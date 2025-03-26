@@ -459,7 +459,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3114507951000454849">Bugungi yangiliklar bilan tanishing <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Batafsil</translation>
 <translation id="3123734510202723619">Xabarnomalar</translation>
-<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> “<ph name="TAB_NAME" />” nomli varaqni oʻzgartirdi</translation>
 <translation id="3148237711805373460">Ochish</translation>
 <translation id="314939179385989105">Chrome bosh sahifasi</translation>
 <translation id="3158667104057012316">Qoʻlda saralanmoqda</translation>
@@ -840,14 +839,12 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4910889077668685004">To‘lov ilovalari</translation>
 <translation id="4912413785358399818">Varaqni koʻchirish</translation>
 <translation id="4913169188695071480">Yangilanishni to‘xtatish</translation>
-<translation id="4918086044614829423">Qabul qilish</translation>
 <translation id="4925120120285606924">Skrinshot: <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Parolingiz eksport qilinadi va matn fayli sifatida yuklab olinadi. Ularni hamma koʻra oladi va har qanday ilova u joylashgan jildga kira oladi.</translation>
 <translation id="4926901776383726965">Rasm va fayllarni oflayn ochish uchun saqlash yoki boshqa ilovalarda ulashish mumkin</translation>
 <translation id="4932247056774066048">Chunki siz <ph name="DOMAIN_NAME" /> tomonidan boshqariladigan hisobingizdan chiqish arafasidasiz. Barcha axborotlar Google Chrome brauzeridan tozalab tashlanadi, lekin Google hisobingizda saqlanib qoladi.</translation>
 <translation id="4943703118917034429">Virtual reallik</translation>
 <translation id="4943872375798546930">Hech narsa topilmadi</translation>
-<translation id="4953833914914492602">“<ph name="TAB_GROUP_NAME" />” nomli varaqlar guruhi endi mavjud emas</translation>
 <translation id="4957722034734105353">Batafsil...</translation>
 <translation id="4961107849584082341">Bu sahifani boshqa tilga tarjima qiling</translation>
 <translation id="4964614743143953889">Chrome xavfli saytlar va yuklanmalar haqida ogohlantiradi</translation>
@@ -966,7 +963,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5526281268548144413">Bir nechta oynada bajarish imkonsiz</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# daqiqa oldin}other{# daqiqa oldin}}</translation>
 <translation id="5548606607480005320">Xavfsizlik tekshiruvi</translation>
-<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> “<ph name="TAB_GROUP_NAME" />” nomli varaqlar guruhiga qoʻshildi</translation>
 <translation id="5554520618550346933">Paroldan foydalansangiz, u internetga chiqib ketgan boʻlsa, Chrome sizni ogohlantiradi. Bunda parolingiz va foydalanuvchi nomingiz shifrlanadi, hatto Google xodimlariga ham koʻrinmaydi.</translation>
 <translation id="5555525474779371165">Saytlarni xavfsiz kezish himoyasini tanlang</translation>
 <translation id="5556459405103347317">Qayta yuklash</translation>
@@ -1183,7 +1179,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6481963882741794338">Chrome va boshqa Google xizmatlarini moslashtirish kabi maqsadlarda ulang</translation>
 <translation id="6482749332252372425">Xotirada yetarli bo‘sh joy yo‘qligi tufayli “<ph name="FILE_NAME" />” fayli yuklab olinmadi.</translation>
 <translation id="6486420406192123355">Bu PDF fayl himoyasiz ulanishli saytdan olingan</translation>
-<translation id="6495590690749880440">Varaqlar guruhi ochilsinmi?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Fayl yuklab olindi}other{# ta fayl yuklab olindi}}</translation>
 <translation id="6508722015517270189">Chrome’ni qaytadan ishga tushiring</translation>
 <translation id="6518133107902771759">Tasdiqlash</translation>
@@ -1617,7 +1612,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8282297628636750033">Saytlarga tungi mavzuni tatbiq etish</translation>
 <translation id="8282950411412455249">Xavfsizlik sozlamalarini ochish</translation>
 <translation id="8306751933352925837">Tez orada bu qurilmadagi parollar ishlamay qoladi. Parollardan foydalanishda davom etish uchun Google Play xizmatlarini yangilang. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
-<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> “<ph name="TAB_NAME" />” nomli varaqni olib tashladi</translation>
 <translation id="8310451567823644042">Tez orada parollar ishlamay qoladi</translation>
 <translation id="831192587911042850">Joriy saytni kuzatuvdagi saytlar roʻyxatiga kiritadi.</translation>
 <translation id="8320212361750431956">Oxirgi faollik</translation>

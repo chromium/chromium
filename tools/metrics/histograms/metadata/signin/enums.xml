@@ -441,6 +441,17 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Don't show, feature flag is disabled"/>
 </enum>
 
+<!-- LINT.IfChange(IOSAccountSwitchType) -->
+
+<enum name="IOSAccountSwitchType">
+  <int value="0" label="Personal -&gt; Personal"/>
+  <int value="1" label="Personal -&gt; Managed"/>
+  <int value="2" label="Managed -&gt; Personal"/>
+  <int value="3" label="Managed -&gt; Managed"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.mm:IOSAccountSwitchType) -->
+
 <enum name="IOSDeviceRestoreSignedinState">
   <int value="0" label="User not signed in before iOS device restore"/>
   <int value="1"

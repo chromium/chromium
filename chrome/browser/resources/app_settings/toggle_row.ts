@@ -49,12 +49,12 @@ export class ToggleRowElement extends CrLitElement {
     };
   }
 
-  icon: string = '';
-  label: string = '';
-  managed: boolean = false;
-  disabled: boolean = false;
-  value: boolean = false;
-  description: string = '';
+  accessor icon: string = '';
+  accessor label: string = '';
+  accessor managed: boolean = false;
+  accessor disabled: boolean = false;
+  accessor value: boolean = false;
+  accessor description: string = '';
 
   override firstUpdated() {
     this.addEventListener('click', this.onClick_);

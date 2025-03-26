@@ -337,30 +337,17 @@ public class PdfUtils {
         RecordHistogram.recordBooleanHistogram("Android.Pdf.DocumentLoad", true);
     }
 
-    static void recordPdfLoadResult(boolean isLoadSuccess) {
-        RecordHistogram.recordBooleanHistogram("Android.Pdf.DocumentLoadResult", isLoadSuccess);
-    }
-
-    static void recordPdfLoadResultPaired(boolean isLoadSuccess) {
-        RecordHistogram.recordBooleanHistogram(
-                "Android.Pdf.DocumentLoadResult.Paired", isLoadSuccess);
-    }
-
     static void recordPdfLoadResultDetail(@PdfLoadResult int loadResult) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.Pdf.DocumentLoadResult.Detail", loadResult, PdfLoadResult.NUM_ENTRIES);
     }
 
-    static void recordPdfLoadTime(long duration) {
-        RecordHistogram.recordTimesHistogram("Android.Pdf.DocumentLoadTime", duration);
-    }
-
-    static void recordPdfLoadTimePaired(long duration) {
-        RecordHistogram.recordTimesHistogram("Android.Pdf.DocumentLoadTime.Paired", duration);
-    }
-
     static void recordPdfLoadTimeFirstPaired(long duration) {
         RecordHistogram.recordTimesHistogram("Android.Pdf.DocumentLoadTime.FirstPaired", duration);
+    }
+
+    static void recordPdfTransientDownloadTime(long duration) {
+        RecordHistogram.recordTimesHistogram("Android.Pdf.DownloadTime.Transient", duration);
     }
 
     static void recordFindInPage(int findInPageCounts) {

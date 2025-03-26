@@ -141,6 +141,10 @@ resources.
 
 #### How to Batch restarting the Activity between tests
 
+This restarts the Android Activities while keeping the browser process alive.
+Static fields, singletons and globals are not reset unless ResettersForTesting
+was used.
+
 1. Add `@Batch(Batch.PER_CLASS)` to the test class.
 2. Use the `@Rule` returned by
    `ChromeTransitTestRules.freshChromeTabbedActivityRule()`.
@@ -151,22 +155,39 @@ The `BatchedPublicTransitRule` is not necessary. Returning to the home station
 is not necessary. However, this does not run as fast as "reusing the Activity"
 below, especially in Release.
 
-#### How to Batch reusing the Activity between tests
+#### How to Batch reusing the Activity between tests but resetting tab state
+
+This keeps the Activity, but closes all tabs between tests and returns to a
+blank page.
+
+Using `AutoResetCtaTransitTestRule`:
 
 1. Add `@Batch(Batch.PER_CLASS)` to the test class.
-2. Use a "reused" `@Rule` such as
+2. Use `ChromeTransitTestRules.autoResetCtaActivityRule()`.
+3. Get the first station in each test case from the test rule:
+   `mCtaTestRule.startOnBlankPage()`.
+
+Tests don't need to return to the home station. Only some reset paths are
+supported - this is best effort since this reset transition is not part of a
+regular user flow.
+
+#### How to Batch reusing the Activity between tests staying on the same state
+
+This both keeps the Activiy and doesn't reset any app state between tests (apart
+from ResettersForTesting) - a test is started immediately after the previous
+finished.
+
+Using `ReusedCtaTransitTestRule`:
+
+1. Add `@Batch(Batch.PER_CLASS)` to the test class.
+2. Use a "Reused" factory method such as
    `ChromeTransitTestRules.blankPageStartReusedActivityRule()`.
 3. Get the first station in each test case from the test rule:
-   `mCtaTestRule#start()`.
-4. Each test should return to the home station. If a test does not end in the
-   home station, it will fail (if it already hasn't) with a descriptive message.
-   The following tests will also fail right at the start.
+   `mCtaTestRule.start()`.
 
-In Chrome, in many situations, [`BlankCTATabInitialStatePublicTransitRule`] is
-more practical to use to automatically reset Tab state. It also acts as entry
-point.
-
-[`BlankCTATabInitialStatePublicTransitRule`]: https://source.chromium.org/search?q=symbol:BlankCTATabInitialStatePublicTransitRule&ss=chromium
+Each test should return to the home station. If a test does not end in the
+home station, it will fail (if it already hasn't) with a descriptive message.
+The following tests will also fail right at the start.
 
 ### ViewPrinter
 

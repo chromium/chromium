@@ -149,6 +149,11 @@ message NavigateAction {
   string url = 1;
 }
 
+// Wait action waits 3 seconds by default.
+// Next ID: 1
+message WaitAction {
+}
+
 // Navigate the page Back action.
 // Next ID: 1
 message HistoryBackAction {
@@ -161,7 +166,7 @@ message HistoryForwardAction {
 
 // All of the actions that can be taken.
 // Only one of these is allowed per action.
-// Next ID: 10
+// Next ID: 11
 message ActionInformation {
   oneof action_info {
     ClickAction click = 1;
@@ -181,6 +186,8 @@ message ActionInformation {
     HistoryBackAction back = 8;
 
     HistoryForwardAction forward = 9;
+
+    WaitAction wait = 10;
   }
 }
 

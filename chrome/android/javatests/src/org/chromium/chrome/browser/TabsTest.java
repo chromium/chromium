@@ -899,14 +899,14 @@ public class TabsTest {
                         TabStateFileManager.getTabStateFilename(
                                 normalModel.getTabAt(normalModel.getCount() - 1).getId(),
                                 false,
-                                false));
+                                /* isFlatBuffer= */ true));
         File incognitoTabFile =
                 new File(
                         tabStateDir,
                         TabStateFileManager.getTabStateFilename(
                                 incognitoModel.getTabAt(0).getId(),
                                 true,
-                                /* isFlatBuffer= */ false));
+                                /* isFlatBuffer= */ true));
 
         assertFileExists(normalTabFile, true);
         assertFileExists(incognitoTabFile, true);

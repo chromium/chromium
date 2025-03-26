@@ -184,7 +184,9 @@ class DesktopSessionProxy
   void OnKeyboardLayoutChanged(const protocol::KeyboardLayout& layout) override;
 
   // mojom::DesktopSessionStateHandler implementation.
-  void DisconnectSession(protocol::ErrorCode error) override;
+  void DisconnectSession(protocol::ErrorCode error,
+                         const std::string& error_details,
+                         const SourceLocation& error_location) override;
 
   // API used to implement the UrlForwarderConfigurator interface.
   void IsUrlForwarderSetUp(

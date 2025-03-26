@@ -99,7 +99,7 @@ void PendingOperations::Complete(Id op_id) {
 void PendingOperations::OnTimeout(Id op_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = pending_ops_.find(op_id);
-  CHECK(it != pending_ops_.end(), base::NotFatalUntil::M130);
+  CHECK(it != pending_ops_.end());
 
   it->second->OnTimeout();
   pending_ops_.erase(it);

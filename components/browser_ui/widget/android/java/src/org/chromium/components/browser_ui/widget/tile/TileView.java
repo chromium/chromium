@@ -98,6 +98,11 @@ public class TileView extends FrameLayout {
         mTitleView.setText(title);
     }
 
+    /** Changes the appearance of a tile to indicate that it's a Custom Tile. */
+    protected void setStyleForCustomTile() {
+        mIconBackgroundView.setBackgroundResource(R.drawable.custom_tile_background);
+    }
+
     /** Specify the handler that will be invoked when this tile is highlighted by the user. */
     void setOnFocusViaSelectionListener(Runnable listener) {
         mOnFocusViaSelectionListener = listener;

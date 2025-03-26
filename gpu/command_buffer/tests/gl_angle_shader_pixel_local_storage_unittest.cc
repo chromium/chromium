@@ -111,9 +111,8 @@ TEST_F(ANGLEShaderPixelLocalStorageTest, GetIntegerv) {
 // marshalled properly over the command buffer. Thorough testing of these
 // commands is done in angle_end2end_tests.
 
-// TODO(anglebug.com/40096838): debug and re-enable this test.
 TEST_F(ANGLEShaderPixelLocalStorageTest,
-       DISABLED_GetFramebufferPixelLocalStorageParameter) {
+       GetFramebufferPixelLocalStorageParameter) {
   if (!gl_.IsInitialized() ||
       !GLTestHelper::HasExtension("GL_ANGLE_shader_pixel_local_storage")) {
     return;

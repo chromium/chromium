@@ -356,7 +356,7 @@ void V4L2StatelessVideoDecoderBackend::SurfaceReady(
   // produces multiple surfaces with the same |bitstream_id|, so we shouldn't
   // remove the timestamp from the cache.
   const auto it = bitstream_id_to_timestamp_.Peek(bitstream_id);
-  CHECK(it != bitstream_id_to_timestamp_.end(), base::NotFatalUntil::M130);
+  CHECK(it != bitstream_id_to_timestamp_.end());
   base::TimeDelta timestamp = it->second;
 
   dec_surface->SetVisibleRect(visible_rect);

@@ -1533,7 +1533,7 @@ enum AXStringListAttribute {
 
   AX_SLA_ARIANOTIFICATIONANNOUNCEMENTS = 2;
 
-  AX_SLA_ARIANOTIFICATIONIDS = 3;
+  AX_SLA_ARIANOTIFICATIONTYPES = 3;
 }
 
 // This will be updated when there is a significant change in the parsing logic.

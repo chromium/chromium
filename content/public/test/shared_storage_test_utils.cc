@@ -87,6 +87,62 @@ std::vector<MethodWithOptionsPtr> CloneSharedStorageMethods(
   return cloned_methods_with_options;
 }
 
+std::string SerializeSharedStorageMethods(
+    const std::vector<MethodWithOptionsPtr>& methods_with_options) {
+  std::stringstream ss;
+
+  ss << "{";
+
+  for (size_t i = 0; i < methods_with_options.size(); ++i) {
+    const MethodWithOptionsPtr& method_with_options = methods_with_options[i];
+
+    ss << "{";
+
+    switch (method_with_options->method->which()) {
+      case network::mojom::SharedStorageModifierMethod::Tag::kSetMethod: {
+        network::mojom::SharedStorageSetMethodPtr& set_method =
+            method_with_options->method->get_set_method();
+        ss << "Set(" << set_method->key << "," << set_method->value << ","
+           << base::ToString(set_method->ignore_if_present) << ")";
+        break;
+      }
+      case network::mojom::SharedStorageModifierMethod::Tag::kAppendMethod: {
+        network::mojom::SharedStorageAppendMethodPtr& append_method =
+            method_with_options->method->get_append_method();
+        ss << "Append(" << append_method->key << "," << append_method->value
+           << ")";
+        break;
+      }
+      case network::mojom::SharedStorageModifierMethod::Tag::kDeleteMethod: {
+        network::mojom::SharedStorageDeleteMethodPtr& delete_method =
+            method_with_options->method->get_delete_method();
+        ss << "Delete(" << delete_method->key << ")";
+        break;
+      }
+      case network::mojom::SharedStorageModifierMethod::Tag::kClearMethod: {
+        ss << "Clear()";
+        break;
+      }
+    }
+
+    const std::optional<std::string>& with_lock =
+        method_with_options->with_lock;
+    if (with_lock) {
+      ss << "; WithLock: " << with_lock.value();
+    }
+
+    ss << "}";
+
+    if (i != methods_with_options.size() - 1) {
+      ss << "; ";
+    }
+  }
+
+  ss << "}";
+
+  return ss.str();
+}
+
 SharedStorageRuntimeManager* GetSharedStorageRuntimeManagerForStoragePartition(
     StoragePartition* storage_partition) {
   return static_cast<StoragePartitionImpl*>(storage_partition)
@@ -197,41 +253,7 @@ SharedStorageWriteOperationAndResult::~SharedStorageWriteOperationAndResult() =
 std::ostream& operator<<(std::ostream& os,
                          const SharedStorageWriteOperationAndResult& op) {
   os << "Request Origin: " << op.request_origin;
-
-  for (auto& method_with_options : op.methods_with_options) {
-    switch (method_with_options->method->which()) {
-      case network::mojom::SharedStorageModifierMethod::Tag::kSetMethod: {
-        network::mojom::SharedStorageSetMethodPtr& set_method =
-            method_with_options->method->get_set_method();
-        os << "; Method: Set(" << set_method->key << "," << set_method->value
-           << "," << base::ToString(set_method->ignore_if_present) << ")";
-        break;
-      }
-      case network::mojom::SharedStorageModifierMethod::Tag::kAppendMethod: {
-        network::mojom::SharedStorageAppendMethodPtr& append_method =
-            method_with_options->method->get_append_method();
-        os << "; Method: Append(" << append_method->key << ","
-           << append_method->value << ")";
-        break;
-      }
-      case network::mojom::SharedStorageModifierMethod::Tag::kDeleteMethod: {
-        network::mojom::SharedStorageDeleteMethodPtr& delete_method =
-            method_with_options->method->get_delete_method();
-        os << "; Method: Delete(" << delete_method->key << ")";
-        break;
-      }
-      case network::mojom::SharedStorageModifierMethod::Tag::kClearMethod: {
-        os << "; Method: Clear()";
-        break;
-      }
-    }
-
-    const std::optional<std::string>& with_lock =
-        method_with_options->with_lock;
-    if (with_lock) {
-      os << "; WithLock: " << with_lock.value();
-    }
-  }
+  os << "; Methods: " << SerializeSharedStorageMethods(op.methods_with_options);
 
   const std::optional<std::string>& with_lock = op.with_lock;
   if (with_lock) {

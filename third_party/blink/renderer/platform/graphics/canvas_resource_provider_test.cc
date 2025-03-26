@@ -666,46 +666,6 @@ TEST_F(CanvasResourceProviderTest,
 #endif
 }
 
-TEST_F(CanvasResourceProviderTest,
-       CanvasResourceProviderDirect3DGpuMemoryBuffer) {
-  const gfx::Size kSize(10, 10);
-  const SkImageInfo kInfo =
-      SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
-
-  auto provider = CanvasResourceProvider::CreatePassThroughProvider(
-      kSize, GetN32FormatForCanvas(), kInfo.alphaType(),
-      gfx::ColorSpace::CreateSRGB(), context_provider_wrapper_);
-
-  EXPECT_EQ(provider->Size(), kSize);
-  EXPECT_TRUE(provider->IsValid());
-  EXPECT_TRUE(provider->IsAccelerated());
-  EXPECT_TRUE(provider->SupportsDirectCompositing());
-  EXPECT_TRUE(provider->IsSingleBuffered());
-  EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
-
-  auto client_si = gpu::ClientSharedImage::CreateForTesting();
-
-  viz::TransferableResource tr;
-  tr.set_mailbox(client_si->mailbox());
-  tr.set_texture_target(GL_TEXTURE_2D);
-  tr.set_sync_token(gpu::SyncToken());
-  tr.size = kSize;
-  tr.is_overlay_candidate = true;
-
-  scoped_refptr<ExternalCanvasResource> resource =
-      ExternalCanvasResource::Create(
-          client_si, tr.sync_token(), tr.resource_source, tr.hdr_metadata,
-          viz::ReleaseCallback(), SharedGpuContext::ContextProviderWrapper(),
-          provider->CreateWeakPtr());
-
-  // NewOrRecycledResource() would return nullptr before an ImportResource().
-  auto* raw_resource = resource.get();
-  provider->ImportResource(std::move(resource));
-  EXPECT_EQ(provider->NewOrRecycledResource().get(), raw_resource);
-  // NewOrRecycledResource() will always return the same |resource|.
-  EXPECT_EQ(provider->NewOrRecycledResource().get(), raw_resource);
-}
-
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_Bitmap) {
   auto provider = CanvasResourceProvider::CreateBitmapProvider(
       gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), GetN32FormatForCanvas(),

@@ -62,7 +62,7 @@ class FakeSession : public Session {
   void SetTransport(Transport* transport) override;
   void Close(ErrorCode error,
              std::string_view error_details,
-             const base::Location& error_location) override;
+             const SourceLocation& error_location) override;
   void AddPlugin(SessionPlugin* plugin) override;
 
  private:

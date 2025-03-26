@@ -136,8 +136,11 @@ crbug.com/1078566 [ android ] GpuNormalTermination_NewWebGLNotBlocked [ Skip ]
 
 # GPU process fallback isn't supported on certain platforms.
 crbug.com/1154047 [ chromeos ] GpuCrash_InfoForHardwareGpu [ Skip ]
+crbug.com/1154047 [ chromeos ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
 crbug.com/1154047 [ android ] GpuCrash_InfoForHardwareGpu [ Skip ]
+crbug.com/1154047 [ android ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
 crbug.com/1154047 [ fuchsia ] GpuCrash_InfoForHardwareGpu [ Skip ]
+crbug.com/1154047 [ fuchsia ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
 
 # WebGPU tests hanging on multiple Mac FYI bots
 crbug.com/1305020 [ mac asan intel-0x3e9b ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
@@ -147,6 +150,7 @@ crbug.com/1305020 [ mac nvidia-0xfe9 ] ContextLost_WebGPUContextLostFromGPUProce
 # Flaky hangs on Mac Debug NVIDIA, stalling the test suite for 40 minutes.
 # This hardware configuration is effectively obsolete; this won't be investigated.
 crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
+crbug.com/1161570 [ mac nvidia debug ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
 crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 
 # Flaky hangs on Mac Debug Intel. Attempted to suppress with
@@ -154,13 +158,16 @@ crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 # Release mode, and no root cause was obvious, so permanently skipping
 # on this configuration.
 crbug.com/1297151 [ mac intel debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
+crbug.com/1297151 [ mac intel debug ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
 
 # Flaky hangs on Mac Debug AMD, stalling the test suite for 60 minutes.
 crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
+crbug.com/1327754 [ mac amd debug ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
 crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 
 # Vulkan enabled on linux, the crash fallback logic is different.
 crbug.com/1334650 [ linux ] GpuCrash_InfoForHardwareGpu [ Skip ]
+crbug.com/1334650 [ linux ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #
@@ -182,12 +189,19 @@ crbug.com/1419558 [ angle-swiftshader clang-coverage fuchsia fuchsia-board-qemu-
 
 # Fails with Graphite on Windows and Mac
 crbug.com/329145823 [ win release amd ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ win release amd ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ win release intel ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ win release intel ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ win release nvidia ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ win release nvidia ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ win release qualcomm ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ win release qualcomm ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ angle-metal graphite-enabled mac release ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ angle-metal graphite-enabled mac release ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ angle-opengl bigsur graphite-disabled mac-x86_64 no-asan no-clang-coverage nvidia-0xfe9 release ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ angle-opengl bigsur graphite-disabled mac-x86_64 no-asan no-clang-coverage nvidia-0xfe9 release ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ asan graphite-disabled intel-0x3e9b mac-x86_64 no-clang-coverage release sonoma ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ graphite-disabled intel-0x3e9b mac-x86_64 no-clang-coverage release sonoma ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 
 # Flaky failure on Mac AMD ASAN - 3 GPU process crashes instead of 4
@@ -202,6 +216,7 @@ crbug.com/338574390 [ angle-metal asan intel mac ] ContextLost_WebGPUBlockedAfte
 
 # Windows debug causes render process hangs due to slow gpu process restart.
 crbug.com/1416920 [ win debug ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/1416920 [ win debug ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 
 # Flaky crash affects this test in particular for some reason
 crbug.com/365565140 [ win qualcomm ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]

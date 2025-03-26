@@ -157,8 +157,7 @@ const CGFloat kSymbolSize = 18;
                      action:^{
                        [omniboxHandler cancelOmniboxEdit];
                        [settingsHandler
-                           showSavedPasswordsSettingsFromViewController:nil
-                                                       showCancelButton:NO];
+                           showSavedPasswordsSettingsFromViewController:nil];
                      }];
     }
     case OmniboxPedalId::UPDATE_CREDIT_CARD: {

@@ -91,15 +91,6 @@ public class SiteSettingsTestUtils {
         return startSiteSettings(AllSiteSettings.class, fragmentArgs);
     }
 
-    public static SettingsActivity startAllSitesSettingsForRws(
-            @SiteSettingsCategory.Type int type, String rwsPage) {
-        Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putString(
-                AllSiteSettings.EXTRA_CATEGORY, SiteSettingsCategory.preferenceKey(type));
-        fragmentArgs.putString(AllSiteSettings.EXTRA_SEARCH, rwsPage);
-        return startSiteSettings(AllSiteSettings.class, fragmentArgs);
-    }
-
     private static SettingsActivity startSiteSettings(
             Class<? extends Fragment> fragmentClass, Bundle fragmentArgs) {
         SettingsNavigation settingsNavigation =

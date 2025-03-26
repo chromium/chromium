@@ -173,8 +173,9 @@ scoped_refptr<media::DecoderBuffer> ReassembleFragments(
   auto temp_buffer = base::HeapArray<uint8_t>::Uninit(frame_size);
   uint8_t* dst = temp_buffer.data();
   for (const auto& fragment : fragments) {
-    memcpy(dst, fragment->data(), fragment->size());
-    dst += fragment->size();
+    auto fragment_span = base::span(*fragment);
+    memcpy(dst, fragment_span.data(), fragment_span.size());
+    dst += fragment_span.size();
   }
 
   auto reassembled_frame =
@@ -1142,10 +1143,12 @@ bool V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers() {
 
       CHECK_EQ(v4l2_buffer->PlanesCount(), 1u);
       uint8_t* dst = static_cast<uint8_t*>(v4l2_buffer->GetPlaneMapping(0));
-      CHECK_GE(v4l2_buffer->GetPlaneSize(/*plane=*/0), media_buffer->size());
-      memcpy(dst, media_buffer->data(), media_buffer->size());
-      v4l2_buffer->SetPlaneBytesUsed(0, media_buffer->size());
-      VLOGF(4) << "Enqueuing " << media_buffer->size() << " bytes.";
+      auto media_buffer_span = base::span(*media_buffer);
+      CHECK_GE(v4l2_buffer->GetPlaneSize(/*plane=*/0),
+               media_buffer_span.size());
+      memcpy(dst, media_buffer_span.data(), media_buffer_span.size());
+      v4l2_buffer->SetPlaneBytesUsed(0, media_buffer_span.size());
+      VLOGF(4) << "Enqueuing " << media_buffer_span.size() << " bytes.";
       v4l2_buffer->SetTimeStamp(TimeDeltaToTimeVal(media_buffer->timestamp()));
 
       const int64_t flat_timespec = media_buffer->timestamp().InMilliseconds();

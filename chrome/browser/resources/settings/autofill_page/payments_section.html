@@ -17,14 +17,6 @@
     padding-inline-start: 20px;
   }
 
-  #migrateCreditCards {
-    border-bottom: var(--cr-separator-line);
-    border-top: none;
-  }
-
-  #migrateCreditCardsButton {
-    margin: 0 auto;
-  }
 </style>
 <settings-toggle-button id="autofillCreditCardToggle"
     no-extension-indicator label="$i18n{enableCreditCardsLabel}"
@@ -129,12 +121,6 @@
     </cr-lazy-render>
   </template>
 </div>
-<cr-link-row id="migrateCreditCards"
-    hidden$="[[!checkIfMigratable_(creditCards,
-        prefs.autofill.credit_card_enabled.value)]]"
-    on-click="onMigrateCreditCardsClick_"
-    label="$i18n{migrateCreditCardsLabel}"
-    sub-label="[[migratableCreditCardsInfo_]]"></cr-link-row>
 <settings-payments-list id="paymentsList"
     class="list-frame payment-list-margin-start"
     credit-cards="[[creditCards]]"

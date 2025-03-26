@@ -90,7 +90,7 @@
         .isFormFieldFocused="${this.isFormFieldFocused_()}">
     </viewer-download-controls>
     <cr-icon-button id="print" iron-icon="${this.printIcon_()}"
-        ?hidden="${!this.printingEnabled}" title="$i18n{tooltipPrint}"
+        ?hidden="${!this.printingEnabled_}" title="$i18n{tooltipPrint}"
         aria-label="$i18n{tooltipPrint}" @click="${this.onPrintClick_}">
     </cr-icon-button>
     <cr-icon-button id="more" iron-icon="${this.moreIcon_()}"

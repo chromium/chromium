@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/complex_tasks/model/ios_content_record_task_id.h"
 #import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_url_utils.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -82,7 +83,10 @@ void HistoryTabHelper::UpdateHistoryPageTitle(const web::NavigationItem& item) {
 history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
     web::NavigationItem* last_committed_item,
     web::NavigationContext* navigation_context) {
-  const GURL& url = last_committed_item->GetURL();
+  const GURL& url =
+      lens_url_processing_enabled_
+          ? lens::ProcessURLForHistory(last_committed_item->GetURL())
+          : last_committed_item->GetURL();
 
   const ui::PageTransition transition =
       last_committed_item->GetTransitionType();

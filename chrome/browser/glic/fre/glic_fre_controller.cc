@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -77,8 +78,8 @@ bool GlicFreController::CanShowFreDialog(Browser* browser) {
   if (!browser) {
     return false;
   }
-  // If there is a browser, the FRE can only be shown if no
-  // other modal is currently being shown on the same tab.
+  // If there is a browser, the FRE can only be shown if no other modal is
+  // currently being shown on the same tab.
   tabs::TabInterface* tab = browser->GetActiveTabInterface();
   return tab && tab->CanShowModalUI();
 }
@@ -180,6 +181,11 @@ void GlicFreController::DismissFre() {
     will_detach_subscription_ = {};
     show_start_time_ = base::TimeTicks();
   }
+}
+
+void GlicFreController::PrepareForClient(
+    base::OnceCallback<void(bool)> callback) {
+  auth_controller_.CheckAuthBeforeLoad(std::move(callback));
 }
 
 void GlicFreController::OnLinkClicked(const GURL& url) {

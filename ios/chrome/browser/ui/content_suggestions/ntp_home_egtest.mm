@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_app_interface.h"
@@ -38,7 +39,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
-#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/whats_new/public/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -1098,37 +1098,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [self testNTPInitialPositionAndContent:collectionView];
 }
 
-// Test to ensure that feed can be collapsed/shown and that feed header changes
-// accordingly.
-- (void)testToggleFeedVisible {
-  // Disable customization.
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_disabled.push_back(kHomeCustomization);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
-  [self
-      testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
-
-  // Check feed label and if NTP is scrollable.
-  [self checkFeedLabelForFeedVisible:YES];
-  [self checkIfNTPIsScrollable];
-
-  // Hide feed.
-  [self hideFeedFromNTPMenu];
-
-  // Check feed label and if NTP is scrollable.
-  [self checkFeedLabelForFeedVisible:NO];
-  [self checkIfNTPIsScrollable];
-
-  // Show feed again.
-  [self showFeedFromNTPMenu];
-
-  // Check feed label and if NTP is scrollable.
-  [self checkFeedLabelForFeedVisible:YES];
-  [self checkIfNTPIsScrollable];
-}
-
 // Test to ensure that feed can be enabled/disabled and that feed header changes
 // accordingly.
 - (void)testToggleFeedEnabled {
@@ -1986,31 +1955,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
-}
-
-- (void)showFeedFromNTPMenu {
-  bool feed_visible =
-      [ChromeEarlGrey userBooleanPref:feed::prefs::kArticlesListVisible];
-  GREYAssertFalse(feed_visible, @"Expect feed to be hidden!");
-
-  // The feed header button may be offscreen, so scroll to find it if needed.
-  id<GREYMatcher> headerButton =
-      grey_allOf(grey_accessibilityID(kNTPFeedHeaderManagementButtonIdentifier),
-                 grey_sufficientlyVisible(), nil);
-  [[[EarlGrey selectElementWithMatcher:headerButton]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100.0f)
-      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      performAction:grey_tap()];
-
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   chrome_test_util::NTPFeedMenuEnableButton(),
-                                   grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-  [ChromeEarlGreyUI waitForAppToIdle];
-  feed_visible =
-      [ChromeEarlGrey userBooleanPref:feed::prefs::kArticlesListVisible];
-  GREYAssertTrue(feed_visible, @"Expect feed to be visible!");
 }
 
 - (void)hideFeedFromNTPMenu {

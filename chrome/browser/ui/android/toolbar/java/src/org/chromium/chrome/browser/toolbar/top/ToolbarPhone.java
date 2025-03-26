@@ -2574,7 +2574,7 @@ public class ToolbarPhone extends ToolbarLayout
             mOptionalButtonCoordinator =
                     new OptionalButtonCoordinator(
                             optionalButton,
-                            mUserEducationHelper,
+                            () -> mUserEducationHelper,
                             /* transitionRoot= */ mToolbarButtonsContainer,
                             isAnimationAllowedPredicate,
                             mTrackerSupplier);

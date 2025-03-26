@@ -108,7 +108,6 @@ void SVGImageElement::SvgAttributeChanged(
   if (is_length_attribute || attr_name == svg_names::kPreserveAspectRatioAttr) {
     if (is_length_attribute) {
       UpdatePresentationAttributeStyle(params.property);
-      UpdateRelativeLengthsInformation();
     }
 
     LayoutObject* object = GetLayoutObject();

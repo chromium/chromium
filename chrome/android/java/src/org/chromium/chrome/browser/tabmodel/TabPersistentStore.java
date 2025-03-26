@@ -1756,14 +1756,14 @@ public class TabPersistentStore {
 
     /**
      * Returns a file pointing at the TabState corresponding to the given Tab.
+     *
      * @param tabId ID of the TabState to locate.
      * @param encrypted Whether or not the tab is encrypted.
      * @return File pointing at the TabState for the Tab.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public File getTabStateFile(int tabId, boolean encrypted) {
+    public File getTabStateFileForTesting(int tabId, boolean encrypted) {
         return TabStateFileManager.getTabStateFile(
-                getStateDirectory(), tabId, encrypted, /* isFlatbuffer= */ false);
+                getStateDirectory(), tabId, encrypted, /* isFlatbuffer= */ true);
     }
 
     /**

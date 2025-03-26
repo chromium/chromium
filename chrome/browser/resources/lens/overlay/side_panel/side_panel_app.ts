@@ -145,12 +145,15 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   isBackArrowVisible: boolean;
   // Whether the user is currently focused into the searchbox.
   isSearchboxFocused: boolean;
+  private showGhostLoader: boolean;
   // Whether to purposely suppress the ghost loader. Done when escaping from
   // the searchbox when there's text or when page bytes aren't successfully
   // uploaded.
   suppressGhostLoader: boolean;
+  placeholderText: string;
   // Whether the ghost loader should show its error state.
   showErrorState: boolean;
+  private showUploadProgress: boolean;
   // The current progress of the page content upload.
   uploadProgressPercentage: number;
   // The placeholder text to show in the searchbox.

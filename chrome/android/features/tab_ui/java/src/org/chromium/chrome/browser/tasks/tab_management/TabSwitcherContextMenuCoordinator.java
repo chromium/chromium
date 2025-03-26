@@ -8,7 +8,6 @@ import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_ST
 
 import android.app.Activity;
 
-import androidx.annotation.DimenRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -66,7 +65,8 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
                         tabListEditorManager),
                 tabModelSupplier,
                 tabGroupSyncService,
-                collaborationService);
+                collaborationService,
+                activity);
         mActivity = activity;
         mTabModelSupplier = tabModelSupplier;
     }
@@ -195,8 +195,8 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
     }
 
     @Override
-    protected @DimenRes int getMenuWidth() {
-        return R.dimen.tab_switcher_context_menu_max_width;
+    protected int getMenuWidth(int anchorViewWidthPx) {
+        return getDimensionPixelSize(R.dimen.tab_switcher_context_menu_max_width);
     }
 
     @Nullable

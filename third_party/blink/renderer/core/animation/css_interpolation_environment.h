@@ -49,9 +49,6 @@ class CSSInterpolationEnvironment : public InterpolationEnvironment {
     return *state_;
   }
 
-  StyleResolverState* GetOptionalState() { return state_; }
-  const StyleResolverState* GetOptionalState() const { return state_; }
-
   const ComputedStyle& BaseStyle() const {
     DCHECK(base_style_);
     return *base_style_;

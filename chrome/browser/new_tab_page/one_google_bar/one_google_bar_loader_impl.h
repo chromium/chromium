@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NEW_TAB_PAGE_ONE_GOOGLE_BAR_ONE_GOOGLE_BAR_LOADER_IMPL_H_
 #define CHROME_BROWSER_NEW_TAB_PAGE_ONE_GOOGLE_BAR_ONE_GOOGLE_BAR_LOADER_IMPL_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -37,7 +38,8 @@ class OneGoogleBarLoaderImpl : public OneGoogleBarLoader {
 
   GURL GetLoadURLForTesting() const override;
 
-  bool SetAdditionalQueryParams(const std::string& value) override;
+  void SetAdditionalQueryParams(
+      const std::map<std::string, std::string>& params) override;
 
  private:
   class AuthenticatedURLLoader;
@@ -58,7 +60,7 @@ class OneGoogleBarLoaderImpl : public OneGoogleBarLoader {
 
   std::vector<OneGoogleCallback> callbacks_;
   std::unique_ptr<AuthenticatedURLLoader> pending_request_;
-  std::string additional_query_params_;
+  std::map<std::string, std::string> additional_query_params_;
 
   base::WeakPtrFactory<OneGoogleBarLoaderImpl> weak_ptr_factory_{this};
 };

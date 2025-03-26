@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_item_data.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_mutator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_notification_cell.h"
-#import "ios/public/provider/chrome/browser/modals/modals_api.h"
 
 using tab_groups::SharingState;
 

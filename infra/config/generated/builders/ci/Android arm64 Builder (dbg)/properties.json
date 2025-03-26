@@ -28,6 +28,7 @@
                 ],
                 "build_config": "Debug",
                 "config": "main_builder_mb",
+                "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"
               },
@@ -66,6 +67,7 @@
                 ],
                 "build_config": "Debug",
                 "config": "main_builder_mb",
+                "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"
               },
@@ -101,6 +103,7 @@
                 ],
                 "build_config": "Debug",
                 "config": "main_builder_mb",
+                "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"
               },
@@ -131,6 +134,7 @@
                 ],
                 "build_config": "Debug",
                 "config": "main_builder_mb",
+                "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"
               },
@@ -166,6 +170,7 @@
                 ],
                 "build_config": "Debug",
                 "config": "main_builder_mb",
+                "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"
               },

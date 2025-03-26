@@ -27,7 +27,7 @@ class ServiceWorkerRegistrationBackgroundFetch final
   ServiceWorkerRegistrationBackgroundFetch& operator=(
       const ServiceWorkerRegistrationBackgroundFetch&) = delete;
 
-  virtual ~ServiceWorkerRegistrationBackgroundFetch();
+  ~ServiceWorkerRegistrationBackgroundFetch();
 
   static ServiceWorkerRegistrationBackgroundFetch& From(
       ServiceWorkerRegistration& registration);

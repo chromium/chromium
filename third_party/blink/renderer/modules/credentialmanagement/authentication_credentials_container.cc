@@ -88,10 +88,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
-#endif
-
 namespace blink {
 
 namespace {
@@ -1036,6 +1032,21 @@ const char* validateGetPublicKeyCredentialPRFExtension(
   return nullptr;
 }
 
+void EmitImmediateMediationUseCounters(
+    ExecutionContext* context,
+    const CredentialRequestOptions* options) {
+  CHECK(options->hasMediation() && options->mediation() == "immediate");
+  if (options->hasPublicKey() && options->password()) {
+    UseCounter::Count(
+        context,
+        WebFeature::kCredentialsGetImmediateMediationWithWebAuthnAndPasswords);
+  } else if (options->hasPublicKey()) {
+    UseCounter::Count(
+        context, WebFeature::kCredentialsGetImmediateMediationWithWebAuthnOnly);
+  }
+  // TODO(crbug.com/392549444): Add other combinations.
+}
+
 }  // namespace
 
 const char AuthenticationCredentialsContainer::kSupplementName[] =
@@ -1520,6 +1531,7 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     } else if (options->mediation() == "immediate") {
       if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled()) {
         mediation = Mediation::IMMEDIATE;
+        EmitImmediateMediationUseCounters(context, options);
       } else {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotSupportedError, "Not implemented"));

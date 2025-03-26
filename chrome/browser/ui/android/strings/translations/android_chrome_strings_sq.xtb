@@ -459,7 +459,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3114507951000454849">Lexo lajmet e sotme <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Më shumë detaje</translation>
 <translation id="3123734510202723619">Njoftime</translation>
-<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> ndryshoi skedën “<ph name="TAB_NAME" />”</translation>
 <translation id="3148237711805373460">Më ço atje</translation>
 <translation id="314939179385989105">Faqja kryesore e Chrome</translation>
 <translation id="3158667104057012316">Po renditen sipas renditjes manuale</translation>
@@ -840,14 +839,12 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4910889077668685004">Aplikacionet e pagesës</translation>
 <translation id="4912413785358399818">Lëviz skedën</translation>
 <translation id="4913169188695071480">Ndalo rifreskimin</translation>
-<translation id="4918086044614829423">Prano</translation>
 <translation id="4925120120285606924">Pamja e ekranit më <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Fjalëkalimet e tua do të eksportohen dhe shkarkohen si skedar teksti. Ato do të jenë të dukshme për këdo dhe çdo aplikacion me qasje në dosjen e destinacionit.</translation>
 <translation id="4926901776383726965">Mund t'i ruash imazhet dhe skedarët që t'i shikosh offline ose t'i ndash në aplikacione të tjera</translation>
 <translation id="4932247056774066048">Duke qenë se po del nga një llogari e menaxhuar nga <ph name="DOMAIN_NAME" />, të dhënat e tua të Chrome do të fshihen nga kjo pajisje. Ato do të mbeten në "Llogarinë tënde të Google".</translation>
 <translation id="4943703118917034429">Realiteti virtual</translation>
 <translation id="4943872375798546930">Asnjë rezultat</translation>
-<translation id="4953833914914492602">Grupi i skedave “<ph name="TAB_GROUP_NAME" />” nuk ofrohet më</translation>
 <translation id="4957722034734105353">Mëso më shumë...</translation>
 <translation id="4961107849584082341">Përktheje këtë faqe në çdo gjuhë</translation>
 <translation id="4964614743143953889">Chrome të paralajmëron për sajtet dhe shkarkimet e pasigurta</translation>
@@ -966,7 +963,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5526281268548144413">Nuk mund të mbyllen në disa dritare</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# minuta më parë}other{# minuta më parë}}</translation>
 <translation id="5548606607480005320">Kontrolli i sigurisë</translation>
-<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> u bashku në grupin e skedave “<ph name="TAB_GROUP_NAME" />”</translation>
 <translation id="5554520618550346933">Kur përdor një fjalëkalim, Chrome të paralajmëron nëse ai është publikuar online. Kur vepron kështu, fjalëkalimet dhe emrat e tu të përdoruesit enkriptohen, në mënyrë që të mos lexohen nga askush, duke përfshirë Google.</translation>
 <translation id="5555525474779371165">Zgjidh mbrojtjen me "Shfletimin e sigurt"</translation>
 <translation id="5556459405103347317">Ringarko</translation>
@@ -1183,7 +1179,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6481963882741794338">Lidh Chrome dhe shërbimet e tjera të Google për personalizimin dhe qëllime të tjera</translation>
 <translation id="6482749332252372425">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të mungesës së hapësirës ruajtëse.</translation>
 <translation id="6486420406192123355">Ky skedar PDF është nga një sajt që përdor një lidhje të pasigurt</translation>
-<translation id="6495590690749880440">Të hapet grupi i skedave?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Skedar i shkarkuar}other{# shkarkime të përfunduara}}</translation>
 <translation id="6508722015517270189">Rinis Chrome</translation>
 <translation id="6518133107902771759">Verifiko</translation>
@@ -1617,7 +1612,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8282297628636750033">Zbato temën e errët për sajtet</translation>
 <translation id="8282950411412455249">Shko te cilësimet e sigurisë</translation>
 <translation id="8306751933352925837">Fjalëkalimet nuk do të funksionojnë më së shpejti në këtë pajisje. Për të vazhduar të përdorësh fjalëkalimet e tua, përditëso shërbimet e Google Play. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
-<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> hoqi skedën “<ph name="TAB_NAME" />”</translation>
 <translation id="8310451567823644042">Fjalëkalimet nuk do të funksionojnë më së shpejti</translation>
 <translation id="831192587911042850">Shton sajtin aktual të uebit në listën e sajteve të uebit që po ndjek ti.</translation>
 <translation id="8320212361750431956">Aktiviteti i fundit</translation>

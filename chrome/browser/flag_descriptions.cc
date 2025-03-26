@@ -591,12 +591,6 @@ const char kAutofillDeprecateAccessibilityApiDescription[] =
     " other Autofill services, enable #enable-autofill-virtual-view-structure.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const char kAutofillDisableLocalCardMigrationName[] =
-    "Disable bulk local credit card migration flows";
-const char kAutofillDisableLocalCardMigrationDescription[] =
-    "When enabled, local credit card migration flows will not be offered, both "
-    "from checkout flows and from the payment methods settings page.";
-
 const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsName[] =
     "Enable allowlist for showing category benefits for BMO cards";
 const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[] =
@@ -703,12 +697,6 @@ const char kAutofillEnableCardInfoRuntimeRetrievalName[] =
 const char kAutofillEnableCardInfoRuntimeRetrievalDescription[] =
     "When enabled, runtime retrieval of CVC along with card number and expiry "
     "from issuer for enrolled cards will be enabled during form fill.";
-
-const char kAutofillEnableCardProductNameName[] =
-    "Enable showing card product name";
-const char kAutofillEnableCardProductNameDescription[] =
-    "When enabled, card product name (instead of issuer network) will be shown "
-    "in Payments Autofill UI.";
 
 const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[] =
     "Enable logging form events to all parsed form on a web page.";
@@ -1968,6 +1956,10 @@ const char kFractionalScrollOffsetsDescription[] =
     "Enables fractional scroll offsets inside Blink, exposing non-integer "
     "offsets to web APIs.";
 
+const char kFedCmAlternativeIdentifiersName[] = "FedCmAlternativeIdentifiers";
+const char kFedCmAlternativeIdentifiersDescription[] =
+    "Supports usernames and phone numbers as account identifiers.";
+
 const char kFedCmAuthzName[] = "FedCmAuthz";
 const char kFedCmAuthzDescription[] =
     "Enables RPs to request authorization for custom IdP scopes.";
@@ -2599,6 +2591,10 @@ const char kNewEtc1EncoderDescription[] =
     "thumbnails.";
 #endif
 
+const char kNotebookLmAppPreinstallName[] = "NotebookLM app preload";
+const char kNotebookLmAppPreinstallDescription[] =
+    "Preloads the NotebookLM app.";
+
 const char kNotificationSchedulerName[] = "Notification scheduler";
 const char kNotificationSchedulerDescription[] =
     "Enable notification scheduler feature.";
@@ -2675,6 +2671,48 @@ const char kOmniboxMostVisitedTilesHorizontalRenderGroupName[] =
 const char kOmniboxMostVisitedTilesHorizontalRenderGroupDescription[] =
     "Updates the logic constructing MV tiles to use horizontal render group. "
     "No user-facing changes expected.";
+
+const char kOmniboxNumNtpZpsRecentSearchesName[] =
+    "Omnibox: Recent Searches on new tab page ZPS";
+const char kOmniboxNumNtpZpsRecentSearchesDescription[] =
+    "Controls presence/volume of Recent Searches shown in zero-prefix context "
+    "on the New Tab Page";
+
+const char kOmniboxNumNtpZpsTrendingSearchesName[] =
+    "Omnibox: Trending Searches on new tab page ZPS";
+const char kOmniboxNumNtpZpsTrendingSearchesDescription[] =
+    "Controls presence/volume of Trending Searches shown in zero-prefix "
+    "context on the New Tab Page";
+
+const char kOmniboxNumSrpZpsRecentSearchesName[] =
+    "Omnibox: Recent Searches on the SRP ZPS";
+const char kOmniboxNumSrpZpsRecentSearchesDescription[] =
+    "Controls presence/volume of Recent Searches shown in zero-prefix "
+    "context on the Search Results Page";
+
+const char kOmniboxNumSrpZpsRelatedSearchesName[] =
+    "Omnibox: Related Searches on the SRP ZPS";
+const char kOmniboxNumSrpZpsRelatedSearchesDescription[] =
+    "Controls presence/volume of Related Searches shown in zero-prefix "
+    "context on the Search Results Page";
+
+const char kOmniboxNumWebZpsRecentSearchesName[] =
+    "Omnibox: Recent Searches on the web ZPS";
+const char kOmniboxNumWebZpsRecentSearchesDescription[] =
+    "Controls presence/volume of Recent Searches shown in zero-prefix "
+    "context on the Web";
+
+const char kOmniboxNumWebZpsRelatedSearchesName[] =
+    "Omnibox: Related Searches on the web ZPS";
+const char kOmniboxNumWebZpsRelatedSearchesDescription[] =
+    "Controls presence/volume of Related Searches shown in zero-prefix "
+    "context on the Web";
+
+const char kOmniboxNumWebZpsMostVisitedUrlsName[] =
+    "Omnibox: Most Visited URLs on the web ZPS";
+const char kOmniboxNumWebZpsMostVisitedUrlsDescription[] =
+    "Controls presence/volume of Most Visited URLs shown in zero-prefix "
+    "context on the Web";
 
 const char kOmniboxZeroSuggestPrefetchDebouncingName[] =
     "Omnibox Zero Prefix Suggest Prefetch Request Debouncing";
@@ -6584,6 +6622,12 @@ const char kAccessibilityManifestV3EnhancedNetworkTtsDescription[] =
     "Experimental migration of Enhanced Network TTS from extension manifest "
     "v2 to v3.";
 
+const char kAccessibilityManifestV3SwitchAccessName[] =
+    "Changes accessibility extension Switch Access manifest v2 to v3.";
+const char kAccessibilityManifestV3SwitchAccessDescription[] =
+    "Experimental migration of Switch Access from extension manifest "
+    "v2 to v3.";
+
 const char kExperimentalAccessibilitySwitchAccessTextName[] =
     "Enable enhanced Switch Access text input.";
 const char kExperimentalAccessibilitySwitchAccessTextDescription[] =
@@ -7681,10 +7725,6 @@ const char kTabSwitcherColorBlendAnimateName[] =
 const char kTabSwitcherColorBlendAnimateDescription[] =
     "Animates the color transition between incognito and regular tab switcher "
     "panes in the Hub.";
-
-const char kTabSwitcherContextMenuAndroidName[] = "Tab Switcher Context Menu";
-const char kTabSwitcherContextMenuAndroidDescription[] =
-    "Shows a context menu on long pressing a tab card in the tab switcher";
 
 #else
 const char kTaskManagerDesktopRefreshName[] = "Task Manager Desktop Refresh";

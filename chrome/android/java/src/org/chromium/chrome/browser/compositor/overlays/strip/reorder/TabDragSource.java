@@ -781,7 +781,7 @@ public class TabDragSource implements View.OnDragListener {
         int groupSize = mCurrentTabGroupModelFilterSupplier.get().getTabCountForGroup(groupId);
 
         return mTabModelSelector.getTotalTabCount() > groupSize
-                && TabUiFeatureUtilities.doesOemSupportDragToCreateInstance();
+                && TabUiFeatureUtilities.isTabDragToCreateInstanceSupported();
     }
 
     private boolean shouldAllowTabDragToCreateInstance() {

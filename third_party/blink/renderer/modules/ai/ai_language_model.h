@@ -7,6 +7,7 @@
 
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_clone_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_options.h"
@@ -45,7 +46,7 @@ class AILanguageModel final : public EventTarget,
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(contextoverflow, kContextoverflow)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(quotaoverflow, kQuotaoverflow)
 
   // ai_language_model.idl implementation.
   ScriptPromise<IDLString> prompt(ScriptState* script_state,
@@ -56,20 +57,16 @@ class AILanguageModel final : public EventTarget,
                                   const V8AILanguageModelPromptInput* input,
                                   const AILanguageModelPromptOptions* options,
                                   ExceptionState& exception_state);
-  ScriptPromise<IDLUnsignedLongLong> countPromptTokens(
+  ScriptPromise<IDLDouble> measureInputUsage(
       ScriptState* script_state,
-      const WTF::String& input,
+      const V8AILanguageModelPromptInput* input,
       const AILanguageModelPromptOptions* options,
       ExceptionState& exception_state);
-  uint64_t maxTokens() const { return max_tokens_; }
-  uint64_t tokensSoFar() const { return current_tokens_; }
-  uint64_t tokensLeft() const { return max_tokens_ - current_tokens_; }
+  double inputQuota() const { return input_quota_; }
+  double inputUsage() const { return input_usage_; }
 
   uint32_t topK() const { return top_k_; }
   float temperature() const { return temperature_; }
-  std::optional<WTF::Vector<WTF::String>> expectedInputLanguages() const {
-    return expected_input_languages_;
-  }
 
   ScriptPromise<AILanguageModel> clone(
       ScriptState* script_state,
@@ -79,18 +76,16 @@ class AILanguageModel final : public EventTarget,
 
   HeapMojoRemote<mojom::blink::AILanguageModel>& GetAILanguageModelRemote();
   scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
-  uint64_t GetCurrentTokens();
 
  private:
   void OnResponseComplete(
       mojom::blink::ModelExecutionContextInfoPtr context_info);
-  void OnContextOverflow();
+  void OnQuotaOverflow();
 
-  uint64_t current_tokens_;
-  uint64_t max_tokens_ = 0;
+  uint64_t input_usage_;
+  uint64_t input_quota_ = 0;
   uint32_t top_k_ = 0;
   float temperature_ = 0.0;
-  std::optional<WTF::Vector<WTF::String>> expected_input_languages_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AILanguageModel> language_model_remote_;

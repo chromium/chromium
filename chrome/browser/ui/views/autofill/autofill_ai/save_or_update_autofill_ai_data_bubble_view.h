@@ -21,9 +21,6 @@ class SaveOrUpdateAutofillAiDataBubbleView
   METADATA_HEADER(SaveOrUpdateAutofillAiDataBubbleView, views::View)
 
  public:
-  static constexpr int kNewEntityAddedOrUpdatedAttributesContainer = 437;
-  static constexpr int kNewEntityUnchagedAttributesContainer = 438;
-
   SaveOrUpdateAutofillAiDataBubbleView(
       views::View* anchor_view,
       content::WebContents* web_contents,

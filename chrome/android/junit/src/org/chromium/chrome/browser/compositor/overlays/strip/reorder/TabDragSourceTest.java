@@ -317,7 +317,7 @@ public class TabDragSourceTest {
     @Test
     public void test_startTabDragAction_exceptionForInvalidTab() {
         assertThrows(
-                NullPointerException.class,
+                AssertionError.class,
                 () ->
                         mSourceInstance.startTabDragAction(
                                 mTabsToolbarView,
@@ -1231,7 +1231,7 @@ public class TabDragSourceTest {
                             POS_X,
                             mPosY,
                             /* tab= */ null,
-                            /* tabGroupMetadata= */ null,
+                            mTabGroupMetadata,
                             /* isGroupDrag= */ true);
             mSourceInstance.onDrag(mTabsToolbarView, event);
 
@@ -1245,7 +1245,7 @@ public class TabDragSourceTest {
                             POS_X,
                             mPosY,
                             MockTab.createAndInitialize(TAB_ID_NOT_DRAGGED, mProfile),
-                            /* tabGroupMetadata= */ null,
+                            mTabGroupMetadata,
                             /* isGroupDrag= */ false);
             mSourceInstance.onDrag(mTabsToolbarView, event);
 

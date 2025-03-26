@@ -149,6 +149,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1455242230282523554">Show language settings</translation>
 <translation id="1459693405370120464">Weather</translation>
 <translation id="1460620680449458626">Volume is muted.</translation>
+<translation id="1462439140224375968">Created Google Doc</translation>
 <translation id="14648076227129703">This allows camera access for <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> and all apps and websites with the camera permission</translation>
 <translation id="1467432559032391204">Left</translation>
 <translation id="146902737843070955">Your administrator has requested this change</translation>
@@ -593,6 +594,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="301584155502740476">Show hotspot details. Hotspot is off.</translation>
 <translation id="3017079585324758401">Background</translation>
 <translation id="3018135054368884502">Fast forward media</translation>
+<translation id="3026897869154397692">Added to Calendar</translation>
 <translation id="3033545621352269033">On</translation>
 <translation id="3033912566804961911">Combine with <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Open Files</translation>
@@ -1481,6 +1483,7 @@ No devices connected.</translation>
 <translation id="5825969630400862129">Connected devices settings</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> more</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> on <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Search with Google</translation>
 <translation id="5841296711770970362">Go to next track</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> hotspot is on, no devices connected</translation>
 <translation id="584525477304726060">Hold to maximise</translation>
@@ -1894,6 +1897,7 @@ New install</translation>
 <translation id="7228968829656641943">Select to search my screen. Press Tab then Space for keyboard navigation.</translation>
 <translation id="7229029500464092426">Memory <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> total</translation>
 <translation id="7239814253344511868">Both mouse buttons</translation>
+<translation id="7240636904654154599">Created Google Sheet</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% battery left. Connect your device to power.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. This Chromebook needs to restart to apply an update. This can take up to one minute.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2408,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8921624153894383499">The Google Assistant doesn’t speak this language.</translation>
 <translation id="8926951137623668982">Shelf always hidden</translation>
 <translation id="8929566928381252430">Trying to use Caps lock? Use</translation>
+<translation id="8929623844713377237">Created contact</translation>
 <translation id="8934418770423095813">Create Google Doc</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}other{# files}}</translation>
 <translation id="8936501819958976551">deactivated</translation>

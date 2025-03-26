@@ -942,9 +942,7 @@ void BrowserTabStripController::OnSplitTabCreated(
     tabs::SplitTabLayout tab_layout) {
   for (const auto& tab_pair : tabs) {
     int index = tab_pair.second;
-    // TODO(agale): Splits should ultimately have ids so the tab strip can keep
-    // track of multiple splits.
-    tabstrip_->AddTabToSplit(index);
+    tabstrip_->SetSplit(index, split_id);
   }
 }
 

@@ -53,7 +53,7 @@ export class TraceReportElement extends CrLitElement {
   private traceReportProxy_: TraceReportBrowserProxy =
       TraceReportBrowserProxy.getInstance();
 
-  protected trace: ClientTraceReport = {
+  protected accessor trace: ClientTraceReport = {
     // Dummy ClientTraceReport
     uuid: {
       high: 0n,

@@ -91,7 +91,7 @@ class MockTabGroupSyncService : public TabGroupSyncService {
               (const CollaborationId&),
               (const));
 
-  MOCK_METHOD(void,
+  MOCK_METHOD(std::optional<LocalTabGroupID>,
               OpenTabGroup,
               (const base::Uuid&, std::unique_ptr<TabGroupActionContext>));
   MOCK_METHOD(void,

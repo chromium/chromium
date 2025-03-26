@@ -988,13 +988,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       deleteAutofillProfileFromFakeSyncServerWithGUID:GUID];
 }
 
-- (void)waitForSyncFeatureEnabled:(BOOL)isEnabled
-                      syncTimeout:(base::TimeDelta)timeout {
-  EG_TEST_HELPER_ASSERT_NO_ERROR([ChromeEarlGreyAppInterface
-      waitForSyncFeatureEnabled:isEnabled
-                    syncTimeout:timeout]);
-}
-
 - (void)waitForSyncTransportStateActiveWithTimeout:(base::TimeDelta)timeout {
   EG_TEST_HELPER_ASSERT_NO_ERROR([ChromeEarlGreyAppInterface
       waitForSyncTransportStateActiveWithTimeout:timeout]);

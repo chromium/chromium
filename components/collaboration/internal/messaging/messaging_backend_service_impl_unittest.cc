@@ -14,6 +14,8 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/collaboration/internal/messaging/data_sharing_change_notifier.h"
+#include "components/collaboration/internal/messaging/instant_message_processor.h"
+#include "components/collaboration/internal/messaging/instant_message_processor_impl.h"
 #include "components/collaboration/internal/messaging/storage/collaboration_message_util.h"
 #include "components/collaboration/internal/messaging/storage/empty_messaging_backend_database.h"
 #include "components/collaboration/internal/messaging/storage/messaging_backend_store_impl.h"
@@ -215,8 +217,9 @@ class MessagingBackendServiceImplTest : public testing::Test {
     service_ = std::make_unique<MessagingBackendServiceImpl>(
         configuration, std::move(tab_group_change_notifier),
         std::move(data_sharing_change_notifier),
-        std::move(messaging_backend_store), mock_tab_group_sync_service_.get(),
-        mock_data_sharing_service_.get(),
+        std::move(messaging_backend_store),
+        std::make_unique<InstantMessageProcessorImpl>(),
+        mock_tab_group_sync_service_.get(), mock_data_sharing_service_.get(),
         identity_test_env_.identity_manager());
   }
 
@@ -274,7 +277,7 @@ class MessagingBackendServiceImplTest : public testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment{
+  base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
 
@@ -1649,12 +1652,13 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsUpdated) {
   // Updating the currently selected tab should inform the delegate.
   tg_notifier_observer_->OnTabUpdated(*tab1, tab_groups::TriggerSource::REMOTE,
                                       true);
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   // We should have received a stored message about the updated tab.
   auto db_message = GetLastMessageFromDB();
   EXPECT_NE("", db_message.uuid());
   base::Uuid db_message_id = base::Uuid::ParseLowercase(db_message.uuid());
-  EXPECT_EQ(db_message_id, message.attribution->id);
+  EXPECT_EQ(db_message_id, message.attributions[0].id);
 
   // Verify that the dirty bit is chip only and no dot.
   EXPECT_FALSE(static_cast<int>(DirtyType::kDot) & db_message.dirty());
@@ -1705,12 +1709,13 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsRemoved) {
   // Removing the currently selected tab should inform the delegate.
   tg_notifier_observer_->OnTabRemoved(*tab1, tab_groups::TriggerSource::REMOTE,
                                       true);
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   // We should have received a stored message about the removed tab.
   auto db_message = GetLastMessageFromDB();
   EXPECT_NE("", db_message.uuid());
   base::Uuid db_message_id = base::Uuid::ParseLowercase(db_message.uuid());
-  EXPECT_EQ(db_message_id, message.attribution->id);
+  EXPECT_EQ(db_message_id, message.attributions[0].id);
 
   EXPECT_EQ(CollaborationEvent::TAB_REMOVED, message.collaboration_event);
   EXPECT_EQ(InstantNotificationType::CONFLICT_TAB_REMOVED, message.type);
@@ -1748,6 +1753,7 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabAtStartupGetsRemoved) {
           DoAll(SaveArg<0>(&message), MoveArg<1>(&success_callback)));
   tg_notifier_observer_->OnTabRemoved(*tab1, tab_groups::TriggerSource::REMOTE,
                                       true);
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   EXPECT_EQ(CollaborationEvent::TAB_REMOVED, message.collaboration_event);
   EXPECT_EQ(InstantNotificationType::CONFLICT_TAB_REMOVED, message.type);
@@ -1781,6 +1787,7 @@ TEST_F(MessagingBackendServiceImplTest, TestUnselectedTabGetsRemoved) {
       .Times(0);
   tg_notifier_observer_->OnTabRemoved(*tab2, tab_groups::TriggerSource::REMOTE,
                                       false);
+  task_environment_.FastForwardBy(base::Seconds(10));
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
@@ -1816,6 +1823,7 @@ TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
   // Removing the tab group should inform the delegate.
   tg_notifier_observer_->OnTabGroupRemoved(tab_group,
                                            tab_groups::TriggerSource::REMOTE);
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   // Verify persistent notification.
   EXPECT_EQ(PersistentNotificationType::TOMBSTONED,
@@ -1829,17 +1837,55 @@ TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
   auto db_message = GetLastMessageFromDB();
   EXPECT_NE("", db_message.uuid());
   base::Uuid db_message_id = base::Uuid::ParseLowercase(db_message.uuid());
-  EXPECT_EQ(db_message_id, message.attribution->id);
+  EXPECT_EQ(db_message_id, message.attributions[0].id);
 
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_REMOVED, message.collaboration_event);
   EXPECT_EQ(tab_group.saved_guid(),
-            message.attribution->tab_group_metadata->sync_tab_group_id);
+            message.attributions[0].tab_group_metadata->sync_tab_group_id);
   EXPECT_TRUE(static_cast<int>(DirtyType::kTombstoned) & db_message.dirty());
   EXPECT_TRUE(static_cast<int>(DirtyType::kMessageOnly) & db_message.dirty());
+  EXPECT_EQ("Tab Group Title",
+            message.attributions[0].tab_group_metadata->last_known_title);
 
   std::move(success_callback).Run(true);
   EXPECT_FALSE(unowned_messaging_backend_store_->HasAnyDirtyMessages(
       DirtyType::kMessageOnly));
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestTabGroupFallbackTitleNTabs) {
+  CreateAndInitializeService();
+  SetupInstantMessageDelegate();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  tab_group.SetTitle(std::u16string());
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillRepeatedly(Return(tab_group));
+
+  // Save the last invocation of calls to the InstantMessageDelegate.
+  InstantMessage message;
+  MessagingBackendService::InstantMessageDelegate::SuccessCallback
+      success_callback;
+  EXPECT_CALL(*mock_instant_message_delegate_,
+              DisplayInstantaneousMessage(_, _))
+      .WillRepeatedly(
+          DoAll(SaveArg<0>(&message), MoveArg<1>(&success_callback)));
+
+  // Removing the tab group should inform the delegate.
+  tg_notifier_observer_->OnTabGroupRemoved(tab_group,
+                                           tab_groups::TriggerSource::REMOTE);
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  // Verify tab group empty title.
+  EXPECT_EQ(CollaborationEvent::TAB_GROUP_REMOVED, message.collaboration_event);
+  EXPECT_EQ("2 tabs",
+            message.attributions[0].tab_group_metadata->last_known_title);
 }
 
 TEST_F(MessagingBackendServiceImplTest,
@@ -1873,6 +1919,52 @@ TEST_F(MessagingBackendServiceImplTest,
   EXPECT_FALSE(HasLastMessageFromDB());
   tg_notifier_observer_->OnTabGroupRemoved(tab_group,
                                            tab_groups::TriggerSource::REMOTE);
+  task_environment_.FastForwardBy(base::Seconds(10));
+}
+
+TEST_F(MessagingBackendServiceImplTest,
+       TestUnshareDoesNotResultInNotifications) {
+  CreateAndInitializeService();
+  SetupInstantMessageDelegate();
+
+  // Set up a collaboration as owner.
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@foo.com", signin::ConsentLevel::kSync);
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+
+  data_sharing::GroupData group_data;
+  group_data.group_token.group_id = collaboration_group_id;
+  data_sharing::GroupMember member1;
+  member1.gaia_id = account_info.gaia;
+  member1.display_name = account_info.full_name;
+  member1.given_name = account_info.given_name;
+  member1.role = data_sharing::MemberRole::kOwner;
+  group_data.members.emplace_back(member1);
+  EXPECT_CALL(*mock_data_sharing_service_,
+              GetPossiblyRemovedGroup(Eq(collaboration_group_id)))
+      .WillRepeatedly(Return(group_data));
+
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillRepeatedly(Return(tab_group));
+
+  // Save the last invocation of calls to the InstantMessageDelegate.
+  EXPECT_CALL(*mock_instant_message_delegate_, DisplayInstantaneousMessage)
+      .Times(0);
+  EXPECT_CALL(mock_persistent_message_observer_, DisplayPersistentMessage)
+      .Times(0);
+  EXPECT_FALSE(HasLastMessageFromDB());
+
+  // Removing the tab group should inform the delegate.
+  tg_notifier_observer_->OnTabGroupRemoved(tab_group,
+                                           tab_groups::TriggerSource::REMOTE);
+  task_environment_.FastForwardBy(base::Seconds(10));
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestInstantMessageCallbackFails) {
@@ -1902,6 +1994,7 @@ TEST_F(MessagingBackendServiceImplTest, TestInstantMessageCallbackFails) {
   // Removing the tab group should inform the delegate.
   tg_notifier_observer_->OnTabGroupRemoved(tab_group,
                                            tab_groups::TriggerSource::REMOTE);
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   EXPECT_TRUE(unowned_messaging_backend_store_->HasAnyDirtyMessages(
       DirtyType::kMessageOnly));
@@ -1947,13 +2040,15 @@ TEST_F(MessagingBackendServiceImplTest, TestMemberAddedCreatesInstantMessage) {
       .WillRepeatedly(Return(group_data));
 
   ds_notifier_observer_->OnGroupMemberAdded(group_data, member2.gaia_id, now);
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   EXPECT_EQ(CollaborationEvent::COLLABORATION_MEMBER_ADDED,
             message.collaboration_event);
-  EXPECT_EQ(member2.gaia_id, message.attribution->affected_user->gaia_id);
-  ASSERT_TRUE(message.attribution->tab_group_metadata);
+  const auto& attribution = message.attributions[0];
+  EXPECT_EQ(member2.gaia_id, attribution.affected_user->gaia_id);
+  ASSERT_TRUE(message.attributions[0].tab_group_metadata);
   EXPECT_EQ(tab_group.saved_guid(),
-            message.attribution->tab_group_metadata->sync_tab_group_id);
+            attribution.tab_group_metadata->sync_tab_group_id);
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestMemberAddedOrRemovedIsOwner) {
@@ -1984,6 +2079,7 @@ TEST_F(MessagingBackendServiceImplTest, TestMemberAddedOrRemovedIsOwner) {
   time += base::Seconds(1);
   ds_notifier_observer_->OnGroupMemberRemoved(group_data, member1.gaia_id,
                                               time);
+  task_environment_.FastForwardBy(base::Seconds(10));
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestTabSelectionClearsChipByDefault) {
@@ -2316,7 +2412,8 @@ TEST_F(MessagingBackendServiceImplTest,
   // Create a dirty db instant message.
   base::Time now = base::Time::Now();
   collaboration_pb::Message message1 = CreateStoredMessage(
-      collaboration_group_id, collaboration_pb::EventType::COLLABORATION_ADDED,
+      collaboration_group_id,
+      collaboration_pb::EventType::COLLABORATION_MEMBER_ADDED,
       DirtyType::kMessageOnly, now - base::Minutes(5));
   message1.set_triggering_user_gaia_id("gaia_1");
   AddMessage(message1);
@@ -2327,6 +2424,7 @@ TEST_F(MessagingBackendServiceImplTest,
       .Times(1);
 
   tg_notifier_observer_->OnTabGroupOpened(tab_group);
+  task_environment_.FastForwardBy(base::Seconds(10));
 }
 
 }  // namespace collaboration::messaging

@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/referring_app_info.h"
@@ -30,8 +29,15 @@ namespace signin {
 class IdentityManager;
 }
 
+namespace policy {
+class ManagementService;
+}
+
+namespace enterprise_connectors {
+class ConnectorsServiceBase;
+}
+
 class PrefService;
-class Profile;
 
 namespace safe_browsing {
 
@@ -46,16 +52,18 @@ class ChromeEnterpriseRealTimeUrlLookupService
   ChromeEnterpriseRealTimeUrlLookupService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       VerdictCacheManager* cache_manager,
-      Profile* profile,
       base::RepeatingCallback<ChromeUserPopulation()>
           get_user_population_callback,
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
-      enterprise_connectors::ConnectorsService* connectors_service,
+      enterprise_connectors::ConnectorsServiceBase* connectors_service,
       ReferrerChainProvider* referrer_chain_provider,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
+      policy::ManagementService* management_service,
       bool is_off_the_record,
-      bool is_guest_session);
+      bool is_guest_session,
+      base::RepeatingCallback<std::string()> get_profile_email_callback,
+      base::RepeatingCallback<bool()> is_profile_affiliated_callback);
 
   ChromeEnterpriseRealTimeUrlLookupService(
       const ChromeEnterpriseRealTimeUrlLookupService&) = delete;
@@ -108,11 +116,8 @@ class ChromeEnterpriseRealTimeUrlLookupService
   std::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
       const override;
 
-  // Unowned object used for checking profile based settings.
-  raw_ptr<Profile, DanglingUntriaged> profile_;
-
   // Unowned pointer to ConnectorsService, used to get a DM token.
-  raw_ptr<enterprise_connectors::ConnectorsService, DanglingUntriaged>
+  raw_ptr<enterprise_connectors::ConnectorsServiceBase, DanglingUntriaged>
       connectors_service_;
 
   // The token fetcher used for getting access token.
@@ -124,11 +129,21 @@ class ChromeEnterpriseRealTimeUrlLookupService
   // Unowned object used for accessing the user's Google identity.
   raw_ptr<signin::IdentityManager> identity_manager_;
 
+  // Unowned object for accessing the profile's management state.
+  raw_ptr<policy::ManagementService> management_service_;
+
   // Indicates if the service is bound to an off the record browsing session.
   bool is_off_the_record_;
 
   // Indicates if the service is bound to a guest browsing session.
   bool is_guest_session_;
+
+  // Callback for accessing the profile's email.
+  base::RepeatingCallback<std::string()> get_profile_email_callback_;
+
+  // Callback returning whether the profile and browser are managed by the same
+  // organization.
+  base::RepeatingCallback<bool()> is_profile_affiliated_callback_;
 
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;
 

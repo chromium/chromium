@@ -70,7 +70,7 @@ public class PriceTrackingButtonControllerUnitTest {
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private ObservableSupplierImpl<Tab> mTabSupplier;
-    private ObservableSupplierImpl<Boolean> mPriceTrackingStateSupplier;
+    private ObservableSupplierImpl<PriceTrackingState> mPriceTrackingStateSupplier;
     @Mock private Tab mMockTab;
     @Mock private Supplier<TabBookmarker> mMockTabBookmarkerSupplier;
     @Mock private TabBookmarker mMockTabBookmarker;
@@ -88,7 +88,7 @@ public class PriceTrackingButtonControllerUnitTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         PriceTrackingUtilsJni.setInstanceForTesting(mMockPriceTrackingUtilsJni);
-        mPriceTrackingStateSupplier = new ObservableSupplierImpl<>(false);
+        mPriceTrackingStateSupplier = new ObservableSupplierImpl<>(PriceTrackingState.UNTRACKED);
         mProfileSupplier = new ObservableSupplierImpl<>(mMockProfile);
         mBookmarkModelSupplier = new ObservableSupplierImpl<>(mMockBookmarkModel);
         mTabSupplier = new ObservableSupplierImpl<>(mMockTab);
@@ -117,7 +117,7 @@ public class PriceTrackingButtonControllerUnitTest {
 
         ButtonSpec originalButtonSpec = priceTrackingButtonController.get(mMockTab).getButtonSpec();
 
-        mPriceTrackingStateSupplier.set(true);
+        mPriceTrackingStateSupplier.set(PriceTrackingState.TRACKED);
         verify(mockButtonObserver).buttonDataChanged(true);
         Shadows.shadowOf(Looper.getMainLooper()).idle();
 
@@ -151,7 +151,7 @@ public class PriceTrackingButtonControllerUnitTest {
                 ArgumentCaptor.forClass(Callback.class);
 
         PriceTrackingButtonController priceTrackingButtonController = createButtonController();
-        mPriceTrackingStateSupplier.set(true);
+        mPriceTrackingStateSupplier.set(PriceTrackingState.TRACKED);
 
         ButtonData buttonData = priceTrackingButtonController.get(mMockTab);
 

@@ -517,6 +517,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7787950393032327779">როგორც ჩანს, პროფილს იყენებს სხვა Google Chrome პროცესი (<ph name="PROCESS_ID" />) სხვა კომპიუტერზე (<ph name="HOST_NAME" />). Chrome-მა ჩაკეტა პროფილი, ასე რომ იგი არ დაზიანდება. თუ დარწმუნებული ხართ, რომ არც ერთი სხვა პროცესი არ იყენებს ამ პროფილს, თქვენ შეგიძლიათ პროფილის გახსნა და Chrome-ის ხელახლა გაშვება.</translation>
 <translation id="7801699035218095297">Google Chrome ცდილობს პაროლების კოპირებას. აღნიშნულის დასაშვებად აკრიფეთ თქვენი Windows-ის პაროლი ამის დასაშვებად.</translation>
 <translation id="7808348361785373670">Chrome-იდან ამოღება...</translation>
+<translation id="782480918904119604">ამ პროფილის Glic-თან გამოსაყენებლად გახსენით Chrome და შედით ანგარიშში</translation>
 <translation id="7825851276765848807">ინსტალაცია ვერ განხორციელდა გაურკვეველი შეცდომის გამო. ხელახლა ჩამოტვირთეთ Google Chrome.</translation>
 <translation id="7845233973568007926">გმადლობთ დაინსტალირებისთვის. <ph name="BUNDLE_NAME" />-ის გამოყენებამდე თქვენი კომპიუტერი უნდა გადატვირთოთ.</translation>
 <translation id="7872446069773932638">მიმდინარეობს ჩამოტვირთვა… დარჩენილია <ph name="SECONDS" /> წამი</translation>
@@ -572,6 +573,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8516431725144212809">Chrome-ის მიერ პროგნოზირებული თქვენი ინტერესები</translation>
 <translation id="8521348052903287641">შემომავალი წესი Google Chrome Dev-ისთვის mDNS ტრაფიკის დასაშვებად.</translation>
 <translation id="852529348814672339">Chrome-ის ჩვენება ამ ენაზე</translation>
+<translation id="8533056045953418157">დააყენეთ Google Chrome PDF ფაილების ნაგულისხმევ მნახველად</translation>
 <translation id="8550334526674375523">სამსახურის ეს პროფილი თქვენი პირადი პროფილისგან სრულიად დამოუკიდებლად ფუნქციონირებს.</translation>
 <translation id="8555465886620020932">სერვისის შეცდომა: <ph name="SERVICE_ERROR" /></translation>
 <translation id="856656450041460113">ენების სიაში ძიება</translation>

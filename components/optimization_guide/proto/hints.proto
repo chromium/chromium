@@ -317,6 +317,9 @@ enum OptimizationType {
   BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS = 88;
   // Provides information about whether a page is eligible to cue for GLIC.
   GLIC_CONTEXTUAL_CUEING = 90;
+  // Provides information about the contextual zero state suggestions for a
+  // page.
+  GLIC_ZERO_STATE_SUGGESTIONS = 91;
 }
 
 // Presents semantics for how page load URLs should be matched.

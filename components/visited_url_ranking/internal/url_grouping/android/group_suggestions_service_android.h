@@ -34,6 +34,12 @@ class GroupSuggestionsServiceAndroid : public base::SupportsUserData::Data {
                     int tab_selection_type,
                     int last_id);
 
+  void WillCloseTab(JNIEnv* env, int tab_id);
+
+  void TabClosureUndone(JNIEnv* env, int tab_id);
+
+  void TabClosureCommitted(JNIEnv* env, int tab_id);
+
   void DidEnterTabSwitcher(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();

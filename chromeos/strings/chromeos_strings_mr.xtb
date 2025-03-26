@@ -5,11 +5,13 @@
 <translation id="1014750484722996375">डेस्क</translation>
 <translation id="1018219910092211213">DNS चे निराकरण करू शकत नाही</translation>
 <translation id="1018656279737460067">रद्द झाले</translation>
+<translation id="1019971142067430077">या आशयासाठी रेकॉर्डिंगची शीर्षके तयार करू शकत नाही</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> विशेष मालमत्ता आता उपलब्ध आहेत</translation>
 <translation id="1022628058306505708">मृदा वाह</translation>
 <translation id="102432830749687801">तुम्ही अ‍ॅक्सेस गमवण्यापूर्वी तुमच्या शाळेचा खाते डेटा तुमच्या वैयक्तिक खात्यामध्ये हलवण्यासाठी Google चे आशय ट्रान्सफर ॲप वापरण्याची खात्री करा.</translation>
 <translation id="1026212596705997935">शॉर्टकट हा "<ph name="CONFLICT_ACCEL_NAME" />" साठी वापरला जात आहे. नवीन शॉर्टकट प्रेस करा. विद्यमान शॉर्टकट बदलण्यासाठी, हा शॉर्टकट पुन्हा प्रेस करा.</translation>
 <translation id="1030856839388844477">डेटा वापर रीसेट करा</translation>
+<translation id="1047095725494118091">डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे <ph name="DEVICE_TYPE" /> रीस्टार्ट करा.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">नवीन वैशिष्ट्य उपलब्ध आहे, अधिक जाणून घेण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="1049663189809099096">पेस्टल पिवळे</translation>
@@ -25,6 +27,7 @@
 <translation id="1082009148392559545">स्क्रीन सेव्हर डाउनलोड करत आहे</translation>
 <translation id="1094693127011229778">आयपी अ‍ॅड्रेस उपलब्ध नाही</translation>
 <translation id="1100902271996134409">इमेज तयार करत आहे...</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> चा ऑडिओ</translation>
 <translation id="1116694919640316211">बद्दल</translation>
 <translation id="1118572504348554005">बग आणि तुम्ही आमच्याकडे तक्रार केलेल्या इतर समस्यांचे निराकरण करण्यासाठी या फॉर्मद्वारे सबमिट केलेला फीडबॅक आम्ही आमच्या भागीदारांसोबत शेअर करू शकतो. पासवर्डसारखी संवेदनशील माहिती समाविष्ट करू नका.</translation>
 <translation id="1119403468619527527">सोपे करण्यासाठी खूप कमी शब्द आहेत</translation>
@@ -101,6 +104,7 @@
 <translation id="1418991483994088776">ऑर्किड</translation>
 <translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">माझ्याकडे कीपेअर आहे</translation>
+<translation id="1422912431241997307">शीर्षक संपादित केले आहे</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> की दाबलेली नाही</translation>
 <translation id="1432110487435300883">अंदाजे परिणामासाठी <ph name="CONVERSION_RATE" /> ने <ph name="CATEGORY_TEXT" /> मूल्याचा भागाकार करा</translation>
 <translation id="1435763214710588005">निवडलेल्या तारखेला प्रत्येक महिन्यात डेटा वापर आपोआप रीसेट करते</translation>
@@ -290,6 +294,7 @@
 <translation id="2163937499206714165">गडद मोड सुरू करा</translation>
 <translation id="2164131940279488868">ऑडिओ रेकॉर्ड करणे सुरू करण्यासाठी माइक कनेक्ट केला असल्याची खात्री करा</translation>
 <translation id="2173302385160625112">तुमचे इंटरनेट कनेक्शन तपासा</translation>
+<translation id="2176909213844392588"><ph name="LANGUAGE_NAME" /> ट्रान्स्क्रिप्शन मॉडेल डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे <ph name="DEVICE_TYPE" /> रीस्टार्ट करा.</translation>
 <translation id="2180197493692062006">काहीतरी चूक झाली. अ‍ॅप पुन्हा उघडण्याचा प्रयत्न करा.</translation>
 <translation id="2189104374785738357">APN शी संबंधित तपशील संपादित करा</translation>
 <translation id="2195732836444333448">आता मर्यादा गाठली आहे. लवकरच परत या.</translation>
@@ -343,6 +348,7 @@
 <translation id="2418150275289244458">सेटिंग्जमध्ये उघडा</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" /> पैकी <ph name="CURRENT_PAGE" /> ची इमेज</translation>
 <translation id="242825218556404975">कोणतेही बोलणे आढळले नाही</translation>
+<translation id="2438248248625638801">रेकॉर्डिंगची शीर्षके तयार करत आहे</translation>
 <translation id="2446553403094072641">फ्लोटिंग पॉइंटची अचूकता</translation>
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2468124392950503650">तयार करण्यासाठी प्रॉम्प्ट निवडा किंवा <ph name="BEGIN_LINK_PROMPTING_GUIDE" />प्रॉम्प्ट मार्गदर्शक<ph name="END_LINK_PROMPTING_GUIDE" /> पहा</translation>
@@ -421,6 +427,7 @@
 <translation id="2873483161362553159">ब्राउझर नेव्हिगेशन</translation>
 <translation id="2874939134665556319">मागील ट्रॅक</translation>
 <translation id="2875812231449496375">सर्वोत्तम परिणामांसाठी या वॉलपेपरसह हा मोड सुरू करा. तुम्ही हे सेटिंग कधीही बंद करू शकता.</translation>
+<translation id="2878126681324394319">सारांश आणि शीर्षक तयार करण्यासंबंधित मॉडेल डाउनलोड करा</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकंदामध्ये <ph name="RATE" /> डिस्चार्ज झाले.</translation>
 <translation id="2880569433548999039">क्लाउड फ्लो स्क्रीन सेव्हर</translation>
 <translation id="2882230315487799269">AI प्रॉम्प्ट कस्टमाइझ करा</translation>
@@ -476,6 +483,7 @@
 <translation id="3199982728237701504">दस्तऐवज फीडर (दोन बाजू असलेले)</translation>
 <translation id="3201315366910775591">शेअर केलेले अल्बम हे इतर लोकांद्वारे अपडेट केले जाऊ शकतात</translation>
 <translation id="3211671540163313381">कीमॅपिंग D-pad</translation>
+<translation id="3217462202230355157">तुमचा माइक कनेक्ट केलेला असल्याची खात्री करा किंवा तुमचे <ph name="DEVICE_TYPE" /> रीस्टार्ट करून पहा</translation>
 <translation id="3226405216343213872">स्कॅनर शोधत आहे</translation>
 <translation id="3226657629376379887">लेआउट अ‍ॅक्‍शन मेनू</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" /> ने <ph name="CATEGORY_TEXT" /> मूल्याचा भागाकार करा</translation>
@@ -493,6 +501,7 @@
 <translation id="3303855915957856445">कोणतेही शोध परिणाम आढळले नाहीत</translation>
 <translation id="3305294846493618482">आणखी</translation>
 <translation id="3310640316857623290">DNS लेटन्सी अनुमती असलेल्या सीमेपेक्षा लक्षणीयरीत्या जास्त आहे</translation>
+<translation id="3316495615885967552">सारांश आणि शीर्षक तयार करण्यासंबंधित मॉडेल डाउनलोड केले आहे</translation>
 <translation id="3321030238473337787">प्लेबॅकचा वेग</translation>
 <translation id="3327613592010997943">तुम्हाला हे डिव्हाइस <ph name="DAY" /> <ph name="TIME" /> वाजता पुन्हा वापरता येईल.</translation>
 <translation id="3328783797891415197">चाचणी रन होत आहे</translation>
@@ -510,6 +519,7 @@
 <translation id="3383623117265110236">विशिष्ट</translation>
 <translation id="3404249063913988450">स्क्रीन सेव्हर सुरू करा</translation>
 <translation id="3413935475507503304">अपडेटसह पुढे सुरू ठेवण्यासाठी, पुढील वर क्लिक करा.</translation>
+<translation id="3416709353545797224"><ph name="DEVICE_TYPE" /> चा सर्व ऑडिओ रेकॉर्ड करत आहे</translation>
 <translation id="3428551088151258685">आउटडोअर</translation>
 <translation id="3428971106895559033">पेस्टल</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -583,6 +593,7 @@
 <translation id="3767737419527918477">रेकॉर्डिंग फाइल शोधा</translation>
 <translation id="3771294271822695279">व्हिडिओ फाइल</translation>
 <translation id="3771694256347217732">Google सेवा अटी</translation>
+<translation id="3772164567520167489">या ट्रान्स्क्रिप्ट भाषेसाठी रेकॉर्डिंगची शीर्षके तयार करू शकत नाही</translation>
 <translation id="3780740315729837296">कीबोर्डची की असाइन करा</translation>
 <translation id="3784455785234192852">लॉक करा</translation>
 <translation id="3785643128701396311">पिक्सेल आर्ट</translation>
@@ -597,6 +608,7 @@
 <translation id="3845880861638660475">डायलॉग बंद करण्यासाठी,<ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> प्रेस करा.</translation>
 <translation id="3848280697030027394">कीबोर्ड गडद</translation>
 <translation id="385051799172605136">मागील</translation>
+<translation id="3852931845120288955">शीर्षक (A ते Z)</translation>
 <translation id="3858860766373142691">नाव</translation>
 <translation id="3862598938296403232">वर्णन आवश्यक आहे</translation>
 <translation id="386280020966669610">मला प्रेरणा द्या</translation>
@@ -651,6 +663,7 @@
 <translation id="4093865285251893588">प्रोफाइल फोटो</translation>
 <translation id="409427325554347132">चाचणीचे तपशील सेव्ह करा</translation>
 <translation id="409469431304488632">प्रयोग</translation>
+<translation id="4095155732125588500">सारांश आणि शीर्षक तयार करण्यासंबंधित मॉडेल डाउनलोड करणे प्रगतीपथावर आहे</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /><ph name="DESC" /> अल्बम निवडा</translation>
 <translation id="4111761024568264522">USB टचपॅड</translation>
@@ -670,11 +683,13 @@
 <translation id="4155551848414053977">तुमच्या नेटवर्क किंवा थेट कनेक्शनद्वारे स्कॅनर सुरू आणि उपलब्ध असल्याची खात्री करा</translation>
 <translation id="4159238217853743776">आंशिक</translation>
 <translation id="4159784952369912983">जांभळा</translation>
+<translation id="416219735020840807">ट्रान्स्क्रिप्शन मॉडेल डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे <ph name="DEVICE_TYPE" /> रीस्टार्ट करा.</translation>
 <translation id="4170180284036919717">फोटो काढा</translation>
 <translation id="4170700058716978431">करता आली नाही</translation>
 <translation id="4171077696775491955">ब्राइटनेस कमी करा</translation>
 <translation id="4176463684765177261">अक्षम केले</translation>
 <translation id="4176659219503619100">कंट्रोल पॅनल</translation>
+<translation id="4192913637640303603">रेकॉर्डिंगची शीर्षके तयार करू शकत नाही</translation>
 <translation id="4193496492959950834">Recorder सेटिंग्ज</translation>
 <translation id="4198398257084619072">पांडा</translation>
 <translation id="420283545744377356">स्क्रीन सेव्हर बंद करा</translation>
@@ -689,6 +704,16 @@
 <translation id="4249717042534905822">रविवारी</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4251839292699800785">शैलीदार कार्यालय</translation>
+<translation id="4252261480746798874">तुम्ही "तुमचे स्वत:चे तयार करा" निवडता, तेव्हा कस्टम प्रॉम्प्ट लिहू शकता. तुम्ही "थीम निवडा" हे निवडून, त्यानंतर तुमचा AI वॉलपेपर पर्सनलाइझ करण्यासाठी अधोरेखित केलेले शब्ददेखील निवडू शकता.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI इमेजचा आणखी युनिक आणि वैविध्यपूर्ण पर्याय मिळवण्यासाठी "मला प्रेरणा द्या" निवडा.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          तुम्ही तुमचा स्वतःचा वॉलपेपर तयार करता, तेव्हा इमेज जनरेट करण्यासाठी आणि उत्पादनामध्ये सुधारणा करण्यासाठी, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google च्या सेवा अटी आणि गोपनीयता धोरण<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> यांच्या अधीन राहून प्रॉम्प्ट Google सर्व्हरना पाठवला जातो. कोणत्याही वैयक्तिक, संवेदनशील किंवा गोपनीय गोष्टीचा समावेश करू नका.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          जनरेटिव्ह AI लोकांच्या बाबतीतदेखील चुका करू शकते, त्यामुळे ते दोनदा तपासा. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />अधिक जाणून घ्या<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP लेटन्सी</translation>
 <translation id="4266143281602681663">सूत</translation>
 <translation id="4269815121975886860">स्टार्टअप प्राधान्ये</translation>
@@ -933,6 +958,7 @@
 <translation id="5344619683981067131">निवडलेल्या मजकुराच्या जागी सूचना वापरत आहे</translation>
 <translation id="5346687412805619883">स्थानिक नेटवर्क</translation>
 <translation id="5358174242040570474">काहीतरी चूक झाली. वॉलपेपर पुन्हा निवडण्याचा प्रयत्न करा किंवा अ‍ॅप पुन्हा उघडा.</translation>
+<translation id="5368228070728130240">सारांश आणि शीर्षक तयार करण्याचे मॉडेल डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे <ph name="DEVICE_TYPE" /> रीस्टार्ट करा.</translation>
 <translation id="5372659122375744710">वायफाय नेटवर्क सुरक्षित नाही</translation>
 <translation id="5376354385557966694">ऑटोमॅटिक प्रकाश मोड</translation>
 <translation id="5378184552853359930">IP चा प्रकार</translation>
@@ -957,6 +983,7 @@
 <translation id="550600468576850160">मेडो</translation>
 <translation id="551689408806449779">डिव्हाइस डिस्कनेक्ट केले गेले आहे. चाचणीला पुन्हा कनेक्ट करण्याचा प्रयत्न करा</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="552644173505433109">सारांश आणि शीर्षक तयार करण्याबद्दल अधिक जाणून घ्या</translation>
 <translation id="5527146180235316490">माइकचे पर्याय</translation>
 <translation id="5534900277405737921">भूप्रदेश</translation>
 <translation id="554067135846762198">कोरल आणि टॅन</translation>
@@ -1055,6 +1082,7 @@
 <translation id="5982621672636444458">क्रमवारी पर्याय</translation>
 <translation id="5984145644188835034">डीफॉल्ट वॉलपेपर</translation>
 <translation id="5996832681196460718">सिल्क</translation>
+<translation id="6016750809509395299">जनरेट केलेली शीर्षके:</translation>
 <translation id="6017514345406065928">हिरवा</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">ऑटोमॅटिक मासिक रीसेट सुरू करा</translation>
@@ -1092,6 +1120,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">इंटरनेटशी कनेक्ट करू शकत नाही</translation>
 <translation id="6156030503438652198">मरून आणि पिंक</translation>
+<translation id="6163318050265152852">शीर्षके तयार करू शकत नाही. आणखी लहान ट्रान्स्क्रिप्ट वापरून पहा.</translation>
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
 <translation id="6184793017104303157">B4</translation>
 <translation id="6185263894115593524">इतरांना तुमचा मायक्रोफोन आणि कॅमेरा वापरण्यापासून थांबवण्यासाठी रीसेट करा. फक्त तुमचा विश्वास असलेल्या साइटना परवानगी द्या.</translation>
@@ -1171,6 +1200,7 @@
 <translation id="6500818810472529210">Google Search मधील परिणाम पहा</translation>
 <translation id="650266656685499220">अल्बम तयार करण्यासाठी Google Photos वर जा</translation>
 <translation id="6505750420152840539">डॉन टू डार्क</translation>
+<translation id="6515056490985026110">शीर्षके तयार करू शकत नाही. आणखी मोठे ट्रान्स्क्रिप्ट वापरून पहा.</translation>
 <translation id="6516990319416533844">बॅटरी चार्जिंग रेटची चाचणी घेण्यासाठी, थोडा वेळ तुमची बॅटरी ड्रेन होऊ द्या</translation>
 <translation id="6517239166834772319">एक्सप्लोर करा</translation>
 <translation id="6526200165918397681">वॉलपेपर जुळवा</translation>
@@ -1234,6 +1264,7 @@
 <translation id="6766275201586212568">अयशस्वी DNS रिझोल्युशन</translation>
 <translation id="6768237774506518020">उच्च DNS रिझोल्युशन अयशस्वी रेट</translation>
 <translation id="6786747875388722282">विस्तार</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" /> चा ऑडिओ सुरू असतो, तेव्हा Recorder या डिव्हाइसवर प्ले होणारे सर्व ऑडिओ कॅप्चर करते</translation>
 <translation id="6791471867139427246">कीबोर्डच्या लाइटचा रंग</translation>
 <translation id="6796229976413584781">शॉर्टकट हटवला आहे</translation>
 <translation id="6798678288485555829">मजकुरासंबंधी नेव्हिगेशन</translation>
@@ -1256,11 +1287,13 @@
 <translation id="6910312834584889076">स्कॅनरचे कव्हर उघडे आहे. कव्हर बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="6910845598686542904">रेकॉर्डिंगमध्ये डिटेक्ट केलेल्या आवाजांच्या मॉडेलची गणना करा</translation>
 <translation id="6911383237894364323">मीडिया सर्व्हरशी कनेक्ट करता आले नाही</translation>
+<translation id="6926069762081461162">रेकॉर्डिंगचे शीर्षक</translation>
 <translation id="6930242544192836755">कालावधी</translation>
 <translation id="6930597342185648547">बॅकग्राउंडविषयी</translation>
 <translation id="6939766318048400022">कॅफे</translation>
 <translation id="6942253772720771875">तुमचा फीडबॅक शेअर करा किंवा तुमच्या समस्येचे वर्णन करा</translation>
 <translation id="6943893908656559156">रिमोट आयडेंटिटी (पर्यायी)</translation>
+<translation id="694981048020558038">रेकॉर्डिंगचे शीर्षक शोधा</translation>
 <translation id="6953137545147683679">सोनेरी</translation>
 <translation id="6957231940976260713">सेवेचे नाव</translation>
 <translation id="695776212669661671">अ‍ॅरो राइट</translation>
@@ -1335,6 +1368,7 @@
 <translation id="7216409898977639127">सेल्युलर सेवा देणारा</translation>
 <translation id="7223952304612664117">यामुळे तुमचे स्थान निर्धारित करण्यासाठी सिस्टीम सेवांना स्थान अचूकता वापरता येते. स्थान अचूकता हे डिव्हाइसच्या स्थानाचा अंदाज घेण्यासाठी वायरलेस सिग्नल आणि सेन्सरबद्दलची माहिती वापरते.</translation>
 <translation id="7233782086689993269">शॉर्टकट रिस्टोअर केला आहे</translation>
+<translation id="723419678599947502">Google AI वापरून शीर्षक तयार करा</translation>
 <translation id="725133483556299729">ईमेल निवडा</translation>
 <translation id="7255187042098209569">पिंक आणि जांभळा</translation>
 <translation id="7267918995585557751">डीफॉल्ट स्टार्टअप पेज हे फिशिंग वेबसाइट नसल्याची खात्री करण्यासाठी रीसेट करा. फक्त तुमचा विश्वास असलेल्या वेबसाइट वापरा.</translation>
@@ -1483,6 +1517,7 @@
 <translation id="7897043345768902965">पादचारी मार्ग</translation>
 <translation id="7902285181767404769">रेकॉर्ड करताना नोटिफिकेशन सायलंट करा</translation>
 <translation id="7903695460270716054">निवडक आर्टवर्क आणि इमेज निवडा</translation>
+<translation id="7908543555831145677">रेकॉर्डिंगची शीर्षके यशस्वीरीत्या तयार केली आहेत</translation>
 <translation id="7912005977894000746">मुख्य पेजवर परत जा</translation>
 <translation id="7915220255123750251">नेटवर्क APN सेटिंग्ज व्यवस्थापित करा. APNs ही मोबाइल नेटवर्क आणि इंटरनेट यांदरम्यान कनेक्शन जोडतात.</translation>
 <translation id="7915759923880480519">तुमच्या नेटवर्कद्वारे पाठवलेला डेटा संरक्षित करण्यासाठी रीसेट करा. फक्त तुमचा विश्वास असलेले नेटवर्क वापरा.</translation>
@@ -1557,6 +1592,7 @@
 <translation id="8261506727792406068">हटवा</translation>
 <translation id="8262870577632766028">१ तास</translation>
 <translation id="827422111966801947">नीळ</translation>
+<translation id="8280687443902283243">शीर्षक संपादित करा</translation>
 <translation id="8286154143153872371">कृपया वॉलपेपर पाहण्यासाठी नेटवर्कशी कनेक्ट करा आणि पेज रीलोड करा.</translation>
 <translation id="8291967909914612644">होम पुरवठादार देश</translation>
 <translation id="8294431847097064396">स्रोत</translation>
@@ -1564,6 +1600,7 @@
 <translation id="8308787307410010965">साइट आशय सेटिंग्ज</translation>
 <translation id="8312330582793120272">मीडिया प्ले करा</translation>
 <translation id="8318753676953949627">कोणत्याही इमेज नाहीत</translation>
+<translation id="8319809980370328428">रेकॉर्डिंग सारांश आणि शीर्षक तयार करणे</translation>
 <translation id="8320910311642849813">जंगल</translation>
 <translation id="8322464149031882595">पुढे जाण्यासाठी क्लिक करा</translation>
 <translation id="8329018942023753850">Calculator ॲप</translation>
@@ -1699,6 +1736,7 @@
 <translation id="8930622219860340959">बिनतारी</translation>
 <translation id="8933650076320258356"><ph name="DIRECTION" /> साठी <ph name="KEYS" /> की निवडलेली आहे. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">क्लायंटचा आयपी अ‍ॅड्रेस</translation>
+<translation id="8938606491880817721">डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे <ph name="DEVICE_TYPE" /> रीस्टार्ट करा.</translation>
 <translation id="8944651180182756621">लाँचरचा रंग</translation>
 <translation id="8945308580158685341">मधमाश्या</translation>
 <translation id="894617464444543719">डिव्हाइस हे फोन आहे.</translation>

@@ -25,13 +25,6 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
-// Simple struct to store observed data about SceneStates.
-struct SceneStateData {
-  bool isForeground;
-  bool isIncognitoContentVisible;
-  bool isUIEnabled;
-};
-
 @interface DefaultBrowserBannerAppAgentObserverList
     : CRBProtocolObservers <DefaultBrowserBannerAppAgentObserver>
 @end
@@ -53,9 +46,8 @@ struct SceneStateData {
   // Stores the last URL visited for each web state to track navigations.
   std::map<web::WebStateID, GURL> _lastNavigatedURLs;
 
-  // Stores the last observed data for scene states to help determine when the
-  // observed data changes.
-  std::map<SceneState*, SceneStateData> _sceneStateDatas;
+  // Stores the last observed foreground state for SceneState.
+  NSMapTable<SceneState*, NSNumber*>* _sceneStateForegroundCachedValue;
 
   // Stored observers.
   DefaultBrowserBannerAppAgentObserverList* _observers;
@@ -78,6 +70,8 @@ struct SceneStateData {
         std::make_unique<WebStateListObserverBridge>(self);
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
+
+    _sceneStateForegroundCachedValue = [NSMapTable weakToStrongObjectsMapTable];
 
     _observers = [DefaultBrowserBannerAppAgentObserverList
         observersWithProtocol:@protocol(DefaultBrowserBannerAppAgentObserver)];
@@ -154,7 +148,7 @@ struct SceneStateData {
 
 // Handles scene state changes and updates the UI and observations as necessary.
 - (void)sceneStateChangedData:(SceneState*)sceneState {
-  if (!_sceneStateDatas[sceneState].isUIEnabled) {
+  if (!sceneState.UIEnabled) {
     return;
   }
 
@@ -171,8 +165,8 @@ struct SceneStateData {
 
   web::WebState* activeMainWebState = webStateList->GetActiveWebState();
 
-  if (_sceneStateDatas[sceneState].isForeground &&
-      !_sceneStateDatas[sceneState].isIncognitoContentVisible) {
+  const BOOL isForeground = [self isSceneStateInForeground:sceneState];
+  if (isForeground && !sceneState.incognitoContentVisible) {
     webStateList->AddObserver(_webStateListObserverBridge.get());
     // Sometimes, like when opening a link in a new window, the scene state
     // doesn't start with an active web state. In this case, the first active
@@ -339,11 +333,9 @@ struct SceneStateData {
 
 - (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
   [super appState:appState sceneConnected:sceneState];
-  _sceneStateDatas[sceneState] = {
-      .isForeground =
-          sceneState.activationLevel >= SceneActivationLevelForegroundInactive,
-      .isIncognitoContentVisible = sceneState.incognitoContentVisible,
-      .isUIEnabled = sceneState.UIEnabled};
+  const BOOL isForeground =
+      sceneState.activationLevel >= SceneActivationLevelForegroundInactive;
+  [self setIsForeground:isForeground forSceneState:sceneState];
 }
 
 #pragma mark - SceneStateObserver
@@ -366,12 +358,12 @@ struct SceneStateData {
   BOOL sceneIsForeground = level >= SceneActivationLevelForegroundInactive;
 
   // If no change in foreground state has happened, stop here.
-  if (_sceneStateDatas[sceneState].isForeground == sceneIsForeground) {
+  const BOOL wasForeground = [self isSceneStateInForeground:sceneState];
+  if (wasForeground == sceneIsForeground) {
     return;
   }
 
-  _sceneStateDatas[sceneState].isForeground = sceneIsForeground;
-
+  [self setIsForeground:sceneIsForeground forSceneState:sceneState];
   [self sceneStateChangedData:sceneState];
 }
 
@@ -381,14 +373,6 @@ struct SceneStateData {
     return;
   }
 
-  if (_sceneStateDatas[sceneState].isIncognitoContentVisible ==
-      incognitoContentVisible) {
-    return;
-  }
-
-  _sceneStateDatas[sceneState].isIncognitoContentVisible =
-      incognitoContentVisible;
-
   [self sceneStateChangedData:sceneState];
 }
 
@@ -397,10 +381,8 @@ struct SceneStateData {
     return;
   }
 
-  _sceneStateDatas[sceneState].isUIEnabled = true;
-
   // If the scene is not in the foreground yet, skip this change.
-  if (!_sceneStateDatas[sceneState].isForeground) {
+  if (![self isSceneStateInForeground:sceneState]) {
     return;
   }
 
@@ -452,6 +434,16 @@ struct SceneStateData {
       navigationContext->GetUrl().GetWithoutRef());
 
   [self updatePromoState];
+}
+
+#pragma mark - Get / set cached foreground value for SceneState.
+
+- (void)setIsForeground:(BOOL)foreground forSceneState:(SceneState*)sceneState {
+  [_sceneStateForegroundCachedValue setObject:@(foreground) forKey:sceneState];
+}
+
+- (BOOL)isSceneStateInForeground:(SceneState*)sceneState {
+  return [[_sceneStateForegroundCachedValue objectForKey:sceneState] boolValue];
 }
 
 @end

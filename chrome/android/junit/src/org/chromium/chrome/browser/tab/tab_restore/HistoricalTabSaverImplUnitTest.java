@@ -104,7 +104,7 @@ public class HistoricalTabSaverImplUnitTest {
     public void testCreateHistoricalBulk_SkipsTabsInSecondaryModel() {
         Tab tab = new MockTab(0, mProfile);
         doReturn(tab).when(mSecondaryTabModel).getTabById(tab.getId());
-        mHistoricalTabSaver.addSecodaryTabModelSupplier(mSecondaryTabModelSupplier);
+        mHistoricalTabSaver.addSecondaryTabModelSupplier(mSecondaryTabModelSupplier);
         mHistoricalTabSaver.createHistoricalTab(tab);
 
         verifyNoMoreInteractions(mHistoricalTabSaverJni);

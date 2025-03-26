@@ -1056,6 +1056,7 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     SharedImageUsageSet usage,
     std::string debug_label,
+    bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
   CHECK_EQ(handle.type, gfx::ANDROID_HARDWARE_BUFFER);
   if (!ValidateUsage(usage, size, format)) {
@@ -1071,8 +1072,8 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
   auto backing = std::make_unique<AHardwareBufferImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(handle.android_hardware_buffer),
-      estimated_size.value(), false, base::ScopedFD(), use_passthrough_,
-      gl_format_caps_);
+      estimated_size.value(), is_thread_safe, base::ScopedFD(),
+      use_passthrough_, gl_format_caps_);
 
   backing->SetCleared();
   return backing;

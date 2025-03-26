@@ -5002,6 +5002,12 @@ class StorageAccessHeaderURLLoaderTest : public URLLoaderTest {
  public:
   StorageAccessHeaderURLLoaderTest() = default;
 
+  void RegisterAdditionalHandlers() override {
+    test_server_.RegisterRequestHandler(base::BindRepeating(
+        &StorageAccessHeaderURLLoaderTest::HandleLoadWithStorageAccessRequest,
+        base::Unretained(this)));
+  }
+
  protected:
   static constexpr char kStorageAccessRedirectLoadPath[] =
       "/redirect-load-with-storage-access";
@@ -5217,6 +5223,9 @@ TEST_F(StorageAccessHeaderURLLoaderTest, RedirectWithLoad) {
       context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), request,
       client()->CreateRemote());
+
+  client()->RunUntilRedirectReceived();
+  url_loader->FollowRedirect({}, {}, {}, std::nullopt);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -8114,6 +8123,49 @@ TEST_P(ParameterizedURLLoaderTest, ReadAndDiscardBody) {
   EXPECT_EQ(completion_status.encoded_body_length, actual_size);
 
   delete_run_loop.Run();
+}
+
+// These tests verify that LoadTimingInternalInfo is only set for trustworthy
+// loaders.
+
+TEST_P(ParameterizedURLLoaderTest, SetLoadTimingInternalInfoForTrustedLoaders) {
+  GURL url = test_server()->GetURL("/hello.html");
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  ASSERT_TRUE(request.trusted_params);
+
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilResponseBodyArrived();
+  EXPECT_TRUE(client()->response_head()->load_timing_internal_info);
+}
+
+TEST_P(ParameterizedURLLoaderTest,
+       DoNotSetLoadTimingInternalInfoForUntrustedLoaders) {
+  GURL url = test_server()->GetURL("/hello.html");
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  // Clear trusted_params.
+  request.trusted_params = std::nullopt;
+
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilResponseBodyArrived();
+  EXPECT_FALSE(client()->response_head()->load_timing_internal_info);
 }
 
 class SharedStorageRequestHelperURLLoaderTest : public URLLoaderTest {

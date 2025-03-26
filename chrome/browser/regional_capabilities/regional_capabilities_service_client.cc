@@ -24,10 +24,12 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #endif
 
+using ::country_codes::CountryId;
+
 namespace regional_capabilities {
 #if BUILDFLAG(IS_CHROMEOS)
 namespace {
-std::optional<int> GetVpdCountry() {
+std::optional<CountryId> GetVpdCountry() {
   using enum ChromeOSFallbackCountry;
 
   ash::system::StatisticsProvider* sys_info =
@@ -62,8 +64,7 @@ std::optional<int> GetVpdCountry() {
     return {};
   }
 
-  const int country_code =
-      country_codes::CountryCharsToCountryID(vpd_region[0], vpd_region[1]);
+  const CountryId country_code(vpd_region);
   base::UmaHistogramEnumeration(kCrOSMissingVariationData, kValidCountryCode);
   return country_code;
 }
@@ -74,11 +75,10 @@ std::optional<int> GetVpdCountry() {
 
 RegionalCapabilitiesServiceClient::RegionalCapabilitiesServiceClient(
     variations::VariationsService* variations_service)
-    : variations_country_id_(
-          variations_service
-              ? country_codes::CountryStringToCountryID(
-                    base::ToUpperASCII(variations_service->GetLatestCountry()))
-              : country_codes::kCountryIDUnknown) {}
+    : variations_country_id_(variations_service
+                                 ? CountryId(base::ToUpperASCII(
+                                       variations_service->GetLatestCountry()))
+                                 : CountryId()) {}
 #else
 RegionalCapabilitiesServiceClient::RegionalCapabilitiesServiceClient() =
     default;
@@ -88,9 +88,9 @@ RegionalCapabilitiesServiceClient::RegionalCapabilitiesServiceClient() =
 RegionalCapabilitiesServiceClient::~RegionalCapabilitiesServiceClient() =
     default;
 
-int RegionalCapabilitiesServiceClient::GetFallbackCountryId() {
+CountryId RegionalCapabilitiesServiceClient::GetFallbackCountryId() {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (const std::optional<int> vpd_country = GetVpdCountry();
+  if (const std::optional<CountryId> vpd_country = GetVpdCountry();
       vpd_country.has_value()) {
     return *vpd_country;
   }
@@ -142,8 +142,7 @@ void JNI_RegionalCapabilitiesServiceClientAndroid_ProcessDeviceCountryResponse(
   }
   std::string device_country =
       base::android::ConvertJavaStringToUTF8(env, j_device_country);
-  int device_country_id =
-      country_codes::CountryStringToCountryID(device_country);
+  CountryId device_country_id(device_country);
   std::move(*heap_callback).Run(device_country_id);
 }
 

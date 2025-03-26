@@ -75,7 +75,7 @@ OSStatus ProvideInputCallback(AudioConverterRef decoder,
 
   // No const version of this API unfortunately, so we need const_cast().
   buffer_list->mBuffers[0].mData =
-      const_cast<uint8_t*>(input_data->buffer->data());
+      const_cast<uint8_t*>(base::span(*input_data->buffer).data());
 
   if (packets)
     *packets = &input_data->packet;

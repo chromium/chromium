@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "chrome/browser/net/dns_probe_runner.h"
+#include "components/country_codes/country_codes.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "services/network/public/cpp/network_context_getter.h"
@@ -22,7 +23,7 @@ namespace chrome_browser_net::secure_dns {
 // specified country.
 net::DohProviderEntry::List ProvidersForCountry(
     const net::DohProviderEntry::List& providers,
-    int country_id);
+    country_codes::CountryId country_id);
 
 // Returns the subsequence of `providers` that are enabled, according to their
 // `net::DohProviderEntry::feature` members.

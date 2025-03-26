@@ -26,11 +26,9 @@ export enum DestinationOrigin {
  * Must match PrinterType in printing/mojom/print.mojom
  */
 export enum PrinterType {
-  PRIVET_PRINTER_DEPRECATED = 0,
-  EXTENSION_PRINTER = 1,
-  PDF_PRINTER = 2,
-  LOCAL_PRINTER = 3,
-  CLOUD_PRINTER_DEPRECATED = 4
+  EXTENSION_PRINTER = 0,
+  PDF_PRINTER = 1,
+  LOCAL_PRINTER = 2,
 }
 
 /**

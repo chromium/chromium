@@ -54,11 +54,13 @@ class BaguetteInstaller {
     // The install request was cancelled.
     Cancelled,
   };
+  using UninstallResult = int;
   using BaguetteInstallerCallback =
       base::OnceCallback<void(InstallResult result,
                               std::optional<base::ScopedFD> fd)>;
 
   void Install(BaguetteInstallerCallback callback);
+  void Uninstall(base::OnceCallback<void(bool)> callback);
 
  private:
   void GetBaguetteImageUrl(BaguetteInstallerCallback callback);
@@ -74,6 +76,7 @@ class BaguetteInstaller {
                              base::FilePath path,
                              std::string hash);
   void OnOpenFd(BaguetteInstallerCallback callback, base::ScopedFD image);
+  void RemoveDlc(base::OnceCallback<void(bool)> callback);
 
   std::vector<std::unique_ptr<guest_os::GuestOsDlcInstallation>> installations_;
 

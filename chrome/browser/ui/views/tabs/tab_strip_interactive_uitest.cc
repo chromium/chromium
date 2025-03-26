@@ -57,14 +57,7 @@ class TabStripInteractiveUiTest : public InteractiveBrowserTest {
   }
 };
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/358199067): Fix mouse hover interactions on Mac
-#define MAYBE_HoverEffectShowsOnMouseOver DISABLED_HoverEffectShowsOnMouseOver
-#else
-#define MAYBE_HoverEffectShowsOnMouseOver HoverEffectShowsOnMouseOver
-#endif
-IN_PROC_BROWSER_TEST_F(TabStripInteractiveUiTest,
-                       MAYBE_HoverEffectShowsOnMouseOver) {
+IN_PROC_BROWSER_TEST_F(TabStripInteractiveUiTest, HoverEffectShowsOnMouseOver) {
   using Observer = views::test::PollingViewObserver<bool, TabStrip>;
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(Observer, kTabStripHoverState);
   RunTestSequence(

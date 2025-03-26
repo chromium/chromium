@@ -33,4 +33,8 @@ class BaseCtaTransitTestRule {
     public EmbeddedTestServer getTestServer() {
         return mActivityTestRule.getTestServer();
     }
+
+    public int tabsCount(boolean incognito) {
+        return mActivityTestRule.tabsCount(incognito);
+    }
 }

@@ -60,16 +60,16 @@ public class HistoricalTabModelObserver implements TabModelObserver {
      * Adds a secondary {@link TabModel} supplier to check if a deleted tab should be added to
      * recent tabs.
      */
-    public void addSecodaryTabModelSupplier(Supplier<TabModel> tabModelSupplier) {
-        mHistoricalTabSaver.addSecodaryTabModelSupplier(tabModelSupplier);
+    public void addSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier) {
+        mHistoricalTabSaver.addSecondaryTabModelSupplier(tabModelSupplier);
     }
 
     /**
      * Removes a secondary {@link TabModel} supplier to check if a deleted tab should be added to
      * recent tabs.
      */
-    public void removeSecodaryTabModelSupplier(Supplier<TabModel> tabModelSupplier) {
-        mHistoricalTabSaver.removeSecodaryTabModelSupplier(tabModelSupplier);
+    public void removeSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier) {
+        mHistoricalTabSaver.removeSecondaryTabModelSupplier(tabModelSupplier);
     }
 
     @Override

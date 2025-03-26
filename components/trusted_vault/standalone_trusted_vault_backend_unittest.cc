@@ -132,6 +132,8 @@ class FakeFileAccess : public StandaloneTrustedVaultStorage::FileAccess {
   trusted_vault_pb::LocalTrustedVault stored_data_;
 };
 
+// TODO(crbug.com/405381481): Move / duplicate relevant tests in this file to
+// PhysicalDeviceRecoveryFactorTest.
 class StandaloneTrustedVaultBackendTest : public testing::Test {
  public:
   StandaloneTrustedVaultBackendTest() {
@@ -699,6 +701,10 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldClearDataAndAttemptDeviceRegistration) {
+  // The TaskEnvironment is needed because this PhysicalDeviceRecoveryFactor
+  // posts callbacks as tasks.
+  base::test::SingleThreadTaskEnvironment environment;
+
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const std::vector<std::vector<uint8_t>> kInitialVaultKeys = {{1, 2, 3}};
   const int kInitialLastKeyVersion = 1;
@@ -730,16 +736,22 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // registration attempt should be triggered.
   backend()->ClearLocalDataForAccount(account_info);
 
-  // Callback should be called immediately.
+  base::RunLoop run_loop;
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
-  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+  backend()->FetchKeys(account_info,
+                       base::BindLambdaForTesting(
+                           [&](const std::vector<std::vector<uint8_t>>& keys) {
+                             fetch_keys_callback.Get().Run(keys);
+                             run_loop.Quit();
+                           }));
 
   // Mimic successful device registration and verify the state.
   std::move(device_registration_callback)
       .Run(TrustedVaultRegistrationStatus::kSuccess,
            kInitialLastKeyVersion + 1);
+  run_loop.Run();
 
   // Now the device should be registered.
   trusted_vault_pb::LocalDeviceRegistrationInfo registration_info =
@@ -1197,6 +1209,10 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldThrottleAndUntrottleKeysDownloading) {
+  // The TaskEnvironment is needed because this PhysicalDeviceRecoveryFactor
+  // posts callbacks as tasks.
+  base::test::SingleThreadTaskEnvironment environment;
+
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kInitialVaultKey = {1, 2, 3};
   const int kInitialLastKeyVersion = 1;
@@ -1218,40 +1234,70 @@ TEST_F(StandaloneTrustedVaultBackendTest,
             return std::make_unique<TrustedVaultConnection::Request>();
           });
 
-  clock()->SetNow(base::Time::Now());
-  EXPECT_CALL(*connection(), DownloadNewKeys);
+  {
+    clock()->SetNow(base::Time::Now());
 
-  // FetchKeys() should trigger keys downloading.
-  backend()->FetchKeys(account_info, /*callback=*/base::DoNothing());
-  ASSERT_FALSE(download_keys_callback.is_null());
-  Mock::VerifyAndClearExpectations(connection());
+    EXPECT_CALL(*connection(), DownloadNewKeys);
 
-  // Mimic transient failure.
-  base::HistogramTester histogram_tester;
-  std::move(download_keys_callback)
-      .Run(TrustedVaultDownloadKeysStatus::kOtherError,
-           /*keys=*/std::vector<std::vector<uint8_t>>(),
-           /*last_key_version=*/0);
-  histogram_tester.ExpectUniqueSample(
-      "TrustedVault.DownloadKeysStatus." + security_domain_name_for_uma(),
-      /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kOtherError,
-      /*expected_bucket_count=*/1);
-  EXPECT_TRUE(backend()->AreConnectionRequestsThrottledForTesting());
+    base::RunLoop run_loop;
+    // FetchKeys() should trigger keys downloading.
+    backend()->FetchKeys(
+        account_info,
+        base::IgnoreArgs<const std::vector<std::vector<uint8_t>>&>(
+            run_loop.QuitClosure()));
+    ASSERT_FALSE(download_keys_callback.is_null());
+    Mock::VerifyAndClearExpectations(connection());
 
-  download_keys_callback = TrustedVaultConnection::DownloadNewKeysCallback();
-  EXPECT_CALL(*connection(), DownloadNewKeys).Times(0);
-  // Following request should be throttled.
-  backend()->FetchKeys(account_info, /*callback=*/base::DoNothing());
-  EXPECT_TRUE(download_keys_callback.is_null());
-  Mock::VerifyAndClearExpectations(connection());
+    // Mimic transient failure.
+    base::HistogramTester histogram_tester;
+    std::move(download_keys_callback)
+        .Run(TrustedVaultDownloadKeysStatus::kOtherError,
+             /*keys=*/std::vector<std::vector<uint8_t>>(),
+             /*last_key_version=*/0);
+    run_loop.Run();
 
-  // Advance time to pass the throttling duration and trigger another attempt.
-  clock()->Advance(StandaloneTrustedVaultBackend::kThrottlingDuration);
-  EXPECT_FALSE(backend()->AreConnectionRequestsThrottledForTesting());
+    histogram_tester.ExpectUniqueSample(
+        "TrustedVault.DownloadKeysStatus." + security_domain_name_for_uma(),
+        /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kOtherError,
+        /*expected_bucket_count=*/1);
+    EXPECT_TRUE(backend()->AreConnectionRequestsThrottledForTesting());
+  }
 
-  EXPECT_CALL(*connection(), DownloadNewKeys);
-  backend()->FetchKeys(account_info, /*callback=*/base::DoNothing());
-  EXPECT_FALSE(download_keys_callback.is_null());
+  {
+    download_keys_callback = TrustedVaultConnection::DownloadNewKeysCallback();
+    EXPECT_CALL(*connection(), DownloadNewKeys).Times(0);
+
+    base::RunLoop run_loop;
+    // Following request should be throttled.
+    backend()->FetchKeys(
+        account_info,
+        base::IgnoreArgs<const std::vector<std::vector<uint8_t>>&>(
+            run_loop.QuitClosure()));
+    run_loop.Run();
+    EXPECT_TRUE(download_keys_callback.is_null());
+    Mock::VerifyAndClearExpectations(connection());
+  }
+
+  {
+    download_keys_callback = TrustedVaultConnection::DownloadNewKeysCallback();
+
+    // Advance time to pass the throttling duration and trigger another attempt.
+    clock()->Advance(StandaloneTrustedVaultBackend::kThrottlingDuration);
+    EXPECT_FALSE(backend()->AreConnectionRequestsThrottledForTesting());
+    EXPECT_CALL(*connection(), DownloadNewKeys);
+
+    base::RunLoop run_loop;
+    backend()->FetchKeys(
+        account_info,
+        base::IgnoreArgs<const std::vector<std::vector<uint8_t>>&>(
+            run_loop.QuitClosure()));
+    ASSERT_FALSE(download_keys_callback.is_null());
+    std::move(download_keys_callback)
+        .Run(TrustedVaultDownloadKeysStatus::kSuccess,
+             /*keys=*/std::vector<std::vector<uint8_t>>(),
+             /*last_key_version=*/0);
+    run_loop.Run();
+  }
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,

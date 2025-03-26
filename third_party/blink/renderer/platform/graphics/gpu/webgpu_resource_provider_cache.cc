@@ -102,19 +102,21 @@ WebGPURecyclableResourceCache::Resource::~Resource() = default;
 std::unique_ptr<CanvasResourceProvider>
 WebGPURecyclableResourceCache::AcquireCachedProvider(
     const SkImageInfo& image_info) {
+  gfx::Size size = gfx::Size(image_info.width(), image_info.height());
+  viz::SharedImageFormat format =
+      viz::SkColorTypeToSinglePlaneSharedImageFormat(image_info.colorType());
+  SkAlphaType alpha_type = image_info.alphaType();
+  gfx::ColorSpace color_space =
+      SkColorSpaceToGfxColorSpace(image_info.refColorSpace());
+
   // Loop from MRU to LRU
   DequeResourceProvider::iterator it;
   for (it = unused_providers_.begin(); it != unused_providers_.end(); ++it) {
     CanvasResourceProvider* resource_provider = it->resource_provider_.get();
-    if (image_info == resource_provider->GetSkImageInfo()) {
-      break;
-    }
-    // Detect and allow for the case wherein the passed-info implicitly
-    // specifies sRGB via a null SkColorSpace whereas the resource provider is
-    // explicitly storing sRGB.
-    if (!image_info.colorSpace() &&
-        (image_info.makeColorSpace(SkColorSpace::MakeSRGB()) ==
-         resource_provider->GetSkImageInfo())) {
+    if (resource_provider->Size() == size &&
+        resource_provider->GetSharedImageFormat() == format &&
+        resource_provider->GetAlphaType() == alpha_type &&
+        resource_provider->GetColorSpace() == color_space) {
       break;
     }
   }

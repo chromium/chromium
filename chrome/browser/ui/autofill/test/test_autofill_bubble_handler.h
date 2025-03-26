@@ -39,10 +39,6 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
                                      IbanBubbleController* controller,
                                      bool is_user_gesture,
                                      IbanBubbleType bubble_type) override;
-  AutofillBubbleBase* ShowLocalCardMigrationBubble(
-      content::WebContents* web_contents,
-      LocalCardMigrationBubbleController* controller,
-      bool is_user_gesture) override;
   AutofillBubbleBase* ShowOfferNotificationBubble(
       content::WebContents* contents,
       OfferNotificationBubbleController* controller,

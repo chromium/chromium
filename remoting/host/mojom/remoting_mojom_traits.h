@@ -15,6 +15,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -29,6 +30,7 @@
 #include "mojo/public/cpp/bindings/map_traits_protobuf.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "remoting/base/result.h"
+#include "remoting/base/source_location.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/mojom/desktop_session.mojom-shared.h"
@@ -1650,6 +1652,32 @@ class StructTraits<remoting::mojom::VideoTrackLayoutDataView,
 
   static bool Read(remoting::mojom::VideoTrackLayoutDataView data_view,
                    ::remoting::protocol::VideoTrackLayout* out_track);
+};
+
+template <>
+class StructTraits<remoting::mojom::SourceLocationDataView,
+                   ::remoting::SourceLocation> {
+ public:
+  static std::optional<std::string_view> function_name(
+      const ::remoting::SourceLocation& source_info) {
+    return source_info.function_name()
+               ? std::optional<std::string_view>(source_info.function_name())
+               : std::nullopt;
+  }
+
+  static std::optional<std::string_view> file_name(
+      const ::remoting::SourceLocation& source_info) {
+    return source_info.file_name()
+               ? std::optional<std::string_view>(source_info.file_name())
+               : std::nullopt;
+  }
+
+  static int32_t line_number(const ::remoting::SourceLocation& source_info) {
+    return source_info.line_number();
+  }
+
+  static bool Read(remoting::mojom::SourceLocationDataView data_view,
+                   ::remoting::SourceLocation* out_source_info);
 };
 
 }  // namespace mojo

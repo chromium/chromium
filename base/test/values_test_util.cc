@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -56,12 +57,6 @@ void ExpectDictValue(const Value& expected_value,
   const Value* found_value = dict.FindByDottedPath(path);
   ASSERT_TRUE(found_value) << path;
   EXPECT_EQ(*found_value, expected_value) << path;
-}
-
-void ExpectStringValue(const std::string& expected_str, const Value& actual) {
-  const std::string* maybe_string = actual.GetIfString();
-  ASSERT_TRUE(maybe_string);
-  EXPECT_EQ(expected_str, *maybe_string);
 }
 
 namespace test {
@@ -121,6 +116,10 @@ DictionaryHasValueMatcher::DictionaryHasValueMatcher(
     const base::Value& expected_value)
     : key_(std::move(key)), expected_value_(expected_value.Clone()) {}
 
+DictionaryHasValueMatcher::DictionaryHasValueMatcher(std::string key,
+                                                     Value&& expected_value)
+    : key_(std::move(key)), expected_value_(std::move(expected_value)) {}
+
 DictionaryHasValueMatcher::DictionaryHasValueMatcher(
     const DictionaryHasValueMatcher& other)
     : key_(other.key_), expected_value_(other.expected_value_.Clone()) {}
@@ -164,6 +163,10 @@ DictionaryHasValuesMatcher::DictionaryHasValuesMatcher(
     : template_value_(template_value.Clone()) {}
 
 DictionaryHasValuesMatcher::DictionaryHasValuesMatcher(
+    Value::Dict&& template_value)
+    : template_value_(std::move(template_value)) {}
+
+DictionaryHasValuesMatcher::DictionaryHasValuesMatcher(
     const DictionaryHasValuesMatcher& other)
     : template_value_(other.template_value_.Clone()) {}
 
@@ -205,6 +208,138 @@ void DictionaryHasValuesMatcher::DescribeNegationTo(std::ostream* os) const {
       << "'";
 }
 
+IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(const Value& template_value)
+    : template_value_(template_value.Clone()) {}
+
+IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(
+    const Value::Dict& template_value)
+    : template_value_(template_value.Clone()) {}
+
+IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(
+    const Value::List& template_value)
+    : template_value_(template_value.Clone()) {}
+
+IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(Value&& template_value)
+    : template_value_(std::move(template_value)) {}
+
+IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(Value::Dict&& template_value)
+    : template_value_(std::move(template_value)) {}
+
+IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(Value::List&& template_value)
+    : template_value_(std::move(template_value)) {}
+
+IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(
+    const IsSupersetOfValueMatcher& other)
+    : template_value_(other.template_value_.Clone()) {}
+
+IsSupersetOfValueMatcher& IsSupersetOfValueMatcher::operator=(
+    const IsSupersetOfValueMatcher& other) {
+  template_value_ = other.template_value_.Clone();
+  return *this;
+}
+
+IsSupersetOfValueMatcher::~IsSupersetOfValueMatcher() = default;
+
+bool IsSupersetOfValueMatcher::MatchAndExplain(
+    const Value& value,
+    testing::MatchResultListener* listener) const {
+  if (value.type() != template_value_.type()) {
+    return testing::ExplainMatchResult(
+        testing::Eq(Value::GetTypeName(template_value_.type())),
+        Value::GetTypeName(value.type()), listener);
+  }
+  switch (value.type()) {
+    case Value::Type::NONE:
+    case Value::Type::BOOLEAN:
+    case Value::Type::INTEGER:
+    case Value::Type::STRING:
+    case Value::Type::BINARY:
+      return testing::ExplainMatchResult(
+          testing::Eq(std::cref(template_value_)), value, listener);
+    case Value::Type::DOUBLE:
+      return testing::ExplainMatchResult(
+          testing::DoubleEq(template_value_.GetDouble()), value.GetDouble(),
+          listener);
+    case Value::Type::DICT:
+      return MatchAndExplain(value.GetDict(), listener);
+    case Value::Type::LIST:
+      return MatchAndExplain(value.GetList(), listener);
+  }
+}
+
+bool IsSupersetOfValueMatcher::MatchAndExplain(
+    const Value::Dict& dict,
+    testing::MatchResultListener* listener) const {
+  if (template_value_.type() != Value::Type::DICT) {
+    return testing::ExplainMatchResult(
+        testing::Eq(Value::GetTypeName(template_value_.type())),
+        Value::GetTypeName(Value::Type::DICT), listener);
+  }
+
+  std::vector<testing::Matcher<const Value::Dict&>> matchers;
+  for (auto [field_name, field_value] : template_value_.GetDict()) {
+    matchers.push_back(testing::ResultOf(
+        StrCat({"field '", field_name, "'"}),
+        [field_name](const Value::Dict& dict) { return dict.Find(field_name); },
+        testing::Pointee(IsSupersetOfValue(field_value))));
+  }
+  return testing::ExplainMatchResult(testing::AllOfArray(matchers), dict,
+                                     listener);
+}
+
+bool IsSupersetOfValueMatcher::MatchAndExplain(
+    const Value::List& list,
+    testing::MatchResultListener* listener) const {
+  if (template_value_.type() != Value::Type::LIST) {
+    return testing::ExplainMatchResult(
+        testing::Eq(Value::GetTypeName(template_value_.type())),
+        Value::GetTypeName(Value::Type::LIST), listener);
+  }
+
+  std::vector<testing::Matcher<const Value&>> matchers;
+  for (const auto& e : template_value_.GetList()) {
+    matchers.push_back(IsSupersetOfValue(e));
+  }
+  return testing::ExplainMatchResult(testing::IsSupersetOf(matchers), list,
+                                     listener);
+}
+
+void IsSupersetOfValueMatcher::DescribeTo(std::ostream* os) const {
+  switch (template_value_.type()) {
+    case Value::Type::NONE:
+    case Value::Type::BOOLEAN:
+    case Value::Type::INTEGER:
+    case Value::Type::DOUBLE:
+    case Value::Type::STRING:
+    case Value::Type::BINARY:
+      *os << "equals '" << FormatAsJSON(template_value_) << "'";
+      return;
+    case Value::Type::DICT:
+    case Value::Type::LIST:
+      *os << "is a superset of '" << FormatAsJSON(template_value_) << "'";
+      return;
+  }
+  NOTREACHED();
+}
+
+void IsSupersetOfValueMatcher::DescribeNegationTo(std::ostream* os) const {
+  switch (template_value_.type()) {
+    case Value::Type::NONE:
+    case Value::Type::BOOLEAN:
+    case Value::Type::INTEGER:
+    case Value::Type::DOUBLE:
+    case Value::Type::STRING:
+    case Value::Type::BINARY:
+      *os << "does not equal '" << FormatAsJSON(template_value_) << "'";
+      return;
+    case Value::Type::DICT:
+    case Value::Type::LIST:
+      *os << "is not a superset of '" << FormatAsJSON(template_value_) << "'";
+      return;
+  }
+  NOTREACHED();
+}
+
 IsJsonMatcher::IsJsonMatcher(std::string_view json)
     : expected_value_(test::ParseJson(json)) {}
 
@@ -216,6 +351,15 @@ IsJsonMatcher::IsJsonMatcher(const base::Value::Dict& value)
 
 IsJsonMatcher::IsJsonMatcher(const base::Value::List& value)
     : expected_value_(base::Value(value.Clone())) {}
+
+IsJsonMatcher::IsJsonMatcher(Value&& value)
+    : expected_value_(std::move(value)) {}
+
+IsJsonMatcher::IsJsonMatcher(Value::Dict&& value)
+    : expected_value_(Value(std::move(value))) {}
+
+IsJsonMatcher::IsJsonMatcher(Value::List&& value)
+    : expected_value_(Value(std::move(value))) {}
 
 IsJsonMatcher::IsJsonMatcher(const IsJsonMatcher& other)
     : expected_value_(other.expected_value_.Clone()) {}

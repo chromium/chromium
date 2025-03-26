@@ -1867,9 +1867,9 @@ public class SelectableTabListEditorTest {
                                     ButtonType.TEXT,
                                     IconPosition.START,
                                     AppCompatResources.getDrawable(cta, R.drawable.ic_widgets),
-                                    (a, b, c, d, ignored, f) ->
+                                    (a, b, c, d, ignored, f, g) ->
                                             new TabGroupListBottomSheetCoordinator(
-                                                    a, b, c, d, mBottomSheetController, f)));
+                                                    a, b, c, d, mBottomSheetController, f, g)));
                     showSelectionEditor(tabs, actions);
                 });
 

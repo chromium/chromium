@@ -52,7 +52,7 @@ and `@Rule`s are applied for each test case, and both `@BeforeClass` and
 `@Before` are run for each test case (same for `@AfterClass` / `@After`).
 
 Activity-reused Public Transit tests use the `ReusedCtaTransitRule` or the
-`BlankCTATabInitialStatePublicTransitRule`.
+`AutoResetCtaTransitRule`.
 
 ### Performance
 

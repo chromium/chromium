@@ -24,6 +24,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
 #include "chrome/browser/privacy_sandbox/profile_bucket_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -72,14 +73,11 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #endif
 
-DEFINE_REQUIRED_NOTICE_IDENTIFIER(kPrivacySandboxNotice);
-
 namespace {
 
 using PromptAction = ::PrivacySandboxService::PromptAction;
 using SurfaceType = ::PrivacySandboxService::SurfaceType;
 using PromptStartupState = ::PrivacySandboxService::PromptStartupState;
-using NoticeQueueState = ::PrivacySandboxService::NoticeQueueState;
 using FakeNoticePromptSuppressionReason =
     ::PrivacySandboxService::FakeNoticePromptSuppressionReason;
 using PrimaryAccountUserGroups =
@@ -103,25 +101,6 @@ bool ShouldBlockThirdPartyOrFirstPartyCookies(
   return cookie_settings->ShouldBlockThirdPartyCookies() ||
          default_content_setting == ContentSetting::CONTENT_SETTING_BLOCK;
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-const char* QueueSourceToUserActionString(NoticeQueueState notice_state) {
-  switch (notice_state) {
-    case NoticeQueueState::kQueueOnStartup:
-      return "NoticeQueue.PrivacySandboxNotice.QueueOnStartup";
-    case NoticeQueueState::kQueueOnThOrNav:
-      return "NoticeQueue.PrivacySandboxNotice.QueueOnThOrNav";
-    case NoticeQueueState::kReleaseOnThOrNav:
-      return "NoticeQueue.PrivacySandboxNotice.ReleaseOnThOrNav";
-    case NoticeQueueState::kReleaseOnDMA:
-      return "NoticeQueue.PrivacySandboxNotice.ReleaseOnDMA";
-    case NoticeQueueState::kReleaseOnShown:
-      return "NoticeQueue.PrivacySandboxNotice.ReleaseOnShown";
-    default:
-      NOTREACHED();
-  }
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Similar to the function above, but checks for ALL 3P cookies to be blocked
 // pre and post 3PCD.
@@ -538,12 +517,20 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
   // Create notice storage
   notice_storage_ =
       std::make_unique<privacy_sandbox::PrivacySandboxNoticeStorage>();
+// Create queue manager
+#if !BUILDFLAG(IS_ANDROID)
+  queue_manager_ =
+      std::make_unique<privacy_sandbox::PrivacySandboxQueueManager>(profile_);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   DCHECK(privacy_sandbox_settings_);
   DCHECK(pref_service_);
   DCHECK(cookie_settings_);
   CHECK(tracking_protection_settings_);
   CHECK(notice_storage_);
+#if !BUILDFLAG(IS_ANDROID)
+  CHECK(queue_manager_);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Register observers for the Privacy Sandbox preferences.
   user_prefs_registrar_.Init(pref_service_);
@@ -1031,114 +1018,11 @@ void UpdateNoticeStorage(
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-user_education::ProductMessagingController*
-PrivacySandboxServiceImpl::GetProductMessagingController() {
-  if (!product_messaging_controller_) {
-    // If there is a valid service, set it.
-    if (auto* service =
-            UserEducationServiceFactory::GetForBrowserContext(profile_)) {
-      product_messaging_controller_ = &service->product_messaging_controller();
-    }
-  }
-  return product_messaging_controller_;
-}
-
-void PrivacySandboxServiceImpl::SetSuppressQueue(bool suppress_queue) {
-  suppress_queue_ = suppress_queue;
-}
-
-bool PrivacySandboxServiceImpl::IsHoldingHandle() {
-  return static_cast<bool>(notice_handle_);
-  // TODO(crbug.com/379900298): Add timeout for notice collision handle
-}
-
-void PrivacySandboxServiceImpl::HoldQueueHandle(
-    user_education::RequiredNoticePriorityHandle messaging_priority_handle) {
-  if (!base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxNoticeQueue)) {
-    return;
-  }
-  notice_handle_ = std::move(messaging_priority_handle);
-}
-
-void SetQueueHandleShown(
-    user_education::RequiredNoticePriorityHandle* notice_handle) {
-  if (!base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxNoticeQueue)) {
-    return;
-  }
-  notice_handle->SetShown();
-}
-
-void PrivacySandboxServiceImpl::MaybeUnqueueNotice(
-    NoticeQueueState unqueue_source) {
-  if (!base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxNoticeQueue) ||
-      suppress_queue_) {
-    return;
-  }
-
-  // Release the handle if we are holding it (checked by controller).
-  notice_handle_.Release();
-
-  // Ensure we don't attempt to access the product messaging controller if it
-  // doesn't exist.
-  if (auto* product_messaging_controller = GetProductMessagingController()) {
-    // Unqueue if we are in the queue (handled by controller).
-    product_messaging_controller->UnqueueRequiredNotice(kPrivacySandboxNotice);
-    base::RecordAction(
-        base::UserMetricsAction(QueueSourceToUserActionString(unqueue_source)));
-  }
-}
-
-bool PrivacySandboxServiceImpl::IsNoticeQueued() {
-  if (auto* product_messaging_controller = GetProductMessagingController()) {
-    return product_messaging_controller->IsNoticeQueued(kPrivacySandboxNotice);
-  }
-  return false;
-}
-
-void PrivacySandboxServiceImpl::MaybeQueueNotice(
-    NoticeQueueState queue_source) {
-  if (!base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxNoticeQueue) ||
-      suppress_queue_) {
-    return;
-  }
-  // We don't want to queue in the case the profile does not require a prompt.
-  if (GetRequiredPromptType(SurfaceType::kDesktop) == PromptType::kNone) {
-    return;
-  }
-  // If we are already holding the handle or in the queue, we don't want to
-  // requeue.
-  if (IsHoldingHandle() || IsNoticeQueued()) {
-    return;
-  }
-
-  if (auto* product_messaging_controller = GetProductMessagingController()) {
-    product_messaging_controller->QueueRequiredNotice(
-      kPrivacySandboxNotice,
-      base::BindOnce(&PrivacySandboxServiceImpl::HoldQueueHandle, weak_factory_.GetWeakPtr()), {/* TODO(crbug.com/370804492): When we add the DMA notice, add it to this show_after_ list*/});
-    base::RecordAction(
-        base::UserMetricsAction(QueueSourceToUserActionString(queue_source)));
-  }
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action,
                                                      SurfaceType surface_type) {
   RecordPromptActionMetrics(action);
   UpdateNoticeStorage(action, notice_storage_.get(), pref_service_.get(),
                       surface_type);
-
-  if (PromptAction::kNoticeShown == action ||
-      PromptAction::kConsentShown == action ||
-      PromptAction::kRestrictedNoticeShown == action) {
-#if !BUILDFLAG(IS_ANDROID)
-    SetQueueHandleShown(&notice_handle_);
-#endif  // !BUILDFLAG(IS_ANDROID)
-  }
 
   if (PromptAction::kNoticeAcknowledge == action ||
       PromptAction::kNoticeOpenSettings == action) {
@@ -1208,6 +1092,11 @@ void PrivacySandboxServiceImpl::PromptClosedForBrowser(Browser* browser) {
 
 bool PrivacySandboxServiceImpl::IsPromptOpenForBrowser(Browser* browser) {
   return browsers_to_open_prompts_.count(browser);
+}
+
+privacy_sandbox::PrivacySandboxQueueManager&
+PrivacySandboxServiceImpl::GetPrivacySandboxNoticeQueueManager() {
+  return *queue_manager_.get();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1903,7 +1792,7 @@ void PrivacySandboxServiceImpl::MaybeCloseOpenPrompts() {
   }
 
   // After we are done closing the last prompt, release the handle
-  MaybeUnqueueNotice(NoticeQueueState::kReleaseOnShown);
+  queue_manager_->MaybeUnqueueNotice();
 }
 #endif
 

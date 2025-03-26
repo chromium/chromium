@@ -199,7 +199,6 @@ BASE_DECLARE_FEATURE(kTabStripLayoutOptimization);
 BASE_DECLARE_FEATURE(kTabClosureMethodRefactor);
 BASE_DECLARE_FEATURE(kTabStripTransitionInDesktopWindow);
 BASE_DECLARE_FEATURE(kTabSwitcherColorBlendAnimate);
-BASE_DECLARE_FEATURE(kTabSwitcherContextMenuAndroid);
 BASE_DECLARE_FEATURE(kTabSwitcherForeignFaviconSupport);
 BASE_DECLARE_FEATURE(kTabWindowManagerReportIndicesMismatch);
 BASE_DECLARE_FEATURE(kHideTabletToolbarDownloadButton);

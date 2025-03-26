@@ -878,12 +878,13 @@ TabGroupSyncServiceImpl::GetTitleForPreviouslyExistingSharedTabGroup(
   return titles_for_previously_existing_shared_tab_groups_.at(collaboration_id);
 }
 
-void TabGroupSyncServiceImpl::OpenTabGroup(
+std::optional<LocalTabGroupID> TabGroupSyncServiceImpl::OpenTabGroup(
     const base::Uuid& sync_group_id,
     std::unique_ptr<TabGroupActionContext> context) {
   CHECK(coordinator_);
   VLOG(2) << __func__;
-  coordinator_->HandleOpenTabGroupRequest(sync_group_id, std::move(context));
+  return coordinator_->HandleOpenTabGroupRequest(sync_group_id,
+                                                 std::move(context));
 }
 
 void TabGroupSyncServiceImpl::UpdateLocalTabGroupMapping(

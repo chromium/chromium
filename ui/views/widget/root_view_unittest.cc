@@ -866,7 +866,6 @@ TEST_F(RootViewTest, DeleteWidgetOnMouseExitDispatchFromChild) {
   EXPECT_FALSE(widget_deletion_observer.IsWidgetAlive());
 }
 
-namespace {
 class RootViewTestDialogDelegate : public DialogDelegateView {
  public:
   RootViewTestDialogDelegate() {
@@ -899,7 +898,6 @@ class RootViewTestDialogDelegate : public DialogDelegateView {
 
   int layout_count_ = 0;
 };
-}  // namespace
 
 // Ensure only one layout happens during Widget initialization, and ensure it
 // happens at the ContentView's preferred size.

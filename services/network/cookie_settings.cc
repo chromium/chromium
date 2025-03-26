@@ -473,8 +473,8 @@ void CookieSettings::AugmentInclusionStatus(
       net::CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES);
 }
 
-// TODO(crbug.com/388550981): Deprecate this function; Storage Access Headers
-// is enabled by default.
+// TODO(crbug.com/366284840): Deprecate this function when moving storage access
+// status out of //net.
 bool CookieSettings::IsStorageAccessHeadersEnabled(
     const GURL& url,
     base::optional_ref<const url::Origin> top_frame_origin) const {

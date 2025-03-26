@@ -209,6 +209,14 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
 
   gfx::Image favicon;
   AutocompleteMatch match = model()->CurrentMatch(nullptr);
+  if (!match.icon_url.is_empty()) {
+    const SkBitmap* bitmap =
+        model()->GetPopupRichSuggestionBitmap(match.icon_url);
+    if (bitmap) {
+      return ui::ImageModel::FromImage(
+          controller_->client()->GetSizedIcon(bitmap));
+    }
+  }
   if (AutocompleteMatch::IsSearchType(match.type)) {
     // For search queries, display default search engine's favicon. If the
     // default search engine is google return the icon instead of favicon for

@@ -38,7 +38,7 @@ class PushMessagingBridge final : public GarbageCollected<PushMessagingBridge>,
   PushMessagingBridge(const PushMessagingBridge&) = delete;
   PushMessagingBridge& operator=(const PushMessagingBridge&) = delete;
 
-  virtual ~PushMessagingBridge();
+  ~PushMessagingBridge();
 
   // Asynchronously determines the permission state for the current origin.
   ScriptPromise<V8PermissionState> GetPermissionState(

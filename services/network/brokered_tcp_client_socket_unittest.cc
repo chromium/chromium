@@ -4,6 +4,7 @@
 
 #include "services/network/brokered_tcp_client_socket.h"
 
+#include "base/compiler_specific.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
@@ -378,7 +379,7 @@ TEST_F(BrokeredTcpClientSocketTest, FullDuplex_ReadFirst) {
   auto request_buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(kWriteBufLen);
   char* request_data = request_buffer->data();
-  memset(request_data, 'A', kWriteBufLen);
+  UNSAFE_TODO(memset(request_data, 'A', kWriteBufLen));
   net::TestCompletionCallback write_callback;
 
   int bytes_written = 0;
@@ -412,7 +413,7 @@ TEST_F(BrokeredTcpClientSocketTest, FullDuplex_WriteFirst) {
   auto request_buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(kWriteBufLen);
   char* request_data = request_buffer->data();
-  memset(request_data, 'A', kWriteBufLen);
+  UNSAFE_TODO(memset(request_data, 'A', kWriteBufLen));
   net::TestCompletionCallback write_callback;
 
   int bytes_written = 0;

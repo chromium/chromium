@@ -1335,19 +1335,17 @@ void BoxFragmentPainter::PaintGapDecorations(const PaintInfo& paint_info,
   if (!GetPhysicalFragment().IsGrid()) {
     return;
   }
-  const GapFragmentData::GapGeometry* gap_geometry =
-      box_fragment_.GapGeometry();
+  const GapGeometry* gap_geometry = box_fragment_.GapGeometry();
   CHECK(gap_geometry);
 
   PaintGridGaps(kForRows, paint_info, paint_rect, gap_geometry);
   PaintGridGaps(kForColumns, paint_info, paint_rect, gap_geometry);
 }
 
-void BoxFragmentPainter::PaintGridGaps(
-    GridTrackSizingDirection track_direction,
-    const PaintInfo& paint_info,
-    const PhysicalRect& paint_rect,
-    const GapFragmentData::GapGeometry* gap_geometry) {
+void BoxFragmentPainter::PaintGridGaps(GridTrackSizingDirection track_direction,
+                                       const PaintInfo& paint_info,
+                                       const PhysicalRect& paint_rect,
+                                       const GapGeometry* gap_geometry) {
   CHECK(GetPhysicalFragment().IsGrid());
 
   const ComputedStyle& style = box_fragment_.Style();
@@ -1393,8 +1391,7 @@ void BoxFragmentPainter::PaintGridGaps(
   // intersection in the cross direction is flanked by spanning items.
   // https://drafts.csswg.org/css-gaps-1/#determine-pairs-of-gap-decoration-endpoints
   auto ShouldMoveIntersectionEndForward =
-      [&](wtf_size_t end_index,
-          const GapFragmentData::GapIntersectionList intersections,
+      [&](wtf_size_t end_index, const GapIntersectionList intersections,
           wtf_size_t gap_index) {
         if (rule_break == RuleBreak::kSpanningItem) {
           return !intersections[end_index].is_blocked_after;
@@ -1430,8 +1427,7 @@ void BoxFragmentPainter::PaintGridGaps(
   // decorations are painted correctly based on `rule_break`.
   auto AdjustIntersectionIndexPair =
       [&](wtf_size_t& start, wtf_size_t& end,
-          const GapFragmentData::GapIntersectionList intersections,
-          wtf_size_t gap_index) {
+          const GapIntersectionList intersections, wtf_size_t gap_index) {
         wtf_size_t num_intersections = intersections.size();
         // If rule_break is `kNone`, cover the entire intersection range.
         if (rule_break == RuleBreak::kNone) {

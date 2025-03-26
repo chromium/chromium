@@ -213,6 +213,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kChromeWideEchoCancellation);
 #endif
 #if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kEnforceSystemEchoCancellation);
+MEDIA_EXPORT extern const base::FeatureParam<bool>
+    kEnforceSystemEchoCancellationAllowAgcInTandem;
+MEDIA_EXPORT extern const base::FeatureParam<bool>
+    kEnforceSystemEchoCancellationAllowNsInTandem;
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSSystemAEC);
@@ -548,6 +552,8 @@ MEDIA_EXPORT std::string GetEffectiveAutoplayPolicy(
 
 MEDIA_EXPORT bool IsChromeWideEchoCancellationEnabled();
 MEDIA_EXPORT bool IsSystemEchoCancellationEnforced();
+MEDIA_EXPORT bool IsSystemEchoCancellationEnforcedAndAllowAgcInTandem();
+MEDIA_EXPORT bool IsSystemEchoCancellationEnforcedAndAllowNsInTandem();
 MEDIA_EXPORT bool IsDedicatedMediaServiceThreadEnabled(
     gl::ANGLEImplementation impl);
 MEDIA_EXPORT bool IsHardwareSecureDecryptionEnabled();

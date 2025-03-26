@@ -84,7 +84,9 @@ SessionImpl::SessionImpl(
     const std::optional<SessionConfigParams>& config_params)
     : feature_(feature),
       execute_remote_fn_(std::move(execute_remote_fn)),
-      sampling_params_(ResolveSamplingParams(config_params, on_device_opts)) {
+      sampling_params_(ResolveSamplingParams(config_params, on_device_opts)),
+      capabilities_(config_params ? config_params->capabilities
+                                  : on_device_model::Capabilities()) {
   if (on_device_opts && on_device_opts->ShouldUse()) {
     LogSessionCreation(on_device_opts->logger.get(), feature_);
     // TODO(crbug.com/403383823): Consider removing `sampling_params_` from
@@ -269,6 +271,10 @@ const proto::Any& SessionImpl::GetOnDeviceFeatureMetadata() const {
 
 const SamplingParams SessionImpl::GetSamplingParams() const {
   return sampling_params_;
+}
+
+on_device_model::Capabilities SessionImpl::GetCapabilities() const {
+  return capabilities_;
 }
 
 std::unique_ptr<OptimizationGuideModelExecutor::Session> SessionImpl::Clone() {

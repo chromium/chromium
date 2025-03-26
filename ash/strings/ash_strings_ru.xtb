@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">Показать языковые настройки</translation>
 <translation id="1459693405370120464">Погода</translation>
 <translation id="1460620680449458626">Сейчас звук выключен.</translation>
+<translation id="1462439140224375968">Документ Google создан.</translation>
 <translation id="14648076227129703">Доступ к камере получат приложения "<ph name="APP1_NAME" />" и "<ph name="APP2_NAME" />", а также все приложения и сайты с разрешением "Камера".</translation>
 <translation id="1467432559032391204">Слева</translation>
 <translation id="146902737843070955">Запрос на это изменение поступил от администратора.</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">Показать сведения о точке доступа. Точка доступа отключена.</translation>
 <translation id="3017079585324758401">Фон</translation>
 <translation id="3018135054368884502">Перемотать вперед</translation>
+<translation id="3026897869154397692">Сведения добавлены в Календарь.</translation>
 <translation id="3033545621352269033">Включено</translation>
 <translation id="3033912566804961911">Объединить с рабочим столом <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Открытие файлов</translation>
@@ -1012,6 +1014,7 @@
 <translation id="4351244548802238354">Закрыть</translation>
 <translation id="4356872429719185452">Показать сведения о точке доступа. Точка доступа включается.</translation>
 <translation id="4364101114148522660">Идет запись (<ph name="DURATION" />)</translation>
+<translation id="4368227575116094370">Создать таблицу Google</translation>
 <translation id="4371348193907997655">Настройки трансляции</translation>
 <translation id="4371834685492830207">PIN-код должен содержать только разрешенные символы.</translation>
 <translation id="4375482231364171368">Искать в адресной строке</translation>
@@ -1481,6 +1484,7 @@
 <translation id="5825969630400862129">Настройки подключенных устройств</translation>
 <translation id="5830180081891717894">ещё <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Остановить трансляцию <ph name="ROUTE_TITLE" /> на устройство "<ph name="RECEIVER_NAME" />"</translation>
+<translation id="5840658767386246331">Найти в Google</translation>
 <translation id="5841296711770970362">Перейти к следующему треку</translation>
 <translation id="5842553299352339114">Точка доступа <ph name="DEVICE_NAME" /> сейчас работает. К ней не подключено ни одно устройство.</translation>
 <translation id="584525477304726060">Чтобы развернуть окно, удерживайте его</translation>
@@ -1894,6 +1898,7 @@
 <translation id="7228968829656641943">Выберите область на экране для поиска. Чтобы включить навигацию с помощью клавиатуры, нажмите Tab, а затем Пробел.</translation>
 <translation id="7229029500464092426">Доступно памяти: <ph name="AVAILABLE_MEMORY" /> | Всего памяти: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Обе кнопки мыши</translation>
+<translation id="7240636904654154599">Таблица Google создана.</translation>
 <translation id="7244725679040769470">Уровень заряда батареи: <ph name="PERCENTAGE" /> %. Подключите устройство к источнику питания.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" /> Для установки обновления необходимо перезапустить Chromebook. Это может занять около минуты.</translation>
 <translation id="7256057185598509352">Клавиша ExpressKey 2</translation>
@@ -2404,6 +2409,7 @@
 <translation id="8921624153894383499">Google Ассистент не говорит на этом языке</translation>
 <translation id="8926951137623668982">Временное хранилище будет всегда скрыто</translation>
 <translation id="8929566928381252430">Хотите нажать клавишу Caps Lock? Используйте</translation>
+<translation id="8929623844713377237">Контакт создан.</translation>
 <translation id="8934418770423095813">Создать документ Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="8936501819958976551">отключила</translation>

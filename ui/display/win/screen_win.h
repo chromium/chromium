@@ -157,7 +157,7 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   static ScreenWinDisplay GetScreenWinDisplayWithDisplayId(int64_t id);
 
   // Returns the display id for the given monitor info.
-  static int64_t DisplayIdFromMonitorInfo(const MONITORINFOEX& monitor);
+  static int64_t DisplayIdFromMonitorInfo(const MONITORINFOEX& monitor_info);
 
   // Updates the display infos to make sure they have the right scale factors.
   // This is called before handling WM_DPICHANGED messages, to be sure that we
@@ -221,7 +221,7 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   void UpdateFromDisplayInfos(
       const std::vector<internal::DisplayInfo>& display_infos);
 
-  // Virtual to support mocking by unit tests.
+  // Virtual to support mocking by unit tests and headless screen.
   virtual std::optional<MONITORINFOEX> MonitorInfoFromScreenPoint(
       const gfx::Point& screen_point) const;
   virtual std::optional<MONITORINFOEX> MonitorInfoFromScreenRect(
@@ -229,17 +229,15 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   virtual std::optional<MONITORINFOEX> MonitorInfoFromWindow(
       HWND hwnd,
       DWORD default_options) const;
+  virtual int64_t GetDisplayIdFromMonitorInfo(
+      const MONITORINFOEX& monitor_info) const;
   virtual HWND GetRootWindow(HWND hwnd) const;
   virtual int GetSystemMetrics(int metric) const;
-
- private:
-  void Initialize();
-  void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
-  void UpdateAllDisplaysAndNotify();
-  void UpdateAllDisplaysIfPrimaryMonitorChanged();
+  virtual void UpdateAllDisplaysAndNotify();
+  virtual void UpdateAllDisplaysIfPrimaryMonitorChanged();
 
   // Returns the ScreenWinDisplay closest to or enclosing |hwnd|.
-  ScreenWinDisplay GetScreenWinDisplayNearestHWND(HWND hwnd) const;
+  virtual ScreenWinDisplay GetScreenWinDisplayNearestHWND(HWND hwnd) const;
 
   // Returns the ScreenWinDisplay closest to or enclosing |screen_rect|.
   ScreenWinDisplay GetScreenWinDisplayNearestScreenRect(
@@ -258,10 +256,15 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
       const gfx::Rect& dip_rect) const;
 
   // Returns the ScreenWinDisplay corresponding to the primary monitor.
-  ScreenWinDisplay GetPrimaryScreenWinDisplay() const;
+  virtual ScreenWinDisplay GetPrimaryScreenWinDisplay() const;
 
-  ScreenWinDisplay GetScreenWinDisplay(
+  // Returns the ScreenWinDisplay corresponding to the given monitor info.
+  virtual ScreenWinDisplay GetScreenWinDisplay(
       std::optional<MONITORINFOEX> monitor_info) const;
+
+ private:
+  void Initialize();
+  void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 
   // Returns the result of calling |getter| with |value| on the global
   // ScreenWin if it exists, otherwise return the default ScreenWinDisplay.

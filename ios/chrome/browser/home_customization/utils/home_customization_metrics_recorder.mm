@@ -6,6 +6,7 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/commerce/core/commerce_feature_list.h"
 
 namespace {
 
@@ -30,6 +31,8 @@ const char kTipsToggledAction[] =
     "IOS.HomeCustomization.MagicStackPage.Tips.Toggled";
 const char kShopCardPriceTrackingAction[] =
     "IOS.HomeCustomization.MagicStackPage.ShopCardPriceTracking.Toggled";
+const char kShopCardReviewsAction[] =
+    "IOS.HomeCustomization.MagicStackPage.ShopCardReviews.Toggled";
 
 }  // namespace
 
@@ -65,7 +68,13 @@ const char kShopCardPriceTrackingAction[] =
       base::RecordAction(base::UserMetricsAction(kTipsToggledAction));
       return;
     case CustomizationToggleType::kShopCard:
-      base::RecordAction(base::UserMetricsAction(kShopCardPriceTrackingAction));
+      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+        base::RecordAction(
+            base::UserMetricsAction(kShopCardPriceTrackingAction));
+      } else if (commerce::kShopCardVariation.Get() ==
+                 commerce::kShopCardArm2) {
+        base::RecordAction(base::UserMetricsAction(kShopCardReviewsAction));
+      }
       return;
   }
 }

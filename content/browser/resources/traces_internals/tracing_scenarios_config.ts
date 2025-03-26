@@ -61,15 +61,15 @@ export class TracingScenariosConfigElement extends CrLitElement {
   private traceReportProxy_: TraceReportBrowserProxy =
       TraceReportBrowserProxy.getInstance();
 
-  protected presetConfig_: Config[] = [];
-  protected fieldConfig_: Config[] = [];
-  protected isEdited_: boolean = false;
-  protected isLoading_: boolean = false;
-  protected privacyFilterEnabled_: boolean = false;
-  protected toastMessage_: string = '';
+  protected accessor presetConfig_: Config[] = [];
+  protected accessor fieldConfig_: Config[] = [];
+  protected accessor isEdited_: boolean = false;
+  protected accessor isLoading_: boolean = false;
+  protected accessor privacyFilterEnabled_: boolean = false;
+  protected accessor toastMessage_: string = '';
   // <if expr="is_win">
-  protected tracingServiceSupported_: boolean = false;
-  protected tracingServiceRegistered_: boolean = false;
+  protected accessor tracingServiceSupported_: boolean = false;
+  protected accessor tracingServiceRegistered_: boolean = false;
   protected securityShieldIconUrl_: string = '';
   // </if>
 

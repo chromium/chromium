@@ -167,8 +167,6 @@ BOOL UIIsBlocking(Browser* browser) {
 
 @implementation ClearBrowsingDataManager
 @synthesize consumer = _consumer;
-@synthesize shouldShowNoticeAboutOtherFormsOfBrowsingHistory =
-    _shouldShowNoticeAboutOtherFormsOfBrowsingHistory;
 @synthesize shouldPopupDialogAboutOtherFormsOfBrowsingHistory =
     _shouldPopupDialogAboutOtherFormsOfBrowsingHistory;
 
@@ -547,9 +545,7 @@ BOOL UIIsBlocking(Browser* browser) {
 }
 
 - (TableViewLinkHeaderFooterItem*)footerForGoogleAccountSectionItem {
-  return _shouldShowNoticeAboutOtherFormsOfBrowsingHistory
-             ? [self footerGoogleAccountAndMyActivityItem]
-             : [self footerGoogleAccountItem];
+  return [self footerGoogleAccountItem];
 }
 
 - (TableViewLinkHeaderFooterItem*)
@@ -612,14 +608,6 @@ BOOL UIIsBlocking(Browser* browser) {
   footerItem.text =
       l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_ACCOUNT);
   return footerItem;
-}
-
-- (TableViewLinkHeaderFooterItem*)footerGoogleAccountAndMyActivityItem {
-  return [self
-      footerItemWithType:ItemTypeFooterGoogleAccountAndMyActivity
-                 titleID:IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_ACCOUNT_AND_HISTORY
-                     URL:kClearBrowsingDataMyActivityUrlInFooterURL
-       appendLocaleToURL:YES];
 }
 
 - (TableViewLinkHeaderFooterItem*)signOutFooterItem {
@@ -782,24 +770,6 @@ BOOL UIIsBlocking(Browser* browser) {
       feature_engagement::TrackerFactory::GetForProfile(self.profile);
   tracker->NotifyEvent(
       feature_engagement::events::kEnhancedSafeBrowsingPromoCriterionMet);
-}
-
-#pragma mark Properties
-
-- (void)setShouldShowNoticeAboutOtherFormsOfBrowsingHistory:(BOOL)showNotice
-                                                   forModel:(ListModel*)model {
-  _shouldShowNoticeAboutOtherFormsOfBrowsingHistory = showNotice;
-  // Update the account footer if the model was already loaded.
-  if (!model) {
-    return;
-  }
-
-  if (![self identityManager]->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    return;
-  }
-
-  [model setFooter:[self footerForGoogleAccountSectionItem]
-      forSectionWithIdentifier:SectionIdentifierGoogleAccount];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

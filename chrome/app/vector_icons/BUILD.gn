@@ -210,6 +210,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "ungroup_refresh.icon",
     "user_account_avatar.icon",
     "user_account_avatar_refresh.icon",
+    "view_list.icon",
     "web.icon",
     "webauthn/camera.icon",
     "webauthn/icloud_keychain.icon",

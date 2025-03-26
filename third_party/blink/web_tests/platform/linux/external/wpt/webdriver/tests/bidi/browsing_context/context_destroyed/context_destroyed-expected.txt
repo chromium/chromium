@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_client_window[tab]
+  AssertionError
+[FAIL] test_client_window[window]
+  AssertionError
+Harness: the test ran to completion.
+

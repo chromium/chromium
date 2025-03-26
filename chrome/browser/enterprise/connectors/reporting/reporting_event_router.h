@@ -6,16 +6,11 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_REPORTING_EVENT_ROUTER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
-#include "content/public/browser/browser_context.h"
-
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace enterprise_connectors {
 
@@ -23,7 +18,7 @@ namespace enterprise_connectors {
 // events to reporting server.
 class ReportingEventRouter : public KeyedService {
  public:
-  explicit ReportingEventRouter(content::BrowserContext* context);
+  explicit ReportingEventRouter(RealtimeReportingClientBase* reporting_client);
 
   ReportingEventRouter(const ReportingEventRouter&) = delete;
   ReportingEventRouter& operator=(const ReportingEventRouter&) = delete;
@@ -49,26 +44,7 @@ class ReportingEventRouter : public KeyedService {
       const safe_browsing::RTLookupResponse& response);
 
  private:
-  raw_ptr<content::BrowserContext> context_;
-  raw_ptr<RealtimeReportingClient> reporting_client_;
-};
-
-class ReportingEventRouterFactory : public BrowserContextKeyedServiceFactory {
- public:
-  static ReportingEventRouterFactory* GetInstance();
-  static ReportingEventRouter* GetForBrowserContext(
-      content::BrowserContext* context);
-
- private:
-  ReportingEventRouterFactory();
-  ~ReportingEventRouterFactory() override;
-  friend struct base::DefaultSingletonTraits<ReportingEventRouterFactory>;
-
-  // BrowserContextKeyedServiceFactory:
-  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
+  raw_ptr<RealtimeReportingClientBase> reporting_client_;
 };
 
 }  // namespace enterprise_connectors

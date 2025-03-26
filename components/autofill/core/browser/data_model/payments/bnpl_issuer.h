@@ -15,6 +15,8 @@
 
 namespace autofill {
 
+std::u16string BnplIssuerIdToDisplayName(std::string_view issuer_id);
+
 // Contains information regarding a Buy Now Pay Later issuer that the user is
 // eligible to use on certain merchant webpages.
 class BnplIssuer {

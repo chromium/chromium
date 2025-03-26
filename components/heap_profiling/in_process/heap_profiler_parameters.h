@@ -31,13 +31,19 @@ extern const base::FeatureParam<double> kNonStableProbability;
 // Mean time between snapshots.
 extern const base::FeatureParam<base::TimeDelta> kCollectionInterval;
 
-// Returns the sampling rate in bytes to use for `process_type`.
+// Returns the sampling rate in bytes to use for `process_type`. 0 means to use
+// PoissonAllocationSampler's default sampling rate.
 size_t GetSamplingRateForProcess(
     sampling_profiler::ProfilerProcessType process_type);
 
 // Returns the probability of sampling a `process_type` process in each
 // snapshot, from 0 to 100.
 int GetSnapshotProbabilityForProcess(
+    sampling_profiler::ProfilerProcessType process_type);
+
+// Returns the load factor that PoissonAllocationSampler's hash set should use
+// in a `process_type` process. 0.0 means to use the hash set's default.
+float GetHashSetLoadFactorForProcess(
     sampling_profiler::ProfilerProcessType process_type);
 
 }  // namespace heap_profiling

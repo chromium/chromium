@@ -104,7 +104,9 @@ public class HubToolbarMediatorUnitTest {
     private ObservableSupplierImpl<FullButtonData> mActionButtonSupplier;
     private ObservableSupplierImpl<Pane> mFocusedPaneSupplier;
     private ObservableSupplierImpl<DisplayButtonData> mTabSwitcherReferenceButtonDataSupplier1;
-    private ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier;
+    private ObservableSupplierImpl<Boolean> mRegularHubSearchEnabledStateSupplier;
+    private ObservableSupplierImpl<Boolean> mIncognitoHubSearchEnabledStateSupplier;
+    private ObservableSupplierImpl<Boolean> mGroupsHubSearchEnabledStateSupplier;
     private ObservableSupplierImpl<DisplayButtonData>
             mIncognitoTabSwitcherReferenceButtonDataSupplier2;
     private PropertyModel mModel;
@@ -115,7 +117,9 @@ public class HubToolbarMediatorUnitTest {
         mFocusedPaneSupplier = new ObservableSupplierImpl<>();
         mTabSwitcherReferenceButtonDataSupplier1 = new ObservableSupplierImpl<>();
         mIncognitoTabSwitcherReferenceButtonDataSupplier2 = new ObservableSupplierImpl<>();
-        mHubSearchEnabledStateSupplier = new ObservableSupplierImpl<>();
+        mRegularHubSearchEnabledStateSupplier = new ObservableSupplierImpl<>();
+        mIncognitoHubSearchEnabledStateSupplier = new ObservableSupplierImpl<>();
+        mGroupsHubSearchEnabledStateSupplier = new ObservableSupplierImpl<>();
         mFocusedPaneSupplier = new ObservableSupplierImpl<>();
         mModel =
                 new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS)
@@ -138,13 +142,11 @@ public class HubToolbarMediatorUnitTest {
         when(mPaneManager.getPaneForId(PaneId.BOOKMARKS)).thenReturn(mBookmarksPane);
 
         when(mTabSwitcherPane.getHubSearchEnabledStateSupplier())
-                .thenReturn(mHubSearchEnabledStateSupplier);
+                .thenReturn(mRegularHubSearchEnabledStateSupplier);
         when(mIncognitoTabSwitcherPane.getHubSearchEnabledStateSupplier())
-                .thenReturn(mHubSearchEnabledStateSupplier);
+                .thenReturn(mIncognitoHubSearchEnabledStateSupplier);
         when(mTabGroupsPane.getHubSearchEnabledStateSupplier())
-                .thenReturn(mHubSearchEnabledStateSupplier);
-        when(mBookmarksPane.getHubSearchEnabledStateSupplier())
-                .thenReturn(mHubSearchEnabledStateSupplier);
+                .thenReturn(mGroupsHubSearchEnabledStateSupplier);
 
         when(mTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mTabSwitcherReferenceButtonDataSupplier1);
@@ -186,7 +188,7 @@ public class HubToolbarMediatorUnitTest {
     @SmallTest
     @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testHubSearchEnabledStateSupplier() {
-        assertFalse(mHubSearchEnabledStateSupplier.hasObservers());
+        assertFalse(mRegularHubSearchEnabledStateSupplier.hasObservers());
 
         when(mPaneOrderController.getPaneOrder())
                 .thenReturn(ImmutableSet.of(PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER));
@@ -194,15 +196,39 @@ public class HubToolbarMediatorUnitTest {
         HubToolbarMediator mediator =
                 new HubToolbarMediator(
                         mActivity, mModel, mPaneManager, mTracker, mSearchActivityClient);
-        assertTrue(mHubSearchEnabledStateSupplier.hasObservers());
+        assertTrue(mRegularHubSearchEnabledStateSupplier.hasObservers());
 
-        mHubSearchEnabledStateSupplier.set(false);
+        mRegularHubSearchEnabledStateSupplier.set(false);
         assertFalse(mModel.get(HUB_SEARCH_ENABLED_STATE));
-        mHubSearchEnabledStateSupplier.set(true);
+        mRegularHubSearchEnabledStateSupplier.set(true);
         assertTrue(mModel.get(HUB_SEARCH_ENABLED_STATE));
 
         mediator.destroy();
-        assertFalse(mHubSearchEnabledStateSupplier.hasObservers());
+        assertFalse(mRegularHubSearchEnabledStateSupplier.hasObservers());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+    public void testHubSearchEnabledStateSupplier_TogglePanesIncognitoReauth() {
+        when(mPaneOrderController.getPaneOrder())
+                .thenReturn(ImmutableSet.of(PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER));
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        new HubToolbarMediator(mActivity, mModel, mPaneManager, mTracker, mSearchActivityClient);
+
+        // Mimic incognito reauth pending
+        mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
+        assertTrue(mModel.get(HUB_SEARCH_ENABLED_STATE));
+
+        // Toggle panes back to the tab switcher
+        mIncognitoHubSearchEnabledStateSupplier.set(false);
+        assertFalse(mModel.get(HUB_SEARCH_ENABLED_STATE));
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        assertTrue(mModel.get(HUB_SEARCH_ENABLED_STATE));
+
+        // TOggle panes back to the incognito tab switcher
+        mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
+        assertFalse(mModel.get(HUB_SEARCH_ENABLED_STATE));
     }
 
     @Test

@@ -189,13 +189,13 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   std::unique_ptr<TabGroupActionContextDesktop> desktop_context =
       std::make_unique<TabGroupActionContextDesktop>(browser(),
                                                      OpeningSource::kUnknown);
-  service()->OpenTabGroup(saved_id, std::move(desktop_context));
+  std::optional<LocalTabGroupID> group_id =
+      service()->OpenTabGroup(saved_id, std::move(desktop_context));
 
-  retrieved_group = service()->GetGroup(saved_id);
-  EXPECT_TRUE(retrieved_group->local_group_id().has_value());
-  EXPECT_NE(local_group_id, retrieved_group->local_group_id());
+  EXPECT_TRUE(group_id.has_value());
+  EXPECT_NE(local_group_id, group_id);
   EXPECT_TRUE(browser()->tab_strip_model()->group_model()->ContainsTabGroup(
-      retrieved_group->local_group_id().value()));
+      group_id.value()));
 
   // There should be no write event back to sync.
   VerifyWrittenToSync(/*write_events_since_last=*/0);

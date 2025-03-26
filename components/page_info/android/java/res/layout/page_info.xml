@@ -10,7 +10,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/sheet_background"
+    android:background="@macro/sheet_bg_color"
     android:orientation="vertical">
 
     <LinearLayout

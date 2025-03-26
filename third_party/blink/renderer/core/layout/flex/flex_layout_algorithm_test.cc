@@ -37,9 +37,6 @@ class FlexLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   }
 };
 
-using GapIntersection = GapFragmentData::GapIntersection;
-using GapIntersectionList = GapFragmentData::GapIntersectionList;
-
 void VerifyGapIntersections(
     const Vector<GapIntersectionList>& expected_intersections,
     const Vector<GapIntersectionList>& intersections) {
@@ -132,8 +129,7 @@ TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsBasic) {
 
   algorithm.Layout();
 
-  const GapFragmentData::GapGeometry* gap_geometry =
-      algorithm.GetGapGeometryForTest();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
 
   const Vector<GapIntersectionList> expected_row_intersections = {
       {GapIntersection(LayoutUnit(2), LayoutUnit(57)),
@@ -211,8 +207,7 @@ TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOneLine) {
 
   algorithm.Layout();
 
-  const GapFragmentData::GapGeometry* gap_geometry =
-      algorithm.GetGapGeometryForTest();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
 
   const Vector<GapIntersectionList> expected_row_intersections = {};
   const Vector<GapIntersectionList> expected_column_intersections = {
@@ -286,8 +281,7 @@ body {
 
   algorithm.Layout();
 
-  const GapFragmentData::GapGeometry* gap_geometry =
-      algorithm.GetGapGeometryForTest();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
 
   const Vector<GapIntersectionList> expected_row_intersections = {
       {GapIntersection(LayoutUnit(2), LayoutUnit(57)),
@@ -381,8 +375,7 @@ body {
 
   algorithm.Layout();
 
-  const GapFragmentData::GapGeometry* gap_geometry =
-      algorithm.GetGapGeometryForTest();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
 
   const Vector<GapIntersectionList> expected_row_intersections = {
       {GapIntersection(LayoutUnit(2), LayoutUnit(57)),
@@ -469,8 +462,7 @@ body {
 
   algorithm.Layout();
 
-  const GapFragmentData::GapGeometry* gap_geometry =
-      algorithm.GetGapGeometryForTest();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
 
   const Vector<GapIntersectionList> expected_row_intersections = {
       {GapIntersection(LayoutUnit(4), LayoutUnit(152)),
@@ -555,8 +547,7 @@ body {
 
   algorithm.Layout();
 
-  const GapFragmentData::GapGeometry* gap_geometry =
-      algorithm.GetGapGeometryForTest();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
 
   const Vector<GapIntersectionList> expected_row_intersections = {
       {GapIntersection(LayoutUnit(4), LayoutUnit(91)),
@@ -641,8 +632,7 @@ body {
 
   algorithm.Layout();
 
-  const GapFragmentData::GapGeometry* gap_geometry =
-      algorithm.GetGapGeometryForTest();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
 
   const Vector<GapIntersectionList> expected_row_intersections = {
       {GapIntersection(LayoutUnit(4), LayoutUnit(152)),

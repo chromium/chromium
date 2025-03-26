@@ -41,16 +41,10 @@ SVGLayoutResult LayoutSVGViewportContainer::UpdateSVGLayout(
   DCHECK(NeedsLayout());
 
   SVGLayoutInfo child_layout_info = layout_info;
-
-  const auto* svg = To<SVGSVGElement>(GetElement());
-  if (RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
-    child_layout_info.viewport_changed = SelfNeedsFullLayout();
-  } else {
-    child_layout_info.viewport_changed =
-        SelfNeedsFullLayout() && svg->HasRelativeLengths();
-  }
+  child_layout_info.viewport_changed = SelfNeedsFullLayout();
 
   if (SelfNeedsFullLayout()) {
+    const auto* svg = To<SVGSVGElement>(GetElement());
     SVGLengthContext length_context(svg);
     gfx::RectF old_viewport = viewport_;
     viewport_.SetRect(svg->x()->CurrentValue()->Value(length_context),

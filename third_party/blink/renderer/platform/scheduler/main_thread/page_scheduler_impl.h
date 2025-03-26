@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/widget_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
@@ -84,7 +85,8 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   bool IsExemptFromBudgetBasedThrottling() const override;
   bool OptedOutFromAggressiveThrottlingForTest() const override;
   bool RequestBeginMainFrameNotExpected(bool new_state) override;
-  scoped_refptr<scheduler::WidgetScheduler> CreateWidgetScheduler() override;
+  scoped_refptr<WidgetScheduler> CreateWidgetScheduler(
+      WidgetScheduler::Delegate*) override;
 
   bool IsFrozen() const;
   bool OptedOutFromAggressiveThrottling() const;

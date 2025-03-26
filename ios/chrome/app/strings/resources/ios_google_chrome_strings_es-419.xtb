@@ -6,7 +6,6 @@
 <translation id="1143896152279775643">La contraseña se guardará en el Administrador de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Abrir una pestaña nueva en Chrome</translation>
 <translation id="1166460004393506534">Borrar los datos de navegación en Chrome</translation>
-<translation id="1171255741903316750">Activa "Bloquear las pestañas de incógnito cuando cierres Chrome"</translation>
 <translation id="1179527450541388808">Accede a Chrome más rápido desde el Dock de la pantalla de inicio de tu iPad.</translation>
 <translation id="1180362651362502943">Sigue usando los datos de Chrome en tu Cuenta de Google.</translation>
 <translation id="1200396280085622191">Usa Chrome cada vez que presiones vínculos en mensajes y otras apps.</translation>
@@ -178,6 +177,7 @@ Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</t
 <translation id="5716154293141027663">Abre Chrome cada vez que presiones vínculos en otras apps</translation>
 <translation id="5752489513673657785">Un feed personalizado que Google creó para ti</translation>
 <translation id="5772407442571703917">Descarga Chrome aquí.</translation>
+<translation id="5777468213129569553">Abrir Chrome</translation>
 <translation id="5779767936254214055">Bloquea tus pestañas de incógnito cuando sales de Chrome o cambias de app.</translation>
 <translation id="5808435672482059465">Ver tu historial de Chrome</translation>
 <translation id="5833027901704861726">Aún no se guardaron algunos de tus datos de Chrome en <ph name="EMAIL" />.

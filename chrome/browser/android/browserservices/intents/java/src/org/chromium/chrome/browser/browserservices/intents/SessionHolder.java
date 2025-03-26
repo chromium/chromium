@@ -36,7 +36,7 @@ public class SessionHolder<T> {
         boolean isAuthTab =
                 IntentUtils.safeGetBooleanExtra(intent, AuthTabIntent.EXTRA_LAUNCH_AUTH_TAB, false);
         if (isAuthTab) {
-            AuthTabSessionToken token = AuthTabSessionToken.getSessionTokenFromIntent(intent);
+            AuthTabSessionToken token = AuthTabSessionToken.createSessionTokenFromIntent(intent);
             if (token != null) {
                 return new SessionHolder<>(token);
             }

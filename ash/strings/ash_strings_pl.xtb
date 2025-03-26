@@ -149,6 +149,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1455242230282523554">Pokaż ustawienia języka</translation>
 <translation id="1459693405370120464">Pogoda</translation>
 <translation id="1460620680449458626">Dźwięk jest wyciszony.</translation>
+<translation id="1462439140224375968">Utworzono dokument Google</translation>
 <translation id="14648076227129703">Spowoduje to przyznanie dostępu do aparatu aplikacjom <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z niego</translation>
 <translation id="1467432559032391204">W lewo</translation>
 <translation id="146902737843070955">Administrator poprosił o tę zmianę</translation>
@@ -593,6 +594,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="301584155502740476">Pokaż szczegóły hotspota. Hotspot jest wyłączony.</translation>
 <translation id="3017079585324758401">Tło</translation>
 <translation id="3018135054368884502">Przewiń do przodu</translation>
+<translation id="3026897869154397692">Dodano do kalendarza</translation>
 <translation id="3033545621352269033">Włączono</translation>
 <translation id="3033912566804961911">Połącz z: <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Otwórz pliki</translation>
@@ -1012,6 +1014,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4351244548802238354">Zamknij okno</translation>
 <translation id="4356872429719185452">Pokaż szczegóły hotspota. Hotspot właśnie się włącza.</translation>
 <translation id="4364101114148522660">Rejestruję <ph name="DURATION" /></translation>
+<translation id="4368227575116094370">Utwórz arkusz Google</translation>
 <translation id="4371348193907997655">Ustawienia przesyłania</translation>
 <translation id="4371834685492830207">Kod PIN musi zawierać tylko prawidłowe znaki</translation>
 <translation id="4375482231364171368">Szukaj na pasku adresu</translation>
@@ -1481,6 +1484,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5825969630400862129">Ustawienia połączonych urządzeń</translation>
 <translation id="5830180081891717894">Jeszcze <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Zatrzymaj usługę <ph name="ROUTE_TITLE" /> na urządzeniu <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Wyszukaj w Google</translation>
 <translation id="5841296711770970362">Przejdź do następnego utworu</translation>
 <translation id="5842553299352339114">Hotspot <ph name="DEVICE_NAME" /> jest włączony, brak połączonych urządzeń</translation>
 <translation id="584525477304726060">Przytrzymaj, aby zmaksymalizować</translation>
@@ -1893,6 +1897,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="7228968829656641943">Wybierz, aby wyszukać treści na ekranie. Aby poruszać się za pomocą klawiatury, naciśnij Tab, a potem spację.</translation>
 <translation id="7229029500464092426">Pamięć: <ph name="AVAILABLE_MEMORY" /> | Łącznie: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Oba przyciski myszy</translation>
+<translation id="7240636904654154599">Utworzono arkusz Google</translation>
 <translation id="7244725679040769470">Bateria: pozostało <ph name="PERCENTAGE" />%. Podłącz urządzenie do zasilania.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Konieczne jest ponowne uruchomienie tego Chromebooka, by zainstalować aktualizację. Może to potrwać około minuty.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2403,6 +2408,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8921624153894383499">Asystent Google nie mówi w tym języku.</translation>
 <translation id="8926951137623668982">Półka zawsze ukryta</translation>
 <translation id="8929566928381252430">Próbujesz użyć klawisza Caps Lock? Użyj</translation>
+<translation id="8929623844713377237">Utworzono kontakt</translation>
 <translation id="8934418770423095813">Utwórz dokument Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 plik}few{# pliki}many{# plików}other{# pliku}}</translation>
 <translation id="8936501819958976551">dezaktywowana</translation>

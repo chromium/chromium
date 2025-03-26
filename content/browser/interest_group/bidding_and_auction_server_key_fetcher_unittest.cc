@@ -31,6 +31,9 @@ namespace content {
 
 namespace {
 
+using TrustedServerAPIType =
+    BiddingAndAuctionServerKeyFetcher::TrustedServerAPIType;
+
 const char kTestScope[] = "https://scope.origin.test/";
 const char kTestScope2[] = "https://other.origin2.test/";
 const char kOtherDefaultGCPKeyURL[] = "https://example.com/other_keys";

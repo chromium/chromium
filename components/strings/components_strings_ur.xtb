@@ -32,7 +32,6 @@
 <translation id="1055184225775184556">شامل کریں کو &amp;کالعدم کریں</translation>
 <translation id="1056898198331236512">وارننگ</translation>
 <translation id="1058344460600311577">‏<ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome میں Dino Run گیم چلانے کیلئے ٹیب پھر اینٹر دبائیں</translation>
-<translation id="1058479211578257048">کارڈز محفوظ کیے جا رہے ہیں...</translation>
 <translation id="1060136083665017312">گیم سسٹمز اور کونسولز</translation>
 <translation id="1060320201901229167">‏Kaku 5 لفافہ</translation>
 <translation id="1062407476771304334">بدلیں</translation>
@@ -115,6 +114,7 @@
 <translation id="1195073053842921378">یہ پتہ اس آلے سے حذف ہو جائے گا</translation>
 <translation id="1195558154361252544">تمام سائٹس کے لیے اطلاعات کو خودکار طور پر مسدود کر دیا گیا ہے سوائے ان کے جن کی آپ نے اجازت دی ہے</translation>
 <translation id="1197088940767939838">نارنجی</translation>
+<translation id="1198412233443148072">‫<ph name="MEMBER_FIRST_NAME" /> نے ٹیب "<ph name="WEBSITE_TITLE" />" کو ہٹا دیا ہے</translation>
 <translation id="1201402288615127009">اگلا</translation>
 <translation id="1201895884277373915">اس سائٹ سے مزید</translation>
 <translation id="1202892408424955784">ٹریک کردہ پروڈکٹس</translation>
@@ -409,7 +409,6 @@
 <translation id="1689333818294560261">عرفی نام</translation>
 <translation id="1692622044604477956">مووی کی فہرستیں اور تھیٹر شو کے اوقات</translation>
 <translation id="1697430960030447570">‏<ph name="BEGIN_BOLD" />آپ کس طرح اپنے ڈیٹا کا نظم کر سکتے ہیں:<ph name="END_BOLD" /> Chrome ‏4 ہفتوں سے زیادہ پرانے موضوعات کو خودکار طور پر حذف کر دیتا ہے۔ جب تک آپ براؤزنگ جاری رکھتے ہیں فہرست پر موضوع دوبارہ ظاہر ہو سکتا ہے۔ آپ ان موضوعات کو بھی مسدود کر سکتے ہیں جن کا آپ چاہتے ہیں کہ Chrome سائٹس کے ساتھ اشتراک نہ کرے اور Chrome کی ترتیبات میں کسی بھی وقت اشتہار کے موضوعات کو بند کر سکتے ہیں۔</translation>
-<translation id="1697532407822776718">آپ بالکل ٹھیک ہیں!</translation>
 <translation id="1699651774646344471">‏اب آپ اپنے Google اکاؤنٹ پر محفوظ پتوں کا استعمال کر سکتے ہیں</translation>
 <translation id="1700542542921501212">ویب پر تلاش کرنے کیلئے آپ <ph name="SEARCH_ENGINE_NAME" /> کو استعمال کر سکتے ہیں۔</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -886,7 +885,6 @@
 <translation id="2518584823165598232">یہ کارڈ دستیاب نہیں ہے۔ براہ کرم اپنے کارڈ فراہم کنندہ سے رابطہ کریں۔</translation>
 <translation id="2521385132275182522">نیچے بائیں طرف سٹیپل</translation>
 <translation id="2521736961081452453">فارم تخلیق کریں</translation>
-<translation id="2523886232349826891">صرف اس آلہ پر محفوظ ہے</translation>
 <translation id="2524461107774643265">مزید معلومات شامل کریں</translation>
 <translation id="2526062290525841862">اس ایپ کو چلانے کے لیے علیحدہ کردہ ویب ایپ ڈویلپر وضع کو دوبارہ فعال کریں</translation>
 <translation id="2526280916094749336">‏آپ پورے Google پروڈکٹس میں محفوظ کردہ پتے استعمال کر سکتے ہیں۔ یہ پتہ آپ کے Google اکاؤنٹ <ph name="ACCOUNT" /> میں محفوظ ہو جائے گا۔</translation>
@@ -1344,7 +1342,6 @@
 <translation id="3360306038446926262">ونڈوز</translation>
 <translation id="3362968246557010467">یہ پالیسی خودکار طور پر فرسودہ <ph name="OLD_POLICY" /> پالیسی سے کاپی کی گئی تھی۔ اس کی بجائے، آپ کو اس کا پالیسی کا استعمال کرنا چاہیے۔</translation>
 <translation id="3364869320075768271"><ph name="URL" /> آپ کا ورچوئل ریئلٹی آلہ اور ڈیٹا استعمال کرنا چاہتا ہے</translation>
-<translation id="3366477098757335611">کارڈز دیکھیں</translation>
 <translation id="3369192424181595722">گھڑی کی خرابی</translation>
 <translation id="3371064404604898522">‏Chrome کو ڈيفالٹ براؤزر کے بطور سیٹ کریں</translation>
 <translation id="337363190475750230">کالعدم کردہ</translation>
@@ -1743,6 +1740,7 @@
 <translation id="4031179711345676612">مائیکروفون اجازت یافتہ ہے</translation>
 <translation id="4036753017940930924">لاٹ اور زمین</translation>
 <translation id="4039506337798853114">اپنا کرسر دکھانے کے لیے، |<ph name="ACCELERATOR" />| کو دبائیں</translation>
+<translation id="4045441967987592849">دوبارہ کھولیں</translation>
 <translation id="4047351652147966654">‏‎18 x 24 انچ</translation>
 <translation id="404831776305217138">‏ID "<ph name="EXTENSION_ID" />" کے ساتھ ایکسٹینشن کے لیے اپ ڈیٹ URL غلط ہے یا ایک غیر تعاون یافتہ اسکیم استعمال کرتا ہے۔ تعاون یافتہ اسکیمیں: <ph name="HTTP_SCHEME" />، <ph name="HTTPS_SCHEME" /> اور <ph name="FILE_SCHEME" /> ہیں۔</translation>
 <translation id="4050392779074832022">‏آپ اسے تمام Google پروڈکٹس میں استعمال کر سکیں گے</translation>
@@ -1903,7 +1901,6 @@
 <translation id="4282280603030594840">گاڑی کی خریداری</translation>
 <translation id="4282346679996504092">اس پروڈکٹ کے لیے الرٹس کو آف کر دیا گیا ہے اور بُک مارک ہٹا دیا گیا ہے</translation>
 <translation id="4285498937028063278">پن ہٹائیں</translation>
-<translation id="428639260510061158">{NUM_CARDS,plural, =1{‏اس کارڈ کو آپ کے Google اکاؤنٹ میں محفوظ کر دیا گیا ہے}other{‏ان کارڈز کو آپ کے Google اکاؤنٹ میں محفوظ کر دیا گیا ہے}}</translation>
 <translation id="4287495839370498922">‏Chrome میں اشتہارات کی بہتر کردہ رازداری</translation>
 <translation id="4290920330097335010">کبھی اجازت نہ دیں</translation>
 <translation id="4296207570293932800">اشتہار کی رازداری کی نئی خصوصیت اب دستیاب ہے</translation>
@@ -1966,7 +1963,6 @@
 <translation id="4378154925671717803">فون</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">‏‫Microsoft OneDrive پر فائل اپ لوڈ کو موقوف کر دیا گیا ہے</translation>
-<translation id="4389931020843542579">ٹیب گروپ لوڈ ہو رہا ہے</translation>
 <translation id="4390472908992056574">کنارہ</translation>
 <translation id="4395550503472021297">یہ پالیسی درج ذیل پالیسیوں کے ڈیفالٹ برتاؤ کو کنٹرول کر رہی ہے: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">آپ کے بینک کی ویب سائٹ پر تصدیق کرنے کے لیے ایک پاپ اپ کھولتا ہے</translation>
@@ -2048,7 +2044,6 @@
 <translation id="4569155249847375786">توثیق کردہ</translation>
 <translation id="457875822857220463">ڈیلیوری</translation>
 <translation id="4579699065574932398">بینکنگ</translation>
-<translation id="4582204425268416675">کارڈ ہٹائیں</translation>
 <translation id="4582595824823167856">ٹیکسٹ پیغام حاصل کریں</translation>
 <translation id="4586607503179159908">ادائیگی کے طریقے کی توثیق ہو گئی</translation>
 <translation id="4587425331216688090">‏Chrome سے پتہ ہٹائیں؟</translation>
@@ -2431,6 +2426,7 @@
 <translation id="5255771248404149177">آپ کا کارڈ فراہم کنندہ یہ یقینی بنانا چاہتا ہے کہ یہ آپ ہی ہیں</translation>
 <translation id="5255833070095767006">‏‎350 x 460 ملی میٹر</translation>
 <translation id="5257739419779698609">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں کاپی کرنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں کاپی کرنے کی تجویز نہیں کرتی ہے}}</translation>
+<translation id="5258473597674772367">‫"<ph name="GROUP_NAME" />" ٹیب گروپ اب دستیاب نہیں ہے</translation>
 <translation id="5263867360296733198">اپ لوڈ کرنے سے پہلے جائزہ لینا ضروری ہے</translation>
 <translation id="5266128565379329178">اوپر باندھیں</translation>
 <translation id="5269225904387178860">نیچے مستطیل سوراخ</translation>
@@ -2705,7 +2701,6 @@
 <translation id="5730040223043577876">‏اگر آپ نے اپنا پاس ورڈ دیگر سائٹس پر دوبارہ استعمال کیا ہے تو Chrome آپ کو اپنا پاس ورڈ ری سیٹ کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="5732392974455271431">آپ کے والدین آپ کیلئے اسے غیر مسدود کر سکتے ہیں</translation>
 <translation id="573555826359077410">‏فارم تخلیق کریں بٹن، Google Forms میں تیزی سے نیا فارم تخلیق کرنے کے لیے فعال کریں</translation>
-<translation id="5737183892635480227">{NUM_CARDS,plural, =1{‏اپنے Google اکاؤنٹ میں کارڈ کو محفوظ کریں}other{‏اپنے Google اکاؤنٹ میں کارڈز کو محفوظ کریں}}</translation>
 <translation id="5738385766833540397">اس بات کا نظم کریں کہ آپ کو ان پروڈکٹس کے لیے قیمتوں میں کمی کے الرٹس کیسے موصول ہوتے ہیں جنہیں آپ ٹریک کرتے ہیں</translation>
 <translation id="573974402615125334">ٹیب گروپس میں اشتراک، شمولیت اور تعاون کرنے کے لیے، اپنی سرگزشت اور ٹیبز کو ہم مطابقت پذیر کریں</translation>
 <translation id="5740911612628596808">‏C9 لفافہ</translation>
@@ -2794,7 +2789,6 @@
 <translation id="5921185718311485855">آن</translation>
 <translation id="5921639886840618607">‏کارڈ کو Google اکاؤنٹ میں محفوظ کریں؟</translation>
 <translation id="5921952831792678223">پک اپ ٹرکس</translation>
-<translation id="5922853866070715753">تقریباً مکمل ہو گیا</translation>
 <translation id="5923492272538889093">‏CVC کے بجائے آلے کو غیر مقفل کرنے کی خصوصیت کا استعمال کریں؟</translation>
 <translation id="5924510104057992926">کھولنے سے پہلے جائزہ لینا ضروری ہے</translation>
 <translation id="5924782825030413055">آخری منظوری کی اپ ڈیٹ کا ماخذ:</translation>
@@ -2882,7 +2876,6 @@
 <translation id="6055982527635883756">لفافہ (آرکائیول)</translation>
 <translation id="6057177372083677067">آن لائن ویڈیو</translation>
 <translation id="6058646026409894363">سول انجینئرنگ</translation>
-<translation id="6058977677006700226">اپنے تمام آلات پر اپنے کارڈز استعمال کریں؟</translation>
 <translation id="6059925163896151826">‏USB آلات</translation>
 <translation id="6060009363608157444">‏DnsOverHttps وضع غلط ہے۔</translation>
 <translation id="6061154937977953833">کُشتی</translation>
@@ -3157,6 +3150,7 @@
 <translation id="6519885440226079262">آپ کے ہاتھوں کو ٹریک کرنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="6520026037299163656">ویب ایپس اور آن لائن ٹولز</translation>
 <translation id="65203098586853226"><ph name="SOURCE" /> کا <ph name="TARGET" /> میں ترجمہ کیا جا رہا ہے</translation>
+<translation id="6520509611422418552">‫<ph name="MEMBER_FIRST_NAME" /> "<ph name="GROUP_NAME" />" ٹیب گروپ میں شامل ہوا</translation>
 <translation id="6521745193039995384">فعال نہیں ہے</translation>
 <translation id="6522682797352430154">کلاسیکل موسیقی</translation>
 <translation id="6524830701589638230">‏ایکسیسبیلٹی کی ترتیبات کا نظم کریں بٹن، Chrome کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنانے کے لیے فعال کریں</translation>
@@ -3442,7 +3436,6 @@
 <translation id="704738887031336226">چیک آؤٹ پر <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />وقت کے ساتھ ادائیگی کریں<ph name="PAY_OVER_TIME_HELP_LINK_END" /> کے اختیارات دکھائیں</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">آپ نے <ph name="DOMAIN" /> تک پہنچنے کی کوشش کی، لیکن سرور نے ایک سرٹیفکیٹ پیش کیا جس کے جواز کا عرصہ اتنا طویل ہے کہ اس پر بھروسہ نہیں کیا جا سکتا۔</translation>
-<translation id="705310974202322020">{NUM_CARDS,plural, =1{اس کارڈ کو ابھی محفوظ نہیں کیا جا سکتا}other{ان کارڈز کو ابھی محفوظ نہیں کیا جا سکتا}}</translation>
 <translation id="7053983685419859001">مسدود کریں</translation>
 <translation id="7054717457611655239">آئندہ سے، اپنی فائلز کو <ph name="CLOUD_PROVIDER" /> میں محفوظ کریں۔</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> نے توثیق کی ہے کہ <ph name="ISSUER" /> نے اس ویب سائٹ کا سرٹیفیکیٹ جاری کیا ہے۔</translation>
@@ -3836,7 +3829,6 @@
 <translation id="7690647519407127574">‏Oufuku Hagaki پوسٹ کارڈ</translation>
 <translation id="7693583928066320343">صفحات کی ترتیب موصول ہوئی</translation>
 <translation id="769424100851389104">ابھی اپ ڈیٹ شروع کریں</translation>
-<translation id="769721561045429135">ابھی، آپ کے پاس ایسے کارڈز ہیں جنہیں صرف اس آلہ پر استعمال کیا جا سکتا ہے کارڈز کا جائزہ لینے کیلئے 'جاری رکھیں' پر کلک کریں۔</translation>
 <translation id="7697837508203274589">لائیو کھیلوں کے ایونٹس</translation>
 <translation id="7698864304447945242">‏Google Play سروسز برائے AR کو اپ ڈیٹ کریں؟</translation>
 <translation id="7701040980221191251">کوئی نہیں</translation>
@@ -4001,7 +3993,6 @@
 <translation id="8009225694047762179">پاسورڈز کا نظم کریں</translation>
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />اپنی کوکیز کو حذف کرنے کی کوشش کریں<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">‏‎10 x 11 انچ</translation>
-<translation id="8012116502927253373">{NUM_CARDS,plural, =1{یہ کارڈ اور اس کا بلنگ پتہ محفوظ ہو جائے گا۔ <ph name="USER_EMAIL" /> میں سائن ان ہونے پر آپ اس کا استعمال کر سکیں گے۔}other{یہ کارڈز اور ان کے بلنگ پتے محفوظ ہو جائیں گے۔ <ph name="USER_EMAIL" /> میں سائن ان ہونے پر آپ ان کا استعمال کر سکیں گے۔}}</translation>
 <translation id="8012647001091218357">اس وقت آپ کے والدین تک ہماری رسائی نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">ٹریول ایجنسیاں اور سروسز</translation>
@@ -4059,7 +4050,6 @@
 <translation id="8094917007353911263">آپ کے زیر استعمال نیٹ ورک آپ سے <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
-<translation id="8100588592594801589">غلط کارڈز کو ہٹا دیا گیا ہے</translation>
 <translation id="8103161714697287722">ادائیگی کا طریقہ</translation>
 <translation id="8103643211515685474">بہرحال پرنٹ کریں</translation>
 <translation id="8105368624971345109">آف کریں</translation>
@@ -4683,7 +4673,6 @@
 <translation id="940524522703752213"><ph name="MINUTES" /> منٹ میں آپ کی فائل <ph name="CLOUD_PROVIDER" /> میں اپ لوڈ ہونا شروع ہو جائے گی</translation>
 <translation id="944578681290094302">چیک آؤٹ کے وقت دکھائیں کہ آپ کے کارڈز کے لیے کون سے انعامات اور فوائد دستیاب ہیں <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />کارڈ کے فوائد کے بارے میں جانیں<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">‏Chrome سائٹس کو فریق ثالث کوکیز کا استعمال کرنے سے مسدود کرتا ہے تاکہ آپ کے براؤز کرتے وقت وہ آپ کو ٹریک نہ کر سکیں۔</translation>
-<translation id="945855313015696284">مندرجہ ذیل معلومات چیک کریں اور کسی بھی غلط کارڈ کو حذف کریں</translation>
 <translation id="94613679163347541"><ph name="CATEGORY" /> کا موازنہ کریں؟</translation>
 <translation id="947370374845726940">‏<ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />، Google Sites میں تیزی سے ایک نئی سائٹ تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{‏Chrome آج دوبارہ کوکیز کو محدود کر دے گا}=1{‏Chrome کل دوبارہ کوکیز کو محدود کر دے گا}other{‏# دنوں میں Chrome کوکیز کو دوبارہ محدود کر دے گا}}</translation>

@@ -108,14 +108,17 @@ void DecoderBufferTranscryptor::DecryptPendingBuffer() {
   }
 
   // Check if we need to split VP9 superframes.
+  auto curr_buffer_span = base::span(*curr_buffer);
   if (needs_vp9_superframe_splitting_ &&
-      Vp9Parser::IsSuperframe(curr_buffer->data(),
-                              base::checked_cast<off_t>(curr_buffer->size()),
-                              curr_buffer->decrypt_config())) {
+      Vp9Parser::IsSuperframe(
+          curr_buffer_span.data(),
+          base::checked_cast<off_t>(curr_buffer_span.size()),
+          curr_buffer->decrypt_config())) {
     base::circular_deque<Vp9Parser::FrameInfo> frames =
-        Vp9Parser::ExtractFrames(curr_buffer->data(),
-                                 base::checked_cast<off_t>(curr_buffer->size()),
-                                 curr_buffer->decrypt_config());
+        Vp9Parser::ExtractFrames(
+            curr_buffer_span.data(),
+            base::checked_cast<off_t>(curr_buffer_span.size()),
+            curr_buffer->decrypt_config());
     if (frames.empty()) {
       LOG(ERROR) << "Failure in Vp9 superframe splitting";
       OnBufferTranscrypted(Decryptor::kError, nullptr);

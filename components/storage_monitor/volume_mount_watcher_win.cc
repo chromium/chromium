@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -126,7 +127,7 @@ bool GetDeviceDetails(const base::FilePath& device_path, StorageInfo* info) {
                          kMaxPathBufLen)) {
     return false;
   }
-  mount_point.resize(wcslen(mount_point.c_str()));
+  mount_point.resize(UNSAFE_TODO(wcslen(mount_point.c_str())));
 
   // Note: experimentally this code does not spin a floppy drive. It
   // returns a GUID associated with the device, not the volume.

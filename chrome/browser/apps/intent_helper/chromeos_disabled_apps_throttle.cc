@@ -4,12 +4,15 @@
 
 #include "chrome/browser/apps/intent_helper/chromeos_disabled_apps_throttle.h"
 
+#include <cstddef>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/publishers/chrome_app_deprecation.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,6 +45,33 @@ std::string GetAppDisabledErrorPage() {
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &strings);
   return webui::GetI18nTemplateHtml(html, strings);
+}
+
+std::optional<std::string> FindThrottlingApp(Profile* profile,
+                                             const GURL& url) {
+  std::vector<std::string> app_ids =
+      apps::AppServiceProxyFactory::GetForProfile(profile)->GetAppIdsForUrl(
+          url, /*exclude_browsers=*/true, /*exclude_browser_tab_apps=*/false);
+
+  for (const auto& app_id : app_ids) {
+    policy::SystemFeature system_feature =
+        policy::SystemFeaturesDisableListPolicyHandler::
+            GetSystemFeatureFromAppId(app_id);
+
+    if (system_feature == policy::SystemFeature::kUnknownSystemFeature) {
+      continue;
+    }
+
+    if (!policy::SystemFeaturesDisableListPolicyHandler::
+            IsSystemFeatureDisabled(system_feature,
+                                    g_browser_process->local_state())) {
+      continue;
+    }
+
+    return app_id;
+  }
+
+  return std::nullopt;
 }
 }  // namespace
 
@@ -88,30 +118,21 @@ ThrottleCheckResult ChromeOsDisabledAppsThrottle::HandleRequest() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  std::vector<std::string> app_ids =
-      apps::AppServiceProxyFactory::GetForProfile(profile)->GetAppIdsForUrl(
-          url, /*exclude_browsers=*/true, /*exclude_browser_tab_apps=*/false);
+  std::optional<std::string> found_app_id = FindThrottlingApp(profile, url);
 
-  for (const auto& app_id : app_ids) {
-    policy::SystemFeature system_feature =
-        policy::SystemFeaturesDisableListPolicyHandler::
-            GetSystemFeatureFromAppId(app_id);
-
-    if (system_feature == policy::SystemFeature::kUnknownSystemFeature) {
-      continue;
-    }
-
-    if (!policy::SystemFeaturesDisableListPolicyHandler::
-            IsSystemFeatureDisabled(system_feature,
-                                    g_browser_process->local_state())) {
-      continue;
-    }
-
-    return ThrottleCheckResult(content::NavigationThrottle::CANCEL,
-                               net::ERR_BLOCKED_BY_ADMINISTRATOR,
-                               GetAppDisabledErrorPage());
+  if (!found_app_id) {
+    return content::NavigationThrottle::PROCEED;
   }
-  return content::NavigationThrottle::PROCEED;
+
+  switch (
+      apps::chrome_app_deprecation::HandleDeprecation(*found_app_id, profile)) {
+    case apps::chrome_app_deprecation::DeprecationStatus::kLaunchBlocked:
+      return content::NavigationThrottle::CANCEL;
+    case apps::chrome_app_deprecation::DeprecationStatus::kLaunchAllowed:
+      return ThrottleCheckResult(content::NavigationThrottle::CANCEL,
+                                 net::ERR_BLOCKED_BY_ADMINISTRATOR,
+                                 GetAppDisabledErrorPage());
+  }
 }
 
 }  // namespace apps

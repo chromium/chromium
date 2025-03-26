@@ -38,6 +38,7 @@
 <translation id="2758123043070977469">Pri preverjanju pristnosti je prišlo do napake. Prijavite se znova.</translation>
 <translation id="2803375539583399270">Vnesite kodo PIN</translation>
 <translation id="2919669478609886916">Trenutno imate to napravo v skupni rabi z drugim uporabnikom. Ali želite nadaljevati skupno rabo?</translation>
+<translation id="2929683002824598593">Deljenje naprave</translation>
 <translation id="2939145106548231838">Preverjanje pristnosti pri gostitelju</translation>
 <translation id="3027681561976217984">Način z dotikanjem</translation>
 <translation id="3106379468611574572">Oddaljeni računalnik se ne odziva na zahteve za povezavo. Preverite, ali ima vzpostavljeno povezavo, in poskusite znova.</translation>
@@ -106,9 +107,11 @@
 <translation id="6122191549521593678">Dosegljiv</translation>
 <translation id="6178645564515549384">Izvorni gostitelj za sporočanje za pomoč na daljavo</translation>
 <translation id="6223301979382383752">Odpri nastavitve snemanja zaslona</translation>
+<translation id="6252344563748670011">Oseba <ph name="CLIENT_USERNAME" /> je zahtevala dostop za ogled vašega zaslona in nadziranje tipkovnice ter miške. Ali želite deliti napravo?</translation>
 <translation id="6284412385303060032">Gostitelj, ki se je izvajal na zaslonu za prijavo v konzolo, se je zaustavil zaradi podpore načinu zavese, tako da je preklopil na gostitelja, ki se izvaja v seji uporabnika.</translation>
 <translation id="6542902059648396432">Prijava težave …</translation>
 <translation id="6612717000975622067">Pošlji Ctrl + Alt + Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Če ne boste ukrepali, bo naprava samodejno začela deliti čez # sekundo.}one{Če ne boste ukrepali, bo naprava samodejno začela deliti čez # sekundo.}two{Če ne boste ukrepali, bo naprava samodejno začela deliti čez # sekundi.}few{Če ne boste ukrepali, bo naprava samodejno začela deliti čez # sekunde.}other{Če ne boste ukrepali, bo naprava samodejno začela deliti čez # sekund.}}</translation>
 <translation id="6654753848497929428">Skupna raba</translation>
 <translation id="677755392401385740">Gostitelj zagnan za uporabnika: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Pomožna aplikacija za odpiranje URL-ja v odjemalcu <ph name="PRODUCT_NAME" />.</translation>

@@ -18,7 +18,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/version_info/channel.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
+#include "google_apis/common/api_key_request_util.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/net_ipc_param_traits.h"
@@ -110,7 +112,7 @@ constexpr int32_t kEpochIdSize = 8;
 constexpr base::TimeDelta kMinExpirationTimeDelta = base::Hours(3);
 constexpr base::TimeDelta kMaxExpirationTimeDelta = base::Days(3);
 
-network::ResourceRequest CreateFetchRequest() {
+network::ResourceRequest CreateFetchRequest(version_info::Channel channel) {
   const std::string& get_prt_server_path =
       net::features::kIpPrivacyProbabilisticRevealTokenServerPath.Get();
   GURL::Replacements replacements;
@@ -128,6 +130,7 @@ network::ResourceRequest CreateFetchRequest() {
     resource_request.headers.SetHeader("Ip-Protection-Debug-Experiment-Arm",
                                        base::NumberToString(experiment_arm));
   }
+  google_apis::AddDefaultAPIKeyToRequest(resource_request, channel);
   return resource_request;
 }
 
@@ -145,8 +148,9 @@ std::string CreateFetchRequestBody() {
 IpProtectionProbabilisticRevealTokenDirectFetcher::
     IpProtectionProbabilisticRevealTokenDirectFetcher(
         std::unique_ptr<network::PendingSharedURLLoaderFactory>
-            pending_url_loader_factory)
-    : retriever_(std::move(pending_url_loader_factory)) {}
+            pending_url_loader_factory,
+        version_info::Channel channel)
+    : retriever_(std::move(pending_url_loader_factory), channel) {}
 
 IpProtectionProbabilisticRevealTokenDirectFetcher::
     ~IpProtectionProbabilisticRevealTokenDirectFetcher() = default;
@@ -173,10 +177,11 @@ void IpProtectionProbabilisticRevealTokenDirectFetcher::
 
 IpProtectionProbabilisticRevealTokenDirectFetcher::Retriever::Retriever(
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_url_loader_factory)
+        pending_url_loader_factory,
+    version_info::Channel channel)
     : url_loader_factory_(network::SharedURLLoaderFactory::Create(
           std::move(pending_url_loader_factory))),
-      request_(CreateFetchRequest()),
+      request_(CreateFetchRequest(channel)),
       request_body_(CreateFetchRequestBody()) {
   CHECK(url_loader_factory_);
   CHECK(request_.url.is_valid());

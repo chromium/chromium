@@ -1235,7 +1235,8 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
 
   auto backing = shared_image_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "TestLabel", std::move(gpu_memory_buffer_handle));
+      "TestLabel", /*is_thread_safe=*/false,
+      std::move(gpu_memory_buffer_handle));
   ASSERT_NE(backing, nullptr);
 
   EXPECT_EQ(backing->format(), format);
@@ -1256,7 +1257,7 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
   auto dup_mailbox = Mailbox::Generate();
   auto dup_backing = shared_image_factory_->CreateSharedImage(
       dup_mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "TestLabel", std::move(dup_handle));
+      "TestLabel", /*is_thread_safe=*/false, std::move(dup_handle));
   ASSERT_NE(dup_backing, nullptr);
 
   EXPECT_EQ(dup_backing->format(), format);
@@ -1556,7 +1557,7 @@ D3DImageBackingFactoryTest::CreateVideoImage(const gfx::Size& size,
     shared_image_backing = shared_image_factory_->CreateSharedImage(
         mailbox, viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "TestLabel",
-        std::move(gmb_handle));
+        /*is_thread_safe=*/false, std::move(gmb_handle));
     if (!shared_image_backing) {
       return {};
     }

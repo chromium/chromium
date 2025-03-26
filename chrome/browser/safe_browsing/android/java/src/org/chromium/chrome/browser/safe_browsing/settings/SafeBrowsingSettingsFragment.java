@@ -13,6 +13,9 @@ import androidx.preference.Preference;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
@@ -23,6 +26,7 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 
 /** Fragment containing Safe Browsing settings. */
+@NullMarked
 public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBase
         implements RadioButtonGroupSafeBrowsingPreference.OnSafeBrowsingModeDetailsRequested,
                 Preference.OnPreferenceChangeListener {
@@ -31,6 +35,7 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
     public static final String ACCESS_POINT = "SafeBrowsingSettingsFragment.AccessPoint";
 
     private RadioButtonGroupSafeBrowsingPreference mSafeBrowsingPreference;
+
     private @SettingsAccessPoint int mAccessPoint;
 
     /**
@@ -64,8 +69,9 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
         return result;
     }
 
+    @Initializer
     @Override
-    protected void onCreatePreferencesInternal(Bundle bundle, String s) {
+    protected void onCreatePreferencesInternal(@Nullable Bundle bundle, @Nullable String s) {
         mAccessPoint =
                 IntentUtils.safeGetInt(getArguments(), ACCESS_POINT, SettingsAccessPoint.DEFAULT);
 

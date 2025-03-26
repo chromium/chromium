@@ -43,7 +43,7 @@ class Profile;
 class TabGroupModel;
 class TabStripModelDelegate;
 class TabStripModelObserver;
-class TabDragController;
+class DraggingTabsSession;
 
 namespace content {
 class WebContents;
@@ -538,7 +538,7 @@ class TabStripModel : public TabGroupController {
   // returns the index of the tabs in the current model that would end up being
   // the adjacent tabs of the selected unpinned tabs post move operation.
   std::pair<std::optional<int>, std::optional<int>>
-  GetAdjacentTabsAfterSelectedMove(base::PassKey<TabDragController>,
+  GetAdjacentTabsAfterSelectedMove(base::PassKey<DraggingTabsSession>,
                                    int destination_index);
 
   // Create a new split view with the active tab and add the set of tabs pointed

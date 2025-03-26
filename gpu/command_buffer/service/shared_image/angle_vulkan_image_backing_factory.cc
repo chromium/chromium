@@ -103,6 +103,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     SharedImageUsageSet usage,
     std::string debug_label,
+    bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
   auto backing = std::make_unique<AngleVulkanImageBacking>(
       context_state_, mailbox, format, size, color_space, surface_origin,
@@ -120,6 +121,7 @@ bool AngleVulkanImageBackingFactory::IsGMBSupported(
   switch (gmb_type) {
     case gfx::EMPTY_BUFFER:
       return true;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
     case gfx::NATIVE_PIXMAP: {
       auto* vulkan_implementation =
           context_state_->vk_context_provider()->GetVulkanImplementation();
@@ -128,6 +130,7 @@ bool AngleVulkanImageBackingFactory::IsGMBSupported(
       return vulkan_implementation->CanImportGpuMemoryBuffer(device_queue,
                                                              gmb_type);
     }
+#endif
     default:
       return false;
   }

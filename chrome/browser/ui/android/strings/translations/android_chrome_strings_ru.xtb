@@ -459,7 +459,6 @@
 <translation id="3114507951000454849">Будьте в курсе новостей <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Подробнее</translation>
 <translation id="3123734510202723619">Оповещения</translation>
-<translation id="3131961580615093332">Пользователь <ph name="GIVEN_NAME" /> изменил вкладку "<ph name="TAB_NAME" />".</translation>
 <translation id="3148237711805373460">Открыть</translation>
 <translation id="314939179385989105">Главная страница Chrome</translation>
 <translation id="3158667104057012316">Сортировка вручную</translation>
@@ -821,6 +820,7 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Восстановить группу из <ph name="TAB_COUNT_ONE" /> вкладки, которой присвоен <ph name="COLOR_NAME" /> цвет, и открыть ее в фоновом режиме.}one{Восстановить группу из <ph name="TAB_COUNT_MANY" /> вкладки, которой присвоен <ph name="COLOR_NAME" /> цвет, и открыть ее в фоновом режиме.}few{Восстановить группу из <ph name="TAB_COUNT_MANY" /> вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет, и открыть ее в фоновом режиме.}many{Восстановить группу из <ph name="TAB_COUNT_MANY" /> вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет, и открыть ее в фоновом режиме.}other{Восстановить группу из <ph name="TAB_COUNT_MANY" /> вкладки, которой присвоен <ph name="COLOR_NAME" /> цвет, и открыть ее в фоновом режиме.}}</translation>
 <translation id="4837753911714442426">Открыть параметры печати страницы</translation>
 <translation id="4844633725025837809">Чтобы надежнее защитить пароли, включите их шифрование на устройстве перед сохранением в Google Менеджере паролей.</translation>
+<translation id="4849731766219625109">Использовать аккаунт <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4850886885716139402">Смотреть</translation>
 <translation id="4852014461738377247">Вход…</translation>
 <translation id="4860895144060829044">Позвонить</translation>
@@ -840,14 +840,12 @@
 <translation id="4910889077668685004">Платежные приложения</translation>
 <translation id="4912413785358399818">Переместить вкладку</translation>
 <translation id="4913169188695071480">Остановить обновление</translation>
-<translation id="4918086044614829423">Принять</translation>
 <translation id="4925120120285606924">Скриншот <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Ваши пароли будут экспортированы и скачаны в виде текстового файла. Они будут видны всем пользователям и приложениям с доступом к папке назначения.</translation>
 <translation id="4926901776383726965">Вы можете сохранять изображения и файлы, чтобы просматривать офлайн или предоставлять к ним доступ другим приложениям.</translation>
 <translation id="4932247056774066048">Вы выходите из аккаунта, которым управляет администратор домена <ph name="DOMAIN_NAME" />. Все данные Chrome будут удалены с этого устройства, но сохранятся в аккаунте Google.</translation>
 <translation id="4943703118917034429">Виртуальная реальность</translation>
 <translation id="4943872375798546930">Нет результатов</translation>
-<translation id="4953833914914492602">Группа вкладок "<ph name="TAB_GROUP_NAME" />" больше не доступна.</translation>
 <translation id="4957722034734105353">Подробнее…</translation>
 <translation id="4961107849584082341">Эту страницу можно перевести на любой язык</translation>
 <translation id="4964614743143953889">Chrome предупреждает о небезопасных сайтах и файлах в интернете</translation>
@@ -966,7 +964,6 @@
 <translation id="5526281268548144413">Невозможно закрыть вкладки, открытые в нескольких окнах</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# мин. назад}one{# мин. назад}few{# мин. назад}many{# мин. назад}other{# мин. назад}}</translation>
 <translation id="5548606607480005320">Проверка безопасности</translation>
-<translation id="5551564597369878730">Пользователь <ph name="GIVEN_NAME" /> присоединился к группе вкладок "<ph name="TAB_GROUP_NAME" />".</translation>
 <translation id="5554520618550346933">Chrome предупреждает, если используемый вами пароль был опубликован в интернете. При этом ваши имена пользователей и сами пароли зашифрованы и никому не видны, даже сотрудникам Google.</translation>
 <translation id="5555525474779371165">Выберите режим работы Безопасного просмотра</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>
@@ -1183,7 +1180,6 @@
 <translation id="6481963882741794338">Вы можете связать Chrome с другими сервисами Google. Это нужно для персонализации и иных целей.</translation>
 <translation id="6482749332252372425">Не удалось скачать файл <ph name="FILE_NAME" />, так как места для хранения данных недостаточно.</translation>
 <translation id="6486420406192123355">Этот PDF-файл расположен на сайте, подключение к которому не защищено.</translation>
-<translation id="6495590690749880440">Открыть группу вкладок?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Скачан 1 файл.}one{Скачан # файл.}few{Скачано # файла.}many{Скачано # файлов.}other{Скачано # файла.}}</translation>
 <translation id="6508722015517270189">Перезапустите Google Chrome.</translation>
 <translation id="6518133107902771759">Подтвердить</translation>
@@ -1562,6 +1558,7 @@
 <translation id="8073388330009372546">Открыть в новой вкладке</translation>
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8078096376109663956">Поделитесь только текстом.</translation>
+<translation id="8078348702936632821">Закрепить для быстрого доступа</translation>
 <translation id="8084114998886531721">Сохраненный пароль</translation>
 <translation id="8084285576995584326">Управляйте данными своего аккаунта Google</translation>
 <translation id="8084864785646838999">Некоторые данные могут здесь не показываться. Чтобы увидеть их, откройте всю историю Chrome. Другие данные истории браузера также могут храниться в вашем аккаунте Google. Вы найдете их на странице <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -1617,7 +1614,6 @@
 <translation id="8282297628636750033">Использовать тёмную тему для сайтов, если возможно</translation>
 <translation id="8282950411412455249">Открыть настройки безопасности</translation>
 <translation id="8306751933352925837">Сохраненные пароли скоро перестанут работать на этом устройстве. Чтобы и дальше использовать их, обновите сервисы Google Play. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
-<translation id="8307517230426267469">Пользователь <ph name="GIVEN_NAME" /> удалил вкладку "<ph name="TAB_NAME" />".</translation>
 <translation id="8310451567823644042">Сохраненные пароли скоро перестанут работать</translation>
 <translation id="831192587911042850">Добавляет текущий сайт в список сайтов, на которые вы подписаны.</translation>
 <translation id="8320212361750431956">Недавние действия</translation>

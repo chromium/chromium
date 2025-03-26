@@ -99,6 +99,27 @@ public class SuggestionEventObserverUnitTest {
     }
 
     @Test
+    public void testWillCloseTab() {
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab, false);
+
+        verify(mGroupSuggestionsService).willCloseTab(eq(TAB_ID));
+    }
+
+    @Test
+    public void testTabClosureUndone() {
+        mTabModelObserverCaptor.getValue().tabClosureUndone(mTab);
+
+        verify(mGroupSuggestionsService).tabClosureUndone(eq(TAB_ID));
+    }
+
+    @Test
+    public void testTabClosureCommitted() {
+        mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab);
+
+        verify(mGroupSuggestionsService).tabClosureCommitted(eq(TAB_ID));
+    }
+
+    @Test
     public void testEnterPane_FocusTabSwitcher() {
         doReturn(PaneId.TAB_SWITCHER).when(mPane).getPaneId();
 

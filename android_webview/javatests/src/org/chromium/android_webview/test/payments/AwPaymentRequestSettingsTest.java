@@ -24,6 +24,7 @@ import org.chromium.android_webview.test.TestAwContentsClient;
 import org.chromium.android_webview.test.TestWebMessageListener;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.payments.MockPaymentApp;
 import org.chromium.components.payments.MockPaymentAppInstaller;
@@ -34,13 +35,10 @@ import org.chromium.net.test.util.TestWebServer;
 /**
  * Tests that the WebView settings for PaymentRequest and hasEnrolledInstrument() work as expected.
  * All test cases are setup to have one payment app that is being requested by the merchant website.
- * The only differences are the settings states and which part of the PaymentRequest API is being
- * called.
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures(ContentFeatures.WEB_PAYMENTS)
 @SmallTest
 public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
     private static final String PAYMENT_METHOD_NAME = "https://payments.test/web-pay";
@@ -81,17 +79,6 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
                                         "79:5C:8E:4D:57:7B:76:49:3A:0A:0B:93:B9:BE:06:50:CE:E4:75:"
                                                 + "80:62:65:02:FB:F6:F9:91:AB:6E:BE:21:7E"))
                 .install();
-
-        mActivityTestRule.loadUrlAsync(
-                mAwContents,
-                mMerchantServer.setResponse(
-                        "/checkout",
-                        new PaymentRequestTestWebPageContents()
-                                .addMethod(PAYMENT_METHOD_NAME)
-                                .build(),
-                        /* responseHeaders= */ null));
-        Assert.assertEquals(
-                "Page loaded.", mWebMessageListener.waitForOnPostMessage().getAsString());
     }
 
     @After
@@ -101,103 +88,127 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
     }
 
     /**
-     * By default, when no settings are changed, PaymentRequest API interface is defined in
-     * JavaScript.
-     *
-     * <p>TODO(crbug.com/395104227): The PaymentRequest JavaScript interface should be undefined if
-     * the WebView settings have not explicitly enabled it.
+     * If the WEB_PAYMENTS feature is not explicitly modified and the WebView settings are not
+     * changed, then the PaymentRequest interface is undefined in JavaScript.
      */
     @Test
-    public void testPaymentRequestJavaScriptInterfaceIsDefinedWithDefaultSettings()
-            throws Exception {
-        // Intentionally do not enable or disable PaymentRequest API or hasEnrolledInstrument().
+    public void testPaymentRequestInterfaceUndefinedByDefault() throws Exception {
+        loadPage();
 
         JSUtils.clickNodeWithUserGesture(
                 mAwContents.getWebContents(), "checkPaymentRequestDefined");
 
         Assert.assertEquals(
-                "PaymentRequest is defined.",
-                mWebMessageListener.waitForOnPostMessage().getAsString());
-    }
-
-    /** By default, when no settings are changed, PaymentRequest API cannot make payments. */
-    @Test
-    public void testDefaultSettingsCannotMakePayment() throws Exception {
-        // Intentionally do not enable or disable PaymentRequest API or hasEnrolledInstrument().
-
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
-
-        Assert.assertEquals(
-                "PaymentRequest cannot make payments.",
-                mWebMessageListener.waitForOnPostMessage().getAsString());
-    }
-
-    /** By default, when no settings are changed, PaymentRequest API has no enrolled instrument. */
-    @Test
-    public void testDefaultSettingsHaveNoEnrolledInstrument() throws Exception {
-        // Intentionally do not enable or disable PaymentRequest API or hasEnrolledInstrument().
-
-        JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
-
-        Assert.assertEquals(
-                "PaymentRequest does not have enrolled instrument.",
-                mWebMessageListener.waitForOnPostMessage().getAsString());
-    }
-
-    /** By default, when no settings are changed, PaymentRequest API cannot launch a payment app. */
-    @Test
-    public void testDefaultSettingsCannotLaunchPaymentApp() throws Exception {
-        // Intentionally do not enable or disable PaymentRequest API or hasEnrolledInstrument().
-
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
-
-        Assert.assertEquals(
-                "AbortError: Web Payments API is disabled.",
+                "PaymentRequest is not defined.",
                 mWebMessageListener.waitForOnPostMessage().getAsString());
     }
 
     /**
-     * The PaymentRequest API is defined in JavaScript, even if the PaymentRequest API is disabled
-     * in WebView settings.
-     *
-     * <p>TODO(crbug.com/395104227): Disabling the PaymentRequest API setting should make it
-     * undefined in JavaScript.
+     * If the WEB_PAYMENTS feature is not explicitly modified and the WebView setting enables
+     * PaymentRequest, then then PaymentRequest interface is undefined in JavaScript, because the
+     * default state for WEB_PAYMENTS feature flag in WebView is "disabled".
      */
     @Test
-    public void testPaymentRequestIsDefinedInJavaScriptEvenWhenWebViewSettingDisabled()
+    public void testPaymentRequestUndefinedWithDefaultWebPaymentsFeature() throws Exception {
+        mAwContents.getSettings().setPaymentRequestEnabled(true);
+        loadPage();
+
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), "checkPaymentRequestDefined");
+
+        Assert.assertEquals(
+                "PaymentRequest is not defined.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * If the WEB_PAYMENTS feature flag is disabled, then the PaymentRequest API interface stays
+     * undefined in JavaScript, even if the WebView setting for PaymentRequest API is enabled.
+     */
+    @Test
+    @DisableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testPaymentRequestJavaScriptInterfaceIsUndefinedWithoutWebPaymentsFeatureFlag()
             throws Exception {
-        mAwContents.getSettings().setPaymentRequestEnabled(false);
+        mAwContents.getSettings().setPaymentRequestEnabled(true);
+        mAwContents.getSettings().setHasEnrolledInstrumentEnabled(true);
+        loadPage();
+
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), "checkPaymentRequestDefined");
+
+        Assert.assertEquals(
+                "PaymentRequest is not defined.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * By default, when no settings are changed, PaymentRequest API interface is undefined in
+     * JavaScript.
+     */
+    @Test
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testPaymentRequestJavaScriptInterfaceIsUndefinedWithDefaultSettings()
+            throws Exception {
+        // Intentionally do not enable or disable PaymentRequest API or hasEnrolledInstrument().
+        loadPage();
+
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), "checkPaymentRequestDefined");
+
+        Assert.assertEquals(
+                "PaymentRequest is not defined.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * The PaymentRequest API is defined in JavaScript when the PaymentRequest API is enabled in
+     * WebView settings.
+     */
+    @Test
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testPaymentRequestIsDefinedInJavaScriptWhenWebViewSettingEnabled()
+            throws Exception {
+        mAwContents.getSettings().setPaymentRequestEnabled(true);
+        loadPage();
 
         JSUtils.clickNodeWithUserGesture(
                 mAwContents.getWebContents(), "checkPaymentRequestDefined");
 
         Assert.assertEquals(
                 "PaymentRequest is defined.",
+                mWebMessageListener.waitForOnPostMessage().getAsString());
+    }
+
+    /**
+     * The PaymentRequest API is undefined in JavaScript when the PaymentRequest API is disabled in
+     * WebView settings.
+     */
+    @Test
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
+    public void testPaymentRequestIsUndefinedInJavaScriptEvenWhenWebViewSettingDisabled()
+            throws Exception {
+        mAwContents.getSettings().setPaymentRequestEnabled(false);
+        loadPage();
+
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), "checkPaymentRequestDefined");
+
+        Assert.assertEquals(
+                "PaymentRequest is not defined.",
                 mWebMessageListener.waitForOnPostMessage().getAsString());
     }
 
     /** Can make payments when PaymentRequest API is enabled. */
     @Test
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testCanMakePaymentWhenPaymentRequestIsEnabled() throws Exception {
         mAwContents.getSettings().setPaymentRequestEnabled(true);
+        loadPage();
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
 
         Assert.assertEquals(
                 "PaymentRequest can make payments.",
-                mWebMessageListener.waitForOnPostMessage().getAsString());
-    }
-
-    /** Cannot make payments when PaymentRequest API is disabled. */
-    @Test
-    public void testCannotMakePaymentsWhenPaymentRequestIsDisabled() throws Exception {
-        mAwContents.getSettings().setPaymentRequestEnabled(false);
-
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
-
-        Assert.assertEquals(
-                "PaymentRequest cannot make payments.",
                 mWebMessageListener.waitForOnPostMessage().getAsString());
     }
 
@@ -207,9 +218,11 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
      * test case setup means there is an enrolled instrument.
      */
     @Test
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testDefaultSettingForHasEnrolledInstrumentIsTrue() throws Exception {
         mAwContents.getSettings().setPaymentRequestEnabled(true);
         // Intentionally do not modify the setting for the hasEnrolledInstrument().
+        loadPage();
 
         JSUtils.clickNodeWithUserGesture(
                 mAwContents.getWebContents(), "checkHasEnrolledInstrument");
@@ -221,9 +234,11 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
 
     /** Has enrolled instrument when the corresponding setting is enabled. */
     @Test
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testHasEnrolledInstrumentIsTruthfulWhenThatSettingIsEnabled() throws Exception {
         mAwContents.getSettings().setPaymentRequestEnabled(true);
         mAwContents.getSettings().setHasEnrolledInstrumentEnabled(true);
+        loadPage();
 
         JSUtils.clickNodeWithUserGesture(
                 mAwContents.getWebContents(), "checkHasEnrolledInstrument");
@@ -235,9 +250,11 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
 
     /** No enrolled instrument when the corresponding setting is disabled. */
     @Test
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testNoEnrolledInstrumentWhenThatSettingIsDisabled() throws Exception {
         mAwContents.getSettings().setPaymentRequestEnabled(true);
         mAwContents.getSettings().setHasEnrolledInstrumentEnabled(false);
+        loadPage();
 
         JSUtils.clickNodeWithUserGesture(
                 mAwContents.getWebContents(), "checkHasEnrolledInstrument");
@@ -249,8 +266,10 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
 
     /** Successful launch of payment app when PaymentRequest API is enabled. */
     @Test
+    @EnableFeatures(ContentFeatures.WEB_PAYMENTS)
     public void testLaunchPaymentAppWithEnabledPaymentRequest() throws Exception {
         mAwContents.getSettings().setPaymentRequestEnabled(true);
+        loadPage();
 
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
 
@@ -260,32 +279,16 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
         Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
     }
 
-    /** Cannot launch payment app when PaymentRequest API is disabled. */
-    @Test
-    public void testCannotLaunchPaymentAppWhenPaymentRequestIsDisabled() throws Exception {
-        mAwContents.getSettings().setPaymentRequestEnabled(false);
-
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
-
+    private void loadPage() throws Exception {
+        mActivityTestRule.loadUrlAsync(
+                mAwContents,
+                mMerchantServer.setResponse(
+                        "/checkout",
+                        new PaymentRequestTestWebPageContents()
+                                .addMethod(PAYMENT_METHOD_NAME)
+                                .build(),
+                        /* responseHeaders= */ null));
         Assert.assertEquals(
-                "AbortError: Web Payments API is disabled.",
-                mWebMessageListener.waitForOnPostMessage().getAsString());
-    }
-
-    /**
-     * If PaymentRequest API is disabled, but the "has enrolled instrument" setting is enabled, then
-     * there are still no enrolled instruments.
-     */
-    @Test
-    public void testNoEnrolledInstrumentsIfPaymentRequestIsDisabled() throws Exception {
-        mAwContents.getSettings().setPaymentRequestEnabled(false);
-        mAwContents.getSettings().setHasEnrolledInstrumentEnabled(true);
-
-        JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
-
-        Assert.assertEquals(
-                "PaymentRequest does not have enrolled instrument.",
-                mWebMessageListener.waitForOnPostMessage().getAsString());
+                "Page loaded.", mWebMessageListener.waitForOnPostMessage().getAsString());
     }
 }

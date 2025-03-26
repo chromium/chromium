@@ -40,7 +40,6 @@ THIRD_PARTY_RUST = os.path.join(CHROMIUM_DIR, "third_party", "rust")
 CRATES_DIR = os.path.join(THIRD_PARTY_RUST, "chromium_crates_io")
 VENDOR_DIR = os.path.join(CRATES_DIR, "vendor")
 CARGO_LOCK = os.path.join(CRATES_DIR, "Cargo.lock")
-VET_CONFIG = os.path.join(CRATES_DIR, "supply-chain", "config.toml")
 INCLUSIVE_LANG_SCRIPT = os.path.join(
     CHROMIUM_DIR, "infra", "update_inclusive_language_presubmit_exempt_dirs.sh")
 INCLUSIVE_LANG_CONFIG = os.path.join(
@@ -147,23 +146,6 @@ def GetCurrentCrateIds() -> Set[str]:
         crate_id = f"{name}@{version}"
         assert crate_id not in result
         result.add(crate_id)
-    return result
-
-
-def GetVetExemptedCrateIds() -> Set[str]:
-    """Parses supply-chain/config.toml and returns a set of crate ids
-    that have `exemptions` entries."""
-    vet_config = toml.load(open(VET_CONFIG))
-    result = set()
-    if "exemptions" not in vet_config:
-        return result
-    for crate_name, exemptions in vet_config["exemptions"].items():
-        for exemption in exemptions:
-            # Ignoring which criteria are covered by the exemption
-            # (it is not needed if we just want to emit a warning).
-            crate_version = exemption["version"]
-            crate_id = f"{crate_name}@{crate_version}"
-            result.add(crate_id)
     return result
 
 
@@ -371,55 +353,6 @@ def SortedMarkdownList(input_list: List[str]) -> str:
     return "\n".join(input_list)
 
 
-def CreateVetPolicyDescription(crate_ids: List[str]) -> str:
-    """Returns a textual description of the required `cargo vet`'s
-    certifications.
-
-    Args:
-        crate_ids: List of crate ids - e.g. `["clap@1.2.3","clap_derive@1.2.3"]`
-
-    Returns:
-        String suitable for including in the CL description.
-    """
-    vet_config = toml.load(open(VET_CONFIG))
-    crate_id_to_criteria = dict()
-    for crate_id in crate_ids:
-        crate_name = ConvertCrateIdToCrateName(crate_id)
-        crate_version = ConvertCrateIdToCrateVersion(crate_id)
-        policy = vet_config["policy"][f"{crate_name}:{crate_version}"][
-            "criteria"]
-        policy.sort()
-        crate_id_to_criteria[crate_id] = policy
-
-    criteria_to_crate_ids = dict()
-    for crate_id, criteria in crate_id_to_criteria.items():
-        criteria = ', '.join(criteria)
-        if criteria not in criteria_to_crate_ids:
-            criteria_to_crate_ids[criteria] = []
-        criteria_to_crate_ids[criteria].append(crate_id)
-
-    items = []
-    for criteria, crate_ids in criteria_to_crate_ids.items():
-        crate_ids.sort()
-        crate_ids = ', '.join(crate_ids)
-        if not criteria:
-            criteria = "No audit criteria found. Crates with no audit " \
-                       "criteria can be submitted without an update to " \
-                       "audits.toml."
-        items.append(f"{crate_ids}: {criteria}")
-
-    description = \
-"""Chromium `supply-chain/config.toml` policy requires that the following
-audit criteria are met (note that these are the *minimum* required
-criteria and `supply-chain/audits.toml` can and should record a stricter
-certification if possible;  see also //docs/rust-unsafe.md):
-
-"""
-    description += SortedMarkdownList(items)
-
-    return description
-
-
 def CreateCommitTitle(old_crate_id: str, new_crate_id: str) -> str:
     crate_name = ConvertCrateIdToCrateName(old_crate_id)
     old_version = ConvertCrateIdToCrateVersion(old_crate_id)
@@ -437,8 +370,7 @@ def CreateCommitTitleForBreakingUpdate(diff: CratesDiff) -> str:
     return textwrap.shorten(title, width=72, placeholder="...")
 
 
-def CreateCommitDescription(title: str, diff: CratesDiff,
-                            include_vet_criteria: bool) -> str:
+def CreateCommitDescription(title: str, diff: CratesDiff) -> str:
     description = f"""{title}
 
 This CL has been created semi-automatically.  The expected review
@@ -459,9 +391,6 @@ process and other details can be found at
 
     new_or_updated_crate_ids = diff.added_crate_ids + \
         [update.new_crate_id for update in diff.updates]
-    if include_vet_criteria:
-        vet_policies = CreateVetPolicyDescription(new_or_updated_crate_ids)
-        description += f"\n{vet_policies}"
 
     description += """
 Bug: None
@@ -504,10 +433,11 @@ def UpdateCrate(args, old_crate_id: str, new_crate_id: str,
         return upstream_branch
     diff = DiffCrateIds(old_crate_ids, new_crate_ids, only_minor_updates)
     title = CreateCommitTitle(old_crate_id, new_crate_id)
-    description = CreateCommitDescription(title, diff, False)
+    description = CreateCommitDescription(title, diff)
 
     # Checkout a new git branch + `git cl upload`
-    new_branch = f"{BRANCH_BASENAME}--{branch_number:02}-{old_crate_id.replace('@', '-')}"
+    branch_suffix = f"{branch_number:02}-{old_crate_id.replace('@', '-')}"
+    new_branch = f"{BRANCH_BASENAME}--{branch_suffix}"
     Git("checkout", upstream_branch, "-b", new_branch)
     Git("branch", "--set-upstream-to", upstream_branch)
     GitAddRustFiles()
@@ -522,7 +452,6 @@ def UpdateCrate(args, old_crate_id: str, new_crate_id: str,
 
 
 def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
-    vet_exempted_crate_ids = GetVetExemptedCrateIds()
     updated_old_crate_ids = set()
 
     # git mv <vendor/old version> <vendor/new version>
@@ -555,11 +484,6 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
         f.write(new_content)
     Git("add", INCLUSIVE_LANG_CONFIG)
     GitCommit(args, "gnrt vendor")
-    if args.upload:
-        print(f"  Running `git cl upload --commit-description=...` ...")
-        description = CreateCommitDescription(title, diff, True)
-        GitClUpload(f"--commit-description={description}", "-t",
-                    "Edit CL description to include vet policy")
 
     # gnrt gen
     print(f"  Running `gnrt gen`...")
@@ -629,15 +553,6 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
         issue = Git("cl", "issue")
         print(f"  {issue}")
 
-    for exempted_crate_id in (
-            updated_old_crate_ids.intersection(vet_exempted_crate_ids)):
-        exempted_crate_name = ConvertCrateIdToCrateName(exempted_crate_id)
-        print(f"  WARNING: The `{exempted_crate_name}` crate "\
-               "is covered by an exemption rather than an audit. "\
-               "Please bump the exemption in "\
-               "`third_party/rust/chromium_crates_io/vet_config.toml.hbs` "\
-               "and run `tools/crates/run_gnrt.py vendor` again.")
-
 
 def IsGitDirty():
     # Make sure there are no uncommitted changes in //third_party/rust,
@@ -685,8 +600,8 @@ def CheckoutInitialBranch(branch):
 
 
 def GitClUpload(*args):
-    # `--bypass-hooks` because the uploaded CL will initially fail
-    # `tools/crates/run_cargo_vet.py check`.
+    # TODO(https://crbug.com/405980483): Remove `--bypass-hooks`, or document
+    # why this is still needed.
     #
     # `-o banned-words-skip` is used, because the CL is auto-generated and only
     # modifies third-party libraries (where any banned words would be purely
@@ -758,7 +673,7 @@ def BreakingUpdate(args):
         return
     diff = DiffCrateIds(old_crate_ids, new_crate_ids, only_minor_updates)
     title = CreateCommitTitleForBreakingUpdate(diff)
-    description = CreateCommitDescription(title, diff, False)
+    description = CreateCommitDescription(title, diff)
 
     # Checkout a new git branch + `git cl upload`
     new_branch = f"{BRANCH_BASENAME}--major-version-update"

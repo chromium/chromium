@@ -695,7 +695,6 @@ void PasswordManager::UpdateFormManagers() {
 void PasswordManager::DropFormManagers() {
   ResetFormsAndPredictionsCache();
   owned_submitted_form_manager_.reset();
-  visible_forms_data_.clear();
 }
 
 base::span<const PasswordForm> PasswordManager::GetBestMatches(
@@ -1342,10 +1341,6 @@ void PasswordManager::OnPasswordFormsRendered(
                       visible_forms_data.size());
   }
 
-  // Record all visible forms from the frame.
-  visible_forms_data_.insert(visible_forms_data_.end(),
-                             visible_forms_data.begin(),
-                             visible_forms_data.end());
   if (
 #if BUILDFLAG(IS_IOS)
       // On iOS, drivers are bound to WebFrames, but some pages (e.g. files)
@@ -1364,7 +1359,7 @@ void PasswordManager::OnPasswordFormsRendered(
   // If we see the login form again, then the login failed.
   if (submitted_manager->GetPendingCredentials().scheme ==
       PasswordForm::Scheme::kHtml) {
-    for (const FormData& form_data : visible_forms_data_) {
+    for (const FormData& form_data : visible_forms_data) {
       if (submitted_manager->IsEqualToSubmittedForm(form_data)) {
         if (submitted_manager->HasLikelyChangeOrResetFormSubmitted() &&
             AreChangePasswordFieldsEmpty(
@@ -1376,8 +1371,6 @@ void PasswordManager::OnPasswordFormsRendered(
                               form_data);
         }
         OnLoginFailed(logger.get());
-        // Clear visible_forms_data_ once we found the match.
-        visible_forms_data_.clear();
         return;
       }
     }
@@ -1386,8 +1379,6 @@ void PasswordManager::OnPasswordFormsRendered(
       logger->LogMessage(Logger::STRING_PROVISIONALLY_SAVED_FORM_IS_NOT_HTML);
     }
   }
-  // Clear visible_forms_data_ after checking all the visible forms.
-  visible_forms_data_.clear();
 
   // Looks like a successful login attempt. Either show an infobar or
   // automatically save the login data. We prompt when the user hasn't

@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">आइतवार</translation>
 <translation id="4250229828105606438">स्क्रिसट</translation>
 <translation id="4251839292699800785">स्टाइलिस अफिस</translation>
+<translation id="4252261480746798874">तपाईंले "आफ्नै पाना बनाउनुहोस्" चयन गर्नुभयो भने तपाईं कस्टम प्रम्प्ट लेख्न सक्नुहुन्छ। तपाईं "थिम चयन गर्नुहोस्" चयन गर्न र आफ्नो AI वालपेपर पर्सनलाइज गर्नका निम्ति अन्डरलाइन गरिएका शब्दहरू चयन गर्न पनि सक्नुहुन्छ।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI फोटोका अझ अद्वितीय तथा विविधतायुक्त विकल्पहरू प्राप्त गर्न "मलाई कुनै प्रेरणादायी कुरा बताउनुहोस्" चयन गर्नुहोस्।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          तपाईंले आफ्नै वालपेपर बनाउँदा फोटोहरू बनाउने र उत्पादनको गुणस्तर सुधार गर्ने प्रयोजनका लागि यो प्रम्प्ट <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google का सेवाका सर्त र गोपनीयता नीति<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />बमोजिम Google का सर्भरमा पठाइन्छ। कुनै पनि व्यक्तिगत, संवेदनशील वा गोप्य जानकारी समावेश नगर्नुहोस्।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          जेनेरेटिभ AI ले मान्छे तथा अन्य कुराका बारेमा गलत जानकारी देखाउन सक्छ। त्यसैले यसले दिने जवाफ सही छ कि छैन फेरि जाँच्नुहोस्। <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />थप जान्नुहोस्<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP विलम्बता</translation>
 <translation id="4266143281602681663">धागोको डल्लो</translation>
 <translation id="4269815121975886860">स्टार्टअपसम्बन्धी प्राथमिकताहरू</translation>

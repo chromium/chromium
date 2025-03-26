@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.adaptive;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -18,6 +19,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPT
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
 import android.view.View.OnLongClickListener;
@@ -84,7 +86,6 @@ public class AdaptiveToolbarButtonControllerTest {
     @Before
     public void setUp() {
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
-        AdaptiveToolbarFeatures.clearParsedParamsForTesting();
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         mButtonData =
                 new ButtonDataImpl(
@@ -255,7 +256,9 @@ public class AdaptiveToolbarButtonControllerTest {
         longClickListener.onLongClick(view);
         adaptiveToolbarButtonController.destroy();
 
-        verify(mSettingsNavigation).startSettings(activity, AdaptiveToolbarSettingsFragment.class);
+        verify(mSettingsNavigation)
+                .startSettings(
+                        eq(activity), eq(AdaptiveToolbarSettingsFragment.class), any(Bundle.class));
     }
 
     @Test

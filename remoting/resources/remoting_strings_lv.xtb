@@ -40,6 +40,7 @@ Ja kastīte “<ph name="SERVICE_SCRIPT_NAME" />” jau ir atzīmēta, noņemiet
 <translation id="2758123043070977469">Autentificēšanas laikā radās problēma. Lūdzu, piesakieties vēlreiz.</translation>
 <translation id="2803375539583399270">Ievadiet PIN</translation>
 <translation id="2919669478609886916">Šobrīd jūs koplietojat šo ierīci ar citu lietotāju. Vai vēlaties turpināt koplietošanu?</translation>
+<translation id="2929683002824598593">Koplietot ierīci</translation>
 <translation id="2939145106548231838">Saimniekdatora autentificēšana</translation>
 <translation id="3027681561976217984">Skārienrežīms</translation>
 <translation id="3106379468611574572">Attālais dators nereaģē uz savienojuma pieprasījumiem. Pārbaudiet, vai tam ir savienojums ar internetu, un mēģiniet vēlreiz.</translation>
@@ -117,10 +118,12 @@ Ja kastīte “<ph name="SERVICE_SCRIPT_NAME" />” jau ir atzīmēta, noņemiet
 <translation id="6178645564515549384">Vietējais ziņojumapmaiņas saimniekdators attālai palīdzībai</translation>
 <translation id="618120821413932081">Mainīt attālās darbvirsmas izšķirtspēju, lai tā atbilstu logam</translation>
 <translation id="6223301979382383752">Atvērt ekrāna ierakstīšanas preferences</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> pieprasīja piekļuvi skatīt jūsu ekrānu un kontrolēt jūsu tastatūru un peli. Vai vēlaties koplietot savu ierīci?</translation>
 <translation id="6284412385303060032">Saimniekdators, kas darbojas konsoles pieteikšanās ekrānā, ir izslēgts, lai atbalstītu aizkara režīmu, pārslēdzoties uz saimniekdatoru, kurš darbojas noteikta lietotāja sesijā.</translation>
 <translation id="6542902059648396432">Ziņot par problēmu...</translation>
 <translation id="6583902294974160967">Atbalsts</translation>
 <translation id="6612717000975622067">Sūtīt Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Ja neveiksiet nekādas darbības, pēc # sekundes tiks automātiski sākta jūsu ierīces koplietošana.}zero{Ja neveiksiet nekādas darbības, pēc # sekundēm tiks automātiski sākta jūsu ierīces koplietošana.}one{Ja neveiksiet nekādas darbības, pēc # sekundes tiks automātiski sākta jūsu ierīces koplietošana.}other{Ja neveiksiet nekādas darbības, pēc # sekundēm tiks automātiski sākta jūsu ierīces koplietošana.}}</translation>
 <translation id="6654753848497929428">Koplietot</translation>
 <translation id="677755392401385740">Saimniekdators startēts šādam lietotājam: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Palīga lietojumprogramma vietrāža URL atvēršanai produkta “<ph name="PRODUCT_NAME" />” klientā</translation>

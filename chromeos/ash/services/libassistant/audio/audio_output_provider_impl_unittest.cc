@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
@@ -46,7 +47,8 @@ class FakeAudioOutputDelegate : public assistant_client::AudioOutput::Delegate {
                   int64_t playback_timestamp,
                   assistant_client::Callback1<int> done_cb) override {
     // Fill some arbitrary stuff.
-    memset(reinterpret_cast<uint8_t*>(buffer), '1', num_bytes_to_fill_);
+    UNSAFE_TODO(
+        memset(reinterpret_cast<uint8_t*>(buffer), '1', num_bytes_to_fill_));
     int filled_bytes = num_bytes_to_fill_;
     num_bytes_to_fill_ = 0;
 

@@ -46,6 +46,8 @@ bool PerformanceControlsHatsServiceFactory::IsAnySurveyFeatureEnabled() {
              performance_manager::features::
                  kPerformanceControlsPerformanceSurvey) ||
          base::FeatureList::IsEnabled(
+             performance_manager::features::kPerformanceControlsPPMSurvey) ||
+         base::FeatureList::IsEnabled(
              performance_manager::features::
                  kPerformanceControlsBatteryPerformanceSurvey) ||
          base::FeatureList::IsEnabled(

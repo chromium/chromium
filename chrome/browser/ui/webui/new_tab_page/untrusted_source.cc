@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/untrusted_source.h"
 
+#include <numeric>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -25,6 +26,8 @@
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_data.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/background/ntp_custom_background_service.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/new_tab_page_untrusted_resources.h"
@@ -34,6 +37,7 @@
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
 #include "url/url_util.h"
@@ -64,6 +68,39 @@ void ServeBackgroundImageData(content::URLDataSource::GotDataCallback callback,
                               std::string data_string) {
   std::move(callback).Run(
       base::MakeRefCounted<base::RefCountedString>(std::move(data_string)));
+}
+
+std::string AsyncParamDataAsCSV(
+    const std::unordered_map<std::string, std::string> param_data) {
+  if (param_data.empty()) {
+    return "";
+  }
+
+  std::string csv = std::accumulate(
+      param_data.cbegin(), param_data.cend(), std::string(),
+      [&](std::string acc, const std::pair<std::string, std::string>& param) {
+        return acc + "," + param.first + ":" + param.second;
+      });
+
+  // Strip preceding comma and return value.
+  return csv.substr(1);
+}
+
+std::map<std::string, std::string> ExtractQueryParams(
+    std::string_view query_params) {
+  std::map<std::string, std::string> params;
+  url::Component query(0, query_params.length());
+  url::Component key, value;
+  while (url::ExtractQueryKeyValue(query_params, &query, &key, &value)) {
+    url::RawCanonOutputW<kMaxUriDecodeLen> output;
+    url::DecodeURLEscapeSequences(query_params.substr(value.begin, value.len),
+                                  url::DecodeURLMode::kUTF8OrIsomorphic,
+                                  &output);
+    params.insert({std::string(query_params.substr(key.begin, key.len)),
+                   base::UTF16ToUTF8(output.view())});
+  }
+
+  return params;
 }
 
 }  // namespace
@@ -120,10 +157,43 @@ void UntrustedSource::StartDataRequest(
   }
   const std::string path = url.has_path() ? url.path().substr(1) : "";
   if (path == "one-google-bar" && one_google_bar_service_) {
+    std::map<std::string, std::string> params;
+
     std::string query_params;
-    net::GetValueForKeyInQuery(url, "paramsencoded", &query_params);
-    base::Base64Decode(query_params, &query_params);
-    one_google_bar_service_->SetAdditionalQueryParams(query_params);
+    if (net::GetValueForKeyInQuery(url, "paramsencoded", &query_params)) {
+      base::Base64Decode(query_params, &query_params);
+      if (!query_params.empty() && query_params.starts_with("&")) {
+        params = ExtractQueryParams(query_params.substr(1));
+      }
+    }
+
+    if (params.find("async") == params.end()) {
+      std::unordered_map<std::string, std::string> async_param_data;
+      async_param_data["fixed"] = "0";
+
+      bool async_bar_parts = base::FeatureList::IsEnabled(
+          ntp_features::kNtpOneGoogleBarAsyncBarParts);
+      if (async_bar_parts) {
+        async_param_data["abp"] = "1";
+
+        NtpCustomBackgroundService* ntp_custom_background_service =
+            NtpCustomBackgroundServiceFactory::GetForProfile(profile_);
+        if (ntp_custom_background_service &&
+            ntp_custom_background_service->GetCustomBackground()) {
+          async_param_data["dark"] = "1";
+        } else {
+          content::WebContents* web_contents = wc_getter.Run();
+          if (web_contents && web_contents->GetColorMode() ==
+                                  ui::ColorProviderKey::ColorMode::kDark) {
+            async_param_data["dark"] = "1";
+          }
+        }
+      }
+
+      params.insert({"async", AsyncParamDataAsCSV(async_param_data)});
+    }
+
+    one_google_bar_service_->SetAdditionalQueryParams(params);
     one_google_bar_callbacks_.push_back(std::move(callback));
     if (one_google_bar_callbacks_.size() == 1) {
       one_google_bar_load_start_time_ = base::TimeTicks::Now();
@@ -153,18 +223,9 @@ void UntrustedSource::StartDataRequest(
   }
   if (path == "custom_background_image") {
     // Parse all query parameters to hash map and decode values.
-    std::unordered_map<std::string, std::string> params;
-    std::string_view query_piece = url.query_piece();
-    url::Component query(0, url.query_piece().length());
-    url::Component key, value;
-    while (url::ExtractQueryKeyValue(query_piece, &query, &key, &value)) {
-      url::RawCanonOutputW<kMaxUriDecodeLen> output;
-      url::DecodeURLEscapeSequences(query_piece.substr(value.begin, value.len),
-                                    url::DecodeURLMode::kUTF8OrIsomorphic,
-                                    &output);
-      params.insert({std::string(query_piece.substr(key.begin, key.len)),
-                     base::UTF16ToUTF8(output.view())});
-    }
+    std::map<std::string, std::string> params =
+        ExtractQueryParams(url.query_piece());
+
     // Extract desired values.
     ServeBackgroundImage(
         params.count("url") == 1 ? GURL(params["url"]) : GURL(),

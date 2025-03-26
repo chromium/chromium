@@ -18,7 +18,7 @@ class HtmlChecker(object):
   def ClassesUseDashFormCheck(self, line_number, line):
     msg = "Classes should use dash-form."
     re = self.input_api.re
-    class_regex = re.compile("""
+    class_regex = re.compile(r"""
         (?:^|\s)                    # start of line or whitespace
         (class="[^"]*[A-Z_][^"]*")  # class contains caps or '_'
         """,
@@ -26,7 +26,7 @@ class HtmlChecker(object):
 
     # $i18n{...} messes with highlighting. Special path for this.
     if "$i18n{" in line:
-      match = re.search(class_regex, re.sub("\$i18n{[^}]+}", "", line))
+      match = re.search(class_regex, re.sub(r"\$i18n{[^}]+}", "", line))
       return "  line %d: %s" % (line_number, msg) if match else ""
 
     return regex_check.RegexCheck(re, line_number, line, class_regex, msg)
@@ -42,7 +42,7 @@ class HtmlChecker(object):
         "Do not use <br>; place blocking elements (<div>) as appropriate.")
 
   def DoNotUseInputTypeButtonCheck(self, line_number, line):
-    regex = self.input_api.re.compile("""
+    regex = self.input_api.re.compile(r"""
         (<input [^>]*  # "<input " followed by anything but ">"
         type="button"  # type="button"
         [^>]*>)        # anything but ">" then ">"
@@ -52,7 +52,7 @@ class HtmlChecker(object):
         'Use the button element instead of <input type="button">')
 
   def DoNotUseSingleQuotesCheck(self, line_number, line):
-    regex = self.input_api.re.compile("""
+    regex = self.input_api.re.compile(r"""
         <\S+                           # The tag name.
         (?:\s+\S+\$?="[^"]*"|\s+\S+)*  # Correctly quoted or non-value props.
         \s+(\S+\$?='[^']*')            # Find incorrectly quoted (foo='bar').
@@ -63,7 +63,7 @@ class HtmlChecker(object):
         'Use double quotes rather than single quotes in HTML properties')
 
   def I18nContentJavaScriptCaseCheck(self, line_number, line):
-    regex = self.input_api.re.compile("""
+    regex = self.input_api.re.compile(r"""
         (?:^|\s)                      # start of line or whitespace
         i18n-content="                # i18n-content="
         ([A-Z][^"]*|[^"]*[-_][^"]*)"  # starts with caps or contains '-' or '_'
@@ -73,7 +73,7 @@ class HtmlChecker(object):
         "For i18n-content use javaScriptCase.")
 
   def LabelCheck(self, line_number, line):
-    regex = self.input_api.re.compile("""
+    regex = self.input_api.re.compile(r"""
         (?:^|\s)     # start of line or whitespace
         <label[^>]+? # <label tag
         (for=)       # for=

@@ -657,6 +657,10 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+        retry_invalid_shards = True,
+    ),
     targets = targets.bundle(
         targets = [
             "chromium_win10_gtests",

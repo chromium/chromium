@@ -459,7 +459,6 @@
 <translation id="3114507951000454849">Прочитајте ги денешните вести <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Повеќе детали</translation>
 <translation id="3123734510202723619">Соопштенија</translation>
-<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> ја промени картичката „<ph name="TAB_NAME" />“</translation>
 <translation id="3148237711805373460">Одведи ме таму</translation>
 <translation id="314939179385989105">Почетна страница на Chrome</translation>
 <translation id="3158667104057012316">Се подредува рачно</translation>
@@ -840,14 +839,12 @@
 <translation id="4910889077668685004">Апликации за плаќање</translation>
 <translation id="4912413785358399818">Премести картичка</translation>
 <translation id="4913169188695071480">Сопри го освежувањето</translation>
-<translation id="4918086044614829423">Прифати</translation>
 <translation id="4925120120285606924">Слика од екранот <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Вашите лозинки ќе се извезат и преземат како текстуална датотека. Тие ќе бидат видливи за секого и за секоја апликација со пристап до дестинациската папка.</translation>
 <translation id="4926901776383726965">Може да зачувувате слики и датотеки за да ги прегледувате офлајн или да ги споделувате со други апликации</translation>
 <translation id="4932247056774066048">Бидејќи се одјавувате од сметка управувана од <ph name="DOMAIN_NAME" />, вашите податоци на Chrome ќе се избришат од уредов. Тие ќе останат во вашата сметка на Google.</translation>
 <translation id="4943703118917034429">Виртуелна реалност</translation>
 <translation id="4943872375798546930">Нема резултати</translation>
-<translation id="4953833914914492602">Групата картички „<ph name="TAB_GROUP_NAME" />“ веќе не е достапна</translation>
 <translation id="4957722034734105353">Дознај повеќе...</translation>
 <translation id="4961107849584082341">Преведете ја страницава на кој било јазик</translation>
 <translation id="4964614743143953889">Chrome ве предупредува за небезбедни сајтови и преземања</translation>
@@ -966,7 +963,6 @@
 <translation id="5526281268548144413">Не може да се затворат во повеќе прозорци</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Пред # мин.}one{Пред # мин.}other{Пред # мин.}}</translation>
 <translation id="5548606607480005320">Безбедносна проверка</translation>
-<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> се придружи на групата картички „<ph name="TAB_GROUP_NAME" />“</translation>
 <translation id="5554520618550346933">Кога користите лозинка, Chrome ве предупредува ако е објавена онлајн. Кога го прави ова, вашите лозинки и кориснички имиња се шифрирани така што не може да ги прочита никој, па дури ни Google.</translation>
 <translation id="5555525474779371165">Изберете ја вашата заштита со „Безбедно прелистување“</translation>
 <translation id="5556459405103347317">Повторно вчитај</translation>
@@ -1183,7 +1179,6 @@
 <translation id="6481963882741794338">Поврзете ги Chrome и другите услуги на Google за персонализација и други цели</translation>
 <translation id="6482749332252372425">Преземањето на <ph name="FILE_NAME" /> не успеа поради недостаток на меморија.</translation>
 <translation id="6486420406192123355">Оваа PDF-датотека е од сајт што користи небезбедна врска</translation>
-<translation id="6495590690749880440">Да се отвори група картички?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Преземена е датотека}one{# преземање се завршени}other{# преземања се завршени}}</translation>
 <translation id="6508722015517270189">Рестартирајте го Chrome</translation>
 <translation id="6518133107902771759">Потврди</translation>
@@ -1617,7 +1612,6 @@
 <translation id="8282297628636750033">Ако е можно, примени темна тема на сајтовите</translation>
 <translation id="8282950411412455249">Одете во „Поставки за безбедност“</translation>
 <translation id="8306751933352925837">Лозинките ќе престанат да функционираат на уредов наскоро. За да продолжите да ги користите лозинките, ажурирајте ја „Услуги на Google Play“. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
-<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> ја отстрани картичката „<ph name="TAB_NAME" />“</translation>
 <translation id="8310451567823644042">Лозинките ќе престанат да функционираат наскоро</translation>
 <translation id="831192587911042850">Го додава тековниот веб-сајт на списокот со веб-сајтови што ги следите.</translation>
 <translation id="8320212361750431956">Последна активност</translation>

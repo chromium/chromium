@@ -51,9 +51,7 @@ uint32_t DiscoverAssistiveTech() {
   uint32_t discovered_ats = 0;
 
   // NOTE: this method is run from another thread to reduce jank, since
-  // there's no guarantee these system calls will return quickly. Code that
-  // needs to run in the UI thread can be run in
-  // UpdateHistogramsOnUIThread instead.
+  // there's no guarantee these system calls will return quickly.
 
   STICKYKEYS sticky_keys = {.cbSize = sizeof(STICKYKEYS)};
   SystemParametersInfo(SPI_GETSTICKYKEYS, 0, &sticky_keys, 0);
@@ -233,7 +231,6 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
 
  protected:
   void RefreshAssistiveTech() override;
-  void InitBackgroundTasks() override;
   ui::AXPlatform::ProductStrings GetProductStrings() override;
   void OnUiaProviderRequested(bool uia_provider_enabled) override;
 
@@ -250,13 +247,11 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
 BrowserAccessibilityStateImplWin::BrowserAccessibilityStateImplWin() {
   ui::GetWinAccessibilityAPIUsageObserverList().AddObserver(
       new WindowsAccessibilityEnabler());
-}
 
-void BrowserAccessibilityStateImplWin::InitBackgroundTasks() {
-  BrowserAccessibilityStateImpl::InitBackgroundTasks();
-
-  singleton_hwnd_observer_ = std::make_unique<gfx::SingletonHwndObserver>(
-      base::BindRepeating(&OnWndProc));
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    singleton_hwnd_observer_ = std::make_unique<gfx::SingletonHwndObserver>(
+        base::BindRepeating(&OnWndProc));
+  }
 }
 
 void BrowserAccessibilityStateImplWin::RefreshAssistiveTech() {

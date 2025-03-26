@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -98,15 +99,18 @@ class AXTreeFixingServicesRouter
   void OnMainNodeIdentified(ui::AXTreeID tree_id,
                             ui::AXNodeID node_id,
                             int request_id) override;
+  void OnServiceStateChanged(bool service_ready) override;
 
-  void ToggleAccessibilityState();
-
-  base::ObserverList<WebContentsObserver> web_contents_observers_;
-  const raw_ptr<Profile> profile_;
   // ScreenAI related objects: service instance, and a list of callbacks/ids.
   std::unique_ptr<AXTreeFixingScreenAIService> screen_ai_service_;
   std::list<std::pair<int, MainNodeIdentificationCallback>> pending_callbacks_;
   int next_request_id_ = 0;
+  bool can_make_main_node_identification_requests_ = false;
+
+  void ToggleAccessibilityState();
+
+  std::vector<std::unique_ptr<WebContentsObserver>> web_contents_observers_;
+  const raw_ptr<Profile> profile_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   void OnAccessibilityStatusEvent(

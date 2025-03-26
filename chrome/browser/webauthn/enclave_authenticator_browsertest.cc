@@ -1512,9 +1512,10 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
       DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
   registration_state_result.key_version = kSecretVersion;
   registration_state_result.gpm_pin_metadata = trusted_vault::GpmPinMetadata(
-      "public key",
-      EnclaveManager::MakeWrappedPINForTesting(kSecurityDomainSecret, "123456"),
-      /*expiry=*/base::Time::Now() + base::Seconds(10000));
+      "public key", trusted_vault::UsableRecoveryPinMetadata(
+                        EnclaveManager::MakeWrappedPINForTesting(
+                            kSecurityDomainSecret, "123456"),
+                        /*expiry=*/base::Time::Now() + base::Seconds(10000)));
   SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
 
   security_domain_service_->pretend_there_are_members();
@@ -3379,9 +3380,11 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, DISABLED_Recovery) {
     const auto& pin_metadata =
         pin_member->member_metadata().google_password_manager_pin_metadata();
     registration_state_result.gpm_pin_metadata = trusted_vault::GpmPinMetadata(
-        pin_member->public_key(), pin_metadata.encrypted_pin_hash(),
-        base::Time::FromSecondsSinceUnixEpoch(
-            pin_metadata.expiration_time().seconds()));
+        pin_member->public_key(),
+        trusted_vault::UsableRecoveryPinMetadata(
+            pin_metadata.encrypted_pin_hash(),
+            base::Time::FromSecondsSinceUnixEpoch(
+                pin_metadata.expiration_time().seconds())));
     registration_state_result.state =
         trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::
             State::kRecoverable;

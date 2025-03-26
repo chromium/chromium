@@ -49,10 +49,26 @@ BASE_FEATURE(kPerformanceControlsBatterySaverOptOutSurvey,
              "PerformanceControlsBatterySaverOptOutSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPerformanceControlsPPMSurvey,
+             "PerformanceControlsPPMSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<base::TimeDelta>
     kPerformanceControlsBatterySurveyLookback{
         &kPerformanceControlsBatteryPerformanceSurvey, "battery_lookback",
         base::Days(8)};
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kPerformanceControlsPPMSurveyMinDelay,
+                   &kPerformanceControlsPPMSurvey,
+                   "ppm_survey_min_delay",
+                   base::Minutes(2));
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kPerformanceControlsPPMSurveyMaxDelay,
+                   &kPerformanceControlsPPMSurvey,
+                   "ppm_survey_max_delay",
+                   base::Minutes(60));
 
 BASE_FEATURE(kPerformanceInterventionDemoMode,
              "PerformanceInterventionDemoMode",

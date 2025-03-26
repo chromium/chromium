@@ -811,9 +811,11 @@ void BirchCoralProvider::HandleCoralResponse(
         NOTREACHED() << "Unknown response type.";
     }
 
+    // If the group title is null/empty, we use a placeholder title.
+    bool is_non_empty = group->title.has_value() && !group->title->empty();
     items.emplace_back(
-        group->title
-            ? base::UTF8ToUTF16(*(group->title))
+        is_non_empty
+            ? base::UTF8ToUTF16(*group->title)
             : l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_SUGGESTION_NAME),
         l10n_util::GetStringUTF16(subtitle_id), response_->source(), group->id);
   }
@@ -880,6 +882,10 @@ void BirchCoralProvider::CacheTabEmbedding(TabClusterUIItem* tab_item) {
       coral::mojom::Entity::NewTab(std::move(tab_mojom)));
   CoralRequest request;
   request.set_content(std::move(active_tab_app_data));
+  if (!system_language_.has_value()) {
+    GetAndCheckLanguageAvailability();
+  }
+  request.set_language(*system_language_);
   Shell::Get()->coral_controller()->CacheEmbeddings(std::move(request));
 }
 

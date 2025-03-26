@@ -1014,6 +1014,7 @@
 <translation id="4351244548802238354">ປິດ​ໜ້າ​ຕ່າງ</translation>
 <translation id="4356872429719185452">ສະແດງລາຍລະອຽດຮັອດສະປອດ. ກຳລັງເປີດຮັອດສະປອດ.</translation>
 <translation id="4364101114148522660">ກຳລັງບັນທຶກ  <ph name="DURATION" /></translation>
+<translation id="4368227575116094370">ສ້າງ Google Sheet</translation>
 <translation id="4371348193907997655">ການຕັ້ງຄ່າການສົ່ງສັນຍານ</translation>
 <translation id="4371834685492830207">ລະຫັດ PIN ຕ້ອງມີຕົວອັກສອນທີ່ຖືກຕ້ອງເທົ່ານັ້ນ</translation>
 <translation id="4375482231364171368">ຊອກຫາໃນແຖບທີ່ຢູ່</translation>
@@ -1483,6 +1484,7 @@
 <translation id="5825969630400862129">ການຕັ້ງຄ່າອຸປະກອນທີ່ເຊື່ອມຕໍ່</translation>
 <translation id="5830180081891717894">ອີກ <ph name="WINDOWS" /> ລາຍການ</translation>
 <translation id="5837036133683224804">ຢຸດ <ph name="ROUTE_TITLE" /> ໃນ <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">ຊອກຫາດ້ວຍ Google</translation>
 <translation id="5841296711770970362">ໄປຫາແທຣັກຕໍ່ໄປ</translation>
 <translation id="5842553299352339114">ຮັອດສະປອດ <ph name="DEVICE_NAME" /> ເປີດຢູ່, ບໍ່ມີອຸປະກອນເຊື່ອມຕໍ່</translation>
 <translation id="584525477304726060">ກົດຄ້າງໄວ້ເພື່ອເປີດເຕັມຈໍ</translation>
@@ -1514,6 +1516,7 @@
 <translation id="595202126637698455">ການຕິດຕາມການປະຕິບັດເປີດໃຊ້ງານແລ້ວ</translation>
 <translation id="5955304353782037793">ແອັບ</translation>
 <translation id="5958529069007801266">ຜູ້ໃຊ້ທີ່ມີການຄວບຄຸມດູແລ</translation>
+<translation id="596035801491797438">ປິດການຄວບຄຸມດ້ວຍໃບໜ້າ</translation>
 <translation id="5960410286721553511">ເບິ່ງຮູບພາບ ແລະ ມີເດຍຫຼ້າສຸດຂອງໂທລະສັບທ່ານ</translation>
 <translation id="5965524703725988602">ສະຫຼັບຮູບແບບສີສັນມືດ. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">ວົນໄປໜ້າຜ່ານໜ້າຈໍ</translation>

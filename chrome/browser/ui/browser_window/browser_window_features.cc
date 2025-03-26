@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/tab_search_toolbar_button_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_open_group_helper.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
@@ -274,6 +275,11 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
           std::make_unique<media_router::CastBrowserController>(
               browser_view->browser());
     }
+
+    if (features::HasTabSearchToolbarButton()) {
+      tab_search_toolbar_button_controller_ =
+          std::make_unique<TabSearchToolbarButtonController>(browser_view);
+    }
   }
 
   if (download::IsDownloadBubbleEnabled()) {
@@ -294,6 +300,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
   memory_saver_opt_in_iph_controller_.reset();
   lens_overlay_entry_point_controller_.reset();
+  tab_search_toolbar_button_controller_.reset();
 
 #if BUILDFLAG(ENABLE_GLIC)
   glic_button_controller_.reset();

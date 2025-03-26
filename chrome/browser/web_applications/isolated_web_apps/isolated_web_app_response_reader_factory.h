@@ -17,7 +17,6 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 
@@ -30,8 +29,6 @@ class SignedWebBundleIntegrityBlock;
 
 namespace web_app {
 
-class IsolatedWebAppValidator;
-
 // Factory for creating instances of `IsolatedWebAppResponseReader` that are
 // ready to read responses from the bundle. Instances returned by this class are
 // guaranteed to have previously read a valid integrity block and metadata, as
@@ -39,9 +36,7 @@ class IsolatedWebAppValidator;
 // `skip_signature_verification` is set).
 class IsolatedWebAppResponseReaderFactory {
  public:
-  explicit IsolatedWebAppResponseReaderFactory(
-      Profile& profile,
-      std::unique_ptr<IsolatedWebAppValidator> validator);
+  explicit IsolatedWebAppResponseReaderFactory(Profile& profile);
   virtual ~IsolatedWebAppResponseReaderFactory();
 
   IsolatedWebAppResponseReaderFactory(
@@ -84,8 +79,6 @@ class IsolatedWebAppResponseReaderFactory {
                                       UnusableSwbnFileError> status);
 
   const raw_ref<Profile> profile_;
-  IsolatedWebAppTrustChecker trust_checker_;
-  std::unique_ptr<IsolatedWebAppValidator> validator_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<IsolatedWebAppResponseReaderFactory> weak_ptr_factory_{

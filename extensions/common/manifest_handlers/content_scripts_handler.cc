@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/lazy_instance.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
 #include "extensions/common/api/content_scripts.h"
@@ -214,6 +215,19 @@ bool ContentScriptsHandler::Parse(Extension* extension, std::u16string* error) {
                          all_urls_includes_chrome_urls, extension, error);
     if (!user_script) {
       return false;  // Failed to parse script context definition.
+    }
+
+    std::string mime_type_error;
+    if (!script_parsing::ValidateUserScriptMimeTypesFromFileExtensions(
+            *user_script, &mime_type_error)) {
+      // Issue a warning and ignore this file. This is a warning and not a
+      // hard-error to preserve both backwards compatibility and potential
+      // future-compatibility if mime types change.
+      extension->AddInstallWarning(InstallWarning(
+          base::StringPrintf(manifest_errors::kInvalidUserScriptMimeType,
+                             mime_type_error.c_str()),
+          ContentScriptsKeys::kContentScripts));
+      continue;
     }
 
     user_script->set_host_id(

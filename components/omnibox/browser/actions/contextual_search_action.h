@@ -9,23 +9,47 @@
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "url/gurl.h"
 
-// An action that triggers a contextual search via Lens.
-class ContextualSearchAction : public OmniboxAction {
+// An action that fulfills a contextual search via Lens.
+class ContextualSearchFulfillmentAction : public OmniboxAction {
  public:
-  ContextualSearchAction(const GURL& url,
-                         AutocompleteMatchType::Type match_type,
-                         bool is_zero_prefix_suggestion);
+  ContextualSearchFulfillmentAction(const GURL& url,
+                                    AutocompleteMatchType::Type match_type,
+                                    bool is_zero_prefix_suggestion);
 
-  // OmniboxAction::
+  // OmniboxAction:
   void RecordActionShown(size_t position, bool executed) const override;
   void Execute(ExecutionContext& context) const override;
   OmniboxActionId ActionId() const override;
 
  private:
-  ~ContextualSearchAction() override;
+  ~ContextualSearchFulfillmentAction() override;
 
   AutocompleteMatchType::Type match_type_;
   bool is_zero_prefix_suggestion_;
+};
+
+class ContextualSearchSelectRegionAction : public OmniboxAction {
+ public:
+  ContextualSearchSelectRegionAction();
+
+  // OmniboxAction:
+  OmniboxActionId ActionId() const override;
+  void Execute(ExecutionContext& context) const override;
+
+ protected:
+  ~ContextualSearchSelectRegionAction() override;
+};
+
+class ContextualSearchAskAboutPageAction : public OmniboxAction {
+ public:
+  ContextualSearchAskAboutPageAction();
+
+  // OmniboxAction:
+  OmniboxActionId ActionId() const override;
+  void Execute(ExecutionContext& context) const override;
+
+ protected:
+  ~ContextualSearchAskAboutPageAction() override;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_CONTEXTUAL_SEARCH_ACTION_H_

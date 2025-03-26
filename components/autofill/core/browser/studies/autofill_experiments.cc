@@ -19,13 +19,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
-#include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -245,37 +243,6 @@ bool IsCreditCardUploadEnabled(
       signin_state_for_metrics);
   LogCardUploadEnabled(log_manager);
   return true;
-}
-
-bool IsCreditCardMigrationEnabled(
-    const PaymentsDataManager& payments_data_manager,
-    const syncer::SyncService* sync_service,
-    const PrefService& pref_service,
-    bool is_test_mode,
-    LogManager* log_manager) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillDisableLocalCardMigration)) {
-    // Feature is being turned down.
-    return false;
-  }
-
-  // If |is_test_mode| is set, assume we are in a browsertest and
-  // credit card upload should be enabled by default to fix flaky
-  // local card migration browsertests.
-  if (!is_test_mode &&
-      !IsCreditCardUploadEnabled(
-          sync_service, pref_service,
-          payments_data_manager.GetCountryCodeForExperimentGroup(),
-          payments_data_manager.GetPaymentsSigninStateForMetrics(),
-          log_manager)) {
-    return false;
-  }
-
-  if (!payments::HasGooglePaymentsAccount(payments_data_manager)) {
-    return false;
-  }
-
-  return payments_data_manager.IsPaymentsDownloadActive();
 }
 
 bool IsInAutofillSuggestionsDisabledExperiment() {

@@ -51,8 +51,6 @@ enum class SignInStatus {
   kSignedInNoBookmarkSyncing,
   // The user is signed in and using the account storage.
   kSignedInOnlyWithAccountStorage,
-  // The user is signed in and syncing.
-  KSignedInAndSync
 };
 
 class BookmarkMediatorUnitTest
@@ -100,14 +98,6 @@ class BookmarkMediatorUnitTest
     sync_service_.GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kBookmarks, NO);
     return fake_identity;
-  }
-
-  // Signs in and enable sync, using the same identity than `SignInOnly()`.
-  void SignInAndSync() {
-    FakeSystemIdentity* fake_identity = SignInOnly();
-    authentication_service_->GrantSyncConsent(
-        fake_identity, signin_metrics::AccessPoint::kBookmarkManager);
-    sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
   }
 
   // Returns `IDS_IOS_BOOKMARKS_BULK_SAVED` string with `count` value.
@@ -191,15 +181,14 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(SignInStatus::kSignOut,
                         SignInStatus::kSignedInOnlyWithLocalOrSyncableStorage,
                         SignInStatus::kSignedInNoBookmarkSyncing,
-                        SignInStatus::kSignedInOnlyWithAccountStorage,
-                        SignInStatus::KSignedInAndSync),
+                        SignInStatus::kSignedInOnlyWithAccountStorage),
         // Whether or not the count should be displayed.
         testing::Bool()));
 
-// Tests the snackbar message with all the different combinaisons with:
+// Tests the snackbar message with all the different combinations with:
 // * One or two saved bookmarks
 // * Using the default folder or not
-// * Being signed-out/signed in/signed in with account storage/signed in + sync.
+// * Being signed-out/signed in/signed in with account storage.
 TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
   const int bookmark_count = GetBookmarkCountParam();
   const SignInStatus signed_in_status = GetSignInStatusParam();
@@ -237,17 +226,6 @@ TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
               : GetSavedToAccountText(bookmark_count, kEmail, show_count);
       SignInOnly();
       ancestor_permanent_folder = bookmark_model_->account_mobile_node();
-      break;
-    case SignInStatus::KSignedInAndSync:
-      expected_snackbar_message =
-          (folder_was_selected_by_user)
-              ? GetSavedToFolderToAccountText(bookmark_count, kFolderName,
-                                              kEmail, show_count)
-              : GetSavedToAccountText(bookmark_count, kEmail, show_count);
-      SignInAndSync();
-      // This test requires that the initial download of bookmarks completed.
-      static_cast<BookmarkClientImpl*>(bookmark_model_->client())
-          ->SetIsSyncFeatureEnabledIncludingBookmarksForTest();
       break;
   }
 
@@ -372,136 +350,6 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageDuplicateBookmarks) {
 
   ASSERT_EQ(3U, bookmarks_dupes.size());
   ASSERT_NSEQ(snackbarMessageDuplicates.text, @"0 bookmarks saved");
-  histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 3, 1);
-  histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 0, 1);
-}
-
-// Tests bulkAddBookmarksWithURLs with no valid URL passed while signed in and
-// syncing.
-TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageNoValidURLsSyncing) {
-  SignInAndSync();
-  NSArray* URLs = @[ [[NSURL alloc] initWithString:@""] ];
-
-  MDCSnackbarMessage* const snackbarMessage =
-      [mediator_ bulkAddBookmarksWithURLs:URLs
-                               viewAction:^{
-                               }];
-
-  std::vector<bookmarks::UrlAndTitle> bookmarks =
-      bookmark_model_->GetUniqueUrls();
-
-  ASSERT_EQ(0U, bookmarks.size());
-  ASSERT_NSEQ(snackbarMessage.text,
-              @"0 bookmarks saved in your Google Account, foo1@gmail.com");
-  histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 0, 1);
-}
-
-// Tests bulkAddBookmarksWithURLs with one valid URL passed while signed in and
-// syncing.
-TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageOneValidURLSyncing) {
-  SignInAndSync();
-  NSArray* URLs = @[ [[NSURL alloc] initWithString:@"https://google.ca"] ];
-
-  MDCSnackbarMessage* const snackbarMessage =
-      [mediator_ bulkAddBookmarksWithURLs:URLs
-                               viewAction:^{
-                               }];
-
-  std::vector<bookmarks::UrlAndTitle> bookmarks =
-      bookmark_model_->GetUniqueUrls();
-
-  ASSERT_EQ(1U, bookmarks.size());
-  ASSERT_NSEQ(snackbarMessage.text,
-              @"Bookmark saved in your Google Account, foo1@gmail.com");
-  histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 1, 1);
-}
-
-// Tests bulkAddBookmarksWithURLs with two valid URLs passed while signed in and
-// syncing.
-TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageTwoValidURLsSyncing) {
-  SignInAndSync();
-  NSArray* URLs = @[
-    [[NSURL alloc] initWithString:@"https://google.com"],
-    [[NSURL alloc] initWithString:@"https://google.fr"]
-  ];
-
-  MDCSnackbarMessage* const snackbarMessage =
-      [mediator_ bulkAddBookmarksWithURLs:URLs
-                               viewAction:^{
-                               }];
-
-  std::vector<bookmarks::UrlAndTitle> bookmarks =
-      bookmark_model_->GetUniqueUrls();
-
-  ASSERT_EQ(2U, bookmarks.size());
-  ASSERT_NSEQ(snackbarMessage.text,
-              @"2 bookmarks saved in your Google Account, foo1@gmail.com");
-  histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 2, 1);
-}
-
-// Tests bulkAddBookmarksWithURLs with a set of mixed valid and invalid URLs
-// while signed in and syncing.
-TEST_F(BookmarkMediatorUnitTest,
-       TestBulkSnackbarMessageValidAndInvalidURLsSyncing) {
-  SignInAndSync();
-  NSArray* URLs = @[
-    [[NSURL alloc] initWithString:@"https://google.com"],
-    [[NSURL alloc] initWithString:@"::invalid::"],
-    [[NSURL alloc] initWithString:@"https://google.fr"],
-    [[NSURL alloc] initWithString:@"https://google.co.jp"]
-  ];
-
-  MDCSnackbarMessage* const snackbarMessage =
-      [mediator_ bulkAddBookmarksWithURLs:URLs
-                               viewAction:^{
-                               }];
-
-  std::vector<bookmarks::UrlAndTitle> bookmarks =
-      bookmark_model_->GetUniqueUrls();
-
-  ASSERT_EQ(3U, bookmarks.size());
-  ASSERT_NSEQ(snackbarMessage.text,
-              @"3 bookmarks saved in your Google Account, foo1@gmail.com");
-  histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 3, 1);
-}
-
-// Tests bulkAddBookmarksWithURLs with duplicate bookmarks while signed in and
-// syncing.
-TEST_F(BookmarkMediatorUnitTest,
-       TestBulkSnackbarMessageDuplicateBookmarksSyncing) {
-  SignInAndSync();
-  NSArray* URLs = @[
-    [[NSURL alloc] initWithString:@"https://google.com"],
-    [[NSURL alloc] initWithString:@"::invalid::"],
-    [[NSURL alloc] initWithString:@"https://google.fr"],
-    [[NSURL alloc] initWithString:@"https://google.co.jp"]
-  ];
-
-  MDCSnackbarMessage* const snackbarMessage =
-      [mediator_ bulkAddBookmarksWithURLs:URLs
-                               viewAction:^{
-                               }];
-
-  std::vector<bookmarks::UrlAndTitle> bookmarks =
-      bookmark_model_->GetUniqueUrls();
-
-  ASSERT_EQ(3U, bookmarks.size());
-  ASSERT_NSEQ(snackbarMessage.text,
-              @"3 bookmarks saved in your Google Account, foo1@gmail.com");
-  histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 3, 1);
-
-  // Try bulk adding the same URLs again, none should be added.
-  MDCSnackbarMessage* const snackbarMessageDuplicates =
-      [mediator_ bulkAddBookmarksWithURLs:URLs
-                               viewAction:^{
-                               }];
-
-  std::vector<bookmarks::UrlAndTitle> bookmarks_dupes =
-      bookmark_model_->GetUniqueUrls();
-
-  ASSERT_EQ(3U, bookmarks_dupes.size());
-  ASSERT_NSEQ(snackbarMessageDuplicates.text,
-              @"0 bookmarks saved in your Google Account, foo1@gmail.com");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 3, 1);
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 0, 1);
 }

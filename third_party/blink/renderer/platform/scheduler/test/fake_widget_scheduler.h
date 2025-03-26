@@ -44,6 +44,7 @@ class FakeWidgetScheduler : public WidgetScheduler {
                                        bool frame_requested) override {}
   void DidRunBeginMainFrame() override {}
   void SetHidden(bool hidden) override {}
+  void WillShutdown() override {}
 
  private:
   scoped_refptr<FakeTaskRunner> input_task_runner_;

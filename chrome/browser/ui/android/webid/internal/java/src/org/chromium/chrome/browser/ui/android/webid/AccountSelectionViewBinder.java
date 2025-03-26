@@ -162,7 +162,7 @@ class AccountSelectionViewBinder {
                             /* cornerRadiusDp= */ avatarSize / 2,
                             /* backgroundColor= */ Color.GRAY,
                             avatarMonogramTextSize);
-            avatar = roundedIconGenerator.generateIconForText(avatarData.mName);
+            avatar = roundedIconGenerator.generateIconForText(avatarData.mDisplayName);
         }
         Drawable croppedAvatar = AvatarGenerator.makeRoundAvatar(resources, avatar, avatarSize);
         avatarView.setImageDrawable(croppedAvatar);
@@ -200,13 +200,16 @@ class AccountSelectionViewBinder {
             // Name is not shown in the account chip of the request permission dialog. The name is
             // shown in the Continue button instead.
             if (title != null) {
-                title.setText(account.isFilteredOut() ? account.getEmail() : account.getName());
+                title.setText(
+                        account.isFilteredOut()
+                                ? account.getDisplayIdentifier()
+                                : account.getDisplayName());
             }
             TextView description = view.findViewById(R.id.description);
             description.setText(
                     account.isFilteredOut()
                             ? view.getContext().getString(R.string.filtered_account_message)
-                            : account.getEmail());
+                            : account.getDisplayIdentifier());
             TextView secondaryDescription = view.findViewById(R.id.secondary_description);
             // The secondary description is not shown in the account chip of active mode's
             // request permission dialog. In this case, the view is not present.
@@ -657,7 +660,7 @@ class AccountSelectionViewBinder {
                                     context.getString(R.string.account_selection_continue),
                                     givenName);
                 }
-                button.setContentDescription(btnText + ", " + account.getEmail());
+                button.setContentDescription(btnText + ", " + account.getDisplayIdentifier());
             }
 
             assert btnText != null;

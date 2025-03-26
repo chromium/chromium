@@ -23,6 +23,7 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -116,15 +117,12 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   std::unique_ptr<ash::AshWebView> CreateSearchResultsView() const override;
   void DetectTextInImage(const SkBitmap& image,
                          ash::OnTextDetectionComplete callback) override;
-  void GetPrimaryAccountAccessToken(
-      base::RepeatingCallback<void(const std::string& access_token)> callback)
-      override;
-  GURL GetBaseSearchURLAndPostContent(
+  void SendLensWebRegionSearch(
       const gfx::Image& image,
-      gfx::Size image_original_size,
-      TemplateURLRef::PostContent* post_content) override;
-  scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
-      const override;
+      const bool is_standalone_session,
+      ash::OnSearchUrlFetchedCallback search_callback,
+      ash::OnTextDetectionComplete text_callback,
+      base::OnceCallback<void()> error_callback) override;
   void SendRegionSearch(const SkBitmap& image,
                         const gfx::Rect& region,
                         ash::OnSearchUrlFetchedCallback search_callback,
@@ -182,10 +180,36 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // Releases the OCR handle and resets pending OCR requests.
   void ResetOcr();
 
+  // Gets the OAuth2 access token for the active user's primary account, used
+  // for making a Lens Web API POST request.
+  void GetPrimaryAccountAccessToken(
+      base::RepeatingCallback<void(const std::string& access_token)> callback);
   void PrimaryAccountAccessTokenAvailable(
       base::RepeatingCallback<void(const std::string& access_token)> callback,
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);
+
+  // Called when an access token request completes (successfully or not).
+  void OnAccessTokenAvailableForImageSearch(const gfx::Image& original_image,
+                                            const bool is_standalone_session,
+                                            const std::string& access_token);
+  void OnAccessTokenAvailableForCopyText(const std::string vsr_id,
+                                         const std::string& access_token);
+
+  // Called after a resource request is dispatched by a `SimpleURLLoader` and a
+  // response is received.
+  void OnDispatchCompleteForImageSearch(
+      base::WeakPtr<const network::SimpleURLLoader> url_loader,
+      const std::string& access_token,
+      std::unique_ptr<std::string> response_body);
+  void OnDispatchCompleteForCopyText(
+      base::WeakPtr<const network::SimpleURLLoader> url_loader,
+      const std::string& access_token,
+      std::unique_ptr<std::string> response_body);
+
+  // Called after the response to a /qfmetadata GET request (for text detection)
+  // is received and the response body has been decoded.
+  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
   // Used to temporarily disable capture mode in certain cases for which neither
   // a device policy, nor DLP will be triggered. For example, Some extension
@@ -205,6 +229,10 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // A callback that will be invoked when the start query response is received
   // and text is detected.
   ash::OnTextDetectionComplete on_text_detection_complete_callback_;
+
+  // A callback that will be invoked if an error or unexpected behavior occurs
+  // during image search or text detection.
+  base::OnceCallback<void()> on_error_callback_;
 
   // True when a capture mode session is currently active.
   bool is_session_active_ = false;
@@ -237,6 +265,13 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       primary_account_token_fetcher_;
 
   std::unique_ptr<LensOverlayQueryController> lens_overlay_query_controller_;
+
+  std::list<std::unique_ptr<const network::SimpleURLLoader>>
+      uploads_in_progress_;
+
+  // URLLoaderFactory used for network requests. May be null initially if the
+  // creation is delayed.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   base::WeakPtrFactory<ChromeCaptureModeDelegate> weak_ptr_factory_{this};
 };

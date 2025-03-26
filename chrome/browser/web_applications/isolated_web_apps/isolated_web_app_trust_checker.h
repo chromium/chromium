@@ -45,21 +45,6 @@ namespace web_app {
 // Apps that were countersigned by a trusted distributor/store.
 class IsolatedWebAppTrustChecker {
  public:
-  explicit IsolatedWebAppTrustChecker(Profile& profile);
-
-  virtual ~IsolatedWebAppTrustChecker();
-
-  struct Result;
-
-  // Checks whether the user agent trusts the Isolated Web App identified by the
-  // `web_bundle_id`. Returns with `Result::Type::kTrusted` if the Isolated Web
-  // App is trusted.
-  //
-  // Whether or not Isolated Web App developer mode is enabled in the browser is
-  // only taken into account when `is_dev_mode_bundle` is set to `true`.
-  virtual Result IsTrusted(const web_package::SignedWebBundleId& web_bundle_id,
-                           bool is_dev_mode_bundle) const;
-
   struct Result {
     enum class Status {
       kTrusted,
@@ -71,13 +56,15 @@ class IsolatedWebAppTrustChecker {
     std::string message;
   };
 
- private:
-  // Returns `true` if trust for this Web Bundle ID is established via
-  // enterprise policy.
-  [[nodiscard]] bool IsTrustedViaPolicy(
-      const web_package::SignedWebBundleId& web_bundle_id) const;
-
-  raw_ref<Profile> profile_;
+  // Checks whether the user agent trusts the Isolated Web App identified by the
+  // `web_bundle_id`. Returns with `Result::Type::kTrusted` if the Isolated Web
+  // App is trusted.
+  //
+  // Whether or not Isolated Web App developer mode is enabled in the browser is
+  // only taken into account when `is_dev_mode_bundle` is set to `true`.
+  static Result IsTrusted(Profile& profile,
+                          const web_package::SignedWebBundleId& web_bundle_id,
+                          bool is_dev_mode_bundle);
 };
 
 // Used in tests to pretend that the given Web Bundle IDs are trusted.

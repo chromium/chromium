@@ -11,7 +11,7 @@ source_set("utils") {
     "tabs_egtest_util.mm",
   ]
   deps = [
-    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/browser/popup_menu/ui_bundled:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",

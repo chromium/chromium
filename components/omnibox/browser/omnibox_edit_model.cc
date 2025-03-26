@@ -48,6 +48,7 @@
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_log.h"
+#include "components/omnibox/browser/omnibox_metrics_provider.h"
 #include "components/omnibox/browser/omnibox_navigation_observer.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
@@ -121,11 +122,6 @@ const char kOmniboxFocusResultedInNavigation[] =
 // in the metrics OmniboxEnteredKeywordMode2 enum which is defined in metrics
 // enum XML file.
 const char kEnteredKeywordModeHistogram[] = "Omnibox.EnteredKeywordMode2";
-
-// Histogram name which counts the number of milliseconds a user takes
-// between focusing and opening an omnibox match.
-const char kFocusToOpenTimeHistogram[] =
-    "Omnibox.FocusToOpenTimeAnyPopupState3";
 
 // Histogram name which counts the number of times the user completes a search
 // in keyword mode, enumerated by how they enter keyword mode.
@@ -227,6 +223,95 @@ size_t CountNumberOfIPv4Parts(const std::u16string& text,
     }
   }
   return parts;
+}
+
+// This function provides a logging implementation that aligns with the original
+// definition of the `DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES()` macro, which is
+// currently being used to log the `FocusToOpenTimeAnyPopupState3` Omnibox
+// metric.
+void LogHistogramMediumTimes(const std::string& histogram_name,
+                             base::TimeDelta elapsed) {
+  base::UmaHistogramCustomTimes(histogram_name, elapsed, base::Milliseconds(10),
+                                base::Minutes(3), 50);
+}
+
+void LogFocusToOpenTime(base::TimeDelta elapsed,
+                        bool is_zero_prefix,
+                        PageClassification page_classification,
+                        AutocompleteMatch& match,
+                        size_t action_index) {
+  LogHistogramMediumTimes("Omnibox.FocusToOpenTimeAnyPopupState3", elapsed);
+
+  std::string summarized_result_type;
+  switch (OmniboxMetricsProvider::GetClientSummarizedResultType(
+      match.GetOmniboxEventResultType(action_index))) {
+    case ClientSummarizedResultType::kSearch:
+      summarized_result_type = "SEARCH";
+      break;
+    case ClientSummarizedResultType::kUrl:
+      summarized_result_type = "URL";
+      break;
+    default:
+      summarized_result_type = "OTHER";
+      break;
+  }
+
+  LogHistogramMediumTimes(
+      base::StrCat(
+          {"Omnibox.FocusToOpenTimeAnyPopupState3.BySummarizedResultType.",
+           summarized_result_type}),
+      elapsed);
+
+  const std::string page_context =
+      OmniboxEventProto::PageClassification_Name(page_classification);
+  LogHistogramMediumTimes(
+      base::StrCat({"Omnibox.FocusToOpenTimeAnyPopupState3.ByPageContext.",
+                    page_context}),
+      elapsed);
+
+  LogHistogramMediumTimes(
+      base::StrCat(
+          {"Omnibox.FocusToOpenTimeAnyPopupState3.BySummarizedResultType.",
+           summarized_result_type, ".ByPageContext.", page_context}),
+      elapsed);
+
+  if (is_zero_prefix) {
+    LogHistogramMediumTimes("Omnibox.FocusToOpenTimeAnyPopupState3.ZeroSuggest",
+                            elapsed);
+    LogHistogramMediumTimes(
+        base::StrCat({"Omnibox.FocusToOpenTimeAnyPopupState3.ZeroSuggest."
+                      "BySummarizedResultType.",
+                      summarized_result_type}),
+        elapsed);
+    LogHistogramMediumTimes(
+        base::StrCat(
+            {"Omnibox.FocusToOpenTimeAnyPopupState3.ZeroSuggest.ByPageContext.",
+             page_context}),
+        elapsed);
+    LogHistogramMediumTimes(
+        base::StrCat({"Omnibox.FocusToOpenTimeAnyPopupState3.ZeroSuggest."
+                      "BySummarizedResultType.",
+                      summarized_result_type, ".ByPageContext.", page_context}),
+        elapsed);
+  } else {
+    LogHistogramMediumTimes(
+        "Omnibox.FocusToOpenTimeAnyPopupState3.TypedSuggest", elapsed);
+    LogHistogramMediumTimes(
+        base::StrCat({"Omnibox.FocusToOpenTimeAnyPopupState3.TypedSuggest."
+                      "BySummarizedResultType.",
+                      summarized_result_type}),
+        elapsed);
+    LogHistogramMediumTimes(
+        base::StrCat({"Omnibox.FocusToOpenTimeAnyPopupState3.TypedSuggest."
+                      "ByPageContext.",
+                      page_context}),
+        elapsed);
+    LogHistogramMediumTimes(
+        base::StrCat({"Omnibox.FocusToOpenTimeAnyPopupState3.TypedSuggest."
+                      "BySummarizedResultType.",
+                      summarized_result_type, ".ByPageContext.", page_context}),
+        elapsed);
+  }
 }
 
 }  // namespace
@@ -354,8 +439,8 @@ void OmniboxEditModel::RestoreState(const State* state) {
     if ((!state->user_text.empty() || !state->keyword.empty()) && view_) {
       view_->SetUserText(state->user_text, false);
     }
-    keyword_ = state->keyword;
-    keyword_placeholder_ = state->keyword_placeholder;
+    SetKeyword(state->keyword);
+    SetKeywordPlaceholder(state->keyword_placeholder);
     is_keyword_hint_ = state->is_keyword_hint;
     keyword_mode_entry_method_ = state->keyword_mode_entry_method;
     if (view_) {
@@ -787,20 +872,14 @@ void OmniboxEditModel::PasteAndGo(const std::u16string& text,
             match_selection_timestamp);
 }
 
-void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
-    OmniboxEventProto::KeywordModeEntryMethod entry_method) {
-  if (!controller_->client()->IsDefaultSearchProviderEnabled()) {
-    return;
-  }
-
+void OmniboxEditModel::EnterKeywordMode(
+    OmniboxEventProto::KeywordModeEntryMethod entry_method,
+    const TemplateURL* template_url) {
+  DCHECK(template_url);
   controller_->StopAutocomplete(/*clear_result=*/false);
 
-  const TemplateURL* default_search_provider = controller_->client()
-                                                   ->GetTemplateURLService()
-                                                   ->GetDefaultSearchProvider();
-  DCHECK(default_search_provider);
-  keyword_ = default_search_provider->keyword();
-  keyword_placeholder_ = u"";
+  SetKeyword(template_url->keyword());
+  SetKeywordPlaceholder(u"");
   is_keyword_hint_ = false;
   keyword_mode_entry_method_ = entry_method;
   if (view_) {
@@ -823,7 +902,17 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
     }
   }
 
-  EmitEnteredKeywordModeHistogram(entry_method, default_search_provider);
+  EmitEnteredKeywordModeHistogram(entry_method, template_url);
+}
+
+void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
+    OmniboxEventProto::KeywordModeEntryMethod entry_method) {
+  if (!controller_->client()->IsDefaultSearchProviderEnabled()) {
+    return;
+  }
+  EnterKeywordMode(entry_method, controller_->client()
+                                     ->GetTemplateURLService()
+                                     ->GetDefaultSearchProvider());
 }
 
 void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
@@ -932,13 +1021,6 @@ bool OmniboxEditModel::AcceptKeyword(
       controller_->client()->GetTemplateURLService()->GetTemplateURLForKeyword(
           keyword_);
   EmitEnteredKeywordModeHistogram(entry_method, turl);
-
-  if (turl && turl->starter_pack_id() > 0) {
-    controller_->OnStarterPackKeywordModeEntered(
-        static_cast<TemplateURLStarterPackData::StarterPackID>(
-            turl->starter_pack_id()));
-  }
-
   return true;
 }
 
@@ -1360,8 +1442,8 @@ void OmniboxEditModel::OnPopupDataChanged(
       ((is_keyword_hint_ != is_keyword_hint) && !keyword.empty());
   if (keyword_state_changed) {
     bool keyword_was_selected = is_keyword_selected();
-    keyword_ = keyword;
-    keyword_placeholder_ = keyword_placeholder;
+    SetKeyword(keyword);
+    SetKeywordPlaceholder(keyword_placeholder);
     is_keyword_hint_ = is_keyword_hint;
     if (!keyword_was_selected && is_keyword_selected()) {
       // Since we entered keyword mode, record the reason. Note that we
@@ -2653,8 +2735,9 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   if (!last_omnibox_focus_.is_null()) {
     // Only record focus to open time when a focus actually happened (as
     // opposed to, say, dragging a link onto the omnibox).
-    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(kFocusToOpenTimeHistogram,
-                                          now - last_omnibox_focus_);
+    LogFocusToOpenTime(now - last_omnibox_focus_, input_.IsZeroSuggest(),
+                       GetPageClassification(), match,
+                       selection.IsAction() ? selection.action_index : -1);
   }
 
   TemplateURLService* service = controller_->client()->GetTemplateURLService();
@@ -2728,6 +2811,28 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
                        controller_->client()->AsWeakPtr()),
         match_selection_timestamp, disposition);
     action->Execute(context);
+
+    // Actions aren't generally able to change omnibox state, but it may be
+    // worth considering an extension to OmniboxAction::ExecutionContext
+    // if more action types want to enter keyword modes, close the popup, etc.
+    if (action->ActionId() ==
+            OmniboxActionId::CONTEXTUAL_SEARCH_ASK_ABOUT_PAGE ||
+        action->ActionId() ==
+            OmniboxActionId::CONTEXTUAL_SEARCH_SELECT_REGION) {
+      if (const TemplateURL* page_turl =
+              controller_->client()
+                  ->GetTemplateURLService()
+                  ->FindStarterPackTemplateURL(
+                      TemplateURLStarterPackData::kPage)) {
+        EnterKeywordMode(OmniboxEventProto::SELECT_SUGGESTION, page_turl);
+        if (action->ActionId() ==
+                OmniboxActionId::CONTEXTUAL_SEARCH_SELECT_REGION &&
+            view_) {
+          view_->CloseOmniboxPopup();
+        }
+        return;
+      }
+    }
   }
 
   if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
@@ -2930,4 +3035,13 @@ std::u16string OmniboxEditModel::GetText() const {
   } else {
     NOTREACHED();
   }
+}
+
+void OmniboxEditModel::SetKeyword(const std::u16string& keyword) {
+  keyword_ = keyword;
+}
+
+void OmniboxEditModel::SetKeywordPlaceholder(
+    const std::u16string& keyword_placeholder) {
+  keyword_placeholder_ = keyword_placeholder;
 }

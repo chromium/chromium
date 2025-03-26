@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
@@ -166,6 +167,9 @@ class StandaloneTrustedVaultBackend
 
   ~StandaloneTrustedVaultBackend() override;
 
+  // Initializes |local_recovery_factors_| with the current |primary_account_|.
+  void ResetLocalRecoveryFactors();
+
   // Attempts to register device in case it's not yet registered and currently
   // available local data is sufficient to do it. For the cases where
   // registration is desirable (i.e. feature toggle enabled and user signed in),
@@ -182,11 +186,15 @@ class StandaloneTrustedVaultBackend
   // successfully or not). |storage_| must contain LocalTrustedVaultPerUser for
   // given |gaia_id|.
   void OnDeviceRegistered(TrustedVaultRegistrationStatus status,
-                          int key_version_unused);
-  void OnDeviceRegisteredWithoutKeys(TrustedVaultRegistrationStatus status,
-                                     int key_version);
+                          int key_version,
+                          bool had_local_keys);
 
-  void OnKeysDownloaded(TrustedVaultDownloadKeysStatus status,
+  void AttemptRecoveryFactor(size_t local_recovery_factor);
+  void AttemptNextRecoveryFactor(
+      size_t current_local_recovery_factor,
+      std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
+  void OnKeysDownloaded(size_t current_local_recovery_factor,
+                        TrustedVaultDownloadKeysStatus status,
                         const std::vector<std::vector<uint8_t>>& new_vault_keys,
                         int last_vault_key_version);
 
@@ -237,6 +245,11 @@ class StandaloneTrustedVaultBackend
   // vault server.
   std::optional<CoreAccountInfo> primary_account_;
 
+  // All known local recovery factors that can be used to attempt key recovery.
+  // Note: |local_recovery_factors_| depends on |storage_|, thus it must be
+  // destroyed before |storage_| (i.e. the order of the fields matters).
+  std::vector<std::unique_ptr<LocalRecoveryFactor>> local_recovery_factors_;
+
   // Error state of refresh token for |primary_account_|.
   RefreshTokenErrorState refresh_token_error_state_ =
       StandaloneTrustedVaultBackend::RefreshTokenErrorState::kUnknown;
@@ -275,13 +288,8 @@ class StandaloneTrustedVaultBackend
 
     GaiaId gaia_id;
     std::vector<FetchKeysCallback> callbacks;
-    std::unique_ptr<TrustedVaultConnection::Request> request;
   };
   std::optional<OngoingFetchKeys> ongoing_fetch_keys_;
-
-  // Destroying this will cancel the ongoing request.
-  std::unique_ptr<TrustedVaultConnection::Request>
-      ongoing_device_registration_request_;
 
   // Same as above, but specifically used for recoverability-related requests.
   // TODO(crbug.com/40178774): Move elsewhere.

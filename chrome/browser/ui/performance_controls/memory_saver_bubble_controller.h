@@ -12,6 +12,10 @@ namespace actions {
 class ActionItem;
 }
 
+namespace views {
+class BubbleDialogModelHost;
+}
+
 class Browser;
 class BrowserWindowInterface;
 
@@ -34,8 +38,11 @@ class MemorySaverBubbleController : MemorySaverBubbleObserver {
   void OnBubbleShown() override;
   void OnBubbleHidden() override;
 
+  views::BubbleDialogModelHost* bubble_for_testing() { return bubble_; }
+
  private:
   base::WeakPtr<actions::ActionItem> action_item_;
+  raw_ptr<views::BubbleDialogModelHost> bubble_ = nullptr;
 };
 
 }  // namespace memory_saver

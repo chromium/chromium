@@ -54,8 +54,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerAuraLinux
       BrowserAccessibility* node,
       const std::string& announcement,
       ax::mojom::AriaNotificationPriority priority_property,
-      const std::string& notification_id,
-      ax::mojom::AriaNotificationInterrupt interrupt_property) override;
+      ax::mojom::AriaNotificationInterrupt interrupt_property,
+      const std::string& type) override;
 
   void FireSelectedEvent(BrowserAccessibility* node);
   void FireEnabledChangedEvent(BrowserAccessibility* node);

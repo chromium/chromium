@@ -5,6 +5,7 @@
 #include "chrome/browser/smart_card/smart_card_permission_context.h"
 
 #include "base/check_deref.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
@@ -16,6 +17,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/permissions/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/smart_card_delegate.h"
 #include "content/public/test/browser_task_environment.h"
@@ -185,7 +187,8 @@ class SmartCardPermissionContextTest : public testing::Test {
     return std::make_unique<FakeOneTimePermissionsTracker>();
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile profile_;
 };
 
@@ -496,4 +499,32 @@ TEST_F(SmartCardPermissionContextTest, GetPersistentReaderGrants) {
           SmartCardPermissionContext::ReaderGrants(kDummyReader2, {origin_3})));
 
   permission_context.RevokeAllPermissions();
+}
+
+TEST_F(SmartCardPermissionContextTest, EphemeralGrantExpiryOnLongTimeout) {
+  auto origin_1 = url::Origin::Create(
+      GURL("isolated-app://"
+           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
+
+  SmartCardPermissionContext permission_context(&profile_);
+  TestPermissionsObserver observer;
+  permission_context.AddObserver(&observer);
+
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+
+  GrantEphemeralReaderPermission(permission_context, origin_1, kDummyReader);
+
+  EXPECT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+
+  task_environment_.FastForwardBy(
+      permissions::feature_params::kOneTimePermissionLongTimeout.Get() -
+      base::Seconds(1));
+  EXPECT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+  EXPECT_TRUE(observer.GetRevokedOriginsSequence().empty());
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+  EXPECT_THAT(observer.GetRevokedOriginsSequence(),
+              testing::ElementsAre(origin_1));
 }

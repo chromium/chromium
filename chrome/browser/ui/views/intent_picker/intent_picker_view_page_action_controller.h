@@ -8,6 +8,10 @@
 #include "base/memory/raw_ref.h"
 #include "components/tab_collections/public/tab_interface.h"
 
+namespace ui {
+class ImageModel;
+}
+
 /**
  * IntentPickerViewPageActionController manages the page action associated with
  * the intent picker. It is responsible for creating and updating the
@@ -15,6 +19,7 @@
  * correctly based on the current state of the active web contents and user's
  * browsing context.
  */
+
 class IntentPickerViewPageActionController {
  public:
   explicit IntentPickerViewPageActionController(
@@ -31,12 +36,12 @@ class IntentPickerViewPageActionController {
   // Updates the visibility of the Intent Picker icon and suggestion chip.
   // If should_show_icon is true, the icon and chip are shown.
   // Otherwise, they are hidden by calling HideIcon().
-  void UpdatePageActionVisibility(bool should_show_icon);
+  void UpdatePageActionVisibility(bool should_show_icon,
+                                  const ui::ImageModel& app_icon);
 
  private:
   // Hides the Intent Picker page action icon and closes any associated bubble.
   void HideIcon();
-
   const raw_ref<tabs::TabInterface> tab_interface_;
 };
 

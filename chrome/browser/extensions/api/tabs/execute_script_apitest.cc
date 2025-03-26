@@ -87,6 +87,10 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptBadEncoding) {
   ASSERT_TRUE(RunExtensionTest("executescript/bad_encoding")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptBadMimeType) {
+  ASSERT_TRUE(RunExtensionTest("executescript/bad_mime_type")) << message_;
+}
+
 // If failing, mark disabled and update http://crbug.com/92105.
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptInFrame) {
   ASSERT_TRUE(RunExtensionTest("executescript/in_frame")) << message_;

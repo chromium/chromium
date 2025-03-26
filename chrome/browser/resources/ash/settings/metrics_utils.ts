@@ -266,10 +266,6 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     setting: Setting.kLobsterOnOff,
     type: PrefType.BOOLEAN,
   },
-  'ash.capture_mode.sunfish_enabled': {
-    setting: Setting.kSunfishOnOff,
-    type: PrefType.BOOLEAN,
-  },
   'ash.scanner.enabled': {
     setting: Setting.kScannerOnOff,
     type: PrefType.BOOLEAN,

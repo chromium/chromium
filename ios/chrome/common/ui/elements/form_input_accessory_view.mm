@@ -303,8 +303,9 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   trailingView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:trailingView];
 
-  NSLayoutConstraint* defaultHeightConstraint = [_contentView.heightAnchor
-      constraintEqualToConstant:[self accessoryHeight]];
+  CGFloat desiredHeight = [self accessoryHeight];
+  NSLayoutConstraint* defaultHeightConstraint =
+      [_contentView.heightAnchor constraintEqualToConstant:desiredHeight];
   defaultHeightConstraint.priority = UILayoutPriorityDefaultHigh;
 
   id<LayoutGuideProvider> layoutGuide = self.safeAreaLayoutGuide;
@@ -332,6 +333,14 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     // Trailing constraint in compact mode.
     _compactTrailingConstraint = [trailingView.trailingAnchor
         constraintEqualToAnchor:layoutGuide.trailingAnchor];
+
+    // When using multiple windows, ensure that the out of focus window keeps a
+    // minimum top anchor preventing the keyboard accessory from being reduced
+    // in height. This is only relevant on tablets.
+    [self.topAnchor
+        constraintLessThanOrEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor
+                                 constant:-desiredHeight]
+        .active = YES;
 
     [self setHorizontalConstraints];
   } else {

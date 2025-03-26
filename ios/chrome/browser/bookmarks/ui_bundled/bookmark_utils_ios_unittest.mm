@@ -15,6 +15,7 @@
 #import "base/time/time.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
@@ -391,35 +392,16 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestMissingNodes) {
 // Tests returned values from `IsAccountBookmarkStorageOptedIn()`.
 TEST_F(BookmarkIOSUtilsUnitTest, IsAccountBookmarkStorageOptedIn) {
   syncer::TestSyncService sync_service;
-
-  // If the user is signed out, `IsAccountBookmarkStorageOptedIn()` should
-  // always return false.
+  sync_service.SetSignedOut();
   EXPECT_FALSE(IsAccountBookmarkStorageOptedIn(&sync_service));
 
-  // If sync-the-feature is on, including bookmarks,
-  // `IsAccountBookmarkStorageOptedIn()` should always return false.
-  sync_service.SetSignedIn(signin::ConsentLevel::kSync);
-  sync_service.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/true, /*types=*/syncer::UserSelectableTypeSet());
-  EXPECT_FALSE(IsAccountBookmarkStorageOptedIn(&sync_service));
-
-  // If sync-the-feature is on, but bookmarks excluded,
-  // `IsAccountBookmarkStorageOptedIn()` should always return false.
-  sync_service.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false, /*types=*/syncer::UserSelectableTypeSet());
-  EXPECT_FALSE(IsAccountBookmarkStorageOptedIn(&sync_service));
-
-  // If sync-the-feature is off and the account storage is enabled,
-  // `IsAccountBookmarkStorageOptedIn()` should return true.
   sync_service.SetSignedIn(signin::ConsentLevel::kSignin);
-  sync_service.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/true, /*types=*/syncer::UserSelectableTypeSet());
+  ASSERT_TRUE(sync_service.GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kBookmarks));
   EXPECT_TRUE(IsAccountBookmarkStorageOptedIn(&sync_service));
 
-  // If sync-the-feature is off and the account storage is not enabled,
-  // `IsAccountBookmarkStorageOptedIn()` should return false.
-  sync_service.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false, /*types=*/syncer::UserSelectableTypeSet());
+  sync_service.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kBookmarks, false);
   EXPECT_FALSE(IsAccountBookmarkStorageOptedIn(&sync_service));
 }
 

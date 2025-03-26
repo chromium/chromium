@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.auxiliary_search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -91,13 +92,8 @@ public class AuxiliarySearchControllerImplUnitTest {
     public void setUp() {
         when(mContext.getResources()).thenReturn(mResources);
 
-        mAuxiliarySearchControllerImpl =
-                new AuxiliarySearchControllerImpl(
-                        mContext,
-                        mProfile,
-                        mAuxiliarySearchProvider,
-                        mAuxiliarySearchDonor,
-                        mFaviconHelper);
+        AuxiliarySearchControllerFactory.getInstance().setHooksForTesting(mHooks);
+        createController();
     }
 
     @After
@@ -420,11 +416,15 @@ public class AuxiliarySearchControllerImplUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON,
-        ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE
-    })
+    @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON})
     public void testOnNonSensitiveHistoryDataAvailable_AfterDestroy() {
+        // Cleans up before creating a new controller.
+        mAuxiliarySearchControllerImpl.destroy();
+
+        when(mHooks.isMultiDataTypeEnabledOnDevice()).thenReturn(true);
+        assertTrue(AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
+        createController();
+
         long now = TimeUtils.uptimeMillis();
         int timeDelta = 50;
 
@@ -472,5 +472,15 @@ public class AuxiliarySearchControllerImplUnitTest {
 
         mAuxiliarySearchControllerImpl.onConfigChanged(true);
         verify(mAuxiliarySearchDonor).onConfigChanged(eq(true), any(Callback.class));
+    }
+
+    private void createController() {
+        mAuxiliarySearchControllerImpl =
+                new AuxiliarySearchControllerImpl(
+                        mContext,
+                        mProfile,
+                        mAuxiliarySearchProvider,
+                        mAuxiliarySearchDonor,
+                        mFaviconHelper);
     }
 }

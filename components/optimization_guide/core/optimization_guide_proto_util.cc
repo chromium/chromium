@@ -912,9 +912,9 @@ optimization_guide::proto::AXStringListAttribute StringListAttributeToProto(
     case ax::mojom::StringListAttribute::kAriaNotificationAnnouncements:
       return optimization_guide::proto::AXStringListAttribute::
           AX_SLA_ARIANOTIFICATIONANNOUNCEMENTS;
-    case ax::mojom::StringListAttribute::kAriaNotificationIds:
+    case ax::mojom::StringListAttribute::kAriaNotificationTypes:
       return optimization_guide::proto::AXStringListAttribute::
-          AX_SLA_ARIANOTIFICATIONIDS;
+          AX_SLA_ARIANOTIFICATIONTYPES;
     case ax::mojom::StringListAttribute::kCustomActionDescriptions:
       return optimization_guide::proto::AXStringListAttribute::
           AX_SLA_CUSTOMACTIONDESCRIPTIONS;

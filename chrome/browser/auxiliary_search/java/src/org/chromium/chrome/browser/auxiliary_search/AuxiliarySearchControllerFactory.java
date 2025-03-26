@@ -65,6 +65,15 @@ public class AuxiliarySearchControllerFactory {
         return consumerSchemaFound && isEnabled();
     }
 
+    /** Returns whether the multiple types of data sources is enabled on this device. */
+    public boolean isMultiDataTypeEnabledOnDevice() {
+        if (mHooksForTesting != null) {
+            return mHooksForTesting.isMultiDataTypeEnabledOnDevice();
+        }
+
+        return mHooks.isMultiDataTypeEnabledOnDevice();
+    }
+
     /** Returns whether the sharing Tabs with the system is enabled by default on the device. */
     public boolean isSettingDefaultEnabledByOs() {
         if (mHooksForTesting != null) {

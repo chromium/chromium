@@ -250,7 +250,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableMediaEngagementBypassAutoplayPolicies,
            raw_ref(media::kMediaEngagementBypassAutoplayPolicies)},
           {wf::EnablePaymentApp, raw_ref(features::kServiceWorkerPaymentApps)},
-          {wf::EnablePaymentRequest, raw_ref(features::kWebPayments)},
           {wf::EnablePeriodicBackgroundSync,
            raw_ref(features::kPeriodicBackgroundSync)},
           {wf::EnablePushMessagingSubscriptionChange,

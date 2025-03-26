@@ -26,6 +26,7 @@
                 ],
                 "build_config": "Debug",
                 "config": "x86_builder",
+                "target_arch": "intel",
                 "target_bits": 32,
                 "target_platform": "android"
               },
@@ -57,6 +58,7 @@
                 ],
                 "build_config": "Debug",
                 "config": "x86_builder",
+                "target_arch": "intel",
                 "target_bits": 32,
                 "target_platform": "android"
               },
@@ -93,6 +95,7 @@
                 ],
                 "build_config": "Debug",
                 "config": "x86_builder",
+                "target_arch": "intel",
                 "target_bits": 32,
                 "target_platform": "android"
               },
@@ -129,6 +132,7 @@
                 ],
                 "build_config": "Debug",
                 "config": "x86_builder",
+                "target_arch": "intel",
                 "target_bits": 32,
                 "target_platform": "android"
               },
@@ -165,6 +169,7 @@
                 ],
                 "build_config": "Debug",
                 "config": "x86_builder",
+                "target_arch": "intel",
                 "target_bits": 32,
                 "target_platform": "android"
               },
@@ -201,6 +206,7 @@
                 ],
                 "build_config": "Debug",
                 "config": "x86_builder",
+                "target_arch": "intel",
                 "target_bits": 32,
                 "target_platform": "android"
               },
@@ -237,6 +243,7 @@
                 ],
                 "build_config": "Debug",
                 "config": "x86_builder",
+                "target_arch": "intel",
                 "target_bits": 32,
                 "target_platform": "android"
               },

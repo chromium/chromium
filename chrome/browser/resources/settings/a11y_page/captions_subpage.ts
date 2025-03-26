@@ -37,12 +37,6 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-
       /**
        * Read-only reference to the languages model provided by the
        * 'settings-languages' instance.

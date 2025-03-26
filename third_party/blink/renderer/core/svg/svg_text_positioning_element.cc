@@ -66,21 +66,16 @@ void SVGTextPositioningElement::Trace(Visitor* visitor) const {
 void SVGTextPositioningElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
-  bool update_relative_lengths =
-      attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
-      attr_name == svg_names::kDxAttr || attr_name == svg_names::kDyAttr;
-
-  if (update_relative_lengths)
-    UpdateRelativeLengthsInformation();
-
-  if (update_relative_lengths || attr_name == svg_names::kRotateAttr) {
+  if (attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
+      attr_name == svg_names::kDxAttr || attr_name == svg_names::kDyAttr ||
+      attr_name == svg_names::kRotateAttr) {
     LayoutObject* layout_object = GetLayoutObject();
     if (!layout_object)
       return;
 
-    if (auto* ng_text =
+    if (auto* text =
             LayoutSVGText::LocateLayoutSVGTextAncestor(layout_object)) {
-      ng_text->SetNeedsPositioningValuesUpdate();
+      text->SetNeedsPositioningValuesUpdate();
     }
     MarkForLayoutAndParentResourceInvalidation(*layout_object);
     return;

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>CSS Pseudo-Elements Test: Verify non-valid pseudo classes don't match</title>
+<link rel="author" title="Stephen Chenney" href="mailto:schenney@chromium.org">
+<meta name="assert" content="Verify that :past, :future and :current(...) do not work for ::search-text.">
+<link rel="match" href="search-text-valid-ref.html">
+<link rel="stylesheet" href="support/highlights.css">
+<script src="../support/markers.js"></script>
+<style>
+  ::search-text {
+    color: blue;
+  }
+  ::search-text:past {
+    color: red;
+  }
+  ::search-text:current {
+    color: green;
+  }
+  ::search-text:current() {
+    color: orange;
+  }
+  ::search-text:future {
+    color: purple;
+  }
+</style>
+<div class="highlight_reftest" id="target">Find me and then find me and then find me.</div>
+<script>
+  addSearchTextMarker(target, 0, 4, false);
+  addSearchTextMarker(target, 17, 21, true);
+  addSearchTextMarker(target, 34, 38, false);
+</script>

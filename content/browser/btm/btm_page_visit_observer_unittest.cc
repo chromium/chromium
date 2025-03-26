@@ -52,14 +52,13 @@ TEST_F(BtmPageVisitObserverTest, PreviousPage) {
 
   tester->NavigateAndCommit(url1);
   ASSERT_TRUE(recorder.WaitForSize(1));
-  ASSERT_THAT(recorder.visits(),
-              ElementsAre(AllOf(PreviousPage(HasUrl(GURL())), HasUrl(url1))));
+  EXPECT_EQ(recorder.visits()[0].prev_page.url, GURL());
+  EXPECT_EQ(recorder.visits()[0].navigation.destination.url, url1);
 
   tester->NavigateAndCommit(url2);
   ASSERT_TRUE(recorder.WaitForSize(2));
-  ASSERT_THAT(recorder.visits(),
-              ElementsAre(AllOf(PreviousPage(HasUrl(GURL())), HasUrl(url1)),
-                          AllOf(PreviousPage(HasUrl(url1)), HasUrl(url2))));
+  EXPECT_EQ(recorder.visits()[1].prev_page.url, url1);
+  EXPECT_EQ(recorder.visits()[1].navigation.destination.url, url2);
 }
 
 TEST_F(BtmPageVisitObserverTest, ServerRedirects) {
@@ -78,12 +77,13 @@ TEST_F(BtmPageVisitObserverTest, ServerRedirects) {
   ASSERT_TRUE(recorder.WaitForSize(2));
 
   // Two navigations are observed, the second with a redirect.
-  ASSERT_THAT(
-      recorder.visits(),
-      ElementsAre(AllOf(Navigation(ServerRedirects(IsEmpty())), HasUrl(url1)),
-                  AllOf(PreviousPage(HasUrl(url1)),
-                        Navigation(ServerRedirects(ElementsAre(HasUrl(url2)))),
-                        HasUrl(url3))));
+  const BtmNavigationInfo& navigation1 = recorder.visits()[0].navigation;
+  EXPECT_EQ(navigation1.server_redirects.size(), 0u);
+  EXPECT_EQ(navigation1.destination.url, url1);
+  const BtmNavigationInfo& navigation2 = recorder.visits()[1].navigation;
+  ASSERT_EQ(navigation2.server_redirects.size(), 1u);
+  EXPECT_EQ(navigation2.server_redirects[0].url, url2);
+  EXPECT_EQ(navigation2.destination.url, url3);
 }
 
 TEST_F(BtmPageVisitObserverTest, IgnoreUncommitted) {
@@ -103,9 +103,9 @@ TEST_F(BtmPageVisitObserverTest, IgnoreUncommitted) {
   ASSERT_TRUE(recorder.WaitForSize(2));
 
   // Only url1 and url3 navigations are observed.
-  ASSERT_THAT(recorder.visits(),
-              ElementsAre(HasUrl(url1),
-                          AllOf(PreviousPage(HasUrl(url1)), HasUrl(url3))));
+  EXPECT_EQ(recorder.visits()[0].navigation.destination.url, url1);
+  EXPECT_EQ(recorder.visits()[1].prev_page.url, url1);
+  EXPECT_EQ(recorder.visits()[1].navigation.destination.url, url3);
 }
 
 TEST_F(BtmPageVisitObserverTest, IgnoreSubframes) {
@@ -126,9 +126,9 @@ TEST_F(BtmPageVisitObserverTest, IgnoreSubframes) {
   ASSERT_TRUE(recorder.WaitForSize(2));
 
   // Only url1 and url3 navigations are observed.
-  ASSERT_THAT(recorder.visits(),
-              ElementsAre(HasUrl(url1),
-                          AllOf(PreviousPage(HasUrl(url1)), HasUrl(url3))));
+  EXPECT_EQ(recorder.visits()[0].navigation.destination.url, url1);
+  EXPECT_EQ(recorder.visits()[1].prev_page.url, url1);
+  EXPECT_EQ(recorder.visits()[1].navigation.destination.url, url3);
 }
 
 // Same-document navigations are ignored.
@@ -149,9 +149,9 @@ TEST_F(BtmPageVisitObserverTest, IgnoreSameDocument) {
   ASSERT_TRUE(recorder.WaitForSize(2));
 
   // Only the url1a and url2 navigations are observed.
-  ASSERT_THAT(recorder.visits(),
-              ElementsAre(HasUrl(url1a),
-                          AllOf(PreviousPage(HasUrl(url1a)), HasUrl(url2))));
+  EXPECT_EQ(recorder.visits()[0].navigation.destination.url, url1a);
+  EXPECT_EQ(recorder.visits()[1].prev_page.url, url1a);
+  EXPECT_EQ(recorder.visits()[1].navigation.destination.url, url2);
 }
 
 TEST_F(BtmPageVisitObserverTest, FlushPendingVisitsAtDestruction) {
@@ -160,9 +160,10 @@ TEST_F(BtmPageVisitObserverTest, FlushPendingVisitsAtDestruction) {
   {
     BtmPageVisitObserver observer(
         web_contents(),
-        base::BindLambdaForTesting([&counter](const BtmPageVisitInfo&,
-                                              const BtmNavigationInfo&,
-                                              const GURL&) { ++counter; }));
+        base::BindLambdaForTesting(
+            [&counter](const BtmPageVisitInfo&, const BtmNavigationInfo&) {
+              ++counter;
+            }));
     NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                       GURL("http://a.test/"));
     NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
@@ -173,7 +174,7 @@ TEST_F(BtmPageVisitObserverTest, FlushPendingVisitsAtDestruction) {
 
   // If observer's pending visits isn't flushed, `counter` will (typically)
   // still be 0. But if they are, all three visits will be recorded.
-  ASSERT_EQ(counter, 3);
+  EXPECT_EQ(counter, 3);
 }
 
 }  // namespace content

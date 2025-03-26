@@ -205,6 +205,7 @@ export class ObjectLayerElement extends PolymerElement {
   // The last post selection made. Updated by events from the post selection
   // layer.
   private lastPostSelection: PostSelectionBoundingBox|null = null;
+  private debugMode: boolean;
   // The overlay theme.
   private theme: OverlayTheme;
   private fadeOutAnimations: Animation[] = [];

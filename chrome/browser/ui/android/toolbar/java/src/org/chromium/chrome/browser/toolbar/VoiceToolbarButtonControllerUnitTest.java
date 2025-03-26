@@ -75,7 +75,6 @@ public final class VoiceToolbarButtonControllerUnitTest {
         doReturn(mUrl).when(mTab).getUrl();
 
         doReturn(mContext).when(mTab).getContext();
-        AdaptiveToolbarFeatures.clearParsedParamsForTesting();
         mVoiceToolbarButtonController =
                 new VoiceToolbarButtonController(
                         mContext,

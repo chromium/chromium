@@ -179,6 +179,8 @@ pub fn readme_file_from_package<'a>(
     Ok((dir, readme))
 }
 
+/// REVIEW REQUIREMENT: When adding a new `LicenseKind`, please consult
+/// `readme.rs-third-party-license-review.md`.
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Eq, Hash, PartialEq, Clone, Copy)]
 enum LicenseKind {

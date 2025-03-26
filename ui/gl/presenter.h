@@ -28,6 +28,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
+#include "ui/gfx/android/surface_control_frame_rate.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -111,10 +112,15 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
   // properties.
   virtual bool ScheduleCALayer(const ui::CARendererLayerParams& params);
 
+#if BUILDFLAG(IS_WIN)
   // Schedule a list of DCLayers to be shown at next Present(). Semantics is
   // similar to calling ScheduleOverlayPlane() for every overlay in a frame. All
   // arguments correspond to their DCLayer properties.
   virtual void ScheduleDCLayers(std::vector<DCLayerOverlayParams> overlays);
+
+  // Destroy all visual tree resources and commit, returning true on success.
+  virtual bool DestroyDCLayerTree();
+#endif
 
   // Presents current frame asynchronously. `completion_callback` will be called
   // once all necessary steps were taken to display the frame.
@@ -130,7 +136,7 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
 
 #if BUILDFLAG(IS_ANDROID)
   // Sets preferred frame rate
-  virtual void SetFrameRate(float frame_rate) {}
+  virtual void SetFrameRate(gfx::SurfaceControlFrameRate frame_rate) {}
 #endif
 
   // Android specific. Sets vsync_id of the corresponding Choreographer frame.

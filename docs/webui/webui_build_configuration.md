@@ -72,7 +72,7 @@ scheme: One of ['chrome', 'relative']. Defaults to 'relative'. Specifies whether
 ```
 
 #### **Example**
-```
+```python
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/polymer/css_to_wrapper.gni")
 
@@ -115,7 +115,7 @@ defines: Optional parameter. Specifies additional variables that can be used in
          conditional expressions.
 ```
 #### **Example:**
-```
+```python
 import("//tools/grit/preprocess_if_expr.gni")
 
 # Preprocesses "my_web_component.html.ts" and my_style_module.css.ts in
@@ -223,7 +223,7 @@ enable_source_maps: Defaults to the value of the enable_webui_inline_sourcemaps
 
 #### **Example**
 
-```
+```python
 import("//tools/typescript/ts_library.gni")
 
 # Compiles and outputs my_webui.js, my_web_component.js and
@@ -362,7 +362,7 @@ out_folder: The location where bundled files will be placed in. Defaults to
 ```
 
 #### **Example**
-```
+```python
 import("//ui/webui/resources/tools/bundle_js.gni")
 import ("//chrome/common/features.gni")
 
@@ -406,7 +406,7 @@ deps: Targets generating any files being minified.
 ```
 
 #### **Example**
-```
+```python
 import("//ui/webui/resources/tools/minify_js.gni")
 import ("//chrome/common/features.gni")
 
@@ -444,7 +444,7 @@ deps: Targets generating any files being minified.
 ```
 
 #### **Example**
-```
+```python
 import("//ui/webui/resources/tools/generate_code_cache.gni")
 import ("//chrome/common/features.gni")
 
@@ -497,7 +497,7 @@ resource_path_rewrites: Paths to rewrite. In general, the path in input_files,
 ```
 
 #### **Example**
-```
+```python
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 generate_grd("build_grd") {
@@ -539,7 +539,7 @@ deps: Names of any targets generating the grd file, and names of any targets
 ```
 
 #### **Example**
-```
+```python
 import("//tools/grit/grit_rule.gni")
 
 grit("resources") {
@@ -715,7 +715,7 @@ enable_type_aware_eslint_checks: Defaults to "true". Turns on additional
 ```
 
 #### **Example**
-```
+```python
 import("//ui/webui/resources/tools/build_webui.gni")
 
 build_webui("build") {
@@ -821,7 +821,7 @@ enable_type_aware_eslint_checks: Defaults to "true". Turns on additional
 ```
 
 #### **Example**
-```
+```python
 import("//chrome/test/data/webui/settings/tools/build_webui_tests.gni")
 
 build_webui_tests("build") {
@@ -862,7 +862,7 @@ use any `<if expr>`.
 ```
 
 #### **BUILD.gn file**
-```
+```python
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/typescript/ts_library.gni")
@@ -915,7 +915,7 @@ for the top level index. None of these files use any `<if expr>`.
 ```
 
 #### **BUILD.gn file**
-```
+```python
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/typescript/ts_library.gni")

@@ -55,7 +55,7 @@ class BuildConfigGenerator extends DefaultTask {
 
     // Used to disable breaking changes while the migration to autorolling
     // portions of android_deps is complete. See http://crbug.com/40774645
-    private static final boolean AUTOROLL_MIGRATION_IN_PROGRESS = true
+    private static final boolean AUTOROLL_MIGRATION_IN_PROGRESS = false
 
     // Use this to exclude a dep from being depended upon but keep the target.
     private static final List<String> DISALLOW_DEPS = [
@@ -117,11 +117,6 @@ class BuildConfigGenerator extends DefaultTask {
             com_google_protobuf_protobuf_javalite: '!defined(android_proto_runtime)',
             // Logic for google_play_services_package added below.
     ]
-
-    // Prefixes of autorolled libraries in //third_party/android_deps_autorolled.
-    static final List<String> AUTOROLLED_LIB_PREFIXES = []
-
-    static final String AUTOROLLED_REPO_PATH = 'third_party/android_deps_autorolled'
 
     static final String COPYRIGHT_HEADER = '''\
         # Copyright 2021 The Chromium Authors
@@ -577,7 +572,7 @@ No modifications.
                 gnTarget = aliasedLib
             } else if (depTargetName.startsWith('google_play_services_') || depTargetName.startsWith('google_firebase_')) {
                 gnTarget = '$google_play_services_package:' + depTargetName
-            } else if (!partOfCurrentProject(dep)) {
+            } else if (dep.buildGnPath != pathToBuildGradle) {
                 if (dep.isAndroidx) {
                     gnTarget = "//${ANDROIDX_PROJECT_PATH}:${depTargetName}"
                 } else {

@@ -91,7 +91,6 @@
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager.h"
 #include "chrome/browser/ui/autofill/payments/filled_card_information_bubble_controller_impl.h"
-#include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller_impl.h"
@@ -99,7 +98,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/promos/ios_promos_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/webauthn/content/browser/internal_authenticator_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -192,40 +190,6 @@ void ChromePaymentsAutofillClient::ConfirmExpirationDateFixFlow(
       /*upload_save_card_callback=*/std::move(callback));
 }
 #else   // !BUILDFLAG(IS_ANDROID)
-void ChromePaymentsAutofillClient::ShowLocalCardMigrationDialog(
-    base::OnceClosure show_migration_dialog_closure) {
-  ManageMigrationUiController::CreateForWebContents(web_contents());
-  ManageMigrationUiController* controller =
-      ManageMigrationUiController::FromWebContents(web_contents());
-  controller->ShowBubble(std::move(show_migration_dialog_closure));
-}
-
-void ChromePaymentsAutofillClient::ConfirmMigrateLocalCardToCloud(
-    const LegalMessageLines& legal_message_lines,
-    const std::string& user_email,
-    const std::vector<MigratableCreditCard>& migratable_credit_cards,
-    LocalCardMigrationCallback start_migrating_cards_callback) {
-  ManageMigrationUiController::CreateForWebContents(web_contents());
-  ManageMigrationUiController* controller =
-      ManageMigrationUiController::FromWebContents(web_contents());
-  controller->ShowOfferDialog(legal_message_lines, user_email,
-                              migratable_credit_cards,
-                              std::move(start_migrating_cards_callback));
-}
-
-void ChromePaymentsAutofillClient::ShowLocalCardMigrationResults(
-    bool has_server_error,
-    const std::u16string& tip_message,
-    const std::vector<MigratableCreditCard>& migratable_credit_cards,
-    MigrationDeleteCardCallback delete_local_card_callback) {
-  ManageMigrationUiController::CreateForWebContents(web_contents());
-  ManageMigrationUiController* controller =
-      ManageMigrationUiController::FromWebContents(web_contents());
-  controller->UpdateCreditCardIcon(has_server_error, tip_message,
-                                   migratable_credit_cards,
-                                   delete_local_card_callback);
-}
-
 void ChromePaymentsAutofillClient::ShowWebauthnOfferDialog(
     WebauthnDialogCallback offer_dialog_callback) {
   WebauthnDialogControllerImpl::GetOrCreateForPage(

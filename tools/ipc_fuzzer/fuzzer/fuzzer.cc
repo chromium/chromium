@@ -758,18 +758,38 @@ struct FuzzTraits<gfx::GpuMemoryBufferHandle> {
     int type;
     if (!FuzzParam(&type, fuzzer))
       return false;
-    p->type = static_cast<gfx::GpuMemoryBufferType>(type);
+    auto buffer_type = static_cast<gfx::GpuMemoryBufferType>(type);
+    switch (buffer_type) {
+      case gfx::SHARED_MEMORY_BUFFER: {
+        p->type = buffer_type;
+        base::UnsafeSharedMemoryRegion region;
+        if (!FuzzParam(&region, fuzzer)) {
+          return false;
+        }
+        p->set_region(std::move(region));
+        break;
+      }
+#if BUILDFLAG(IS_WIN)
+      case gfx::DXGI_SHARED_HANDLE: {
+        p->type = buffer_type;
+        base::UnsafeSharedMemoryRegion region;
+        if (!FuzzParam(&region, fuzzer)) {
+          return false;
+        }
+        gfx::DXGIHandle dxgi_handle = gfx::DXGIHandle::CreateFakeForTest();
+        dxgi_handle.set_region(std::move(region));
+        p->set_dxgi_handle(std::move(dxgi_handle));
+        break;
+      }
+#endif
+      default:
+        p->type = buffer_type;
+        break;
+    }
     if (!FuzzParam(&p->offset, fuzzer))
       return false;
     if (!FuzzParam(&p->stride, fuzzer))
       return false;
-    // This reduces fuzzing coverage somewhat, but the UnsafeSharedMemoryRegion
-    // can only be set for GpuMemoryBufferHandle's of the correct type.
-    if ((p->type == gfx::SHARED_MEMORY_BUFFER ||
-         p->type == gfx::DXGI_SHARED_HANDLE) &&
-        !FuzzParam(&p->region(), fuzzer)) {
-      return false;
-    }
     p->type = static_cast<gfx::GpuMemoryBufferType>(type);
     return true;
   }

@@ -35,6 +35,7 @@ static_library("on_task") {
     "//ash/webui/boca_ui",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
+    "//chrome/app:command_ids",
     "//chrome/browser/apps/app_service",
 
     # Explicitly depend on boca to get around with circular dependency on

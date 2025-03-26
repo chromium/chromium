@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/policies/userspace_swap_policy_chromeos.h"
 
 #include "base/allocator/buildflags.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
@@ -80,7 +81,7 @@ class MockUserspaceSwapPolicy : public UserspaceSwapPolicy {
     // Create a simple starting config that can be modified as needed for tests.
     // NOTE: We only initialize the configuration options which are used by the
     // policy.
-    memset(&test_config_, 0, sizeof(test_config_));
+    UNSAFE_TODO(memset(&test_config_, 0, sizeof(test_config_)));
 
     test_config_.enabled = true;
     test_config_.graph_walk_frequency = base::Seconds(10);

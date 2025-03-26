@@ -68,7 +68,6 @@
 #include "content/browser/interest_group/additional_bids_test_util.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
-#include "content/browser/interest_group/privacy_sandbox_coordinator_test_util.h"
 #include "content/browser/interest_group/test_interest_group_observer.h"
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
@@ -91,6 +90,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/privacy_sandbox_coordinator_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_monitor.h"
@@ -28134,8 +28134,8 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
   void ConfigureSignalsServerKeys(
       base::span<const url::Origin> signals_origins) {
     ConfigureTestPrivacySandboxCoordinatorKeys(
-        manager_, TrustedServerAPIType::kTrustedKeyValue, kCoordinatorOrigin,
-        signals_origins);
+        manager_, InterestGroupManager::TrustedServerAPIType::kTrustedKeyValue,
+        kCoordinatorOrigin, signals_origins);
   }
 
   // These test helps set up an auction on simulated public servers with signals

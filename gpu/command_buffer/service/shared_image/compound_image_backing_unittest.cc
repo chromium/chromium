@@ -73,6 +73,7 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       SkAlphaType alpha_type,
       SharedImageUsageSet usage,
       std::string debug_label,
+      bool is_thread_safe,
       gfx::GpuMemoryBufferHandle handle) override {
     return nullptr;
   }

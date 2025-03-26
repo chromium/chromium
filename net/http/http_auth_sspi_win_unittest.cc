@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "net/base/net_errors.h"
@@ -56,7 +57,7 @@ TEST(HttpAuthSSPITest, SplitUserAndDomain) {
 
 TEST(HttpAuthSSPITest, DetermineMaxTokenLength_Normal) {
   SecPkgInfoW package_info;
-  memset(&package_info, 0x0, sizeof(package_info));
+  UNSAFE_TODO(memset(&package_info, 0x0, sizeof(package_info)));
   package_info.cbMaxToken = 1337;
 
   MockSSPILibrary mock_library{L"NTLM"};

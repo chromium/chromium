@@ -691,7 +691,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.DeviceManagement.InstallAttributesStatus"
-    enum="InstallAttributesStatus" expires_after="2025-07-20">
+    enum="InstallAttributesStatus" expires_after="2025-09-21">
   <owner>sadmansakib@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
@@ -1718,7 +1718,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.DeleteEmptyMultigenerationQueueDirectories"
-    enum="Boolean" expires_after="2025-04-06">
+    enum="Boolean" expires_after="2025-10-06">
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
@@ -3010,7 +3010,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.{GSC}.FlashLog" enum="Cr50FlashLogs"
-    expires_after="2025-05-11">
+    expires_after="2025-09-21">
   <owner>apronin@chromium.org</owner>
   <owner>vbendeb@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>

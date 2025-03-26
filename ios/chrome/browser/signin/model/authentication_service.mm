@@ -371,49 +371,6 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
   crash_keys::SetCurrentlySignedIn(true);
 }
 
-void AuthenticationService::GrantSyncConsent(
-    id<SystemIdentity> identity,
-    signin_metrics::AccessPoint access_point) {
-  // TODO(crbug.com/40067025): Turn sync on was deprecated. Remove
-  // `GrantSyncConsent()` as it is obsolete.
-  DUMP_WILL_BE_CHECK(access_point !=
-                     signin_metrics::AccessPoint::kPostDeviceRestoreSigninPromo)
-      << "Turn sync on should not be available as sync promos are deprecated "
-         "[access point = "
-      << int(access_point) << "]";
-  DCHECK(account_manager_service_->IsValidIdentity(identity));
-  DCHECK(identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-  const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
-      GaiaId(identity.gaiaID), base::SysNSStringToUTF8(identity.userEmail));
-  // Ensure that the account the user is trying to sign into has been loaded
-  // from the SSO library and that hosted_domain is set (should be the proper
-  // hosted domain or kNoHostedDomainFound that are both non-empty strings).
-  const AccountInfo account_info =
-      identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
-  CHECK(!account_info.IsEmpty());
-  CHECK(!account_info.hosted_domain.empty());
-
-  // When sync is disabled by enterprise, sync consent is not removed.
-  // Consent can be skipped.
-  if (!HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
-    const signin::PrimaryAccountMutator::PrimaryAccountError error =
-        identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
-            account_id, signin::ConsentLevel::kSync, access_point);
-    CHECK_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
-             error)
-        << "SetPrimaryAccount error: " << static_cast<int>(error);
-  }
-  CHECK_EQ(account_id,
-           identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync));
-
-  // Kick-off sync: The authentication error UI (sign in infobar and warning
-  // badge in settings screen) check the sync auth error state. Sync
-  // needs to be kicked off so that it resets the auth error quickly once
-  // `identity` is reauthenticated.
-  sync_service_->SetSyncFeatureRequested();
-}
-
 void AuthenticationService::SignOut(
     signin_metrics::ProfileSignout signout_source,
     ProceduralBlock completion) {

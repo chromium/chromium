@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">भाषा सेटिंग्ज दर्शवा</translation>
 <translation id="1459693405370120464">हवामान</translation>
 <translation id="1460620680449458626">व्हॉल्यूम म्यूट केलेला आहे.</translation>
+<translation id="1462439140224375968">Google दस्तऐवज तयार केला आहे</translation>
 <translation id="14648076227129703">हे कॅमेरा परवानगी असलेल्या <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> आणि सर्व अ‍ॅप्स व वेबसाइटना कॅमेराच्या अ‍ॅक्सेसची अनुमती देते</translation>
 <translation id="1467432559032391204">डावे</translation>
 <translation id="146902737843070955">तुमच्या अ‍ॅडमिनिस्ट्रेटरने या बदलाची विनंती केली आहे</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">हॉटस्पॉटचे तपशील दाखवा. हॉटस्पॉट बंद आहे.</translation>
 <translation id="3017079585324758401">बॅकग्राउंड</translation>
 <translation id="3018135054368884502">मीडिया फास्ट फॉरवर्ड करा</translation>
+<translation id="3026897869154397692">Calendar मध्ये जोडले आहेत</translation>
 <translation id="3033545621352269033">सुरू</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> सह एकत्र करा</translation>
 <translation id="3036649622769666520">फाइल उघडा</translation>
@@ -1012,6 +1014,7 @@
 <translation id="4351244548802238354">डायलॉग बंद करा</translation>
 <translation id="4356872429719185452">हॉटस्पॉटचे तपशील दाखवा. हॉटस्पॉट सुरू करत आहे.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  रेकॉर्ड करत आहे</translation>
+<translation id="4368227575116094370">Google शीट तयार करा</translation>
 <translation id="4371348193907997655">कास्ट करा सेटिंग्ज</translation>
 <translation id="4371834685492830207">पिनमध्ये फक्त वैध वर्ण असणे आवश्यक आहे</translation>
 <translation id="4375482231364171368">अ‍ॅड्रेस बारमध्ये शोधा</translation>
@@ -1481,6 +1484,7 @@
 <translation id="5825969630400862129">कनेक्‍ट केलेली डिव्हाइस सेटिंग्ज</translation>
 <translation id="5830180081891717894">आणखी <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> वर <ph name="ROUTE_TITLE" /> थांबवा</translation>
+<translation id="5840658767386246331">Google वापरून शोधा</translation>
 <translation id="5841296711770970362">पुढील ट्रॅकवर जा</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> चा हॉटस्पॉट सुरू आहे, कोणतीही डिव्हाइस कनेक्ट केलेली नाहीत</translation>
 <translation id="584525477304726060">मोठे करण्यासाठी धरून ठेवा</translation>
@@ -1512,6 +1516,7 @@
 <translation id="595202126637698455">कार्यप्रदर्शन ट्रेसिंग सक्षम केले</translation>
 <translation id="5955304353782037793">अ‍ॅप</translation>
 <translation id="5958529069007801266">पर्यवेक्षित वापरकर्ता</translation>
+<translation id="596035801491797438">चेहरा नियंत्रण बंद करा</translation>
 <translation id="5960410286721553511">तुमच्या फोनमधील अलीकडील फोटो आणि मीडिया पहा</translation>
 <translation id="5965524703725988602">गडद थीम टॉगल करा. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">विंडोदरम्यान पुढे जा</translation>
@@ -1894,6 +1899,7 @@
 <translation id="7228968829656641943">शोधण्यासाठी माझ्या स्क्रीनवरील भाग निवडा. कीबोर्ड नेव्हिगेशनसाठी टॅब त्यानंतर स्पेस प्रेस करा.</translation>
 <translation id="7229029500464092426">मेमरी <ph name="AVAILABLE_MEMORY" /> | एकूण <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">दोन्ही माउस बटणे</translation>
+<translation id="7240636904654154599">Google Sheet तयार केली आहे</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% बॅटरी शिल्लक आहे. तुमचे डिव्हाइस पॉवरशी कनेक्ट करा.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. अपडेट लागू करण्यासाठी तुम्ही हे Chromebook रीस्टार्ट करणे आवश्यक आहे. याला सुमारे एक मिनिट लागू शकते.</translation>
 <translation id="7256057185598509352">ExpressKey २</translation>
@@ -2404,6 +2410,7 @@
 <translation id="8921624153894383499">Google Assistant ही भाषा बोलत नाही.</translation>
 <translation id="8926951137623668982">शेल्फ नेहमी लपवलेले आहे</translation>
 <translation id="8929566928381252430">कॅप्स लॉक वापरण्याचा प्रयत्न करत आहात का? वापरा</translation>
+<translation id="8929623844713377237">संपर्क तयार केला आहे</translation>
 <translation id="8934418770423095813">Google Doc तयार करा</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{१ फाइल}other{# फाइल}}</translation>
 <translation id="8936501819958976551">डीॲक्टिव्हेट केले आहे</translation>

@@ -39,9 +39,9 @@ ax::mojom::blink::AriaNotificationPriority AsEnum(
 AriaNotification::AriaNotification(const String& announcement,
                                    const AriaNotificationOptions* options)
     : announcement_(announcement),
-      notification_id_(options->notificationId()),
+      priority_(AsEnum(options->priority())),
       interrupt_(AsEnum(options->interrupt())),
-      priority_(AsEnum(options->priority())) {}
+      type_(options->type()) {}
 
 void AriaNotifications::Add(const String& announcement,
                             const AriaNotificationOptions* options) {

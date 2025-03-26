@@ -1346,7 +1346,7 @@ class IOSurfaceImageBackingFactoryGMBTest
 
     auto backing = backing_factory_->CreateSharedImage(
         mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-        "TestLabel", std::move(handle));
+        "TestLabel", /*is_thread_safe=*/false, std::move(handle));
 
     if (!should_succeed) {
       return nullptr;

@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -207,7 +208,7 @@ void PdfConverterImpl::Initialize(scoped_refptr<base::RefCountedMemory> data) {
   }
 
   PRINTER_LOG(EVENT) << "PdfConverter created. Mode: " << settings_.mode;
-  memcpy(memory.mapping.memory(), data->front(), data->size());
+  UNSAFE_TODO(memcpy(memory.mapping.memory(), data->front(), data->size()));
 
   GetPrintingService()->BindPdfToEmfConverterFactory(
       pdf_to_emf_converter_factory_.BindNewPipeAndPassReceiver());

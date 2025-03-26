@@ -16,6 +16,7 @@ import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/load_timing_internal_info.mojom";
 import "services/network/public/mojom/source_type.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
@@ -74,6 +75,10 @@ struct URLResponseHead {
   // Detailed timing information used by the WebTiming, HAR and Developer
   // Tools.  Includes socket ID and socket reuse information.
   LoadTimingInfo load_timing;
+
+  // Load timing internal information that is exposed only to trustworthy
+  // processes. Only provided if request has `trusted_params`.
+  LoadTimingInternalInfo? load_timing_internal_info;
 
   // Set to true if the request had devtools_request_id set and OnRawRequest
   // and OnRawResponse are called on the corresponding DevToolsObserver. This

@@ -140,14 +140,16 @@ void ElementInternals::setFormValue(const V8ControlValue* value,
   NotifyFormStateChanged();
 }
 
-HTMLFormElement* ElementInternals::form(ExceptionState& exception_state) const {
+HTMLElement* ElementInternals::formForBinding(
+    ExceptionState& exception_state) const {
   if (!IsTargetFormAssociated()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "The target element is not a form-associated custom element.");
     return nullptr;
   }
-  return ListedElement::Form();
+
+  return ListedElement::RetargetedForm();
 }
 
 void ElementInternals::setValidity(ValidityStateFlags* flags,

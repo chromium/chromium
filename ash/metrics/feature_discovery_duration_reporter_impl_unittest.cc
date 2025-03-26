@@ -9,6 +9,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/test/metrics/histogram_tester.h"
 
@@ -208,7 +209,9 @@ TEST_F(FeatureDiscoveryDurationReporterImplTest,
 // Verifies each feature that is supported by the feature discovery duration
 // reporter has the unique feature name.
 TEST_F(FeatureDiscoveryDurationReporterImplTest, VerifyFeatureNameIsUnique) {
-  auto cmp = [](const char* a, const char* b) { return std::strcmp(a, b) > 0; };
+  auto cmp = [](const char* a, const char* b) {
+    return UNSAFE_TODO(std::strcmp(a, b)) > 0;
+  };
   std::set<const char*, decltype(cmp)> feature_names(cmp);
   for (const auto& feature_info : feature_discovery::kTrackableFeatureArray) {
     bool success = feature_names.emplace(feature_info.name).second;

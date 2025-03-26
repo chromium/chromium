@@ -324,5 +324,8 @@ json_to_struct("regional_settings") {
   source = "regional_settings.json"
   schema_file = "regional_settings_schema.json"
   namespace = "TemplateURLPrepopulateData"
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//third_party/search_engines_data:prepopulated_engines",
+  ]
 }

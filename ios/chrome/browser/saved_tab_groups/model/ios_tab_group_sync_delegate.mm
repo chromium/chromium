@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_delegate.h"
 
+#import <optional>
 #import <vector>
 
 #import "base/check.h"
@@ -86,7 +87,8 @@ IOSTabGroupSyncDelegate::IOSTabGroupSyncDelegate(
 
 IOSTabGroupSyncDelegate::~IOSTabGroupSyncDelegate() {}
 
-void IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
+std::optional<LocalTabGroupID>
+IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
     const base::Uuid& sync_tab_group_id,
     std::unique_ptr<TabGroupActionContext> context) {
   IOSTabGroupActionContext* ios_context =
@@ -96,7 +98,7 @@ void IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
 
   if (!saved_tab_group || !origin_browser) {
     // The group doesn't exist or there is no origin browser.
-    return;
+    return std::nullopt;
   }
 
   Browser* target_browser = origin_browser;
@@ -106,7 +108,7 @@ void IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
   const TabGroup* group = tab_group_info.tab_group;
   if (group) {
     if (!tab_group_info.browser) {
-      return;
+      return std::nullopt;
     }
     target_browser = tab_group_info.browser;
 
@@ -145,7 +147,7 @@ void IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
       }
 
       if (!target_scene_state.UIEnabled) {
-        return;
+        return std::nullopt;
       }
 
       CommandDispatcher* dispatcher = target_browser->GetCommandDispatcher();
@@ -156,7 +158,7 @@ void IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
           HandlerForProtocol(dispatcher, TabGroupsCommands);
       [tabGroupsHandler showTabGroup:group];
 
-      return;
+      return saved_tab_group->local_group_id();
     }
     base::RecordAction(base::UserMetricsAction("MobileOpenGroupOpenInBrowser"));
   } else {
@@ -165,7 +167,7 @@ void IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
     std::optional<LocalTabGroupID> tab_group_id =
         CreateLocalTabGroupImpl(*saved_tab_group, origin_browser);
     if (!tab_group_id) {
-      return;
+      return std::nullopt;
     }
     LocalTabGroupInfo new_tab_group_info =
         GetLocalTabGroupInfo(browser_list_, tab_group_id.value());
@@ -189,6 +191,8 @@ void IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
             HandlerForProtocol(dispatcher, TabGridCommands);
         [tabGridHandler bringGroupIntoView:group animated:NO];
       });
+
+  return group->tab_group_id();
 }
 
 std::unique_ptr<ScopedLocalObservationPauser>

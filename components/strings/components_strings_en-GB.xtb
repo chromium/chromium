@@ -32,7 +32,6 @@
 <translation id="1055184225775184556">&amp;Undo add</translation>
 <translation id="1056898198331236512">Warning</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Press tab then Enter to play the Dino Run game in Chrome</translation>
-<translation id="1058479211578257048">Saving cards...</translation>
 <translation id="1060136083665017312">Game Systems and Consoles</translation>
 <translation id="1060320201901229167">Envelope Kaku 5</translation>
 <translation id="1062407476771304334">Replace</translation>
@@ -115,6 +114,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1195073053842921378">This address will be deleted from this device</translation>
 <translation id="1195558154361252544">Notifications are automatically blocked for all sites except ones that you allow</translation>
 <translation id="1197088940767939838">Orange</translation>
+<translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> removed tab '<ph name="WEBSITE_TITLE" />'</translation>
 <translation id="1201402288615127009">Next</translation>
 <translation id="1201895884277373915">More from this site</translation>
 <translation id="1202892408424955784">Tracked products</translation>
@@ -409,7 +409,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1692622044604477956">Film listings and cinema showtimes</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> Chrome auto-deletes topics that are older than four weeks. As you keep browsing, a topic might reappear on the list. You can also block topics that you don’t want Chrome to share with sites and turn ad topics off at any time in Chrome settings.</translation>
-<translation id="1697532407822776718">You're all set!</translation>
 <translation id="1699651774646344471">You can now use addresses from your Google Account</translation>
 <translation id="1700542542921501212">You can use <ph name="SEARCH_ENGINE_NAME" /> to search the web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -886,7 +885,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2518584823165598232">This card is not available. Please contact your card provider.</translation>
 <translation id="2521385132275182522">Staple bottom right</translation>
 <translation id="2521736961081452453">Create form</translation>
-<translation id="2523886232349826891">Saved on this device only</translation>
 <translation id="2524461107774643265">Add More Information</translation>
 <translation id="2526062290525841862">To run this app, re-enable isolated web app developer mode</translation>
 <translation id="2526280916094749336">You can use saved addresses across Google products. This address will be saved in your Google Account, <ph name="ACCOUNT" />.</translation>
@@ -1343,7 +1341,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3362968246557010467">This policy was automatically copied from the deprecated <ph name="OLD_POLICY" /> policy. You should use this policy instead.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> wants to use your virtual reality device and data</translation>
-<translation id="3366477098757335611">View cards</translation>
 <translation id="3369192424181595722">Clock error</translation>
 <translation id="3371064404604898522">Set Chrome as the default browser</translation>
 <translation id="337363190475750230">Deprovisioned</translation>
@@ -1742,6 +1739,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4031179711345676612">Microphone allowed</translation>
 <translation id="4036753017940930924">Lots and land</translation>
 <translation id="4039506337798853114">To show your cursor, press |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045441967987592849">Re-open</translation>
 <translation id="4047351652147966654">18 in x 24 in</translation>
 <translation id="404831776305217138">Update URL for extension with ID ‘<ph name="EXTENSION_ID" />’ is invalid or uses an unsupported scheme. Supported schemes are: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> and <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">You will be able to use it across Google products</translation>
@@ -1902,7 +1900,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4282280603030594840">Vehicle shopping</translation>
 <translation id="4282346679996504092">Alerts for this product have been turned off and the bookmark removed</translation>
 <translation id="4285498937028063278">Unpin</translation>
-<translation id="428639260510061158">{NUM_CARDS,plural, =1{This card has been saved in your Google Account}other{These cards have been saved in your Google Account}}</translation>
 <translation id="4287495839370498922">Enhanced ad privacy in Chrome</translation>
 <translation id="4290920330097335010">Never allow</translation>
 <translation id="4296207570293932800">New ads privacy feature now available</translation>
@@ -1965,7 +1962,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4387692837058041921">File upload to Microsoft OneDrive has been paused</translation>
-<translation id="4389931020843542579">Loading tab group</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4395550503472021297">This policy is controlling the default behaviour of the following policies: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Opens a pop-up to verify on your bank's website</translation>
@@ -2047,7 +2043,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4569155249847375786">Verified</translation>
 <translation id="457875822857220463">Delivery</translation>
 <translation id="4579699065574932398">Banking</translation>
-<translation id="4582204425268416675">Remove card</translation>
 <translation id="4582595824823167856">Get a text message</translation>
 <translation id="4586607503179159908">Payment method verified</translation>
 <translation id="4587425331216688090">Remove address from Chrome?</translation>
@@ -2430,6 +2425,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5255771248404149177">Your card provider wants to make sure that it's you</translation>
 <translation id="5255833070095767006">350 mm x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Administrator policy doesn’t recommend copying this file to <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend copying these files to <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="5258473597674772367">The '<ph name="GROUP_NAME" />' tab group is no longer available</translation>
 <translation id="5263867360296733198">Review is required before uploading</translation>
 <translation id="5266128565379329178">Bind top</translation>
 <translation id="5269225904387178860">Quad punch bottom</translation>
@@ -2704,7 +2700,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5730040223043577876">Chrome recommends resetting your password if you reused it on other sites.</translation>
 <translation id="5732392974455271431">Your parents can unblock it for you</translation>
 <translation id="573555826359077410">Create form button, activate to quickly create a new form in Google Forms</translation>
-<translation id="5737183892635480227">{NUM_CARDS,plural, =1{Save card in your Google Account}other{Save cards in your Google Account}}</translation>
 <translation id="5738385766833540397">Manage how you receive price drop alerts for products that you track</translation>
 <translation id="573974402615125334">To share, join and collaborate in tab groups, sync your history and tabs</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
@@ -2793,7 +2788,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5921185718311485855">On</translation>
 <translation id="5921639886840618607">Save card to Google Account?</translation>
 <translation id="5921952831792678223">Pickup trucks</translation>
-<translation id="5922853866070715753">Almost finished</translation>
 <translation id="5923492272538889093">Use device unlock instead of CVC?</translation>
 <translation id="5924510104057992926">Review is required before opening</translation>
 <translation id="5924782825030413055">Source of last consent update:</translation>
@@ -2881,7 +2875,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6055982527635883756">Envelope (archival)</translation>
 <translation id="6057177372083677067">Online video</translation>
 <translation id="6058646026409894363">Civil engineering</translation>
-<translation id="6058977677006700226">Use your cards on all your devices?</translation>
 <translation id="6059925163896151826">USB devices</translation>
 <translation id="6060009363608157444">Invalid DnsOverHttps mode.</translation>
 <translation id="6061154937977953833">Wrestling</translation>
@@ -3155,6 +3148,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6519885440226079262">Can ask to track your hands</translation>
 <translation id="6520026037299163656">Web apps and online tools</translation>
 <translation id="65203098586853226">Translating <ph name="SOURCE" /> to <ph name="TARGET" /></translation>
+<translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> joined '<ph name="GROUP_NAME" />' tab group</translation>
 <translation id="6521745193039995384">Not active</translation>
 <translation id="6522682797352430154">Classical music</translation>
 <translation id="6524830701589638230">Manage accessibility settings button, activate to personalise your accessibility tools in Chrome settings</translation>
@@ -3440,7 +3434,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="704738887031336226">Show <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />pay over time<ph name="PAY_OVER_TIME_HELP_LINK_END" /> options at checkout</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">You attempted to reach <ph name="DOMAIN" />, but the server presented a certificate whose validity period is too long to be trustworthy.</translation>
-<translation id="705310974202322020">{NUM_CARDS,plural, =1{This card can't be saved at the moment}other{These cards can't be saved at the moment}}</translation>
 <translation id="7053983685419859001">Block</translation>
 <translation id="7054717457611655239">From now on, save your files to <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> verified that <ph name="ISSUER" /> issued this website's certificate.</translation>
@@ -3835,7 +3828,6 @@ Additional details:
 <translation id="7690647519407127574">Ofuku Hagaki Postcard</translation>
 <translation id="7693583928066320343">Page order received</translation>
 <translation id="769424100851389104">Start update now</translation>
-<translation id="769721561045429135">At the moment, you have cards that can only be used on this device. Click Continue to review cards.</translation>
 <translation id="7697837508203274589">Live sporting events</translation>
 <translation id="7698864304447945242">Update Google Play Services for AR?</translation>
 <translation id="7701040980221191251">None</translation>
@@ -4000,7 +3992,6 @@ Additional details:
 <translation id="8009225694047762179">Manage passwords</translation>
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />Try deleting your cookies<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">10 in x 11 in</translation>
-<translation id="8012116502927253373">{NUM_CARDS,plural, =1{This card and its billing address will be saved. You'll be able to use it when signed in to <ph name="USER_EMAIL" />.}other{These cards and their billing addresses will be saved. You'll be able to use them when signed in to <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8012647001091218357">We could not reach your parents at the moment. Please try again.</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">Travel Agencies and Services</translation>
@@ -4058,7 +4049,6 @@ Additional details:
 <translation id="8094917007353911263">The network that you are using may require you to visit <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
-<translation id="8100588592594801589">The invalid cards have been removed</translation>
 <translation id="8103161714697287722">Payment Method</translation>
 <translation id="8103643211515685474">Print anyway</translation>
 <translation id="8105368624971345109">Turn Off</translation>
@@ -4682,7 +4672,6 @@ Additional details:
 <translation id="940524522703752213">Your file upload to <ph name="CLOUD_PROVIDER" /> will begin in <ph name="MINUTES" /> minutes</translation>
 <translation id="944578681290094302">Show which rewards and benefits are available for your cards at checkout. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Learn about card benefits<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome blocks sites from using third-party cookies to track you as you browse.</translation>
-<translation id="945855313015696284">Check the info below and delete any invalid cards</translation>
 <translation id="94613679163347541">Compare <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new site in Google Sites quickly</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome will limit cookies again today}=1{Chrome will limit cookies again tomorrow}other{# days until Chrome limits cookies again}}</translation>

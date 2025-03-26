@@ -31,6 +31,17 @@ inline constexpr std::array kSpanifyManualPathsToIgnore = {
     // win:pe_image target that uses this file does not depend on base/.
     "base/no_destructor.h",
 
+    // dwarf_helpers from //base/BUILD.gn is a dependency of base and can't
+    // depend on it and thus can't use base::span.
+    "base/debug/buffered_dwarf_reader.cc",
+    "base/debug/buffered_dwarf_reader.h",
+    "base/debug/dwarf_line_no.cc",
+    "base/debug/dwarf_line_no.h",
+
+    // span_unittests explicitly wants to test compatibility of certain types,
+    // rewriting would break that.
+    "base/containers/span_unittest.cc"
+
     // Can't depend on //base, pointers/references under this directory can't be
     // rewritten.
     "testing/rust_gtest_interop/",

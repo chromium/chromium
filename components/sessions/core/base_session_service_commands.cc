@@ -165,6 +165,19 @@ std::unique_ptr<SessionCommand> CreateAddExtraDataCommand(
   return std::make_unique<SessionCommand>(command, pickle);
 }
 
+std::unique_ptr<SessionCommand> CreateSetPlatformSessionIdCommand(
+    SessionCommand::id_type command_id,
+    const std::string& platform_session_id) {
+  base::Pickle pickle;
+  static const SessionCommand::size_type max_id_size =
+      std::numeric_limits<SessionCommand::size_type>::max() - 1024;
+  int bytes_written = 0;
+
+  WriteStringToPickle(pickle, &bytes_written, max_id_size, platform_session_id);
+
+  return std::make_unique<SessionCommand>(command_id, pickle);
+}
+
 bool RestoreUpdateTabNavigationCommand(
     const SessionCommand& command,
     sessions::SerializedNavigationEntry* navigation,
@@ -258,6 +271,14 @@ bool RestoreAddExtraDataCommand(const SessionCommand& command,
 
   return ReadSessionIdFromPickle(&it, session_id) && it.ReadString(key) &&
          it.ReadString(data);
+}
+
+bool RestoreSetPlatformSessionIdCommand(const SessionCommand& command,
+                                        std::string* platform_session_id) {
+  base::Pickle pickle = command.PayloadAsPickle();
+  base::PickleIterator iterator(pickle);
+
+  return iterator.ReadString(platform_session_id);
 }
 
 }  // namespace sessions

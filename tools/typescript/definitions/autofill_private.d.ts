@@ -217,9 +217,15 @@ declare global {
         editEntityTypeString: string;
       }
 
+      export interface DateValue {
+        year: string;
+        month: string;
+        day: string;
+      }
+
       export interface AttributeInstance {
         type: AttributeType;
-        value: string;
+        value: string|DateValue;
       }
 
       export interface EntityInstance {
@@ -256,7 +262,6 @@ declare global {
       export function getCreditCardList(): Promise<CreditCardEntry[]>;
       export function getIbanList(): Promise<IbanEntry[]>;
       export function isValidIban(ibanValue: string): Promise<boolean>;
-      export function migrateCreditCards(): void;
       export function logServerCardLinkClicked(): void;
       export function logServerIbanLinkClicked(): void;
       export function addVirtualCard(cardId: string): void;
@@ -268,8 +273,6 @@ declare global {
       export function checkIfDeviceAuthAvailable(): Promise<boolean>;
       export function bulkDeleteAllCvcs(): void;
       export function setAutofillSyncToggleEnabled(enabled: boolean): void;
-      export function isUserEligibleForAutofillImprovements(): Promise<boolean>;
-      export function predictionImprovementsIphFeatureUsed(): void;
       export function addOrUpdateEntityInstance(entityInstance: EntityInstance):
           void;
       export function removeEntityInstance(guid: string): void;

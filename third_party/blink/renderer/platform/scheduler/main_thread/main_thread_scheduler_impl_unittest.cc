@@ -38,6 +38,7 @@
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/platform/scheduler/common/auto_advancing_virtual_time_domain.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/idle_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/find_in_page_budget_pool_controller.h"
@@ -114,6 +115,14 @@ class MockFrameDelegate : public FrameScheduler::Delegate {
 
  private:
   base::UnguessableToken agent_cluster_id_ = base::UnguessableToken::Create();
+};
+
+class MockWidgetSchedulerDelegate : public WidgetScheduler::Delegate {
+ public:
+  MockWidgetSchedulerDelegate() = default;
+  ~MockWidgetSchedulerDelegate() override = default;
+
+  MOCK_METHOD(void, RequestBeginMainFrameNotExpected, (bool));
 };
 
 }  // namespace
@@ -426,7 +435,10 @@ class MainThreadSchedulerImplTest : public testing::Test {
                              /*is_in_embedded_frame_tree=*/false,
                              FrameScheduler::FrameType::kMainFrame);
 
-    widget_scheduler_ = scheduler_->CreateWidgetScheduler();
+    widget_scheduler_delegate_ =
+        std::make_unique<NiceMock<MockWidgetSchedulerDelegate>>();
+    widget_scheduler_ =
+        scheduler_->CreateWidgetScheduler(widget_scheduler_delegate_.get());
     input_task_runner_ = widget_scheduler_->InputTaskRunner();
 
     loading_control_task_runner_ =
@@ -481,13 +493,23 @@ class MainThreadSchedulerImplTest : public testing::Test {
   }
 
   void TearDown() override {
-    widget_scheduler_.reset();
+    ShutdownWidgetScheduler();
     main_frame_scheduler_.reset();
     page_scheduler_.reset();
     agent_group_scheduler_ = nullptr;
     scheduler_->Shutdown();
     base::RunLoop().RunUntilIdle();
     scheduler_.reset();
+  }
+
+  void ShutdownWidgetScheduler() {
+    if (!widget_scheduler_) {
+      return;
+    }
+    widget_scheduler_->WillShutdown();
+    widget_scheduler_delegate_.reset();
+    widget_scheduler_->Shutdown();
+    widget_scheduler_.reset();
   }
 
   virtual base::TimeTicks Now() {
@@ -507,21 +529,23 @@ class MainThreadSchedulerImplTest : public testing::Test {
     test_task_runner_->AdvanceMockTickClock(delta);
   }
 
-  void DoMainFrame() {
+  void DoMainFrame(WidgetScheduler* widget_scheduler) {
     viz::BeginFrameArgs begin_frame_args = viz::BeginFrameArgs::Create(
         BEGINFRAME_FROM_HERE, 0, next_begin_frame_number_++, Now(),
         base::TimeTicks(), base::Milliseconds(16), viz::BeginFrameArgs::NORMAL);
     begin_frame_args.on_critical_path = false;
-    scheduler_->WillBeginFrame(begin_frame_args);
-    scheduler_->DidCommitFrameToCompositor();
+    widget_scheduler->WillBeginFrame(begin_frame_args);
+    widget_scheduler->DidCommitFrameToCompositor();
   }
+
+  void DoMainFrame() { DoMainFrame(widget_scheduler_.get()); }
 
   void DoMainFrameOnCriticalPath() {
     viz::BeginFrameArgs begin_frame_args = viz::BeginFrameArgs::Create(
         BEGINFRAME_FROM_HERE, 0, next_begin_frame_number_++, Now(),
         base::TimeTicks(), base::Milliseconds(16), viz::BeginFrameArgs::NORMAL);
     begin_frame_args.on_critical_path = true;
-    scheduler_->WillBeginFrame(begin_frame_args);
+    widget_scheduler_->WillBeginFrame(begin_frame_args);
   }
 
   void ForceBlockingInputToBeExpectedSoon() {
@@ -718,6 +742,23 @@ class MainThreadSchedulerImplTest : public testing::Test {
   void SimulateThrottleableTask(base::TimeDelta duration) {
     test_task_runner_->AdvanceMockTickClock(duration);
     simulate_throttleable_task_ran_ = true;
+  }
+
+  void SimulateInitializingCompositingWithTask(
+      scoped_refptr<WidgetScheduler>* widget_scheduler,
+      WidgetScheduler::Delegate* delegate) {
+    scheduler_->DefaultTaskQueue()
+        ->GetTaskRunnerWithDefaultTaskType()
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(
+                       [](scoped_refptr<WidgetScheduler>* widget_scheduler,
+                          WidgetScheduler::Delegate* delegate,
+                          MainThreadSchedulerImpl* scheduler) {
+                         *widget_scheduler =
+                             scheduler->CreateWidgetScheduler(delegate);
+                       },
+                       widget_scheduler, delegate, scheduler_.get()));
+    base::RunLoop().RunUntilIdle();
   }
 
   void EnableIdleTasks() { DoMainFrame(); }
@@ -961,6 +1002,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
   Persistent<AgentGroupSchedulerImpl> agent_group_scheduler_;
   std::unique_ptr<MockPageSchedulerImpl> page_scheduler_;
   std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler_;
+  std::unique_ptr<MockWidgetSchedulerDelegate> widget_scheduler_delegate_;
   scoped_refptr<WidgetScheduler> widget_scheduler_;
 
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
@@ -3004,20 +3046,27 @@ TEST_F(MainThreadSchedulerImplTest, LoadingControlTasks) {
 
 TEST_F(MainThreadSchedulerImplTest, RequestBeginMainFrameNotExpected) {
   scheduler_->OnPendingTasksChanged(true);
+  EXPECT_CALL(*widget_scheduler_delegate_,
+              RequestBeginMainFrameNotExpected(true))
+      .Times(1);
+  base::RunLoop().RunUntilIdle();
   EXPECT_CALL(*page_scheduler_, RequestBeginMainFrameNotExpected(true))
-      .Times(1)
-      .WillRepeatedly(testing::Return(true));
+      .Times(0);
   base::RunLoop().RunUntilIdle();
 
   Mock::VerifyAndClearExpectations(page_scheduler_.get());
+  Mock::VerifyAndClearExpectations(widget_scheduler_delegate_.get());
 
   scheduler_->OnPendingTasksChanged(false);
+  EXPECT_CALL(*widget_scheduler_delegate_,
+              RequestBeginMainFrameNotExpected(false))
+      .Times(1);
   EXPECT_CALL(*page_scheduler_, RequestBeginMainFrameNotExpected(false))
-      .Times(1)
-      .WillRepeatedly(testing::Return(true));
+      .Times(0);
   base::RunLoop().RunUntilIdle();
 
   Mock::VerifyAndClearExpectations(page_scheduler_.get());
+  Mock::VerifyAndClearExpectations(widget_scheduler_delegate_.get());
 }
 
 TEST_F(MainThreadSchedulerImplTest,
@@ -3025,12 +3074,142 @@ TEST_F(MainThreadSchedulerImplTest,
   scheduler_->OnPendingTasksChanged(true);
   scheduler_->OnPendingTasksChanged(true);
   // Multiple calls should result in only one call.
+  EXPECT_CALL(*widget_scheduler_delegate_,
+              RequestBeginMainFrameNotExpected(true))
+      .Times(1);
   EXPECT_CALL(*page_scheduler_, RequestBeginMainFrameNotExpected(true))
-      .Times(1)
-      .WillRepeatedly(testing::Return(true));
+      .Times(0);
   base::RunLoop().RunUntilIdle();
 
   Mock::VerifyAndClearExpectations(page_scheduler_.get());
+  Mock::VerifyAndClearExpectations(widget_scheduler_delegate_.get());
+}
+
+TEST_F(MainThreadSchedulerImplTest,
+       IdleTasksPostedBeforeWidgetSchedulerCreated) {
+  // Start without any `WidgetScheduler`s registered.
+  ShutdownWidgetScheduler();
+
+  scheduler_->OnPendingTasksChanged(true);
+  base::RunLoop().RunUntilIdle();
+  // Simulate initializing compositing after an idle task has been posted.
+  auto delegate = std::make_unique<NiceMock<MockWidgetSchedulerDelegate>>();
+  scoped_refptr<WidgetScheduler> widget_scheduler;
+  EXPECT_CALL(*delegate, RequestBeginMainFrameNotExpected(true)).Times(1);
+  SimulateInitializingCompositingWithTask(&widget_scheduler, delegate.get());
+  Mock::VerifyAndClearExpectations(delegate.get());
+
+  widget_scheduler->WillShutdown();
+  widget_scheduler->Shutdown();
+}
+
+TEST_F(MainThreadSchedulerImplTest,
+       RequestBeginMainFrameNotExpected_MultipleWidgets) {
+  auto delegate1 = std::make_unique<NiceMock<MockWidgetSchedulerDelegate>>();
+  scoped_refptr<WidgetScheduler> widget_scheduler1;
+
+  // This shouldn't be called since no idle tasks are pending.
+  EXPECT_CALL(*delegate1, RequestBeginMainFrameNotExpected(true)).Times(0);
+  SimulateInitializingCompositingWithTask(&widget_scheduler1, delegate1.get());
+  Mock::VerifyAndClearExpectations(delegate1.get());
+
+  scheduler_->OnPendingTasksChanged(true);
+  EXPECT_CALL(*widget_scheduler_delegate_,
+              RequestBeginMainFrameNotExpected(true))
+      .Times(1);
+  EXPECT_CALL(*delegate1, RequestBeginMainFrameNotExpected(true)).Times(1);
+  base::RunLoop().RunUntilIdle();
+
+  Mock::VerifyAndClearExpectations(widget_scheduler_delegate_.get());
+  Mock::VerifyAndClearExpectations(delegate1.get());
+
+  // Add another delegate while there are idle tasks pending. The signals should
+  // be requested from the new delegate immediately.
+  auto delegate2 = std::make_unique<NiceMock<MockWidgetSchedulerDelegate>>();
+  scoped_refptr<WidgetScheduler> widget_scheduler2;
+  EXPECT_CALL(*widget_scheduler_delegate_,
+              RequestBeginMainFrameNotExpected(true))
+      .Times(0);
+  EXPECT_CALL(*delegate1, RequestBeginMainFrameNotExpected(true)).Times(0);
+  EXPECT_CALL(*delegate2, RequestBeginMainFrameNotExpected(true)).Times(1);
+
+  SimulateInitializingCompositingWithTask(&widget_scheduler2, delegate2.get());
+  Mock::VerifyAndClearExpectations(widget_scheduler_delegate_.get());
+  Mock::VerifyAndClearExpectations(delegate1.get());
+  Mock::VerifyAndClearExpectations(delegate2.get());
+
+  widget_scheduler1->WillShutdown();
+  widget_scheduler1->Shutdown();
+  widget_scheduler2->WillShutdown();
+  widget_scheduler2->Shutdown();
+}
+
+TEST_F(MainThreadSchedulerImplTest, LongIdlePeriodAfterWidgetShutdown) {
+  // Simulate creating a popup window, which has a separate widget scheduler.
+  auto delegate = std::make_unique<NiceMock<MockWidgetSchedulerDelegate>>();
+  scoped_refptr<WidgetScheduler> popup_widget_scheduler;
+  SimulateInitializingCompositingWithTask(&popup_widget_scheduler,
+                                          delegate.get());
+
+  // Simulate queuing an idle task so the compositor signals are requested.
+  scheduler_->OnPendingTasksChanged(true);
+  base::RunLoop().RunUntilIdle();
+
+  // The user is idle, both widgets stop pumping frames.
+  const IdleHelper& idle_helper = scheduler_->GetIdleHelperForTesting();
+  EXPECT_FALSE(idle_helper.IsInIdlePeriod());
+  widget_scheduler_->BeginFrameNotExpectedSoon();
+  EXPECT_TRUE(idle_helper.IsInLongIdlePeriod());
+  popup_widget_scheduler->BeginFrameNotExpectedSoon();
+  EXPECT_TRUE(idle_helper.IsInLongIdlePeriod());
+
+  // The user makes a selection on the popup, which triggers frames, followed by
+  // the popup closing.
+  DoMainFrame(popup_widget_scheduler.get());
+  EXPECT_TRUE(idle_helper.IsInIdlePeriod());
+  EXPECT_FALSE(idle_helper.IsInLongIdlePeriod());
+
+  // The popup closes, but the main frame doesn't need to repaint. The scheduler
+  // should be in a long idle period since the remaining widget scheduler is
+  // idle.
+  popup_widget_scheduler->WillShutdown();
+  popup_widget_scheduler->Shutdown();
+  EXPECT_TRUE(idle_helper.IsInIdlePeriod());
+  EXPECT_TRUE(idle_helper.IsInLongIdlePeriod());
+}
+
+TEST_F(MainThreadSchedulerImplTest, LongIdlePeriodAfterWidgetShutdown_Hidden) {
+  // Simulate creating a second page, which has a separate widget scheduler.
+  auto delegate = std::make_unique<NiceMock<MockWidgetSchedulerDelegate>>();
+  scoped_refptr<WidgetScheduler> second_widget_scheduler;
+  SimulateInitializingCompositingWithTask(&second_widget_scheduler,
+                                          delegate.get());
+
+  // Simulate queuing an idle task so the compositor signals are requested.
+  scheduler_->OnPendingTasksChanged(true);
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate both widgets going idle.
+  const IdleHelper& idle_helper = scheduler_->GetIdleHelperForTesting();
+  EXPECT_FALSE(idle_helper.IsInIdlePeriod());
+  widget_scheduler_->BeginFrameNotExpectedSoon();
+  second_widget_scheduler->BeginFrameNotExpectedSoon();
+  EXPECT_TRUE(idle_helper.IsInLongIdlePeriod());
+
+  // Both pages become hidden, which starts a limited-duration long idle period.
+  scheduler_->SetAllRenderWidgetsHidden(true);
+  EXPECT_TRUE(idle_helper.IsInLongIdlePeriod());
+  test_task_runner_->FastForwardBy(end_idle_when_hidden_delay() +
+                                   base::Milliseconds(10));
+  EXPECT_FALSE(idle_helper.IsInIdlePeriod());
+  EXPECT_FALSE(idle_helper.IsInLongIdlePeriod());
+
+  // Close one of the pages while in the background, which shouldn't restart
+  // long idle periods because the renderer is still backgrounded.
+  second_widget_scheduler->WillShutdown();
+  second_widget_scheduler->Shutdown();
+  EXPECT_FALSE(idle_helper.IsInIdlePeriod());
+  EXPECT_FALSE(idle_helper.IsInLongIdlePeriod());
 }
 
 #if BUILDFLAG(IS_ANDROID)

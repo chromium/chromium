@@ -164,6 +164,7 @@ class MockTopSites : public TopSites {
   MOCK_CONST_METHOD0(loaded, bool());
   MOCK_METHOD0(GetPrepopulatedPages, history::PrepopulatedPageList());
   MOCK_METHOD1(OnNavigationCommitted, void(const GURL& url));
+  MOCK_CONST_METHOD0(NumBlockedSites, int());
 
   // Publicly expose notification to observers, since the implementation cannot
   // be overriden.
@@ -449,7 +450,8 @@ class MostVisitedSitesTest : public ::testing::TestWithParam<bool> {
         &pref_service_, /*identity_manager=*/nullptr,
         /*supervised_user_service=*/nullptr, mock_top_sites_,
         popular_sites_factory_.New(), std::move(mock_custom_links),
-        std::move(icon_cacher), true);
+        std::move(icon_cacher),
+        /*is_default_chrome_app_migrated=*/true, is_custom_links_mixable_);
   }
 
   bool IsPopularSitesFeatureEnabled() const { return GetParam(); }
@@ -475,7 +477,10 @@ class MostVisitedSitesTest : public ::testing::TestWithParam<bool> {
 
   void EnableCustomLinks() { is_custom_links_enabled_ = true; }
 
+  void EnableCustomLinkMixing() { is_custom_links_mixable_ = true; }
+
   bool is_custom_links_enabled_ = false;
+  bool is_custom_links_mixable_ = false;
   TopSitesCallbackList top_sites_callbacks_;
 
   base::test::TaskEnvironment task_environment_;
@@ -1034,6 +1039,9 @@ TEST(MostVisitedSitesTest, ShouldDeduplicateDomainByReplacingMobilePrefixes) {
   EXPECT_TRUE(MostVisitedSites::IsHostOrMobilePageKnown({"mobile.cnn.com"},
                                                         "www.cnn.com"));
 }
+
+// TODO(crbug.com/397422358): Adapt MostVisitedSitesWithCustomLinksTest for
+// Android, which will require calling EnableCustomLinkMixing() in the CTOR.
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 class MostVisitedSitesWithCustomLinksTest : public MostVisitedSitesTest {

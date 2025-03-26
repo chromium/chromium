@@ -444,7 +444,7 @@ void TestSuite::DisableCheckForLeakedGlobals() {
   check_for_leaked_globals_ = false;
 }
 
-void TestSuite::UnitTestAssertHandler(const char* file,
+void TestSuite::UnitTestAssertHandler(const std::string_view file,
                                       int line,
                                       std::string_view summary,
                                       std::string_view stack_trace) {

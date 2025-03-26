@@ -79,10 +79,10 @@ void CrosSafetyService::GetArcSafetySessionComplete(
 void CrosSafetyService::CreateOnDeviceSafetySession(
     mojo::PendingReceiver<cros_safety::mojom::OnDeviceSafetySession> session,
     CreateOnDeviceSafetySessionCallback callback) {
-  // This function should only be called during the primary user's session.
-  CHECK(user_manager::UserManager::Get()->IsPrimaryUser(
-      user_manager::UserManager::Get()->GetActiveUser()));
-  if (!arc::IsArcAvailable() || !arc::ArcServiceManager::Get()) {
+  // ARC is only available under primary user session.
+  if (!user_manager::UserManager::Get()->IsPrimaryUser(
+          user_manager::UserManager::Get()->GetActiveUser()) ||
+      !arc::IsArcAvailable() || !arc::ArcServiceManager::Get()) {
     // TODO(crbug.com/379073760) Separate kArcDisabledByUser cases so we can
     // inform the user to enable arc.
     std::move(callback).Run(

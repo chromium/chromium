@@ -239,57 +239,19 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
   auto* attributes_wrapper = main_content_wrapper->AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetAccessibleRole(ax::mojom::Role::kDescriptionList)
-          .SetBetweenChildSpacing(GetVerticaSpaceBetweenDialogSections())
+          .SetBetweenChildSpacing(
+              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  DISTANCE_CONTROL_LIST_VERTICAL))
+          .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
           .Build());
-  auto* new_entity_added_or_updated_attributes_container =
-      attributes_wrapper->AddChildView(
-          views::Builder<views::BoxLayoutView>()
-              .SetOrientation(views::BoxLayout::Orientation::kVertical)
-              .SetBetweenChildSpacing(
-                  ChromeLayoutProvider::Get()->GetDistanceMetric(
-                      DISTANCE_CONTROL_LIST_VERTICAL))
-              .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-              .Build());
-  new_entity_added_or_updated_attributes_container->SetID(
-      kNewEntityAddedOrUpdatedAttributesContainer);
-
-  // Only present in the update case.
-  views::View* new_entity_unchanged_attributes_container = nullptr;
-  if (!is_save_prompt) {
-    new_entity_unchanged_attributes_container =
-        attributes_wrapper->AddChildView(
-            views::Builder<views::BoxLayoutView>()
-                .SetOrientation(views::BoxLayout::Orientation::kVertical)
-                .SetBetweenChildSpacing(
-                    ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        DISTANCE_CONTROL_LIST_VERTICAL))
-                .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-                .Build());
-    new_entity_unchanged_attributes_container->SetID(
-        kNewEntityUnchagedAttributesContainer);
-  }
 
   const std::vector<
       SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails>
       attributes_details = controller_->GetUpdatedAttributesDetails();
   for (const SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails&
            detail : attributes_details) {
-    const bool new_entity_added_or_updated_attibute =
-        (detail.update_type ==
-         SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
-             kNewEntityAttributeUpdated) ||
-        (detail.update_type ==
-         SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
-             kNewEntityAttributeAdded);
-    if (new_entity_added_or_updated_attibute) {
-      new_entity_added_or_updated_attributes_container->AddChildView(
-          BuildEntityAttributeRow(detail, is_save_prompt));
-    } else {
-      CHECK(!is_save_prompt);
-      new_entity_unchanged_attributes_container->AddChildView(
-          BuildEntityAttributeRow(detail, is_save_prompt));
-    }
+    attributes_wrapper->AddChildView(
+        BuildEntityAttributeRow(detail, is_save_prompt));
   }
 
   DialogDelegate::SetButtonLabel(

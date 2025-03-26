@@ -200,7 +200,11 @@ public class CustomTabToolbarUnitTest {
 
         if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
             mToolbar.initializeToolbar(
-                    mActivity, mIntentDataProvider, mFeatureOverridesManager, mMinimizeDelegate);
+                    mActivity,
+                    mIntentDataProvider,
+                    mFeatureOverridesManager,
+                    mMinimizeDelegate,
+                    null);
         }
         mToolbar.setFeatureOverridesManager(mFeatureOverridesManager);
 

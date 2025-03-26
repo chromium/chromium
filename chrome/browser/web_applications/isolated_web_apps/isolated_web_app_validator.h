@@ -12,26 +12,19 @@
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
-#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
 
 class GURL;
+class Profile;
 
 namespace web_package {
 class SignedWebBundleId;
-}
+class SignedWebBundleIntegrityBlock;
+}  // namespace web_package
 
 namespace web_app {
 
-class IsolatedWebAppTrustChecker;
-
 class IsolatedWebAppValidator {
  public:
-  IsolatedWebAppValidator();
-  virtual ~IsolatedWebAppValidator();
-
-  using IntegrityBlockCallback =
-      base::OnceCallback<void(base::expected<void, std::string>)>;
-
   // Validates that the integrity block of the Isolated Web App contains trusted
   // public keys given the `expected_web_bundle_id`.
   //
@@ -41,18 +34,18 @@ class IsolatedWebAppValidator {
   // Important: This method does not verify the signatures themselves - it only
   // checks whether the public keys associated with these signatures correspond
   // to trusted parties.
-  virtual base::expected<void, std::string> ValidateIntegrityBlock(
+  static base::expected<void, UnusableSwbnFileError> ValidateIntegrityBlock(
+      Profile& profile,
       const web_package::SignedWebBundleId& expected_web_bundle_id,
       const web_package::SignedWebBundleIntegrityBlock& integrity_block,
-      bool dev_mode,
-      const IsolatedWebAppTrustChecker& trust_checker);
+      bool dev_mode);
 
   // Validates that the metadata of the Isolated Web App is valid given the
   // `web_bundle_id`.
-  [[nodiscard]] virtual base::expected<void, UnusableSwbnFileError>
-  ValidateMetadata(const web_package::SignedWebBundleId& web_bundle_id,
-                   const std::optional<GURL>& primary_url,
-                   const std::vector<GURL>& entries);
+  static base::expected<void, UnusableSwbnFileError> ValidateMetadata(
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const std::optional<GURL>& primary_url,
+      const std::vector<GURL>& entries);
 };
 
 }  // namespace web_app

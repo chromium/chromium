@@ -107,6 +107,12 @@ def parameters_of(file: str) -> camera.Parameters:
     result.fps = 120
     # All the videos now being used are 30s long.
     result.duration_sec = 30
+    # Expect the camera serial number to be set, but now the hosts running in
+    # media lab have only one camera per host and need no serial number.
+    # TODO(crbug.com/391663618): Remove the condition once all the hosts are
+    # migrated into chrome lab.
+    if os.environ.get('CAMERA_SERIAL_NUMBER'):
+        result.serial_number = os.environ['CAMERA_SERIAL_NUMBER']
     return result
 
 

@@ -129,17 +129,22 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
 
   void ReadWindows(
       std::vector<std::unique_ptr<sessions::SessionWindow>>* windows,
-      SessionID* active_window_id) {
+      SessionID* active_window_id,
+      std::string* platform_session_id) {
     DestroySessionService();
 
     session_service_ = std::make_unique<SessionService>(browser()->profile());
     helper_.SetService(session_service_.get());
 
-    SessionID* non_null_active_window_id = active_window_id;
     SessionID dummy_active_window_id = SessionID::InvalidValue();
-    if (!non_null_active_window_id)
-      non_null_active_window_id = &dummy_active_window_id;
-    helper_.ReadWindows(windows, non_null_active_window_id);
+    SessionID* non_null_active_window_id =
+        active_window_id ? active_window_id : &dummy_active_window_id;
+    std::string dummy_platform_session_id{};
+    std::string* non_null_platform_session_id =
+        platform_session_id ? platform_session_id : &dummy_platform_session_id;
+
+    helper_.ReadWindows(windows, non_null_active_window_id,
+                        non_null_platform_session_id);
   }
 
   // Configures the session service with one window with one tab and a single
@@ -158,7 +163,7 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
       helper_.service()->SetPinnedState(window_id, tab_id, pinned_state);
 
     std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-    ReadWindows(&windows, nullptr);
+    ReadWindows(&windows, nullptr, nullptr);
 
     EXPECT_EQ(1U, windows.size());
     if (HasFatalFailure())
@@ -216,8 +221,11 @@ TEST_F(SessionServiceTest, Basic) {
   helper_.PrepareTabInWindow(window_id, tab_id, 0, true);
   UpdateNavigation(window_id, tab_id, nav1, true);
 
+  service()->SetPlatformSessionIdForTesting("some-platform-session-id");
+
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  std::string platform_session_id;
+  ReadWindows(&windows, nullptr, &platform_session_id);
 
   ASSERT_EQ(1U, windows.size());
   ASSERT_TRUE(window_bounds == windows[0]->bounds);
@@ -226,6 +234,7 @@ TEST_F(SessionServiceTest, Basic) {
   ASSERT_EQ(window_id, windows[0]->window_id);
   ASSERT_EQ(1U, windows[0]->tabs.size());
   ASSERT_EQ(sessions::SessionWindow::TYPE_NORMAL, windows[0]->type);
+  ASSERT_EQ("some-platform-session-id", platform_session_id);
 
   sessions::SessionTab* tab = windows[0]->tabs[0].get();
   helper_.AssertTabEquals(window_id, tab_id, 0, 0, 1, *tab);
@@ -246,7 +255,7 @@ TEST_F(SessionServiceTest, PersistPostData) {
   UpdateNavigation(window_id, tab_id, nav1, true);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   helper_.AssertSingleWindowWithSingleTab(windows, 1);
 }
@@ -271,7 +280,7 @@ TEST_F(SessionServiceTest, ClosingTabStaysClosed) {
   EXPECT_TRUE(helper_.GetHasOpenTrackableBrowsers());
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   EXPECT_EQ(0, windows[0]->selected_tab_index);
@@ -301,7 +310,7 @@ TEST_F(SessionServiceTest, CloseSingleTabClosesWindowAndTab) {
   EXPECT_FALSE(helper_.GetHasOpenTrackableBrowsers());
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   EXPECT_TRUE(windows.empty());
 }
@@ -333,7 +342,7 @@ TEST_F(SessionServiceTest, Pruning) {
   EXPECT_EQ(2, available_range.second);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   ASSERT_EQ(0, windows[0]->selected_tab_index);
@@ -361,7 +370,7 @@ TEST_F(SessionServiceTest, TwoWindows) {
       window2_id, tab1_id, tab2_id, &nav1, &nav2);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   ASSERT_EQ(2U, windows.size());
   ASSERT_EQ(0, windows[0]->selected_tab_index);
@@ -412,7 +421,7 @@ TEST_F(SessionServiceTest, WindowWithNoTabsGetsPruned) {
   helper_.PrepareTabInWindow(window2_id, tab2_id, 0, true);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   ASSERT_EQ(0, windows[0]->selected_tab_index);
@@ -446,7 +455,7 @@ TEST_F(SessionServiceTest, ClosingLastWindowDoesntCloseTabs) {
   service()->WindowClosed(window_id);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   EXPECT_EQ(0, windows[0]->selected_tab_index);
@@ -480,7 +489,7 @@ TEST_F(SessionServiceTest, ClosingSecondWindowClosesTabs) {
   service()->WindowClosed(window2_id);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   EXPECT_EQ(0, windows[0]->selected_tab_index);
@@ -514,7 +523,7 @@ TEST_F(SessionServiceTest, LockingWindowRemembersAll) {
   service()->WindowClosed(window2_id);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   ASSERT_EQ(2U, windows.size());
   ASSERT_EQ(1U, windows[0]->tabs.size());
@@ -547,7 +556,7 @@ TEST_F(SessionServiceTest, WindowCloseCommittedAfterNavigate) {
   service()->WindowClosed(window2_id);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   ASSERT_EQ(0, windows[0]->selected_tab_index);
@@ -600,7 +609,7 @@ TEST_F(SessionServiceTest, PruneFromFront) {
 
   // Read back in.
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   ASSERT_EQ(0, windows[0]->selected_tab_index);
@@ -651,7 +660,7 @@ TEST_F(SessionServiceTest, PruneFromMiddle) {
 
   // Read back in.
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   ASSERT_EQ(0, windows[0]->selected_tab_index);
@@ -772,7 +781,7 @@ TEST_F(SessionServiceTest, PruneToEmpty) {
 
   // Read back in.
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   ASSERT_EQ(0U, windows.size());
 }
@@ -806,7 +815,7 @@ TEST_F(SessionServiceTest, PersistApplicationExtensionID) {
   helper_.SetTabExtensionAppID(window_id, tab_id, app_id);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   helper_.AssertSingleWindowWithSingleTab(windows, 1);
   EXPECT_TRUE(app_id == windows[0]->tabs[0]->extension_app_id);
@@ -840,7 +849,7 @@ TEST_F(SessionServiceTest, PersistUserAgentOverrides) {
   helper_.SetTabUserAgentOverride(window_id, tab_id, serialized_override);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
   helper_.AssertSingleWindowWithSingleTab(windows, 1);
 
   sessions::SessionTab* tab = windows[0]->tabs[0].get();
@@ -867,7 +876,7 @@ TEST_F(SessionServiceTest, PersistExtraData) {
                                      kSampleValue);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
   EXPECT_EQ(1U, windows.size());
   EXPECT_EQ(1U, windows[0]->tabs.size());
   EXPECT_EQ(1U, windows[0]->extra_data.size());
@@ -892,7 +901,7 @@ TEST_F(SessionServiceTest, DontPersistDefault) {
                              ui::mojom::WindowShowState::kDefault);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
   ASSERT_EQ(1U, windows.size());
   EXPECT_EQ(ui::mojom::WindowShowState::kNormal, windows[0]->show_state);
 }
@@ -931,7 +940,7 @@ TEST_F(SessionServiceTest, KeepPostDataWithoutPasswords) {
   UpdateNavigation(window_id, tab_id, nav2, true);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   helper_.AssertSingleWindowWithSingleTab(windows, 2);
 
@@ -966,7 +975,7 @@ TEST_F(SessionServiceTest, RemovePostDataWithPasswords) {
   UpdateNavigation(window_id, tab_id, nav1, true);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   helper_.AssertSingleWindowWithSingleTab(windows, 1);
 
@@ -992,7 +1001,7 @@ TEST_F(SessionServiceTest, ReplacePendingNavigation) {
 
   // Read back in.
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   // The ones with index 0, and 2 should have been replaced by 1 and 3.
   ASSERT_EQ(1U, windows.size());
@@ -1039,7 +1048,7 @@ TEST_F(SessionServiceTest, ReplacePendingNavigationAndPrune) {
 
   // Read back in.
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   // We should still have that last navigation at the end,
   // even though it replaced one that was set before the prune.
@@ -1066,7 +1075,7 @@ TEST_F(SessionServiceTest, RestoreActivation1) {
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
   SessionID active_window_id = SessionID::InvalidValue();
-  ReadWindows(&windows, &active_window_id);
+  ReadWindows(&windows, &active_window_id, nullptr);
   EXPECT_EQ(window_id, active_window_id);
 }
 
@@ -1090,8 +1099,10 @@ TEST_F(SessionServiceTest, RestoreActivation2) {
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
   SessionID active_window_id = SessionID::InvalidValue();
-  ReadWindows(&windows, &active_window_id);
+  std::string platform_session_id;
+  ReadWindows(&windows, &active_window_id, &platform_session_id);
   EXPECT_EQ(window2_id, active_window_id);
+  EXPECT_TRUE(platform_session_id.empty());
 }
 
 // Makes sure sessions doesn't track certain urls.
@@ -1111,7 +1122,7 @@ TEST_F(SessionServiceTest, IgnoreBlockedUrls) {
   UpdateNavigation(window_id, tab_id, nav3, true);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   ASSERT_EQ(0, windows[0]->selected_tab_index);
@@ -1127,7 +1138,7 @@ TEST_F(SessionServiceTest, TabGroupDefaultsToNone) {
   CreateTabWithTestNavigationData(window_id, 0);
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   ASSERT_EQ(1U, windows[0]->tabs.size());
@@ -1153,7 +1164,7 @@ TEST_F(SessionServiceTest, TabGroupsSaved) {
   }
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   ASSERT_EQ(kNumTabs, static_cast<int>(windows[0]->tabs.size()));
@@ -1194,7 +1205,7 @@ TEST_F(SessionServiceTest, TabGroupMetadataSaved) {
   }
 
   std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
+  ReadWindows(&windows, nullptr, nullptr);
 
   ASSERT_EQ(1U, windows.size());
   ASSERT_EQ(2U, windows[0]->tabs.size());

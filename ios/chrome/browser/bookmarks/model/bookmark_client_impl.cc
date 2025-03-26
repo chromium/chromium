@@ -43,10 +43,6 @@ BookmarkClientImpl::BookmarkClientImpl(
 
 BookmarkClientImpl::~BookmarkClientImpl() {}
 
-void BookmarkClientImpl::SetIsSyncFeatureEnabledIncludingBookmarksForTest() {
-  is_sync_feature_enabled_including_bookmarks_for_test_ = true;
-}
-
 void BookmarkClientImpl::Init(bookmarks::BookmarkModel* model) {
   if (managed_bookmark_service_) {
     managed_bookmark_service_->BookmarkModelCreated(model);
@@ -109,18 +105,8 @@ BookmarkClientImpl::GetLoadManagedNodeCallback() {
 }
 
 bool BookmarkClientImpl::IsSyncFeatureEnabledIncludingBookmarks() {
-  if (is_sync_feature_enabled_including_bookmarks_for_test_) {
-    CHECK_IS_TEST();
-    return true;
-  }
-
-  // `kMigrateSyncingUserToSignedIn` is only used as an extra safeguard to avoid
-  // behavioral changes. If this feature is enabled, sync-the-feature can be
-  // safely considered disabled, as the remaining cases where
-  // `IsTrackingMetadata()` below returns true should be very rare, usually
-  // error cases.
-  return local_or_syncable_bookmark_sync_service_->IsTrackingMetadata() &&
-         !base::FeatureList::IsEnabled(switches::kMigrateSyncingUserToSignedIn);
+  // Sync-the-feature is gone on iOS.
+  return false;
 }
 
 bool BookmarkClientImpl::CanSetPermanentNodeTitle(

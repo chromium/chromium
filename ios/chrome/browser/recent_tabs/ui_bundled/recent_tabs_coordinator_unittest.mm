@@ -185,8 +185,6 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
   }
 
   void SetupSyncState(BOOL signed_in,
-                      BOOL sync_enabled,
-                      BOOL sync_completed,
                       BOOL has_foreign_sessions) {
     SessionSyncServiceMockForRecentTabsTableCoordinator* session_sync_service =
         static_cast<SessionSyncServiceMockForRecentTabsTableCoordinator*>(
@@ -196,20 +194,10 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
         SyncServiceFactory::GetForProfile(profile_.get()));
 
     if (!signed_in) {
-      CHECK(!sync_enabled);
-      CHECK(!sync_completed);
       CHECK(!has_foreign_sessions);
       sync_service_->SetSignedOut();
-    } else if (!sync_enabled) {
-      CHECK(!sync_completed);
-      CHECK(!has_foreign_sessions);
-      sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
     } else {
-      sync_service_->SetSignedIn(signin::ConsentLevel::kSync);
-      if (!sync_completed) {
-        sync_service_->GetUserSettings()
-            ->ClearInitialSyncFeatureSetupComplete();
-      }
+      sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
     }
 
     // Needed by SyncService's initialization.
@@ -231,8 +219,6 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
       system_identity_manager->AddIdentity(identity);
 
       authentication_service->SignIn(
-          identity, signin_metrics::AccessPoint::kResigninInfobar);
-      authentication_service->GrantSyncConsent(
           identity, signin_metrics::AccessPoint::kResigninInfobar);
     }
 
@@ -312,44 +298,33 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
 };
 
 TEST_F(RecentTabsTableCoordinatorTest, TestConstructorDestructor) {
-  SetupSyncState(NO, NO, NO, NO);
+  SetupSyncState(NO, NO);
   CreateController();
   EXPECT_TRUE(coordinator_);
 }
 
 TEST_F(RecentTabsTableCoordinatorTest, TestUserSignedOut) {
   // TODO(crbug.com/40603410): Actual test expectations are missing below.
-  SetupSyncState(NO, NO, NO, NO);
+  SetupSyncState(NO, NO);
   CreateController();
 }
 
-TEST_F(RecentTabsTableCoordinatorTest, TestUserSignedInSyncOff) {
+TEST_F(RecentTabsTableCoordinatorTest, TestUserSignedInWithoutSessions) {
   // TODO(crbug.com/40603410): Actual test expectations are missing below.
-  SetupSyncState(YES, NO, NO, NO);
+  SetupSyncState(YES, NO);
   CreateController();
 }
 
-TEST_F(RecentTabsTableCoordinatorTest, TestUserSignedInSyncInProgress) {
+TEST_F(RecentTabsTableCoordinatorTest, TestUserSignedInWithSessions) {
   // TODO(crbug.com/40603410): Actual test expectations are missing below.
-  SetupSyncState(YES, YES, NO, NO);
-  CreateController();
-}
-TEST_F(RecentTabsTableCoordinatorTest, TestUserSignedInSyncOnWithoutSessions) {
-  // TODO(crbug.com/40603410): Actual test expectations are missing below.
-  SetupSyncState(YES, YES, YES, NO);
-  CreateController();
-}
-
-TEST_F(RecentTabsTableCoordinatorTest, TestUserSignedInSyncOnWithSessions) {
-  // TODO(crbug.com/40603410): Actual test expectations are missing below.
-  SetupSyncState(YES, YES, YES, YES);
+  SetupSyncState(YES, YES);
   CreateController();
 }
 
 // Makes sure that the app don't crash when checking cells after -stop is
 // called. This is done to prevent crbug.com/1469608 to regress.
 TEST_F(RecentTabsTableCoordinatorTest, TestLoadFaviconAfterDisconnect) {
-  SetupSyncState(YES, YES, YES, YES);
+  SetupSyncState(YES, YES);
   CreateController();
 
   UINavigationController* navigation_controller =
@@ -383,7 +358,7 @@ TEST_F(RecentTabsTableCoordinatorTest, TestLoadFaviconAfterDisconnect) {
 // This test verifies that there's no crash in this case.
 // See https://crbug.com/1470860.
 TEST_F(RecentTabsTableCoordinatorTest, TestReopenHistorySyncWhenPreviousShown) {
-  SetupSyncState(YES, NO, NO, NO);
+  SetupSyncState(YES, NO);
   // Disable history and tabs settings to ensure that the History Sync
   // coordinator.
   sync_service_->GetUserSettings()->SetSelectedTypes(

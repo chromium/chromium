@@ -487,6 +487,14 @@ void ReadAnythingAppController::OnNodeDeleted(ui::AXTree* tree,
                                               ui::AXNodeID node_id) {
   if (displayed_nodes_pending_deletion_.contains(node_id)) {
     displayed_nodes_pending_deletion_.erase(node_id);
+
+    // If speech is playing, we don't want to redraw because this can disrupt
+    // speech.
+    if (features::IsReadAnythingReadAloudEnabled() &&
+        read_aloud_model_.speech_playing()) {
+      return;
+    }
+
     // For Google Docs, we extract text from the "annotated canvas" element
     // nodes, which hold the currently visible text on screen. As the user
     // scrolls, these canvas elements are dynamically updated, resulting in

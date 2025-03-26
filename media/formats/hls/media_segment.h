@@ -8,7 +8,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "crypto/symmetric_key.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/tags.h"
 #include "media/formats/hls/types.h"

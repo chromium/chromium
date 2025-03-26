@@ -166,7 +166,8 @@ trusted_vault_pb::SecurityDomainMember CreateSecurityDomainMember(
             auto* member_metadata = member.mutable_member_metadata();
             auto* pin_metadata =
                 member_metadata->mutable_google_password_manager_pin_metadata();
-            pin_metadata->set_encrypted_pin_hash(gpm_pin_metadata.wrapped_pin);
+            pin_metadata->set_encrypted_pin_hash(
+                gpm_pin_metadata.usable_pin_metadata->wrapped_pin);
           },
           [&member](const ICloudKeychain&) {
             member.set_member_type(trusted_vault_pb::SecurityDomainMember::
@@ -449,10 +450,13 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
               kPinPresentAndUsableForRecovery;
           const auto& pin_metadata =
               member.member_metadata().google_password_manager_pin_metadata();
-          result_.gpm_pin_metadata.emplace(
-              member.public_key(), pin_metadata.encrypted_pin_hash(),
-              ToTime(pin_metadata.expiration_time()));
+          result_.gpm_pin_metadata = GpmPinMetadata(
+              member.public_key(), UsableRecoveryPinMetadata(
+                                       pin_metadata.encrypted_pin_hash(),
+                                       ToTime(pin_metadata.expiration_time())));
         } else {
+          result_.gpm_pin_metadata = GpmPinMetadata(
+              member.public_key(), /*pin_metadata=*/std::nullopt);
           pin_status_ = TrustedVaultListSecurityDomainMembersPinStatus::
               kPinPresentButUnusableForRecovery;
         }

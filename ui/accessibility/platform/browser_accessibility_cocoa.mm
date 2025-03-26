@@ -586,12 +586,12 @@ bool ui::IsNSRange(id value) {
   return self;
 }
 
-- (void)detach {
+- (void)detachAndNotifyDestroyed:(BOOL)shouldNotify {
   if (!_owner)
     return;
 
   _owner = nullptr;
-  [super detach];
+  [super detachAndNotifyDestroyed:shouldNotify];
 }
 
 // Returns an array of BrowserAccessibilityCocoa objects, representing the

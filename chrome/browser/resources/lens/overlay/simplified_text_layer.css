@@ -22,8 +22,8 @@
               opacity 100ms cubic-bezier(0.3, 0, 1, 1);
 }
 
-:host([has-copied-text]) .highlighted-line {
-  background-color: var(--color-text-highlight-copied);
+:host([has-actioned-text]) .highlighted-line {
+  background-color: var(--color-text-highlight-actioned);
   opacity: 60%;
 }
 

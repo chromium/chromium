@@ -314,7 +314,7 @@ std::unique_ptr<Backend::Iterator> MemBackendImpl::CreateIterator() {
 void MemBackendImpl::OnExternalCacheHit(const std::string& key) {
   auto it = entries_.find(key);
   if (it != entries_.end())
-    it->second->UpdateStateOnUse(MemEntryImpl::ENTRY_WAS_NOT_MODIFIED);
+    it->second->UpdateStateOnUse();
 }
 
 void MemBackendImpl::EvictIfNeeded() {

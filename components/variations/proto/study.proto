@@ -451,13 +451,11 @@ message Study {
     // one of the signed in users is a member of at least one of the specified
     // groups.
     // The values are the gaia ID of the google group.
-    // Mutually exclusive with |exclude_google_group|.
     repeated int64 google_group = 22 [packed = true];
 
     // Specifies that the config should apply only to clients where none
     // of the signed in users are a member of any of the specified groups.
     // The values are the gaia ID of the google group.
-    // Mutually exclusive with |google_group|.
     repeated int64 exclude_google_group = 23 [packed = true];
   }
 

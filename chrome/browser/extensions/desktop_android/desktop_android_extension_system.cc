@@ -193,12 +193,6 @@ bool DesktopAndroidExtensionSystem::AddExtension(
   return true;
 }
 
-void DesktopAndroidExtensionSystem::DisableExtension(
-    const ExtensionId& extension_id,
-    const DisableReasonSet& disable_reasons) {
-  registrar_->DisableExtension(extension_id, disable_reasons);
-}
-
 void DesktopAndroidExtensionSystem::ReloadExtension(
     const std::string& extension_id) {
   registrar_->ReloadExtension(extension_id, LoadErrorBehavior::kNoisy);

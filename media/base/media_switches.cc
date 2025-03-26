@@ -453,6 +453,27 @@ BASE_FEATURE(kChromeWideEchoCancellation,
 BASE_FEATURE(kEnforceSystemEchoCancellation,
              "EnforceSystemEchoCancellation",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If `EnforceSystemEchoCancellation` is enabled and echo cancellation (AEC) is
+// requested, two additional parameters can be added: one for the AGC effect and
+// one for the NS effect. Note that, system AGC/NS are never enabled
+// independently of the system AEC.
+//
+// If true, system AGC/NS and the WebRTC AGC/NS will run in tandem
+// (sequentially) if system echo cancellation is performed and a corresponding
+// AGC/NS getUserMedia constraint is specified.
+// Example on Windows: constraints ask for [AEC=true, NS=false, AGC=true]. If
+// system AEC is supported, it will also lead to system NS and AGC independently
+// of the supplied constraints since system effects can't be modified one by one
+// on Windows. If `allow_agc_in_tandem` now is set to true, two AGC effects will
+// therefore be enabled (system AGC and WebRTC AGC). Also, in this example,
+// `allow_ns_in_tandem` will have no effect since setting it to true will not
+// override the false constraint setting. Hence, WebRTC NS will be off (but
+// system NS will still be on due to system echo cancellation running).
+const base::FeatureParam<bool> kEnforceSystemEchoCancellationAllowAgcInTandem{
+    &kEnforceSystemEchoCancellation, "allow_agc_in_tandem", false};
+const base::FeatureParam<bool> kEnforceSystemEchoCancellationAllowNsInTandem{
+    &kEnforceSystemEchoCancellation, "allow_ns_in_tandem", false};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -769,7 +790,7 @@ BASE_FEATURE(kVaapiVp8TemporalLayerHWEncoding,
 // Enable AV1 temporal layer encoding with HW encoder on ChromeOS.
 BASE_FEATURE(kVaapiAV1TemporalLayerHWEncoding,
              "VaapiAv1TemporalLayerEncoding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Enable VP9 S-mode encoding with HW encoder for webrtc use case on ChromeOS.
 BASE_FEATURE(kVaapiVp9SModeHWEncoding,
              "VaapiVp9SModeHWEncoding",
@@ -1707,6 +1728,24 @@ bool IsChromeWideEchoCancellationEnabled() {
 bool IsSystemEchoCancellationEnforced() {
 #if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
   return base::FeatureList::IsEnabled(kEnforceSystemEchoCancellation);
+#else
+  return false;
+#endif
+}
+
+bool IsSystemEchoCancellationEnforcedAndAllowNsInTandem() {
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
+  return base::FeatureList::IsEnabled(media::kEnforceSystemEchoCancellation) &&
+         media::kEnforceSystemEchoCancellationAllowNsInTandem.Get();
+#else
+  return false;
+#endif
+}
+
+bool IsSystemEchoCancellationEnforcedAndAllowAgcInTandem() {
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
+  return base::FeatureList::IsEnabled(media::kEnforceSystemEchoCancellation) &&
+         media::kEnforceSystemEchoCancellationAllowAgcInTandem.Get();
 #else
   return false;
 #endif

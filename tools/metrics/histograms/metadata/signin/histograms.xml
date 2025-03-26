@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Signin.AccountInPref.MatchingFetchedAccount" enum="Boolean"
     expires_after="2025-05-05">
   <owner>rsult@google.com</owner>
-  <owner>droger@chromium.com</owner>
+  <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     This histogram records whether the fetched account and the stored account in
@@ -344,7 +344,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Signin.AccountInPref.StartupState.{AccountType}"
     enum="AccountStartupState" expires_after="2025-08-10">
   <owner>rsult@google.com</owner>
-  <owner>droger@chromium.com</owner>
+  <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     This histogram records whether the {AccountType} account is known in the
@@ -360,7 +360,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Signin.AccountInPref.State" enum="AccountInPrefState"
     expires_after="2025-09-07">
   <owner>rsult@google.com</owner>
-  <owner>droger@chromium.com</owner>
+  <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     This histogram records the state of the account that is stored in the
@@ -795,7 +795,7 @@ prefs when the profile is loaded.  -->
 
 <histogram
     name="Signin.BoundSessionCredentials.CookieRotationOutageAttempts{Interval}"
-    units="requests" expires_after="2025-05-11">
+    units="requests" expires_after="2025-09-21">
   <owner>alexilin@chromium.org</owner>
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1768,6 +1768,18 @@ prefs when the profile is loaded.  -->
     <variant name=".ManagedDevice" summary=", only for managed devices"/>
     <variant name=".UnmanagedDevice" summary=", only for unmanaged devices"/>
   </token>
+</histogram>
+
+<histogram name="Signin.IOSAccountSwitchType" enum="IOSAccountSwitchType"
+    expires_after="2026-03-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    When switching accounts, records whether the old and/or the new account were
+    managed. Recorded independently of whether the account switch involved a
+    profile switch.
+  </summary>
 </histogram>
 
 <histogram name="Signin.IOSDeviceRestoreIdentityCountAfter" units="identities"

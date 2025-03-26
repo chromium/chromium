@@ -918,7 +918,8 @@ class ChromiumDepGraph {
             return id.startsWith('androidx')
         }
 
-        // This indicates which BUILD.gn file this target lives in.
+        // This indicates which build.gradle subproject the target belongs to.
+        // Used to determine whether to process the target for this run.
         String getProjectPath() {
             if (isAndroidx) {
                 return BuildConfigGenerator.ANDROIDX_PROJECT_PATH
@@ -926,6 +927,17 @@ class ChromiumDepGraph {
             if (isAutorolled) {
                 return BuildConfigGenerator.AUTOROLLED_PROJECT_PATH
             }
+            return BuildConfigGenerator.MAIN_PROJECT_PATH
+        }
+
+        // Indicates which BUILD.gn file the target lives in
+        String getBuildGnPath() {
+            if (isAndroidx) {
+                return BuildConfigGenerator.ANDROIDX_PROJECT_PATH
+            }
+            // While autorolled targets are generated as part of
+            // AUTOROLLED_PROJECT_PATH's BUILD.gn, it is declared inside a gn
+            // template to be imported into the MAIN_PROJECT_PATH's BUILD.gn.
             return BuildConfigGenerator.MAIN_PROJECT_PATH
         }
     }

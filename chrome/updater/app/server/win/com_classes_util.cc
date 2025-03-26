@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -45,7 +46,9 @@ HRESULT IsCOMCallerAllowed() {
 std::optional<std::string> ValidateStringEmptyNotOk(const wchar_t* value,
                                                     size_t max_length) {
   std::string value_s;
-  return value && base::WideToUTF8(value, wcslen(value), &value_s) &&
+  return value &&
+                 base::WideToUTF8(value, UNSAFE_TODO(wcslen(value)),
+                                  &value_s) &&
                  !value_s.empty() && (value_s.length() <= max_length)
              ? std::make_optional(value_s)
              : std::nullopt;
@@ -55,7 +58,7 @@ std::optional<std::string> ValidateStringEmptyOk(const wchar_t* value,
                                                  size_t max_length) {
   std::string value_s;
   return !value ? std::make_optional(value_s)
-         : base::WideToUTF8(value, wcslen(value), &value_s) &&
+         : base::WideToUTF8(value, UNSAFE_TODO(wcslen(value)), &value_s) &&
                  (value_s.length() <= max_length)
              ? std::make_optional(value_s)
              : std::nullopt;

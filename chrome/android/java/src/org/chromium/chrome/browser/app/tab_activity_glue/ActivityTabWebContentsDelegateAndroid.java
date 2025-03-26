@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -87,6 +88,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final TabObserver mTabObserver;
 
     public ActivityTabWebContentsDelegateAndroid(
             Tab tab,
@@ -109,8 +111,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-
-        tab.addObserver(
+        mTabObserver =
                 new EmptyTabObserver() {
                     @Override
                     public void onActivityAttachmentChanged(
@@ -122,7 +123,8 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                     public void onDestroyed(Tab tab) {
                         tab.removeObserver(this);
                     }
-                });
+                };
+        tab.addObserver(mTabObserver);
     }
 
     @Override
@@ -571,5 +573,10 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     protected Tab fromWebContents(WebContents webContents) {
         return TabUtils.fromWebContents(webContents);
+    }
+
+    @Override
+    public void destroy() {
+        mTab.removeObserver(mTabObserver);
     }
 }

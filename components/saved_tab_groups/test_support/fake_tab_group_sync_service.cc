@@ -319,10 +319,11 @@ FakeTabGroupSyncService::GetTitleForPreviouslyExistingSharedTabGroup(
   return std::nullopt;
 }
 
-void FakeTabGroupSyncService::OpenTabGroup(
+std::optional<LocalTabGroupID> FakeTabGroupSyncService::OpenTabGroup(
     const base::Uuid& sync_group_id,
     std::unique_ptr<TabGroupActionContext> context) {
   // No op.
+  return std::nullopt;
 }
 
 void FakeTabGroupSyncService::UpdateLocalTabGroupMapping(

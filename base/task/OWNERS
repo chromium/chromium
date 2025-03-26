@@ -1,7 +1,6 @@
 # For public facing APIs, for impl details of ThreadPool and SequenceManager see
 # subfolder OWNERS.
 
-altimin@chromium.org
 etiennep@chromium.org
 fdoray@chromium.org
 gab@chromium.org

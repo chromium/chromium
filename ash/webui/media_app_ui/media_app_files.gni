@@ -25,6 +25,7 @@ media_app_mojom_sources = [
   "ash/webui/media_app_ui/media_app_ui_untrusted.mojom-webui.ts",
   "chromeos/ash/components/mantis/mojom/mantis_processor.mojom-webui.ts",
   "chromeos/ash/components/mantis/mojom/mantis_service.mojom-webui.ts",
+  "chromeos/services/machine_learning/public/mojom/text_classifier.mojom-webui.ts",
 ]
 
 # Contains only the file name (with extension) part of `media_app_mojom_sources`.

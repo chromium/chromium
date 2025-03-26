@@ -106,6 +106,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyTest, Deferred) {
   auto* current_state = frame_.navigation_listener().current_state();
   EXPECT_TRUE(current_state->has_is_main_document_loaded());
   EXPECT_FALSE(current_state->is_main_document_loaded());
+  EXPECT_EQ(current_state->page_type(), fuchsia::web::PageType::NORMAL);
 
   EXPECT_EQ(page_url.spec(), policy_provider_.requested_navigation()->url());
 }

@@ -531,9 +531,9 @@ class ReduceAcceptLanguageBrowserTest : public policy::PolicyTest {
 class DisableFeatureReduceAcceptLanguageBrowserTest
     : public ReduceAcceptLanguageBrowserTest {
   void EnabledFeatures() override {
-    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitFromCommandLine("", "ReduceAcceptLanguage");
-    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+    scoped_feature_list_.InitWithFeatures(
+        {}, {network::features::kReduceAcceptLanguage,
+             network::features::kReduceAcceptLanguageHTTP});
   }
 };
 

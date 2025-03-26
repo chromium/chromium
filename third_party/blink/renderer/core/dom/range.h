@@ -223,6 +223,7 @@ class CORE_EXPORT Range final : public AbstractRange {
   };
   UpdateSelectionBehavior update_selection_behavior_ =
       UpdateSelectionBehavior::kAll;
+  void ResetUpdateSelectionBehavior();
 
   friend class RangeUpdateScope;
 };

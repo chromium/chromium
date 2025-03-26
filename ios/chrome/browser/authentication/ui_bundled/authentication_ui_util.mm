@@ -17,7 +17,6 @@
 #import "components/sync/base/account_pref_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
-#import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -202,19 +201,12 @@ AlertCoordinator* ManagedConfirmationDialogContentForHostedDomain(
     UIViewController* view_controller,
     ProceduralBlock accept_block,
     ProceduralBlock cancel_block) {
-  // Show the legacy managed confirmation dialog if User Policy is disabled.
-  // Otherwise, show the release version of the managed confirmation dialog for
-  // User Policy if User Policy is enabled and there is no Sync consent.
-  bool user_policy_enabled = policy::IsAnyUserPolicyFeatureEnabled();
   NSString* title = l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE);
-  NSString* subtitle = l10n_util::GetNSStringF(
-      user_policy_enabled ? IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_SUBTITLE
-                          : IDS_IOS_MANAGED_SIGNIN_SUBTITLE,
-      base::SysNSStringToUTF16(hosted_domain));
+  NSString* subtitle =
+      l10n_util::GetNSStringF(IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_SUBTITLE,
+                              base::SysNSStringToUTF16(hosted_domain));
   NSString* accept_label = l10n_util::GetNSString(
-      user_policy_enabled
-          ? IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL
-          : IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON);
+      IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL);
   NSString* cancel_label = l10n_util::GetNSString(IDS_CANCEL);
 
   AlertCoordinator* managed_confirmation_alert_coordinator =
@@ -280,8 +272,7 @@ BOOL ShouldShowManagedConfirmationForHostedDomain(
     return NO;
   }
 
-  // Show the dialog if User Policy is enabled.
-  return policy::IsAnyUserPolicyFeatureEnabled();
+  return YES;
 }
 
 SignedInUserState GetSignedInUserState(

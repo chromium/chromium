@@ -10,6 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/feed/core/v2/public/common_enums.h"
 #import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/search_engines/template_url.h"
@@ -18,6 +19,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
@@ -111,8 +113,11 @@ class NewTabPageMediatorTest : public PlatformTest {
                          isSafeMode:NO];
     header_consumer_ = OCMProtocolMock(@protocol(NewTabPageHeaderConsumer));
     mediator_.headerConsumer = header_consumer_;
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForProfile(profile_.get());
     feed_metrics_recorder_ =
-        [[FeedMetricsRecorder alloc] initWithPrefService:prefs];
+        [[FeedMetricsRecorder alloc] initWithPrefService:prefs
+                                featureEngagementTracker:tracker];
     mediator_.feedMetricsRecorder = feed_metrics_recorder_;
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }

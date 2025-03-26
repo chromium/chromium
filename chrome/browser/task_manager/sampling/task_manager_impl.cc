@@ -363,10 +363,22 @@ const TaskIdList& TaskManagerImpl::GetTaskIdsList() const {
     // order is meaningful), and finally by task id (when all else is equal, put
     // the oldest tasks first).
     auto comparator = [](const Task* a, const Task* b) -> bool {
-      return std::make_tuple(a->HasParentTask(), a->GetType(), a->GetTabId(),
-                             a->task_id()) <
-             std::make_tuple(b->HasParentTask(), b->GetType(), b->GetTabId(),
-                             b->task_id());
+      bool should_make_adjustment = false;
+#if !BUILDFLAG(IS_ANDROID)
+      // Move vm processes up over the arc tasks.
+      should_make_adjustment =
+          base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh) &&
+          ((a->GetType() == Task::ARC && b->GetType() == Task::CROSTINI) ||
+           (b->GetType() == Task::ARC && a->GetType() == Task::CROSTINI));
+#endif
+      return std::make_tuple(
+                 a->HasParentTask(),
+                 should_make_adjustment ? b->GetType() : a->GetType(),
+                 a->GetTabId(), a->task_id()) <
+             std::make_tuple(
+                 b->HasParentTask(),
+                 should_make_adjustment ? a->GetType() : b->GetType(),
+                 b->GetTabId(), b->task_id());
     };
 
     const size_t num_groups =

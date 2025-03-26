@@ -310,6 +310,9 @@ class PLATFORM_EXPORT GraphicsContext {
   void FillRoundedRect(const FloatRoundedRect&,
                        const Color&,
                        const AutoDarkMode& auto_dark_mode);
+  void FillContouredRect(const ContouredRect&,
+                         const Color&,
+                         const AutoDarkMode& auto_dark_mode);
   void FillDRRect(const FloatRoundedRect&,
                   const FloatRoundedRect&,
                   const Color&,

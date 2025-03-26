@@ -40,7 +40,7 @@ export class CrA11yAnnouncerDemoElement extends CrLitElement {
   }
 
   private announcementTextCount_: number = 0;
-  protected forceShowAnnouncer_: boolean = false;
+  protected accessor forceShowAnnouncer_: boolean = false;
 
   protected onAnnounceTextClick_() {
     const announcer = this.forceShowAnnouncer_ ?

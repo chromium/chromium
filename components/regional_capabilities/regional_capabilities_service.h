@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "components/country_codes/country_codes.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -30,14 +31,15 @@ class RegionalCapabilitiesService : public KeyedService {
   // that could be coming from platform-specific or //chrome layer sources.
   class Client {
    public:
-    using CountryIdCallback = base::OnceCallback<void(int)>;
+    using CountryIdCallback =
+        base::OnceCallback<void(country_codes::CountryId)>;
 
     virtual ~Client() = default;
 
     // Synchronously returns a country to use in current run for this profile.
     //
     // The default implementation uses `country_codes::GetCurrentCountryID()`.
-    virtual int GetFallbackCountryId() = 0;
+    virtual country_codes::CountryId GetFallbackCountryId() = 0;
 
     // Computes a country to associate with this profile, returning it by
     // running `country_id_fetched_callback`. If it is not run synchronously,
@@ -86,7 +88,7 @@ class RegionalCapabilitiesService : public KeyedService {
 #endif
 
  private:
-  int GetCountryIdInternal();
+  country_codes::CountryId GetCountryIdInternal();
 
   // Checks whether the persisted
   void InitializeCountryIdCache();
@@ -96,7 +98,7 @@ class RegionalCapabilitiesService : public KeyedService {
 
   // Used to ensure that the value returned from `GetCountryId` never changes
   // in runtime (different runs can still return different values, though).
-  std::optional<int> country_id_cache_;
+  std::optional<country_codes::CountryId> country_id_cache_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Corresponding Java object.

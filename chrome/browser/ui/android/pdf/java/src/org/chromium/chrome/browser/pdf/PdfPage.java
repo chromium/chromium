@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.pdf;
 
 import android.app.Activity;
 import android.net.Uri;
+import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -24,6 +25,7 @@ public class PdfPage extends BasicNativePage {
     private final String mUrl;
     private boolean mIsIncognito;
     private boolean mIsDownloadSafe;
+    private long mTransientDownloadStartTimestamp;
 
     /**
      * Create a new instance of the pdf page.
@@ -60,6 +62,10 @@ public class PdfPage extends BasicNativePage {
         mPdfCoordinator = new PdfCoordinator(profile, activity, filepath, tabId);
         mIsIncognito = profile.isOffTheRecord();
         initWithView(mPdfCoordinator.getView());
+        // PDF is downloading when the filepath is null.
+        if (filepath == null) {
+            mTransientDownloadStartTimestamp = SystemClock.elapsedRealtime();
+        }
     }
 
     @Override
@@ -113,6 +119,8 @@ public class PdfPage extends BasicNativePage {
     public void onDownloadComplete(String pdfFileName, String pdfFilePath, boolean isDownloadSafe) {
         mTitle = pdfFileName;
         mIsDownloadSafe = isDownloadSafe;
+        PdfUtils.recordPdfTransientDownloadTime(
+                SystemClock.elapsedRealtime() - mTransientDownloadStartTimestamp);
         // TODO(b/348701300): check if pdf should be opened inline.
         if (mIsIncognito) {
             Uri uri = PdfContentProvider.createContentUri(pdfFilePath, pdfFileName);

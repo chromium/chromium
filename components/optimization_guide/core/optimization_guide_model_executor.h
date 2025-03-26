@@ -298,6 +298,9 @@ class OptimizationGuideModelExecutor {
     // Return the sampling params for the current session.
     virtual const SamplingParams GetSamplingParams() const = 0;
 
+    // Return the capabilities for the current session.
+    virtual on_device_model::Capabilities GetCapabilities() const = 0;
+
     // Returns the feature_metadata from the
     // OnDeviceModelExecutionFeatureConfig.
     virtual const proto::Any& GetOnDeviceFeatureMetadata() const = 0;

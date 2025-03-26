@@ -339,6 +339,15 @@ void InterestGroupManagerImpl::RemoveInterestGroupsByDataKey(
       data_key.owner, data_key.joining_origin, std::move(callback));
 }
 
+void InterestGroupManagerImpl::AddTrustedServerKeysDebugOverride(
+    TrustedServerAPIType api,
+    const url::Origin& coordinator,
+    std::string serialized_keys,
+    base::OnceCallback<void(std::optional<std::string>)> callback) {
+  ba_key_fetcher_.AddKeysDebugOverride(
+      api, coordinator, std::move(serialized_keys), std::move(callback));
+}
+
 void InterestGroupManagerImpl::CheckPermissionsAndJoinInterestGroup(
     blink::InterestGroup group,
     const GURL& joining_url,
@@ -747,15 +756,6 @@ void InterestGroupManagerImpl::SetBiddingAndAuctionServerKeys(
     base::Time expiration) {
   caching_storage_.SetBiddingAndAuctionServerKeys(
       coordinator, std::move(serialized_keys), expiration);
-}
-
-void InterestGroupManagerImpl::AddTrustedServerKeysDebugOverride(
-    TrustedServerAPIType api,
-    const url::Origin& coordinator,
-    std::string serialized_keys,
-    base::OnceCallback<void(std::optional<std::string>)> callback) {
-  ba_key_fetcher_.AddKeysDebugOverride(
-      api, coordinator, std::move(serialized_keys), std::move(callback));
 }
 
 void InterestGroupManagerImpl::GetBiddingAndAuctionServerKeys(

@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 enum class ContentSuggestionsModuleType;
+@class MagicStackModule;
 @protocol MagicStackModuleContainerDelegate;
 
 /// Object that handles context menu interactions on the magic stack module..
@@ -15,7 +16,8 @@ enum class ContentSuggestionsModuleType;
     : NSObject <UIContextMenuInteractionDelegate>
 
 /// Configure the interaction handler with type.
-- (void)configureWithType:(ContentSuggestionsModuleType)type;
+- (void)configureWithType:(ContentSuggestionsModuleType)type
+                   config:(MagicStackModule*)config;
 
 /// Menu elements being shown on interaction.
 - (NSArray<UIMenuElement*>*)menuElements;

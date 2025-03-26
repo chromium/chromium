@@ -64,7 +64,16 @@ constexpr base::FeatureParam<int> kNetworkSnapshotProbability{
 // (Memory.RenderProcessHost.Count2.All) ranged from 8 on Windows to 18 on Mac.
 // 10% is an easy default between 1/18 and 1/8.
 constexpr base::FeatureParam<int> kRendererSnapshotProbability{
-    &kHeapProfilerReporting, "renderer-prob-pct", 10};
+    &kHeapProfilerReporting, "renderer-prob-pct",
+#if BUILDFLAG(IS_CHROMEOS)
+    // base::debug::TraceStackFramePointers is crashing in ChromeOS rendererer
+    // processes. Disable heap profiling there for now.
+    // TODO(crbug.com/402542102): Find the root cause and re-enable.
+    0
+#else
+    10
+#endif
+};
 
 // Sample 50% of utility processes by default, because last time this was
 // evaluated (2024-08) the profiler collected 1.8x as many snapshots on Mac and
@@ -100,6 +109,19 @@ constexpr base::FeatureParam<int> kRendererSamplingRateBytes{
 constexpr base::FeatureParam<int> kUtilitySamplingRateBytes{
     &kHeapProfilerReporting, "utility-sampling-rate-bytes",
     kDefaultSamplingRateBytes / 10};
+
+// The load factor that should be used by PoissonAllocationSampler's hash set in
+// each process type.
+constexpr base::FeatureParam<double> kBrowserHashSetLoadFactor{
+    &kHeapProfilerReporting, "browser-hash-set-load-factor", 1.0};
+constexpr base::FeatureParam<double> kGpuHashSetLoadFactor{
+    &kHeapProfilerReporting, "gpu-hash-set-load-factor", 1.0};
+constexpr base::FeatureParam<double> kNetworkHashSetLoadFactor{
+    &kHeapProfilerReporting, "network-hash-set-load-factor", 1.0};
+constexpr base::FeatureParam<double> kRendererHashSetLoadFactor{
+    &kHeapProfilerReporting, "renderer-hash-set-load-factor", 1.0};
+constexpr base::FeatureParam<double> kUtilityHashSetLoadFactor{
+    &kHeapProfilerReporting, "utility-hash-set-load-factor", 1.0};
 
 }  // namespace
 
@@ -171,6 +193,24 @@ int GetSnapshotProbabilityForProcess(
   CHECK_GE(snapshot_probability_pct, 0);
   CHECK_LE(snapshot_probability_pct, 100);
   return snapshot_probability_pct;
+}
+
+float GetHashSetLoadFactorForProcess(
+    sampling_profiler::ProfilerProcessType process_type) {
+  switch (process_type) {
+    case sampling_profiler::ProfilerProcessType::kBrowser:
+      return kBrowserHashSetLoadFactor.Get();
+    case sampling_profiler::ProfilerProcessType::kGpu:
+      return kGpuHashSetLoadFactor.Get();
+    case sampling_profiler::ProfilerProcessType::kNetworkService:
+      return kNetworkHashSetLoadFactor.Get();
+    case sampling_profiler::ProfilerProcessType::kRenderer:
+      return kRendererHashSetLoadFactor.Get();
+    case sampling_profiler::ProfilerProcessType::kUtility:
+      return kUtilityHashSetLoadFactor.Get();
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace heap_profiling

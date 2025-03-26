@@ -699,9 +699,11 @@ void EntryImpl::OnEntryCreated(BackendImpl* backend) {
   background_queue_ = backend->GetBackgroundQueue();
 }
 
-void EntryImpl::SetTimes(base::Time last_used, base::Time last_modified) {
-  node_.Data()->last_used = last_used.ToInternalValue();
-  node_.Data()->last_modified = last_modified.ToInternalValue();
+void EntryImpl::SetTimes(base::Time last_used) {
+  auto timestamp = last_used.ToInternalValue();
+  auto* node_data = node_.Data();
+  node_data->last_used = timestamp;
+  node_data->no_longer_used_last_modified = timestamp;
   node_.set_modified();
 }
 
@@ -784,11 +786,6 @@ std::string EntryImpl::GetKey() const {
 Time EntryImpl::GetLastUsed() const {
   CacheRankingsBlock* node = const_cast<CacheRankingsBlock*>(&node_);
   return Time::FromInternalValue(node->Data()->last_used);
-}
-
-Time EntryImpl::GetLastModified() const {
-  CacheRankingsBlock* node = const_cast<CacheRankingsBlock*>(&node_);
-  return Time::FromInternalValue(node->Data()->last_modified);
 }
 
 int32_t EntryImpl::GetDataSize(int index) const {
@@ -917,7 +914,7 @@ net::Error EntryImpl::ReadyForSparseIO(CompletionOnceCallback callback) {
 }
 
 void EntryImpl::SetLastUsedTimeForTest(base::Time time) {
-  SetTimes(time, time);
+  SetTimes(time);
 }
 
 // When an entry is deleted from the cache, we clean up all the data associated
@@ -1224,10 +1221,10 @@ void EntryImpl::UpdateRank(bool modified) {
   }
 
   Time current = Time::Now();
-  node_.Data()->last_used = current.ToInternalValue();
-
-  if (modified)
-    node_.Data()->last_modified = current.ToInternalValue();
+  auto timestamp = current.ToInternalValue();
+  auto* node_data = node_.Data();
+  node_data->last_used = timestamp;
+  node_data->no_longer_used_last_modified = timestamp;
 }
 
 File* EntryImpl::GetBackingFile(Addr address, int index) {

@@ -37,7 +37,9 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -1939,6 +1941,38 @@ TEST_F(AccessibilityControllerTest, FaceGazeNotifications) {
   controller()->ShowNotificationForFaceGaze(
       FaceGazeNotificationType::kDlcFailed);
   ASSERT_EQ(1u, MessageCenter::Get()->GetVisibleNotifications().size());
+}
+
+TEST_F(AccessibilityControllerTest, ShowNotificationOnFaceGaze) {
+  // Enabling FaceGaze should show a pinned notification.
+  controller()->face_gaze().SetEnabled(true);
+  message_center::NotificationList::Notifications notifications =
+      MessageCenter::Get()->GetVisibleNotifications();
+  ASSERT_EQ(1u, notifications.size());
+  EXPECT_EQ(u"Face control active", (*notifications.begin())->title());
+  ASSERT_TRUE((*notifications.begin())->pinned());
+
+  // Disabling FaceGaze should clear the notification.
+  controller()->face_gaze().SetEnabled(false);
+  notifications = MessageCenter::Get()->GetVisibleNotifications();
+  EXPECT_EQ(0u, notifications.size());
+}
+
+TEST_F(AccessibilityControllerTest, ClickNotification) {
+  // Enabling FaceGaze should show a notification.
+  controller()->face_gaze().SetEnabled(true);
+  message_center::NotificationList::Notifications notifications =
+      MessageCenter::Get()->GetVisibleNotifications();
+  ASSERT_EQ(1u, notifications.size());
+
+  // Clicking the notification will show a confirmation dialog.
+  base::RunLoop dialog_waiter;
+  controller()->AddFeatureDisableDialogCallbackForTesting(
+      base::BindLambdaForTesting([&dialog_waiter]() { dialog_waiter.Quit(); }));
+  (*notifications.begin())
+      ->delegate()
+      ->Click(/*button_index=*/1, /*reply=*/std::nullopt);
+  dialog_waiter.Run();
 }
 
 namespace {

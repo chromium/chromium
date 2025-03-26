@@ -95,7 +95,6 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="328933489847748230">{count,plural, =1{Er wordt nu 1 Chromium-venster getoond}other{Er worden nu {count} Chromium-vensters getoond}}</translation>
 <translation id="3344973607274501920">Chromium kan je wachtwoorden niet checken. Check de internetverbinding.</translation>
 <translation id="3366305173356742781">Chromium-gegevens in je account</translation>
-<translation id="33788334537425157">Zet 'Incognitotabbladen vergrendelen als je Chromium sluit' aan</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Dit gebeurt als Chromium {THRESHOLD} minuut niet wordt gebruikt. Dit kunnen onder andere de geschiedenis en gegevens voor automatisch invullen zijn.}other{Dit gebeurt als Chromium {THRESHOLD} minuten niet wordt gebruikt. Dit kunnen onder andere de geschiedenis en gegevens voor automatisch invullen zijn.}}</translation>
 <translation id="3410395242749598859">Sommige van je Chromium-gegevens zijn nog niet opgeslagen in <ph name="EMAIL" />.
 Wacht een paar minuten voordat je van account wisselt. Als je nu van account wisselt, worden deze gegevens verwijderd.</translation>

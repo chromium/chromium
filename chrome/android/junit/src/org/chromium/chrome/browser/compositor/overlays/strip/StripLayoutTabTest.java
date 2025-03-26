@@ -8,12 +8,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.FOLIO_FOOT_LENGTH_DP;
+
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.ContextThemeWrapper;
 
 import androidx.annotation.ColorInt;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.filters.SmallTest;
 
 import com.google.android.material.color.MaterialColors;
 
@@ -215,6 +219,22 @@ public class StripLayoutTabTest {
         assertTrue(
                 "Going from a non-null to null title should result in a description update",
                 mNormalTab.needsAccessibilityDescriptionUpdate(null, resId));
+    }
+
+    @Test
+    @SmallTest
+    public void testAnchorRect() {
+        int folioFootLengthPx =
+                Math.round(
+                        mContext.getResources().getDisplayMetrics().density * FOLIO_FOOT_LENGTH_DP);
+        int width = folioFootLengthPx + 20; // Should be larger than folioFootLengthPx
+        int height = 10; // Arbitrary
+        mNormalTab.setWidth(width);
+        mNormalTab.setHeight(10);
+
+        Rect rect = new Rect();
+        mNormalTab.getAnchorRect(rect);
+        assertEquals(new Rect(folioFootLengthPx, 0, width, height), rect);
     }
 
     private StripLayoutTab createStripLayoutTab(boolean incognito) {

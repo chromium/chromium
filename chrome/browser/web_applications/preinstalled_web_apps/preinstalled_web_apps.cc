@@ -37,6 +37,7 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_calendar.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_meet.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/messages_dogfood.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/notebook_lm.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -98,6 +99,7 @@ std::vector<ExternalInstallOptions> GetChromeBrandedApps(
 #if BUILDFLAG(IS_CHROMEOS)
       GetConfigForCalculator(),
       GetConfigForGemini(device_info),
+      GetConfigForNotebookLm(),
       GetConfigForGoogleCalendar(),
       GetConfigForGoogleChat(/*is_standalone=*/true,
                              /*only_for_new_users=*/false),

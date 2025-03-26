@@ -5,12 +5,12 @@ promise_test(async t => {
     'unavailable'
   );
   assert_not_equals(
-    await ai.languageModel.availability({ expectedInputLanguages: ["en"] }),
+    await ai.languageModel.availability({ expectedInputs: [{ type: "text", languages: ["en"] }]}),
     'unavailable',
     'availability() with supported language should not return unavailable.'
   );
   assert_equals(
-    await ai.languageModel.availability({ expectedInputLanguages: ["ja"] }),
+    await ai.languageModel.availability({ expectedInputs: [{ type: "text", languages: ["ja"] }]}),
     'unavailable',
     'availability() with unsupported language should return unavailable.'
   );
@@ -48,7 +48,7 @@ promise_test(async t => {
     await ai.languageModel.availability({
       topK: 3,
       temperature: 1.5,
-      expectedInputLanguages: ["en"]
+      expectedInputs: [{ type: "text", languages: ["en"] }]
     }),
     'unavailable',
     'availability() with valid sampling params and supported language should not return unavailable.'
@@ -57,9 +57,9 @@ promise_test(async t => {
     await ai.languageModel.availability({
       topK: 3,
       temperature: -1,
-      expectedInputLanguages: ["en"]
+      expectedInputs: [{ type: "text", languages: ["en"] }]
     }),
     'unavailable',
-    'availability() with valid supported language and invalid smapling params should return unavailable.'
+    'availability() with invalid sampling params and supported language should return unavailable.'
   );
 });

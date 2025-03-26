@@ -1121,328 +1121,328 @@ constexpr EngineAndTier engines_ZW[] = {
 // ----------------------------------------------------------------------------
 
 const std::vector<EngineAndTier> GetPrepopulationSetFromCountryID(
-    int country_id) {
+    country_codes::CountryId country_id) {
   const EngineAndTier* engines;
   size_t num_engines;
   // If you add a new country make sure to update the unit test for coverage.
-  switch (country_id) {
-#define UNHANDLED_COUNTRY(code1, code2) \
-  case country_codes::CountryCharsToCountryID((#code1)[0], (#code2)[0]):
-#define END_UNHANDLED_COUNTRIES(code1, code2)      \
-  engines = engines_##code1##code2;                \
-  num_engines = std::size(engines_##code1##code2); \
+  switch (country_id.Serialize()) {
+#define UNHANDLED_COUNTRY(code) \
+  case country_codes::CountryId(#code).Serialize():
+#define END_UNHANDLED_COUNTRIES(code)      \
+  engines = engines_##code;                \
+  num_engines = std::size(engines_##code); \
   break;
-#define DECLARE_COUNTRY(code1, code2) \
-  UNHANDLED_COUNTRY(code1, code2)     \
-  END_UNHANDLED_COUNTRIES(code1, code2)
+#define DECLARE_COUNTRY(code) \
+  UNHANDLED_COUNTRY(code)     \
+  END_UNHANDLED_COUNTRIES(code)
 
     // Countries with their own, dedicated engine set.
-    DECLARE_COUNTRY(A, E)  // United Arab Emirates
-    DECLARE_COUNTRY(A, L)  // Albania
-    DECLARE_COUNTRY(A, R)  // Argentina
-    DECLARE_COUNTRY(A, T)  // Austria
-    DECLARE_COUNTRY(A, U)  // Australia
-    DECLARE_COUNTRY(B, A)  // Bosnia and Herzegovina
-    DECLARE_COUNTRY(B, E)  // Belgium
-    DECLARE_COUNTRY(B, G)  // Bulgaria
-    DECLARE_COUNTRY(B, H)  // Bahrain
-    DECLARE_COUNTRY(B, I)  // Burundi
-    DECLARE_COUNTRY(B, N)  // Brunei
-    DECLARE_COUNTRY(B, O)  // Bolivia
-    DECLARE_COUNTRY(B, R)  // Brazil
-    DECLARE_COUNTRY(B, Y)  // Belarus
-    DECLARE_COUNTRY(B, Z)  // Belize
-    DECLARE_COUNTRY(C, A)  // Canada
-    DECLARE_COUNTRY(C, H)  // Switzerland
-    DECLARE_COUNTRY(C, L)  // Chile
-    DECLARE_COUNTRY(C, N)  // China
-    DECLARE_COUNTRY(C, O)  // Colombia
-    DECLARE_COUNTRY(C, R)  // Costa Rica
-    DECLARE_COUNTRY(C, Y)  // Republic of Cyprus
-    DECLARE_COUNTRY(C, Z)  // Czech Republic
-    DECLARE_COUNTRY(D, E)  // Germany
-    DECLARE_COUNTRY(D, K)  // Denmark
-    DECLARE_COUNTRY(D, O)  // Dominican Republic
-    DECLARE_COUNTRY(D, Z)  // Algeria
-    DECLARE_COUNTRY(E, C)  // Ecuador
-    DECLARE_COUNTRY(E, E)  // Estonia
-    DECLARE_COUNTRY(E, G)  // Egypt
-    DECLARE_COUNTRY(E, S)  // Spain
-    DECLARE_COUNTRY(F, I)  // Finland
-    DECLARE_COUNTRY(F, O)  // Faroe Islands
-    DECLARE_COUNTRY(F, R)  // France
-    DECLARE_COUNTRY(G, B)  // United Kingdom
-    DECLARE_COUNTRY(G, R)  // Greece
-    DECLARE_COUNTRY(G, T)  // Guatemala
-    DECLARE_COUNTRY(H, K)  // Hong Kong
-    DECLARE_COUNTRY(H, N)  // Honduras
-    DECLARE_COUNTRY(H, R)  // Croatia
-    DECLARE_COUNTRY(H, U)  // Hungary
-    DECLARE_COUNTRY(I, D)  // Indonesia
-    DECLARE_COUNTRY(I, E)  // Ireland
-    DECLARE_COUNTRY(I, L)  // Israel
-    DECLARE_COUNTRY(I, N)  // India
-    DECLARE_COUNTRY(I, Q)  // Iraq
-    DECLARE_COUNTRY(I, R)  // Iran
-    DECLARE_COUNTRY(I, S)  // Iceland
-    DECLARE_COUNTRY(I, T)  // Italy
-    DECLARE_COUNTRY(J, M)  // Jamaica
-    DECLARE_COUNTRY(J, O)  // Jordan
-    DECLARE_COUNTRY(J, P)  // Japan
-    DECLARE_COUNTRY(K, E)  // Kenya
-    DECLARE_COUNTRY(K, R)  // South Korea
-    DECLARE_COUNTRY(K, W)  // Kuwait
-    DECLARE_COUNTRY(K, Z)  // Kazakhstan
-    DECLARE_COUNTRY(L, B)  // Lebanon
-    DECLARE_COUNTRY(L, I)  // Liechtenstein
-    DECLARE_COUNTRY(L, T)  // Lithuania
-    DECLARE_COUNTRY(L, U)  // Luxembourg
-    DECLARE_COUNTRY(L, V)  // Latvia
-    DECLARE_COUNTRY(L, Y)  // Libya
-    DECLARE_COUNTRY(M, A)  // Morocco
-    DECLARE_COUNTRY(M, C)  // Monaco
-    DECLARE_COUNTRY(M, D)  // Moldova
-    DECLARE_COUNTRY(M, E)  // Montenegro
-    DECLARE_COUNTRY(M, K)  // Macedonia
-    DECLARE_COUNTRY(M, T)  // Malta
-    DECLARE_COUNTRY(M, X)  // Mexico
-    DECLARE_COUNTRY(M, Y)  // Malaysia
-    DECLARE_COUNTRY(N, I)  // Nicaragua
-    DECLARE_COUNTRY(N, L)  // Netherlands
-    DECLARE_COUNTRY(N, O)  // Norway
-    DECLARE_COUNTRY(N, Z)  // New Zealand
-    DECLARE_COUNTRY(O, M)  // Oman
-    DECLARE_COUNTRY(P, A)  // Panama
-    DECLARE_COUNTRY(P, E)  // Peru
-    DECLARE_COUNTRY(P, H)  // Philippines
-    DECLARE_COUNTRY(P, K)  // Pakistan
-    DECLARE_COUNTRY(P, L)  // Poland
-    DECLARE_COUNTRY(P, R)  // Puerto Rico
-    DECLARE_COUNTRY(P, T)  // Portugal
-    DECLARE_COUNTRY(P, Y)  // Paraguay
-    DECLARE_COUNTRY(Q, A)  // Qatar
-    DECLARE_COUNTRY(R, O)  // Romania
-    DECLARE_COUNTRY(R, S)  // Serbia
-    DECLARE_COUNTRY(R, U)  // Russia
-    DECLARE_COUNTRY(R, W)  // Rwanda
-    DECLARE_COUNTRY(S, A)  // Saudi Arabia
-    DECLARE_COUNTRY(S, E)  // Sweden
-    DECLARE_COUNTRY(S, G)  // Singapore
-    DECLARE_COUNTRY(S, I)  // Slovenia
-    DECLARE_COUNTRY(S, K)  // Slovakia
-    DECLARE_COUNTRY(S, V)  // El Salvador
-    DECLARE_COUNTRY(S, Y)  // Syria
-    DECLARE_COUNTRY(T, H)  // Thailand
-    DECLARE_COUNTRY(T, N)  // Tunisia
-    DECLARE_COUNTRY(T, R)  // Turkey
-    DECLARE_COUNTRY(T, T)  // Trinidad and Tobago
-    DECLARE_COUNTRY(T, W)  // Taiwan
-    DECLARE_COUNTRY(T, Z)  // Tanzania
-    DECLARE_COUNTRY(U, A)  // Ukraine
-    DECLARE_COUNTRY(U, S)  // United States
-    DECLARE_COUNTRY(U, Y)  // Uruguay
-    DECLARE_COUNTRY(V, E)  // Venezuela
-    DECLARE_COUNTRY(V, N)  // Vietnam
-    DECLARE_COUNTRY(Y, E)  // Yemen
-    DECLARE_COUNTRY(Z, A)  // South Africa
-    DECLARE_COUNTRY(Z, W)  // Zimbabwe
+    DECLARE_COUNTRY(AE)  // United Arab Emirates
+    DECLARE_COUNTRY(AL)  // Albania
+    DECLARE_COUNTRY(AR)  // Argentina
+    DECLARE_COUNTRY(AT)  // Austria
+    DECLARE_COUNTRY(AU)  // Australia
+    DECLARE_COUNTRY(BA)  // Bosnia and Herzegovina
+    DECLARE_COUNTRY(BE)  // Belgium
+    DECLARE_COUNTRY(BG)  // Bulgaria
+    DECLARE_COUNTRY(BH)  // Bahrain
+    DECLARE_COUNTRY(BI)  // Burundi
+    DECLARE_COUNTRY(BN)  // Brunei
+    DECLARE_COUNTRY(BO)  // Bolivia
+    DECLARE_COUNTRY(BR)  // Brazil
+    DECLARE_COUNTRY(BY)  // Belarus
+    DECLARE_COUNTRY(BZ)  // Belize
+    DECLARE_COUNTRY(CA)  // Canada
+    DECLARE_COUNTRY(CH)  // Switzerland
+    DECLARE_COUNTRY(CL)  // Chile
+    DECLARE_COUNTRY(CN)  // China
+    DECLARE_COUNTRY(CO)  // Colombia
+    DECLARE_COUNTRY(CR)  // Costa Rica
+    DECLARE_COUNTRY(CY)  // Republic of Cyprus
+    DECLARE_COUNTRY(CZ)  // Czech Republic
+    DECLARE_COUNTRY(DE)  // Germany
+    DECLARE_COUNTRY(DK)  // Denmark
+    DECLARE_COUNTRY(DO)  // Dominican Republic
+    DECLARE_COUNTRY(DZ)  // Algeria
+    DECLARE_COUNTRY(EC)  // Ecuador
+    DECLARE_COUNTRY(EE)  // Estonia
+    DECLARE_COUNTRY(EG)  // Egypt
+    DECLARE_COUNTRY(ES)  // Spain
+    DECLARE_COUNTRY(FI)  // Finland
+    DECLARE_COUNTRY(FO)  // Faroe Islands
+    DECLARE_COUNTRY(FR)  // France
+    DECLARE_COUNTRY(GB)  // United Kingdom
+    DECLARE_COUNTRY(GR)  // Greece
+    DECLARE_COUNTRY(GT)  // Guatemala
+    DECLARE_COUNTRY(HK)  // Hong Kong
+    DECLARE_COUNTRY(HN)  // Honduras
+    DECLARE_COUNTRY(HR)  // Croatia
+    DECLARE_COUNTRY(HU)  // Hungary
+    DECLARE_COUNTRY(ID)  // Indonesia
+    DECLARE_COUNTRY(IE)  // Ireland
+    DECLARE_COUNTRY(IL)  // Israel
+    DECLARE_COUNTRY(IN)  // India
+    DECLARE_COUNTRY(IQ)  // Iraq
+    DECLARE_COUNTRY(IR)  // Iran
+    DECLARE_COUNTRY(IS)  // Iceland
+    DECLARE_COUNTRY(IT)  // Italy
+    DECLARE_COUNTRY(JM)  // Jamaica
+    DECLARE_COUNTRY(JO)  // Jordan
+    DECLARE_COUNTRY(JP)  // Japan
+    DECLARE_COUNTRY(KE)  // Kenya
+    DECLARE_COUNTRY(KR)  // South Korea
+    DECLARE_COUNTRY(KW)  // Kuwait
+    DECLARE_COUNTRY(KZ)  // Kazakhstan
+    DECLARE_COUNTRY(LB)  // Lebanon
+    DECLARE_COUNTRY(LI)  // Liechtenstein
+    DECLARE_COUNTRY(LT)  // Lithuania
+    DECLARE_COUNTRY(LU)  // Luxembourg
+    DECLARE_COUNTRY(LV)  // Latvia
+    DECLARE_COUNTRY(LY)  // Libya
+    DECLARE_COUNTRY(MA)  // Morocco
+    DECLARE_COUNTRY(MC)  // Monaco
+    DECLARE_COUNTRY(MD)  // Moldova
+    DECLARE_COUNTRY(ME)  // Montenegro
+    DECLARE_COUNTRY(MK)  // Macedonia
+    DECLARE_COUNTRY(MT)  // Malta
+    DECLARE_COUNTRY(MX)  // Mexico
+    DECLARE_COUNTRY(MY)  // Malaysia
+    DECLARE_COUNTRY(NI)  // Nicaragua
+    DECLARE_COUNTRY(NL)  // Netherlands
+    DECLARE_COUNTRY(NO)  // Norway
+    DECLARE_COUNTRY(NZ)  // New Zealand
+    DECLARE_COUNTRY(OM)  // Oman
+    DECLARE_COUNTRY(PA)  // Panama
+    DECLARE_COUNTRY(PE)  // Peru
+    DECLARE_COUNTRY(PH)  // Philippines
+    DECLARE_COUNTRY(PK)  // Pakistan
+    DECLARE_COUNTRY(PL)  // Poland
+    DECLARE_COUNTRY(PR)  // Puerto Rico
+    DECLARE_COUNTRY(PT)  // Portugal
+    DECLARE_COUNTRY(PY)  // Paraguay
+    DECLARE_COUNTRY(QA)  // Qatar
+    DECLARE_COUNTRY(RO)  // Romania
+    DECLARE_COUNTRY(RS)  // Serbia
+    DECLARE_COUNTRY(RU)  // Russia
+    DECLARE_COUNTRY(RW)  // Rwanda
+    DECLARE_COUNTRY(SA)  // Saudi Arabia
+    DECLARE_COUNTRY(SE)  // Sweden
+    DECLARE_COUNTRY(SG)  // Singapore
+    DECLARE_COUNTRY(SI)  // Slovenia
+    DECLARE_COUNTRY(SK)  // Slovakia
+    DECLARE_COUNTRY(SV)  // El Salvador
+    DECLARE_COUNTRY(SY)  // Syria
+    DECLARE_COUNTRY(TH)  // Thailand
+    DECLARE_COUNTRY(TN)  // Tunisia
+    DECLARE_COUNTRY(TR)  // Turkey
+    DECLARE_COUNTRY(TT)  // Trinidad and Tobago
+    DECLARE_COUNTRY(TW)  // Taiwan
+    DECLARE_COUNTRY(TZ)  // Tanzania
+    DECLARE_COUNTRY(UA)  // Ukraine
+    DECLARE_COUNTRY(US)  // United States
+    DECLARE_COUNTRY(UY)  // Uruguay
+    DECLARE_COUNTRY(VE)  // Venezuela
+    DECLARE_COUNTRY(VN)  // Vietnam
+    DECLARE_COUNTRY(YE)  // Yemen
+    DECLARE_COUNTRY(ZA)  // South Africa
+    DECLARE_COUNTRY(ZW)  // Zimbabwe
 
     // Countries using the "Australia" engine set.
-    UNHANDLED_COUNTRY(C, C)  // Cocos Islands
-    UNHANDLED_COUNTRY(C, X)  // Christmas Island
-    UNHANDLED_COUNTRY(H, M)  // Heard Island and McDonald Islands
-    UNHANDLED_COUNTRY(N, F)  // Norfolk Island
-    END_UNHANDLED_COUNTRIES(A, U)
+    UNHANDLED_COUNTRY(CC)  // Cocos Islands
+    UNHANDLED_COUNTRY(CX)  // Christmas Island
+    UNHANDLED_COUNTRY(HM)  // Heard Island and McDonald Islands
+    UNHANDLED_COUNTRY(NF)  // Norfolk Island
+    END_UNHANDLED_COUNTRIES(AU)
 
     // Countries using the "China" engine set.
-    UNHANDLED_COUNTRY(M, O)  // Macao
-    END_UNHANDLED_COUNTRIES(C, N)
+    UNHANDLED_COUNTRY(MO)  // Macao
+    END_UNHANDLED_COUNTRIES(CN)
 
     // Countries using the "Denmark" engine set.
-    UNHANDLED_COUNTRY(G, L)  // Greenland
-    END_UNHANDLED_COUNTRIES(D, K)
+    UNHANDLED_COUNTRY(GL)  // Greenland
+    END_UNHANDLED_COUNTRIES(DK)
 
     // Countries using the "Spain" engine set.
-    UNHANDLED_COUNTRY(A, D)  // Andorra
-    UNHANDLED_COUNTRY(E, A)  // Ceuta & Melilla (not in ISO 3166-1 but included
-                             // in some Chrome country code lists)
-    UNHANDLED_COUNTRY(I, C)  // Canary Islands (not in ISO 3166-1 but included
-                             // in some Chrome country code lists)
-    END_UNHANDLED_COUNTRIES(E, S)
+    UNHANDLED_COUNTRY(AD)  // Andorra
+    UNHANDLED_COUNTRY(EA)  // Ceuta & Melilla (not in ISO 3166-1 but included
+                           // in some Chrome country code lists)
+    UNHANDLED_COUNTRY(IC)  // Canary Islands (not in ISO 3166-1 but included
+                           // in some Chrome country code lists)
+    END_UNHANDLED_COUNTRIES(ES)
 
     // Countries using the "Finland" engine set.
-    UNHANDLED_COUNTRY(A, X)  // Aland Islands
-    END_UNHANDLED_COUNTRIES(F, I)
+    UNHANDLED_COUNTRY(AX)  // Aland Islands
+    END_UNHANDLED_COUNTRIES(FI)
 
     // Countries using the "France" engine set.
-    UNHANDLED_COUNTRY(B, F)  // Burkina Faso
-    UNHANDLED_COUNTRY(B, J)  // Benin
-    UNHANDLED_COUNTRY(B, L)  // St. Barthélemy
-    UNHANDLED_COUNTRY(C, D)  // Congo - Kinshasa
-    UNHANDLED_COUNTRY(C, F)  // Central African Republic
-    UNHANDLED_COUNTRY(C, G)  // Congo - Brazzaville
-    UNHANDLED_COUNTRY(C, I)  // Ivory Coast
-    UNHANDLED_COUNTRY(C, M)  // Cameroon
-    UNHANDLED_COUNTRY(D, J)  // Djibouti
-    UNHANDLED_COUNTRY(G, A)  // Gabon
-    UNHANDLED_COUNTRY(G, F)  // French Guiana
-    UNHANDLED_COUNTRY(G, N)  // Guinea
-    UNHANDLED_COUNTRY(G, P)  // Guadeloupe
-    UNHANDLED_COUNTRY(H, T)  // Haiti
-    UNHANDLED_COUNTRY(M, F)  // Saint Martin
-    UNHANDLED_COUNTRY(M, L)  // Mali
-    UNHANDLED_COUNTRY(M, Q)  // Martinique
-    UNHANDLED_COUNTRY(N, C)  // New Caledonia
-    UNHANDLED_COUNTRY(N, E)  // Niger
-    UNHANDLED_COUNTRY(P, F)  // French Polynesia
-    UNHANDLED_COUNTRY(P, M)  // Saint Pierre and Miquelon
-    UNHANDLED_COUNTRY(R, E)  // Reunion
-    UNHANDLED_COUNTRY(S, N)  // Senegal
-    UNHANDLED_COUNTRY(T, D)  // Chad
-    UNHANDLED_COUNTRY(T, F)  // French Southern Territories
-    UNHANDLED_COUNTRY(T, G)  // Togo
-    UNHANDLED_COUNTRY(W, F)  // Wallis and Futuna
-    UNHANDLED_COUNTRY(Y, T)  // Mayotte
-    END_UNHANDLED_COUNTRIES(F, R)
+    UNHANDLED_COUNTRY(BF)  // Burkina Faso
+    UNHANDLED_COUNTRY(BJ)  // Benin
+    UNHANDLED_COUNTRY(BL)  // St. Barthélemy
+    UNHANDLED_COUNTRY(CD)  // Congo - Kinshasa
+    UNHANDLED_COUNTRY(CF)  // Central African Republic
+    UNHANDLED_COUNTRY(CG)  // Congo - Brazzaville
+    UNHANDLED_COUNTRY(CI)  // Ivory Coast
+    UNHANDLED_COUNTRY(CM)  // Cameroon
+    UNHANDLED_COUNTRY(DJ)  // Djibouti
+    UNHANDLED_COUNTRY(GA)  // Gabon
+    UNHANDLED_COUNTRY(GF)  // French Guiana
+    UNHANDLED_COUNTRY(GN)  // Guinea
+    UNHANDLED_COUNTRY(GP)  // Guadeloupe
+    UNHANDLED_COUNTRY(HT)  // Haiti
+    UNHANDLED_COUNTRY(MF)  // Saint Martin
+    UNHANDLED_COUNTRY(ML)  // Mali
+    UNHANDLED_COUNTRY(MQ)  // Martinique
+    UNHANDLED_COUNTRY(NC)  // New Caledonia
+    UNHANDLED_COUNTRY(NE)  // Niger
+    UNHANDLED_COUNTRY(PF)  // French Polynesia
+    UNHANDLED_COUNTRY(PM)  // Saint Pierre and Miquelon
+    UNHANDLED_COUNTRY(RE)  // Reunion
+    UNHANDLED_COUNTRY(SN)  // Senegal
+    UNHANDLED_COUNTRY(TD)  // Chad
+    UNHANDLED_COUNTRY(TF)  // French Southern Territories
+    UNHANDLED_COUNTRY(TG)  // Togo
+    UNHANDLED_COUNTRY(WF)  // Wallis and Futuna
+    UNHANDLED_COUNTRY(YT)  // Mayotte
+    END_UNHANDLED_COUNTRIES(FR)
 
     // Countries using the "Italy" engine set.
-    UNHANDLED_COUNTRY(S, M)  // San Marino
-    UNHANDLED_COUNTRY(V, A)  // Vatican
-    END_UNHANDLED_COUNTRIES(I, T)
+    UNHANDLED_COUNTRY(SM)  // San Marino
+    UNHANDLED_COUNTRY(VA)  // Vatican
+    END_UNHANDLED_COUNTRIES(IT)
 
     // Countries using the "Morocco" engine set.
-    UNHANDLED_COUNTRY(E, H)  // Western Sahara
-    END_UNHANDLED_COUNTRIES(M, A)
+    UNHANDLED_COUNTRY(EH)  // Western Sahara
+    END_UNHANDLED_COUNTRIES(MA)
 
     // Countries using the "Netherlands" engine set.
-    UNHANDLED_COUNTRY(A, N)  // Netherlands Antilles
-    UNHANDLED_COUNTRY(A, W)  // Aruba
-    END_UNHANDLED_COUNTRIES(N, L)
+    UNHANDLED_COUNTRY(AN)  // Netherlands Antilles
+    UNHANDLED_COUNTRY(AW)  // Aruba
+    END_UNHANDLED_COUNTRIES(NL)
 
     // Countries using the "Norway" engine set.
-    UNHANDLED_COUNTRY(B, V)  // Bouvet Island
-    UNHANDLED_COUNTRY(S, J)  // Svalbard and Jan Mayen
-    END_UNHANDLED_COUNTRIES(N, O)
+    UNHANDLED_COUNTRY(BV)  // Bouvet Island
+    UNHANDLED_COUNTRY(SJ)  // Svalbard and Jan Mayen
+    END_UNHANDLED_COUNTRIES(NO)
 
     // Countries using the "New Zealand" engine set.
-    UNHANDLED_COUNTRY(C, K)  // Cook Islands
-    UNHANDLED_COUNTRY(N, U)  // Niue
-    UNHANDLED_COUNTRY(T, K)  // Tokelau
-    END_UNHANDLED_COUNTRIES(N, Z)
+    UNHANDLED_COUNTRY(CK)  // Cook Islands
+    UNHANDLED_COUNTRY(NU)  // Niue
+    UNHANDLED_COUNTRY(TK)  // Tokelau
+    END_UNHANDLED_COUNTRIES(NZ)
 
     // Countries using the "Portugal" engine set.
-    UNHANDLED_COUNTRY(C, V)  // Cape Verde
-    UNHANDLED_COUNTRY(G, W)  // Guinea-Bissau
-    UNHANDLED_COUNTRY(M, Z)  // Mozambique
-    UNHANDLED_COUNTRY(S, T)  // Sao Tome and Principe
-    UNHANDLED_COUNTRY(T, L)  // Timor-Leste
-    END_UNHANDLED_COUNTRIES(P, T)
+    UNHANDLED_COUNTRY(CV)  // Cape Verde
+    UNHANDLED_COUNTRY(GW)  // Guinea-Bissau
+    UNHANDLED_COUNTRY(MZ)  // Mozambique
+    UNHANDLED_COUNTRY(ST)  // Sao Tome and Principe
+    UNHANDLED_COUNTRY(TL)  // Timor-Leste
+    END_UNHANDLED_COUNTRIES(PT)
 
     // Countries using the "Russia" engine set.
-    UNHANDLED_COUNTRY(A, M)  // Armenia
-    UNHANDLED_COUNTRY(A, Z)  // Azerbaijan
-    UNHANDLED_COUNTRY(K, G)  // Kyrgyzstan
-    UNHANDLED_COUNTRY(T, J)  // Tajikistan
-    UNHANDLED_COUNTRY(T, M)  // Turkmenistan
-    UNHANDLED_COUNTRY(U, Z)  // Uzbekistan
-    END_UNHANDLED_COUNTRIES(R, U)
+    UNHANDLED_COUNTRY(AM)  // Armenia
+    UNHANDLED_COUNTRY(AZ)  // Azerbaijan
+    UNHANDLED_COUNTRY(KG)  // Kyrgyzstan
+    UNHANDLED_COUNTRY(TJ)  // Tajikistan
+    UNHANDLED_COUNTRY(TM)  // Turkmenistan
+    UNHANDLED_COUNTRY(UZ)  // Uzbekistan
+    END_UNHANDLED_COUNTRIES(RU)
 
     // Countries using the "Saudi Arabia" engine set.
-    UNHANDLED_COUNTRY(M, R)  // Mauritania
-    UNHANDLED_COUNTRY(P, S)  // Palestinian Territory
-    UNHANDLED_COUNTRY(S, D)  // Sudan
-    END_UNHANDLED_COUNTRIES(S, A)
+    UNHANDLED_COUNTRY(MR)  // Mauritania
+    UNHANDLED_COUNTRY(PS)  // Palestinian Territory
+    UNHANDLED_COUNTRY(SD)  // Sudan
+    END_UNHANDLED_COUNTRIES(SA)
 
     // Countries using the "United Kingdom" engine set.
-    UNHANDLED_COUNTRY(B, M)  // Bermuda
-    UNHANDLED_COUNTRY(C, Q)  // Sark
-    UNHANDLED_COUNTRY(F, K)  // Falkland Islands
-    UNHANDLED_COUNTRY(G, G)  // Guernsey
-    UNHANDLED_COUNTRY(G, I)  // Gibraltar
-    UNHANDLED_COUNTRY(G, S)  // South Georgia and the South Sandwich
-                             //   Islands
-    UNHANDLED_COUNTRY(I, M)  // Isle of Man
-    UNHANDLED_COUNTRY(I, O)  // British Indian Ocean Territory
-    UNHANDLED_COUNTRY(J, E)  // Jersey
-    UNHANDLED_COUNTRY(K, Y)  // Cayman Islands
-    UNHANDLED_COUNTRY(M, S)  // Montserrat
-    UNHANDLED_COUNTRY(P, N)  // Pitcairn Islands
-    UNHANDLED_COUNTRY(S, H)  // Saint Helena, Ascension Island, and Tristan da
-                             //   Cunha
-    UNHANDLED_COUNTRY(T, C)  // Turks and Caicos Islands
-    UNHANDLED_COUNTRY(V, G)  // British Virgin Islands
-    END_UNHANDLED_COUNTRIES(G, B)
+    UNHANDLED_COUNTRY(BM)  // Bermuda
+    UNHANDLED_COUNTRY(CQ)  // Sark
+    UNHANDLED_COUNTRY(FK)  // Falkland Islands
+    UNHANDLED_COUNTRY(GG)  // Guernsey
+    UNHANDLED_COUNTRY(GI)  // Gibraltar
+    UNHANDLED_COUNTRY(GS)  // South Georgia and the South Sandwich
+                           //   Islands
+    UNHANDLED_COUNTRY(IM)  // Isle of Man
+    UNHANDLED_COUNTRY(IO)  // British Indian Ocean Territory
+    UNHANDLED_COUNTRY(JE)  // Jersey
+    UNHANDLED_COUNTRY(KY)  // Cayman Islands
+    UNHANDLED_COUNTRY(MS)  // Montserrat
+    UNHANDLED_COUNTRY(PN)  // Pitcairn Islands
+    UNHANDLED_COUNTRY(SH)  // Saint Helena, Ascension Island, and Tristan da
+                           //   Cunha
+    UNHANDLED_COUNTRY(TC)  // Turks and Caicos Islands
+    UNHANDLED_COUNTRY(VG)  // British Virgin Islands
+    END_UNHANDLED_COUNTRIES(GB)
 
     // Countries using the "United States" engine set.
-    UNHANDLED_COUNTRY(A, S)  // American Samoa
-    UNHANDLED_COUNTRY(G, U)  // Guam
-    UNHANDLED_COUNTRY(M, P)  // Northern Mariana Islands
-    UNHANDLED_COUNTRY(U, M)  // U.S. Minor Outlying Islands
-    UNHANDLED_COUNTRY(V, I)  // U.S. Virgin Islands
-    END_UNHANDLED_COUNTRIES(U, S)
+    UNHANDLED_COUNTRY(AS)  // American Samoa
+    UNHANDLED_COUNTRY(GU)  // Guam
+    UNHANDLED_COUNTRY(MP)  // Northern Mariana Islands
+    UNHANDLED_COUNTRY(UM)  // U.S. Minor Outlying Islands
+    UNHANDLED_COUNTRY(VI)  // U.S. Virgin Islands
+    END_UNHANDLED_COUNTRIES(US)
 
     // Countries using the "default" engine set.
-    UNHANDLED_COUNTRY(A, F)  // Afghanistan
-    UNHANDLED_COUNTRY(A, G)  // Antigua and Barbuda
-    UNHANDLED_COUNTRY(A, I)  // Anguilla
-    UNHANDLED_COUNTRY(A, O)  // Angola
-    UNHANDLED_COUNTRY(A, Q)  // Antarctica
-    UNHANDLED_COUNTRY(B, B)  // Barbados
-    UNHANDLED_COUNTRY(B, D)  // Bangladesh
-    UNHANDLED_COUNTRY(B, S)  // Bahamas
-    UNHANDLED_COUNTRY(B, T)  // Bhutan
-    UNHANDLED_COUNTRY(B, W)  // Botswana
-    UNHANDLED_COUNTRY(C, U)  // Cuba
-    UNHANDLED_COUNTRY(D, M)  // Dominica
-    UNHANDLED_COUNTRY(E, R)  // Eritrea
-    UNHANDLED_COUNTRY(E, T)  // Ethiopia
-    UNHANDLED_COUNTRY(F, J)  // Fiji
-    UNHANDLED_COUNTRY(F, M)  // Micronesia
-    UNHANDLED_COUNTRY(G, D)  // Grenada
-    UNHANDLED_COUNTRY(G, E)  // Georgia
-    UNHANDLED_COUNTRY(G, H)  // Ghana
-    UNHANDLED_COUNTRY(G, M)  // Gambia
-    UNHANDLED_COUNTRY(G, Q)  // Equatorial Guinea
-    UNHANDLED_COUNTRY(G, Y)  // Guyana
-    UNHANDLED_COUNTRY(K, H)  // Cambodia
-    UNHANDLED_COUNTRY(K, I)  // Kiribati
-    UNHANDLED_COUNTRY(K, M)  // Comoros
-    UNHANDLED_COUNTRY(K, N)  // Saint Kitts and Nevis
-    UNHANDLED_COUNTRY(K, P)  // North Korea
-    UNHANDLED_COUNTRY(L, A)  // Laos
-    UNHANDLED_COUNTRY(L, C)  // Saint Lucia
-    UNHANDLED_COUNTRY(L, K)  // Sri Lanka
-    UNHANDLED_COUNTRY(L, R)  // Liberia
-    UNHANDLED_COUNTRY(L, S)  // Lesotho
-    UNHANDLED_COUNTRY(M, G)  // Madagascar
-    UNHANDLED_COUNTRY(M, H)  // Marshall Islands
-    UNHANDLED_COUNTRY(M, M)  // Myanmar
-    UNHANDLED_COUNTRY(M, N)  // Mongolia
-    UNHANDLED_COUNTRY(M, U)  // Mauritius
-    UNHANDLED_COUNTRY(M, V)  // Maldives
-    UNHANDLED_COUNTRY(M, W)  // Malawi
-    UNHANDLED_COUNTRY(N, A)  // Namibia
-    UNHANDLED_COUNTRY(N, G)  // Nigeria
-    UNHANDLED_COUNTRY(N, P)  // Nepal
-    UNHANDLED_COUNTRY(N, R)  // Nauru
-    UNHANDLED_COUNTRY(P, G)  // Papua New Guinea
-    UNHANDLED_COUNTRY(P, W)  // Palau
-    UNHANDLED_COUNTRY(S, B)  // Solomon Islands
-    UNHANDLED_COUNTRY(S, C)  // Seychelles
-    UNHANDLED_COUNTRY(S, L)  // Sierra Leone
-    UNHANDLED_COUNTRY(S, O)  // Somalia
-    UNHANDLED_COUNTRY(S, R)  // Suriname
-    UNHANDLED_COUNTRY(S, Z)  // Swaziland
-    UNHANDLED_COUNTRY(T, O)  // Tonga
-    UNHANDLED_COUNTRY(T, V)  // Tuvalu
-    UNHANDLED_COUNTRY(U, G)  // Uganda
-    UNHANDLED_COUNTRY(V, C)  // Saint Vincent and the Grenadines
-    UNHANDLED_COUNTRY(V, U)  // Vanuatu
-    UNHANDLED_COUNTRY(W, S)  // Samoa
-    UNHANDLED_COUNTRY(Z, M)  // Zambia
-    case country_codes::kCountryIDUnknown:
+    UNHANDLED_COUNTRY(AF)  // Afghanistan
+    UNHANDLED_COUNTRY(AG)  // Antigua and Barbuda
+    UNHANDLED_COUNTRY(AI)  // Anguilla
+    UNHANDLED_COUNTRY(AO)  // Angola
+    UNHANDLED_COUNTRY(AQ)  // Antarctica
+    UNHANDLED_COUNTRY(BB)  // Barbados
+    UNHANDLED_COUNTRY(BD)  // Bangladesh
+    UNHANDLED_COUNTRY(BS)  // Bahamas
+    UNHANDLED_COUNTRY(BT)  // Bhutan
+    UNHANDLED_COUNTRY(BW)  // Botswana
+    UNHANDLED_COUNTRY(CU)  // Cuba
+    UNHANDLED_COUNTRY(DM)  // Dominica
+    UNHANDLED_COUNTRY(ER)  // Eritrea
+    UNHANDLED_COUNTRY(ET)  // Ethiopia
+    UNHANDLED_COUNTRY(FJ)  // Fiji
+    UNHANDLED_COUNTRY(FM)  // Micronesia
+    UNHANDLED_COUNTRY(GD)  // Grenada
+    UNHANDLED_COUNTRY(GE)  // Georgia
+    UNHANDLED_COUNTRY(GH)  // Ghana
+    UNHANDLED_COUNTRY(GM)  // Gambia
+    UNHANDLED_COUNTRY(GQ)  // Equatorial Guinea
+    UNHANDLED_COUNTRY(GY)  // Guyana
+    UNHANDLED_COUNTRY(KH)  // Cambodia
+    UNHANDLED_COUNTRY(KI)  // Kiribati
+    UNHANDLED_COUNTRY(KM)  // Comoros
+    UNHANDLED_COUNTRY(KN)  // Saint Kitts and Nevis
+    UNHANDLED_COUNTRY(KP)  // North Korea
+    UNHANDLED_COUNTRY(LA)  // Laos
+    UNHANDLED_COUNTRY(LC)  // Saint Lucia
+    UNHANDLED_COUNTRY(LK)  // Sri Lanka
+    UNHANDLED_COUNTRY(LR)  // Liberia
+    UNHANDLED_COUNTRY(LS)  // Lesotho
+    UNHANDLED_COUNTRY(MG)  // Madagascar
+    UNHANDLED_COUNTRY(MH)  // Marshall Islands
+    UNHANDLED_COUNTRY(MM)  // Myanmar
+    UNHANDLED_COUNTRY(MN)  // Mongolia
+    UNHANDLED_COUNTRY(MU)  // Mauritius
+    UNHANDLED_COUNTRY(MV)  // Maldives
+    UNHANDLED_COUNTRY(MW)  // Malawi
+    UNHANDLED_COUNTRY(NA)  // Namibia
+    UNHANDLED_COUNTRY(NG)  // Nigeria
+    UNHANDLED_COUNTRY(NP)  // Nepal
+    UNHANDLED_COUNTRY(NR)  // Nauru
+    UNHANDLED_COUNTRY(PG)  // Papua New Guinea
+    UNHANDLED_COUNTRY(PW)  // Palau
+    UNHANDLED_COUNTRY(SB)  // Solomon Islands
+    UNHANDLED_COUNTRY(SC)  // Seychelles
+    UNHANDLED_COUNTRY(SL)  // Sierra Leone
+    UNHANDLED_COUNTRY(SO)  // Somalia
+    UNHANDLED_COUNTRY(SR)  // Suriname
+    UNHANDLED_COUNTRY(SZ)  // Swaziland
+    UNHANDLED_COUNTRY(TO)  // Tonga
+    UNHANDLED_COUNTRY(TV)  // Tuvalu
+    UNHANDLED_COUNTRY(UG)  // Uganda
+    UNHANDLED_COUNTRY(VC)  // Saint Vincent and the Grenadines
+    UNHANDLED_COUNTRY(VU)  // Vanuatu
+    UNHANDLED_COUNTRY(WS)  // Samoa
+    UNHANDLED_COUNTRY(ZM)  // Zambia
+    case country_codes::CountryId::kUnknownCountryCode:
     default:  // Unhandled location
-      END_UNHANDLED_COUNTRIES(def, ault)
+      END_UNHANDLED_COUNTRIES(default)
   }
 
   std::vector<EngineAndTier> t_url;

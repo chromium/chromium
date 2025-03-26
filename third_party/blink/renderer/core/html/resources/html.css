@@ -1834,7 +1834,7 @@ dialog:where(:modal) {
 
 
   select:not(:-internal-list-box):not([multiple]) option::checkmark {
-    content: '\2713' / '';
+    content: '\2713';
   }
   select option:not(:checked)::checkmark {
     visibility: hidden;

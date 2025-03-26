@@ -49,102 +49,22 @@ The script should Just Work in most cases, but sometimes it may fail when
 dealing with a specific create update.  See the "Recovering from script
 failures" section below for what to do when that happens.
 
-Before the auto-generated CLs can be landed, some additional manual steps need
-to be done first - see the sections below.
-
-## Manual step: `run_cargo_vet.py`
-
-The changes in the auto-generated CL need to go through a security audit, which
-will ensure that `cargo vet` criteria (e.g. `ub-risk-0`, `safe-to-deploy`,
-etc.). still hold for the new versions.  The CL description specifies what are
-the _minimum_ criteria required for the updated crates (note that
-`supply-chain/audits.toml` can and should record a stricter certification if
-possible).
-See the `//docs/rust-unsafe.md` doc for details on how to audit and certify
-the new crate versions (this may require looping in `unsafe` Rust experts
-and/or cryptography experts).
-
-For each update CL, there is a separate git branch created. An audit will most
-likely need to be recorded in
-`third_party/rust/chromium_crates_io/supply-chain/audits.toml` and committed to
-the git branch for each update CL. There are some known corner cases where
-`audits.toml` changes are not needed:
-
-* Updates of crates listed in `remove_crates` in
-  `third_party/rust/chromium_crates_io/gnrt_config.toml` (e.g. the `cc` crate
-  which is a dependency of `cxx` but is not actually used/needed in Chromium).
-  This case should be recognized by the `create_update_cl.py` script and noted
-  in the CL description.
-* Updates of grand-parented-in crates that are covered by exemptions in
-  `third_party/rust/chromium_crates_io/supply-chain/config.toml` instead of
-  being covered by real audits from `audits.toml`.  For such crates, skim the
-  delta and use your best judgement on whether to bump the crate version that
-  the exemption applies to.  Note that `supply-chain/config.toml` is generated
-  by `gnrt vendor` and should not be edited directly - please instead edit
-  `third_party/rust/chromium_crates_io/vet_config.toml.hbs` and then run
-  `tools/crates/run_gnrt.py vendor` to regenerate `supply-chain/config.toml`.
-* Update to a crate version that is already covered by `audits.toml` of other
-  projects that Chromium's `run_cargo_vet.py` imports.  In such case you may
-  need to commit changes that `cargo vet` generates in
-  `third_party/rust/chromium_crates_io/supply-chain/imports.lock`.
-
-This step may require one or more of the commands below, for each git branch
-associated with an update CL (starting with the earliest branches - ones
-closest to `origin/main`):
-
-1. `git checkout rust-crates-update--...`
-    - If this is the second or subsequent branch, then also run `git rebase` to
-      rebase it on top of the manual `audits.toml` changes in the upstream
-      branches
-1. Check which crate (or crates) and which audit criteria need to be reviewed in
-   this branch / CL: `tools/crates/run_cargo_vet.py check`
-    - Note that `run_cargo_vet.py check` may list a _subset_ of the criteria
-      that the automated script has listed in the CL description (e.g. if some
-      of the criteria are already covered by `audits.toml` imported from other
-      projects).
-    - Also note that `cargo vet` will list the _minimum_ required criteria
-      and `audits.toml` can and should record stricter certification if
-      possible. In particular:
-         - Record `does-not-implement-crypto` instead of `crypto-safe` if the
-           crate does not implement crypto.
-         - Record a lower-numbered `ub-risk-N` if appropriate.
-    - And also note that if the crate is currently covered by an exemption
-      in `config.toml`, then we want to bump the exemption instead of providing
-      a delta audit that is baselined on an exemption.
-      Note that `config.toml` shouldn't be edited manually - please edit
-      `vet_config.toml.hbs` and regenerate `config.toml` by running
-      `tools/crates/run_gnrt.py vendor`.
-1. Follow the cargo vet instructions to inspect diffs and certify the results
-    - Note that special guidelines may apply to
-      [delta audits](https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#delta-audits-should-describe-the-final-version)
-    - When performing delta audits, <https://diff.rs/> may be a helpful
-      resource.
-    - The result of an audit can be recorded by simply editing `audits.toml`
-      directly, or running a command like the following:
-      ```
-      tools/crates/run_cargo_vet.py certify autocfg 1.2.0 1.4.0 \
-        --criteria=safe-to-deploy \
-        --criteria=does-not-implement-crypto \
-        --criteria=ub-risk-0
-      ```
-1. `git add third_party/rust/chromium_crates_io/supply-chain`.
-1. `git commit -m 'cargo vet'`
-1. `git cl upload -m 'cargo vet'`
+Before the auto-generated CLs can be landed, you will need to get an LGTM from
+`//third_party/rust/OWNERS`.  See `//third_party/rust/OWNERS-security-review.md`
+for a review checklist.
 
 ## New transitive dependencies
 
-If the roll brings in a new transitive dependency, it will need to be
-audited in its entirety and the results recorded in
-`third_party/rust/chromium_crates_io/supply-chain/audits.toml`.
+Notes from `//third_party/rust/OWNERS-security-review.md` apply:
 
-The addition of transitive Rust dependencies does not need ATL approval,
-but an FYI email should be sent to
-[chrome-atls-discuss@google.com](mailto:chrome-atls-discuss@google.com)
-in order to record the addition.
+* The dependency will need to go through security review.
+* An FYI email should be sent to
+  [chrome-atls-discuss@google.com](mailto:chrome-atls-discuss@google.com)
+  in order to record the addition.
 
 ### Optional: Adding the transitive dependency in its own CL.
 
-If the crate and/or audit are non-trivial, it's possible to split the
+If the new crate is non-trivial, it's possible to split the
 additional crate into its own CL, however then it will default to global
 visibility and allowing non-test use.
 * `gnrt add` and `gnrt vendor` can add the dependency to a fresh checkout.
@@ -218,9 +138,8 @@ introduce breaking changes in the _behavior_ of the existing APIs.
 To update:
 
 1. `tools/crates/create_update_cl.py auto -- some_crate_name --breaking`
-1. Follow the manual steps from the minor version update rotation:
-    1. `cargo vet` audit
-    1. Review, landing, etc.
+1. Follow the manual steps from the minor version update rotation for
+   review, landing, etc.
 
 ### Major version update: Workflow B: Incremental transition
 

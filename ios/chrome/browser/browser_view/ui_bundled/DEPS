@@ -111,6 +111,8 @@ include_rules = [
   "+ios/chrome/browser/webui",
   "+ios/chrome/browser/whats_new/coordinator",
   "+ios/chrome/browser/window_activities/model/window_activity_helpers.h",
+  "+ios/chrome/browser/popup_menu/ui_bundled/popup_menu_coordinator.h",
+  "+ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h",
 ]
 
 specific_include_rules = {

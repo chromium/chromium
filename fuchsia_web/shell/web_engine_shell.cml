@@ -12,8 +12,6 @@
     "//build/config/fuchsia/test/chromium_system_test_facet.shard.test-cml",
     "//build/config/fuchsia/test/elf_test_runner.shard.test-cml",
     "sys/component/realm_builder_absolute.shard.cml",
-
-    "syslog/client.shard.cml",
   ],
   program: {
     binary: "web_engine_shell_exec",
@@ -60,7 +58,7 @@
         "fuchsia.fonts.Provider",
         "fuchsia.hwinfo.Product",
         "fuchsia.intl.PropertyProvider",
-        // "fuchsia.logger/LogSink", is included by the shard above.
+        // "fuchsia.logger/LogSink", is included by the RealmBuilder shard
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",

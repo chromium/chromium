@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <sys/utsname.h>
 
+#include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -23,7 +24,7 @@ void ReportKernelVersion() {
   utsname uts;
   if (uname(&uts) == 0) {
     int major, minor;
-    if (sscanf(uts.release, "%d.%d", &major, &minor) == 2) {
+    if (UNSAFE_TODO(sscanf(uts.release, "%d.%d", &major, &minor)) == 2) {
       int version = ((major & 0xFFFF) << 16) | (minor & 0xFFFF);
       base::UmaHistogramSparse("Android.KernelVersion", version);
     }

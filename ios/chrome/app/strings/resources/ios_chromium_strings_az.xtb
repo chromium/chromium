@@ -95,7 +95,6 @@ Chromium təcrübənizi təkmilləşdirmək məqsədilə data istifadə edən di
 <translation id="328933489847748230">{count,plural, =1{1 Chromium pəncərəsi göstərilir}other{{count} Chromium pəncərəsi göstərilir}}</translation>
 <translation id="3344973607274501920">Chromium parollarınızı yoxlaya bilmədi. İnternet bağlantınızı yoxlayın.</translation>
 <translation id="3366305173356742781">Hesabdakı Chromium datası</translation>
-<translation id="33788334537425157">"Chromium-u bağladıqda Anonim tabları kilidləyin" funksiyasını yandırın</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium {THRESHOLD} dəqiqə istifadə edilmədikdə belə olur. Bura tarixçə və avtodoldurma daxil ola bilər.}other{Chromium {THRESHOLD} dəqiqə istifadə edilmədikdə belə olur. Bura tarixçə və avtodoldurma daxil ola bilər.}}</translation>
 <translation id="3410395242749598859">Müəyyən Chromium datası hələ də <ph name="EMAIL" /> hesabında yadda saxlanılmayıb.
 Hesabları dəyişməzdən əvvəl bir neçə dəqiqə gözləyin. İndi hesabları dəyişsəniz, bu data silinəcək.</translation>

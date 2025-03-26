@@ -31,7 +31,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
   const LayoutResult* Layout();
 
-  const GapFragmentData::GapGeometry* GetGapGeometryForTest() {
+  const GapGeometry* GetGapGeometryForTest() {
     return container_builder_.GetGapGeometryForTest();
   }
 
@@ -101,44 +101,36 @@ class CORE_EXPORT FlexLayoutAlgorithm
       size_t flex_line_index,
       wtf_size_t item_index_in_line,
       LogicalOffset item_offset,
-      Vector<GapFragmentData::GapIntersection>&
-          main_intersections_before_current_line,
-      Vector<GapFragmentData::GapIntersection>&
-          main_intersections_after_current_line,
-      Vector<GapFragmentData::GapIntersectionList>& cross_axis_gaps);
+      Vector<GapIntersection>& main_intersections_before_current_line,
+      Vector<GapIntersection>& main_intersections_after_current_line,
+      Vector<GapIntersectionList>& cross_axis_gaps);
   void PopulateGapIntersectionsForFirstLine(
       const FlexLine& flex_line,
       wtf_size_t num_lines,
       bool is_last_item_in_line,
-      GapFragmentData::GapIntersection& item_cross_intersection,
-      Vector<GapFragmentData::GapIntersection>&
-          main_intersections_after_current_line,
-      Vector<GapFragmentData::GapIntersection>& item_cross_intersections_list);
+      GapIntersection& item_cross_intersection,
+      Vector<GapIntersection>& main_intersections_after_current_line,
+      Vector<GapIntersection>& item_cross_intersections_list);
   void PopulateMainAxisGapIntersectionsForFirstItem(
       const FlexLine& flex_line,
       wtf_size_t num_lines,
-      Vector<GapFragmentData::GapIntersection>&
-          main_intersections_after_current_line);
+      Vector<GapIntersection>& main_intersections_after_current_line);
   void PopulateMainAxisGapIntersectionsForLastItem(
       LayoutUnit cross_axis_block_offset,
-      Vector<GapFragmentData::GapIntersection>&
-          main_intersections_after_current_line);
+      Vector<GapIntersection>& main_intersections_after_current_line);
   void PopulateGapIntersectionsForMiddleItem(
       const HeapVector<FlexLine>& flex_lines,
       bool is_last_item_in_line,
       size_t flex_line_index,
-      GapFragmentData::GapIntersection& item_cross_intersection,
-      Vector<GapFragmentData::GapIntersection>&
-          main_intersections_before_current_line,
-      Vector<GapFragmentData::GapIntersection>&
-          main_intersections_after_current_line,
-      Vector<GapFragmentData::GapIntersection>& item_cross_intersections_list);
+      GapIntersection& item_cross_intersection,
+      Vector<GapIntersection>& main_intersections_before_current_line,
+      Vector<GapIntersection>& main_intersections_after_current_line,
+      Vector<GapIntersection>& item_cross_intersections_list);
   void PopulateGapIntersectionsForLastLine(
       const FlexLine& flex_line,
-      GapFragmentData::GapIntersection& item_cross_intersection,
-      Vector<GapFragmentData::GapIntersection>&
-          main_intersections_before_current_line,
-      Vector<GapFragmentData::GapIntersection>& item_cross_intersections_list);
+      GapIntersection& item_cross_intersection,
+      Vector<GapIntersection>& main_intersections_before_current_line,
+      Vector<GapIntersection>& item_cross_intersections_list);
 
   void ConstructAndAppendFlexItems(
       Phase phase,

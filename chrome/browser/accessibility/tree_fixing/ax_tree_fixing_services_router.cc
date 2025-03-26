@@ -6,9 +6,9 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/accessibility/tree_fixing/internal/ax_tree_fixing_screen_ai_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
@@ -67,6 +67,13 @@ void AXTreeFixingServicesRouter::IdentifyMainNode(
         std::make_unique<AXTreeFixingScreenAIService>(*this, profile_);
   }
 
+  // We must wait for the ScreenAI service to be ready for requests.
+  if (!can_make_main_node_identification_requests_) {
+    // TODO(crbug.com/401308988): Give a signal to requesters that they need to
+    // re-request? Or, queue requests to be made once service is ready?
+    return;
+  }
+
   // Store the callback for later use, and make a request to ScreenAI.
   pending_callbacks_.emplace_back(next_request_id_, std::move(callback));
   screen_ai_service_->IdentifyMainNode(ax_tree, next_request_id_);
@@ -74,11 +81,9 @@ void AXTreeFixingServicesRouter::IdentifyMainNode(
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-void AXTreeFixingServicesRouter::OnAXModeAdded(ui::AXMode mode) override {
-  if ((!current_ax_mode_.has_mode(ui::AXMode::kExtendedProperties) &&
-       mode.has_mode(ui::AXMode::kExtendedProperties)) ||
-      (current_ax_mode_.has_mode(ui::AXMode::kExtendedProperties) &&
-       !mode.has_mode(ui::AXMode::kExtendedProperties))) {
+void AXTreeFixingServicesRouter::OnAXModeAdded(ui::AXMode mode) {
+  if (current_ax_mode_.has_mode(ui::AXMode::kExtendedProperties) !=
+      mode.has_mode(ui::AXMode::kExtendedProperties)) {
     current_ax_mode_ = mode;
     ToggleAccessibilityState();
   }
@@ -105,7 +110,22 @@ void AXTreeFixingServicesRouter::OnMainNodeIdentified(ui::AXTreeID tree_id,
   NOTREACHED();
 }
 
+void AXTreeFixingServicesRouter::OnServiceStateChanged(bool service_ready) {
+  can_make_main_node_identification_requests_ = service_ready;
+  // TODO(crbug.com/401308988): Follow-up state change by sending or clearing
+  // queued requests (if a queue exists)? Should a signal be sent to clients?
+}
+
 void AXTreeFixingServicesRouter::ToggleAccessibilityState() {
+  // TODO(crbug.com/401308988): Downstream service instances such as
+  // screen_ai_service_ need to be cleared when accessibility (or user pref) is
+  // disabled.
+  web_contents_observers_.clear();
+  if (!content::BrowserAccessibilityState::GetInstance()
+           ->GetAccessibilityModeForBrowserContext(profile_)
+           .has_mode(ui::AXMode::kExtendedProperties)) {
+    return;
+  }
   std::unique_ptr<content::RenderWidgetHostIterator> widgets(
       content::RenderWidgetHost::GetRenderWidgetHosts());
   while (content::RenderWidgetHost* rwh = widgets->GetNextHost()) {
@@ -115,26 +135,14 @@ void AXTreeFixingServicesRouter::ToggleAccessibilityState() {
     }
     content::WebContents* web_contents =
         content::WebContents::FromRenderViewHost(rvh);
-    if (!web_contents) {
+    if (!web_contents || web_contents->IsBeingDestroyed()) {
       continue;
     }
     if (web_contents->GetPrimaryMainFrame()->GetRenderViewHost() != rvh) {
       continue;
     }
-    if (web_contents->GetAccessibilityMode().has_mode(
-            ui::AXMode::kExtendedProperties) ||
-        accessibility_state_utils::IsScreenReaderEnabled() ||
-        accessibility_state_utils::IsSelectToSpeakEnabled()) {
-      web_contents_observers_.AddObserver(
-          new WebContentsObserver(*web_contents));
-    } else {
-      for (const WebContentsObserver& observer : web_contents_observers_) {
-        if (observer.web_contents() == web_contents) {
-          web_contents_observers_.RemoveObserver(&observer);
-          break;
-        }
-      }
-    }
+    web_contents_observers_.push_back(
+        std::make_unique<WebContentsObserver>(*web_contents));
   }
 }
 

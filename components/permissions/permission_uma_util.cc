@@ -88,6 +88,9 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
     // TODO(crbug.com/40214907): Enable on Android
     case RequestType::kLocalFonts:
       return RequestTypeForUma::PERMISSION_LOCAL_FONTS;
+    // TODO(crbug.com/400455013): Enable on Android.
+    case RequestType::kLocalNetworkAccess:
+      return RequestTypeForUma::PERMISSION_LOCAL_NETWORK_ACCESS;
 #endif
     case RequestType::kGeolocation:
       return RequestTypeForUma::PERMISSION_GEOLOCATION;
@@ -245,6 +248,8 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "KeyboardAndPointerLock";
     case RequestTypeForUma::PERMISSION_WEB_APP_INSTALLATION:
       return "WebAppInstallation";
+    case RequestTypeForUma::PERMISSION_LOCAL_NETWORK_ACCESS:
+      return "LocalNetworkAccess";
 
     case RequestTypeForUma::UNKNOWN:
     case RequestTypeForUma::PERMISSION_FLASH:
@@ -1462,6 +1467,10 @@ void PermissionUmaUtil::RecordPermissionAction(
       break;
     case ContentSettingsType::WEB_APP_INSTALLATION:
       base::UmaHistogramEnumeration("Permissions.Action.WebAppInstallation",
+                                    action, PermissionAction::NUM);
+      break;
+    case ContentSettingsType::LOCAL_NETWORK_ACCESS:
+      base::UmaHistogramEnumeration("Permissions.Action.LocalNetworkAccess",
                                     action, PermissionAction::NUM);
       break;
     // The user is not prompted for these permissions, thus there is no

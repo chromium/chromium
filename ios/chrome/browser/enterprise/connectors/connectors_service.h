@@ -29,10 +29,10 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
 
   // ConnectorsServiceBase:
   bool IsConnectorEnabled(AnalysisConnector connector) const override;
-
   // Returns the DM tokens corresponding to browser management, if one is
   // present.
-  std::optional<std::string> GetBrowserDmToken() const;
+  std::optional<std::string> GetBrowserDmToken() const override;
+  std::unique_ptr<ClientMetadata> BuildClientMetadata(bool is_cloud) override;
 
  protected:
   // ConnectorsServiceBase:

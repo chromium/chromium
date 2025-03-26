@@ -37,39 +37,26 @@ struct PasswordAndMetadata {
   bool is_grouped_affiliation = false;
 };
 
-// Structure used to trigger password suggestion generation.
-struct PasswordSuggestionRequest {
-  PasswordSuggestionRequest(FieldRendererId element_id,
-                            const FormData& form_data,
-                            AutofillSuggestionTriggerSource trigger_source,
-                            uint64_t username_field_index,
-                            uint64_t password_field_index,
-                            base::i18n::TextDirection text_direction,
-                            const std::u16string& typed_username,
-                            bool show_webauthn_credentials,
-                            const gfx::RectF& bounds);
-
-  PasswordSuggestionRequest();
-  PasswordSuggestionRequest(const PasswordSuggestionRequest&);
-  PasswordSuggestionRequest& operator=(const PasswordSuggestionRequest&);
-  PasswordSuggestionRequest(PasswordSuggestionRequest&&);
-  PasswordSuggestionRequest& operator=(PasswordSuggestionRequest&&);
-  ~PasswordSuggestionRequest();
+// Minimal struct that describes and identifies a form field which triggered a
+// `PasswordSuggestionRequest`. Should be a password or username field.
+struct TriggeringField {
+  TriggeringField(FieldRendererId element_id,
+                  AutofillSuggestionTriggerSource trigger_source,
+                  base::i18n::TextDirection text_direction,
+                  const std::u16string& typed_username,
+                  bool show_webauthn_credentials,
+                  const gfx::RectF& bounds);
+  TriggeringField();
+  TriggeringField(const TriggeringField&);
+  TriggeringField& operator=(const TriggeringField&);
+  TriggeringField(TriggeringField&&);
+  TriggeringField& operator=(TriggeringField&&);
+  ~TriggeringField();
 
   // The unique renderer id of the field that the user has clicked.
   FieldRendererId element_id;
-  // A web form extracted from the DOM that contains the triggering field.
-  FormData form_data;
-  // Describes the way suggestion generation was triggered.
+  // Describes the way suggestion generation for this field was triggered.
   AutofillSuggestionTriggerSource trigger_source;
-  // The index of the username field in the `form_data.fields`. If the password
-  // form doesn't contain the username field, this value will be equal to
-  // `form_data.fields.size()`.
-  uint64_t username_field_index;
-  // The index of the password field in the `form_data.fields`. If the password
-  // form doesn't contain the password field, this value will be equal to
-  // `form_data.fields.size()`.
-  uint64_t password_field_index;
   // Direction of the text for the triggering field.
   base::i18n::TextDirection text_direction;
   // The value of the username field. This will be empty if the suggestion
@@ -79,6 +66,36 @@ struct PasswordSuggestionRequest {
   bool show_webauthn_credentials;
   // Location at which to display the popup.
   gfx::RectF bounds;
+};
+
+// Structure used to trigger password suggestion generation.
+struct PasswordSuggestionRequest {
+  PasswordSuggestionRequest(TriggeringField field,
+                            const FormData& form_data,
+                            uint64_t username_field_index,
+                            uint64_t password_field_index);
+
+  PasswordSuggestionRequest();
+  PasswordSuggestionRequest(const PasswordSuggestionRequest&);
+  PasswordSuggestionRequest& operator=(const PasswordSuggestionRequest&);
+  PasswordSuggestionRequest(PasswordSuggestionRequest&&);
+  PasswordSuggestionRequest& operator=(PasswordSuggestionRequest&&);
+  ~PasswordSuggestionRequest();
+
+  // Information to identify and locate the triggering field.
+  TriggeringField field;
+  // A web form extracted from the DOM that contains the triggering field.
+  FormData form_data;
+  // The index of the username field in the `form_data.fields`. If the password
+  // form doesn't contain the username field, this value will be equal to
+  // `form_data.fields.size()`. Either this or `password_field_index` should be
+  // available.
+  uint64_t username_field_index;
+  // The index of the password field in the `form_data.fields`. If the password
+  // form doesn't contain the password field, this value will be equal to
+  // `form_data.fields.size()`. Either this or `username_field_index` should be
+  // available.
+  uint64_t password_field_index;
 };
 
 // Structure used for autofilling password forms. Note that the realms in this

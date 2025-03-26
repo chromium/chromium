@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
+<translation id="1045545926731898784">這個網站是由 <ph name="SET_OWNER" /> 定義的網站群組，可以在群組中分享你的活動，協助網站正常運作。</translation>
 <translation id="1055273091707420432">Chromium 會自動刪除 4 週前的廣告主題</translation>
 <translation id="1184166532603925201">在無痕模式下，Chrome 會禁止網站使用第三方 Cookie</translation>
 <translation id="1297285729613779935">網站建議廣告有助於保護瀏覽記錄和身分資料，同時可讓網站向你顯示相關廣告。隨著你持續瀏覽，其他網站可以根據你的活動記錄 (例如你在造訪的網站上進行哪些活動) 推薦相關廣告。你可以在「設定」頁面查看這些網站的清單，封鎖不適合的網站。</translation>
@@ -12,6 +13,7 @@
 <translation id="1716616582630291702"><ph name="BEGIN_BOLD" />網站如何使用這類資料？<ph name="END_BOLD" />Chrome 會在你瀏覽內容時記錄感興趣的主題。系統已預先定義主題標籤，包括「藝術與娛樂」、「購物」和「運動」等。此後，你造訪的網站就可以要求 Chrome 提供一些主題，據此向你放送個人化廣告。</translation>
 <translation id="1732764153129912782">你可以前往廣告隱私權設定進行變更</translation>
 <translation id="1780659583673667574">舉例來說，如果你造訪某個網站尋找晚餐食譜，該網站可能會判定你對烹飪感興趣。之後，另一個網站可能會根據第一個網站的建議，向你顯示雜貨外送服務相關的廣告。</translation>
+<translation id="1818866261309406359">在新分頁中管理相關網站資料</translation>
 <translation id="1887631853265748225">廣告隱私權功能可限制網站及其廣告合作夥伴能取得哪些個人資訊，用於顯示個人化廣告。</translation>
 <translation id="1954777269544683286">Google 會要求公司公開聲明，不跨網站使用這類資料追蹤你的活動。公司必須負責向使用者告知資料用途。<ph name="BEGIN_LINK" />詳情請參閱《隱私權政策》<ph name="END_LINK" />。</translation>
 <translation id="2004697686368036666">某些網站的功能可能無法運作</translation>
@@ -67,6 +69,7 @@
 <translation id="5117284457376555514">網站無法運用第三方 Cookie 提供個人化內容和廣告，也無法瞭解你在其他網站的操作，除非你允許相關網站存取這些 Cookie。某些網站功能可能無法正常運作。</translation>
 <translation id="5165490319523240316">網站及其廣告合作夥伴可以根據你的活動記錄 (例如你在造訪的網站上進行哪些活動)，在其他網站放送個人化廣告。舉例來說，如果你造訪某個網站尋找晚餐食譜，該網站可能會判定你對烹飪感興趣。之後，另一個網站可能會根據第一個網站的建議，向你顯示雜貨外送服務相關的廣告。</translation>
 <translation id="544199055391706031">網站會根據多種因素建議廣告，使用者的活動只是其中之一。停用「網站建議廣告」後，網站仍可放送廣告，但廣告與使用者的關聯性會降低。進一步瞭解<ph name="BEGIN_LINK" />網站建議廣告<ph name="END_LINK" />。</translation>
+<translation id="5495405805627942351">管理相關網站資料</translation>
 <translation id="5574580428711706114">Google 會要求公司公開聲明，不跨網站使用這類資料追蹤你的活動。公司必須負責向使用者告知資料用途。<ph name="BEGIN_LINK1" />詳情請參閱《隱私權政策》<ph name="LINK_END1" />。</translation>
 <translation id="5576983628189470385">Google 會要求公司公開聲明，不跨網站使用這類資料追蹤使用者的活動。某些網站可能會根據使用者的活動記錄提供個人化體驗 (不限於廣告)，也可能會將活動記錄與網站中與該使用者相關的其他個人資訊整合在一起。公司必須負責向使用者告知資料用途。詳情請參閱《隱私權政策》。</translation>
 <translation id="5812448946879247580"><ph name="BEGIN_BOLD" />網站如何使用這類資料？<ph name="END_BOLD" />你造訪的網站可以要求 Chrome 提供相關資訊，協助網站評估廣告成效。為了保護你的隱私，Chrome 會限制網站之間可以彼此分享的資訊。</translation>
@@ -81,6 +84,7 @@
 <translation id="6710025070089118043">網站無法運用第三方 Cookie 提供個人化內容和廣告，也無法瞭解你在其他網站的操作，除非你允許相關網站存取這些 Cookie</translation>
 <translation id="6774168155917940386">Google 會要求公司公開聲明，不跨網站使用這類資料追蹤使用者的活動。某些網站可能會根據使用者的活動記錄提供個人化體驗 (不限於廣告)，也可能會將活動記錄與網站中與該使用者相關的其他個人資訊整合在一起。公司必須負責向使用者告知資料用途。詳情請參閱《<ph name="BEGIN_LINK" />隱私權政策<ph name="END_LINK" />》。</translation>
 <translation id="6789193059040353742">上網時是否會看到個人化廣告取決於許多因素，包括這項設定、<ph name="BEGIN_LINK1" />廣告主題<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie 設定<ph name="LINK_END2" />，以及網站是否放送個人化廣告。</translation>
+<translation id="7011445931908871535">要刪除資料嗎？</translation>
 <translation id="7084100010522077571">進一步瞭解廣告評估</translation>
 <translation id="7315780377187123731">進一步瞭解「封鎖第三方 Cookie」選項</translation>
 <translation id="737025278945207416">某些網站可能會根據你的活動記錄提供個人化體驗 (不限於廣告)。此外，網站保存廣告主題的時間可能會超過 4 週，廣告主題也可能會與網站中有關你的其他資訊整合在一起</translation>
@@ -94,6 +98,7 @@
 <translation id="8200078544056087897">依賴第三方 Cookie 的網站功能應該能正常運作</translation>
 <translation id="8365690958942020052">你造訪的網站可以要求取得這項資訊，包括廣告主題或是曾造訪網站的廣告建議。</translation>
 <translation id="839994149685752920">網站可以運用第三方 Cookie 提供個人化內容和廣告</translation>
+<translation id="8477178913400731244">刪除資料</translation>
 <translation id="859369389161884405">在新分頁中開啟《隱私權政策》</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />如何管理這類資料？<ph name="END_BOLD" />Chrome 會自動刪除 4 週前的主題，但隨著你持續瀏覽內容，清單中可能會再次出現特定主題。你隨時可以在 Chrome 設定中封鎖不想讓 Chrome 與網站分享的主題，也可以關閉廣告主題設定。</translation>
 <translation id="8908886019881851657"><ph name="BEGIN_BOLD" />網站如何使用這類資料？<ph name="END_BOLD" />網站及其廣告合作夥伴可以根據你的活動記錄，在其他網站放送個人化廣告。舉例來說，如果你造訪某個網站尋找晚餐食譜，該網站可能會判定你對烹飪感興趣。之後，另一個網站可能會根據第一個網站的建議，向你顯示雜貨外送服務相關的廣告。</translation>

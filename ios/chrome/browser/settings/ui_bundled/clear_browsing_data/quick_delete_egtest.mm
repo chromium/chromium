@@ -1692,24 +1692,6 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
-// Tests that a supervised user in the `ConsentLevel::kSync` state will remain
-// signed-in after clearing their browsing history.
-// TODO(crbug.com/40066949): Delete this test after the syncing state is gone.
-- (void)testSupervisedUserSyncingWhenClearingBrowsingData {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity
-                 withCapabilities:@{
-                   @(kIsSubjectToParentalControlsCapabilityName) : @YES,
-                 }];
-  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
-
-  // Open Quick Delete and delete browsing data.
-  [self openQuickDeleteFromThreeDotMenu];
-  [self triggerDeletionFromQuickDelete];
-
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-}
-
 // Tests that a supervised user in the `ConsentLevel::kSignin` state will remain
 // signed-in after clearing their browsing history.
 - (void)testSupervisedUserSignedInWhenClearingBrowsingData {

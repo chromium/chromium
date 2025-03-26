@@ -40,6 +40,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="2758123043070977469">Bei der Authentifizierung ist ein Fehler aufgetreten. Bitte melde dich noch einmal an.</translation>
 <translation id="2803375539583399270">PIN eingeben</translation>
 <translation id="2919669478609886916">Dieser Computer ist zurzeit für einen anderen Nutzer freigegeben. Möchtest du die Freigabe fortsetzen?</translation>
+<translation id="2929683002824598593">Gerät gemeinsam nutzen</translation>
 <translation id="2939145106548231838">Authentifizierung gegenüber dem Host</translation>
 <translation id="3027681561976217984">Touch-Modus</translation>
 <translation id="3106379468611574572">Der Remote-Computer reagiert nicht auf Verbindungsanfragen. Überprüfe, ob er online ist, und versuche es erneut.</translation>
@@ -117,10 +118,12 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="6178645564515549384">Nativer Nachrichtenhost für Remote-Unterstützung</translation>
 <translation id="618120821413932081">Auflösung des Remote-Desktops an Fenster anpassen</translation>
 <translation id="6223301979382383752">Einstellungen für Bildschirmaufzeichnung öffnen</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> hat Zugriff angefordert, um deinen Bildschirm zu sehen und deine Tastatur und Maus zu steuern. Möchtest du dein Gerät freigeben?</translation>
 <translation id="6284412385303060032">Der Host, der auf dem Anmeldebildschirm für die Konsole ausgeführt wird, wurde heruntergefahren, um den Vorhangmodus zu unterstützen, indem zu einem Host in einer nutzerspezfischen Sitzung gewechselt wurde.</translation>
 <translation id="6542902059648396432">Problem melden...</translation>
 <translation id="6583902294974160967">Hilfe</translation>
 <translation id="6612717000975622067">Strg-Alt-Entf senden</translation>
+<translation id="6625262630437221505">{0,plural, =1{Wenn du nichts unternimmst, wird dein Gerät in # Sekunde automatisch freigegeben.}other{Wenn du nichts unternimmst, wird dein Gerät in # Sekunden automatisch freigegeben.}}</translation>
 <translation id="6654753848497929428">Freigeben</translation>
 <translation id="677755392401385740">Host für folgenden Nutzer gestartet: <ph name="HOST_USERNAME" /></translation>
 <translation id="6902524959760471898">Hilfs-App für das Öffnen einer URL mit dem <ph name="PRODUCT_NAME" />-Client</translation>

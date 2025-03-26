@@ -2164,6 +2164,56 @@ TEST_F(AttributionManagerImplTest,
   }
 }
 
+TEST_F(AttributionManagerImplTest,
+       30DaysBetweenInitialReportTimeAndReportSentSuccessfully) {
+  const struct {
+    base::TimeDelta time;
+    bool sample;
+  } kTestCases[] = {
+      // Offset by `kDefaultOfflineReportDelay.max`.
+      {base::Days(30) - kDefaultOfflineReportDelay.max, /*sample=*/false},
+      {base::Days(30) - kDefaultOfflineReportDelay.max + base::Microseconds(1),
+       /*sample=*/true},
+  };
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+    attribution_manager_->HandleSource(
+        SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
+    attribution_manager_->HandleTrigger(
+        DefaultAggregatableTriggerBuilder().Build(), kFrameId);
+
+    ReportSentCallback report_sent_callback;
+    std::optional<AttributionReport> sent_report;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce([&](AttributionReport report, bool is_debug_report,
+                      ReportSentCallback callback) {
+          report_sent_callback = std::move(callback);
+          sent_report = std::move(report);
+        });
+
+    SetConnectionTypeAndWaitForObserversToBeNotified(
+        network::mojom::ConnectionType::CONNECTION_NONE);
+
+    task_environment_.FastForwardBy(test_case.time + kFirstReportingWindow);
+
+    SetConnectionTypeAndWaitForObserversToBeNotified(
+        network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+
+    task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
+
+    ASSERT_TRUE(report_sent_callback);
+    ASSERT_TRUE(sent_report);
+    std::move(report_sent_callback)
+        .Run(*std::move(sent_report), SendResult::Sent(SentResult::kSent,
+                                                       /*status=*/0));
+
+    histograms.ExpectUniqueSample(
+        "Conversions.ExtraReportDelayForSuccessfulSendExceeds30Days",
+        test_case.sample, 1);
+  }
+}
+
 TEST_F(AttributionManagerImplTest, SendReport_RecordsSchedulerReportDelay) {
   base::HistogramTester histograms;
 

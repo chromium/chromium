@@ -259,4 +259,7 @@ interface NetworkServiceTest {
   // can be fully drained of tasks during network context shutdown.
   [EnableIf=is_win]
   DisableExclusiveCookieDatabaseLockingForTesting() => ();
+
+  // Returns true if the HappyEyeballs V3 is enabled for testing.
+  IsHappyEyeballsV3Enabled() => (bool is_happy_eyeballs_v3_enabled);
 };

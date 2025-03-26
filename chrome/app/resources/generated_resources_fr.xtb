@@ -70,7 +70,6 @@
 <translation id="1042248468362992359">Connectez-vous aux données mobiles pour utiliser le point d'accès. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1043505821207197890">Un problème est survenu. La mise à niveau Linux risque de n'être que partielle. Pour en savoir plus, consultez les journaux enregistrés dans Fichiers &gt; Mes fichiers &gt; <ph name="LOG_FILE" /></translation>
 <translation id="104385770822424034">Ajouter une action</translation>
-<translation id="104419033123549300">Style de jeu de raccourcis clavier</translation>
 <translation id="1045487161760507186">Vous n'avez pas besoin de mémoriser le mot de passe, car il est enregistré dans le Gestionnaire de mots de passe de Google</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 mot de passe importé dans le <ph name="BRAND" /> sur cet appareil}one{{NUM_PASSWORDS} mot de passe importé dans le <ph name="BRAND" /> sur cet appareil}other{{NUM_PASSWORDS} mots de passe importés dans le <ph name="BRAND" /> sur cet appareil}}</translation>
 <translation id="1046572983040892965">Fenêtre déplacée vers le haut et la gauche</translation>
@@ -303,7 +302,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1197088940767939838">Orange</translation>
 <translation id="11978075283960463">Données stockées dans l'appli : <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">Outils de synthèse vocale pour personnes malvoyantes</translation>
-<translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> a supprimé l'onglet "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="119944043368869598">Tout effacer</translation>
 <translation id="1199814941632954229">Les certificats sont en cours de préparation pour ces profils</translation>
 <translation id="120069043972472860">Impossible à regarder</translation>
@@ -709,7 +707,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1484176899013802755">Peinture à l'huile colorée représentant une prairie ensoleillée.</translation>
 <translation id="1484979925941077974">Le site utilise actuellement le Bluetooth</translation>
 <translation id="1485015260175968628">Elle peut désormais :</translation>
-<translation id="1485141095922496924">Version <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Microsoft 365 exige que les fichiers soient stockés dans OneDrive. Les fichiers locaux seront déplacés, et les fichiers d'autres emplacements seront copiés. Vous pourrez trouver vos fichiers dans le dossier Microsoft OneDrive de l'appli Fichiers.</translation>
 <translation id="1486012259353794050">Lorsque vous posez des questions, l'Assistant Google vous fournit des réponses personnalisées en fonction de votre écran</translation>
 <translation id="1486096554574027028">Rechercher</translation>
@@ -2223,6 +2220,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
         Vous pouvez gérer les paramètres dans le menu de la carte ou voir plus d'options dans "Personnaliser Chrome".</translation>
 <translation id="2514326558286966059">Déverrouiller l'appareil plus rapidement avec votre empreinte</translation>
 <translation id="2514465118223423406">Lorsqu'une souris est connectée</translation>
+<translation id="2514938842036917377">Cela supprimera <ph name="TOTAL_USAGE" /> de données stockées par <ph name="SITE_NAME" />, les sites associés et les applis installées</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Confirmer votre nom d'utilisateur</translation>
 <translation id="2517472476991765520">Scanner</translation>
@@ -2341,7 +2339,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2606568927909309675">Génère automatiquement des sous-titres pour les contenus audio et vidéo en anglais. Le flux audio et les sous-titres ne sont jamais exportés hors de votre appareil.</translation>
 <translation id="2606890864830643943">Exportation des données de diagnostic…</translation>
 <translation id="2607101320794533334">Infos sur la clé publique de l'objet</translation>
-<translation id="2608837922830967145">Ne plus afficher ce message</translation>
 <translation id="2609896558069604090">Créer des raccourcis…</translation>
 <translation id="2609980095400624569">Impossible d'établir la connexion</translation>
 <translation id="2610157865375787051">Veille</translation>
@@ -2706,7 +2703,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2849936225196189499">Essentielle</translation>
 <translation id="285033512555869047">Fermé</translation>
 <translation id="2850541429955027218">Ajouter un thème</translation>
-<translation id="2850672011315104382">Style de ponctuation</translation>
 <translation id="285237063405807022">(chargement…)</translation>
 <translation id="2853121255651601031">Mot de passe enregistré</translation>
 <translation id="2855243985454069333">Supprime l'historique de tous les appareils synchronisés</translation>
@@ -4398,7 +4394,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="404493185430269859">Moteur de recherche par défaut</translation>
 <translation id="4044964245574571633">Utilise l'espace de stockage Microsoft OneDrive</translation>
 <translation id="4045196801416070837">Sons de l'appareil</translation>
-<translation id="4045441967987592849">Rouvrir</translation>
 <translation id="4046013316139505482">Ces extensions n'ont pas besoin de voir ni de modifier des informations sur ce site.</translation>
 <translation id="4046123991198612571">Piste suivante</translation>
 <translation id="4046655456159965535">Supprimer les données affichées ?</translation>
@@ -5031,7 +5026,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4515872537870654449">Contactez Dell pour faire réparer votre équipement. La station d'accueil ne peut pas fonctionner si le ventilateur n'est pas en état de marche.</translation>
 <translation id="4515942088136451195">Votre organisation limite ce que vous pouvez enregistrer</translation>
 <translation id="4516395361210407049">Les boutons de la barre d'outils ont été réinitialisés</translation>
-<translation id="4518840066030486079">Style du mode de la touche Maj</translation>
 <translation id="4519331665958994620">Les sites peuvent demander à utiliser votre caméra</translation>
 <translation id="4519605771716872386">Synchronisation des fichiers activée</translation>
 <translation id="4519935350946509010">Erreur de connexion.</translation>
@@ -5231,6 +5225,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4653116291358041820">Ombre fine</translation>
 <translation id="4653405415038586100">Erreur lors de la configuration de Linux</translation>
 <translation id="4654236001025007561">Partagez des fichiers avec des Chromebooks et des appareils Android à proximité</translation>
+<translation id="4657810666108475055">Recherche dans les onglets</translation>
 <translation id="4657914796247705218">Vitesse</translation>
 <translation id="4658285806588491142">Protéger la confidentialité du contenu à l'écran</translation>
 <translation id="4658648180588730283">L'appli <ph name="APPLICATION_NAME" /> n'est pas disponible hors connexion.</translation>
@@ -5764,7 +5759,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
 <translation id="504561833207953641">Ouverture dans une session de navigateur existante.</translation>
 <translation id="504953514574706691">Onglet exclu du groupe suggéré</translation>
-<translation id="5049614114599109018">Utiliser l'historique de saisie</translation>
 <translation id="5050330054928994520">Synthèse vocale</translation>
 <translation id="5051461727068120271">Télécharger le fichier non vérifié</translation>
 <translation id="5051836348807686060">La vérification orthographique n'est pas disponible pour les langues que vous avez sélectionnées</translation>
@@ -6067,7 +6061,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5256174546894739043">Demander lorsqu'un site souhaite suivre vos mains</translation>
 <translation id="52566111838498928">Chargement des polices…</translation>
 <translation id="5256861893479663409">Sur tous les sites</translation>
-<translation id="5258473597674772367">Le groupe d'onglets "<ph name="GROUP_NAME" />" n'est plus disponible</translation>
 <translation id="5258992782919386492">Installer sur cet appareil</translation>
 <translation id="5260334392110301220">Guillemets courbes</translation>
 <translation id="5260508466980570042">Adresse e-mail ou mot de passe incorrect. Veuillez réessayer.</translation>
@@ -6685,7 +6678,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="571222594670061844">Les sites peuvent afficher les invites de connexion des services d'identité</translation>
 <translation id="5713033452812927234">Ouverture des fenêtres du précédent appareil…</translation>
 <translation id="5713158217420111469">Connecté à <ph name="DEVICE" /></translation>
-<translation id="5713960379473463904">Style de saisie avec Espace</translation>
 <translation id="5714100381896040477">Limitez les mouvements à l'écran</translation>
 <translation id="5715711091495208045">Gestionnaire de plug-ins : "<ph name="PLUGIN_NAME" />"</translation>
 <translation id="5719854774000914513">Les sites peuvent demander à se connecter à des périphériques HID</translation>
@@ -7777,7 +7769,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6519689855001245063">Vérification de l'éligibilité…</translation>
 <translation id="6520087076882753524">Vous pouvez afficher et gérer les mots de passe enregistrés dans le Gestionnaire de mots de passe Google</translation>
 <translation id="6520115099532274511"><ph name="SITE" /> souhaite valider votre identité. Saisissez votre code alphanumérique pour le Gestionnaire de mots de passe de Google.</translation>
-<translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> a rejoint le groupe d'onglets "<ph name="GROUP_NAME" />"</translation>
 <translation id="6520876759015997832">Résultat de recherche <ph name="LIST_POSITION" /> sur <ph name="LIST_SIZE" /> : <ph name="SEARCH_RESULT_TEXT" />. Appuyez sur Entrée pour accéder à la section.</translation>
 <translation id="6521214596282732365">Les sites utilisent généralement vos polices pour que vous puissiez créer du contenu haute fidélité grâce à des outils de conception et de graphisme en ligne</translation>
 <translation id="6523574494641144162">Le Gestionnaire de mots de passe de Google n'a pas pu enregistrer ces mots de passe dans votre compte Google. Vous pouvez les enregistrer sur cet appareil.</translation>
@@ -7846,6 +7837,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6563055593659435495">Impossible de maintenir la connexion avec votre téléphone. Vérifiez que votre téléphone est à proximité et débloqué, et que le Bluetooth et le Wi-Fi sont activés.</translation>
 <translation id="6564860838537532172">Lorsque vous effectuez une recherche dans l'historique de navigation, vos recherches dans l'historique, le contenu des pages correspondant aux meilleurs résultats et les sorties du modèle généré sont envoyés à Google. Ils peuvent être consultés par des réviseurs humains afin d'améliorer cette fonctionnalité.</translation>
 <translation id="6565144332292237355">Les sites peuvent utiliser cette fonctionnalité pour rechercher les appareils sur votre réseau local et s'y connecter</translation>
+<translation id="6568283005472142698">Recherche dans les onglets</translation>
 <translation id="6569931898053264308">Économies moyennes</translation>
 <translation id="6570622975915850879">Utiliser un autre appareil</translation>
 <translation id="65711204837946324">Autorisation de téléchargement nécessaire</translation>
@@ -8265,7 +8257,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" souhaite imprimer <ph name="FILE_NAME" /> avec <ph name="PRINTER_NAME" />.</translation>
 <translation id="6846843854964504403">Réinitialisation sécurisée</translation>
 <translation id="6847125920277401289">Libérer de l'espace pour continuer</translation>
-<translation id="6848388270925200958">Vous disposez actuellement de plusieurs cartes qui ne peuvent être utilisées qu'avec cet appareil</translation>
 <translation id="6848716236260083778">Pour configurer l'empreinte de votre enfant, demandez-lui d'appuyer sur le lecteur d'empreinte digitale. Les données de son empreinte sont stockées de façon sécurisée et ne quittent jamais ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6850286078059909152">Couleur du texte</translation>
 <translation id="6850925512806464982">Tout le monde perdra immédiatement l'accès à ce groupe d'onglets, qui sera supprimé de tous les appareils</translation>
@@ -8804,7 +8795,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7253521419891527137">&amp;En savoir plus</translation>
 <translation id="7254951428499890870">Voulez-vous vraiment lancer l'application "<ph name="APP_NAME" />" en mode diagnostic ?</translation>
 <translation id="725497546968438223">Bouton du dossier de favoris</translation>
-<translation id="7255002516883565667">Vous disposez actuellement d'une carte qui ne peut être utilisée qu'avec cet appareil</translation>
 <translation id="7255935316994522020">Appliquer</translation>
 <translation id="7256069762010468647">Le site utilise votre caméra</translation>
 <translation id="7256634071279256947">Micro arrière</translation>
@@ -9082,6 +9072,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7443806024147773267">Accédez à vos mots de passe chaque fois que vous êtes connecté à votre compte Google</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Les cookies seront de nouveau bloqués aujourd'hui}=1{Les cookies seront de nouveau bloqués demain}one{Les cookies seront de nouveau bloqués dans # jour}other{Les cookies seront de nouveau bloqués dans # jours}}</translation>
 <translation id="7444983668544353857">Désactiver <ph name="NETWORKDEVICE" /></translation>
+<translation id="7446716846072322308">Cela supprimera <ph name="TOTAL_USAGE" /> de données stockées par <ph name="SITE_NAME" /> et les sites associés</translation>
 <translation id="7448430327655618736">Installer automatiquement des applications</translation>
 <translation id="7448664748118305024">Supprimer les données que les sites ont enregistrées sur votre appareil lorsque vous fermez toutes les fenêtres</translation>
 <translation id="7450761244949417357">Ouverture dans <ph name="ALTERNATIVE_BROWSER_NAME" /> maintenant</translation>
@@ -9314,7 +9305,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7625025537587898155">Ajouter un profil</translation>
 <translation id="7625568159987162309">Afficher les autorisations et les données enregistrées pour les différents sites</translation>
 <translation id="7625823789272218216">Nouvel onglet à gauche</translation>
-<translation id="7628392600831846024">Style de symboles</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), niveau <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Sélectionnez une action pour chaque touche</translation>
 <translation id="7629206210984165492">Discret</translation>
@@ -10334,6 +10324,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8309458809024885768">Ce certificat existe déjà</translation>
 <translation id="8310409247509201074"><ph name="NUM" /> onglets</translation>
 <translation id="831207808878314375">Définition</translation>
+<translation id="8312841338723044391">EN DIRECT</translation>
 <translation id="8314089908545021657">Associer à un nouveau téléphone</translation>
 <translation id="8314381333424235892">Extension manquante ou non installée</translation>
 <translation id="831440797644402910">Impossible d'ouvrir ce dossier</translation>
@@ -10630,7 +10621,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8523493869875972733">Conserver les modifications</translation>
 <translation id="8523849605371521713">Ajoutée en raison des règles</translation>
 <translation id="8524594273111932386">Recherche+Flèche vers le bas</translation>
-<translation id="8524783101666974011">Enregistrer des cartes dans votre compte Google</translation>
 <translation id="8524817717332153865">Le micro et l'appareil photo sont désactivés dans les paramètres système Mac</translation>
 <translation id="8524841856047224176">Personnalisez l'arrière-plan de votre caméra pour les appels vidéo et plus</translation>
 <translation id="8525306231823319788">Plein écran</translation>
@@ -11107,7 +11097,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8850251000316748990">Voir plus…</translation>
 <translation id="885246833287407341">Arguments de fonction API</translation>
 <translation id="8853586775156634952">Cette carte sera enregistrée sur cet appareil uniquement</translation>
-<translation id="8854745870658584490">Raccourci de sélection</translation>
 <translation id="8855242995793521265">Ne ralentit pas sensiblement votre navigateur ni votre appareil.</translation>
 <translation id="8855977033756560989">Cet appareil Chromebook Enterprise est fourni avec Chrome Enterprise Upgrade. Pour profiter des fonctionnalités d'entreprise, enregistrez votre appareil avec un compte administrateur Google.</translation>
 <translation id="8856028055086294840">Restaurer les applications et les pages</translation>

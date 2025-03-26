@@ -229,7 +229,7 @@ class GlanceablesClassroomClientImplTest : public testing::Test {
         });
     client_ = std::make_unique<GlanceablesClassroomClientImpl>(
         profile_manager_.CreateTestingProfile("profile@example.com",
-                                              /*is_main_profile=*/true,
+                                              /*testing_factories=*/{},
                                               url_loader_factory_),
         &test_clock_, create_request_sender_callback);
 

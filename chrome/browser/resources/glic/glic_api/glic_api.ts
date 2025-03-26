@@ -233,8 +233,12 @@ export declare interface GlicBrowserHost {
    */
   createTab?(url: string, options: CreateTabOptions): Promise<TabData>;
 
-  /** Opens a new tab to the glic settings page. */
-  openGlicSettingsPage?(): void;
+  /**
+   * Opens a tab with the glic settings page, optionally highlighting a specific
+   * field in it. If an open tab already has the glic settings page loaded, it
+   * is focused instead.
+   */
+  openGlicSettingsPage?(options?: OpenSettingsOptions): void;
 
   /** Requests the closing of the panel containing the web client. */
   closePanel?(): Promise<void>;
@@ -407,7 +411,8 @@ export declare interface GlicBrowserHost {
 
   /**
    * Opens the OS permission settings menu for the given permission type.
-   * Supports `media` for microphone ad `geolocation` for location.
+   * Supports `media` for microphone ad `geolocation` for location. This
+   * function is available when running on Mac.
    */
   openOsPermissionSettingsMenu?(permission: string): void;
 
@@ -421,6 +426,23 @@ export declare interface GlicBrowserHost {
    * panel and false when the user stops.
    */
   isManuallyResizing?(): ObservableValue<boolean>;
+}
+
+/** Fields of interest from the Glic settings page. */
+export enum SettingsPageField {
+  /** The OS hotkey configuration field. */
+  OS_HOTKEY = 1,
+  /** The OS entrypoint enabling field. */
+  OS_ENTRYPOINT_TOGGLE = 2,
+}
+
+/** Optional parameters for the openGlicSettingsPage function. */
+export declare interface OpenSettingsOptions {
+  /**
+   * Optionally select a field to be highlighted while opening the Glic settings
+   * page.
+   */
+  highlightField?: SettingsPageField;
 }
 
 /** Holds optional parameters for `GlicBrowserHost#resizeWindow`. */
@@ -1045,6 +1067,7 @@ export interface BackwardsCompatibleTypes {
   userProfileInfo: UserProfileInfo;
   webClient: GlicWebClient;
   webPageData: WebPageData;
+  openSettingsOptions: OpenSettingsOptions;
 }
 
 // Enums that should not be changed.
@@ -1060,4 +1083,5 @@ export interface ExtensibleEnums {
   webClientInitializeErrorReason: typeof WebClientInitializeErrorReason;
   invocationSource: typeof InvocationSource;
   actInFocusedTabErrorReason: typeof ActInFocusedTabErrorReason;
+  settingsPageField: typeof SettingsPageField;
 }
