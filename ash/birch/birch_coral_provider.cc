@@ -225,42 +225,6 @@ std::unordered_set<coral::mojom::EntityPtr> GetInSessionNonWebAppData() {
   return entities;
 }
 
-// Checks if we should show the response on Glanceables bar.
-bool ShouldShowResponse(CoralResponse* response) {
-  if (!response) {
-    return false;
-  }
-
-  // If we got only one group from an in-session response whose name and content
-  // are exactly same as the active desk which was created from a coral group,
-  // we won't show it.
-  const auto& groups = response->groups();
-  if (response->source() == CoralSource::kPostLogin ||
-      DesksController::Get()->active_desk()->type() != Desk::Type::kCoral ||
-      groups.size() != 1) {
-    return true;
-  }
-
-  // Since the non-duplicated entities in the group is a subset of the tabs and
-  // apps on the active desk, we only need to check if the number of group
-  // entities equals to the total number of tabs and apps on the active desk.
-  Shell* shell = Shell::Get();
-  const size_t tab_num = std::ranges::count_if(
-      shell->tab_cluster_ui_controller()->tab_items(),
-      [](const auto& tab_item) {
-        aura::Window* window = tab_item->current_info().browser_window;
-        return IsBrowserWindow(window) &&
-               desks_util::BelongsToActiveDesk(window);
-      });
-  const size_t app_num = std::ranges::count_if(
-      shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk),
-      [](const auto& window) {
-        return !wm::GetTransientParent(window) && !IsBrowserWindow(window);
-      });
-
-  return groups[0]->entities.size() != (tab_num + app_num);
-}
-
 // Returns the pref service to use for coral policy prefs.
 PrefService* GetPrefService() {
   return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
@@ -275,6 +239,21 @@ bool IsLanguageSupported(std::string_view language) {
     return language == "en";
   }
   return base::Contains(kSupportedLanguages, language);
+}
+
+// Gets the total number of entities corresponding to the given `identifier`
+// from the `response`.
+int GetNumOfEntities(std::string_view identifier,
+                     const CoralResponse* response) {
+  int entity_num = 0;
+  for (const auto& group : response->groups()) {
+    entity_num += std::ranges::count_if(
+        group->entities, [&](const coral::mojom::EntityPtr& entity) {
+          return coral_util::GetIdentifier(entity) == identifier;
+        });
+  }
+
+  return entity_num;
 }
 
 }  // namespace
@@ -788,7 +767,7 @@ void BirchCoralProvider::HandleCoralResponse(
     std::unique_ptr<CoralResponse> response) {
   std::vector<BirchCoralItem> items;
   response_ = std::move(response);
-  if (!ShouldShowResponse(response_.get())) {
+  if (!response_) {
     windows_observation_.RemoveAllObservations();
     Shell::Get()->birch_model()->SetCoralItems(items);
     return;
@@ -938,17 +917,21 @@ void BirchCoralProvider::ObserveAllWindowsInResponse() {
 
 void BirchCoralProvider::OnTabRemovedFromSourceDesk(
     TabClusterUIItem* tab_item) {
-  const std::string url = tab_item->current_info().source;
+  const TabClusterUIItem::Info& removed_tab_info = tab_item->current_info();
+  const std::string url = removed_tab_info.source;
+  const std::string title = removed_tab_info.title;
 
-  // Don't modify the groups if there are multiple tabs with the same url to be
-  // removed.
-  if (std::ranges::count_if(
-          Shell::Get()->tab_cluster_ui_controller()->tab_items(),
-          [&](const auto& tab) {
-            return windows_observation_.IsObservingSource(
-                       tab->current_info().browser_window) &&
-                   tab->current_info().source == url;
-          }) == 1) {
+  // If the count of currently opened tabs sharing the same to be removed tab's
+  // URL equals to the count of corresponding tab entities in the groups, remove
+  // a matching entity from the groups.
+  const int tab_num = std::ranges::count_if(
+      Shell::Get()->tab_cluster_ui_controller()->tab_items(),
+      [&](const auto& tab) {
+        const TabClusterUIItem::Info& info = tab->current_info();
+        return windows_observation_.IsObservingSource(info.browser_window) &&
+               info.source == url;
+      });
+  if (tab_num == GetNumOfEntities(url, response_.get())) {
     RemoveEntity(url);
   }
 }
@@ -957,13 +940,16 @@ void BirchCoralProvider::OnAppWindowRemovedFromSourceDesk(
     aura::Window* app_window) {
   CHECK(!IsBrowserWindow(app_window));
 
-  // Don't modify groups if there are multiple of the same app on the active
-  // desk.
+  // If the count of currently opened apps sharing the same to be removed app's
+  // ID equals to the count of corresponding app entities in the groups, remove
+  // a matching entity from the groups.
   const std::string app_id = *(app_window->GetProperty(kAppIDKey));
-  if (std::ranges::count_if(
-          windows_observation_.sources(), [&app_id](const auto& window) {
-            return *(window->GetProperty(kAppIDKey)) == app_id;
-          }) == 1) {
+  const int app_num = std::ranges::count_if(
+      windows_observation_.sources(), [&app_id](const auto& window) {
+        return *(window->GetProperty(kAppIDKey)) == app_id;
+      });
+
+  if (app_num == GetNumOfEntities(app_id, response_.get())) {
     RemoveEntity(app_id);
   }
 }
@@ -973,7 +959,8 @@ void BirchCoralProvider::RemoveEntity(std::string_view entity_identifier) {
   CHECK_EQ(response_->source(), CoralSource::kInSession);
 
   auto& groups = response_->groups();
-  for (auto group_iter = groups.begin(); group_iter != groups.end();) {
+  for (auto group_iter = groups.begin(); group_iter != groups.end();
+       group_iter++) {
     const coral::mojom::GroupPtr& group = *group_iter;
     // Check if the entity is included in the group.
     auto entity_iter = std::find_if(
@@ -995,13 +982,13 @@ void BirchCoralProvider::RemoveEntity(std::string_view entity_identifier) {
           in_session_source_desk_ = nullptr;
         }
         observers_.Notify(&Observer::OnCoralGroupRemoved, group_id);
-        continue;
+        return;
       }
 
       observers_.Notify(&Observer::OnCoralEntityRemoved, group->id,
                         entity_identifier);
+      return;
     }
-    group_iter++;
   }
 }
 
