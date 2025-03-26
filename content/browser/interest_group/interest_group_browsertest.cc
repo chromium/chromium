@@ -2382,8 +2382,10 @@ class InterestGroupPrivateNetworkBrowserTest : public InterestGroupBrowserTest {
  protected:
   InterestGroupPrivateNetworkBrowserTest()
       : remote_test_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitAndEnableFeature(
-        features::kPrivateNetworkAccessRespectPreflightResults);
+    base::FieldTrialParams params;
+    params["LocalNetworkAccessChecksWarn"] = "false";
+    feature_list_.InitAndEnableFeatureWithParameters(
+        network::features::kLocalNetworkAccessChecks, params);
 
     remote_test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     remote_test_server_.AddDefaultHandlers(GetTestDataFilePath());
@@ -17912,9 +17914,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
             bidder_status.error_code);
   EXPECT_THAT(bidder_status.cors_error_status,
               Optional(network::CorsErrorStatus(
-                  network::mojom::CorsError::kPreflightMissingAllowOriginHeader,
-                  network::mojom::IPAddressSpace::kLocal,
-                  network::mojom::IPAddressSpace::kUnknown)));
+                  network::mojom::CorsError::kInsecurePrivateNetwork,
+                  network::mojom::IPAddressSpace::kUnknown,
+                  network::mojom::IPAddressSpace::kLocal)));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
@@ -17967,11 +17969,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       url_loader_monitor.WaitForRequestCompletion(seller_url);
   EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
             seller_status.error_code);
-  EXPECT_THAT(seller_status.cors_error_status,
-              Optional(network::CorsErrorStatus(
-                  network::mojom::CorsError::kPreflightMissingAllowOriginHeader,
-                  network::mojom::IPAddressSpace::kLocal,
-                  network::mojom::IPAddressSpace::kUnknown)));
+  EXPECT_THAT(
+      seller_status.cors_error_status,
+      Optional(network::CorsErrorStatus(
+          network::mojom::CorsError::kLocalNetworkAccessPermissionDenied,
+          network::mojom::IPAddressSpace::kUnknown,
+          network::mojom::IPAddressSpace::kLocal)));
 }
 
 // Have the auction and worklets server from public IPs, but send reports to a
@@ -18047,12 +18050,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
         url_loader_monitor.WaitForRequestCompletion(report_url);
     EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
               report_status.error_code);
-    EXPECT_THAT(
-        report_status.cors_error_status,
-        Optional(network::CorsErrorStatus(
-            network::mojom::CorsError::kPreflightMissingAllowOriginHeader,
-            network::mojom::IPAddressSpace::kLocal,
-            network::mojom::IPAddressSpace::kUnknown)));
+    EXPECT_THAT(report_status.cors_error_status,
+                Optional(network::CorsErrorStatus(
+                    network::mojom::CorsError::kInsecurePrivateNetwork,
+                    network::mojom::IPAddressSpace::kUnknown,
+                    network::mojom::IPAddressSpace::kLocal)));
   }
 }
 
@@ -18075,7 +18077,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
 
   GURL seller_url = remote_test_server_.GetURL(
       "a.test", "/interest_group/decision_logic_report_to_seller_signals.js");
-  GURL ad_url = embedded_https_test_server().GetURL("c.test", "/echo");
+  GURL ad_url = remote_test_server_.GetURL("c.test", "/echo");
 
   // While reports should be made to these URLs in this test, their results
   // don't matter, so there's no need for a test server to respond to these URLs
@@ -28144,9 +28146,8 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
   // `expect_success` indicates whether the signals URL is expected to be
   // successfully fetched.
   //
-  // `add_access_control_allow_origin_header` and `add_private_network_header`
-  // control whether the corresponding CORS headers are sent in response to an
-  // OPTIONS request.
+  // `add_access_control_allow_origin_header` controls whether the corresponding
+  // CORS headers is sent in response to an OPTIONS request.
   //
   // `signals_on_private_origin` controls whether the signals are servers from a
   // private origin or on another public one.
@@ -28163,14 +28164,12 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
       bool expect_success,
       bool add_access_control_allow_origin_header,
       bool signals_on_private_origin,
-      bool add_private_network_header,
       bool attest_signals_origin);
   void TestTrustedKVv2ScoringSignalsCrossOrigin(
       bool expect_success,
       bool add_access_control_allow_origin_header,
       bool add_script_header,
       bool signals_on_private_origin,
-      bool add_private_network_header,
       bool attest_signals_origin);
 
  protected:
@@ -28259,10 +28258,6 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
                                 access_control_allow_origin_header_);
       response->AddCustomHeader("Access-Control-Allow-Methods", "POST");
       response->AddCustomHeader("Access-Control-Allow-Headers", "*");
-      if (send_access_control_allow_origin_header_) {
-        response->AddCustomHeader("Access-Control-Allow-Private-Network",
-                                  "true");
-      }
 
       return response;
     }
@@ -28338,11 +28333,6 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
     access_control_allow_origin_header_ = header;
   }
 
-  void SendAccessControlAllowPrivateNetworkHeader() {
-    base::AutoLock auto_lock(lock_);
-    send_access_control_allow_origin_header_ = true;
-  }
-
   base::test::ScopedFeatureList feature_list_;
 
   const url::Origin kCoordinatorOrigin =
@@ -28350,7 +28340,6 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
 
   base::Lock lock_;
   std::string access_control_allow_origin_header_ GUARDED_BY(lock_);
-  bool send_access_control_allow_origin_header_ GUARDED_BY(lock_) = false;
 };
 
 void InterestGroupTrustedSignalsKVv2BrowserTest::
@@ -28358,7 +28347,6 @@ void InterestGroupTrustedSignalsKVv2BrowserTest::
         bool expect_success,
         bool add_access_control_allow_origin_header,
         bool signals_on_private_origin,
-        bool add_private_network_header,
         bool attest_signals_origin) {
   const char kPublisher[] = "a.test";
   const char kBidder[] = "b.test";
@@ -28389,10 +28377,6 @@ void InterestGroupTrustedSignalsKVv2BrowserTest::
   if (add_access_control_allow_origin_header) {
     SetAccessControlAllowOriginHeader(
         url::Origin::Create(bidder_script_url).Serialize());
-  }
-
-  if (add_private_network_header) {
-    SendAccessControlAllowPrivateNetworkHeader();
   }
 
   if (attest_signals_origin) {
@@ -28499,7 +28483,6 @@ void InterestGroupTrustedSignalsKVv2BrowserTest::
         bool add_access_control_allow_origin_header,
         bool add_script_header,
         bool signals_on_private_origin,
-        bool add_private_network_header,
         bool attest_signals_origin) {
   const char kPublisher[] = "a.test";
   const char kBidder[] = "b.test";
@@ -28531,10 +28514,6 @@ void InterestGroupTrustedSignalsKVv2BrowserTest::
   if (add_access_control_allow_origin_header) {
     SetAccessControlAllowOriginHeader(
         url::Origin::Create(seller_script_url).Serialize());
-  }
-
-  if (add_private_network_header) {
-    SendAccessControlAllowPrivateNetworkHeader();
   }
 
   if (attest_signals_origin) {
@@ -28854,7 +28833,6 @@ IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
       /*expect_success=*/true,
       /*add_access_control_allow_origin_header=*/true,
       /*signals_on_private_origin=*/false,
-      /*add_private_network_header=*/false,
       /*attest_signals_origin=*/true);
 }
 
@@ -28864,7 +28842,6 @@ IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
       /*expect_success=*/false,
       /*add_access_control_allow_origin_header=*/false,
       /*signals_on_private_origin=*/false,
-      /*add_private_network_header=*/false,
       /*attest_signals_origin=*/true);
 }
 
@@ -28874,29 +28851,16 @@ IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
       /*expect_success=*/false,
       /*add_access_control_allow_origin_header=*/true,
       /*signals_on_private_origin=*/false,
-      /*add_private_network_header=*/false,
       /*attest_signals_origin=*/false);
 }
 
 IN_PROC_BROWSER_TEST_P(
     InterestGroupTrustedSignalsKVv2BrowserTest,
-    TrustedKVv2BiddingSignalsCrossOriginPrivateNetworkSuccess) {
-  TestTrustedKVv2BiddingSignalsCrossOrigin(
-      /*expect_success=*/true,
-      /*add_access_control_allow_origin_header=*/true,
-      /*signals_on_private_origin=*/true,
-      /*add_private_network_header=*/true,
-      /*attest_signals_origin=*/true);
-}
-
-IN_PROC_BROWSER_TEST_P(
-    InterestGroupTrustedSignalsKVv2BrowserTest,
-    TrustedKVv2BiddingSignalsCrossOriginPrivateNetworkNoPrivateNetworkHeader) {
+    TrustedKVv2BiddingSignalsCrossOriginPrivateNetworkPrivateNetworkFailure) {
   TestTrustedKVv2BiddingSignalsCrossOrigin(
       /*expect_success=*/false,
       /*add_access_control_allow_origin_header=*/true,
       /*signals_on_private_origin=*/true,
-      /*add_private_network_header=*/false,
       /*attest_signals_origin=*/true);
 }
 
@@ -28907,7 +28871,6 @@ IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
       /*add_access_control_allow_origin_header=*/true,
       /*add_script_header=*/true,
       /*signals_on_private_origin=*/false,
-      /*add_private_network_header=*/false,
       /*attest_signals_origin=*/true);
 }
 
@@ -28918,7 +28881,6 @@ IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
       /*add_access_control_allow_origin_header=*/false,
       /*add_script_header=*/true,
       /*signals_on_private_origin=*/false,
-      /*add_private_network_header=*/false,
       /*attest_signals_origin=*/true);
 }
 
@@ -28929,7 +28891,6 @@ IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
       /*add_access_control_allow_origin_header=*/true,
       /*add_script_header=*/false,
       /*signals_on_private_origin=*/false,
-      /*add_private_network_header=*/false,
       /*attest_signals_origin=*/true);
 }
 
@@ -28940,31 +28901,17 @@ IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
       /*add_access_control_allow_origin_header=*/true,
       /*add_script_header=*/true,
       /*signals_on_private_origin=*/false,
-      /*add_private_network_header=*/false,
       /*attest_signals_origin=*/false);
 }
 
 IN_PROC_BROWSER_TEST_P(
     InterestGroupTrustedSignalsKVv2BrowserTest,
-    TrustedKVv2ScoringSignalsCrossOriginPrivateNetworkSuccess) {
-  TestTrustedKVv2ScoringSignalsCrossOrigin(
-      /*expect_success=*/true,
-      /*add_access_control_allow_origin_header=*/true,
-      /*add_script_header=*/true,
-      /*signals_on_private_origin=*/true,
-      /*add_private_network_header=*/true,
-      /*attest_signals_origin=*/true);
-}
-
-IN_PROC_BROWSER_TEST_P(
-    InterestGroupTrustedSignalsKVv2BrowserTest,
-    TrustedKVv2ScoringSignalsCrossOriginPrivateNetworkNoPrivateNetworkHeader) {
+    TrustedKVv2ScoringSignalsCrossOriginPrivateNetworkPrivateNetworkFailure) {
   TestTrustedKVv2ScoringSignalsCrossOrigin(
       /*expect_success=*/false,
       /*add_access_control_allow_origin_header=*/true,
       /*add_script_header=*/true,
       /*signals_on_private_origin=*/true,
-      /*add_private_network_header=*/false,
       /*attest_signals_origin=*/true);
 }
 
