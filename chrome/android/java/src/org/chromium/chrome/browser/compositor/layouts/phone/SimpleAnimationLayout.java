@@ -224,7 +224,6 @@ public class SimpleAnimationLayout extends Layout {
         updateCacheVisibleIds(new LinkedList<Integer>(Arrays.asList(id, sourceId)));
 
         newLayoutTab.setBorderAlpha(0.0f);
-        newLayoutTab.setStaticToViewBlend(1.f);
 
         forceAnimationToFinish();
 
