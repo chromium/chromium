@@ -304,6 +304,10 @@ class CertVerifyProcTrustStore {
     return additional_trust_store_->GetTrust(trust_anchor).IsTrustAnchor() ||
            system_trust_store_->IsLocallyTrustedRoot(trust_anchor);
   }
+
+  bssl::TrustStore* eutl_trust_store() {
+    return system_trust_store_->eutl_trust_store();
+  }
 #endif
 
  private:
@@ -1186,8 +1190,12 @@ bssl::CertPathBuilder::Result TryBuildPath(
   // Allow the path builder to discover the explicitly provided intermediates in
   // |input_cert|.
   path_builder.AddCertIssuerSource(intermediates);
-  // TODO(crbug.com/392931068): Should the EUTL certs be added as an
-  // intermediates source for the regular path building?
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  if (base::FeatureList::IsEnabled(features::kVerifyQWACs)) {
+    // Certs on the EUTL are also provided as hints for path building.
+    path_builder.AddCertIssuerSource(trust_store->eutl_trust_store());
+  }
+#endif
 
   // Allow the path builder to discover intermediates through AIA fetching.
   // TODO(crbug.com/40479281): hook up netlog to AIA.
