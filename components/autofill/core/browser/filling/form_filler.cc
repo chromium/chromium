@@ -866,35 +866,21 @@ void FormFiller::MaybeTriggerRefill(
       }
       return;
   }
-  switch (refill_trigger_reason) {
-    case RefillTriggerReason::kFormChanged:
-      ScheduleRefill(form, form_structure, AutofillTriggerSource::kFormsSeen,
-                     RefillTriggerReason::kFormChanged);
-      break;
-    case RefillTriggerReason::kSelectOptionsChanged:
-      TriggerRefill(form, AutofillTriggerSource::kSelectOptionsChanged,
-                    RefillTriggerReason::kSelectOptionsChanged);
-      break;
-    case RefillTriggerReason::kExpirationDateFormatted:
-      ScheduleRefill(form, form_structure, trigger_source,
-                     RefillTriggerReason::kExpirationDateFormatted);
-      break;
-  }
+  ScheduleRefill(form, CHECK_DEREF(refill_context), trigger_source,
+                 refill_trigger_reason);
 }
 
 void FormFiller::ScheduleRefill(const FormData& form,
-                                const FormStructure& form_structure,
+                                RefillContext& refill_context,
                                 AutofillTriggerSource trigger_source,
                                 RefillTriggerReason refill_trigger_reason) {
-  RefillContext* refill_context = GetRefillContext(form_structure.global_id());
-  DCHECK(refill_context != nullptr);
   // If a timer for the refill was already running, it means the form
   // changed again. Stop the timer and start it again.
-  if (refill_context->on_refill_timer.IsRunning()) {
-    refill_context->on_refill_timer.Stop();
+  if (refill_context.on_refill_timer.IsRunning()) {
+    refill_context.on_refill_timer.Stop();
   }
   // Start a new timer to trigger refill.
-  refill_context->on_refill_timer.Start(
+  refill_context.on_refill_timer.Start(
       FROM_HERE, kWaitTimeForDynamicForms,
       base::BindRepeating(&FormFiller::TriggerRefill,
                           weak_ptr_factory_.GetWeakPtr(), form, trigger_source,

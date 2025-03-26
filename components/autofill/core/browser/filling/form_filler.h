@@ -158,6 +158,7 @@ class FormFiller {
 
  private:
   friend class FormFillerTestApi;
+  friend class TestFormFiller;
 
   // Keeps track of the filling context for a form, used to make refill
   // attempts.
@@ -205,7 +206,7 @@ class FormFiller {
 
   // Schedules a call of TriggerRefill. Virtual for testing.
   virtual void ScheduleRefill(const FormData& form,
-                              const FormStructure& form_structure,
+                              RefillContext& refill_context,
                               AutofillTriggerSource trigger_source,
                               RefillTriggerReason refill_trigger_reason);
 
