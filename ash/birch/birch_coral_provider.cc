@@ -683,7 +683,7 @@ void BirchCoralProvider::HandlePostLoginDataRequest() {
     for (const InformedRestoreContentsData::TabInfo& tab_info :
          app_info.tab_infos) {
       tab_app_data.push_back(coral::mojom::Entity::NewTab(
-          coral::mojom::Tab::New(tab_info.title, tab_info.url)));
+          coral::mojom::Tab::New(tab_info.title, tab_info.virtual_url)));
     }
   }
 
