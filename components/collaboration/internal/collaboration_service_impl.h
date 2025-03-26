@@ -57,6 +57,7 @@ class CollaborationServiceImpl : public CollaborationService,
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       const tab_groups::EitherGroupID& either_id,
       CollaborationServiceShareOrManageEntryPoint entry) override;
+  void CancelAllFlows(base::OnceCallback<void()> finish_callback) override;
   ServiceStatus GetServiceStatus() override;
   data_sharing::MemberRole GetCurrentUserRoleForGroup(
       const data_sharing::GroupId& group_id) override;
@@ -95,7 +96,6 @@ class CollaborationServiceImpl : public CollaborationService,
   SigninStatus GetSigninStatus();
   CollaborationStatus GetCollaborationStatus();
   void RefreshServiceStatus();
-  void ExitConflictingFlows(base::OnceCallback<void()> finish_callback);
   void StartJoinFlowInternal(
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       const data_sharing::GroupToken& token);

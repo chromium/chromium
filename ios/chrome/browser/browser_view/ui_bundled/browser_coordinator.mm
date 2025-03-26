@@ -17,6 +17,7 @@
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#import "components/collaboration/public/collaboration_service.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/feature_utils.h"
 #import "components/commerce/core/shopping_service.h"
@@ -69,6 +70,7 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_coordinator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
@@ -842,6 +844,8 @@ enum class ToolbarKind {
 
   [self dismissAccountMenu];
   [self dismissAutoDeletionActionSheet];
+
+  [self cancelCollaborationFlows];
 
   [self.viewController clearPresentedStateWithCompletion:completion
                                           dismissOmnibox:dismissOmnibox];
@@ -1724,6 +1728,15 @@ enum class ToolbarKind {
     (ContextualPanelIPHDismissedReason)dismissalReason {
   base::UmaHistogramEnumeration("IOS.ContextualPanel.IPH.DismissedReason",
                                 dismissalReason);
+}
+
+// Cancels all the currently active collaboration flows.
+- (void)cancelCollaborationFlows {
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(self.profile);
+  if (collaborationService) {
+    collaborationService->CancelAllFlows(base::DoNothing());
+  }
 }
 
 #pragma mark - ActivityServiceCommands
