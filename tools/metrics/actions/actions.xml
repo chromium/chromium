@@ -8140,6 +8140,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContentSuggestions.Feed.CardAction.ManageFollowing">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user selected the 'manage following' option from the Feed header menu.
+  </description>
+</action>
+
 <action name="ContentSuggestions.Feed.CardAction.ManageHidden">
   <owner>edchin@google.com</owner>
   <owner>harringtond@chromium.org</owner>

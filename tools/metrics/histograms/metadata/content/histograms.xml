@@ -1013,16 +1013,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.Controls.Actions"
-    enum="FeedControlsActions" expires_after="never">
-<!-- expires-never: tracked as an important feed metric. -->
-
-  <owner>vincb@google.com</owner>
-  <owner>feed@chromium.org</owner>
-  <owner>src/components/feed/OWNERS</owner>
-  <summary>Actions related to the feed controls.</summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.DisplayStatusOnOpen"
     enum="ContentSuggestionsDisplayStatus" expires_after="2025-11-30">
   <owner>jianli@chromium.org</owner>

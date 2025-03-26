@@ -95,18 +95,22 @@ public final class FeedServiceBridge {
         FeedServiceBridgeJni.get().setContentOrderForWebFeed(contentOrder);
     }
 
-    /**
-     * Reports that a user action occurred which is untied to a Feed tab. Use
-     * FeedStream.reportOtherUserAction for stream-specific actions.
-     */
+    /** Reports that a user action occurred which is associated with a feed stream. */
     public static void reportOtherUserAction(
             @StreamKind int streamKind, @FeedUserActionType int userAction) {
-        FeedServiceBridgeJni.get().reportOtherUserAction(streamKind, userAction);
+        FeedServiceBridgeJni.get().reportOtherUserActionForStream(streamKind, userAction);
+    }
+
+    /** Reports that a user action occurred which is independent of any feed stream. */
+    // TODO(crbug.com/404592444): Add the usage of this function for NTP Customization Discover
+    // Feed bottom sheet.
+    public static void reportOtherUserAction(@FeedUserActionType int userAction) {
+        FeedServiceBridgeJni.get().reportOtherUserAction(userAction);
     }
 
     /**
      * @return True if the user is signed in for feed purposes (i.e. if a personalized feed can be
-     *         requested).
+     *     requested).
      */
     public static boolean isSignedIn() {
         return FeedServiceBridgeJni.get().isSignedIn();
@@ -151,7 +155,10 @@ public final class FeedServiceBridge {
 
         long getReliabilityLoggingId();
 
-        void reportOtherUserAction(@StreamKind int streamKind, @FeedUserActionType int userAction);
+        void reportOtherUserActionForStream(
+                @StreamKind int streamKind, @FeedUserActionType int userAction);
+
+        void reportOtherUserAction(@FeedUserActionType int userAction);
 
         @ContentOrder
         int getContentOrderForWebFeed();
