@@ -41,6 +41,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -654,9 +655,12 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
           "document.derivedStructData.displayPhoto.url"));
       // Ensure that image URLs from lh3.googleusercontent.com include an image
       // size parameter.
-      if (base::StartsWith(image_url, "https://lh3.googleusercontent.com") &&
-          !base::Contains(image_url, "=s")) {
-        image_url += "=s64";
+      if (base::StartsWith(image_url, "https://lh3.googleusercontent.com")) {
+        // Check for existing size parameters (e.g., -s128, =w256, -h64).
+        RE2 size_regex("[-=][s|w|h]\\d+");
+        if (!RE2::PartialMatch(image_url, size_regex)) {
+          image_url += base::Contains(image_url, "=") ? "-s64" : "=s64";
+        }
       }
     } else if (suggestion_type == SuggestionType::CONTENT) {
       icon_url = ptr_to_string(result.FindStringByDottedPath("iconUri"));
