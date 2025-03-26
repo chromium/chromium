@@ -13,13 +13,15 @@
 #include "remoting/protocol/ice_config.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/transport_context.h"
+#include "third_party/webrtc/api/environment/environment.h"
 #include "third_party/webrtc/p2p/client/basic_port_allocator.h"
 
 namespace remoting::protocol {
 
 class PortAllocator : public cricket::BasicPortAllocator {
  public:
-  PortAllocator(std::unique_ptr<rtc::NetworkManager> network_manager,
+  PortAllocator(const webrtc::Environment& webrtc_env,
+                std::unique_ptr<rtc::NetworkManager> network_manager,
                 std::unique_ptr<rtc::PacketSocketFactory> socket_factory,
                 scoped_refptr<TransportContext> transport_context);
   ~PortAllocator() override;
