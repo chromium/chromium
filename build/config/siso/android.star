@@ -271,7 +271,7 @@ def __step_config(ctx, step_config):
                 "*.sql",
             ],
             "canonicalize_dir": True,
-            "remote": remote_run,
+            "remote": remote_run_static_analysis,
             "platform_ref": "large",
             "timeout": "10m",
         },
