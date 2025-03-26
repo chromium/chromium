@@ -99,14 +99,17 @@
   <message name="IDS_DRIVE_SUGGESTION_GENERAL" desc="Google Drive product name, for use in general omnibox Drive file result descriptions.">
     Google Drive
   </message>
-  <message name="IDS_DRIVE_SUGGESTION_DESCRIPTION_TEMPLATE" desc="Product description for Google Drive omnibox results.">
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE" desc="Product description for Google Drive omnibox results.">
     <ph name="RESULT_MODIFIED_DATE">$1<ex>12/31/2018</ex></ph> - <ph name="RESULT_OWNER">$2<ex>First Last</ex></ph> - <ph name="RESULT_PRODUCT_SOURCE">$3<ex>Google Docs</ex></ph>
   </message>
-  <message name="IDS_DRIVE_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_DATE" desc="Product description for Google Drive omnibox results when date is missing.">
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_DATE" desc="Product description for Google Drive omnibox results when date is missing.">
     <ph name="RESULT_OWNER">$1<ex>First Last</ex></ph> - <ph name="RESULT_PRODUCT_SOURCE">$2<ex>Google Docs</ex></ph>
   </message>
-  <message name="IDS_DRIVE_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_OWNER" desc="Product description for Google Drive omnibox results when owner is missing.">
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_OWNER" desc="Product description for Google Drive omnibox results when owner is missing.">
     <ph name="RESULT_MODIFIED_DATE">$1<ex>12/31/2018</ex></ph> - <ph name="RESULT_PRODUCT_SOURCE">$2<ex>Google Docs</ex></ph>
+  </message>
+  <message name="IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_FILE_TYPE_DESCRIPTION" desc="Product description for content suggestions in omnibox when the file type description is missing.">
+    <ph name="RESULT_MODIFIED_DATE">$1<ex>12/31/2018</ex></ph> - <ph name="RESULT_OWNER">$2<ex>First Last</ex></ph>
   </message>
   <if expr="use_titlecase">
     <then>
