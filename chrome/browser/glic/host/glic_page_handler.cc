@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -317,6 +318,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     state->browser_is_open = browser_is_open_calculator_.IsOpen();
 
+#if BUILDFLAG(IS_MAC)
+    state->open_os_settings_api_is_allowed = true;
+#else
+    state->open_os_settings_api_is_allowed = false;
+#endif
+
     local_state_pref_change_registrar_.Init(g_browser_process->local_state());
     local_state_pref_change_registrar_.Add(
         prefs::kGlicLauncherHotkey,
@@ -358,8 +365,18 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                              std::move(callback));
   }
 
-  void OpenGlicSettingsPage() override {
-    glic_service_->OpenGlicSettingsPage();
+  void OpenGlicSettingsPage(mojom::OpenSettingsOptionsPtr options) override {
+    switch (options->highlightField) {
+      case mojom::SettingsPageField::kOsHotkey:
+        ::glic::OpenGlicKeyboardShortcutSetting(profile_);
+        break;
+      case mojom::SettingsPageField::kOsEntrypointToggle:
+        ::glic::OpenGlicOsToggleSetting(profile_);
+        break;
+      case mojom::SettingsPageField::kNone:  // Default value.
+        ::glic::OpenGlicSettingsPage(profile_);
+        break;
+    }
   }
 
   void ClosePanel() override { glic_service_->ClosePanel(); }
@@ -388,10 +405,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->GetContextFromFocusedTab(*options, std::move(callback));
   }
 
-  void ActInFocusedTab(
-      const std::vector<uint8_t>& action_proto,
-      glic::mojom::GetTabContextOptionsPtr options,
-      ActInFocusedTabCallback callback) override {
+  void ActInFocusedTab(const std::vector<uint8_t>& action_proto,
+                       glic::mojom::GetTabContextOptionsPtr options,
+                       ActInFocusedTabCallback callback) override {
     glic_service_->ActInFocusedTab(action_proto, *options, std::move(callback));
   }
 
@@ -432,6 +448,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       bool enabled,
       SetMicrophonePermissionStateCallback callback) override {
     pref_service_->SetBoolean(prefs::kGlicMicrophoneEnabled, enabled);
+    if (enabled) {
+      base::RecordAction(
+          base::UserMetricsAction("GlicMicrophonePermissionEnabled"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("GlicMicrophonePermissionDisabled"));
+    }
     std::move(callback).Run();
   }
 
@@ -439,6 +462,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       bool enabled,
       SetLocationPermissionStateCallback callback) override {
     pref_service_->SetBoolean(prefs::kGlicGeolocationEnabled, enabled);
+    if (enabled) {
+      base::RecordAction(
+          base::UserMetricsAction("GlicLocationPermissionEnabled"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("GlicLocationPermissionDisabled"));
+    }
     std::move(callback).Run();
   }
 
@@ -544,6 +574,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OpenOsPermissionSettingsMenu(ContentSettingsType type) override {
+#if BUILDFLAG(IS_MAC)
     if (type != ContentSettingsType::MEDIASTREAM_MIC &&
         type != ContentSettingsType::GEOLOCATION) {
       // This will terminate the render process.
@@ -554,6 +585,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
     system_permission_settings::OpenSystemSettings(
         page_handler_->webui_contents(), type);
+#else
+    mojo::ReportBadMessage(
+        "OpenOsPermissionSettingsMenu not supported on this platform.");
+#endif
   }
 
   void GetOsMicrophonePermissionStatus(

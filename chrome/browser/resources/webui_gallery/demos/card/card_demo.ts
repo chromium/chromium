@@ -34,7 +34,7 @@ export class CardDemoElement extends CrLitElement {
     };
   }
 
-  protected expanded_: boolean = false;
+  protected accessor expanded_: boolean = false;
 
   protected onExternalLinkClick_() {
     window.open('https://chromium.org');

@@ -113,6 +113,7 @@ copy("copy_mojo") {
   public_deps = [
     ":mojo_bindings_untrusted_ts__generator",
     "//chromeos/ash/components/mantis/mojom:mojom_ts__generator",
+    "//chromeos/services/machine_learning/public/mojom:mojom_ts__generator",
   ]
   sources = []
   foreach(file, media_app_mojom_sources) {

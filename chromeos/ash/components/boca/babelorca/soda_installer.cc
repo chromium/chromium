@@ -30,7 +30,13 @@ void SodaInstaller::GetAvailabilityOrInstall(AvailabilityCallback callback) {
     return;
   }
 
-  callback_ = std::move(callback);
+  callbacks_.push(std::move(callback));
+
+  if (installing_) {
+    return;
+  }
+  installing_ = true;
+
   soda_installer->AddObserver(this);
 
   // if no other SODA features are currently active
@@ -48,27 +54,30 @@ void SodaInstaller::OnSodaInstalled(speech::LanguageCode language_code) {
   // This event is triggered whenever any language pack or the SODA binary is
   // installed, but we should only begin speech recognition when the language
   // pack associated with BabelOrca is installed.
-  if (callback_.is_null() ||
+  if (callbacks_.empty() ||
       language_code != speech::GetLanguageCode(language_)) {
     return;
   }
 
-  std::move(callback_).Run(true);
+  FlushCallbacks(true);
+
   speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  installing_ = false;
 }
 
 void SodaInstaller::OnSodaInstallError(
     speech::LanguageCode language_code,
     speech::SodaInstaller::ErrorCode error_code) {
-  if (callback_.is_null()) {
+  if (callbacks_.empty()) {
     return;
   }
 
   // If the language code is kNone then the binary failed to install.
   if (language_code == speech::GetLanguageCode(language_) ||
       language_code == speech::LanguageCode::kNone) {
-    std::move(callback_).Run(false);
+    FlushCallbacks(false);
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+    installing_ = false;
   }
 }
 
@@ -76,5 +85,12 @@ void SodaInstaller::OnSodaInstallError(
 // progress, dispatch these updates to the bubble?
 void SodaInstaller::OnSodaProgress(speech::LanguageCode language_code,
                                    int progress) {}
+
+void SodaInstaller::FlushCallbacks(bool result) {
+  while (!callbacks_.empty()) {
+    std::move(callbacks_.front()).Run(result);
+    callbacks_.pop();
+  }
+}
 
 }  // namespace ash::babelorca

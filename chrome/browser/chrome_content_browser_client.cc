@@ -567,7 +567,6 @@
 #include "chrome/browser/apps/intent_helper/chromeos_disabled_apps_throttle.h"
 #include "chrome/browser/apps/link_capturing/chromeos_link_capturing_delegate.h"
 #include "chrome/browser/apps/link_capturing/chromeos_reimpl_navigation_capturing_throttle.h"
-#include "chrome/browser/chromeos/enterprise/incognito_navigation_throttle.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 #include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
 #include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_cros.h"
@@ -647,6 +646,7 @@
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
+#include "chrome/browser/enterprise/incognito/incognito_navigation_throttle.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -1643,8 +1643,12 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       policy::policy_prefs::kForcePermissionPolicyUnloadDefaultEnabled, false);
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_LINUX)
   registry->RegisterListPref(prefs::kMandatoryExtensionsForIncognitoNavigation);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterListPref(
       prefs::kSubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins);
 #endif
@@ -3981,9 +3985,6 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
         web_prefs->preferred_color_scheme;
   }
 #else
-  // Update based on native theme scheme.
-  web_prefs->preferred_color_scheme =
-      ToBlinkPreferredColorScheme(native_theme->GetPreferredColorScheme());
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -4000,20 +4001,13 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/359577226): merge the branches for WebUI and non-WebUI
-  // contents after kContentUsesBrowserThemeColorMode is launched.
-  if (content::HasWebUIScheme(url)) {
-    // If color scheme is not forced, WebUI should track the color mode of the
-    // ColorProvider associated with `web_contents`.
+  // Incognito contents follow the device color mode.
+  if (profile->IsIncognitoProfile() && !content::HasWebUIScheme(url)) {
     web_prefs->preferred_color_scheme =
-        web_contents->GetColorMode() == ui::ColorProviderKey::ColorMode::kLight
-            ? blink::mojom::PreferredColorScheme::kLight
-            : blink::mojom::PreferredColorScheme::kDark;
-  } else if (base::FeatureList::IsEnabled(
-                 features::kContentUsesBrowserThemeColorMode) &&
-             !profile->IsIncognitoProfile()) {
-    // Track the browser theme's color mode in contents.
-    // Incognito contents are not affected by the browser theme.
+      ToBlinkPreferredColorScheme(native_theme->GetPreferredColorScheme());
+  } else {
+    // WebUI and regular pages follow the browser theme color mode, provided by
+    // the color provider.
     web_prefs->preferred_color_scheme =
         web_contents->GetColorMode() == ui::ColorProviderKey::ColorMode::kLight
             ? blink::mojom::PreferredColorScheme::kLight
@@ -5660,14 +5654,22 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   // TODO(b:296844164) Handle captive portal signin properly.
   if (profile && profile->IsIncognitoProfile() && profile->IsOffTheRecord() &&
       !profile->GetOTRProfileID().IsCaptivePortal()) {
-    MaybeAddThrottle(
-        chromeos::IncognitoNavigationThrottle::MaybeCreateThrottleFor(handle),
-        &throttles);
+    MaybeAddThrottle(enterprise_incognito::IncognitoNavigationThrottle::
+                         MaybeCreateThrottleFor(handle),
+                     &throttles);
   }
 
   MaybeAddThrottle(apps::AppInstallNavigationThrottle::MaybeCreate(handle),
                    &throttles);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (profile && profile->IsIncognitoProfile() && profile->IsOffTheRecord()) {
+    MaybeAddThrottle(enterprise_incognito::IncognitoNavigationThrottle::
+                         MaybeCreateThrottleFor(handle),
+                     &throttles);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_ANDROID)
   MaybeAddThrottle(PreviewNavigationThrottle::MaybeCreateThrottleFor(handle),

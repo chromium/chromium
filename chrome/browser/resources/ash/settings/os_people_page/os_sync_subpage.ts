@@ -178,6 +178,7 @@ export class OsSettingsSyncSubpageElement extends
   private encryptionExpanded_: boolean;
   forceEncryptionExpanded: boolean;
   private existingPassphrase_: string;
+  private showExistingPassphraseBelowAccount_: boolean;
   private signedIn_: boolean;
   private syncDisabledByAdmin_: boolean;
   private syncSectionDisabled_: boolean;

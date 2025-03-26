@@ -71,6 +71,10 @@ void CaptionBubbleModel::SetObserver(CaptionBubble* observer) {
 
 void CaptionBubbleModel::RemoveObserver() {
   observer_ = nullptr;
+
+  if (context_) {
+    context_->RemoveContextActivatabilityObserver();
+  }
 }
 
 void CaptionBubbleModel::OnTextChanged() {

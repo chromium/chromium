@@ -81,10 +81,6 @@ base::Time MockDiskEntry::GetLastUsed() const {
   return base::Time::Now();
 }
 
-base::Time MockDiskEntry::GetLastModified() const {
-  return base::Time::Now();
-}
-
 int32_t MockDiskEntry::GetDataSize(int index) const {
   DCHECK(index >= 0 && index < kNumCacheEntryDataIndices);
   return static_cast<int32_t>(data_[index].size());

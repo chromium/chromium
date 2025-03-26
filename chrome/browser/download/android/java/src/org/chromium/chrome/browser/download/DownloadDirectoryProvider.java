@@ -290,6 +290,14 @@ public class DownloadDirectoryProvider {
             this.directories = directories;
             this.directoriesPreR = directoriesPreR;
         }
+
+        /** Returns whether there is any download directories on secondary storage. */
+        public boolean isEmpty() {
+            if (directories != null && directories.size() > 0) {
+                return false;
+            }
+            return directoriesPreR.size() == 0;
+        }
     }
 
     /**
@@ -318,6 +326,7 @@ public class DownloadDirectoryProvider {
 
     /**
      * Returns whether the downloaded file path is on an external SD card.
+     *
      * @param filePath The download file path.
      */
     public static boolean isDownloadOnSDCard(String filePath) {

@@ -93,37 +93,6 @@ interface DedicatedWorkerHostFactoryClient {
 // An interface used to instantiate a dedicated worker host. The implementation
 // of this interface lives in the browser process.
 interface DedicatedWorkerHostFactory {
-  // TODO(crbug.com/906991): Remove this after PlzDedicatedWorker ships.
-  // Non-PlzDedicatedWorker:
-  // The factory client should call this instead of
-  // CreateWorkerHostAndStartScriptLoad() when PlzDedicatedWorker is disabled.
-  //
-  // Creates a new DedicatedWorkerHost, and requests `browser_interface_broker`
-  // to provide the worker access to mojo interfaces.
-  // `script_url` is used only for UMA purposes.
-  // `origin` is the origin that will be used by the worker on the renderer
-  // side. It might differ from the origin that is used on the browser side
-  // when `script_url` is a data: URL, due to the linked bug. We are passing the
-  // origin to the browser side so that it can use it in cases like blob URL
-  // origin resolving, which is based on the renderer side's origin.
-  // TODO(crbug.com/40051700): Remove the mismatch cases.
-  CreateWorkerHost(
-      blink.mojom.DedicatedWorkerToken token,
-      url.mojom.Url script_url,
-      url.mojom.Origin origin,
-      pending_receiver<blink.mojom.BrowserInterfaceBroker>
-          browser_interface_broker,
-      pending_receiver<DedicatedWorkerHost> host) =>
-    (network.mojom.CrossOriginEmbedderPolicy parent_coep,
-     // Used to notify feature usages that might affect back-forward cache
-     // usages.
-     pending_remote<BackForwardCacheControllerHost>?
-         back_forward_cache_controller_host);
-
-  // PlzDedicatedWorker:
-  // The factory client should call this instead of CreateWorkerHost() when
-  // PlzDedicatedWorker is enabled.
-  //
   // Creates a new DedicatedWorkerHost, and requests to start top-level worker
   // script loading for `script_url` using `credentials_mode` and
   // `outside_fetch_client_settings_object`.

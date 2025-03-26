@@ -69,7 +69,7 @@ def CheckApiChangesAreBackwardsCompatible(input_api, output_api, api_file,
         '** Your changelist is a backwards-incompatible Glic API change!\n' +
         '** Did you add a non-optional field or function, or change the\n' +
         '** type of an existing field or function?\n' +
-        '** Please fix, or add BYPASS_GLIC_API_COMPATIBILITY_CHECK=<reason>' +
+        '** Please fix, or add BYPASS_GLIC_API_COMPATIBILITY_CHECK: <reason>' +
         ' to your changelist description if this is intended. Error:\n  ')
 
     tsc_cmd = [

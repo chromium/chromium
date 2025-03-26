@@ -438,7 +438,7 @@ void AudioOutputResampler::StopStream(AudioOutputProxy* stream_proxy) {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
 
   auto it = callbacks_.find(stream_proxy);
-  CHECK(it != callbacks_.end(), base::NotFatalUntil::M130);
+  CHECK(it != callbacks_.end());
   StopStreamInternal(*it);
 }
 

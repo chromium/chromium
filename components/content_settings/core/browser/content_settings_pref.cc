@@ -401,7 +401,11 @@ void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
 
     // Get settings dictionary for the current pattern string, and read
     // settings from the dictionary.
-    DCHECK(i.second.is_dict());
+    if(!i.second.is_dict()) {
+      LOG(ERROR) << "Invalid settings dictionary for pattern string: "
+                 << pattern_str << " with value: " << i.second.DebugString();
+      continue;
+    }
     const base::Value::Dict& settings_dictionary = i.second.GetDict();
 
     // Check to see if the setting is expired or not. This may be due to a past

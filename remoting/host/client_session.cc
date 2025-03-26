@@ -831,7 +831,7 @@ const std::string& ClientSession::client_jid() const {
 
 void ClientSession::DisconnectSession(ErrorCode error,
                                       std::string_view error_details,
-                                      const base::Location& error_location) {
+                                      const SourceLocation& error_location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(connection_.get());
 

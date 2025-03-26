@@ -529,6 +529,8 @@ TabLifecycleUnitSource::TabLifecycleUnit::GetTabState() const {
 
 void TabLifecycleUnitSource::TabLifecycleUnit::RecomputeLifecycleUnitState(
     LifecycleUnitStateChangeReason reason) {
+  performance_manager::PageLiveStateDecorator::SetIsDiscarded(web_contents(),
+                                                              is_discarded_);
   if (is_discarded_) {
     SetState(mojom::LifecycleUnitState::DISCARDED, reason);
   } else if (page_lifecycle_state_ ==

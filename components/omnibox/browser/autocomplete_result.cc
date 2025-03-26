@@ -8,6 +8,7 @@
 #include <functional>
 #include <iterator>
 #include <optional>
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <unordered_set>
@@ -885,23 +886,16 @@ void AutocompleteResult::AttachPedalsToMatches(
   }
 }
 
-void AutocompleteResult::AttachContextualSearchActionToMatches() {
+void AutocompleteResult::AttachContextualSearchFulfillmentActionToMatches() {
   for (AutocompleteMatch& match : matches_) {
-    if (match.subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX)) {
-      if (match.subtypes.contains(omnibox::SUBTYPE_CONTEXTUAL_SEARCH)) {
-        match.takeover_action = base::MakeRefCounted<ContextualSearchAction>(
-            match.destination_url, match.type,
-            match.subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX));
-      }
-      continue;
+    if ((match.provider && match.provider->type() ==
+                               AutocompleteProvider::TYPE_CONTEXTUAL_SEARCH) ||
+        match.subtypes.contains(omnibox::SUBTYPE_CONTEXTUAL_SEARCH)) {
+      match.takeover_action =
+          base::MakeRefCounted<ContextualSearchFulfillmentAction>(
+              match.destination_url, match.type,
+              match.subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX));
     }
-    // TODO(crbug.com/400952597): Add a check on the provider type once one
-    // provider is created for @page suggestions. That also means we can cleanup
-    // the above logic to only check if its from the contextual search provider
-    // or has the subtype omnibox::SUBTYPE_CONTEXTUAL_SEARCH.
-    match.takeover_action = base::MakeRefCounted<ContextualSearchAction>(
-        match.destination_url, match.type,
-        match.subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX));
   }
 }
 
@@ -1658,4 +1652,15 @@ void AutocompleteResult::GroupSuggestionsBySearchVsURL(iterator begin,
 
   std::ranges::stable_sort(begin, end, {},
                            [](const auto& m) { return m.GetSortingOrder(); });
+}
+
+std::ostream& operator<<(std::ostream& os, const AutocompleteResult& result) {
+  os << "AutocompleteResult {" << std::endl;
+  for (size_t i = 0; i < result.matches_.size(); i++) {
+    const AutocompleteMatch& match = result.matches_[i];
+    os << "  - " << i << ": `" << match.contents << "`"
+       << (match.allowed_to_be_default_match ? '*' : ' ') << std::endl;
+  }
+  os << "}" << std::endl;
+  return os;
 }

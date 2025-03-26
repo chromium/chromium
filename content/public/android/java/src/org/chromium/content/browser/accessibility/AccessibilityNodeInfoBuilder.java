@@ -139,7 +139,8 @@ public class AccessibilityNodeInfoBuilder {
     public static final String EXTRAS_KEY_IMAGE_DATA = "AccessibilityNodeInfo.imageData";
 
     public static final String ACCESSIBILITY_SPANNABLE_CREATION_TIME =
-            "Accessibility.Android.Performance.SpannableCreationTime";
+            "Accessibility.Android.Performance.SpannableCreationTime2";
+    private static final int MAX_TIME_BUCKET = 5 * 1000; // 5,000 microseconds = 5ms.
 
     // Static instances of the three types of extra data keys that can be added to nodes.
     private static final List<String> sTextCharacterLocation =
@@ -473,7 +474,7 @@ public class AccessibilityNodeInfoBuilder {
             String[] suggestions,
             String stateDescription,
             String containerTitle) {
-        long now = SystemClock.elapsedRealtime();
+        long now = SystemClock.elapsedRealtimeNanos() / 1000;
 
         CharSequence computedText =
                 computeText(
@@ -531,7 +532,7 @@ public class AccessibilityNodeInfoBuilder {
                 : "setAccessibilityNodeInfoText with text styling information was called when"
                         + " feature was not enabled.";
 
-        long now = SystemClock.elapsedRealtime();
+        long now = SystemClock.elapsedRealtimeNanos() / 1000;
 
         CharSequence computedText =
                 computeText(
@@ -572,9 +573,12 @@ public class AccessibilityNodeInfoBuilder {
     }
 
     private void recordTimeToCreateSpannables(long startTime) {
-        // TODO(mschillaci): Check initial data and change time range/buckets if needed.
-        RecordHistogram.recordTimesHistogram(
-                ACCESSIBILITY_SPANNABLE_CREATION_TIME, SystemClock.elapsedRealtime() - startTime);
+        RecordHistogram.recordCustomTimesHistogram(
+                ACCESSIBILITY_SPANNABLE_CREATION_TIME,
+                (SystemClock.elapsedRealtimeNanos() / 1000) - startTime,
+                1,
+                MAX_TIME_BUCKET,
+                100);
     }
 
     @CalledByNative

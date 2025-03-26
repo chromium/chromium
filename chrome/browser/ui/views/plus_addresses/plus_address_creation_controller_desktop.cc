@@ -28,6 +28,7 @@
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
+#include "components/url_formatter/elide_url.h"
 
 namespace plus_addresses {
 
@@ -106,8 +107,10 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
   metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalShown,
                             /*is_notice_screen=*/should_show_notice);
   if (!suppress_ui_for_testing_) {
+    const std::u16string domain = url_formatter::FormatOriginForSecurityDisplay(
+        main_frame_origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
     dialog_delegate_ = std::make_unique<PlusAddressCreationDialogDelegate>(
-        GetWeakPtr(), &GetWebContents(), maybe_email.value(),
+        GetWeakPtr(), &GetWebContents(), maybe_email.value(), domain,
         should_show_notice);
     constrained_window::ShowWebModalDialogViews(dialog_delegate_.get(),
                                                 &GetWebContents());

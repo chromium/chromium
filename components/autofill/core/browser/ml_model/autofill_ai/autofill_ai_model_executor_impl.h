@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_AI_AUTOFILL_AI_MODEL_EXECUTOR_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
@@ -17,6 +18,7 @@
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/forms_classifications.pb.h"
+#include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 
 namespace autofill {
 
@@ -32,7 +34,11 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
   ~AutofillAiModelExecutorImpl() override;
 
   // AutofillAiModelExecutor:
-  void GetPredictions(FormData form_data) override;
+  void GetPredictions(
+      FormData form_data,
+      std::optional<optimization_guide::proto::AnnotatedPageContent>
+          annotated_page_content) override;
+  base::WeakPtr<AutofillAiModelExecutor> GetWeakPtr() override;
 
  private:
   // Writes the model execution response into the cache.

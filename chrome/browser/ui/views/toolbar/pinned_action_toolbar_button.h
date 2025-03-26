@@ -42,6 +42,7 @@ class PinnedActionToolbarButton : public ToolbarButton {
   void SetIconVisibility(bool is_visible);
   bool NeedsDelayedDestruction() { return needs_delayed_destruction_; }
   void SetIsPinnable(bool is_pinnable) { is_pinnable_ = is_pinnable; }
+  void SetIsPermanent() { permanent_ = true; }
   void SetIsActionShowingBubble(bool showing_bubble) {
     is_action_showing_bubble_ = showing_bubble;
   }
@@ -53,6 +54,7 @@ class PinnedActionToolbarButton : public ToolbarButton {
   bool ShouldShowEphemerallyInToolbar();
   bool IsIconVisible() { return is_icon_visible_; }
   bool IsPinned() { return pinned_; }
+  bool IsPermanent() { return permanent_; }
   views::View* GetImageContainerView() { return image_container_view(); }
 
   bool ShouldSkipExecutionForTesting() { return skip_execution_; }
@@ -88,6 +90,7 @@ class PinnedActionToolbarButton : public ToolbarButton {
   std::optional<Button::ScopedAnchorHighlight> anchor_higlight_;
   bool pinned_ = false;
   bool needs_delayed_destruction_ = false;
+  bool permanent_ = false;
   bool is_pinnable_ = false;
   bool is_icon_visible_ = true;
   bool action_engaged_ = false;

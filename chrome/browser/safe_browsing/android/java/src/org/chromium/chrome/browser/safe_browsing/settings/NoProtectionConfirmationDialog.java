@@ -4,10 +4,15 @@
 
 package org.chromium.chrome.browser.safe_browsing.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -17,10 +22,13 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Dialog to confirm if the user is sure to disable Safe Browsing. */
+@NullMarked
 public class NoProtectionConfirmationDialog {
     private Context mContext;
-    private ModalDialogManager mManager;
-    private PropertyModel mModel;
+
+    @MonotonicNonNull private ModalDialogManager mManager;
+
+    private @Nullable PropertyModel mModel;
     private Callback<Boolean> mDidConfirmCallback;
 
     public static NoProtectionConfirmationDialog create(
@@ -65,6 +73,9 @@ public class NoProtectionConfirmationDialog {
     }
 
     private Controller makeController() {
+        // Technically mManager is only non-Null when the methods inside the
+        // controller are called.
+        assumeNonNull(mManager);
         return new ModalDialogProperties.Controller() {
             @Override
             public void onClick(PropertyModel model, int buttonType) {

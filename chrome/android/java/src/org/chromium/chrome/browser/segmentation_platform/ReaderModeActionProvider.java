@@ -6,31 +6,44 @@ package org.chromium.chrome.browser.segmentation_platform;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Pair;
 
-import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationStatus;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /** Provides reader mode signal for showing contextual page action for a given tab. */
 public class ReaderModeActionProvider implements ContextualPageActionController.ActionProvider {
+    // Needed to remove DistillabilityObserver upon destroy before the provider has distillable
+    // results. This is especially important if the activity shuts down but the tab is reparented.
+    private final Map<DistillabilityObserver, TabDistillabilityProvider> mObserverToProviderMap =
+            new HashMap<>();
+
     @Override
     public void getAction(Tab tab, SignalAccumulator signalAccumulator) {
         final TabDistillabilityProvider tabDistillabilityProvider =
                 TabDistillabilityProvider.get(tab);
+        // TODO(crbug.com/405420546): Consider emitting a signal from TabDistillabilityProvider when
+        // an observer is added if distillability is already determined.
         if (tabDistillabilityProvider.isDistillabilityDetermined()) {
-            notifyActionAvailable(
-                    tabDistillabilityProvider.isDistillable(),
-                    tabDistillabilityProvider.isMobileOptimized(),
-                    tab,
-                    signalAccumulator);
+            Pair<Boolean, Integer> result =
+                    ReaderModeManager.computeDistillationStatus(
+                            tab,
+                            tabDistillabilityProvider.isDistillable(),
+                            tabDistillabilityProvider.isMobileOptimized(),
+                            /* isLast= */ true);
+            notifyActionAvailable(result.second == DistillationStatus.POSSIBLE, signalAccumulator);
             return;
         }
 
         // Distillability score isn't available yet. Start observing the provider.
-        final TabDistillabilityProvider.DistillabilityObserver distillabilityObserver =
+        final DistillabilityObserver distillabilityObserver =
                 new DistillabilityObserver() {
                     @Override
                     public void onIsPageDistillableResult(
@@ -38,12 +51,23 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
                             boolean isDistillable,
                             boolean isLast,
                             boolean isMobileOptimized) {
-                        notifyActionAvailable(
-                                isDistillable, isMobileOptimized, tab, signalAccumulator);
-                        tabDistillabilityProvider.removeObserver(this);
+                        Pair<Boolean, Integer> result =
+                                ReaderModeManager.computeDistillationStatus(
+                                        tab,
+                                        tabDistillabilityProvider.isDistillable(),
+                                        tabDistillabilityProvider.isMobileOptimized(),
+                                        /* isLast= */ true);
+                        if (result.first) {
+                            notifyActionAvailable(
+                                    result.second == DistillationStatus.POSSIBLE,
+                                    signalAccumulator);
+                            tabDistillabilityProvider.removeObserver(this);
+                            mObserverToProviderMap.remove(this);
+                        }
                     }
                 };
         tabDistillabilityProvider.addObserver(distillabilityObserver);
+        mObserverToProviderMap.put(distillabilityObserver, tabDistillabilityProvider);
     }
 
     @Override
@@ -66,30 +90,18 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
                         /* delayMillis= */ 500);
     }
 
-    private void notifyActionAvailable(
-            boolean isDistillable,
-            boolean isMobileOptimized,
-            Tab tab,
-            SignalAccumulator signalAccumulator) {
-        // TODO(shaktisahu): Can we merge these into a single method call?
-        signalAccumulator.setHasReaderMode(isDistillable && !isFilteredOut(tab, isMobileOptimized));
-        signalAccumulator.notifySignalAvailable();
+    @Override
+    public void destroy() {
+        for (Map.Entry<DistillabilityObserver, TabDistillabilityProvider> observerAndProvider :
+                mObserverToProviderMap.entrySet()) {
+            observerAndProvider.getValue().removeObserver(observerAndProvider.getKey());
+        }
+        mObserverToProviderMap.clear();
     }
 
-    private boolean isFilteredOut(Tab tab, boolean isMobileOptimized) {
-        // Test if the user is requesting the desktop site. Ignore this if distiller is set to
-        // ALWAYS_TRUE.
-        boolean usingRequestDesktopSite =
-                tab.getWebContents() != null
-                        && tab.getWebContents().getNavigationController().getUseDesktopUserAgent()
-                        && !DomDistillerTabUtils.isHeuristicAlwaysTrue();
-
-        if (usingRequestDesktopSite) return true;
-
-        if (isMobileOptimized && DomDistillerTabUtils.shouldExcludeMobileFriendly(tab)) {
-            return true;
-        }
-
-        return false;
+    private void notifyActionAvailable(boolean isDistillable, SignalAccumulator signalAccumulator) {
+        // TODO(shaktisahu): Can we merge these into a single method call?
+        signalAccumulator.setHasReaderMode(isDistillable);
+        signalAccumulator.notifySignalAvailable();
     }
 }

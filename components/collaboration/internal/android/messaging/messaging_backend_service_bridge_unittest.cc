@@ -241,7 +241,7 @@ InstantMessage CreateInstantMessage() {
   message.collaboration_event = CollaborationEvent::TAB_REMOVED;
   message.localized_message = u"Message content - single message";
 
-  message.attribution = CreateAttribution1();
+  message.attributions.emplace_back(CreateAttribution1());
 
   return message;
 }
@@ -277,10 +277,9 @@ TEST_F(MessagingBackendServiceBridgeTest,
   message.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
   message.collaboration_event = CollaborationEvent::TAB_REMOVED;
   message.localized_message = u"Message content - aggregated message";
-  AggregatedMessageData aggregated_data;
-  aggregated_data.attributions.emplace_back(CreateAttribution1());
-  aggregated_data.attributions.emplace_back(CreateAttribution2());
-  message.aggregated_data = aggregated_data;
+  message.attributions.clear();
+  message.attributions.emplace_back(CreateAttribution1());
+  message.attributions.emplace_back(CreateAttribution2());
 
   DisplayInstantaneousMessage(message, /*success=*/true);
 

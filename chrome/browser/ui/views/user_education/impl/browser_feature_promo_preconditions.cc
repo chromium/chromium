@@ -184,10 +184,7 @@ void UserNotActivePrecondition::CreateEventMonitor() {
   // watching events at all.
   event_monitor_ = views::EventMonitor::CreateWindowMonitor(
       this, browser_view_->GetWidget()->GetTopLevelWidget()->GetNativeWindow(),
-      {ui::EventType::kKeyPressed, ui::EventType::kKeyReleased,
-       ui::EventType::kMousePressed, ui::EventType::kMouseReleased,
-       ui::EventType::kTouchPressed, ui::EventType::kTouchReleased,
-       ui::EventType::kGestureBegin, ui::EventType::kGestureEnd});
+      {ui::EventType::kKeyPressed, ui::EventType::kKeyReleased});
 }
 
 void UserNotActivePrecondition::OnEvent(const ui::Event& event) {
@@ -197,10 +194,18 @@ void UserNotActivePrecondition::OnEvent(const ui::Event& event) {
 
 user_education::FeaturePromoResult UserNotActivePrecondition::CheckPrecondition(
     ComputedData&) const {
-  const auto elapsed = time_provider_->GetCurrentTime() - last_active_time_;
-  return elapsed < user_education::features::GetIdleTimeBeforeHeavyweightPromo()
-             ? user_education::FeaturePromoResult::kBlockedByUi
-             : user_education::FeaturePromoResult::Success();
+  // Only do check if min idle time is nonzero and positive; otherwise this is a
+  // no-op. Explicitly verify this in case of non-monotonic clock weirdness.
+  const auto min_idle_time =
+      user_education::features::GetIdleTimeBeforeHeavyweightPromo();
+  if (min_idle_time.is_positive()) {
+    const auto elapsed = time_provider_->GetCurrentTime() - last_active_time_;
+    return elapsed < min_idle_time
+               ? user_education::FeaturePromoResult::kBlockedByUi
+               : user_education::FeaturePromoResult::Success();
+  } else {
+    return user_education::FeaturePromoResult::Success();
+  }
 }
 
 void UserNotActivePrecondition::OnViewAddedToWidget(

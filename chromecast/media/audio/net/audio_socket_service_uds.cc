@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/media/audio/net/audio_socket_service.h"
-
 #include <unistd.h>
 
 #include <cstring>
@@ -11,12 +9,14 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/safe_strerror.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromecast/media/audio/net/audio_socket_service.h"
 #include "chromecast/net/socket_util.h"
 #include "net/base/net_errors.h"
 #include "net/socket/stream_socket.h"
@@ -121,7 +121,7 @@ void AudioSocketService::ReceiveFdFromSocket(int socket_fd) {
     LOG(ERROR) << "Failed to receive message from the descriptor " << socket_fd;
     return;
   }
-  if (memcmp(buffer, kSocketMsg, sizeof(kSocketMsg)) != 0) {
+  if (UNSAFE_TODO(memcmp(buffer, kSocketMsg, sizeof(kSocketMsg))) != 0) {
     LOG(ERROR) << "Received invalid message.";
     return;
   }

@@ -9,7 +9,6 @@ import static org.chromium.chrome.test.util.TabBinningUtil.group;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,8 +24,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
@@ -51,18 +50,14 @@ import java.util.List;
 // or enable Google Sans (Text) in //chrome/ tests on Android T+.
 @Features.DisableFeatures(ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT)
 public class TabSwitcherListEditorPTTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
-            new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
+    public AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     @Test
     @MediumTest
     public void testLeaveEditorViaBackPress() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
         editor.pressBackToExit();
@@ -75,7 +70,7 @@ public class TabSwitcherListEditorPTTest {
     @Test
     @MediumTest
     public void testCreateTabGroupOf1() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
@@ -95,7 +90,7 @@ public class TabSwitcherListEditorPTTest {
     @Test
     @MediumTest
     public void testClose2Tabs() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
         int secondTabId = secondPage.getLoadedTab().getId();
@@ -119,7 +114,7 @@ public class TabSwitcherListEditorPTTest {
     @Test
     @MediumTest
     public void testCreateTabGroupOf2() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
         int secondTabId = secondPage.getLoadedTab().getId();
@@ -144,15 +139,10 @@ public class TabSwitcherListEditorPTTest {
     @MediumTest
     @RequiresRestart("crbug.com/378502216")
     public void testCreateTabGroupOf10() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
-            Journeys.prepareTabsWithThumbnails(
-                firstPage,
-                10,
-                0,
-                "about:blank",
-                WebPageStation::newBuilder
-            );
+                Journeys.prepareTabsWithThumbnails(
+                        firstPage, 10, 0, "about:blank", WebPageStation::newBuilder);
         RegularTabSwitcherStation tabSwitcher = pageStation.openRegularTabSwitcher();
         Journeys.mergeAllTabsToNewGroup(tabSwitcher);
 
@@ -165,20 +155,23 @@ public class TabSwitcherListEditorPTTest {
     @MediumTest
     @RequiresRestart("crbug.com/378502216")
     public void testCreate10TabsAndCreateTabGroupOf4() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
-            Journeys.prepareTabsWithThumbnails(
-                firstPage,
-                10,
-                0,
-                "about:blank",
-                WebPageStation::newBuilder
-            );
+                Journeys.prepareTabsWithThumbnails(
+                        firstPage, 10, 0, "about:blank", WebPageStation::newBuilder);
         RegularTabSwitcherStation tabSwitcher = pageStation.openRegularTabSwitcher();
-        TabList tabList = tabSwitcher.getTabModelSelectorSupplier().get()
-            .getCurrentModel().getComprehensiveModel();
-        List<Tab> tabs = List.of(tabList.getTabAt(0),
-                tabList.getTabAt(3), tabList.getTabAt(5), tabList.getTabAt(9));
+        TabList tabList =
+                tabSwitcher
+                        .getTabModelSelectorSupplier()
+                        .get()
+                        .getCurrentModel()
+                        .getComprehensiveModel();
+        List<Tab> tabs =
+                List.of(
+                        tabList.getTabAt(0),
+                        tabList.getTabAt(3),
+                        tabList.getTabAt(5),
+                        tabList.getTabAt(9));
         Journeys.mergeTabsToNewGroup(tabSwitcher, tabs);
 
         // Go back to PageStation for InitialStateRule to reset
@@ -190,7 +183,7 @@ public class TabSwitcherListEditorPTTest {
     @MediumTest
     @RequiresRestart("crbug.com/378502216")
     public void testCreate2TabGroups() {
-        WebPageStation pageStation = mInitialStateRule.startOnBlankPage();
+        WebPageStation pageStation = mCtaTestRule.startOnBlankPage();
         pageStation =
                 Journeys.prepareTabsWithThumbnails(
                         pageStation, 10, 0, "about:blank", WebPageStation::newBuilder);
@@ -221,7 +214,7 @@ public class TabSwitcherListEditorPTTest {
     @Test
     @MediumTest
     public void testUndoCreateTabGroup() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         TabModel tabModel = firstPage.getActivity().getCurrentTabModel();
 

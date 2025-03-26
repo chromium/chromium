@@ -10,7 +10,6 @@ import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestinati
 
 import androidx.test.filters.LargeTest;
 
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,8 +24,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
@@ -46,13 +45,9 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class TabbedAppMenuPTTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
-            new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
+    public AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -67,10 +62,10 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     public void testOpenNewTab() {
         RegularNewTabPageStation newTabPage =
-                mInitialStateRule.startOnBlankPage().openRegularTabAppMenu().openNewTab();
+                mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewTab();
 
-        assertEquals(2, sActivityTestRule.tabsCount(/* incognito= */ false));
-        assertEquals(0, sActivityTestRule.tabsCount(/* incognito= */ true));
+        assertEquals(2, mCtaTestRule.tabsCount(/* incognito= */ false));
+        assertEquals(0, mCtaTestRule.tabsCount(/* incognito= */ true));
         assertFinalDestination(newTabPage);
     }
 
@@ -79,10 +74,10 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     public void testOpenNewIncognitoTab() {
         IncognitoNewTabPageStation newIncognitoTabPage =
-                mInitialStateRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
+                mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
 
-        assertEquals(1, sActivityTestRule.tabsCount(/* incognito= */ false));
-        assertEquals(1, sActivityTestRule.tabsCount(/* incognito= */ true));
+        assertEquals(1, mCtaTestRule.tabsCount(/* incognito= */ false));
+        assertEquals(1, mCtaTestRule.tabsCount(/* incognito= */ true));
         assertFinalDestination(newIncognitoTabPage);
     }
 
@@ -90,7 +85,7 @@ public class TabbedAppMenuPTTest {
     @Test
     @LargeTest
     public void testOpenSettings() {
-        WebPageStation pageStation = mInitialStateRule.startOnBlankPage();
+        WebPageStation pageStation = mCtaTestRule.startOnBlankPage();
         Tab tab = pageStation.getLoadedTab();
         SettingsStation settings = pageStation.openRegularTabAppMenu().openSettings();
 
@@ -113,7 +108,7 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testNewTabPageRegularAppMenuItems() throws IOException {
-        WebPageStation blankPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation blankPage = mCtaTestRule.startOnBlankPage();
         RegularNewTabPageStation newTabPage = blankPage.openRegularTabAppMenu().openNewTab();
         RegularNewTabPageAppMenuFacility menu = newTabPage.openAppMenu();
 
@@ -134,7 +129,7 @@ public class TabbedAppMenuPTTest {
     @Feature({"RenderTest"})
     public void testNewTabPageIncognitoAppMenuItems() throws IOException {
         IncognitoNewTabPageStation incognitoNewTabPage =
-                mInitialStateRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
+                mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
         IncognitoNewTabPageAppMenuFacility menu = incognitoNewTabPage.openAppMenu();
 
         mRenderTestRule.render(menu.getView(), "incognito_ntp_app_menu");
@@ -153,7 +148,7 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testWebPageRegularAppMenuItems() throws IOException {
-        WebPageStation blankPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation blankPage = mCtaTestRule.startOnBlankPage();
         RegularWebPageAppMenuFacility menu = blankPage.openRegularTabAppMenu();
 
         mRenderTestRule.render(menu.getView(), "regular_webpage_app_menu");
@@ -173,11 +168,11 @@ public class TabbedAppMenuPTTest {
     @Feature({"RenderTest"})
     public void testWebPageIncognitoAppMenuItems() throws IOException {
         IncognitoNewTabPageStation incognitoNtp =
-                mInitialStateRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
+                mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
 
         WebPageStation pageOne =
                 incognitoNtp.loadPageProgrammatically(
-                        sActivityTestRule.getTestServer().getURL(NavigatePageStations.PATH_ONE),
+                        mCtaTestRule.getTestServer().getURL(NavigatePageStations.PATH_ONE),
                         NavigatePageStations.newNavigateOnePageBuilder());
         IncognitoWebPageAppMenuFacility menu = pageOne.openIncognitoTabAppMenu();
 
@@ -193,8 +188,8 @@ public class TabbedAppMenuPTTest {
     @Test
     @LargeTest
     public void testHideMenuOnToggleOverview() {
-        WebPageStation page = mInitialStateRule.startOnBlankPage();
-        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+        WebPageStation page = mCtaTestRule.startOnBlankPage();
+        ChromeTabbedActivity activity = mCtaTestRule.getActivity();
         LayoutManagerChrome layoutManager = activity.getLayoutManager();
 
         page.openRegularTabAppMenu();

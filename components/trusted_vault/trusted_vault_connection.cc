@@ -24,12 +24,32 @@ TrustedVaultKeyAndVersion::~TrustedVaultKeyAndVersion() = default;
 bool TrustedVaultKeyAndVersion::operator==(
     const TrustedVaultKeyAndVersion& other) const = default;
 
-GpmPinMetadata::GpmPinMetadata(std::optional<std::string> in_public_key,
-                               std::string in_wrapped_pin,
-                               base::Time in_expiry)
+UsableRecoveryPinMetadata::UsableRecoveryPinMetadata(std::string in_wrapped_pin,
+                                                     base::Time in_expiry)
+    : wrapped_pin(std::move(in_wrapped_pin)), expiry(in_expiry) {}
+
+UsableRecoveryPinMetadata::UsableRecoveryPinMetadata(
+    const UsableRecoveryPinMetadata&) = default;
+
+UsableRecoveryPinMetadata& UsableRecoveryPinMetadata::operator=(
+    const UsableRecoveryPinMetadata&) = default;
+
+UsableRecoveryPinMetadata::UsableRecoveryPinMetadata(
+    UsableRecoveryPinMetadata&&) = default;
+
+UsableRecoveryPinMetadata& UsableRecoveryPinMetadata::operator=(
+    UsableRecoveryPinMetadata&&) = default;
+
+UsableRecoveryPinMetadata::~UsableRecoveryPinMetadata() = default;
+
+bool UsableRecoveryPinMetadata::operator==(
+    const UsableRecoveryPinMetadata&) const = default;
+
+GpmPinMetadata::GpmPinMetadata(
+    std::optional<std::string> in_public_key,
+    std::optional<UsableRecoveryPinMetadata> in_pin_metadata)
     : public_key(std::move(in_public_key)),
-      wrapped_pin(std::move(in_wrapped_pin)),
-      expiry(in_expiry) {}
+      usable_pin_metadata(std::move(in_pin_metadata)) {}
 
 GpmPinMetadata::GpmPinMetadata(const GpmPinMetadata&) = default;
 

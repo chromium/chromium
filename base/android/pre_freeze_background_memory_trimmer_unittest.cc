@@ -822,15 +822,15 @@ TEST_F(PreFreezeSelfCompactionTest, Locked) {
 }
 
 TEST_F(PreFreezeSelfCompactionTest, SimpleCancel) {
-  auto started_at = base::TimeTicks::Now();
+  auto triggered_at = base::TimeTicks::Now();
 
-  EXPECT_TRUE(ShouldContinueSelfCompaction(started_at));
+  EXPECT_TRUE(ShouldContinueSelfCompaction(triggered_at));
 
   PreFreezeBackgroundMemoryTrimmer::MaybeCancelSelfCompaction(
       PreFreezeBackgroundMemoryTrimmer::SelfCompactCancellationReason::
           kPageResumed);
 
-  EXPECT_FALSE(ShouldContinueSelfCompaction(started_at));
+  EXPECT_FALSE(ShouldContinueSelfCompaction(triggered_at));
 }
 
 TEST_F(PreFreezeSelfCompactionTest, Cancel) {
@@ -873,8 +873,9 @@ TEST_F(PreFreezeSelfCompactionTest, Cancel) {
         .self_compaction_last_triggered_ = triggered_at;
   }
   PreFreezeBackgroundMemoryTrimmer::Instance().StartSelfCompaction(
-      task_environment_.GetMainThreadTaskRunner(), std::move(regions), 1,
-      triggered_at);
+      std::make_unique<PreFreezeBackgroundMemoryTrimmer::CompactionState>(
+          task_environment_.GetMainThreadTaskRunner(), std::move(regions),
+          triggered_at, 1));
 
   EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1u);
 
@@ -936,10 +937,12 @@ TEST_F(PreFreezeSelfCompactionTest, NotCanceled) {
 
   ASSERT_EQ(regions.size(), 4u);
 
-  const auto started_at = base::TimeTicks::Now();
+  const auto triggered_at = base::TimeTicks::Now();
   PreFreezeBackgroundMemoryTrimmer::Instance().StartSelfCompaction(
-      task_environment_.GetMainThreadTaskRunner(), std::move(regions), 1,
-      started_at);
+      std::make_unique<PreFreezeBackgroundMemoryTrimmer::CompactionState>(
+
+          task_environment_.GetMainThreadTaskRunner(), std::move(regions),
+          triggered_at, 1));
 
   // We should have 4 sections here, based on the sizes mapped above.
   // |StartSelfCompaction| doesn't run right away, but rather schedules a task.
@@ -1002,8 +1005,9 @@ TEST_F(PreFreezeSelfCompactionTest, Disabled) {
 
   base::HistogramTester histograms;
 
+  auto triggered_at = base::TimeTicks::Now();
   PreFreezeBackgroundMemoryTrimmer::Instance().CompactSelf(
-      task_environment_.GetMainThreadTaskRunner(), base::TimeTicks::Now());
+      task_environment_.GetMainThreadTaskRunner(), triggered_at);
 
   // Run metrics
   task_environment_.FastForwardBy(base::Seconds(60));

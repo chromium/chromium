@@ -11,6 +11,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/common/chrome_features.h"
 #include "components/app_launch_prefetch/app_launch_prefetch.h"
@@ -83,7 +84,7 @@ void ChromeProcessSingleton::InitializeFeatures() {
   // It is expected that this will overall improve the behavior of ALPF on
   // Windows, which should decrease startup time for ordinary browser processes.
   if (is_singleton_instance_ &&
-      (wcsstr(::GetCommandLineW(), L"/prefetch:") == nullptr) &&
+      (UNSAFE_TODO(wcsstr(::GetCommandLineW(), L"/prefetch:")) == nullptr) &&
       base::FeatureList::IsEnabled(features::kOverridePrefetchOnSingleton)) {
     OVERRIDE_PREFETCH_PARAMETER prefetch_parameter = {};
     prefetch_parameter.Value = app_launch_prefetch::GetPrefetchBucket(

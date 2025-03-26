@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -258,7 +259,8 @@ class MagicStackRankingModelTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(GetProfile());
 
     // Necessary set up for kIOSSetUpList.
-    GetLocalState()->ClearPref(set_up_list_prefs::kDisabled);
+    GetProfile()->GetPrefs()->SetBoolean(
+        prefs::kHomeCustomizationMagicStackSetUpListEnabled, true);
     ClearDefaultBrowserPromoData();
     WriteFirstRunSentinel();
 
@@ -310,7 +312,9 @@ class MagicStackRankingModelTest : public PlatformTest {
             &pref_service_, /*identity_manager*/ nullptr,
             /*supervised_user_service*/ nullptr, /*top_sites*/ nullptr,
             /*popular_sites*/ nullptr,
-            /*custom_links*/ nullptr, /*icon_cacher*/ nullptr, true);
+            /*custom_links*/ nullptr, /*icon_cacher*/ nullptr,
+            /*is_default_chrome_app_migrated*/ true,
+            /*is_custom_links_mixable*/ false);
     _mostVisitedTilesMediator = [[FakeMostVisitedTilesMediator alloc]
         initWithMostVisitedSite:std::move(most_visited_sites)
                     prefService:GetProfile()->GetPrefs()
@@ -413,9 +417,10 @@ class MagicStackRankingModelTest : public PlatformTest {
         << base::File::ErrorToString(file_error);
     FirstRun::LoadSentinelInfo();
     FirstRun::ClearStateForTesting();
-    EXPECT_FALSE(set_up_list_prefs::IsSetUpListDisabled(GetLocalState()));
+    EXPECT_FALSE(set_up_list_prefs::IsSetUpListDisabled(profile_->GetPrefs()));
     EXPECT_FALSE(FirstRun::IsChromeFirstRun());
-    EXPECT_TRUE(set_up_list_utils::IsSetUpListActive(GetLocalState()));
+    EXPECT_TRUE(set_up_list_utils::IsSetUpListActive(GetLocalState(),
+                                                     profile_->GetPrefs()));
   }
 
   web::WebTaskEnvironment task_environment_;

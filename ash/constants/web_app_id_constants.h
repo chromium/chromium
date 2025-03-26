@@ -122,6 +122,10 @@ inline constexpr char kGraduationAppId[] = "dcmgllglecpogfcjmdkdncendnjphdcd";
 inline constexpr char kHelpAppId[] = "nbljnnecbjbmifnoehiemkgefbnpoeak";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
+//     "https://notebooklm.google.com/"))
+inline constexpr char kNotebookLmAppId[] = "gjcmcplpgihbecacndmmbaenpfgimlec";
+
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //     "chrome://media-app/"))
 inline constexpr char kMediaAppId[] = "jhdjimmaggjajfjphpljagpgkidjilnj";
 

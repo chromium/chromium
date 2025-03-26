@@ -99,7 +99,6 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
     bool is_supervised_profile,
     std::optional<bool> is_new_profile,
     std::optional<std::unique_ptr<policy::PolicyService>> policy_service,
-    bool is_main_profile,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
   DCHECK(called_set_up_);
 
@@ -150,25 +149,14 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
 
 TestingProfile* TestingProfileManager::CreateTestingProfile(
     const std::string& name,
-    bool is_main_profile,
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
-  DCHECK(called_set_up_);
-  return CreateTestingProfile(name, /*testing_factories=*/{}, is_main_profile,
-                              shared_url_loader_factory);
-}
-
-TestingProfile* TestingProfileManager::CreateTestingProfile(
-    const std::string& name,
     TestingProfile::TestingFactories testing_factories,
-    bool is_main_profile,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
   DCHECK(called_set_up_);
   return CreateTestingProfile(
       name, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
       base::UTF8ToUTF16(name), /*avatar_id=*/0, std::move(testing_factories),
       /*is_supervised_profile=*/false, /*is_new_profile=*/std::nullopt,
-      /*policy_service=*/std::nullopt, is_main_profile,
-      shared_url_loader_factory);
+      /*policy_service=*/std::nullopt, shared_url_loader_factory);
 }
 
 TestingProfile* TestingProfileManager::CreateGuestProfile(

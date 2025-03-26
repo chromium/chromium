@@ -46,8 +46,7 @@ std::ostream& operator<<(std::ostream& out, const BtmNavigationInfo& nav) {
 std::ostream& operator<<(std::ostream& out,
                          const BtmPageVisitObserver::VisitTuple& visit) {
   return out << "VisitTuple{prev_page=" << visit.prev_page
-             << ", navigation=" << visit.navigation << ", url=" << visit.url
-             << "}";
+             << ", navigation=" << visit.navigation << "}";
 }
 
 BtmPageVisitRecorder::BtmPageVisitRecorder(WebContents* web_contents,
@@ -76,9 +75,8 @@ BtmPageVisitRecorder::~BtmPageVisitRecorder() = default;
 }
 
 void BtmPageVisitRecorder::OnVisit(const BtmPageVisitInfo& prev_page,
-                                   const BtmNavigationInfo& navigation,
-                                   const GURL& url) {
-  visits_.emplace_back(prev_page, navigation, url);
+                                   const BtmNavigationInfo& navigation) {
+  visits_.emplace_back(prev_page, navigation);
 
   if (wait_state_.has_value() && wait_state_->wanted_count <= visits_.size()) {
     wait_state_->run_loop.Quit();

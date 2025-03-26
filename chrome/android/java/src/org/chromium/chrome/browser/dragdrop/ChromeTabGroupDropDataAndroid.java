@@ -4,15 +4,22 @@
 
 package org.chromium.chrome.browser.dragdrop;
 
+import android.content.ClipDescription;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.ui.base.MimeTypeUtils;
 
 /** Chrome-specific drop data containing a {@link TabGroupMetadata}. */
 public class ChromeTabGroupDropDataAndroid extends ChromeDropDataAndroid {
-    public final TabGroupMetadata tabGroupMetadata;
+    @Nullable public final TabGroupMetadata tabGroupMetadata;
 
     ChromeTabGroupDropDataAndroid(Builder builder) {
         super(builder);
         tabGroupMetadata = builder.mTabGroupMetadata;
+        assert tabGroupMetadata != null;
     }
 
     @Override
@@ -22,13 +29,24 @@ public class ChromeTabGroupDropDataAndroid extends ChromeDropDataAndroid {
 
     @Override
     public boolean isIncognito() {
-        return hasBrowserContent() && tabGroupMetadata.isIncognito;
+        return tabGroupMetadata.isIncognito;
     }
 
     @Override
     public String buildTabClipDataText() {
-        // TODO(crbug.com/380327012): Implement clip data text for groups.
-        return null;
+        // TODO(crbug.com/404709214): If the group title from metadata is null (i.e., the user
+        //  didn't set a specific name), fallback to the default "N tabs" format.
+        return tabGroupMetadata.tabGroupTitle;
+    }
+
+    @Override
+    public String[] getSupportedMimeTypes() {
+        // TODO(crbug.com/384945274): Support Link Mimetype by using the shared tab group link.
+        return new String[] {
+            MimeTypeUtils.CHROME_MIMETYPE_TAB_GROUP,
+            ClipDescription.MIMETYPE_TEXT_PLAIN,
+            ClipDescription.MIMETYPE_TEXT_INTENT
+        };
     }
 
     /** Builder for @{@link ChromeTabDropDataAndroid} instance. */
@@ -39,7 +57,7 @@ public class ChromeTabGroupDropDataAndroid extends ChromeDropDataAndroid {
          * @param tabGroupMetadata The {@link TabGroupMetadata} associated with the dragging group.
          * @return {@link ChromeTabGroupDropDataAndroid.Builder} instance.
          */
-        public Builder withTabGroupMetadata(TabGroupMetadata tabGroupMetadata) {
+        public Builder withTabGroupMetadata(@NonNull TabGroupMetadata tabGroupMetadata) {
             mTabGroupMetadata = tabGroupMetadata;
             return this;
         }

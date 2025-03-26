@@ -809,8 +809,9 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
                  << __func__ << " called from " << location.ToString());
     EXPECT_CALL(fake_driver_,
                 ShowPasswordSuggestions(AllOf(
-                    Field(&autofill::PasswordSuggestionRequest::typed_username,
-                          expected_username))))
+                    Field(&autofill::PasswordSuggestionRequest::field,
+                          Field(&autofill::TriggeringField::typed_username,
+                                expected_username)))))
         .Times(NumShowSuggestionsCalls());
     base::RunLoop().RunUntilIdle();
   }
@@ -2510,9 +2511,10 @@ TEST_F(PasswordAutofillAgentTest, CredentialsOnClick) {
 
   // Now simulate a user typing in a saved username. The list is filtered.
   EXPECT_CALL(fake_driver_,
-              ShowPasswordSuggestions(
-                  Field(&autofill::PasswordSuggestionRequest::element_id,
-                        form_util::GetFieldRendererId(username_element_))))
+              ShowPasswordSuggestions(Field(
+                  &autofill::PasswordSuggestionRequest::field,
+                  Field(&autofill::TriggeringField::element_id,
+                        form_util::GetFieldRendererId(username_element_)))))
       .Times(NumShowSuggestionsCalls());
   SimulateUsernameTyping(kAliceUsername);
 }

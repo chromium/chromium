@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
@@ -24,7 +25,7 @@ namespace {
 constexpr char kHelpSwitch[] = "help";
 
 bool AXDumpEventsLogMessageHandler(int severity,
-                                   const char* file,
+                                   std::string_view file,
                                    int line,
                                    size_t message_start,
                                    const std::string& str) {

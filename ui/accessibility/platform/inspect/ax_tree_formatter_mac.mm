@@ -21,8 +21,7 @@
 #include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 #include "ui/accessibility/platform/inspect/ax_transform_mac.h"
 
-// This file uses the deprecated NSObject accessibility interface.
-// TODO(crbug.com/41450813): Migrate to the new NSAccessibility interface.
+// TODO(https://crbug.com/406190900): Remove this deprecation pragma.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 

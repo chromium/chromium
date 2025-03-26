@@ -3,6 +3,7 @@ include_rules = [
   # on other components.
   "+chromeos/ash/components/mojo_service_manager",
   "+chromeos/ash/components/specialized_features",
+  "+chromeos/services/machine_learning/public",
   "+components/signin/public/identity_manager",
 
   # TODO(crbug.com/402346171): Components should not have dependencies to //ash.

@@ -293,7 +293,7 @@ class TasksClientImplTest : public testing::Test {
         });
     client_ = std::make_unique<TasksClientImpl>(
         profile_manager_.CreateTestingProfile("profile@example.com",
-                                              /*is_main_profile=*/true,
+                                              /*testing_factories=*/{},
                                               url_loader_factory_),
         create_request_sender_callback, TRAFFIC_ANNOTATION_FOR_TESTS);
 

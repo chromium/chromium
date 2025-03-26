@@ -694,11 +694,19 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       }
       break;
     case SuggestionType::kIdentityCredential:
-      // TODO(crbug.com/380367784): support previewing.
+      manager_->FillOrPreviewField(
+          mojom::ActionPersistence::kPreview,
+          mojom::FieldActionType::kReplaceAll, query_form_, query_field_,
+          suggestion.main_text.value, SuggestionType::kIdentityCredential,
+          EMAIL_ADDRESS);
       break;
     case SuggestionType::kLoyaltyCardEntry:
-      // TODO(crbug.com/404436027): Implement.
-      NOTIMPLEMENTED();
+      // Always shows the masked loyalty card value as the preview of the
+      // suggestion.
+      manager_->FillOrPreviewField(
+          mojom::ActionPersistence::kPreview,
+          mojom::FieldActionType::kReplaceAll, query_form_, query_field_,
+          suggestion.main_text.value, suggestion.type, LOYALTY_MEMBERSHIP_ID);
       break;
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
@@ -902,10 +910,18 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     case SuggestionType::kIdentityCredential: {
-      // TODO(crbug.com/380367784): support filling too.
       if (const IdentityCredentialDelegate* identity_credential_delegate =
               manager_->client().GetIdentityCredentialDelegate()) {
         identity_credential_delegate->NotifySuggestionAccepted(suggestion);
+
+        // TODO(crbug.com/380367784): generalize this to allow filling different
+        // field types (e.g. passwords) as well as more than one one field
+        // at a time (e.g. name and email, rather than email alone)?
+        manager_->FillOrPreviewField(
+            mojom::ActionPersistence::kFill,
+            mojom::FieldActionType::kReplaceAll, query_form_, query_field_,
+            suggestion.main_text.value, SuggestionType::kIdentityCredential,
+            EMAIL_ADDRESS);
       }
       break;
     }

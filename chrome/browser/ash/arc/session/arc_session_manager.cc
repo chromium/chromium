@@ -902,10 +902,10 @@ void ArcSessionManager::Shutdown() {
   }
   switch (internal_state_) {
     case InternalState::kNotInitialized:
-      LOG(ERROR) << "Unexpected state: kNotInitialized";
-      expected = false;
-      break;
     case InternalState::kRunning:
+      // If the device is shutdown on login screen, ArcSessionManager state is
+      // kNotInitialized. Otherwise, i.e., if it's shut down from a user session
+      // the internal state should be kRunning.
       internal_state_ = InternalState::kShutdown;
       break;
     case InternalState::kShutdown:

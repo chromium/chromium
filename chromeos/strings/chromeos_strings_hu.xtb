@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">vasárnap</translation>
 <translation id="4250229828105606438">Képernyőkép</translation>
 <translation id="4251839292699800785">Stílusos iroda</translation>
+<translation id="4252261480746798874">A „Saját létrehozása” elemet választva egyéni utasítást írhat. Használhatja a „Téma választása” lehetőséget is, amellyel az aláhúzott szavak kiválasztásával személyre szabhatja az AI-háttérképet.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Az „Inspiráció” gombot választva egyedibb és változatosabb AI-képlehetőségeket kaphat.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Amikor saját háttérképet hoz létre, a rendszer elküldi az utasítást a Google szervereinek a képek generálásához és a termék továbbfejlesztéséhez a <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Általános Szerződési Feltételeinek és adatvédelmi irányelveinek<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> megfelelően. Ne adjon meg személyes, kényes vagy bizalmas adatokat.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A generatív AI hibázhat (többek között személyekkel kapcsolatban is), ezért ellenőrizze a válaszait. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />További információ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP várakozási idő</translation>
 <translation id="4266143281602681663">fonal</translation>
 <translation id="4269815121975886860">Indítási preferenciák</translation>
@@ -1522,6 +1532,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8010765388850538088">További információ a generatív AI-ról</translation>
 <translation id="8017679124341497925">Billentyűparancs szerkesztve</translation>
 <translation id="802154636333426148">Nem sikerült a letöltés</translation>
+<translation id="8027467664787098346">További információ a kiválasztott háttérképről</translation>
 <translation id="8028993641010258682">Méret</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Automatikus szín mód engedélyezése</translation>

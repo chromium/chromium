@@ -333,6 +333,9 @@ extern const char kLensOverlayOnboardingParamUpdatedStringsAndVisuals[];
 // Feature flag to change the onboariding experience of Lens Overlay.
 BASE_DECLARE_FEATURE(kLensOverlayAlternativeOnboarding);
 
+// Feature flag to add lens overlay navigation to history.
+BASE_DECLARE_FEATURE(kLensOverlayNavigationHistory);
+
 // Feature flag to enable UITraitCollection workaround for fixing incorrect
 // trait propagation.
 BASE_DECLARE_FEATURE(kEnableTraitCollectionWorkAround);

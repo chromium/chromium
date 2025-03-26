@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/rail_mode_observer.h"
+#include "third_party/blink/renderer/platform/scheduler/public/widget_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -80,10 +81,11 @@ FORWARD_DECLARE_TEST(MainThreadSchedulerImplTest,
                      CanExceedIdleDeadlineIfRequired);
 }  // namespace main_thread_scheduler_impl_unittest
 class AgentGroupSchedulerImpl;
+class CPUTimeBudgetPool;
 class FrameSchedulerImpl;
 class PageSchedulerImpl;
 class WebRenderWidgetSchedulingState;
-class CPUTimeBudgetPool;
+class WidgetSchedulerImpl;
 
 class PLATFORM_EXPORT MainThreadSchedulerImpl
     : public ThreadSchedulerBase,
@@ -237,7 +239,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // RenderWidgetSignals::Observer implementation:
   void SetAllRenderWidgetsHidden(bool hidden) override;
 
-  scoped_refptr<WidgetScheduler> CreateWidgetScheduler();
+  scoped_refptr<WidgetScheduler> CreateWidgetScheduler(
+      WidgetScheduler::Delegate* delegate);
   void WillBeginFrame(const viz::BeginFrameArgs& args);
   void BeginFrameNotExpectedSoon();
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time);
@@ -316,6 +319,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   base::TimeTicks CurrentIdleTaskDeadlineForTesting() const;
   void EndIdlePeriodForTesting(base::TimeTicks time_remaining);
   bool PolicyNeedsUpdateForTesting();
+  const IdleHelper& GetIdleHelperForTesting() const;
 
   std::unique_ptr<CPUTimeBudgetPool> CreateCPUTimeBudgetPoolForTesting(
       const char* name);
@@ -359,6 +363,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   const SchedulingSettings& scheduling_settings() const;
 
   void OnWebSchedulingTaskQueuePriorityChanged(MainThreadTaskQueue*);
+  void OnWidgetSchedulerWillShutdown(WidgetSchedulerImpl*);
 
   base::WeakPtr<MainThreadSchedulerImpl> GetWeakPtr();
 
@@ -496,7 +501,13 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void IsNotQuiescent() override {}
   void OnPendingTasksChanged(bool has_tasks) override;
 
+  // Enables or disables the BeginMainFrameNotExpected signals from all widgets.
   void DispatchRequestBeginMainFrameNotExpected(bool has_tasks);
+
+  // Requests the BeginMainFrameNotExpected signals for a single widget, which
+  // is done asynchronously during initialization if needed.
+  void InitializeRequestBeginMainFrameNotExpected(
+      scoped_refptr<WidgetSchedulerImpl>);
 
   void EndIdlePeriod();
 
@@ -777,6 +788,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // Temporarily boosts the main thread priority. Only used if
     // kInputScenarioPriorityBoost is enabled.
     std::optional<base::ScopedBoostPriority> main_thread_priority_boost;
+
+    // `WidgetScheduler`s that have not been shut down.
+    WTF::HashSet<scoped_refptr<WidgetSchedulerImpl>> widget_schedulers;
   };
 
   struct AnyThread {

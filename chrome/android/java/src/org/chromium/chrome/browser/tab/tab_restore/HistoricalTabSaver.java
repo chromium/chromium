@@ -19,13 +19,13 @@ public interface HistoricalTabSaver {
      * Adds a secondary {@link TabModel} supplier to check if a deleted tab should be added to
      * recent tabs.
      */
-    public void addSecodaryTabModelSupplier(Supplier<TabModel> tabModelSupplier);
+    public void addSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier);
 
     /**
      * Removes a secondary {@link TabModel} supplier to check if a deleted tab should be added to
      * recent tabs.
      */
-    public void removeSecodaryTabModelSupplier(Supplier<TabModel> tabModelSupplier);
+    public void removeSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier);
 
     /**
      * Creates a Tab entry in TabRestoreService.

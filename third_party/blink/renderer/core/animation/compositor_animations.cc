@@ -256,12 +256,10 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
 
   const PropertyHandleSet& properties =
       keyframe_effect.EnsureDynamicProperties();
-  if (RuntimeEnabledFeatures::StaticAnimationOptimizationEnabled()) {
-    // If all properties are static, we don't need to composite. The animation
-    // can only change at a phase boundary.
-    if (properties.empty()) {
-      reasons |= kAnimationHasNoVisibleChange;
-    }
+  // If all properties are static, we don't need to composite. The animation
+  // can only change at a phase boundary.
+  if (properties.empty()) {
+    reasons |= kAnimationHasNoVisibleChange;
   }
   if (keyframe_effect.HasStaticProperty()) {
     UseCounter::Count(target_element.GetDocument(),

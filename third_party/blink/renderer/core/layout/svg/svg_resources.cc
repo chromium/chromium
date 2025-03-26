@@ -299,8 +299,7 @@ void SVGElementResourceClient::ResourceContentChanged(SVGResource* resource) {
       ContainsResource(style.MarkerEndResource(), resource)) {
     // Within layout a <marker> with a percentage length can invalidate its
     // clients if the viewport has changed. Skip layout invalidation.
-    if (RuntimeEnabledFeatures::SvgViewportOptimizationEnabled() &&
-        layout_object->GetFrameView()->IsInPerformLayout()) {
+    if (layout_object->GetFrameView()->IsInPerformLayout()) {
       layout_object->SetShouldDoFullPaintInvalidation();
     } else {
       needs_layout = true;

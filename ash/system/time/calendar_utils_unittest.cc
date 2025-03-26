@@ -9,6 +9,7 @@
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "ash/test/ash_test_base.h"
+#include "base/compiler_specific.h"
 #include "base/i18n/rtl.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
@@ -172,7 +173,7 @@ TEST_F(CalendarUtilsUnitTest, HoursAndMinutesInDifferentLocales) {
               calendar_utils::GetTwelveHourClockHours(am_time));
     EXPECT_EQ(u"11", calendar_utils::GetTwelveHourClockHours(pm_time));
     // Locale 'ja'uses  'K' format (0~11) for its 12-hour clock.
-    EXPECT_EQ((strcmp(locale, "ja") == 0) ? u"0" : u"12",
+    EXPECT_EQ((UNSAFE_TODO(strcmp(locale, "ja")) == 0) ? u"0" : u"12",
               calendar_utils::GetTwelveHourClockHours(midnight));
 
     // Return hours in twenty four hour format.

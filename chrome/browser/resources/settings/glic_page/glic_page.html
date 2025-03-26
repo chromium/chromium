@@ -108,12 +108,14 @@
           <settings-toggle-button
               id="geolocationToggle" pref="{{prefs.glic.geolocation_enabled}}"
               label="$i18n{glicLocationToggle}"
-              sub-label="$i18n{glicLocationToggleSublabel}">
+              sub-label="$i18n{glicLocationToggleSublabel}"
+              on-settings-boolean-control-change="onGeolocationToggleChange_">
           </settings-toggle-button>
           <settings-toggle-button
               id="microphoneToggle" pref="{{prefs.glic.microphone_enabled}}"
               label="$i18n{glicMicrophoneToggle}"
-              sub-label="$i18n{glicMicrophoneToggleSublabel}">
+              sub-label="$i18n{glicMicrophoneToggleSublabel}"
+              on-settings-boolean-control-change="onMicrophoneToggleChange_">
           </settings-toggle-button>
           <settings-toggle-button
               id="tabAccessToggle" pref="{{prefs.glic.tab_context_enabled}}"

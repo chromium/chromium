@@ -17,7 +17,7 @@ void RegisterParcelTrackingPrefs(PrefRegistrySimple* registry) {
 
 bool IsParcelTrackingDisabled(PrefService* prefs) {
   if (IsHomeCustomizationEnabled()) {
-    return prefs->GetBoolean(
+    return !prefs->GetBoolean(
         prefs::kHomeCustomizationMagicStackParcelTrackingEnabled);
   }
   return prefs->GetBoolean(kParcelTrackingDisabled);

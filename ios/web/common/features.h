@@ -78,9 +78,6 @@ BASE_DECLARE_FEATURE(kForceSynthesizedRestoreSession);
 // intended to be used as a kill switch.
 BASE_DECLARE_FEATURE(kDetectDestroyedNavigationContexts);
 
-// Feature flag to enable improve tracking number detection.
-BASE_DECLARE_FEATURE(kEnableNewParcelTrackingNumberDetection);
-
 // When true, an option to enable Web Inspector should be present in Settings.
 bool IsWebInspectorSupportEnabled();
 

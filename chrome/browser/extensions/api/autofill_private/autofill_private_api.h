@@ -196,24 +196,6 @@ class AutofillPrivateGetCreditCardListFunction
   ResponseAction Run() override;
 };
 
-class AutofillPrivateMigrateCreditCardsFunction
-    : public AutofillPrivateExtensionFunction {
- public:
-  AutofillPrivateMigrateCreditCardsFunction() = default;
-  AutofillPrivateMigrateCreditCardsFunction(
-      const AutofillPrivateMigrateCreditCardsFunction&) = delete;
-  AutofillPrivateMigrateCreditCardsFunction& operator=(
-      const AutofillPrivateMigrateCreditCardsFunction&) = delete;
-  DECLARE_EXTENSION_FUNCTION("autofillPrivate.migrateCreditCards",
-                             AUTOFILLPRIVATE_MIGRATECREDITCARDS)
-
- protected:
-  ~AutofillPrivateMigrateCreditCardsFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class AutofillPrivateLogServerCardLinkClickedFunction
     : public AutofillPrivateExtensionFunction {
  public:
@@ -455,50 +437,6 @@ class AutofillPrivateSetAutofillSyncToggleEnabledFunction
 
  protected:
   ~AutofillPrivateSetAutofillSyncToggleEnabledFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
-class AutofillPrivateIsUserEligibleForAutofillImprovementsFunction
-    : public AutofillPrivateExtensionFunction {
- public:
-  AutofillPrivateIsUserEligibleForAutofillImprovementsFunction() = default;
-  AutofillPrivateIsUserEligibleForAutofillImprovementsFunction(
-      const AutofillPrivateIsUserEligibleForAutofillImprovementsFunction&) =
-      delete;
-  AutofillPrivateIsUserEligibleForAutofillImprovementsFunction& operator=(
-      const AutofillPrivateIsUserEligibleForAutofillImprovementsFunction&) =
-      delete;
-  DECLARE_EXTENSION_FUNCTION(
-      "autofillPrivate.isUserEligibleForAutofillImprovements",
-      AUTOFILLPRIVATE_ISUSERELIGIBLEFORAUTOFILLIMPROVEMENTS)
-
- protected:
-  ~AutofillPrivateIsUserEligibleForAutofillImprovementsFunction() override =
-      default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
-class AutofillPrivatePredictionImprovementsIphFeatureUsedFunction
-    : public AutofillPrivateExtensionFunction {
- public:
-  AutofillPrivatePredictionImprovementsIphFeatureUsedFunction() = default;
-  AutofillPrivatePredictionImprovementsIphFeatureUsedFunction(
-      const AutofillPrivatePredictionImprovementsIphFeatureUsedFunction&) =
-      delete;
-  AutofillPrivatePredictionImprovementsIphFeatureUsedFunction& operator=(
-      const AutofillPrivatePredictionImprovementsIphFeatureUsedFunction&) =
-      delete;
-  DECLARE_EXTENSION_FUNCTION(
-      "autofillPrivate.predictionImprovementsIphFeatureUsed",
-      AUTOFILLPRIVATE_PREDICTIONIMPROVEMENTSIPHFFEATUREUSED)
-
- protected:
-  ~AutofillPrivatePredictionImprovementsIphFeatureUsedFunction() override =
-      default;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, DraggableArea, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelOpeningData, PanelState, PdfDocumentData, Screenshot, ScrollToParams, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, ResizeWindowOptions, Screenshot, ScrollToParams, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 import {replaceProperties} from './conversions.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
@@ -246,6 +246,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!state.dragResizeEnabled) {
       (this as GlicBrowserHost).enableDragResize = undefined;
     }
+
+    if (!state.openOsSettingsApiIsAllowed) {
+      (this as GlicBrowserHost).openOsPermissionSettingsMenu = undefined;
+    }
   }
 
   webClientInitialized(
@@ -282,10 +286,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return Promise.resolve(this.fitWindow);
   }
 
-  async createTab(
-      url: string,
-      options: {openInBackground?: boolean, windowId?: string},
-      ): Promise<TabData> {
+  async createTab(url: string, options: CreateTabOptions): Promise<TabData> {
     const result =
         await this.sender.requestWithResponse('glicBrowserCreateTab', {
           url,
@@ -297,8 +298,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return convertTabDataFromPrivate(result.tabData);
   }
 
-  openGlicSettingsPage(): void {
-    this.sender.requestNoResponse('glicBrowserOpenGlicSettingsPage', undefined);
+  openGlicSettingsPage(options?: OpenSettingsOptions): void {
+    this.sender.requestNoResponse('glicBrowserOpenGlicSettingsPage', {options});
   }
 
   closePanel(): Promise<void> {
@@ -333,9 +334,9 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         context.actInFocusedTabResult);
   }
 
-  async resizeWindow(width: number, height: number, options?: {
-    durationMs?: number,
-  }): Promise<void> {
+  async resizeWindow(
+      width: number, height: number,
+      options?: ResizeWindowOptions): Promise<void> {
     return this.sender.requestWithResponse(
         'glicBrowserResizeWindow', {size: {width, height}, options});
   }

@@ -374,6 +374,10 @@ HTMLFormElement* HTMLObjectElement::formOwner() const {
   return ListedElement::Form();
 }
 
+HTMLElement* HTMLObjectElement::formForBinding() const {
+  return ListedElement::RetargetedForm();
+}
+
 bool HTMLObjectElement::UseFallbackContent() const {
   return HTMLPlugInElement::UseFallbackContent() || use_fallback_content_;
 }

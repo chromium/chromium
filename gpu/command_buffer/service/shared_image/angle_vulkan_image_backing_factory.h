@@ -54,6 +54,7 @@ class GPU_GLES2_EXPORT AngleVulkanImageBackingFactory
       SkAlphaType alpha_type,
       SharedImageUsageSet usage,
       std::string debug_label,
+      bool is_thread_safe,
       gfx::GpuMemoryBufferHandle handle) override;
   bool IsSupported(SharedImageUsageSet usage,
                    viz::SharedImageFormat format,

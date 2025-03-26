@@ -11,13 +11,13 @@
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/clear_browsing_data_ui_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/shared/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -361,22 +361,6 @@ using chrome_test_util::WindowWithNumber;
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [self openCBDAndClearData];
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-}
-
-// Tests that a supervised user in the `ConsentLevel::kSync` state will remain
-// signed-in after clearing their browsing history.
-// TODO(crbug.com/40066949): Delete this test after the syncing state is gone.
-- (void)testSupervisedUserSyncingWhenClearingBrowsingData {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity
-                 withCapabilities:@{
-                   @(kIsSubjectToParentalControlsCapabilityName) : @YES,
-                 }];
-  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
-
-  [self openCBDAndClearData];
-
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 

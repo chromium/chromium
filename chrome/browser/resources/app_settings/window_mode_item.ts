@@ -58,9 +58,9 @@ export class WindowModeItemElement extends CrLitElement {
     };
   }
 
-  windowModeLabel: string = '';
-  app: App = createDummyApp();
-  override hidden: boolean = false;
+  accessor windowModeLabel: string = '';
+  accessor app: App = createDummyApp();
+  override accessor hidden: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

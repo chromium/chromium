@@ -40,7 +40,6 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
 #include "components/autofill/core/browser/crowdsourcing/server_prediction_overrides.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
@@ -119,6 +118,22 @@ bool is_password_field(const std::unique_ptr<AutofillField>& field) {
   return field->form_control_type() == FormControlType::kInputPassword;
 }
 
+// Returns true if at least `num` fields satisfy `p`.
+// This is useful if `num` is significantly smaller than `fields.size()` because
+// it may avoid iterating over all of `fields`. It's equivalent to
+// `std::range::count_if(fields, [](auto& f) { p(*f); }) >= num`.
+template <typename Predicate>
+bool AtLeastNumSatisfy(base::span<const std::unique_ptr<AutofillField>> fields,
+                       size_t num,
+                       Predicate p) {
+  for (auto it = fields.begin(); it != fields.end() && num > 0; ++it) {
+    if (std::invoke(p, **it)) {
+      --num;
+    }
+  }
+  return num == 0;
+}
+
 }  // namespace
 
 FormStructure::FormStructure(const FormData& form)
@@ -140,11 +155,6 @@ FormStructure::FormStructure(const FormData& form)
     if (!IsCheckable(field.check_status())) {
       ++active_field_count_;
     }
-
-    if (field.form_control_type() == FormControlType::kInputPassword) {
-      has_password_field_ = true;
-    }
-
     fields_.push_back(std::make_unique<AutofillField>(field));
   }
 
@@ -213,7 +223,6 @@ void FormStructure::DetermineHeuristicTypes(
   FieldCandidatesMap regex_predictions = ParseFieldTypesWithPatterns(context);
   AssignBestFieldTypes(regex_predictions, HeuristicSource::kRegexes);
 
-  UpdateAutofillCount();
   AssignSections(fields_);
   RationalizeFormStructure(log_manager);
   RationalizePhoneNumberFieldsForFilling();
@@ -319,11 +328,9 @@ bool FormStructure::IsAutofillable() const {
   size_t min_required_fields =
       std::min({kMinRequiredFieldsForHeuristics, kMinRequiredFieldsForQuery,
                 kMinRequiredFieldsForUpload});
-  if (autofill_count() < min_required_fields) {
-    return false;
-  }
-
-  return ShouldBeParsed();
+  return AtLeastNumSatisfy(fields_, min_required_fields,
+                           &AutofillField::IsFieldFillable) &&
+         ShouldBeParsed();
 }
 
 bool FormStructure::IsCompleteCreditCardForm(
@@ -351,15 +358,6 @@ bool FormStructure::IsCompleteCreditCardForm(
           (has_type(CREDIT_CARD_NAME_FIRST) && has_type(CREDIT_CARD_NAME_LAST));
       return found_cc_expiration && found_cc_number && found_cc_cvc &&
              found_cc_name;
-    }
-  }
-}
-
-void FormStructure::UpdateAutofillCount() {
-  autofill_count_ = 0;
-  for (const auto& field : *this) {
-    if (field && field->IsFieldFillable()) {
-      ++autofill_count_;
     }
   }
 }
@@ -412,8 +410,8 @@ bool FormStructure::ShouldRunHeuristicsForSingleFields() const {
 }
 
 bool FormStructure::ShouldBeQueried() const {
-  return (has_password_field_ ||
-          active_field_count() >= kMinRequiredFieldsForQuery) &&
+  return (active_field_count() >= kMinRequiredFieldsForQuery ||
+          std::ranges::any_of(fields_, is_password_field)) &&
          ShouldBeParsed();
 }
 
@@ -648,8 +646,6 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
     }
     field->set_field_log_events(cached_field->field_log_events());
   }
-
-  UpdateAutofillCount();
 
   // Preserve timestamp from the cache as a new form from the renderer does not
   // know the parsing/filling history, as this information is computed in the
@@ -898,11 +894,6 @@ DenseSet<FormType> FormStructure::GetFormTypes() const {
     }
   }
   return form_types;
-}
-
-void FormStructure::set_randomized_encoder(
-    std::unique_ptr<RandomizedEncoder> encoder) {
-  randomized_encoder_ = std::move(encoder);
 }
 
 void FormStructure::RationalizePhoneNumberFieldsForFilling() {

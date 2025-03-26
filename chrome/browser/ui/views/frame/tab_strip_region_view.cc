@@ -129,8 +129,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
       tab_search_container = std::make_unique<TabSearchContainer>(
           tab_strip_->controller(), browser->GetTabStripModel(),
           render_tab_search_before_tab_strip_, this, browser,
-          browser->GetFeatures().tab_declutter_controller(),
-          /*anchor_view=*/nullptr, tab_strip_);
+          browser->GetFeatures().tab_declutter_controller(), tab_strip_);
       tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,
                                         views::LayoutAlignment::kCenter);
     }

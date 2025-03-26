@@ -401,8 +401,7 @@ InterpolationValue CSSInterpolationType::MaybeConvertUnderlyingValue(
   // TODO(alancutter): Remove the need for passing in conversion checkers.
   ConversionCheckers dummy_conversion_checkers;
   return MaybeConvertValue(*underlying_value,
-                           css_environment.GetOptionalState(),
-                           dummy_conversion_checkers);
+                           /*state=*/nullptr, dummy_conversion_checkers);
 }
 
 void CSSInterpolationType::Apply(

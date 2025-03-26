@@ -171,6 +171,7 @@ component("gfx") {
       "android/android_surface_control_compat.h",
       "android/java_bitmap.cc",
       "android/java_bitmap.h",
+      "android/surface_control_frame_rate.h",
       "android/view_configuration.cc",
       "android/view_configuration.h",
     ]

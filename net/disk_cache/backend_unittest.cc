@@ -1650,7 +1650,6 @@ TEST_F(DiskCacheBackendTest, NewEvictionTrimInvalidEntry2) {
 
 void DiskCacheBackendTest::BackendEnumerations() {
   InitCache();
-  Time initial = Time::Now();
 
   const int kNumEntries = 100;
   for (int i = 0; i < kNumEntries; i++) {
@@ -1660,20 +1659,15 @@ void DiskCacheBackendTest::BackendEnumerations() {
     entry->Close();
   }
   EXPECT_EQ(kNumEntries, cache_->GetEntryCount());
-  Time final = Time::Now();
 
   disk_cache::Entry* entry;
   std::unique_ptr<TestIterator> iter = CreateIterator();
   int count = 0;
-  Time last_modified[kNumEntries];
   Time last_used[kNumEntries];
   while (iter->OpenNextEntry(&entry) == net::OK) {
     ASSERT_TRUE(nullptr != entry);
     if (count < kNumEntries) {
-      last_modified[count] = entry->GetLastModified();
       last_used[count] = entry->GetLastUsed();
-      EXPECT_TRUE(initial <= last_modified[count]);
-      EXPECT_TRUE(final >= last_modified[count]);
     }
 
     entry->Close();
@@ -1687,7 +1681,6 @@ void DiskCacheBackendTest::BackendEnumerations() {
   while (iter->OpenNextEntry(&entry) == net::OK) {
     ASSERT_TRUE(nullptr != entry);
     if (count < kNumEntries) {
-      EXPECT_TRUE(last_modified[count] == entry->GetLastModified());
       EXPECT_TRUE(last_used[count] == entry->GetLastUsed());
     }
     entry->Close();
@@ -4442,60 +4435,6 @@ TEST_F(DiskCacheBackendTest, SimpleCacheNegMaxSize) {
       EXPECT_LE(max_size_scaled, 2 * max_size_without_scaling);
     }
   }
-}
-
-TEST_F(DiskCacheBackendTest, SimpleLastModified) {
-  // Simple cache used to incorrectly set LastModified on entries based on
-  // timestamp of the cache directory, and not the entries' file
-  // (https://crbug.com/714143). So this test arranges for a situation
-  // where this would occur by doing:
-  // 1) Write entry 1
-  // 2) Delay
-  // 3) Write entry 2. This sets directory time stamp to be different from
-  //    timestamp of entry 1 (due to the delay)
-  // It then checks whether the entry 1 got the proper timestamp or not.
-
-  SetSimpleCacheMode();
-  InitCache();
-  std::string key1 = GenerateKey(true);
-  std::string key2 = GenerateKey(true);
-
-  disk_cache::Entry* entry1;
-  ASSERT_THAT(CreateEntry(key1, &entry1), IsOk());
-
-  // Make the Create complete --- SimpleCache can handle it optimistically,
-  // and if we let it go fully async then trying to flush the Close might just
-  // flush the Create.
-  disk_cache::FlushCacheThreadForTesting();
-  base::RunLoop().RunUntilIdle();
-
-  entry1->Close();
-
-  // Make the ::Close actually complete, since it is asynchronous.
-  disk_cache::FlushCacheThreadForTesting();
-  base::RunLoop().RunUntilIdle();
-
-  Time entry1_timestamp = Time::NowFromSystemTime();
-
-  // Don't want AddDelay since it sleep 1s(!) for SimpleCache, and we don't
-  // care about reduced precision in index here.
-  while (base::Time::NowFromSystemTime() <=
-         (entry1_timestamp + base::Milliseconds(10))) {
-    base::PlatformThread::Sleep(base::Milliseconds(1));
-  }
-
-  disk_cache::Entry* entry2;
-  ASSERT_THAT(CreateEntry(key2, &entry2), IsOk());
-  entry2->Close();
-  disk_cache::FlushCacheThreadForTesting();
-  base::RunLoop().RunUntilIdle();
-
-  disk_cache::Entry* reopen_entry1;
-  ASSERT_THAT(OpenEntry(key1, &reopen_entry1), IsOk());
-
-  // This shouldn't pick up entry2's write time incorrectly.
-  EXPECT_LE(reopen_entry1->GetLastModified(), entry1_timestamp);
-  reopen_entry1->Close();
 }
 
 TEST_F(DiskCacheBackendTest, SimpleFdLimit) {

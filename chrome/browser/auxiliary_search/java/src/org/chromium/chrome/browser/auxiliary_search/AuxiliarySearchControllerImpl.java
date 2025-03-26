@@ -64,7 +64,7 @@ public class AuxiliarySearchControllerImpl
         mFaviconHelper = faviconHelper;
         mIsFaviconEnabled = ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled();
         mSupportMultiDataSource =
-                ChromeFeatureList.sAndroidAppIntegrationMultiDataSource.isEnabled();
+                AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice();
 
         mZeroStateFaviconNumber =
                 sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber.getValue();

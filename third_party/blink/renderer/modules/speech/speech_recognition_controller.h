@@ -52,7 +52,7 @@ class MODULES_EXPORT SpeechRecognitionController final
   static const char kSupplementName[];
 
   explicit SpeechRecognitionController(LocalDOMWindow&);
-  virtual ~SpeechRecognitionController();
+  ~SpeechRecognitionController();
 
   // Builds the speech recognition request params. If `audio_forwarder` and
   // `audio_parameters` are not defined, speech recognition will use audio from

@@ -105,6 +105,7 @@
         hdrMetadataType : hdrMetadataType,
         colorGamut : colorGamut,
         transferFunction : transferFunction,
+
         // Any reasonable value will do.
         width : 640,
         height : 480,
@@ -144,4 +145,43 @@
 
     runTest(configuration);
   }
+
+  function testVideoConfigWithHdrMetadataAndKeySystem(
+    hdrMetadataType,
+    colorGamut,
+    transferFunction,
+    keySystem,
+    queryType,
+    contentType) {
+    // Clear previous test result from title.
+    document.title = '';
+
+    log("Testing video content type: " + contentType +
+        ", HDR metadata type: " + hdrMetadataType +
+        ", color gamut: " + colorGamut +
+        ", transfer function: " + transferFunction +
+        ", key system: " + keySystem);
+
+    const configuration = {
+        type: queryType,
+        video: {
+            contentType: contentType,
+            hdrMetadataType: hdrMetadataType,
+            colorGamut: colorGamut,
+            transferFunction: transferFunction,
+
+            // Any reasonable value will do.
+            width: 640,
+            height: 480,
+            bitrate: 10000,
+            framerate: 30
+        },
+        keySystemConfiguration: {
+            keySystem: keySystem
+        },
+    };
+
+    runTest(configuration);
+}
+
 </script>

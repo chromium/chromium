@@ -12,6 +12,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/rand_util.h"
@@ -153,7 +154,7 @@ class TestAshTraceDestinationIO : public hud_display::AshTraceDestinationIO {
   int fstat(base::PlatformFile fd, struct stat* statbuf) override {
     LOG(INFO) << "TestAshTraceDestinationIO::fstat(): Called.";
     AssertRegistry();
-    memset(statbuf, 0, sizeof(struct stat));
+    UNSAFE_TODO(memset(statbuf, 0, sizeof(struct stat)));
     return CanWriteFile(fd) ? 0 : -1;
   }
 

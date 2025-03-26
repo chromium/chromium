@@ -7,6 +7,7 @@ syntax = "proto2";
 package data_sharing_pb;
 
 import "components/data_sharing/public/protocol/group_data.proto";
+import "components/sync/protocol/collaboration_group_metadata.proto";
 
 option java_multiple_files = true;
 option java_package = "org.chromium.components.data_sharing.protocol";
@@ -14,6 +15,8 @@ option optimize_for = LITE_RUNTIME;
 
 message CreateGroupParams {
   optional string display_name = 1;
+
+  optional sync_pb.CollaborationGroupMetadata collaboration_group_metadata = 2;
 }
 
 message CreateGroupResult {

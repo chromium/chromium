@@ -30,6 +30,7 @@ from pylib.local.emulator import ini
 from pylib.local.emulator.proto import avd_pb2
 
 from lib.proto import exception_recorder
+from lib.proto import measures
 
 # A common root directory to store the CIPD packages for creating or starting
 # the emulator instance, e.g. emulator binary, system images, AVDs.
@@ -844,7 +845,8 @@ class AvdConfig:
     Returns: None
     Raises: AvdException on failure to install.
     """
-    self._InstallCipdPackages(_PACKAGES_RUNTIME)
+    with measures.time_consumption('emulator', 'install', 'cipd_packages'):
+      self._InstallCipdPackages(_PACKAGES_RUNTIME)
     self._MakeWriteable()
     self._UpdateConfigs()
     self._RebaseQcow2Images()
@@ -1204,12 +1206,14 @@ class _AvdInstance:
           return 'emulator-%d' % int(val)
 
       try:
-        self._emulator_serial = timeout_retry.Run(
-            listen_for_serial,
-            timeout=300 if is_slow_start else 60,
-            retries=retries,
-            args=[sock])
-        logging.info('%s started', self._emulator_serial)
+        with measures.time_consumption('emulator', 'start',
+                                       'listen_for_serial'):
+          self._emulator_serial = timeout_retry.Run(
+              listen_for_serial,
+              timeout=300 if is_slow_start else 60,
+              retries=retries,
+              args=[sock])
+          logging.info('%s started', self._emulator_serial)
       except base_error.BaseError as e:
         self.Stop(force=True)
         raise AvdStartException(str(e)) from e

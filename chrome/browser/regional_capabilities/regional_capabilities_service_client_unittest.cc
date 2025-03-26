@@ -24,6 +24,8 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #endif
 
+using ::country_codes::CountryId;
+
 namespace regional_capabilities {
 
 namespace {
@@ -31,9 +33,7 @@ namespace {
 #if BUILDFLAG(IS_ANDROID)
 constexpr char kBelgiumCountryCode[] = "BE";
 
-constexpr int kBelgiumCountryId =
-    country_codes::CountryCharsToCountryID(kBelgiumCountryCode[0],
-                                           kBelgiumCountryCode[1]);
+constexpr CountryId kBelgiumCountryId(kBelgiumCountryCode);
 
 class TestSupportAndroid {
  public:
@@ -195,9 +195,9 @@ TEST_F(RegionalCapabilitiesServiceClientTest,
     country_code = "BE";
   }
   SetRegion(country_code);
-  const int fallback_id = client.GetFallbackCountryId();
+  const CountryId fallback_id = client.GetFallbackCountryId();
   ASSERT_NE(fallback_id, country_codes::GetCurrentCountryID());
-  EXPECT_EQ(fallback_id, country_codes::CountryStringToCountryID(country_code));
+  EXPECT_EQ(fallback_id, country_codes::CountryId(country_code));
   histogram_tester().ExpectUniqueSample(
       kCrOSMissingVariationData, ChromeOSFallbackCountry::kValidCountryCode, 1);
 }
@@ -222,9 +222,9 @@ TEST_F(RegionalCapabilitiesServiceClientTest, FetchCountryId_Sync) {
   TestSupportAndroid test_support;
   test_support.ReturnDeviceCountry(kBelgiumCountryCode);
 
-  std::optional<int> actual_country_id;
-  client.FetchCountryId(
-      base::BindLambdaForTesting([&actual_country_id](int device_country_id) {
+  std::optional<CountryId> actual_country_id;
+  client.FetchCountryId(base::BindLambdaForTesting(
+      [&actual_country_id](CountryId device_country_id) {
         actual_country_id = device_country_id;
       }));
   EXPECT_EQ(actual_country_id, kBelgiumCountryId);
@@ -235,9 +235,9 @@ TEST_F(RegionalCapabilitiesServiceClientTest, FetchCountryId_Async) {
 
   TestSupportAndroid test_support;
 
-  std::optional<int> actual_country_id;
-  client.FetchCountryId(
-      base::BindLambdaForTesting([&actual_country_id](int device_country_id) {
+  std::optional<CountryId> actual_country_id;
+  client.FetchCountryId(base::BindLambdaForTesting(
+      [&actual_country_id](CountryId device_country_id) {
         actual_country_id = device_country_id;
       }));
   EXPECT_EQ(actual_country_id, std::nullopt);
@@ -253,9 +253,9 @@ TEST_F(RegionalCapabilitiesServiceClientTest, FetchCountryId_Failure) {
   TestSupportAndroid test_support;
   test_support.TriggerDeviceCountryFailure();
 
-  std::optional<int> actual_country_id;
-  client.FetchCountryId(
-      base::BindLambdaForTesting([&actual_country_id](int device_country_id) {
+  std::optional<CountryId> actual_country_id;
+  client.FetchCountryId(base::BindLambdaForTesting(
+      [&actual_country_id](CountryId device_country_id) {
         actual_country_id = device_country_id;
       }));
 

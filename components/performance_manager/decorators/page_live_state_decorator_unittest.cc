@@ -326,6 +326,18 @@ TEST_F(PageLiveStateDecoratorTest, OnIsCapturingDisplayChanged) {
                                 kOnIsCapturingDisplayChanged);
 }
 
+TEST_F(PageLiveStateDecoratorTest, SetIsDiscarded) {
+  EXPECT_FALSE(PageLiveStateDecorator::IsDiscarded(web_contents()));
+  auto setter = [](content::WebContents* contents, bool value) {
+    PageLiveStateDecorator::SetIsDiscarded(contents, value);
+    EXPECT_EQ(PageLiveStateDecorator::IsDiscarded(contents), value);
+  };
+  testing::EndToEndBooleanPropertyTest(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsDiscarded, setter,
+      /*default_state=*/false);
+}
+
 TEST_F(PageLiveStateDecoratorTest, SetIsAutoDiscardable) {
   EXPECT_TRUE(PageLiveStateDecorator::IsAutoDiscardable(web_contents()));
   auto setter = [](content::WebContents* contents, bool value) {

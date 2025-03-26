@@ -122,19 +122,18 @@ ScopedJavaLocalRef<jobject> CreatePersistentMessageAndMaybeAddToListHelper(
   return jmessage;
 }
 
-ScopedJavaLocalRef<jobject> AggregatedMessageMetadataToJava(
+ScopedJavaLocalRef<jobject> AttributionListToJava(
     JNIEnv* env,
-    const AggregatedMessageData& aggregated_data) {
-  ScopedJavaLocalRef<jobject> j_aggregated_data;
+    const std::vector<MessageAttribution>& attributions) {
+  ScopedJavaLocalRef<jobject> j_attribution_list;
 
-  for (const auto& attribution : aggregated_data.attributions) {
+  for (const auto& attribution : attributions) {
     auto j_attribution = MessageAttributionToJava(env, attribution);
-    j_aggregated_data =
-        Java_ConversionUtils_addAttributionToAggregatedMessageData(
-            env, j_aggregated_data, j_attribution);
+    j_attribution_list = Java_ConversionUtils_addAttributionToList(
+        env, j_attribution_list, j_attribution);
   }
 
-  return j_aggregated_data;
+  return j_attribution_list;
 }
 
 }  // namespace
@@ -161,20 +160,13 @@ ScopedJavaLocalRef<jobject> PersistentMessagesToJava(
 ScopedJavaLocalRef<jobject> InstantMessageToJava(
     JNIEnv* env,
     const InstantMessage& message) {
-  ScopedJavaLocalRef<jobject> j_attribution =
-      message.attribution.has_value()
-          ? MessageAttributionToJava(env, message.attribution.value())
-          : ScopedJavaLocalRef<jobject>();
-  ScopedJavaLocalRef<jobject> j_aggregated_data =
-      message.aggregated_data.has_value()
-          ? AggregatedMessageMetadataToJava(env,
-                                            message.aggregated_data.value())
-          : ScopedJavaLocalRef<jobject>();
+  ScopedJavaLocalRef<jobject> j_attribution_list =
+      AttributionListToJava(env, message.attributions);
   return Java_ConversionUtils_createInstantMessage(
       env, static_cast<int>(message.collaboration_event),
       static_cast<int>(message.level), static_cast<int>(message.type),
-      ConvertUTF16ToJavaString(env, message.localized_message), j_attribution,
-      j_aggregated_data);
+      ConvertUTF16ToJavaString(env, message.localized_message),
+      j_attribution_list);
 }
 
 ScopedJavaLocalRef<jobject> ActivityLogItemsToJava(

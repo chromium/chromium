@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/boringssl/src/pki/path_builder.h"
-
 #include <algorithm>
 
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
 #include "base/path_service.h"
@@ -26,6 +25,7 @@
 #include "third_party/boringssl/src/pki/common_cert_errors.h"
 #include "third_party/boringssl/src/pki/input.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
+#include "third_party/boringssl/src/pki/path_builder.h"
 #include "third_party/boringssl/src/pki/pem.h"
 #include "third_party/boringssl/src/pki/simple_path_builder_delegate.h"
 #include "third_party/boringssl/src/pki/trust_store_collection.h"
@@ -192,7 +192,7 @@ void AddToStoreWithEKURestriction(
       X509_ASN_ENCODING, cert->der_cert().data(), cert->der_cert().size()));
 
   CERT_ENHKEY_USAGE usage;
-  memset(&usage, 0, sizeof(usage));
+  UNSAFE_TODO(memset(&usage, 0, sizeof(usage)));
   CertSetEnhancedKeyUsage(os_cert.get(), &usage);
   if (usage_identifier) {
     CertAddEnhancedKeyUsageIdentifier(os_cert.get(), usage_identifier);

@@ -76,13 +76,6 @@ class IsolatedWebAppResponseReaderTest : public ::testing::Test {
     return future.Take();
   }
 
-  IsolatedWebAppResponseReaderImpl::TrustChecker CreateTrustChecker() {
-    return base::BindRepeating(
-        &IsolatedWebAppTrustChecker::IsTrusted,
-        std::make_unique<IsolatedWebAppTrustChecker>(profile_), web_bundle_id_,
-        /*is_dev_mode_bundle=*/false);
-  }
-
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir temp_dir_;
@@ -104,7 +97,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, ChecksWhetherBundleIsStillTrusted) {
                        CreateReaderAndInitialize(web_bundle_path, base_url_));
 
   auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader), CreateTrustChecker());
+      std::move(reader), profile_, web_bundle_id_, /*dev_mode=*/false);
 
   {
     network::ResourceRequest request;
@@ -143,7 +136,7 @@ TEST_F(IsolatedWebAppResponseReaderTest,
                        CreateReaderAndInitialize(web_bundle_path, base_url_));
 
   auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader), CreateTrustChecker());
+      std::move(reader), profile_, web_bundle_id_, /*dev_mode=*/false);
 
   {
     network::ResourceRequest request;
@@ -174,7 +167,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, ReadResponseBody) {
                        CreateReaderAndInitialize(web_bundle_path, base_url_));
 
   auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader), CreateTrustChecker());
+      std::move(reader), profile_, web_bundle_id_, /*dev_mode=*/false);
 
   network::ResourceRequest request;
   request.url = base_url_;
@@ -217,7 +210,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, Close) {
   auto* raw_reader = reader.get();
 
   auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader), CreateTrustChecker());
+      std::move(reader), profile_, web_bundle_id_, /*dev_mode=*/false);
 
   network::ResourceRequest request;
   request.url = base_url_;

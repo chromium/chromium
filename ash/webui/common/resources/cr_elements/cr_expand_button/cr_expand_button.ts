@@ -96,6 +96,8 @@ export class CrExpandButtonElement extends PolymerElement {
 
   expanded: boolean;
   disabled: boolean;
+  override ariaLabel: string;
+  override tabIndex: number;
   expandIcon: string;
   collapseIcon: string;
   expandTitle: string;

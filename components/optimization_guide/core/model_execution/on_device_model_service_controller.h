@@ -167,14 +167,9 @@ class OnDeviceModelServiceController
     // Model adaptation assets are populated when it was required.
     std::optional<on_device_model::AdaptationAssetPaths> adaptation_assets_;
   };
-  friend class ChromeOnDeviceModelServiceController;
-  friend class FakeOnDeviceModelServiceController;
   friend class OnDeviceModelAdaptationController;
   friend class OnDeviceModelClient;
   friend class OnDeviceModelExecutionEnabledBrowserTest;
-  friend class OnDeviceModelServiceAdaptationControllerTest;
-  friend class OnDeviceModelServiceControllerIOS;
-  friend class OnDeviceModelServiceControllerTest;
   friend class base::RefCounted<OnDeviceModelServiceController>;
 
   // Ensures the service is running and provides a remote for the model.

@@ -44,8 +44,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
 #include "components/autofill/core/browser/integrators/fast_checkout_client.h"
-#else
-#include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {

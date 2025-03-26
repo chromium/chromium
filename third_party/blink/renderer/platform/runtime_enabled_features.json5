@@ -435,12 +435,12 @@
     },
     {
       name: "AriaNotify",
-      status: "test",
+      status: {"Android": "test", "Win": "test", "Mac": "test", "Linux": "test"},
       implied_by: ["AriaNotifyV2"],
     },
     {
       name: "AriaNotifyV2",
-      status: "test",
+      status: {"Android": "test", "Win": "test", "Mac": "test", "Linux": "test"},
     },
     {
       name: "AriaRowColIndexText",
@@ -718,6 +718,12 @@
       browser_process_read_write_access: true,
     },
     {
+      // This allows testing the canvas noise interventions in tests (which in
+      // most cases don't have a CPU). In practice the interventions are only
+      // enabled for GPU-rendered canvases.
+      name: "CanvasInterventionsOnCpuForTesting",
+    },
+    {
       // https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md
       name: "CanvasPlaceElement",
       status: "experimental",
@@ -759,7 +765,7 @@
     {
       name: "CapturedSurfaceControl",
       origin_trial_feature_name: "CapturedSurfaceControl",
-      status: {"Android": "", "default": "experimental"},
+      status: {"Android": "", "default": "stable"}
     },
     {
       name: "CapturedSurfaceResolution",
@@ -3251,7 +3257,7 @@
     },
     {
       name: "PartitionVisitedLinkDatabaseWithSelfLinks",
-      status: {"iOS": "", "default": "experimental"},
+      status: {"iOS": "", "default": "stable"},
     },
     // This is to add an option to enable the Reveal button on password inputs while waiting ::reveal gets standardized.
     {
@@ -3596,7 +3602,7 @@
     },
     {
       // Killswitch M136.
-      name: "ReferenceFilterMapsReferenceBox",
+      name: "ReferenceFilterOutputBounds",
       status: "stable",
     },
     {
@@ -3920,9 +3926,12 @@
       name: "ScrollTopLeftInterop",
       status: "stable",
     },
+    // Allows CSS styling of browser search results.
+    // https://issues.chromium.org/issues/339298411
+    // https://chromestatus.com/feature/5195073796177920
     {
       name: "SearchTextHighlightPseudo",
-      status: "test",
+      status: "experimental",
     },
     // SecurePaymentConfirmation has shipped on some platforms, but its
     // availability is controlled by the browser process (via the
@@ -4146,10 +4155,6 @@
       origin_trial_allows_third_party: true,
     },
     {
-      name: "SiteInitiatedMirroring",
-      status: "experimental",
-    },
-    {
       name: "SkipAd",
       depends_on: ["MediaSession"],
       status: "stable",
@@ -4282,12 +4287,8 @@
     },
     {
       name: "StandardizedTimerClamping",
-      status: "experimental",
-      public: true,
-    },
-    {
-      name: "StaticAnimationOptimization",
       status: "stable",
+      public: true,
     },
     {
       name: "StorageBuckets",
@@ -4345,10 +4346,6 @@
     },
     {
       name: "SvgNoPixelSnappingScaleAdjustment",
-      status: "stable",
-    },
-    {
-      name: "SvgViewportOptimization",
       status: "stable",
     },
     {

@@ -36,22 +36,5 @@ TEST(BrowserIOThreadDelegateTest, CanPostTasksToThread) {
                                              base::Unretained(&event)));
   event.Wait();
 }
-
-TEST(BrowserIOThreadDelegateTest, DefaultTaskRunnerIsAlwaysActive) {
-  base::Thread thread("my_thread");
-
-  auto delegate = std::make_unique<BrowserIOThreadDelegate>();
-  auto task_runner = delegate->GetDefaultTaskRunner();
-
-  base::Thread::Options options;
-  options.delegate = std::move(delegate);
-  thread.StartWithOptions(std::move(options));
-
-  base::WaitableEvent event;
-  task_runner->PostTask(FROM_HERE, base::BindOnce(&base::WaitableEvent::Signal,
-                                                  base::Unretained(&event)));
-  event.Wait();
-}
-
 }  // namespace
 }  // namespace content

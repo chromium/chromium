@@ -722,13 +722,6 @@ const TemplateURL* TemplateURLService::GetTemplateURLForHost(
                        host, search_terms_data());
 }
 
-size_t TemplateURLService::GetTemplateURLCountForHostForLogging(
-    const std::string& host) const {
-  DCHECK(loaded_);
-  auto* host_urls = provider_map_->GetURLsForHost(host);
-  return host_urls ? host_urls->size() : 0;
-}
-
 TemplateURL* TemplateURLService::Add(
     std::unique_ptr<TemplateURL> template_url) {
   DCHECK(template_url);

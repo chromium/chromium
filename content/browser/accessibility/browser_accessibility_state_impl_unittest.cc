@@ -42,7 +42,7 @@ class BrowserAccessibilityStateImplTest : public ::testing::Test {
 
   void TearDown() override {
     // Disable accessibility so that it does not impact subsequent tests.
-    state_->DisableAccessibility();
+    state_->DisableProcessAccessibility();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -59,15 +59,13 @@ TEST_F(BrowserAccessibilityStateImplTest,
   base::HistogramTester histograms;
 
   // Initially, accessibility should be disabled.
-  EXPECT_FALSE(state_->IsAccessibleBrowser());
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::AXMode());
 
   // Enable accessibility based on usage of accessibility APIs.
-  state_->EnableAccessibility();
+  state_->EnableProcessAccessibility();
   // Indicate that an actual screen reader is not running (a screen reader
   // will prevent auto-disable from taking place).
   state_->SetScreenReaderAppActive(false);
-  EXPECT_TRUE(state_->IsAccessibleBrowser());
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::kAXModeComplete);
 
   // Send user input, wait 31 seconds, then send another user input event.
@@ -78,7 +76,6 @@ TEST_F(BrowserAccessibilityStateImplTest,
   state_->OnUserInputEvent();
 
   // Accessibility should now be disabled.
-  EXPECT_FALSE(state_->IsAccessibleBrowser());
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::AXMode());
 
   // A histogram should record that accessibility was disabled with
@@ -94,15 +91,13 @@ TEST_F(BrowserAccessibilityStateImplTest,
 TEST_F(BrowserAccessibilityStateImplTest,
        AccessibilityApiUsagePreventsAutoDisableAccessibility) {
   // Initially, accessibility should be disabled.
-  EXPECT_FALSE(state_->IsAccessibleBrowser());
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::AXMode());
 
   // Enable accessibility based on usage of accessibility APIs.
-  state_->OnScreenReaderDetected();
+  state_->EnableProcessAccessibility();
   // Indicate that an actual screen reader is not running (a screen reader
   // will prevent auto-disable from taking place).
   state_->SetScreenReaderAppActive(false);
-  EXPECT_TRUE(state_->IsAccessibleBrowser());
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::kAXModeComplete);
 
   // Send user input, wait 31 seconds, then send another user input event -
@@ -114,7 +109,6 @@ TEST_F(BrowserAccessibilityStateImplTest,
   state_->OnUserInputEvent();
 
   // Accessibility should still be enabled.
-  EXPECT_TRUE(state_->IsAccessibleBrowser());
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::kAXModeComplete);
 
   // Same test, but simulate accessibility API usage after the first
@@ -126,26 +120,25 @@ TEST_F(BrowserAccessibilityStateImplTest,
   state_->OnUserInputEvent();
 
   // Accessibility should still be enabled.
-  EXPECT_TRUE(state_->IsAccessibleBrowser());
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::kAXModeComplete);
 
   // Advance another 31 seconds and simulate another user input event;
   // now accessibility should be disabled.
   task_environment_.FastForwardBy(base::Seconds(31));
   state_->OnUserInputEvent();
-  EXPECT_FALSE(state_->IsAccessibleBrowser());
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::AXMode());
 }
 
 TEST_F(BrowserAccessibilityStateImplTest,
        AddAccessibilityModeFlagsPreventsAutoDisableAccessibility) {
   // Initially, accessibility should be disabled.
-  EXPECT_FALSE(state_->IsAccessibleBrowser());
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::AXMode());
 
   // Enable accessibility.
-  state_->OnScreenReaderDetected();
-  EXPECT_TRUE(state_->IsAccessibleBrowser());
+  state_->EnableProcessAccessibility();
+  // Indicate that an actual screen reader is not running (a screen reader
+  // will prevent auto-disable from taking place).
+  state_->SetScreenReaderAppActive(false);
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::kAXModeComplete);
 
   // Send user input, wait 31 seconds, then send another user input event -
@@ -157,7 +150,6 @@ TEST_F(BrowserAccessibilityStateImplTest,
   state_->OnUserInputEvent();
 
   // Accessibility should still be enabled.
-  EXPECT_TRUE(state_->IsAccessibleBrowser());
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::kAXModeComplete);
 }
 
@@ -186,12 +178,10 @@ TEST_F(BrowserAccessibilityStateImplTest,
   ASSERT_NE(nullptr, ax_root);
 
   // Initially, accessibility should be disabled.
-  EXPECT_FALSE(state_->IsAccessibleBrowser());
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::AXMode());
 
   // Enable accessibility.
-  state_->OnScreenReaderDetected();
-  EXPECT_TRUE(state_->IsAccessibleBrowser());
+  state_->EnableProcessAccessibility();
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::kAXModeComplete);
 
   // Send user input, wait 31 seconds, then send another user input event after
@@ -203,57 +193,7 @@ TEST_F(BrowserAccessibilityStateImplTest,
   state_->OnUserInputEvent();
 
   // Accessibility should still be enabled due to GetRole() being called.
-  EXPECT_TRUE(state_->IsAccessibleBrowser());
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::kAXModeComplete);
-}
-
-TEST_F(BrowserAccessibilityStateImplTest, DisableAccessibilityHasADelay) {
-  // Initially accessibility should be disabled.
-  EXPECT_FALSE(state_->IsAccessibleBrowser());
-
-  // Enable accessibility.
-  state_->OnScreenReaderDetected();
-  EXPECT_TRUE(state_->IsAccessibleBrowser());
-
-  // After 10 seconds, disable accessibility in response to client being quit.
-  task_environment_.FastForwardBy(base::Seconds(10));
-  state_->OnScreenReaderStopped();
-
-  // After one second, accessibility support should still be enabled. This is
-  // because we delay disabling accessibility support in response to the client
-  // being quit just in case it is about to be toggled back on.
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(state_->IsAccessibleBrowser());
-
-  // After the delay has passed without support being re-enabled, accessibility
-  // should now be disabled.
-  task_environment_.FastForwardBy(base::Seconds(10));
-  EXPECT_FALSE(state_->IsAccessibleBrowser());
-}
-
-TEST_F(BrowserAccessibilityStateImplTest,
-       EnableImmediatelyAfterDisablePreventsDisable) {
-  // Initially accessibility should be disabled.
-  EXPECT_FALSE(state_->IsAccessibleBrowser());
-
-  // Enable accessibility.
-  state_->OnScreenReaderDetected();
-  EXPECT_TRUE(state_->IsAccessibleBrowser());
-
-  // After 10 seconds, disable accessibility in response to client being quit.
-  // Then re-enable it immediately. Accessibility support should never get
-  // disabled because it was re-enabled before the delay to disable support
-  // had passed.
-  task_environment_.FastForwardBy(base::Seconds(10));
-  state_->OnScreenReaderStopped();
-  EXPECT_TRUE(state_->IsAccessibleBrowser());
-
-  task_environment_.FastForwardBy(base::Milliseconds(10));
-  state_->OnScreenReaderDetected();
-  for (int i = 0; i < 10; i++) {
-    task_environment_.FastForwardBy(base::Seconds(i));
-    EXPECT_TRUE(state_->IsAccessibleBrowser());
-  }
 }
 
 namespace {
@@ -268,7 +208,7 @@ class MockAXModeObserver : public ui::AXModeObserver {
 TEST_F(BrowserAccessibilityStateImplTest,
        EnablingAccessibilityTwiceSendsASingleNotification) {
   // Initially accessibility should be disabled.
-  EXPECT_FALSE(state_->IsAccessibleBrowser());
+  EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::AXMode());
 
   auto& ax_platform = ui::AXPlatform::GetInstance();
   ::testing::StrictMock<MockAXModeObserver> mock_observer;
@@ -278,11 +218,11 @@ TEST_F(BrowserAccessibilityStateImplTest,
 
   // Enable accessibility.
   EXPECT_CALL(mock_observer, OnAXModeAdded(ui::kAXModeComplete));
-  state_->OnScreenReaderDetected();
+  state_->EnableProcessAccessibility();
   ::testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // A second call should be a no-op.
-  state_->OnScreenReaderDetected();
+  state_->EnableProcessAccessibility();
   ::testing::Mock::VerifyAndClearExpectations(&mock_observer);
 }
 

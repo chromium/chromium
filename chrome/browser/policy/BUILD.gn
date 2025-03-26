@@ -289,6 +289,7 @@ source_set("policy_specific_browser_tests") {
       "test/data_url_policy_browsertest.cc",
       "test/developer_tools_policy_browsertest.cc",
       "test/download_directory_browsertest.cc",
+      "test/happy_eyeballs_v3_enabled_policy_browsertest.cc",
       "test/ipv6_reachability_override_policy_browsertest.cc",
       "test/local_fonts_policy_browsertest.cc",
       "test/media_stream_policy_browsertest.cc",

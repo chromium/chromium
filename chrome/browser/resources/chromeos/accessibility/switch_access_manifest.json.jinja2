@@ -6,13 +6,13 @@
   "manifest_version": 3,
   "minimum_chrome_version": "93",
   "background": {
-    "service_worker": "switch_access/switch_access_loader.js",
+    "service_worker": "switch_access/mv3/switch_access_loader.js",
     "type": "module"
   },
 {% else %}
   "manifest_version": 2,
   "background": {
-    "page": "switch_access/background.html"
+    "page": "switch_access/mv2/background.html"
   },
 {% endif %}
   "name": "__MSG_SWITCH_ACCESS_NAME__",

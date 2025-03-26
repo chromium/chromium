@@ -46,13 +46,13 @@ export class CrDialogDemoElement extends CrLitElement {
     };
   }
 
-  protected autofocusInput_: boolean = false;
-  protected isDialogOpen_: boolean = false;
-  protected showHeader_: boolean = false;
-  protected showFooter_: boolean = false;
-  protected showInputs_: boolean = false;
-  protected showScrollingBody_: boolean = false;
-  protected statusTexts_: string[] = [];
+  protected accessor autofocusInput_: boolean = false;
+  protected accessor isDialogOpen_: boolean = false;
+  protected accessor showHeader_: boolean = false;
+  protected accessor showFooter_: boolean = false;
+  protected accessor showInputs_: boolean = false;
+  protected accessor showScrollingBody_: boolean = false;
+  protected accessor statusTexts_: string[] = [];
 
   private getDialog_(): CrDialogElement|null {
     return this.shadowRoot.querySelector('cr-dialog');

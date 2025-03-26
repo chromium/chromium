@@ -222,8 +222,8 @@ MATCHER_P2(HasDynamicDirectoryOffer, name, rights, "") {
 // context.
 fuchsia::web::CreateContextParams BuildCreateContextParams() {
   fuchsia::web::CreateContextParams output;
-  zx_status_t result = fdio_service_connect(
-      base::kServiceDirectoryPath,
+  zx_status_t result = fdio_open3(
+      base::kServiceDirectoryPath, uint64_t{fuchsia::io::PERM_READABLE},
       output.mutable_service_directory()->NewRequest().TakeChannel().release());
   EXPECT_EQ(result, ZX_OK) << "Failed to open /svc";
   return output;
@@ -232,9 +232,10 @@ fuchsia::web::CreateContextParams BuildCreateContextParams() {
 // Returns a handle to the test component's `/cache` directory.
 fidl::InterfaceHandle<fuchsia::io::Directory> OpenCacheDirectory() {
   fidl::InterfaceHandle<fuchsia::io::Directory> cache_handle;
-  zx_status_t result =
-      fdio_service_connect(base::kPersistedCacheDirectoryPath,
-                           cache_handle.NewRequest().TakeChannel().release());
+  zx_status_t result = fdio_open3(
+      base::kPersistedCacheDirectoryPath,
+      uint64_t{fuchsia::io::PERM_READABLE | fuchsia::io::PERM_WRITABLE},
+      cache_handle.NewRequest().TakeChannel().release());
   EXPECT_EQ(result, ZX_OK) << "Failed to open /cache";
   return cache_handle;
 }

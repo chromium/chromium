@@ -85,3 +85,6 @@ assertNever<CheckEnumCompatibility<
     typeof mojom.ScrollToErrorReason, typeof api.ScrollToErrorReason>>();
 assertNever<CheckEnumCompatibility<
     typeof mojom.InvocationSource, typeof api.InvocationSource>>();
+assertNever<CheckEnumCompatibility<
+    Omit<typeof mojom.SettingsPageField, 'kNone'>,
+    typeof api.SettingsPageField>>();

@@ -43,16 +43,24 @@ TEST_F(SupervisedUserPreferencesTest, RegisterProfilePrefs) {
   // library, add more test cases for their correct default values.
 }
 
-TEST_F(SupervisedUserPreferencesTest, ToggleParentalControls) {
+TEST_F(SupervisedUserPreferencesTest, ToggleParentalControlsSetsUserId) {
   supervised_user::EnableParentalControls(pref_service_);
   EXPECT_EQ(pref_service_.GetString(prefs::kSupervisedUserId),
             supervised_user::kChildAccountSUID);
-  EXPECT_TRUE(supervised_user::IsChildAccountStatusKnown(pref_service_));
 
   supervised_user::DisableParentalControls(pref_service_);
   EXPECT_EQ(pref_service_.GetString(prefs::kSupervisedUserId), std::string());
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(SupervisedUserPreferencesTest, ToggleParentalControlsSetsChildStatus) {
+  supervised_user::EnableParentalControls(pref_service_);
+  EXPECT_TRUE(supervised_user::IsChildAccountStatusKnown(pref_service_));
+
+  supervised_user::DisableParentalControls(pref_service_);
   EXPECT_TRUE(supervised_user::IsChildAccountStatusKnown(pref_service_));
 }
+#endif
 
 TEST_F(SupervisedUserPreferencesTest, StartFetchingFamilyInfo) {
   kidsmanagement::ListMembersResponse list_family_members_response;

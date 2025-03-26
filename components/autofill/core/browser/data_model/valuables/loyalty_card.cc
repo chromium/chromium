@@ -4,9 +4,13 @@
 
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 
+#include <string>
+
+#include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
+
 namespace autofill {
 
-LoyaltyCard::LoyaltyCard(std::string id,
+LoyaltyCard::LoyaltyCard(ValuableId id,
                          std::string merchant_name,
                          std::string program_name,
                          GURL program_logo,
@@ -23,7 +27,8 @@ LoyaltyCard::LoyaltyCard(LoyaltyCard&&) = default;
 LoyaltyCard::~LoyaltyCard() = default;
 
 bool LoyaltyCard::IsValid() const {
-  return !id_.empty() && (program_logo_.is_empty() || program_logo_.is_valid());
+  return !id_->empty() &&
+         (program_logo_.is_empty() || program_logo_.is_valid());
 }
 
 }  // namespace autofill

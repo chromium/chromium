@@ -628,13 +628,13 @@ void BrowserHandler::AddPrivacySandboxCoordinatorKeyConfig(
     return;
   }
 
-  std::optional<TrustedServerAPIType> api;
+  std::optional<InterestGroupManager::TrustedServerAPIType> api;
   if (in_api ==
       protocol::Browser::PrivacySandboxAPIEnum::BiddingAndAuctionServices) {
-    api = TrustedServerAPIType::kBiddingAndAuction;
+    api = InterestGroupManager::TrustedServerAPIType::kBiddingAndAuction;
   } else if (in_api ==
              protocol::Browser::PrivacySandboxAPIEnum::TrustedKeyValue) {
-    api = TrustedServerAPIType::kTrustedKeyValue;
+    api = InterestGroupManager::TrustedServerAPIType::kTrustedKeyValue;
   } else {
     callback->sendFailure(Response::InvalidParams("Unrecognized API target"));
     return;

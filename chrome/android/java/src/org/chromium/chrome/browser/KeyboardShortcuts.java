@@ -13,6 +13,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -64,7 +65,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CLOSE_WINDOW,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_QUIT_CHROME,
         KeyboardShortcutsSemanticMeaning.JUMP_TO_OMNIBOX,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_JUMP_TO_SEARCH,
+        KeyboardShortcutsSemanticMeaning.JUMP_TO_SEARCH,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_WEB_CONTENTS_PANE,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SCROLL_DOWN,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SCROLL_UP,
@@ -81,7 +82,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.OPEN_BOOKMARKS,
         KeyboardShortcutsSemanticMeaning.BOOKMARK_PAGE,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_BOOKMARK_ALL_TABS,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_SHOW_BOOKMARKS_BAR,
+        KeyboardShortcutsSemanticMeaning.TOGGLE_BOOKMARK_BAR,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_IMMERSIVE,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_EXIT_IMMERSIVE,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS,
@@ -138,7 +139,7 @@ public class KeyboardShortcuts {
 
         // Navigation controls.
         int JUMP_TO_OMNIBOX = 16;
-        int NOT_IMPLEMENTED_JUMP_TO_SEARCH = 17;
+        int JUMP_TO_SEARCH = 17;
         int NOT_IMPLEMENTED_FOCUS_WEB_CONTENTS_PANE = 18;
         int NOT_IMPLEMENTED_SCROLL_DOWN = 19;
         int NOT_IMPLEMENTED_SCROLL_UP = 20;
@@ -161,7 +162,7 @@ public class KeyboardShortcuts {
         int OPEN_BOOKMARKS = 31;
         int BOOKMARK_PAGE = 32;
         int NOT_IMPLEMENTED_BOOKMARK_ALL_TABS = 33;
-        int NOT_IMPLEMENTED_TOGGLE_SHOW_BOOKMARKS_BAR = 34;
+        int TOGGLE_BOOKMARK_BAR = 34;
 
         // Fullscreen.
         int NOT_IMPLEMENTED_TOGGLE_IMMERSIVE = 35;
@@ -303,9 +304,7 @@ public class KeyboardShortcuts {
             case KeyEvent.KEYCODE_BUTTON_X:
                 return KeyboardShortcutsSemanticMeaning.JUMP_TO_OMNIBOX;
             case CTRL | KeyEvent.KEYCODE_E:
-            case CTRL | KeyEvent.KEYCODE_K:
-                // TODO(crbug.com/402775002): Investigate supporting BROWSER_SEARCH button.
-                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_JUMP_TO_SEARCH;
+                return KeyboardShortcutsSemanticMeaning.JUMP_TO_SEARCH;
             case CTRL | KeyEvent.KEYCODE_F6:
                 return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_WEB_CONTENTS_PANE;
             case KeyEvent.KEYCODE_SPACE:
@@ -355,7 +354,7 @@ public class KeyboardShortcuts {
             case CTRL | SHIFT | KeyEvent.KEYCODE_D:
                 return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_BOOKMARK_ALL_TABS;
             case CTRL | SHIFT | KeyEvent.KEYCODE_B:
-                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_SHOW_BOOKMARKS_BAR;
+                return KeyboardShortcutsSemanticMeaning.TOGGLE_BOOKMARK_BAR;
 
                 // Fullscreen.
             case KeyEvent.KEYCODE_F11:
@@ -596,6 +595,14 @@ public class KeyboardShortcuts {
                 R.string.keyboard_shortcut_open_menu,
                 KeyEvent.KEYCODE_E,
                 KeyEvent.META_ALT_ON);
+        if (BookmarkBarUtils.isFeatureEnabled(context)) {
+            addShortcut(
+                    context,
+                    chromeFeatureShortcutGroup,
+                    R.string.keyboard_shortcut_toggle_bookmark_bar,
+                    KeyEvent.KEYCODE_B,
+                    ctrlShift);
+        }
         addShortcut(
                 context,
                 chromeFeatureShortcutGroup,
@@ -775,6 +782,9 @@ public class KeyboardShortcuts {
             case KeyboardShortcutsSemanticMeaning.OPEN_MENU:
                 menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.show_menu, false);
                 return true;
+            case KeyboardShortcutsSemanticMeaning.TOGGLE_BOOKMARK_BAR:
+                return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                        R.id.toggle_bookmark_bar, /* fromMenu= */ false);
         }
 
         if (isCurrentTabVisible) {
@@ -829,6 +839,10 @@ public class KeyboardShortcuts {
                 case KeyboardShortcutsSemanticMeaning.JUMP_TO_OMNIBOX:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.focus_url_bar, false);
+                    return true;
+                case KeyboardShortcutsSemanticMeaning.JUMP_TO_SEARCH:
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.focus_and_clear_url_bar, false);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.OPEN_BOOKMARKS:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(

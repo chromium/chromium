@@ -5,7 +5,7 @@
 GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 
 /** Test fixture for the Switch Access predicates. */
-SwitchAccessPredicateTest = class extends SwitchAccessE2ETest {};
+SwitchAccessMV2PredicateTest = class extends SwitchAccessE2ETest {};
 
 function fakeLoc(x) {
   return {left: x, top: x, width: x, height: x};
@@ -81,7 +81,7 @@ function getTree(loadedPage) {
   };
 }
 
-AX_TEST_F('SwitchAccessPredicateTest', 'IsInteresting', async function() {
+AX_TEST_F('SwitchAccessMV2PredicateTest', 'IsInteresting', async function() {
   const loadedPage = await this.runWithLoadedTree(testWebsite());
   const t = getTree(loadedPage);
   const cache = new SACache();
@@ -130,7 +130,7 @@ AX_TEST_F('SwitchAccessPredicateTest', 'IsInteresting', async function() {
       'Leaf7 should not be interesting');
 });
 
-AX_TEST_F('SwitchAccessPredicateTest', 'IsGroup', async function() {
+AX_TEST_F('SwitchAccessMV2PredicateTest', 'IsGroup', async function() {
   const loadedPage = await this.runWithLoadedTree(testWebsite());
   const t = getTree(loadedPage);
   const cache = new SACache();
@@ -180,7 +180,7 @@ AX_TEST_F('SwitchAccessPredicateTest', 'IsGroup', async function() {
 });
 
 AX_TEST_F(
-    'SwitchAccessPredicateTest', 'IsInterestingSubtree', async function() {
+    'SwitchAccessMV2PredicateTest', 'IsInterestingSubtree', async function() {
       const loadedPage = await this.runWithLoadedTree(testWebsite());
       const t = getTree(loadedPage);
       const cache = new SACache();
@@ -226,7 +226,7 @@ AX_TEST_F(
           'Leaf7 should not be an interesting subtree');
     });
 
-AX_TEST_F('SwitchAccessPredicateTest', 'IsActionable', async function() {
+AX_TEST_F('SwitchAccessMV2PredicateTest', 'IsActionable', async function() {
   const treeString =
       `<button style="position:absolute; top:-100px;">offscreen</button>
        <button disabled>disabled</button>
@@ -290,7 +290,7 @@ AX_TEST_F('SwitchAccessPredicateTest', 'IsActionable', async function() {
 });
 
 AX_TEST_F(
-    'SwitchAccessPredicateTest', 'IsActionableFocusableElements',
+    'SwitchAccessMV2PredicateTest', 'IsActionableFocusableElements',
     async function() {
       const treeString = `<div id="noChildren" tabindex=0></div>
        <div id="oneInterestingChild" tabindex=0>
@@ -344,7 +344,7 @@ AX_TEST_F(
           'Focusable element with uninteresting children should be actionable');
     });
 
-AX_TEST_F('SwitchAccessPredicateTest', 'LeafPredicate', async function() {
+AX_TEST_F('SwitchAccessMV2PredicateTest', 'LeafPredicate', async function() {
   const loadedPage = await this.runWithLoadedTree(testWebsite());
   const t = getTree(loadedPage);
   const cache = new SACache();
@@ -370,7 +370,7 @@ AX_TEST_F('SwitchAccessPredicateTest', 'LeafPredicate', async function() {
   assertTrue(leaf(t.leaf3), 'Leaf3 should be a leaf for lower1 tree');
 });
 
-AX_TEST_F('SwitchAccessPredicateTest', 'RootPredicate', async function() {
+AX_TEST_F('SwitchAccessMV2PredicateTest', 'RootPredicate', async function() {
   const loadedPage = await this.runWithLoadedTree(testWebsite());
   const t = getTree(loadedPage);
 
@@ -394,7 +394,7 @@ AX_TEST_F('SwitchAccessPredicateTest', 'RootPredicate', async function() {
   assertFalse(root(t.leaf3), 'Leaf3 should not be a root of the lower1 tree');
 });
 
-AX_TEST_F('SwitchAccessPredicateTest', 'VisitPredicate', async function() {
+AX_TEST_F('SwitchAccessMV2PredicateTest', 'VisitPredicate', async function() {
   const loadedPage = await this.runWithLoadedTree(testWebsite());
   const t = getTree(loadedPage);
   const cache = new SACache();
@@ -426,7 +426,7 @@ AX_TEST_F('SwitchAccessPredicateTest', 'VisitPredicate', async function() {
   assertFalse(visit(t.leaf7), 'Leaf7 should not be visited in lower1 tree');
 });
 
-AX_TEST_F('SwitchAccessPredicateTest', 'Cache', async function() {
+AX_TEST_F('SwitchAccessMV2PredicateTest', 'Cache', async function() {
   const loadedPage = await this.runWithLoadedTree(testWebsite());
   const t = getTree(loadedPage);
   const cache = new SACache();

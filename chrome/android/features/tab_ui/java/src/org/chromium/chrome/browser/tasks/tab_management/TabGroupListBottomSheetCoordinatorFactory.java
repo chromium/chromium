@@ -25,6 +25,7 @@ public interface TabGroupListBottomSheetCoordinatorFactory {
      * @param filter Used to read current tab groups.
      * @param controller Used to interact with the bottom sheet.
      * @param showNewGroupRow Whether the 'New Tab Group' row should be displayed.
+     * @param destroyOnHide Whether the coordinator should be destroyed on hide.
      */
     TabGroupListBottomSheetCoordinator create(
             Context context,
@@ -32,5 +33,6 @@ public interface TabGroupListBottomSheetCoordinatorFactory {
             TabGroupCreationCallback callback,
             TabGroupModelFilter filter,
             BottomSheetController controller,
-            boolean showNewGroupRow);
+            boolean showNewGroupRow,
+            boolean destroyOnHide);
 }

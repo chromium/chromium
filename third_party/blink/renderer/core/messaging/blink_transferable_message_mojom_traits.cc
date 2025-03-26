@@ -60,7 +60,7 @@ ToSerializedAcceleratedImage(
       blink::mojom::blink::SerializedStaticBitmapImage::NewAcceleratedImage(
           blink::AcceleratedImageInfo{
               shared_image->Export(), cloned_image->GetSyncToken(),
-              cloned_image->GetSize(), cloned_image->GetSkColorType(),
+              cloned_image->GetSize(), cloned_image->GetSharedImageFormat(),
               cloned_image->GetAlphaType(), cloned_image->GetSkColorSpace(),
               WTF::BindOnce(&blink::StaticBitmapImage::UpdateSyncToken,
                             std::move(cloned_image))});

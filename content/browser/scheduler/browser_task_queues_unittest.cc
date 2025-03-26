@@ -54,6 +54,10 @@ class BrowserTaskQueuesTest : public testing::Test {
   scoped_refptr<BrowserTaskQueues::Handle> handle_;
 };
 
+// Queues are disabled by default and only enabled by the BrowserTaskExecutor
+// and so no task can be posted until the BrowserTaskExecutor is created. This
+// allows an embedder to control when to enable the UI task queues. This state
+// is required for WebView's async startup to work properly.
 TEST_F(BrowserTaskQueuesTest, NoTaskRunsUntilQueuesAreEnabled) {
   StrictMockTask task;
   for (size_t i = 0; i < BrowserTaskQueues::kNumQueueTypes; ++i) {
@@ -64,8 +68,6 @@ TEST_F(BrowserTaskQueuesTest, NoTaskRunsUntilQueuesAreEnabled) {
   {
     RunLoop run_loop;
     handle_->ScheduleRunAllPendingTasksForTesting(run_loop.QuitClosure());
-    // Default queue isn't disabled and should run.
-    EXPECT_CALL(task, Run).Times(1);
     run_loop.Run();
   }
 
@@ -74,56 +76,7 @@ TEST_F(BrowserTaskQueuesTest, NoTaskRunsUntilQueuesAreEnabled) {
   {
     RunLoop run_loop;
     handle_->ScheduleRunAllPendingTasksForTesting(run_loop.QuitClosure());
-    // All tasks should run except default queue which already run as
-    // it's not disabled during startup.
-    EXPECT_CALL(task, Run).Times(BrowserTaskQueues::kNumQueueTypes - 1);
-    run_loop.Run();
-  }
-}
-
-TEST_F(BrowserTaskQueuesTest, OnlyDefaultQueueRunsTasksOnCreation) {
-  StrictMockTask task;
-  for (size_t i = 0; i < BrowserTaskQueues::kNumQueueTypes; ++i) {
-    if (static_cast<QueueType>(i) != QueueType::kDefault) {
-      handle_->GetBrowserTaskRunner(static_cast<QueueType>(i))
-          ->PostTask(FROM_HERE, task.Get());
-    }
-  }
-
-  StrictMockTask default_task;
-  handle_->GetDefaultTaskRunner()->PostTask(FROM_HERE, default_task.Get());
-
-  {
-    RunLoop run_loop;
-    handle_->ScheduleRunAllPendingTasksForTesting(run_loop.QuitClosure());
-    EXPECT_CALL(default_task, Run);
-    run_loop.Run();
-  }
-}
-
-TEST_F(BrowserTaskQueuesTest, TasksRunWhenQueuesAreEnabled) {
-  StrictMockTask task;
-  for (size_t i = 0; i < BrowserTaskQueues::kNumQueueTypes; ++i) {
-    handle_->GetBrowserTaskRunner(static_cast<QueueType>(i))
-        ->PostTask(FROM_HERE, task.Get());
-  }
-
-  {
-    RunLoop run_loop;
-    handle_->ScheduleRunAllPendingTasksForTesting(run_loop.QuitClosure());
-    // Default queue isn't disabled.
-    EXPECT_CALL(task, Run).Times(1);
-    run_loop.Run();
-  }
-
-  handle_->OnStartupComplete();
-
-  {
-    RunLoop run_loop;
-    // All tasks should run, except default queue which is already run
-    // as default queue isn't disabled.
-    handle_->ScheduleRunAllPendingTasksForTesting(run_loop.QuitClosure());
-    EXPECT_CALL(task, Run).Times(BrowserTaskQueues::kNumQueueTypes - 1);
+    EXPECT_CALL(task, Run).Times(BrowserTaskQueues::kNumQueueTypes);
     run_loop.Run();
   }
 }
@@ -283,6 +236,35 @@ TEST_F(BrowserTaskQueuesTest, HandleStillWorksWhenQueuesDestroyed) {
   RunLoop run_loop;
   handle_->ScheduleRunAllPendingTasksForTesting(run_loop.QuitClosure());
   run_loop.Run();
+}
+
+TEST_F(BrowserTaskQueuesTest, TaskIsRunWhenEnableQueueIsCalled) {
+  StrictMockTask task;
+  StrictMockTask user_visible;
+  for (size_t i = 0; i < BrowserTaskQueues::kNumQueueTypes; ++i) {
+    auto queue_type = static_cast<QueueType>(i);
+    if (queue_type != QueueType::kUserVisible) {
+      handle_->GetBrowserTaskRunner(queue_type)
+          ->PostTask(FROM_HERE, task.Get());
+    }
+  }
+  handle_->GetBrowserTaskRunner(QueueType::kUserVisible)
+      ->PostTask(FROM_HERE, user_visible.Get());
+
+  {
+    RunLoop run_loop;
+    handle_->ScheduleRunAllPendingTasksForTesting(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  handle_->EnableTaskQueue(QueueType::kUserVisible);
+
+  {
+    RunLoop run_loop;
+    handle_->ScheduleRunAllPendingTasksForTesting(run_loop.QuitClosure());
+    EXPECT_CALL(user_visible, Run).Times(1);
+    run_loop.Run();
+  }
 }
 
 }  // namespace

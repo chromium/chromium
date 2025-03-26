@@ -1035,6 +1035,9 @@ _CONFIG = [
             'gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE',
             'gpu::SharedImageUsageSet',
             'gpu::SyncToken',
+            'viz::SharedImageFormat',
+            'viz::SkColorTypeToSinglePlaneSharedImageFormat',
+            'viz::ToClosestSkColorType',
         ],
     },
     {

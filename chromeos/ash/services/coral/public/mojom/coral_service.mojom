@@ -240,5 +240,6 @@ interface CoralService {
   Initialize@3(
       pending_remote<chromeos.machine_learning.mojom.MachineLearningService>?
           ml_service,
-      pending_receiver<CoralProcessor> processor);
+      pending_receiver<CoralProcessor> processor,
+      [MinVersion=2] string? language_code);
 };

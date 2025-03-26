@@ -70,7 +70,7 @@ void TabStripScrollSessionWithTimer::TabScrollCallback() {
   scroll_view->ScrollByOffset(gfx::PointF(tab_scroll_offset, 0));
 
   tab_drag_with_scroll_manager_->MoveAttached(
-      tab_drag_with_scroll_manager_->GetLastPointInScreen(), false);
+      tab_drag_with_scroll_manager_->GetLastPointInScreen());
 }
 
 bool TabStripScrollSessionWithTimer::IsRunning() {

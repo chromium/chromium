@@ -1278,10 +1278,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"editIban", IDS_SETTINGS_IBAN_EDIT},
       {"removeLocalIbanConfirmationTitle",
        IDS_SETTINGS_LOCAL_IBAN_REMOVE_CONFIRMATION_TITLE},
-      {"migrateCreditCardsLabel", IDS_SETTINGS_MIGRATABLE_CARDS_LABEL},
-      {"migratableCardsInfoSingle", IDS_SETTINGS_SINGLE_MIGRATABLE_CARD_INFO},
-      {"migratableCardsInfoMultiple",
-       IDS_SETTINGS_MULTIPLE_MIGRATABLE_CARDS_INFO},
       {"remotePaymentMethodsLinkLabel",
        IDS_SETTINGS_REMOTE_PAYMENT_METHODS_LINK_LABEL},
       {"canMakePaymentToggleLabel", IDS_SETTINGS_CAN_MAKE_PAYMENT_TOGGLE_LABEL},
@@ -1373,6 +1369,12 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_AUTOFILL_AI_DELETE_ENTITY_INSTANCE_DIALOG_TITLE},
       {"autofillAiDeleteEntityInstanceDialogText",
        IDS_SETTINGS_AUTOFILL_AI_DELETE_ENTITY_INSTANCE_DIALOG_TEXT},
+      {"autofillAiAccessibilityLabelMonthDropdown",
+       IDS_SETTINGS_AUTOFILL_AI_ACCESSIBILITY_LABEL_MONTH_DROPDOWN},
+      {"autofillAiAccessibilityLabelDayDropdown",
+       IDS_SETTINGS_AUTOFILL_AI_ACCESSIBILITY_LABEL_DAY_DROPDOWN},
+      {"autofillAiAccessibilityLabelYearDropdown",
+       IDS_SETTINGS_AUTOFILL_AI_ACCESSIBILITY_LABEL_YEAR_DROPDOWN},
       {"autofillAiAddOrEditDialogValidationError",
        IDS_SETTINGS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_VALIDATION_ERROR},
       {"autofillPayOverTimeSettingsLabel", IDS_AUTOFILL_BNPL_SETTINGS_LABEL},
@@ -1403,25 +1405,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddString("autofillPayOverTimeSettingsLearnMoreUrl",
                          chrome::kPayOverTimeLearnMoreUrl);
 
-  bool is_guest_mode = false;
-#if BUILDFLAG(IS_CHROMEOS)
-  is_guest_mode =
-      user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
-      user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession();
-#else   // !BUILDFLAG(IS_CHROMEOS)
-  is_guest_mode = profile->IsOffTheRecord();
-#endif  // BUILDFLAG(IS_CHROMEOS)
   autofill::PaymentsDataManager& payments_data =
       autofill::PersonalDataManagerFactory::GetForBrowserContext(profile)
           ->payments_data_manager();
-  html_source->AddBoolean(
-      "migrationEnabled",
-      !is_guest_mode &&
-          autofill::IsCreditCardMigrationEnabled(
-              payments_data, SyncServiceFactory::GetForProfile(profile),
-              *profile->GetPrefs(),
-              /*is_test_mode=*/false,
-              /*log_manager=*/nullptr));
+  html_source->AddBoolean("migrationEnabled", false);
 
   html_source->AddBoolean("showIbansSettings",
                           autofill::ShouldShowIbanOnSettingsPage(

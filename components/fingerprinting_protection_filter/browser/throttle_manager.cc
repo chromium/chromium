@@ -179,9 +179,9 @@ void ThrottleManager::MaybeAppendNavigationThrottles(
         GetParentFrameFilter(navigation_handle);
     if (parent_filter) {
       if (navigation_handle->GetParentFrame() &&
-          !subresource_filter::FirstPartyOrigin(
-               navigation_handle->GetParentFrame()->GetLastCommittedOrigin())
-               .IsThirdParty(navigation_handle->GetURL())) {
+          net::SchemefulSite::IsSameSite(
+              url::Origin::Create(navigation_handle->GetURL()),
+              navigation_handle->GetParentFrame()->GetLastCommittedOrigin())) {
         // Don't create throttles for first-party requests.
         return;
       }

@@ -108,18 +108,19 @@ void EncodedVideoChunk::copyTo(const AllowSharedBufferSource* destination,
                                ExceptionState& exception_state) {
   // Validate destination buffer.
   auto dest_wrapper = AsSpan<uint8_t>(destination);
-  if (dest_wrapper.size() < buffer_->size()) {
+  auto buffer_span = base::span(*buffer_);
+  if (dest_wrapper.size() < buffer_span.size()) {
     exception_state.ThrowTypeError("destination is not large enough.");
     return;
   }
 
-  if (buffer_->empty()) {
+  if (buffer_span.empty()) {
     // Calling memcpy with nullptr is UB, even if count is zero.
     return;
   }
 
   // Copy data.
-  memcpy(dest_wrapper.data(), buffer_->data(), buffer_->size());
+  dest_wrapper.copy_prefix_from(buffer_span);
 }
 
 }  // namespace blink

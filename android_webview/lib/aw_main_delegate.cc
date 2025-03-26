@@ -209,11 +209,6 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
 
     // Enabled by default for webview.
     features.EnableIfNotSet(::features::kWebViewThreadSafeMediaDefault);
-
-    // WebView uses kWebViewFrameRateHints to control this. Not using
-    // AwFieldTrials::RegisterFeatureOverrides to avoid misconfiguring
-    // experimients accidentally enabling kUseFrameIntervalDecider for WebView.
-    features.DisableIfNotSet(::features::kUseFrameIntervalDecider);
   }
 
   android_webview::RegisterPathProvider();

@@ -75,6 +75,7 @@ public class TabGroupListBottomSheetCoordinator {
      * @param filter Used to read current tab groups.
      * @param bottomSheetController Used to interact with the bottom sheet.
      * @param showNewGroupRow Whether the 'New Tab Group' row should be displayed.
+     * @param destroyOnHide Whether this object should be destroyed on hiding the bottom sheet.
      */
     public TabGroupListBottomSheetCoordinator(
             Context context,
@@ -82,7 +83,8 @@ public class TabGroupListBottomSheetCoordinator {
             TabGroupCreationCallback tabGroupCreationCallback,
             TabGroupModelFilter filter,
             BottomSheetController bottomSheetController,
-            boolean showNewGroupRow) {
+            boolean showNewGroupRow,
+            boolean destroyOnHide) {
         mView = new TabGroupListBottomSheetView(context, bottomSheetController, showNewGroupRow);
         mBottomSheetController = bottomSheetController;
 
@@ -134,13 +136,13 @@ public class TabGroupListBottomSheetCoordinator {
                         dataSharingService,
                         collaborationService,
                         bottomSheetController,
-                        createDelegate(),
+                        createDelegate(destroyOnHide),
                         showNewGroupRow);
     }
 
     /** Creates the delegate. */
     @VisibleForTesting
-    TabGroupListBottomSheetCoordinatorDelegate createDelegate() {
+    TabGroupListBottomSheetCoordinatorDelegate createDelegate(boolean destroyOnHide) {
         return new TabGroupListBottomSheetCoordinatorDelegate() {
             @Override
             public boolean requestShowContent() {
@@ -150,6 +152,9 @@ public class TabGroupListBottomSheetCoordinator {
             @Override
             public void hide(@StateChangeReason int hideReason) {
                 mBottomSheetController.hideContent(mView, /* animate= */ true, hideReason);
+                if (destroyOnHide) {
+                    destroy();
+                }
             }
         };
     }

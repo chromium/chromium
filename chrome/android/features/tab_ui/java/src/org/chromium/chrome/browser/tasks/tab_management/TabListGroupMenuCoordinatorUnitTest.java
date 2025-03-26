@@ -100,7 +100,8 @@ public class TabListGroupMenuCoordinatorUnitTest {
                                 mOnItemClickedCallback,
                                 () -> mTabModel,
                                 mTabGroupSyncService,
-                                mCollaborationService));
+                                mCollaborationService,
+                                mActivity));
     }
 
     private void onActivity(TestActivity activity) {

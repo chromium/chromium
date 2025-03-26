@@ -84,13 +84,6 @@ UIAction* GetOverflowMenuElementForBadgeType(
                                                  kInfobarSymbolPointSize);
       histogram_type = MobileMessagesInfobarType::Permissions;
       break;
-    case kBadgeTypeParcelTracking:
-      action_identifier = kBadgeButtonParcelTrackingActionIdentifier;
-      title = l10n_util::GetNSString(
-          IDS_IOS_PARCEL_TRACKING_INFOBAR_NEW_PACKAGE_TRACKED_TITLE);
-      image = DefaultSymbolWithPointSize(kShippingBoxSymbol,
-                                         kInfobarSymbolPointSize);
-      break;
     case kBadgeTypeIncognito:
       NOTREACHED() << "An overflow menu badge should not be an Incognito badge";
     case kBadgeTypeOverflow:

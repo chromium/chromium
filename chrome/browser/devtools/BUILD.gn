@@ -143,6 +143,8 @@ static_library("devtools") {
     sources += [
       "aida_client.cc",
       "aida_client.h",
+      "devtools_availability_checker.cc",
+      "devtools_availability_checker.h",
       "devtools_contents_resizing_strategy.cc",
       "devtools_contents_resizing_strategy.h",
       "devtools_embedder_message_dispatcher.cc",

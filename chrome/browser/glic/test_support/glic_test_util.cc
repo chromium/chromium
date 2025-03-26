@@ -49,4 +49,29 @@ void SetFRECompletion(Profile* profile, bool completed) {
   profile->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, completed);
 }
 
+void InvalidateAccount(Profile* profile) {
+  auto* const identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager,
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  ASSERT_TRUE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          identity_manager->GetPrimaryAccountId(
+              signin::ConsentLevel::kSignin)));
+  ASSERT_FALSE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+}
+
+void ReauthAccount(Profile* profile) {
+  auto* const identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager,
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      GoogleServiceAuthError::AuthErrorNone());
+}
+
 }  // namespace glic

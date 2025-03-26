@@ -43,6 +43,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDrawable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -51,6 +52,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
@@ -88,9 +90,12 @@ public class BookmarkBarUtilsTest {
     @Mock private PrefObserver mPrefObserver;
     @Mock private PrefService mPrefService;
     @Mock private Profile mProfile;
+    @Mock private ProfileProvider mProfileProvider;
     @Mock private UserPrefsJni mUserPrefsJni;
 
     private final AtomicBoolean mSetting = new AtomicBoolean();
+
+    private ObservableSupplierImpl<ProfileProvider> mProfileProviderSupplier;
 
     @Before
     public void setUp() {
@@ -100,9 +105,12 @@ public class BookmarkBarUtilsTest {
 
         when(mPrefService.getBoolean(Pref.SHOW_BOOKMARK_BAR)).thenAnswer(i -> mSetting.get());
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
+
+        mProfileProviderSupplier = new ObservableSupplierImpl<>(mProfileProvider);
     }
 
     @After
@@ -186,6 +194,102 @@ public class BookmarkBarUtilsTest {
 
         BookmarkBarUtils.toggleSettingEnabled(mProfile);
         assertFalse(BookmarkBarUtils.isSettingEnabled(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testToggleSettingEnabledWithFeatureDisabled() {
+        // Set up.
+        BookmarkBarUtils.setFeatureEnabledForTesting(false);
+        assertFalse(BookmarkBarUtils.isSettingEnabled(mProfile));
+
+        // Attempt toggle.
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            BookmarkBarUtils.toggleSettingEnabled(
+                                    activity, mProfileProviderSupplier);
+                            assertFalse(BookmarkBarUtils.isSettingEnabled(mProfile));
+                        });
+    }
+
+    @Test
+    @SmallTest
+    public void testToggleSettingEnabledWithFeatureEnabled() {
+        // Set up.
+        BookmarkBarUtils.setFeatureEnabledForTesting(true);
+        assertFalse(BookmarkBarUtils.isSettingEnabled(mProfile));
+
+        // Attempt toggle.
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            BookmarkBarUtils.toggleSettingEnabled(
+                                    activity, mProfileProviderSupplier);
+                            assertTrue(BookmarkBarUtils.isSettingEnabled(mProfile));
+
+                            BookmarkBarUtils.toggleSettingEnabled(
+                                    activity, mProfileProviderSupplier);
+                            assertFalse(BookmarkBarUtils.isSettingEnabled(mProfile));
+                        });
+    }
+
+    @Test
+    @SmallTest
+    public void testToggleSettingEnabledWithoutProfile() {
+        // Set up.
+        BookmarkBarUtils.setFeatureEnabledForTesting(true);
+        when(mProfileProvider.getOriginalProfile()).thenReturn(null);
+        assertFalse(BookmarkBarUtils.isSettingEnabled(mProfile));
+
+        // Attempt toggle.
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            BookmarkBarUtils.toggleSettingEnabled(
+                                    activity, mProfileProviderSupplier);
+                            assertFalse(BookmarkBarUtils.isSettingEnabled(mProfile));
+                        });
+    }
+
+    @Test
+    @SmallTest
+    public void testToggleSettingEnabledWithoutProfileProvider() {
+        // Set up.
+        BookmarkBarUtils.setFeatureEnabledForTesting(true);
+        mProfileProviderSupplier.set(null);
+        assertFalse(BookmarkBarUtils.isSettingEnabled(mProfile));
+
+        // Attempt toggle.
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            BookmarkBarUtils.toggleSettingEnabled(
+                                    activity, mProfileProviderSupplier);
+                            assertFalse(BookmarkBarUtils.isSettingEnabled(mProfile));
+                        });
+    }
+
+    @Test
+    @SmallTest
+    public void testToggleSettingEnabledWithoutProfileProviderSupplier() {
+        // Set up.
+        BookmarkBarUtils.setFeatureEnabledForTesting(true);
+        assertFalse(BookmarkBarUtils.isSettingEnabled(mProfile));
+
+        // Attempt toggle.
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            BookmarkBarUtils.toggleSettingEnabled(
+                                    activity, /* profileProviderSupplier= */ null);
+                            assertFalse(BookmarkBarUtils.isSettingEnabled(mProfile));
+                        });
     }
 
     @Test

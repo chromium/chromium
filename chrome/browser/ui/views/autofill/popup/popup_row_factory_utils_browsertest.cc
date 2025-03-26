@@ -40,7 +40,7 @@ namespace {
 using ::testing::NiceMock;
 using ::testing::Return;
 
-std::vector<std::string_view> minor_texts = {"Minor text"};
+std::vector<std::string> minor_texts = {"Minor text"};
 
 Suggestion CreatePasswordSuggestion(const std::u16string& main_text) {
   Suggestion suggestion(main_text, SuggestionType::kPasswordEntry);

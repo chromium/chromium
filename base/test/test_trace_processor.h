@@ -11,6 +11,7 @@
 #ifndef BASE_TEST_TEST_TRACE_PROCESSOR_H_
 #define BASE_TEST_TEST_TRACE_PROCESSOR_H_
 
+#include <ostream>
 #include <string_view>
 
 #include "base/run_loop.h"
@@ -77,5 +78,9 @@ class TestTraceProcessor {
 };
 
 }  // namespace base::test
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const base::test::TestTraceProcessor::QueryResult& result);
 
 #endif  // BASE_TEST_TEST_TRACE_PROCESSOR_H_

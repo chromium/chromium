@@ -6,7 +6,6 @@
 <translation id="1143896152279775643">Şifreniz, <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="1146503048444965320">Chrome'da yeni sekme aç</translation>
 <translation id="1166460004393506534">Chrome'daki tarama verilerini silme</translation>
-<translation id="1171255741903316750">"Chrome'u kapattığınızda Gizli sekmeler kilitlensin" seçeneğini etkinleştirin</translation>
 <translation id="1179527450541388808">iPad'inizin ana ekran yuvasından Chrome'a daha hızlı erişin.</translation>
 <translation id="1180362651362502943">Google Hesabınızdaki Chrome verilerini kullanmaya devam edin.</translation>
 <translation id="1200396280085622191">Mesajlardaki ve diğer uygulamalardaki bağlantılara her dokunduğunuzda Chrome'u kullanın.</translation>
@@ -178,6 +177,7 @@ Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsan
 <translation id="5716154293141027663">Diğer uygulamalarda bağlantılara dokunduğunuzda Chrome açılır</translation>
 <translation id="5752489513673657785">Google tarafından sizin için oluşturulmuş özel feed</translation>
 <translation id="5772407442571703917">Chrome'u buradan indirin.</translation>
+<translation id="5777468213129569553">Chrome'u aç</translation>
 <translation id="5779767936254214055">Chrome'dan çıktığınızda veya farklı bir uygulamaya geçtiğinizde gizli sekmelerinizi kilitleyin</translation>
 <translation id="5808435672482059465">Chrome Geçmişimi Göster</translation>
 <translation id="5833027901704861726">Chrome verilerinizden bazıları henüz <ph name="EMAIL" /> hesabına kaydedilmedi.

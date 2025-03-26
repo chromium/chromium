@@ -128,7 +128,7 @@ static SkColor4f ResolveStopColorWithMissingParams(
 void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
   if (stops_.empty()) {
     // A gradient with no stops must be transparent black.
-    pos.push_back(WebCoreDoubleToSkScalar(0));
+    pos.push_back(0);
     colors.push_back(SkColors::kTransparent);
   } else if (stops_.front().stop > 0 &&
              // hue-interpolation-method longer hue should not pad the start, as
@@ -139,7 +139,7 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
     // rounding error, but we don't care in this float comparison, since
     // 0.0 comes through cleanly and people aren't likely to want a gradient
     // with a stop at (0 + epsilon).
-    pos.push_back(WebCoreDoubleToSkScalar(0));
+    pos.push_back(0);
     if (color_filter_) {
       colors.push_back(color_filter_->FilterColor(
           stops_.front().color.ToGradientStopSkColor4f(
@@ -161,7 +161,7 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
         // to resolve missing components at all, but for logic reuse, we still
         // call `ResolveStopColorWithMissingParams` with a dummy three
         // components all none color.
-        pos.push_back(WebCoreDoubleToSkScalar(stops_[i].stop));
+        pos.push_back(ClampNonFiniteToZero(stops_[i].stop));
         colors.push_back(ResolveStopColorWithMissingParams(
             color,
             Color::FromColorSpace(color.GetColorSpace(), std::nullopt,
@@ -172,7 +172,7 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
 
       if (i != 0) {
         // Fill left
-        pos.push_back(WebCoreDoubleToSkScalar(stops_[i].stop));
+        pos.push_back(ClampNonFiniteToZero(stops_[i].stop));
         colors.push_back(ResolveStopColorWithMissingParams(
             color, stops_[i - 1].color, color_space_interpolation_space_,
             color_filter_.get()));
@@ -180,13 +180,13 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
 
       if (i != stops_.size() - 1) {
         // Fill right
-        pos.push_back(WebCoreDoubleToSkScalar(stops_[i].stop));
+        pos.push_back(ClampNonFiniteToZero(stops_[i].stop));
         colors.push_back(ResolveStopColorWithMissingParams(
             color, stops_[i + 1].color, color_space_interpolation_space_,
             color_filter_.get()));
       }
     } else {
-      pos.push_back(WebCoreDoubleToSkScalar(stops_[i].stop));
+      pos.push_back(ClampNonFiniteToZero(stops_[i].stop));
       if (color_filter_) {
         colors.push_back(color_filter_->FilterColor(
             color.ToGradientStopSkColor4f(color_space_interpolation_space_)));
@@ -204,7 +204,7 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
       // hue-interpolation-method longer hue should not pad the end, as
       // it would introducing a gradient at position last_stop..end
       hue_interpolation_method_ != Color::HueInterpolationMethod::kLonger) {
-    pos.push_back(WebCoreDoubleToSkScalar(1));
+    pos.push_back(1);
     colors.push_back(colors.back());
   }
 }
@@ -395,7 +395,8 @@ class LinearGradient final : public Gradient {
       return PaintShader::MakeEmpty();
     }
 
-    SkPoint pts[2] = {FloatPointToSkPoint(p0_), FloatPointToSkPoint(p1_)};
+    SkPoint pts[2] = {gfx::PointFToSkPoint(ClampNonFiniteToZero(p0_)),
+                      gfx::PointFToSkPoint(ClampNonFiniteToZero(p1_))};
     return PaintShader::MakeLinearGradient(
         pts, colors.data(), pos.data(), static_cast<int>(colors.size()),
         tile_mode, sk_interpolation, 0 /* flags */, &local_matrix,
@@ -448,8 +449,8 @@ class RadialGradient final : public Gradient {
 
     // The radii we give to Skia must be positive. If we're given a
     // negative radius, ask for zero instead.
-    const SkScalar radius0 = std::max(WebCoreFloatToSkScalar(r0_), 0.0f);
-    const SkScalar radius1 = std::max(WebCoreFloatToSkScalar(r1_), 0.0f);
+    const float radius0 = std::max(ClampNonFiniteToZero(r0_), 0.0f);
+    const float radius1 = std::max(ClampNonFiniteToZero(r1_), 0.0f);
 
     if (GetDegenerateHandling() == DegenerateHandling::kDisallow &&
         p0_ == p1_ && radius0 == radius1) {
@@ -457,8 +458,9 @@ class RadialGradient final : public Gradient {
     }
 
     return PaintShader::MakeTwoPointConicalGradient(
-        FloatPointToSkPoint(p0_), radius0, FloatPointToSkPoint(p1_), radius1,
-        colors.data(), pos.data(), static_cast<int>(colors.size()), tile_mode,
+        gfx::PointFToSkPoint(ClampNonFiniteToZero(p0_)), radius0,
+        gfx::PointFToSkPoint(ClampNonFiniteToZero(p1_)), radius1, colors.data(),
+        pos.data(), static_cast<int>(colors.size()), tile_mode,
         sk_interpolation, 0 /* flags */, matrix, fallback_color);
   }
 

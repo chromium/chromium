@@ -459,7 +459,6 @@
 <translation id="3114507951000454849">Կարդացեք այսօրվա նորությունները <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Այլ մանրամասներ</translation>
 <translation id="3123734510202723619">Հայտարարություններ</translation>
-<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> օգտատերը փոխել է «<ph name="TAB_NAME" />» ներդիրը</translation>
 <translation id="3148237711805373460">Անցնել</translation>
 <translation id="314939179385989105">Chrome-ի գլխավոր էջ</translation>
 <translation id="3158667104057012316">Ձեռքով տեսակավորում</translation>
@@ -840,14 +839,12 @@
 <translation id="4910889077668685004">Հավելվածներ վճարումների համար</translation>
 <translation id="4912413785358399818">Տեղափոխել ներդիրը</translation>
 <translation id="4913169188695071480">Դադարեցնել թարմացումը</translation>
-<translation id="4918086044614829423">Ընդունել</translation>
 <translation id="4925120120285606924">Սքրինշոթ՝ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Ձեր գաղտնաբառերը կարտահանվեն և կներբեռնվեն տեքստային ֆայլի տեսքով։ Դրանք տեսանելի կլինեն բոլոր օգտատերերին և հավելվածներին, որոնց հասանելի է նպատակային պանակը։</translation>
 <translation id="4926901776383726965">Դուք կարող եք պահել պատկերներն ու ֆայլերը՝ անցանց դիտելու կամ այլ հավելվածներում բացելու համար</translation>
 <translation id="4932247056774066048">Դուք դուրս եք գալիս <ph name="DOMAIN_NAME" /> տիրույթի ադմինիստրատորի կողմից կառավարվող հաշվից: Chrome-ի ձեր տվյալները կհեռացվեն այս սարքից, սակայն կպահպանվեն Google հաշվում:</translation>
 <translation id="4943703118917034429">Վիրտուալ իրականություն</translation>
 <translation id="4943872375798546930">Արդյունքներ չկան</translation>
-<translation id="4953833914914492602">«<ph name="TAB_GROUP_NAME" />» ներդիրների խումբն այլևս հասանելի չէ</translation>
 <translation id="4957722034734105353">Իմանալ ավելին…</translation>
 <translation id="4961107849584082341">Թարգմանել կայքը</translation>
 <translation id="4964614743143953889">Chrome-ը զգուշացնում է ձեզ վտանգավոր կայքերի և ներբեռնումների մասին</translation>
@@ -966,7 +963,6 @@
 <translation id="5526281268548144413">Հնարավոր չէ փակել ներդիրները, որոնք բացված են մեկից ավելի պատուհանում</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# ր առաջ}one{# ր առաջ}other{# ր առաջ}}</translation>
 <translation id="5548606607480005320">Անվտանգության ստուգում</translation>
-<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> օգտատերը միացել է «<ph name="TAB_GROUP_NAME" />» ներդիրների խմբին</translation>
 <translation id="5554520618550346933">Երբ գաղտնաբառ եք օգտագործում, Chrome-ը զգուշացնում է ձեզ, եթե այն հրապարակվել է համացանցում։ Այդ ժամանակ ձեր գաղտնաբառերը և օգտանունները գաղտնագրվում են, այնպես որ ոչ ոք, այդ թվում՝ Google-ը, չի կարող կարդալ դրանք։</translation>
 <translation id="5555525474779371165">Ընտրեք Ապահով դիտարկման պաշտպանության տեսակը</translation>
 <translation id="5556459405103347317">Վերաբեռնել</translation>
@@ -1183,7 +1179,6 @@
 <translation id="6481963882741794338">Կապեք Chrome-ը Google-ի մյուս ծառայությունների հետ՝ անհատականացման և այլ գործընթացների համար</translation>
 <translation id="6482749332252372425"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ հիշողությունում բավարար տեղ չկա:</translation>
 <translation id="6486420406192123355">Այս PDF ֆայլն անապահով կապ օգտագործող կայքից է</translation>
-<translation id="6495590690749880440">Բացե՞լ ներդիրների խումբը</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Ֆայլը ներբեռնվեց}one{Ներբեռնվեց # ֆայլ}other{Ներբեռնվեց # ֆայլ}}</translation>
 <translation id="6508722015517270189">Վերագործարկեք Chrome-ը</translation>
 <translation id="6518133107902771759">Ստուգել</translation>
@@ -1617,7 +1612,6 @@
 <translation id="8282297628636750033">Կայքերում հնարավորինս կիրառել մուգ թեման</translation>
 <translation id="8282950411412455249">Բացել անվտանգության կարգավորումները</translation>
 <translation id="8306751933352925837">Գաղտնաբառերը շուտով կդադարեն աշխատել այս սարքում։ Թարմացրեք Google Play ծառայությունները՝ ձեր գաղտնաբառերն օգտագործելու համար։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
-<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> օգտատերը հեռացրել է «<ph name="TAB_NAME" />» ներդիրը</translation>
 <translation id="8310451567823644042">Գաղտնաբառերը շուտով կդադարեն աշխատել</translation>
 <translation id="831192587911042850">Ավելացնում է ընթացիկ կայքը վեբ կայքերի ցանկում, որոնց հետևում եք։</translation>
 <translation id="8320212361750431956">Վերջին գործողությունները</translation>

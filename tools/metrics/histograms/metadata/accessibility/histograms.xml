@@ -152,7 +152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.FindElementType.Usage2.{RunningATs}"
-    enum="AccessibilityPredicateType" expires_after="2025-07-27">
+    enum="AccessibilityPredicateType" expires_after="2025-09-07">
   <owner>mschillaci@google.com</owner>
   <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.InlineTextBoxes.Bundle.{CallLocation}"
-    enum="AccessibilityModeBundleEnum" expires_after="2025-08-24">
+    enum="AccessibilityModeBundleEnum" expires_after="2025-09-07">
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.InlineTextBoxes.DuplicateRequest"
-    enum="Boolean" expires_after="2025-08-24">
+    enum="Boolean" expires_after="2025-09-07">
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
@@ -445,7 +445,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.Performance.OneShotTreeSearch"
-    units="microseconds" expires_after="2025-07-27">
+    units="microseconds" expires_after="2025-09-07">
   <owner>mschillaci@google.com</owner>
   <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -463,8 +463,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Android.Performance.SpannableCreationTime"
-    units="ms" expires_after="2025-07-27">
+<histogram name="Accessibility.Android.Performance.SpannableCreationTime2"
+    units="microseconds" expires_after="2025-09-07">
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -473,12 +473,14 @@ chromium-metrics-reviews@google.com.
     performance impact of the AccessibilityTextFormatting feature and is meant
     to be temporary. The histogram is recorded immediately before the
     constructed Spannable is set on the node.
+
+    Note: This metric is only recorded on devices with high-resolution clocks.
   </summary>
 </histogram>
 
 <histogram
     name="Accessibility.Android.Performance.TimeUntilFirstAccessibilityFocus"
-    units="ms" expires_after="2025-07-27">
+    units="ms" expires_after="2025-09-07">
   <owner>mschillaci@google.com</owner>
   <owner>lucasradaelli@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -492,7 +494,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.UpdateAccessibilityServices.DidPoll"
-    enum="BooleanHit" expires_after="2025-05-04">
+    enum="BooleanHit" expires_after="2025-09-07">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -515,7 +517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.UpdateAccessibilityServices.PollTimeout"
-    enum="BooleanHit" expires_after="2025-05-04">
+    enum="BooleanHit" expires_after="2025-09-07">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -768,8 +770,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The caret blink interval rate, in milliseconds, chosen by the user, from 12
     possible values in chrome os settings. 0ms means &quot;do not blink&quot;,
-    and the default value is 500ms. Logged once, 45 seconds after startup. For
-    how users adjust the setting from settings, see
+    and the default value is 500ms. Logged once after startup. For how users
+    adjust the setting from settings, see
     ChromeOS.Settings.Accessibility.CaretBlinkInterval, which logs each time the
     setting changes.
   </summary>
@@ -780,8 +782,8 @@ chromium-metrics-reviews@google.com.
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    The color correction filter intensity chosen by the user. Logged once, 45
-    seconds after startup. For how users adjust the setting from settings, see
+    The color correction filter intensity chosen by the user. Logged once after
+    startup. For how users adjust the setting from settings, see
     ChromeOS.Settings.Accessibility.ColorCorrection.FilterAmount, which logs
     each time the setting changes.
   </summary>
@@ -792,7 +794,7 @@ chromium-metrics-reviews@google.com.
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    The color correction filter type chosen by the user. Logged once, 45 seconds
+    The color correction filter type chosen by the user. Logged once seconds
     after startup. For how users adjust the setting from settings, see
     ChromeOS.Settings.Accessibility.ColorCorrection.FilterType, which logs each
     time the setting changes.
@@ -922,8 +924,8 @@ chromium-metrics-reviews@google.com.
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Cursor size of the Chrome OS Large Cursor (logged once 45 secs after
-    startup). This replaced Accessibility.CrosLargeCursorSize in M124.
+    Cursor size of the Chrome OS Large Cursor (logged once after startup). This
+    replaced Accessibility.CrosLargeCursorSize in M124.
   </summary>
 </histogram>
 
@@ -1287,7 +1289,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<!-- This set of histograms is recorded once, 45 seconds after startup.
+<!-- This set of histograms is recorded once after startup.
 Do not add new variants to this histogram unless they are recorded in the same way,
 even if they fit the naming pattern. -->
 
@@ -1297,7 +1299,7 @@ even if they fit the naming pattern. -->
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Note: This metric is logged once 45 seconds after startup.
+    Note: This metric is logged once after startup.
 
     Whether the user has enabled the Chrome OS feature: {SettingType}
   </summary>
@@ -1442,6 +1444,18 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.EngineUse.PageNavsUntilStart" units="count"
+    expires_after="2025-09-14">
+  <owner>mschillaci@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    This histogram tracks the number of page navigations from start-up until the
+    kWebContents AXMode is first used, up until 10000. This is tracked only one
+    per instance, and is recorded as the accessibility code is enable.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.EngineUse.TimeUntilStart" units="ms"
     expires_after="2025-09-14">
   <owner>mschillaci@google.com</owner>
@@ -1521,8 +1535,8 @@ even if they fit the naming pattern. -->
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Whether the Chrome accessibility image label setting is on for Android.
-    Logged once 45 secs after profile open, which always happens when the
-    browser starts.
+    Logged when the profile opens via browser startup, and any time an image
+    labelling setting changes.
   </summary>
 </histogram>
 
@@ -1544,8 +1558,8 @@ even if they fit the naming pattern. -->
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Whether the Chrome accessibility image label setting for Android is set to
-    only be enabled on a Wi-Fi connection. Logged once 45 secs after profile
-    open, which always happens when the browser starts.
+    only be enabled on a Wi-Fi connection. Logged when the profile opens via
+    browser startup, and any time an image labelling setting changes.
   </summary>
 </histogram>
 
@@ -1632,10 +1646,11 @@ even if they fit the naming pattern. -->
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Whether the Chrome accessibility image label setting is on. Logged once 45
-    secs after profile open. Only logged for regular profiles, Incognito
-    profiles, and guest off-the-record profiles, as these are the only profiles
-    that can display web content.
+    Whether the Chrome accessibility image label setting is on. Logged when the
+    profile opens via browser startup, and any time an image labelling setting
+    changes. Only logged for regular profiles, Incognito profiles, and guest
+    off-the-record profiles, as these are the only profiles that can display web
+    content.
   </summary>
 </histogram>
 
@@ -2005,7 +2020,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.MainNodeAnnotations.AnnotationResult"
-    enum="MainNodeAnnotationResult" expires_after="2025-07-13">
+    enum="MainNodeAnnotationResult" expires_after="2025-09-21">
   <owner>abigailbklein@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2060,8 +2075,8 @@ even if they fit the naming pattern. -->
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Whether the Chrome OS OOBE startup sound is enabled (logged once 45 secs
-    after startup).
+    Whether the Chrome OS OOBE startup sound is enabled (logged once after
+    startup).
   </summary>
 </histogram>
 
@@ -2441,7 +2456,7 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.Performance.SendPendingAccessibilityEvents.PostLoad2"
-    units="microseconds" expires_after="2025-05-04">
+    units="microseconds" expires_after="2025-09-07">
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
@@ -3357,7 +3372,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.VTTContainsStyleBlock" enum="BooleanEnabled"
-    expires_after="2025-06-27">
+    expires_after="2025-09-21">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -3427,7 +3442,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.WinAPIs.UIAutomation" enum="BooleanEnabled"
-    expires_after="2025-07-06">
+    expires_after="2025-09-21">
   <owner>aleventhal@chromium.org</owner>
   <owner>almaher@microsoft.com</owner>
   <owner>benjamin.beaudry@microsoft.com</owner>
@@ -3443,8 +3458,8 @@ even if they fit the naming pattern. -->
   <owner>almaher@microsoft.com</owner>
   <summary>
     Tracks which Windows high contrast theme is set in system settings (logged
-    once 45 secs after startup). AccessibilityHighContrastColorScheme::None
-    indicates that high contrast mode is not enabled.
+    once after startup). AccessibilityHighContrastColorScheme::None indicates
+    that high contrast mode is not enabled.
   </summary>
 </histogram>
 
@@ -3537,6 +3552,18 @@ even if they fit the naming pattern. -->
   <summary>
     Records whether current page was excluded because it was found to be mobile
     friendly. Recorded when ReaderModeManager gets a distillation result.
+  </summary>
+</histogram>
+
+<histogram
+    name="DomDistiller.Android.OnDistillableResult.DistillablePageExcludedByRequestDesktopSite"
+    enum="Boolean" expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records whether the current page is not distillable only because the user is
+    requesting the desktop site. Recorded when ReaderModeManager gets a
+    distillation result.
   </summary>
 </histogram>
 

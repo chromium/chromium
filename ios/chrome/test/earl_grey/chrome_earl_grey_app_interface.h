@@ -358,11 +358,6 @@ enum class TipsNotificationType;
 
 #pragma mark - Sync Utilities (EG2)
 
-// Waits for the sync feature to be enabled/disabled. See SyncService::
-// IsSyncFeatureEnabled() for details. If not succeeded a GREYAssert is induced.
-+ (NSError*)waitForSyncFeatureEnabled:(BOOL)isEnabled
-                          syncTimeout:(base::TimeDelta)timeout;
-
 // Waits for sync to become fully active; see
 // SyncService::TransportState::ACTIVE for details. If not succeeded a
 // GREYAssert is induced.

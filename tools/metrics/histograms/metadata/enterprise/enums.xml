@@ -2214,6 +2214,7 @@ chromium-metrics-reviews@google.com.
   <int value="1346" label="GenAIInlineImageSettings"/>
   <int value="1347" label="UserSecuritySignalsReporting"/>
   <int value="1348" label="UserSecurityAuthenticatedReporting"/>
+  <int value="1349" label="HappyEyeballsV3Enabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

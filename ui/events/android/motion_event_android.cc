@@ -335,7 +335,7 @@ float MotionEventAndroid::GetTwist(size_t pointer_index) const {
 }
 
 base::TimeTicks MotionEventAndroid::GetDownTime() const {
-  DCHECK(!cached_down_time_ms_.is_null());
+  CHECK(!cached_down_time_ms_.is_null());
   return cached_down_time_ms_;
 }
 

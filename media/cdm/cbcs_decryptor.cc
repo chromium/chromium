@@ -39,7 +39,7 @@ bool DecryptWithPattern(base::span<const uint8_t> key,
                         base::span<const uint8_t> iv,
                         const EncryptionPattern& pattern,
                         base::span<const uint8_t> input_data,
-                        uint8_t* output_data) {
+                        base::span<uint8_t> output_data) {
   // The AES_CBC decryption is reset for each subsample.
   AesCbcCrypto aes_cbc_crypto;
   if (!aes_cbc_crypto.Initialize(key, iv)) {
@@ -77,8 +77,7 @@ bool DecryptWithPattern(base::span<const uint8_t> key,
   // repeat until the end. Note that the input does not have to contain
   // a full pattern or even |crypt_byte_block| blocks at the end.
   size_t blocks_processed = 0;
-  const uint8_t* src = input_data.data();
-  uint8_t* dest = output_data;
+  size_t offset = 0;
   bool is_encrypted_blocks = false;
   while (blocks_processed < total_blocks) {
     is_encrypted_blocks = !is_encrypted_blocks;
@@ -90,6 +89,8 @@ bool DecryptWithPattern(base::span<const uint8_t> key,
       continue;
 
     size_t bytes_to_process = blocks_to_process * kAesBlockSizeInBytes;
+    auto src = input_data.subspan(offset, bytes_to_process);
+    auto dest = output_data.subspan(offset, bytes_to_process);
 
     // From ISO/IEC 23001-7:2016(E), section 10.4.2:
     // For a typical pattern length of 10 (e.g. 1:9) "the pattern is repeated
@@ -100,22 +101,24 @@ bool DecryptWithPattern(base::span<const uint8_t> key,
     // remain where the pattern is terminated by the byte length of the range
     // BytesOfProtectedData, is left unencrypted."
     if (is_encrypted_blocks) {
-      if (!aes_cbc_crypto.Decrypt(base::span(src, bytes_to_process), dest)) {
+      if (!aes_cbc_crypto.Decrypt(src, dest)) {
         return false;
       }
     } else {
-      memcpy(dest, src, bytes_to_process);
+      dest.copy_from(src);
     }
 
     blocks_processed += blocks_to_process;
-    src += bytes_to_process;
-    dest += bytes_to_process;
+    offset += bytes_to_process;
   }
 
   // Any partial block data remaining in this subsample is considered
   // unencrypted so simply copy it into |dest|.
-  if (remaining_bytes > 0)
-    memcpy(dest, src, remaining_bytes);
+  if (remaining_bytes > 0) {
+    auto src = input_data.subspan(offset, remaining_bytes);
+    auto dest = output_data.subspan(offset, remaining_bytes);
+    dest.copy_from(src);
+  }
 
   return true;
 }
@@ -149,7 +152,7 @@ scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(const DecoderBuffer& input,
   if (subsamples.empty()) {
     // Assume the whole buffer is encrypted.
     return DecryptWithPattern(key, base::as_byte_span(decrypt_config->iv()),
-                              pattern, base::span(input), output_data.data())
+                              pattern, base::span(input), output_data)
                ? buffer
                : nullptr;
   }
@@ -181,7 +184,7 @@ scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(const DecoderBuffer& input,
       dest = dest_rem;
       if (!DecryptWithPattern(key,
                               base::as_bytes(base::span(decrypt_config->iv())),
-                              pattern, src_cypher, dest_cypher.data())) {
+                              pattern, src_cypher, dest_cypher)) {
         return nullptr;
       }
     }

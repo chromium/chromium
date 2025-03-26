@@ -19,9 +19,7 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.navigationBar.translucent = NO;
   self.navigationBar.prefersLargeTitles = YES;
-  self.toolbar.translucent = NO;
 
   self.navigationBar.barTintColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];

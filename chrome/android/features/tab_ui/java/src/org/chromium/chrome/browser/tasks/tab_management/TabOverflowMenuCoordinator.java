@@ -86,7 +86,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
                 OnItemClickedCallback<T> onItemClickedCallback,
                 T id,
                 @Nullable String collaborationId,
-                @DimenRes int popupWidthRes,
+                int popupWidthPx,
                 @Nullable Callback<OverflowMenuHolder<T>> onDismiss,
                 Activity activity) {
             mContext = activity;
@@ -152,8 +152,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
             } else {
                 mMenuWindow.setAnimateFromAnchor(true);
             }
-            int popupWidth = mContext.getResources().getDimensionPixelSize(popupWidthRes);
-            mMenuWindow.setMaxWidth(popupWidth);
+            mMenuWindow.setMaxWidth(popupWidthPx);
 
             // Resize if any new elements are added.
             adapter.registerDataSetObserver(
@@ -207,6 +206,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
     protected @Nullable TabGroupSyncService mTabGroupSyncService;
 
     private final @LayoutRes int mMenuLayout;
+    private final @NonNull Context mContext;
     private final OnItemClickedCallback<T> mOnItemClickedCallback;
     private @Nullable OverflowMenuHolder<T> mMenuHolder;
 
@@ -216,19 +216,22 @@ public abstract class TabOverflowMenuCoordinator<T> {
      * @param tabModelSupplier The supplier of the tab model.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
      * @param collaborationService Used for checking the user is the owner of a group.
+     * @param context The {@link Context} that the coordinator resides in.
      */
     protected TabOverflowMenuCoordinator(
             @LayoutRes int menuLayout,
             OnItemClickedCallback<T> onItemClickedCallback,
             Supplier<TabModel> tabModelSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
-            @NonNull CollaborationService collaborationService) {
+            @NonNull CollaborationService collaborationService,
+            @NonNull Context context) {
         mMenuLayout = menuLayout;
         mOnItemClickedCallback = onItemClickedCallback;
         mTabModelSupplier = tabModelSupplier;
         mTabGroupSyncService = tabGroupSyncService;
         assert collaborationService != null;
         mCollaborationService = collaborationService;
+        mContext = context;
     }
 
     /**
@@ -257,8 +260,13 @@ public abstract class TabOverflowMenuCoordinator<T> {
      */
     protected void buildCollaborationMenuItems(ModelList itemList, @MemberRole int memberRole) {}
 
-    /** Concrete class required to get a specific menu width for the menu pop up window. */
-    protected abstract @DimenRes int getMenuWidth();
+    /**
+     * Concrete class required to get a specific menu width for the menu pop up window.
+     *
+     * @param anchorViewWidthPx The width of the anchor view, in px.
+     * @return The desired width of the popup, in px.
+     */
+    protected abstract int getMenuWidth(int anchorViewWidthPx);
 
     /** Returns the collaborationId relevant for the object with ID {@code id} */
     protected abstract @Nullable String getCollaborationIdOrNull(T id);
@@ -322,7 +330,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
                         mOnItemClickedCallback,
                         id,
                         collaborationId,
-                        getMenuWidth(),
+                        getMenuWidth(anchorViewRectProvider.getRect().width()),
                         this::onDismiss,
                         activity);
         buildCustomView(mMenuHolder.getContentView(), isIncognito);
@@ -360,6 +368,13 @@ public abstract class TabOverflowMenuCoordinator<T> {
 
     protected @Nullable TabModel getTabModel() {
         return mTabModelSupplier.get();
+    }
+
+    /**
+     * @return The DP measure {@param dimenRes}, converted to px.
+     */
+    protected int getDimensionPixelSize(@DimenRes int dimenRes) {
+        return mContext.getResources().getDimensionPixelSize(dimenRes);
     }
 
     private void onDismiss(OverflowMenuHolder<T> menuHolder) {

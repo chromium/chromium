@@ -7,10 +7,14 @@
 
 import json
 import os
+import sys
 
 from google.protobuf import any_pb2
 from google.protobuf.json_format import MessageToDict
 
+# Add to sys.path so that this module can be imported by other modules that
+# have different path setup, e.g. android test runner, and ios test runner.
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from average import Average
 from count import Count
 from data_points import DataPoints

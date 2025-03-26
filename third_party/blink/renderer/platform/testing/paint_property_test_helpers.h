@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace blink {
@@ -114,7 +115,8 @@ inline EffectPaintPropertyNode* CreateFilterEffect(
   EffectPaintPropertyNode::State state;
   state.local_transform_space = &local_transform_space;
   state.output_clip = output_clip;
-  state.filter = std::move(filter);
+  state.filter_info = std::make_unique<EffectPaintPropertyNode::FilterInfo>(
+      filter, filter.MapRect(gfx::ToEnclosingRect(filter.ReferenceBox())));
   state.direct_compositing_reasons = compositing_reasons;
   state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
       NewUniqueObjectId(), CompositorElementIdNamespace::kEffectFilter);
@@ -137,7 +139,8 @@ inline EffectPaintPropertyNode* CreateAnimatingFilterEffect(
   EffectPaintPropertyNode::State state;
   state.local_transform_space = &parent.Unalias().LocalTransformSpace();
   state.output_clip = output_clip;
-  state.filter = std::move(filter);
+  state.filter_info = std::make_unique<EffectPaintPropertyNode::FilterInfo>(
+      filter, filter.MapRect(gfx::ToEnclosingRect(filter.ReferenceBox())));
   state.direct_compositing_reasons = CompositingReason::kActiveFilterAnimation;
   state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
       NewUniqueObjectId(), CompositorElementIdNamespace::kEffectFilter);

@@ -37,6 +37,9 @@
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled,
         &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled,
+        &_prefChangeRegistrar);
   }
   return self;
 }
@@ -57,8 +60,14 @@
 }
 
 - (void)fetchLatestShopCardItem {
-  if (!_prefService->GetBoolean(
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1 &&
+      !_prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled)) {
+    return;
+  }
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm2 &&
+      !_prefService->GetBoolean(
+          prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled)) {
     return;
   }
   // Populate the item if it is not already initialized.
@@ -102,6 +111,16 @@
       prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled) {
     if (_prefService->GetBoolean(
             prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled)) {
+      // TODO(crbug.com/404564187) Fetch ShopCardData if ShopCardData
+      // is nil, then insert the card.
+      [self.delegate insertShopCard];
+    } else {
+      [self.delegate removeShopCard];
+    }
+  } else if (preferenceName ==
+             prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled) {
+    if (_prefService->GetBoolean(
+            prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled)) {
       // TODO(crbug.com/404564187) Fetch ShopCardData if ShopCardData
       // is nil, then insert the card.
       [self.delegate insertShopCard];

@@ -9,7 +9,6 @@ import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipData.Item;
-import android.content.ClipDescription;
 import android.content.Intent;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
@@ -25,10 +24,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
-import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragAndDropBrowserDelegate;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.ui.dragdrop.DropDataAndroid;
@@ -44,19 +41,6 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     private static Item sItemWithPendingIntentForTesting;
     private static boolean sDefinedItemWithPendingIntentForTesting;
     private static boolean sClipDataItemBuilderNotFound;
-
-    private final String[] mSupportedTabMimeTypes =
-            new String[] {
-                MimeTypeUtils.CHROME_MIMETYPE_TAB,
-                ClipDescription.MIMETYPE_TEXT_PLAIN,
-                ClipDescription.MIMETYPE_TEXT_INTENT,
-                MimeTypeUtils.CHROME_MIMETYPE_LINK
-            };
-
-    // TODO(crbug.com/384945274): Support dragging group to new instance.
-    private final String[] mSupportedGroupMimeTypes =
-            new String[] {MimeTypeUtils.CHROME_MIMETYPE_TAB_GROUP};
-
     private final Supplier<Activity> mActivitySupplier;
     private final boolean mSupportDropInChrome;
     private final boolean mSupportAnimatedImageDragShadow;
@@ -125,55 +109,45 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
         ChromeDropDataAndroid chromeDropDataAndroid = (ChromeDropDataAndroid) dropData;
 
         // Dragging to create new instance.
-        // TODO(crbug.com/384945274): Support dragging group to new instance.
-        if (chromeDropDataAndroid.hasBrowserContent()
-                && chromeDropDataAndroid.allowDragToCreateInstance) {
-            ClipData clipData = null;
-            if (chromeDropDataAndroid instanceof ChromeTabDropDataAndroid) {
-                clipData =
-                        buildClipDataForTabTearing(
-                                ((ChromeTabDropDataAndroid) chromeDropDataAndroid).tab,
-                                chromeDropDataAndroid.windowId);
-            }
+        if (chromeDropDataAndroid.allowDragToCreateInstance) {
+            ClipData clipData =
+                    buildClipDataForTabOrGroupTearing(
+                            chromeDropDataAndroid,
+                            chromeDropDataAndroid.windowId,
+                            /* destWindowId= */ MultiWindowUtils.INVALID_INSTANCE_ID);
             if (clipData != null) return clipData;
         }
 
         // Dragging to existing instances.
-        if (chromeDropDataAndroid instanceof ChromeTabDropDataAndroid tabDropData) {
-            String text =
-                    chromeDropDataAndroid.hasBrowserContent()
-                            ? chromeDropDataAndroid.buildTabClipDataText()
-                            : dropData.text;
-            return new ClipData(null, mSupportedTabMimeTypes, new Item(text));
-        } else if (chromeDropDataAndroid instanceof ChromeTabGroupDropDataAndroid groupDropData) {
-            return new ClipData(null, mSupportedGroupMimeTypes, new Item(dropData.text));
-        }
-        return null;
+        String text = chromeDropDataAndroid.buildTabClipDataText();
+        return new ClipData(null, chromeDropDataAndroid.getSupportedMimeTypes(), new Item(text));
     }
 
-    private @Nullable ClipData buildClipDataForTabTearing(Tab tab, int sourceWindowId) {
+    private @Nullable ClipData buildClipDataForTabOrGroupTearing(
+            ChromeDropDataAndroid chromeDropDataAndroid, int sourceWindowId, int destWindowId) {
+        @Nullable
         Intent intent =
-                DragAndDropLauncherActivity.getTabIntent(
-                        tab.getContext(),
-                        tab,
+                DragAndDropLauncherActivity.buildTabOrGroupIntent(
+                        chromeDropDataAndroid,
+                        mActivitySupplier.get(),
                         sourceWindowId,
-                        /* destWindowId= */ MultiWindowUtils.INVALID_INSTANCE_ID);
-        if (intent != null) {
-            ActivityOptions opts = ActivityOptions.makeBasic();
-            ApiCompatibilityUtils.setCreatorActivityOptionsBackgroundActivityStartMode(opts);
-            PendingIntent pendingIntent =
-                    PendingIntent.getActivity(
-                            tab.getContext(),
-                            0,
-                            intent,
-                            PendingIntent.FLAG_IMMUTABLE,
-                            opts.toBundle());
-            Item item = buildClipDataItemWithPendingIntent(pendingIntent);
-            return item == null
-                    ? new ClipData(null, mSupportedTabMimeTypes, new Item(intent))
-                    : new ClipData(null, mSupportedTabMimeTypes, item);
-        }
-        return null;
+                        destWindowId);
+
+        if (intent == null) return null;
+        ActivityOptions opts = ActivityOptions.makeBasic();
+        ApiCompatibilityUtils.setCreatorActivityOptionsBackgroundActivityStartMode(opts);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(
+                        mActivitySupplier.get(),
+                        0,
+                        intent,
+                        PendingIntent.FLAG_IMMUTABLE,
+                        opts.toBundle());
+        Item item = buildClipDataItemWithPendingIntent(pendingIntent);
+        return new ClipData(
+                null,
+                chromeDropDataAndroid.getSupportedMimeTypes(),
+                (item != null ? item : new Item(intent)));
     }
 
     @Override

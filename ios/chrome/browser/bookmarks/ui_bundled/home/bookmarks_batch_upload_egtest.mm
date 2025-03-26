@@ -200,34 +200,6 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
       @"Invalid metric count.");
 }
 
-// Tests that no batch upload dialog is shown if the user is syncing.
-- (void)testNoBatchUploadDialogIfSyncing {
-  // Add one local bookmark.
-  [BookmarkEarlGrey addBookmarkWithTitle:@"example1"
-                                     URL:@"https://www.example1.com"
-                               inStorage:BookmarkStorageType::kLocalOrSyncable];
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Adds `fakeIdentity` and turns sync on.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  [BookmarkEarlGreyUI openBookmarks];
-
-  // Verify that the batch upload section is not visible.
-  ExpectNoBatchUploadDialog();
-
-  GREYAssertNil(
-      [MetricsAppInterface
-           expectCount:0
-             forBucket:YES
-          forHistogram:
-              @"IOS.Bookmarks.BulkSaveBookmarksInAccountViewRecreated"],
-      @"Invalid metric count.");
-}
-
 // Tests that batch upload dialog is shown if the user is signed-in with the
 // last syncing account.
 - (void)testBatchUploadDialogIfSignedInWithLastSyncingAccount {

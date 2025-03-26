@@ -17,9 +17,13 @@
   offer: [
     {
       protocol: [
-        "fuchsia.logger.LogSink",
         "fuchsia.tracing.provider.Registry",
       ],
+      from: "parent",
+      to: "#isolated_font_provider",
+    },
+    {
+      dictionary: "diagnostics",
       from: "parent",
       to: "#isolated_font_provider",
     },

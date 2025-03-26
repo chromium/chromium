@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -213,12 +214,12 @@ void StorageMonitorWinTest::DoMTPDeviceTest(const std::wstring& pnp_device_id,
       dev_interface_broadcast(
           static_cast<DEV_BROADCAST_DEVICEINTERFACE*>(malloc(size)));
   DCHECK(dev_interface_broadcast);
-  ZeroMemory(dev_interface_broadcast.get(), size);
+  UNSAFE_TODO(ZeroMemory(dev_interface_broadcast.get(), size));
   dev_interface_broadcast->dbcc_size = size;
   dev_interface_broadcast->dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
   dev_interface_broadcast->dbcc_classguid = guidDevInterface;
-  memcpy(dev_interface_broadcast->dbcc_name, pnp_device_id.data(),
-         device_id_size);
+  UNSAFE_TODO(memcpy(dev_interface_broadcast->dbcc_name, pnp_device_id.data(),
+                     device_id_size));
 
   int expect_attach_calls = observer_.attach_calls();
   int expect_detach_calls = observer_.detach_calls();

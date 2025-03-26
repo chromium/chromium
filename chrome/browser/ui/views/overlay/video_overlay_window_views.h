@@ -184,6 +184,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
       const;
   global_media_controls::MediaProgressView* progress_view_for_testing() const;
   views::Label* timestamp_for_testing() const;
+  views::Label* live_status_for_testing() const;
   views::ImageView* favicon_view_for_testing() const;
   views::Label* origin_for_testing() const;
   CloseImageButton* close_button_for_testing() const;
@@ -390,6 +391,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   raw_ptr<SimpleOverlayWindowImageButton> next_slide_controls_view_ = nullptr;
   raw_ptr<global_media_controls::MediaProgressView> progress_view_ = nullptr;
   raw_ptr<views::Label> timestamp_ = nullptr;
+  raw_ptr<views::Label> live_status_ = nullptr;
   raw_ptr<AutoPipSettingOverlayView> overlay_view_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -442,6 +444,9 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // Tracks the current position of media playback. Used for seeking to the
   // proper time when the user interacts with the progress bar.
   media_session::MediaPosition position_;
+
+  // True if the video in the picture-in-picture window is live.
+  bool is_live_ = false;
 
   // Whether or not the current frame sink for the surface displayed in the
   // |video_view_| is registered as the child of the overlay window frame sink.

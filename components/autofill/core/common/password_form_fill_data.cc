@@ -21,25 +21,35 @@ PasswordAndMetadata& PasswordAndMetadata::operator=(PasswordAndMetadata&&) =
     default;
 PasswordAndMetadata::~PasswordAndMetadata() = default;
 
-PasswordSuggestionRequest::PasswordSuggestionRequest(
-    FieldRendererId element_id,
-    const FormData& form_data,
-    AutofillSuggestionTriggerSource trigger_source,
-    uint64_t username_field_index,
-    uint64_t password_field_index,
-    base::i18n::TextDirection text_direction,
-    const std::u16string& typed_username,
-    bool show_webauthn_credentials,
-    const gfx::RectF& bounds)
+TriggeringField::TriggeringField(FieldRendererId element_id,
+                                 AutofillSuggestionTriggerSource trigger_source,
+                                 base::i18n::TextDirection text_direction,
+                                 const std::u16string& typed_username,
+                                 bool show_webauthn_credentials,
+                                 const gfx::RectF& bounds)
     : element_id(element_id),
-      form_data(form_data),
       trigger_source(trigger_source),
-      username_field_index(username_field_index),
-      password_field_index(password_field_index),
       text_direction(text_direction),
       typed_username(typed_username),
       show_webauthn_credentials(show_webauthn_credentials),
       bounds(bounds) {}
+
+TriggeringField::TriggeringField() = default;
+TriggeringField::TriggeringField(const TriggeringField&) = default;
+TriggeringField& TriggeringField::operator=(const TriggeringField&) = default;
+TriggeringField::TriggeringField(TriggeringField&&) = default;
+TriggeringField& TriggeringField::operator=(TriggeringField&&) = default;
+TriggeringField::~TriggeringField() = default;
+
+PasswordSuggestionRequest::PasswordSuggestionRequest(
+    TriggeringField field,
+    const FormData& form_data,
+    uint64_t username_field_index,
+    uint64_t password_field_index)
+    : field(field),
+      form_data(form_data),
+      username_field_index(username_field_index),
+      password_field_index(password_field_index) {}
 
 PasswordSuggestionRequest::PasswordSuggestionRequest() = default;
 PasswordSuggestionRequest::PasswordSuggestionRequest(
@@ -64,17 +74,19 @@ PasswordFormFillData::~PasswordFormFillData() = default;
 
 PasswordFormFillData MaybeClearPasswordValues(
     const PasswordFormFillData& data) {
-  // In case when there is a username on a page (for example in a hidden field),
-  // credentials from |additional_logins| could be used for filling on load. So
-  // in case of filling on load nor |password_field| nor |additional_logins|
-  // can't be cleared
+  // In case when there is a username on a page (for example in a hidden
+  // field), credentials from |additional_logins| could be used for filling
+  // on load. So in case of filling on load nor |password_field| nor
+  // |additional_logins| can't be cleared
   bool is_fallback = data.password_element_renderer_id.is_null();
-  if (!data.wait_for_username && !is_fallback)
+  if (!data.wait_for_username && !is_fallback) {
     return data;
+  }
   PasswordFormFillData result(data);
   result.preferred_login.password_value.clear();
-  for (auto& credentials : result.additional_logins)
+  for (auto& credentials : result.additional_logins) {
     credentials.password_value.clear();
+  }
   return result;
 }
 

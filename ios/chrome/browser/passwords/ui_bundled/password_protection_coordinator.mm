@@ -78,8 +78,8 @@
   id<SettingsCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SettingsCommands);
 
-  [handler showSavedPasswordsSettingsFromViewController:self.baseViewController
-                                       showCancelButton:NO];
+  [handler
+      showSavedPasswordsSettingsFromViewController:self.baseViewController];
 }
 
 @end

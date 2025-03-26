@@ -13,24 +13,29 @@ uniform float u_time;
 uniform int u_dark;
 uniform float u_emphasis;
 uniform float u_corner_radius;
+uniform float u_insets;
 uniform float2 u_resolution;
 
+// Applies a uniform insets to coords.
+float2 InsetsCoord(float2 coord, float2 resolution, float insets) {
+  return (1.0 - 2.0 * insets / resolution) * coord + insets;
+}
+
 void BorderDistance(float2 coord, out float delta, out float aa) {
-  float2 tl = vec2(border_width);
+  float2 tl = vec2(border_width) + 2 * u_insets;
   float2 br = u_resolution - tl;
   float2 dtl = coord - tl;
   float2 dbr = br - coord;
 
   float extent = max_extent * u_emphasis;
-  float rounded_extent =
-      extent + u_corner_radius - border_width - half_pixel;
+  float rounded_extent = extent + u_corner_radius - border_width - half_pixel;
   if (dtl.y < extent && dtl.x < extent) {
     delta = extent - distance(coord, tl + vec2(extent));
   } else if (dtl.y < extent && dbr.x < extent) {
     delta = extent - distance(coord, vec2(br.x - extent, tl.y + extent));
   } else if (dbr.y < rounded_extent && dtl.x < rounded_extent) {
-    delta = rounded_extent - distance(
-        coord, vec2(tl.x + rounded_extent, br.y - rounded_extent));
+    delta = rounded_extent -
+            distance(coord, vec2(tl.x + rounded_extent, br.y - rounded_extent));
     aa = half_pixel;
   } else if (dbr.y < rounded_extent && dbr.x < rounded_extent) {
     delta = rounded_extent - distance(coord, br - vec2(rounded_extent));
@@ -41,6 +46,8 @@ void BorderDistance(float2 coord, out float delta, out float aa) {
 }
 
 vec4 main(float2 coord) {
+  coord = InsetsCoord(coord, u_resolution, u_insets);
+
   float4 border_color = light_color;
   if (u_dark > 0) {
     border_color = dark_color;

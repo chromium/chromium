@@ -806,6 +806,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.subapps_apis_require_user_gesture_and_authorization;
   }
 
+  static bool payment_request_enabled(
+      const blink::web_pref::WebPreferences& r) {
+    return r.payment_request_enabled;
+  }
+
   static bool Read(blink::mojom::WebPreferencesDataView r,
                    blink::web_pref::WebPreferences* out);
 };

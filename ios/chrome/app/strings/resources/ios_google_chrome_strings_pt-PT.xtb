@@ -6,7 +6,6 @@
 <translation id="1143896152279775643">A palavra-passe será guardada no Gestor de palavras-passe da Google para <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Abra um novo separador no Chrome</translation>
 <translation id="1166460004393506534">Elimine os dados de navegação no Chrome</translation>
-<translation id="1171255741903316750">Ative a opção "Bloquear separadores de navegação anónima quando fecha o Chrome"</translation>
 <translation id="1179527450541388808">Aceda ao Chrome mais rapidamente a partir da dock do ecrã principal do iPad.</translation>
 <translation id="1180362651362502943">Continue a usar os dados do Chrome na sua Conta Google.</translation>
 <translation id="1200396280085622191">Use o Chrome sempre que tocar em links em mensagens e noutras apps.</translation>
@@ -178,6 +177,7 @@ Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sess�
 <translation id="5716154293141027663">Abra o Chrome sempre que tocar em links noutras apps</translation>
 <translation id="5752489513673657785">Um feed personalizado criado para si pela Google</translation>
 <translation id="5772407442571703917">Transfira o Chrome aqui.</translation>
+<translation id="5777468213129569553">Abrir o Chrome</translation>
 <translation id="5779767936254214055">Bloqueie os seus separadores de navegação anónima quando sai do Chrome ou muda para uma app diferente.</translation>
 <translation id="5808435672482059465">Ver Histórico do Chrome</translation>
 <translation id="5833027901704861726">Alguns dos seus dados do Chrome ainda não foram guardados na conta <ph name="EMAIL" />.

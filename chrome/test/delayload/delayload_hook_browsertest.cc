@@ -7,6 +7,7 @@
 #include <delayimp.h>
 #include <roerrorapi.h>
 
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "chrome/common/win/delay_load_notify_hook.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -36,8 +37,8 @@ FARPROC TestDelayLoadCallbackFunction(unsigned delay_load_event,
   if (delay_load_event == dliNotePreGetProcAddress &&
       base::EqualsCaseInsensitiveASCII(
           delay_load_info->szDll, "api-ms-win-core-winrt-error-l1-1-0.dll") &&
-      strcmp(delay_load_info->dlp.szProcName, "RoFailFastWithErrorContext") ==
-          0) {
+      UNSAFE_TODO(strcmp(delay_load_info->dlp.szProcName,
+                         "RoFailFastWithErrorContext")) == 0) {
     return reinterpret_cast<FARPROC>(RoFailFastWithErrorContextPatch);
   }
 

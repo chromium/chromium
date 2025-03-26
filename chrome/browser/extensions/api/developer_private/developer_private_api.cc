@@ -11,6 +11,7 @@
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/warning_service_factory.h"
+#include "ui/base/clipboard/file_info.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/account_extension_tracker.h"
@@ -124,16 +125,16 @@ base::FilePath DeveloperPrivateAPI::GetUnpackedPath(
   return path_iter->second;
 }
 
-void DeveloperPrivateAPI::SetDraggedPath(content::WebContents* web_contents,
-                                         const base::FilePath& dragged_path) {
+void DeveloperPrivateAPI::SetDraggedFile(content::WebContents* web_contents,
+                                         const ui::FileInfo& dragged_file) {
   WebContentsData* data = GetOrCreateWebContentsData(web_contents);
-  data->dragged_path = dragged_path;
+  data->dragged_file = dragged_file;
 }
 
-base::FilePath DeveloperPrivateAPI::GetDraggedPath(
+ui::FileInfo DeveloperPrivateAPI::GetDraggedFile(
     content::WebContents* web_contents) const {
   const WebContentsData* data = GetWebContentsData(web_contents);
-  return data ? data->dragged_path : base::FilePath();
+  return data ? data->dragged_file : ui::FileInfo();
 }
 
 void DeveloperPrivateAPI::RegisterNotifications() {

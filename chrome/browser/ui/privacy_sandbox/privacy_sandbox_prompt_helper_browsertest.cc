@@ -44,12 +44,6 @@ constexpr char kPrivacySandboxPromptHelperEventHistogram[] =
 std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
   return std::make_unique<syncer::TestSyncService>();
 }
-
-std::unique_ptr<KeyedService> CreateMockPrivacySandboxService(
-    content::BrowserContext*) {
-  return std::make_unique<testing::NiceMock<MockPrivacySandboxService>>();
-}
-
 }  // namespace
 
 class PrivacySandboxPromptHelperTest : public InProcessBrowserTest {
@@ -57,6 +51,33 @@ class PrivacySandboxPromptHelperTest : public InProcessBrowserTest {
   PrivacySandboxPromptHelperTest()
       : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
+  // This setup happens before the tests run as a second browser startup.
+  // Mock service creation happens here so that we have a valid browser() object
+  // to initialize the queue_manager_ with after the first browser startup in
+  // SetUpInProcessBrowserTestFixture().
+  void SetUpOnMainThread() override {
+    mock_privacy_sandbox_service_ = static_cast<MockPrivacySandboxService*>(
+        PrivacySandboxServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            browser()->profile(),
+            base::BindRepeating(&BuildMockPrivacySandboxService)));
+
+    ON_CALL(*mock_privacy_sandbox_service_,
+            GetRequiredPromptType(PrivacySandboxService::SurfaceType::kDesktop))
+        .WillByDefault(testing::Return(TestPromptType()));
+    ON_CALL(*mock_privacy_sandbox_service_, IsPromptOpenForBrowser(testing::_))
+        .WillByDefault(testing::Return(false));
+
+    queue_manager_ =
+        std::make_unique<privacy_sandbox::PrivacySandboxQueueManager>(
+            browser()->profile());
+    ON_CALL(*mock_privacy_sandbox_service_,
+            GetPrivacySandboxNoticeQueueManager())
+        .WillByDefault(testing::ReturnRef(*queue_manager_.get()));
+  }
+
+  void TearDownOnMainThread() override { queue_manager_.reset(); }
+
+  // This setup happens before SetUpOnMainThread() as an initial startup.
   void SetUpInProcessBrowserTestFixture() override {
     PrivacySandboxService::SetPromptDisabledForTests(false);
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -73,20 +94,6 @@ class PrivacySandboxPromptHelperTest : public InProcessBrowserTest {
   void SetupTestFactories(content::BrowserContext* context) {
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&CreateTestSyncService));
-    auto* mock_privacy_sandbox_service =
-        static_cast<MockPrivacySandboxService*>(
-            PrivacySandboxServiceFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    context,
-                    base::BindRepeating(&CreateMockPrivacySandboxService)));
-
-    ON_CALL(*mock_privacy_sandbox_service,
-            GetRequiredPromptType(PrivacySandboxService::SurfaceType::kDesktop))
-        .WillByDefault(testing::Return(TestPromptType()));
-    ON_CALL(*mock_privacy_sandbox_service, IsPromptOpenForBrowser(testing::_))
-        .WillByDefault(testing::Return(false));
-    ON_CALL(*mock_privacy_sandbox_service, IsHoldingHandle())
-        .WillByDefault(testing::Return(true));
   }
 
   virtual PrivacySandboxService::PromptType TestPromptType() {
@@ -122,14 +129,16 @@ class PrivacySandboxPromptHelperTest : public InProcessBrowserTest {
         SyncServiceFactory::GetForProfile(browser()->profile()));
   }
   MockPrivacySandboxService* mock_privacy_sandbox_service() {
-    return static_cast<MockPrivacySandboxService*>(
-        PrivacySandboxServiceFactory::GetForProfile(browser()->profile()));
+    return mock_privacy_sandbox_service_;
   }
   net::EmbeddedTestServer* https_test_server() { return &https_test_server_; }
 
  private:
   base::CallbackListSubscription create_services_subscription_;
   net::EmbeddedTestServer https_test_server_;
+  std::unique_ptr<privacy_sandbox::PrivacySandboxQueueManager> queue_manager_;
+  raw_ptr<MockPrivacySandboxService, DanglingUntriaged>
+      mock_privacy_sandbox_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxPromptHelperTest, NoPromptRequired) {
@@ -288,6 +297,8 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
               PromptOpenedForBrowser(browser(), testing::_))
       .Times(0);
 
+  // Sets up explicit redirect to invalid URL. Otherwise, redirects to
+  // chrome://new-tab-page/, which is considered a valid URL.
   GURL ntp_url = https_test_server()->GetURL("/title1.html");
   ntp_test_utils::SetUserSelectedDefaultSearchProvider(
       browser()->profile(), https_test_server()->base_url().spec(),

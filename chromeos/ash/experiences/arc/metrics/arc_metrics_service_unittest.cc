@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/run_loop.h"
@@ -799,7 +800,7 @@ TEST_P(ArcVmArcMetricsServiceTest, AppLowMemoryDailyKills) {
       if (!vm.has_vm_info()) {
         continue;
       }
-      printf(" %s", VmKillCounterPrefix(vm.vm_info().vm_type()));
+      UNSAFE_TODO(printf(" %s", VmKillCounterPrefix(vm.vm_info().vm_type())));
     }
   }
 

@@ -374,6 +374,11 @@ void GpuDataManagerImpl::FallBackToNextGpuMode() {
   private_->FallBackToNextGpuMode();
 }
 
+void GpuDataManagerImpl::FallBackToNextGpuModeDueToCrash() {
+  base::AutoLock auto_lock(lock_);
+  private_->FallBackToNextGpuModeDueToCrash();
+}
+
 bool GpuDataManagerImpl::CanFallback() const {
   base::AutoLock auto_lock(lock_);
   return private_->CanFallback();

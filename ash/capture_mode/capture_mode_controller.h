@@ -39,7 +39,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
@@ -390,12 +389,21 @@ class ASH_EXPORT CaptureModeController
   void SendMultimodalSearch(const gfx::ImageSkia& image,
                             const std::string& text);
 
-  // Called by `CaptureModeDelegate` when the search result is fetched.
-  // Opens `url` and `image` if the captured region on the screen has not
-  // changed since the request was made.
+  // TODO(hewer): Remove the `image` param when cleaning up the native
+  // implementation.
+  // Called by `CaptureModeDelegate` when the search result is fetched. Opens
+  // `url` if the captured region on the screen has not changed since the
+  // request was made. `image` is used as the thumbnail image for the native
+  // search box; if the Lens Web implementation is enabled, then `image` can be
+  // empty as we use the Lens search box instead.
   void OnSearchUrlFetched(const gfx::Rect& captured_region,
                           const gfx::ImageSkia& image,
                           GURL url);
+
+  // Called by `CaptureModeDelegate` if an error occurs while trying to perform
+  // and image search or text detection. Shows a generic error message in the
+  // action container if the session is active.
+  void OnLensWebError(base::WeakPtr<BaseCaptureModeSession> image_search_token);
 
   // Called by `SearchResultsView` when a search result is opened.
   void OnSearchResultClicked();
@@ -558,33 +566,6 @@ class ASH_EXPORT CaptureModeController
       bool was_cursor_originally_blocked,
       base::WeakPtr<BaseCaptureModeSession> image_search_token,
       scoped_refptr<base::RefCountedMemory> jpeg_bytes);
-
-  // Called when an access token request completes (successfully or not).
-  void OnAccessTokenAvailableForImageSearch(
-      const gfx::Image& original_image,
-      base::WeakPtr<BaseCaptureModeSession> image_search_token,
-      const std::string& access_token);
-  void OnAccessTokenAvailableForCopyText(
-      std::string vsr_id,
-      base::WeakPtr<BaseCaptureModeSession> image_search_token,
-      const std::string& access_token);
-
-  // Called after a resource request is dispatched by a `SimpleURLLoader` and a
-  // response is received.
-  void OnDispatchCompleteForImageSearch(
-      base::WeakPtr<const network::SimpleURLLoader> url_loader,
-      base::WeakPtr<BaseCaptureModeSession> image_search_token,
-      const std::string& access_token,
-      std::unique_ptr<std::string> response_body);
-  void OnDispatchCompleteForCopyText(
-      base::WeakPtr<const network::SimpleURLLoader> url_loader,
-      base::WeakPtr<BaseCaptureModeSession> image_search_token,
-      const std::string& access_token,
-      std::unique_ptr<std::string> response_body);
-
-  // Called after the response to a /qfmetadata GET request is received and the
-  // response body has been decoded.
-  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
   // Called back when on-device text detection is complete to show copy text and
   // smart actions buttons if needed. `image_search_token` is a weak pointer

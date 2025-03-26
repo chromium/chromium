@@ -48,7 +48,7 @@ class PageActionView : public IconLabelBubbleView,
   bool IsChipVisible() const;
 
   using ChipVisibilityChanged = base::RepeatingCallback<void(PageActionView*)>;
-  base::CallbackListSubscription AddChipVisibiltyChangedCallback(
+  base::CallbackListSubscription AddChipVisibilityChangedCallback(
       ChipVisibilityChanged callback);
 
   // PageActionModelObserver:

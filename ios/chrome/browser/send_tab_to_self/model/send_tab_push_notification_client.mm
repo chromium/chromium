@@ -9,11 +9,13 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_prefs.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
@@ -61,6 +63,11 @@ bool SendTabPushNotificationClient::HandleNotificationInteraction(
       GURL(url),
       base::BindOnce(&SendTabPushNotificationClient::OnURLLoadedInNewTab,
                      weak_ptr_factory_.GetWeakPtr(), std::move(guid)));
+
+  if (IsNotificationCollisionManagementEnabled()) {
+    GetApplicationContext()->GetLocalState()->SetTime(
+        push_notification_prefs::kSendTabLastOpenTimestamp, base::Time::Now());
+  }
 
   base::RecordAction(
       base::UserMetricsAction("IOS.Notifications.SendTab.Interaction"));

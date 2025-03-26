@@ -8,9 +8,20 @@
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_consumer.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
+namespace signin_metrics {
+enum class AccessPoint : int;
+}
+
 // View controller for history sync.
 @interface HistorySyncViewController
     : PromoStyleViewController <HistorySyncConsumer>
+
+// Designated initializer.
+// `accessPoint` associated with the history opt-in screen.
+- (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

@@ -127,15 +127,15 @@ export class FlagsAppElement extends CrLitElement {
     };
   }
 
-  protected tabNames_: string[] = [
+  protected accessor tabNames_: string[] = [
     loadTimeData.getString('available'),
     // <if expr="not is_ios">
     loadTimeData.getString('unavailable'),
     // </if>
   ];
-  protected selectedTabIndex_: number = 0;
+  protected accessor selectedTabIndex_: number = 0;
 
-  protected data: ExperimentalFeaturesData = {
+  protected accessor data: ExperimentalFeaturesData = {
     supportedFeatures: [],
     // <if expr="not is_ios">
     unsupportedFeatures: [],
@@ -148,10 +148,10 @@ export class FlagsAppElement extends CrLitElement {
     // </if>
   };
 
-  protected defaultFeatures: Feature[] = [];
-  protected nonDefaultFeatures: Feature[] = [];
-  protected searching: boolean = false;
-  protected needsRestart: boolean = false;
+  protected accessor defaultFeatures: Feature[] = [];
+  protected accessor nonDefaultFeatures: Feature[] = [];
+  protected accessor searching: boolean = false;
+  protected accessor needsRestart: boolean = false;
 
   private announceStatusDelayMs: number = 100;
   private featuresResolver: PromiseResolver<void> = new PromiseResolver();

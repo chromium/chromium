@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/compiler_specific.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/test/nacl/nacl_browsertest_util.h"
@@ -49,12 +50,15 @@ void CheckPNaClLoadUMAs(base::HistogramTester& histograms,
 
 bool IsSubzeroSupportedForArch() {
   const char* arch = nacl::GetSandboxArch();
-  if (strcmp(arch, "x86-32") == 0)
+  if (UNSAFE_TODO(strcmp(arch, "x86-32")) == 0) {
     return true;
-  if (strcmp(arch, "x86-64") == 0)
+  }
+  if (UNSAFE_TODO(strcmp(arch, "x86-64")) == 0) {
     return true;
-  if (strcmp(arch, "arm") == 0)
+  }
+  if (UNSAFE_TODO(strcmp(arch, "arm")) == 0) {
     return true;
+  }
   return false;
 }
 

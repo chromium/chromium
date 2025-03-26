@@ -55,12 +55,12 @@ export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
     };
   }
 
-  sidebarWidth: string = '';
-  showSelectionOverlay: boolean = false;
-  protected narrow_: boolean = false;
-  private searchTerm_: string = '';
-  private selectedItems_: Set<string> = new Set();
-  private globalCanEdit_: boolean = false;
+  accessor sidebarWidth: string = '';
+  accessor showSelectionOverlay: boolean = false;
+  protected accessor narrow_: boolean = false;
+  private accessor searchTerm_: string = '';
+  private accessor selectedItems_: Set<string> = new Set();
+  private accessor globalCanEdit_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();

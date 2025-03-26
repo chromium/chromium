@@ -185,7 +185,7 @@ public class TabPersistentStoreIntegrationTest {
         tabState.contentsState = WEB_CONTENTS_STATE;
         TabStateExtractor.setTabStateForTesting(TAB_ID, tabState);
         tabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        File tabStateFile = mTabPersistentStore.getTabStateFile(TAB_ID, false);
+        File tabStateFile = mTabPersistentStore.getTabStateFileForTesting(TAB_ID, false);
         assertFalse(tabStateFile.exists());
 
         // Step to test: Load stops

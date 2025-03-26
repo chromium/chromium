@@ -97,7 +97,6 @@ class GlicKeyedService : public KeyedService {
                  bool open_in_background,
                  const std::optional<int32_t>& window_id,
                  glic::mojom::WebClientHandler::CreateTabCallback callback);
-  void OpenGlicSettingsPage();
   virtual void ClosePanel();
   void AttachPanel();
   void DetachPanel();

@@ -237,7 +237,8 @@ static const char kAllTracingCategories[] = "*";
 
   // Enable Accessibility if VoiceOver is already running.
   if (UIAccessibilityIsVoiceOverRunning()) {
-    content::BrowserAccessibilityState::GetInstance()->OnScreenReaderDetected();
+    content::BrowserAccessibilityState::GetInstance()
+        ->EnableProcessAccessibility();
   }
 
   // Register for VoiceOver notifications.
@@ -421,9 +422,11 @@ static const char kAllTracingCategories[] = "*";
   content::BrowserAccessibilityState* accessibility_state =
       content::BrowserAccessibilityState::GetInstance();
   if (UIAccessibilityIsVoiceOverRunning()) {
-    accessibility_state->OnScreenReaderDetected();
+    accessibility_state->EnableProcessAccessibility();
+    accessibility_state->SetScreenReaderAppActive(true);
   } else {
-    accessibility_state->OnScreenReaderStopped();
+    accessibility_state->DisableProcessAccessibility();
+    accessibility_state->SetScreenReaderAppActive(false);
   }
 }
 @end

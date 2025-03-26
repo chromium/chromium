@@ -34,6 +34,14 @@ class TemplateURLService;
 
 class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
  public:
+  // Relevance along with info for `AutocompleteMatch::additional_info`.
+  struct RelevanceData {
+    int relevance;
+    size_t strong_word_matches;
+    size_t weak_word_matches;
+    std::string rule;
+  };
+
   EnterpriseSearchAggregatorProvider(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener);
 
@@ -134,7 +142,7 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   // Helper to create a match.
   AutocompleteMatch CreateMatch(SuggestionType suggestion_type,
                                 bool is_navigation,
-                                int relevance,
+                                RelevanceData relevance_data,
                                 const std::string& destination_url,
                                 const std::string& image_url,
                                 const std::string& icon_url,

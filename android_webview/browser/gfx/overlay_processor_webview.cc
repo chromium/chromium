@@ -597,7 +597,8 @@ class OverlayProcessorWebView::Manager
       transaction.SetBuffer(surface, buffer, resource->TakeBeginReadFence());
 
       if (gfx::SurfaceControl::SupportsSetFrameRate()) {
-        transaction.SetFrameRate(surface, resource->frame_rate());
+        transaction.SetFrameRate(surface,
+                                 {.frame_rate = resource->frame_rate()});
       }
     } else {
       // Android T has a bug where setting empty buffer to ASurfaceControl will
@@ -961,8 +962,7 @@ bool OverlayProcessorWebView::ProcessForFrameSinkId(
     const auto& frame = surface->GetActiveFrame();
     auto* quad = frame.render_pass_list.back()->quad_list.front();
 
-    if (gfx::SurfaceControl::SupportsSetFrameRate() &&
-        base::FeatureList::IsEnabled(features::kWebViewFrameRateHints)) {
+    if (gfx::SurfaceControl::SupportsSetFrameRate()) {
       float frame_rate = 0.f;
       const viz::FrameIntervalInputs& frame_interval_inputs =
           frame.metadata.frame_interval_inputs;

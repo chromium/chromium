@@ -246,7 +246,7 @@ class MockSession : public Session {
               Close,
               (ErrorCode error,
                std::string_view error_details,
-               const base::Location& location),
+               const SourceLocation& location),
               (override));
   MOCK_METHOD1(AddPlugin, void(SessionPlugin* plugin));
 };

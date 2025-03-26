@@ -779,15 +779,6 @@ const LayoutBox& LayoutView::RootBox() const {
   return To<LayoutBox>(*document_element->GetLayoutObject());
 }
 
-void LayoutView::InvalidateSvgRootsWithRelativeLengthDescendents() {
-  NOT_DESTROYED();
-  if (GetDocument().SvgExtensions() && !ShouldUsePaginatedLayout()) {
-    GetDocument()
-        .AccessSVGExtensions()
-        .InvalidateSVGRootsWithRelativeLengthDescendents();
-  }
-}
-
 void LayoutView::LayoutRoot() {
   NOT_DESTROYED();
   if (ShouldUsePaginatedLayout()) {
@@ -813,7 +804,6 @@ void LayoutView::LayoutRoot() {
       LogicalHeight() != ViewLogicalHeightForBoxSizing();
   DCHECK(!initial_containing_block_resize_handled_list_);
   if (is_resizing_initial_containing_block) {
-    InvalidateSvgRootsWithRelativeLengthDescendents();
     initial_containing_block_resize_handled_list_ =
         MakeGarbageCollected<GCedHeapHashSet<Member<const LayoutObject>>>();
   }

@@ -1974,10 +1974,7 @@ float StyleBuilderConverter::ConvertNumberOrPercentage(
     const CSSValue& value) {
   const auto& primitive_value = To<CSSPrimitiveValue>(value);
   DCHECK(primitive_value.IsNumber() || primitive_value.IsPercentage());
-  if (primitive_value.IsNumber()) {
-    return primitive_value.GetFloatValue();
-  }
-  return primitive_value.GetFloatValue() / 100.0f;
+  return primitive_value.ConvertTo<float>(state.CssToLengthConversionData());
 }
 
 int StyleBuilderConverter::ConvertInteger(StyleResolverState& state,

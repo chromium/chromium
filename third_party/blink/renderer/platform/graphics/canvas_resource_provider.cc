@@ -369,7 +369,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     return true;
   }
 
-  scoped_refptr<CanvasResource> CreateResource() final {
+  scoped_refptr<CanvasResource> CreateResource() {
     TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::CreateResource");
 
     if (is_software_) {
@@ -773,6 +773,32 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
  private:
   // BitmapGpuChannelLostObserver implementation.
   void OnGpuChannelLost() override { resource_host()->NotifyGpuContextLost(); }
+
+  scoped_refptr<CanvasResource> NewOrRecycledResource() {
+    if (canvas_resources_.empty()) {
+      scoped_refptr<CanvasResource> resource = CreateResource();
+      if (!resource) {
+        return nullptr;
+      }
+
+      RegisterUnusedResource(std::move(resource));
+      ++num_inflight_resources_;
+      if (num_inflight_resources_ > max_inflight_resources_) {
+        max_inflight_resources_ = num_inflight_resources_;
+      }
+    }
+
+    if (IsSingleBuffered()) {
+      DCHECK_EQ(canvas_resources_.size(), 1u);
+      return canvas_resources_.back().resource;
+    }
+
+    scoped_refptr<CanvasResource> resource =
+        std::move(canvas_resources_.back().resource);
+    canvas_resources_.pop_back();
+    DCHECK(resource->HasOneRef());
+    return resource;
+  }
 
   bool IsResourceUsable(CanvasResource* resource) final {
     // The only resources that should be coming in here are
@@ -1848,11 +1874,6 @@ uint32_t CanvasResourceProvider::ContentUniqueID() const {
   return GetSkSurface()->generationID();
 }
 
-scoped_refptr<CanvasResource> CanvasResourceProvider::CreateResource() {
-  // Needs to be implemented in subclasses that use resource recycling.
-  NOTREACHED();
-}
-
 cc::ImageDecodeCache* CanvasResourceProvider::ImageDecodeCacheRGBA8() {
   if (UseHardwareDecodeCache()) {
     return context_provider_wrapper_->ContextProvider().ImageDecodeCache(
@@ -1935,31 +1956,6 @@ void CanvasResourceProvider::ClearOldUnusedResources() {
   // SharedImageInterface::Flush in not needed here explicitly.
 
   MaybePostUnusedResourcesReclaimTask();
-}
-
-scoped_refptr<CanvasResource> CanvasResourceProvider::NewOrRecycledResource() {
-  if (canvas_resources_.empty()) {
-    scoped_refptr<CanvasResource> resource = CreateResource();
-    if (!resource) {
-      return nullptr;
-    }
-
-    RegisterUnusedResource(std::move(resource));
-    ++num_inflight_resources_;
-    if (num_inflight_resources_ > max_inflight_resources_)
-      max_inflight_resources_ = num_inflight_resources_;
-  }
-
-  if (IsSingleBuffered()) {
-    DCHECK_EQ(canvas_resources_.size(), 1u);
-    return canvas_resources_.back().resource;
-  }
-
-  scoped_refptr<CanvasResource> resource =
-      std::move(canvas_resources_.back().resource);
-  canvas_resources_.pop_back();
-  DCHECK(resource->HasOneRef());
-  return resource;
 }
 
 void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {

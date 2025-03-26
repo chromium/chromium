@@ -96,3 +96,10 @@ export function openMenu(
 export function isWhitespace(s: string): boolean {
   return /\s+/g.test(s);
 }
+
+export function isHtmlElementVisible(element: HTMLElement): boolean {
+  const boundingRect = element.getBoundingClientRect();
+  return (boundingRect.bottom <= window.innerHeight ||
+          boundingRect.bottom <= document.documentElement.clientHeight) &&
+      boundingRect.top >= 0;
+}

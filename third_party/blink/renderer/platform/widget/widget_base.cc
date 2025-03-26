@@ -186,7 +186,7 @@ void WidgetBase::InitializeCompositing(
     WidgetBase* previous_widget) {
   DCHECK(!initialized_);
 
-  widget_scheduler_ = page_scheduler.CreateWidgetScheduler();
+  widget_scheduler_ = page_scheduler.CreateWidgetScheduler(this);
   widget_scheduler_->SetHidden(is_hidden_);
 
   main_thread_compositor_task_runner_ =
@@ -304,6 +304,8 @@ void WidgetBase::Shutdown(bool delay_release) {
   // `LayerTreeHost` destruction is synchronous and will join with the
   // compositor thread
   if (widget_scheduler_) {
+    widget_scheduler_->WillShutdown();
+
     scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner =
         base::SingleThreadTaskRunner::GetCurrentDefault();
     base::TimeDelta task_delay(base::Seconds(0));
@@ -1903,6 +1905,10 @@ void WidgetBase::OnDevToolsSessionConnectionChanged(bool attached) {
   if (widget_input_handler_manager_) {
     widget_input_handler_manager_->OnDevToolsSessionConnectionChanged(attached);
   }
+}
+
+void WidgetBase::RequestBeginMainFrameNotExpected(bool requested) {
+  LayerTreeHost()->RequestBeginMainFrameNotExpected(requested);
 }
 
 }  // namespace blink

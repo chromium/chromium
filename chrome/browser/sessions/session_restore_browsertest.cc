@@ -703,48 +703,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
   EXPECT_EQ(http_status_code, entry->GetHttpStatusCode());
 }
 
-// Flaky on Linux. https://crbug.com/537592.
-// Flaky on Mac. https://crbug.com/1334914.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-#define MAYBE_WindowWithOneTab DISABLED_WindowWithOneTab
-#else
-#define MAYBE_WindowWithOneTab WindowWithOneTab
-#endif
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MAYBE_WindowWithOneTab) {
-  GURL url(ui_test_utils::GetTestUrl(
-      base::FilePath(base::FilePath::kCurrentDirectory),
-      base::FilePath(FILE_PATH_LITERAL("title1.html"))));
-
-  // Add a single tab.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  sessions::TabRestoreService* service =
-      TabRestoreServiceFactory::GetForProfile(browser()->profile());
-  service->ClearEntries();
-  EXPECT_EQ(0U, service->entries().size());
-
-  // Close the window.
-  browser()->window()->Close();
-
-  // Expect the window to be converted to a tab by the TRS.
-  EXPECT_EQ(1U, service->entries().size());
-  ASSERT_EQ(sessions::tab_restore::Type::TAB, service->entries().front()->type);
-  auto* tab = static_cast<const sessions::tab_restore::Tab*>(
-      service->entries().front().get());
-
-  // Restore the tab.
-  std::vector<sessions::LiveTab*> content = service->RestoreEntryById(
-      nullptr, tab->id, WindowOpenDisposition::UNKNOWN);
-  ASSERT_EQ(1U, content.size());
-  ASSERT_TRUE(content[0]);
-  EXPECT_EQ(url, static_cast<sessions::ContentLiveTab*>(content[0])
-                     ->web_contents()
-                     ->GetURL());
-
-  // Make sure the restore was successful.
-  EXPECT_EQ(0U, service->entries().size());
-}
-
 #if !BUILDFLAG(IS_CHROMEOS)
 // This test does not apply to ChromeOS as ChromeOS does not do session
 // restore when a new window is open.

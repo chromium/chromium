@@ -222,7 +222,8 @@ pub fn build_rule_from_dep(
             NameLibStyle::LibLiteral => Some(Epoch::from_version(&d.version).to_string()),
             NameLibStyle::PackageName => None,
         },
-    })?;
+    })
+    .with_context(|| format!("Error processing dependencies of {}", dep.package_name))?;
     detail_template.build_deps = group_deps(&build_deps, |d| PackageId {
         name: NormalizedName::from_crate_name(&d.package_name).to_string(),
         epoch: match name_lib_style {
@@ -230,7 +231,8 @@ pub fn build_rule_from_dep(
             NameLibStyle::LibLiteral => Some(Epoch::from_version(&d.version).to_string()),
             NameLibStyle::PackageName => None,
         },
-    })?;
+    })
+    .with_context(|| format!("Error processing build dependencies of {}", dep.package_name))?;
     detail_template.aliased_deps = aliased_normal_deps;
 
     detail_template.sources =
@@ -582,13 +584,34 @@ fn cfg_to_condition(cfg: &cargo_platform::Cfg) -> Condition {
             "target_family" => target_family_to_condition(value),
             "target_os" => target_os_to_condition(value),
             "target_vendor" => target_vendor_to_condition(value),
-            _ => Condition::Unsupported(format!("Unknown key `{key}` in `{cfg}`")),
+            "panic" => panic_cfg_to_condition(value),
+            _ => {
+                // Keys that start with `target_` are the only remaining ones that are 1) not
+                // handled above, but 2) listed as set by `rustc` by the documentation at
+                // https://doc.rust-lang.org/reference/conditional-compilation.html
+                if key.starts_with("target_") {
+                    // TODO(https://crbug.com/402096443): Add support for more keys set by `rustc`.
+                    Condition::Unsupported(format!("Not yet supported key `{key}` in `{cfg}`"))
+                } else {
+                    // `key` is not set by `rustc` (i.e. it is not documented in
+                    // https://doc.rust-lang.org/reference/conditional-compilation.html and not
+                    // handled above).  Therefore we assume that Chromium will never ask GN/ninja
+                    // to pass `--cfg 'this_unrecognized_key="something"'` to `rustc`.  And
+                    // therefore we treat this as `AlwaysFalse`.  See also
+                    // https://crbug.com/404598090#comment4.
+                    log::warn!(
+                        "Treating unrecogized `#[cfg({key} = \"{value}\")]` as `AlwaysFalse"
+                    );
+                    Condition::AlwaysFalse
+                }
+            }
         },
     }
 }
 
 /// `name` should correspond to https://doc.rust-lang.org/reference/conditional-compilation.html#r-cfg.option-name
 fn cfg_name_to_condition(name: &str) -> Condition {
+    // See https://doc.rust-lang.org/reference/conditional-compilation.html#unix-and-windows
     const FAMILY_NAMES: [&str; 2] = ["unix", "windows"];
     if FAMILY_NAMES.contains(&name) {
         return target_family_to_condition(name);
@@ -600,7 +623,37 @@ fn cfg_name_to_condition(name: &str) -> Condition {
         return Condition::AlwaysFalse;
     }
 
-    Condition::Unsupported(format!("unknown option name: `#[cfg({name})]`"))
+    // See https://doc.rust-lang.org/reference/conditional-compilation.html#debug_assertions
+    if name == "debug_assertions" {
+        return Condition::Expr("is_debug".to_string());
+    }
+
+    // See https://doc.rust-lang.org/reference/conditional-compilation.html#test
+    //
+    // TODO(https://crbug.com/402096443): Add support for `#[cfg(test)]`.
+    if name == "test" {
+        return Condition::Unsupported("`#[cfg(test)]` is not yet supported by `gnrt`".to_string());
+    }
+
+    // `name` is not something that is documented in
+    // https://doc.rust-lang.org/reference/conditional-compilation.html.  We assume that Chromium
+    // will never ask GN/ninja to pass `--cfg this_unrecognized_name` to `rustc`.
+    // And therefore we treat this as `AlwaysFalse`.  See also https://crbug.com/404598090#comment4.
+    log::warn!("Treating unrecogized `#[cfg({name})]` as `AlwaysFalse");
+    Condition::AlwaysFalse
+}
+
+/// `value` should correspond to https://doc.rust-lang.org/reference/conditional-compilation.html#r-cfg.panic.values
+fn panic_cfg_to_condition(value: &str) -> Condition {
+    // `//build/config/compiler/BUILD.gn` always hardcodes `-Cpanic=abort` into
+    // `rustflags`.
+    match value {
+        "abort" => Condition::AlwaysTrue,
+        "unwind" => Condition::AlwaysFalse,
+        _ => Condition::Unsupported(format!(
+            "Unrecognized panic configuration: `#[cfg(panic = \"{value}\")]`"
+        )),
+    }
 }
 
 fn triple_to_condition(triple: &str) -> Condition {
@@ -651,11 +704,13 @@ fn target_arch_to_condition(target_arch: &str) -> Condition {
 
 /// `target_env` should correspond to https://doc.rust-lang.org/reference/conditional-compilation.html#target_env
 fn target_env_to_condition(target_env: &str) -> Condition {
+    // Based on https://crbug.com/402096443#comment6 target triples supported by Chromium
+    // only use `target_env` set to either `msvc`, `gnu`, or an empty string.
     for (t, c) in &[
-        // Based on `triple_to_condition` `msvc` is the only supported environment
-        // on Windows.
+        // `msvc` is the only supported environment on Windows.
         //
-        // TODO(lukasza): Would returning `Condition::Expr("is_win")` be more correct?
+        // TODO(https://crbug.com/402096443): Would returning `Condition::Expr("is_win")` be more
+        // correct?
         ("msvc", Condition::AlwaysTrue),
         // Treating `gnu` as `AlwaysFalse`, because:
         //
@@ -666,18 +721,27 @@ fn target_env_to_condition(target_env: &str) -> Condition {
         // OTOH, maybe this is not quite right, because Chromium also supports triples like
         // "i686-unknown-linux-gnu".
         //
-        // TODO(lukasza): Would returning `Condition::Expr("is_linux || is_chromeos")` be more
-        // correct?
+        // TODO(https://crbug.com/402096443): Would returning `Condition::Expr("!is_win")`
+        // or `Condition::Expr("(is_linux || is_chromeos) && !is_android")`
+        // be more correct?  Looking more at https://crbug.com/402096443#comment6 may help to
+        // decide...
         ("gnu", Condition::AlwaysFalse),
-        // `sgx` is used as condition in `dlmalloc` package in `std` library.
-        ("sgx", Condition::AlwaysFalse),
+        // Empty string is used as a condition in `getrandom` package.
+        //
+        // We give up and return `Ignored` because of difficulty of capturing all the different
+        // triples that report `target_env=""` in https://crbug.com/402096443#comment6
+        ("", Condition::Ignored),
     ] {
         if *t == target_env {
             return c.clone();
         }
     }
 
-    Condition::Unsupported(format!("unknown `target_env` value: `{target_env}`"))
+    // Other `target_env` values are never used by target triples supported by
+    // Chromium. For example, `sgx` is used as condition in `dlmalloc` package
+    // in `std` library, but this condition will never be true in Chromium
+    // builds.
+    Condition::AlwaysFalse
 }
 
 /// `target_family` should correspond to https://doc.rust-lang.org/reference/conditional-compilation.html#target_family

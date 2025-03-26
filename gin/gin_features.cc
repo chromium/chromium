@@ -132,6 +132,13 @@ BASE_FEATURE(kV8MemoryReducer,
 const base::FeatureParam<int> kV8MemoryReducerGCCount{
     &kV8MemoryReducer, "V8MemoryReducerGCCount", 3};
 
+BASE_FEATURE(kV8PreconfigureOldGen,
+             "V8PreconfigureOldGen",
+             kFeatureDefaultStateControlledByV8);
+
+const base::FeatureParam<int> kV8PreconfigureOldGenSize{
+    &kV8PreconfigureOldGen, "V8PreconfigureOldGenSize", 32};
+
 // Enables MinorMC young generation garbage collector.
 BASE_FEATURE(kV8MinorMS, ("V8MinorMS"), kFeatureDefaultStateControlledByV8);
 

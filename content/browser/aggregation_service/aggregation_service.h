@@ -64,7 +64,7 @@ class CONTENT_EXPORT AggregationService {
 
   // Sends an aggregatable report to the reporting endpoint `url`.
   virtual void SendReport(
-      const GURL& url,
+      GURL url,
       const AggregatableReport& report,
       std::optional<AggregatableReportRequest::DelayType> delay_type,
       SendCallback callback) = 0;
@@ -73,7 +73,7 @@ class CONTENT_EXPORT AggregationService {
   // `url`. This allows a caller to modify the report's JSON serialization as
   // needed.
   virtual void SendReport(
-      const GURL& url,
+      GURL url,
       const base::Value& contents,
       std::optional<AggregatableReportRequest::DelayType> delay_type,
       SendCallback callback) = 0;

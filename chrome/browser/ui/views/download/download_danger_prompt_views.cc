@@ -42,8 +42,6 @@
 
 using safe_browsing::ClientSafeBrowsingReportRequest;
 
-namespace {
-
 // Views-specific implementation of download danger prompt dialog, which
 // implements danger warning bypass from the downloads extension API. We use
 // this class rather than a TabModalConfirmDialog so that we can use custom
@@ -244,8 +242,6 @@ void DownloadDangerPromptViews::RunDone(Action action) {
 BEGIN_METADATA(DownloadDangerPromptViews)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, MessageBody)
 END_METADATA
-
-}  // namespace
 
 // static
 DownloadDangerPrompt* DownloadDangerPrompt::Create(

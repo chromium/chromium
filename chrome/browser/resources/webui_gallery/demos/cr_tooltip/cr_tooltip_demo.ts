@@ -43,8 +43,8 @@ export class CrTooltipDemoElement extends CrLitElement {
   }
 
   // Default values.
-  protected tooltipPosition_: TooltipPosition = TooltipPosition.BOTTOM;
-  protected tooltipOffset_: number = 14;
+  protected accessor tooltipPosition_: TooltipPosition = TooltipPosition.BOTTOM;
+  protected accessor tooltipOffset_: number = 14;
 
   protected onTooltipPositionChange_(e: Event) {
     const position = (e.target as HTMLSelectElement).value;

@@ -38,6 +38,8 @@ enum class RequestType {
   kIdleDetection,
 #if !BUILDFLAG(IS_ANDROID)
   kLocalFonts,
+  // TODO(crbug.com/400455013): Add Android support.
+  kLocalNetworkAccess,
 #endif
   kMicStream,
   kMidiSysex,

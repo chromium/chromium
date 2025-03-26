@@ -27,6 +27,7 @@
 #include "third_party/blink/public/platform/web_text_input_info.h"
 #include "third_party/blink/renderer/platform/graphics/lcd_text_preference.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/scheduler/public/widget_scheduler.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -65,20 +66,16 @@ class WidgetBaseClient;
 class WidgetInputHandlerManager;
 class WidgetCompositor;
 
-namespace scheduler {
-class WidgetScheduler;
-}
-
 // This class is the foundational class for all widgets that blink creates.
 // (WebPagePopupImpl, WebFrameWidgetImpl) will contain an instance of this
 // class. For simplicity purposes this class will be a member of those classes.
 //
 // Co-orindates handled in this class can be in the "blink coordinate space"
 // which is scaled DSF baked in.
-class PLATFORM_EXPORT WidgetBase
-    : public mojom::blink::Widget,
-      public LayerTreeViewDelegate,
-      public mojom::blink::RenderInputRouterClient {
+class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
+                                   public LayerTreeViewDelegate,
+                                   public mojom::blink::RenderInputRouterClient,
+                                   public scheduler::WidgetScheduler::Delegate {
  public:
   WidgetBase(
       WidgetBaseClient* client,
@@ -209,6 +206,9 @@ class PLATFORM_EXPORT WidgetBase
   void ScheduleAnimationForWebTests() override;
   std::unique_ptr<cc::RenderFrameMetadataObserver> CreateRenderFrameObserver()
       override;
+
+  // scheduler::WidgetScheduler::Delegate overrides:
+  void RequestBeginMainFrameNotExpected(bool) override;
 
   cc::AnimationHost* AnimationHost() const;
   cc::AnimationTimeline* ScrollAnimationTimeline() const;

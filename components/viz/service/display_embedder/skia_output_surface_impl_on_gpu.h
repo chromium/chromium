@@ -50,6 +50,10 @@
 #include "media/gpu/chromeos/vulkan_overlay_adaptor.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/gfx/android/surface_control_frame_rate.h"
+#endif
+
 namespace gfx {
 namespace mojom {
 class DelegatedInkPointRenderer;
@@ -215,7 +219,7 @@ class SkiaOutputSurfaceImplOnGpu
   void SetVSyncDisplayID(int64_t display_id);
 
 #if BUILDFLAG(IS_ANDROID)
-  void SetFrameRate(float frame_rate);
+  void SetFrameRate(gfx::SurfaceControlFrameRate frame_rate);
 #endif
 
   bool was_context_lost() { return context_state_->context_lost(); }

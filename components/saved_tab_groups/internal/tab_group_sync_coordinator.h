@@ -25,7 +25,7 @@ namespace tab_groups {
 class TabGroupSyncCoordinator : public TabGroupSyncService::Observer {
  public:
   // Requests to open a saved tab group. Invoked from UI.
-  virtual void HandleOpenTabGroupRequest(
+  virtual std::optional<LocalTabGroupID> HandleOpenTabGroupRequest(
       const base::Uuid& sync_tab_group_id,
       std::unique_ptr<TabGroupActionContext> context) = 0;
 

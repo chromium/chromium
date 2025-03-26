@@ -161,7 +161,7 @@ class MockAggregationService : public AggregationService {
 
   MOCK_METHOD(void,
               SendReport,
-              (const GURL& url,
+              (GURL url,
                const AggregatableReport& report,
                std::optional<AggregatableReportRequest::DelayType> delay_type,
                AggregationService::SendCallback callback),
@@ -169,7 +169,7 @@ class MockAggregationService : public AggregationService {
 
   MOCK_METHOD(void,
               SendReport,
-              (const GURL& url,
+              (GURL url,
                const base::Value& value,
                std::optional<AggregatableReportRequest::DelayType> delay_type,
                AggregationService::SendCallback callback),

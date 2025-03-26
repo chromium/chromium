@@ -3622,6 +3622,10 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences(
   if (command_line.HasSwitch(switches::kHideScrollbars)) {
     prefs.hide_scrollbars = true;
   }
+
+  prefs.payment_request_enabled =
+      base::FeatureList::IsEnabled(features::kWebPayments);
+
   GetContentClient()->browser()->OverrideWebPreferences(
       this, *main_frame->GetSiteInstance(), &prefs);
   return prefs;
@@ -3638,6 +3642,7 @@ void WebContentsImpl::OnWebPreferencesChanged() {
   }
   updating_web_preferences_ = true;
   SetWebPreferences(ComputeWebPreferences(GetPrimaryMainFrame()));
+
 #if BUILDFLAG(IS_ANDROID)
   const bool force_enable_zoom_changed =
       (force_enable_zoom_ != web_preferences_->force_enable_zoom);
@@ -3659,6 +3664,12 @@ void WebContentsImpl::OnWebPreferencesChanged() {
     }
   }
 #endif
+
+  // Update inner WebContents.
+  for (WebContents* inner : GetInnerWebContents()) {
+    static_cast<WebContentsImpl*>(inner)->OnWebPreferencesChanged();
+  }
+
   updating_web_preferences_ = false;
 }
 
@@ -7141,6 +7152,8 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
     // |max_loaded_frame_count_| is not necessarily 1 if the navigation was
     // served from BackForwardCache.
     max_loaded_frame_count_ = GetFrameTreeSize(&primary_frame_tree_);
+
+    BrowserAccessibilityStateImpl::GetInstance()->OnPageNavigationComplete();
   }
 
   // TODO(crbug.com/40202416): MPArch GuestView: We might need to look up the

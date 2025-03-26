@@ -22,6 +22,18 @@ interface AILanguageDetector {
     CallWith=ScriptState
   ]
   undefined destroy();
+
+[
+  MeasureAs=LanguageDetector_MeasureInputUsage,
+  CallWith=ScriptState,
+  RaisesException
+]
+  Promise<double> measureInputUsage(
+    DOMString input,
+    optional AILanguageDetectorDetectOptions options = {}
+  );
+  [MeasureAs=LanguageDetector_InputQuota]
+  readonly attribute unrestricted double inputQuota;
 };
 
 dictionary AILanguageDetectorDetectOptions {

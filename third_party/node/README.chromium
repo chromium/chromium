@@ -1,9 +1,9 @@
 Name: Node JS
 Short Name: node
 URL: https://github.com/nodejs/node
-Version: 12.14.1
-Revision: f098f8295c407e5a5126b501ed5f1aa80bd86106
-Date: 2016-12-06
+Version: 22.11.0
+Revision: 4e0f2773ff9465148a654dd0a2c1668104c20fec
+Date: 2024-10-29
 License: Unicode-DFS-2016, NAIST-2003, MIT, HPND, BSD-3-Clause, OpenSSL, Zlib, ISC, BSD-2-Clause, Artistic-2.0, ICU, SSLeay
 License File: LICENSE
 Security Critical: no

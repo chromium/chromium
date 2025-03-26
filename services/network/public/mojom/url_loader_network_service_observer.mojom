@@ -149,6 +149,13 @@ interface URLLoaderNetworkServiceObserver {
       string? private_network_device_id,
       string? private_network_device_name) => (bool permission_granted);
 
+  // Asks the URL loader observer if the caller has permission to connect to
+  // devices on the local network.
+  //
+  // `permission_granted` is a bool specifying whether the user granted the
+  // local network access permission.
+  OnLocalNetworkAccessPermissionRequired() => (bool permission_granted);
+
   // Called when the Clear-Site-Data header has been received. The callback
   // should be run after the data is deleted.
   // https://www.w3.org/TR/clear-site-data/

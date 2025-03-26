@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">ਭਾਸ਼ਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="1459693405370120464">ਮੌਸਮ</translation>
 <translation id="1460620680449458626">ਅਵਾਜ਼ ਨੂੰ ਮਿਊਟ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
+<translation id="1462439140224375968">Google ਡੌਕ ਬਣਾਇਆ ਗਿਆ</translation>
 <translation id="14648076227129703">ਇਸ ਨਾਲ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="1467432559032391204">ਖੱਬੇ ਪਾਸੇ</translation>
 <translation id="146902737843070955">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਇਸ ਤਬਦੀਲੀ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਹੈ</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">ਹੌਟਸਪੌਟ ਦੇ ਵੇਰਵੇ ਦੇਖੋ। ਹੌਟਸਪੌਟ ਬੰਦ ਹੈ।</translation>
 <translation id="3017079585324758401">ਬੈਕਗ੍ਰਾਊਂਡ</translation>
 <translation id="3018135054368884502">ਮੀਡੀਆ ਨੂੰ ਤੇਜ਼ੀ ਨਾਲ ਅੱਗੇ ਕਰੋ</translation>
+<translation id="3026897869154397692">ਕੈਲੰਡਰ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3033545621352269033">ਚਾਲੂ</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> ਨਾਲ ਜੋੜੋ</translation>
 <translation id="3036649622769666520">ਫਾਈਲਾਂ ਖੋਲ੍ਹੋ</translation>
@@ -1012,6 +1014,7 @@
 <translation id="4351244548802238354">ਡਾਇਲੌਗ ਬੰਦ ਕਰੋ</translation>
 <translation id="4356872429719185452">ਹੌਟਸਪੌਟ ਦੇ ਵੇਰਵੇ ਦਿਖਾਓ। ਹੌਟਸਪੌਟ ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  ਰਿਕਾਰਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="4368227575116094370">Google ਸ਼ੀਟ ਬਣਾਓ</translation>
 <translation id="4371348193907997655">ਕਾਸਟ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="4371834685492830207">ਪਿੰਨ ਵਿੱਚ ਸਿਰਫ਼ ਵੈਧ ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਦਾ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="4375482231364171368">ਪਤਾ ਬਾਰ ਵਿੱਚ ਖੋਜੋ</translation>
@@ -1482,6 +1485,7 @@
 <translation id="5825969630400862129">ਕਨੈਕਟ ਕੀਤੇ ਡੀਵਾਈਸਾਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> ਹੋਰ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> 'ਤੇ <ph name="ROUTE_TITLE" /> ਨੂੰ ਬੰਦ ਕਰੋ</translation>
+<translation id="5840658767386246331">Google 'ਤੇ ਖੋਜੋ</translation>
 <translation id="5841296711770970362">ਅਗਲੇ ਟਰੈਕ 'ਤੇ ਜਾਓ</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> ਦਾ ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ, ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="584525477304726060">ਵਿੰਡੋ ਨੂੰ ਵੱਡਾ ਕਰਨ ਲਈ ਰੋਕ ਕੇ ਰੱਖੋ</translation>
@@ -1895,6 +1899,7 @@
 <translation id="7228968829656641943">ਖੋਜਣ ਲਈ ਸਕ੍ਰੀਨ ਦਾ ਕੋਈ ਹਿੱਸਾ ਚੁਣੋ। ਕੀ-ਬੋਰਡ ਨਾਲ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ, tab ਤੋਂ ਬਾਅਦ space ਦਬਾਓ।</translation>
 <translation id="7229029500464092426">ਮੈਮੋਰੀ <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ਕੁੱਲ</translation>
 <translation id="7239814253344511868">ਦੋਵੇਂ ਮਾਊਸ ਬਟਨ</translation>
+<translation id="7240636904654154599">Google ਸ਼ੀਟ ਬਣਾਈ ਗਈ</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ਬੈਟਰੀ ਬਾਕੀ ਬਚੀ ਹੈ। ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਪਾਵਰ ਸਰੋਤ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। ਇਸ Chromebook ਨੂੰ ਅੱਪਡੇਟ ਲਾਗੂ ਕਰਨ ਲਈ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਣ ਦੀ ਲੋੜ ਹੈ। ਇਸ ਵਿੱਚ 1 ਮਿੰਟ ਲੱਗ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2405,6 +2410,7 @@
 <translation id="8921624153894383499">Google Assistant ਇਹ ਭਾਸ਼ਾ ਨਹੀਂ ਬੋਲਦੀ।</translation>
 <translation id="8926951137623668982">ਸ਼ੈਲਫ਼ ਹਮੇਸ਼ਾਂ ਲੁਕੀ ਰਹਿੰਦੀ ਹੈ</translation>
 <translation id="8929566928381252430">ਕੀ Caps Lock ਨੂੰ ਵਰਤਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ? ਇਹ ਵਰਤੋ</translation>
+<translation id="8929623844713377237">ਸੰਪਰਕ ਬਣਾਇਆ ਗਿਆ</translation>
 <translation id="8934418770423095813">Google ਡੌਕ ਬਣਾਓ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ਫ਼ਾਈਲ}one{# ਫ਼ਾਈਲ}other{# ਫ਼ਾਈਲਾਂ}}</translation>
 <translation id="8936501819958976551">ਅਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਗਿਆ</translation>

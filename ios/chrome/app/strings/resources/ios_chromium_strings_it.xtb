@@ -95,7 +95,6 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="328933489847748230">{count,plural, =1{Visualizzazione di 1 finestra di Chromium}other{Visualizzazione di {count} finestre di Chromium}}</translation>
 <translation id="3344973607274501920">Chromium non ha potuto controllare le tue password. Verifica la tua connessione a Internet.</translation>
 <translation id="3366305173356742781">Dati di Chromium nel tuo account</translation>
-<translation id="33788334537425157">Attiva l'opzione "Blocca le schede di navigazione in incognito quando chiudi Chromium".</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuto. Potrebbero essere inclusi la cronologia e la compilazione automatica.}other{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuti. Potrebbero essere inclusi la cronologia e la compilazione automatica.}}</translation>
 <translation id="3410395242749598859">Alcuni dati di Chromium non sono ancora stati salvati sull'account <ph name="EMAIL" />.
 Prova ad attendere qualche minuto prima di cambiare account. Se cambi account ora, questi dati verranno eliminati.</translation>

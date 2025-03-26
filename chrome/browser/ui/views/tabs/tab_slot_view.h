@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "chrome/browser/ui/tabs/split_tab_id.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -38,6 +39,10 @@ class TabSlotView : public views::View {
 
   std::optional<tab_groups::TabGroupId> group() const { return group_; }
 
+  virtual void SetSplit(std::optional<split_tabs::SplitTabId> split);
+
+  std::optional<split_tabs::SplitTabId> split() const { return split_; }
+
   // Used to mark the view as having been detached.  Once this has happened, the
   // view should be invisibly closed.  This is irreversible.
   void set_detached() { detached_ = true; }
@@ -49,9 +54,6 @@ class TabSlotView : public views::View {
 
   void set_animating(bool animating) { animating_ = animating; }
   bool animating() const { return animating_; }
-
-  void set_split(bool split) { split_ = split; }
-  bool split() const { return split_; }
 
   // views::View:
   gfx::Rect GetAnchorBoundsInScreen() const override;
@@ -68,8 +70,7 @@ class TabSlotView : public views::View {
   // True if the tab's bounds are being animated by the tabstrip.
   bool animating_ = false;
 
-  // True if the tab is part of a split.
-  bool split_ = false;
+  std::optional<split_tabs::SplitTabId> split_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_SLOT_VIEW_H_

@@ -201,7 +201,8 @@ export class CrInputElement extends PolymerElement {
   }
 
   override ariaDescription: string|null;
-  autoFocus: boolean;
+  override ariaLabel: string;
+  override autofocus: boolean;
   autoValidate: boolean;
   disabled: boolean;
   errorMessage: string;

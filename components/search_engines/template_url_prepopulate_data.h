@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/country_codes/country_codes.h"
 
 class PrefService;
 struct TemplateURLData;
@@ -25,7 +26,7 @@ class PrefRegistrySyncable;
 namespace TemplateURLPrepopulateData {
 
 // The ID of a country. See `//components/country_codes` for details.
-typedef int CountryID;
+using CountryId = country_codes::CountryId;
 
 struct PrepopulatedEngine;
 
@@ -52,13 +53,13 @@ int GetDataVersion(PrefService* prefs);
 // Returns the prepopulated URLs for the given country.
 std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
     PrefService& prefs,
-    CountryID country_id);
+    CountryId country_id);
 
 // Returns the prepopulated search engine with the given `prepopulated_id`
 // from the given country's known prepopulated search engines, or `nullptr`
 // if it's not known there.
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(PrefService& prefs,
-                                                       CountryID country_id,
+                                                       CountryId country_id,
                                                        int prepopulated_id);
 
 // Returns the prepopulated search engine with the given `prepopulated_id`
@@ -69,7 +70,7 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(PrefService& prefs,
 // be associated with multiple country-specific variants.
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
     PrefService& prefs,
-    CountryID country_id,
+    CountryId country_id,
     int prepopulated_id);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -96,7 +97,7 @@ void ClearPrepopulatedEnginesInPrefs(PrefService* prefs);
 // engines available.
 std::unique_ptr<TemplateURLData> GetPrepopulatedFallbackSearch(
     PrefService& prefs,
-    CountryID country_id);
+    CountryId country_id);
 
 // Returns all prepopulated engines for all locales.
 const base::span<const PrepopulatedEngine* const> GetAllPrepopulatedEngines();
@@ -111,7 +112,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetDefaultPrepopulatedEngines();
 // Test Utilities -------------------------------------------------------------
 
 const std::vector<raw_ptr<const PrepopulatedEngine>>
-GetPrepopulationSetFromCountryIDForTesting(CountryID country_id);
+GetPrepopulationSetFromCountryIDForTesting(CountryId country_id);
 
 }  // namespace TemplateURLPrepopulateData
 

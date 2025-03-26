@@ -27,6 +27,7 @@
 #include "components/plus_addresses/plus_address_ui_utils.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -200,7 +201,7 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
     view_->ShowInit(
         GetWebContents().GetNativeView(),
         TabModelList::GetTabModelForWebContents(&GetWebContents()),
-        maybe_email.value(),
+        maybe_email.value(), GetOriginForDisplay(main_frame_origin),
         plus_address_service->IsRefreshingSupported(relevant_origin_),
         /*has_accepted_notice=*/!should_show_notice);
   }

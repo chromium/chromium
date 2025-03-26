@@ -327,6 +327,8 @@ class CORE_EXPORT CanvasRenderingContext
     return false;
   }
 
+  virtual bool ShouldTriggerIntervention() const { return false; }
+
   bool did_print_in_current_task() const { return did_print_in_current_task_; }
 
  protected:

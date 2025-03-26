@@ -35,6 +35,8 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<base::TimeDelta>
     kAutofillAiServerModelExecutionTimeout;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<bool> kAutofillAiServerModelSendPageContent;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool> kAutofillAiServerModelSendPageUrl;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool> kAutofillAiServerModelUseCacheResults;

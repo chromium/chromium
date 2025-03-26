@@ -27,7 +27,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,8 +42,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -55,23 +55,20 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(ChromeFeatureList.BOOKMARK_PANE_ANDROID)
 public class BookmarkPaneTest {
-
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
-            new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
+    public AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
+
+    private WebPageStation mStartingPage;
 
     @Before
     public void setUp() {
-        mInitialStateRule.startOnBlankPage();
+        mStartingPage = mCtaTestRule.startOnBlankPage();
     }
 
     @After
     public void tearDown() {
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         runOnUiThreadBlocking(
                 () -> clearBookmarks(cta.getProfileProviderSupplier().get().getOriginalProfile()));
     }
@@ -80,16 +77,14 @@ public class BookmarkPaneTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testBookmarkIsDisplayed() {
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         String urlOne =
-                sActivityTestRule
-                        .getTestServer()
-                        .getURL("/chrome/test/data/android/navigate/one.html");
-        sActivityTestRule.loadUrl(urlOne);
+                mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/one.html");
+        mStartingPage.loadWebPageProgrammatically(urlOne);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(),
+                mCtaTestRule.getActivity(),
                 R.id.bookmark_this_page_id);
 
         enterTabSwitcher(cta);
@@ -103,16 +98,14 @@ public class BookmarkPaneTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testBookmarkSearchMatch() {
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         String urlOne =
-                sActivityTestRule
-                        .getTestServer()
-                        .getURL("/chrome/test/data/android/navigate/one.html");
-        sActivityTestRule.loadUrl(urlOne);
+                mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/one.html");
+        mStartingPage.loadWebPageProgrammatically(urlOne);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(),
+                mCtaTestRule.getActivity(),
                 R.id.bookmark_this_page_id);
 
         enterTabSwitcher(cta);
@@ -130,23 +123,19 @@ public class BookmarkPaneTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testBookmarkClickOpens() {
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         String urlOne =
-                sActivityTestRule
-                        .getTestServer()
-                        .getURL("/chrome/test/data/android/navigate/one.html");
-        sActivityTestRule.loadUrl(urlOne);
+                mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/one.html");
+        WebPageStation pageOne = mStartingPage.loadWebPageProgrammatically(urlOne);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(),
+                mCtaTestRule.getActivity(),
                 R.id.bookmark_this_page_id);
 
         String urlTwo =
-                sActivityTestRule
-                        .getTestServer()
-                        .getURL("/chrome/test/data/android/navigate/two.html");
-        sActivityTestRule.loadUrl(urlTwo);
+                mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/two.html");
+        pageOne.loadWebPageProgrammatically(urlTwo);
 
         enterTabSwitcher(cta);
         enterBookmarkPane();

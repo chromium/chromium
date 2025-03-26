@@ -262,13 +262,7 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [self minimalAppConfigurationForTestCase];
-  // Enable User Policy for both consent levels.
-  config.features_enabled.push_back(
-      policy::kUserPolicyForSigninAndNoSyncConsentLevel);
-  config.features_enabled.push_back(
-      policy::kUserPolicyForSigninOrSyncConsentLevel);
-  return config;
+  return [self minimalAppConfigurationForTestCase];
 }
 
 - (AppLaunchConfiguration)minimalAppConfigurationForTestCase {
@@ -323,9 +317,6 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Restart the browser while keeping sign-in by preserving the identity of the
   // managed account.
   AppLaunchConfiguration config = [self minimalAppConfigurationForTestCase];
-  // Enable User Policy for sign-in consent level exclusively.
-  config.features_enabled.push_back(
-      policy::kUserPolicyForSigninAndNoSyncConsentLevel);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back(
       std::string("-") + test_switches::kAddFakeIdentitiesAtStartup + "=" +
@@ -437,12 +428,9 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
 }
 
 // Tests that the managed accout confirmation dialog is shown in the sign-in
-// flow with its contextual and specific content when user policies are enabled.
+// flow with its contextual and specific content.
 - (void)testSigninFlowConfirmationDialogWhenUserPolicyAndSignin {
   AppLaunchConfiguration config = [self minimalAppConfigurationForTestCase];
-  // Enable User Policy for sign-in consent level exclusively.
-  config.features_enabled.push_back(
-      policy::kUserPolicyForSigninAndNoSyncConsentLevel);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
@@ -524,9 +512,6 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   }
 
   AppLaunchConfiguration config = [self minimalAppConfigurationForTestCase];
-  // Enable User Policy for sign-in consent level exclusively.
-  config.features_enabled.push_back(
-      policy::kUserPolicyForSigninAndNoSyncConsentLevel);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity

@@ -53,10 +53,13 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 #endif
 
   bool is_default_chrome_app_migrated;
+  bool is_custom_links_mixable;
 #if BUILDFLAG(IS_ANDROID)
   is_default_chrome_app_migrated = false;
+  is_custom_links_mixable = true;
 #else
   is_default_chrome_app_migrated = true;
+  is_custom_links_mixable = false;
 #endif
 
   auto most_visited_sites = std::make_unique<ntp_tiles::MostVisitedSites>(
@@ -82,6 +85,6 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
               profile->GetDefaultStoragePartition()
                   ->GetURLLoaderFactoryForBrowserProcess()),
           std::move(data_decoder)),
-      is_default_chrome_app_migrated);
+      is_default_chrome_app_migrated, is_custom_links_mixable);
   return most_visited_sites;
 }

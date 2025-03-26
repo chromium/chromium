@@ -886,8 +886,7 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
     votes_uploader_->MaybeSendSingleUsernameVotes();
     votes_uploader_->UploadPasswordVote(
         parsed_submitted_form, parsed_submitted_form, autofill::NEW_PASSWORD,
-        base::NumberToString(
-            *autofill::CalculateFormSignature(pending_credentials_.form_data)));
+        autofill::CalculateFormSignature(pending_credentials_.form_data));
   }
 
   if (pending_credentials_.times_used_in_html_form == 1) {

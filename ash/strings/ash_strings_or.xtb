@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">ଭାଷାର ସେଟିଂସ୍‌ ଦେଖାନ୍ତୁ</translation>
 <translation id="1459693405370120464">ପାଣିପାଗ</translation>
 <translation id="1460620680449458626">ଭଲ୍ୟୁମ୍ ମ୍ୟୁଟ୍ କରାଯାଇଛି।</translation>
+<translation id="1462439140224375968">Google Doc ତିଆରି କରାଯାଇଛି</translation>
 <translation id="14648076227129703">ଏହା କେମେରା ଅନୁମତି ଥିବା <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ଏବଂ ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ପାଇଁ କେମେରା ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ</translation>
 <translation id="1467432559032391204">ବାମ</translation>
 <translation id="146902737843070955">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଏହି ପରିବର୍ତ୍ତନ ପାଇଁ ଅନୁରୋଧ କରିଛନ୍ତି</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">ହଟସ୍ପଟ ବିବରଣୀ ଦେଖାନ୍ତୁ। ହଟସ୍ପଟ ବନ୍ଦ ଅଛି।</translation>
 <translation id="3017079585324758401">ପୃଷ୍ଠପଟ</translation>
 <translation id="3018135054368884502">ମିଡିଆକୁ ଫାଷ୍ଟ ଫରୱାର୍ଡ କରନ୍ତୁ</translation>
+<translation id="3026897869154397692">କେଲେଣ୍ଡରରେ ଯୋଗ କରାଯାଇଛି</translation>
 <translation id="3033545621352269033">ଚାଲୁ</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> ସହ ଏକତ୍ରିତ କରନ୍ତୁ</translation>
 <translation id="3036649622769666520">ଓପନ୍ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
@@ -1481,6 +1483,7 @@
 <translation id="5825969630400862129">ସଂଯୁକ୍ତ ଥିବା ଡିଭାଇସଗୁଡ଼ିକର ସେଟିଂସ୍</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> ଅଧିକ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />ରେ <ph name="ROUTE_TITLE" /> ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="5840658767386246331">Googleରେ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="5841296711770970362">ପରବର୍ତ୍ତୀ ଟ୍ରାକକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> ହଟସ୍ପଟ ଚାଲୁ ଅଛି, କୌଣସି ଡିଭାଇସ କନେକ୍ଟ କରାଯାଇନାହିଁ</translation>
 <translation id="584525477304726060">ବଡ଼ କରିବାକୁ ଧରି ରଖନ୍ତୁ</translation>
@@ -1893,6 +1896,7 @@
 <translation id="7228968829656641943">ମୋ ସ୍କ୍ରିନ ସର୍ଚ୍ଚ କରିବାକୁ ଚୟନ କରନ୍ତୁ। କୀବୋର୍ଡ ନାଭିଗେସନ ପାଇଁ ଟାବ ଦବାଇ ସ୍ପେସ ଦବାନ୍ତୁ।</translation>
 <translation id="7229029500464092426">ମୋଟ <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ମେମୋରୀ</translation>
 <translation id="7239814253344511868">ଉଭୟ ମାଉସ ବଟନ</translation>
+<translation id="7240636904654154599">Google Sheet ତିଆରି କରାଯାଇଛି</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ବେଟେରୀ ଚାର୍ଜ ବାକି ଅଛି। ଆପଣଙ୍କ ଡିଭାଇସକୁ ପାୱାର ସହ କନେକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। ଏକ ଅପଡେଟ୍ ଲାଗୁ କରିବା ନିମନ୍ତେ ଏହି Chromebook ରିଷ୍ଟାର୍ଟ କରିବା ଦରକାର। ଏହା ପାଖାପାଖି 1 ମିନିଟ୍ ସମୟ ନେଇପାରେ।</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2403,6 +2407,7 @@
 <translation id="8921624153894383499">Google ଆସିଷ୍ଟାଣ୍ଟ ଏହି ଭାଷା କହେ ନାହିଁ।</translation>
 <translation id="8926951137623668982">ସେଲ୍ଫ ସର୍ବଦା ଲୁଚାଇ ରଖାଯାଇଛି</translation>
 <translation id="8929566928381252430">Caps Lockକୁ ବ୍ୟବହାର କରିବାକୁ ଚେଷ୍ଟା କରୁଛନ୍ତି? ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="8929623844713377237">ତିଆରି କରାଯାଇଥିବା କଣ୍ଟାକ୍ଟ</translation>
 <translation id="8934418770423095813">Google Doc ତିଆରି କରନ୍ତୁ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1ଟି ଫାଇଲ}other{#ଟି ଫାଇଲ}}</translation>
 <translation id="8936501819958976551">ନିଷ୍କ୍ରିୟ କରାଯାଇଛି</translation>

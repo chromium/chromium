@@ -256,13 +256,15 @@ void Mp4MuxerDelegateFragment::AddDataToMdat(
   // a giant blob of memory to hold them all. We should only have one
   // copy into the final muxed output buffer in an ideal world.
   size_t current_size = track_data.size();
-  if (current_size + encoded_data.size() > track_data.capacity()) {
-    track_data.reserve((current_size + encoded_data.size()) * 1.5);
+  auto encoded_data_span = base::span(encoded_data);
+  if (current_size + encoded_data_span.size() > track_data.capacity()) {
+    track_data.reserve((current_size + encoded_data_span.size()) * 1.5);
   }
 
   // TODO(crbug.com/40273983): encoded stream needs to be movable container.
-  track_data.resize(current_size + encoded_data.size());
-  memcpy(&track_data[current_size], encoded_data.data(), encoded_data.size());
+  track_data.resize(current_size + encoded_data_span.size());
+  memcpy(&track_data[current_size], encoded_data_span.data(),
+         encoded_data_span.size());
 }
 
 void Mp4MuxerDelegateFragment::AddLastTimestamp(

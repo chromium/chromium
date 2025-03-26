@@ -6,7 +6,6 @@
 <translation id="1143896152279775643">Lösenordet sparas med Google Lösenordshantering för <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Öppna en ny flik i Chrome</translation>
 <translation id="1166460004393506534">Radera webbinformation i Chrome</translation>
-<translation id="1171255741903316750">Aktivera Lås inkognitoflikar när du stänger Chrome</translation>
 <translation id="1179527450541388808">Kom åt Chrome snabbare från startskärmsdockan på iPad.</translation>
 <translation id="1180362651362502943">Fortsätt använda Chrome-data i Google-kontot.</translation>
 <translation id="1200396280085622191">Använd Chrome varje gång du trycker på länkar i meddelanden och andra appar.</translation>
@@ -178,6 +177,7 @@ Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas d
 <translation id="5716154293141027663">Öppna Chrome varje gång du trycker på länkar i andra appar</translation>
 <translation id="5752489513673657785">Ett flöde som anpassats för dig av Google</translation>
 <translation id="5772407442571703917">Ladda ned Chrome här.</translation>
+<translation id="5777468213129569553">Öppna Chrome</translation>
 <translation id="5779767936254214055">Lås inkognitoflikarna när du lämnar Chrome eller byter till en annan app.</translation>
 <translation id="5808435672482059465">Visa Chrome-historiken</translation>
 <translation id="5833027901704861726">Viss Chrome-data har inte sparats i <ph name="EMAIL" /> ännu.

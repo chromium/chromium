@@ -7,12 +7,10 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.Window;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -63,7 +61,6 @@ import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -215,7 +212,7 @@ class AutocompleteMediator
         OmniboxActionFactoryImpl.get()
                 .setDialerAvailable(!pm.queryIntentActivities(dialIntent, 0).isEmpty());
 
-        mAnimationDriver = initializeAnimationDriver(mWindowAndroid.getWindow());
+        mAnimationDriver = initializeAnimationDriver();
     }
 
     /**
@@ -442,13 +439,8 @@ class AutocompleteMediator
 
             mNewOmniboxEditSessionTimestamp = -1;
             // Prevent any upcoming omnibox suggestions from showing once a URL is loaded (and as
-            // a consequence the omnibox is unfocused), unless it is for hub search.
-            // TODO(crbug.com/390011136): Find a better way to create a seamless animation when
-            // exiting hub search that dismisses the URL bar and suggestions list together.
-            if (mDataProvider.getPageClassification(/* isPrefetch= */ false)
-                    != PageClassification.ANDROID_HUB_VALUE) {
-                clearSuggestions();
-            }
+            // a consequence the omnibox is unfocused).
+            clearSuggestions();
         }
     }
 
@@ -1110,7 +1102,7 @@ class AutocompleteMediator
         if (isActive) {
             mListPropertyModel.set(
                     SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE,
-                    mAutocompleteInput.getPageClassification()
+                    mDataProvider.getPageClassification(/* isPrefetch= */ false)
                             == PageClassification.ANDROID_HUB_VALUE);
         }
 
@@ -1371,39 +1363,17 @@ class AutocompleteMediator
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    SuggestionsListAnimationDriver initializeAnimationDriver(@Nullable Window window) {
+    SuggestionsListAnimationDriver initializeAnimationDriver() {
         SuggestionsListAnimationDriver driver;
-        if (mDelegate.isToolbarPositionCustomizationEnabled()) {
-            int addedVerticalOffset =
-                    mContext.getResources()
-                            .getDimensionPixelOffset(
-                                    R.dimen
-                                            .omnibox_suggestion_list_bottom_animation_starting_vertical_offset);
+        if (mDelegate.isToolbarPositionCustomizationEnabled()
+                || OmniboxFeatures.shouldAnimateSuggestionsListAppearance()) {
             driver =
                     new UnsyncedSuggestionsListAnimationDriver(
                             mListPropertyModel,
                             () -> propagateOmniboxSessionStateChange(true),
                             mDelegate::isToolbarBottomAnchored,
-                            addedVerticalOffset);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && OmniboxFeatures.shouldAnimateSuggestionsListAppearance()
-                && window != null) {
-            int addedVerticalOffset =
-                    mContext.getResources()
-                            .getDimensionPixelOffset(
-                                    R.dimen
-                                            .omnibox_suggestion_list_animation_added_vertical_offset);
-            InsetObserver insetObserver = mWindowAndroid.getInsetObserver();
-            assert insetObserver != null;
-            driver =
-                    new ImeSyncedSuggestionsListAnimationDriver(
-                            insetObserver,
-                            mListPropertyModel,
                             mEmbedder::getVerticalTranslationForAnimation,
-                            () -> propagateOmniboxSessionStateChange(true),
-                            addedVerticalOffset,
-                            new Handler(),
-                            window);
+                            mContext);
         } else {
             driver =
                     new SuggestionsListAnimationDriver() {
@@ -1437,8 +1407,16 @@ class AutocompleteMediator
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
         mActivityWindowFocused = isTopResumedActivity;
+        // Always set the window activity focused property to true for hub search so that the
+        // dropdown container persists when search activity is dismissed.
+        // TODO(crbug.com/390011136): Find a better way to create a seamless animation when
+        // exiting hub search that dismisses the URL bar and suggestions list together.
         mListPropertyModel.set(
-                SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED, isTopResumedActivity);
+                SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED,
+                mDataProvider.getPageClassification(/* isPrefetch= */ false)
+                                == PageClassification.ANDROID_HUB_VALUE
+                        ? true
+                        : isTopResumedActivity);
         if (isActive()) {
             onTextChanged(
                     mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),

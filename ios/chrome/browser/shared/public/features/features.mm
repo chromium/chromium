@@ -233,7 +233,7 @@ BASE_FEATURE(kLensOverlayEnableLandscapeCompatibility,
 
 BASE_FEATURE(kLensOverlayEnableLVFEscapeHatch,
              "LensOverlayEnableLVFEscapeHatch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayEnableLocationBarEntrypoint,
              "LensOverlayEnableLocationBarEntrypoint",
@@ -261,6 +261,10 @@ const char kLensOverlayOnboardingParamUpdatedStringsAndVisuals[] =
 
 BASE_FEATURE(kLensOverlayAlternativeOnboarding,
              "LensOverlayAlternativeOnboarding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensOverlayNavigationHistory,
+             "LensOverlayNavigationHistory",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableTraitCollectionWorkAround,
@@ -969,7 +973,7 @@ bool IsSaveToPhotosAccountPickerImprovementEnabled() {
 
 BASE_FEATURE(kHomeCustomization,
              "HomeCustomization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsHomeCustomizationEnabled() {
   return base::FeatureList::IsEnabled(kHomeCustomization);

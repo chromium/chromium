@@ -40,6 +40,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="2758123043070977469">Det oppsto en feil under autentiseringen. Logg på igjen.</translation>
 <translation id="2803375539583399270">Skriv inn PIN-koden</translation>
 <translation id="2919669478609886916">Du deler denne datamaskinen med en annen bruker. Vil du fortsette å dele?</translation>
+<translation id="2929683002824598593">Del enheten</translation>
 <translation id="2939145106548231838">Autentiser for å være vert</translation>
 <translation id="3027681561976217984">Berøringsmodus</translation>
 <translation id="3106379468611574572">Den eksterne datamaskinen svarer ikke på tilkoblingsforespørsler. Kontroller at datamaskinen er koblet til Internett, og prøv på nytt.</translation>
@@ -117,10 +118,12 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="6178645564515549384">Innebygd meldingsvert for ekstern hjelp</translation>
 <translation id="618120821413932081">Oppdater oppløsningen på det eksterne skrivebordet, så den samsvarer med vinduet</translation>
 <translation id="6223301979382383752">Åpne innstillinger for skjermopptak</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> har bedt om tilgang til å se skjermen din og styre tastaturet og musen. Vil du dele enheten din?</translation>
 <translation id="6284412385303060032">Verten som kjører på skjermen for konsollpålogging, har blitt avsluttet for å støtte gardinmodus ved å bytte til en vert som kjører i en brukerspesifikk økt.</translation>
 <translation id="6542902059648396432">Rapporter et problem</translation>
 <translation id="6583902294974160967">Brukerstøtte</translation>
 <translation id="6612717000975622067">Send Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Hvis du ikke gjør noe, begynner enheten automatisk å dele om # sekund.}other{Hvis du ikke gjør noe, begynner enheten automatisk å dele om # sekunder.}}</translation>
 <translation id="6654753848497929428">Del</translation>
 <translation id="677755392401385740">Vert startet for brukeren: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Hjelpeprogram for å åpne en nettadresse på <ph name="PRODUCT_NAME" />-klienten</translation>

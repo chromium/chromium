@@ -1835,12 +1835,13 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
   const bool show_webauthn_credentials =
       field.parsed_autocomplete() && field.parsed_autocomplete()->webauthn;
   GetPasswordManagerDriver().ShowPasswordSuggestions(PasswordSuggestionRequest(
-      field.renderer_id(), form, trigger_source,
-      GetIndexOfElement(form, username_element),
-      GetIndexOfElement(form, password_element), field.text_direction(),
-      typed_username, show_webauthn_credentials,
-      gfx::RectF(render_frame()->ConvertViewportToWindow(
-          user_input.BoundsInWidget()))));
+      TriggeringField(field.renderer_id(), trigger_source,
+                      field.text_direction(), typed_username,
+                      show_webauthn_credentials,
+                      gfx::RectF(render_frame()->ConvertViewportToWindow(
+                          user_input.BoundsInWidget()))),
+      form, GetIndexOfElement(form, username_element),
+      GetIndexOfElement(form, password_element)));
 }
 
 void PasswordAutofillAgent::CleanupOnDocumentShutdown() {

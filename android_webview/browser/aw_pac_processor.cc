@@ -9,6 +9,7 @@
 #include <dlfcn.h>
 #include <netdb.h>
 #include <unistd.h>
+
 #include <cstddef>
 #include <memory>
 #include <string>
@@ -16,6 +17,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -188,7 +190,7 @@ class HostResolver : public proxy_resolver::ProxyHostResolver {
 
     bool DnsResolveImpl(const std::string& host) {
       struct addrinfo hints;
-      memset(&hints, 0, sizeof hints);
+      UNSAFE_TODO(memset(&hints, 0, sizeof hints));
       hints.ai_family = AF_INET;
 
       struct addrinfo* res = nullptr;

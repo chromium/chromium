@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_IOS_TAB_GROUP_SYNC_DELEGATE_H_
 #define IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_IOS_TAB_GROUP_SYNC_DELEGATE_H_
 
+#include <optional>
 #import <vector>
 
 #import "base/memory/raw_ptr.h"
@@ -47,7 +48,7 @@ class IOSTabGroupSyncDelegate : public TabGroupSyncDelegate {
   ~IOSTabGroupSyncDelegate() override;
 
   // TabGroupSyncDelegate.
-  void HandleOpenTabGroupRequest(
+  std::optional<LocalTabGroupID> HandleOpenTabGroupRequest(
       const base::Uuid& sync_tab_group_id,
       std::unique_ptr<TabGroupActionContext> context) override;
   std::unique_ptr<ScopedLocalObservationPauser>

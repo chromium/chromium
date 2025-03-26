@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import android.graphics.Rect;
 
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
@@ -13,10 +14,11 @@ import org.chromium.content_public.browser.WebContents;
 
 /** A basic {@link WebContentsDelegateAndroid} that proxies methods into Tab. */
 @NullMarked
-public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateAndroid {
+public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateAndroid
+        implements Destroyable {
     /**
-     * Returns whether the page should resume accepting requests for the new window. This is
-     * used when window creation is asynchronous and the navigations need to be delayed.
+     * Returns whether the page should resume accepting requests for the new window. This is used
+     * when window creation is asynchronous and the navigations need to be delayed.
      */
     protected abstract boolean shouldResumeRequestsForCreatedWindow();
 

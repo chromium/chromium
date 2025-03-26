@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -110,7 +111,8 @@ std::unique_ptr<SkBitmap> AshMojomVideoConsumer::Frame::CreateSkBitmap() const {
   bitmap->allocPixels(
       SkImageInfo::MakeN32(size.width(), size.height(), kOpaque_SkAlphaType,
                            info_->color_space.ToSkColorSpace()));
-  memcpy(bitmap->getPixels(), pixels_.memory(), bitmap->computeByteSize());
+  UNSAFE_TODO(
+      memcpy(bitmap->getPixels(), pixels_.memory(), bitmap->computeByteSize()));
 
   return bitmap;
 }

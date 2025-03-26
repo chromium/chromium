@@ -517,6 +517,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="7787950393032327779">Izgleda da neki drugi Google Chrome proces (<ph name="PROCESS_ID" />) koristi ovaj profil na nekom drugom računaru (<ph name="HOST_NAME" />).  Chrome je zaključao profil kako ne bi došlo do oštećenja.  Ako ste sigurni da nijedan drugi proces ne koristi ovaj profil, možete ga otključati i ponovo pokrenuti Chrome.</translation>
 <translation id="7801699035218095297">Google Chrome pokušava kopirati lozinke. Unesite svoju lozinku za Windows da to dozvolite.</translation>
 <translation id="7808348361785373670">Ukloni iz Chromea…</translation>
+<translation id="782480918904119604">Da koristite ovaj profil s Glicom, otvorite Chrome i prijavite se</translation>
 <translation id="7825851276765848807">Instalacija nije uspjela zbog neodređene greške. Ponovo preuzmite Google Chrome.</translation>
 <translation id="7845233973568007926">Hvala što ste instalirali. Morate ponovo instalirati računar prije nego što možete koristiti <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7872446069773932638">Preuzimanje… Preostalo je <ph name="SECONDS" /> s</translation>

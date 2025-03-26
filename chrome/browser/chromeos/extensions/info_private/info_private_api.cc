@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/stylus_utils.h"
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -257,7 +258,7 @@ std::string GetClientId() {
 
 const char* GetBoolPrefNameForApiProperty(const char* api_name) {
   for (const auto& item : kPreferencesMap) {
-    if (strcmp(item.api_name, api_name) == 0) {
+    if (UNSAFE_TODO(strcmp(item.api_name, api_name)) == 0) {
       return item.preference_name;
     }
   }

@@ -12,6 +12,7 @@
 #include <variant>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -135,7 +136,8 @@ std::unique_ptr<ActivityIconLoader::ActivityToIconsMap> ResizeAndEncodeIcons(
       continue;
     }
     DCHECK_GE(bitmap.computeByteSize(), icon->icon.size());
-    memcpy(bitmap.getPixels(), &icon->icon.front(), icon->icon.size());
+    UNSAFE_TODO(
+        memcpy(bitmap.getPixels(), &icon->icon.front(), icon->icon.size()));
 
     gfx::ImageSkia original(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
 

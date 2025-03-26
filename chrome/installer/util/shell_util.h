@@ -24,6 +24,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/cstring_view.h"
 #include "base/win/windows_types.h"
 #include "chrome/installer/util/work_item_list.h"
 
@@ -503,7 +504,12 @@ class ShellUtil {
 
   // Returns the DefaultState of Chrome for |protocol|.
   static DefaultState GetChromeDefaultProtocolClientState(
-      const std::wstring& protocol);
+      base::wcstring_view protocol);
+
+  // Returns the DefaultState of Chrome for `file_extension`. `file_extension`
+  // must include a leading `.`, e.g., ".pdf".
+  static DefaultState GetChromeDefaultFileHandlerState(
+      base::wcstring_view file_extension);
 
   // Make Chrome the default browser. This function works by going through
   // the url protocols and file associations that are related to general

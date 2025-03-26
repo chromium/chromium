@@ -18,6 +18,7 @@
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/url_pattern_set.h"
 #include "extensions/common/user_script.h"
+#include "extensions/common/utils/content_script_utils.h"
 
 namespace content {
 class BrowserContext;
@@ -224,6 +225,7 @@ bool CanAccessTarget(const PermissionsData& permissions,
 // them, invoking `callback` with the result. Returns true on success; on
 // failure, populates `error_out`.
 bool CheckAndLoadFiles(std::vector<std::string> files,
+                       script_parsing::ContentScriptType resources_type,
                        const Extension& extension,
                        bool requires_localization,
                        ResourcesLoadedCallback callback,
@@ -232,6 +234,7 @@ bool CheckAndLoadFiles(std::vector<std::string> files,
 // Checks `files` and populates `resources_out` with the appropriate extension
 // resource. Returns true on success; on failure, populates `error_out`.
 bool GetFileResources(const std::vector<std::string>& files,
+                      script_parsing::ContentScriptType resources_type,
                       const Extension& extension,
                       std::vector<ExtensionResource>* resources_out,
                       std::string* error_out);

@@ -606,6 +606,7 @@ mojom("url_loader_base") {
     "isolation_info.mojom",
     "link_header.mojom",
     "load_timing_info.mojom",
+    "load_timing_internal_info.mojom",
     "network_change_manager.mojom",
     "network_interface.mojom",
     "network_interface_change_listener.mojom",
@@ -828,6 +829,19 @@ mojom("url_loader_base") {
       traits_headers =
           [ "//services/network/public/cpp/isolation_info_mojom_traits.h" ]
       traits_public_deps = [ "//net" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.LoadTimingInternalInfo"
+          cpp = "::net::LoadTimingInternalInfo"
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/load_timing_internal_info_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//net",
+      ]
     },
     {
       types = [

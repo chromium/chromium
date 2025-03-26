@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
@@ -103,6 +104,16 @@ void ChromePasswordReuseDetectionManagerClient::
   if (FromWebContents(contents)) {
     return;
   }
+  // For some SSO users that enforce browser sign-in, Chrome crashes.
+  // This early exit should be removed once a suitable test environment has been
+  // established and fix verified. crbug.com/405438533 tracks this.
+  if (signin_util::IsForceSigninEnabled()) {
+    base::UmaHistogramBoolean(
+        "PasswordProtection.SkipProfilePickerPasswordHashSaveAttempt", true);
+    return;
+  }
+  base::UmaHistogramBoolean(
+      "PasswordProtection.SkipProfilePickerPasswordHashSaveAttempt", false);
   // ChromePasswordReuseDetectionManagerClient depends on
   // ChromePasswordManagerClient for obtaining objects it needs to attempt
   // saving password hashes. ChromePasswordManagerClient depends on

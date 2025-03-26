@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/database.h"
@@ -30,7 +31,7 @@ constexpr std::string_view kUnmaskedLoyaltyCardSuffix =
 // `kLoyaltyCardProgramLogo` and `kUnmaskedLoyaltyCardSuffix` in that order.
 // Constructs a `LoyaltyCard` from that data.
 std::optional<LoyaltyCard> LoyaltyCardFromStatement(sql::Statement& s) {
-  LoyaltyCard card(/*loyalty_card_id=*/s.ColumnString(0),
+  LoyaltyCard card(/*loyalty_card_id=*/ValuableId(s.ColumnString(0)),
                    /*merchant_name=*/s.ColumnString(1),
                    /*program_name=*/s.ColumnString(2),
                    /*program_logo=*/GURL(s.ColumnStringView(3)),
@@ -109,7 +110,7 @@ bool ValuablesTable::AddOrUpdateLoyaltyCard(
        kLoyaltyCardProgramLogo, kUnmaskedLoyaltyCardSuffix},
       /*or_replace=*/true);
   int index = 0;
-  query.BindString(index++, loyalty_card.id());
+  query.BindString(index++, loyalty_card.id().value());
   query.BindString(index++, loyalty_card.merchant_name());
   query.BindString(index++, loyalty_card.program_name());
   query.BindString(index++, loyalty_card.program_logo().spec());
@@ -118,21 +119,21 @@ bool ValuablesTable::AddOrUpdateLoyaltyCard(
 }
 
 std::optional<LoyaltyCard> ValuablesTable::GetLoyaltyCardById(
-    std::string_view loyalty_card_id) const {
+    ValuableId loyalty_card_id) const {
   sql::Statement query;
   if (SelectByGuid(
           db(), query, kLoyaltyCardsTable,
           {kLoyaltyCardGuid, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
            kLoyaltyCardProgramLogo, kUnmaskedLoyaltyCardSuffix},
-          loyalty_card_id)) {
+          loyalty_card_id.value())) {
     return LoyaltyCardFromStatement(query);
   }
   return std::nullopt;
 }
 
-bool ValuablesTable::RemoveLoyaltyCard(std::string_view loyalty_card_id) {
+bool ValuablesTable::RemoveLoyaltyCard(ValuableId loyalty_card_id) {
   return DeleteWhereColumnEq(db(), kLoyaltyCardsTable, kLoyaltyCardGuid,
-                             loyalty_card_id);
+                             loyalty_card_id.value());
 }
 
 bool ValuablesTable::ClearLoyaltyCards() {

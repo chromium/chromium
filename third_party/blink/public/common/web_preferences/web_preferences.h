@@ -447,6 +447,10 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // when feature DynamicSafeAreaInsets is enabled.
   bool dynamic_safe_area_insets_enabled = false;
 
+  // Whether PaymentRequest is enabled. Controlled by WebView settings on
+  // WebView and by `kWebPayments` feature flag everywhere.
+  bool payment_request_enabled = false;
+
   // We try to keep the default values the same as the default values in
   // chrome, except for the cases where it would require lots of extra work for
   // the embedder to use the same default value.

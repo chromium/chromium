@@ -128,6 +128,11 @@ class ContentPasswordManagerDriver final
   void GeneratePassword(autofill::mojom::PasswordGenerationAgent::
                             TriggeredGeneratePasswordCallback callback);
 
+  // Notify the associated `PasswordAutofillManager` that password suggestions
+  // for the triggering field can be shown.
+  void ShowPasswordSuggestionsForField(
+      const autofill::TriggeringField& triggering_field);
+
   // Returns true if the field is any of the following cases:
   // 1) The field has type="password".
   // 2) The field was type="password" field at some point of time.

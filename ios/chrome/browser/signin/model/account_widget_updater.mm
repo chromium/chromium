@@ -91,12 +91,14 @@ void AccountWidgetUpdater::UpdateLoadedAccounts() {
 
   // An account was removed, 'urls_info' and
   // 'last_modification_dates_info' need to be updated.
-  if (urls_info.count > accounts.count) {
+  // The +1 is needed because 'urls_info' contains also info about
+  // most visited urls when there is no signed-in acoount.
+  if (urls_info.count > accounts.count + 1) {
     NSMutableDictionary* updated_urls = [NSMutableDictionary dictionary];
     NSMutableDictionary* updated_dates = [NSMutableDictionary dictionary];
 
     for (NSString* gaia in urls_info) {
-      if (accounts[gaia]) {
+      if (accounts[gaia] || [gaia isEqualToString:app_group::kDefaultAccount]) {
         updated_urls[gaia] = urls_info[gaia];
         updated_dates[gaia] = last_modification_dates_info[gaia];
       }

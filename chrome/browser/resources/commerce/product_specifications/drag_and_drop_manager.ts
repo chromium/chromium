@@ -87,6 +87,8 @@ export class DragAndDropManager {
         const col = this.columnElements_[key];
         assert(col);
         col.style.order = `${value}`;
+        // Ensure the 'relative' position property is maintained while dragging.
+        col.style.position = 'relative';
         col.toggleAttribute(IS_FIRST_COLUMN_ATTR, value === 0);
       });
     }
@@ -139,6 +141,12 @@ export class DragAndDropManager {
 
   // Sets up column reordering for drag events.
   private dragStart_(dragElement: HTMLElement) {
+    // Set the column element positions to relative so that dragging functions
+    // correctly.
+    this.columnElements_.forEach((column) => {
+      column.style.position = 'relative';
+    });
+
     this.tableElement_.draggingColumn = dragElement;
     // Set initial column order for later visual reordering.
     this.syncVisualOrderWithDom();
@@ -211,6 +219,12 @@ export class DragAndDropManager {
 
   // Called when drag-and-drop is finished, even if canceled.
   private dragEnd_() {
+    // Once dragging has finished, unset the position attribute to avoid
+    // tooltips and other popovers from being clipped by the column.
+    this.columnElements_.forEach((column) => {
+      column.style.position = 'unset';
+    });
+
     if (!this.tableElement_.draggingColumn) {
       return;
     }

@@ -226,9 +226,15 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
 }
 
 - (void)reportDimensionChangeIfNeeded {
+  // Maintain a strong reference to self throughout this method to prevent
+  // premature deallocation. `lensOverlayDetentsManagerDidChangeDimensionState`
+  // could trigger self's deallocation if the dimension state change results in
+  // the overlay being hidden. (see https://crbug.com/403224762).
+  LensOverlayDetentsManager* strongSelf = self;
+
   if (self.sheetDimension != _latestReportedDimension) {
-    [_delegate lensOverlayDetentsManagerDidChangeDimensionState:self];
-    _latestReportedDimension = self.sheetDimension;
+    _latestReportedDimension = strongSelf.sheetDimension;
+    [_delegate lensOverlayDetentsManagerDidChangeDimensionState:strongSelf];
   }
 }
 

@@ -97,7 +97,7 @@ void IpProtectionCoreHost::SetUp() {
   if (!ip_protection_prt_fetcher_) {
     ip_protection_prt_fetcher_ = std::make_unique<
         ip_protection::IpProtectionProbabilisticRevealTokenDirectFetcher>(
-        url_loader_factory->Clone());
+        url_loader_factory->Clone(), chrome::GetChannel());
   }
   if (!ip_protection_token_fetcher_) {
     ip_protection_token_fetcher_ =
@@ -126,7 +126,7 @@ void IpProtectionCoreHost::SetUpForTesting(
 
   ip_protection_prt_fetcher_ = std::make_unique<
       ip_protection::IpProtectionProbabilisticRevealTokenDirectFetcher>(
-      url_loader_factory->Clone());
+      url_loader_factory->Clone(), chrome::GetChannel());
   ip_protection_token_fetcher_ =
       std::make_unique<ip_protection::IpProtectionTokenDirectFetcher>(
           this, url_loader_factory->Clone(), std::move(bsa));

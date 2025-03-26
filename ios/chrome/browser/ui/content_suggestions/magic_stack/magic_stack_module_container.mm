@@ -304,7 +304,7 @@ const CGFloat kSeparatorHeight = 0.5;
     return;
   }
   _type = config.type;
-  [[self contextMenuInteractionHandler] configureWithType:_type];
+  [[self contextMenuInteractionHandler] configureWithType:_type config:config];
 
   _title.text = [MagicStackModuleContainer titleStringForModule:_type
                                                    inMagicStack:inMagicStack
@@ -445,7 +445,7 @@ const CGFloat kSeparatorHeight = 0.5;
             IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_TITLE);
       } else {
         return l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_TITLE);
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_ALT_TITLE);
       }
     }
     case ContentSuggestionsModuleType::kTipsWithProductImage:

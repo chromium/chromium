@@ -1225,14 +1225,14 @@ class AccountSelectionMediator {
 
     private void requestAvatarImage(PropertyModel accountModel) {
         Account account = accountModel.get(AccountProperties.ACCOUNT);
-        final String name = account.getName();
+        final String displayName = account.getDisplayName();
         final Bitmap picture =
                 mIsMultipleIdps
                         ? account.getCircledBadgedPictureBitmap()
                         : account.getPictureBitmap();
         accountModel.set(
                 AccountProperties.AVATAR,
-                new AccountProperties.Avatar(name, picture, mDesiredAvatarSize));
+                new AccountProperties.Avatar(displayName, picture, mDesiredAvatarSize));
     }
 
     boolean wasDismissed() {

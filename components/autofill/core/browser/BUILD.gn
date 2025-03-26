@@ -192,6 +192,7 @@ static_library("browser") {
     "data_model/usage_history_information.h",
     "data_model/valuables/loyalty_card.cc",
     "data_model/valuables/loyalty_card.h",
+    "data_model/valuables/valuable_types.h",
     "data_quality/addresses/address_normalization_manager.cc",
     "data_quality/addresses/address_normalization_manager.h",
     "data_quality/addresses/address_normalizer.h",
@@ -399,8 +400,6 @@ static_library("browser") {
     "metrics/payments/filled_card_information_bubble_metrics.h",
     "metrics/payments/iban_metrics.cc",
     "metrics/payments/iban_metrics.h",
-    "metrics/payments/local_card_migration_metrics.cc",
-    "metrics/payments/local_card_migration_metrics.h",
     "metrics/payments/manage_cards_prompt_metrics.cc",
     "metrics/payments/manage_cards_prompt_metrics.h",
     "metrics/payments/mandatory_reauth_metrics.cc",
@@ -708,6 +707,8 @@ static_library("browser") {
     "webdata/payments/payments_autofill_table.h",
     "webdata/payments/payments_sync_bridge_util.cc",
     "webdata/payments/payments_sync_bridge_util.h",
+    "webdata/valuables/loyalty_card_data_type_controller.cc",
+    "webdata/valuables/loyalty_card_data_type_controller.h",
     "webdata/valuables/loyalty_card_sync_bridge.cc",
     "webdata/valuables/loyalty_card_sync_bridge.h",
     "webdata/valuables/loyalty_card_sync_util.cc",
@@ -911,13 +912,6 @@ static_library("browser") {
     sources += [
       "crowdsourcing/server_prediction_overrides.cc",
       "crowdsourcing/server_prediction_overrides.h",
-      "payments/local_card_migration_manager.cc",
-      "payments/local_card_migration_manager.h",
-      "payments/payments_requests/migrate_cards_request.cc",
-      "payments/payments_requests/migrate_cards_request.h",
-      "strike_databases/payments/local_card_migration_strike_database.h",
-      "ui/payments/local_card_migration_bubble_controller.h",
-      "ui/payments/local_card_migration_dialog_controller.h",
     ]
     deps += [
       "//ui/native_theme",
@@ -1179,13 +1173,6 @@ static_library("test_support") {
     deps += [
       "//components/webauthn/core/browser",
       "//third_party/blink/public/common",
-    ]
-  }
-
-  if (!is_ios && !is_android) {
-    sources += [
-      "payments/test_local_card_migration_manager.cc",
-      "payments/test_local_card_migration_manager.h",
     ]
   }
 }
@@ -1492,11 +1479,7 @@ source_set("unit_tests") {
   }
 
   if (!is_ios && !is_android) {
-    sources += [
-      "crowdsourcing/server_prediction_overrides_unittest.cc",
-      "payments/local_card_migration_manager_unittest.cc",
-      "payments/payments_requests/migrate_cards_request_unittest.cc",
-    ]
+    sources += [ "crowdsourcing/server_prediction_overrides_unittest.cc" ]
   }
 
   if (build_with_tflite_lib) {

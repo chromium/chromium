@@ -1114,22 +1114,7 @@
   final org.chromium.base.ThreadUtils$ThreadChecker * return _NONNULL_;
 }
 
-# File: ../../third_party/android_deps/cipd/libs/com_android_support_support_annotations/support-annotations-28.0.0.jar:META-INF/proguard/androidx-annotations.pro
--keep @android.support.annotation.Keep class * {*;}
-
--keepclasseswithmembers class * {
-    @android.support.annotation.Keep <methods>;
-}
-
--keepclasseswithmembers class * {
-    @android.support.annotation.Keep <fields>;
-}
-
--keepclasseswithmembers class * {
-    @android.support.annotation.Keep <init>(...);
-}
-
-# File: ../../third_party/android_deps/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.8.1.jar:META-INF/com.android.tools/r8-from-1.6.0/coroutines.pro
+# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.8.1.jar:META-INF/com.android.tools/r8-from-1.6.0/coroutines.pro
 # Allow R8 to optimize away the FastServiceLoader.
 # Together with ServiceLoader optimization in R8
 # this results in direct instantiation when loading Dispatchers.Main
@@ -1153,7 +1138,7 @@
     boolean getRECOVER_STACK_TRACES() return false;
 }
 
-# File: ../../third_party/android_deps/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.10.1.jar:META-INF/com.android.tools/r8/coroutines.pro
+# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.7.3.jar:META-INF/com.android.tools/r8/coroutines.pro
 # When editing this file, update the following files as well:
 # - META-INF/proguard/coroutines.pro
 # - META-INF/com.android.tools/proguard/coroutines.pro
@@ -1168,7 +1153,7 @@
     volatile <fields>;
 }
 
-# These classes are only required by kotlinx.coroutines.debug.internal.AgentPremain, which is only loaded when
+# These classes are only required by kotlinx.coroutines.debug.AgentPremain, which is only loaded when
 # kotlinx-coroutines-core is used as a Java agent, so these are not needed in contexts where ProGuard is used.
 -dontwarn java.lang.instrument.ClassFileTransformer
 -dontwarn sun.misc.SignalHandler
@@ -1182,7 +1167,7 @@
 # An annotation used for build tooling, won't be directly accessed.
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 
-# File: ../../third_party/android_deps/cipd/libs/org_jetbrains_kotlinx_kotlinx_serialization_core_jvm/kotlinx-serialization-core-jvm-1.7.2.jar:META-INF/com.android.tools/r8/kotlinx-serialization-common.pro
+# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_serialization_core_jvm/kotlinx-serialization-core-jvm-1.7.2.jar:META-INF/com.android.tools/r8/kotlinx-serialization-common.pro
 # Keep `Companion` object fields of serializable classes.
 # This avoids serializer lookup through `getDeclaredClasses` as done for named companion objects.
 -if @kotlinx.serialization.Serializable class **
@@ -1225,7 +1210,7 @@
     private ** descriptor;
 }
 
-# File: ../../third_party/android_deps/cipd/libs/org_jetbrains_kotlinx_kotlinx_serialization_core_jvm/kotlinx-serialization-core-jvm-1.7.2.jar:META-INF/com.android.tools/r8/kotlinx-serialization-r8.pro
+# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_serialization_core_jvm/kotlinx-serialization-core-jvm-1.7.2.jar:META-INF/com.android.tools/r8/kotlinx-serialization-r8.pro
 # Rule to save runtime annotations on serializable class.
 # If the R8 full mode is used, annotations are removed from classes-files.
 #
@@ -1238,6 +1223,21 @@
 
  -if @kotlinx.serialization.Serializable class **
  -keep, allowshrinking, allowoptimization, allowobfuscation, allowaccessmodification class <1>
+
+# File: ../../third_party/android_deps/cipd/libs/com_android_support_support_annotations/support-annotations-28.0.0.jar:META-INF/proguard/androidx-annotations.pro
+-keep @android.support.annotation.Keep class * {*;}
+
+-keepclasseswithmembers class * {
+    @android.support.annotation.Keep <methods>;
+}
+
+-keepclasseswithmembers class * {
+    @android.support.annotation.Keep <fields>;
+}
+
+-keepclasseswithmembers class * {
+    @android.support.annotation.Keep <init>(...);
+}
 
 # File: //build/android/gyp/proguard.py (generated rules)
 -repackageclasses ''

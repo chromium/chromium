@@ -112,8 +112,8 @@ struct DragSessionData final {
                                         : tab_drag_data_.size();
   }
 
-  std::vector<raw_ptr<TabSlotView, VectorExperimental>> attached_views() const {
-    std::vector<raw_ptr<TabSlotView, VectorExperimental>> attached_views;
+  std::vector<TabSlotView*> attached_views() const {
+    std::vector<TabSlotView*> attached_views;
     for (const TabDragData& tab_data : tab_drag_data_) {
       attached_views.push_back(tab_data.attached_view);
     }

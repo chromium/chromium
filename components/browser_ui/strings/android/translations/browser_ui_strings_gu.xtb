@@ -440,7 +440,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_OWNER" />ની <ph name="RWS_MEMBERS_COUNT" /> સાઇટ માટે કુકીને મંજૂરી આપી}one{<ph name="RWS_OWNER" />ની <ph name="RWS_MEMBERS_COUNT" /> સાઇટ માટે કુકીને મંજૂરી આપી}other{<ph name="RWS_OWNER" />ની <ph name="RWS_MEMBERS_COUNT" /> સાઇટ માટે કુકીને મંજૂરી આપી}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">સુરક્ષિત કન્ટેન્ટ</translation>
-<translation id="662080504995468778">પૃષ્ઠ પર રહો</translation>
+<translation id="662080504995468778">અહીં જ રહો</translation>
 <translation id="6653342741369270081">પૂર્ણ સ્ક્રીનથી બહાર નીકળવા માટે 'પાછળ' બટનને દબાવો</translation>
 <translation id="6683865262523156564">આ સાઇટ એવા ગ્રૂપમાં શામેલ છે, જે તમારી ઍક્ટિવિટી જોઈ શકે છે. ગ્રૂપ <ph name="RWS_OWNER" /> દ્વારા નિર્ધારિત છે</translation>
 <translation id="6689172468748959065">પ્રોફાઇલ ફોટો</translation>
@@ -529,6 +529,7 @@
 <translation id="789180354981963912">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો:</translation>
 <translation id="789722939441020330">સાઇટને ઑટોમૅટિક રીતે એક કરતાં વધુ ફાઇલો ડાઉનલોડ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="7940722705963108451">મને યાદ કરાવો</translation>
+<translation id="7948081750384205628"><ph name="SETTING_TITLE" /> વિશે વધુ જાણો</translation>
 <translation id="7952708427581814389">સાઇટ તમારા ક્લિપબોર્ડ પરની ટેક્સ્ટ અને છબીઓ જોવાનું પૂછી શકે છે</translation>
 <translation id="7986741934819883144">સંપર્ક પસંદ કરો</translation>
 <translation id="7990211076305263060">ચાલુ હોય ત્યારે, સાઇટ તમારા માઇક્રોફોનનો ઉપયોગ કરવાનું પૂછી શકે છે. બંધ હોય ત્યારે, સાઇટ તમારા માઇક્રોફોનનો ઉપયોગ કરી શકતી નથી.</translation>

@@ -23,7 +23,9 @@
     Exposed=Window,
     HTMLConstructor
 ] interface HTMLLabelElement : HTMLElement {
-    readonly attribute HTMLFormElement? form;
+    // Until ReferenceTarget is enabled, this will only ever return HTMLFormElement.
+    // https://github.com/whatwg/html/pull/10995
+    [ImplementedAs=formForBinding] readonly attribute HTMLElement? form;
     [CEReactions, Reflect=for] attribute DOMString htmlFor;
     [ImplementedAs=controlForBinding] readonly attribute HTMLElement? control;
 };

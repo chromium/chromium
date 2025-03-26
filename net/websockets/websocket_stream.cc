@@ -149,7 +149,7 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
             url.SchemeIsWSOrWSS() ? ChangeWebSocketSchemeToHttpScheme(url)
                                   : url,
             storage_access_api_status, url_request_->initiator(),
-            /*emit_metrics=*/true)) {
+            /*emit_metrics=*/true, /*credentials_mode_include=*/true)) {
       url_request_->cookie_setting_overrides().Put(
           CookieSettingOverride::kStorageAccessGrantEligible);
     }

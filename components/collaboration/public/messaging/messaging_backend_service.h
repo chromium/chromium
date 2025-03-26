@@ -15,7 +15,6 @@
 #include "components/saved_tab_groups/public/types.h"
 
 namespace collaboration::messaging {
-class InstantMessageDelegate;
 
 class MessagingBackendService : public KeyedService,
                                 public base::SupportsUserData {

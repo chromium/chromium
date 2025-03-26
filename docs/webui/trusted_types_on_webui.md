@@ -25,7 +25,7 @@ in the WebUI renderer such as memory corruption bugs.
 should have an if statement to check the Trusted Types support before using
 methods/properties under `window.trustedTypes` :**
 
-```
+```ts
 if (window.trustedTypes) {
   // Trusted Types is supported, let's use Trusted Types 😎
   elem.innerHTML = trustedTypes.emptyHTML;
@@ -39,7 +39,7 @@ if (window.trustedTypes) {
 
 Example code:
 
-```
+```ts
 document.body.innerHTML = '';
 ```
 
@@ -47,7 +47,7 @@ This will be a Trusted Types violation because the value we are assigning to
 a dangerous sink is not a Trusted Type.
 This can be converted to:
 
-```
+```ts
 document.body.innerHTML = trustedTypes.emptyHTML;
 ```
 
@@ -57,13 +57,13 @@ There is also `trustedTypes.emptyScript` to clear script contents.
 
 Example code:
 
-```
+```ts
 document.body.innerHTML = 'Hello Guest!';
 ```
 
 Because this is just a text assignment, this can be converted to:
 
-```
+```ts
 document.body.textContent = 'Hello Guest!';
 ```
 
@@ -73,14 +73,14 @@ document.body.textContent = 'Hello Guest!';
 
 Example code:
 
-```
+```ts
 document.body.innerHTML = '<div><p>' + loadTimeData.getString('foo') + '</p>
 </div>';
 ```
 
 This can be converted by adding _template_ element to HTML file:
 
-```
+```html
 <template id="foo-template">
   <div>
     <p></p>
@@ -90,7 +90,7 @@ This can be converted by adding _template_ element to HTML file:
 
 And then adding following JS code to JS file:
 
-```
+```ts
 // body might already have some contents, so let's clear those first 😊
 document.body.innerHTML = trustedTypes.emptyHTML;
 
@@ -105,13 +105,13 @@ In cases where you don't have control over the HTML file (e.g. converting common
 JS libraries), you can use DOM APIs.
 Example code:
 
-```
+```ts
 document.body.innerHTML += '<p>' + loadTimeData.getString('foo') + '</p>';
 ```
 
 And then adding following JS code to JS file:
 
-```
+```ts
 const p = document.createElement('p');
 p.textContent = loadTimeData.getString('foo');
 document.body.appendChild(p);
@@ -124,7 +124,7 @@ readability, you can [use `trustedTypes.createPolicy`]
 (https://web.dev/trusted-types/#create-a-trusted-type-policy).
 Example code:
 
-```
+```ts
 document.body.innerHTML = '<div class="tree-row">' +
     '<span class="expand-icon"></span>' +
     '<span class="tree-label-icon"></span>' +
@@ -135,7 +135,7 @@ document.body.innerHTML = '<div class="tree-row">' +
 
 This can be converted to:
 
-```
+```ts
 const htmlString = '<div class="tree-row">' +
     '<span class="expand-icon"></span>' +
     '<span class="tree-label-icon"></span>' +
@@ -155,7 +155,7 @@ This case also requires changes in C++, as we need to allow the `foo-static`
 Trusted Type policy (created above in `trustedTypes.createPolicy`) in the CSP
 header.
 
-```
+```c++
 source->OverrideContentSecurityPolicy(
     network::mojom::CSPDirectiveName::TrustedTypes,
     "trusted-types foo-static;");
@@ -165,7 +165,7 @@ source->OverrideContentSecurityPolicy(
 
 Example code:
 
-```
+```ts
 const script = document.createElement('script');
 script.src = 'chrome://resources/foo.js';
 document.body.appendChild(script);
@@ -173,7 +173,7 @@ document.body.appendChild(script);
 
 This can be converted to:
 
-```
+```ts
 const staticUrlPolicy = trustedTypes.createPolicy(
     'foo-js-static',
     {createScriptURL: () => 'chrome://resources/foo.js'});
@@ -189,7 +189,7 @@ This case also requires changes in C++, as we need to allow the `foo-js-static`
 Trusted Type policy (created above in `trustedTypes.createPolicy`) in the CSP
 header.
 
-```
+```c++
 source->OverrideContentSecurityPolicy(
     network::mojom::CSPDirectiveName::TrustedTypes,
     "trusted-types foo-js-static;");
@@ -200,7 +200,7 @@ source->OverrideContentSecurityPolicy(
 In case there is no way to support Trusted Types in a WebUI page, you can
 disable Trusted Types with following code:
 
-```
+```c++
 source->DisableTrustedTypesCSP();
 ```
 

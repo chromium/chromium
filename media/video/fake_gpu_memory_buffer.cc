@@ -69,8 +69,11 @@ class FakeGpuMemoryBufferImpl : public gpu::GpuMemoryBufferImpl {
   std::unique_ptr<media::FakeGpuMemoryBuffer> fake_gmb_;
 };
 
+static base::AtomicSequenceNumber buffer_id_generator;
+
 }  // namespace
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 gfx::GpuMemoryBufferHandle CreatePixmapHandleForTesting(
     const gfx::Size& size,
     gfx::BufferFormat format,
@@ -81,10 +84,8 @@ gfx::GpuMemoryBufferHandle CreatePixmapHandleForTesting(
 
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::NATIVE_PIXMAP;
-  static base::AtomicSequenceNumber buffer_id_generator;
   handle.id = gfx::GpuMemoryBufferId(buffer_id_generator.GetNext());
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   for (size_t i = 0; i < VideoFrame::NumPlanes(*video_pixel_format); i++) {
     const gfx::Size plane_size_in_bytes =
         VideoFrame::PlaneSize(*video_pixel_format, i, size);
@@ -93,9 +94,9 @@ gfx::GpuMemoryBufferHandle CreatePixmapHandleForTesting(
         GetDummyFD());
   }
   handle.native_pixmap_handle.modifier = modifier;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return handle;
 }
+#endif
 
 FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
                                          gfx::BufferFormat format)
@@ -122,14 +123,9 @@ FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
   const size_t allocation_size =
       VideoFrame::AllocationSize(video_pixel_format_, size_);
   data_ = std::vector<uint8_t>(allocation_size);
-  handle_ = CreatePixmapHandleForTesting(size_, format, modifier);
 
-#if BUILDFLAG(IS_FUCHSIA)
-  zx::eventpair client_handle, service_handle;
-  zx::eventpair::create(0, &client_handle, &service_handle);
-  handle_.native_pixmap_handle.buffer_collection_handle =
-      std::move(client_handle);
-#endif  // BUILDFLAG(IS_FUCHSIA)
+  handle_.type = gfx::SHARED_MEMORY_BUFFER;
+  handle_.id = gfx::GpuMemoryBufferId(buffer_id_generator.GetNext());
 }
 
 FakeGpuMemoryBuffer::~FakeGpuMemoryBuffer() = default;
@@ -180,18 +176,11 @@ gfx::GpuMemoryBufferId FakeGpuMemoryBuffer::GetId() const {
 }
 
 gfx::GpuMemoryBufferType FakeGpuMemoryBuffer::GetType() const {
-  return gfx::NATIVE_PIXMAP;
+  return gfx::SHARED_MEMORY_BUFFER;
 }
 
 gfx::GpuMemoryBufferHandle FakeGpuMemoryBuffer::CloneHandle() const {
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::NATIVE_PIXMAP;
-  handle.id = handle_.id;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-  handle.native_pixmap_handle =
-      gfx::CloneHandleForIPC(handle_.native_pixmap_handle);
-#endif
-  return handle;
+  return handle_.Clone();
 }
 
 void FakeGpuMemoryBuffer::OnMemoryDump(

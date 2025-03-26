@@ -159,7 +159,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests that disabling the "Allow Chrome sign-in" blocks the user from signing
 // in to Chrome through settings until it is re-enabled.
 - (void)testToggleAllowChromeSignin {
-  // User is signed-in and syncing.
+  // User is signed-in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];

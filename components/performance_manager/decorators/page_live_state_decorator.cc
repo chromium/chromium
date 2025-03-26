@@ -12,6 +12,7 @@
 #include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "components/performance_manager/decorators/decorators_utils.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -76,6 +77,10 @@ class PageLiveStateDataImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_capturing_display_;
   }
+  bool IsDiscarded() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_discarded_;
+  }
   bool IsAutoDiscardable() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_auto_discardable_;
@@ -123,6 +128,9 @@ class PageLiveStateDataImpl
   }
   void SetIsCapturingDisplayForTesting(bool value) override {
     set_is_capturing_display(value);
+  }
+  void SetIsDiscardedForTesting(bool value) override {
+    set_is_discarded(value);
   }
   void SetIsAutoDiscardableForTesting(bool value) override {
     set_is_auto_discardable(value);
@@ -217,6 +225,10 @@ class PageLiveStateDataImpl
     for (auto& obs : observers_)
       obs.OnIsCapturingDisplayChanged(page_node_);
   }
+  void set_is_discarded(bool is_discarded) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    is_discarded_ = is_discarded;
+  }
   void set_is_auto_discardable(bool is_auto_discardable) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (is_auto_discardable_ == is_auto_discardable)
@@ -272,6 +284,7 @@ class PageLiveStateDataImpl
   bool is_being_mirrored_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_capturing_window_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_capturing_display_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool is_discarded_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_auto_discardable_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
   bool is_active_tab_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_pinned_tab_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
@@ -418,6 +431,13 @@ void PageLiveStateDecorator::OnIsCapturingDisplayChanged(
 }
 
 // static
+void PageLiveStateDecorator::SetIsDiscarded(content::WebContents* contents,
+                                            bool is_discarded) {
+  SetPropertyForWebContentsPageNode(
+      contents, &PageLiveStateDataImpl::set_is_discarded, is_discarded);
+}
+
+// static
 void PageLiveStateDecorator::SetIsAutoDiscardable(
     content::WebContents* contents,
     bool is_auto_discardable) {
@@ -508,6 +528,12 @@ bool PageLiveStateDecorator::IsCapturingDisplay(
 }
 
 // static
+bool PageLiveStateDecorator::IsDiscarded(content::WebContents* contents) {
+  return GetPropertyForWebContentsPageNode<bool>(
+      contents, &PageLiveStateDataImpl::IsDiscarded);
+}
+
+// static
 bool PageLiveStateDecorator::IsAutoDiscardable(content::WebContents* contents) {
   return GetPropertyForWebContentsPageNode<bool>(
       contents, &PageLiveStateDataImpl::IsAutoDiscardable);
@@ -565,6 +591,7 @@ base::Value::Dict PageLiveStateDecorator::DescribePageNodeData(
   ret.Set("IsBeingMirrored", data->IsBeingMirrored());
   ret.Set("IsCapturingWindow", data->IsCapturingWindow());
   ret.Set("IsCapturingDisplay", data->IsCapturingDisplay());
+  ret.Set("IsDiscarded", data->IsDiscarded());
   ret.Set("IsAutoDiscardable", data->IsAutoDiscardable());
   ret.Set("IsActiveTab", data->IsActiveTab());
   ret.Set("IsPinnedTab", data->IsPinnedTab());

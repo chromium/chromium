@@ -115,3 +115,32 @@ TEST_F(TabMatcherDesktopTest, IsTabOpenUsesCanonicalSearchURL) {
         nullptr));
   }
 }
+
+TEST_F(TabMatcherDesktopTest, IsTabOpenIncludeActiveTab) {
+  std::unique_ptr<TemplateURLService> turl_service =
+      TemplateURLServiceTestUtil::CreateTemplateURLServiceForTesting(
+          profile(), kServiceInitializers);
+  TabMatcherDesktop matcher(turl_service.get(), profile());
+
+  GURL foo("http://foo.chromium.org");
+  GURL bar("http://bar.chromium.org");
+  GURL baz("http://baz.chromium.org");
+
+  for (auto url : {bar, baz}) {
+    AddTab(browser(), url);
+  }
+
+  EXPECT_FALSE(
+      matcher.IsTabOpenWithURL(foo, nullptr, /*exclude_active_tab =*/false));
+  EXPECT_TRUE(
+      matcher.IsTabOpenWithURL(bar, nullptr, /*exclude_active_tab =*/false));
+  // The last tab is active. IsTabOpenWithURL() should match when
+  // `exclude_active_tab` is false.
+  EXPECT_TRUE(matcher.IsTabOpenWithURL(GURL("http://baz.chromium.org"), nullptr,
+                                       /*exclude_active_tab =*/false));
+  // The last tab is active. IsTabOpenWithURL() should not match when
+  // `exclude_active_tab` is true.
+  EXPECT_FALSE(matcher.IsTabOpenWithURL(GURL("http://baz.chromium.org"),
+                                        nullptr,
+                                        /*exclude_active_tab =*/true));
+}

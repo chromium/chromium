@@ -11,7 +11,4 @@ blink_core_sources_canvas_interventions = [
   "noise_helper.h",
 ]
 
-blink_core_tests_canvas_interventions = [
-  "canvas_interventions_helper_unittest.cc",
-  "noise_helper_unittest.cc",
-]
+blink_core_tests_canvas_interventions = [ "noise_helper_unittest.cc" ]

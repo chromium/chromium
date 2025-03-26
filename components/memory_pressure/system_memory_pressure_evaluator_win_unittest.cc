@@ -45,15 +45,11 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
   static const DWORDLONG kMBBytes = 1024 * 1024;
 
   explicit TestSystemMemoryPressureEvaluator(
-      bool large_memory,
       std::unique_ptr<MemoryPressureVoter> voter)
       : SystemMemoryPressureEvaluator(std::move(voter)), mem_status_() {
     // Generate a plausible amount of memory.
-    mem_status_.ullTotalPhys =
-        static_cast<DWORDLONG>(GenerateTotalMemoryMb(large_memory)) * kMBBytes;
+    mem_status_.ullTotalPhys = 8000 * kMBBytes;
 
-    // Rerun InferThresholds using the test fixture's GetSystemMemoryStatus.
-    InferThresholds();
     // Stop the timer.
     StopObserving();
   }
@@ -80,19 +76,6 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
 
   MOCK_METHOD1(OnMemoryPressure,
                void(base::MemoryPressureListener::MemoryPressureLevel level));
-
-  // Generates an amount of total memory that is consistent with the requested
-  // memory model.
-  int GenerateTotalMemoryMb(bool large_memory) {
-    int total_mb = 64;
-    while (total_mb < SystemMemoryPressureEvaluator::kLargeMemoryThresholdMb) {
-      total_mb *= 2;
-    }
-    if (large_memory) {
-      return total_mb * 2;
-    }
-    return total_mb / 2;
-  }
 
   // Sets up the memory status to reflect the provided absolute memory left.
   void SetMemoryFree(int phys_left_mb) {
@@ -167,35 +150,16 @@ class WinSystemMemoryPressureEvaluatorTest : public testing::Test {
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
 };
 
-// Tests the fundamental direct calculation of memory pressure with automatic
-// small-memory thresholds.
+// Tests the fundamental direct calculation of memory pressure with default
+// thresholds.
 TEST_F(WinSystemMemoryPressureEvaluatorTest,
-       CalculateCurrentMemoryPressureLevelSmall) {
+       CalculateCurrentMemoryPressureLevelDefault) {
   static const int kModerateMb =
-      SystemMemoryPressureEvaluator::kSmallMemoryDefaultModerateThresholdMb;
+      SystemMemoryPressureEvaluator::kPhysicalMemoryDefaultModerateThresholdMb;
   static const int kCriticalMb =
-      SystemMemoryPressureEvaluator::kSmallMemoryDefaultCriticalThresholdMb;
+      SystemMemoryPressureEvaluator::kPhysicalMemoryDefaultCriticalThresholdMb;
 
-  // Small-memory model.
-  TestSystemMemoryPressureEvaluator evaluator(false, nullptr);
-
-  EXPECT_EQ(kModerateMb, evaluator.moderate_threshold_mb());
-  EXPECT_EQ(kCriticalMb, evaluator.critical_threshold_mb());
-
-  ASSERT_NO_FATAL_FAILURE(CalculateCurrentMemoryPressureLevelTest(&evaluator));
-}
-
-// Tests the fundamental direct calculation of memory pressure with automatic
-// large-memory thresholds.
-TEST_F(WinSystemMemoryPressureEvaluatorTest,
-       CalculateCurrentMemoryPressureLevelLarge) {
-  static const int kModerateMb =
-      SystemMemoryPressureEvaluator::kLargeMemoryDefaultModerateThresholdMb;
-  static const int kCriticalMb =
-      SystemMemoryPressureEvaluator::kLargeMemoryDefaultCriticalThresholdMb;
-
-  // Large-memory model.
-  TestSystemMemoryPressureEvaluator evaluator(true, nullptr);
+  TestSystemMemoryPressureEvaluator evaluator(nullptr);
 
   EXPECT_EQ(kModerateMb, evaluator.moderate_threshold_mb());
   EXPECT_EQ(kCriticalMb, evaluator.critical_threshold_mb());
@@ -225,9 +189,8 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest,
 TEST_F(WinSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   MultiSourceMemoryPressureMonitor monitor;
 
-  // Large-memory.
   testing::StrictMock<TestSystemMemoryPressureEvaluator> evaluator(
-      true, monitor.CreateVoter());
+      monitor.CreateVoter());
 
   base::MemoryPressureListener listener(
       FROM_HERE,
@@ -336,7 +299,7 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
 // GetSystemMemoryStatus succeeds.
 TEST_F(WinSystemMemoryPressureEvaluatorTest, RecordCommitHistogramsBasic) {
   base::HistogramTester histogram_tester;
-  TestSystemMemoryPressureEvaluator evaluator(false, nullptr);
+  TestSystemMemoryPressureEvaluator evaluator(nullptr);
 
   evaluator.SetCommitData(/*commit_limit_mb=*/4096,
                           /*commit_available_mb=*/2048);
@@ -353,7 +316,7 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest, RecordCommitHistogramsBasic) {
 TEST_F(WinSystemMemoryPressureEvaluatorTest,
        RecordCommitHistogramsDivisionByZero) {
   base::HistogramTester histogram_tester;
-  TestSystemMemoryPressureEvaluator evaluator(false, nullptr);
+  TestSystemMemoryPressureEvaluator evaluator(nullptr);
 
   evaluator.SetCommitData(/*commit_limit_mb=*/0, /*commit_available_mb=*/0);
 
@@ -368,7 +331,7 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest,
 // 32-bit integers to calculate and correctly output all histograms.
 TEST_F(WinSystemMemoryPressureEvaluatorTest, RecordCommitHistogramsOverflow) {
   base::HistogramTester histogram_tester;
-  TestSystemMemoryPressureEvaluator evaluator(false, nullptr);
+  TestSystemMemoryPressureEvaluator evaluator(nullptr);
 
   constexpr uint64_t kLargerThanMaxInt =
       static_cast<uint64_t>(std::numeric_limits<int>::max()) + 1U;
@@ -387,7 +350,7 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest, RecordCommitHistogramsOverflow) {
 // underflow in that calculation.
 TEST_F(WinSystemMemoryPressureEvaluatorTest, PotentialUnderflow) {
   base::HistogramTester histogram_tester;
-  TestSystemMemoryPressureEvaluator evaluator(false, nullptr);
+  TestSystemMemoryPressureEvaluator evaluator(nullptr);
 
   evaluator.SetCommitData(/*commit_limit_mb=*/50,
                           /*commit_available_mb=*/100);

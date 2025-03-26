@@ -242,7 +242,6 @@ NavigationCapturingProcess::MaybeHandleAppNavigation(
 #endif
     return nullptr;
   }
-
   return result;
 }
 
@@ -433,23 +432,6 @@ NavigationCapturingProcess::GetInitialBrowserAndTabOverrideForNavigation(
       Browser* browser = Browser::Create(browser_params);
       return NoCapturingOverrideBrowser(browser);
     }
-  }
-
-  // Clicking a link to the home tab in a tabbed web app should always open the
-  // link in the home tab.
-  if (web_app::IsHomeTabUrl(navigation_params_browser_,
-                            navigation_params_url_)) {
-    navigation_params_browser_->tab_strip_model()->ActivateTabAt(0);
-    // If the navigation URL is the same as the current home tab URL, skip the
-    // navigation.
-    if (navigation_params_browser_->tab_strip_model()
-            ->GetActiveWebContents()
-            ->GetLastCommittedURL() == navigation_params_url_) {
-      return CancelInitialNavigation();
-    }
-
-    // Allow navigation to happen in the currently activated home tab.
-    return NoCapturingOverrideBrowser(navigation_params_browser_);
   }
 
   // Below here handles the states outlined in
@@ -1064,11 +1046,6 @@ bool NavigationCapturingProcess::
       ::web_app::ChromeOsWebAppExperiments::
           IsNavigationCapturingReimplEnabledForSourceApp(
               *source_browser_app_id_, navigation_params_url_)) {
-    return true;
-  }
-
-  if (web_app::IsHomeTabUrl(navigation_params_browser_,
-                            navigation_params_url_)) {
     return true;
   }
 #endif

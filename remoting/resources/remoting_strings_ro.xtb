@@ -40,6 +40,7 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="2758123043070977469">A apărut o problemă la autentificare, conectează-te din nou.</translation>
 <translation id="2803375539583399270">Introdu codul PIN</translation>
 <translation id="2919669478609886916">În prezent, permiteți accesul unui alt utilizator la acest computer. Doriți să permiteți în continuare accesul?</translation>
+<translation id="2929683002824598593">Permite accesul la dispozitiv</translation>
 <translation id="2939145106548231838">Autentificare la gazdă</translation>
 <translation id="3027681561976217984">Modul tactil</translation>
 <translation id="3106379468611574572">Computerul la distanță nu răspunde la solicitările de conectare. Verificați dacă respectivul computer este online și încercați din nou.</translation>
@@ -117,10 +118,12 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="6178645564515549384">Gazda de mesagerie nativă pentru asistență la distanță</translation>
 <translation id="618120821413932081">Actualizează rezoluția la distanță pentru a se potrivi cu fereastra</translation>
 <translation id="6223301979382383752">Deschide preferințele pentru Înregistrarea ecranului</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> a solicitat acces să vadă ecranul și să controleze tastatura și mouse-ul. Permiți accesul la dispozitiv?</translation>
 <translation id="6284412385303060032">Executarea gazdei pe ecranul de conectare al consolei a fost oprită pentru a accepta modul perdea, comutând la o gazdă care rulează într-o sesiune specifică utilizatorului.</translation>
 <translation id="6542902059648396432">Raportează o problemă...</translation>
 <translation id="6583902294974160967">Asistență</translation>
 <translation id="6612717000975622067">Trimite Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Dacă nu iei măsuri, dispozitivul va începe să permită accesul peste # secundă.}few{Dacă nu iei măsuri, dispozitivul va începe să permită accesul peste # secunde.}other{Dacă nu iei măsuri, dispozitivul va începe să permită accesul peste # de secunde.}}</translation>
 <translation id="6654753848497929428">Permite accesul</translation>
 <translation id="677755392401385740">Gazda a fost inițiată pentru utilizatorul: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Aplicație de ajutor pentru deschiderea unei adrese URL pe clientul <ph name="PRODUCT_NAME" /></translation>

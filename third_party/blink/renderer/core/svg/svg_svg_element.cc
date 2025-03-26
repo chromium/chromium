@@ -233,8 +233,6 @@ void SVGSVGElement::SvgAttributeChanged(
   if (width_or_height_changed || attr_name == svg_names::kXAttr ||
       attr_name == svg_names::kYAttr) {
     update_relative_lengths_or_view_box = true;
-    UpdateRelativeLengthsInformation();
-    InvalidateRelativeLengthClients();
 
     // At the SVG/HTML boundary (aka LayoutSVGRoot), the width and
     // height attributes can affect the replaced size so we need
@@ -256,7 +254,6 @@ void SVGSVGElement::SvgAttributeChanged(
 
   if (SVGFitToViewBox::IsKnownAttribute(attr_name)) {
     update_relative_lengths_or_view_box = true;
-    InvalidateRelativeLengthClients();
     if (LayoutObject* object = GetLayoutObject()) {
       object->SetNeedsTransformUpdate();
       if (attr_name == svg_names::kViewBoxAttr && object->IsSVGRoot())
@@ -608,9 +605,6 @@ void SVGSVGElement::RemovedFrom(ContainerNode& root_parent) {
   if (root_parent.isConnected()) {
     SVGDocumentExtensions& svg_extensions = GetDocument().AccessSVGExtensions();
     svg_extensions.RemoveTimeContainer(this);
-    if (!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
-      svg_extensions.RemoveSVGRootWithRelativeLengthDescendents(this);
-    }
   }
 
   SVGGraphicsElement::RemovedFrom(root_parent);

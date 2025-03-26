@@ -27,6 +27,11 @@ interface BasicInfo {
   sections: Section[];
 }
 
+interface WebContentsInfo {
+  enabled: boolean;
+  search_content_filtering: 'on'|'off';
+}
+
 type UserSettings = Record<string, any>;
 
 function getBasicInfoHtml(sections: Section[]) {
@@ -97,11 +102,21 @@ function initialize() {
     event.preventDefault();
   }
 
+  function changeSearchContentFilters(newState: 'on'|'off') {
+    chrome.send('changeSearchContentFilters', [newState]);
+  }
+
   getRequiredElement('try-url').addEventListener('submit', submitURL);
+  getRequiredElement('search-content-filters-enabled-on')
+      .addEventListener('click', () => changeSearchContentFilters('on'));
+  getRequiredElement('search-content-filters-enabled-off')
+      .addEventListener('click', () => changeSearchContentFilters('off'));
 
   addWebUiListener('basic-info-received', receiveBasicInfo);
   addWebUiListener('user-settings-received', receiveUserSettings);
   addWebUiListener('filtering-result-received', receiveFilteringResult);
+  addWebUiListener(
+      'web-content-filters-info-received', receiveWebContentsFilterInfo);
 
   chrome.send('registerForEvents');
   chrome.send('getBasicInfo');
@@ -178,6 +193,32 @@ function receiveFilteringResult(result: Result) {
 
   if (shouldScrollDown) {
     scrollToBottom(container);
+  }
+}
+
+function receiveWebContentsFilterInfo(result: WebContentsInfo) {
+  getRequiredElement<HTMLInputElement>('search-content-filters-enabled-on')
+      .readOnly = !result.enabled;
+  getRequiredElement<HTMLInputElement>('search-content-filters-enabled-off')
+      .readOnly = !result.enabled;
+  getRequiredElement<HTMLInputElement>('search-content-filters-enabled-on')
+      .disabled = !result.enabled;
+  getRequiredElement<HTMLInputElement>('search-content-filters-enabled-off')
+      .disabled = !result.enabled;
+
+  switch (result.search_content_filtering) {
+    case 'on':
+      getRequiredElement<HTMLInputElement>('search-content-filters-enabled-on')
+          .checked = true;
+      getRequiredElement<HTMLInputElement>('search-content-filters-enabled-off')
+          .checked = false;
+      break;
+    case 'off':
+      getRequiredElement<HTMLInputElement>('search-content-filters-enabled-on')
+          .checked = false;
+      getRequiredElement<HTMLInputElement>('search-content-filters-enabled-off')
+          .checked = true;
+      break;
   }
 }
 

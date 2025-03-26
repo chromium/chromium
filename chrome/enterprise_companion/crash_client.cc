@@ -217,7 +217,7 @@ class CrashClient {
                               GetGlobalConstants()->CrashUploadURL().spec(),
                               annotations, MakeCrashHandlerArgs(),
                               /*restartable=*/true,
-                              /*asynchronous_start=*/false)) {
+                              /*asynchronous_start=*/false, attachments)) {
       VLOG(1) << "Failed to start handler.";
       return false;
     }

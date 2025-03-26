@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -133,7 +134,7 @@ bool CaptureServiceReceiver::Socket::OnMessage(char* data, size_t size) {
     LOG(ERROR) << "Invalid message size: " << size << ".";
     return false;
   }
-  memcpy(&type, data, sizeof(type));
+  UNSAFE_TODO(memcpy(&type, data, sizeof(type)));
   capture_service::MessageType message_type =
       static_cast<capture_service::MessageType>(type);
 

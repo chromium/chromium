@@ -1309,6 +1309,9 @@ void Canvas2DRecorderContext::setShadowBlur(double blur) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowBlur,
                                                 blur);
   }
+  if (blur > 0) {
+    SetTriggerForCanvasIntervention();
+  }
   state.SetShadowBlur(ClampTo<float>(blur));
 }
 
@@ -1332,6 +1335,7 @@ void Canvas2DRecorderContext::setShadowColor(const String& color_string) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowColor,
                                                 color.Rgb());
   }
+  SetTriggerForCanvasIntervention();
   state.SetShadowColor(color);
 }
 
@@ -1411,6 +1415,9 @@ void Canvas2DRecorderContext::setGlobalCompositeOperation(
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kSetGlobalCompositeOpertion, sk_blend_mode);
+  }
+  if (op != kCompositeSourceOver || blend_mode != BlendMode::kNormal) {
+    SetTriggerForCanvasIntervention();
   }
   state.SetGlobalComposite(sk_blend_mode);
 }
@@ -1740,10 +1747,8 @@ void Canvas2DRecorderContext::DrawPathInternal(
         [line](cc::PaintCanvas* c,
                const cc::PaintFlags* flags)  // draw lambda
         {
-          c->drawLine(SkFloatToScalar(line.start.x()),
-                      SkFloatToScalar(line.start.y()),
-                      SkFloatToScalar(line.end.x()),
-                      SkFloatToScalar(line.end.y()), *flags);
+          c->drawLine(line.start.x(), line.start.y(), line.end.x(),
+                      line.end.y(), *flags);
         },
         [](const SkIRect& rect)  // overdraw test lambda
         { return false; },
@@ -1757,16 +1762,13 @@ void Canvas2DRecorderContext::DrawPathInternal(
 
   if (path.IsArc()) {
     const auto& arc = path.arc();
-    const SkScalar x = WebCoreFloatToSkScalar(arc.x);
-    const SkScalar y = WebCoreFloatToSkScalar(arc.y);
-    const SkScalar radius = WebCoreFloatToSkScalar(arc.radius);
-    const SkScalar diameter = radius + radius;
     const SkRect oval =
-        SkRect::MakeXYWH(x - radius, y - radius, diameter, diameter);
-    const SkScalar start_degrees =
-        WebCoreFloatToSkScalar(arc.start_angle_radians * 180 / kPiFloat);
-    const SkScalar sweep_degrees =
-        WebCoreFloatToSkScalar(arc.sweep_angle_radians * 180 / kPiFloat);
+        SkRect::MakeLTRB(arc.x - arc.radius, arc.y - arc.radius,
+                         arc.x + arc.radius, arc.y + arc.radius);
+    const float start_degrees =
+        ClampNonFiniteToZero(arc.start_angle_radians * 180 / kPiFloat);
+    const float sweep_degrees =
+        ClampNonFiniteToZero(arc.sweep_angle_radians * 180 / kPiFloat);
     const bool closed = arc.closed;
     Draw<OverdrawOp::kNone>(
         [oval, start_degrees, sweep_degrees, closed](
@@ -1845,6 +1847,9 @@ void Canvas2DRecorderContext::FillPathImpl(Path2D* dom_path,
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kFill__Path, dom_path->GetIdentifiableToken(), winding_rule);
   }
+  if (dom_path->HasTriggerForIntervention()) {
+    SetTriggerForCanvasIntervention();
+  }
   DrawPathInternal(*dom_path, CanvasRenderingContext2DState::kFillPaintType,
                    winding_rule, path2d_use_paint_cache_);
 }
@@ -1861,6 +1866,9 @@ void Canvas2DRecorderContext::stroke(Path2D* dom_path) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kStroke__Path, dom_path->GetIdentifiableToken());
+  }
+  if (dom_path->HasTriggerForIntervention()) {
+    SetTriggerForCanvasIntervention();
   }
   DrawPathInternal(*dom_path, CanvasRenderingContext2DState::kStrokePaintType,
                    SkPathFillType::kWinding, path2d_use_paint_cache_);

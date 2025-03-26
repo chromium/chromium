@@ -120,7 +120,8 @@ enum class CrostiniResult {
   START_BAGUETTE_VM_TIMED_OUT = 85,
   UNINSTALL_BAGUETTE_FAILED = 86,
   INSTALL_BAGUETTE_CANCELLED = 87,
-  kMaxValue = INSTALL_BAGUETTE_CANCELLED,
+  DOWNLOAD_BAGUETTE_FAILED = 88,
+  kMaxValue = DOWNLOAD_BAGUETTE_FAILED,
   // When adding a new value, check you've followed the steps in the comment at
   // the top of this enum.
 };

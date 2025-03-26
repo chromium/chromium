@@ -100,6 +100,7 @@ public class TabGroupMenuActionHandler {
                             this::onTabGroupCreation,
                             mFilter,
                             mBottomSheetController,
+                            true,
                             true);
             mTabGroupListBottomSheetCoordinatorSupplier.set(tabGroupListBottomSheetCoordinator);
             tabGroupListBottomSheetCoordinator.showBottomSheet(List.of(tab));
@@ -114,11 +115,5 @@ public class TabGroupMenuActionHandler {
         TabGroupCreationDialogManager manager =
                 new TabGroupCreationDialogManager(mContext, mModalDialogManager, null);
         manager.showDialog(tabGroupId, mFilter);
-
-        @Nullable TabGroupListBottomSheetCoordinator coordinator =
-                mTabGroupListBottomSheetCoordinatorSupplier.get();
-        if (coordinator != null) {
-            coordinator.destroy();
-        }
     }
 }

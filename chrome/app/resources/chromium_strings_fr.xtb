@@ -364,6 +364,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="6174920971222007286">Ce fichier est peut-être dangereux<ph name="LINE_BREAK" />Si vous fournissez le mot de passe, Chromium peut vérifier ce téléchargement. Des infos sur le fichier sont envoyées à la navigation sécurisée Google, mais son contenu et le mot de passe restent sur votre appareil.</translation>
 <translation id="6182736845697986886">Échec de l'installation en raison d'une erreur interne du serveur de mise à jour.</translation>
 <translation id="6183079672144801177">Vérifiez si vous êtes bien connecté à Chromium sur votre <ph name="TARGET_DEVICE_NAME" />, puis procédez de nouveau à l'envoi.</translation>
+<translation id="6196339736238974634">Pour utiliser ce profil avec Glic, ouvrez Chromium et connectez-vous</translation>
 <translation id="6212496753309875659">Cet ordinateur dispose déjà d'une version plus récente de Chromium. Si le logiciel ne fonctionne pas, veuillez le désinstaller, puis réessayer.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium va être relancé maintenant}=1{Chromium va être relancé dans 1 seconde}one{Chromium va être relancé dans # seconde}other{Chromium va être relancé dans # secondes}}</translation>
 <translation id="6241367896540709610">Pour télécharger des fichiers, Chromium a besoin de l'autorisation d'accéder à l'espace de stockage</translation>

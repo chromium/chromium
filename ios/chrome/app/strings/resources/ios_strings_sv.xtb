@@ -40,6 +40,7 @@
 <translation id="1147031633655575115">Inloggad som <ph name="USER" /></translation>
 <translation id="1149401351239820326">Utgångsmånad</translation>
 <translation id="1150989369772528668">Kalender</translation>
+<translation id="1161663161838091892">Synkronisera flikar och historik för att fortsätta</translation>
 <translation id="1164891049599601209">Har angetts på en bedräglig webbplats</translation>
 <translation id="1165039591588034296">Fel</translation>
 <translation id="1172898394251786223">Nästa fält</translation>
@@ -182,6 +183,7 @@
 <translation id="1732468323901456775">Slå på aviseringar för <ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">Tryck snabbt två gånger här om du vill installera.</translation>
 <translation id="1740650426894359238">Byt till en annan profil</translation>
+<translation id="1741219894094057085">Smartklocka</translation>
 <translation id="1743244221910283364">Ignorera ändringar</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} alternativ för adress visas ovanför tangentbordet.}other{{count} alternativ för adress visas ovanför tangentbordet.}}</translation>
 <translation id="1750238553597293878">Fortsätt använda lösenorden i Google-kontot</translation>
@@ -296,6 +298,7 @@
 <translation id="2202084845446535117">Inga e-postkonton</translation>
 <translation id="2214453882118345682">Köp, översätt och identifiera det du ser med kameran.</translation>
 <translation id="2215819824168709130">Dölj kortet Bevaka pris</translation>
+<translation id="2216366330550244277">Öppna sidan för en produkt</translation>
 <translation id="2220529011494928058">Rapportera ett problem</translation>
 <translation id="2220887224562128152">När radering av en fil har schemalagts kan filen inte återställas.</translation>
 <translation id="2223461067862937305">Skapa en QR-kod</translation>
@@ -477,7 +480,6 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2989523299700148168">Nyligen besökta</translation>
 <translation id="2989805286512600854">Öppna i ny flik</translation>
 <translation id="2996291259634659425">Skapa lösenfras</translation>
-<translation id="3000900718786961632">{COUNT,plural, =1{Nytt paket spåras}other{Nya paket spåras}}</translation>
 <translation id="3010025794097054078">Skydda dig från dataintrång, osäkra webbplatser med mera.</translation>
 <translation id="301080557829842765">Integritetsguide</translation>
 <translation id="3012310354105716927">Viss data har inte sparats ännu</translation>
@@ -703,6 +705,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4038354071007134711">Det går inte att öppna filen med någon av apparna på enheten.</translation>
 <translation id="4042870976416480368">Sök på sidan</translation>
 <translation id="4045648459118332842">Få tillgång till sparade lösenord i alla appar med ett tryck</translation>
+<translation id="4047337302138771011">Dela dina lösenord</translation>
 <translation id="4049419681095579435">Paketet spåras redan</translation>
 <translation id="4049507953662678203">Kontrollera att du är ansluten till nätverket och försök igen.</translation>
 <translation id="4054572406751135230">Håll dig uppdaterad om nyheter, sport med mera.</translation>
@@ -954,6 +957,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5118462200606189584">Lägg till konto …</translation>
 <translation id="5118713593561876160">Intressen</translation>
 <translation id="5118764316110575523">Av</translation>
+<translation id="5119329531859909472">Tryck på Bevaka för att bevaka produkten</translation>
 <translation id="5121618895923301719">Du bevakar redan den här produkten. Den här sidan har sparats i <ph name="BEGIN_LINK" />bokmärken på telefonen<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Du har flera problem med lösenord.</translation>
 <translation id="5127538504377457572">Aktiv för <ph name="DAYS" /> dagar sedan</translation>
@@ -1016,6 +1020,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5414763847370083940">Du får en avisering om priset sänks på en webbplats.</translation>
 <translation id="5415289094036440596">Det går inte att dela nycklar</translation>
 <translation id="5416455648658732408">Flytta till flikgrupp</translation>
+<translation id="5423269318075950257">Bevaka pris</translation>
 <translation id="542659109038405424">Till</translation>
 <translation id="5429624150850059322">När du kommer tillbaka är flikarna suddiga tills du trycker för att fortsätta</translation>
 <translation id="5431239785743546285">Sidor du har läst</translation>
@@ -1106,6 +1111,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5737974891429562743">Inloggningsuppgifterna för kontot är inte aktuella. Starta synkroniseringen genom att uppdatera.</translation>
 <translation id="5738385766833540397">Hantera hur du får sänkt pris-aviseringar för produkter du bevakar</translation>
 <translation id="5738887413654608789">Detta gör det möjligt att upptäcka relevanta webbsidor utifrån din omgivning.</translation>
+<translation id="573974402615125334">Om du vill dela, gå med i och samarbeta i flikgrupper måste du synkronisera din historik och dina flikar</translation>
 <translation id="5740123193752401435">Sök bland flikar …</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" />-aviseringar aktiverade</translation>
 <translation id="574762237186762643">Händelser</translation>
@@ -1444,6 +1450,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7080806333218412752">Webbadresser skickas till Säker webbsökning för kontroll. Ett litet urval av sidor, nedladdning, tilläggsaktivitet och systeminformation skickas även för att upptäcka nya hot. Denna data länkas tillfälligt till Google-kontot när du loggar in för att skydda dig i Googles appar.</translation>
 <translation id="7082853213442715471">När det här läget är aktiverat blockeras viss webbteknik, vilket kan få vissa webbplatser att läsas in långsammare eller inte fungera korrekt.</translation>
 <translation id="7095110968493193530">I Google Lösenordshantering för <ph name="EMAIL" /></translation>
+<translation id="7097046145876891318">Tryck på prishistorik i adressfältet för att se prisändringar över tid</translation>
 <translation id="7101580180124131336">Nu visas innehåll från och om <ph name="CHANNEL_NAME" /> i Följer.</translation>
 <translation id="7102005569666697658">Laddar ned … <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Meny → Inställningar → Betalningsmetod</translation>
@@ -1737,6 +1744,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8325455175867928593">Dölj Recensioner baserade på dina intressen</translation>
 <translation id="833647236762414178">Skapa, spara och hantera dina lösenord och nycklar för att enkelt logga in på webbplatser och i appar. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Säkerhetskopiera dina grejer och använd dem på vilken enhet som helst</translation>
+<translation id="8348530355586151720">Tryck på menyn med tre punkter</translation>
 <translation id="8349305172487531364">Bokmärkesfältet</translation>
 <translation id="8364563001733875155">Om du vill ändra pinkoden måste du först ställa in ett lösenord på enheten.</translation>
 <translation id="8366466717204352506">Kontrollen har aldrig körts</translation>
@@ -1892,7 +1900,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="891282356902782456">Lösenordet sparas endast på den här enheten. Om du vill använda det på dina andra enheter sparar du det i Google-kontot <ph name="EMAIL" />.</translation>
 <translation id="8915916167043355778">Stäng alla</translation>
 <translation id="892185197271200809">Alla förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och den raderas från alla enheter</translation>
-<translation id="8921902386312975525">Alternativ för att spåra paket</translation>
 <translation id="8923178205567790913">Lösenord</translation>
 <translation id="892776311701544612">Läs mer …</translation>
 <translation id="8928133177108699615">Dator</translation>

@@ -757,7 +757,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGreyUI assertFakeAddAccountMenuDisplayed];
 }
 
-// Tests that a signed-out user can open "Sign in and sync" screen from the NTP.
+// Tests that a signed-out user can open the "Sign in" screen from the NTP.
 - (void)testOpenSignInFromNTP {
   // Select the identity disc particle.
   [[EarlGrey selectElementWithMatcher:

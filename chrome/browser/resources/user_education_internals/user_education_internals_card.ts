@@ -45,10 +45,10 @@ export class UserEducationInternalsCardElement extends CrLitElement {
     };
   }
 
-  promo: FeaturePromoDemoPageInfo|null = null;
-  showAction: boolean = false;
-  protected instructionsExpanded_: boolean = false;
-  protected dataExpanded_: boolean = false;
+  accessor promo: FeaturePromoDemoPageInfo|null = null;
+  accessor showAction: boolean = false;
+  protected accessor instructionsExpanded_: boolean = false;
+  protected accessor dataExpanded_: boolean = false;
 
   protected launchPromo_() {
     assert(this.promo);

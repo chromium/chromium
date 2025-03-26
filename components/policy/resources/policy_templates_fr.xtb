@@ -585,7 +585,6 @@ Une réauthentification en ligne peut être requise pour plusieurs raisons (par 
 <translation id="143649776386947790">Utiliser le comportement par défaut</translation>
 <translation id="1438739959477268107">Paramètre de génération de clé par défaut</translation>
 <translation id="1440408958042020947">Permet aux utilisateurs ayant activé Phone Hub d'accéder aux photos et vidéos récentes prises sur leur téléphone</translation>
-<translation id="1442458649848299896">Activer le contrôle du déploiement de la réduction <ph name="AL_HEADER_NAME" /> via des tests en conditions réelles</translation>
 <translation id="1443532790824582949">Activer le clavier virtuel tactile</translation>
 <translation id="1449083855104537880">Définissez cette règle sur "True" pour afficher les options d'accessibilité dans le menu de la barre d'état système. Si vous définissez cette règle sur "False", ces options ne s'affichent pas dans le menu.
 
@@ -3222,15 +3221,6 @@ Si elle est désactivée, la fonctionnalité d'écriture prédictive est désact
 <translation id="3387999258705169775">Comportement par défaut pour la limitation imbriquée de la fonction setTimeout().</translation>
 <translation id="3388628790024977864">Interdire le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="GOOGLE_DRIVE_NAME" /> et <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Activer l'authentification gnubby pour l'hôte d'accès à distance</translation>
-<translation id="3394895899282672754">La réduction de l'en-tête de requête HTTP <ph name="AL_HEADER_NAME" /> et du getter JavaScript <ph name="JS_GETTER_NAME" /> est programmée pour des raisons de confidentialité.
-Pour faciliter les tests et assurer la compatibilité, cette règle vous permet d'activer ou de désactiver le déploiement de cette réduction.
-
-Si cette règle est activée ou n'est pas configurée, le déploiement de la réduction <ph name="AL_HEADER_NAME" /> sera appliqué via des tests en conditions réelles.
-Si cette règle est désactivée, les tests en conditions réelles ne pourront pas activer le déploiement de la réduction.
-
-Pour en savoir plus sur cette fonctionnalité, consultez https://github.com/explainers-by-googlers/reduce-accept-language.
-
-REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les modifications apportées à cette règle lorsque le navigateur sera en cours d'exécution.</translation>
 <translation id="3395744872155955051">Autoriser le choix de fichiers directement dans <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="3397883909301547525">Ne pas afficher de recommandations d'applis dans le lanceur de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3398051852031115795">Comportement système par défaut (varie en fonction de la taille d'écran)</translation>
@@ -5993,7 +5983,6 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
       <ph name="IMAGE_SEARCH_SOURCE" />,
       <ph name="IMAGE_THUMBNAIL" />,
       <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
-<translation id="5368878547690689592">Contrôler le déploiement de la réduction <ph name="AL_HEADER_NAME" /></translation>
 <translation id="5369937289900051171">Impression couleur seulement</translation>
 <translation id="5370279767682621504">Activer la compatibilité avec HTTP 0.9 sur les ports non utilisés par défaut</translation>
 <translation id="5370765433640162225">Si cette règle est définie sur "True", le nettoyage automatique est lancé lors de la connexion pour vérifier que l'espace disque disponible est suffisant.
@@ -8736,6 +8725,18 @@ Les plannings dont les intervalles se chevauchent ne sont pas acceptés. Cette r
 Les appareils <ph name="PRODUCT_OS_NAME" /> utiliseront le fuseau horaire du système pour appliquer ces intervalles.
 
 Remarque importante : Il est possible que les plannings définis par cette règle ne soient pas suivis comme prévu s'ils entrent en conflit avec d'autres paramètres de gestion de l'alimentation, comme <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />. Assurez-vous que ces paramètres sont configurés pour permettre l'application des intervalles de suspension planifiés.</translation>
+<translation id="7196944905905233325">Active le fournisseur de framework d'accessibilité <ph name="UIA_NAME" /> dans <ph name="PRODUCT_NAME" /> pour en permettre l'utilisation par les outils d'accessibilité.
+
+Cette règle est disponible dans <ph name="PRODUCT_NAME" /> pendant une période de transition d'un an afin de permettre aux administrateurs d'entreprise de contrôler le déploiement du fournisseur de framework d'accessibilité <ph name="UIA_NAME" /> du navigateur. Les outils d'accessibilité et autres qui utilisent le framework d'accessibilité <ph name="UIA_NAME" /> pour interagir avec le navigateur peuvent nécessiter des mises à jour pour fonctionner correctement avec le fournisseur <ph name="UIA_NAME" /> du navigateur. Les administrateurs peuvent utiliser cette règle pour désactiver temporairement le fournisseur <ph name="UIA_NAME" /> du navigateur (et rétablir ainsi l'ancien comportement) pendant qu'ils travaillent avec les fournisseurs pour proposer des mises à jour aux outils concernés.
+
+Si cette règle est définie sur "False", <ph name="PRODUCT_NAME" /> n'active que son fournisseur <ph name="MSAA_NAME" />. Les outils d'accessibilité et autres qui utilisent le nouveau framework d'accessibilité <ph name="UIA_NAME" /> pour interagir avec le navigateur communiqueront avec lui par l'intermédiaire d'un shim de compatibilité dans <ph name="MS_WIN_NAME" />.
+
+Si cette règle est définie sur "True", <ph name="PRODUCT_NAME" /> active son fournisseur <ph name="UIA_NAME" /> en plus de son fournisseur <ph name="MSAA_NAME" />.
+Les outils d'accessibilité et autres qui utilisent le nouveau framework d'accessibilité <ph name="UIA_NAME" /> pour interagir avec le navigateur communiqueront directement avec lui.
+
+Si cette règle n'est pas configurée, le framework des variantes dans <ph name="PRODUCT_NAME" /> est utilisé pour activer ou désactiver le fournisseur.
+
+Cette règle ne sera plus disponible à partir de <ph name="PRODUCT_NAME" /> 146.</translation>
 <translation id="7198134478421755850">Extension</translation>
 <translation id="7199304109870655950">Configurez les options d'accès à distance dans l'hôte Bureau à distance Chrome.
 
@@ -11111,7 +11112,6 @@ Remarque : Pour le moment, seule la première entrée est prise en compte. Les 
       Pour en savoir plus sur les formats d'entrée valides, rendez-vous sur https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur "<ph name="WILDCARD_VALUE" />" n'est pas acceptée pour cette règle. Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.</translation>
 <translation id="9010080992450148617">Autoriser les utilisateurs inscrits au Programme Protection Avancée à envoyer leurs téléchargements à Google pour une analyse approfondie</translation>
 <translation id="9012101302849557459">Étendre la compatibilité pour les applis Chrome sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name="LINUX_OS_NAME" />.</translation>
-<translation id="9013629280364842072">Désactiver le contrôle du déploiement de la réduction <ph name="AL_HEADER_NAME" /> via des tests en conditions réelles</translation>
 <translation id="9013875414788074110">Lors de la connexion, l'authentification dans <ph name="PRODUCT_OS_NAME" /> peut être effectuée sur un serveur (en ligne) ou à l'aide d'un mot de passe en cache (hors connexion).
 
       Si cette règle est définie sur la valeur -1, l'utilisateur peut s'authentifier hors connexion sans limite de temps. Si elle est définie sur une autre valeur, celle-ci indique le délai suite à une authentification en ligne après lequel l'utilisateur doit à nouveau procéder à cette authentification.
