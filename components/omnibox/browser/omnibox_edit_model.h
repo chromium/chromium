@@ -242,7 +242,8 @@ class OmniboxEditModel {
   // so the match must support this keyword mode or it will be exited.
   void EnterKeywordMode(
       metrics::OmniboxEventProto::KeywordModeEntryMethod entry_method,
-      const TemplateURL* template_url);
+      const TemplateURL* template_url,
+      const std::u16string& placeholder_text);
 
   // Enters keyword mode for user's default search provider, if enabled.
   void EnterKeywordModeForDefaultSearchProvider(

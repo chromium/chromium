@@ -874,12 +874,13 @@ void OmniboxEditModel::PasteAndGo(const std::u16string& text,
 
 void OmniboxEditModel::EnterKeywordMode(
     OmniboxEventProto::KeywordModeEntryMethod entry_method,
-    const TemplateURL* template_url) {
+    const TemplateURL* template_url,
+    const std::u16string& placeholder_text) {
   DCHECK(template_url);
   controller_->StopAutocomplete(/*clear_result=*/false);
 
   SetKeyword(template_url->keyword());
-  SetKeywordPlaceholder(u"");
+  SetKeywordPlaceholder(placeholder_text);
   is_keyword_hint_ = false;
   keyword_mode_entry_method_ = entry_method;
   if (view_) {
@@ -910,9 +911,11 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
   if (!controller_->client()->IsDefaultSearchProviderEnabled()) {
     return;
   }
-  EnterKeywordMode(entry_method, controller_->client()
-                                     ->GetTemplateURLService()
-                                     ->GetDefaultSearchProvider());
+  EnterKeywordMode(entry_method,
+                   controller_->client()
+                       ->GetTemplateURLService()
+                       ->GetDefaultSearchProvider(),
+                   u"");
 }
 
 void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
@@ -2824,7 +2827,9 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
                   ->GetTemplateURLService()
                   ->FindStarterPackTemplateURL(
                       TemplateURLStarterPackData::kPage)) {
-        EnterKeywordMode(OmniboxEventProto::SELECT_SUGGESTION, page_turl);
+        EnterKeywordMode(
+            OmniboxEventProto::SELECT_SUGGESTION, page_turl,
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_PAGE_SCOPE_PLACEHOLDER_TEXT));
         if (action->ActionId() ==
                 OmniboxActionId::CONTEXTUAL_SEARCH_SELECT_REGION &&
             view_) {

@@ -1309,6 +1309,9 @@ std::u16string AutocompleteMatch::GetKeywordPlaceholder(
     case TemplateURLStarterPackData::kGemini:
       message_id = IDS_OMNIBOX_GEMINI_SCOPE_PLACEHOLDER_TEXT;
       break;
+    case TemplateURLStarterPackData::kPage:
+      message_id = IDS_OMNIBOX_PAGE_SCOPE_PLACEHOLDER_TEXT;
+      break;
     default:
       return u"";
   }

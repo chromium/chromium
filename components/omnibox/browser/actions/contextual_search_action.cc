@@ -44,9 +44,7 @@ OmniboxActionId ContextualSearchAskAboutPageAction::ActionId() const {
 
 void ContextualSearchAskAboutPageAction::Execute(
     ExecutionContext& context) const {
-  // Omnibox handles this action to change its own state.
-  // Here could be the place to invoke lens once it supports
-  // background invocation.
+  context.client_->OpenLensOverlay(/*show=*/false);
 }
 
 ContextualSearchAskAboutPageAction::~ContextualSearchAskAboutPageAction() =
@@ -63,7 +61,7 @@ OmniboxActionId ContextualSearchSelectRegionAction::ActionId() const {
 
 void ContextualSearchSelectRegionAction::Execute(
     ExecutionContext& context) const {
-  context.client_->OpenLensOverlay();
+  context.client_->OpenLensOverlay(/*show=*/true);
 }
 
 ContextualSearchSelectRegionAction::~ContextualSearchSelectRegionAction() =
