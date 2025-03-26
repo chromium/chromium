@@ -404,6 +404,7 @@
 <translation id="1264956950255940376">Подзамижете со левото око</translation>
 <translation id="1265094893042958831">Се генерираат предлози за страницава…</translation>
 <translation id="1265279736024499987">Вашите апликации и поставки ќе се синхронизираат на сите уреди со ChromeOS Flex каде што сте најавени со сметката на Google. За да ги видите опциите за синхронизација на прелистувачот, одете во <ph name="LINK_BEGIN" />поставките за Chrome<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Откако ќе снимите слика од екранот или ќе го пребарате екранот, прикажете повеќе дејства како додавање во „Календар“, создавање документ на Docs и друго.</translation>
 <translation id="126710816202626562">Јазик на превод:</translation>
 <translation id="1267649802567297774">Генерирана слика: <ph name="INDEX" /> од <ph name="SUBJECT" />, во стил: <ph name="STYLE" />, со расположение: <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1578,6 +1579,7 @@
 <translation id="208547068587548667">Најавете се на <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Обидете се повторно</translation>
 <translation id="208634871997892083">Секогаш вклучена VPN</translation>
+<translation id="208654914566977272">Предложени дејства кога го пребарување екранот</translation>
 <translation id="2087822576218954668">Печати: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Регистрацијата е поддржана само откако ќе инсталирате <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Вграден TrackPoint</translation>

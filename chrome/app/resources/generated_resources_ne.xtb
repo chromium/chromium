@@ -401,6 +401,7 @@
 <translation id="1264956950255940376">बायाँ आँखा आधा चिम्लनुहोस्</translation>
 <translation id="1265094893042958831">यो पेजका हकमा सुझावहरू सिर्जना गरिँदै छन्…</translation>
 <translation id="1265279736024499987">तपाईंले आफ्नो Google खातामार्फत साइन इन गरेका ChromeOS Flex चल्ने डिभाइसहरूमा तपाईंका एप तथा सेटिङ सिंक हुने छन्। तपाईं ब्राउजरका सिंकसम्बन्धी विकल्पहरू हेर्न चाहनुहुन्छ भने <ph name="LINK_BEGIN" />Chrome का सेटिङ<ph name="LINK_END" />मा जानुहोस्।</translation>
+<translation id="1267081565119405990">स्क्रिनसट लिइसकेपछि वा आफ्नो स्क्रिनमा भएका कुरा खोजिसकेपछि पात्रोमा हाल्ने र Google Docs बनाउनेलगायतका थप कारबाहीहरू देखाउनुहोस्।</translation>
 <translation id="126710816202626562">अनुवाद भाषा:</translation>
 <translation id="1267649802567297774"><ph name="STYLE" /> शैली र <ph name="MOOD" /> मुड भएको <ph name="SUBJECT" /> को सिर्जना गरिएको फोटो <ph name="INDEX" />।</translation>
 <translation id="126768002343224824">१६ गुणा</translation>
@@ -1564,6 +1565,7 @@
 <translation id="208547068587548667"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="208586643495776849">कृपया फेरि प्रयास गर्नुहोस्</translation>
 <translation id="208634871997892083">सधैँ अन रहने VPN</translation>
+<translation id="208654914566977272">तपाईंले आफ्नो स्क्रिनमा भएका कुरा खोज्दा सिफारिस गरिने कारबाहीहरू</translation>
 <translation id="2087822576218954668">प्रिन्ट: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">तपाईंले <ph name="DEVICE_OS" /> इन्स्टल गरेपछि मात्र दर्ता गर्न मिल्छ।</translation>
 <translation id="2088564884469682888">अन्तर्निर्मित TrackPoint</translation>

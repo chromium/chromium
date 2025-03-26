@@ -403,6 +403,7 @@
 <translation id="1264956950255940376">Sol gözünüzü kısın</translation>
 <translation id="1265094893042958831">Bu sayfa için öneriler oluşturuluyor…</translation>
 <translation id="1265279736024499987">Uygulamalarınız ve ayarlarınız, Google hesabınızla oturum açtığınız tüm ChromeOS Flex cihazlarda senkronize edilir. Tarayıcı senkronizasyon seçenekleri için <ph name="LINK_BEGIN" />Chrome ayarlarına<ph name="LINK_END" /> gidin.</translation>
+<translation id="1267081565119405990">Ekran görüntüsü aldıktan veya ekranınızda arama yaptıktan sonra, "Takvim'e ekle", "Google Dokümanı oluştur" vb. daha fazla eylem görün.</translation>
 <translation id="126710816202626562">Çeviri dili:</translation>
 <translation id="1267649802567297774"><ph name="STYLE" /> stilini ve <ph name="MOOD" /> ruh halini içeren <ph name="SUBJECT" /> resimden <ph name="INDEX" />. resim oluşturuldu</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1567,6 +1568,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="208547068587548667"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ile oturum aç</translation>
 <translation id="208586643495776849">Lütfen tekrar deneyin</translation>
 <translation id="208634871997892083">Her zaman açık VPN</translation>
+<translation id="208654914566977272">Ekranınızda arama yaparken önerilen eylemler</translation>
 <translation id="2087822576218954668">Yazdır: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Kayıt, yalnızca <ph name="DEVICE_OS" /> yüklemesinden sonra desteklenir.</translation>
 <translation id="2088564884469682888">Yerleşik TrackPoint</translation>

@@ -992,6 +992,11 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="1675391557079742340">Habilitar la publicidad de la codificación de contenido de <ph name="ZSTANDARD_SHORTNAME" /> en el encabezado Accept-Encoding</translation>
+<translation id="167550754083555945">Configura las políticas de informes en la nube.
+
+En los dispositivos gestionados, si no se establece la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o se inhabilita, se ignorarán estas políticas a nivel de navegador. En plataformas distintas a <ph name="PRODUCT_OS_NAME" />, esta política solo se admite en navegadores registrados en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
+
+En el caso de los perfiles gestionados, si no se establece la política <ph name="CLOUD_PROFILE_REPORTING_ENABLED_POLICY_NAME" /> o se inhabilita, se ignorarán estas políticas a nivel de perfil.</translation>
 <translation id="1678137412645922426">Controla el uso de <ph name="AES_KL_NAME" /> para el cifrado del almacenamiento de los datos del usuario, si se admite</translation>
 <translation id="1682063842123336408">Espacio disponible en disco (en GB) necesario para instalar <ph name="PLUGIN_VM_NAME" />.
 
@@ -2814,6 +2819,15 @@ Nota: Puedes consultar más ejemplos detallados en The Chromium Projects: https:
 <translation id="305106159605171619">La reducción de user-agent está inhabilitada. No se habilita mediante pruebas de campo ni de origen.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">No permitir el uso de Chrome for Testing</translation>
+<translation id="3060608694980129910">Esta política controla los informes en la nube de <ph name="PRODUCT_NAME" /> de las señales de seguridad de un perfil gestionado concreto.
+
+Si se habilita esta política, se enviarán señales de seguridad sobre el dispositivo, el navegador y el perfil al servidor de gestión de dispositivos.
+
+Si se inhabilita esta política o no se establece, no se recogerán ni se subirán señales de seguridad.
+
+El informe contiene datos sobre el estado y el uso del perfil, incluidos, entre otros, la versión del SO, la versión del navegador, las extensiones instaladas y las políticas aplicadas.
+
+Esta política solo se puede establecer como política de usuarios basada en la nube.</translation>
 <translation id="3063302084011279315">Inhabilitar Grabación de pantalla</translation>
 <translation id="3063307261083019730">No permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se almacenen en la caché de páginas completas.</translation>
 <translation id="3064530882228745118">Usar la búsqueda de CNAME durante la autenticación Kerberos</translation>
@@ -5626,6 +5640,7 @@ Si no se establece esta política o se inhabilita, las cookies y los datos se po
 <translation id="5152787786897382519">Tanto Chromium como Google Chrome cuentan con algunos grupos de políticas que tienen dependencia mutua para asumir el control de una función. Estos conjuntos están representados por los grupos de políticas que se indican a continuación. Dado que las políticas pueden tener varias fuentes, solo se aplicarán los valores procedentes de la fuente que tenga la mayor prioridad. Se ignorarán los valores procedentes de las fuentes del mismo grupo que tengan menor prioridad. El orden de prioridad se define en la página <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Icono de experimentos del navegador en la barra de herramientas</translation>
 <translation id="5159674159887919923">No enviar datos adicionales de hardware con ChromeOS Flex</translation>
+<translation id="5162571264806471078">Habilitar los informes en la nube de señales de seguridad en perfiles gestionados</translation>
 <translation id="5162982931329320509">Lista de dominios que se resolverán mediante DNS-over-HTTPS. Los dominios que no se incluyan en la lista no se resolverán mediante DNS-over-HTTPS. Esta política se ignora cuando el modo DNS seguro se desactiva (usa siempre un DNS de texto sin formato).
 
 Si la lista está vacía o no se define, todos los dominios se resolverán mediante DNS‑over‑HTTPS siempre que sea posible. Este es el mismo comportamiento que el obtenido con una lista de dominios incluidos con el valor ["*"].
@@ -6325,6 +6340,7 @@ Nota: Esta política no se aplica al modo Incógnito ni al modo Invitado.</trans
       Recuerda que no se recomienda esta opción, ya que puede permitir que se omita la extensión nameConstraints que restringe los nombres de host para los que puede estar autorizado un certificado concreto.
 
       Si esta política no se configura o se le asigna el valor valse, los certificados de servidor que no tengan ninguna extensión subjectAlternativeName que incluya un nombre de DNS o una dirección IP no serán de confianza.</translation>
+<translation id="5576376485226897323">Inhabilitar los informes en la nube de las señales de seguridad de los usuarios</translation>
 <translation id="5576377426850850084">Utilizar la autenticación NTLM</translation>
 <translation id="5577475143148445339">Contiene el número de días y el porcentaje de dispositivos que deben actualizarse una vez transcurridos esos días.</translation>
 <translation id="5582429816116769246">Permite controlar si los usuarios pueden acceder a impresoras que no sean de empresa
@@ -6611,6 +6627,7 @@ Si esta política se inhabilita o no se define, no se habilitarán los widgets G
       Si se asigna el valor "false" a esta política o no se le asigna ninguno, no se enviará esta información del dispositivo.
       Si se le asigna el valor "true", se enviará información sobre VPD del dispositivo.
       Los datos vitales del producto (VPD, Vital Product Data) son un conjunto de datos de configuración e informativos (como los números de serie) asociados al dispositivo.</translation>
+<translation id="5760861224093391268">Inhabilitar la autenticación propia al informar de señales de seguridad de los usuarios</translation>
 <translation id="5762969307102447459">Inhabilitar la función Autocompletar para direcciones</translation>
 <translation id="5765780083710877561">Descripción:</translation>
 <translation id="5766438888216077649">No utilices <ph name="WINDOW_OPENER_PROPERTY" /> en enlaces destinados a <ph name="BLANK_PAGE_NAME" /></translation>
@@ -6790,6 +6807,15 @@ Si se inhabilita esta política, se inhabilitarán los sonidos en el modo Sin di
 <translation id="5893303508158298667">Si se habilita <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" />, siempre y cuando se habilite <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> o no se le asigne ningún valor, los clientes remotos podrán utilizar servidores de retransmisión para conectarse a este equipo cuando no haya disponible una conexión directa (por ejemplo, debido a restricciones del cortafuegos).
 
       Si se le asigna el valor Disabled a esta política, el acceso remoto no se desactivará, pero solo se permitirán las conexiones procedentes de la misma red (sin NAT transversal ni retransmisión).</translation>
+<translation id="5895049442553435093">Esta política controla el uso de la autenticación de usuario propia de <ph name="PRODUCT_NAME" /> al informar de las señales de seguridad de los usuarios de un perfil gestionado concreto.
+
+Esta política se ha habilitado y se usará la autenticación propia al subir señales de seguridad.
+
+Si se inhabilita esta política o no se define, no se usará la autenticación propia al subir señales de seguridad.
+
+Los informes de señales de seguridad de los usuarios solo se suben cuando <ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME" /> está habilitada.
+
+Esta política solo se puede establecer como política de usuarios basada en la nube.</translation>
 <translation id="5895569286536062756">Habilitar Enunciar selección en la pantalla de inicio de sesión</translation>
 <translation id="5895861015839311441">Envía informes de telemetría sobre el uso de aplicaciones por parte de usuarios afiliados.
 
@@ -8938,6 +8964,7 @@ Ahora los espacios se conservarán en todas las URLs de datos, independientement
 Si no se define esta política o se le asigna el valor True, se habilitará el nuevo comportamiento.
 
 Si se le asigna el valor False, se habilitará el comportamiento anterior.</translation>
+<translation id="7366637365754181686">Habilitar los informes en la nube de las señales de seguridad de los usuarios</translation>
 <translation id="7366948865469126526">Inhabilitar conversión de unidades de Respuestas rápidas</translation>
 <translation id="7367734504783638685">Sincronización de contraseñas entre proveedores de SSO externos y dispositivos Chrome</translation>
 <translation id="7372831798009983116">Habilitar la función de accesibilidad de clic automático</translation>
@@ -10819,6 +10846,7 @@ Para obtener información detallada sobre los patrones de URL válidos, consulta
 <translation id="8807728576820212213">Habilitar la integración de Lens</translation>
 <translation id="8809082103104823938">Compatibilidad con GIFs en el selector de emojis</translation>
 <translation id="8812091410765157924">Solo permitir que las ventanas emergentes abiertas con <ph name="BLANK_PAGE_NAME" /> como objetivo interactúen con la página que ha abierto la ventana emergente (si esta ha aceptado explícitamente dicha interacción)</translation>
+<translation id="8812631362927615118">Habilitar la autenticación propia al informar de señales de seguridad de los usuarios</translation>
 <translation id="8816370949847593408">En función del estado del lanzamiento de la desactivación, es posible que no se puedan ejecutar aplicaciones de Chrome.</translation>
 <translation id="8818768076343557335">Predecir las acciones de la red en cualquier red que no sea móvil.
           (Obsoleto en 50, eliminado en 52. Si se le asigna el valor 1 después de 52, se tratará como si fuese 0 - predecir las acciones de red en cualquier conexión de red).</translation>

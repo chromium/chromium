@@ -403,6 +403,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1264956950255940376">Je linkeroog dichtknijpen</translation>
 <translation id="1265094893042958831">Suggesties voor deze pagina genereren…</translation>
 <translation id="1265279736024499987">Je apps en instellingen worden gesynchroniseerd voor alle Chrome OS Flex-apparaten waarop je bent ingelogd met je Google-account. Ga naar de <ph name="LINK_BEGIN" />Chrome-instellingen<ph name="LINK_END" /> voor opties voor browsersynchronisatie.</translation>
+<translation id="1267081565119405990">Toon meer acties, zoals toevoegen aan Agenda en Google-documenten maken, nadat je een screenshot hebt gemaakt of op je scherm hebt gezocht.</translation>
 <translation id="126710816202626562">Doeltaal:</translation>
 <translation id="1267649802567297774">Afbeelding <ph name="INDEX" /> van <ph name="SUBJECT" /> gegenereerd, in de stijl <ph name="STYLE" />, met de stemming <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1567,6 +1568,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="208547068587548667">Inloggen op <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Probeer het opnieuw</translation>
 <translation id="208634871997892083">Always-on VPN</translation>
+<translation id="208654914566977272">Voorgestelde acties bij het zoeken op je scherm</translation>
 <translation id="2087822576218954668">Afdrukken: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Inschrijving wordt alleen ondersteund nadat je <ph name="DEVICE_OS" /> hebt geïnstalleerd.</translation>
 <translation id="2088564884469682888">Geïntegreerde TrackPoint</translation>

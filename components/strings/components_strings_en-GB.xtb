@@ -900,6 +900,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2539524384386349900">Detect</translation>
 <translation id="2541219929084442027">Pages that you view in Incognito tabs won’t stick around in your browser’s history, cookie store or search history after you’ve closed all of your Incognito tabs. Any files that you download or bookmarks that you create will be kept.</translation>
 <translation id="2542106216580219892">Surfing</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – to exit full screen, press and hold |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Your administrator restarted your device</translation>
 <translation id="2544644783021658368">Single document</translation>
 <translation id="254524874071906077">Set Chrome as Default Browser</translation>
@@ -3932,6 +3933,7 @@ Additional details:
 <translation id="7887885240995164102">Enter picture-in-picture</translation>
 <translation id="7888575728750733395">Print rendering intent</translation>
 <translation id="7890748547282909375">Sign in to Microsoft OneDrive to save screenshot</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – to show your cursor, press |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">payment settings</translation>
 <translation id="7894280532028510793">If spelling is correct, <ph name="BEGIN_LINK" />try running network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 in</translation>
@@ -4624,6 +4626,7 @@ Additional details:
 <translation id="9155646082713385498">Magazines</translation>
 <translation id="9157595877708044936">Setting up...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> may contain sensitive content}other{<ph name="FILE_COUNT" /> files may contain sensitive content}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – to exit full screen, press |<ph name="ACCELERATOR" />|</translation>
 <translation id="9165305804774426672">Sites that you visit can also determine what you like based on your activity on the site. For example, if you visit a site that sells long-distance running shoes, the site might decide that you’re interested in running marathons.</translation>
 <translation id="9166851138617700776">More about site-suggested ads and ad measurement</translation>
 <translation id="9167054383925257837">Browser and device OS information (such as the browser and OS versions)</translation>

@@ -900,6 +900,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2539524384386349900">Algıla</translation>
 <translation id="2541219929084442027">Gizli sekmelerde görüntülediğiniz sayfalar, açık olan tüm gizli sekmeler kapatıldıktan sonra tarayıcınızın geçmişinden, çerez deposundan veya arama geçmişinden silinecektir. İndirdiğiniz dosyalar veya oluşturduğunuz yer işaretleri kalacaktır.</translation>
 <translation id="2542106216580219892">Sörf</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – Tam ekrandan çıkmak için |<ph name="ACCELERATOR" />| tuşunu basılı tutun</translation>
 <translation id="2544546346215446551">Yöneticiniz cihazınızı yeniden başlattı</translation>
 <translation id="2544644783021658368">Tek doküman</translation>
 <translation id="254524874071906077">Chrome'u Varsayılan Tarayıcı olarak ayarla</translation>
@@ -3932,6 +3933,7 @@ Ek ayrıntılar:
 <translation id="7887885240995164102">Pencere içinde pencere moduna gir</translation>
 <translation id="7888575728750733395">Baskı oluşturma amacı</translation>
 <translation id="7890748547282909375">Ekran görüntüsünü kaydetmek için Microsoft OneDrive'da oturum açın</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – İmlecinizi göstermek için |<ph name="ACCELERATOR" />| tuşuna basın</translation>
 <translation id="7892865709991296481">ödeme ayarları</translation>
 <translation id="7894280532028510793">Yazım doğruysa <ph name="BEGIN_LINK" />Ağ Teşhisi'ni çalıştırmayı deneyin<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Zarf 7 x 9 inç</translation>
@@ -4624,6 +4626,7 @@ Ek ayrıntılar:
 <translation id="9155646082713385498">Dergiler</translation>
 <translation id="9157595877708044936">Ayarlanıyor...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> hassas içeriğe sahip olabilir}other{<ph name="FILE_COUNT" /> dosya hassas içeriğe sahip olabilir}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – Tam ekrandan çıkmak için |<ph name="ACCELERATOR" />| tuşuna basın</translation>
 <translation id="9165305804774426672">Ziyaret ettiğiniz siteler, sitedeki etkinliğinize bağlı olarak da nelerden hoşlandığınızı belirleyebilir. Örneğin, uzun mesafe koşu ayakkabıları satan bir siteyi ziyaret ederseniz bu site maraton koşularıyla ilgilendiğinize karar verebilir.</translation>
 <translation id="9166851138617700776">Site tarafından önerilen reklamlar ve reklam ölçümleriyle ilgili daha fazla bilgi</translation>
 <translation id="9167054383925257837">Tarayıcı ve cihaz işletim sistemi bilgileri (ör. tarayıcı ve işletim sistemi sürümleri)</translation>

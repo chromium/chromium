@@ -406,6 +406,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1264956950255940376">Priprtje levega očesa</translation>
 <translation id="1265094893042958831">Ustvarjanje predlogov za to stran …</translation>
 <translation id="1265279736024499987">Vaše aplikacije in nastavitve se bodo sinhronizirale v vseh napravah ChromeOS Flex, v katerih ste prijavljeni z računom Google. Če vas zanimajo možnosti sinhronizacije brskalnika, odprite <ph name="LINK_BEGIN" />Chromove nastavitve<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Po ustvarjanju posnetka zaslona ali iskanju po zaslonu so prikazana dodatna dejanja, kot so dodajanje v Koledar, ustvarjanje Google Dokumentov in drugo.</translation>
 <translation id="126710816202626562">Jezik prevoda:</translation>
 <translation id="1267649802567297774">Ustvarjena je bila slika št. <ph name="INDEX" /> za »<ph name="SUBJECT" />« v slogu <ph name="STYLE" /> z razpoloženjem <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16 x</translation>
@@ -1580,6 +1581,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="208547068587548667">Prijava na <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Poskusite znova</translation>
 <translation id="208634871997892083">Stalno vklopljen VPN</translation>
+<translation id="208654914566977272">Predlagana dejanja pri iskanju po zaslonu</translation>
 <translation id="2087822576218954668">Tiskanje: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Včlanitev je podprta šele po namestitvi sistema <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Vgrajena naprava TrackPoint</translation>

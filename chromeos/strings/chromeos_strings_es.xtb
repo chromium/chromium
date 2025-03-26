@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Asegúrate de usar la aplicación Transferencia de contenido de Google para transferir los datos de tu cuenta de centro educativo a tu cuenta personal antes de que pierdas el acceso.</translation>
 <translation id="1026212596705997935">Se está usando la combinación de teclas para "<ph name="CONFLICT_ACCEL_NAME" />". Pulsa una nueva combinación de teclas. Para reemplazar la combinación de teclas actual, vuelve a pulsar esta combinación de teclas.</translation>
 <translation id="1030856839388844477">Reiniciar uso de datos</translation>
+<translation id="1047095725494118091">No se puede descargar. Vuelve a intentarlo o reinicia tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> hilos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Hay una nueva función disponible. Utiliza la flecha hacia arriba para obtener más información.</translation>
 <translation id="1049663189809099096">amarillo pastel</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Descargando el salvapantallas</translation>
 <translation id="1094693127011229778">La dirección IP no está disponible</translation>
 <translation id="1100902271996134409">Creando imágenes...</translation>
+<translation id="1107856713690040084">Audio: <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Información</translation>
 <translation id="1118572504348554005">Es posible que compartamos con nuestros partners los comentarios enviados a través de este formulario para solucionar errores y otros problemas que nos comuniques. No incluyas información sensible, como contraseñas.</translation>
 <translation id="1119403468619527527">No hay suficientes palabras para simplificar</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Activar modo Oscuro</translation>
 <translation id="2164131940279488868">Asegúrate de que haya un micrófono conectado para empezar a grabar audio</translation>
 <translation id="2173302385160625112">Comprueba tu conexión a Internet</translation>
+<translation id="2176909213844392588">No se puede descargar el modelo de transcripción del <ph name="LANGUAGE_NAME" />. Vuelve a intentarlo o reinicia tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">Algo ha fallado. Prueba a abrir de nuevo la aplicación.</translation>
 <translation id="2189104374785738357">Editar detalles de APN</translation>
 <translation id="2195732836444333448">Al máximo de su capacidad. Vuelve pronto.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Alimentador de documentos (dos caras)</translation>
 <translation id="3201315366910775591">Otras personas pueden actualizar los álbumes compartidos</translation>
 <translation id="3211671540163313381">Cruceta de asignación de teclas</translation>
+<translation id="3217462202230355157">Comprueba que el micrófono esté conectado o prueba a reiniciar tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Buscando escáneres</translation>
 <translation id="3226657629376379887">Menú de acciones de diseño</translation>
 <translation id="3227186760713762082">Divide el valor de <ph name="CATEGORY_TEXT" /> entre <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Exclusivos</translation>
 <translation id="3404249063913988450">Habilitar salvapantallas</translation>
 <translation id="3413935475507503304">Para continuar con la actualización, haz clic en Siguiente.</translation>
+<translation id="3416709353545797224">Grabando todo el audio de <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">exterior</translation>
 <translation id="3428971106895559033">pastel</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Comprueba que el escáner esté activado y que esté disponible a través de tu red o de una conexión directa</translation>
 <translation id="4159238217853743776">Parcial</translation>
 <translation id="4159784952369912983">Morado</translation>
+<translation id="416219735020840807">No se puede descargar el modelo de transcripción. Vuelve a intentarlo o reinicia tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4170180284036919717">Hacer foto</translation>
 <translation id="4170700058716978431">ERROR</translation>
 <translation id="4171077696775491955">reducir brillo</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Sustituyendo texto seleccionado por sugerencia</translation>
 <translation id="5346687412805619883">Red local</translation>
 <translation id="5358174242040570474">Se ha producido un error. Prueba a elegir un fondo de pantalla de nuevo o vuelve a abrir la aplicación.</translation>
+<translation id="5368228070728130240">No se puede descargar el modelo de creación de resúmenes y títulos. Vuelve a intentarlo o reinicia tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">La red Wi-Fi no es segura</translation>
 <translation id="5376354385557966694">Modo Claro automático</translation>
 <translation id="5378184552853359930">Tipo de IP</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">Errores de resoluciones de DNS</translation>
 <translation id="6768237774506518020">Tasa de errores de resolución de DNS alta</translation>
 <translation id="6786747875388722282">Extensiones</translation>
+<translation id="6789891265243243337">Cuando el audio de <ph name="DEVICE_TYPE" /> está activado, Grabadora captura todo el audio que se reproduce en este dispositivo</translation>
 <translation id="6791471867139427246">color de la luz del teclado</translation>
 <translation id="6796229976413584781">Combinación de teclas eliminada</translation>
 <translation id="6798678288485555829">Navegación por el texto</translation>
@@ -1728,6 +1736,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8930622219860340959">Conexión inalámbrica</translation>
 <translation id="8933650076320258356">La tecla seleccionada es <ph name="KEYS" /> para <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Dirección IP de cliente</translation>
+<translation id="8938606491880817721">No se puede descargar. Vuelve a intentarlo o reinicia tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8944651180182756621">Color del menú de aplicaciones</translation>
 <translation id="8945308580158685341">abejas</translation>
 <translation id="894617464444543719">El dispositivo es un teléfono.</translation>

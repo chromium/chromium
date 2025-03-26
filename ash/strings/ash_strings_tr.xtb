@@ -551,6 +551,7 @@ Aksi takdirde yerleşik dokunmatik alan <ph name="TIMEOUT_SECONDS" /> sonra yeni
 <translation id="2872353916818027657">Birincil monitörü değiştir</translation>
 <translation id="2872961005593481000">Kapat</translation>
 <translation id="2876338922445400217">Ekranı yakınlaştırın</translation>
+<translation id="2876760662374103627">Yüzle kumanda etkin</translation>
 <translation id="2878884018241093801">Yeni öğe yok</translation>
 <translation id="2880541185262491188">Çok fazla sayıda PIN denemesi. <ph name="TIME_LEFT" /> bekleyin ve tekrar deneyin.</translation>
 <translation id="2883271196820422439">Fare tuşlarını devam ettir</translation>
@@ -1516,6 +1517,7 @@ Bağlı cihaz yok.</translation>
 <translation id="595202126637698455">Performans izleme etkin</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Denetlenen kullanıcı</translation>
+<translation id="596035801491797438">Yüzle kumandayı kapat</translation>
 <translation id="5960410286721553511">Telefonunuzdaki son fotoğrafları ve medya içeriklerini görün</translation>
 <translation id="5965524703725988602">Koyu temayı aç/kapat. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Pencereler arasında ileriye doğru geçiş yapın</translation>

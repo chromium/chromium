@@ -403,6 +403,7 @@
 <translation id="1264956950255940376">Сол көзіңізді сығырайтыңыз.</translation>
 <translation id="1265094893042958831">Бұл бетке арналған ұсыныстар жасалып жатыр…</translation>
 <translation id="1265279736024499987">Қолданбаларыңыз бен параметрлеріңіз осы Google аккаунтымен кірген барлық ChromeOS Flex құрылғысында синхрондалады. Браузерді синхрондау опцияларын <ph name="LINK_BEGIN" />Chrome параметрлерінен<ph name="LINK_END" /> қараңыз.</translation>
+<translation id="1267081565119405990">Скриншот жасағаннан кейін немесе экранды іздегеннен кейін, күнтізбеге қосу, Google құжатын жасау сияқты тағы басқа әрекеттерді көрсетеді.</translation>
 <translation id="126710816202626562">Аударма тілі:</translation>
 <translation id="1267649802567297774">Келесі сипаттарға ие жасалған сурет: <ph name="INDEX" />, <ph name="SUBJECT" />, <ph name="STYLE" /> стилі, <ph name="MOOD" /> реңкі.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1564,6 +1565,7 @@
 <translation id="208547068587548667"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> сайтына кіру</translation>
 <translation id="208586643495776849">Қайталап көріңіз</translation>
 <translation id="208634871997892083">Әрқашан қосулы VPN</translation>
+<translation id="208654914566977272">Экранды іздеген кезде ұсынылатын әрекеттер</translation>
 <translation id="2087822576218954668">Басып шығару: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196"><ph name="DEVICE_OS" /> орнатылған соң ғана тіркелуге болады.</translation>
 <translation id="2088564884469682888">Ендірілген TrackPoint</translation>

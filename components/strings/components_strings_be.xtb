@@ -1570,6 +1570,7 @@
 <translation id="3715016660240337709">{0,plural, =1{Файл не можа быць запампаваны па прычыне блакіроўкі}one{<ph name="FILE_COUNT" /> файл не можа быць запампаваны па прычыне блакіроўкі}few{<ph name="FILE_COUNT" /> файлы не могуць быць запампаваны па прычыне блакіроўкі}many{<ph name="FILE_COUNT" /> файлаў не могуць быць запампаваны па прычыне блакіроўкі}other{<ph name="FILE_COUNT" /> файла не могуць быць запампаваны па прычыне блакіроўкі}}</translation>
 <translation id="3715597595485130451">Падключэнне да Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Праверыць проксі-сервер, брандмаўэр і канфігурацыю DNS<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">Падчас абнаўлення вы не зможаце выкарыстоўваць прыладу на працягу прыкладна 10 хвілін.</translation>
 <translation id="372429172604983730">Выклікаць гэту памылку могуць такія праграмы, як антывірусы, брандмаўэры, сістэмы вэб-фільтрацыі і проксі-серверы.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новую прэзентацыю Google у праграме "Прэзентацыі", націсніце Tab, затым Enter</translation>
@@ -2493,6 +2494,7 @@
 <translation id="5379618281582508161">Каб атрымаць гэты пароль на ўсіх прыладах, пацвердзіце сваю асобу</translation>
 <translation id="5380953781541843508">па ўзрастанні</translation>
 <translation id="5381318171304904246">Калі вы націснеце "Працягнуць", то будзеце перанакіраваны на вэб-сайт банка. Пасля спраўджання вы аўтаматычна вернецеся сюды, каб завяршыць куплю.</translation>
+<translation id="5381952079334035181">Карыстальнік <ph name="MEMBER_FIRST_NAME" /> змяніў укладку "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="5383478552402031184">Матэрыял для падлог</translation>
 <translation id="5385857628869214740">Гумар</translation>
 <translation id="5385966243497224160">Для URL-адрасоў, якія не выкарыстоўваюць пратакол HTTPS, перадпрагляд не падтрымліваецца</translation>
@@ -3926,6 +3928,7 @@
 <translation id="787226752901403048">Увайдзіце ў Chrome, каб абагульваць групы ўкладак, далучацца да іх і сумесна працаваць з іншымі карыстальнікамі</translation>
 <translation id="7877007680666472091">ідэнтыфікатары абароненага змесціва</translation>
 <translation id="7878562273885520351">Ваш пароль можа быць раскрыты</translation>
+<translation id="7881044256965445977">Можа шукаць прылады ў вашай лакальнай сетцы і падключацца да іх</translation>
 <translation id="7882421473871500483">Карычневы</translation>
 <translation id="7886897188117641322">Укажыце, якія катэгорыі тэм могуць выкарыстоўвацца для персаналізацыі рэкламы</translation>
 <translation id="7887683347370398519">Праверце код CVC і паўтарыце спробу</translation>
@@ -4683,6 +4686,7 @@
 <translation id="94613679163347541">Параўнаць тавары катэгорыі "<ph name="CATEGORY" />"?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новы сайт з дапамогай Google Сайтаў, націсніце Tab, затым Enter</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Сягоння Chrome зноў абмяжуе выкарыстанне файлаў cookie}=1{Заўтра Chrome зноў абмяжуе выкарыстанне файлаў cookie}one{Chrome зноў абмяжуе выкарыстанне файлаў cookie праз # дзень}few{Chrome зноў абмяжуе выкарыстанне файлаў cookie праз # дні}many{Chrome зноў абмяжуе выкарыстанне файлаў cookie праз # дзён}other{Chrome зноў абмяжуе выкарыстанне файлаў cookie праз # дня}}</translation>
+<translation id="949026252328034572">Удзельнікі (<ph name="MEMBER_COUNT" />) далучыліся да групы ўкладак "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Запыт на наведванне гэтага сайта адпраўлены. Адзін з тваіх бацькоў зможа адказаць на яго ў Family Link.</translation>
 <translation id="950736567201356821">Тры дзіркі зверху</translation>
 <translation id="950926967802086924">Ключ доступу • Менеджар пароляў Google</translation>

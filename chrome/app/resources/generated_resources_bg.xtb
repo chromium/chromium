@@ -403,6 +403,7 @@
 <translation id="1264956950255940376">Свиване на лявото око</translation>
 <translation id="1265094893042958831">Генерират се предложения за тази страница…</translation>
 <translation id="1265279736024499987">Приложенията и настройките ви ще се синхронизират с всички устройства с ChromeOS Flex, в които сте влезли в профила си в Google. За да намерите опциите за синхронизиране на браузъра, отворете <ph name="LINK_BEGIN" />настройките на Chrome<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">След като направите екранна снимка или потърсите на екрана си, да се показват повече действия, като например добавяне към Календар, създаване на документ в Google Документи и др.</translation>
 <translation id="126710816202626562">Език за превод:</translation>
 <translation id="1267649802567297774">Генерирано изображение <ph name="INDEX" /> с(ъс) <ph name="SUBJECT" /> в стил „<ph name="STYLE" />“ и настроение „<ph name="MOOD" />“.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1573,6 +1574,7 @@
 <translation id="208547068587548667">Вход в(ъв) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Моля, опитайте отново</translation>
 <translation id="208634871997892083">Винаги включена VPN</translation>
+<translation id="208654914566977272">Предложени действия при търсене на екрана ви</translation>
 <translation id="2087822576218954668">Отпечатване: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Регистрирането се поддържа само след като инсталирате <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Вграден TrackPoint</translation>

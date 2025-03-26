@@ -551,6 +551,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="2872353916818027657">Swap primary monitor</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2876338922445400217">Zoom in on screen</translation>
+<translation id="2876760662374103627">Face control active</translation>
 <translation id="2878884018241093801">No recent items</translation>
 <translation id="2880541185262491188">Too many PIN attempts. Wait <ph name="TIME_LEFT" /> and try again</translation>
 <translation id="2883271196820422439">Resume mouse keys</translation>
@@ -1516,6 +1517,7 @@ No devices connected.</translation>
 <translation id="595202126637698455">Performance tracing enabled</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Supervised user</translation>
+<translation id="596035801491797438">Turn off face control</translation>
 <translation id="5960410286721553511">View your phone's recent photos and media</translation>
 <translation id="5965524703725988602">Toggle Dark theme. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Cycle forward through windows</translation>

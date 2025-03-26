@@ -900,6 +900,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2539524384386349900">Detectar</translation>
 <translation id="2541219929084442027">Una vez que cierres todas las pestañas de incógnito, las páginas que hayas visitado en ese modo no se guardarán en el historial del navegador, en la lista de cookies ni en el historial de búsqueda. Sí se guardarán los archivos que descargues y los favoritos que crees.</translation>
 <translation id="2542106216580219892">Surf</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – Para salir de la pantalla completa, mantén presionado |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Tu administrador reinició el dispositivo</translation>
 <translation id="2544644783021658368">Documento único</translation>
 <translation id="254524874071906077">Establecer Chrome como navegador predeterminado</translation>
@@ -3933,6 +3934,7 @@ Detalles adicionales:
 <translation id="7887885240995164102">Ingresar al modo de pantalla en pantalla</translation>
 <translation id="7888575728750733395">Propósito de conversión para impresión</translation>
 <translation id="7890748547282909375">Accede a Microsoft OneDrive para guardar la captura de pantalla</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – Para mostrar el cursor, presiona |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">configuración de pagos</translation>
 <translation id="7894280532028510793">Si no hay errores, <ph name="BEGIN_LINK" />prueba ejecutar el diagnóstico de red<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Sobre de 17.7 × 22.8 cm</translation>
@@ -4626,6 +4628,7 @@ Detalles adicionales:
 <translation id="9155646082713385498">Revistas</translation>
 <translation id="9157595877708044936">Configurando...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> puede incluir contenido sensible}other{<ph name="FILE_COUNT" /> archivos pueden incluir contenido sensible}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – Para salir de la pantalla completa, presiona |<ph name="ACCELERATOR" />|</translation>
 <translation id="9165305804774426672">Los sitios que visitas también pueden determinar lo que te gusta en función de tu actividad en el sitio. Por ejemplo, si visitas un sitio que vende calzado para correr largas distancias, el sitio podría inferir que te interesa correr maratones.</translation>
 <translation id="9166851138617700776">Obtén más información sobre los anuncios sugeridos por sitios y la medición de anuncios</translation>
 <translation id="9167054383925257837">Información del navegador y el SO del dispositivo (como las versiones del navegador y el SO)</translation>

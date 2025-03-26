@@ -404,6 +404,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="1264956950255940376">Yenza iso lesobunxele libe yinxemu</translation>
 <translation id="1265094893042958831">Isakhiqiza iziphakamiso zaleli khasi…</translation>
 <translation id="1265279736024499987">Ama-app namasethingi wakho kuzovunyelwaniswa kuwo wonke amadivayisi we-ChromeOS Flex lapho ongene khona ngemvume nge-Google Account yakho. Ukuthola izinketho zokuvumelanisa isiphequluli, iya kumasethingi we-<ph name="LINK_BEGIN" />Chrome<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Ngemva kokuthatha i-screenshot noma ukusesha esikrinini sakho, veza okwengeziwe ongakwenza njengokufaka iGoogle Calendar, ukusungula iGoogle Docs, nokunye okuningi.</translation>
 <translation id="126710816202626562">Ulimi lokuhumusha:</translation>
 <translation id="1267649802567297774">Isithombe esikhiqiziwe <ph name="INDEX" /> se-<ph name="SUBJECT" />, ngesitayela esithi <ph name="STYLE" />, ngesimomizwa esithi <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1576,6 +1577,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="208547068587548667">Ngena ngemvume kokuthi <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Sicela uzame futhi</translation>
 <translation id="208634871997892083">I-VPN ehlala ikhanya</translation>
+<translation id="208654914566977272">Izinyathelo eziphakanyisiwe lapho usesha esikrinini sakho</translation>
 <translation id="2087822576218954668">Phrinta: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Ukubhalisa kusekelwa kuphela ngemva kokuba ufake i-<ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">I-TrackPoint Eyakhelwe Ngaphakathi</translation>

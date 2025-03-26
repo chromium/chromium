@@ -992,6 +992,11 @@ In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor ins
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>
 <translation id="1675391557079742340">Contentcodering met <ph name="ZSTANDARD_SHORTNAME" /> voor advertenties aanzetten in de header Accept-Encoding</translation>
+<translation id="167550754083555945">Beleid voor cloudrapportage configureren.
+
+Als je het beleid <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> niet instelt of niet toepast, worden deze beleidsregels genegeerd op browserniveau voor beheerde apparaten. Op andere platforms dan <ph name="PRODUCT_OS_NAME" /> wordt dat beleid alleen ondersteund in browsers die zijn ingeschreven voor <ph name="PRODUCT_NAME" /> met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
+
+Als je het beleid <ph name="CLOUD_PROFILE_REPORTING_ENABLED_POLICY_NAME" /> niet instelt of niet toepast voor beheerde profielen, wordt dit beleid genegeerd op profielniveau.</translation>
 <translation id="1678137412645922426">Beheert het gebruik van <ph name="AES_KL_NAME" /> voor versleuteling van gebruikersopslag (als dit wordt ondersteund)</translation>
 <translation id="1682063842123336408">Dvrije opslagruimte (in GB) die is vereist om <ph name="PLUGIN_VM_NAME" /> te installeren.
 
@@ -2809,6 +2814,15 @@ Opmerking: Voor gedetailleerdere voorbeelden ga je naar The Chromium Projects ( 
 <translation id="305106159605171619">Inkorting van user-agent uitgezet en kan niet worden aangezet door field trials of origin trials.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">Gebruik van Chrome for Testing niet toestaan</translation>
+<translation id="3060608694980129910">Dit beleid beheert <ph name="PRODUCT_NAME" />-cloudrapportage van beveiligingssignalen voor een bepaald beheerd profiel.
+
+Als je dit beleid toepast, worden beveiligingssignalen over het apparaat, de browser en het profiel gerapporteerd aan de apparaatbeheerserver.
+
+Als je dit beleid niet toepast of niet instelt, worden er geen beveiligingssignalen verzameld en geüpload.
+
+Het rapport bevat de profielstatus en gebruiksinformatie, inclusief maar niet beperkt tot de OS-versie, browserversie, geïnstalleerde extensies en toegepaste beleidsregels.
+
+Dit beleid kan alleen worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="3063302084011279315">Screencast uitzetten</translation>
 <translation id="3063307261083019730">Niet toestaan dat pagina's met de koptekst <ph name="CACHE_CONTROL_NO_STORE_NAME" /> worden opgeslagen in Back-Forward Cache.</translation>
 <translation id="3064530882228745118">CNAME-lookup tijdens Kerberos-verificatie gebruiken</translation>
@@ -5568,6 +5582,7 @@ Als je het beleid niet instelt of niet toepast, mogen de cookies en gegevens wor
 <translation id="5152787786897382519">Zowel Chromium als Google Chrome bevatten enkele beleidsgroepen die voor het beheer van een functie van elkaar afhankelijk zijn. Deze reeksen worden vertegenwoordigd door de volgende beleidsgroepen. Aangezien beleidsregels meerdere bronnen kunnen hebben, worden alleen waarden afkomstig van de bron met de hoogste prioriteit toegepast. Waarden van een bron met een lagere prioriteit in dezelfde groep worden genegeerd. De prioriteitsvolgorde wordt gedefinieerd in <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Icoon voor experimentele browserfuncties op werkbalk</translation>
 <translation id="5159674159887919923">Geen aanvullende hardwaregegevens sturen op ChromeOS Flex</translation>
+<translation id="5162571264806471078">Cloudrapportage van beveiligingssignalen in beheerde profielen aanzetten</translation>
 <translation id="5162982931329320509">Lijst met domeinen die moeten worden omgezet via DNS-over-HTTPS. Andere domeinen die niet in de lijst zijn opgenomen, worden niet omgezet via DNS-over-HTTPS. Dit beleid wordt genegeerd als de beveiligde DNS-modus is uitgezet (gebruik altijd DNS in platte tekst).
 
 Als de lijst leeg is of niet is ingesteld, worden alle domeinen omgezet via DNS-over-HTTPS wanneer dat mogelijk is. Dit is hetzelfde gedrag met een lijst met opgenomen domeinen met de waarde ["*"].
@@ -6266,6 +6281,7 @@ Opmerking: Dit beleid is niet van toepassing op de incognito- of gastmodus.</tra
       Houd er rekening mee dat dit niet wordt aanbevolen, aangezien zodoende de extensie nameConstraints, waarmee kan worden beperkt voor welke hostnamen een bepaald certificaat kan worden geautoriseerd, kan worden omzeild.
 
       Als dit beleid niet is ingesteld of is ingesteld op False, worden de servercertificaten die geen subjectAlternativeName-extensie met een DNS-naam of IP-adres bevatten, niet vertrouwd.</translation>
+<translation id="5576376485226897323">Cloudrapportage van gebruikersbeveiligingssignalen uitzetten</translation>
 <translation id="5576377426850850084">NTLM-verificatie gebruiken</translation>
 <translation id="5577475143148445339">Bevat het aantal dagen en het percentage van de apparaten dat na het verstrijken van die dagen moet worden geüpdatet.</translation>
 <translation id="5582429816116769246">Hiermee kun je bepalen of gebruikers toegang hebben tot printers die niet van het bedrijf zijn.
@@ -6540,6 +6556,7 @@ Als je dit beleid niet toepast of niet instelt, staat Glanceables niet aan in <p
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
       Als het beleid is ingesteld op True, worden de VPD-gegevens van het apparaat gerapporteerd.
       VPD (Vital Product Data) is een verzameling configuratiegegevens en informatie, zoals onderdeel- en serienummers, die bij het apparaat horen.</translation>
+<translation id="5760861224093391268">First-party verificatie uitzetten bij het rapporteren van gebruikersbeveiligingssignalen</translation>
 <translation id="5762969307102447459">Automatisch invullen voor adressen uitzetten</translation>
 <translation id="5765780083710877561">Beschrijving:</translation>
 <translation id="5766438888216077649"><ph name="WINDOW_OPENER_PROPERTY" /> niet instellen voor links die <ph name="BLANK_PAGE_NAME" /> targeten</translation>
@@ -6718,6 +6735,15 @@ Als je het beleid niet toepast, worden geluiden in Focusmodus uitgezet.</transla
 <translation id="5893303508158298667">Als je <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> hebt toegepast en <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> toepast of niet instelt, kunnen externe clients relayservers gebruiken om verbinding met dit apparaat te maken als er geen rechtstreekse verbinding beschikbaar is (bijvoorbeeld vanwege firewallbeperkingen).
 
       Als je het beleid niet toepast, wordt externe toegang niet uitgezet, maar zijn alleen verbindingen vanuit hetzelfde netwerk toegestaan (geen NAT-traversal of -relay).</translation>
+<translation id="5895049442553435093">Dit beleid beheert het gebruik in <ph name="PRODUCT_NAME" /> van first-party gebruikersverificatie bij het rapporteren van gebruikersbeveiligingssignalen voor een bepaald beheerd profiel.
+
+Als je dit beleid toepast, wordt first-party verificatie gebruikt bij het uploaden van beveiligingssignalen.
+
+Als je dit beleid niet toepast of niet instelt, wordt first-party verificatie niet gebruikt bij het uploaden van beveiligingssignalen.
+
+Rapporten over gebruikersbeveiligingssignalen worden alleen geüpload als <ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME" /> wordt toegepast.
+
+Dit beleid kan alleen worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="5895569286536062756">Toegankelijkheidsfunctie 'Selecteer om voor te lezen' op het inlogscherm aanzetten</translation>
 <translation id="5895861015839311441">Rapporteert telemetriegegevens over app-gebruik voor aangesloten gebruikers.
 
@@ -8845,6 +8871,7 @@ Nu blijft witruimte behouden in alle gegevens-URL's, ongeacht het mediatype.
 Als je dit beleid niet instelt of instelt op Waar, wordt het nieuwe gedrag toegepast.
 
 Als je dit beleid instelt op Onwaar, wordt het oude gedrag toegepast.</translation>
+<translation id="7366637365754181686">Cloudrapportage voor gebruikersbeveiligingssignalen aanzetten</translation>
 <translation id="7366948865469126526">Eenheidsconversie van Snelle antwoorden uitzetten</translation>
 <translation id="7367734504783638685">Wachtwoordsynchronisatie tussen externe SSO-providers en Chrome-apparaten</translation>
 <translation id="7372831798009983116">Toegankelijkheidsfunctie voor automatisch klikken aanzetten</translation>
@@ -10706,6 +10733,7 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
 <translation id="8807728576820212213">De Lens-integratie aanzetten</translation>
 <translation id="8809082103104823938">Gif-ondersteuning in emoji-kiezer</translation>
 <translation id="8812091410765157924">Alleen toestaan dat pop-ups die zijn geopend met het doel <ph name="BLANK_PAGE_NAME" />, interactie hebben met de pagina die de pop-up heeft geopend als de openende pagina expliciet toestemming geeft voor dergelijke interactie</translation>
+<translation id="8812631362927615118">First-party verificatie aanzetten bij het rapporteren van gebruikersbeveiligingssignalen</translation>
 <translation id="8816370949847593408">Afhankelijk van de status van de uitrol van de beëindiging kun je mogelijk geen Chrome-apps uitvoeren.</translation>
 <translation id="8818768076343557335">Netwerkacties voorspellen op elk netwerk dat niet mobiel is.
           (Beëindigd in 50, verwijderd in 52. Als na 52 waarde 1 is ingesteld, wordt deze waarde verwerkt als 0 - netwerkacties voorspellen voor elke netwerkverbinding.)</translation>

@@ -403,6 +403,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1264956950255940376">Squint left eye</translation>
 <translation id="1265094893042958831">Generating suggestions for this page…</translation>
 <translation id="1265279736024499987">Your apps and settings will sync across all Chrome OS Flex devices where you are signed in with your Google Account. For browser sync options, go to <ph name="LINK_BEGIN" />Chrome settings<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">After taking a screenshot or searching your screen, show more actions such as add to Calendar, create Google Docs and more.</translation>
 <translation id="126710816202626562">Translation language:</translation>
 <translation id="1267649802567297774">Generated image <ph name="INDEX" /> of <ph name="SUBJECT" />, in <ph name="STYLE" /> style, with <ph name="MOOD" /> mood.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1577,6 +1578,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="208547068587548667">Sign in to <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Please try again</translation>
 <translation id="208634871997892083">Always-on VPN</translation>
+<translation id="208654914566977272">Suggested actions when searching your screen</translation>
 <translation id="2087822576218954668">Print: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Enrolment is only supported after you install <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Built-in TrackPoint</translation>

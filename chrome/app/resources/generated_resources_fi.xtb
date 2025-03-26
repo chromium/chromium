@@ -403,6 +403,7 @@
 <translation id="1264956950255940376">Siristä vasenta silmää</translation>
 <translation id="1265094893042958831">Luodaan ehdotuksia tälle sivulle…</translation>
 <translation id="1265279736024499987">Sovelluksesi ja asetuksesi synkronoidaan kaikilla ChromeOS Flex ‑laitteilla, joilla olet kirjautuneena Google-tilillesi. Näet selaimen synkronointiasetukset <ph name="LINK_BEGIN" />Chromen asetuksista<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Kun olet ottanut kuvakaappauksen tai hakenut näytöltä, näytä lisätoimintoja, kuten Lisää kalenteriin ja Luo Google Docs.</translation>
 <translation id="126710816202626562">Käännöksen kieli:</translation>
 <translation id="1267649802567297774">Luotu kuva <ph name="INDEX" /> / <ph name="SUBJECT" />, tyyli: <ph name="STYLE" />, tunnelma: <ph name="MOOD" /></translation>
 <translation id="126768002343224824">16x</translation>
@@ -1576,6 +1577,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="208547068587548667">Kirjaudu sisään: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Yritä uudelleen</translation>
 <translation id="208634871997892083">Aina käytössä oleva VPN</translation>
+<translation id="208654914566977272">Näytöltä hakemisen ehdotetut toiminnot</translation>
 <translation id="2087822576218954668">Tulosta: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Rekisteröinti on mahdollista vasta, kun <ph name="DEVICE_OS" /> on asennettu.</translation>
 <translation id="2088564884469682888">Sisäänrakennettu tappiohjain</translation>

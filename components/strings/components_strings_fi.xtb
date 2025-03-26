@@ -900,6 +900,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2539524384386349900">Tunnista</translation>
 <translation id="2541219929084442027">Incognito-välilehdillä avattujen sivujen tietoja ei säilytetä selaimen historiassa, evästeissä tai hakuhistoriassa, kun kaikki incognito-välilehdet suljetaan. Ladatut tiedostot ja luodut kirjanmerkit säilytetään.</translation>
 <translation id="2542106216580219892">Surffaus</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – Poistu koko näytön tilasta painamalla pitkään |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Järjestelmänvalvoja käynnisti laitteen uudelleen</translation>
 <translation id="2544644783021658368">Yksittäinen dokumentti</translation>
 <translation id="254524874071906077">Aseta Chrome oletusselaimeksi</translation>
@@ -3933,6 +3934,7 @@ Lisätietoja:
 <translation id="7887885240995164102">Avaa kuva kuvassa</translation>
 <translation id="7888575728750733395">Tulosteen renderöintitavoite</translation>
 <translation id="7890748547282909375">Kirjaudu Microsoft OneDriveen, niin voit tallentaa kuvakaappauksen</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – Saat kohdistimen näkyviin painamalla |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">maksuasetukset</translation>
 <translation id="7894280532028510793">Jos kirjoitusasu on oikein, <ph name="BEGIN_LINK" />kokeile verkon diagnostiikkaa<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Kirjekuori 177 x 228 mm</translation>
@@ -4626,6 +4628,7 @@ Lisätietoja:
 <translation id="9155646082713385498">Lehdet</translation>
 <translation id="9157595877708044936">Valmistellaan...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> saattaa sisältää arkaluontoista sisältöä}other{<ph name="FILE_COUNT" /> tiedostossa voi olla arkaluontoista sisältöä}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – Poistu koko näytön tilasta painamalla |<ph name="ACCELERATOR" />|</translation>
 <translation id="9165305804774426672">Avaamasi sivustot voivat päätellä kiinnostuksen kohteitasi myös sen perusteella, mitä teet sivustolla. Jos esimerkiksi käyt sivustolla, joka myy kestävyysjuoksuun tarkoitettuja kenkiä, sivusto voi päätellä, että olet kiinnostunut maratoneista.</translation>
 <translation id="9166851138617700776">Lue lisää sivustojen ehdottamista mainoksista ja mainosten mittauksesta</translation>
 <translation id="9167054383925257837">Selaimen ja laitteen käyttöjärjestelmän tiedot (esimerkiksi selain ja käyttöjärjestelmäversiot)</translation>

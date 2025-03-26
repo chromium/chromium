@@ -900,6 +900,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2539524384386349900">Thola</translation>
 <translation id="2541219929084442027">Amakhasi owabukayo kumathebhu we-incognito ngeke ahlale akhona kumlando wesiphequluli sakho, amakhukhi, noma umlando wokubuka ngemuva kokuthi uvale wonke amathebhu we-incognito. Noma yimaphi amafayela owadawunilodayo noma amabhukhimakhi owadalayo kuzogcinwa.</translation>
 <translation id="2542106216580219892">Ukusefa</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – Ukuze uphume kusikrini esigcwele, cindezela futhi ubambe okuthi |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Umlawuli wakho uqalise kabusha idivayisi yakho</translation>
 <translation id="2544644783021658368">Idokhumenti eyodwa</translation>
 <translation id="254524874071906077">Setha i-Chrome njengesiphequluli esizenzakalelayo</translation>
@@ -3928,6 +3929,7 @@ Imininingwane engeziwe:
 <translation id="7887885240995164102">Faka isithombe-esithombeni</translation>
 <translation id="7888575728750733395">Phrinta inhloso yokunikezela</translation>
 <translation id="7890748547282909375">Ngena ngemvume kuMicrosoft OneDrive ukuze ulondoloze isithombe-skrini</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – Ukuze uveze i-cursor yakho, cindezela okuthi |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">izilungiselelo zokukhokha</translation>
 <translation id="7894280532028510793">Uma isipelingi singalungile, <ph name="BEGIN_LINK" />zama ukuqalisa Ukuxilongwa Kwenethiwekhi<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Imvilophu ye-7 x 9 in</translation>
@@ -4620,6 +4622,7 @@ Imininingwane engeziwe:
 <translation id="9155646082713385498">Omagazini</translation>
 <translation id="9157595877708044936">Iyasetha...</translation>
 <translation id="9161794544616754735">{0,plural, =1{I-<ph name="FILE_NAME" /> ingaqukatha okuqukethwe okubucayi}one{Amafayela e-<ph name="FILE_COUNT" /> angaqukatha okuqukethwe okubucayi}other{Amafayela e-<ph name="FILE_COUNT" /> angaqukatha okuqukethwe okubucayi}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – Ukuze uphume kusikrini esigcwele, cindezela okuthi |<ph name="ACCELERATOR" />|</translation>
 <translation id="9165305804774426672">Amasayithi owavakashelayo angaphinda anqume ukuthi yini oyithandayo ngokusekelwe kumsebenzi wakho kusayithi. Ngokwesibonelo, uma uvakashela isayithi ethengisa izicathulo zokugijima ibanga elide, isayithi ingase inqume ukuthi uthanda ukugijima imijaho.</translation>
 <translation id="9166851138617700776">Okuningi mayelana nezikhangiso eziphakanyiswe yisayithi kanye nesilinganiso sesikhangiso</translation>
 <translation id="9167054383925257837">Ulwazi lwebhrawuza ne-OS yedivayisi (njengebhrawuza nezinguqulo ze-OS)</translation>

@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Erişiminizi kaybetmeden önce okul hesabı verilerinizi kişisel hesabınıza taşımak için Google'ın İçerik Aktarımı uygulamasını kullandığınızdan emin olun.</translation>
 <translation id="1026212596705997935">Kısayol, "<ph name="CONFLICT_ACCEL_NAME" />" için kullanılıyor. Yeni bir kısayola basın. Mevcut kısayolu değiştirmek için bu kısayola tekrar basın.</translation>
 <translation id="1030856839388844477">Veri kullanımını sıfırlayın</translation>
+<translation id="1047095725494118091">İndirilemiyor. Tekrar deneyin veya <ph name="DEVICE_TYPE" /> cihazınızı yeniden başlatın.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> iş parçacığı, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Yeni özellik mevcut. Daha fazla bilgi için yukarı ok tuşunu kullanın.</translation>
 <translation id="1049663189809099096">pastel sarı</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Ekran koruyucu indiriliyor</translation>
 <translation id="1094693127011229778">IP adresi kullanılamıyor</translation>
 <translation id="1100902271996134409">Resimler üretiliyor...</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> sesi</translation>
 <translation id="1116694919640316211">Hakkında</translation>
 <translation id="1118572504348554005">Bize bildirdiğiniz hataları ve diğer sorunları gidermek için bu form üzerinden gönderilen geri bildirimleri iş ortaklarımızla paylaşabiliriz. Şifreler gibi hassas bilgileri eklemeyin.</translation>
 <translation id="1119403468619527527">Sadeleştirilecek çok az kelime var</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Koyu modu aç</translation>
 <translation id="2164131940279488868">Ses kaydına başlamak için mikrofonun bağlı olduğundan emin olun</translation>
 <translation id="2173302385160625112">İnternet bağlantınızı kontrol edin</translation>
+<translation id="2176909213844392588"><ph name="LANGUAGE_NAME" /> Metne dönüştürme modeli indirilemedi. Tekrar deneyin veya <ph name="DEVICE_TYPE" /> cihazınızı yeniden başlatın.</translation>
 <translation id="2180197493692062006">Bir sorun oldu. Uygulamayı yeniden açmayı deneyin.</translation>
 <translation id="2189104374785738357">APN ayrıntılarını düzenleyin</translation>
 <translation id="2195732836444333448">Şu anda kapasite dolu. Daha sonra tekrar gelin.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Doküman Besleyici (İki taraflı)</translation>
 <translation id="3201315366910775591">Paylaşılan albümler diğer kullanıcılar tarafından güncellenebilir</translation>
 <translation id="3211671540163313381">Tuş eşleme D-pad'i</translation>
+<translation id="3217462202230355157">Mikrofonunuzun bağlandığından emin olun veya <ph name="DEVICE_TYPE" /> cihazınızı yeniden başlatmayı deneyin</translation>
 <translation id="3226405216343213872">Tarayıcılar aranıyor</translation>
 <translation id="3226657629376379887">Düzen işlemleri menüsü</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> değerini <ph name="CONVERSION_RATE" /> değerine böl</translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Özel</translation>
 <translation id="3404249063913988450">Ekran koruyucuyu etkinleştir</translation>
 <translation id="3413935475507503304">Güncelleme işlemine devam etmek için İleri'yi tıklayın.</translation>
+<translation id="3416709353545797224">Tüm <ph name="DEVICE_TYPE" /> sesleri kaydediliyor</translation>
 <translation id="3428551088151258685">dış mekan</translation>
 <translation id="3428971106895559033">pastel</translation>
 <translation id="3434107140712555581">%<ph name="BATTERY_PERCENTAGE" /></translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Tarayıcının açık ve ağınız üzerinden veya doğrudan bağlantı ile kullanılabilir olduğundan emin olun</translation>
 <translation id="4159238217853743776">Kısmi</translation>
 <translation id="4159784952369912983">Mor</translation>
+<translation id="416219735020840807">Metne dönüştürme modeli indirilemedi. Tekrar deneyin veya <ph name="DEVICE_TYPE" /> cihazınızı yeniden başlatın.</translation>
 <translation id="4170180284036919717">Fotoğraf çek</translation>
 <translation id="4170700058716978431">BAŞARISIZ</translation>
 <translation id="4171077696775491955">parlaklığı azalt</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Seçili metin öneriyle değiştiriliyor</translation>
 <translation id="5346687412805619883">Yerel Ağ</translation>
 <translation id="5358174242040570474">Bir sorun oldu. Tekrar bir duvar kağıdı seçmeyi deneyin veya uygulamayı yeniden açın.</translation>
+<translation id="5368228070728130240">Özet ve başlık oluşturma modeli indirilemiyor. Tekrar deneyin veya <ph name="DEVICE_TYPE" /> cihazınızı yeniden başlatın.</translation>
 <translation id="5372659122375744710">Kablosuz ağ güvenli değil</translation>
 <translation id="5376354385557966694">Otomatik açık mod</translation>
 <translation id="5378184552853359930">IP türü</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">Başarısız DNS çözümlemeleri</translation>
 <translation id="6768237774506518020">DNS çözümleme hata oranı yüksek</translation>
 <translation id="6786747875388722282">Uzantılar</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" /> cihazının sesi açık olduğunda, Kaydedici bu cihazda çalan tüm sesleri kaydeder</translation>
 <translation id="6791471867139427246">klavye ışığı rengi</translation>
 <translation id="6796229976413584781">Kısayol silindi</translation>
 <translation id="6798678288485555829">Metinde gezinme</translation>
@@ -1728,6 +1736,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8930622219860340959">WiFi (Kablosuz)</translation>
 <translation id="8933650076320258356"><ph name="DIRECTION" /> için <ph name="KEYS" /> tuşu seçildi. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">İstemci IP adresleri</translation>
+<translation id="8938606491880817721">İndirilemiyor. Tekrar deneyin veya <ph name="DEVICE_TYPE" /> cihazınızı yeniden başlatın.</translation>
 <translation id="8944651180182756621">Başlatıcı rengi</translation>
 <translation id="8945308580158685341">arılar</translation>
 <translation id="894617464444543719">Cihazın türü telefon.</translation>

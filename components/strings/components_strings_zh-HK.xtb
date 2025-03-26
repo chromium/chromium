@@ -900,6 +900,7 @@
 <translation id="2539524384386349900">偵測</translation>
 <translation id="2541219929084442027">當您關閉所有無痕式分頁後，您在其中瀏覽的網頁都不會保留在瀏覽器記錄、Cookie 儲存庫或搜尋記錄中。不過，您下載的檔案或建立的書籤將會全部保留。</translation>
 <translation id="2542106216580219892">滑浪</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> - 如要離開全螢幕，請按住 |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">管理員已重新啟動您的裝置</translation>
 <translation id="2544644783021658368">單一文件</translation>
 <translation id="254524874071906077">將 Chrome 設為預設瀏覽器</translation>
@@ -3931,6 +3932,7 @@
 <translation id="7887885240995164102">進入畫中畫</translation>
 <translation id="7888575728750733395">列印輸出意圖</translation>
 <translation id="7890748547282909375">登入 Microsoft OneDrive 即可儲存螢幕截圖</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> - 如要顯示游標，請按下 |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">付款設定</translation>
 <translation id="7894280532028510793">如果拼字正確，<ph name="BEGIN_LINK" />請嘗試執行網絡診斷<ph name="END_LINK" />。</translation>
 <translation id="7901831439558593470">7 x 9 吋信封</translation>
@@ -4622,6 +4624,7 @@
 <translation id="9155646082713385498">雜誌</translation>
 <translation id="9157595877708044936">設定中…</translation>
 <translation id="9161794544616754735">{0,plural, =1{「<ph name="FILE_NAME" />」可能含有敏感內容}other{<ph name="FILE_COUNT" /> 個檔案可能含有敏感內容}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> - 如要離開全螢幕，請按下 |<ph name="ACCELERATOR" />|</translation>
 <translation id="9165305804774426672">你瀏覽的網站亦可根據你的網站活動判斷你喜歡的內容。例如，如果你瀏覽售賣長跑運動鞋的網站，該網站可能會判斷你有興趣參加馬拉松。</translation>
 <translation id="9166851138617700776">進一步瞭解網站建議廣告和廣告評估</translation>
 <translation id="9167054383925257837">瀏覽器和裝置 OS 資料 (例如瀏覽器和 OS 版本)</translation>

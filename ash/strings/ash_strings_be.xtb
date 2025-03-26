@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">Перыферыйная прылада не падтрымліваецца ў гасцявым рэжыме</translation>
 <translation id="1270290102613614947">Экранная клавіятура выключана</translation>
 <translation id="1272079795634619415">Спыніць</translation>
+<translation id="12741168609094094">Выберыце любую вобласць на экране для пошуку, капіравання тэксту і іншых дзеянняў</translation>
 <translation id="1275285675049378717">Сілкаванне прылады: <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Выбрана</translation>
 <translation id="1276975447697633661">Выберыце файл і націсніце <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">Хот-спот выключаны</translation>
 <translation id="1731815243805539470">Пераключыцца на папярэдняга карыстальніка</translation>
 <translation id="1733996486177697563">Вы можаце пераключацца паміж цёмнай і светлай тэмамі. Націсніце на працоўны стол і ўтрымлівайце палец, а затым выберыце "Шпалеры і стыль".</translation>
+<translation id="1735992454301033090">Выбрана вобласць, для перамяшчэння выкарыстоўвайце клавішы са стрэлкамі</translation>
 <translation id="1736898441010944794">Прылада "<ph name="NAME" />" бачная прыладам з Bluetooth.</translation>
 <translation id="1737078180382804488">Не наладжваць прагляд апавяшчэнняў з тэлефона</translation>
 <translation id="174102739345480129">Маркер выключаны.</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> на мінулым тыдні</translation>
 <translation id="2687510499067466116">Спалучэнне клавіш зменена</translation>
 <translation id="2689613560355655046">Працоўны стол 8</translation>
+<translation id="2692092709110488417">Націсніце Tab, каб перайсці да выбранай вобласці і перамясціць яе</translation>
 <translation id="2695305337569143674">інтэрнэт</translation>
 <translation id="2697697418792422688">Паказаць налады клавіятуры. Выбрана: <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Праграма "Перанос змесціва" дазваляе перанесці даныя вучэбнага ўліковага запісу ў асабісты ўліковы запіс</translation>
@@ -1033,6 +1036,7 @@
 <translation id="4412698727486357573">Даведачны цэнтр</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />: выключана.</translation>
 <translation id="4417647906073317561">Налады рэжыму канцэнтрацыі ўвагі. Наладзьце таймер, выберыце задачу і музыку, каб нішто вам не замінала.</translation>
+<translation id="4418600384772451109">Закрыць панэль</translation>
 <translation id="4424159417645388645">Працоўны стол 5</translation>
 <translation id="4426817706804363424">Так трымаць!</translation>
 <translation id="4430019312045809116">Гучнасць</translation>
@@ -2229,6 +2233,7 @@
 <translation id="8287009018010202411">Прадукцыйнасць</translation>
 <translation id="828708037801473432">Выключана</translation>
 <translation id="8297006494302853456">Слабы</translation>
+<translation id="8300451473979404345">Выбраны маркер, для перамяшчэння выкарыстоўвайце клавішы са стрэлкамі</translation>
 <translation id="8308637677604853869">Папярэдняе меню</translation>
 <translation id="830868413617744215">Бэта-версія</translation>
 <translation id="8314772463905284467">CAPS LOCK уключаны</translation>
@@ -2289,6 +2294,7 @@
 <translation id="851458219935658693">Паказ вокнаў бягучага працоўнага стала, выбраны пераключальнік</translation>
 <translation id="851660987304951246">Выкарыстоўвайце дапамогу з чытаннем, каб хутка падсумоўваць змесціва ці задаваць пытанні</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> можа не зараджацца ва ўключаным стане.</translation>
+<translation id="8519329096920173967">Пошук па змесціве на экране з дапамогай Google Аб’ектыва</translation>
 <translation id="8535393432370007982">Адрабіць сартаванне па колеры</translation>
 <translation id="8536886494750559755">Паказаць налады функцыі "Хуткае абагульванне". Яны будуць бачныя ўсім <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">Тэкст скапіраваны ў буфер абмену</translation>

@@ -403,6 +403,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1264956950255940376">Entrecerrar el ojo izquierdo</translation>
 <translation id="1265094893042958831">Generando sugerencias para esta página…</translation>
 <translation id="1265279736024499987">Se sincronizarán tus apps y parámetros de configuración en todos los dispositivos ChromeOS Flex a los que hayas accedido con tu Cuenta de Google. Para ver los parámetros de sincronización del navegador, ve a la <ph name="LINK_BEGIN" />configuración de Chrome<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Después de tomar una captura de pantalla o buscar en la pantalla, muestra más acciones, como agregar a Calendario, crear Documentos de Google y mucho más.</translation>
 <translation id="126710816202626562">Idioma de traducción:</translation>
 <translation id="1267649802567297774">Imagen generada <ph name="INDEX" /> de <ph name="SUBJECT" />, en el estilo <ph name="STYLE" />, con el estado de ánimo <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1564,6 +1565,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="208547068587548667">Acceder a <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Vuelve a intentarlo</translation>
 <translation id="208634871997892083">VPN siempre activada</translation>
+<translation id="208654914566977272">Acciones sugeridas cuando buscas en la pantalla</translation>
 <translation id="2087822576218954668">Imprimir: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Solo se permite la inscripción después de instalar <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">TrackPoint integrado</translation>

@@ -900,6 +900,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2539524384386349900">Detecteren</translation>
 <translation id="2541219929084442027">De pagina's die je op incognitotabbladen bekijkt, worden niet bewaard in je browsergeschiedenis, cookie-opslag of zoekgeschiedenis nadat je al je incognitotabbladen hebt gesloten. Alle bestanden die je hebt gedownload of bookmarks die je hebt gemaakt, blijven behouden.</translation>
 <translation id="2542106216580219892">Surfen</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – Houd |<ph name="ACCELERATOR" />| ingedrukt om het volledige scherm te sluiten</translation>
 <translation id="2544546346215446551">Je beheerder heeft je apparaat opnieuw opgestart</translation>
 <translation id="2544644783021658368">Eén document</translation>
 <translation id="254524874071906077">Chrome instellen als standaardbrowser</translation>
@@ -3925,6 +3926,7 @@ Aanvullende informatie:
 <translation id="7887885240995164102">Scherm-in-scherm openen</translation>
 <translation id="7888575728750733395">Weergave-intentie voor afdrukken</translation>
 <translation id="7890748547282909375">Log in bij Microsoft OneDrive om het screenshot op te slaan</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – Druk op |<ph name="ACCELERATOR" />| om de cursor te tonen</translation>
 <translation id="7892865709991296481">betaalinstellingen</translation>
 <translation id="7894280532028510793">Als de spelling klopt, <ph name="BEGIN_LINK" />voer je een netwerkcontrole uit<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelop 7 x 9 inch</translation>
@@ -4616,6 +4618,7 @@ Aanvullende informatie:
 <translation id="9155646082713385498">Tijdschriften</translation>
 <translation id="9157595877708044936">Bezig met instellen...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> bevat misschien gevoelige content}other{<ph name="FILE_COUNT" /> bestanden bevatten misschien gevoelige content}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – Druk op |<ph name="ACCELERATOR" />| om het volledige scherm te sluiten</translation>
 <translation id="9165305804774426672">Sites die je bezoekt, kunnen ook vaststellen wat je leuk vindt op basis van je activiteit op de site. Als je bijvoorbeeld een site bezoekt die hardloopschoenen voor lange afstanden verkoopt, kan de site besluiten dat je geïnteresseerd bent in marathons.</translation>
 <translation id="9166851138617700776">Meer over door sites voorgestelde advertenties en advertentiemetingen</translation>
 <translation id="9167054383925257837">Informatie over browser en apparaat-OS (zoals de browser- en OS-versies)</translation>

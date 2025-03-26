@@ -403,6 +403,7 @@
 <translation id="1264956950255940376">瞇起左眼</translation>
 <translation id="1265094893042958831">正在生成與本頁相關的建議…</translation>
 <translation id="1265279736024499987">您的應用程式和設定將會同步至所有您使用 Google 帳戶登入的 ChromeOS Flex 裝置。如要瞭解瀏覽器同步選項，請前往 <ph name="LINK_BEGIN" />Chrome 設定<ph name="LINK_END" />。</translation>
+<translation id="1267081565119405990">在擷取螢幕截圖或搜尋畫面內容後顯示更多操作，例如新增至「日曆」、建立「Google 文件」等。</translation>
 <translation id="126710816202626562">翻譯語言：</translation>
 <translation id="1267649802567297774">生成嘅<ph name="SUBJECT" />圖片 <ph name="INDEX" />，風格係 <ph name="STYLE" />，情境係<ph name="MOOD" />。</translation>
 <translation id="126768002343224824">16 倍</translation>
@@ -1577,6 +1578,7 @@
 <translation id="208547068587548667">登入 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">請再試一次</translation>
 <translation id="208634871997892083">保持開啟 VPN</translation>
+<translation id="208654914566977272">在搜尋畫面內容時顯示的建議操作</translation>
 <translation id="2087822576218954668">列印：<ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">安裝 <ph name="DEVICE_OS" /> 後才能註冊。</translation>
 <translation id="2088564884469682888">內置 TrackPoint</translation>

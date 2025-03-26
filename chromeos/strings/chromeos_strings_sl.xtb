@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Uporabite Googlovo aplikacijo za prenos vsebine, če želite podatke iz šolskega računa premakniti v osebni račun, preden izgubite dostop.</translation>
 <translation id="1026212596705997935">Bližnjica se uporablja za »<ph name="CONFLICT_ACCEL_NAME" />«. Pritisnite novo bližnjico. Če želite zamenjati obstoječo bližnjico, znova pritisnite to bližnjico.</translation>
 <translation id="1030856839388844477">Ponastavitev prenesene količine podatkov</translation>
+<translation id="1047095725494118091">Ni mogoče prenesti. Poskusite znova ali znova zaženite napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (št. niti: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Na voljo je nova funkcija. Uporabite tipko s puščico gor, če želite izvedeti več o tem.</translation>
 <translation id="1049663189809099096">pastelno rumene</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Prenos ohranjevalnika zaslona</translation>
 <translation id="1094693127011229778">Naslov IP ni na voljo.</translation>
 <translation id="1100902271996134409">Ustvarjanje slik …</translation>
+<translation id="1107856713690040084">Zvok v napravi <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">O možnostih</translation>
 <translation id="1118572504348554005">Povratne informacije, ki jih pošljete v tem obrazcu, lahko delimo z našimi partnerji in tako odpravljamo napake ter druge težave, o katerih nas obvestite. Ne vključite občutljivih podatkov, kot so gesla.</translation>
 <translation id="1119403468619527527">Premalo besed za poenostavitev</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Vklop temnega načina</translation>
 <translation id="2164131940279488868">Če želite začeti snemati zvok, se prepričajte, da je mikrofon priključen</translation>
 <translation id="2173302385160625112">Preverite internetno povezavo</translation>
+<translation id="2176909213844392588">Modela prepisa v jeziku <ph name="LANGUAGE_NAME" /> ni mogoče prenesti. Poskusite znova ali znova zaženite napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">Prišlo je do napake. Poskusite znova odpreti aplikacijo.</translation>
 <translation id="2189104374785738357">Urejanje podrobnosti APN-ja</translation>
 <translation id="2195732836444333448">Trenutno ni prostih zmogljivosti. Vrnite se pozneje.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Podajalnik dokumentov (dvostransko)</translation>
 <translation id="3201315366910775591">Deljene albume lahko posodobijo drugi uporabniki</translation>
 <translation id="3211671540163313381">Smerni gumb pri razporejanju tipk</translation>
+<translation id="3217462202230355157">Prepričajte se, da je mikrofon priključen, ali poskusite znova zagnati napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Iskanje optičnih bralnikov</translation>
 <translation id="3226657629376379887">Meni z dejanji za postavitev</translation>
 <translation id="3227186760713762082">Deljenje vrednosti kategorije »<ph name="CATEGORY_TEXT" />« s/z: <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Ekskluzivno</translation>
 <translation id="3404249063913988450">Omogočanje ohranjevalnika zaslona</translation>
 <translation id="3413935475507503304">Če želite nadaljevati posodobitev, kliknite Naprej.</translation>
+<translation id="3416709353545797224">Snemanje vsega zvoka v napravi <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">na prostem</translation>
 <translation id="3428971106895559033">pastelne</translation>
 <translation id="3434107140712555581">Akumulator: <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Optični bralnik mora biti vklopljen in na voljo prek omrežja ali neposredne povezave.</translation>
 <translation id="4159238217853743776">Delno</translation>
 <translation id="4159784952369912983">Vijolična</translation>
+<translation id="416219735020840807">Modela prepisa ni mogoče prenesti. Poskusite znova ali znova zaženite napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4170180284036919717">Fotografiraj</translation>
 <translation id="4170700058716978431">NI USPEL</translation>
 <translation id="4171077696775491955">zmanjšanje svetlosti</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Zamenjava izbranega besedila s predlogom</translation>
 <translation id="5346687412805619883">Lokalno omrežje</translation>
 <translation id="5358174242040570474">Prišlo je do napake. Poskusite znova izbrati zaslonsko ozadje ali znova odpreti aplikacijo.</translation>
+<translation id="5368228070728130240">Modela za ustvarjanje povzetkov in naslovov ni mogoče prenesti. Poskusite znova ali znova zaženite napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">Omrežje Wi-Fi ni varno</translation>
 <translation id="5376354385557966694">Samodejni svetli način</translation>
 <translation id="5378184552853359930">Vrsta IP-ja</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">Neuspele razrešitve DNS</translation>
 <translation id="6768237774506518020">Visoko število napak pri razreševanju DNS</translation>
 <translation id="6786747875388722282">Razširitve</translation>
+<translation id="6789891265243243337">Ko je zvok naprave <ph name="DEVICE_TYPE" /> vklopljen, snemalnik posname ves zvok, ki se predvaja v tej napravi</translation>
 <translation id="6791471867139427246">barva svetlobe tipkovnice</translation>
 <translation id="6796229976413584781">Bližnjica je izbrisana</translation>
 <translation id="6798678288485555829">Premikanje po besedilu</translation>
@@ -1728,6 +1736,7 @@
 <translation id="8930622219860340959">Brezžično</translation>
 <translation id="8933650076320258356">Izbrani ključ je <ph name="KEYS" /> za <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Naslov IP odjemalca</translation>
+<translation id="8938606491880817721">Ni mogoče prenesti. Poskusite znova ali znova zaženite napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8944651180182756621">Barva zaganjalnika</translation>
 <translation id="8945308580158685341">čebele</translation>
 <translation id="894617464444543719">Naprava je telefon.</translation>

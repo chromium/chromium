@@ -900,6 +900,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2539524384386349900">Zaznava</translation>
 <translation id="2541219929084442027">Strani, ki si jih ogledujete na anonimnih zavihkih, se ne bodo ohranile v zgodovini brskalnika, hrambi piškotkov ali zgodovini iskanja, ko boste zaprli vse anonimne zavihke. Datoteke, ki jih prenesete, ali zaznamki, ki jih ustvarite, se bodo ohranili.</translation>
 <translation id="2542106216580219892">Deskanje na vodi</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – Če želite zapreti celozaslonski način, pridržite |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Skrbnik je znova zagnal napravo</translation>
 <translation id="2544644783021658368">Enojni dokument</translation>
 <translation id="254524874071906077">Nastavi Chrome kot privzeti brskalnik</translation>
@@ -3932,6 +3933,7 @@ Dodatne podrobnosti:
 <translation id="7887885240995164102">Odpri način slike v sliki</translation>
 <translation id="7888575728750733395">Namen upodabljanja tiskanja</translation>
 <translation id="7890748547282909375">Če želite shraniti posnetek zaslona, se prijavite v Microsoft OneDrive</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – Za prikaz kazalca pritisnite |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">nastavitve plačil</translation>
 <translation id="7894280532028510793">Če je črkovanje pravilno, <ph name="BEGIN_LINK" />poskušajte zagnati orodje za omrežno diagnostiko<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Kuverta 7 x 9 palcev</translation>
@@ -4624,6 +4626,7 @@ Dodatne podrobnosti:
 <translation id="9155646082713385498">Revije</translation>
 <translation id="9157595877708044936">Nastavljanje ...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Datoteka <ph name="FILE_NAME" /> morda vsebuje občutljivo vsebino}one{<ph name="FILE_COUNT" /> datoteka morda vsebuje občutljivo vsebino}two{<ph name="FILE_COUNT" /> datoteki morda vsebujeta občutljivo vsebino}few{<ph name="FILE_COUNT" /> datoteke morda vsebujejo občutljivo vsebino}other{<ph name="FILE_COUNT" /> datotek morda vsebuje občutljivo vsebino}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – Če želite zapreti celozaslonski način, pritisnite |<ph name="ACCELERATOR" />|</translation>
 <translation id="9165305804774426672">Spletna mesta, ki jih obiščete, lahko tudi določijo, kaj vam je všeč, na podlagi vaše dejavnosti na spletnem mestu. Če na primer obiščete spletno mesto, ki prodaja tekaško obutev za dolge razdalje, se lahko spletno mesto odloči, da vas zanimajo maratoni.</translation>
 <translation id="9166851138617700776">Več o oglasih, ki jih predlaga spletno mesto, in merjenju oglasov</translation>
 <translation id="9167054383925257837">Podatki o brskalniku in napravi (na primer različici brskalnika in operacijskega sistema)</translation>
