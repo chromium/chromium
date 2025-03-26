@@ -4,30 +4,30 @@
 
 # See `docs/unsafe_buffers.md`.
 
+# Checks to enable
+.buffers
+
+# Directories to exempt from checks
 -base/allocator/
 -base/third_party/
+-codelabs/  # Examples, keep simple.
 -chrome/browser/platform_experience/win/
 -chrome/chrome_elf/third_party_dlls/
 -chrome/elevation_service/internal/
 -chrome/installer/mac/third_party/
+-chromeos/assistant/internal
 -components/optimization_guide/internal/
 -ios/
 -ios_internal/
 -native_client/
 -net/third_party/
+-ppapi/
 -testing/iossim/
 -third_party/
 +third_party/blink/
 +third_party/ipcz/
-+third_party/pdfium/
--third_party/pdfium/testing/
--third_party/pdfium/third_party/
 -tools/
+-ui/gl/  # Unsafe generated files.
 -url/third_party/
 -v8/
 
-# //codelabs is a directory that contains examples for developers to modify as
-# they learn about chromium development. This is indefinitely opt-out because
-# it is not part of the main build, and we don't want developers to be blocked
-# by this check.
--codelabs/
