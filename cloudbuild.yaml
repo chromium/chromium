@@ -15,7 +15,7 @@ steps:
 - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.2'
   id: 'configure-gclient'
   waitFor: [ 'clone-depot-tools' ]
-  entrypoint: 'bash'
+  entrypoint: 'sh'
   args:
       - '-c'
       - |
@@ -28,7 +28,7 @@ steps:
 - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.2'
   id: 'sync-deps'
   waitFor: [ 'configure-gclient' ]
-  entrypoint: 'bash'
+  entrypoint: 'sh'
   args:
       - '-c'
       - |
@@ -38,7 +38,7 @@ steps:
 - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.2'
   id: 'checkout-branch'
   waitFor: [ 'sync-deps' ]
-  entrypoint: 'bash'
+  entrypoint: 'sh'
   args:
       - '-c'
       - |
@@ -50,7 +50,7 @@ steps:
 - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.2'
   id: 'configure-build'
   waitFor: [ 'checkout-branch' ]
-  entrypoint: 'bash'
+  entrypoint: 'sh'
   args:
       - '-c'
       - |
@@ -76,7 +76,7 @@ steps:
 - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.2'
   id: 'branding-script'
   waitFor: [ 'configure-build' ]
-  entrypoint: 'bash'
+  entrypoint: 'sh'
   args:
       - '-c'
       - |
@@ -86,7 +86,7 @@ steps:
 - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.2'
   id: 'build-browser'
   waitFor: [ 'branding-script' ]
-  entrypoint: 'bash'
+  entrypoint: 'sh'
   args:
       - '-c'
       - |
@@ -97,7 +97,7 @@ steps:
 - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.2'
   id: 'verify-binary'
   waitFor: [ 'build-browser' ]
-  entrypoint: 'bash'
+  entrypoint: 'sh'
   args:
       - '-c'
       - |
