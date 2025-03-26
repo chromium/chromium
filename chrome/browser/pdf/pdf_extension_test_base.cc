@@ -45,9 +45,8 @@ PDFExtensionTestBase::PDFExtensionTestBase() = default;
 
 PDFExtensionTestBase::~PDFExtensionTestBase() = default;
 
-void PDFExtensionTestBase::SetUpCommandLine(base::CommandLine* command_line) {
-  extensions::ExtensionApiTest::SetUpCommandLine(command_line);
-
+void PDFExtensionTestBase::SetUpCommandLine(
+    base::CommandLine* /*command_line*/) {
   feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
                                               GetDisabledFeatures());
 }

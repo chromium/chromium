@@ -9508,9 +9508,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_MV2ExtensionsUnsupported",
+                    "name": "Enabled_DisableMV2Extensions",
                     "enable_features": [
-                        "ExtensionManifestV2Unsupported"
+                        "ExtensionManifestV2Disabled"
                     ]
                 }
             ]

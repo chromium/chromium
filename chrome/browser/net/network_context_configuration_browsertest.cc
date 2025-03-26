@@ -108,7 +108,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/test/test_extension_dir.h"
 #endif
@@ -801,9 +800,6 @@ std::unique_ptr<net::test_server::HttpResponse> EchoCookieHeader(
 
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
                        ThirdPartyCookiesAllowedForExtensions) {
-  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
-  extensions::ScopedTestMV2Enabler mv2_enabler;
-
   if (IsRestartStateWithInProcessNetworkService())
     return;
 

@@ -391,11 +391,6 @@ _ANDROID_NEGATIVE_FILTER['chromedriver_webview_shell'] = (
     ]
 )
 
-# TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
-_DISABLE_MV2_EXPERIMENTS_SWITCH = (
-    'disable-features=ExtensionManifestV2Disabled,' +
-        'ExtensionManifestV2Unsupported')
-
 def _GetChromePathList(driver_path, platform):
   path_mapping = {
     'linux': [os.path.join(driver_path, 'chrome')],
@@ -6445,17 +6440,13 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
     """Checks that chromedriver can take the extensions in crx format."""
     crx_1 = os.path.join(_TEST_DATA_DIR, 'ext_test_1.crx')
     crx_2 = os.path.join(_TEST_DATA_DIR, 'ext_test_2.crx')
-    self.CreateDriver(
-        chrome_extensions=[self._PackExtension(crx_1),
-                           self._PackExtension(crx_2)],
-        chrome_switches=[_DISABLE_MV2_EXPERIMENTS_SWITCH])
+    self.CreateDriver(chrome_extensions=[self._PackExtension(crx_1),
+                                         self._PackExtension(crx_2)])
 
   def testExtensionsInstallZip(self):
     """Checks that chromedriver can take the extensions in zip format."""
     zip_1 = os.path.join(_TEST_DATA_DIR, 'ext_test_1.zip')
-    self.CreateDriver(
-        chrome_extensions=[self._PackExtension(zip_1)],
-        chrome_switches=[_DISABLE_MV2_EXPERIMENTS_SWITCH])
+    self.CreateDriver(chrome_extensions=[self._PackExtension(zip_1)])
 
   def testCanInspectExtensionWindows(self):
     crx_unpacked = os.path.join(_TEST_DATA_DIR, 'extv2_new_window')
@@ -6464,7 +6455,7 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
     # considered an extension target.
     driver = self.CreateDriver(
         chrome_switches=[
-          _DISABLE_MV2_EXPERIMENTS_SWITCH,
+          'disable-features=ExtensionManifestV2Disabled',
           'load-extension=' + crx_unpacked
         ])
     time.sleep(0.5)
@@ -6488,7 +6479,7 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
         # Chrome Extension inspection requires enableExtensionTargets = True.
         experimental_options={'enableExtensionTargets': True},
         chrome_extensions=[self._PackExtension(crx)],
-        chrome_switches=[_DISABLE_MV2_EXPERIMENTS_SWITCH])
+        chrome_switches=['disable-features=ExtensionManifestV2Disabled'])
     handles = driver.GetWindowHandles()
     for handle in handles:
       driver.SwitchToWindow(handle)
@@ -6509,7 +6500,7 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
     driver = self.CreateDriver(
         chrome_extensions=[self._PackExtension(crx)],
         experimental_options={'windowTypes': ['background_page']},
-        chrome_switches=[_DISABLE_MV2_EXPERIMENTS_SWITCH])
+        chrome_switches=['disable-features=ExtensionManifestV2Disabled'])
     handles = driver.GetWindowHandles()
     for handle in handles:
       driver.SwitchToWindow(handle)
@@ -6538,10 +6529,7 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
     # the extension's content script's one.
     extension_path = os.path.join(_TEST_DATA_DIR, 'all_frames')
     driver = self.CreateDriver(
-        chrome_switches=[
-            'load-extension=%s' % extension_path,
-            _DISABLE_MV2_EXPERIMENTS_SWITCH
-        ])
+        chrome_switches=['load-extension=%s' % extension_path])
     driver.Load(
         ChromeDriverTest._http_server.GetUrl() + '/chromedriver/container.html')
     driver.SwitchToMainFrame()
