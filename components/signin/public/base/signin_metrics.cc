@@ -315,11 +315,6 @@ void RecordSignoutConfirmationFromDataLossAlert(
   }
   base::UmaHistogramBoolean(histogram, signout_confirmed);
 }
-
-void RecordSignoutForceClearDataChoice(bool force_clear_data) {
-  base::UmaHistogramBoolean("Signin.UserRequestedWipeDataOnSignout",
-                            force_clear_data);
-}
 #endif  // BUILDFLAG(IS_IOS)
 
 void RecordOpenTabCountOnSignin(signin::ConsentLevel consent_level,
@@ -578,14 +573,6 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromGlicLaunchButton"));
       break;
-  }
-}
-
-void RecordSignoutUserAction(bool force_clear_data) {
-  if (force_clear_data) {
-    base::RecordAction(base::UserMetricsAction("Signin_SignoutClearData"));
-  } else {
-    base::RecordAction(base::UserMetricsAction("Signin_Signout"));
   }
 }
 

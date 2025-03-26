@@ -40855,6 +40855,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_SignoutClearData">
+  <obsolete>Removed 03/2025.</obsolete>
   <owner>jlebel@chromium.org</owner>
   <owner>arthurmilchior@chromium.org</owner>
   <description>
