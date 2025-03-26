@@ -209,6 +209,9 @@ bool SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
 }
 
 void SyncReader::Close() {
+  uint32_t exit_signal = std::numeric_limits<uint32_t>::max() - 1;
+  socket_.Send(base::byte_span_from_ref(exit_signal));
+
   socket_.Close();
   output_bus_.reset();
 }
