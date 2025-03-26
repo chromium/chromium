@@ -699,7 +699,7 @@ public class TabListFaviconProvider {
 
     private Drawable processBitmap(Bitmap bitmap, boolean isTabStrip) {
         if (isTabStrip) {
-            return processBitampWithBackground(
+            return processBitmapWithBackground(
                     mContext, bitmap, mStripFaviconSize, mFaviconCornerRadius, mFaviconInset);
         } else {
             return processBitmapNoBackground(
@@ -715,7 +715,7 @@ public class TabListFaviconProvider {
                 cornerRadius);
     }
 
-    private static Drawable processBitampWithBackground(
+    private static Drawable processBitmapWithBackground(
             Context context, Bitmap bitmap, int size, int cornerRadius, int inset) {
         Drawable favicon = processBitmapNoBackground(context, bitmap, size, cornerRadius);
         Drawable circleBackground =
@@ -867,7 +867,7 @@ public class TabListFaviconProvider {
                                         AppCompatResources.getDrawable(
                                                 context, R.drawable.ic_globe_24dp);
                                 return new ResourceTabFavicon(
-                                        processBitampWithBackground(
+                                        processBitmapWithBackground(
                                                 context,
                                                 getResizedBitmapFromDrawable(
                                                         globeDrawable, stripFaviconSize),
@@ -885,7 +885,7 @@ public class TabListFaviconProvider {
                                         AppCompatResources.getDrawable(
                                                 context, R.drawable.chromelogo16);
                                 return new ResourceTabFavicon(
-                                        processBitampWithBackground(
+                                        processBitmapWithBackground(
                                                 context,
                                                 getResizedBitmapFromDrawable(
                                                         chromeDrawable, stripFaviconSize),

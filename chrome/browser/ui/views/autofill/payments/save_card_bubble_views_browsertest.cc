@@ -900,15 +900,26 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 }
 
 class SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream
-    : public SaveCardBubbleViewsFullFormBrowserTest {
+    : public SaveCardBubbleViewsFullFormBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream() {
-    feature_list_.InitAndEnableFeature(features::kAutofillUpstream);
+    feature_list_.InitWithFeatureStates(
+        {{features::kAutofillUpstream, true},
+         {features::kAutofillEnableNewFopDisplayDesktop,
+          IsNewFopDisplayEnabled()}});
   }
+
+  bool IsNewFopDisplayEnabled() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    SaveCardBubbleViewsFullFormBrowserTest,
+    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
+    ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
                        AlertAccessibleEvent) {
@@ -1014,7 +1025,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 // Tests the upload save bubble. Ensures that clicking the [Save] button
 // successfully causes the bubble to go away and sends an UploadCardRequest RPC
 // to Google Payments.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     // TODO(crbug.com/40913383): Flaky on multiple platforms.
     DISABLED_Upload_ClickingSaveClosesBubble) {
@@ -1178,7 +1189,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
 
 // Tests the fully-syncing state. Ensures that the Butter (i) info icon does not
 // appear for fully-syncing users.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_NotTransportMode_InfoTextIconDoesNotExist) {
   // Start sync.
@@ -1194,7 +1205,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that clicking the [No thanks] button
 // successfully causes the bubble to go away.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_ClickingNoThanksClosesBubble) {
   // Start sync.
@@ -1217,7 +1228,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that clicking the top-right [X] close
 // button successfully causes the bubble to go away.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_ClickingCloseClosesBubble) {
   // Start sync.
@@ -1232,7 +1243,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that the bubble does not surface the
 // cardholder name textfield if it is not needed.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_ShouldNotRequestCardholderNameInHappyPath) {
   // Start sync.
@@ -1247,7 +1258,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that the bubble surfaces a textfield
 // requesting cardholder name if cardholder name is missing.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SubmittingFormWithMissingNamesRequestsCardholderNameIfExpOn) {
   // Start sync.
@@ -1272,7 +1283,7 @@ IN_PROC_BROWSER_TEST_F(
 // To make test work one need to inject an existing address into the
 // PersonalDataManager. Alternatively, the import logic should try to get an
 // address candidate from the form even though no address was imported yet.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     DISABLED_Upload_SubmittingFormWithConflictingNamesRequestsCardholderNameIfExpOn) {
   // Start sync.
@@ -1291,7 +1302,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that if the cardholder name textfield
 // is empty, the user is not allowed to click [Save] and close the dialog.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SaveButtonIsDisabledIfNoCardholderNameAndCardholderNameRequested) {
   // Start sync.
@@ -1321,7 +1332,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that if cardholder name is explicitly
 // requested, it is prefilled with the name from the user's Google Account.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_RequestedCardholderNameTextfieldIsPrefilledWithFocusName) {
   base::HistogramTester histogram_tester;
@@ -1352,7 +1363,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the upload save bubble. Ensures that if cardholder name is explicitly
 // requested but the name on the user's Google Account is unable to be fetched
 // for any reason, the textfield is left blank.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_RequestedCardholderNameTextfieldIsNotPrefilledWithFocusNameIfMissing) {
   base::HistogramTester histogram_tester;
@@ -1385,7 +1396,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save logic. Ensures that Chrome offers a local save when the
 // data is complete, even if Payments rejects the data.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_ShouldOfferLocalSaveIfPaymentsDeclines) {
   // Start sync.
@@ -1413,7 +1424,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save logic. Ensures that Chrome offers a local save when the
 // data is complete, even if the Payments upload fails unexpectedly.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_ShouldOfferLocalSaveIfPaymentsFails) {
   // Start sync.
@@ -1441,7 +1452,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save logic. Ensures that Chrome delegates the offer-to-save
 // call to Payments, and offers to upload save the card if Payments allows it.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_CanOfferToSaveEvenIfNothingFoundIfPaymentsAccepts) {
   // Start sync.
@@ -1457,7 +1468,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save logic. Ensures that Chrome offers a upload save for
 // dynamic change form.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_CanOfferToSaveDynamicForm) {
   // Start sync.
@@ -1483,7 +1494,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the upload save logic. Ensures that Chrome delegates the offer-to-save
 // call to Payments, and still does not surface the offer to upload save dialog
 // if Payments declines it.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_ShouldNotOfferToSaveIfNothingFoundAndPaymentsDeclines) {
   // Start sync.
@@ -1507,7 +1518,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save logic. Ensures that Chrome lets Payments decide whether
 // upload save should be offered, even if CVC is not detected.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_ShouldAttemptToOfferToSaveIfCvcNotFound) {
   // Start sync.
@@ -1523,7 +1534,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save logic. Ensures that Chrome lets Payments decide whether
 // upload save should be offered, even if the detected CVC is invalid.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_ShouldAttemptToOfferToSaveIfInvalidCvcFound) {
   // Start sync.
@@ -1541,7 +1552,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the upload save logic. Ensures that Chrome lets Payments decide whether
 // upload save should be offered, even if address/cardholder name is not
 // detected.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     // TODO(crbug.com/40913383): Flaky on multiple platforms.
     DISABLED_Logic_ShouldAttemptToOfferToSaveIfNameNotFound) {
@@ -1560,7 +1571,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the upload save logic. Ensures that Chrome lets Payments decide whether
 // upload save should be offered, even if multiple conflicting names are
 // detected.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_ShouldAttemptToOfferToSaveIfNamesConflict) {
   // Start sync.
@@ -1578,7 +1589,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save logic. Ensures that Chrome lets Payments decide whether
 // upload save should be offered, even if billing address is not detected.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_ShouldAttemptToOfferToSaveIfAddressNotFound) {
   // Start sync.
@@ -1596,7 +1607,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the upload save logic. Ensures that Chrome lets Payments decide whether
 // upload save should be offered, even if multiple conflicting billing address
 // postal codes are detected.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Logic_ShouldAttemptToOfferToSaveIfPostalCodesConflict) {
   // Start sync.
@@ -1622,7 +1633,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests UMA logging for the upload save bubble. Ensures that if the user
 // declines upload, Autofill.UploadAcceptedCardOrigin is not logged.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_DecliningUploadDoesNotLogUserAcceptedCardOriginUMA) {
   base::HistogramTester histogram_tester;
@@ -1645,7 +1656,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that the bubble surfaces a pair of
 // dropdowns requesting expiration date if expiration date is missing.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SubmittingFormWithMissingExpirationDateRequestsExpirationDate) {
   SetUpForEditableExpirationDate();
@@ -1656,7 +1667,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that the bubble surfaces a pair of
 // dropdowns requesting expiration date if expiration date is expired.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SubmittingFormWithExpiredExpirationDateRequestsExpirationDate) {
   SetUpForEditableExpirationDate();
@@ -1667,7 +1678,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that the bubble does not surface the
 // expiration date dropdowns if it is not needed.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_ShouldNotRequestExpirationDateInHappyPath) {
   SetUpForEditableExpirationDate();
@@ -1686,7 +1697,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that if the expiration date drop down
 // box is changing, [Save] button will change status correctly.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SaveButtonStatusResetBetweenExpirationDateSelectionChanges) {
   SetUpForEditableExpirationDate();
@@ -1718,7 +1729,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that if the user is selecting an
 // expired expiration date, it is not allowed to click [Save].
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SaveButtonIsDisabledIfExpiredExpirationDateAndExpirationDateRequested) {
   SetUpForEditableExpirationDate();
@@ -1744,7 +1755,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the upload save bubble. Ensures that the bubble surfaces a pair of
 // dropdowns requesting expiration date with year pre-populated if year is valid
 // but month is missing.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     // TODO(crbug.com/40913383): Flaky on multiple platforms.
     DISABLED_Upload_SubmittingFormWithMissingExpirationDateMonthAndWithValidYear) {
@@ -1764,7 +1775,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the upload save bubble. Ensures that the bubble surfaces a pair of
 // dropdowns requesting expiration date with month pre-populated if month is
 // detected but year is missing.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     // TODO(crbug.com/40913383): Flaky on multiple platforms.
     DISABLED_Upload_SubmittingFormWithMissingExpirationDateYearAndWithMonth) {
@@ -1783,7 +1794,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the upload save bubble. Ensures that the bubble surfaces a pair of
 // dropdowns requesting expiration date if month is missing and year is detected
 // but out of the range of dropdown.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SubmittingFormWithExpirationDateMonthAndWithYearIsOutOfRange) {
   SetUpForEditableExpirationDate();
@@ -1801,7 +1812,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the upload save bubble. Ensures that the bubble surfaces a pair of
 // dropdowns requesting expiration date if expiration date month is missing and
 // year is detected but passed.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SubmittingFormWithExpirationDateMonthAndYearExpired) {
   SetUpForEditableExpirationDate();
@@ -1819,7 +1830,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the upload save bubble. Ensures that the bubble surfaces a pair of
 // dropdowns requesting expiration date if expiration date is expired but is
 // current year.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_SubmittingFormWithExpirationDateMonthAndCurrentYear) {
   SetUpForEditableExpirationDate();
@@ -1882,7 +1893,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 
 // Tests the upload save bubble. Ensures that clicking the [No thanks] button
 // successfully causes a strike to be added.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     StrikeDatabase_Upload_AddStrikeIfBubbleDeclined) {
   // Start sync.
@@ -1905,7 +1916,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that clicking the [X] button
 // successfully causes a strike to be added.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     StrikeDatabase_Upload_AddStrikeIfBubbleIgnored) {
   // Start sync.
@@ -1992,7 +2003,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 // example of declining the prompt three times and ensuring that the
 // offer-to-save bubble does not appear on the fourth try. Then, ensures that no
 // strikes are added if the card already has max strikes.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     StrikeDatabase_Upload_FullFlowTest) {
   // Start sync.
@@ -2061,7 +2072,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Tests to ensure the card nickname is shown correctly in the Upstream bubble.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     LocalCardHasNickname) {
   base::HistogramTester histogram_tester;
@@ -2078,10 +2089,11 @@ IN_PROC_BROWSER_TEST_F(
   SubmitFormAndWaitForCardUploadSaveBubble();
 
   EXPECT_EQ(GetSaveCardBubbleViews()->GetCardIdentifierString(),
-            card.NicknameAndLastFourDigitsForTesting());
+            card.CardNameAndLastFourDigits(
+                /*customized_nickname=*/u"", IsNewFopDisplayEnabled() ? 2 : 4));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     LocalCardHasNoNickname) {
   base::HistogramTester histogram_tester;
@@ -2097,13 +2109,13 @@ IN_PROC_BROWSER_TEST_F(
   SubmitFormAndWaitForCardUploadSaveBubble();
 
   EXPECT_EQ(GetSaveCardBubbleViews()->GetCardIdentifierString(),
-            card.NetworkAndLastFourDigits());
+            card.NetworkAndLastFourDigits(IsNewFopDisplayEnabled() ? 2 : 4));
 }
 
 // Tests the upload save bubble. Ensures that if cardholder name is explicitly
 // requested and the user accepts the dialog after changing it, the correct
 // metric is logged.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric) {
   // Start sync.
@@ -2136,7 +2148,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the upload save bubble. Ensures that if cardholder name is explicitly
 // requested and the user accepts the dialog without changing it, the correct
 // metric is logged.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric) {
   // Start sync.
@@ -2165,7 +2177,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that if cardholder name is explicitly
 // requested, filling it and clicking "Save" logs dialog's acceptance.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_EnteringCardholderNameAndClickingSaveAcceptsBubbleIfCardholderNameRequested) {
   // Start sync.
@@ -2295,7 +2307,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 
 // Test to verify the account chip footer is displayed correctly on the upload
 // save bubble. User label information contains the user avatar and email.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     UploadBubble_CheckForAccountChipFooter) {
   ASSERT_TRUE(SetupSync());

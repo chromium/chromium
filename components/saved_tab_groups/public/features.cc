@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
+#include "components/data_sharing/public/features.h"
 
 namespace tab_groups {
 
@@ -97,7 +98,8 @@ BASE_FEATURE(kEnableOriginatingSavedGroupCleanUp,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsTabGroupSyncServiceDesktopMigrationEnabled() {
-  return base::FeatureList::IsEnabled(kTabGroupSyncServiceDesktopMigration);
+  return (base::FeatureList::IsEnabled(kTabGroupSyncServiceDesktopMigration) ||
+          data_sharing::features::IsDataSharingFunctionalityEnabled());
 }
 
 bool IsTabGroupSyncDelegateAndroidEnabled() {

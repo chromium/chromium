@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/bitrate.h"
+#include "media/base/encoder_status.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace gfx {
@@ -41,7 +42,7 @@ class VideoEncoderShim : public media::VideoEncodeAccelerator {
   // media::VideoEncodeAccelerator implementation.
   media::VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles()
       override;
-  bool Initialize(
+  media::EncoderStatus Initialize(
       const media::VideoEncodeAccelerator::Config& config,
       media::VideoEncodeAccelerator::Client* client,
       std::unique_ptr<media::MediaLog> media_log = nullptr) override;

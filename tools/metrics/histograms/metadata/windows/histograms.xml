@@ -307,6 +307,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.ShouldPinToTaskbarResult" enum="TaskbarPinResult"
+    expires_after="2025-12-01">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>jessemckenna@google.com</owner>
+  <summary>
+    The result of calling ShouldOfferToPin(), logged when it is called. It is
+    called when deciding whether or not to offer to pin Chrome to the taskbar.
+  </summary>
+</histogram>
+
+<histogram name="Windows.TaskbarPinResult" enum="TaskbarPinResult"
+    expires_after="2025-12-01">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>jessemckenna@google.com</owner>
+  <summary>
+    The result of calling PinAppToTaskbar(), logged when it is called. It is
+    called when the user has agreed to pin Chrome to the taskbar.
+  </summary>
+</histogram>
+
 <histogram name="Windows.TimeInSelectFileDialog" units="ms"
     expires_after="2025-08-24">
   <owner>fdoray@chromium.org</owner>

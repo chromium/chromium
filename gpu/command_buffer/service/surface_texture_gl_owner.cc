@@ -303,8 +303,7 @@ bool SurfaceTextureGLOwner::DecomposeTransform(float mtx[16],
 bool SurfaceTextureGLOwner::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
-  auto dump_name =
-      base::StringPrintf("gpu/media_texture_owner_%d", tracing_id());
+  auto dump_name = base::StringPrintf(kMemoryDumpPrefix, tracing_id());
 
   // We don't know the exact format of the image so we use NV12 as approximation
   // as the most popular format.

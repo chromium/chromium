@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/toolbar/split_tabs_button.h"
 
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -23,7 +23,7 @@ SplitTabsToolbarButton::SplitTabsToolbarButton(Browser* browser)
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_SPLIT_TABS));
 
-  SetVectorIcon(vector_icons::kCelebrationIcon);
+  SetVectorIcon(kSplitTabIcon);
   SetVisible(false);
   browser->tab_strip_model()->AddObserver(this);
 }

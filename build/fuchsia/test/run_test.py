@@ -70,9 +70,6 @@ def main():
                         action='store_true',
                         default=False,
                         help='Use an existing device.')
-    parser.add_argument('--extra-path',
-                        action='append',
-                        help='Extra paths to append to the PATH environment')
 
     # Register arguments
     register_common_args(parser)
@@ -96,9 +93,6 @@ def main():
             # logs_dir is not defined.
             stack.push(lambda *_: monitors.dump(
                 os.path.join(runner_args.logs_dir, 'invocations')))
-        if runner_args.extra_path:
-            os.environ['PATH'] += os.pathsep + os.pathsep.join(
-                runner_args.extra_path)
         if running_unattended():
             # Only restart the daemon if 1) daemon will be run in a new isolate
             # dir, or 2) if there isn't a daemon running in the predefined

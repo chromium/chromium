@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
@@ -278,9 +279,8 @@ class H264VaapiVideoEncoderDelegateTest
 std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob>
 H264VaapiVideoEncoderDelegateTest::CreateEncodeJob(bool keyframe,
                                                    base::TimeDelta timestamp) {
-  scoped_refptr<H264Picture> picture(
-      new VaapiH264Picture(std::make_unique<VASurfaceHandle>(
-          next_surface_id_++, base::DoNothing())));
+  auto picture = base::MakeRefCounted<VaapiH264Picture>(
+      std::make_unique<VASurfaceHandle>(next_surface_id_++, base::DoNothing()));
 
   constexpr VABufferID kDummyVABufferID = 12;
   auto scoped_va_buffer = ScopedVABuffer::CreateForTesting(

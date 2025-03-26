@@ -47,9 +47,11 @@ Corner ContouredRect::Corner::AlignedToOrigin(Corner origin) const {
   gfx::Vector2dF offset(v2().Length() - origin.v2().Length(),
                         v1().Length() - origin.v1().Length());
 
+  const bool originally_concave = origin.IsConcave();
+
   // For concave curves, flip the vertex and use the corresponding convex curve.
-  if (origin.IsConcave()) {
-    origin = origin.ToConvex();
+  if (originally_concave) {
+    origin = origin.Inverse();
     offset.Scale(-1);
   }
 
@@ -76,7 +78,7 @@ Corner ContouredRect::Corner::AlignedToOrigin(Corner origin) const {
       origin.Curvature());
 
   if (origin.Curvature() <= 2 || target_corner.IsStraight()) {
-    return target_corner;
+    return originally_concave ? target_corner.Inverse() : target_corner;
   }
 
   // For highly concave or convex curvatures (>2 or <0.5), we adjust the target
@@ -91,7 +93,7 @@ Corner ContouredRect::Corner::AlignedToOrigin(Corner origin) const {
        adjusted_length) /
       target_length);
 
-  return target_corner;
+  return originally_concave ? target_corner.Inverse() : target_corner;
 }
 
 // static
@@ -99,14 +101,6 @@ float ContouredRect::Corner::CurvatureForHalfCorner(float half_corner) {
   return half_corner >= 1   ? ContouredRect::CornerCurvature::kStraight
          : half_corner <= 0 ? ContouredRect::CornerCurvature::kNotch
                             : std::log(0.5) / std::log(half_corner);
-}
-
-gfx::PointF ContouredRect::Corner::HullPoint() const {
-  // This is the x of the hull of the superellipse.
-  const float normalized_control_point = ClampTo<float>(
-      2 * Corner::HalfCornerForCurvature(curvature_) - 0.5, 0, 1);
-  return MapPoint(
-      gfx::Vector2dF(normalized_control_point, normalized_control_point));
 }
 
 }  // namespace blink

@@ -384,6 +384,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2539748786028143624">Uključi Poboljšanu zaštitu…</translation>
 <translation id="2540111494300686866">Spreči dijaloge</translation>
 <translation id="2542268842667970959">Sakrij opciju Provera bezbednosti</translation>
+<translation id="2543870349255816922">Ova kartica prikazuje pad cene proizvoda koji pratite sa jednog od sinhronizovanih uređaja</translation>
 <translation id="2547458583188611426">Sinhronizacija ne radi. Da biste pokrenuli sinhronizaciju, unesite pristupnu frazu.</translation>
 <translation id="2551153019974022505">Greška sa nalogom</translation>
 <translation id="2559843230610279254">Grupa kartica, <ph name="GROUP_TITLE" />, kartica: <ph name="TABS_NUMBER" />.</translation>
@@ -560,7 +561,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3380352560400387991">Ovaj sajt pokušava da otvori aplikaciju. To će vas odvesti iz režima bez arhiviranja.</translation>
 <translation id="3392923070107623576">Ostanite organizovani pravljenjem grupa kartica</translation>
 <translation id="3404232721752787413">Sačuvaj u Google slikama</translation>
-<translation id="3404744938087714423">Odjavljivanjem se isključuje sinhronizacija.</translation>
 <translation id="3406506285180498376">Deli stranicu…</translation>
 <translation id="340669334496430859">Poslednja izmena</translation>
 <translation id="3409785640040772790">Mape</translation>
@@ -780,7 +780,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4334428914252001502">1 nepročitan članak.</translation>
 <translation id="4338258232580025606">Prijavljivanje nije moguće</translation>
 <translation id="4338650699862464074">Šalje URL-ove stranica koje posećujete Google-u.</translation>
-<translation id="4342054591427973606">{count,plural, =1{Ova adresa će biti izbrisana sa ovog i drugih uređaja na kojima ste prijavljeni.}one{Ove adrese će biti izbrisane sa ovog i drugih uređaja na kojima ste prijavljeni.}few{Ove adrese će biti izbrisane sa ovog i drugih uređaja na kojima ste prijavljeni.}other{Ove adrese će biti izbrisane sa ovog i drugih uređaja na kojima ste prijavljeni.}}</translation>
 <translation id="4342946437867096381">Već ste sačuvali lozinku za ovaj sajt na Google nalogu. Google može da izabere najnoviju lozinku za vas.</translation>
 <translation id="4365121137632832185">Grupa kartica. Prošireno.</translation>
 <translation id="4367971618859387374">Ime za prikaz</translation>
@@ -1288,7 +1287,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6447842834002726250">Kolačići</translation>
 <translation id="6449554712554071184">Ovim ćete trajno izbrisati grupu sa uređaja.</translation>
 <translation id="6452534462676960500">Nova aktivnost</translation>
-<translation id="6459307836338400162">Više podešavanja u vezi sa privatnošću, bezbednošću i prikupljanjem podataka potražite u odeljcima <ph name="BEGIN_LINK" />Sinhronizacija<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />Google usluge<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Detalji su skriveni</translation>
 <translation id="646394917185284261">Fajlovi</translation>
 <translation id="6464397691496239022">Sajtovi mogu da koriste kolačiće za poboljšanje doživljaja pregledanja, na primer, da biste ostali prijavljeni ili da bi stavke u vašoj korpi za kupovinu ostale sačuvane.
@@ -1638,7 +1636,6 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7933880123415105005">Pretražite <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Stranica je dodata na listu za čitanje na nalogu, {email}}one{{count} stranica je dodata na listu za čitanje na nalogu, {email}}few{{count} stranice su dodate na listu za čitanje na nalogu, {email}}other{{count} stranica je dodato na listu za čitanje na nalogu, {email}}}</translation>
-<translation id="7947953824732555851">Prihvati i prijavi me</translation>
 <translation id="7952670906562503188">Uskoro ćete izbrisati pristupne ključeve ({passkey_count}) i listu sajtova i aplikacija za koje ste odabrali da nikada ne čuvate podatke za prijavljivanje. Nalozi koje ste otvorili za sajtove i aplikacije neće biti izbrisani.</translation>
 <translation id="7958575506592576831">Informacije o bezbednosti stranice</translation>
 <translation id="7961015016161918242">Nikad</translation>
@@ -1927,7 +1924,6 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="9013605037177245304">Uključi obaveštenja</translation>
 <translation id="9029650858822697271">Odjavljeni ste</translation>
 <translation id="9032405509996909363">Potvrdite brisanje podataka pregledanja</translation>
-<translation id="9034759925968272072">Nećemo vas odjaviti sa Google naloga. Google nalog možda ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Propusni opseg</translation>
 <translation id="9042893549633094279">Privatnost i bezbednost</translation>
 <translation id="9055580485132823283">Izbrisaćete lozinke ({password_count}), pristupne ključeve ({passkey_count}) i listu sajtova i aplikacija za koje ste odabrali da nikada ne čuvate podatke za prijavljivanje. Nalozi koje ste otvorili za sajtove i aplikacije neće biti izbrisani.</translation>

@@ -747,6 +747,7 @@ absl_cc_library(
     absl::log_internal_fnmatch
     absl::memory
     absl::no_destructor
+    absl::nullability
     absl::strings
     absl::synchronization
     absl::optional

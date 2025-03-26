@@ -141,12 +141,10 @@ internal_gen_well_known_protos_java(
 # Should be used as `//java/lite`.
 java_library(
     name = "lite",
-    srcs = LITE_SRCS + [
-        ":gen_well_known_protos_javalite",
-    ],
-    visibility = [
-        "//java/lite:__pkg__",
-    ],
+    srcs = [":gen_well_known_protos_javalite"],
+    visibility = ["//java/lite:__pkg__"],
+    exports = [":lite_runtime_only"],
+    deps = [":lite_runtime_only"],
 )
 
 protobuf_versioned_java_library(
@@ -182,6 +180,7 @@ protobuf_java_export(
 protobuf_java_library(
     name = "lite_runtime_only",
     srcs = LITE_SRCS,
+    visibility = ["//java/kotlin:__pkg__"],
 )
 
 proto_library(
@@ -199,7 +198,10 @@ proto_library(
 
 cc_proto_library(
     name = "java_features_cc_proto",
-    visibility = ["//editions:__pkg__"],
+    visibility = [
+        "//editions:__pkg__",
+        "//src/google/protobuf/compiler/java:__pkg__",  # For java/names.h
+    ],
     deps = [":java_features_proto"],
 )
 
@@ -443,6 +445,7 @@ junit_tests(
         ":lite_test_protos_java_proto",
         ":test_util",
         "@protobuf_maven//:com_google_guava_guava",
+        "@protobuf_maven//:com_google_testparameterinjector_test_parameter_injector",
         "@protobuf_maven//:com_google_truth_truth",
         "@protobuf_maven//:junit_junit",
         "@protobuf_maven//:org_mockito_mockito_core",
@@ -567,6 +570,7 @@ LITE_TEST_EXCLUSIONS = [
     "src/test/java/com/google/protobuf/UnknownFieldSetLiteTest.java",
     "src/test/java/com/google/protobuf/UnknownFieldSetPerformanceTest.java",
     "src/test/java/com/google/protobuf/UnknownFieldSetTest.java",
+    "src/test/java/com/google/protobuf/UnredactedDebugFormatForTestTest.java",
     "src/test/java/com/google/protobuf/WellKnownTypesTest.java",
     "src/test/java/com/google/protobuf/WireFormatTest.java",
 ]
@@ -621,6 +625,8 @@ junit_tests(
             "src/test/java/com/google/protobuf/CodedOutputStreamTest.java",
             "src/test/java/com/google/protobuf/CodedInputStreamTest.java",
             "src/test/java/com/google/protobuf/ProtobufToStringOutputTest.java",
+            "src/test/java/com/google/protobuf/FieldPresenceTest.java",
+            "src/test/java/com/google/protobuf/UnredactedDebugFormatForTestTest.java",
             # Excluded in core_tests
             "src/test/java/com/google/protobuf/DecodeUtf8Test.java",
             "src/test/java/com/google/protobuf/IsValidUtf8Test.java",
@@ -670,6 +676,7 @@ junit_tests(
             "src/test/java/com/google/protobuf/CodedOutputStreamTest.java",
             "src/test/java/com/google/protobuf/CodedInputStreamTest.java",
             "src/test/java/com/google/protobuf/ProtobufToStringOutputTest.java",
+            "src/test/java/com/google/protobuf/FieldPresenceTest.java",
             # Excluded in core_tests
             "src/test/java/com/google/protobuf/DecodeUtf8Test.java",
             "src/test/java/com/google/protobuf/IsValidUtf8Test.java",
@@ -706,4 +713,3 @@ pkg_files(
     strip_prefix = strip_prefix.from_root(""),
     visibility = ["//java:__pkg__"],
 )
-

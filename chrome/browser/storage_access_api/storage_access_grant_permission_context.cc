@@ -197,6 +197,13 @@ bool AreFedCmAutograntsEnabled(content::RenderFrameHost* rfh) {
       state.has_value()) {
     return state.value();
   }
+
+  // RuntimeFeatureStateDocumentData doesn't know what the default state of a
+  // feature is, so we check the underlying feature explicitly.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFedCmWithStorageAccessAPI)) {
+    return true;
+  }
   content::RuntimeFeatureStateDocumentData* document_data =
       content::RuntimeFeatureStateDocumentData::GetForCurrentDocument(rfh);
   CHECK(document_data);

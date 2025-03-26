@@ -41,6 +41,10 @@ class MEDIA_EXPORT CdmModule {
 
   CreateCdmFunc GetCreateCdmFunc();
 
+  void SetDebuggerAttached(bool is_debugger_attached);
+
+  bool GetDebuggerAttached() const;
+
 // Loads the CDM, initialize function pointers and initialize the CDM module.
 // This must only be called only once.
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
@@ -62,6 +66,7 @@ class MEDIA_EXPORT CdmModule {
   CdmModule();
 
   bool initialized_ = false;
+  bool is_debugger_attached_ = false;
   base::FilePath cdm_path_;
   base::ScopedNativeLibrary library_;
   CreateCdmFunc create_cdm_func_ = nullptr;

@@ -17,6 +17,7 @@
 
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
@@ -123,7 +124,7 @@ scoped_refptr<H264Picture> V4L2VideoDecoderDelegateH264::CreateH264Picture() {
     return nullptr;
   }
 
-  return new V4L2H264Picture(dec_surface);
+  return base::MakeRefCounted<V4L2H264Picture>(dec_surface);
 }
 
 scoped_refptr<H264Picture>
@@ -133,7 +134,7 @@ V4L2VideoDecoderDelegateH264::CreateH264PictureSecure(uint64_t secure_handle) {
   if (!dec_surface)
     return nullptr;
 
-  return new V4L2H264Picture(dec_surface);
+  return base::MakeRefCounted<V4L2H264Picture>(dec_surface);
 }
 
 void V4L2VideoDecoderDelegateH264::ProcessSPS(

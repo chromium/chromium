@@ -618,10 +618,23 @@ void UserEducationInternalsPageHandlerImpl::OnFeaturePromoShowResult(
         reason = "Cannot show IPH in this browser window.";
         break;
       case Failure::kBlockedByPromo:
-        reason = "Failed to show IPH due to high-priority IPH.";
+        reason = "Failed to show IPH due to another high-priority IPH.";
+        break;
+      case Failure::kAnchorSurfaceNotActive:
+        reason = "Anchor window is not active.";
+        break;
+      case Failure::kAnchorNotVisible:
+        reason = "Anchor element for promo is not visible.";
         break;
       case Failure::kBlockedByUi:
-        reason = "Cannot show IPH due to conflicting UI or missing anchor.";
+        reason =
+            "Blocked by some other UI (omnibox drop-down, legal notice, etc.)";
+        break;
+      case Failure::kBlockedByUserActivity:
+        reason = "Blocked by user activity.";
+        break;
+      case Failure::kWindowTooSmall:
+        reason = "Target window is too small/UI is collapsed.";
         break;
       case Failure::kCanceled:
         reason = "IPH was canceled before it could be shown.";
@@ -636,16 +649,35 @@ void UserEducationInternalsPageHandlerImpl::OnFeaturePromoShowResult(
         reason = "Already queued.";
         break;
       case Failure::kBlockedByConfig:
+        reason = "Blocked by Feature Engagement system.";
+        break;
       case Failure::kFeatureDisabled:
+        reason = "IPH feature is disabled.";
+        break;
       case Failure::kPermanentlyDismissed:
+        reason = "Promo has been permanently dismissed.";
+        break;
       case Failure::kSnoozed:
+        reason = "Promo has been recently snoozed.";
+        break;
       case Failure::kBlockedByGracePeriod:
+        reason = "Blocked by startup grace period.";
+        break;
       case Failure::kBlockedByCooldown:
+        reason = "Too little time has passed since the last heavyweight promo.";
+        break;
       case Failure::kRecentlyAborted:
+        reason = "Too little time has passed since the promo was aborted.";
+        break;
       case Failure::kExceededMaxShowCount:
+        reason = "Promo would exceed maximum show count.";
+        break;
       case Failure::kBlockedByNewProfile:
+        reason = "Promo cannot be shown in brand new profile.";
+        break;
       case Failure::kBlockedByReshowDelay:
-        reason = "Unexpected failure (should not happen for demo).";
+        reason = "Promo is inside of minimum reshow time.";
+        break;
     }
   }
   std::move(pending_callback_).Run(reason);

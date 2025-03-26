@@ -43,13 +43,15 @@ unsigned ShapeResultView::RunInfoPart::PreviousSafeToBreakOffset(
   offset += offset_;
   if (run_->IsLtr()) {
     for (const auto& glyph : base::Reversed(*this)) {
-      if (glyph.safe_to_break_before && glyph.character_index <= offset)
+      if (glyph.IsSafeToBreakBefore() && glyph.character_index <= offset) {
         return glyph.character_index - offset_;
+      }
     }
   } else {
     for (const auto& glyph : *this) {
-      if (glyph.safe_to_break_before && glyph.character_index <= offset)
+      if (glyph.IsSafeToBreakBefore() && glyph.character_index <= offset) {
         return glyph.character_index - offset_;
+      }
     }
   }
 

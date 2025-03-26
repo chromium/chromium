@@ -68,11 +68,11 @@ export class ProductSelectionMenuElement extends CrLitElement {
   private shoppingApi_: ShoppingServiceBrowserProxy =
       ShoppingServiceBrowserProxyImpl.getInstance();
 
-  selectedUrl: string = '';
-  excludedUrls: string[] = [];
-  forNewColumn: boolean = false;
-  isTableFull: boolean = false;
-  sections: MenuSection[] = [];
+  accessor selectedUrl: string = '';
+  accessor excludedUrls: string[] = [];
+  accessor forNewColumn: boolean = false;
+  accessor isTableFull: boolean = false;
+  accessor sections: MenuSection[] = [];
 
   override render() {
     return getHtml.bind(this)();

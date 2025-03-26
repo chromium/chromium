@@ -47,8 +47,7 @@ public class ContactsPickerDialog extends FullscreenAlertDialog
             boolean includeAddresses,
             boolean includeIcons,
             String formattedOrigin) {
-        // TODO(crbug.com/401075913): Support shouldPadForContent in //components.
-        super(assertNonNull(windowAndroid.getActivity().get()), /* shouldPadForContent= */ false);
+        super(assertNonNull(windowAndroid.getContext().get()));
 
         // Initialize the main content view.
         mCategoryView =

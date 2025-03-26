@@ -2534,6 +2534,232 @@ TEST_P(InterestGroupStorageDualLifetimeTest,
 }
 
 TEST_P(InterestGroupStorageDualLifetimeTest,
+       ViewClickStoreRetrieve_RateLimited) {
+  // Max of 10 views, 10 clicks, every 20 seconds, per (providing origin,
+  // eligible origin).
+  constexpr int kMaxEvents = 10;
+  constexpr base::TimeDelta kMaxEventsDelta = base::Seconds(20);
+
+  AdAuctionEventRecord record_view;
+  record_view.type = AdAuctionEventRecord::Type::kView;
+  record_view.providing_origin = kViewClickProviderOrigin1;
+  record_view.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record_view.IsValid());
+
+  AdAuctionEventRecord record_click;
+  record_click.type = AdAuctionEventRecord::Type::kClick;
+  record_click.providing_origin = kViewClickProviderOrigin1;
+  record_click.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record_click.IsValid());
+
+  AdAuctionEventRecord record_view_other_provider;
+  record_view_other_provider.type = AdAuctionEventRecord::Type::kView;
+  record_view_other_provider.providing_origin = kViewClickProviderOrigin2;
+  record_view_other_provider.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record_view_other_provider.IsValid());
+
+  AdAuctionEventRecord record_click_other_eligible_origin;
+  record_click_other_eligible_origin.type = AdAuctionEventRecord::Type::kClick;
+  record_click_other_eligible_origin.providing_origin =
+      kViewClickProviderOrigin1;
+  record_click_other_eligible_origin.eligible_origins = {
+      kViewClickEligibleOrigin2};
+  ASSERT_TRUE(record_click_other_eligible_origin.IsValid());
+
+  // Which gets rate limited first, views, or clicks. Checking what happens in
+  // each scenario ensures that one of views and clicks getting rate limited
+  // doesn't mean the other one will be rate limited.
+  enum class Scenario {
+    kViewFirst = 0,
+    kClickFirst,
+  };
+  for (Scenario scenario : {Scenario::kViewFirst, Scenario::kClickFirst}) {
+    SCOPED_TRACE(static_cast<int>(scenario));
+
+    // First, create the storage, and join an interest group.
+    std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+    InterestGroup g1 = NewInterestGroup(kViewClickEligibleOrigin1, "cars");
+    g1.view_and_click_counts_providers = {
+        {kViewClickProviderOrigin1, kViewClickProviderOrigin2}};
+    g1.expiry = base::Time::Now() + base::Days(90);
+    storage->JoinInterestGroup(g1, GURL("https://joining-site.test"));
+
+    InterestGroup g2 = NewInterestGroup(kViewClickEligibleOrigin2, "shoes");
+    g2.view_and_click_counts_providers = {{kViewClickProviderOrigin1}};
+    g2.expiry = base::Time::Now() + base::Days(90);
+    storage->JoinInterestGroup(g2, GURL("https://joining-site.test"));
+
+    // Now record kMaxEvents + 1 events of the first type. Only kMaxEvents get
+    // recorded.
+    for (int i = 0; i < kMaxEvents + 1; i++) {
+      switch (scenario) {
+        case Scenario::kViewFirst:
+          storage->RecordViewClick(record_view);
+          break;
+        case Scenario::kClickFirst:
+          storage->RecordViewClick(record_click);
+          break;
+      }
+    }
+
+    {
+      std::vector<StorageInterestGroup> groups =
+          storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+      ASSERT_EQ(1u, groups.size());
+
+      blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+          groups[0].bidding_browser_signals->view_and_click_counts;
+
+      int view_count = 0;
+      int click_count = 0;
+      switch (scenario) {
+        case Scenario::kViewFirst:
+          view_count = kMaxEvents;
+          break;
+        case Scenario::kClickFirst:
+          click_count = kMaxEvents;
+          break;
+      }
+
+      EXPECT_EQ(view_count, view_and_click_counts->view_counts->past_hour);
+      EXPECT_EQ(view_count, view_and_click_counts->view_counts->past_day);
+      EXPECT_EQ(view_count, view_and_click_counts->view_counts->past_week);
+      EXPECT_EQ(view_count, view_and_click_counts->view_counts->past_30_days);
+      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? view_count : 0,
+                view_and_click_counts->view_counts->past_90_days);
+      EXPECT_EQ(click_count, view_and_click_counts->click_counts->past_hour);
+      EXPECT_EQ(click_count, view_and_click_counts->click_counts->past_day);
+      EXPECT_EQ(click_count, view_and_click_counts->click_counts->past_week);
+      EXPECT_EQ(click_count, view_and_click_counts->click_counts->past_30_days);
+      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? click_count : 0,
+                view_and_click_counts->click_counts->past_90_days);
+    }
+
+    // Now record kMaxEvents + 1 events of the second type. Only kMaxEvents get
+    // recorded.
+    for (int i = 0; i < kMaxEvents + 1; i++) {
+      switch (scenario) {
+        case Scenario::kViewFirst:
+          storage->RecordViewClick(record_click);
+          break;
+        case Scenario::kClickFirst:
+          storage->RecordViewClick(record_view);
+          break;
+      }
+    }
+
+    {
+      std::vector<StorageInterestGroup> groups =
+          storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+      ASSERT_EQ(1u, groups.size());
+
+      blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+          groups[0].bidding_browser_signals->view_and_click_counts;
+
+      EXPECT_EQ(kMaxEvents, view_and_click_counts->view_counts->past_hour);
+      EXPECT_EQ(kMaxEvents, view_and_click_counts->view_counts->past_day);
+      EXPECT_EQ(kMaxEvents, view_and_click_counts->view_counts->past_week);
+      EXPECT_EQ(kMaxEvents, view_and_click_counts->view_counts->past_30_days);
+      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? kMaxEvents : 0,
+                view_and_click_counts->view_counts->past_90_days);
+      EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_hour);
+      EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_day);
+      EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_week);
+      EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_30_days);
+      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? kMaxEvents : 0,
+                view_and_click_counts->click_counts->past_90_days);
+    }
+
+    // (kViewClickEligibleOrigin1, kViewClickProviderOrigin1)'s currently rate
+    // limited, but events for other eligible origins and providers should
+    // be counted.
+    storage->RecordViewClick(record_view_other_provider);
+    storage->RecordViewClick(record_click_other_eligible_origin);
+
+    {
+      std::vector<StorageInterestGroup> groups =
+          storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+      ASSERT_EQ(1u, groups.size());
+
+      blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+          groups[0].bidding_browser_signals->view_and_click_counts;
+
+      EXPECT_EQ(kMaxEvents + 1, view_and_click_counts->view_counts->past_hour);
+      EXPECT_EQ(kMaxEvents + 1, view_and_click_counts->view_counts->past_day);
+      EXPECT_EQ(kMaxEvents + 1, view_and_click_counts->view_counts->past_week);
+      EXPECT_EQ(kMaxEvents + 1,
+                view_and_click_counts->view_counts->past_30_days);
+      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? kMaxEvents + 1 : 0,
+                view_and_click_counts->view_counts->past_90_days);
+      EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_hour);
+      EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_day);
+      EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_week);
+      EXPECT_EQ(kMaxEvents, view_and_click_counts->click_counts->past_30_days);
+      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? kMaxEvents : 0,
+                view_and_click_counts->click_counts->past_90_days);
+    }
+
+    {
+      std::vector<StorageInterestGroup> groups =
+          storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin2);
+      ASSERT_EQ(1u, groups.size());
+
+      blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+          groups[0].bidding_browser_signals->view_and_click_counts;
+
+      EXPECT_EQ(0, view_and_click_counts->view_counts->past_hour);
+      EXPECT_EQ(0, view_and_click_counts->view_counts->past_day);
+      EXPECT_EQ(0, view_and_click_counts->view_counts->past_week);
+      EXPECT_EQ(0, view_and_click_counts->view_counts->past_30_days);
+      EXPECT_EQ(0, view_and_click_counts->view_counts->past_90_days);
+      EXPECT_EQ(1, view_and_click_counts->click_counts->past_hour);
+      EXPECT_EQ(1, view_and_click_counts->click_counts->past_day);
+      EXPECT_EQ(1, view_and_click_counts->click_counts->past_week);
+      EXPECT_EQ(1, view_and_click_counts->click_counts->past_30_days);
+      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
+                view_and_click_counts->click_counts->past_90_days);
+    }
+
+    // Finally advance time. (kViewClickProviderOrigin1,
+    // kViewClickEligibleOrigin1) should no longer be rate-limited.
+    task_environment().FastForwardBy(kMaxEventsDelta + base::Microseconds(1));
+
+    storage->RecordViewClick(record_view);
+    storage->RecordViewClick(record_click);
+
+    {
+      std::vector<StorageInterestGroup> groups =
+          storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+      ASSERT_EQ(1u, groups.size());
+
+      blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+          groups[0].bidding_browser_signals->view_and_click_counts;
+
+      EXPECT_EQ(kMaxEvents + 2, view_and_click_counts->view_counts->past_hour);
+      EXPECT_EQ(kMaxEvents + 2, view_and_click_counts->view_counts->past_day);
+      EXPECT_EQ(kMaxEvents + 2, view_and_click_counts->view_counts->past_week);
+      EXPECT_EQ(kMaxEvents + 2,
+                view_and_click_counts->view_counts->past_30_days);
+      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? kMaxEvents + 2 : 0,
+                view_and_click_counts->view_counts->past_90_days);
+      EXPECT_EQ(kMaxEvents + 1, view_and_click_counts->click_counts->past_hour);
+      EXPECT_EQ(kMaxEvents + 1, view_and_click_counts->click_counts->past_day);
+      EXPECT_EQ(kMaxEvents + 1, view_and_click_counts->click_counts->past_week);
+      EXPECT_EQ(kMaxEvents + 1,
+                view_and_click_counts->click_counts->past_30_days);
+      EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? kMaxEvents + 1 : 0,
+                view_and_click_counts->click_counts->past_90_days);
+    }
+
+    // Delete the database in case we loop again, creating the database from
+    // another .sql file.
+    storage.reset();
+    base::DeleteFile(db_path());
+  }
+}
+
+TEST_P(InterestGroupStorageDualLifetimeTest,
        ViewClickStoreRetrieve_TwoEligibleOrigins) {
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 

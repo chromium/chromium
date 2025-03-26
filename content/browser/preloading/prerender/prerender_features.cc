@@ -41,6 +41,11 @@ const base::FeatureParam<size_t> kPrerender2FallbackBodySizeLimit{
     &kPrerender2FallbackPrefetchSpecRules, "kPrerender2FallbackBodySizeLimit",
     65536};
 
+const base::FeatureParam<bool>
+    kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout{
+        &kPrerender2FallbackPrefetchSpecRules,
+        "kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout", true};
+
 BASE_FEATURE(kPrerender2NoVarySearch,
              "Prerender2NoVarySearch",
              base::FEATURE_ENABLED_BY_DEFAULT);

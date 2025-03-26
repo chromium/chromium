@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Це нова функція</translation>
 <translation id="2006524834898217237">Перевірте, чи пристрій підключено до Інтернету.</translation>
 <translation id="208586643495776849">Повторіть спробу</translation>
+<translation id="2111134541987263231">Увімкніть параметр <ph name="BEGIN_BOLD" />Дозволити в анонімному режимі<ph name="END_BOLD" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 д.}one{# д.}few{# дн.}many{# дн.}other{# дн.}}</translation>
 <translation id="2148716181193084225">Сьогодні</translation>
 <translation id="2168039046890040389">Сторінка вгору</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Торкніться елементів для дотику на екрані.</translation>
 <translation id="2295140143284145483">Опитування</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> ТБ/сек.</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Не вдалося знайти розширення з ідентифікатором <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Зв’яжіться з адміністратором.}one{Не вдалося знайти розширення з ідентифікаторами <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Зв’яжіться з адміністратором.}few{Не вдалося знайти розширення з ідентифікаторами <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Зв’яжіться з адміністратором.}many{Не вдалося знайти розширення з ідентифікаторами <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Зв’яжіться з адміністратором.}other{Не вдалося знайти розширення з ідентифікаторами <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Зв’яжіться з адміністратором.}}</translation>
 <translation id="2353636109065292463">Перевірка інтернет-з’єднання</translation>
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2388990488038464401">Здійснювати виклики на цей номер із вашого телефона?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Видалити все</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{через 1 дн.}one{через # дн.}few{через # дн.}many{через # дн.}other{через # дн.}}</translation>
 <translation id="2922712708897119705">Стовпець "<ph name="COLUMN_NAME" />" відсортовано в порядку спадання.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Не вдалося знайти розширення}one{Не вдалося знайти розширення}few{Не вдалося знайти розширення}many{Не вдалося знайти розширення}other{Не вдалося знайти розширення}}</translation>
 <translation id="3036649622769666520">Відкрити файли</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
 <translation id="3087734570205094154">Низ</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Зателефонувати через</translation>
 <translation id="3306688585798492231">Вбудований екран</translation>
 <translation id="335581015389089642">Speech</translation>
+<translation id="3372635229069101468">Натисніть <ph name="BEGIN_BOLD" />Деталі<ph name="END_BOLD" />.</translation>
 <translation id="3389286852084373014">SMS-повідомлення завелике</translation>
 <translation id="3406306243914553062">Контент HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Залишився 1 день}one{Залишився # день}few{Залишилося # дні}many{Залишилося # днів}other{Залишилося # дня}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Стовпець "<ph name="COLUMN_NAME" />" відсортовано в порядку зростання.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрочитане сповіщення}one{# непрочитане сповіщення}few{# непрочитані сповіщення}many{# непрочитаних сповіщень}other{# непрочитаного сповіщення}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Увімкніть наведене нижче розширення в анонімному режимі.}one{Увімкніть наведені нижче розширення в анонімному режимі.}few{Увімкніть наведені нижче розширення в анонімному режимі.}many{Увімкніть наведені нижче розширення в анонімному режимі.}other{Увімкніть наведені нижче розширення в анонімному режимі.}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 місяць тому}one{# місяць тому}few{# місяці тому}many{# місяців тому}other{# місяця тому}}</translation>
 <translation id="4289300219472526559">Start Speaking</translation>
 <translation id="4289540628985791613">Огляд</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">номер</translation>
 <translation id="4746179598275229723">Розширення відкріплено</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Залишився 1 місяць}one{Залишився # місяць}few{Залишилося # місяці}many{Залишилося # місяців}other{Залишилося # місяця}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{За вимогами вашої організації, ви повинні встановити розширення, щоб використовувати анонімний режим}one{За вимогами вашої організації, ви повинні встановити кілька розширень, щоб використовувати анонімний режим}few{За вимогами вашої організації, ви повинні встановити кілька розширень, щоб використовувати анонімний режим}many{За вимогами вашої організації, ви повинні встановити кілька розширень, щоб використовувати анонімний режим}other{За вимогами вашої організації, ви повинні встановити кілька розширень, щоб використовувати анонімний режим}}</translation>
+<translation id="482932175346970750">У веб-переглядачі введіть <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />.</translation>
 <translation id="4888938634149558681">Зателефонувати</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 секунда}one{# секунда}few{# секунди}many{# секунд}other{# секунди}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Вставити</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> Пб</translation>
 <translation id="5278860589123563674">Не вдалося надіслати</translation>
+<translation id="5283101102242354279">Щоб увімкнути розширення в анонімному режимі:</translation>
 <translation id="528468243742722775">Завершити</translation>
 <translation id="5329858601952122676">&amp;Видалити</translation>
 <translation id="5361107212971249203">текст</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Налаштування екрана для додатка почнуть діяти після наступного перезапуску.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Залишилась 1 хв}one{Залишилася # хв}few{Залишилося # хв}many{Залишилося # хв}other{Залишилося # хв}}</translation>
+<translation id="7252604552361840748">Знайдіть указане вище розширення.</translation>
 <translation id="7363164521834647158">Надіслати відповідь</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 хв тому}one{# хв тому}few{# хв тому}many{# хв тому}other{# хв тому}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>

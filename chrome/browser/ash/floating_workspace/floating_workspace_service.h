@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/system/session/logout_confirmation_controller.h"
 #include "ash/system/tray/system_tray_observer.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -69,16 +70,18 @@ enum class FloatingWorkspaceServiceNotificationType {
 // A keyed service to support floating workspace. Note that a periodical
 // task `CaptureAndUploadActiveDesk` will be dispatched during service
 // initialization.
-class FloatingWorkspaceService : public KeyedService,
-                                 public message_center::NotificationObserver,
-                                 public syncer::SyncServiceObserver,
-                                 public apps::AppRegistryCache::Observer,
-                                 public apps::AppRegistryCacheWrapper::Observer,
-                                 public ash::SessionObserver,
-                                 public NetworkStateHandlerObserver,
-                                 public ash::SystemTrayObserver,
-                                 public chromeos::PowerManagerClient::Observer,
-                                 public syncer::DeviceInfoTracker::Observer {
+class FloatingWorkspaceService
+    : public KeyedService,
+      public message_center::NotificationObserver,
+      public syncer::SyncServiceObserver,
+      public apps::AppRegistryCache::Observer,
+      public apps::AppRegistryCacheWrapper::Observer,
+      public ash::SessionObserver,
+      public ash::LogoutConfirmationController::Observer,
+      public NetworkStateHandlerObserver,
+      public ash::SystemTrayObserver,
+      public chromeos::PowerManagerClient::Observer,
+      public syncer::DeviceInfoTracker::Observer {
  public:
   explicit FloatingWorkspaceService(
       Profile* profile,
@@ -117,6 +120,9 @@ class FloatingWorkspaceService : public KeyedService,
   // ash::SessionObserver overrides:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
   void OnLockStateChanged(bool locked) override;
+
+  // ash::LogoutConfirmationController::Observer:
+  void OnLogoutConfirmationStarted() override;
 
   // NetworkStateHandlerObserver:
   void OnShuttingDown() override;

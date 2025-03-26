@@ -145,7 +145,7 @@ FeaturePromoResult AnchorElementPrecondition::CheckPrecondition(
   auto* const element = provider_->GetAnchorElement(default_context_, index);
   GetCachedDataForComputation(data, kAnchorElement) = element;
   return element != nullptr ? FeaturePromoResult::Success()
-                            : FeaturePromoResult::kBlockedByUi;
+                            : FeaturePromoResult::kAnchorNotVisible;
 }
 
 DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(LifecyclePrecondition,

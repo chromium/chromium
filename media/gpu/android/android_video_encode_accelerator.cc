@@ -24,6 +24,7 @@
 #include "gpu/ipc/service/gpu_channel.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/bitstream_buffer.h"
+#include "media/base/encoder_status.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
 #include "media/base/video_frame.h"
@@ -131,7 +132,7 @@ AndroidVideoEncodeAccelerator::GetSupportedProfiles() {
   return profiles;
 }
 
-bool AndroidVideoEncodeAccelerator::Initialize(
+EncoderStatus AndroidVideoEncodeAccelerator::Initialize(
     const Config& config,
     Client* client,
     std::unique_ptr<MediaLog> media_log) {
@@ -145,7 +146,7 @@ bool AndroidVideoEncodeAccelerator::Initialize(
   if (config.input_format != PIXEL_FORMAT_I420) {
     MEDIA_LOG(ERROR, log_) << "Unexpected combo: " << config.input_format
                            << ", " << GetProfileName(config.output_profile);
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   std::string mime_type;
@@ -167,7 +168,7 @@ bool AndroidVideoEncodeAccelerator::Initialize(
     frame_input_count = 30;
     i_frame_interval = IFRAME_INTERVAL_H264;
   } else {
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   frame_size_ = config.input_visible_size;
@@ -186,7 +187,7 @@ bool AndroidVideoEncodeAccelerator::Initialize(
       is_software_codec) {
     MEDIA_LOG(ERROR, log_) << "No hardware encoding support for "
                            << GetCodecName(codec);
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   // We need to add the ability to select by name if we want to support software
@@ -195,13 +196,13 @@ bool AndroidVideoEncodeAccelerator::Initialize(
       !is_software_codec) {
     MEDIA_LOG(ERROR, log_) << "No software encoding support for "
                            << GetCodecName(codec);
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   PixelFormat pixel_format = COLOR_FORMAT_YUV420_SEMIPLANAR;
   if (!GetSupportedColorFormatForMime(mime_type, &pixel_format)) {
     MEDIA_LOG(ERROR, log_) << "No color format support.";
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
   media_codec_ = MediaCodecBridgeImpl::CreateVideoEncoder(
       codec, config.input_visible_size, config.bitrate.target_bps(),
@@ -210,12 +211,12 @@ bool AndroidVideoEncodeAccelerator::Initialize(
   if (!media_codec_) {
     MEDIA_LOG(ERROR, log_) << "Failed to create/start the codec: "
                            << config.input_visible_size.ToString();
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   if (!SetInputBufferLayout()) {
     MEDIA_LOG(ERROR, log_) << "Can't get input buffer layout from MediaCodec";
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   // Conservative upper bound for output buffer size: decoded size + 2KB.
@@ -228,7 +229,7 @@ bool AndroidVideoEncodeAccelerator::Initialize(
       base::BindOnce(&VideoEncodeAccelerator::Client::RequireBitstreamBuffers,
                      client_ptr_factory_->GetWeakPtr(), frame_input_count,
                      config.input_visible_size, output_buffer_capacity));
-  return true;
+  return {EncoderStatus::Codes::kOk};
 }
 
 void AndroidVideoEncodeAccelerator::MaybeStartIOTimer() {

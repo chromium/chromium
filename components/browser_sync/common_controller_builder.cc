@@ -764,13 +764,8 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
             delegate)));
   }
 
-  // TODO(crbug.com/381505059): Check if the collab service status should be
-  // used.
   bool data_sharing_enabled =
-      base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature) ||
-      base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingJoinOnly);
+      data_sharing::features::IsDataSharingFunctionalityEnabled();
   if (!disabled_types.Has(syncer::SHARED_TAB_GROUP_DATA) &&
       tab_group_sync_service_.value() && data_sharing_enabled) {
     syncer::DataTypeControllerDelegate* delegate =

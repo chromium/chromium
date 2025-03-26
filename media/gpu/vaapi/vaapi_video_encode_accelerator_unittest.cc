@@ -400,8 +400,9 @@ class VaapiVideoEncodeAcceleratorTest
     vaapi_encoder->supported_profiles_for_testing_.push_back(profile);
     if (config.input_visible_size.IsEmpty())
       return false;
-    return encoder_->Initialize(config, &client_,
-                                std::make_unique<media::NullMediaLog>());
+    return encoder_
+        ->Initialize(config, &client_, std::make_unique<media::NullMediaLog>())
+        .is_ok();
   }
 
   static constexpr int GetMaxNumOfEncoderInstances() {
@@ -905,7 +906,8 @@ TEST_F(VaapiVideoEncodeAcceleratorTest, TooManyEncoderInstances) {
     auto media_log = std::make_unique<MockMediaLog>();
     if (i == kMaxNumOfInstances) {
       EXPECT_MEDIA_LOG_ON(*media_log, ContainsTooManyEncoderInstances());
-      EXPECT_FALSE(encoder->Initialize(config, &client_, std::move(media_log)));
+      EXPECT_FALSE(
+          encoder->Initialize(config, &client_, std::move(media_log)).is_ok());
     } else {
       encoders[i] = std::move(encoder);
     }

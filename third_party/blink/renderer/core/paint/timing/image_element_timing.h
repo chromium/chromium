@@ -9,7 +9,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/paint/timing/container_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/media_record_id.h"
+#include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -73,6 +75,8 @@ class CORE_EXPORT ImageElementTiming final
  private:
   friend class ImageElementTimingTest;
 
+  void EnsureContainerTiming();
+
   void NotifyImagePaintedInternal(
       Node&,
       const LayoutObject&,
@@ -135,6 +139,8 @@ class CORE_EXPORT ImageElementTiming final
   // of the background image.
   HeapHashMap<WeakMember<const StyleImage>, base::TimeTicks>
       background_image_timestamps_;
+
+  Member<ContainerTiming> container_timing_;
 };
 
 }  // namespace blink

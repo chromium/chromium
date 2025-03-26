@@ -11,6 +11,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "base/format_macros.h"
 #include "base/notreached.h"
@@ -150,7 +152,7 @@ std::unique_ptr<google::protobuf::MessageLite> BuildProtobufFromTag(
 // Utility method to extract a MCS tag from a google::protobuf::MessageLite
 // object.
 int GetMCSProtoTag(const google::protobuf::MessageLite& message) {
-  const std::string& type_name = message.GetTypeName();
+  std::string_view type_name = message.GetTypeName();
   if (type_name == kProtoNames[kHeartbeatPingTag]) {
     return kHeartbeatPingTag;
   } else if (type_name == kProtoNames[kHeartbeatAckTag]) {

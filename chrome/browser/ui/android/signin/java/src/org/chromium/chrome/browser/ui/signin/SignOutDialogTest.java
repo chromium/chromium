@@ -41,7 +41,6 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -294,9 +293,6 @@ public class SignOutDialogTest {
     public void testPositiveButtonWhenAccountIsNotManagedAndRemoveLocalDataNotChecked() {
         setUpMocks();
         mockAllowDeletingBrowserHistoryPref(true);
-        var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.UserRequestedWipeDataOnSignout", false);
         when(mSigninManagerMock.isSignOutAllowed()).thenReturn(true);
         doAnswer(
                         args -> {
@@ -311,7 +307,6 @@ public class SignOutDialogTest {
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
         onView(withId(android.R.id.message)).check(doesNotExist());
 
-        histogramWatcher.assertExpected();
         verify(mSigninManagerMock)
                 .signOut(
                         eq(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS),
@@ -324,9 +319,6 @@ public class SignOutDialogTest {
     public void testPositiveButtonWhenAccountIsNotManagedAndRemoveLocalDataChecked() {
         setUpMocks();
         mockAllowDeletingBrowserHistoryPref(true);
-        var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.UserRequestedWipeDataOnSignout", true);
         when(mSigninManagerMock.isSignOutAllowed()).thenReturn(true);
         doAnswer(
                         args -> {
@@ -341,7 +333,6 @@ public class SignOutDialogTest {
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
         onView(withId(android.R.id.message)).check(doesNotExist());
 
-        histogramWatcher.assertExpected();
         verify(mSigninManagerMock)
                 .signOut(
                         eq(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS),

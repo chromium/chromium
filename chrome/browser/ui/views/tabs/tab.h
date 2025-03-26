@@ -164,6 +164,9 @@ class Tab : public gfx::AnimationDelegate,
 
   bool mouse_hovered() const { return mouse_hovered_; }
 
+  void ShowHover(TabStyle::ShowHoverStyle style);
+  void HideHover(TabStyle::HideHoverStyle style);
+
   // Returns the TabStyle associated with this tab.
   TabStyleViews* tab_style_views() { return tab_style_views_.get(); }
   const TabStyleViews* tab_style_views() const {

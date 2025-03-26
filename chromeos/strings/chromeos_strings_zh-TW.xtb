@@ -11,6 +11,7 @@
 <translation id="102432830749687801">請務必在失去存取權前，使用 Google 的內容轉移工具應用程式將學校帳戶資料移到個人帳戶。</translation>
 <translation id="1026212596705997935">「<ph name="CONFLICT_ACCEL_NAME" />」正在使用這組快速鍵。請按下新的快速鍵。如要取代現有快速鍵，請再次按下這組快速鍵。</translation>
 <translation id="1030856839388844477">重設數據用量</translation>
+<translation id="1047095725494118091">無法下載，請再試一次或重新啟動 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> 個執行緒；<ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">已推出新功能，請使用向上鍵瞭解詳情。</translation>
 <translation id="1049663189809099096">淡彩黃</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">正在下載螢幕保護程式</translation>
 <translation id="1094693127011229778">缺少 IP 位址</translation>
 <translation id="1100902271996134409">正在生成圖片...</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> 音訊</translation>
 <translation id="1116694919640316211">關於</translation>
 <translation id="1118572504348554005">我們可能會將透過這份表單提交的意見回饋提供給合作夥伴，用於排解錯誤及你回報的其他問題。請勿輸入密碼等機密資訊。</translation>
 <translation id="1119403468619527527">字數太少，無法精簡</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">開啟深色模式</translation>
 <translation id="2164131940279488868">請務必連接麥克風，才能開始錄音</translation>
 <translation id="2173302385160625112">檢查你的網際網路連線</translation>
+<translation id="2176909213844392588">無法下載<ph name="LANGUAGE_NAME" />語音轉錄模型，請再試一次或重新啟動 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="2180197493692062006">發生錯誤，請嘗試重新開啟應用程式。</translation>
 <translation id="2189104374785738357">編輯 APN 詳細資料</translation>
 <translation id="2195732836444333448">工作負載已達上限，請稍後再回來查看。</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">文件送紙器 (雙面)</translation>
 <translation id="3201315366910775591">其他使用者可更新共享相簿</translation>
 <translation id="3211671540163313381">按鍵對應 D-pad</translation>
+<translation id="3217462202230355157">請確認已接上麥克風，你也可以試著重新啟動 <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">正在尋找掃描器</translation>
 <translation id="3226657629376379887">版面配置動作選單</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />值除以 <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">專屬</translation>
 <translation id="3404249063913988450">啟用螢幕保護程式</translation>
 <translation id="3413935475507503304">如要繼續執行更新作業，請按「下一步」</translation>
+<translation id="3416709353545797224">錄製所有 <ph name="DEVICE_TYPE" /> 音訊</translation>
 <translation id="3428551088151258685">露天</translation>
 <translation id="3428971106895559033">粉彩</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">請確認掃描器已開啟，而且可供透過網路或直接連線使用</translation>
 <translation id="4159238217853743776">部分</translation>
 <translation id="4159784952369912983">紫色</translation>
+<translation id="416219735020840807">無法下載語音轉錄模型，請再試一次或重新啟動 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="4170180284036919717">拍攝相片</translation>
 <translation id="4170700058716978431">失敗</translation>
 <translation id="4171077696775491955">調低亮度</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">正在將所選文字改成建議內容</translation>
 <translation id="5346687412805619883">區域網路</translation>
 <translation id="5358174242040570474">發生錯誤，請重新選擇桌布或重新開啟應用程式。</translation>
+<translation id="5368228070728130240">無法下載摘要和標題建立模型，請再試一次或重新啟動 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="5372659122375744710">WiFi 網路不安全</translation>
 <translation id="5376354385557966694">自動淺色模式</translation>
 <translation id="5378184552853359930">IP 類型</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">DNS 解析失敗</translation>
 <translation id="6768237774506518020">高 DNS 解析失敗率</translation>
 <translation id="6786747875388722282">擴充功能</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" /> 音訊開啟時，錄音工具會錄下裝置播放的所有內容</translation>
 <translation id="6791471867139427246">鍵盤背光顏色</translation>
 <translation id="6796229976413584781">已刪除捷徑</translation>
 <translation id="6798678288485555829">文字導覽</translation>
@@ -1728,6 +1736,7 @@
 <translation id="8930622219860340959">無線</translation>
 <translation id="8933650076320258356">為「<ph name="DIRECTION" />」選取的按鍵為 <ph name="KEYS" />。<ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">用戶端 IP 位址</translation>
+<translation id="8938606491880817721">無法下載，請再試一次或重新啟動 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="8944651180182756621">啟動器顏色</translation>
 <translation id="8945308580158685341">蜜蜂</translation>
 <translation id="894617464444543719">裝置類型為手機。</translation>

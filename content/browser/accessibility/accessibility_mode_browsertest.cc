@@ -258,6 +258,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, AddScreenReaderModeFlag) {
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, TestEngineUseHistograms) {
+  // Check that we are starting with AXMode, so that we don't fail if a11y was
+  // already on when the test starts, e.g. in Android Automotive.
+  if (!BrowserAccessibilityState::GetInstance()
+           ->GetAccessibilityMode()
+           .is_mode_off()) {
+    return;
+  }
+
   base::HistogramTester histograms;
   histograms.ExpectTotalCount("Accessibility.EngineUse.PageNavsUntilStart", 0);
   histograms.ExpectTotalCount("Accessibility.EngineUse.TimeUntilStart", 0);

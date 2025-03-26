@@ -18,12 +18,18 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
+#include "chrome/browser/upgrade_detector/version_history_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "components/network_time/network_time_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/version_info/version_info.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -89,11 +95,15 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         scoped_local_state_(TestingBrowserProcess::GetGlobal()),
         env_(base::Environment::Create()) {
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        url_loader_factory_.GetSafeWeakWrapper());
     // Disable the detector's check to see if autoupdates are inabled.
     // Without this, tests put the detector into an invalid state by detecting
     // upgrades before the detection task completes.
     scoped_local_state_.Get()->SetUserPref(prefs::kAttemptedToEnableAutoupdate,
                                            std::make_unique<base::Value>(true));
+    scoped_local_state_.Get()->SetUserPref(
+        network_time::prefs::kNetworkTimeQueriesEnabled, base::Value(false));
 
     fake_update_engine_client_ =
         ash::UpdateEngineClient::InitializeFakeForTest();
@@ -125,6 +135,10 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
 
   const base::TickClock* GetMockTickClock() {
     return task_environment_.GetMockTickClock();
+  }
+
+  network::TestURLLoaderFactory& GetTestURLLoaderFactory() {
+    return url_loader_factory_;
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -196,6 +210,30 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
     }
   }
 
+  // Sets the browser.relaunch_window preference in Local State.
+  void SetRelaunchWindowPref(int hour, int minute, int duration_mins) {
+    // Create the dict representing relaunch time interval.
+    base::Value::Dict entry;
+    entry.SetByDottedPath("start.hour", hour);
+    entry.SetByDottedPath("start.minute", minute);
+    entry.Set("duration_mins", duration_mins);
+    // Put it in a list.
+    base::Value::List entries;
+    entries.Append(std::move(entry));
+    // Put the list in the policy value.
+    base::Value::Dict value;
+    value.Set("entries", std::move(entries));
+
+    scoped_local_state_.Get()->SetManagedPref(prefs::kRelaunchWindow,
+                                              base::Value(std::move(value)));
+  }
+
+  // Sets the browser.relaunch_superseded_release_age preference in Local State.
+  void SetRelaunchSupersededReleaseAgePref(int days) {
+    scoped_local_state_.Get()->SetManagedPref(
+        prefs::kRelaunchSupersededReleaseAge, base::Value(days));
+  }
+
   // Fast-forwards virtual time by |delta|.
   void FastForwardBy(base::TimeDelta delta) {
     task_environment_.FastForwardBy(delta);
@@ -204,6 +242,7 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   ScopedTestingLocalState scoped_local_state_;
+  network::TestURLLoaderFactory url_loader_factory_;
   std::unique_ptr<base::Environment> env_;
   std::optional<std::string> original_tz_;
 
@@ -320,6 +359,65 @@ TEST_F(UpgradeDetectorChromeosTest, TestHighAnnoyanceDeadline) {
   // Another new version of ChromeOS is ready to install after high
   // annoyance reached.
   FastForwardBy(upgrade_detector.GetDefaultHighAnnoyanceThreshold());
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+  // New notification could be sent or not.
+  EXPECT_CALL(mock_observer, OnUpgradeRecommended())
+      .Times(testing::AnyNumber());
+  NotifyUpdateReadyToInstall("1.0.0.0", false /*is_rollback*/,
+                             false /*will_powerwash*/);
+
+  // Deadline wasn't changed because of new upgrade detected.
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            deadline);
+  upgrade_detector.Shutdown();
+  RunUntilIdle();
+}
+
+TEST_F(UpgradeDetectorChromeosTest, TestSupersededRelease) {
+  // Enable the relaunch notification policy.
+  SetIsRelaunchNotificationPolicyEnabled(true /*enabled*/);
+  SetRelaunchSupersededReleaseAgePref(7);
+  SetRelaunchWindowPref(0, 0, 60 * 24);
+
+  TestUpgradeDetectorChromeos upgrade_detector(GetMockClock(),
+                                               GetMockTickClock());
+  upgrade_detector.Init();
+  ::testing::StrictMock<MockUpgradeObserver> mock_observer(&upgrade_detector);
+
+  // Observer should get some notifications about new version.
+  EXPECT_CALL(mock_observer, OnUpgradeRecommended()).Times(testing::AtLeast(1));
+  NotifyUpdateReadyToInstall("1.0.0.0", false /*is_rollback*/,
+                             false /*will_powerwash*/);
+
+  const auto upgrade_detected_time = upgrade_detector.upgrade_detected_time();
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            upgrade_detected_time +
+                upgrade_detector.GetDefaultHighAnnoyanceThreshold());
+
+  // This should've fired off a URL request to the VersionHistory API. After
+  // it completes, the period should change to 2 hours.
+  GURL version_history_url = GetVersionReleasesUrl(version_info::GetVersion());
+  EXPECT_TRUE(GetTestURLLoaderFactory().IsPending(version_history_url.spec()));
+  GetTestURLLoaderFactory().AddResponse(version_history_url.spec(), R"({
+        "releases": [{
+          "serving": {
+            "endTime": "1969-01-01T09:00:00.000000Z"
+          }
+        }]
+      })",
+                                        net::HTTP_OK);
+  RunUntilIdle();
+  const auto deadline = upgrade_detector.GetAnnoyanceLevelDeadline(
+      UpgradeDetector::UPGRADE_ANNOYANCE_HIGH);
+  EXPECT_EQ(upgrade_detector.GetAnnoyanceLevelDeadline(
+                UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
+            upgrade_detected_time + base::Hours(2));
+
+  // Another new version of ChromeOS is ready to install after high
+  // annoyance reached.
+  FastForwardBy(base::Hours(2));
   ::testing::Mock::VerifyAndClear(&mock_observer);
   // New notification could be sent or not.
   EXPECT_CALL(mock_observer, OnUpgradeRecommended())

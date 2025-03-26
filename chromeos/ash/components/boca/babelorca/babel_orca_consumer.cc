@@ -263,6 +263,7 @@ void BabelOrcaConsumer::JoinSessionTachyonGroup() {
       base::BindOnce(&BabelOrcaConsumer::OnJoinGroupResponse,
                      base::Unretained(this)),
       boca::kContentTypeApplicationJson);
+  request_data->uma_name = "JoinGroup";
   join_group_authed_client_->StartAuthedRequestString(std::move(request_data),
                                                       "");
 }

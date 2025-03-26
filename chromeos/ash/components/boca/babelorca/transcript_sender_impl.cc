@@ -242,11 +242,12 @@ void TranscriptSenderImpl::Send(int max_retries, std::string request_string) {
 
   auto response_callback_wrapper = base::BindOnce(
       &TranscriptSenderImpl::OnSendResponse, weak_ptr_factory.GetWeakPtr());
-  authed_client_->StartAuthedRequestString(
-      std::make_unique<RequestDataWrapper>(
-          kTrafficAnnotation, kSendMessageUrl, max_retries,
-          std::move(response_callback_wrapper)),
-      std::move(request_string));
+  auto request_data = std::make_unique<RequestDataWrapper>(
+      kTrafficAnnotation, kSendMessageUrl, max_retries,
+      std::move(response_callback_wrapper));
+  request_data->uma_name = "SendMessage";
+  authed_client_->StartAuthedRequestString(std::move(request_data),
+                                           std::move(request_string));
 }
 
 void TranscriptSenderImpl::OnSendResponse(TachyonResponse response) {

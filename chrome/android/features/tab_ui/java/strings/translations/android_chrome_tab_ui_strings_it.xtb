@@ -127,7 +127,7 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link da Chrome}other{<ph name="TABS_COUNT_MANY" /> link da Chrome}}</translation>
 <translation id="58326064309361797">Trascina le schede per raggrupparle</translation>
 <translation id="5901630391730855834">Giallo</translation>
-<translation id="5972844218283131174">Deseleziona tutte</translation>
+<translation id="5972844218283131174">Deseleziona tutto</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6051432659151380973">I gruppi di schede vengono salvati automaticamente</translation>

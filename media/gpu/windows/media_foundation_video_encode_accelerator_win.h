@@ -27,6 +27,7 @@
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "media/base/bitrate.h"
+#include "media/base/encoder_status.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame_converter.h"
@@ -69,9 +70,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // VideoEncodeAccelerator implementation.
   using EncodeOptions = VideoEncoder::EncodeOptions;
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
-  bool Initialize(const Config& config,
-                  Client* client,
-                  std::unique_ptr<MediaLog> media_log) override;
+  EncoderStatus Initialize(const Config& config,
+                           Client* client,
+                           std::unique_ptr<MediaLog> media_log) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void Encode(scoped_refptr<VideoFrame> frame,
               const EncodeOptions& options) override;

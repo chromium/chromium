@@ -148,9 +148,13 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private showAddPasswordDialog_: boolean;
   private showAuthTimedOutDialog_: boolean;
   private showMovePasswordsDialog_: boolean;
+  private importPasswordsText_: string;
+  private passwordsOnDevice_: chrome.passwordsPrivate.PasswordUiEntry[];
+  private showPasswordsDescription_: boolean;
   private movePasswordsText_: string;
   private promoCard_: PromoCard|null;
   private passwordManagerDisabled_: boolean;
+  private shouldShowPromoCard_: boolean;
   private activeListItem_: HTMLElement|null;
 
   private setSavedPasswordsListener_: (

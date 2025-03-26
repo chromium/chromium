@@ -38,6 +38,12 @@ class COMPONENT_EXPORT(GOOGLE_APIS) ApiKeyCache {
   const std::string& api_key_read_aloud() const { return api_key_read_aloud_; }
   const std::string& api_key_fresnel() const { return api_key_fresnel_; }
   const std::string& api_key_boca() const { return api_key_boca_; }
+  const std::string& api_key_cros_system_geo() const {
+    return api_key_cros_system_geo_;
+  }
+  const std::string& api_key_cros_chrome_geo() const {
+    return api_key_cros_chrome_geo_;
+  }
 #endif
 
   const std::string& metrics_key() const { return metrics_key_; }
@@ -67,6 +73,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) ApiKeyCache {
   std::string api_key_read_aloud_;
   std::string api_key_fresnel_;
   std::string api_key_boca_;
+  std::string api_key_cros_system_geo_;
+  std::string api_key_cros_chrome_geo_;
 #endif
 
   std::string metrics_key_;

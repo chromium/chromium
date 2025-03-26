@@ -2558,6 +2558,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2751454300227269244">Mover a boca cara á dereita</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> quere coñecer o número de identificación da túa chave de seguranza. O sitio saberá que chave de seguranza estás utilizando exactamente.</translation>
 <translation id="275213133112113418">Gardouse a tarxeta</translation>
+<translation id="2752805177271551234">Usar historial de entrada</translation>
 <translation id="2754226775788136540">Buscando dispositivos de Vinculación rápida gardados en <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">En Google Play Store, atopa as aplicacións que necesitas: tes desde material relacionado coa produtividade ata contido para entreterte. Podes instalar aplicacións cando queiras.</translation>
 <translation id="2755349111255270002">Restablecer este dispositivo (<ph name="DEVICE_TYPE" />)</translation>
@@ -2590,7 +2591,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2771816809568414714">Queixo</translation>
 <translation id="2772936498786524345">Ninja</translation>
 <translation id="2773288106548584039">Compatibilidade con navegadores antigos</translation>
-<translation id="2773621783913034737">Desactivar pestanas</translation>
 <translation id="2774876860084746535">Intelectual</translation>
 <translation id="2775047284666165174">O cartafol <ph name="LOCAL_FOLDER" /> está gardado só neste dispositivo. Se o moves a <ph name="LOCAL_FOLDER" />, xa non poderás acceder desde os outros dispositivos.</translation>
 <translation id="2775104091073479743">Editar impresións dixitais</translation>
@@ -4028,6 +4028,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3798632811625902122">O dispositivo Bluetooth <ph name="DEVICE" /> solicita permiso para vincularse.</translation>
 <translation id="3798670284305777884">Altofalante (interno)</translation>
 <translation id="3799128412641261490">Configuración do acceso con interruptores</translation>
+<translation id="3800764353337460026">Estilo do símbolo</translation>
 <translation id="3800828618615365228">Condicións adicionais de Google Chrome e ChromeOS</translation>
 <translation id="3800898876950197674">Para permitir esta extensión, pon o teu contrasinal.</translation>
 <translation id="3801449494961771207">Voz de conversión de texto a voz do sistema</translation>
@@ -5335,6 +5336,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4735506354605317060">Destacar punteiro cun círculo</translation>
 <translation id="4735793370946506039">Obtén máis información sobre a función Navegación segura mellorada.</translation>
 <translation id="4735803855089279419">O sistema non puido determinar os identificadores deste dispositivo.</translation>
+<translation id="4735819417216076266">Estilo de entrada de espazos</translation>
 <translation id="4735846817388402006">Facer clic para permitir <ph name="EXTENSIONS_REQUESTING_ACCESS" /> en <ph name="ORIGIN" /></translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="473936925429402449">Botón de contido extra (seleccionado): <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
@@ -6598,7 +6600,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5642508497713047">Asinante de CRL</translation>
 <translation id="5643191124441701136">O código de seguranza está na parte dianteira da túa tarxeta</translation>
 <translation id="5643321261065707929">Rede de pago por consumo</translation>
-<translation id="5643717184207603910">Manter a rapidez no rendemento</translation>
 <translation id="5646376287012673985">Localización</translation>
 <translation id="5646558797914161501">Home de negocios</translation>
 <translation id="5648021990716966815">Conector do micrófono</translation>
@@ -6703,7 +6704,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5734362860645681824">Comunicacións</translation>
 <translation id="5734697361979786483">Engadir un sistema de ficheiros compartido</translation>
 <translation id="573520097779121706">Usa as teclas 7, 8, 9, U, O, J, K e L para mover o cursor</translation>
-<translation id="5735513236153491131">Mellorar agora</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Estes datos ou o teu dispositivo non cumpren algunhas das políticas de seguranza da túa organización. Consulta o administrador para saber o que debes corrixir.}=1{Este ficheiro ou o teu dispositivo non cumpre algunhas das políticas de seguranza da túa organización. Consulta o administrador para saber o que debes corrixir.}other{Estes ficheiros non cumpren algunhas das políticas de seguranza da túa organización. Consulta o administrador para saber o que debes corrixir.}}</translation>
 <translation id="5738093759615225354">Precisas esta clave de acceso para iniciar sesión no teu ordenador</translation>
 <translation id="5739017626473506901">Inicia sesión para axudarlle a <ph name="USER_NAME" /> a engadir unha conta de centro educativo</translation>
@@ -7908,7 +7908,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6611972847767394631">Atopa aquí as túas pestanas</translation>
 <translation id="661266467055912436">Mellora a túa seguranza e a do resto dos usuarios da Web.</translation>
 <translation id="6613267708691765962">Analizando en busca de software malicioso...</translation>
-<translation id="6614172284067813496">Engadiuse a páxina á lista de lectura</translation>
 <translation id="6615455863669487791">Mostrar</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">O sitio pode facer un seguimento da túa localización</translation>
@@ -7928,6 +7927,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6628328486509726751">Data da carga: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6630117778953264026">Máis seguranza</translation>
+<translation id="6630452975878488444">Atallo de selección</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> solicita acceso permanente a un certificado para autenticarse no teu nome.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{Saír do grupo}other{Saír dos grupos}}</translation>
 <translation id="6635362468090274700">Ninguén pode compartir contido contigo ata que o teu dispositivo sexa visible.<ph name="BR" /><ph name="BR" />Se queres facelo visible de forma temporal, abre a área de estado e, a continuación, activa Visibilidade.</translation>
@@ -8617,7 +8617,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7114054701490058191">Os contrasinais non coinciden</translation>
 <translation id="7114648273807173152">Se queres usar Smart Lock para iniciar sesión na túa Conta de Google, vai a Configuración &gt; Dispositivos conectados &gt; O teu teléfono &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Non hai ningún contacto co que se poida establecer conexión</translation>
-<translation id="7115731767122970828">Mellorar agora</translation>
 <translation id="7116554090938189816">O certificado SSL da impresora caducou. Reinicia a impresora e téntao de novo.</translation>
 <translation id="7117228822971127758">Téntao de novo máis tarde</translation>
 <translation id="7118268675952955085">captura de pantalla</translation>
@@ -8786,7 +8785,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7243092385765551741">Queres eliminar a clave de acceso?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (a mellor)</translation>
 <translation id="7246230585855757313">Volve introducir a túa chave de seguranza e téntao de novo</translation>
-<translation id="7248802599439396696">Desactivar pestanas</translation>
 <translation id="7249197363678284330">Cambia esta opción de configuración na barra de enderezos.</translation>
 <translation id="7249764475759804559">Incluír esta aplicación como opción ao abrir ficheiros</translation>
 <translation id="7250616558727237648">O dispositivo co que tentaches compartir o ficheiro non respondeu. Téntao de novo.</translation>
@@ -9099,6 +9097,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7465777686629334728">Quitar contorno de desenvolvemento xestionado (<ph name="SPECIFIC_NAME" />)</translation>
 <translation id="7465778193084373987">URL de revogación do certificado de Netscape</translation>
 <translation id="7466431077154602932">Vista compacta</translation>
+<translation id="7466861475611330213">Estilo de puntuación</translation>
 <translation id="746861123368584540">Cargouse a extensión</translation>
 <translation id="7469612367552312334">Activado • Usa frases cotiás para facer buscas no historial de navegación e atopar sitios que visitases</translation>
 <translation id="7470131554696493512">Impedir que accesorios USB4 ou Thunderbolt accedan á memoria (RAM) e a compartan</translation>
@@ -9340,6 +9339,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7646772052135772216">A sincronización de contrasinais non funciona</translation>
 <translation id="7647403192093989392">Non hai actividades recentes</translation>
 <translation id="7648023614017258011">Chrome está verificando o paquete de instalación</translation>
+<translation id="7648048654005891115">Estilo do mapa de teclas</translation>
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="7650141368285545431">Usar clave de acceso doutro dispositivo</translation>
 <translation id="7650178491875594325">Restaurar os datos locais</translation>
@@ -10552,7 +10552,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8466052016039127321">Non se pode retomar a sesión anterior</translation>
 <translation id="8467326454809944210">Escoller outro idioma</translation>
 <translation id="8468087214092422866">Permiso denegado para buscar dispositivos Bluetooth</translation>
-<translation id="8469863130477774813">Mellora de rendemento dispoñible</translation>
 <translation id="8470513973197838199">Gardáronse os contrasinais para <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Os sitios adoitan conectarse aos dispositivos USB para ofrecerche determinadas funcións (por exemplo, imprimir documentos ou gardar información nun dispositivo de almacenamento)</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{Non hai ningún contrasinal reutilizado}=1{{COUNT} contrasinal reutilizado}other{{COUNT} contrasinais reutilizados}}</translation>
@@ -11089,6 +11088,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="8846163936679269230">Restablecer perfís de eSIM</translation>
 <translation id="8846239054091760429">Audio en mono, inicio, Subtítulos instantáneos e moito máis</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8848709220963126773">Cambio do modo da tecla Maiús</translation>
 <translation id="8849001918648564819">Oculto</translation>
 <translation id="8849219423513870962">Cancelar eliminación do perfil de eSIM chamado "<ph name="PROFILE_NAME" />"</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> de <ph name="CHECKING" /></translation>

@@ -219,13 +219,16 @@ class GlicWindowController : public views::WidgetObserver,
   // Warms the glic web contents.
   void Preload();
 
+  // Warms the fre web contents.
+  void PreloadFre();
+
   // Reloads the glic web contents or the FRE's web contents (depending on
   // which is currently visible).
   void Reload();
 
   // Returns whether or not the glic web contents are loaded (this can also be
   // true if `IsActive()` (i.e., if the contents are loaded in the glic window).
-  bool IsWarmed();
+  bool IsWarmed() const;
 
   // Returns a WeakPtr to this instance. It can be destroyed at any time if the
   // profile is deleted or if the browser shuts down.

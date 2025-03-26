@@ -53,7 +53,6 @@ import org.chromium.components.signin.identitymanager.IdentityMutator;
 import org.chromium.components.signin.identitymanager.PrimaryAccountError;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
-import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 
 import java.lang.annotation.Retention;
@@ -116,15 +115,13 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
      *
      * @param nativeSigninManagerAndroid A pointer to native's SigninManagerAndroid.
      */
-    // TODO(crbug.com/350461111): Remove syncService from parameter list.
     @CalledByNative
     @VisibleForTesting
     static SigninManager create(
             long nativeSigninManagerAndroid,
             @JniType("Profile*") Profile profile,
             @JniType("signin::IdentityManager*") IdentityManager identityManager,
-            IdentityMutator identityMutator,
-            SyncService syncService) {
+            IdentityMutator identityMutator) {
         assert nativeSigninManagerAndroid != 0;
         assert profile != null;
         assert identityManager != null;
@@ -340,16 +337,20 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     }
 
     private void signinInternal(SignInState signInState) {
-        assert isSigninAllowed()
-                : String.format(
-                        "Sign-in isn't allowed!\n"
-                                + "  mSignInState: %s\n"
-                                + "  mSigninAllowedPref: %s\n"
-                                + "  Signed-in account: %s",
-                        mSignInState,
-                        mSigninAllowedPref,
-                        mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
-        assert signInState != null : "SigninState shouldn't be null!";
+        if (signInState == null) {
+            throw new IllegalArgumentException("SigninState shouldn't be null!");
+        }
+        if (!isSigninAllowed()) {
+            throw new IllegalStateException(
+                    String.format(
+                            "Sign-in isn't allowed!\n"
+                                    + "  mSignInState: %s\n"
+                                    + "  mSigninAllowedPref: %s\n"
+                                    + "  Signed-in account: %s",
+                            mSignInState,
+                            mSigninAllowedPref,
+                            mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
+        }
 
         // The mSignInState must be updated prior to the async processing below, as this indicates
         // that a signin operation is in progress and prevents other sign in operations from being

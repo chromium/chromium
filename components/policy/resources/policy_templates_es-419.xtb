@@ -1041,6 +1041,11 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
       Si no la estableces, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta configuración.</translation>
 <translation id="1675391557079742340">Habilitar el uso de la codificación de contenido con <ph name="ZSTANDARD_SHORTNAME" /> en el encabezado Accept-Encoding</translation>
+<translation id="167550754083555945">Configura las políticas que controlan los informes en la nube.
+
+Para los dispositivos administrados, si no estableces la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o la inhabilitas, se ignorará a nivel del navegador. En plataformas que no son <ph name="PRODUCT_OS_NAME" />, esa política solo es compatible con los navegadores que se inscribieron en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
+
+En el caso de los perfiles administrados, si no estableces la política <ph name="CLOUD_PROFILE_REPORTING_ENABLED_POLICY_NAME" /> o la inhabilitas, se ignorarán estas políticas a nivel del perfil.</translation>
 <translation id="1678137412645922426">Controlar el uso de <ph name="AES_KL_NAME" /> para la encriptación del almacenamiento de datos del usuario (en caso de ser compatible)</translation>
 <translation id="1682063842123336408">Indica el espacio libre en disco (expresado en GB) que se necesita para instalar <ph name="PLUGIN_VM_NAME" />.
 
@@ -2934,6 +2939,15 @@ Nota: Para obtener más ejemplos detallados, visita The Chromium Projects ( http
 <translation id="305106159605171619">Se inhabilita la reducción de usuario-agente, y las pruebas de campo o de origen no la habilitan</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">No permitir el uso de Chrome for Testing</translation>
+<translation id="3060608694980129910">Esta política controla los informes en la nube de <ph name="PRODUCT_NAME" /> de los indicadores de seguridad para un perfil administrado en particular.
+
+Si habilitas esta política, se informarán indicadores de seguridad sobre el dispositivo, el navegador y el perfil al servidor de administración de dispositivos.
+
+Si la inhabilitas o no la estableces, no se activará la recopilación y carga de indicadores de seguridad.
+
+El informe contiene datos de uso y estado del perfil, incluidas, sin limitaciones, la versión del SO y del navegador, las extensiones instaladas y las políticas aplicadas.
+
+Esta política solo se puede establecer como política del usuario basada en la nube.</translation>
 <translation id="3063302084011279315">Inhabilitar Screencast</translation>
 <translation id="3063307261083019730">No permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se almacenen en la memoria caché atrás/adelante</translation>
 <translation id="3064530882228745118">Usar la búsqueda de CNAME durante la autenticación de Kerberos</translation>
@@ -4848,27 +4862,6 @@ Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</transl
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="4480694116501920047">Forzar SafeSearch</translation>
 <translation id="4481202456143946404">La versión válida de las Condiciones del Servicio de Google3 CL, donde se introdujo una nueva versión de las Condiciones.</translation>
-<translation id="4481804933320714808">Esta es una función beta. Como esta función está en desarrollo y está disponible para nuestros verificadores de confianza, ten en cuenta que puede sufrir cambios y actualizaciones.
-
-Esta política permite a los administradores establecer un agregador de búsquedas de la empresa designado que proporcionará recomendaciones de búsqueda y resultados en la barra de direcciones cuando se active una palabra clave específica. Para iniciar una búsqueda, los usuarios pueden escribir en la barra de direcciones la palabra clave especificada en el campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> con o sin el prefijo @ (p. ej., <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) y, luego, presionar la barra espaciadora o Tab.
-
-Los siguientes campos son obligatorios: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-El campo <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde al nombre del motor de búsqueda que se muestra al usuario en la barra de direcciones.
-
-El campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde a la palabra clave que el usuario ingresa para activar la búsqueda. El atajo puede incluir palabras y caracteres simples, pero no puede incluir espacios ni comenzar con el símbolo @. Los atajos deben ser únicos.
-
-El campo <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL en la que se realizará la búsqueda. Ingresa la dirección web para la página de resultados del motor de búsqueda y usa <ph name="SEARCH_TERM_MARKER" /> en lugar de la búsqueda.
-
-El campo <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL que proporciona sugerencias de búsqueda. Si <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> contiene <ph name="SEARCH_TERM_MARKER" />, Chrome obtendrá sugerencias de búsqueda a través de una solicitud GET a la URL, reemplazando <ph name="SEARCH_TERM_MARKER" /> con la búsqueda del usuario. De lo contrario, se realizará una solicitud POST y la consulta del usuario se pasará en los parámetros de POST con la clave <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
-
-El campo <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL de una imagen que se usará en las sugerencias de búsqueda. Si no se establece este campo, se usará un ícono predeterminado. Se recomienda usar un ícono de página (por ejemplo, <ph name="ICON_URL_EXAMPLE" />).
-
-El campo <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica si se requiere la barra de direcciones <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> para ver las recomendaciones de búsqueda. Si no estableces este campo, no se requerirá la barra de direcciones <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4481952213163895432">Inhabilitar la palabra clave de Asistente de Google</translation>
 <translation id="4482784169143060077">Habilitar las actualizaciones automáticas de HTTPS</translation>
 <translation id="4483120730995943109">Si setTimeout() de JavaScript tiene un tiempo de espera de 0 ms, no se restringirá a 1 ms.</translation>
@@ -5839,6 +5832,7 @@ Si no la estableces o la inhabilitas, las cookies y los datos se pueden usar par
 <translation id="5152787786897382519">Chromium y Google Chrome tienen algunos grupos de políticas que dependen unos de otros para controlar una función. Los siguientes grupos de políticas representan estos conjuntos. Como las políticas pueden tener diferentes fuentes, solo se aplicarán los valores que provengan de la fuente de mayor prioridad. Se ignorarán los valores que provengan de una fuente de menor prioridad perteneciente al mismo grupo. El orden de prioridad se define en <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Ícono de experimentos del navegador de la barra de herramientas</translation>
 <translation id="5159674159887919923">No enviar datos de hardware adicionales en ChromeOS Flex</translation>
+<translation id="5162571264806471078">Habilitar los informes en la nube de indicadores de seguridad en los perfiles administrados</translation>
 <translation id="5162982931329320509">Lista de dominios que se resolverán con DNS-over-HTTPS. Los otros dominios que no se incluyen en la lista no se resolverán con DNS-over-HTTPS. Esta política se ignora cuando el modo de DNS seguro está desactivado (siempre usa DNS en texto sin formato).
 
 Si la lista está vacía o no se establece, todos los dominios se resolverán con DNS-over-HTTPS siempre que sea posible. Este es el mismo comportamiento que se produce con una lista de dominios incluidos con el valor ["*"].
@@ -6552,6 +6546,7 @@ Nota: Esta política no se aplica al modo Incógnito o los Modos de Invitado</tr
       Ten en cuenta que no se recomienda esta acción, ya que puede permitir la omisión de la extensión nameConstraints, que restringe los nombres de host para los que se puede autorizar un certificado determinado.
 
       Si esta política no se establece, o se establece como falsa, los certificados de servidores que no tengan la extensión subjectAlternativeName con un nombre de DNS o una dirección IP no serán confiables.</translation>
+<translation id="5576376485226897323">Inhabilitar los informes en la nube de indicadores de seguridad del usuario</translation>
 <translation id="5576377426850850084">Usar la autenticación NTLM</translation>
 <translation id="5577475143148445339">Contiene el porcentaje del grupo de dispositivos que se debe actualizar y el número de días restante para la actualización.</translation>
 <translation id="5582429816116769246">Te permite controlar si los usuarios pueden acceder a impresoras no empresariales.
@@ -6839,6 +6834,7 @@ Si la inhabilitas o no la estableces, no se habilitarán los widgets de consulta
       Si estableces el valor "False" para la política o no la estableces, no se enviará la información.
       Si estableces el valor "True", se enviará información sobre los VPD del dispositivo.
       Los datos vitales del producto (VPD) son un conjunto de datos informativos y de configuración (como números de serie y piezas) asociados al dispositivo.</translation>
+<translation id="5760861224093391268">Inhabilitar la autenticación propia cuando se informen los indicadores de seguridad del usuario</translation>
 <translation id="5762969307102447459">Inhabilitar Autocompletar para las direcciones</translation>
 <translation id="5765780083710877561">Descripción:</translation>
 <translation id="5766438888216077649">No configurar <ph name="WINDOW_OPENER_PROPERTY" /> para los vínculos destinados a <ph name="BLANK_PAGE_NAME" /></translation>
@@ -7025,6 +7021,15 @@ Si inhabilitas la política, se inhabilitarán los sonidos del Modo sin distracc
 <translation id="5893303508158298667">Si habilitas la política <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> y habilitas la política <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> o no la estableces, los clientes remotos podrán usar servidores de retransmisión para conectarse con este equipo cuando no haya conexiones directas disponibles, por ejemplo, debido a la presencia de firewalls.
 
       Si inhabilitas la política, no se desactivará el acceso remoto, pero solo se permitirán conexiones de la misma red (no se permitirán retransmisiones ni técnicas NAT traversal).</translation>
+<translation id="5895049442553435093">Esta política controla el uso de <ph name="PRODUCT_NAME" /> de la autenticación de usuario propia cuando se informan los indicadores de seguridad del usuario para un perfil administrado en particular.
+
+Si habilitas esta política, se usará la autenticación propia cuando se suban los indicadores de seguridad.
+
+Si la inhabilitas o no la estableces, no se usará la autenticación propia cuando se suban los indicadores de seguridad.
+
+Los informes de indicadores de seguridad del usuario solo se suben cuando se habilita <ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME" />.
+
+Esta política solo se puede establecer como política del usuario basada en la nube.</translation>
 <translation id="5895569286536062756">Habilitar la función Seleccionar para pronunciar en la pantalla de acceso</translation>
 <translation id="5895861015839311441">Informa datos de telemetría de uso de las apps para los usuarios afiliados.
 
@@ -9303,6 +9308,7 @@ Ahora, se conservarán los espacios en blanco en todas las URLs de datos, indepe
 Si no estableces esta política o la estableces como verdadera, se habilitará el nuevo comportamiento.
 
 Si la estableces como falsa, se habilitará el comportamiento anterior.</translation>
+<translation id="7366637365754181686">Habilitar los informes en la nube de indicadores de seguridad del usuario</translation>
 <translation id="7366948865469126526">Inhabilitar la conversión de unidades de Respuestas rápidas</translation>
 <translation id="7367734504783638685">Sincronización de contraseñas entre dispositivos Chrome y proveedores de SSO de terceros</translation>
 <translation id="7372831798009983116">Habilita la función de accesibilidad de clic automático</translation>
@@ -11258,6 +11264,7 @@ Para obtener información detallada sobre los patrones de URL válidos, consulta
 <translation id="8807728576820212213">Habilitar la integración de Lens</translation>
 <translation id="8809082103104823938">Compatibilidad con GIF en el selector de emojis</translation>
 <translation id="8812091410765157924">Solo permitir que se abran ventanas emergentes destinadas a <ph name="BLANK_PAGE_NAME" /> para interactuar con la página que abrió la ventana emergente si esta página habilita esta interacción de forma explícita</translation>
+<translation id="8812631362927615118">Habilitar la autenticación propia cuando se informen los indicadores de seguridad del usuario</translation>
 <translation id="8816370949847593408">En función del estado del lanzamiento de la desactivación, es posible que no se puedan ejecutar las Apps de Chrome.</translation>
 <translation id="8818768076343557335">Predecir las acciones de red en cualquier red que no sea móvil
           (Dejó de estar disponible en la versión 50 y se quitó en la versión 52. Después de esta versión, si se establece el valor 1, se trata como 0; es decir, se predicen las acciones de red en cualquier conexión de red).</translation>

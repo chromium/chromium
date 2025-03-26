@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/mojo/services/mojo_video_encode_accelerator_service.h"
+
 #include <stddef.h>
 
 #include "base/functional/bind.h"
@@ -14,9 +16,9 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
+#include "media/base/encoder_status.h"
 #include "media/mojo/clients/mojo_media_log_service.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
-#include "media/mojo/services/mojo_video_encode_accelerator_service.h"
 #include "media/video/fake_video_encode_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -36,7 +38,8 @@ namespace media {
 
 static const gfx::Size kInputVisibleSize(64, 48);
 
-std::unique_ptr<VideoEncodeAccelerator> CreateAndInitializeFakeVEA(
+EncoderStatus::Or<std::unique_ptr<VideoEncodeAccelerator>>
+CreateAndInitializeFakeVEA(
     bool will_initialization_succeed,
     const VideoEncodeAccelerator::Config& config,
     VideoEncodeAccelerator::Client* client,
@@ -51,11 +54,14 @@ std::unique_ptr<VideoEncodeAccelerator> CreateAndInitializeFakeVEA(
   auto vea = std::make_unique<FakeVideoEncodeAccelerator>(
       base::SingleThreadTaskRunner::GetCurrentDefault());
   vea->SetWillInitializationSucceed(will_initialization_succeed);
-  const bool result = vea->Initialize(config, client, media_log->Clone());
+  const EncoderStatus result =
+      vea->Initialize(config, client, media_log->Clone());
 
-  // Mimic the behaviour of GpuVideoEncodeAcceleratorFactory::CreateVEA().
-  return result ? base::WrapUnique<VideoEncodeAccelerator>(vea.release())
-                : nullptr;
+  if (result.is_ok()) {
+    return base::WrapUnique<VideoEncodeAccelerator>(vea.release());
+  } else {
+    return std::move(result);
+  }
 }
 
 class MockMojoVideoEncodeAcceleratorClient
@@ -142,7 +148,9 @@ class MojoVideoEncodeAcceleratorServiceTest : public ::testing::Test {
     mojo_vea_service()->Initialize(
         config, std::move(pending_client_remote),
         std::move(media_log_pending_remote),
-        base::BindOnce([](bool success) { ASSERT_TRUE(success); }));
+        base::BindOnce([](const media::EncoderStatus& status) {
+          ASSERT_TRUE(status.is_ok());
+        }));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -324,7 +332,9 @@ TEST_F(MojoVideoEncodeAcceleratorServiceTest,
   mojo_vea_service()->Initialize(
       config, std::move(invalid_mojo_vea_client),
       std::move(media_log_pending_remote),
-      base::BindOnce([](bool success) { ASSERT_FALSE(success); }));
+      base::BindOnce([](const media::EncoderStatus& status) {
+        ASSERT_FALSE(status.is_ok());
+      }));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -353,7 +363,9 @@ TEST_F(MojoVideoEncodeAcceleratorServiceTest, InitializeFailure) {
 
   mojo_vea_service()->Initialize(
       config, std::move(mojo_vea_client), std::move(media_log_pending_remote),
-      base::BindOnce([](bool success) { ASSERT_FALSE(success); }));
+      base::BindOnce([](const media::EncoderStatus& status) {
+        ASSERT_FALSE(status.is_ok());
+      }));
   base::RunLoop().RunUntilIdle();
 
   mojo_vea_receiver->Close();

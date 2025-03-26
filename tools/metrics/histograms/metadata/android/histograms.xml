@@ -5814,7 +5814,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.ComponentUpdater.CPSDirectorySize" units="KB"
     expires_after="2025-10-15">
-  <owner>avvall@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Size on disk taken by the ComponentsProviderService serving directory. This
@@ -5824,7 +5824,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.ComponentUpdater.CUSDirectorySize" units="KB"
     expires_after="2025-10-15">
-  <owner>avvall@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Size on disk taken by the AwComponentUpdateService directory. This is logged
@@ -5834,7 +5834,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.ComponentUpdater.GetFilesDuration" units="ms"
     expires_after="2025-09-14">
-  <owner>avvall@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Duration of ComponentsProviderService getFilesForComponent request. This
@@ -5845,7 +5845,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.ComponentUpdater.GetFilesResult"
     enum="WebViewComponentUpdaterGetFilesResult" expires_after="2025-09-14">
-  <owner>avvall@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Logs the result of ComponentsProviderService getFilesForComponent request.
@@ -5856,7 +5856,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.ComponentUpdater.SafeModeActionExecuted"
     enum="Boolean" expires_after="2025-10-15">
-  <owner>avvall@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Whether a SafeMode action was executed by Component Updater services. This
@@ -5867,7 +5867,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.ComponentUpdater.UnexpectedExit"
     enum="Boolean" expires_after="2025-09-14">
-  <owner>avvall@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Whether AwComponentUpdateService quit unexpectedly on the previous run. This
@@ -5878,7 +5878,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.ComponentUpdater.UpdateJobDuration" units="ms"
     expires_after="2025-09-14">
-  <owner>avvall@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Duration of AwComponentUpdateService update job. This job is responsible for
@@ -5888,7 +5888,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.ComponentUpdater.UpdateJobFilesChanged"
     units="count" expires_after="2025-10-15">
-  <owner>avvall@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     How many components were updated by AwComponentUpdateService update job.
@@ -6360,7 +6360,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.WebView.HistoricalApplicationExitInfo.Counts2"
     enum="AndroidProcessExitReason" expires_after="2025-10-01">
   <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Enumerates over the historical list of ApplicationExitInfo and their exit
@@ -6373,7 +6372,6 @@ chromium-metrics-reviews@google.com.
     name="Android.WebView.HistoricalApplicationExitInfo.Counts2.BACKGROUND"
     enum="AndroidProcessExitReason" expires_after="2025-10-01">
   <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Enumerates over the historical list of ApplicationExitInfo and their exit
@@ -6387,7 +6385,6 @@ chromium-metrics-reviews@google.com.
     name="Android.WebView.HistoricalApplicationExitInfo.Counts2.DESTROYED"
     enum="AndroidProcessExitReason" expires_after="2025-10-01">
   <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Enumerates over the historical list of ApplicationExitInfo and their exit
@@ -6401,7 +6398,6 @@ chromium-metrics-reviews@google.com.
     name="Android.WebView.HistoricalApplicationExitInfo.Counts2.FOREGROUND"
     enum="AndroidProcessExitReason" expires_after="2025-10-01">
   <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Enumerates over the historical list of ApplicationExitInfo and their exit
@@ -6414,7 +6410,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.WebView.HistoricalApplicationExitInfo.Counts2.STARTUP"
     enum="AndroidProcessExitReason" expires_after="2025-10-01">
   <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Enumerates over the historical list of ApplicationExitInfo and their exit
@@ -6427,7 +6422,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.WebView.HistoricalApplicationExitInfo.Counts2.UNKNOWN"
     enum="AndroidProcessExitReason" expires_after="2025-10-01">
   <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Enumerates over the historical list of ApplicationExitInfo and their exit
@@ -6440,7 +6434,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.WebView.HistoricalApplicationExitInfo.Delta2"
     units="ms" expires_after="2025-10-01">
   <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Tracks the deltas (in ms) between the current time of recording and the last
@@ -6820,7 +6813,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.NonEmbeddedMetrics.HistogramRecordAge"
     units="minutes" expires_after="2025-08-03">
-  <owner>avvall@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -6835,7 +6827,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.WebView.NonEmbeddedMetrics.NumHistograms"
     units="histograms" expires_after="2025-08-03">
   <owner>ntfschr@chromium.org</owner>
-  <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the number of histograms received from WebView's non-embedded
@@ -6847,7 +6838,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.WebView.NonEmbeddedMetrics.ParsingLogResult"
     enum="AndroidWebViewNonEmbeddedMetricsParsingLogResult"
     expires_after="2025-08-03">
-  <owner>avvall@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -6861,7 +6851,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.WebView.NonEmbeddedMetrics.TransmissionResult"
     enum="AndroidWebViewDevUiMetricsTransmission" expires_after="2025-08-03">
   <owner>ntfschr@chromium.org</owner>
-  <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records whether metrics transmission from the non-embedded histogram service
@@ -7196,7 +7185,7 @@ chromium-metrics-reviews@google.com.
     enum="AndroidWebViewSafeModeActionName" expires_after="never">
 <!-- expires-never: Needed for tracking SafeMode during an incident. -->
 
-  <owner>avvall@chromium.org</owner>
+  <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records which SafeModeAction was executed. This is recorded once during
@@ -7241,7 +7230,7 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: Needed for tracking SafeMode during an incident. -->
 
-  <owner>avvall@chromium.org</owner>
+  <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records whether or not the WebView nonembedded service receives a SafeMode
@@ -7337,7 +7326,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Android.WebView.ShouldInterceptRequest.GetCookieHeader.PostMojo.TimeToRun"
     units="ms" expires_after="2025-11-20">
-  <owner>avvall@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the total time spent processing work to provide cookie headers to
@@ -7381,7 +7370,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Android.WebView.ShouldInterceptRequest.SetCookieHeader.TimeToRun"
     units="ms" expires_after="2025-11-20">
-  <owner>avvall@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the total time spent processing work to update the cookie jar. This

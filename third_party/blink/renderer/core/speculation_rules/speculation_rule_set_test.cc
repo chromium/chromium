@@ -154,19 +154,35 @@ MATCHER_P(ReferrerPolicyIs,
   return arg->referrer_policy() == policy;
 }
 
-MATCHER_P(HasTags, tag, std::string(tag) + " is in the tag list") {
-  for (auto& tag_ : arg->tags) {
-    if (tag_ == tag) {
-      return true;
+MATCHER_P(HasRuleLevelTag, tag, "has rule level tag " + std::string(tag)) {
+  return arg->rule_tag() == tag;
+}
+
+MATCHER_P(HasTags, tags, "") {
+  if (arg->tags.size() != tags.size()) {
+    return false;
+  }
+
+  for (auto& tag : tags) {
+    bool found = false;
+    for (auto& tag_ : arg->tags) {
+      if (tag_ == tag) {
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      return false;
     }
   }
-  return false;
+  return true;
 }
 
 MATCHER_P(HasRulesetLevelTag,
           tag,
           "has ruleset level tag " + std::string(tag)) {
-  return arg->ruleset_tag().value() == tag;
+  return arg->ruleset_tag() == tag;
 }
 
 class SpeculationRuleSetTest : public ::testing::Test {
@@ -4458,6 +4474,17 @@ TEST_F(SpeculationRuleSetTest, ParseValidTag) {
       KURL("https://example.com/"), execution_context());
   EXPECT_THAT(rule_set2->prefetch_rules(),
               ElementsAre(HasRulesetLevelTag("null")));
+
+  // Verify rule level tag and an empty string as tag.
+  auto* rule_set3 = CreateRuleSet(
+      R"({
+        "prefetch": [{
+          "tag": "",
+          "where": {"href_matches": "/foo"}
+        }]
+      })",
+      KURL("https://example.com/"), execution_context());
+  EXPECT_THAT(rule_set3->prefetch_rules(), ElementsAre(HasRuleLevelTag("")));
 }
 
 TEST_F(SpeculationRuleSetTest, InvalidTag) {
@@ -4517,13 +4544,91 @@ TEST_F(SpeculationRuleSetTest, CandidatesSharesTheSameTag) {
       UnorderedElementsAre(
           AllOf(HasURL(KURL("https://example.com/foo")),
                 HasEagerness(blink::mojom::SpeculationEagerness::kConservative),
-                HasTags("example/foo")),
+                HasTags(Vector<AtomicString>({AtomicString("example/foo")}))),
           AllOf(HasURL(KURL("https://example.com/foo")),
                 HasEagerness(blink::mojom::SpeculationEagerness::kModerate),
-                HasTags("example/foo")),
+                HasTags(Vector<AtomicString>({AtomicString("example/foo")}))),
           AllOf(HasURL(KURL("https://example.com/baz")),
                 HasEagerness(blink::mojom::SpeculationEagerness::kModerate),
-                HasTags("example/foo"))));
+                HasTags(Vector<AtomicString>({AtomicString("example/foo")})))));
+}
+
+TEST_F(SpeculationRuleSetTest, RuleLevelTags) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  AddAnchor(*document.body(), "https://example.com/foo",
+            {{html_names::kClassAttr, AtomicString("bar")}});
+  AddAnchor(*document.body(), "https://example.com/baz",
+            {{html_names::kClassAttr, AtomicString("bar")}});
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, String(R"({
+        "prefetch": [{
+          "tag": "example/foo",
+          "where": {"href_matches": "https://example.com/foo"}
+        }, {
+          "where": {"selector_matches": ".bar"},
+          "eagerness": "moderate"
+        }]
+      })"));
+
+  const auto& candidates = speculation_host.candidates();
+
+  EXPECT_THAT(
+      candidates,
+      UnorderedElementsAre(
+          AllOf(HasURL(KURL("https://example.com/foo")),
+                HasEagerness(blink::mojom::SpeculationEagerness::kConservative),
+                HasTags(Vector<AtomicString>({AtomicString("example/foo")}))),
+          AllOf(HasURL(KURL("https://example.com/foo")),
+                HasEagerness(blink::mojom::SpeculationEagerness::kModerate),
+                HasTags(Vector<AtomicString>({g_null_atom}))),
+          AllOf(HasURL(KURL("https://example.com/baz")),
+                HasEagerness(blink::mojom::SpeculationEagerness::kModerate),
+                HasTags(Vector<AtomicString>({g_null_atom})))));
+}
+
+TEST_F(SpeculationRuleSetTest, BothLevelTags) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  AddAnchor(*document.body(), "https://example.com/foo",
+            {{html_names::kClassAttr, AtomicString("bar")}});
+  AddAnchor(*document.body(), "https://example.com/baz",
+            {{html_names::kClassAttr, AtomicString("bar")}});
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, String(R"({
+        "tag": "example/foo",
+        "prefetch": [{
+          "tag": "",
+          "where": {"href_matches": "https://example.com/foo"}
+        }, {
+          "where": {"selector_matches": ".bar"},
+          "tag": "example/bar1",
+          "eagerness": "moderate"
+        }]
+      })"));
+
+  const auto& candidates = speculation_host.candidates();
+
+  EXPECT_THAT(
+      candidates,
+      UnorderedElementsAre(
+          AllOf(HasURL(KURL("https://example.com/foo")),
+                HasEagerness(blink::mojom::SpeculationEagerness::kConservative),
+                HasTags(Vector<AtomicString>(
+                    {AtomicString("example/foo"), g_empty_atom}))),
+          AllOf(HasURL(KURL("https://example.com/foo")),
+                HasEagerness(blink::mojom::SpeculationEagerness::kModerate),
+                HasTags(Vector<AtomicString>({AtomicString("example/foo"),
+                                              AtomicString("example/bar1")}))),
+          AllOf(
+              HasURL(KURL("https://example.com/baz")),
+              HasEagerness(blink::mojom::SpeculationEagerness::kModerate),
+              HasTags(Vector<AtomicString>({AtomicString("example/foo"),
+                                            AtomicString("example/bar1")})))));
 }
 
 // Regression test for crbug.com/386547460.

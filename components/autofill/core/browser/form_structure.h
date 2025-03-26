@@ -241,10 +241,6 @@ class FormStructure {
   const AutofillField* GetFieldById(FieldGlobalId field_id) const;
   AutofillField* GetFieldById(FieldGlobalId field_id);
 
-  // Returns the number of fields that are part of the form signature and that
-  // are included in queries to the Autofill server.
-  size_t active_field_count() const;
-
   // Used for iterating over the fields.
   std::vector<std::unique_ptr<AutofillField>>::const_iterator begin() const {
     return fields_.begin();
@@ -457,10 +453,6 @@ class FormStructure {
   // A vector of all the input fields in the form.
   // See FormFieldData::fields.
   std::vector<std::unique_ptr<AutofillField>> fields_;
-
-  // The number of fields that are part of the form signature and that are
-  // included in queries to the Autofill server.
-  size_t active_field_count_ = 0;
 
   // Indicates whether the client may run the AutofillAI model for this form.
   bool may_run_autofill_ai_model_ = false;

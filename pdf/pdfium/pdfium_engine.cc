@@ -91,6 +91,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 #include "v8/include/v8.h"
 
 #if defined(PDF_ENABLE_XFA)
@@ -1288,7 +1289,7 @@ void PDFiumEngine::PrintEnd() {
   FORM_DoDocumentAAction(form(), FPDFDOC_AACTION_DP);
 }
 
-PDFiumPage::Area PDFiumEngine::GetCharIndex(const gfx::Point& point,
+PDFiumPage::Area PDFiumEngine::GetCharIndex(const gfx::PointF& point,
                                             int* page_index,
                                             int* char_index,
                                             int* form_type,
@@ -1389,7 +1390,7 @@ bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
   int char_index = -1;
   int form_type = FPDF_FORMFIELD_UNKNOWN;
   PDFiumPage::LinkTarget target;
-  const gfx::Point point = gfx::ToRoundedPoint(event.PositionInWidget());
+  const gfx::PointF& point = event.PositionInWidget();
   PDFiumPage::Area area =
       GetCharIndex(point, &page_index, &char_index, &form_type, &target);
   DCHECK_GE(form_type, FPDF_FORMFIELD_UNKNOWN);
@@ -1448,8 +1449,7 @@ bool PDFiumEngine::OnMiddleMouseDown(const blink::WebMouseEvent& event) {
 
   SetMouseLeftButtonDown(false);
   mouse_middle_button_down_ = true;
-  mouse_middle_button_last_position_ =
-      gfx::ToRoundedPoint(event.PositionInWidget());
+  mouse_middle_button_last_position_ = event.PositionInWidget();
 
   ClearTextSelection();
 
@@ -1479,7 +1479,7 @@ bool PDFiumEngine::OnMiddleMouseDown(const blink::WebMouseEvent& event) {
 bool PDFiumEngine::OnRightMouseDown(const blink::WebMouseEvent& event) {
   DCHECK_EQ(blink::WebPointerProperties::Button::kRight, event.button);
 
-  const gfx::Point point = gfx::ToRoundedPoint(event.PositionInWidget());
+  const gfx::PointF& point = event.PositionInWidget();
   int page_index = -1;
   int char_index = -1;
   int form_type = FPDF_FORMFIELD_UNKNOWN;
@@ -1530,9 +1530,11 @@ bool PDFiumEngine::OnRightMouseDown(const blink::WebMouseEvent& event) {
 
   std::vector<gfx::Rect> selection_rect_vector =
       GetAllScreenRectsUnion(selection_, GetVisibleRect().origin());
+  const gfx::Point rounded_point = gfx::ToRoundedPoint(point);
   for (const auto& rect : selection_rect_vector) {
-    if (rect.Contains(point))
+    if (rect.Contains(rounded_point)) {
       return false;
+    }
   }
 
   ClearTextSelection();
@@ -1587,7 +1589,7 @@ bool PDFiumEngine::OnMouseUp(const blink::WebMouseEvent& event) {
   int char_index = -1;
   int form_type = FPDF_FORMFIELD_UNKNOWN;
   PDFiumPage::LinkTarget target;
-  gfx::Point point = gfx::ToRoundedPoint(event.PositionInWidget());
+  const gfx::PointF& point = event.PositionInWidget();
   PDFiumPage::Area area =
       GetCharIndex(point, &page_index, &char_index, &form_type, &target);
 
@@ -1639,7 +1641,7 @@ bool PDFiumEngine::OnMouseMove(const blink::WebMouseEvent& event) {
   int char_index = -1;
   int form_type = FPDF_FORMFIELD_UNKNOWN;
   PDFiumPage::LinkTarget target;
-  const gfx::Point point = gfx::ToRoundedPoint(event.PositionInWidget());
+  const gfx::PointF& point = event.PositionInWidget();
   PDFiumPage::Area area =
       GetCharIndex(point, &page_index, &char_index, &form_type, &target);
 
@@ -1674,7 +1676,7 @@ bool PDFiumEngine::OnMouseMove(const blink::WebMouseEvent& event) {
       // `event.movement_x` and `event.movement_y` do not work here, as small
       // mouse movements are considered zero.
       gfx::Vector2d page_position_delta =
-          mouse_middle_button_last_position_ - point;
+          gfx::ToRoundedVector2d(mouse_middle_button_last_position_ - point);
       if (page_position_delta.x() != 0 || page_position_delta.y() != 0) {
         client_->ScrollBy(page_position_delta);
         mouse_middle_button_last_position_ = point;
@@ -1745,8 +1747,7 @@ void PDFiumEngine::OnMouseEnter(const blink::WebMouseEvent& event) {
       blink::WebInputEvent::Modifiers::kMiddleButtonDown) {
     if (!mouse_middle_button_down_) {
       mouse_middle_button_down_ = true;
-      mouse_middle_button_last_position_ =
-          gfx::ToRoundedPoint(event.PositionInWidget());
+      mouse_middle_button_last_position_ = event.PositionInWidget();
     }
   } else {
     if (mouse_middle_button_down_) {
@@ -2425,7 +2426,7 @@ void PDFiumEngine::HandleAccessibilityAction(
   NOTREACHED();
 }
 
-std::string PDFiumEngine::GetLinkAtPosition(const gfx::Point& point) {
+std::string PDFiumEngine::GetLinkAtPosition(const gfx::PointF& point) {
   std::string url;
   int temp;
   int page_index = -1;
@@ -3738,7 +3739,7 @@ PDFiumEngine::RegionData& PDFiumEngine::RegionData::operator=(
 PDFiumEngine::RegionData::~RegionData() = default;
 
 void PDFiumEngine::DeviceToPage(int page_index,
-                                const gfx::Point& device_point,
+                                const gfx::PointF& device_point,
                                 double* page_x,
                                 double* page_y) {
   *page_x = 0;
@@ -3757,7 +3758,7 @@ void PDFiumEngine::DeviceToPage(int page_index,
   DCHECK(ret);
 }
 
-gfx::Point PDFiumEngine::DeviceToScreen(const gfx::Point& device_point) const {
+gfx::Point PDFiumEngine::DeviceToScreen(const gfx::PointF& device_point) const {
   return {static_cast<int>((device_point.x() + position_.x()) / current_zoom_),
           static_cast<int>((device_point.y() + position_.y()) / current_zoom_)};
 }
@@ -4184,7 +4185,8 @@ void PDFiumEngine::MoveRangeSelectionExtent(const gfx::Point& extent) {
   int char_index = -1;
   int form_type = FPDF_FORMFIELD_UNKNOWN;
   PDFiumPage::LinkTarget target;
-  GetCharIndex(extent, &page_index, &char_index, &form_type, &target);
+  GetCharIndex(gfx::PointF(extent), &page_index, &char_index, &form_type,
+               &target);
   if (page_index < 0 || char_index < 0)
     return;
 
@@ -4202,8 +4204,8 @@ void PDFiumEngine::MoveRangeSelectionExtent(const gfx::Point& extent) {
 
   // This should always succeeed because the range selection base should have
   // already been selected.
-  GetCharIndex(range_selection_base_, &page_index, &char_index, &form_type,
-               &target);
+  GetCharIndex(gfx::PointF(range_selection_base_), &page_index, &char_index,
+               &form_type, &target);
   ExtendSelection(page_index, char_index);
 }
 

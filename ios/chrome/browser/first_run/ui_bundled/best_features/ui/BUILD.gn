@@ -12,21 +12,28 @@ source_set("ui") {
     "best_features_screen_consumer.h",
     "best_features_view_controller.h",
     "best_features_view_controller.mm",
+    "feature_highlight_screenshot_view_controller.h",
+    "feature_highlight_screenshot_view_controller.mm",
   ]
   deps = [
     "//base",
     "//build:branding_buildflags",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/first_run/ui_bundled:features",
+    "//ios/chrome/browser/first_run/ui_bundled/best_features/resources:animation_files",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
     "//ui/base",
+    "//ui/strings",
   ]
+  frameworks = [ "UIKit.framework" ]
 }

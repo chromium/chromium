@@ -213,6 +213,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   private usernamesBySignonRealm_: Map<string, Set<string>>;
   private websiteErrorMessage_: string|null;
   private usernameErrorMessage_: string|null;
+  private canAddPassword_: boolean;
   private isPasswordInvalid_: boolean;
   private urlCollection_: chrome.passwordsPrivate.UrlCollection|null;
   private readonly storeOptionAccountValue_: string;

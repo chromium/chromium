@@ -45,33 +45,15 @@ message AutofillAiTypeRequest {
   // This is optional and may be used by the model to improve predictions.
   FormMedia media = 3;
 
-  // The page content extracted from the page, including form and field names,
-  // types, surrounding text, and other relevant information.
-  // TODO(crbug.com/405474316): Remove this once the MES config no longer references it.
-  PageContent page_content = 4 [deprecated = true];
-
   // The annotated page content of the page that the form is on.
   AnnotatedPageContent annotated_page_content = 5;
+
+  reserved 4;
 }
 
 message FormMedia {
   // Screenshots in base64-encoded PNG format
   repeated bytes screenshots = 1;
-}
-
-// Next ID: 4
-// TODO(crbug.com/405474316): Remove this once the MES config no longer references it.
-message PageContent {
-  // The form data extracted from the page, including form and field names,
-  // types, and other relevant information.
-  repeated FormInfo forms = 1;
-
-  // Information about unowned form control elements found on the page.
-  repeated FormControlData unowned_form_controls = 2;
-
-  // The page content represented as a tree of semantic chunks and (in the
-  // future) annotated with additional information about the page.
-  AnnotatedPageContent annotated_page_content = 3;
 }
 
 message AutofillAiTypeResponse {

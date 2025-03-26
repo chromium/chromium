@@ -68,6 +68,10 @@ class DataSharingPageHandler : public data_sharing::mojom::PageHandler {
   void LeaveGroup(std::string group_id,
                   data_sharing::mojom::Page::LeaveGroupCallback callback);
 
+  void ReadGroupWithToken(
+      data_sharing::mojom::ReadGroupWithTokenParamPtr param,
+      data_sharing::mojom::Page::ReadGroupWithTokenCallback callback);
+
  private:
   Profile* GetProfile();
 

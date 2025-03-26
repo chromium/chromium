@@ -334,13 +334,16 @@ class StateObserverElementT : public StateObserverElement {
   // A lookup table is provided per value of `T`.
   using LookupTable = std::map<std::pair<ElementIdentifier, ElementContext>,
                                StateObserverElementT<T>*>;
+  using TestContext = InteractiveTestPrivate::AdditionalContext;
 
   // Specify the `id` and `context` of the element to be created, as well as the
   // associated `observer` which will be linked to this element.
   StateObserverElementT(ElementIdentifier id,
                         ElementContext context,
-                        std::unique_ptr<StateObserver<T>> observer)
+                        std::unique_ptr<StateObserver<T>> observer,
+                        TestContext test_context)
       : StateObserverElement(id, context),
+        test_context_(test_context),
         current_value_(observer->GetStateObserverInitialState()),
         observer_(std::move(observer)) {
     auto& table = GetLookupTable();
@@ -393,9 +396,15 @@ class StateObserverElementT : public StateObserverElement {
   }
 
   void UpdateVisibility() {
-    if (target_value_ && target_value_->Matches(current_value_)) {
+    testing::StringMatchResultListener listener;
+    if (target_value_ &&
+        target_value_->MatchAndExplain(current_value_, &listener)) {
+      test_context_.Clear();
       Show();
     } else {
+      std::ostringstream oss;
+      oss << "Waiting for state " << identifier() << " " << listener.str();
+      test_context_.Set(oss.str());
       Hide();
     }
   }
@@ -411,6 +420,9 @@ class StateObserverElementT : public StateObserverElement {
   }
 
  private:
+  // Since the context can be updated on observer shutdown and needs access to
+  // the current value, it needs to be destructed last.
+  TestContext test_context_;
   T current_value_;
   std::optional<testing::Matcher<T>> target_value_;
   std::unique_ptr<StateObserver<T>> observer_;
@@ -454,8 +466,8 @@ bool InteractiveTestPrivate::AddStateObserver(
     }
   }
   state_observer_elements_.emplace_back(
-      std::make_unique<StateObserverElementT<V>>(id, context,
-                                                 std::move(state_observer)));
+      std::make_unique<StateObserverElementT<V>>(
+          id, context, std::move(state_observer), CreateAdditionalContext()));
   return true;
 }
 

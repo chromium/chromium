@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/logging.h"
+#include "crypto/hash.h"
 #include "crypto/scoped_capi_types.h"
 #include "crypto/sha2.h"
 #include "net/cert/x509_certificate.h"
@@ -102,15 +103,11 @@ SHA256HashValue CalculateFingerprint256(PCCERT_CONTEXT cert) {
   DCHECK(nullptr != cert->pbCertEncoded);
   DCHECK_NE(0u, cert->cbCertEncoded);
 
-  SHA256HashValue sha256;
-
-  // Use crypto::SHA256HashString for two reasons:
+  // Use crypto::SHA256Hash for two reasons:
   // * < Windows Vista does not have universal SHA-256 support.
   // * More efficient on Windows > Vista (less overhead since non-default CSP
   // is not needed).
-  crypto::SHA256HashString(base::as_string_view(CertContextAsSpan(cert)),
-                           sha256.data, sizeof(sha256.data));
-  return sha256;
+  return crypto::hash::Sha256(CertContextAsSpan(cert));
 }
 
 bool IsSelfSigned(PCCERT_CONTEXT cert_handle) {

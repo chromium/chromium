@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/shell.h"
+#include "ash/system/session/logout_confirmation_controller.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/wm/desks/desk.h"
@@ -554,6 +555,27 @@ class FloatingWorkspaceServiceV2Test : public FloatingWorkspaceServiceTest {
   void TearDown() override {
     FloatingWorkspaceServiceTest::TearDown();
     scoped_feature_list().Reset();
+  }
+
+  FloatingWorkspaceService* InitAndPrepareTemplateForCapture(
+      const std::string& template_name,
+      base::Time creation_time) {
+    PopulateAppsCache();
+    CreateFloatingWorkspaceServiceForTesting(profile());
+    auto* floating_workspace_service =
+        FloatingWorkspaceServiceFactory::GetForProfile(profile());
+    floating_workspace_service->Init(test_sync_service(),
+                                     fake_desk_sync_service(),
+                                     fake_device_info_sync_service());
+    std::unique_ptr<DeskTemplate> floating_workspace_template =
+        MakeTestFloatingWorkspaceDeskTemplate(template_name, creation_time);
+    test_sync_service()->SetDownloadStatusFor(
+        {syncer::DataType::WORKSPACE_DESK},
+        syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+    test_sync_service()->FireStateChanged();
+    mock_desks_client()->SetCapturedDeskTemplate(
+        std::move(floating_workspace_template));
+    return floating_workspace_service;
   }
 };
 
@@ -1760,25 +1782,29 @@ TEST_F(FloatingWorkspaceServiceV2Test, CaptureImmediatelyAfterRestore) {
 
 TEST_F(FloatingWorkspaceServiceV2Test,
        CaptureFloatingWorkspaceTemplateOnSystemTrayVisible) {
-  PopulateAppsCache();
-  CreateFloatingWorkspaceServiceForTesting(profile());
-  auto* floating_workspace_service =
-      FloatingWorkspaceServiceFactory::GetForProfile(profile());
-  floating_workspace_service->Init(test_sync_service(),
-                                   fake_desk_sync_service(),
-                                   fake_device_info_sync_service());
-
   const std::string template_name = "floating_workspace_captured_template";
   const base::Time creation_time = base::Time::Now();
-  std::unique_ptr<DeskTemplate> floating_workspace_template =
-      MakeTestFloatingWorkspaceDeskTemplate(template_name, creation_time);
-  test_sync_service()->SetDownloadStatusFor(
-      {syncer::DataType::WORKSPACE_DESK},
-      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
-  test_sync_service()->FireStateChanged();
-  mock_desks_client()->SetCapturedDeskTemplate(
-      std::move(floating_workspace_template));
+  auto* floating_workspace_service =
+      InitAndPrepareTemplateForCapture(template_name, creation_time);
   ash::Shell::Get()->system_tray_notifier()->NotifySystemTrayBubbleShown();
+  ASSERT_TRUE(floating_workspace_service->GetLatestFloatingWorkspaceTemplate());
+  EXPECT_EQ(floating_workspace_service->GetLatestFloatingWorkspaceTemplate()
+                ->created_time(),
+            creation_time);
+}
+
+TEST_F(FloatingWorkspaceServiceV2Test,
+       CaptureFloatingWorkspaceTemplateOnSignOutConfirmation) {
+  const std::string template_name = "floating_workspace_captured_template";
+  const base::Time creation_time = base::Time::Now();
+  auto* floating_workspace_service =
+      InitAndPrepareTemplateForCapture(template_name, creation_time);
+  // Confirmation is only required when we set a non-zero `logout_time` to
+  // `LogoutConfirmationController::ConfirmLogout`.
+  base::TimeDelta non_zero_logout_confirmation_duration = base::Seconds(20);
+  ash::Shell::Get()->logout_confirmation_controller()->ConfirmLogout(
+      base::TimeTicks::Now() + non_zero_logout_confirmation_duration,
+      ash::LogoutConfirmationController::Source::kShelfExitButton);
   ASSERT_TRUE(floating_workspace_service->GetLatestFloatingWorkspaceTemplate());
   EXPECT_EQ(floating_workspace_service->GetLatestFloatingWorkspaceTemplate()
                 ->created_time(),

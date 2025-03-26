@@ -2060,51 +2060,6 @@ TEST(SpanTest, OutOfBoundsDeath) {
       std::copy_n(span_len2.begin(), 3, span_len3.begin()), "");
 }
 
-TEST(SpanTest, IteratorIsRangeMoveSafe) {
-  static constexpr int kArray[] = {1, 6, 1, 8, 0};
-  const size_t kNumElements = 5;
-  constexpr span<const int> span(kArray);
-
-  static constexpr int kOverlappingStartIndexes[] = {-4, 0, 3, 4};
-  static constexpr int kNonOverlappingStartIndexes[] = {-7, -5, 5, 7};
-
-  // Overlapping ranges.
-  for (const int dest_start_index : kOverlappingStartIndexes) {
-    EXPECT_FALSE(CheckedContiguousIterator<const int>::IsRangeMoveSafe(
-        span.begin(), span.end(),
-        // SAFETY: TODO(tsepez): iterator constructor safety is dubious
-        // given that we are adding indices like -4 to `data()`.
-        UNSAFE_BUFFERS(CheckedContiguousIterator<const int>(
-            span.data() + dest_start_index,
-            span.data() + dest_start_index + kNumElements))));
-  }
-
-  // Non-overlapping ranges.
-  for (const int dest_start_index : kNonOverlappingStartIndexes) {
-    EXPECT_TRUE(CheckedContiguousIterator<const int>::IsRangeMoveSafe(
-        span.begin(), span.end(),
-        // SAFETY: TODO(tsepez): iterator constructor safety is dubious
-        // given that we are adding indices like -7 to `data()`.
-        UNSAFE_BUFFERS(CheckedContiguousIterator<const int>(
-            span.data() + dest_start_index,
-            span.data() + dest_start_index + kNumElements))));
-  }
-
-  // IsRangeMoveSafe is true if the length to be moved is 0.
-  EXPECT_TRUE(CheckedContiguousIterator<const int>::IsRangeMoveSafe(
-      span.begin(), span.begin(),
-      // SAFETY: Empty range at the start of a span is always valid.
-      UNSAFE_BUFFERS(
-          CheckedContiguousIterator<const int>(span.data(), span.data()))));
-
-  // IsRangeMoveSafe is false if end < begin.
-  EXPECT_FALSE(CheckedContiguousIterator<const int>::IsRangeMoveSafe(
-      span.end(), span.begin(),
-      // SAFETY: Empty range at the start of a span is always valid.
-      UNSAFE_BUFFERS(
-          CheckedContiguousIterator<const int>(span.data(), span.data()))));
-}
-
 TEST(SpanTest, Sort) {
   int array[] = {5, 4, 3, 2, 1};
 

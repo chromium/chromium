@@ -323,58 +323,10 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
     }
 
     // If windowId is different from the current window, move between windows.
-    if (target_window == source_window) {
-      return false;
+    if (target_browser != source_browser) {
+      return MoveTabGroupBetweenBrowsers(source_browser, target_browser, *group,
+                                         *visual_data, tabs, new_index, error);
     }
-
-    TabStripModel* target_tab_strip =
-        ExtensionTabUtil::GetEditableTabStripModel(target_browser);
-    if (!target_tab_strip) {
-      *error = ExtensionTabUtil::kTabStripNotEditableError;
-      return false;
-    }
-
-    if (!target_tab_strip->SupportsTabGroups()) {
-      *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
-      return false;
-    }
-
-    if (new_index > target_tab_strip->count() || new_index < 0) {
-      new_index = target_tab_strip->count();
-    }
-
-    if (!IndexSupportsGroupMove(target_tab_strip, new_index, error)) {
-      return false;
-    }
-
-    // When moving a group between windows, Saved Tab Groups must pause
-    // listening since the group is in an invalid state. Since Extensions
-    // implements it's own bulk move action, pausing must be performed here.
-    tab_groups::TabGroupSyncService* tab_group_sync_service =
-        tab_groups::SavedTabGroupUtils::GetServiceForProfile(
-            target_window->profile());
-    std::unique_ptr<tab_groups::ScopedLocalObservationPauser>
-        tab_groups_sync_movement_obseration;
-    if (tab_group_sync_service) {
-      tab_groups_sync_movement_obseration =
-          tab_group_sync_service->CreateScopedLocalObserverPauser();
-    }
-
-    target_tab_strip->AddTabGroup(*group, *visual_data);
-
-    for (size_t i = 0; i < tabs.length(); ++i) {
-      // Detach tabs from the same index each time, since each detached tab is
-      // removed from the model, and groups are always contiguous.
-      std::unique_ptr<TabModel> detached_tab =
-          source_tab_strip->DetachTabAtForInsertion(tabs.start());
-
-      // Attach tabs in consecutive indices, to insert them in the same order.
-      target_tab_strip->InsertDetachedTabAt(new_index + i,
-                                            std::move(detached_tab),
-                                            AddTabTypes::ADD_NONE, *group);
-    }
-
-    return true;
   }
 
   // Perform a move within the same window.
@@ -405,6 +357,65 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
   }
 
   source_tab_strip->MoveGroupTo(*group, new_index);
+
+  return true;
+}
+
+bool TabGroupsMoveFunction::MoveTabGroupBetweenBrowsers(
+    Browser* source_browser,
+    Browser* target_browser,
+    const tab_groups::TabGroupId& group,
+    const tab_groups::TabGroupVisualData& visual_data,
+    const gfx::Range& tabs,
+    int new_index,
+    std::string* error) {
+  TabStripModel* target_tab_strip =
+      ExtensionTabUtil::GetEditableTabStripModel(target_browser);
+  if (!target_tab_strip) {
+    *error = ExtensionTabUtil::kTabStripNotEditableError;
+    return false;
+  }
+
+  if (!target_tab_strip->SupportsTabGroups()) {
+    *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
+    return false;
+  }
+
+  if (new_index > target_tab_strip->count() || new_index < 0) {
+    new_index = target_tab_strip->count();
+  }
+
+  if (!IndexSupportsGroupMove(target_tab_strip, new_index, error)) {
+    return false;
+  }
+
+  // When moving a group between windows, Saved Tab Groups must pause
+  // listening since the group is in an invalid state. Since Extensions
+  // implements it's own bulk move action, pausing must be performed here.
+  tab_groups::TabGroupSyncService* tab_group_sync_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+          target_browser->profile());
+  std::unique_ptr<tab_groups::ScopedLocalObservationPauser>
+      tab_groups_sync_movement_obseration;
+  if (tab_group_sync_service) {
+    tab_groups_sync_movement_obseration =
+        tab_group_sync_service->CreateScopedLocalObserverPauser();
+  }
+
+  target_tab_strip->AddTabGroup(group, visual_data);
+
+  TabStripModel* source_tab_strip = source_browser->tab_strip_model();
+
+  for (size_t i = 0; i < tabs.length(); ++i) {
+    // Detach tabs from the same index each time, since each detached tab is
+    // removed from the model, and groups are always contiguous.
+    std::unique_ptr<TabModel> detached_tab =
+        source_tab_strip->DetachTabAtForInsertion(tabs.start());
+
+    // Attach tabs in consecutive indices, to insert them in the same order.
+    target_tab_strip->InsertDetachedTabAt(
+        new_index + i, std::move(detached_tab), AddTabTypes::ADD_NONE, group);
+  }
 
   return true;
 }

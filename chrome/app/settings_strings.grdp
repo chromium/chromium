@@ -660,6 +660,10 @@
     <ph name="DROPDOWN_NAME">$1<ex>Expiration date</ex></ph>: year
   </message>
   <!-- TODO(crbug.com/395807244): Make string translateable. -->
+  <message name="IDS_SETTINGS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_DATE_VALIDATION_ERROR"  desc="An error message if the user clicks Save with an invalid date." translateable = "false">
+    Check the date
+  </message>
+  <!-- TODO(crbug.com/395807244): Make string translateable. -->
   <message name="IDS_SETTINGS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_VALIDATION_ERROR"  desc="An error message if the user clicks Save without having filled at least one value in the form." translateable = "false">
     Fill at least one field before saving.
   </message>

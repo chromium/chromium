@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/bitstream_buffer.h"
+#include "media/base/encoder_status.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
 #include "media/fuchsia/common/stream_processor_helper.h"
@@ -38,9 +39,9 @@ class MEDIA_EXPORT FuchsiaVideoEncodeAccelerator final
 
   // VideoEncodeAccelerator implementation.
   SupportedProfiles GetSupportedProfiles() override;
-  bool Initialize(const Config& config,
-                  VideoEncodeAccelerator::Client* client,
-                  std::unique_ptr<MediaLog> media_log) override;
+  EncoderStatus Initialize(const Config& config,
+                           VideoEncodeAccelerator::Client* client,
+                           std::unique_ptr<MediaLog> media_log) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(

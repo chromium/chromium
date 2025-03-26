@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -35,6 +36,7 @@ ContextualCueingServiceFactory::ContextualCueingServiceFactory()
               .Build()) {
   DependsOn(page_content_annotations::PageContentExtractionServiceFactory::
                 GetInstance());
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
 ContextualCueingServiceFactory::~ContextualCueingServiceFactory() = default;
@@ -47,7 +49,9 @@ ContextualCueingServiceFactory::BuildServiceInstanceForBrowserContext(
   }
   return std::make_unique<ContextualCueingService>(
       page_content_annotations::PageContentExtractionServiceFactory::
-          GetForProfile(Profile::FromBrowserContext(context)));
+          GetForProfile(Profile::FromBrowserContext(context)),
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context)));
 }
 
 bool ContextualCueingServiceFactory::ServiceIsCreatedWithBrowserContext()

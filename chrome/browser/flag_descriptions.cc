@@ -26,12 +26,6 @@ const char kAdjustCanCreateCanvas2DResourceProviderDescription[] =
     "Changes CanvasRenderingContxt2D::CanCreateCanvas2DResourceProvider() "
     "to check for provider recreation rather than bridge recreation";
 
-const char kAdjustGetOrCreate2DCanvasProviderName[] =
-    "Adjust GetOrCreateCanvasResourceProvider() for Canvas2D";
-const char kAdjustGetOrCreate2DCanvasProviderDescription[] =
-    "Moves HTMLCanvasElement::GetOrCreateCanvasResourceProvider() "
-    "away from calling GetOrCreateCanvas2DLayerBridge() for Canvas2D";
-
 const char kAiSettingsPageRefreshName[] = "AI settings page refresh";
 const char kAiSettingsPageRefreshDescription[] =
     "Enables a revamp of the existing AI settings page.";
@@ -2016,6 +2010,11 @@ const char kFedCmUseOtherAccountDescription[] =
     "Enables the \"Use a different account\" button on the FedCM account "
     "chooser to log in to another IdP account, for IdPs who have opted in.";
 
+const char kFedCmSegmentationPlatformName[] = "FedCmSegmentationPlatform";
+const char kFedCmSegmentationPlatformDescription[] =
+    "Enables the segmentation platform service to provide UI volume "
+    "recommendations to FedCM.";
+
 const char kWebIdentityDigitalCredentialsName[] = "DigitalCredentials";
 const char kWebIdentityDigitalCredentialsDescription[] =
     "Enables the three-party verifier/holder/issuer identity model.";
@@ -3708,10 +3707,6 @@ const char kSupportToolScreenshotDescription[] =
     "Enables the Support Tool to capture and include a screenshot in the "
     "exported packet.";
 
-const char kSuppressToolbarCapturesName[] = "Suppress Toolbar Captures";
-const char kSuppressToolbarCapturesDescription[] =
-    "Suppress Toolbar Captures except when certain properties change.";
-
 const char kSyncAutofillWalletCredentialDataName[] =
     "Sync Autofill Wallet Credential Data";
 const char kSyncAutofillWalletCredentialDataDescription[] =
@@ -3846,6 +3841,12 @@ const char kTranslateForceTriggerOnEnglishDescription[] =
     "with the selected language model active.";
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+const char kEnableHistorySyncOptinName[] = "History Sync Opt-in";
+const char kEnableHistorySyncOptinDescription[] =
+    "Enables the History Sync Opt-in screen on Desktop platforms. The screen "
+    "is shown after the user has signed in (in the profile picker or in the "
+    "dialog) instead of the Sync Confirmation screen.";
+
 const char kTranslationAPIName[] = "Experimental translation API";
 const char kTranslationAPIDescription[] =
     "Enables the on-device language translation API. "
@@ -4720,6 +4721,12 @@ const char kNavBarColorMatchesTabBackgroundName[] =
 const char kNavBarColorMatchesTabBackgroundDescription[] =
     "Matches the OS navigation bar color to the background color of the "
     "active tab.";
+
+const char kNavigationCaptureRefactorAndroidName[] =
+    "Navigation Capture refactoring for Chrome on Android";
+const char kNavigationCaptureRefactorAndroidDescription[] =
+    "Enables opening links from Chrome in an installed PWA."
+    "Currently under refactoring.";
 
 const char kNotificationOneTapUnsubscribeName[] =
     "Notification one-tap unsubscribe";
@@ -6616,10 +6623,21 @@ const char kAccessibilityManifestV3BrailleImeName[] =
 const char kAccessibilityManifestV3BrailleImeDescription[] =
     "Experimental migration of Braille IME from extension manifest v2 to v3.";
 
+const char kAccessibilityManifestV3ChromeVoxName[] =
+    "Changes accessibility extension ChromeVox manifest v2 to v3.";
+const char kAccessibilityManifestV3ChromeVoxDescription[] =
+    "Experimental migration of ChromeVox from extension manifest v2 to v3.";
+
 const char kAccessibilityManifestV3EnhancedNetworkTtsName[] =
     "Changes accessibility extension Enhanced Network TTS manifest v2 to v3.";
 const char kAccessibilityManifestV3EnhancedNetworkTtsDescription[] =
     "Experimental migration of Enhanced Network TTS from extension manifest "
+    "v2 to v3.";
+
+const char kAccessibilityManifestV3SelectToSpeakName[] =
+    "Changes accessibility extension Select to Speak manifest v2 to v3.";
+const char kAccessibilityManifestV3SelectToSpeakDescription[] =
+    "Experimental migration of Select to Speak from extension manifest "
     "v2 to v3.";
 
 const char kAccessibilityManifestV3SwitchAccessName[] =

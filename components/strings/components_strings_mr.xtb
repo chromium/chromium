@@ -696,7 +696,6 @@
 <translation id="2187317261103489799">शोधा (डीफॉल्ट)</translation>
 <translation id="2188375229972301266">मल्टिपल पंच बॉटम</translation>
 <translation id="2194856509914051091">विचार करण्याच्या गोष्टी</translation>
-<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" /> याविषयी अधिक जाणून घ्या</translation>
 <translation id="2200678913752027654">थंब्स डाउन बटण, तुम्हाला ही सूचना का आवडली नाही याबद्दल तपशीलवार फीडबॅक सबमिट करण्यासाठी फॉर्म उघडण्याकरिता एंटर प्रेस करा</translation>
 <translation id="2202627062836089804">तुमच्या कार्डची मागील बाजू</translation>
 <translation id="2204482073374652408">अपडेट करणे संपले!</translation>
@@ -1570,6 +1569,7 @@
 <translation id="3715016660240337709">{0,plural, =1{फाइल अपलोड करण्यापासून ब्लॉक केली आहे}other{<ph name="FILE_COUNT" /> फाइल अपलोड करण्यापासून ब्लॉक केल्या आहेत}}</translation>
 <translation id="3715597595485130451">वाय-फाय वर कनेक्ट करा</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />प्रॉक्सी, फायरवॉल आणि DNS कॉन्फिगरेशन तपासणे<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">अपडेटदरम्यान तुम्हाला तुमचे डिव्हाइस कमान १० मिनिटे वापरता येणार नाही.</translation>
 <translation id="372429172604983730">या एररला कारणीभूत असू शकणार्‍या ॲप्लिकेशनमध्ये अँटिव्हायरस, फायरवॉल आणि वेब फिल्टरिंग किंवा प्रॉक्सी सॉफ्टवेअरचा समावेश होतो.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides मध्ये नवीन Google प्रेझेंटेशन झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
@@ -1809,6 +1809,7 @@
 <translation id="4150099059797363385">एन्व्हलप चायनीज #४</translation>
 <translation id="4151403195736952345">जागतिक डीफॉल्‍ट (शोधणे) वापरा</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{पेज एक}other{पेज {COUNT}}}</translation>
+<translation id="4152670763139331043">{NUM_TABS,plural, =1{1 टॅब}other{# टॅब}}</translation>
 <translation id="4154277373259957087">Chrome हे आता पेमेंट पद्धती भरण्यापूर्वी तुम्हीच असल्याची पडताळणी करेल. तुम्ही हे <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> मध्ये कधीही अपडेट करू शकता.</translation>
 <translation id="415440494507469262">तुलना सारणीमध्ये टॅप जोडा</translation>
 <translation id="4159784952369912983">जांभळा</translation>
@@ -2493,6 +2494,7 @@
 <translation id="5379618281582508161">हा पासवर्ड तुमच्या सर्व डिव्हाइसवर मिळवण्यासाठी, ते तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="5380953781541843508">चढत्या क्रमाने</translation>
 <translation id="5381318171304904246">तुम्ही पुढे सुरू ठेवल्यावर, तुम्हाला बँकच्या वेबसाइटवर नेले जाईल. तुम्ही पडताळणी केल्यावर, तुमची खरेदी पूर्ण करण्यासाठी तुम्हाला आपोआप परत आणले जाईल.</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> यांनी “<ph name="WEBSITE_TITLE" />” टॅब अपडेट केला आहे</translation>
 <translation id="5383478552402031184">फ्लोरिंग</translation>
 <translation id="5385857628869214740">विनोदी</translation>
 <translation id="5385966243497224160">HTTPS नसलेल्या URL चे पूर्वावलोकन करू शकत नाही</translation>
@@ -2531,7 +2533,6 @@
             <ph name="LIST_ITEM" />फॉर्ममध्ये एंटर केलेली माहिती
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">उलट्या क्रमाने फेस अप</translation>
-<translation id="5445340838622821110">तुम्ही कालांतराने पेमेंट करता, तेव्हा एकदाच व्हर्चुअल कार्ड नंबर भरला जातो. हा नंबर फक्त या खरेदीसाठी आहे. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" /> ला त्यांनी तुमच्याबद्दल सेव्ह केलेली माहिती वापरण्याची अनुमती द्या</translation>
 <translation id="5451331376824595378">Chrome ने सुरक्षा इव्हेंट फ्लॅग केल्यावर, इव्हेंटबद्दलचा सुसंबद्ध डेटा तुमच्या अ‍ॅडमिनिस्ट्रेटरकडे पाठवला जातो. यामध्ये तुम्ही Chrome मध्ये भेट दिलेल्या पेजच्या URLs, ज्यावरून डेटा कॉपी केला त्या पेजच्या URLs, फाइलची नावे किंवा मेटाडेटा, आयपी अ‍ॅड्रेस, ब्राउझर अथवा टॅब क्रॅश, तसेच वेबवर आधारित अ‍ॅप्लिकेशन, तुमचे डिव्हाइस आणि Chrome मध्ये साइन इन करण्यासाठी वापरलेले वापरकर्ता नाव यांचा समावेश असू शकतो.</translation>
 <translation id="5452270690849572955">हे <ph name="HOST_NAME" /> पेज सापडत नाही</translation>
@@ -3928,6 +3929,7 @@
 <translation id="787226752901403048">टॅब गट शेअर करण्यासाठी आणि त्यात सामील होण्यासाठी आणि कल्पनांवर एकत्रितपणे विचारविनिमय करण्यासाठी Chrome मध्ये साइन इन करा</translation>
 <translation id="7877007680666472091">संरक्षित आशय आयडी</translation>
 <translation id="7878562273885520351">तुमच्या पासवर्डशी तडजोड होत असल्याची शक्यता आहे</translation>
+<translation id="7881044256965445977">तुमच्या स्थानिक नेटवर्कवरील कोणतेही डिव्हाइस शोधा आणि कनेक्ट करा</translation>
 <translation id="7882421473871500483">तपकिरी</translation>
 <translation id="7886897188117641322">जाहिराती पर्सनलाइझ करण्यात मदत व्हावी, यासाठी विषयांच्या कोणत्या व्यापक वर्गवाऱ्या वापरल्या जाऊ शकतात हे निवडा</translation>
 <translation id="7887683347370398519">तुमचे CVC तपासा आणि पुन्हा प्रयत्न करा</translation>
@@ -4001,7 +4003,6 @@
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />तुमच्या कुकी हटवण्याचा प्रयत्न करणे<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">१० x ११ इं</translation>
 <translation id="8012647001091218357">आम्ही याक्षणी आपल्या पालकांपर्यंत पोहोचू शकलो नाही. कृपया पुन्हा प्रयत्न करा.</translation>
-<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">प्रवास एजन्‍सी आणि सेवा</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ला सिस्टीमचा डीफॉल्ट ब्राउझर म्हणून सेट करण्यासाठी टॅब प्रेस करा, त्यानंतर एंटर करा</translation>
 <translation id="8027077570865220386">ट्रे १५</translation>
@@ -4686,6 +4687,7 @@
 <translation id="94613679163347541"><ph name="CATEGORY" /> ची तुलना करायची आहे का?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites मध्ये नवीन साइट झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome आज पुन्हा कुकी मर्यादित करेल}=1{Chrome उद्या पुन्हा कुकी मर्यादित करेल}other{Chrome पुन्हा # दिवसांनी कुकी मर्यादित करेल}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> सदस्य "<ph name="GROUP_NAME" />" टॅग गटामध्ये सामील झाले आहेत</translation>
 <translation id="949314938206378263">तुम्हाला या साइटला भेट देण्यास सांगितले आहे. तुमचे पालक Family Link मध्ये उत्तर देऊ शकतात.</translation>
 <translation id="950736567201356821">ट्रिपल पंच टॉप</translation>
 <translation id="950926967802086924">पासकी • Google Password Manager</translation>

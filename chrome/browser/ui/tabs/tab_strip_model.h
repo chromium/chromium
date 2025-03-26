@@ -624,6 +624,7 @@ class TabStripModel : public TabGroupController {
     CommandAddToNewComparisonTable,
     CommandAddToExistingComparisonTable,
     CommandAddToSplit,
+    CommandRemoveSplit,
     CommandRemoveFromGroup,
     CommandMoveToExistingWindow,
     CommandMoveTabsToNewWindow,

@@ -760,6 +760,10 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   update->begin_frame_args = tree.CurrentBeginFrameArgs();
   update->source_frame_number = tree.source_frame_number();
   update->trace_id = tree.trace_id().value();
+  update->page_scale_factor = tree.page_scale_factor()->Current(true);
+  update->min_page_scale_factor = tree.min_page_scale_factor();
+  update->max_page_scale_factor = tree.max_page_scale_factor();
+  update->external_page_scale_factor = tree.external_page_scale_factor();
   update->device_viewport = tree.GetDeviceViewport();
   update->device_scale_factor = tree.device_scale_factor();
   update->painted_device_scale_factor = tree.painted_device_scale_factor();

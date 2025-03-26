@@ -119,6 +119,9 @@
           ],
           'merge': {
             'script': '//tools/perf/process_perf_results.py',
+            'args': [
+              '--upload-skia-json',
+            ],
           },
         },
       },
@@ -147,6 +150,9 @@
           ],
           'merge': {
             'script': '//tools/perf/process_perf_results.py',
+            'args': [
+              '--upload-skia-json',
+            ],
           },
         },
       },

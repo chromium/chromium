@@ -81,11 +81,12 @@ void TachyonRegistrar::Register(const std::string& client_uuid,
       base::BindOnce(&TachyonRegistrar::OnResponse,
                      weak_ptr_factory.GetWeakPtr(), std::move(success_cb));
 
-  authed_client_->StartAuthedRequest(
-      std::make_unique<RequestDataWrapper>(kTrafficAnnotation, kSigninGaiaUrl,
-                                           kMaxRetries,
-                                           std::move(response_callback)),
-      std::move(signin_request));
+  auto request_data = std::make_unique<RequestDataWrapper>(
+      kTrafficAnnotation, kSigninGaiaUrl, kMaxRetries,
+      std::move(response_callback));
+  request_data->uma_name = "SigninGaia";
+  authed_client_->StartAuthedRequest(std::move(request_data),
+                                     std::move(signin_request));
 }
 
 std::optional<std::string> TachyonRegistrar::GetTachyonToken() const {

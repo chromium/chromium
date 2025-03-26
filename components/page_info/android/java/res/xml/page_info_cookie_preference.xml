@@ -17,6 +17,7 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="rws_in_use"
+        app:allowDividerAbove="true"
         app:allowDividerBelow="true" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference

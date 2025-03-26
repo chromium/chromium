@@ -57,6 +57,9 @@ static constexpr char kAgentStateAwaiting[] = "awaiting";
 static constexpr char kAgentStateResumed[] = "resumed";
 static constexpr char kAgentStateSuspended[] = "suspended";
 
+static constexpr int kAgentExitCodeTerminatedByBroker = 1;
+static constexpr int kAgentExitCodeBrokerDisconnected = 2;
+
 // A struct that holds both the real process object and the path of the agent
 // state file.
 struct Process {
@@ -233,22 +236,28 @@ TEST_F(AgentProcessBrokerTest,
   ASSERT_TRUE(WaitForTestAgentState(p2, kAgentStateResumed));
 }
 
-TEST_F(AgentProcessBrokerTest,
-       UserAgentProcessAfterUserAgentProcess_SecondProcessClosedImmediately) {
+TEST_F(
+    AgentProcessBrokerTest,
+    UserAgentProcessAfterUserAgentProcess_SecondProcessTerminatedImmediately) {
   auto p1 = LaunchTestAgentProcess(/* is_root= */ false);
   ASSERT_TRUE(WaitForTestAgentState(p1, kAgentStateResumed));
 
   auto p2 = LaunchTestAgentProcess(/* is_root= */ false);
-  ASSERT_TRUE(p2.process.WaitForExit(nullptr));
+  int exit_code;
+  ASSERT_TRUE(p2.process.WaitForExit(&exit_code));
+  ASSERT_EQ(exit_code, kAgentExitCodeTerminatedByBroker);
 }
 
-TEST_F(AgentProcessBrokerTest,
-       RootAgentProcessAfterRootAgentProcess_SecondProcessClosedImmediately) {
+TEST_F(
+    AgentProcessBrokerTest,
+    RootAgentProcessAfterRootAgentProcess_SecondProcessTerminatedImmediately) {
   auto p1 = LaunchTestAgentProcess(/* is_root= */ true);
   ASSERT_TRUE(WaitForTestAgentState(p1, kAgentStateResumed));
 
   auto p2 = LaunchTestAgentProcess(/* is_root= */ true);
-  ASSERT_TRUE(p2.process.WaitForExit(nullptr));
+  int exit_code;
+  ASSERT_TRUE(p2.process.WaitForExit(&exit_code));
+  ASSERT_EQ(exit_code, kAgentExitCodeTerminatedByBroker);
 }
 
 TEST_F(AgentProcessBrokerTest,
@@ -274,7 +283,8 @@ TEST_F(
   ASSERT_TRUE(WaitForTestAgentState(root_process, kAgentStateResumed));
 }
 
-TEST_F(AgentProcessBrokerTest, DestroyServer_TerminatesClientProcesses) {
+TEST_F(AgentProcessBrokerTest,
+       DestroyServer_ClientProcessesObserveDisconnectEvents) {
   auto user_process = LaunchTestAgentProcess(/* is_root= */ false);
   ASSERT_TRUE(WaitForTestAgentState(user_process, kAgentStateResumed));
 
@@ -283,8 +293,11 @@ TEST_F(AgentProcessBrokerTest, DestroyServer_TerminatesClientProcesses) {
 
   agent_process_broker_.reset();
 
-  ASSERT_TRUE(user_process.process.WaitForExit(nullptr));
-  ASSERT_TRUE(root_process.process.WaitForExit(nullptr));
+  int exit_code;
+  ASSERT_TRUE(user_process.process.WaitForExit(&exit_code));
+  ASSERT_EQ(exit_code, kAgentExitCodeBrokerDisconnected);
+  ASSERT_TRUE(root_process.process.WaitForExit(&exit_code));
+  ASSERT_EQ(exit_code, kAgentExitCodeBrokerDisconnected);
 }
 
 MULTIPROCESS_TEST_MAIN(RemotingTestAgentProcess) {
@@ -294,14 +307,23 @@ MULTIPROCESS_TEST_MAIN(RemotingTestAgentProcess) {
   mojo::NamedPlatformChannel::ServerName server_name =
       cmd_line->GetSwitchValueNative(kServerNameSwitch);
   base::RunLoop run_loop;
-  AgentProcessBrokerClient broker_client(run_loop.QuitClosure());
+  int exit_code;
+  AgentProcessBrokerClient broker_client(
+      base::BindLambdaForTesting([&]() {
+        exit_code = kAgentExitCodeTerminatedByBroker;
+        run_loop.Quit();
+      }),
+      base::BindLambdaForTesting([&]() {
+        exit_code = kAgentExitCodeBrokerDisconnected;
+        run_loop.Quit();
+      }));
   EXPECT_TRUE(broker_client.ConnectToServer(server_name));
   base::FilePath state_file_path =
       cmd_line->GetSwitchValuePath(kAgentStateFilePathSwitch);
   TestAgentProcess test_process(state_file_path);
   broker_client.OnAgentProcessLaunched(&test_process);
   run_loop.Run();
-  return 0;
+  return exit_code;
 }
 
 }  // namespace remoting

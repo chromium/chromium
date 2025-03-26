@@ -622,6 +622,41 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
       form_for_autocomplete, &form_structure, client.IsAutocompleteEnabled());
 }
 
+// Retrieves the AutofillAI predictions for `form` in `cache` and adds them to
+// `form`'s fields.
+void AddAutofillAiPredictions(const AutofillAiModelCache& cache,
+                              FormStructure& form) {
+  using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;
+  using ModelFieldPrediction = AutofillAiModelCache::FieldPrediction;
+  const base::flat_map<FieldIdentifier, ModelFieldPrediction> predictions =
+      cache.GetFieldPredictions(form.form_signature());
+  if (predictions.empty()) {
+    return;
+  }
+  for (const std::unique_ptr<AutofillField>& field : form.fields()) {
+    auto it = predictions.find(FieldIdentifier{
+        .signature = field->GetFieldSignature(),
+        .rank_in_signature_group = field->rank_in_signature_group()});
+    if (it == predictions.end()) {
+      continue;
+    }
+    const ModelFieldPrediction& prediction = it->second;
+    if (prediction.field_type != NO_SERVER_DATA) {
+      using ServerPrediction = AutofillQueryResponse::FormSuggestion::
+          FieldSuggestion::FieldPrediction;
+      ServerPrediction server_prediction;
+      server_prediction.set_type(prediction.field_type);
+      server_prediction.set_source(ServerPrediction::SOURCE_AUTOFILL_AI);
+      field->MaybeAddServerPrediction(std::move(server_prediction));
+    }
+    if (!prediction.format_string.empty()) {
+      field->set_format_string_unless_overruled(
+          prediction.format_string,
+          AutofillField::FormatStringSource::kModelResult);
+    }
+  }
+}
+
 }  // namespace
 
 BrowserAutofillManager::MetricsState::MetricsState(
@@ -1916,7 +1951,7 @@ void BrowserAutofillManager::DidShowSuggestions(
     const FieldGlobalId& field_id) {
   NotifyObservers(&Observer::OnSuggestionsShown);
 
-  if (!std::ranges::any_of(
+  if (std::ranges::none_of(
           shown_suggestion_types,
           AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId)) {
     return;
@@ -2101,31 +2136,34 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
 
 void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
     base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) {
-  if (!MayPerformAutofillAiAction(
-          client(), AutofillAiAction::kServerClassificationModel)) {
+  const AutofillAiModelCache* const model_cache =
+      client().GetAutofillAiModelCache();
+  if (!model_cache) {
     return;
   }
+
   for (raw_ptr<FormStructure, VectorExperimental> form : forms) {
-    if (!form || !form->may_run_autofill_ai_model()) {
+    if (!form) {
       continue;
     }
 
-    AutofillAiModelCache* model_cache = client().GetAutofillAiModelCache();
-    if (!model_cache) {
-      LOG_AF(log_manager())
-          << LoggingScope::kAutofillAi
-          << "Form for model run detected, but cache unavailable." << Br{}
-          << *form;
-      return;
-    }
     if (model_cache->Contains(form->form_signature())) {
-      LOG_AF(log_manager()) << LoggingScope::kAutofillAi
-                            << "Form for model run detected, but its signature "
-                               "is already contained in the cache."
-                            << Br{} << *form;
+      // Do not override server predictions.
+      if (MayPerformAutofillAiAction(
+              client(),
+              AutofillAiAction::kUseCachedServerClassificationModelResults) &&
+          std::ranges::none_of(
+              form->fields(), [](const std::unique_ptr<AutofillField>& field) {
+                return field->GetAutofillAiServerTypePredictions().has_value();
+              })) {
+        AddAutofillAiPredictions(*model_cache, *form);
+      }
       continue;
     }
 
+    if (!form->may_run_autofill_ai_model()) {
+      continue;
+    }
     AutofillAiModelExecutor* model_executor =
         client().GetAutofillAiModelExecutor();
     if (!model_executor) {
@@ -2133,7 +2171,16 @@ void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
           << LoggingScope::kAutofillAi
           << "Form for model run detected, but the model is unavailable."
           << Br{} << *form;
-      return;
+      continue;
+    }
+
+    if (!MayPerformAutofillAiAction(
+            client(), AutofillAiAction::kServerClassificationModel)) {
+      LOG_AF(log_manager())
+          << LoggingScope::kAutofillAi
+          << "Form for model run detected, but the model may not be run."
+          << Br{} << *form;
+      continue;
     }
 
     if (features::kAutofillAiServerModelSendPageContent.Get()) {
@@ -2681,8 +2728,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       is_card_number_autofilled && card_number_field_value.size() >= 4
           ? card_number_field_value.substr(card_number_field_value.size() - 4)
           : u"");
-  bool is_virtual_card_standalone_cvc_field = std::any_of(
-      suggestions.begin(), suggestions.end(), [](Suggestion suggestion) {
+  bool is_virtual_card_standalone_cvc_field =
+      std::ranges::any_of(suggestions, [](Suggestion suggestion) {
         return suggestion.type == SuggestionType::kVirtualCreditCardEntry;
       });
   if (!is_virtual_card_standalone_cvc_field) {

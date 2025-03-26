@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/task/common/task_annotator.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -92,19 +93,18 @@ SkiaOutputDevice::SkiaOutputDevice(
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
     ReleaseOverlaysCallback release_overlays_callback)
-    : gr_context_(gr_context),
-      graphite_context_(graphite_context),
+    : graphite_context_(graphite_context),
       did_swap_buffer_complete_callback_(
           std::move(did_swap_buffer_complete_callback)),
       release_overlays_callback_(std::move(release_overlays_callback)),
       memory_type_tracker_(
           std::make_unique<gpu::MemoryTypeTracker>(memory_tracker)) {
-  if (gr_context_) {
-    CHECK(!graphite_context_);
+  if (gr_context) {
+    CHECK(!graphite_context);
     capabilities_.max_render_target_size = gr_context->maxRenderTargetSize();
     capabilities_.max_texture_size = gr_context->maxTextureSize();
   } else {
-    CHECK(graphite_context_);
+    CHECK(graphite_context);
     capabilities_.max_render_target_size = graphite_context->maxTextureSize();
     capabilities_.max_texture_size = graphite_context->maxTextureSize();
   }
@@ -125,13 +125,17 @@ SkiaOutputDevice::BeginScopedPaint() {
 
 void SkiaOutputDevice::SetViewportSize(const gfx::Size& viewport_size) {}
 
-void SkiaOutputDevice::Submit(bool sync_cpu, base::OnceClosure callback) {
-  if (gr_context_) {
-    gr_context_->submit(sync_cpu ? GrSyncCpu::kYes : GrSyncCpu::kNo);
+void SkiaOutputDevice::Submit(
+    scoped_refptr<gpu::SharedContextState> context_state,
+    bool sync_cpu,
+    base::OnceClosure callback) {
+  if (auto* gr_context = context_state->gr_context()) {
+    gr_context->submit(sync_cpu ? GrSyncCpu::kYes : GrSyncCpu::kNo);
   } else {
-    CHECK(graphite_context_);
-    graphite_context_->submit(sync_cpu ? skgpu::graphite::SyncToCpu::kYes
-                                       : skgpu::graphite::SyncToCpu::kNo);
+    auto* graphite_context = context_state->graphite_context();
+    CHECK(graphite_context);
+    graphite_context->submit(sync_cpu ? skgpu::graphite::SyncToCpu::kYes
+                                      : skgpu::graphite::SyncToCpu::kNo);
   }
   std::move(callback).Run();
 }

@@ -601,6 +601,13 @@
        {}
       ]
      ],
+     "anchor-display-none-crash.html": [
+      "bf513e391473d788fd2e06de7a2088e1d13939a1",
+      [
+       null,
+       {}
+      ]
+     ],
      "anchor-fallback-to-self-crash.html": [
       "c5a8165d11322901546f30f948041ca96cf43639",
       [
@@ -4318,6 +4325,20 @@
     },
     "css-page": {
      "crashtests": {
+      "counter-containment-001.html": [
+       "2672bfffb5b6736259615215d77ee8603d17b6ba",
+       [
+        null,
+        {}
+       ]
+      ],
+      "counter-containment-002.html": [
+       "04b4710ab28a2e01ea3765123dc0639f438e11e9",
+       [
+        null,
+        {}
+       ]
+      ],
       "match-media-listener-relayout-contained-inline-subtree-print.html": [
        "634cf5f4f5836ba9671312f1b761ba312ef4fb22",
        [
@@ -85479,919 +85500,6 @@
        ]
       },
       "corner-shape": {
-       "corner-shape-any.html": [
-        "638d34b7bc2ef48fb17137b0b72dae37b2f5a189",
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-bottom-left-shape=bevel&border-bottom-left-radius=30px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-bottom-left-shape=bevel&border-bottom-left-radius=30px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-bottom-left-shape=bevel&border-width=10px&border-radius=20px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-bottom-left-shape=bevel&border-width=10px&border-radius=20px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-bottom-right-shape=bevel&border-width=10px&border-radius=20px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-bottom-right-shape=bevel&border-width=10px&border-radius=20px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-bottom-right-shape=bevel&corner-bottom-left-shape=bevel",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-bottom-right-shape=bevel&corner-bottom-left-shape=bevel",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-bottom-right-shape=superellipse(1.9)&border-bottom-right-radius=50%",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-bottom-right-shape=superellipse(1.9)&border-bottom-right-radius=50%",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=scoop&border-radius=20%&border-width=20px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=scoop&border-radius=20%&border-width=20px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=scoop&border-radius=20%&border-width=20px&border-top-color=rebeccapurple&border-bottom-color=blue",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=scoop&border-radius=20%&border-width=20px&border-top-color=rebeccapurple&border-bottom-color=blue",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=squircle&border-radius=25%&border-width=20px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-radius=25%&border-width=20px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=squircle&border-radius=25%&box-shadow=10px 10px 0 10px black",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-radius=25%&box-shadow=10px 10px 0 10px black",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=squircle&border-radius=25%&box-shadow=10px 10px 0 10px black,-20px 5px 0 20px yellow",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-radius=25%&box-shadow=10px 10px 0 10px black,-20px 5px 0 20px yellow",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=squircle&border-radius=50%",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-radius=50%",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=squircle&border-top-left-radius=25%&border-width=10px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-top-left-radius=25%&border-width=10px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=squircle&border-top-left-radius=30%",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-top-left-radius=30%",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=squircle&border-top-right-radius=30px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-top-right-radius=30px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=straight&border-bottom-left-radius=5px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=straight&border-bottom-left-radius=5px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=superellipse(0.05)&border-radius=20%&border-width=20px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(0.05)&border-radius=20%&border-width=20px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=superellipse(0.25)&border-radius=20%&border-width=20px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(0.25)&border-radius=20%&border-width=20px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=superellipse(40)&border-radius=20%&border-width=20px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(40)&border-radius=20%&border-width=20px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=superellipse(5.2)&border-radius=40%",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(5.2)&border-radius=40%",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=superellipse(8)&border-radius=10px&box-shadow=10px 10px 0 10px black",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(8)&border-radius=10px&box-shadow=10px 10px 0 10px black",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=superellipse(8)&border-top-right-radius=33px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(8)&border-top-right-radius=33px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-left-shape=bevel&border-radius=40px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=bevel&border-radius=40px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-left-shape=bevel&border-radius=40px&border-width=10px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=bevel&border-radius=40px&border-width=10px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-left-shape=bevel&border-width=10px&border-color=black",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=bevel&border-width=10px&border-color=black",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-left-shape=notch&border-radius=40px&border-width=10px&border-color=blue&border-left-color=yellow",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=notch&border-radius=40px&border-width=10px&border-color=blue&border-left-color=yellow",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-left-shape=scoop&border-radius=40px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=scoop&border-radius=40px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-left-shape=scoop&corner-top-right-shape=scoop&border-radius=50%",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=scoop&corner-top-right-shape=scoop&border-radius=50%",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-left-shape=superellipse(0.2)&border-radius=40px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=superellipse(0.2)&border-radius=40px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-left-shape=superellipse(0.3)&border-radius=40%",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=superellipse(0.3)&border-radius=40%",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-left-shape=superellipse(0.8)&border-radius=40px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=superellipse(0.8)&border-radius=40px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-left-shape=superellipse(1.2)&border-radius=40px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=superellipse(1.2)&border-radius=40px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-left-shape=superellipse(6)&border-radius=20%&border-width=10px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=superellipse(6)&border-radius=20%&border-width=10px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-right-shape=bevel&border-width=10px&border-color=black",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-right-shape=bevel&border-width=10px&border-color=black",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-right-shape=scoop&border-radius=20%&border-width=10px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-right-shape=scoop&border-radius=20%&border-width=10px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-right-shape=superellipse(0.1)&border-top-right-radius=50px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-right-shape=superellipse(0.1)&border-top-right-radius=50px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ]
-       ],
        "corner-shape-bevel-overflow-composite.html": [
         "985b5efdc9b9c868465d658e5486cd1e7eae5fd5",
         [
@@ -86501,6 +85609,948 @@
              [
               0,
               64
+             ]
+            ]
+           ]
+          ]
+         }
+        ]
+       ],
+       "corner-shape-render-fuzzy.html": [
+        "5c276b6d5ac1190cf3c1332f7ec7449286b6bea1",
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-shape=scoop&border-radius=20%&border-width=20px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=scoop&border-radius=20%&border-width=20px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-shape=scoop&border-radius=20%&border-width=20px&border-top-color=rebeccapurple&border-bottom-color=blue",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=scoop&border-radius=20%&border-width=20px&border-top-color=rebeccapurple&border-bottom-color=blue",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-shape=squircle&border-radius=25%&border-width=20px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-radius=25%&border-width=20px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-shape=squircle&border-radius=25%&box-shadow=10px 10px 0 10px black",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-radius=25%&box-shadow=10px 10px 0 10px black",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-shape=squircle&border-radius=50%",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-radius=50%",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-shape=superellipse(0.05)&border-radius=20%&border-width=20px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(0.05)&border-radius=20%&border-width=20px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-shape=superellipse(0.25)&border-radius=20%&border-width=20px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(0.25)&border-radius=20%&border-width=20px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-shape=superellipse(1.8)&border-radius=40px&border-width=10px&border-left-color=purple",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(1.8)&border-radius=40px&border-width=10px&border-left-color=purple",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-shape=superellipse(40)&border-radius=20%&border-width=20px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(40)&border-radius=20%&border-width=20px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-top-left-shape=bevel&border-radius=40px&border-width=10px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=bevel&border-radius=40px&border-width=10px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-top-left-shape=bevel&corner-bottom-right-shape=bevel&border-radius=40px&border-width=10px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=bevel&corner-bottom-right-shape=bevel&border-radius=40px&border-width=10px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-top-left-shape=notch&border-radius=40px&border-width=10px&border-color=blue&border-left-color=yellow",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=notch&border-radius=40px&border-width=10px&border-color=blue&border-left-color=yellow",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-top-left-shape=scoop&corner-top-right-shape=scoop&border-radius=50%",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=scoop&corner-top-right-shape=scoop&border-radius=50%",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-top-left-shape=superellipse(0.3)&border-radius=40%",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=superellipse(0.3)&border-radius=40%",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-top-left-shape=superellipse(6)&border-radius=20%&border-width=10px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=superellipse(6)&border-radius=20%&border-width=10px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-fuzzy.html?corner-top-right-shape=scoop&border-radius=20%&border-width=10px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-right-shape=scoop&border-radius=20%&border-width=10px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              550
+             ]
+            ]
+           ]
+          ]
+         }
+        ]
+       ],
+       "corner-shape-render-precise.html": [
+        "81cb56d341fafc714c318ad337807c428312b60b",
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-bottom-left-shape=bevel&border-bottom-left-radius=30px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-bottom-left-shape=bevel&border-bottom-left-radius=30px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-bottom-left-shape=bevel&border-width=10px&border-radius=20px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-bottom-left-shape=bevel&border-width=10px&border-radius=20px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-bottom-right-shape=bevel&border-width=10px&border-radius=20px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-bottom-right-shape=bevel&border-width=10px&border-radius=20px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-bottom-right-shape=bevel&corner-bottom-left-shape=bevel",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-bottom-right-shape=bevel&corner-bottom-left-shape=bevel",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-bottom-right-shape=superellipse(1.9)&border-bottom-right-radius=50%",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-bottom-right-shape=superellipse(1.9)&border-bottom-right-radius=50%",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-shape=squircle&border-top-left-radius=25%&border-width=10px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-top-left-radius=25%&border-width=10px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-shape=squircle&border-top-left-radius=30%",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-top-left-radius=30%",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-shape=squircle&border-top-right-radius=30px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-top-right-radius=30px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-shape=straight&border-bottom-left-radius=5px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=straight&border-bottom-left-radius=5px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-shape=superellipse(5.2)&border-radius=40%",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(5.2)&border-radius=40%",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-shape=superellipse(8)&border-radius=10px&box-shadow=10px 10px 0 10px black",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(8)&border-radius=10px&box-shadow=10px 10px 0 10px black",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-shape=superellipse(8)&border-top-right-radius=33px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(8)&border-top-right-radius=33px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-top-left-shape=bevel&border-radius=40px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=bevel&border-radius=40px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-top-left-shape=bevel&border-width=10px&border-color=black",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=bevel&border-width=10px&border-color=black",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-top-left-shape=scoop&border-radius=40px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=scoop&border-radius=40px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-top-left-shape=superellipse(0.2)&border-radius=40px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=superellipse(0.2)&border-radius=40px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-top-left-shape=superellipse(0.8)&border-radius=40px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=superellipse(0.8)&border-radius=40px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-top-left-shape=superellipse(1.2)&border-radius=40px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=superellipse(1.2)&border-radius=40px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-top-right-shape=bevel&border-width=10px&border-color=black",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-right-shape=bevel&border-width=10px&border-color=black",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-render-precise.html?corner-top-right-shape=superellipse(0.1)&border-top-right-radius=50px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-right-shape=superellipse(0.1)&border-top-right-radius=50px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              350
              ]
             ]
            ]
@@ -306998,6 +307048,71 @@
      ]
     },
     "embedded": {
+     "image-embedding-nested-data-url-png.html": [
+      "ff54e38b1a48c1692a4e7cb3c7ab44a82e0e36bf",
+      [
+       null,
+       [
+        [
+         "/svg/struct/reftests/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "image-embedding-nested-data-url.html": [
+      "7e58c3e7e10b0b5679b02f77dde8cb2479bbf96e",
+      [
+       null,
+       [
+        [
+         "/svg/struct/reftests/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "image-embedding-nested-external-data-url-png.html": [
+      "0935507c045f71ff195ff7141b6171c9099ceb78",
+      [
+       null,
+       [
+        [
+         "/svg/struct/reftests/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "image-embedding-nested-http-url.sub.html": [
+      "f3d8a79b999ab50790c7c2cbbac29dc5ebbb4c9d",
+      [
+       null,
+       [
+        [
+         "/svg/struct/reftests/reference/green-100x100.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "image-embedding-nesteder-data-url.html": [
+      "48fb4fa48b7439dde62fbe82a0ff20ff5d64e550",
+      [
+       null,
+       [
+        [
+         "/svg/struct/reftests/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "image-embedding-svg-nested-svg-in-foreignobject.html": [
       "880305253c59fe4d7af9808894f82bd88a6aa760",
       [
@@ -315969,7 +316084,7 @@
    },
    "accname": {
     "META.yml": [
-     "7f538628e8c0b2134f9605106616b3a1d05eb7a7",
+     "775209284947114b6f50e5dfaf7695afd2ba7abf",
      []
     ],
     "name": {
@@ -318891,6 +319006,30 @@
      ],
      "non-main-frame-select.html": [
       "c64ecd067c82d050f989f1cbe005fe0b33bb9e96",
+      []
+     ]
+    }
+   },
+   "container-timing": {
+    "DIR_METADATA": [
+     "e1a0e70f54c6a2b32e056562aba8680ed9465d9b",
+     []
+    ],
+    "META.yml": [
+     "b786960789921b08bdbb782ea4a57afc8c20f826",
+     []
+    ],
+    "OWNERS": [
+     "9d5ea8bae27a7ed694cb383965a5ffd14dd22d9a",
+     []
+    ],
+    "resources": {
+     "container-timing-helpers.js": [
+      "a80ad964fef311f55062631d5548a6d8f0eecb3f",
+      []
+     ],
+     "square100.png": [
+      "567babb96d1ec3e1032d476f8f7ee1fcb2aa4875",
       []
      ]
     }
@@ -331201,6 +331340,10 @@
        ],
        "corner-shape-fill-ref.html": [
         "4000833c31d1cad31076f52f33f0f4f95922bbd1",
+        []
+       ],
+       "corner-shape-gallery.manual.html": [
+        "1eb6cbd8df349f0a27b1575b8a77583c95b44a42",
         []
        ],
        "corner-shape-notch-ref.html": [
@@ -376153,7 +376296,7 @@
      []
     ],
     "get-user-activation.https-expected.txt": [
-     "fc71f414a70717e97a5e6666c026dc156d22cc1a",
+     "141e9bc3f0c72516418d2a31915b325e11ac83e2",
      []
     ],
     "get.tentative.https-expected.txt": [
@@ -386233,7 +386376,7 @@
      []
     ],
     "META.yml": [
-     "197263836e7695882d4d1fb533c1e043a70ff234",
+     "c51c6e1b186e7bf9c026905ea2f07531035964d6",
      []
     ]
    },
@@ -401363,7 +401506,7 @@
          []
         ],
         "parse-error-expected.txt": [
-         "4455cd15af8e67a8b7ed7b67f3d17f1dc165a63b",
+         "1ede06b55802e9f9aa6feefff11f2d7d9adb2d9d",
          []
         ],
         "parse-error.json": [
@@ -404851,11 +404994,11 @@
      []
     ],
     "META.yml": [
-     "212cae7fa52e95b820d11e7ca8e2eed7d36bf112",
+     "bfca09eadfa361255d89f89bee31af839c3dda0d",
      []
     ],
     "roles-contextual-expected.txt": [
-     "352325b24d232a655d543200e018e032981d6f2f",
+     "c54618d798ec510c3e4a1e2ce9de70ad2ddb5745",
      []
     ],
     "roles-dynamic-switch.tentative.window-expected.txt": [
@@ -406695,7 +406838,7 @@
      []
     ],
     "fedcm.idl": [
-     "f7038a6fee1063734193f00341de6ceaf5f792b0",
+     "c26e2b14c73ec27cacc6b9126de125e96d3d93d6",
      []
     ],
     "fenced-frame.idl": [
@@ -407303,7 +407446,7 @@
      []
     ],
     "webaudio.idl": [
-     "3b351f4d9e99452f4e81ba401bf283f1c49dd85b",
+     "286aeba40693992ede1cdd233d449fe4f6b59e6c",
      []
     ],
     "webauthn.idl": [
@@ -407359,7 +407502,7 @@
      []
     ],
     "webgpu.idl": [
-     "d91a6a710b102d0d9dae24638b2d5e40c8eaa38a",
+     "de1f7c1e52bc401fed112469595f281736213027",
      []
     ],
     "webhid.idl": [
@@ -407459,7 +407602,7 @@
      []
     ],
     "webxr.idl": [
-     "dea448d744078292c08e620f4651e5ea5140616e",
+     "1098000d6c2edae1a36f8e6a035f0c53432207c8",
      []
     ],
     "webxrlayers.idl": [
@@ -415417,6 +415560,10 @@
      []
     ],
     "resources": {
+     "child.html": [
+      "4d6895125a2acaad00cc2bc849e026a2632dd88e",
+      []
+     ],
      "post_name_on_load.html": [
       "4679a6e6ec73ea4c2dae646b0f027dd7f2ce6823",
       []
@@ -422334,6 +422481,12 @@
        "120941444a4898197d6b6001f9908a6cd48b62ba",
        []
       ]
+     },
+     "support": {
+      "external-with-data-url.svg": [
+       "e5f707c79809cfcc2eabc3361b291cdae8114ad0",
+       []
+      ]
      }
     },
     "extensibility": {
@@ -423623,7 +423776,7 @@
      []
     ],
     "META.yml": [
-     "b0a59c18030bd44644bde1df16b0c08e74ff6abd",
+     "c55d09e15c2ee6917e46e66135c1d977d4128ec3",
      []
     ],
     "role": {
@@ -428221,7 +428374,7 @@
        []
       ],
       "__init__.py": [
-       "8e45c0f72651ed7b825458682fc04bc2e1a7be5a",
+       "b0562d22b56d0656b76d0641f6628c57dfa47a35",
        []
       ],
       "browser": {
@@ -428544,7 +428697,7 @@
       },
       "network": {
        "__init__.py": [
-        "840b8086d1373852dad9c2468736b98a76044b49",
+        "46146d52eb9cd986d8712aac7965e6a19ce4dbd6",
         []
        ],
        "add_intercept": {
@@ -433327,7 +433480,7 @@
      ]
     },
     "idlharness.https.window-expected.txt": [
-     "98752f07207b3f88fe278d817b3b773288cadc2b",
+     "f2c4f1f3c273091c85e84aa4f6f7ad8a0cbf8276",
      []
     ],
     "layers": {
@@ -476108,6 +476261,59 @@
       }
      ]
     ]
+   },
+   "container-timing": {
+    "tentative": {
+     "containertiming-body-with-child-img.html": [
+      "53e9bc550745067be9a573ed5505063438a075e3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "containertiming-img-itself.html": [
+      "6d55532a419bbdc6f8c353298b4b74bc738c7d87",
+      [
+       null,
+       {}
+      ]
+     ],
+     "containertiming-observe-no-paint.html": [
+      "f2384248255283e48bf5b5263dc0eaee1c7b259a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "containertiming-two-overlapping-imgs.html": [
+      "1a36c6f253211c3838b2586feff6660b6b53a379",
+      [
+       null,
+       {}
+      ]
+     ],
+     "containertiming-with-child-img.html": [
+      "03f0e113902d0d4117a38870dfd22defe99c4653",
+      [
+       null,
+       {}
+      ]
+     ],
+     "img-not-child-of-container-timing.html": [
+      "751342a7ceb1eaa2a98d1c07dc4000c34d14e4fd",
+      [
+       null,
+       {}
+      ]
+     ],
+     "nested-containertiming-child-img.html": [
+      "3f830fe786307c5d8400544911f27eaf9fb39df7",
+      [
+       null,
+       {}
+      ]
+     ]
+    }
    },
    "content-dpr": {
     "image-with-dpr-header.html": [
@@ -522665,7 +522871,7 @@
        {}
       ]
      ],
-     "if-cycle.tentative.html": [
+     "if-cycle.html": [
       "74d56dc9ed7c382ee8427feaefacc2198b94216f",
       [
        null,
@@ -556204,7 +556410,7 @@
      ]
     ],
     "interactionid-keyboard-event-simulated-click-button-space.html": [
-     "d3ab5437f8e533a32fad8d327e5e1dd58d210574",
+     "b7a7675f3244835a4074827868f5a1423c1f0b24",
      [
       null,
       {
@@ -556213,7 +556419,7 @@
      ]
     ],
     "interactionid-keyboard-event-simulated-click-checkbox-space.html": [
-     "3dd8e21e784d7d8970e2fdfba4d4e146ce32f968",
+     "e2582259e1557106cfa587ab7d12465773561519",
      [
       null,
       {
@@ -556222,7 +556428,7 @@
      ]
     ],
     "interactionid-keyboard-event-simulated-click-link-enter.html": [
-     "6945d2ff771976ea1a17ba66f427e51d840268d5",
+     "9e1f4ee3761d2f7808ccb7221e426af7ab240a4a",
      [
       null,
       {
@@ -600761,7 +600967,7 @@
         ]
        },
        "regression-1399759.https.sub.html": [
-        "d0b09f335db6c9292417fdf64f4148db1a7abbc7",
+        "a960fb87020061887a4aef20dfe37a27bcb2b5f6",
         [
          "html/browsers/origin/origin-keyed-agent-clusters/regression-1399759.https.sub.html?pipe=header(Origin-Agent-Cluster,%3F0)",
          {}
@@ -642220,13 +642426,6 @@
           {}
          ]
         ],
-        "option-computed-style.tentative.html": [
-         "ba2861a5c6181b72c3b8abc3e077a9f414f2cd99",
-         [
-          null,
-          {}
-         ]
-        ],
         "option-list.tentative.html": [
          "22dadf7f9a624d4a0917d950f3adf1c22ac88c7f",
          [
@@ -646160,7 +646359,7 @@
          ]
         ],
         "parse-error.html": [
-         "88fb23a00d963b97e789deb5750e8a6ad62b533a",
+         "3c079f0654b16c476693afa7e56358afad30d748",
          [
           null,
           {}
@@ -654999,7 +655198,7 @@
      ]
     ],
     "roles-contextual.html": [
-     "793bdf1f4130912fe679e91f04c39e0af513ae4b",
+     "e1f343cd07459d7ac9b0ae6e637646b8022edafe",
      [
       null,
       {
@@ -691923,6 +692122,13 @@
       }
      ]
     ],
+    "callback-iframe-different-origin.html": [
+     "5e66b36d7123a26e9ee142fa792e305d8440f5e4",
+     [
+      null,
+      {}
+     ]
+    ],
     "callback-iframe.html": [
      "8ec08a804a6d3b2dfb1b4d6ba1dfcb70ee188944",
      [
@@ -723058,6 +723264,29 @@
        ]
       ]
      }
+    },
+    "fonts": {
+     "zero-font-size-adjust-no-glyphs-font.html": [
+      "b1783af474c0e866694b619ca9c4d89a29bfb829",
+      [
+       null,
+       {}
+      ]
+     ],
+     "zero-font-size-adjust-no-glyphs-zero-height-font.html": [
+      "25839e0ef5f386700be0edbbd3658ea8f47e7434",
+      [
+       null,
+       {}
+      ]
+     ],
+     "zero-font-size-adjust.html": [
+      "7e7a226c6b35cb6b7469d7400f72225ee7dd13b0",
+      [
+       null,
+       {}
+      ]
+     ]
     },
     "geometry": {
      "inheritance.svg": [
@@ -786487,7 +786716,7 @@
      ]
     ],
     "RTCIceTransport.html": [
-     "31504481f4ba36e2bf57f3b968bb8b58c394a209",
+     "f00af08e97c32408fcaf8e6efd0d1c134128335b",
      [
       null,
       {
@@ -827326,14 +827555,14 @@
        },
        "response_completed": {
         "response_completed.py": [
-         "127416d8de41740b2b7199c93d1256f110c28ecb",
+         "6f53572a341aa5db214714a77e921dd4ce8fcb78",
          [
           null,
           {}
          ]
         ],
         "response_completed_cached.py": [
-         "5b1e3592e09e4dda83ddcd49bdc692f3f9c6c941",
+         "3f5cbad1047df2bca9038b7ce069ced79c0a2473",
          [
           null,
           {}
@@ -827342,7 +827571,7 @@
        },
        "response_started": {
         "response_started.py": [
-         "6ab3e1c3cace1069705f2bf979e843315ec39ca9",
+         "324105197f048622428d30492c95b78957272983",
          [
           null,
           {}

@@ -165,6 +165,8 @@ struct ControlledTab {
 struct OnTaskConfig {
   // If content will be display on students' device in lock mode.
   bool is_locked;
+  // If the entire screen will be paused.
+  bool is_paused;
   array<ControlledTab> tabs;
 };
 

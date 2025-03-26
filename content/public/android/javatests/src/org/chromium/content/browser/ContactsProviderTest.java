@@ -8,7 +8,6 @@ import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -68,9 +67,6 @@ public class ContactsProviderTest {
             throw new AssertionError("Couldn't load test page.", t);
         }
     }
-
-    @After
-    public void tearDown() {}
 
     private static String executeJavaScript(
             final RenderFrameHost frame, String js, boolean userGesture) {

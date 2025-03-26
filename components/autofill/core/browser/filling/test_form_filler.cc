@@ -4,17 +4,16 @@
 
 #include "components/autofill/core/browser/filling/test_form_filler.h"
 
-#include "components/autofill/core/browser/filling/form_filler_test_api.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_data.h"
 
 namespace autofill {
 
 void TestFormFiller::ScheduleRefill(const FormData& form,
-                                    const FormStructure& form_structure,
+                                    RefillContext& refill_context,
                                     AutofillTriggerSource trigger_source,
                                     RefillTriggerReason refill_trigger_reason) {
-  test_api(*this).TriggerRefill(form, trigger_source, refill_trigger_reason);
+  TriggerRefill(form, trigger_source, refill_trigger_reason);
 }
 
 }  // namespace autofill

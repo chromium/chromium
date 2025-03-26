@@ -68,7 +68,7 @@ export class PrintPreviewScalingSettingsElement extends
       },
 
       /** Mirroring the enum so that it can be used from HTML bindings. */
-      ScalingValue: {
+      scalingTypeEnum_: {
         type: Object,
         value: ScalingType,
       },

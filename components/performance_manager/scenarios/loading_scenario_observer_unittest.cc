@@ -14,6 +14,7 @@
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/scenario_api/performance_scenario_memory.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "components/performance_manager/scenarios/browser_performance_scenarios.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"

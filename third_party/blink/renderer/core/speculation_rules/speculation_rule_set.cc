@@ -140,18 +140,17 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
                                       const KURL& base_url,
                                       ExecutionContext* context,
                                       bool is_browser_injected,
-                                      std::optional<AtomicString> ruleset_tag,
+                                      WTF::String ruleset_tag,
                                       String* out_error,
                                       Vector<String>& out_warnings) {
   // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-a-speculation-rule
 
-  // If input has any key other than "source", "urls", "where", "requires",
-  // "target_hint", "referrer_policy", "relative_to", "eagerness" and
-  // "expects_no_vary_search", then return null.
+  // If input has any key other than these keys listed below, then return null.
   const char* const kKnownKeys[] = {
       "source",      "urls",        "where",
       "requires",    "target_hint", "referrer_policy",
-      "relative_to", "eagerness",   "expects_no_vary_search"};
+      "relative_to", "eagerness",   "expects_no_vary_search",
+      "tag"};
 
   for (wtf_size_t i = 0; i < input->size(); ++i) {
     const String& input_key = input->at(i).first;
@@ -435,6 +434,23 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     }
   }
 
+  AtomicString rule_tag;
+  if (JSONValue* tag_value = input->Get("tag");
+      tag_value &&
+      RuntimeEnabledFeatures::SpeculationRulesTagEnabled(context)) {
+    String tag_str;
+    if (!tag_value->AsString(&tag_str)) {
+      SetParseErrorMessage(out_error, "Tag value must be a string.");
+      return nullptr;
+    }
+    if (!IsValidTag(tag_str)) {
+      SetParseErrorMessage(out_error,
+                           "Tag value is invalid: must be ASCII printable.");
+      return nullptr;
+    }
+    rule_tag = AtomicString(tag_str);
+  }
+
   auto injection_type = mojom::blink::SpeculationInjectionType::kNone;
   if (is_browser_injected) {
     injection_type =
@@ -451,7 +467,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   return MakeGarbageCollected<SpeculationRule>(
       std::move(urls), document_rule_predicate, requires_anonymous_client_ip,
       target_hint, referrer_policy, eagerness, std::move(no_vary_search),
-      injection_type, std::move(ruleset_tag));
+      injection_type, std::move(ruleset_tag), std::move(rule_tag));
 }
 
 }  // namespace
@@ -630,7 +646,7 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
     result->AddWarnings(base::span_from_ref(duplicate_key_warning));
   }
 
-  std::optional<AtomicString> ruleset_tag;
+  WTF::String ruleset_tag;
   if (RuntimeEnabledFeatures::SpeculationRulesTagEnabled(context)) {
     JSONValue* tag_value = parsed->Get("tag");
     if (tag_value) {
@@ -642,7 +658,7 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
         result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
                          "Tag value is invalid: must be ASCII printable.");
       } else {
-        ruleset_tag = AtomicString(tag_str);
+        ruleset_tag = WTF::String(tag_str);
       }
     }
   }

@@ -24,6 +24,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.dom_distiller.DistillerHeuristicsType;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
@@ -104,6 +105,52 @@ public class ReaderModeActionProviderTest {
         setReaderModeBackendSignal(true);
         verify(mMockSignalAccumulator).setHasReaderMode(true);
         verify(mMockSignalAccumulator).notifySignalAvailable();
+    }
+
+    @Test
+    public void testReaderModeSignalRecordsMetricsOnCPASuccess() {
+        when(mMockSignalAccumulator.hasTimedOut()).thenReturn(false);
+        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                ReaderModeActionProvider
+                                        .SIGNAL_ACCUMULATOR_WITHIN_TIMEOUT_HISTOGRAM,
+                                true)
+                        .expectBooleanRecord(
+                                ReaderModeActionProvider
+                                        .SIGNAL_ACCUMULATOR_DISTILLABLE_WITHIN_TIMEOUT_HISTOGRAM,
+                                true)
+                        .build();
+        setReaderModeBackendSignal(true);
+        provider.getAction(mMockTab, mMockSignalAccumulator);
+        verify(mMockSignalAccumulator).setHasReaderMode(true);
+        verify(mMockSignalAccumulator).notifySignalAvailable();
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testReaderModeSignalRecordsMetricsOnCPATimeout() {
+        when(mMockSignalAccumulator.hasTimedOut()).thenReturn(true);
+        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                ReaderModeActionProvider
+                                        .SIGNAL_ACCUMULATOR_WITHIN_TIMEOUT_HISTOGRAM,
+                                false)
+                        .expectBooleanRecord(
+                                ReaderModeActionProvider
+                                        .SIGNAL_ACCUMULATOR_DISTILLABLE_WITHIN_TIMEOUT_HISTOGRAM,
+                                false)
+                        .build();
+        setReaderModeBackendSignal(true);
+        provider.getAction(mMockTab, mMockSignalAccumulator);
+        verify(mMockSignalAccumulator).setHasReaderMode(true);
+        verify(mMockSignalAccumulator).notifySignalAvailable();
+        watcher.assertExpected();
     }
 
     @Test

@@ -464,6 +464,9 @@ extern const char kLensOverlayEnableLocationBarEntrypointOnSRPDescription[];
 extern const char kLensOverlayEnableSameTabNavigationName[];
 extern const char kLensOverlayEnableSameTabNavigationDescription[];
 
+extern const char kLensOverlayNavigationHistoryName[];
+extern const char kLensOverlayNavigationHistoryDescription[];
+
 extern const char kLensPrewarmHardStickinessInInputSelectionName[];
 extern const char kLensPrewarmHardStickinessInInputSelectionDescription[];
 
@@ -654,6 +657,15 @@ extern const char kIPHPriceNotificationsWhileBrowsingDescription[];
 
 extern const char kNotificationSettingsMenuItemName[];
 extern const char kNotificationSettingsMenuItemDescription[];
+
+extern const char kReaderModeDistillerHeuristicName[];
+extern const char kReaderModeDistillerHeuristicDescription[];
+
+extern const char kReaderModeDistillerHeuristicSamplingName[];
+extern const char kReaderModeDistillerHeuristicSamplingDescription[];
+
+extern const char kReaderModeDistillerHeuristicPageLoadDelayName[];
+extern const char kReaderModeDistillerHeuristicPageLoadDelayDescription[];
 
 // Title and description for the flag to refactor the toolbarsSize.
 extern const char kRefactorToolbarsSizeName[];

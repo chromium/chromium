@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Погрижете се да ја користите апликацијата „Префрлање содржини“ од Google за да ги префрлите податоците од вашата училишна сметка во вашата лична сметка пред да го изгубите пристапот.</translation>
 <translation id="1026212596705997935">Кратенката се користи за „<ph name="CONFLICT_ACCEL_NAME" />“. Притиснете нова кратенка. За да ја замените постојната кратенка, притиснете ја оваа кратенка повторно.</translation>
 <translation id="1030856839388844477">Ресетирајте го потрошениот интернет</translation>
+<translation id="1047095725494118091">Не може да се преземе. Обидете се повторно или рестартирајте го вашиот уред <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> низи, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Достапна е нова функција. Користете го копчето со стрелка нагоре за да дознаете повеќе.</translation>
 <translation id="1049663189809099096">пастелножолта</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Се презема штедачот на екран</translation>
 <translation id="1094693127011229778">IP-адресата не е достапна</translation>
 <translation id="1100902271996134409">Се создаваат слики…</translation>
+<translation id="1107856713690040084">Аудио на <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Информации</translation>
 <translation id="1118572504348554005">Можно е да ги споделиме повратните информации споделени со нас преку формуларов со нашите партнери за отстранувањето грешки и решавањето на другите проблеми што ни ги пријавувате. Не опфаќајте чувствителни податоци како лозинки.</translation>
 <translation id="1119403468619527527">Премалку зборови за да се поедностави</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Вклучи темен режим</translation>
 <translation id="2164131940279488868">Погрижете се да имате поврзано микрофон за да започнете да снимате аудио</translation>
 <translation id="2173302385160625112">Проверете ја вашата интернет-врска</translation>
+<translation id="2176909213844392588">Не може да се преземе моделот за транскрипции на <ph name="LANGUAGE_NAME" />. Обидете се повторно или рестартирајте го вашиот уред <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">Нешто тргна наопаку. Отворете ја апликацијата повторно.</translation>
 <translation id="2189104374785738357">Изменете ги деталите за APN</translation>
 <translation id="2195732836444333448">Нема ништо ново во моментов. Вратете се пак наскоро.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Внесувач на документи (двостран)</translation>
 <translation id="3201315366910775591">Други луѓе може да ги ажурираат споделените албуми</translation>
 <translation id="3211671540163313381">Мапирање клуч на навигациски копчиња</translation>
+<translation id="3217462202230355157">Погрижете се да биде поврзан микрофонот или рестартирајте го вашиот уред <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Се бараат скенери</translation>
 <translation id="3226657629376379887">Мени на дејства за распоред</translation>
 <translation id="3227186760713762082">Поделете ја вредноста на <ph name="CATEGORY_TEXT" /> со <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Ексклузивно</translation>
 <translation id="3404249063913988450">Овозможете го штедачот на екранот</translation>
 <translation id="3413935475507503304">За да продолжите со ажурирањето, кликнете „Следно“.</translation>
+<translation id="3416709353545797224">Снимање на секое аудио на <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">надвор</translation>
 <translation id="3428971106895559033">пастелни бои</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Уверете се дека скенерот е вклучен и достапен преку мрежата или преку директна врска</translation>
 <translation id="4159238217853743776">Делумно</translation>
 <translation id="4159784952369912983">Пурпурна</translation>
+<translation id="416219735020840807">Не може да се преземе моделот за транскрипции. Обидете се повторно или рестартирајте го вашиот уред <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4170180284036919717">Фотографирај</translation>
 <translation id="4170700058716978431">НЕУСПЕШЕН</translation>
 <translation id="4171077696775491955">намалување на осветленоста</translation>
@@ -698,6 +704,16 @@
 <translation id="4249717042534905822">во недела</translation>
 <translation id="4250229828105606438">Слика од екран</translation>
 <translation id="4251839292699800785">Модерна канцеларија</translation>
+<translation id="4252261480746798874">Кога ќе изберете „Создајте своја“, може да напишете приспособено барање. Може да изберете и „Изберете тема“, па да ги изберете подвлечените зборови за да го персонализирате вашиот AI-тапет.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Изберете „Инспирирај ме“ за да добиете повеќе уникатни и разновидни опции за слики создадени од AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Кога создавате свој тапет, барањето се испраќа до серверите на Google за да се генерираат слики и да се подобрува производот, што подлежи на <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />„Условите за користење“ и „Политиката за приватност“ на Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Не внесувајте лични, чувствителни или доверливи податоци.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративната AI може да прави грешки, што опфаќа и грешки за луѓе, па проверувајте ги одговорите. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Дознајте повеќе<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">Латенција на HTTP</translation>
 <translation id="4266143281602681663">преѓа</translation>
 <translation id="4269815121975886860">Претпочитани поставки за стартување</translation>
@@ -942,6 +958,7 @@
 <translation id="5344619683981067131">Избраниот текст се заменува со предлог</translation>
 <translation id="5346687412805619883">Локална мрежа</translation>
 <translation id="5358174242040570474">Нешто тргна наопаку. Обидете се повторно да изберете тапет или повторно отворете ја апликацијата.</translation>
+<translation id="5368228070728130240">Не може да се преземе моделот за создавање резимеа и наслови. Обидете се повторно или рестартирајте го вашиот уред <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">WiFi мрежата не е безбедна</translation>
 <translation id="5376354385557966694">Автоматски светол режим</translation>
 <translation id="5378184552853359930">Тип IP</translation>
@@ -1247,6 +1264,7 @@
 <translation id="6766275201586212568">Неуспешни одредувања со DNS</translation>
 <translation id="6768237774506518020">Висока стапка на неуспех на одредување со DNS</translation>
 <translation id="6786747875388722282">Наставки</translation>
+<translation id="6789891265243243337">Кога е вклучено аудиото на <ph name="DEVICE_TYPE" />, „Диктафон“ го снима секое аудио што се пушта на уредов</translation>
 <translation id="6791471867139427246">боја на светло на тастатурата</translation>
 <translation id="6796229976413584781">Кратенката е избришана</translation>
 <translation id="6798678288485555829">Навигација низ текстот</translation>
@@ -1718,6 +1736,7 @@
 <translation id="8930622219860340959">Безжична</translation>
 <translation id="8933650076320258356">Избраното копче е <ph name="KEYS" /> за <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">IP адреса на клиент</translation>
+<translation id="8938606491880817721">Не може да се преземе. Обидете се повторно или рестартирајте го вашиот уред <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8944651180182756621">Боја на стартерот</translation>
 <translation id="8945308580158685341">пчели</translation>
 <translation id="894617464444543719">Уредот е телефон.</translation>

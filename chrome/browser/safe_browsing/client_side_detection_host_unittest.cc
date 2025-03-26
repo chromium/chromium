@@ -3347,4 +3347,74 @@ TEST_F(
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2, 1);
 }
 
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       CatchAllScamExperimentVerdictDoesNotShowWarning) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
+               kClientSideDetectionSendLlamaForcedTriggerInfo,
+               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
+               kClientSideDetectionShowScamVerdictWarning,
+               kClientSideDetectionShowLlamaScamVerdictWarning},
+              {});
+
+  GURL example_url("http://scammybutnotshowing.com/");
+
+  // The verdict's is_phishing is true, so that we send a ping and await a
+  // response.
+  ClientPhishingRequest verdict;
+  verdict.set_url(example_url.spec());
+  verdict.set_client_score(0.8f);
+  verdict.set_is_phishing(true);
+
+  ClientSideDetectionService::ClientReportPhishingRequestCallback response_cb;
+  EXPECT_CALL(*csd_service_,
+              SendClientReportPhishingRequest(PartiallyEqualVerdict(verdict), _,
+                                              "fake_access_token"))
+      .WillOnce(MoveArg<1>(&response_cb));
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback token_cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .Times(1)
+      .WillRepeatedly(MoveArg<0>(&token_cb));
+  // Although the phishing detection done is set to TRIGGER_MODELS, it will
+  // eventually switch to FORCE_REQUEST because the verdict cache manager
+  // contains a suspicious RTLookupResponse.
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict),
+                        ClientSideDetectionType::TRIGGER_MODELS);
+  // Wait for token fetcher to be called.
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(token_cb.is_null());
+  std::move(token_cb).Run("fake_access_token");
+
+  // Token is now fetched, so we will now callback on
+  // ClientReportPhishingRequest.
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  // Now we run the callback to receive a server response. Because the callback
+  // responds with the catch all verdict, we will not show a warning.
+  UnsafeResource resource;
+  EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
+  std::move(response_cb)
+      .Run(example_url, false, net::HTTP_OK,
+           IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.ServerModelDetectsPhishing", false, 1);
+
+  // Although the warning has not been displayed, we should still check that the
+  // histogram has been logged.
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.IntelligentScanVerdict",
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL, 1);
+}
+
 }  // namespace safe_browsing

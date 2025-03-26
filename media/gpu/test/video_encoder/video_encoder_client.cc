@@ -534,9 +534,11 @@ void VideoEncoderClient::CreateEncoderTask(const RawVideo* video,
   gpu::CollectGraphicsInfoForTesting(&gpu_info);
 #endif  // BUILDFLAG(IS_WIN)
 
-  encoder_ = GpuVideoEncodeAcceleratorFactory::CreateVEA(
+  auto encoder_or_error = GpuVideoEncodeAcceleratorFactory::CreateVEA(
       config, this, gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds(),
       gpu_info.active_gpu());
+  encoder_ = encoder_or_error.has_value() ? std::move(encoder_or_error).value()
+                                          : nullptr;
 
   *success = (encoder_ != nullptr);
 

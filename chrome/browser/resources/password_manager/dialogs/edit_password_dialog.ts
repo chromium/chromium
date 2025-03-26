@@ -123,6 +123,7 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
   private note_: string;
   private conflictingUsernames_: Map<string, string>;
   private usernameErrorMessage_: string|null;
+  private canEditPassword_: boolean;
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
 

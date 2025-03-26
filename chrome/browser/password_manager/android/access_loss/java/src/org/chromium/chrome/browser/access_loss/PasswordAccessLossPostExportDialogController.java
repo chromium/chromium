@@ -15,9 +15,8 @@ import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_manager.HelpUrlLauncher;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -33,6 +32,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * passwords in the profile store (either they never had them or passwords were removed after export
  * flow).
  */
+@NullMarked
 public class PasswordAccessLossPostExportDialogController
         implements ModalDialogProperties.Controller {
     private final Context mContext;
@@ -41,7 +41,7 @@ public class PasswordAccessLossPostExportDialogController
 
     public PasswordAccessLossPostExportDialogController(
             Context context,
-            @NonNull ModalDialogManager modalDialogManager,
+            ModalDialogManager modalDialogManager,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
         mContext = context;
         mModalDialogManager = modalDialogManager;

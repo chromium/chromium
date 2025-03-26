@@ -328,4 +328,31 @@ TEST_F(CollaborationServiceImplTest, LeaveGroup) {
   run_loop.Run();
 }
 
+TEST_F(CollaborationServiceImplTest, CancelAllFlows) {
+  GURL url("http://www.example.com/");
+  data_sharing::GroupToken token(data_sharing::GroupId(kGroupId), kAccessToken);
+
+  // New join flow will be appended with a valid url parsing and will stop all
+  // conflicting flows.
+  EXPECT_CALL(mock_data_sharing_service_, ParseDataSharingUrl(url))
+      .WillRepeatedly(Return(base::ok(token)));
+  std::unique_ptr<MockCollaborationControllerDelegate> mock_delegate =
+      std::make_unique<MockCollaborationControllerDelegate>();
+  EXPECT_CALL(*mock_delegate, OnFlowFinished());
+  service_->StartJoinFlow(std::move(mock_delegate), url,
+                          CollaborationServiceJoinEntryPoint::kUnknown);
+
+  // Wait for post tasks.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return service_->GetJoinControllersForTesting().size() == 1; }));
+
+  base::RunLoop run_loop;
+  service_->CancelAllFlows(base::BindOnce(
+      [](base::RunLoop* run_loop) { run_loop->Quit(); }, &run_loop));
+
+  // Wait for post tasks.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return service_->GetJoinControllersForTesting().size() == 0; }));
+}
+
 }  // namespace collaboration

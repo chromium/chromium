@@ -46,6 +46,8 @@ class StorageAccessStatusCache {
 
   bool IsSet() const { return !std::holds_alternative<Unset>(state_); }
 
+  void Reset() { state_ = Unset{}; }
+
  private:
   // `state_` variant used when the storage access status is not set.
   struct Unset {};

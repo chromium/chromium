@@ -1586,9 +1586,6 @@ bool LockContentsView::AreMediaControlsEnabled() const {
          Shell::Get()->media_controller()->AreLockScreenMediaKeysEnabled();
 }
 
-void LockContentsView::OnWillChangeFocus(View* focused_before,
-                                         View* focused_now) {}
-
 void LockContentsView::OnDidChangeFocus(View* focused_before,
                                         View* focused_now) {
   if (!focused_before || !focused_now) {

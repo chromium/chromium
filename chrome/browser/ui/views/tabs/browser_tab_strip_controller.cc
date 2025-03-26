@@ -946,6 +946,16 @@ void BrowserTabStripController::OnSplitTabCreated(
   }
 }
 
+void BrowserTabStripController::OnSplitTabRemoved(
+    std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+    split_tabs::SplitTabId split_id,
+    SplitTabRemoveReason reason) {
+  for (const auto& tab_pair : tabs) {
+    int index = tab_pair.second;
+    tabstrip_->SetSplit(index, std::nullopt);
+  }
+}
+
 BrowserNonClientFrameView* BrowserTabStripController::GetFrameView() {
   return browser_view_->frame()->GetFrameView();
 }

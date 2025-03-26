@@ -402,6 +402,9 @@ crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-o
 # Conformance expectations
 # ========================
 
+# Failing new updated tests
+crbug.com/406187744 conformance/offscreencanvas/offscreencanvas-transfer-image-bitmap.html [ Failure ]
+
 # The validating command decoder suppressions here will not be fixed.
 # finder:disable-narrowing Intentionally broad to suppress failures until validating decoder is removed.
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/ext-texture-compression-bptc.html [ Failure ]
@@ -518,7 +521,7 @@ crbug.com/844311 [ angle-opengl mac ] conformance/glsl/misc/fragcolor-fragdata-i
 crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/1230781 [ mac amd angle-opengl ] conformance/canvas/to-data-url-test.html [ Failure ]
 crbug.com/328100306 [ amd angle-metal sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
-crbug.com/328102507 [ amd-0x7340 angle-opengl graphite-disabled mac-x86_64 sonoma ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
+crbug.com/328102507 [ amd-0x7340 angle-opengl asan graphite-disabled mac-x86_64 release sonoma ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-metal ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]

@@ -91,6 +91,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1269405891096105529">Hindi sinusuportahan ang peripheral sa Guest mode</translation>
 <translation id="1270290102613614947">Naka-disable ang on-screen na keyboard</translation>
 <translation id="1272079795634619415">Stop</translation>
+<translation id="12741168609094094">Pumili ng kahit ano sa iyong screen para maghanap, kumopya ng text, at higit pa</translation>
 <translation id="1275285675049378717">Pinapagana ang <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Pinili</translation>
 <translation id="1276975447697633661">Piliin ang file, at pagkatapos ay pindutin ang <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1720230731642245863">Naka-off ang Hotspot</translation>
 <translation id="1731815243805539470">Lumipat sa nakaraang user</translation>
 <translation id="1733996486177697563">Magpalipat-lipat sa madilim at maliwanag na tema. Pindutin nang matagal ang desktop, pagkatapos ay piliin ang Wallpaper at style.</translation>
+<translation id="1735992454301033090">Napiling area, gamitin ang mga arrow key para ilipat ito</translation>
 <translation id="1736898441010944794">Nakikita ng mga Bluetooth device ang "<ph name="NAME" />."</translation>
 <translation id="1737078180382804488">I-dismiss ang pag-set up sa pagtingin sa mga notification ng iyong telepono</translation>
 <translation id="174102739345480129">Naka-off ang marker.</translation>
@@ -494,6 +496,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> noong nakaraang linggo</translation>
 <translation id="2687510499067466116">Nagbago ang keyboard shortcut</translation>
 <translation id="2689613560355655046">Desk 8</translation>
+<translation id="2692092709110488417">Pindutin ang tab para mag-focus sa napiling area at ilipat ito</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Ipakita ang mga setting ng keyboard. Pinili ang <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Gamitin ang Content transfer app para ilipat ang data ng pampaaralang account mo sa iyong personal na account</translation>
@@ -551,6 +554,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="2872353916818027657">Pagpalitin ang pangunahing monitor</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2876338922445400217">Mag-zoom in sa screen</translation>
+<translation id="2876760662374103627">Aktibo ang pagkontrol gamit ang mukha</translation>
 <translation id="2878884018241093801">Walang kamakailang item</translation>
 <translation id="2880541185262491188">Masyadong maraming pagsubok sa PIN. Maghintay nang <ph name="TIME_LEFT" /> at subukan ulit</translation>
 <translation id="2883271196820422439">Ituloy ang mga mouse key</translation>
@@ -1032,6 +1036,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4412698727486357573">Help center</translation>
 <translation id="4412944820643904175">Naka-off ang <ph name="FEATURE_NAME" />.</translation>
 <translation id="4417647906073317561">Mga setting ng Pag-focus. Magtakda ng timer, gawain, at musika para makapag-focus.</translation>
+<translation id="4418600384772451109">Isara ang Panel</translation>
 <translation id="4424159417645388645">Desk 5</translation>
 <translation id="4426817706804363424">Mahusay!</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -1516,6 +1521,7 @@ Walang nakakonektang device.</translation>
 <translation id="595202126637698455">Naka-enable ang pagte-trace sa pagganap</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Pinangangasiwaang user</translation>
+<translation id="596035801491797438">I-off ang Pagkontrol gamit ang mukha</translation>
 <translation id="5960410286721553511">Tingnan ang mga pinakabagong larawan at media ng iyong telepono</translation>
 <translation id="5965524703725988602">I-toggle ang Madilim na tema. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Mag-navigate nang paabante sa mga window</translation>
@@ -2226,6 +2232,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8287009018010202411">Pagiging Produktibo</translation>
 <translation id="828708037801473432">Naka-off</translation>
 <translation id="8297006494302853456">Mahina</translation>
+<translation id="8300451473979404345">Napiling handle, gamitin ang mga arrow key para ilipat ito</translation>
 <translation id="8308637677604853869">Nakaraang menu</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Naka-on ang Caps Lock</translation>
@@ -2286,6 +2293,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="851458219935658693">Ipakita ang mga window mula sa kasalukuyang desk at piniling radio button</translation>
 <translation id="851660987304951246">Gamitin ang Tulungan akong magbasa para mabilis na magbuod ng content o magtanong</translation>
 <translation id="8517041960877371778">Maaaring hindi mag-charge ang iyong <ph name="DEVICE_TYPE" /> habang naka-on ito.</translation>
+<translation id="8519329096920173967">Maghanap sa aking screen gamit ang Google Lens</translation>
 <translation id="8535393432370007982">I-undo ang ayos ng pagkakasunod-sunod ayon sa kulay</translation>
 <translation id="8536886494750559755">Ipakita ang mga setting ng Quick Share. Nakikita ng lahat sa loob ng <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Nakopya ang text sa Clipboard</translation>

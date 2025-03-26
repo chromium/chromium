@@ -560,7 +560,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3380352560400387991">Site-ul încearcă să deschidă o aplicație. Astfel, vei ieși din modul incognito.</translation>
 <translation id="3392923070107623576">Organizează-te creând grupuri de file</translation>
 <translation id="3404232721752787413">Salvează în Google Foto</translation>
-<translation id="3404744938087714423">Deconectarea dezactivează sincronizarea.</translation>
 <translation id="3406506285180498376">Trimite pagina…</translation>
 <translation id="340669334496430859">Data ultimei modificări</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -780,7 +779,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4334428914252001502">Un articol necitit.</translation>
 <translation id="4338258232580025606">Nu mă pot conecta</translation>
 <translation id="4338650699862464074">Trimite la Google adresele URL ale paginilor pe care le accesezi.</translation>
-<translation id="4342054591427973606">{count,plural, =1{Adresa se va șterge de pe acest dispozitiv și de pe celelalte dispozitive conectate}few{Adresele se vor șterge de pe acest dispozitiv și de pe celelalte dispozitive conectate.}other{Adresele se vor șterge de pe acest dispozitiv și de pe celelalte dispozitive conectate.}}</translation>
 <translation id="4342946437867096381">Ai salvat deja o parolă pentru acest site în Contul Google. Google poate alege cea mai recentă parolă pentru tine.</translation>
 <translation id="4365121137632832185">Grup de file. Extins.</translation>
 <translation id="4367971618859387374">Numele afișat</translation>
@@ -1288,7 +1286,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6447842834002726250">Cookie-uri</translation>
 <translation id="6449554712554071184">Astfel, grupul va fi șters definitiv de pe dispozitiv.</translation>
 <translation id="6452534462676960500">Activitate nouă</translation>
-<translation id="6459307836338400162">Pentru mai multe setări privind confidențialitatea, securitatea și colectarea datelor, consultă <ph name="BEGIN_LINK" />Sincronizarea<ph name="END_LINK" /> și <ph name="BEGIN_LINK" />Serviciile Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Detaliile au fost ascunse</translation>
 <translation id="646394917185284261">Fișiere</translation>
 <translation id="6464397691496239022">Site-urile pot folosi cookie-uri pentru a-ți îmbunătăți experiența de navigare, de exemplu, pentru a te menține conectat(ă) sau pentru a reține articolele din coșul de cumpărături.
@@ -1638,7 +1635,6 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7933880123415105005">Caută <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Pagina a fost adăugată în lista de lecturi din contul tău, {email}}few{{count} pagini au fost adăugate în lista de lecturi din contul tău, {email}}other{{count} de pagini au fost adăugate în lista de lecturi din contul tău, {email}}}</translation>
-<translation id="7947953824732555851">Accept și conectare</translation>
 <translation id="7952670906562503188">Urmează să ștergi {passkey_count} chei de acces și lista de site-uri și aplicații pentru care ai ales să nu salvezi niciodată informațiile de conectare. Conturile pe care le-ai creat pentru site-uri și aplicații nu se vor șterge.</translation>
 <translation id="7958575506592576831">Informații privind securitatea paginii</translation>
 <translation id="7961015016161918242">Niciodată</translation>
@@ -1927,7 +1923,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9013605037177245304">Activează notificările</translation>
 <translation id="9029650858822697271">Te-ai deconectat</translation>
 <translation id="9032405509996909363">Confirmă ștergerea datelor de navigare</translation>
-<translation id="9034759925968272072">Nu vei fi deconectat(ă) de la Contul Google. Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Lățime de bandă</translation>
 <translation id="9042893549633094279">Confidențialitate și securitate</translation>
 <translation id="9055580485132823283">Urmează să ștergi {password_count} parole, {passkey_count} chei de acces și lista de site-uri și aplicații pentru care ai ales să nu salvezi niciodată informațiile de conectare. Conturile pe care le-ai creat pentru site-uri și aplicații nu se vor șterge.</translation>

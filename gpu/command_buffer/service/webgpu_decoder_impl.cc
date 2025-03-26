@@ -1612,10 +1612,17 @@ WebGPUDecoderImpl::CreateQueuedRequestDeviceCallback(
           decoder->RequestDeviceImpl(adapter.Get(), descriptor.get(),
                                      callback_info);
         } else {
+#ifdef WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
+          callback_info.callback(
+              WGPURequestDeviceStatus_CallbackCancelled, nullptr,
+              MakeStringView("Queued device request cancelled."),
+              callback_info.userdata1, callback_info.userdata2);
+#else
           callback_info.callback(
               WGPURequestDeviceStatus_InstanceDropped, nullptr,
               MakeStringView("Queued device request cancelled."),
               callback_info.userdata1, callback_info.userdata2);
+#endif  // WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
         }
       },
       base::Unretained(this), adapter, std::move(desc), callback_info);

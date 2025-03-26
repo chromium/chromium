@@ -196,7 +196,7 @@ class WebGLConformanceIntegrationTestBase(
                         ])
     # Individual extension tests.
     for extension in extension_tests:
-      yield ('WebglExtension_%s' % extension,
+      yield (f'WebglExtension_{extension}',
              os.path.join(webgl_test_util.extensions_relpath,
                           'webgl_extension_test.html'), [
                               '_RunExtensionTest',
@@ -264,8 +264,7 @@ class WebGLConformanceIntegrationTestBase(
       self.tab.Navigate(url, script_to_evaluate_on_commit=harness_script)
       self.tab.WaitForDocumentReadyStateToBeComplete(timeout=5)
       self.tab.action_runner.EvaluateJavaScript(
-          'connectWebsocket("%d")' %
-          self.__class__.websocket_server.server_port,
+          f'connectWebsocket("{self.__class__.websocket_server.server_port}")',
           timeout=WEBSOCKET_JAVASCRIPT_TIMEOUT_S)
       self.__class__.websocket_server.WaitForConnection(
           websocket_utils.GetScaledConnectionTimeout(self.child.jobs))
@@ -278,7 +277,7 @@ class WebGLConformanceIntegrationTestBase(
     gpu_info = self.browser.GetSystemInfo().gpu
     self._crash_count = gpu_info.aux_attributes['process_crash_count']
     url = self.UrlOfStaticFilePath(test_path)
-    self.tab.action_runner.EvaluateJavaScript('runTest("%s")' % url)
+    self.tab.action_runner.EvaluateJavaScript(f'runTest("{url}")')
 
   def _HandleMessageLoop(self, test_timeout: float) -> None:
     got_test_started = False
@@ -296,14 +295,14 @@ class WebGLConformanceIntegrationTestBase(
 
         if time.time() - start_time > test_timeout:
           raise RuntimeError(
-              'Hit %.3f second global timeout, but page continued to send '
-              'messages over the websocket, i.e. was not due to a renderer '
-              'crash.' % test_timeout)
+              f'Hit {test_timeout:.3f} second global timeout, but page '
+              f'continued to send messages over the websocket, i.e. was not '
+              f'due to a renderer crash.')
 
         if not got_test_started:
           if response_type != 'TEST_STARTED':
-            raise RuntimeError('Got response %s when expected a test start.' %
-                               response_type)
+            raise RuntimeError(
+                f'Got response {response_type} when expected a test start.')
           got_test_started = True
           continue
 
@@ -311,7 +310,7 @@ class WebGLConformanceIntegrationTestBase(
           continue
         if response_type == 'TEST_FINISHED':
           break
-        raise RuntimeError('Received unknown message type %s' % response_type)
+        raise RuntimeError(f'Received unknown message type {response_type}')
     except wss.WebsocketReceiveMessageTimeoutError:
       websocket_utils.HandleWebsocketReceiveTimeoutError(self.tab, start_time)
       raise

@@ -5,10 +5,25 @@
 import("//tools/json_to_struct/json_to_struct.gni")
 
 json_to_struct("prepopulated_engines") {
-  visibility = [ "//components/search_engines:*" ]
+  visibility = [
+    ":*",
+    "//components/search_engines:*",
+  ]
 
   source = "resources/definitions/prepopulated_engines.json"
   schema_file = "prepopulated_engines_schema.json"
   namespace = "TemplateURLPrepopulateData"
   deps = [ "//base" ]
+}
+
+json_to_struct("regional_settings") {
+  visibility = [ "//components/search_engines:*" ]
+
+  source = "resources/definitions/regional_settings.json"
+  schema_file = "regional_settings_schema.json"
+  namespace = "TemplateURLPrepopulateData"
+  deps = [
+    ":prepopulated_engines",
+    "//base",
+  ]
 }

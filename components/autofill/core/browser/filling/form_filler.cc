@@ -828,73 +828,59 @@ void FormFiller::MaybeTriggerRefill(
     AutofillTriggerSource trigger_source,
     base::optional_ref<const FormFieldData> field,
     base::optional_ref<const std::u16string> old_value) {
-  if (!ShouldTriggerRefill(form_structure, refill_trigger_reason)) {
+  // Should not refill if a form with the same FormGlobalId has not been filled
+  // before or if it has been refilled before.
+  RefillContext* refill_context = GetRefillContext(form_structure.global_id());
+  if (!refill_context || refill_context->attempted_refill) {
     return;
   }
+
+  // Should not refill a form that has been filled a long time ago as the UX
+  // would appear strange.
+  // TODO(crbug.com/41490871): Use form_structure.last_filling_timestamp_
+  // instead of filling_context->original_fill_time.
+  if (base::TimeDelta delta =
+          base::TimeTicks::Now() - refill_context->original_fill_time;
+      delta > limit_before_refill_) {
+    return;
+  }
+
   switch (refill_trigger_reason) {
     case RefillTriggerReason::kFormChanged:
-      ScheduleRefill(form, form_structure, AutofillTriggerSource::kFormsSeen,
-                     RefillTriggerReason::kFormChanged);
+      // Confirm that the form actually changed between filling time and
+      // parsing after filling time, and otherwise do not refill.
+      if (refill_context->filled_form &&
+          FormData::DeepEqual(form_structure.ToFormData(),
+                              *refill_context->filled_form)) {
+        return;
+      }
       break;
     case RefillTriggerReason::kSelectOptionsChanged:
-      TriggerRefill(form, AutofillTriggerSource::kSelectOptionsChanged,
-                    RefillTriggerReason::kSelectOptionsChanged);
       break;
     case RefillTriggerReason::kExpirationDateFormatted:
       CHECK(field && old_value);
       if (std::optional<std::u16string> refill_value =
               GetRefillValueForExpirationDate(*field, *old_value)) {
-        RefillContext& refill_context =
-            CHECK_DEREF(GetRefillContext(form_structure.global_id()));
-        refill_context.forced_fill_values[field->global_id()] = *refill_value;
-        ScheduleRefill(form, form_structure, trigger_source,
-                       RefillTriggerReason::kExpirationDateFormatted);
+        refill_context->forced_fill_values[field->global_id()] = *refill_value;
+        break;
       }
-      break;
+      return;
   }
-}
-
-bool FormFiller::ShouldTriggerRefill(
-    const FormStructure& form_structure,
-    RefillTriggerReason refill_trigger_reason) {
-  // Should not refill if a form with the same FormGlobalId that has not been
-  // filled before.
-  RefillContext* refill_context = GetRefillContext(form_structure.global_id());
-  if (refill_context == nullptr) {
-    return false;
-  }
-
-  // Confirm that the form changed by running a DeepEqual check on the filled
-  // form and the received form. Other trigger reasons do not need this check
-  // since they do not depend on the form changing.
-  if (refill_trigger_reason == RefillTriggerReason::kFormChanged &&
-      refill_context->filled_form &&
-      FormData::DeepEqual(form_structure.ToFormData(),
-                          *refill_context->filled_form)) {
-    return false;
-  }
-
-  // TODO(crbug.com/41490871): Use form_structure.last_filling_timestamp_
-  // instead of filling_context->original_fill_time.
-  base::TimeDelta delta =
-      base::TimeTicks::Now() - refill_context->original_fill_time;
-
-  return !refill_context->attempted_refill && delta < limit_before_refill_;
+  ScheduleRefill(form, CHECK_DEREF(refill_context), trigger_source,
+                 refill_trigger_reason);
 }
 
 void FormFiller::ScheduleRefill(const FormData& form,
-                                const FormStructure& form_structure,
+                                RefillContext& refill_context,
                                 AutofillTriggerSource trigger_source,
                                 RefillTriggerReason refill_trigger_reason) {
-  RefillContext* refill_context = GetRefillContext(form_structure.global_id());
-  DCHECK(refill_context != nullptr);
   // If a timer for the refill was already running, it means the form
   // changed again. Stop the timer and start it again.
-  if (refill_context->on_refill_timer.IsRunning()) {
-    refill_context->on_refill_timer.Stop();
+  if (refill_context.on_refill_timer.IsRunning()) {
+    refill_context.on_refill_timer.Stop();
   }
   // Start a new timer to trigger refill.
-  refill_context->on_refill_timer.Start(
+  refill_context.on_refill_timer.Start(
       FROM_HERE, kWaitTimeForDynamicForms,
       base::BindRepeating(&FormFiller::TriggerRefill,
                           weak_ptr_factory_.GetWeakPtr(), form, trigger_source,

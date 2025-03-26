@@ -2,5 +2,5 @@ include_rules = [
   "+ios/chrome/browser/ntp/shared/metrics",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/parcel_tracking",
-  "+ios/chrome/browser/ui/content_suggestions/set_up_list",
+  "+ios/chrome/browser/content_suggestions/ui_bundled/set_up_list",
 ]

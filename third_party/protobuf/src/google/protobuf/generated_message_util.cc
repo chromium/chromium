@@ -42,10 +42,6 @@ void DestroyString(const void* s) {
   static_cast<const std::string*>(s)->~basic_string();
 }
 
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ExplicitlyConstructedArenaString
-        fixed_address_empty_string{};  // NOLINT
-
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT const EmptyCord empty_cord_;
 
@@ -89,7 +85,7 @@ void InitWeakDefaults() {}
 
 PROTOBUF_CONSTINIT bool init_protobuf_defaults_state{false};
 void InitProtobufDefaultsSlow() {
-  fixed_address_empty_string.DefaultConstruct();
+  fixed_address_empty_string.Init();
   init_protobuf_defaults_state = true;
   InitWeakDefaults();
 }

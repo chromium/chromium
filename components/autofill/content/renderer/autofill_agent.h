@@ -240,6 +240,10 @@ class AutofillAgent : public content::RenderFrameObserver,
     return *field_data_manager_.get();
   }
 
+  form_util::ButtonTitlesCache* button_titles_cache() {
+    return &button_titles_cache_;
+  }
+
  protected:
   // blink::WebAutofillClient:
 
@@ -422,7 +426,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   // `source` is the type of submission requesting the submitted form.
   std::optional<FormData> GetSubmittedForm(
       mojom::SubmissionSource source,
-      std::optional<blink::WebFormElement> submitted_form_element) const;
+      std::optional<blink::WebFormElement> submitted_form_element);
 
   void ResetLastInteractedElements();
   // A form_id means that the user last interacted with a FormElement.
@@ -536,6 +540,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   // by user, etc. (see FieldPropertiesMask).
   scoped_refptr<FieldDataManager> field_data_manager_ =
       base::MakeRefCounted<FieldDataManager>();
+
+  // Stores the mapping from a form element's ID to results of button titles
+  // heuristics for that form.
+  form_util::ButtonTitlesCache button_titles_cache_;
 
   // State for, and only for, HandleFocusChangeComplete().
   struct Caret {

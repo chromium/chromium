@@ -60,12 +60,17 @@ source_set("permission_checking") {
   frameworks = [ "AVFoundation.framework" ]
 }
 
+source_set("agent_process_broker_constants") {
+  sources = [ "agent_process_broker_constants.h" ]
+}
+
 source_set("agent_process_broker_client") {
   sources = [
     "agent_process_broker_client.cc",
     "agent_process_broker_client.h",
   ]
   deps = [
+    ":agent_process_broker_constants",
     "//base",
     "//components/named_mojo_ipc_server",
     "//mojo/public/cpp/platform",
@@ -98,6 +103,7 @@ source_set("agent_process_broker") {
     "agent_process_broker.h",
   ]
   deps = [
+    ":agent_process_broker_constants",
     "//base",
     "//components/named_mojo_ipc_server",
     "//mojo/public/cpp/platform",

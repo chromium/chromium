@@ -9,6 +9,12 @@ states and transitions between them.
 
 See the [Getting Started with Public Transit](getting_started.md) guide.
 
+See some example tests:
+
+* [ExampleAutoResetCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleAutoResetCtaTest.java)
+* [ExampleFreshCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleFreshCtaTest.java)
+* [ExampleReusedCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleReusedCtaTest.java)
+
 ## Why Use Public Transit?
 
 **Scalability**
@@ -155,6 +161,9 @@ The `BatchedPublicTransitRule` is not necessary. Returning to the home station
 is not necessary. However, this does not run as fast as "reusing the Activity"
 below, especially in Release.
 
+
+Example: [ExampleFreshCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleFreshCtaTest.java)
+
 #### How to Batch reusing the Activity between tests but resetting tab state
 
 This keeps the Activity, but closes all tabs between tests and returns to a
@@ -170,6 +179,8 @@ Using `AutoResetCtaTransitTestRule`:
 Tests don't need to return to the home station. Only some reset paths are
 supported - this is best effort since this reset transition is not part of a
 regular user flow.
+
+Example: [ExampleAutoResetCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleAutoResetCtaTest.java)
 
 #### How to Batch reusing the Activity between tests staying on the same state
 
@@ -188,6 +199,8 @@ Using `ReusedCtaTransitTestRule`:
 Each test should return to the home station. If a test does not end in the
 home station, it will fail (if it already hasn't) with a descriptive message.
 The following tests will also fail right at the start.
+
+Example: [ExampleReusedCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleReusedCtaTest.java)
 
 ### ViewPrinter
 

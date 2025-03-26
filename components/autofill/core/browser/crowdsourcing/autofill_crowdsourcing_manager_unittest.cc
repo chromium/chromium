@@ -472,8 +472,6 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITest) {
     ASSERT_EQ(1U, buckets.size());
     EXPECT_GT(buckets[0].count, 0);
   }
-  histogram.ExpectUniqueSample(
-      AutofillCrowdsourcingManager::kUmaApiUrlIsTooLong, false, 1);
 
   // Inspect the request that the test URL loader sent.
   network::TestURLLoaderFactory::PendingRequest* request =
@@ -554,9 +552,6 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITestWhenTooLongUrl) {
   // Verify that the logged method is POST.
   histogram.ExpectUniqueSample(AutofillCrowdsourcingManager::kUmaMethod,
                                METHOD_POST, 1);
-  // Verify that too long URL is tracked.
-  histogram.ExpectUniqueSample(
-      AutofillCrowdsourcingManager::kUmaApiUrlIsTooLong, true, 1);
 
   // Get the latest request that the test URL loader sent.
   network::TestURLLoaderFactory::PendingRequest* request =

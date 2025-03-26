@@ -129,12 +129,19 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   std::string GetMatchContents(const base::Value::Dict& result,
                                SuggestionType suggestion_type) const;
 
-  // Helper method to get user-readable (e.g. 'chromium is awesome document')
-  // fields that can be used to compare input similarity. Non-user-readable
-  // fields (e.g. 'doc_id=123/locations/global') should be excluded because the
-  // input matching that would be a coincidence and not a sign the user wanted
-  // this suggestion. Does not return fields already returned by
-  // `GetMatchDescription()` and `GetMatchContents()`.
+  // Helper method to get a localized metadata string depending on which of
+  // `update_time`, `owner`, and `file_type_description` exist.
+  std::u16string GetLocalizedContentMetadata(
+      const std::u16string& update_time,
+      const std::u16string& owner,
+      const std::u16string& file_type_description) const;
+
+  // Helper method to get user-readable (e.g. 'chromium is awesome
+  // document') fields that can be used to compare input similarity.
+  // Non-user-readable fields (e.g. 'doc_id=123/locations/global') should be
+  // excluded because the input matching that would be a coincidence and not
+  // a sign the user wanted this suggestion. Does not return fields already
+  // returned by `GetMatchDescription()` and `GetMatchContents()`.
   std::vector<std::string> GetAdditionalScoringFields(
       const base::Value::Dict& result,
       SuggestionType suggestion_type) const;

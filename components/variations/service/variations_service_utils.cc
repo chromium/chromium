@@ -51,7 +51,9 @@ std::string GetCurrentCountryCode(const VariationsService* variations) {
   // Since variations doesn't provide a permanent country by default on things
   // like local builds, we try to fall back to the country_codes component which
   // should always have one.
-  return country.empty() ? country_codes::GetCurrentCountryCode() : country;
+  return country.empty()
+             ? std::string(country_codes::GetCurrentCountryID().CountryCode())
+             : country;
 }
 
 }  // namespace variations

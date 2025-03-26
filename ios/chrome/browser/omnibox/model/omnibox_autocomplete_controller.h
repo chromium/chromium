@@ -15,6 +15,7 @@ class AutocompleteResult;
 @class AutocompleteResultWrapper;
 class OmniboxController;
 @protocol OmniboxAutocompleteControllerDelegate;
+@protocol OmniboxAutocompleteControllerDebuggerDelegate;
 @class OmniboxTextController;
 class OmniboxViewIOS;
 
@@ -25,6 +26,10 @@ class OmniboxViewIOS;
 
 /// Delegate of the omnibox autocomplete controller.
 @property(nonatomic, weak) id<OmniboxAutocompleteControllerDelegate> delegate;
+
+/// Debugger delegate of the omnibox autocomplete controller.
+@property(nonatomic, weak) id<OmniboxAutocompleteControllerDebuggerDelegate>
+    debuggerDelegate;
 
 /// Autcomplete result wrapper.
 @property(nonatomic, strong)

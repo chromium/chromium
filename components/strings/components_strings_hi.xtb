@@ -697,7 +697,6 @@
 <translation id="2187317261103489799">पता लगाएं (डिफ़ॉल्ट)</translation>
 <translation id="2188375229972301266">नीचे की ओर एक से ज़्यादा पंच</translation>
 <translation id="2194856509914051091">इन बातों का ध्यान रखें</translation>
-<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" /> के बारे में ज़्यादा जानें</translation>
 <translation id="2200678913752027654">'नापसंद' बटन. आपको यह सुझाव क्यों पसंद नहीं आया, इस बारे में ज़्यादा जानकारी देने के लिए फ़ॉर्म सबमिट करें. इस फ़ॉर्म को खोलने के लिए, Enter दबाएं</translation>
 <translation id="2202627062836089804">अपने कार्ड के पिछले हिस्से</translation>
 <translation id="2204482073374652408">अपडेट पूरा हुआ!</translation>
@@ -902,6 +901,7 @@
 <translation id="2539524384386349900">पता लगाएं</translation>
 <translation id="2541219929084442027">आप गुप्त टैब का इस्तेमाल करके जो पेज देखते हैं वे आपके गुप्त टैब बंद कर देने के बाद, आपके ब्राउज़र के इतिहास, कुकी संग्रह, या खोज इतिहास में नहीं रहेंगे. आपकी डाउनलोड की गई सभी फ़ाइलें या बनाए गए बुकमार्क रहेंगे.</translation>
 <translation id="2542106216580219892">सर्फ़िंग</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – फ़ुल स्क्रीन से बाहर निकलने के लिए |<ph name="ACCELERATOR" />| को दबाकर रखें</translation>
 <translation id="2544546346215446551">आपके एडमिन ने आपके डिवाइस को रीस्टार्ट किया है</translation>
 <translation id="2544644783021658368">एक दस्तावेज़</translation>
 <translation id="254524874071906077">Chrome को सामान्य ब्राउज़र के रूप में सेट करें</translation>
@@ -1809,6 +1809,7 @@
 <translation id="4150099059797363385">चाइनीज़ #4 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="4151403195736952345">वैश्‍विक डिफ़ॉल्‍ट का उपयोग करें (पता करें)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{पेज 1}one{पेज {COUNT}}other{पेज {COUNT}}}</translation>
+<translation id="4152670763139331043">{NUM_TABS,plural, =1{1 टैब}one{# टैब}other{# टैब}}</translation>
 <translation id="4154277373259957087">पेमेंट के तरीके भरने से पहले, Chrome आपकी पहचान की पुष्टि करेगा. <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> में जाकर, इसे कभी भी अपडेट किया जा सकता है.</translation>
 <translation id="415440494507469262">तुलना करने वाली टेबल में टैब जोड़ें</translation>
 <translation id="4159784952369912983">बैंगनी</translation>
@@ -2531,7 +2532,6 @@
             <ph name="LIST_ITEM" />फ़ॉर्म में डाली गई जानकारी
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">दूसरी तरफ़ सीधा करके रखें</translation>
-<translation id="5445340838622821110">समय के साथ पेमेंट करने पर, एक-बार इस्तेमाल किया जा सकने वाला वर्चुअल कार्ड नंबर अपने-आप भर जाता है. यह नंबर सिर्फ़ इस खरीदारी के लिए है. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" /> को आपकी सेव की गई जानकारी का इस्तेमाल करने की अनुमति दें</translation>
 <translation id="5451331376824595378">जब Chrome, सुरक्षा से जुड़ी गतिविधियों के बारे में फ़्लैग करता है, तो इवेंट से जुड़ा ज़रूरी डेटा आपके एडमिन को भेजा जाता है. इसमें कई तरह का डेटा शामिल हो सकता है. जैसे, Chrome पर आपके विज़िट किए गए पेजों के यूआरएल, उन पेजों के यूआरएल जिनसे आपने डेटा कॉपी किया है, फ़ाइल के नाम या मेटाडेटा, आईपी पते, ब्राउज़र या टैब बंद होने की जानकारी. इसमें वह उपयोगकर्ता नाम भी शामिल हो सकता है जिसका इस्तेमाल आपके डिवाइस में, वेब पर आधारित ऐप्लिकेशन और Chrome में साइन इन करने के लिए किया जाता है.</translation>
 <translation id="5452270690849572955">यह <ph name="HOST_NAME" /> पेज नहीं पाया जा सकता</translation>
@@ -3933,6 +3933,7 @@
 <translation id="7887885240995164102">पिक्चर में पिक्चर चालू करें</translation>
 <translation id="7888575728750733395">प्रिंट रेंडरिंग इंटेंट</translation>
 <translation id="7890748547282909375">स्क्रीनशॉट सेव करने के लिए, Microsoft OneDrive में साइन इन करें</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – अपना कर्सर दिखाने के लिए |<ph name="ACCELERATOR" />| दबाएं</translation>
 <translation id="7892865709991296481">पेमेंट सेटिंग</translation>
 <translation id="7894280532028510793">अगर स्पेलिंग सही है, तो <ph name="BEGIN_LINK" />Network Diagnostics ऐप्लिकेशन चलाकर देखें<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">7 x 9 इंच का लिफ़ाफ़ा</translation>
@@ -3999,7 +4000,6 @@
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />अपनी कुकी मिटाकर देखें<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">10 x 11 इंच</translation>
 <translation id="8012647001091218357">हम इस समय आपके अभिभावकों तक नहीं पहुंच पा रहे हैं. कृपया फिर से प्रयास करें.</translation>
-<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">ट्रैवल एजेंसी और सेवाएं</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome को सिस्टम के डिफ़ॉल्ट ब्राउज़र के रूप में सेट करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="8027077570865220386">ट्रे 15</translation>
@@ -4627,6 +4627,7 @@
 <translation id="9155646082713385498">पत्रिकाएं</translation>
 <translation id="9157595877708044936">सेट अप कर रहा है...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> में संवेदनशील कॉन्टेंट हो सकता है}one{<ph name="FILE_COUNT" /> फ़ाइल में संवेदनशील कॉन्टेंट हो सकता है}other{<ph name="FILE_COUNT" /> फ़ाइलों में संवेदनशील कॉन्टेंट हो सकता है}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – फ़ुल स्क्रीन से बाहर निकलने के लिए |<ph name="ACCELERATOR" />| दबाएं</translation>
 <translation id="9165305804774426672">आपने जिन साइटों पर विज़िट किया है वे भी आपकी पसंद का अनुमान लगा सकती हैं. ऐसा किसी साइट पर आपकी गतिविधि के आधार पर तय होता है. उदाहरण के लिए, अगर आपने किसी साइट पर लंबी दूरी की दौड़ के लिए जूते खोजे हैं, तो वह साइट यह अनुमान लगा सकती है कि आपकी दिलचस्पी मैराथन दौड़ने में है.</translation>
 <translation id="9166851138617700776">साइट के सुझाए गए विज्ञापनों और विज्ञापन की परफ़ॉर्मेंस का आकलन करने के बारे में ज़्यादा जानें</translation>
 <translation id="9167054383925257837">ब्राउज़र और डिवाइस के ओएस की जानकारी (जैसे- ब्राउज़र और ओएस के वर्शन)</translation>

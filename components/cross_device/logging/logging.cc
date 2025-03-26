@@ -16,17 +16,17 @@ CrossDeviceScopedLogMessage::~CrossDeviceScopedLogMessage() {
   const std::string string_from_stream = stream_.str();
   CrossDeviceLogBuffer::GetInstance()->AddLogMessage(
       CrossDeviceLogBuffer::LogMessage(string_from_stream, feature_,
-                                       base::Time::Now(), std::string(file_),
-                                       line_, severity_));
+                                       base::Time::Now(), file_.data(), line_,
+                                       severity_));
 
   // Don't emit VERBOSE-level logging to the standard logging system.
   if (severity_ <= logging::LOGGING_VERBOSE &&
-      logging::GetVlogLevelHelper(file_) <= 0) {
+      logging::GetVlogLevelHelper(file_.data(), file_.size()) <= 0) {
     return;
   }
 
   // The destructor of |log_message| also creates a log for the standard logging
   // system.
-  logging::LogMessage log_message(file_, line_, severity_);
+  logging::LogMessage log_message(file_.data(), line_, severity_);
   log_message.stream() << string_from_stream;
 }

@@ -1643,7 +1643,7 @@ def make_steps_of_ce_reactions(cg_context):
 
     nodes = [
         TextNode("// [CEReactions]"),
-        TextNode("CEReactionsScope ce_reactions_scope;"),
+        TextNode("CEReactionsScope ce_reactions_scope(${isolate});"),
     ]
 
     nodes[-1].accumulate(

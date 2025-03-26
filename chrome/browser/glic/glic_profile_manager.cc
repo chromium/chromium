@@ -136,44 +136,23 @@ void GlicProfileManager::OnLoadingClientForService(GlicKeyedService* glic) {
   }
 }
 
+void GlicProfileManager::OnUnloadingClientForService(GlicKeyedService* glic) {
+  if (last_loaded_glic_ && last_loaded_glic_.get() == glic) {
+    last_loaded_glic_.reset();
+  }
+}
+
 bool GlicProfileManager::ShouldPreloadForProfile(Profile* profile) const {
-  if (!GlicEnabling::IsReadyForProfile(profile) ||
-      !base::FeatureList::IsEnabled(features::kGlicWarming)) {
-    return false;
-  }
+  return CanPreloadForProfile(profile) &&
+         base::FeatureList::IsEnabled(features::kGlicWarming) &&
+         GlicEnabling::IsReadyForProfile(profile);
+}
 
-  if (last_loaded_glic_ && last_loaded_glic_->profile() == profile) {
-    return false;
-  }
-
-  if (last_active_glic_ && last_active_glic_->profile() == profile) {
-    return false;
-  }
-
-  // Code below adapted from WebUIContentsPreloadManager.
-  if (profile->ShutdownStarted()) {
-    return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(features::kGlicWarmMultiple) &&
-      last_active_glic_) {
-    if (last_active_glic_->window_controller().IsShowing() ||
-        last_active_glic_->window_controller()
-            .fre_controller()
-            ->IsShowingDialog()) {
-      return false;
-    }
-  }
-
-  // Don't preload if under heavy memory pressure.
-  // TODO(crbug.com/390719004): Look at discarding when pressure increases.
-  if (GetCurrentPressureLevel() >=
-      base::MemoryPressureMonitor::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_MODERATE) {
-    return false;
-  }
-
-  return true;
+bool GlicProfileManager::ShouldPreloadFreForProfile(Profile* profile) const {
+  return CanPreloadForProfile(profile) &&
+         base::FeatureList::IsEnabled(features::kGlicFreWarming) &&
+         // We only want to preload the FRE if it has not been completed.
+         !GlicEnabling::IsEnabledAndConsentForProfile(profile);
 }
 
 GlicKeyedService* GlicProfileManager::GetLastActiveGlic() const {
@@ -238,17 +217,47 @@ void GlicProfileManager::ForceMemoryPressureForTesting(
   g_forced_memory_pressure_level_ = level;
 }
 
-base::MemoryPressureMonitor::MemoryPressureLevel
-GlicProfileManager::GetCurrentPressureLevel() const {
+bool GlicProfileManager::IsUnderMemoryPressure() const {
+  // TODO(crbug.com/390719004): Look at discarding when pressure increases.
+  base::MemoryPressureMonitor::MemoryPressureLevel memory_pressure = base::
+      MemoryPressureMonitor::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE;
   if (g_forced_memory_pressure_level_) {
-    return *g_forced_memory_pressure_level_;
+    memory_pressure = *g_forced_memory_pressure_level_;
+  } else if (const auto* memory_monitor = base::MemoryPressureMonitor::Get()) {
+    memory_pressure = memory_monitor->GetCurrentPressureLevel();
   }
-  const auto* memory_monitor = base::MemoryPressureMonitor::Get();
-  if (!memory_monitor) {
-    return base::MemoryPressureMonitor::MemoryPressureLevel::
-        MEMORY_PRESSURE_LEVEL_NONE;
+  return memory_pressure >= base::MemoryPressureMonitor::MemoryPressureLevel::
+                                MEMORY_PRESSURE_LEVEL_MODERATE;
+}
+
+bool GlicProfileManager::CanPreloadForProfile(Profile* profile) const {
+  if (!profile) {
+    return false;
   }
-  return memory_monitor->GetCurrentPressureLevel();
+
+  if (!GlicEnabling::IsEnabledForProfile(profile)) {
+    return false;
+  }
+
+  if (last_active_glic_ && last_active_glic_->profile() == profile) {
+    return false;
+  }
+
+  if (last_loaded_glic_ && last_loaded_glic_->profile() == profile) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kGlicWarmMultiple) &&
+      last_active_glic_) {
+    if (last_active_glic_->window_controller().IsShowing() ||
+        last_active_glic_->window_controller()
+            .fre_controller()
+            ->IsShowingDialog()) {
+      return false;
+    }
+  }
+
+  return !profile->ShutdownStarted() && !IsUnderMemoryPressure();
 }
 
 }  // namespace glic

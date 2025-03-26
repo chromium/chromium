@@ -364,6 +364,10 @@
       status: "stable",
     },
     {
+      name: "AllowPreloadingWithCSPMetaTag",
+      status: "experimental",
+    },
+    {
       name: "AllowSameSiteNoneCookiesInSandbox",
       base_feature: "none",
 
@@ -1772,10 +1776,6 @@
     },
     {
       name: "DOMPartsAPIMinimal",
-    },
-    {
-      name: "DragImageNoNodeId",
-      status: "stable",
     },
     // Dynamically change the safe area insets based on the bottom browser
     // controls visibility.
@@ -4854,6 +4854,12 @@
     {
       // https://chromestatus.com/feature/5077691662073856
       name: "WebAudioBypassOutputBuffering",
+      status: {
+        "Win": "stable",
+        "ChromeOS": "stable",
+        "Mac": "stable",
+        "Linux": "stable",
+      },
     },
     {
       // https://chromestatus.com/feature/5077691662073856

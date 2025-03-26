@@ -207,7 +207,6 @@ Tänk på detta:
   • Om du synkroniserar historiken med Google-kontot kan mätvärdena även innehålla information om webbadresser du besöker.<ph name="END_INDENT" /></translation>
 <translation id="5932787118589620366">Radera webbinformation i Chromium.</translation>
 <translation id="593808800391107017">Få varningar om integritets- eller säkerhetsproblem som identifieras automatiskt av Chromium.</translation>
-<translation id="5945387852661427312">Du håller på att logga in med ett konto som hanteras av <ph name="DOMAIN" /> vilket ger administratören kontroll över data i Chromium. Din data kopplas permanent till det här kontot. Om du loggar ut från Chromium raderas all din data från enheten, men den lagras fortfarande på Google-kontot.</translation>
 <translation id="5951593919357934226">Få ut mesta möjliga av Chromium.</translation>
 <translation id="5985254578475526217">Om du vill få aviseringar från Chromium aktiverar du aviseringar i iOS-inställningarna</translation>
 <translation id="6104024151682120539">Öppna i Chromium</translation>

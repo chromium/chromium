@@ -53,6 +53,23 @@ TEST(StorageAccessStatusCacheTest, GetStatusForThirdPartyContext_Unset) {
 }
 #endif  // GTEST_HAS_DEATH_TEST
 
+TEST(StorageAccessStatusCacheTest, Reset) {
+  StorageAccessStatusCache status(
+      net::cookie_util::StorageAccessStatus::kActive);
+  EXPECT_TRUE(status.IsSet());
+  status.Reset();
+  EXPECT_FALSE(status.IsSet());
+}
+
+#ifdef GTEST_HAS_DEATH_TEST
+TEST(StorageAccessStatusCacheTest, GetStatusForThirdPartyContext_AfterReset) {
+  StorageAccessStatusCache status(
+      net::cookie_util::StorageAccessStatus::kActive);
+  status.Reset();
+  EXPECT_CHECK_DEATH(status.GetStatusForThirdPartyContext());
+}
+#endif  // GTEST_HAS_DEATH_TEST
+
 }  // namespace
 
 }  // namespace net

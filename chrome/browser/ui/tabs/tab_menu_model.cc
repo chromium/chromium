@@ -39,6 +39,7 @@ using base::UserMetricsAction;
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kAddANoteTabMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kSplitTabsMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kUnsplitTabsMenuItem);
 
 TabMenuModel::TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                            TabMenuModelDelegate* tab_menu_model_delegate,
@@ -132,10 +133,16 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
     SetElementIdentifierAt(GetItemCount() - 1, kAddToNewGroupItemIdentifier);
   }
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    AddItemWithStringId(TabStripModel::CommandAddToSplit,
-                        IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT);
-    SetEnabledAt(GetItemCount() - 1, num_tabs == 1);
-    SetElementIdentifierAt(GetItemCount() - 1, kSplitTabsMenuItem);
+    if (!tab_strip->IsTabSplit(index)) {
+      AddItemWithStringId(TabStripModel::CommandAddToSplit,
+                          IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT);
+      SetEnabledAt(GetItemCount() - 1, num_tabs == 1);
+      SetElementIdentifierAt(GetItemCount() - 1, kSplitTabsMenuItem);
+    } else {
+      AddItemWithStringId(TabStripModel::CommandRemoveSplit,
+                          IDS_TAB_CXMENU_REMOVE_SPLIT);
+      SetElementIdentifierAt(GetItemCount() - 1, kUnsplitTabsMenuItem);
+    }
   }
 
   for (const auto& selection : indices) {
@@ -152,7 +159,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
         commerce::ProductSpecificationsServiceFactory::GetForBrowserContext(
             tab_strip->profile());
     if (commerce::ExistingComparisonTableSubMenuModel::ShouldShowSubmenu(
-            tab_strip->GetActiveWebContents()->GetLastCommittedURL(),
+            tab_strip->GetWebContentsAt(index)->GetLastCommittedURL(),
             product_specs_service)) {
       // Create submenu with existing comparison tables.
       add_to_existing_comparison_table_submenu_ =

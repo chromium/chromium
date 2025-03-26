@@ -4,8 +4,9 @@
 
 #include "chrome/browser/glic/glic_pref_names.h"
 
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
+#include "ui/base/accelerators/command.h"
 
 namespace glic::prefs {
 
@@ -15,6 +16,14 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kGlicGeolocationEnabled, false);
   registry->RegisterBooleanPref(kGlicTabContextEnabled, false);
   registry->RegisterBooleanPref(kGlicCompletedFre, false);
+}
+
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kGlicLauncherEnabled, false);
+  registry->RegisterStringPref(
+      prefs::kGlicLauncherHotkey,
+      ui::Command::AcceleratorToString(
+          GlicLauncherConfiguration::GetDefaultHotkey()));
 }
 
 }  // namespace glic::prefs

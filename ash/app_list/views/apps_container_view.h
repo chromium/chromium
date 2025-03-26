@@ -123,7 +123,6 @@ class ASH_EXPORT AppsContainerView
   DropCallback GetDropCallback(const ui::DropTargetEvent& event) override;
 
   // views::FocusChangeListener overrides:
-  void OnWillChangeFocus(View* focused_before, View* focused_now) override {}
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
   // AppListPage overrides:

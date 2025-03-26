@@ -12,6 +12,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/structured_shared_memory.h"
+#include "components/performance_manager/scenario_api/performance_scenario_memory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_scenarios {

@@ -225,12 +225,17 @@ bool AnchorPositionScrollData::IsFallbackPositionValid(
 
   for (const NonOverflowingScrollRange& range :
        *non_overflowing_scroll_ranges) {
-    if (range.anchor_element != new_adjustment_data.anchor_element) {
+    const Element* range_element = new_adjustment_data.anchor_element;
+    const Element* new_element = range.anchor_element;
+    const LayoutObject* range_object =
+        range_element ? range_element->GetLayoutObject() : nullptr;
+    const LayoutObject* new_object =
+        new_element ? new_element->GetLayoutObject() : nullptr;
+    if (new_object != range_object) {
       // The range was calculated with a different anchor object. Check if the
       // anchored element (which previously overflowed with the try option that
       // specified that anchor) will become non-overflowing with that option.
-      if (range.Contains(
-              TotalOffset(range.anchor_element->GetLayoutObject()))) {
+      if (range.Contains(TotalOffset(range_object))) {
         return false;
       }
     } else {

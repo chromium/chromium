@@ -231,13 +231,9 @@ const std::string kGoodJsonResponseImageUrls = base::StringPrintf(
             "name": "sundar",
             "derivedStructData": {
               "name": {
-                "display_name_lower": "john doe",
                 "familyName": "Doe",
                 "givenName": "John",
-                "given_name_lower": "john",
-                "family_name_lower": "doe",
-                "displayName": "John Doe",
-                "userName": "john"
+                "displayName": "John Doe"
               },
               "emails": [
                 {
@@ -246,7 +242,7 @@ const std::string kGoodJsonResponseImageUrls = base::StringPrintf(
                 }
               ],
               "displayPhoto": {
-                "url": "https://example.com/image.png"
+                "url": "https://lh3.googleusercontent.com/some/path"
               }
             }
           },
@@ -258,13 +254,9 @@ const std::string kGoodJsonResponseImageUrls = base::StringPrintf(
             "name": "sundar2",
             "derivedStructData": {
               "name": {
-                "display_name_lower": "john doe2",
                 "familyName": "Doe2",
                 "givenName": "John",
-                "given_name_lower": "john",
-                "family_name_lower": "doe2",
-                "displayName": "John Doe2",
-                "userName": "john2"
+                "displayName": "John Doe2"
               },
               "emails": [
                 {
@@ -273,7 +265,7 @@ const std::string kGoodJsonResponseImageUrls = base::StringPrintf(
                 }
               ],
               "displayPhoto": {
-                "url": "https://lh3.googleusercontent.com/some/path"
+                "url": "https://lh3.googleusercontent.com/some/path=s100"
               }
             }
           },
@@ -285,13 +277,9 @@ const std::string kGoodJsonResponseImageUrls = base::StringPrintf(
             "name": "sundar3",
             "derivedStructData": {
               "name": {
-                "display_name_lower": "john doe3",
                 "familyName": "Doe3",
                 "givenName": "John",
-                "given_name_lower": "john",
-                "family_name_lower": "doe3",
-                "displayName": "John Doe3",
-                "userName": "john3"
+                "displayName": "John Doe3"
               },
               "emails": [
                 {
@@ -300,7 +288,30 @@ const std::string kGoodJsonResponseImageUrls = base::StringPrintf(
                 }
               ],
               "displayPhoto": {
-                "url": "https://lh3.googleusercontent.com/some/path=s100"
+                "url": "https://lh3.googleusercontent.com/some/path=abc"
+              }
+            }
+          },
+          "dataStore": "project 1"
+        },
+        {
+          "suggestion": "john4@example.com",
+          "document": {
+            "name": "sundar4",
+            "derivedStructData": {
+              "name": {
+                "familyName": "Doe4",
+                "givenName": "John",
+                "displayName": "John Doe4"
+              },
+              "emails": [
+                {
+                  "type": "primary",
+                  "value": "john4@example.com"
+                }
+              ],
+              "displayPhoto": {
+                "url": "https://lh3.googleusercontent.com/some/path=w100-h200"
               }
             }
           },
@@ -710,21 +721,27 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseAndModifyImageUrls) {
   ParseResponse(kGoodJsonResponseImageUrls);
 
   ACMatches matches = provider_->matches_;
-  ASSERT_EQ(matches.size(), 3u);
+  ASSERT_EQ(matches.size(), 4u);
 
   EXPECT_EQ(matches[0].contents, u"john@example.com");
   EXPECT_EQ(matches[0].description, u"John Doe");
-  EXPECT_EQ(matches[0].image_url, GURL("https://example.com/image.png"));
+  EXPECT_EQ(matches[0].image_url,
+            GURL("https://lh3.googleusercontent.com/some/path=s64"));
 
   EXPECT_EQ(matches[1].contents, u"john2@example.com");
   EXPECT_EQ(matches[1].description, u"John Doe2");
   EXPECT_EQ(matches[1].image_url,
-            GURL("https://lh3.googleusercontent.com/some/path=s64"));
+            GURL("https://lh3.googleusercontent.com/some/path=s100"));
 
   EXPECT_EQ(matches[2].contents, u"john3@example.com");
   EXPECT_EQ(matches[2].description, u"John Doe3");
   EXPECT_EQ(matches[2].image_url,
-            GURL("https://lh3.googleusercontent.com/some/path=s100"));
+            GURL("https://lh3.googleusercontent.com/some/path=abc-s64"));
+
+  EXPECT_EQ(matches[3].contents, u"john4@example.com");
+  EXPECT_EQ(matches[3].description, u"John Doe4");
+  EXPECT_EQ(matches[3].image_url,
+            GURL("https://lh3.googleusercontent.com/some/path=w100-h200"));
 }
 
 // Test results with missing expected fields are skipped.

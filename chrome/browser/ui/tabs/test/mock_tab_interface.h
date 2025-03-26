@@ -18,6 +18,7 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
   MockTabInterface();
   ~MockTabInterface() override;
 
+  MOCK_METHOD(base::WeakPtr<TabInterface>, GetWeakPtr, (), (override));
   MOCK_METHOD(content::WebContents*, GetContents, (), (const, override));
   MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(base::CallbackListSubscription,

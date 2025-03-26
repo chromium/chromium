@@ -4,6 +4,7 @@
 
 #include "ash/system/tray/tray_event_filter.h"
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/root_window_controller.h"
@@ -11,11 +12,11 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
+#include "ash/system/network/network_detailed_view.h"
 #include "ash/system/notification_center/ash_message_popup_collection.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/views/ash_notification_expand_button.h"
 #include "ash/system/notification_center/views/ash_notification_view.h"
-#include "ash/system/network/network_detailed_view.h"
-#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/tray_constants.h"
@@ -79,8 +80,11 @@ class TestTrayBackgroundView : public TrayBackgroundView {
   }
 
   void ShowBubble() override {
-    auto bubble_view = std::make_unique<TrayBubbleView>(
-        CreateInitParamsForTrayBubble(/*tray=*/this));
+    TrayBubbleView::InitParams init_params =
+        CreateInitParamsForTrayBubble(/*tray=*/this);
+    init_params.close_on_deactivate = close_on_deactivate_;
+
+    auto bubble_view = std::make_unique<TrayBubbleView>(init_params);
     bubble_view->SetPreferredSize(gfx::Size(kTrayMenuWidth, 100));
     bubble_ = std::make_unique<TrayBubbleWrapper>(this,
                                                   /*event_handling=*/true);
@@ -95,6 +99,8 @@ class TestTrayBackgroundView : public TrayBackgroundView {
     return clicked_outside_bubble_called_;
   }
 
+  void set_close_on_deactivate(bool close) { close_on_deactivate_ = close; }
+
  private:
   void OnButtonPressed(const ui::Event& event) {
     if (bubble_) {
@@ -106,6 +112,21 @@ class TestTrayBackgroundView : public TrayBackgroundView {
 
   std::unique_ptr<TrayBubbleWrapper> bubble_;
   bool clicked_outside_bubble_called_ = false;
+
+  // Whether to close the bubble on deactivation.
+  bool close_on_deactivate_ = true;
+};
+
+class ScopedChromeVox {
+ public:
+  ScopedChromeVox() {
+    Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(
+        true);
+  }
+  ~ScopedChromeVox() {
+    Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(
+        false);
+  }
 };
 
 }  // namespace
@@ -408,6 +429,50 @@ TEST_F(TrayEventFilterTest, NotCloseTrayBubbleWhenTranscientChildActivated) {
   // Since a transcient child of the bubble is activated, the bubble should
   // remain open.
   EXPECT_TRUE(system_tray->bubble());
+}
+
+TEST_F(TrayEventFilterTest, FocusChangeWithChromeVox) {
+  ScopedChromeVox scoped_chrome_vox;
+  ASSERT_TRUE(
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled());
+
+  auto* status_area = GetPrimaryShelf()->GetStatusAreaWidget();
+  ASSERT_TRUE(status_area);
+
+  // Simulate tray bubbles that do not close on deactivation.
+  test_tray_background_view()->set_close_on_deactivate(false);
+
+  // Clicking outside bubble with no activatable widget should close the bubble
+  // and focus the tray.
+  ShowTestBubble();
+  ClickOutsideWidget(GetTestBubbleWidget());
+  EXPECT_FALSE(test_tray_background_view()->bubble());
+  EXPECT_TRUE(status_area->IsActive());
+  EXPECT_TRUE(test_tray_background_view()->HasFocus());
+
+  // Creating and activating window should close the bubble and have the window
+  // activated.
+  ShowTestBubble();
+  std::unique_ptr<views::Widget> widget(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
+  EXPECT_TRUE(widget->IsActive());
+  EXPECT_FALSE(test_tray_background_view()->bubble());
+  EXPECT_FALSE(test_tray_background_view()->HasFocus());
+
+  // Clicking outside a bubble with a window should close the bubble and focus
+  // back to the tray.
+  ShowTestBubble();
+  ClickOutsideWidget(GetTestBubbleWidget());
+  EXPECT_FALSE(test_tray_background_view()->bubble());
+  EXPECT_TRUE(status_area->IsActive());
+  EXPECT_TRUE(test_tray_background_view()->HasFocus());
+
+  // Activating a window should close the bubble and activate the window.
+  ShowTestBubble();
+  widget->Activate();
+  EXPECT_TRUE(widget->IsActive());
+  EXPECT_FALSE(test_tray_background_view()->bubble());
+  EXPECT_FALSE(test_tray_background_view()->HasFocus());
 }
 
 }  // namespace ash

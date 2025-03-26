@@ -839,11 +839,13 @@ void WebMediaPlayerMS::Play() {
   paused_ = false;
 }
 
-void WebMediaPlayerMS::Pause() {
+void WebMediaPlayerMS::Pause(PauseReason pause_reason) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   SendLogMessage(String::Format("%s()", __func__));
 
-  should_play_upon_shown_ = false;
+  if (pause_reason != PauseReason::kPageHidden) {
+    should_play_upon_shown_ = false;
+  }
   media_log_->AddEvent<media::MediaLogEvent::kPause>();
   if (paused_)
     return;
@@ -1182,8 +1184,8 @@ void WebMediaPlayerMS::SuspendForFrameClosed() {
 // On Android, pause the video completely for this time period.
 #if BUILDFLAG(IS_ANDROID)
   if (!paused_) {
-    Pause();
     should_play_upon_shown_ = true;
+    Pause(PauseReason::kPageHidden);
   }
 
   delegate_->PlayerGone(delegate_id_);

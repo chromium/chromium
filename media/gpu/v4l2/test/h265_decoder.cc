@@ -13,6 +13,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "media/gpu/macros.h"
 #include "media/parsers/h265_parser.h"
@@ -1325,7 +1326,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
             // |curr_pic_| already exists, so skip to ProcessCurrentSlice().
             state_ = kTryCurrentSlice;
           } else {
-            curr_pic_ = new H265Picture();
+            curr_pic_ = base::MakeRefCounted<H265Picture>();
             CHECK(curr_pic_) << "Ran out of surfaces.";
 
             curr_pic_->first_picture_ = first_picture_;

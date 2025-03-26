@@ -1749,9 +1749,11 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandAddToExistingGroup:
       return SupportsTabGroups();
 
-    case CommandAddToSplit: {
+    case CommandAddToSplit:
+    case CommandRemoveSplit: {
       return true;
     }
+
     case CommandRemoveFromGroup:
       return SupportsTabGroups();
 
@@ -1987,10 +1989,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     }
 
     case CommandAddToSplit: {
-      if (!base::FeatureList::IsEnabled(features::kSideBySide)) {
-        break;
-      }
-
+      CHECK(base::FeatureList::IsEnabled(features::kSideBySide));
       if (context_index == active_index()) {
         // TODO(crbug.com/405426549): Replace with empty split GURL.
         delegate()->AddTabAt(GURL(), context_index + 1, false,
@@ -1998,6 +1997,15 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
         context_index += 1;
       }
       AddToNewSplit({context_index}, tabs::SplitTabLayout::kHorizontal);
+      break;
+    }
+
+    case CommandRemoveSplit: {
+      CHECK(base::FeatureList::IsEnabled(features::kSideBySide));
+      std::optional<split_tabs::SplitTabId> split_id =
+          GetTabAtIndex(context_index)->GetSplit();
+      CHECK(split_id.has_value());
+      RemoveSplit(split_id.value());
       break;
     }
 

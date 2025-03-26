@@ -25,10 +25,13 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_otr_state.h"
+#include "chrome/browser/upgrade_detector/version_history_client.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/network_time/network_time_tracker.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/version_info.h"
 #include "ui/base/idle/idle.h"
 
 namespace {
@@ -106,6 +109,17 @@ base::Time ComputeRelaunchWindowStartForDay(
   return window_start;
 }
 
+// Returns the value of the RelaunchSupersededReleaseAge policy, or a zero
+// TimeDelta if the policy is unset.
+base::TimeDelta GetRelaunchSupersededReleaseAge() {
+  auto* local_state = g_browser_process->local_state();
+  if (!local_state) {
+    return base::TimeDelta();
+  }
+  return base::Days(
+      local_state->GetInteger(prefs::kRelaunchSupersededReleaseAge));
+}
+
 }  // namespace
 
 // static
@@ -121,6 +135,7 @@ void UpgradeDetector::Init() {
     pref_change_registrar_.Init(local_state);
     MonitorPrefChanges(prefs::kRelaunchNotificationPeriod);
     MonitorPrefChanges(prefs::kRelaunchWindow);
+    MonitorPrefChanges(prefs::kRelaunchSupersededReleaseAge);
   }
 }
 
@@ -332,6 +347,52 @@ base::TimeDelta UpgradeDetector::GetGracePeriod(
   return std::min(kDefaultGracePeriod, elevated_to_high_delta / 2);
 }
 
+bool UpgradeDetector::GetNetworkTimeWithFallback(base::Time& current_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (g_browser_process->network_time_tracker()->GetNetworkTime(
+          &current_time, /*uncertainty=*/nullptr) ==
+      network_time::NetworkTimeTracker::NETWORK_TIME_AVAILABLE) {
+    return true;
+  }
+  // When network time has not been initialized yet, simply rely on the
+  // machine's current time.
+  current_time = base::Time::Now();
+  return false;
+}
+
+// static
+bool UpgradeDetector::IsSupersededRelease() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!last_served_date_.has_value()) {
+    return false;
+  }
+  base::TimeDelta max_age = GetRelaunchSupersededReleaseAge();
+  if (max_age.is_zero()) {
+    return false;
+  }
+  base::Time current_time;
+  GetNetworkTimeWithFallback(current_time);
+  return current_time - last_served_date_.value() > max_age;
+}
+
+bool UpgradeDetector::ShouldFetchLastServedDate() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return !fetched_last_served_date_ &&
+         !GetRelaunchSupersededReleaseAge().is_zero();
+}
+
+void UpgradeDetector::FetchLastServedDate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (fetched_last_served_date_) {
+    // Only do it once.
+    return;
+  }
+  fetched_last_served_date_ = true;
+  GetLastServedDate(version_info::GetVersion(),
+                    base::BindOnce(&UpgradeDetector::OnGotLastServedDate,
+                                   weak_factory_.GetWeakPtr()));
+}
+
 void UpgradeDetector::NotifyUpgrade() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // An implementation will request that a notification be sent after dropping
@@ -451,7 +512,7 @@ void UpgradeDetector::CheckIdle() {
 
 void UpgradeDetector::OnRelaunchPrefChanged() {
   // Coalesce simultaneous changes to multiple prefs into a single call to the
-  // implementation's OnMonitoredPrefsChanged method by making the call in a
+  // implementation's RecomputeSchedule method by making the call in a
   // task that will run after processing returns to the main event loop.
   if (pref_change_task_pending_)
     return;
@@ -462,8 +523,17 @@ void UpgradeDetector::OnRelaunchPrefChanged() {
                      [](base::WeakPtr<UpgradeDetector> weak_this) {
                        if (weak_this) {
                          weak_this->pref_change_task_pending_ = false;
-                         weak_this->OnMonitoredPrefsChanged();
+                         weak_this->RecomputeSchedule();
                        }
                      },
                      weak_factory_.GetWeakPtr()));
+}
+
+void UpgradeDetector::OnGotLastServedDate(
+    std::optional<base::Time> last_served_date) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (last_served_date.has_value()) {
+    last_served_date_ = last_served_date;
+    RecomputeSchedule();
+  }
 }

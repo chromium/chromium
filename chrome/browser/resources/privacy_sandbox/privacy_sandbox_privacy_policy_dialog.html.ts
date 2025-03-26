@@ -7,19 +7,19 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PrivacySandboxPrivacyPolicyDialogElement} from './privacy_sandbox_privacy_policy_dialog.js';
 
 export function getHtml(this: PrivacySandboxPrivacyPolicyDialogElement) {
-  return html`
-    <div class="button-container">
-      <cr-icon-button id="backButton"
-          aria-description="$i18n{privacyPolicyBackButtonAria}"
-          iron-icon="cr:arrow-back"
-          @click="${this.onBackToConsentNotice_}">
-      </cr-icon-button>
-    </div>
-    <iframe id="privacyPolicy"
-        tabindex="${this.shouldShow ? 0 : -1}"
-        src='chrome-untrusted://privacy-sandbox-dialog/privacy-policy'
-        frameBorder="0"
-        aria-hidden="${!this.shouldShow}">
-    </iframe>
-  `;
+  return html`<!--_html_template_start_-->
+<div class="button-container">
+  <cr-icon-button id="backButton"
+      aria-description="$i18n{privacyPolicyBackButtonAria}"
+      iron-icon="cr:arrow-back"
+      @click="${this.onBackToConsentNotice_}">
+  </cr-icon-button>
+</div>
+<iframe id="privacyPolicy"
+    tabindex="${this.shouldShow ? 0 : -1}"
+    src='chrome-untrusted://privacy-sandbox-dialog/privacy-policy'
+    frameBorder="0"
+    aria-hidden="${!this.shouldShow}">
+</iframe>
+<!--_html_template_end_-->`;
 }

@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
@@ -38,9 +39,7 @@ namespace {
 
 // The padding between the header (image and title) and the elements around it.
 constexpr int kHeaderPadding = 20;
-
 constexpr int kBubbleWidth = 320;
-
 constexpr int kNewOrUpdatedAttributeDotSize = 4;
 constexpr int kNewOrUpdatedAttributeDotRightSpacing = 4;
 constexpr int kNewOrUpdatedAttributeDotTopSpacing = 8;
@@ -77,100 +76,6 @@ std::unique_ptr<views::BoxLayoutView> GetEntityAttributeAndValueLayout(
           // resizing/stretching.
           .SetMinimumCrossAxisSize(GetEntityAttributeAndValueLabelMaxWidth())
           .Build();
-  return row;
-}
-
-std::unique_ptr<views::View> GetAttributeValueView(
-    const SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails&
-        detail,
-    bool is_save_prompt) {
-  std::unique_ptr<views::BoxLayoutView> atribute_value_row_wrapper =
-      GetEntityAttributeAndValueLayout(
-          views::BoxLayout::CrossAxisAlignment::kEnd);
-  std::unique_ptr<views::Label> label =
-      views::Builder<views::Label>()
-          .SetText(detail.attribute_value)
-          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT)
-          .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
-          .SetAccessibleRole(ax::mojom::Role::kDefinition)
-          .SetMultiLine(true)
-          .SetMaximumWidth(GetEntityAttributeAndValueLabelMaxWidth())
-          .Build();
-
-  // Only update dialogs have a dot circle in front of added or updated values.
-  const bool existing_entity_added_or_updated_attribute =
-      !is_save_prompt &&
-      detail.update_type !=
-          SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
-              kNewEntityAttributeUnchanged;
-  if (!existing_entity_added_or_updated_attribute) {
-    atribute_value_row_wrapper->AddChildView(std::move(label));
-    return atribute_value_row_wrapper;
-  }
-
-  views::View* updated_entity_dot_and_value_wrapper =
-      atribute_value_row_wrapper->AddChildView(
-          views::Builder<views::BoxLayoutView>()
-              .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-              .SetCrossAxisAlignment(
-                  views::BoxLayout::CrossAxisAlignment::kStart)
-              .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-              .Build());
-  views::BoxLayoutView* updated_entity_dot =
-      updated_entity_dot_and_value_wrapper->AddChildView(
-          views::Builder<views::BoxLayoutView>()
-              .SetProperty(
-                  views::kMarginsKey,
-                  // The top margin is done to roughly center the dot at the
-                  // middle of the first line of the attribute value.
-                  gfx::Insets::TLBR(kNewOrUpdatedAttributeDotTopSpacing, 0, 0,
-                                    kNewOrUpdatedAttributeDotRightSpacing))
-              .Build());
-  updated_entity_dot->SetPreferredSize(
-      gfx::Size(kNewOrUpdatedAttributeDotSize, kNewOrUpdatedAttributeDotSize));
-  updated_entity_dot->SizeToPreferredSize();
-  updated_entity_dot->SetBackground(views::CreateRoundedRectBackground(
-      ui::kColorButtonBackgroundProminent, kNewOrUpdatedAttributeDotSize / 2));
-  label->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
-      detail.update_type ==
-              SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
-                  kNewEntityAttributeAdded
-          ? IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_NEW_ATTRIBUTE_ACCESSIBLE_NAME
-          : IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_UPDATED_ATTRIBUTE_ACCESSIBLE_NAME,
-      detail.attribute_value));
-  updated_entity_dot_and_value_wrapper->AddChildView(std::move(label));
-
-  return atribute_value_row_wrapper;
-}
-
-// Helper to create a row displayed in the dialog. This row contains information
-// about the entity to be saved or updated.
-std::unique_ptr<views::View> BuildEntityAttributeRow(
-    const SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails&
-        detail,
-    bool is_save_prompt) {
-  auto row = views::Builder<views::BoxLayoutView>()
-                 .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-                 .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
-                 .Build();
-
-  views::BoxLayoutView* entity_attribute_wrapper =
-      row->AddChildView(GetEntityAttributeAndValueLayout(
-          views::BoxLayout::CrossAxisAlignment::kStart));
-  entity_attribute_wrapper->AddChildView(
-      views::Builder<views::Label>()
-          .SetText(detail.attribute_name)
-          .SetTextStyle(views::style::STYLE_BODY_4)
-          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-          .SetAccessibleRole(ax::mojom::Role::kTerm)
-          .SetElideBehavior(gfx::ELIDE_TAIL)
-          .SetMaximumWidthSingleLine(GetEntityAttributeAndValueLabelMaxWidth())
-          .Build());
-  row->AddChildView(GetAttributeValueView(detail, is_save_prompt));
-  // Set every child to expand with the same ratio.
-  for (auto child : row->children()) {
-    row->SetFlexForView(child, 1);
-  }
   return row;
 }
 
@@ -243,6 +148,7 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
               ChromeLayoutProvider::Get()->GetDistanceMetric(
                   DISTANCE_CONTROL_LIST_VERTICAL))
           .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+          .SetAccessibleRole(ax::mojom::Role::kDescriptionList)
           .Build());
 
   const std::vector<
@@ -250,8 +156,7 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
       attributes_details = controller_->GetUpdatedAttributesDetails();
   for (const SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails&
            detail : attributes_details) {
-    attributes_wrapper->AddChildView(
-        BuildEntityAttributeRow(detail, is_save_prompt));
+    attributes_wrapper->AddChildView(BuildEntityAttributeRow(detail));
   }
 
   DialogDelegate::SetButtonLabel(
@@ -271,6 +176,109 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
 SaveOrUpdateAutofillAiDataBubbleView::~SaveOrUpdateAutofillAiDataBubbleView() =
     default;
 
+std::unique_ptr<views::View>
+SaveOrUpdateAutofillAiDataBubbleView::GetAttributeValueView(
+    const SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails&
+        detail) {
+  std::unique_ptr<views::BoxLayoutView> atribute_value_row_wrapper =
+      GetEntityAttributeAndValueLayout(
+          views::BoxLayout::CrossAxisAlignment::kEnd);
+  std::unique_ptr<views::Label> label =
+      views::Builder<views::Label>()
+          .SetText(detail.attribute_value)
+          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT)
+          .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
+          .SetAccessibleRole(ax::mojom::Role::kDefinition)
+          .SetMultiLine(true)
+          .SetMaximumWidth(GetEntityAttributeAndValueLabelMaxWidth())
+          .Build();
+  attribute_values_observation_.AddObservation(label.get());
+
+  // Only update dialogs have a dot circle in front of added or updated values.
+  const bool existing_entity_added_or_updated_attribute =
+      !controller_->IsSavePrompt() &&
+      detail.update_type !=
+          SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
+              kNewEntityAttributeUnchanged;
+  if (!existing_entity_added_or_updated_attribute) {
+    atribute_value_row_wrapper->AddChildView(std::move(label));
+    return atribute_value_row_wrapper;
+  }
+
+  views::View* updated_entity_dot_and_value_wrapper =
+      atribute_value_row_wrapper->AddChildView(
+          views::Builder<views::BoxLayoutView>()
+              .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+              .SetCrossAxisAlignment(
+                  views::BoxLayout::CrossAxisAlignment::kStart)
+              .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+              .Build());
+  views::BoxLayoutView* updated_entity_dot_wrapper =
+      updated_entity_dot_and_value_wrapper->AddChildView(
+          views::Builder<views::BoxLayoutView>()
+              .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+              .SetCrossAxisAlignment(
+                  views::BoxLayout::CrossAxisAlignment::kCenter)
+              .Build());
+
+  views::BoxLayoutView* updated_entity_dot =
+      updated_entity_dot_wrapper->AddChildView(
+          views::Builder<views::BoxLayoutView>()
+              .SetProperty(
+                  views::kMarginsKey,
+                  gfx::Insets::TLBR(kNewOrUpdatedAttributeDotTopSpacing, 0, 0,
+                                    kNewOrUpdatedAttributeDotRightSpacing))
+              .SetCrossAxisAlignment(
+                  views::BoxLayout::CrossAxisAlignment::kCenter)
+              .SetMainAxisAlignment(
+                  views::BoxLayout::MainAxisAlignment::kCenter)
+              .Build());
+  updated_entity_dot->SetPreferredSize(
+      gfx::Size(kNewOrUpdatedAttributeDotSize, kNewOrUpdatedAttributeDotSize));
+  updated_entity_dot->SizeToPreferredSize();
+  updated_entity_dot->SetBackground(views::CreateRoundedRectBackground(
+      ui::kColorButtonBackgroundProminent, kNewOrUpdatedAttributeDotSize / 2));
+  label->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+      detail.update_type ==
+              SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
+                  kNewEntityAttributeAdded
+          ? IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_NEW_ATTRIBUTE_ACCESSIBLE_NAME
+          : IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_UPDATED_ATTRIBUTE_ACCESSIBLE_NAME,
+      detail.attribute_value));
+  updated_entity_dot_and_value_wrapper->AddChildView(std::move(label));
+
+  return atribute_value_row_wrapper;
+}
+
+std::unique_ptr<views::View>
+SaveOrUpdateAutofillAiDataBubbleView::BuildEntityAttributeRow(
+    const SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails&
+        detail) {
+  auto row = views::Builder<views::BoxLayoutView>()
+                 .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+                 .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+                 .Build();
+
+  views::BoxLayoutView* entity_attribute_wrapper =
+      row->AddChildView(GetEntityAttributeAndValueLayout(
+          views::BoxLayout::CrossAxisAlignment::kStart));
+  entity_attribute_wrapper->AddChildView(
+      views::Builder<views::Label>()
+          .SetText(detail.attribute_name)
+          .SetTextStyle(views::style::STYLE_BODY_4)
+          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+          .SetAccessibleRole(ax::mojom::Role::kTerm)
+          .SetElideBehavior(gfx::ELIDE_TAIL)
+          .SetMaximumWidthSingleLine(GetEntityAttributeAndValueLabelMaxWidth())
+          .Build());
+  row->AddChildView(GetAttributeValueView(detail));
+  // Set every child to expand with the same ratio.
+  for (auto child : row->children()) {
+    row->SetFlexForView(child, 1);
+  }
+  return row;
+}
+
 void SaveOrUpdateAutofillAiDataBubbleView::Hide() {
   CloseBubble();
   if (controller_) {
@@ -278,6 +286,21 @@ void SaveOrUpdateAutofillAiDataBubbleView::Hide() {
         GetAutofillAiBubbleClosedReasonFromWidget(GetWidget()));
   }
   controller_ = nullptr;
+}
+
+void SaveOrUpdateAutofillAiDataBubbleView::OnViewBoundsChanged(
+    views::View* observed_view) {
+  views::Label* attribute_value_view =
+      views::AsViewClass<views::Label>(observed_view);
+  if (!attribute_value_view) {
+    return;
+  }
+
+  // If the value leads to more than a single line, align the text to the left.
+  if (attribute_value_view->GetRequiredLines() > 1) {
+    attribute_value_view->SetHorizontalAlignment(
+        gfx::HorizontalAlignment::ALIGN_LEFT);
+  }
 }
 
 void SaveOrUpdateAutofillAiDataBubbleView::AddedToWidget() {

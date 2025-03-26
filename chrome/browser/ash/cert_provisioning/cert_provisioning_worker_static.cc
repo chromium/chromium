@@ -418,17 +418,13 @@ void CertProvisioningWorkerStatic::GenerateKeyForVa() {
       /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
       GetKeyName(cert_profile_.profile_id), profile_,
       base::BindOnce(&CertProvisioningWorkerStatic::OnGenerateKeyForVaDone,
-                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()),
+                     weak_factory_.GetWeakPtr()),
       /*signals=*/std::nullopt);
 }
 
 void CertProvisioningWorkerStatic::OnGenerateKeyForVaDone(
-    base::TimeTicks start_time,
     const attestation::TpmChallengeKeyResult& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  RecordKeypairGenerationTime(cert_profile_.protocol_version, cert_scope_,
-                              base::TimeTicks::Now() - start_time);
 
   if (result.result_code ==
       attestation::TpmChallengeKeyResultCode::kGetCertificateFailedError) {
@@ -519,16 +515,12 @@ void CertProvisioningWorkerStatic::BuildVaChallengeResponse() {
       va_challenge_,
       base::BindOnce(
           &CertProvisioningWorkerStatic::OnBuildVaChallengeResponseDone,
-          weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+          weak_factory_.GetWeakPtr()));
 }
 
 void CertProvisioningWorkerStatic::OnBuildVaChallengeResponseDone(
-    base::TimeTicks start_time,
     const attestation::TpmChallengeKeyResult& challenge_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  RecordVerifiedAccessTime(cert_profile_.protocol_version, cert_scope_,
-                           base::TimeTicks::Now() - start_time);
 
   if (!challenge_result.IsSuccess()) {
     failure_message_ = base::StrCat(
@@ -641,25 +633,20 @@ void CertProvisioningWorkerStatic::SignCsr() {
     platform_keys_service_->SignRSAPKCS1Raw(
         GetPlatformKeysTokenId(cert_scope_), StrToBytes(csr_), public_key_,
         base::BindRepeating(&CertProvisioningWorkerStatic::OnSignCsrDone,
-                            weak_factory_.GetWeakPtr(),
-                            base::TimeTicks::Now()));
+                            weak_factory_.GetWeakPtr()));
     return;
   }
   platform_keys_service_->SignRsaPkcs1(
       GetPlatformKeysTokenId(cert_scope_), StrToBytes(csr_), public_key_,
       hashing_algorithm_.value(),
       base::BindRepeating(&CertProvisioningWorkerStatic::OnSignCsrDone,
-                          weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+                          weak_factory_.GetWeakPtr()));
 }
 
 void CertProvisioningWorkerStatic::OnSignCsrDone(
-    base::TimeTicks start_time,
     std::vector<uint8_t> signature,
     chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  RecordDataSignTime(cert_profile_.protocol_version, cert_scope_,
-                     base::TimeTicks::Now() - start_time);
 
   if (status != chromeos::platform_keys::Status::kSuccess) {
     failure_message_ = base::StrCat(

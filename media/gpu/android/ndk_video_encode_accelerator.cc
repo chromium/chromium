@@ -489,7 +489,7 @@ NdkVideoEncodeAccelerator::GetSupportedProfiles() {
   return profiles;
 }
 
-bool NdkVideoEncodeAccelerator::Initialize(
+EncoderStatus NdkVideoEncodeAccelerator::Initialize(
     const Config& config,
     VideoEncodeAccelerator::Client* client,
     std::unique_ptr<MediaLog> media_log) {
@@ -514,7 +514,7 @@ bool NdkVideoEncodeAccelerator::Initialize(
       config.input_format != PIXEL_FORMAT_NV12) {
     MEDIA_LOG(ERROR, log_) << "Unexpected combo: " << config.input_format
                            << ", " << GetProfileName(config.output_profile);
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   effective_framerate_ = config.framerate;
@@ -528,7 +528,7 @@ bool NdkVideoEncodeAccelerator::Initialize(
   }
 
   if (!ResetMediaCodec()) {
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   const size_t bitstream_buffer_size = EstimateBitstreamBufferSize(
@@ -540,7 +540,7 @@ bool NdkVideoEncodeAccelerator::Initialize(
                      config.input_visible_size, bitstream_buffer_size));
 
   NotifyEncoderInfo();
-  return true;
+  return {EncoderStatus::Codes::kOk};
 }
 
 void NdkVideoEncodeAccelerator::NotifyEncoderInfo() {

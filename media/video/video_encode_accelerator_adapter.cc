@@ -478,10 +478,12 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
   auto vea_config = SetUpVeaConfig(profile_, options_, format, storage_type,
                                    supported_rc_modes_, required_encoder_type_);
 
-  if (!accelerator_->Initialize(vea_config, this, media_log_->Clone())) {
-    std::move(done_cb).Run(
-        EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
-                      "Failed to initialize video encode accelerator."));
+  if (auto status =
+          accelerator_->Initialize(vea_config, this, media_log_->Clone());
+      !status.is_ok()) {
+    std::move(done_cb).Run(EncoderStatus(
+        EncoderStatus::Codes::kEncoderInitializationError,
+        "Failed to initialize video encode accelerator: " + status.message()));
     return;
   }
 

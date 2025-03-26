@@ -18,16 +18,20 @@ import java.util.List;
 public class TabGroupMetadataExtractor {
     /**
      * Extracts the metadata of a given tab group, including tab IDs, URLs, group ID, root ID,
-     * color, title, and collapsed state.
+     * color, title, collapsed state and shared state.
      *
      * @param groupedTabs The list of tabs that form the group.
      * @param sourceWindowIndex The index of the window that holds the tab group.
      * @param selectedTabId The selected tab ID of the group.
+     * @param isGroupShared Whether the tab group is shared with other collaborators.
      * @return A {@link TabGroupMetadata} object containing the metadata of the tab group, or {@code
      *     null} if the provided tab group list is empty.
      */
     public static @Nullable TabGroupMetadata extractTabGroupMetadata(
-            List<Tab> groupedTabs, int sourceWindowIndex, int selectedTabId) {
+            List<Tab> groupedTabs,
+            int sourceWindowIndex,
+            int selectedTabId,
+            boolean isGroupShared) {
         if (groupedTabs.size() == 0) return null;
 
         // 1. Collect IDs and URLs for each tab in the group. Check if the selected tab is in the
@@ -67,6 +71,7 @@ public class TabGroupMetadataExtractor {
                         tabGroupColor,
                         tabGroupTitle,
                         tabGroupCollapsed,
+                        isGroupShared,
                         firstTab.isIncognitoBranded());
         return tabGroupMetadata;
     }

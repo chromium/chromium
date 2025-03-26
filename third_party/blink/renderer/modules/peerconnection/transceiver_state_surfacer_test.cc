@@ -88,8 +88,8 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
     rtc::scoped_refptr<blink::FakeRtpTransceiver> transceiver(
         new rtc::RefCountedObject<blink::FakeRtpTransceiver>(
             local_track->kind() == webrtc::MediaStreamTrackInterface::kAudioKind
-                ? cricket::MEDIA_TYPE_AUDIO
-                : cricket::MEDIA_TYPE_VIDEO,
+                ? webrtc::MediaType::AUDIO
+                : webrtc::MediaType::VIDEO,
             CreateWebRtcSender(local_track, local_stream_id),
             CreateWebRtcReceiver(remote_track_id, remote_stream_id),
             std::nullopt, false, webrtc::RtpTransceiverDirection::kSendRecv,

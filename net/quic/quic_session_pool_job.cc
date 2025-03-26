@@ -61,11 +61,13 @@ QuicSessionPool::Job::~Job() {
 }
 
 void QuicSessionPool::Job::AddRequest(QuicSessionRequest* request) {
+  request->AddedToJob();
   requests_.insert(request);
   SetRequestExpectations(request);
 }
 
 void QuicSessionPool::Job::RemoveRequest(QuicSessionRequest* request) {
+  request->RemovedFromJob();
   auto request_iter = requests_.find(request);
   CHECK(request_iter != requests_.end(), base::NotFatalUntil::M130);
   requests_.erase(request_iter);

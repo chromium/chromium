@@ -22,6 +22,7 @@ source_set("model") {
     "//components/password_manager/core/browser/leak_detection:leak_detection",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/version_info",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
     "//ios/chrome/browser/omaha/model",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
@@ -29,7 +30,6 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/common",
   ]
   frameworks = [ "Foundation.framework" ]

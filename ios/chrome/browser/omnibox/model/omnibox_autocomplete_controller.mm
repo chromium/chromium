@@ -20,6 +20,7 @@
 #import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_debugger_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -113,6 +114,8 @@ using base::UserMetricsAction;
         omniboxAutocompleteControllerDidUpdateSuggestions:self
                                            hasSuggestions:self.hasSuggestions
                                                isFocusing:isFocusing];
+    [self.debuggerDelegate omniboxAutocompleteController:self
+                       didUpdateWithSuggestionsAvailable:self.hasSuggestions];
   }
 }
 

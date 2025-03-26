@@ -65,13 +65,6 @@ class TypedBuffer {
 
   uint32_t length() const { return length_; }
 
-  // Helper returning a pointer to the structure starting at a specified byte
-  // offset.
-  T* GetAtOffset(uint32_t offset) {
-    return reinterpret_cast<T*>(reinterpret_cast<uint8_t*>(buffer_.get()) +
-                                offset);
-  }
-
   // Allow TypedBuffer<T> to be used in boolean expressions.
   explicit operator bool() const { return buffer_ != nullptr; }
 

@@ -127,6 +127,7 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
                     }
                 };
         doReturn(currentTabSupplier).when(mTabModel).getCurrentTabSupplier();
+        doReturn(true).when(mBottomSheetController).requestShowContent(any(), anyBoolean());
     }
 
     @Test

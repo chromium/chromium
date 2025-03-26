@@ -195,7 +195,7 @@ size_t Message::ComputeUnknownFieldsSize(
 
 size_t Message::MaybeComputeUnknownFieldsSize(
     size_t total_size, const internal::CachedSize* cached_size) const {
-  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+  if (ABSL_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     return ComputeUnknownFieldsSize(total_size, cached_size);
   }
   cached_size->Set(internal::ToCachedSize(total_size));
@@ -497,17 +497,6 @@ const internal::RepeatedFieldAccessor* Reflection::RepeatedFieldAccessor(
 }
 
 namespace internal {
-template <>
-#if defined(_MSC_VER) && (_MSC_VER >= 1800)
-// Note: force noinline to workaround MSVC compiler bug with /Zc:inline, issue
-// #240
-PROTOBUF_NOINLINE
-#endif
-    Message*
-    GenericTypeHandler<Message>::NewFromPrototype(const Message* prototype,
-                                                  Arena* arena) {
-  return prototype->New(arena);
-}
 template <>
 #if defined(_MSC_VER) && (_MSC_VER >= 1800)
 // Note: force noinline to workaround MSVC compiler bug with /Zc:inline, issue

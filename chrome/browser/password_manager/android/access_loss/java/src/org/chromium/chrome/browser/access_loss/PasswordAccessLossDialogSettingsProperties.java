@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.access_loss;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 
+@NullMarked
 class PasswordAccessLossDialogSettingsProperties {
     private PasswordAccessLossDialogSettingsProperties() {}
 

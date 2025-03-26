@@ -310,6 +310,9 @@ WebGPUSwapBufferProvider::ExportCurrentSharedImage(
 bool WebGPUSwapBufferProvider::PrepareTransferableResource(
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback) {
+  front_buffer_shared_image_ = nullptr;
+  front_buffer_sync_token_ = gpu::SyncToken();
+
   gpu::SyncToken sync_token;
 
   scoped_refptr<gpu::ClientSharedImage> shared_image =
@@ -317,6 +320,9 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
   if (!shared_image) {
     return false;
   }
+
+  front_buffer_shared_image_ = shared_image;
+  front_buffer_sync_token_ = sync_token;
 
   // Populate the output resource.
   *out_resource = viz::TransferableResource::Make(
@@ -429,6 +435,15 @@ scoped_refptr<gpu::ClientSharedImage>
 WebGPUSwapBufferProvider::GetCurrentSharedImage() {
   return current_swap_buffer_ ? current_swap_buffer_->GetSharedImage()
                               : nullptr;
+}
+
+scoped_refptr<gpu::ClientSharedImage>
+WebGPUSwapBufferProvider::GetFrontBufferSharedImage() {
+  return front_buffer_shared_image_;
+}
+
+gpu::SyncToken WebGPUSwapBufferProvider::GetFrontBufferSyncToken() {
+  return front_buffer_sync_token_;
 }
 
 gpu::Mailbox WebGPUSwapBufferProvider::GetCurrentMailboxForTesting() const {

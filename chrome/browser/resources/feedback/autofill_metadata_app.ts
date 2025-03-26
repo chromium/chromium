@@ -44,8 +44,8 @@ export class AutofillMetadataAppElement extends CrLitElement {
     };
   }
 
-  protected entries_: KeyValuePairEntry[] = [];
-  protected loading_: boolean = true;
+  protected accessor entries_: KeyValuePairEntry[] = [];
+  protected accessor loading_: boolean = true;
 
   override connectedCallback() {
     super.connectedCallback();

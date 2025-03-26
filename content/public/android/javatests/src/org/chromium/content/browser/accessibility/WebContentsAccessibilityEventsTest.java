@@ -673,6 +673,20 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_descriptionChangedPaneTitle() {
+        performTest(
+                "description-changed-pane-title.html",
+                "description-changed-pane-title-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    public void test_descriptionChangedSubtree() {
+        performTest("description-changed-subtree.html", EMPTY_EXPECTATIONS_FILE);
+    }
+
+    @Test
+    @SmallTest
     public void test_descriptionChangedIndirect() {
         performTest("description-change-indirect.html", EMPTY_EXPECTATIONS_FILE);
     }

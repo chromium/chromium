@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_view.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -16,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+using ::autofill::autofill_metrics::LogBnplTosDialogShown;
 using l10n_util::GetStringFUTF16;
 using l10n_util::GetStringUTF16;
 using std::u16string;
@@ -132,6 +134,7 @@ void BnplTosControllerImpl::Show(
   cancel_callback_ = std::move(cancel_callback);
 
   view_ = std::move(create_and_show_view_callback).Run();
+  LogBnplTosDialogShown(GetIssuerId());
 }
 
 void BnplTosControllerImpl::Dismiss() {

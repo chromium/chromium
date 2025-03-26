@@ -6178,7 +6178,8 @@ AuctionWorkletManager::WorkletKey InterestGroupAuction::BidderWorkletKey(
       /*needs_cors_for_additional_bid=*/false, experiment_group_id,
       GetTrustedBiddingSignalsSlotSizeParam(
           interest_group.trusted_bidding_signals_slot_size_mode),
-      interest_group.trusted_bidding_signals_coordinator);
+      interest_group.trusted_bidding_signals_coordinator,
+      /*contextual_data=*/std::nullopt);
 }
 
 const std::string& InterestGroupAuction::GetTrustedBiddingSignalsSlotSizeParam(

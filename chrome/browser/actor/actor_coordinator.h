@@ -10,10 +10,6 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
@@ -45,7 +41,7 @@ class ActorCoordinator {
 
  private:
   void OnMayActOnTabResponse(
-      base::WeakPtr<content::WebContents> web_contents,
+      base::WeakPtr<tabs::TabInterface> tab,
       const optimization_guide::proto::BrowserAction& action,
       const url::Origin& evaluated_origin,
       ActionResultCallback callback,

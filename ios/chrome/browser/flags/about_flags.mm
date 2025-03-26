@@ -98,6 +98,7 @@
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/features.h"
@@ -1381,6 +1382,28 @@ const FeatureEntry::FeatureVariation kFeedSwipeInProductHelpVariations[] = {
     {"- Animated IPH", kFeedSwipeInProductHelpAnimated,
      std::size(kFeedSwipeInProductHelpAnimated), nullptr}};
 
+constexpr flags_ui::FeatureEntry::FeatureParam
+    kReaderModeDistillerPageLoadHeuristicAlwaysEnabledParam[] = {
+        {kReaderModeDistillerPageLoadProbabilityName, "1"}};
+const FeatureEntry::FeatureVariation
+    kReaderModePageLoadHeuristicSamplingOptions[] = {
+        {"on all page loads",
+         kReaderModeDistillerPageLoadHeuristicAlwaysEnabledParam,
+         std::size(kReaderModeDistillerPageLoadHeuristicAlwaysEnabledParam),
+         nullptr},
+};
+
+constexpr flags_ui::FeatureEntry::FeatureParam
+    kReaderModeDistillerHeuristicPageLoadDelayDisabledParam[] = {
+        {kReaderModeDistillerPageLoadDelayDurationStringName, "0"}};
+const FeatureEntry::FeatureVariation
+    kReaderModeDistillerHeuristicPageLoadDelayOptions[] = {
+        {"with no delay",
+         kReaderModeDistillerHeuristicPageLoadDelayDisabledParam,
+         std::size(kReaderModeDistillerHeuristicPageLoadDelayDisabledParam),
+         nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2551,6 +2574,29 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableSupportForHomeAndWork)},
+    {"reader-mode-distiller-heuristic-delay-string",
+     flag_descriptions::kReaderModeDistillerHeuristicPageLoadDelayName,
+     flag_descriptions::kReaderModeDistillerHeuristicPageLoadDelayDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kEnableReaderModeDistillerHeuristic,
+         kReaderModeDistillerHeuristicPageLoadDelayOptions,
+         "ReaderModeHeuristicPageLoadDelay")},
+    {"reader-mode-distiller-heuristic-enabled",
+     flag_descriptions::kReaderModeDistillerHeuristicName,
+     flag_descriptions::kReaderModeDistillerHeuristicDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableReaderModeDistillerHeuristic)},
+    {"reader-mode-distiller-heuristic-sampling",
+     flag_descriptions::kReaderModeDistillerHeuristicSamplingName,
+     flag_descriptions::kReaderModeDistillerHeuristicSamplingDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableReaderModeDistillerHeuristic,
+                                    kReaderModePageLoadHeuristicSamplingOptions,
+                                    "ReaderModeHeuristicSampling")},
+    {"lens-overlay-navigation-history",
+     flag_descriptions::kLensOverlayNavigationHistoryName,
+     flag_descriptions::kLensOverlayNavigationHistoryDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensOverlayNavigationHistory)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

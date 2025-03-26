@@ -12,13 +12,13 @@ Some of the `.icon` files have multiple variants of the same icon (contained wit
 
 ## Converting an SVG to .icon format
 
+**Note: If you are a Google employee, please reference [go/chrome-gm3-icons](http://go/chrome-gm3-icons) to ensure standardized icon sizes and weights.**
+
 [This tool](http://evanstade.github.io/skiafy/) generates `.icon` file output from SVGs. (If you want to contribute improvements, [here's the project](https://github.com/evanstade/skiafy).)
 
 It handles only a small subset of SVG (paths, circles, etc.) and it's finicky about what it expects as the format, but with a minor amount of manual intervention beforehand, it mostly spits out usable `.icon` output. It will often work better if you run the SVG through SVGO first, which is a separate project (an SVG minifier). [Jake Archibald's SVGOMG](https://jakearchibald.github.io/svgomg/) is a web interface to SVGO. If any manual adjustments need to be made to the output, the [SVG Path spec](https://www.w3.org/TR/SVG/paths.html) is a helpful reference; compare with the relevant [Chromium drawing commands](https://cs.chromium.org/chromium/src/ui/gfx/vector_icon_types.h?rcl=b9bf332694f083c6767416b69d0f8539d1c44707&l=22).
 
 Some SVGs are already pretty minimal, like the ones at [the Material Design Icon repository](https://material.io/icons/) so they don't require much if any adjustment, but some SVG editing tools like Sketch leave a lot of random cruft so SVGOMG helps a lot. Take the output and insert into a `.icon` file.
-
-**Note: If you are a Google employee, please reference [go/chrome-gm3-icons](http://go/chrome-gm3-icons) to ensure standardized icon sizes and weights.**
 
 ### Troubleshooting icon generation
 

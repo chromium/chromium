@@ -184,6 +184,9 @@ class OmniboxClient {
   virtual void OnFocusChanged(OmniboxFocusState state,
                               OmniboxFocusChangeReason reason) {}
 
+  // Called to show HaTS survey if the proper criteria is met.
+  virtual void MaybeShowOnFocusHatsSurvey() {}
+
   // Called to notify the clients that the user has pasted into the omnibox, and
   // the resulting string in the omnibox is a valid URL.
   virtual void OnUserPastedInOmniboxResultingInValidURL();

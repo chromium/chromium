@@ -103,6 +103,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
         return intent;
     }
 
+    @SuppressWarnings("UnusedVariable")
     @Override
     public ClipData buildClipData(@NonNull DropDataAndroid dropData) {
         assert dropData instanceof ChromeDropDataAndroid;

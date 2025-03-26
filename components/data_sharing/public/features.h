@@ -34,6 +34,8 @@ extern const base::FeatureParam<std::string> kActivityLogsURL;
 extern const base::FeatureParam<base::TimeDelta>
     kDataSharingGroupDataPeriodicPollingInterval;
 
+bool IsDataSharingFunctionalityEnabled();
+
 }  // namespace data_sharing::features
 
 #endif  // COMPONENTS_DATA_SHARING_PUBLIC_FEATURES_H_

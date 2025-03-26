@@ -7,6 +7,7 @@ module policy.local_user_files.mojom;
 enum CloudProvider {
   kGoogleDrive,
   kOneDrive,
+  kDelete,
 };
 
 enum TimeUnit {
@@ -37,8 +38,8 @@ interface PageHandler {
     TimeUnitAndValue remaining_time,
     string start_date_and_time);
 
-  // Closes the dialog and initiates the file upload immediately.
-  UploadNow();
+  // Closes the dialog and initiates the file upload or deletion immediately.
+  UploadOrDeleteNow();
 
   // Closes the dialog without initiating the upload.
   Close();

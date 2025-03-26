@@ -704,16 +704,16 @@
 <translation id="4249717042534905822">u nedjelju</translation>
 <translation id="4250229828105606438">Snimak ekrana</translation>
 <translation id="4251839292699800785">Stilizirana kancelarija</translation>
-<translation id="4252261480746798874">Kad odaberete Izradite vlastitu, možete napisati prilagođeni upit. Možete odabrati i opciju Odaberi temu, a zatim odabrati podcrtane riječi da biste personalizirali svoju AI pozadinu.
+<translation id="4252261480746798874">Kada odaberete "Kreirajte vlastito", možete napisati prilagođeni upit. Također možete odabrati "Odaberite temu", a zatim odabrati podvučene riječi da personalizirate AI pozadinsku sliku.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Odaberite Nadahni me da biste dobili jedinstvenije i raznolikije opcije AI slika.
+          Odaberite "Inspiriraj me" da dobijete više jedinstvenih i raznolikih opcija AI slika.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Kad izradite vlastitu pozadinu, upit se šalje Googleovim poslužiteljima radi generiranja slika i poboljšanja proizvoda, u skladu s <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleovim uvjetima pružanja usluge i pravilima o privatnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Nemojte navoditi ništa osobno, osjetljivo ni povjerljivo.
+          Kada kreirate pozadinsku sliku, upit će se poslati na servere Google AI-ja radi generiranja slika i poboljšanja proizvoda podložno <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleovim Uslovima korištenja usluge i Pravilima privatnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Nemojte uključivati ništa što je lične, osjetljive ili povjerljive prirode.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Generativni AI može pogriješiti, uključujući kada daje informacije o osobama, stoga provjerite njegove odgovore. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Saznajte više<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
+          Generativni AI može pogriješiti, uključujući informacije o osobama, pa ih provjerite. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Saznajte više<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP latentnost</translation>
 <translation id="4266143281602681663">pletiva</translation>
 <translation id="4269815121975886860">Postavke pokretanja</translation>
@@ -1540,6 +1540,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="8010765388850538088">Više informacija o generativnom AI-ju</translation>
 <translation id="8017679124341497925">Prečica je uređena</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
+<translation id="8027467664787098346">Saznajte više o odabranoj pozadini</translation>
 <translation id="8028993641010258682">Veličina</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Omogućavanje načina rada automatske boje</translation>

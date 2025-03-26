@@ -250,7 +250,6 @@ component("base") {
     "containers/to_value_list.h",
     "containers/to_vector.h",
     "containers/unique_ptr_adapters.h",
-    "containers/util.h",
     "containers/vector_buffer.h",
     "critical_closure.h",
     "dcheck_is_on.h",
@@ -2523,6 +2522,7 @@ rust_bindgen("logging_log_severity_bindgen") {
 rust_static_library("rust_logger") {
   allow_unsafe = true  # Unsafe needed for FFI.
   deps = [
+    ":debugging_buildflags",
     ":logging_log_severity_bindgen",
     ":tracing_buildflags",
     "//build:chromeos_buildflags",

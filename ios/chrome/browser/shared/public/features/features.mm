@@ -637,7 +637,7 @@ bool IsWebChannelsEnabled() {
   }
   std::string launched_countries[6] = {"AU", "CA", "GB", "NZ", "US", "ZA"};
   if (base::Contains(launched_countries,
-                     country_codes::GetCurrentCountryCode())) {
+                     country_codes::GetCurrentCountryID().CountryCode())) {
     return true;
   }
   return base::FeatureList::IsEnabled(kEnableWebChannels);
@@ -732,7 +732,7 @@ bool IsFeedAblationEnabled() {
 bool IsFollowUIUpdateEnabled() {
   std::string launched_countries[1] = {"US"};
   if (base::Contains(launched_countries,
-                     country_codes::GetCurrentCountryCode())) {
+                     country_codes::GetCurrentCountryID().CountryCode())) {
     return true;
   }
   return base::FeatureList::IsEnabled(kEnableFollowUIUpdate);
@@ -1229,6 +1229,9 @@ const char kIPHGestureRecognitionPanAblation[] =
     "IPHGestureRecognitionPanAblation";
 const char kIPHGestureRecognitionSwipeAblation[] =
     "IPHGestureRecognitionSwipeAblation";
+const char kCancelTouchesInViewForIPH[] = "CancelTouchesInViewForIPH";
+const char kIPHGestureRecognitionImprovement[] =
+    "IPHGestureRecognitionImprovement";
 
 bool IsIPHGestureRecognitionInsideTapAblationEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
@@ -1251,6 +1254,16 @@ bool IsIPHGestureRecognitionSwipeAblationEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kIPHGestureRecognitionAblation, kIPHGestureRecognitionSwipeAblation,
       false);
+}
+
+bool ShouldCancelTouchesInViewForIPH() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kIPHGestureRecognitionAblation, kCancelTouchesInViewForIPH, false);
+}
+
+bool IsIPHGestureRecognitionImprovementEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kIPHGestureRecognitionAblation, kIPHGestureRecognitionImprovement, false);
 }
 
 BASE_FEATURE(kNonModalSignInPromo,

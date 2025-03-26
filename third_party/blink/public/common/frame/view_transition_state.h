@@ -83,6 +83,7 @@ struct BLINK_COMMON_EXPORT ViewTransitionState {
   uint32_t next_element_resource_id =
       viz::ViewTransitionElementResourceId::kInvalidLocalId;
   viz::ViewTransitionElementResourceId subframe_snapshot_id;
+  base::flat_map<std::string, std::string> id_to_auto_name_map;
 };
 
 }  // namespace blink

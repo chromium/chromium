@@ -63,6 +63,7 @@ class LensOverlayNavigationManagerTest : public PlatformTest {
     url = net::AppendOrReplaceQueryParameter(
         url, lens::kLensSurfaceQueryParameter, "4");
     url = net::AppendOrReplaceQueryParameter(url, "q", query_text);
+    url = net::AppendOrReplaceQueryParameter(url, "cs", "0");
     return url;
   }
 

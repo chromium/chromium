@@ -709,16 +709,16 @@ std::u16string DocumentProvider::GetMatchDescription(
         GenerateLastModifiedString(update_time, base::Time::Now());
     return owner.empty()
                ? l10n_util::GetStringFUTF16(
-                     IDS_DRIVE_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_OWNER,
+                     IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_OWNER,
                      date_desc, mime_desc)
                : l10n_util::GetStringFUTF16(
-                     IDS_DRIVE_SUGGESTION_DESCRIPTION_TEMPLATE, date_desc,
+                     IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE, date_desc,
                      base::UTF8ToUTF16(owner), mime_desc);
   }
   return owner.empty()
              ? std::move(mime_desc)
              : l10n_util::GetStringFUTF16(
-                   IDS_DRIVE_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_DATE,
+                   IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_DATE,
                    base::UTF8ToUTF16(owner), mime_desc);
 }
 
@@ -825,8 +825,9 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
                                  match.description_for_shortcuts);
     }
 
-    match.TryRichAutocompletion(base::UTF8ToUTF16(match.destination_url.spec()),
-                                match.contents, input_);
+    match.TryRichAutocompletion(input_,
+                                base::UTF8ToUTF16(match.destination_url.spec()),
+                                match.contents);
     match.transition = ui::PAGE_TRANSITION_GENERATED;
     match.RecordAdditionalInfo("owned", is_owned);
     match.RecordAdditionalInfo("completely matched in title and owner",
@@ -848,8 +849,8 @@ void DocumentProvider::CopyCachedMatchesToMatches() {
       [this](auto match) {
         match.allowed_to_be_default_match = false;
         match.TryRichAutocompletion(
-            base::UTF8ToUTF16(match.destination_url.spec()), match.contents,
-            input_);
+            input_, base::UTF8ToUTF16(match.destination_url.spec()),
+            match.contents);
         match.contents_class =
             DocumentProvider::Classify(match.contents, input_.text());
         match.RecordAdditionalInfo("from cache", "true");

@@ -155,7 +155,7 @@ void SetSenderParameters(webrtc::RtpSenderInterface& sender,
 // WebRTC's defaults.
 void SetDefaultSenderParameters(
     rtc::scoped_refptr<webrtc::RtpSenderInterface> sender) {
-  if (sender->media_type() == cricket::MEDIA_TYPE_VIDEO) {
+  if (sender->media_type() == webrtc::MediaType::VIDEO) {
     webrtc::RtpParameters parameters = sender->GetParameters();
     if (parameters.encodings.empty()) {
       LOG(ERROR) << "No encodings found for sender " << sender->id();
@@ -1142,7 +1142,7 @@ void WebrtcTransport::UpdateBitrates() {
   SetPeerConnectionBitrates(min_bitrate_bps, max_bitrate_bps);
   auto senders = peer_connection()->GetSenders();
   for (auto& sender : senders) {
-    if (sender->media_type() == cricket::MEDIA_TYPE_VIDEO) {
+    if (sender->media_type() == webrtc::MediaType::VIDEO) {
       SetSenderBitrates(sender, min_bitrate_bps, max_bitrate_bps);
     }
   }

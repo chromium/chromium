@@ -814,6 +814,7 @@ void InterestGroupAuctionReporter::RequestBidderWorklet(
       winning_bid_info_.provided_as_additional_bid, experiment_group_id,
       trusted_bidder_signals_slot_size_param,
       interest_group.trusted_bidding_signals_coordinator,
+      /*contextual_data=*/std::nullopt,
       base::BindOnce(&InterestGroupAuctionReporter::OnBidderWorkletReceived,
                      base::Unretained(this), signals_for_winner),
       base::BindOnce(&InterestGroupAuctionReporter::OnBidderWorkletFatalError,

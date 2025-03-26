@@ -31,173 +31,209 @@ Events: [
     [0] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : set
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             ignoreIfPresent : false
             key : key0-set-from-document
             value : value0
         }
-        type : documentSet
+        scope : window
     }
     [1] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : set
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             ignoreIfPresent : true
             key : key1-set-from-document
             value : value1
         }
-        type : documentSet
+        scope : window
     }
     [2] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : append
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             key : key1-set-from-document
             value : value1
         }
-        type : documentAppend
+        scope : window
     }
     [3] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : set
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             ignoreIfPresent : false
             key : key2-set-from-document
             value : value2
         }
-        type : documentSet
+        scope : window
     }
     [4] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : set
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             ignoreIfPresent : true
             key : key2-set-from-document
             value : value3
         }
-        type : documentSet
+        scope : window
     }
     [5] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : delete
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             key : key2-set-from-document
         }
-        type : documentDelete
+        scope : window
     }
     [6] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : addModule
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             scriptSourceUrl : http://127.0.0.1:8000/inspector-protocol/shared-storage/resources/shared-storage-module.js
         }
-        type : documentAddModule
+        scope : window
     }
     [7] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : run
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             operationName : test-operation
             serializedData : 
         }
-        type : documentRun
+        scope : window
     }
     [8] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : set
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             ignoreIfPresent : false
             key : key0-set-from-worklet
             value : value0
         }
-        type : workletSet
+        scope : sharedStorageWorklet
     }
     [9] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : set
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             ignoreIfPresent : false
             key : key1-set-from-worklet
             value : value1
         }
-        type : workletSet
+        scope : sharedStorageWorklet
     }
     [10] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : set
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             ignoreIfPresent : true
             key : key2-set-from-worklet
             value : value2
         }
-        type : workletSet
+        scope : sharedStorageWorklet
     }
     [11] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : append
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             key : key1-set-from-worklet
             value : value1
         }
-        type : workletAppend
+        scope : sharedStorageWorklet
     }
     [12] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : delete
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             key : key2-set-from-worklet
         }
-        type : workletDelete
+        scope : sharedStorageWorklet
     }
     [13] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : length
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
         }
-        type : workletLength
+        scope : sharedStorageWorklet
     }
     [14] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : remainingBudget
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
         }
-        type : workletRemainingBudget
+        scope : sharedStorageWorklet
     }
     [15] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : keys
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
         }
-        type : workletKeys
+        scope : sharedStorageWorklet
     }
     [16] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : entries
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
         }
-        type : workletEntries
+        scope : sharedStorageWorklet
     }
     [17] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : selectURL
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             operationName : test-url-selection-operation
             serializedData : 
@@ -214,51 +250,61 @@ Events: [
                 }
             ]
         }
-        type : documentSelectURL
+        scope : window
     }
     [18] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : get
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             key : key0-set-from-worklet
         }
-        type : workletGet
+        scope : sharedStorageWorklet
     }
     [19] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : get
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             key : key0-set-from-document
         }
-        type : workletGet
+        scope : sharedStorageWorklet
     }
     [20] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : run
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             operationName : clear-operation
             serializedData : 
         }
-        type : documentRun
+        scope : window
     }
     [21] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : clear
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
         }
-        type : workletClear
+        scope : sharedStorageWorklet
     }
     [22] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : clear
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
         }
-        type : documentClear
+        scope : window
     }
 ]
 

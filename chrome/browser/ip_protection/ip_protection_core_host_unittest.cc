@@ -70,6 +70,7 @@ constexpr char kTokenBatchHistogram[] =
     "NetworkService.IpProtection.TokenBatchRequestTime";
 
 constexpr char kTestEmail[] = "test@example.com";
+constexpr size_t kPRTPointSize = 33;
 
 enum class PrimaryAccountBehavior {
   // Primary account not set.
@@ -1030,7 +1031,7 @@ TEST_F(IpProtectionCoreHostTest, TryGetProbabilisticRevealTokensSuccess) {
       (base::Time::Now() + base::Hours(5)).InSecondsFSinceUnixEpoch();
   const int32_t num_tokens_with_signal = 3;
   std::string public_key;
-  ASSERT_TRUE(base::Base64Decode("ArcODL1rtL9/MhOQuUoDwdNWwhEiNDKA1hFcHSE=",
+  ASSERT_TRUE(base::Base64Decode("Aibvzr0O6eNKZpGH4Ys6kSKy9zOUW2Scyfn5Ien52tgS",
                                  &public_key));
   std::string response_str;
   {
@@ -1040,8 +1041,8 @@ TEST_F(IpProtectionCoreHostTest, TryGetProbabilisticRevealTokensSuccess) {
           GetProbabilisticRevealTokenResponse_ProbabilisticRevealToken* token =
               response_proto.add_tokens();
       token->set_version(1);
-      token->set_u(std::string(29, 'u'));
-      token->set_e(std::string(29, 'e'));
+      token->set_u(std::string(kPRTPointSize, 'u'));
+      token->set_e(std::string(kPRTPointSize, 'e'));
     }
     response_proto.mutable_public_key()->set_y(public_key);
     response_proto.set_expiration_time_seconds(expiration);
@@ -1075,8 +1076,8 @@ TEST_F(IpProtectionCoreHostTest, TryGetProbabilisticRevealTokensSuccess) {
   const auto& outcome = future.Get<0>();
   ASSERT_TRUE(outcome);
   EXPECT_THAT(outcome->tokens, testing::SizeIs(10));
-  EXPECT_EQ(outcome->tokens[9].u, std::string(29, 'u'));
-  EXPECT_EQ(outcome->tokens[9].e, std::string(29, 'e'));
+  EXPECT_EQ(outcome->tokens[9].u, std::string(kPRTPointSize, 'u'));
+  EXPECT_EQ(outcome->tokens[9].e, std::string(kPRTPointSize, 'e'));
   EXPECT_EQ(outcome->public_key, public_key);
   EXPECT_EQ(outcome->expiration_time_seconds, expiration);
   EXPECT_EQ(outcome->next_epoch_start_time_seconds, next_start);

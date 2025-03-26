@@ -44,13 +44,18 @@ WebGPURecyclableResourceCache::GetOrCreateCanvasResource(
     const SkImageInfo& info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  gfx::Size size = gfx::Size(info.width(), info.height());
+  viz::SharedImageFormat format =
+      viz::SkColorTypeToSinglePlaneSharedImageFormat(info.colorType());
+  SkAlphaType alpha_type = info.alphaType();
+  gfx::ColorSpace color_space =
+      SkColorSpaceToGfxColorSpace(info.refColorSpace());
+
   std::unique_ptr<CanvasResourceProvider> provider =
-      AcquireCachedProvider(info);
+      AcquireCachedProvider(size, format, alpha_type, color_space);
   if (!provider) {
     provider = CanvasResourceProvider::CreateWebGPUImageProvider(
-        gfx::Size(info.width(), info.height()),
-        viz::SkColorTypeToSinglePlaneSharedImageFormat(info.colorType()),
-        info.alphaType(), SkColorSpaceToGfxColorSpace(info.refColorSpace()));
+        size, format, alpha_type, color_space);
     if (!provider)
       return nullptr;
   }
@@ -101,14 +106,10 @@ WebGPURecyclableResourceCache::Resource::~Resource() = default;
 
 std::unique_ptr<CanvasResourceProvider>
 WebGPURecyclableResourceCache::AcquireCachedProvider(
-    const SkImageInfo& image_info) {
-  gfx::Size size = gfx::Size(image_info.width(), image_info.height());
-  viz::SharedImageFormat format =
-      viz::SkColorTypeToSinglePlaneSharedImageFormat(image_info.colorType());
-  SkAlphaType alpha_type = image_info.alphaType();
-  gfx::ColorSpace color_space =
-      SkColorSpaceToGfxColorSpace(image_info.refColorSpace());
-
+    const gfx::Size& size,
+    const viz::SharedImageFormat& format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space) {
   // Loop from MRU to LRU
   DequeResourceProvider::iterator it;
   for (it = unused_providers_.begin(); it != unused_providers_.end(); ++it) {

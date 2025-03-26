@@ -17,7 +17,6 @@ import android.os.Looper;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -63,9 +62,6 @@ public class IsReadyToPayServiceHelperTest {
     public void setUp() throws Throwable {
         Looper.prepare();
     }
-
-    @After
-    public void tearDown() throws Throwable {}
 
     private interface ServiceCallbackHandler {
         void handle(IsReadyToPayServiceCallback callback);

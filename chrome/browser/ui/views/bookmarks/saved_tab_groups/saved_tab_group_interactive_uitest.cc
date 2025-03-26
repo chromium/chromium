@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
@@ -975,6 +976,26 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       // Ensure the button is no longer present.
       WaitForHide(kSavedTabGroupButtonElementId),
       CheckEverythingButtonVisibility());
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       ClosingLastGroupedTabInWindowCreatesNewTab) {
+  constexpr char kTabCloseButton[] = "tab_close_button";
+
+  browser()->tab_strip_model()->AddToNewGroup({0});
+  RunTestSequence(
+      FinishTabstripAnimations(), SelectTab(kTabStripElementId, 0),
+      NameViewRelative(kTabStripElementId, kTabCloseButton,
+                       [](TabStrip* tab_strip) {
+                         return tab_strip->tab_at(0)->close_button().get();
+                       }),
+      // Close the last tab in the browser which.
+      PressButton(kTabCloseButton), PressButton(kDeletionDialogOkButtonId),
+      // Ensure the saved group was deleted.
+      EnsureNotPresent(kSavedTabGroupButtonElementId),
+      // Verify that removing the last grouped tab in the browser keeps the
+      // browser open with one tab.
+      Do([this]() { EXPECT_EQ(browser()->tab_strip_model()->count(), 1); }));
 }
 
 // TODO(crbug.com/40264110): Re-enable this test once it doesn't get stuck in

@@ -178,8 +178,12 @@ public abstract class AwContentsClient {
             // Note: only GET requests can be overridden, so we hardcode the method.
             AwWebResourceRequest request =
                     new AwWebResourceRequest(
-                            url, isOutermostMainFrame, hasUserGesture, "GET", requestHeaders);
-            request.isRedirect = isRedirect;
+                            url,
+                            isOutermostMainFrame,
+                            hasUserGesture,
+                            isRedirect,
+                            "GET",
+                            requestHeaders);
             return shouldOverrideUrlLoading(request);
         }
 

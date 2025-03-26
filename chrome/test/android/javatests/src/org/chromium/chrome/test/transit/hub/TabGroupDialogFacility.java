@@ -22,11 +22,14 @@ import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.List;
@@ -89,6 +92,20 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
         mTitleInputSpec = TITLE_INPUT.and(withText(mTitle));
     }
 
+    private boolean isAllowedToShare() {
+        if (mIsIncognito) return false;
+
+        Profile profile =
+                mHostStation
+                        .getActivity()
+                        .getTabModelSelector()
+                        .getModel(mIsIncognito)
+                        .getProfile();
+        CollaborationService collaborationService =
+                CollaborationServiceFactory.getForProfile(profile);
+        return collaborationService.getServiceStatus().isAllowedToCreate();
+    }
+
     @Override
     public void declareElements(Elements.Builder elements) {
         elements.declareView(TABS_LIST);
@@ -97,9 +114,12 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
         elements.declareView(NEW_TAB_BUTTON);
         elements.declareView(BACK_BUTTON);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
-            elements.declareView(SHARE_BUTTON);
+            // TODO(ckitagawa): Add handling for an already shared group.
+            if (isAllowedToShare()) {
+                elements.declareView(SHARE_BUTTON);
+            }
 
-            // TODO(ckitagawa): Share button causes menu button to be slightly hidden.
+            // Data sharing layout causes the menu button to be hidden due to the rounded corner.
             elements.declareView(LIST_MENU_BUTTON, ViewElement.displayingAtLeastOption(51));
         } else {
             elements.declareView(LIST_MENU_BUTTON);

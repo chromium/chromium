@@ -1253,51 +1253,30 @@ const FeatureEntry::FeatureVariation kRemotePageMetadataVariations[] = {
     BUILDFLAG(IS_WIN)
 
 // A limited number of combinations of the rich autocompletion params.
-const FeatureEntry::FeatureParam
-    kOmniboxRichAutocompletionConservativeModerate[] = {
-        {"RichAutocompletionAutocompleteTitles", "true"},
-        {"RichAutocompletionAutocompleteNonPrefixShortcutProvider", "true"},
-        {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-        {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}};
-const FeatureEntry::FeatureParam
-    kOmniboxRichAutocompletionConservativeModerate2[] = {
-        {"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
-        {"RichAutocompletionAutocompleteNonPrefixShortcutProvider", "true"},
-        {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-        {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}};
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionAggressive1[] = {
+    {"RichAutocompletionAutocompleteTitlesMinChar", "1"},
+    {"RichAutocompletionAutocompleteShortcutTextMinChar", "1"}};
 const FeatureEntry::FeatureParam kOmniboxRichAutocompletionAggressive2[] = {
-    {"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
     {"RichAutocompletionAutocompleteTitlesMinChar", "2"},
-    {"RichAutocompletionAutocompleteShortcutText", "true"},
     {"RichAutocompletionAutocompleteShortcutTextMinChar", "2"}};
 const FeatureEntry::FeatureParam kOmniboxRichAutocompletionAggressive3[] = {
-    {"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
     {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-    {"RichAutocompletionAutocompleteShortcutText", "true"},
     {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}};
 const FeatureEntry::FeatureParam kOmniboxRichAutocompletionAggressive4[] = {
-    {"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
     {"RichAutocompletionAutocompleteTitlesMinChar", "4"},
-    {"RichAutocompletionAutocompleteShortcutText", "true"},
     {"RichAutocompletionAutocompleteShortcutTextMinChar", "4"}};
 
 const FeatureEntry::FeatureVariation
     kOmniboxRichAutocompletionPromisingVariations[] = {
-        {"Conservative Moderate - Title, Shortcut Non-Prefix, min 3/5",
-         kOmniboxRichAutocompletionConservativeModerate,
-         std::size(kOmniboxRichAutocompletionConservativeModerate), nullptr},
-        {"Conservative Moderate 2 - Shortcut Title, Shortcut Non-Prefix, min "
-         "3/5",
-         kOmniboxRichAutocompletionConservativeModerate2,
-         std::size(kOmniboxRichAutocompletionConservativeModerate2), nullptr},
-        {"Aggressive 2 - Title Shortcut Title 2, Shortcut Text 2",
-         kOmniboxRichAutocompletionAggressive2,
+        {"Min input length 1 characters", kOmniboxRichAutocompletionAggressive1,
+         std::size(kOmniboxRichAutocompletionAggressive1), nullptr},
+        {"Min input length 2 characters", kOmniboxRichAutocompletionAggressive2,
          std::size(kOmniboxRichAutocompletionAggressive2), nullptr},
-        {"Aggressive 3 - Title Shortcut Title 3, Shortcut Text 3",
-         kOmniboxRichAutocompletionAggressive3,
+        {"Min input length 2 characters", kOmniboxRichAutocompletionAggressive2,
+         std::size(kOmniboxRichAutocompletionAggressive2), nullptr},
+        {"Min input length 3 characters", kOmniboxRichAutocompletionAggressive3,
          std::size(kOmniboxRichAutocompletionAggressive3), nullptr},
-        {"Aggressive 4 - Title Shortcut Title 4, Shortcut Text 4",
-         kOmniboxRichAutocompletionAggressive4,
+        {"Min input length 4 characters", kOmniboxRichAutocompletionAggressive4,
          std::size(kOmniboxRichAutocompletionAggressive4), nullptr},
 };
 
@@ -1362,10 +1341,24 @@ const FeatureEntry::FeatureVariation kOmniboxSearchAggregatorVariations[] = {
     {"alternate", kOmniboxSearchAggregatorAlternateParams,
      std::size(kOmniboxSearchAggregatorAlternateParams), nullptr}};
 
-const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax6[] = {
-    {"OnFocusMaxSuggestions", "6"},
-    {"OnFocusMaxSearchSuggestions", "3"},
-    {"OnFocusMaxUrlSuggestions", "3"},
+const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusOneDayWindow[] = {
+    {"OnFocusMostVisitedRecencyWindow", "0"},
+};
+const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusTwoDayWindow[] = {
+    {"OnFocusMostVisitedRecencyWindow", "1"},
+};
+const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusThreeDayWindow[] =
+    {
+        {"OnFocusMostVisitedRecencyWindow", "2"},
+};
+const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusTwoWeekWindow[] =
+    {
+        {"OnFocusMostVisitedRecencyWindow", "13"},
+};
+const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax8[] = {
+    {"OnFocusMaxSuggestions", "8"},
+    {"OnFocusMaxSearchSuggestions", "4"},
+    {"OnFocusMaxUrlSuggestions", "4"},
 };
 const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax4[] = {
     {"OnFocusMaxSuggestions", "4"},
@@ -1374,9 +1367,19 @@ const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax4[] = {
 };
 const FeatureEntry::FeatureVariation kOmniboxUrlSuggestionsOnFocusVariations[] =
     {
-        {"- Max 6 Suggestions", kOmniboxUrlSuggestionsOnFocusMax6,
-         std::size(kOmniboxUrlSuggestionsOnFocusMax6), nullptr},
-        {"- Max 4 Suggestions", kOmniboxUrlSuggestionsOnFocusMax4,
+        {"- One day window", kOmniboxUrlSuggestionsOnFocusOneDayWindow,
+         std::size(kOmniboxUrlSuggestionsOnFocusOneDayWindow), nullptr},
+        {"- Two day window", kOmniboxUrlSuggestionsOnFocusTwoDayWindow,
+         std::size(kOmniboxUrlSuggestionsOnFocusTwoDayWindow), nullptr},
+        {"- Three day window", kOmniboxUrlSuggestionsOnFocusThreeDayWindow,
+         std::size(kOmniboxUrlSuggestionsOnFocusThreeDayWindow), nullptr},
+        {"- Two week window", kOmniboxUrlSuggestionsOnFocusTwoWeekWindow,
+         std::size(kOmniboxUrlSuggestionsOnFocusTwoWeekWindow), nullptr},
+        {"- Max 8 Suggestions (One week window)",
+         kOmniboxUrlSuggestionsOnFocusMax8,
+         std::size(kOmniboxUrlSuggestionsOnFocusMax8), nullptr},
+        {"- Max 4 Suggestions (One week window)",
+         kOmniboxUrlSuggestionsOnFocusMax4,
          std::size(kOmniboxUrlSuggestionsOnFocusMax4), nullptr},
 };
 
@@ -7406,6 +7409,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNavBarColorMatchesTabBackgroundDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kNavBarColorMatchesTabBackground)},
 
+    {"enable-navigation-capture-refactor-android",
+     flag_descriptions::kNavigationCaptureRefactorAndroidName,
+     flag_descriptions::kNavigationCaptureRefactorAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kNavigationCaptureRefactorAndroid)},
+
     {"enable-magic-stack-android", flag_descriptions::kMagicStackAndroidName,
      flag_descriptions::kMagicStackAndroidDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kMagicStackAndroid,
@@ -7480,11 +7489,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabStateFlatBuffer,
                                     kTabStateFlatBufferVariations,
                                     "TabStateFlatBuffer")},
-
-    {"suppress-toolbar-captures",
-     flag_descriptions::kSuppressToolbarCapturesName,
-     flag_descriptions::kSuppressToolbarCapturesDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kSuppressToolbarCaptures)},
 
     {"price-insights", commerce::flag_descriptions::kPriceInsightsName,
      commerce::flag_descriptions::kPriceInsightsDescription, kOsAndroid,
@@ -8186,11 +8190,22 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityManifestV3BrailleImeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityManifestV3BrailleIme)},
 
+    {"enable-accessibility-manifest-v3-chromevox",
+     flag_descriptions::kAccessibilityManifestV3ChromeVoxName,
+     flag_descriptions::kAccessibilityManifestV3ChromeVoxDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityManifestV3ChromeVox)},
+
     {"enable-accessibility-manifest-v3-enhanced-network-tts",
      flag_descriptions::kAccessibilityManifestV3EnhancedNetworkTtsName,
      flag_descriptions::kAccessibilityManifestV3EnhancedNetworkTtsDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityManifestV3EnhancedNetworkTts)},
+
+    {"enable-accessibility-manifest-v3-select-to-speak",
+     flag_descriptions::kAccessibilityManifestV3SelectToSpeakName,
+     flag_descriptions::kAccessibilityManifestV3SelectToSpeakDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityManifestV3SelectToSpeak)},
 
     {"enable-accessibility-manifest-v3-switch-access",
      flag_descriptions::kAccessibilityManifestV3SwitchAccessName,
@@ -9040,6 +9055,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmWithoutWellKnownEnforcementName,
      flag_descriptions::kFedCmWithoutWellKnownEnforcementDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmWithoutWellKnownEnforcement)},
+
+    {"fedcm-segmentation-platform",
+     flag_descriptions::kFedCmSegmentationPlatformName,
+     flag_descriptions::kFedCmSegmentationPlatformDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         segmentation_platform::features::kSegmentationPlatformFedCmUser)},
 
     {"web-identity-digital-credentials",
      flag_descriptions::kWebIdentityDigitalCredentialsName,
@@ -10951,6 +10972,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kCanvas2DHibernation)},
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    {"enable-history-sync-optin",
+     flag_descriptions::kEnableHistorySyncOptinName,
+     flag_descriptions::kEnableHistorySyncOptinDescription,
+     kOsWin | kOsMac | kOsLinux,
+     FEATURE_VALUE_TYPE(switches::kEnableHistorySyncOptin)},
     {"sync-enable-bookmarks-in-transport-mode",
      flag_descriptions::kSyncEnableBookmarksInTransportModeName,
      flag_descriptions::kSyncEnableBookmarksInTransportModeDescription,
@@ -12030,11 +12056,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          blink::features::kAdjustCanCreateCanvas2dResourceProvider)},
-
-    {"adjust-get-or-create-2dcanvas-provider",
-     flag_descriptions::kAdjustGetOrCreate2DCanvasProviderName,
-     flag_descriptions::kAdjustGetOrCreate2DCanvasProviderDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kAdjustGetOrCreate2DCanvasProvider)},
 
     {"is-paintable-checks-resource-provider",
      flag_descriptions::kIsPaintableChecksResourceProviderInsteadOfBridgeName,

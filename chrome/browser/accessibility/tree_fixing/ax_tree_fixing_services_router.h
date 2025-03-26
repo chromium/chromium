@@ -10,10 +10,12 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/tree_fixing/internal/ax_tree_fixing_screen_ai_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/ax_mode.h"
 
@@ -66,7 +68,7 @@ class AXTreeFixingServicesRouter
     WebContentsObserver(const WebContentsObserver&) = delete;
     WebContentsObserver& operator=(WebContentsObserver&&) = delete;
     WebContentsObserver& operator=(const WebContentsObserver&) = delete;
-    ~WebContentsObserver();
+    ~WebContentsObserver() override;
 
     // content::WebContentsObserver:
     void AccessibilityEventReceived(
@@ -107,10 +109,11 @@ class AXTreeFixingServicesRouter
   int next_request_id_ = 0;
   bool can_make_main_node_identification_requests_ = false;
 
-  void ToggleAccessibilityState();
+  void ToggleEnabledState();
 
   std::vector<std::unique_ptr<WebContentsObserver>> web_contents_observers_;
   const raw_ptr<Profile> profile_;
+  PrefChangeRegistrar pref_change_registrar_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   void OnAccessibilityStatusEvent(
@@ -122,6 +125,7 @@ class AXTreeFixingServicesRouter
   base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
       ax_mode_observation_{this};
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  base::WeakPtrFactory<AXTreeFixingServicesRouter> weak_factory_{this};
 };
 
 }  // namespace tree_fixing

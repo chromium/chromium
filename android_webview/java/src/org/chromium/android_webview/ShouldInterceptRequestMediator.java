@@ -14,9 +14,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.Nullable;
@@ -116,22 +118,9 @@ public abstract class ShouldInterceptRequestMediator {
     @AnyThread
     @CalledByNative
     private void shouldInterceptRequestFromNative(
-            String url,
-            boolean isMainFrame,
-            boolean hasUserGesture,
-            String method,
-            String[] requestHeaderNames,
-            String[] requestHeaderValues,
-            int requestId) {
-        AwWebResourceRequest request =
-                new AwWebResourceRequest(
-                        url,
-                        isMainFrame,
-                        hasUserGesture,
-                        method,
-                        requestHeaderNames,
-                        requestHeaderValues);
-        WebResponseCallback callback = new WebResponseCallback(requestId, request);
+            @JniType("android_webview::AwWebResourceRequest") AwWebResourceRequest request,
+            JniOnceCallback<AwWebResourceInterceptResponse> responseCallback) {
+        WebResponseCallback callback = new WebResponseCallback(request, responseCallback);
         try {
             shouldInterceptRequest(request, callback, mAsyncCallback);
         } catch (Throwable e) {
@@ -156,7 +145,7 @@ public abstract class ShouldInterceptRequestMediator {
                 ShouldInterceptRequestOverridden.COUNT);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static boolean overridesShouldInterceptRequest(@Nullable WebViewClient client)
             throws NoSuchMethodException {
         if (client == null) return false;

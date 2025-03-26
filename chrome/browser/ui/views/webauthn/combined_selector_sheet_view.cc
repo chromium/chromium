@@ -21,8 +21,6 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/scroll_view.h"
-#include "ui/views/controls/table/table_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/table_layout.h"
@@ -74,11 +72,12 @@ CombinedSelectorSheetView::BuildStepSpecificHeader() {
 std::pair<std::unique_ptr<views::View>,
           AuthenticatorRequestSheetView::AutoFocus>
 CombinedSelectorSheetView::BuildStepSpecificContent() {
-  auto scroll_view = std::make_unique<views::ScrollView>();
-  scroll_view->SetContents(std::make_unique<CombinedSelectorListView>(
-      static_cast<CombinedSelectorSheetModel*>(model()), this));
-  scroll_view->ClipHeightTo(kMaxRowHeight, 3 * kMaxRowHeight + 2 * kRowGap);
-  return std::make_pair(std::move(scroll_view), AutoFocus::kNo);
+  auto* sheet_model = static_cast<CombinedSelectorSheetModel*>(model());
+  auto autofocus = sheet_model->dialog_model()->mechanisms.size() == 1
+                       ? AutoFocus::kNo
+                       : AutoFocus::kYes;
+  return std::make_pair(
+      std::make_unique<CombinedSelectorListView>(sheet_model, this), autofocus);
 }
 
 void CombinedSelectorSheetView::OnRadioButtonChecked(int index) {

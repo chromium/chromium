@@ -268,9 +268,11 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   }
 
   private getMonthName_(month: string): string {
-    // TODO(crbug.com/393318914): Use names instead of numbers ("Jan", "Feb",
-    // etc.).
-    return month;
+    const date = new Date();
+    date.setMonth(Number(month) - 1);
+    const formatter = new Intl.DateTimeFormat(
+        document.documentElement.lang, {month: 'short'});
+    return formatter.format(date);
   }
 
 
@@ -304,18 +306,24 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   private onMonthSelectChange_(e: DomRepeatEvent<AttributeInstance>): void {
     (this.completeAttributeInstanceList_[e.model.index].value as DateValue)
         .month = (e.target as HTMLSelectElement).value;
+    this.notifyPath(
+        `completeAttributeInstanceList_.${e.model.index}.value.month`);
     this.onAttributeInstanceFieldInput_(e);
   }
 
   private onDaySelectChange_(e: DomRepeatEvent<AttributeInstance>): void {
     (this.completeAttributeInstanceList_[e.model.index].value as DateValue)
         .day = (e.target as HTMLSelectElement).value;
+    this.notifyPath(
+        `completeAttributeInstanceList_.${e.model.index}.value.day`);
     this.onAttributeInstanceFieldInput_(e);
   }
 
   private onYearSelectChange_(e: DomRepeatEvent<AttributeInstance>): void {
     (this.completeAttributeInstanceList_[e.model.index].value as DateValue)
         .year = (e.target as HTMLSelectElement).value;
+    this.notifyPath(
+        `completeAttributeInstanceList_.${e.model.index}.value.year`);
     this.onAttributeInstanceFieldInput_(e);
   }
 
@@ -331,7 +339,8 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
    * first time. Subsequent validations occur any time a field is changed.
    */
   private isDateInvalid_(attributeInstance: AttributeInstance): boolean {
-    if (attributeInstance.type.dataType !== AttributeTypeDataType.DATE) {
+    if (attributeInstance.type.dataType !== AttributeTypeDataType.DATE ||
+        !this.userClickedSaveButton_) {
       return false;
     }
     const value: DateValue = attributeInstance.value as DateValue;
@@ -387,9 +396,10 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
 
   private validateForm_(): void {
     this.allFieldsAreEmpty_ = !this.completeAttributeInstanceList_.some(
-        this.isAttributeInstanceNotEmpty);
-    const invalidDateExists =
-        this.completeAttributeInstanceList_.some(this.isDateInvalid_);
+        attributeInstance =>
+            this.isAttributeInstanceNotEmpty(attributeInstance));
+    const invalidDateExists = this.completeAttributeInstanceList_.some(
+        attributeInstance => this.isDateInvalid_(attributeInstance));
     this.canSave_ = !this.allFieldsAreEmpty_ && !invalidDateExists;
   }
 
@@ -407,7 +417,8 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
         detail: {
           ...this.entityInstance,
           attributeInstances: this.completeAttributeInstanceList_.filter(
-              this.isAttributeInstanceNotEmpty),
+              attributeInstance =>
+                  this.isAttributeInstanceNotEmpty(attributeInstance)),
         },
       }));
       this.$.dialog.close();

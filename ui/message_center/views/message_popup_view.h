@@ -62,7 +62,7 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
   // in such case MessagePopupView should be deleted. Virtual for unit testing.
   virtual void Close();
 
-  void OnWillChangeFocus(views::View* before, views::View* now) override {}
+  // views::FocusChangeListener,
   void OnDidChangeFocus(views::View* before, views::View* now) override;
 
   // views::WidgetDelegateView:

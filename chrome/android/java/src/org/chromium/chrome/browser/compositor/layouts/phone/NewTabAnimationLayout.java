@@ -624,6 +624,7 @@ public class NewTabAnimationLayout extends Layout {
                         ? NewTabAnimationUtils.getBackgroundColor(context, isIncognito)
                         : mToolbarManager.getPrimaryColor();
 
+        // TODO(crbug.com/40282469): Make sure we get the proper y-offset.
         mBackgroundHostView.updateFakeTabSwitcherButton(
                 tabSwitcherButton,
                 prevTabCount,

@@ -66,16 +66,26 @@ chromium-metrics-reviews@google.com.
   <variant name="FromUser"/>
 </variants>
 
+<!-- LINT.IfChange(OsScreen) -->
+
 <variants name="OsScreen">
-  <variant name="OS_PROMPT"/>
-  <variant name="OS_SYSTEM_SETTINGS"/>
+  <variant name="OsPrompt"/>
+  <variant name="OsSystemSettings"/>
 </variants>
 
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:OsScreen) -->
+
+<!-- LINT.IfChange(OsScreenAction) -->
+
 <variants name="OsScreenAction">
-  <variant name="DISMISSED_SCRIM"/>
-  <variant name="DISMISSED_X_BUTTON"/>
-  <variant name="SYSTEM_SETTINGS"/>
+  <variant name="DismissedScrim"/>
+  <variant name="DismissedXButton"/>
+  <variant name="OsPromptAllowed"/>
+  <variant name="OsPromptDenied"/>
+  <variant name="SystemSettings"/>
 </variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:OsScreenAction) -->
 
 <variants name="PermissionTypeForElementAnchoredBubble">
   <variant name="AR"/>
@@ -298,27 +308,8 @@ chromium-metrics-reviews@google.com.
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Records whether the on-device AIv1 model is available when needed for
-    permission request evaluation.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.AIv1.DownloadSuccess" enum="BooleanSuccess"
-    expires_after="2025-12-02">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records whether the on-device AIv1 model was downloaded successfully or not.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.AIv1.DownloadTime" units="ms"
-    expires_after="2025-11-25">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    Records the duration it took to download the on-device AIv1 model before
-    first use. This is only logged if the model was downloaded successfully.
+    permission request evaluation. Logged every time
+    PermissionsAiHandler::InquireAiOnDeviceModel is called.
   </summary>
 </histogram>
 
@@ -328,9 +319,9 @@ chromium-metrics-reviews@google.com.
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
-    Records the duration it took to execute the on-device model. This happens if
-    the on-device AIv1 model was downloaded successfully and the session is
-    available.
+    Records the duration it took to execute the on-device model. Logged only if
+    the on-device AIv1 model was inquired successfully without getting
+    cancelled.
   </summary>
 </histogram>
 
@@ -339,8 +330,9 @@ chromium-metrics-reviews@google.com.
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Records whether the on-device AIv1 model execution is successful or not.
-    This will not log when the session was canceled because it took too long;
+    Records whether the on-device AIv1 model execution was successful or not.
+    This required the model to be available and unbusy at inquiry time. This
+    will not get logged when the session was canceled because it took too long;
     these failures are logged by the ExecutionTimeOut histogram instead.
   </summary>
 </histogram>
@@ -374,7 +366,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether an inquiry to the on-device AIv1 model finishes in time to
     not hinder the next inquiries execution. Will get logged when an inquiry is
-    requested and evaluates to false if the previous session is still running.
+    requested with the model being available. It evaluates to false if the
+    previous session is still running.
   </summary>
 </histogram>
 
@@ -395,19 +388,8 @@ chromium-metrics-reviews@google.com.
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Records whether a session was created successfully for the on-device AIv1
-    model.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.AIv1.SessionCreationTime" units="ms"
-    expires_after="2025-12-02">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    Records the duration it took to create an on-device AIv1 model session. This
-    happens when the on-device model was downloaded successfully and is
-    available.
+    model each time we inquire the model. We also log failures when the model is
+    not available.
   </summary>
 </histogram>
 
@@ -1118,7 +1100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Permissions.Prompt.{PermissionType}.ElementAnchoredBubble.Dismissed.Reason"
+    name="Permissions.Prompt.{PermissionType}.ElementAnchoredBubble.DismissedReason"
     enum="DismissedReason" expires_after="2026-03-01">
   <owner>hkamila@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>

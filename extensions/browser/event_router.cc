@@ -64,6 +64,8 @@ using content::RenderProcessHost;
 
 namespace extensions {
 
+base::TimeDelta kEventAckMetricTimeLimit = base::Minutes(5);
+
 namespace {
 
 // A dictionary of event names to lists of filters that this extension has

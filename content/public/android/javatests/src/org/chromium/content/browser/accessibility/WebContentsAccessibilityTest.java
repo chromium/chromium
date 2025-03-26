@@ -219,10 +219,11 @@ public class WebContentsAccessibilityTest {
         mActivityTestRule.sendReadyForTestSignal();
     }
 
-    protected void setupTestWithHTMLForFormControlsMode(String html) {
+    protected void setupTestWithHTMLForFormControlsMode(
+            String html, boolean includeEventMaskByDefault) {
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
-        mActivityTestRule.setupTestFrameworkForFormControlsMode();
+        mActivityTestRule.setupTestFrameworkForFormControlsMode(includeEventMaskByDefault);
         mActivityTestRule.setAccessibilityDelegate();
 
         // To prevent flakes, do not disable accessibility mid tests.
@@ -232,10 +233,24 @@ public class WebContentsAccessibilityTest {
         mActivityTestRule.sendReadyForTestSignal();
     }
 
-    protected void setupTestWithHTMLForBasicMode(String html) {
+    protected void setupTestWithHTMLForBasicMode(String html, boolean includeEventMaskByDefault) {
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
-        mActivityTestRule.setupTestFrameworkForBasicMode();
+        mActivityTestRule.setupTestFrameworkForBasicMode(includeEventMaskByDefault);
+        mActivityTestRule.setAccessibilityDelegate();
+
+        // To prevent flakes, do not disable accessibility mid tests.
+        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
+
+        mTestData = AccessibilityContentShellTestData.getInstance();
+        mActivityTestRule.sendReadyForTestSignal();
+    }
+
+    protected void setupTestWithHTMLForCompleteMode(
+            String html, boolean includeEventMaskByDefault) {
+        mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
+        mActivityTestRule.waitForActiveShellToBeDoneLoading();
+        mActivityTestRule.setupTestFrameworkForCompleteMode(includeEventMaskByDefault);
         mActivityTestRule.setAccessibilityDelegate();
 
         // To prevent flakes, do not disable accessibility mid tests.
@@ -400,10 +415,11 @@ public class WebContentsAccessibilityTest {
     @SmallTest
     public void testUMAHistograms_AXModeComplete() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
-        setupTestWithHTML(
+        setupTestWithHTMLForCompleteMode(
                 "<p>This is a test 1</p>\n"
                         + "<p>This is a test 2</p>\n"
-                        + "<p>This is a test 3</p>");
+                        + "<p>This is a test 3</p>",
+                true);
 
         // Set the relevant features and accessibility state.
         ThreadUtils.runOnUiThreadBlocking(
@@ -437,7 +453,8 @@ public class WebContentsAccessibilityTest {
         setupTestWithHTMLForFormControlsMode(
                 "<p>This is a test 1</p>\n"
                         + "<p>This is a test 2</p>\n"
-                        + "<p>This is a test 3</p>");
+                        + "<p>This is a test 3</p>",
+                true);
 
         // Set the relevant features and accessibility state.
         ThreadUtils.runOnUiThreadBlocking(
@@ -472,7 +489,8 @@ public class WebContentsAccessibilityTest {
         setupTestWithHTMLForBasicMode(
                 "<p>This is a test 1</p>\n"
                         + "<p>This is a test 2</p>\n"
-                        + "<p>This is a test 3</p>");
+                        + "<p>This is a test 3</p>",
+                true);
 
         // Set the relevant features and screen reader state.
         ThreadUtils.runOnUiThreadBlocking(
@@ -506,10 +524,11 @@ public class WebContentsAccessibilityTest {
     @SmallTest
     public void testUMAHistograms_AXModeComplete_100Percent() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
-        setupTestWithHTML(
+        setupTestWithHTMLForCompleteMode(
                 "<p>This is a test 1</p>\n"
                         + "<p>This is a test 2</p>\n"
-                        + "<p>This is a test 3</p>");
+                        + "<p>This is a test 3</p>",
+                false);
 
         // Set the relevant features and screen reader state, set event type masks to empty.
         ThreadUtils.runOnUiThreadBlocking(
@@ -549,7 +568,8 @@ public class WebContentsAccessibilityTest {
         setupTestWithHTMLForFormControlsMode(
                 "<p>This is a test 1</p>\n"
                         + "<p>This is a test 2</p>\n"
-                        + "<p>This is a test 3</p>");
+                        + "<p>This is a test 3</p>",
+                false);
 
         // Set the relevant features and screen reader state, set event type masks to empty.
         ThreadUtils.runOnUiThreadBlocking(
@@ -586,7 +606,8 @@ public class WebContentsAccessibilityTest {
         setupTestWithHTMLForBasicMode(
                 "<p>This is a test 1</p>\n"
                         + "<p>This is a test 2</p>\n"
-                        + "<p>This is a test 3</p>");
+                        + "<p>This is a test 3</p>",
+                false);
 
         // Set the relevant features and screen reader state, set event type masks to empty.
         ThreadUtils.runOnUiThreadBlocking(

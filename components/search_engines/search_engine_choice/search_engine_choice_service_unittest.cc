@@ -635,8 +635,7 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade) {
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       switches::kSearchEngineChoiceCountry);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kSearchEngineChoiceCountry,
-      country_codes::CountryIDToCountryString(kBelgiumCountryId));
+      switches::kSearchEngineChoiceCountry, kBelgiumCountryId.CountryCode());
 
   // Test that the choice is recorded if it wasn't previously done.
   search_engine_choice_service().RecordChoiceMade(
@@ -686,8 +685,7 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_ByLocation) {
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       switches::kSearchEngineChoiceCountry);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kSearchEngineChoiceCountry,
-      country_codes::CountryIDToCountryString(kBelgiumCountryId));
+      switches::kSearchEngineChoiceCountry, kBelgiumCountryId.CountryCode());
   EXPECT_EQ(template_url_service().GetDefaultSearchProvider()->prepopulate_id(),
             TemplateURLPrepopulateData::google.id);
 
@@ -745,8 +743,7 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_DistributionCustom) {
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       switches::kSearchEngineChoiceCountry);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kSearchEngineChoiceCountry,
-      country_codes::CountryIDToCountryString(kBelgiumCountryId));
+      switches::kSearchEngineChoiceCountry, kBelgiumCountryId.CountryCode());
 
   // Test that the choice is recorded if it wasn't previously done.
   search_engine_choice_service().RecordChoiceMade(
@@ -784,8 +781,7 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_RemovedPrepopulated) {
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       switches::kSearchEngineChoiceCountry);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kSearchEngineChoiceCountry,
-      country_codes::CountryIDToCountryString(kBelgiumCountryId));
+      switches::kSearchEngineChoiceCountry, kBelgiumCountryId.CountryCode());
 
   // Test that the choice is recorded if it wasn't previously done.
   search_engine_choice_service().RecordChoiceMade(

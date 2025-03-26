@@ -11,6 +11,7 @@ package lens;
 import "lens_overlay_routing_info.proto";
 
 // Request Id definition to support request sequencing and state lookup.
+// Next Id: 10
 message LensOverlayRequestId {
   // A unique identifier for a sequence of related Lens requests.
   uint64 uuid = 1;
@@ -29,6 +30,11 @@ message LensOverlayRequestId {
   // Analytics ID for the Lens request. Will be updated on the initial request
   // and once per interaction request.
   bytes analytics_id = 4;
+
+  // An id to indicate the order of contextual document payloads sent within a
+  // sequence of requests sharing the same uuid. Starts from 1, increments by 1
+  // if there is a new request with a contextual payload with the same uuid.
+  int32 long_context_id = 9;
 
   // Information about where to route the request.
   LensOverlayRoutingInfo routing_info = 6;

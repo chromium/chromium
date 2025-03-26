@@ -326,6 +326,7 @@ enum IntelligentScanVerdict {
   INTELLIGENT_SCAN_VERDICT_SAFE = 1;
   SCAM_EXPERIMENT_VERDICT_1 = 2;
   SCAM_EXPERIMENT_VERDICT_2 = 3;
+  SCAM_EXPERIMENT_CATCH_ALL = 1000;
 }
 
 message ClientPhishingResponse {

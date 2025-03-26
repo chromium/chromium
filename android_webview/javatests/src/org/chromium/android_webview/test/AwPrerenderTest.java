@@ -807,7 +807,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         AwWebResourceRequest mainRequest =
                 shouldInterceptRequestHelper.getRequestsForUrl(mPrerenderingUrl);
         Assert.assertNotNull(mainRequest);
-        HashMap<String, String> mainHeaders = mainRequest.requestHeaders;
+        Map<String, String> mainHeaders = mainRequest.requestHeaders;
         Assert.assertNotNull(mainHeaders);
         Assert.assertEquals("1", mainHeaders.get("Test-Header1"));
         Assert.assertEquals("2", mainHeaders.get("Test-Header2"));
@@ -817,7 +817,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         AwWebResourceRequest scriptRequest =
                 shouldInterceptRequestHelper.getRequestsForUrl(scriptUrl);
         Assert.assertNotNull(scriptRequest);
-        HashMap<String, String> scriptHeaders = scriptRequest.requestHeaders;
+        Map<String, String> scriptHeaders = scriptRequest.requestHeaders;
         Assert.assertNotNull(scriptHeaders);
         Assert.assertNull(scriptHeaders.get("Test-Header1"));
         Assert.assertNull(scriptHeaders.get("Test-Header2"));
@@ -1161,7 +1161,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         AwWebResourceRequest request =
                 shouldInterceptRequestHelper.getRequestsForUrl(mPrerenderingUrl);
         Assert.assertNotNull(request);
-        HashMap<String, String> requestHeaders = request.requestHeaders;
+        Map<String, String> requestHeaders = request.requestHeaders;
         Assert.assertNotNull(requestHeaders);
         Assert.assertEquals("prefetch;prerender", requestHeaders.get("Sec-Purpose"));
 
@@ -1212,7 +1212,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         AwWebResourceRequest request =
                 shouldInterceptRequestHelper.getRequestsForUrl(prerenderingUrl);
         Assert.assertNotNull(request);
-        HashMap<String, String> requestHeaders = request.requestHeaders;
+        Map<String, String> requestHeaders = request.requestHeaders;
         Assert.assertNotNull(requestHeaders);
         Assert.assertEquals("prefetch;prerender", requestHeaders.get("Sec-Purpose"));
 
@@ -1220,7 +1220,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         AwWebResourceRequest beaconRequest =
                 shouldInterceptRequestHelper.getRequestsForUrl(beaconUrl);
         Assert.assertNotNull(beaconRequest);
-        HashMap<String, String> beaconRequestHeaders = beaconRequest.requestHeaders;
+        Map<String, String> beaconRequestHeaders = beaconRequest.requestHeaders;
         Assert.assertNotNull(beaconRequestHeaders);
         Assert.assertEquals("prefetch;prerender", beaconRequestHeaders.get("Sec-Purpose"));
 
@@ -1237,7 +1237,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         AwWebResourceRequest beaconRequest2 =
                 shouldInterceptRequestHelper.getRequestsForUrl(beaconUrl2);
         Assert.assertNotNull(beaconRequest2);
-        HashMap<String, String> beaconRequestHeaders2 = beaconRequest2.requestHeaders;
+        Map<String, String> beaconRequestHeaders2 = beaconRequest2.requestHeaders;
         Assert.assertNotNull(beaconRequestHeaders2);
         Assert.assertFalse(beaconRequestHeaders2.containsKey("Sec-Purpose"));
     }
@@ -1315,7 +1315,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         shouldOverrideUrlLoadingHelper.waitForCallback(currentShouldOverrideUrlLoadingCallCount);
         Assert.assertEquals(
                 shouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl(), mPrerenderingUrl);
-        HashMap<String, String> requestHeadersOnShouldOverride =
+        Map<String, String> requestHeadersOnShouldOverride =
                 shouldOverrideUrlLoadingHelper.requestHeaders();
         Assert.assertNotNull(requestHeadersOnShouldOverride);
         Assert.assertEquals(
@@ -1326,9 +1326,9 @@ public class AwPrerenderTest extends AwParameterizedTest {
         shouldOverrideUrlLoadingHelper.waitForCallback(currentShouldOverrideUrlLoadingCallCount);
         Assert.assertEquals(
                 shouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl(), mPrerenderingUrl);
-        Assert.assertNull(
-                "activation naivgation should have null requestHeaders.",
-                shouldOverrideUrlLoadingHelper.requestHeaders());
+        Assert.assertTrue(
+                "activation navigation should have empty requestHeaders.",
+                shouldOverrideUrlLoadingHelper.requestHeaders().isEmpty());
     }
 
     // Tests ShouldOverrideUrlLoading interaction with prerendering that is redirected.
@@ -1361,7 +1361,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 shouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl(),
                 initialPrerenderingUrl);
         Assert.assertFalse(shouldOverrideUrlLoadingHelper.isRedirect());
-        HashMap<String, String> requestHeadersOnShouldOverride =
+        Map<String, String> requestHeadersOnShouldOverride =
                 shouldOverrideUrlLoadingHelper.requestHeaders();
         Assert.assertNotNull(requestHeadersOnShouldOverride);
         Assert.assertEquals(
@@ -1388,9 +1388,9 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertEquals(
                 shouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl(),
                 initialPrerenderingUrl);
-        Assert.assertNull(
-                "activation naivgation should have null requestHeaders.",
-                shouldOverrideUrlLoadingHelper.requestHeaders());
+        Assert.assertTrue(
+                "activation navigation should have empty requestHeaders.",
+                shouldOverrideUrlLoadingHelper.requestHeaders().isEmpty());
     }
 
     // Tests that subframe navigation of prerendered page emits shouldInterceptRequest with

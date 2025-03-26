@@ -24,7 +24,8 @@
 namespace policy::local_user_files {
 
 // Dialog size.
-constexpr gfx::Size kDialogSize{448, 360};
+constexpr gfx::Size kUploadDialogSize{448, 360};
+constexpr gfx::Size kDeleteDialogSize{448, 280};
 
 // static
 bool LocalFilesMigrationDialog::Show(MigrationDestination destination,
@@ -63,7 +64,9 @@ LocalFilesMigrationDialog::LocalFilesMigrationDialog(
       destination_(destination),
       migration_start_time_(std::move(migration_start_time)),
       migration_callback_(std::move(migration_callback)) {
-  set_dialog_size(kDialogSize);
+  set_dialog_size(destination == MigrationDestination::kDelete
+                      ? kDeleteDialogSize
+                      : kUploadDialogSize);
 
   // This callback runs just before destroying this instance.
   RegisterOnDialogClosedCallback(
@@ -98,7 +101,8 @@ void LocalFilesMigrationDialog::ProcessDialogClosing(
   // If closed because user clicked on "Upload now", start the migration.
   if (ret_value == kStartMigration) {
     if (!migration_callback_) {
-      LOG(ERROR) << "Upload now clicked, but migration callback is empty!";
+      LOG(ERROR)
+          << "Upload/Delete now clicked, but migration callback is empty!";
       return;
     }
     std::move(migration_callback_).Run();

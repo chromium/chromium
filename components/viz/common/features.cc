@@ -231,7 +231,7 @@ BASE_FEATURE(kWebViewEnableADPFRendererMain,
 // otherwise this is a no-op.
 BASE_FEATURE(kWebViewEnableADPFGpuMain,
              "WebViewEnableADPFGpuMain",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_APPLE)

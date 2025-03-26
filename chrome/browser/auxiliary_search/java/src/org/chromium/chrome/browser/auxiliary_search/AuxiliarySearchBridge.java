@@ -14,9 +14,12 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchProvider.Observer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +27,7 @@ import java.util.List;
 /** Java bridge to provide information for the auxiliary search. */
 public class AuxiliarySearchBridge {
     private long mNativeBridge;
+    private AuxiliarySearchProvider.Observer mObserver;
 
     /**
      * Constructs a bridge for the auxiliary search provider.
@@ -88,6 +92,34 @@ public class AuxiliarySearchBridge {
     }
 
     /**
+     * Assigns {@link #mObserver}, possibly to null. If non-null {@param observer} is passed,
+     * requires {@link #mObserver} initially null, then fetches the current most visited site
+     * suggestions.
+     *
+     * @param observer The observer to receive suggestions when they are ready.
+     */
+    public void setObserver(Observer observer) {
+        if (observer == null) {
+            mObserver = null;
+            return;
+        }
+
+        assert mObserver == null;
+        mObserver = observer;
+        AuxiliarySearchBridgeJni.get().setObserverAndTrigger(mNativeBridge, this);
+    }
+
+    /** Starts a fetch of the current most visited sites suggestions. */
+    public void getMostVisitedSites() {
+        if (mNativeBridge == 0) {
+            mObserver.onSiteSuggestionsAvailable(null);
+            return;
+        }
+
+        AuxiliarySearchBridgeJni.get().getMostVisitedSites(mNativeBridge);
+    }
+
+    /**
      * Helper to call previously injected callback to pass suggestion results.
      *
      * @param entries The list of fetched entries.
@@ -101,6 +133,36 @@ public class AuxiliarySearchBridge {
         callback.onResult(entries);
     }
 
+    @CalledByNative
+    @VisibleForTesting
+    static AuxiliarySearchDataEntry addDataEntry(
+            @AuxiliarySearchEntryType int type,
+            GURL url,
+            String title,
+            long lastActiveTime,
+            int tabId,
+            @Nullable String appId,
+            int visitId) {
+        return AuxiliarySearchDataEntry.addDataEntry(
+                type, url, title, lastActiveTime, tabId, appId, visitId);
+    }
+
+    @CalledByNative
+    @VisibleForTesting
+    void onMostVisitedSitesURLsAvailable(
+            @JniType("std::vector") List<AuxiliarySearchDataEntry> entries) {
+        mObserver.onSiteSuggestionsAvailable(entries);
+    }
+
+    @CalledByNative
+    void onIconMadeAvailable(@JniType("GURL") GURL siteUrl) {
+        mObserver.onIconMadeAvailable(siteUrl);
+    }
+
+    AuxiliarySearchProvider.Observer getObserverForTesting() {
+        return mObserver;
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -112,5 +174,9 @@ public class AuxiliarySearchBridge {
         void getNonSensitiveHistoryData(
                 long nativeAuxiliarySearchProvider,
                 Callback<List<AuxiliarySearchDataEntry>> callback);
+
+        void setObserverAndTrigger(long nativeAuxiliarySearchProvider, AuxiliarySearchBridge self);
+
+        void getMostVisitedSites(long nativeAuxiliarySearchProvider);
     }
 }

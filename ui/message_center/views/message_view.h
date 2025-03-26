@@ -189,7 +189,6 @@ class MESSAGE_CENTER_EXPORT MessageView
   void OnSlideOut() override;
 
   // views::FocusChangeListener:
-  void OnWillChangeFocus(views::View* before, views::View* now) override;
   void OnDidChangeFocus(views::View* before, views::View* now) override;
 
   void AddObserver(Observer* observer);

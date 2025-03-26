@@ -161,9 +161,10 @@ TEST_F(LobsterCandidateResizerTest,
       future.GetCallback());
 
   EXPECT_FALSE(future.Get().has_value());
-  EXPECT_EQ(future.Get().error(),
-            ash::LobsterError(/*status_code=*/ash::LobsterErrorCode::kUnknown,
-                              /*message=*/"empty candidate response"));
+  EXPECT_EQ(
+      future.Get().error(),
+      ash::LobsterError(/*status_code=*/ash::LobsterErrorCode::kBlockedOutputs,
+                        /*message=*/"the output is blocked"));
 }
 
 }  // namespace

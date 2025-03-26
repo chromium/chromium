@@ -300,6 +300,11 @@ void ScrollMarkerGroupData::RemoveFromFocusGroup(Element& scroll_marker) {
 }
 
 void ScrollMarkerGroupData::ClearFocusGroup() {
+  if (selected_marker_.Get() &&
+      selected_marker_->HasTagName(html_names::kATag)) {
+    SetSelected(nullptr);
+  }
+  pending_selected_marker_.Clear();
   focus_group_.clear();
 }
 

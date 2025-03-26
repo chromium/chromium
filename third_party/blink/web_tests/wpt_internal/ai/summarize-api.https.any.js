@@ -2,16 +2,20 @@
 // META: timeout=long
 
 promise_test(async () => {
-  const availability = await ai.summarizer.availability({
+  assert_true(!!AISummarizer);
+}, 'AISummarizer must be defined.');
+
+promise_test(async () => {
+  const availability = await AISummarizer.availability({
     type: "tl;dr",
     format: "plain-text",
     length: "medium",
   });
   assert_not_equals(availability, "unavailable");
-}, 'AISummarizerFactory.availability() is available');
+}, 'AISummarizer.availability() is available');
 
 promise_test(async () => {
-  const availability = await ai.summarizer.availability({
+  const availability = await AISummarizer.availability({
     type: "tl;dr",
     format: "plain-text",
     length: "medium",
@@ -20,10 +24,10 @@ promise_test(async () => {
     outputLanguage: "en",
   });
   assert_not_equals(availability, "unavailable");
-}, 'AISummarizerFactory.availability() is available for supported languages');
+}, 'AISummarizer.availability() is available for supported languages');
 
 promise_test(async () => {
-  const availability = await ai.summarizer.availability({
+  const availability = await AISummarizer.availability({
     type: "tl;dr",
     format: "plain-text",
     length: "medium",
@@ -32,7 +36,7 @@ promise_test(async () => {
     outputLanguage: "es", // not supported
   });
   assert_equals(availability, "unavailable");
-}, 'AISummarizerFactory.availability() returns no for unsupported languages');
+}, 'AISummarizer.availability() returns no for unsupported languages');
 
 promise_test(async () => {
   const summarizer = await createSummarizerMaybeDownload({});

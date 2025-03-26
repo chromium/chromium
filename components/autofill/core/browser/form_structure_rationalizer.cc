@@ -712,6 +712,7 @@ void FormStructureRationalizer::RationalizeFormatStrings(
       case AutofillField::FormatStringSource::kUnset:
       case AutofillField::FormatStringSource::kHeuristics:
         break;  // Breaks the switch, not the loop.
+      case AutofillField::FormatStringSource::kModelResult:
       case AutofillField::FormatStringSource::kServer:
         continue;
     }

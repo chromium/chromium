@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/ash/components/boca/on_task/notification_constants.h"
 #include "chromeos/ash/components/boca/on_task/util/mock_clock.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "components/sessions/core/session_id.h"
@@ -53,7 +52,8 @@ class OnTaskSessionManagerBrowserTest : public InProcessBrowserTest {
     // Enable Boca and consumer experience for testing purposes. This is used
     // to set up the Boca SWA for OnTask.
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kBoca, features::kBocaConsumer},
+        /*enabled_features=*/{features::kBoca, features::kBocaConsumer,
+                              features::kBocaLockedModeCustomCountdownDuration},
         /*disabled_features=*/{});
   }
 
@@ -90,12 +90,15 @@ class OnTaskSessionManagerBrowserTest : public InProcessBrowserTest {
   }
 
   void WaitForLockedModeCountdown() {
-    // Simulate one tick of the countdown timer to generate the notification.
-    boca::MockClock::Get().Advance(kOnTaskNotificationCountdownInterval);
+    // Simulate the full countdown duration to ensure generating the
+    // notification.
+    boca::MockClock::Get().Advance(
+        ash::features::kBocaLockedModeCountdownDurationInSeconds.Get());
     content::RunAllTasksUntilIdle();
 
     // Simulate the full countdown duration to trigger completion.
-    boca::MockClock::Get().Advance(kOnTaskNotificationCountdownDuration);
+    boca::MockClock::Get().Advance(
+        ash::features::kBocaLockedModeCountdownDurationInSeconds.Get());
     content::RunAllTasksUntilIdle();
   }
 

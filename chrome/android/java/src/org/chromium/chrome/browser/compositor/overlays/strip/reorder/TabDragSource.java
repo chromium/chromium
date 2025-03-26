@@ -62,6 +62,8 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -219,6 +221,7 @@ public class TabDragSource implements View.OnDragListener {
      *
      * @param dragSourceView View used to create the drag shadow.
      * @param tabGroupId The dragged group's ID.
+     * @param isGroupShared Whether the dragged group is shared with other collaborators.
      * @param startPoint Position of the drag start point in view coordinates.
      * @param positionX The horizontal position of the dragged group title in view coordinates.
      * @param widthDp Width of the group title in dp.
@@ -227,6 +230,7 @@ public class TabDragSource implements View.OnDragListener {
     public boolean startGroupDragAction(
             @NonNull View dragSourceView,
             @NonNull Token tabGroupId,
+            boolean isGroupShared,
             @NonNull PointF startPoint,
             float positionX,
             float widthDp) {
@@ -257,7 +261,7 @@ public class TabDragSource implements View.OnDragListener {
         int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(getActivity());
         TabGroupMetadata metadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
-                        groupedTabs, windowId, mTabModelSelector.getCurrentTabId());
+                        groupedTabs, windowId, mTabModelSelector.getCurrentTabId(), isGroupShared);
 
         // Build shared state with all info.
         ChromeDropDataAndroid dropData =
@@ -514,7 +518,8 @@ public class TabDragSource implements View.OnDragListener {
             // Reparent tab at drop index and merge to group on destination if needed.
             int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
             mMultiInstanceManager.moveTabToWindow(getActivity(), tabBeingDragged, tabIndex);
-            helper.maybeMergeToGroupOnDrop(tabBeingDragged.getId(), tabIndex);
+            helper.maybeMergeToGroupOnDrop(
+                    Collections.singletonList(tabBeingDragged.getId()), tabIndex);
         }
         DragDropMetricUtils.recordTabDragDropType(
                 DragDropType.TAB_STRIP_TO_TAB_STRIP,
@@ -540,13 +545,24 @@ public class TabDragSource implements View.OnDragListener {
             mMultiInstanceManager.moveTabGroupToWindow(
                     getActivity(),
                     tabGroupMetadata,
-                    mTabModelSelector.getModel(tabGroupMetadata.isIncognito).getCount());
+                    mTabModelSelector.getModel(tabGroupMetadata.isIncognito).getCount(),
+                    /* onFinishedRunnable= */ null);
             showDroppedDifferentModelToast(mWindowAndroid.getContext().get());
         } else {
             // Reparent tab group at drop index and merge to group on destination if needed.
-            // TODO(crbug.com/384978938) Handle merge to group.
             int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
-            mMultiInstanceManager.moveTabGroupToWindow(getActivity(), tabGroupMetadata, tabIndex);
+            ArrayList<Integer> tabIds = new ArrayList<>(tabGroupMetadata.tabIdsToUrls.keySet());
+
+            // Do not merge a collaboration group into another group.
+            @Nullable Runnable maybeMergeToGroupOnDrop = null;
+            if (!tabGroupMetadata.isGroupShared) {
+                maybeMergeToGroupOnDrop =
+                        () -> {
+                            helper.maybeMergeToGroupOnDrop(tabIds, tabIndex);
+                        };
+            }
+            mMultiInstanceManager.moveTabGroupToWindow(
+                    getActivity(), tabGroupMetadata, tabIndex, maybeMergeToGroupOnDrop);
         }
         return true;
     }

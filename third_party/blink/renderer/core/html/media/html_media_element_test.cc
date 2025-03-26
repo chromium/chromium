@@ -84,7 +84,7 @@ AtomicString SrcSchemeToURL(TestURLScheme scheme) {
 
 class MockWebMediaPlayer : public EmptyWebMediaPlayer {
  public:
-  MOCK_METHOD0(Pause, void());
+  MOCK_METHOD1(Pause, void(PauseReason));
   MOCK_METHOD0(OnTimeUpdate, void());
   MOCK_CONST_METHOD0(Seekable, WebTimeRanges());
   MOCK_METHOD0(OnFrozen, void());
@@ -1191,15 +1191,17 @@ TEST_P(HTMLMediaElementTest, WebMediaPlayerIsPaused) {
   Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
   test::RunPendingTasks();
 
-  // Prior to HaveMetadat, Play/Pause won't be delivered to the player.
-  EXPECT_CALL(*MockMediaPlayer(), Pause()).Times(0);
+  // Prior to HaveMetadata, Play/Pause won't be delivered to the player.
+  EXPECT_CALL(*MockMediaPlayer(), Pause(_)).Times(0);
   Media()->Play();
   Media()->pause();
   testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
 
   // After metadata pause should be delivered even if already paused.
   SetReadyState(HTMLMediaElement::kHaveMetadata);
-  EXPECT_CALL(*MockMediaPlayer(), Pause()).Times(2);
+  EXPECT_CALL(*MockMediaPlayer(),
+              Pause(WebMediaPlayer::PauseReason::kPauseCalled))
+      .Times(2);
   Media()->pause();
   Media()->pause();
   testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());

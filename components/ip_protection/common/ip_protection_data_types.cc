@@ -23,8 +23,8 @@ namespace ip_protection {
 namespace {
 
 // Size of a PRT when TLS serialized, before base64 encoding.
-constexpr size_t kPRTSize = 71;
-constexpr size_t kPRTPointSize = 29;
+constexpr size_t kPRTSize = 79;
+constexpr size_t kPRTPointSize = 33;
 constexpr size_t kEpochIdSize = 8;
 
 }  // namespace
@@ -127,7 +127,7 @@ ProbabilisticRevealToken::~ProbabilisticRevealToken() = default;
 /*
 Serialize and base64 encode the following struct given in TLS presentation
 language (rfc8446 section-3). Size of u and e depends on the version and only
-possible version value is 1 for now. Only possible size for u and e is 29.
+possible version value is 1 for now. Only possible size for u and e is 33.
 Returns null in case of failure.
 
 struct {
@@ -140,8 +140,8 @@ struct {
 Once serialized (before base64 encoding), output bytes will be as follows.
 
 [1 byte for version |
- 2 bytes for u size | 29 bytes for u |
- 2 bytes for e size | 29 bytes for e |
+ 2 bytes for u size | 33 bytes for u |
+ 2 bytes for e size | 33 bytes for e |
  8 bytes for epoch_id]
 */
 std::optional<std::string> ProbabilisticRevealToken::SerializeAndEncode()

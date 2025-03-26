@@ -35,6 +35,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUi;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.LoadCommittedDetails;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -50,8 +51,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
- * The main coordinator for the context menu, responsible for creating the context menu in
- * general and the header component.
+ * The main coordinator for the context menu, responsible for creating the context menu in general
+ * and the header component.
  */
 public class ContextMenuCoordinator implements ContextMenuUi {
     @Retention(RetentionPolicy.SOURCE)
@@ -86,7 +87,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
      *
      * @param topContentOffsetPx content offset from the top.
      * @param nativeDelegate The {@link ContextMenuNativeDelegate} to retrieve the thumbnail from
-     *         native.
+     *     native.
      */
     ContextMenuCoordinator(float topContentOffsetPx, ContextMenuNativeDelegate nativeDelegate) {
         mTopContentOffsetPx = topContentOffsetPx;
@@ -331,6 +332,11 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                     public void navigationEntryCommitted(LoadCommittedDetails details) {
                         dismissDialog();
                     }
+
+                    @Override
+                    public void onVisibilityChanged(@Visibility int visibility) {
+                        if (visibility != Visibility.VISIBLE) dismissDialog();
+                    }
                 };
 
         mDialog.show();
@@ -553,5 +559,9 @@ public class ContextMenuCoordinator implements ContextMenuUi {
 
     public ContextMenuListView getListViewForTest() {
         return mListView;
+    }
+
+    public WebContentsObserver getWebContentsObserverForTesting() {
+        return mWebContentsObserver;
     }
 }

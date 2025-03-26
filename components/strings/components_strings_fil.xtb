@@ -696,7 +696,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2187317261103489799">Tukuyin (default)</translation>
 <translation id="2188375229972301266">Multiple punch bottom</translation>
 <translation id="2194856509914051091">Mga bagay na dapat isaalang-alang</translation>
-<translation id="2198071643181968308">Matuto pa tungkol sa <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Button na thumbs down, pindutin ang Enter para magbukas ng form para sa pagsusumite ng detalyadong feedback kung bakit mo na-dislike ang suhestyong ito</translation>
 <translation id="2202627062836089804">likod ng iyong card</translation>
 <translation id="2204482073374652408">Natapos na ang pag-update!</translation>
@@ -901,6 +900,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2539524384386349900">Tukuyin</translation>
 <translation id="2541219929084442027">Hindi mananatili ang mga page na titingnan mo sa mga tab na Incognito sa history, cookie store o history ng paghahanap ng iyong browser pagkatapos mong isara ang lahat ng iyong tab na incognito. Papanatilihin ang anumang file na ida-download o mga bookmark na gagawin mo.</translation>
 <translation id="2542106216580219892">Surfing</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – Para lumabas sa full screen, pindutin nang matagal ang |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Na-restart ng iyong administrator ang device mo</translation>
 <translation id="2544644783021658368">Isang dokumento</translation>
 <translation id="254524874071906077">Itakda ang Chrome bilang Default na Browser</translation>
@@ -1570,6 +1570,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3715016660240337709">{0,plural, =1{Na-block ang file para hindi ma-upload}one{<ph name="FILE_COUNT" /> file ang na-block para hindi ma-upload}other{<ph name="FILE_COUNT" /> na file ang na-block para hindi ma-upload}}</translation>
 <translation id="3715597595485130451">Kumonekta sa Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Suriin ang configuration ng proxy, firewall at DNS<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">Iban</translation>
 <translation id="3723663469265383848">Habang ina-update, hindi mo magagamit ang iyong device sa loob ng hanggang 10 minuto.</translation>
 <translation id="372429172604983730">Kabilang ang antivirus, firewall, at pag-filter ng web o proxy na software sa mga application na maaaring magsanhi ng ganitong error.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para gumawa ng bagong Google presentation sa Slides nang mabilis</translation>
@@ -1809,6 +1810,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4150099059797363385">Envelope Chinese #4</translation>
 <translation id="4151403195736952345">Gamitin ang pangkalahatang default (Tukuyin)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Page 1}one{Page {COUNT}}other{Page {COUNT}}}</translation>
+<translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tab}one{# tab}other{# na tab}}</translation>
 <translation id="4154277373259957087">Ive-verify na ngayon ng Chrome na ikaw ito bago punan ang mga paraan ng pagbabayad. Puwede mo itong i-update anumang oras sa <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Magdagdag ng Tab sa Talahanayan ng Paghahambing</translation>
 <translation id="4159784952369912983">Lila</translation>
@@ -2493,6 +2495,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5379618281582508161">Para makuha ang password na ito sa lahat ng iyong device, i-verify na ikaw ito</translation>
 <translation id="5380953781541843508">sa pataas na ayos</translation>
 <translation id="5381318171304904246">Kapag nagpatuloy ka, mapupunta ka sa website ng iyong bangko. Pagkatapos mong mag-verify, awtomatiko kang ibabalik para tapusin ang iyong pagbili.</translation>
+<translation id="5381952079334035181">Na-update ni <ph name="MEMBER_FIRST_NAME" /> ang tab na “<ph name="WEBSITE_TITLE" />”</translation>
 <translation id="5383478552402031184">Pag-aayos ng Sahig</translation>
 <translation id="5385857628869214740">Katatawanan</translation>
 <translation id="5385966243497224160">Hindi ma-preview ang non-HTTPS URL</translation>
@@ -2531,7 +2534,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
             <ph name="LIST_ITEM" />Impormasyong inilalagay sa mga form
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Baligtarin ang pagkakasunod-sunod nang nakatihaya</translation>
-<translation id="5445340838622821110">Sa susunod na magbayad ka, mapupunan ang isang one-time na numero ng virtual card. Para lang sa pagbiling ito ang numerong ito. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Payagan ang <ph name="SITE" /> na gumamit ng impormasyong na-save nito tungkol sa iyo</translation>
 <translation id="5451331376824595378">Kapag na-flag ng Chrome ang mga event tungkol sa seguridad, ipapadala sa iyong administrator ang nauugnay na data tungkol sa mga event. Puwedeng kabilang dito ang mga URL ng mga page na binibisita mo sa Chrome, URL ng mga page kung saan ka kumopya ng data, pangalan ng file o metadata, IP address, pag-crash ng browser o tab, at ang username na ginagamit mo para mag-sign in sa mga web-based na application, sa iyong device, at sa Chrome.</translation>
 <translation id="5452270690849572955">Hindi makita ang <ph name="HOST_NAME" /> page na ito</translation>
@@ -3927,12 +3929,14 @@ Mga karagdagang detalye:
 <translation id="787226752901403048">Mag-sign in sa Chrome para mag-share ng at sumali sa mga grupo ng tab, at makipagtulungan sa mga ideya</translation>
 <translation id="7877007680666472091">mga pinoprotektahang content ID</translation>
 <translation id="7878562273885520351">Maaaring makompromismo ang iyong password</translation>
+<translation id="7881044256965445977">Maghanap ng at kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="7882421473871500483">Brown</translation>
 <translation id="7886897188117641322">Piliin kung aling malalawak na kategorya ng mga paksa ang puwedeng gamitin para tumulong na mag-personalize ng mga ad</translation>
 <translation id="7887683347370398519">Tingnan ang iyong CVC at subukan ulit</translation>
 <translation id="7887885240995164102">Pumasok sa picture-in-picture</translation>
 <translation id="7888575728750733395">Intent sa pag-render ng print</translation>
 <translation id="7890748547282909375">Mag-sign in sa Microsoft OneDrive para ma-save ang screenshot</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – Para ipakita ang iyong cursor, pindutin ang |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">mga setting ng pagbabayad</translation>
 <translation id="7894280532028510793">Kung tama ang pagbabaybay, <ph name="BEGIN_LINK" />subukang patakbuhin ang Mga Diagnostic ng Network<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 in</translation>
@@ -3999,7 +4003,6 @@ Mga karagdagang detalye:
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />Subukang i-delete ang iyong cookies<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">10 x 11 in</translation>
 <translation id="8012647001091218357">Hindi namin makaugnayan ang iyong mga magulang sa sandaling ito. Pakisubukang muli.</translation>
-<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">Mga Ahensya at Serbisyo sa Pagbiyahe</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay Enter para itakda ang Chrome bilang default na browser ng system</translation>
 <translation id="8027077570865220386">Tray 15</translation>
@@ -4626,6 +4629,7 @@ Mga karagdagang detalye:
 <translation id="9155646082713385498">Mga Magazine</translation>
 <translation id="9157595877708044936">Nagse-set up...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Posibleng naglalaman ng sensitibong content ang <ph name="FILE_NAME" />}one{Posibleng naglalaman ng sensitibong content ang <ph name="FILE_COUNT" /> file}other{Posibleng naglalaman ng sensitibong content ang <ph name="FILE_COUNT" /> na file}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – Para lumabas sa full screen, pindutin ang |<ph name="ACCELERATOR" />|</translation>
 <translation id="9165305804774426672">Puwede ring matukoy ng mga site na binibisita mo ang mga gusto mo batay sa iyong aktibidad sa site. Halimbawa, kung bibisita ka sa isang site na nagbebenta ng long-distance running shoes, posibleng tukuyin ng site na interesado kang tumakbo sa mga marathon.</translation>
 <translation id="9166851138617700776">Higit pa tungkol sa mga ad na iminumungkahi ng site at pagsukat ng ad</translation>
 <translation id="9167054383925257837">Impormasyon ng browser at OS ng device (tulad ng mga bersyon ng browser at OS)</translation>
@@ -4683,6 +4687,7 @@ Mga karagdagang detalye:
 <translation id="94613679163347541">Paghambingin ang <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para gumawa ng bagong site sa Google Sites nang mabilis</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Maglilimita ulit ang Chrome ng cookies ngayong araw}=1{Maglilimita ulit ang Chrome ng cookies bukas}one{# araw bago maglimita ulit ang Chrome ng cookies}other{# na araw bago maglimita ulit ang Chrome ng cookies}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> (na) miyembro ang sumali sa grupo ng tab na "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Hiniling mong bisitahin ang site na ito. Puwedeng sumagot ang iyong magulang sa Family Link.</translation>
 <translation id="950736567201356821">Triple punch top</translation>
 <translation id="950926967802086924">Passkey • Google Password Manager</translation>

@@ -148,7 +148,7 @@ bool IsMinimumAddress(const AutofillProfile& profile, LogBuffer* log_buffer) {
   }
   std::vector<AddressImportRequirement> address_requirements =
       ValidateProfileImportRequirements(profile, log_buffer);
-  return !std::ranges::any_of(
+  return std::ranges::none_of(
       kMinimumAddressRequirementViolations,
       [&](AddressImportRequirement address_requirement_violation) {
         return base::Contains(address_requirements,

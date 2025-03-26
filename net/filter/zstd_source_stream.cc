@@ -12,6 +12,8 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "net/base/io_buffer.h"
@@ -39,12 +41,7 @@ class ZstdSourceStream : public FilterSourceStream {
       : FilterSourceStream(SourceStreamType::kZstd, std::move(upstream)),
         dictionary_(std::move(dictionary)),
         dictionary_size_(dictionary_size) {
-    ZSTD_customMem custom_mem = {&customMalloc, &customFree, this};
-    dctx_.reset(ZSTD_createDCtx_advanced(custom_mem));
-    CHECK(dctx_);
-
-    // Following RFC 8878 recommendation (see section 3.1.1.1.2 Window
-    // Descriptor) of using a maximum 8MB memory buffer to decompress frames
+    // Following RFC 9659, use a maximum 8MB memory buffer to decompress frames
     // to '... protect decoders from unreasonable memory requirements'.
     int window_log_max = 23;
     if (dictionary_) {
@@ -61,6 +58,14 @@ class ZstdSourceStream : public FilterSourceStream {
           23,   // 8MB
           27);  // 128MB
     }
+    // Max window size, 10% allowance for overhead. Set before we allocate any
+    // memory.
+    max_expected_allocation_ = (1 << window_log_max) * 11 / 10;
+
+    ZSTD_customMem custom_mem = {&customMalloc, &customFree, this};
+    dctx_.reset(ZSTD_createDCtx_advanced(custom_mem));
+    CHECK(dctx_);
+
     ZSTD_DCtx_setParameter(dctx_.get(), ZSTD_d_windowLogMax, window_log_max);
     if (dictionary_) {
       size_t result = ZSTD_DCtx_loadDictionary_advanced(
@@ -97,6 +102,16 @@ class ZstdSourceStream : public FilterSourceStream {
   }
 
  private:
+  NOINLINE NOT_TAIL_CALLED void DumpExceededMaxAllocationWithoutDictionary() {
+    NO_CODE_FOLDING();
+    base::debug::DumpWithoutCrashing();
+  }
+
+  NOINLINE NOT_TAIL_CALLED void DumpExceededMaxAllocationWithDictionary() {
+    NO_CODE_FOLDING();
+    base::debug::DumpWithoutCrashing();
+  }
+
   static void* customMalloc(void* opaque, size_t size) {
     return reinterpret_cast<ZstdSourceStream*>(opaque)->customMalloc(size);
   }
@@ -108,6 +123,12 @@ class ZstdSourceStream : public FilterSourceStream {
     total_allocated_ += size;
     if (total_allocated_ > max_allocated_) {
       max_allocated_ = total_allocated_;
+      if (!exceeded_max_allocation_ &&
+          max_allocated_ > max_expected_allocation_) {
+        exceeded_max_allocation_ = true;
+        dictionary_ ? DumpExceededMaxAllocationWithDictionary()
+                    : DumpExceededMaxAllocationWithoutDictionary();
+      }
     }
     return address;
   }
@@ -182,6 +203,8 @@ class ZstdSourceStream : public FilterSourceStream {
   size_t total_allocated_ = 0;
   size_t max_allocated_ = 0;
   std::unordered_map<void*, size_t> malloc_sizes_;
+  size_t max_expected_allocation_;
+  bool exceeded_max_allocation_ = false;
 
   const scoped_refptr<IOBuffer> dictionary_;
   const size_t dictionary_size_;

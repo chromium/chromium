@@ -7,7 +7,10 @@ package org.chromium.chrome.test.transit;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.test.EmbeddedTestServer;
+
+import java.util.concurrent.TimeoutException;
 
 /** Base class for integration tests that start {@link ChromeTabbedActivity}. */
 @NullMarked
@@ -32,6 +35,16 @@ class BaseCtaTransitTestRule {
 
     public EmbeddedTestServer getTestServer() {
         return mActivityTestRule.getTestServer();
+    }
+
+    // TODO(crbug.com/406324209): Create WebPageStation#getWebContents() and replace these calls.
+    public WebContents getWebContents() {
+        return mActivityTestRule.getWebContents();
+    }
+
+    // TODO(crbug.com/406324209): Create WebPageStation#runJavaScript() and replace these calls.
+    public String runJavaScriptCodeInCurrentTab(String code) throws TimeoutException {
+        return mActivityTestRule.runJavaScriptCodeInCurrentTab(code);
     }
 
     public int tabsCount(boolean incognito) {

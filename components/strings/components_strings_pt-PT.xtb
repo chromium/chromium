@@ -696,7 +696,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2187317261103489799">Detetar (predefinição)</translation>
 <translation id="2188375229972301266">Perfuração múltipla na parte inferior</translation>
 <translation id="2194856509914051091">Aspetos a considerar</translation>
-<translation id="2198071643181968308">Saiba mais sobre a <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Botão Não gosto, prima Enter para abrir um formulário e enviar feedback detalhado sobre o motivo pelo qual não gosta desta sugestão</translation>
 <translation id="2202627062836089804">no verso do cartão</translation>
 <translation id="2204482073374652408">Atualização concluída!</translation>
@@ -901,6 +900,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2539524384386349900">Detetar</translation>
 <translation id="2541219929084442027">As páginas que visualizar em separadores de navegação anónima não são memorizadas no histórico do navegador, no armazenamento de cookies ou no histórico de pesquisas depois de fechar todos os separadores de navegação anónima. Todos os ficheiros transferidos ou os marcadores criados são guardados.</translation>
 <translation id="2542106216580219892">Surf</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – Para sair do modo de ecrã inteiro, prima sem soltar |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">O administrador reiniciou o seu dispositivo</translation>
 <translation id="2544644783021658368">Documento único</translation>
 <translation id="254524874071906077">Definir o Google Chrome como o Navegador Predefinido</translation>
@@ -1570,6 +1570,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3715016660240337709">{0,plural, =1{O carregamento do ficheiro foi bloqueado}other{O carregamento de <ph name="FILE_COUNT" /> ficheiros foi bloqueado}}</translation>
 <translation id="3715597595485130451">Estabelecer ligação a redes Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Rever a configuração do proxy, da firewall e de DNS<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">Durante a atualização, não vai poder usar o seu dispositivo durante, no máximo, 10 minutos.</translation>
 <translation id="372429172604983730">As aplicações que podem causar este erro incluem antivírus, firewalls e software de filtragem Web ou proxy.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para criar rapidamente uma nova apresentação do Google no Slides</translation>
@@ -1809,6 +1810,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4150099059797363385">Envelope Chinese n.º 4</translation>
 <translation id="4151403195736952345">Usar predefinição global (Detetar)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Página 1}other{Página {COUNT}}}</translation>
+<translation id="4152670763139331043">{NUM_TABS,plural, =1{1 separador}other{# separadores}}</translation>
 <translation id="4154277373259957087">O Chrome vai validar a sua identidade antes de preencher os métodos de pagamento. Pode atualizar esta opção em qualquer altura em <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Adicionar separador à tabela de comparação</translation>
 <translation id="4159784952369912983">Roxo</translation>
@@ -2493,6 +2495,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5379618281582508161">Para ter esta palavra-passe em todos os seus dispositivos, valide a sua identidade</translation>
 <translation id="5380953781541843508">por ordem ascendente</translation>
 <translation id="5381318171304904246">Se continuar, vai aceder ao Website do seu banco. Após a validação, regressa automaticamente a esta página para concluir a compra.</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> atualizou o separador "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="5383478552402031184">Pavimentos</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">Não é possível pré-visualizar um URL não HTTPS</translation>
@@ -2531,7 +2534,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
             <ph name="LIST_ITEM" />As informações introduzidas em formulários
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Ordem inversa, com orientação para cima</translation>
-<translation id="5445340838622821110">Quando paga ao longo do tempo, é preenchido um número de cartão virtual único. Este número destina-se apenas a esta compra. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Permita que o site <ph name="SITE" /> use as informações que guardou sobre si</translation>
 <translation id="5451331376824595378">Quando o Chrome sinaliza eventos de segurança, são enviados dados relevantes acerca dos eventos ao seu administrador. Estes podem incluir os URLs das páginas que visita no Chrome, os URLs das páginas das quais copiou dados, os metadados ou os nomes de ficheiros, os endereços IP, as falhas de sistema do navegador ou dos separadores e o nome de utilizador que usa para iniciar sessão nas aplicações baseadas na Web, no dispositivo e no Chrome.</translation>
 <translation id="5452270690849572955">Não é possível encontrar esta página de <ph name="HOST_NAME" /></translation>
@@ -3926,12 +3928,14 @@ Detalhes adicionais:
 <translation id="787226752901403048">Inicie sessão no Chrome para partilhar e aderir a grupos de separadores, e desenvolver ideias em conjunto</translation>
 <translation id="7877007680666472091">IDs de conteúdo protegido</translation>
 <translation id="7878562273885520351">A palavra-passe pode estar comprometida</translation>
+<translation id="7881044256965445977">Procurar e fazer ligação a qualquer dispositivo na sua rede local</translation>
 <translation id="7882421473871500483">Castanho</translation>
 <translation id="7886897188117641322">Escolha as categorias amplas de tópicos que podem ser usadas para ajudar a personalizar anúncios</translation>
 <translation id="7887683347370398519">Verifique o Código de Segurança/CVC e tente novamente</translation>
 <translation id="7887885240995164102">Entrar no modo ecrã no ecrã</translation>
 <translation id="7888575728750733395">Imprimir intenção de renderização</translation>
 <translation id="7890748547282909375">Inicie sessão no Microsoft OneDrive para guardar a captura de ecrã</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – Para mostrar o cursor, prima |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">definições de pagamento</translation>
 <translation id="7894280532028510793">Se a ortografia estiver correta, <ph name="BEGIN_LINK" />experimente executar o Diagnóstico de rede<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 pol.</translation>
@@ -3998,7 +4002,6 @@ Detalhes adicionais:
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />Experimente eliminar os cookies<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">10 x 11 pol.</translation>
 <translation id="8012647001091218357">Não conseguimos falar com os seus pais de momento. Tente novamente.</translation>
-<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">Serviços e agências de viagem</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, de seguida, Enter para definir o Chrome como o navegador predefinido do sistema</translation>
 <translation id="8027077570865220386">Tabuleiro 15</translation>
@@ -4626,6 +4629,7 @@ Detalhes adicionais:
 <translation id="9155646082713385498">Revistas</translation>
 <translation id="9157595877708044936">A configurar...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> pode incluir conteúdo sensível}other{<ph name="FILE_COUNT" /> ficheiros podem incluir conteúdo sensível}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – Para sair do modo de ecrã inteiro, prima |<ph name="ACCELERATOR" />|</translation>
 <translation id="9165305804774426672">Os sites que visitar também podem determinar os seus gostos com base na sua atividade no site. Por exemplo, se visitar um site que vende calçado de corrida de longa distância, o site pode decidir que tem interesse em correr maratonas.</translation>
 <translation id="9166851138617700776">Mais sobre os anúncios sugeridos por sites e a medição de anúncios</translation>
 <translation id="9167054383925257837">Informações do SO do dispositivo e do navegador (como as versões do SO e do navegador)</translation>
@@ -4683,6 +4687,7 @@ Detalhes adicionais:
 <translation id="94613679163347541">Comparar <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para criar rapidamente um novo site no Google Sites</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{O Chrome vai limitar os cookies novamente hoje}=1{O Chrome vai limitar os cookies novamente amanhã}other{# dias até o Chrome limitar os cookies novamente}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> membros aderiram ao grupo de separadores "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Pediste para visitar este site. O teu adulto responsável pode responder no Family Link.</translation>
 <translation id="950736567201356821">Perfuração tripla na parte superior</translation>
 <translation id="950926967802086924">Chave de acesso • Gestor de Palavras-passe da Google</translation>

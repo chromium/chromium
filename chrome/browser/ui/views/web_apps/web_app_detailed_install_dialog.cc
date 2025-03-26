@@ -484,7 +484,7 @@ void ShowWebAppDetailedInstallDialog(
     delegate_weak_ptr->CloseDialogAsIgnored();
     return;
   }
-  delegate_weak_ptr->StartObservingWidgetForChanges(detailed_dialog_widget);
+  delegate_weak_ptr->OnWidgetShownStartTracking(detailed_dialog_widget);
 
   base::RecordAction(base::UserMetricsAction("WebAppDetailedInstallShown"));
 

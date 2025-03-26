@@ -1159,4 +1159,48 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrefetchBrowserTest,
       PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved, 2);
 }
 
+class BrowsingDataRemoverImplPrefetchHoldbackBrowserTest
+    : public BrowsingDataRemoverImplPrefetchBrowserTest {
+ public:
+  BrowsingDataRemoverImplPrefetchHoldbackBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPreloadingConfig, {{"preloading_config", R"(
+            [{
+              "preloading_type": "Prefetch",
+              "preloading_predictor": "SpeculationRules",
+              "holdback": true,
+              "sampling_likelihood": 1
+            }])"}});
+  }
+
+  ~BrowsingDataRemoverImplPrefetchHoldbackBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrefetchHoldbackBrowserTest,
+                       ClearCacheCancelsHeldbackPrefetch) {
+  GURL initial_url = ssl_server().GetURL("/empty.html");
+  GURL prefetch_url = ssl_server().GetURL("/title1.html");
+
+  // 1) Navigate to the initial url.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // 2) Start prefetching the prefetch_url.
+  StartPrefetch(prefetch_url, shell());
+
+  // 3) Remove the browsing data with DATA_TYPE_CACHE.
+  auto filter = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter->AddRegisterableDomain(ssl_server().base_url().host());
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_CACHE,
+                          std::move(filter));
+
+  // 4) Verify that the prefetch failed due to removing browsing data.
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved, 1);
+}
+
 }  // namespace content

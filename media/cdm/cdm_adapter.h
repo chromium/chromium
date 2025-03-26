@@ -65,7 +65,8 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
       const SessionClosedCB& session_closed_cb,
       const SessionKeysChangeCB& session_keys_change_cb,
       const SessionExpirationUpdateCB& session_expiration_update_cb,
-      CdmCreatedCB cdm_created_cb);
+      CdmCreatedCB cdm_created_cb,
+      const bool is_debugger_attached);
 
   CdmAdapter(base::PassKey<CdmAdapter>,
              const CdmConfig& cdm_config,
@@ -74,7 +75,8 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
              const SessionMessageCB& session_message_cb,
              const SessionClosedCB& session_closed_cb,
              const SessionKeysChangeCB& session_keys_change_cb,
-             const SessionExpirationUpdateCB& session_expiration_update_cb);
+             const SessionExpirationUpdateCB& session_expiration_update_cb,
+             const bool is_debugger_attached);
   CdmAdapter(const CdmAdapter&) = delete;
   CdmAdapter& operator=(const CdmAdapter&) = delete;
 

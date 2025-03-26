@@ -4,6 +4,8 @@
 
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 
+#include <array>
+
 namespace user_education {
 
 FeaturePromoResult::FeaturePromoResult(const FeaturePromoResult& other) =
@@ -24,62 +26,38 @@ FeaturePromoResult FeaturePromoResult::Success() {
   return FeaturePromoResult();
 }
 
+// static
+std::string FeaturePromoResult::GetFailureName(Failure failure) {
+  // LINT.IfChange(failure_names)
+  constexpr static std::array<const char*, Failure::kMaxValue + 1>
+      kFailureNames{"Canceled",
+                    "Error",
+                    "BlockedByUi",
+                    "BlockedByPromo",
+                    "BlockedByConfig",
+                    "Snoozed",
+                    "BlockedByContext",
+                    "FeatureDisabled",
+                    "PermanentlyDismissed",
+                    "BlockedByGracePeriod",
+                    "BlockedByCooldown",
+                    "RecentlyAborted",
+                    "ExceededMaxShowCount",
+                    "BlockedByNewProfile",
+                    "BlockedByReshowDelay",
+                    "TimedOut",
+                    "AlreadyQueued",
+                    "AnchorNotVisible",
+                    "AnchorSurfaceNotActive",
+                    "WindowTooSmall",
+                    "BlockedByUserActivity"};
+  // LINT.ThenChange(//components/user_education/common/feature_promo/feature_promo_result.h:failure_enum)
+  return kFailureNames[failure];
+}
+
 std::ostream& operator<<(std::ostream& os,
                          FeaturePromoResult::Failure failure) {
-  os << "FeaturePromoResult::";
-  switch (failure) {
-    case FeaturePromoResult::kCanceled:
-      os << "kCanceled";
-      break;
-    case FeaturePromoResult::kBlockedByUi:
-      os << "kBlockedByUi";
-      break;
-    case FeaturePromoResult::kBlockedByPromo:
-      os << "kBlockedByPromo";
-      break;
-    case FeaturePromoResult::kBlockedByConfig:
-      os << "kBlockedByConfig";
-      break;
-    case FeaturePromoResult::kSnoozed:
-      os << "kSnoozed";
-      break;
-    case FeaturePromoResult::kPermanentlyDismissed:
-      os << "kPermanentlyDismissed";
-      break;
-    case FeaturePromoResult::kBlockedByContext:
-      os << "kBlockedForContext";
-      break;
-    case FeaturePromoResult::kFeatureDisabled:
-      os << "kFeatureDisabled";
-      break;
-    case FeaturePromoResult::kError:
-      os << "kError";
-      break;
-    case FeaturePromoResult::kBlockedByGracePeriod:
-      os << "kBlockedByGracePeriod";
-      break;
-    case FeaturePromoResult::kBlockedByCooldown:
-      os << "kBlockedByCooldown";
-      break;
-    case FeaturePromoResult::kRecentlyAborted:
-      os << "kRecentlyAborted";
-      break;
-    case FeaturePromoResult::kExceededMaxShowCount:
-      os << "kExceededMaxShowCount";
-      break;
-    case FeaturePromoResult::kBlockedByNewProfile:
-      os << "kBlockedByNewProfile";
-      break;
-    case FeaturePromoResult::kBlockedByReshowDelay:
-      os << "kBlockedByReshowDelay";
-      break;
-    case FeaturePromoResult::kTimedOut:
-      os << "kTimedOut";
-      break;
-    case FeaturePromoResult::kAlreadyQueued:
-      os << "kAlreadyQueued";
-      break;
-  }
+  os << "FeaturePromoResult::k" << FeaturePromoResult::GetFailureName(failure);
   return os;
 }
 

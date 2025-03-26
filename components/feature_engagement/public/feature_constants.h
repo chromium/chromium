@@ -61,6 +61,12 @@ extern const base::FeatureParam<std::string> kIPHLensOverlayUrlAllowFilters;
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 extern const base::FeatureParam<std::string> kIPHLensOverlayUrlBlockFilters;
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
+extern const base::FeatureParam<std::string>
+    kIPHLensOverlayUrlPathMatchAllowPatterns;
+COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
+extern const base::FeatureParam<std::string>
+    kIPHLensOverlayUrlPathMatchBlockPatterns;
+COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta> kIPHLensOverlayDelayTime;
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHLensOverlayTranslateButtonFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHLiveCaptionFeature);
@@ -99,6 +105,7 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHTabGroupsSharedTabChangedFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHTabGroupsSharedTabFeedbackFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHTabOrganizationSuccessFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHTabSearchFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHTabSearchToolbarButtonFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHWebUITabStripFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHDesktopSnoozeFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHDesktopPwaInstallFeature);

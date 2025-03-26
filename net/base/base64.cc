@@ -19,7 +19,7 @@ namespace net {
 bool SimdutfBase64Decode(std::string_view input,
                          std::string* output,
                          base::Base64DecodePolicy policy) {
-  CHECK(IsSimdutfBase64SupportEnabled());
+  CHECK(base::FeatureList::IsEnabled(features::kSimdutfBase64Support));
   if (policy == base::Base64DecodePolicy::kStrict) {
     if (input.size() % 4 != 0) {
       // The input is not properly padded.
@@ -51,10 +51,5 @@ bool SimdutfBase64Decode(std::string_view input,
   return true;
 }
 
-bool IsSimdutfBase64SupportEnabled() {
-  static const bool simdutf_base64_support_enabled =
-      base::FeatureList::IsEnabled(features::kSimdutfBase64Support);
-  return simdutf_base64_support_enabled;
-}
 
 }  // namespace net

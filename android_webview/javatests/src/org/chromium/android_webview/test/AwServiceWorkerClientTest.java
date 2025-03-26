@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import android.util.Pair;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -19,7 +21,6 @@ import org.chromium.android_webview.AsyncShouldInterceptRequestCallback;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.WebResponseCallback;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.net.test.util.TestWebServer;
@@ -27,6 +28,9 @@ import org.chromium.net.test.util.TestWebServer;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /** Tests Service Worker Client related APIs. */
 @RunWith(Parameterized.class)
@@ -46,6 +50,7 @@ public class AwServiceWorkerClientTest extends AwParameterizedTest {
         <html>
           <body>
             <script>
+              console.log("Registering serviceworker");
               success = 0;
               navigator.serviceWorker.register('sw.js').then(function(reg) {
                  success = 1;
@@ -57,25 +62,12 @@ public class AwServiceWorkerClientTest extends AwParameterizedTest {
         </html>
         """;
 
-    private static final String SW_HTML = "fetch('fetch.html');";
+    private static final String SW_HTML =
+            """
+        console.log("Running in serviceworker");
+        fetch('fetch.html');
+        """;
     private static final String FETCH_HTML = ";)";
-
-    private static class TestAsyncShouldInterceptRequestCallback
-            implements AsyncShouldInterceptRequestCallback {
-        public WebResponseCallback mResponseCallback;
-        private Runnable mCallbackHelper;
-
-        TestAsyncShouldInterceptRequestCallback(Runnable r) {
-            mCallbackHelper = r;
-        }
-
-        @Override
-        public void shouldInterceptRequestAsync(
-                AwWebResourceRequest request, WebResponseCallback callback) {
-            mResponseCallback = callback;
-            mCallbackHelper.run();
-        }
-    }
 
     public AwServiceWorkerClientTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
@@ -131,14 +123,13 @@ public class AwServiceWorkerClientTest extends AwParameterizedTest {
         mWebServer.setResponse("/sw.js", SW_HTML, null);
         mWebServer.setResponse("/fetch.html", FETCH_HTML, null);
 
-        TestAwServiceWorkerClient.ShouldInterceptRequestHelper interceptHelper =
-                mServiceWorkerClient.getShouldInterceptRequestHelper();
-        CallbackHelper helper = new CallbackHelper();
-        TestAsyncShouldInterceptRequestCallback asyncCallback =
-                new TestAsyncShouldInterceptRequestCallback(
-                        () -> {
-                            helper.notifyCalled();
-                        });
+        // Set up a future to bring the callback back to this thread.
+        BlockingQueue<Pair<String, WebResponseCallback>> callbacks = new ArrayBlockingQueue<>(10);
+        AsyncShouldInterceptRequestCallback asyncCallback =
+                (request, callback) -> {
+                    callbacks.add(Pair.create(request.url, callback));
+                };
+
         mActivityTestRule
                 .getAwBrowserContext()
                 .getServiceWorkerController()
@@ -146,14 +137,20 @@ public class AwServiceWorkerClientTest extends AwParameterizedTest {
 
         int onPageFinishedCallCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, fullIndexUrl);
-        helper.waitForNext(); // wait for shouldInterceptRequestAsync to provide the callback to use
-        asyncCallback.mResponseCallback.intercept(null);
         mContentsClient.getOnPageFinishedHelper().waitForCallback(onPageFinishedCallCount);
-
+        // wait for shouldInterceptRequestAsync to provide the callback to use
+        Pair<String, WebResponseCallback> interceptedPair = callbacks.poll(1, TimeUnit.SECONDS);
+        Assert.assertEquals(mWebServer.getResponseUrl("/sw.js"), interceptedPair.first);
+        interceptedPair.second.intercept(null); // Proceed with normal load
         Assert.assertEquals(fullIndexUrl, mContentsClient.getOnPageFinishedHelper().getUrl());
 
         // Check that the service worker has been registered successfully.
         AwActivityTestRule.pollInstrumentationThread(() -> getSuccessFromJs() == 1);
+
+        // Check that the fetch is also executed from the service worker
+        interceptedPair = callbacks.poll(1, TimeUnit.SECONDS);
+        Assert.assertEquals(mWebServer.getResponseUrl("/fetch.html"), interceptedPair.first);
+        interceptedPair.second.intercept(null); // Proceed with normal load
     }
 
     // Verify that WebView ServiceWorker code can properly handle http errors that happened

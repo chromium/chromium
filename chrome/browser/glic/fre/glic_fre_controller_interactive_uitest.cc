@@ -27,7 +27,10 @@ class GlicFreControllerUiTest : public test::InteractiveGlicTest {
     // interfere with chrome://glic-fre/'s <webview>, too, depending which loads
     // first. It's also unclear whether it ought to happen at all before FRE
     // completion. Disable that feature until that can be sorted out.
-    features_.InitAndDisableFeature(features::kGlicWarming);
+    features_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kGlicWarming,
+                               features::kGlicFreWarming});
 
     fre_server_.AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(fre_server_.InitializeAndListen());

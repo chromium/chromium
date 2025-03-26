@@ -49,13 +49,6 @@
 
 namespace {
 
-// Return true if either non-prefix autocompletion is enabled.
-bool RichAutocompletionEitherNonPrefixEnabled() {
-  return OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixAll.Get() ||
-         OmniboxFieldTrial::
-             kRichAutocompletionAutocompleteNonPrefixShortcutProvider.Get();
-}
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Return true if the given match uses a vector icon with a background.
 bool HasVectorIconBackground(const AutocompleteMatch& match) {
@@ -65,9 +58,6 @@ bool HasVectorIconBackground(const AutocompleteMatch& match) {
 #endif
 
 }  // namespace
-
-OmniboxView::State::State() = default;
-OmniboxView::State::State(const State& state) = default;
 
 // static
 std::u16string OmniboxView::StripJavascriptSchemas(const std::u16string& text) {
@@ -221,15 +211,15 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
     // For search queries, display default search engine's favicon. If the
     // default search engine is google return the icon instead of favicon for
     // search queries with the chrome refresh feature.
-      if (search::DefaultSearchProviderIsGoogle(
-              controller_->client()->GetTemplateURLService())) {
-        // For non chrome builds this would return an empty image model. In
-        // those cases revert to using the favicon.
-        ui::ImageModel icon = model()->GetSuperGIcon(dip_size, dark_mode);
-        if (!icon.IsEmpty()) {
-          return icon;
-        }
+    if (search::DefaultSearchProviderIsGoogle(
+            controller_->client()->GetTemplateURLService())) {
+      // For non chrome builds this would return an empty image model. In
+      // those cases revert to using the favicon.
+      ui::ImageModel icon = model()->GetSuperGIcon(dip_size, dark_mode);
+      if (!icon.IsEmpty()) {
+        return icon;
       }
+    }
 
     favicon = controller_->client()->GetFaviconForDefaultSearchProvider(
         std::move(on_icon_fetched));
@@ -329,8 +319,6 @@ void OmniboxView::GetState(State* state) {
   state->keyword = model()->keyword();
   state->is_keyword_selected = model()->is_keyword_selected();
   GetSelectionBounds(&state->sel_start, &state->sel_end);
-  if (RichAutocompletionEitherNonPrefixEnabled())
-    state->all_sel_length = GetAllSelectionsLength();
 }
 
 OmniboxView::StateChanges OmniboxView::GetStateChanges(const State& before,
@@ -363,12 +351,6 @@ OmniboxView::StateChanges OmniboxView::GetStateChanges(const State& before,
   state_changes.just_deleted_text =
       before.text.length() > after.text.length() &&
       after.sel_start <= std::min(before.sel_start, before.sel_end);
-  if (RichAutocompletionEitherNonPrefixEnabled()) {
-    state_changes.just_deleted_text =
-        state_changes.just_deleted_text &&
-        after.sel_start <=
-            std::max(before.sel_start, before.sel_end) - before.all_sel_length;
-  }
 
   return state_changes;
 }
