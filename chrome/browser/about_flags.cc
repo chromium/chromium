@@ -1362,10 +1362,24 @@ const FeatureEntry::FeatureVariation kOmniboxSearchAggregatorVariations[] = {
     {"alternate", kOmniboxSearchAggregatorAlternateParams,
      std::size(kOmniboxSearchAggregatorAlternateParams), nullptr}};
 
-const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax6[] = {
-    {"OnFocusMaxSuggestions", "6"},
-    {"OnFocusMaxSearchSuggestions", "3"},
-    {"OnFocusMaxUrlSuggestions", "3"},
+const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusOneDayWindow[] = {
+    {"OnFocusMostVisitedRecencyWindow", "0"},
+};
+const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusTwoDayWindow[] = {
+    {"OnFocusMostVisitedRecencyWindow", "1"},
+};
+const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusThreeDayWindow[] =
+    {
+        {"OnFocusMostVisitedRecencyWindow", "2"},
+};
+const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusTwoWeekWindow[] =
+    {
+        {"OnFocusMostVisitedRecencyWindow", "13"},
+};
+const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax8[] = {
+    {"OnFocusMaxSuggestions", "8"},
+    {"OnFocusMaxSearchSuggestions", "4"},
+    {"OnFocusMaxUrlSuggestions", "4"},
 };
 const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax4[] = {
     {"OnFocusMaxSuggestions", "4"},
@@ -1374,9 +1388,19 @@ const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax4[] = {
 };
 const FeatureEntry::FeatureVariation kOmniboxUrlSuggestionsOnFocusVariations[] =
     {
-        {"- Max 6 Suggestions", kOmniboxUrlSuggestionsOnFocusMax6,
-         std::size(kOmniboxUrlSuggestionsOnFocusMax6), nullptr},
-        {"- Max 4 Suggestions", kOmniboxUrlSuggestionsOnFocusMax4,
+        {"- One day window", kOmniboxUrlSuggestionsOnFocusOneDayWindow,
+         std::size(kOmniboxUrlSuggestionsOnFocusOneDayWindow), nullptr},
+        {"- Two day window", kOmniboxUrlSuggestionsOnFocusTwoDayWindow,
+         std::size(kOmniboxUrlSuggestionsOnFocusTwoDayWindow), nullptr},
+        {"- Three day window", kOmniboxUrlSuggestionsOnFocusThreeDayWindow,
+         std::size(kOmniboxUrlSuggestionsOnFocusThreeDayWindow), nullptr},
+        {"- Two week window", kOmniboxUrlSuggestionsOnFocusTwoWeekWindow,
+         std::size(kOmniboxUrlSuggestionsOnFocusTwoWeekWindow), nullptr},
+        {"- Max 8 Suggestions (One week window)",
+         kOmniboxUrlSuggestionsOnFocusMax8,
+         std::size(kOmniboxUrlSuggestionsOnFocusMax8), nullptr},
+        {"- Max 4 Suggestions (One week window)",
+         kOmniboxUrlSuggestionsOnFocusMax4,
          std::size(kOmniboxUrlSuggestionsOnFocusMax4), nullptr},
 };
 

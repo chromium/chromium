@@ -260,19 +260,19 @@ OmniboxUrlSuggestionsOnFocus::OmniboxUrlSuggestionsOnFocus() {
                                "ShowRecentlyClosedTabs", false)
           .Get();
   max_suggestions = base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
-                                               "OnFocusMaxSuggestions", 8)
+                                               "OnFocusMaxSuggestions", 6)
                         .Get();
   max_search_suggestions =
       base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
-                                 "OnFocusMaxSearchSuggestions", 4)
+                                 "OnFocusMaxSearchSuggestions", 3)
           .Get();
   max_url_suggestions =
       base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
-                                 "OnFocusMaxUrlSuggestions", 4)
+                                 "OnFocusMaxUrlSuggestions", 3)
           .Get();
   most_visited_recency_window =
       base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
-                                 "OnFocusMostVisitedRecencyWindow", 13)
+                                 "OnFocusMostVisitedRecencyWindow", 6)
           .Get();
   most_visited_recency_factor =
       base::FeatureParam<std::string>(&kOmniboxUrlSuggestionsOnFocus,

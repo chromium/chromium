@@ -551,6 +551,9 @@ TEST_F(MostVisitedSitesProviderTest, TestCreateMostVisitedTopSitesMatches) {
       scoped_config;
   scoped_config.Get().enabled = true;
   scoped_config.Get().directly_query_history_service = false;
+  scoped_config.Get().max_suggestions = 8U;
+  scoped_config.Get().max_url_suggestions = 4U;
+  scoped_config.Get().max_search_suggestions = 4U;
 
   provider_->Start(BuildAutocompleteInputForWebOnFocus(), true);
 
