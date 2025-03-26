@@ -1891,6 +1891,13 @@ cc::ImageDecodeCache* CanvasResourceProvider::ImageDecodeCacheF16() {
   return &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
 }
 
+void CanvasResourceProvider::OnResourceReturnedFromCompositor(
+    scoped_refptr<CanvasResource>&& resource) {
+  if (resource->IsRecycleable() && resource->HasOneRef()) {
+    RecycleResource(std::move(resource));
+  }
+}
+
 void CanvasResourceProvider::RecycleResource(
     scoped_refptr<CanvasResource>&& resource) {
   // We don't want to keep an arbitrary large number of canvases.
