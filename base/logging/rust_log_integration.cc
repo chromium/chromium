@@ -6,8 +6,6 @@
 
 #include <stdint.h>
 
-#include <string_view>
-
 #include "base/logging.h"
 #include "base/logging/log_severity.h"
 #include "base/logging/rust_logger.rs.h"
@@ -15,7 +13,7 @@
 
 namespace logging::internal {
 
-LogMessageRustWrapper::LogMessageRustWrapper(std::string_view file,
+LogMessageRustWrapper::LogMessageRustWrapper(const char* file,
                                              int line,
                                              ::logging::LogSeverity severity)
     : log_message(file, line, severity) {}
@@ -26,13 +24,12 @@ void LogMessageRustWrapper::write_to_stream(rust::Str str) {
 }
 
 void print_rust_log(const RustFmtArguments& msg,
-                    rust::Str file,
+                    const char* file,
                     int32_t line,
                     int32_t severity,
                     bool verbose) {
   // TODO(danakj): If `verbose` make the log equivalent to VLOG instead of LOG.
-  LogMessageRustWrapper wrapper(std::string_view(file.data(), file.size()),
-                                line, severity);
+  LogMessageRustWrapper wrapper(file, line, severity);
   msg.format(wrapper);
 }
 

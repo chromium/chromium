@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <string_view>
-
 #include "base/base_export.h"
 #include "base/logging.h"
 #include "base/logging/log_severity.h"
@@ -30,7 +28,7 @@ struct RustFmtArguments;
 // TODO(danakj): Should this helper function be replaced with C-like apis next
 // to logging::LogMessage that Rust uses more directly?
 void print_rust_log(const RustFmtArguments& msg,
-                    rust::Str file,
+                    const char* file,
                     int32_t line,
                     int32_t severity,
                     bool verbose);
@@ -38,7 +36,7 @@ void print_rust_log(const RustFmtArguments& msg,
 // Wraps a LogMessage object so that Rust code can write to its ostream.
 class LogMessageRustWrapper {
  public:
-  LogMessageRustWrapper(std::string_view file,
+  LogMessageRustWrapper(const char* file,
                         int line,
                         ::logging::LogSeverity severity);
 
