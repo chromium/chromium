@@ -93,7 +93,7 @@ public class SuggestionEventObserverUnitTest {
                         mTab,
                         TabLaunchType.FROM_RESTORE,
                         TabCreationState.LIVE_IN_FOREGROUND,
-                        false);
+                        /* markedForSelection= */ true);
 
         verify(mGroupSuggestionsService).didAddTab(eq(TAB_ID), eq(TabLaunchType.FROM_RESTORE));
     }

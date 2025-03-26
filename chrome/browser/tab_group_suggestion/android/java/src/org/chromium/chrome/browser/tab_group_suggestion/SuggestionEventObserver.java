@@ -41,7 +41,10 @@ public class SuggestionEventObserver {
                         @TabLaunchType int type,
                         @TabCreationState int creationState,
                         boolean markedForSelection) {
-                    mGroupSuggestionsService.didAddTab(tab.getId(), type);
+                    if (markedForSelection
+                            && creationState == TabCreationState.LIVE_IN_FOREGROUND) {
+                        mGroupSuggestionsService.didAddTab(tab.getId(), type);
+                    }
                 }
 
                 @Override

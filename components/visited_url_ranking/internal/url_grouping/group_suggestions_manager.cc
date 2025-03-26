@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/visited_url_ranking/internal/url_grouping/grouping_heuristics.h"
@@ -65,6 +66,8 @@ class GroupSuggestionsManager::GroupSuggestionComputer {
                            ResultStatus status,
                            URLVisitsMetadata metadata,
                            std::vector<URLVisitAggregate> candidates) {
+    VLOG(1) << "GroupSuggestionComputer::OnFetchedCandidates: "
+            << candidates.size();
     heuristics_.GetSuggestions(std::move(candidates), std::move(callback));
   }
 
@@ -84,6 +87,10 @@ GroupSuggestionsManager::~GroupSuggestionsManager() = default;
 
 void GroupSuggestionsManager::MaybeTriggerSuggestions(
     const GroupSuggestionsService::Scope& scope) {
+  VLOG(1)
+      << "GroupSuggestionsManager::MaybeTriggerSuggestions. Ongoing compute: "
+      << !!suggestion_computer_;
+
   // Stop any ongoing computation since tab state has been updated.
   suggestion_computer_.reset();
 
@@ -128,7 +135,12 @@ void GroupSuggestionsManager::ShowSuggestion(
     }
   }
   if (delegate) {
-    delegate->ShowSuggestion(*suggestions, base::DoNothing());
+    VLOG(1) << "Showing suggestion to group tabs "
+            << suggestions->suggestions.size();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&GroupSuggestionsDelegate::ShowSuggestion,
+                                  base::Unretained(delegate),
+                                  std::move(*suggestions), base::DoNothing()));
   } else {
     VLOG(1) << "Suggestion discarded for " << scope.tab_session_id;
   }
