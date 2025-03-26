@@ -30,6 +30,7 @@ class TabEventTrackerImpl : public TabEventTracker {
   void TabClosureUndone(int tab_id) override;
   void TabClosureCommitted(int tab_id) override;
   void DidMoveTab(int tab_id, int new_index, int current_index) override;
+  void OnPageLoadFinished(int tab_id) override;
   void DidEnterTabSwitcher() override;
 
   int GetSelectedCount(int tab_id) const;

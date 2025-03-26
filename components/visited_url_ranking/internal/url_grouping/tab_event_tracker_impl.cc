@@ -35,6 +35,10 @@ void TabEventTrackerImpl::DidMoveTab(int tab_id,
                                      int new_index,
                                      int current_index) {}
 
+void TabEventTrackerImpl::OnPageLoadFinished(int tab_id) {
+  on_new_event_callback_.Run();
+}
+
 void TabEventTrackerImpl::DidEnterTabSwitcher() {}
 
 int TabEventTrackerImpl::GetSelectedCount(int tab_id) const {

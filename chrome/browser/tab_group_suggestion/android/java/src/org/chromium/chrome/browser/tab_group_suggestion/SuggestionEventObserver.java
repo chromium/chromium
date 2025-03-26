@@ -19,7 +19,10 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestionsService;
+import org.chromium.url.GURL;
 
 /** Observer for events that are relevant to TabGroup suggestion triggering or calculation. */
 @NullMarked
@@ -28,6 +31,7 @@ public class SuggestionEventObserver {
     private final @NonNull TabModel mTabModel;
     private final @NonNull GroupSuggestionsService mGroupSuggestionsService;
     private final @NonNull Callback<Boolean> mHubVisibilityObserver = this::onHubVisibilityChanged;
+    private final @NonNull TabModelSelectorTabObserver mTabObserver;
     private final @NonNull TabModelObserver mTabModelObserver =
             new TabModelObserver() {
                 @Override
@@ -68,13 +72,22 @@ public class SuggestionEventObserver {
 
     /** Creates the observer. */
     public SuggestionEventObserver(
-            @NonNull TabModel tabModel,
+            @NonNull TabModelSelector tabModelSelector,
             @NonNull OneshotSupplierImpl<HubManager> hubManagerSupplier) {
-        mTabModel = tabModel;
+        mTabModel = tabModelSelector.getModel(false);
+        mTabObserver =
+                new TabModelSelectorTabObserver(tabModelSelector) {
+                    @Override
+                    public void onPageLoadFinished(Tab tab, GURL url) {
+                        if (tab.isIncognitoBranded()) {
+                            return;
+                        }
+                        mGroupSuggestionsService.onPageLoadFinished(tab.getId());
+                    }
+                };
         mGroupSuggestionsService =
-                GroupSuggestionsServiceFactory.getForProfile(tabModel.getProfile());
-        assert !tabModel.isIncognitoBranded();
-        tabModel.addObserver(mTabModelObserver);
+                GroupSuggestionsServiceFactory.getForProfile(mTabModel.getProfile());
+        mTabModel.addObserver(mTabModelObserver);
         hubManagerSupplier.runSyncOrOnAvailable(
                 hubManager -> {
                     mHubVisibilitySupplier = hubManager.getHubVisibilitySupplier();
@@ -94,9 +107,14 @@ public class SuggestionEventObserver {
         }
     }
 
+    public @NonNull TabModelSelectorTabObserver getTabModelSelectorTabObserverForTesting() {
+        return mTabObserver;
+    }
+
     /** Destroys the observer. */
     public void destroy() {
         mTabModel.removeObserver(mTabModelObserver);
+        mTabObserver.destroy();
         if (mHubVisibilitySupplier != null) {
             mHubVisibilitySupplier.removeObserver(mHubVisibilityObserver);
         }

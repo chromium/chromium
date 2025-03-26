@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.tab_group_suggestion;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,7 +39,9 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestionsService;
+import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class SuggestionEventObserverUnitTest {
@@ -47,6 +51,7 @@ public class SuggestionEventObserverUnitTest {
 
     @Mock Profile mProfile;
     @Mock TabModel mTabModel;
+    @Mock TabModelSelector mTabModelSelector;
     @Mock GroupSuggestionsService mGroupSuggestionsService;
     @Mock HubManager mHubManager;
     @Mock PaneManager mPaneManager;
@@ -61,6 +66,7 @@ public class SuggestionEventObserverUnitTest {
 
     @Before
     public void setup() {
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
         when(mTab.getId()).thenReturn(TAB_ID);
@@ -75,7 +81,8 @@ public class SuggestionEventObserverUnitTest {
         GroupSuggestionsServiceFactory.setGroupSuggestionsServiceForTesting(
                 mGroupSuggestionsService);
 
-        mSuggestionEventObserver = new SuggestionEventObserver(mTabModel, hubManagerSupplier);
+        mSuggestionEventObserver =
+                new SuggestionEventObserver(mTabModelSelector, hubManagerSupplier);
     }
 
     @Test
@@ -153,6 +160,29 @@ public class SuggestionEventObserverUnitTest {
         mHubVisibilitySupplier.set(false);
 
         verify(mGroupSuggestionsService, never()).didEnterTabSwitcher();
+    }
+
+    @Test
+    public void testTabNavigation_IncognitoTab() {
+        Tab incognitoTab = mock(Tab.class);
+        when(incognitoTab.isIncognitoBranded()).thenReturn(true);
+
+        mSuggestionEventObserver
+                .getTabModelSelectorTabObserverForTesting()
+                .onPageLoadFinished(incognitoTab, new GURL(""));
+
+        verify(mGroupSuggestionsService, never()).onPageLoadFinished(anyInt());
+    }
+
+    @Test
+    public void testTabNavigation_NormalTab() {
+        when(mTab.isIncognitoBranded()).thenReturn(false);
+
+        mSuggestionEventObserver
+                .getTabModelSelectorTabObserverForTesting()
+                .onPageLoadFinished(mTab, new GURL(""));
+
+        verify(mGroupSuggestionsService).onPageLoadFinished(eq(TAB_ID));
     }
 
     @Test

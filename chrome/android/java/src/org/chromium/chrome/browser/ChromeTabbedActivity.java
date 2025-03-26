@@ -1327,8 +1327,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.GROUP_SUGGESTION_SERVICE)) {
                 mSuggestionEventObserver =
-                        new SuggestionEventObserver(
-                                mTabModelSelector.getModel(false), mHubManagerSupplier);
+                        new SuggestionEventObserver(mTabModelSelector, mHubManagerSupplier);
                 mGroupSuggestionsPromotionCoordinator =
                         new GroupSuggestionsPromotionCoordinator(
                                 this,

@@ -40,6 +40,8 @@ class GroupSuggestionsServiceAndroid : public base::SupportsUserData::Data {
 
   void TabClosureCommitted(JNIEnv* env, int tab_id);
 
+  void OnPageLoadFinished(JNIEnv* env, int tab_id);
+
   void DidEnterTabSwitcher(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
