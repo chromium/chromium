@@ -3533,6 +3533,28 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="DomDistiller.Android.AnyPageSignalWithinTimeout"
+    enum="Boolean" expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    For all distillation page signals, records if the distillation result made
+    it within the magic toolbar button timeout. Recorded when
+    ReaderModeActionProvider gets a distillation result.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Android.DistillablePageSignalWithinTimeout"
+    enum="Boolean" expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    For distillable pages, records if the distillation result made it within the
+    magic toolbar button timeout. Recorded when ReaderModeActionProvider gets a
+    distillation result.
+  </summary>
+</histogram>
+
 <histogram
     name="DomDistiller.Android.OnDistillableResult.AccessibilitySettingEnabled"
     enum="Boolean" expires_after="2025-08-24">
