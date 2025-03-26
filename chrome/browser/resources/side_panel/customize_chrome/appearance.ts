@@ -77,6 +77,7 @@ export class AppearanceElement extends AppearanceElementBase {
       showUploadedImageButton_: {type: Boolean},
       showSearchedImageButton_: {type: Boolean},
       showManagedDialog_: {type: Boolean},
+      showEditTheme_: {type: Boolean},
       isSourceTabFirstPartyNtp_: {type: Boolean},
 
       wallpaperSearchButtonEnabled_: {
@@ -105,7 +106,9 @@ export class AppearanceElement extends AppearanceElementBase {
   private wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
   protected isSourceTabFirstPartyNtp_: boolean = true;
+  protected showEditTheme_: boolean = true;
   protected ntpManagedByName_: string = '';
+  private setThemeEditableId_: number|null = null;
   private setThemeListenerId_: number|null = null;
   private attachedTabStateUpdatedId_: number|null = null;
   private ntpManagedByNameUpdatedId_: number|null = null;
@@ -136,6 +139,12 @@ export class AppearanceElement extends AppearanceElementBase {
                 });
     this.pageHandler_.updateAttachedTabState();
 
+    this.setThemeEditableId_ = CustomizeChromeApiProxy.getInstance()
+                                   .callbackRouter.setThemeEditable.addListener(
+                                       (isThemeEditable: boolean) => {
+                                         this.showEditTheme_ = isThemeEditable;
+                                       });
+
     this.ntpManagedByNameUpdatedId_ =
         CustomizeChromeApiProxy.getInstance()
             .callbackRouter.ntpManagedByNameUpdated.addListener(
@@ -151,12 +160,13 @@ export class AppearanceElement extends AppearanceElementBase {
     this.callbackRouter_.removeListener(this.setThemeListenerId_);
 
     assert(this.attachedTabStateUpdatedId_);
-    CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
-        this.attachedTabStateUpdatedId_);
+    this.callbackRouter_.removeListener(this.attachedTabStateUpdatedId_);
 
     assert(this.ntpManagedByNameUpdatedId_);
-    CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
-        this.ntpManagedByNameUpdatedId_);
+    this.callbackRouter_.removeListener(this.ntpManagedByNameUpdatedId_);
+
+    assert(this.setThemeEditableId_);
+    this.callbackRouter_.removeListener(this.setThemeEditableId_);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -247,6 +257,8 @@ export class AppearanceElement extends AppearanceElementBase {
     return !!this.theme_ && !this.theme_.thirdPartyThemeInfo &&
         (!(this.theme_.backgroundImage &&
            this.theme_.backgroundImage.isUploadedImage)) &&
+        // TODO(crbug.com/404247286) Enable snapshots for extension NTP with 1P
+        // theme.
         this.isSourceTabFirstPartyNtp_;
   }
 
