@@ -11450,6 +11450,15 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_SEARCH_PROMO" desc="Promo UI shown next to the tab search button to encourage it's use.">
         To search your tabs, click here
       </message>
+      <message name="IDS_TAB_SEARCH_TOOLBAR_BUTTON_PROMO_TITLE" desc="Title text on the tab search toolbar button promo UI.">
+        Tab search is now pinned to your toolbar
+      </message>
+      <message name="IDS_TAB_SEARCH_TOOLBAR_BUTTON_PROMO_BODY" desc="Body text on the tab search toolbar button promo UI.">
+        You can unpin it and open it from the menu
+      </message>
+      <message name="IDS_TAB_SEARCH_TOOLBAR_BUTTON_PROMO_ACTION" desc="Action button text on the tab search toolbar button promo UI.">
+        Unpin
+      </message>
       <message name="IDS_TAB_SEARCH_SEARCH_TABS" desc="The label on the tab search search filed when user input is empty.">
         Search Tabs
       </message>

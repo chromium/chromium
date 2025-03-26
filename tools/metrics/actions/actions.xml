@@ -48335,6 +48335,8 @@ should be able to be added at any place in this file.
       label="For the tab organization feature."/>
   <suffix name="TabPinnedFeature" label="For tab pinned overflow hint."/>
   <suffix name="TabSearch" label="For the tab search feature."/>
+  <suffix name="TabSearchToolbarButton"
+      label="For the tab search migration to a toolbar button."/>
   <suffix name="TabSwitcherButton" label="For tab switcher button."/>
   <suffix name="TabSwitcherButtonSwitchIncognito"
       label="For tab switcher button switch to incognito."/>

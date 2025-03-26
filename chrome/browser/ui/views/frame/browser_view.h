@@ -1104,6 +1104,9 @@ class BrowserView : public BrowserWindow,
   // Attempts to show IPH promo for experimental AI.
   void MaybeShowExperimentalAIIPH();
 
+  // Attempts to show IPH promo for the tab search toolbar button.
+  void MaybeShowTabStripToolbarButtonIPH();
+
   void UpdateWindowControlsOverlayEnabled();
 
   // Updates the visibility of the Window Controls Overlay toggle button.
