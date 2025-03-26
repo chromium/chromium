@@ -2432,13 +2432,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.ElementCapture.RestrictTo.Result"
-    enum="ApplySubCaptureTargetResult" expires_after="2024-09-20">
+    enum="ApplySubCaptureTargetResult" expires_after="2026-03-25">
   <owner>eladalon@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
     Tracks the result of calls to BrowserCaptureMediaStreamTrack.restrictTo().
     Recorded when resolving the promise produced by restrictTo().
+
+    Warning: this histogram was expired from 2024-09-20 to 2025-03-25; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -4975,7 +4978,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RegionCapture.CropTo.Latency" units="ms"
-    expires_after="2025-01-07">
+    expires_after="2026-03-25">
   <owner>eladalon@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
@@ -4984,22 +4987,28 @@ chromium-metrics-reviews@google.com.
     BrowserCaptureMediaStreamTrack.cropTo() call to resolve (either successfully
     or with an error). Note a call which never resolves won't be counted in this
     metric.
+
+    Warning: this histogram was expired from 2025-01-07 to 2025-03-25; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.RegionCapture.CropTo.Result2"
-    enum="ApplySubCaptureTargetResult" expires_after="2025-01-07">
+    enum="ApplySubCaptureTargetResult" expires_after="2026-03-25">
   <owner>eladalon@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
     Tracks the result of calls to BrowserCaptureMediaStreamTrack.cropTo().
     Recorded when resolving the promise produced by cropTo().
+
+    Warning: this histogram was expired from 2025-01-07 to 2025-03-25; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.RegionCapture.ProduceCropTarget.Function.Result"
-    enum="ProduceTargetFunctionResult" expires_after="2025-01-07">
+    enum="ProduceTargetFunctionResult" expires_after="2026-03-25">
   <owner>eladalon@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
@@ -5008,11 +5017,14 @@ chromium-metrics-reviews@google.com.
     histogram tracks whether a new Promise was produced, and if not, why not.
     Another histogram tracks the result of new Promises, i.e. whether they were
     resolved or rejected.
+
+    Warning: this histogram was expired from 2025-01-07 to 2025-03-25; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.RegionCapture.ProduceCropTarget.Promise.Result"
-    enum="ProduceTargetPromiseResult" expires_after="2025-01-07">
+    enum="ProduceTargetPromiseResult" expires_after="2026-03-25">
   <owner>eladalon@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
@@ -5020,6 +5032,9 @@ chromium-metrics-reviews@google.com.
     When CropTarget.fromElement() is called for the first time on a given
     Element, a new Promise is produced. This histogram tracks the result of this
     Promise - whether it was resolved or rejected.
+
+    Warning: this histogram was expired from 2025-01-07 to 2025-03-25; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -6068,7 +6083,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.AspectRatio" units="%"
-    expires_after="2025-04-24">
+    expires_after="2026-03-25">
   <owner>mcasas@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <summary>
@@ -6181,7 +6196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Device.SupportedResolution"
-    enum="VideoResolutionDesignation" expires_after="2025-12-15">
+    enum="VideoResolutionDesignation" expires_after="2026-03-25">
   <owner>bryantchandler@chromium.org</owner>
   <owner>eshr@google.com</owner>
   <owner>handellm@google.com</owner>
@@ -6221,7 +6236,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.FrameRate" units="fps"
-    expires_after="2025-12-15">
+    expires_after="2026-03-25">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
@@ -6246,13 +6261,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Height" units="pixels"
-    expires_after="2023-12-31">
+    expires_after="2026-03-25">
   <owner>mcasas@chromium.org</owner>
   <owner>handellm@google.com</owner>
   <owner>jophba@chromium.org</owner>
   <summary>
     Video Capture Device captured frame height in pixels. The collection is made
     in the VideoCaptureController upon reception of the first frame.
+
+    Warning: this histogram was expired from 2023-12-31 to 2025-03-25; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -6324,7 +6342,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.ScaleOverride" units="units"
-    expires_after="2025-04-24">
+    expires_after="2026-03-25">
   <owner>jophba@chromium.org</owner>
   <owner>klausw@chromium.org</owner>
   <summary>
@@ -6336,7 +6354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.ScaleOverrideChangeCount" units="units"
-    expires_after="2025-04-24">
+    expires_after="2026-03-25">
   <owner>jophba@chromium.org</owner>
   <owner>klausw@chromium.org</owner>
   <summary>
@@ -6410,7 +6428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Track.FrameDrop.{StreamType}"
-    enum="VideoCaptureFrameDropReason" expires_after="2024-03-03">
+    enum="VideoCaptureFrameDropReason" expires_after="2026-03-25">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
@@ -6423,6 +6441,9 @@ chromium-metrics-reviews@google.com.
     the frame drop reason changes. The frame drop is recorder on a per-track
     basis (i.e. cloned tracks also log) and includes out-of-process frame drops
     (e.g. a DeviceCapture webcam source dropping frames in the capture process).
+
+    Warning: this histogram was expired from 2024-03-03 to 2025-03-25; data may
+    be missing.
   </summary>
   <token key="StreamType">
     <variant name="DeviceCapture"/>
@@ -6434,7 +6455,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Width" units="pixels"
-    expires_after="2025-05-05">
+    expires_after="2026-03-25">
   <owner>mcasas@chromium.org</owner>
   <owner>handellm@google.com</owner>
   <owner>jophba@chromium.org</owner>
