@@ -6616,6 +6616,11 @@ const char kAccessibilityManifestV3BrailleImeName[] =
 const char kAccessibilityManifestV3BrailleImeDescription[] =
     "Experimental migration of Braille IME from extension manifest v2 to v3.";
 
+const char kAccessibilityManifestV3ChromeVoxName[] =
+    "Changes accessibility extension ChromeVox manifest v2 to v3.";
+const char kAccessibilityManifestV3ChromeVoxDescription[] =
+    "Experimental migration of ChromeVox from extension manifest v2 to v3.";
+
 const char kAccessibilityManifestV3EnhancedNetworkTtsName[] =
     "Changes accessibility extension Enhanced Network TTS manifest v2 to v3.";
 const char kAccessibilityManifestV3EnhancedNetworkTtsDescription[] =

@@ -291,6 +291,14 @@ bool IsAccessibilityManifestV3EnabledForBrailleIme() {
       ::features::kAccessibilityManifestV3BrailleIme);
 }
 
+BASE_FEATURE(kAccessibilityManifestV3ChromeVox,
+             "AccessibilityManifestV3ChromeVox",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityManifestV3EnabledForChromeVox() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityManifestV3ChromeVox);
+}
+
 BASE_FEATURE(kAccessibilityManifestV3EnhancedNetworkTts,
              "AccessibilityManifestV3EnhancedNetworkTts",
              base::FEATURE_DISABLED_BY_DEFAULT);
