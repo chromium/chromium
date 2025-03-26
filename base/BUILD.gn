@@ -250,7 +250,6 @@ component("base") {
     "containers/to_value_list.h",
     "containers/to_vector.h",
     "containers/unique_ptr_adapters.h",
-    "containers/util.h",
     "containers/vector_buffer.h",
     "critical_closure.h",
     "dcheck_is_on.h",
