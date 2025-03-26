@@ -4854,6 +4854,12 @@
     {
       // https://chromestatus.com/feature/5077691662073856
       name: "WebAudioBypassOutputBuffering",
+      status: {
+        "Win": "stable",
+        "ChromeOS": "stable",
+        "Mac": "stable",
+        "Linux": "stable",
+      },
     },
     {
       // https://chromestatus.com/feature/5077691662073856
