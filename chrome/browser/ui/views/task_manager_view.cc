@@ -347,13 +347,10 @@ void TaskManagerView::MenuClosed(ui::SimpleMenuModel* source) {
 }
 
 void TaskManagerView::SearchBarOnInputChanged(std::u16string_view query) {
-  const auto selected_category =
-      query.empty()
-          ? kTabDefinitions[tabs_->GetSelectedTabIndex()].associated_category
-          : DisplayCategory::kAll;
-
-  tabs_->SetEnabled(query.empty());
-  PerformFilter(selected_category, query);
+  // TODO(zhzhliu): Clean up tab disabled related code.
+  search_terms_ = query;
+  PerformFilter(
+      kTabDefinitions[tabs_->GetSelectedTabIndex()].associated_category);
 }
 
 TaskManagerView::TaskManagerView(StartAction start_action)
@@ -479,8 +476,7 @@ std::unique_ptr<views::View> TaskManagerView::CreateHeaderSeparatorUnderlay(
   return separator_container;
 }
 
-void TaskManagerView::PerformFilter(DisplayCategory category,
-                                    std::u16string_view search_term) {
+void TaskManagerView::PerformFilter(DisplayCategory category) {
   // When `select_on_remove_` is enabled, the selection will automatically jump
   // to some next/previous row if available. However, this setting needs to be
   // temporarily disabled during model updates to achieve the desired selection
@@ -493,7 +489,7 @@ void TaskManagerView::PerformFilter(DisplayCategory category,
   // no other selection should be applied (a.k.a the selection should clear).
 
   tab_table_->SetSelectOnRemove(false);
-  if (table_model_->UpdateModel(category, search_term)) {
+  if (table_model_->UpdateModel(category, search_terms_)) {
     // Model row count may differ, leading to off-screen row rendering.
     // Recompute scroll position.
     tab_table_->InvalidateLayout();
