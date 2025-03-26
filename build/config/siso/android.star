@@ -229,6 +229,15 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
         {
+            "name": "android/trace_event_bytecode_rewriter",
+            "command_prefix": "python3 ../../build/android/gyp/trace_event_bytecode_rewriter.py",
+            "handler": "android_trace_event_bytecode_rewriter",
+            "canonicalize_dir": True,
+            "remote": remote_run,
+            "platform_ref": "large",
+            "timeout": "10m",
+        },
+        {
             "name": "android/proguard",
             "command_prefix": "python3 ../../build/android/gyp/proguard.py",
             "handler": "android_proguard",
@@ -243,8 +252,26 @@ def __step_config(ctx, step_config):
                 "*.sql",
             ],
             "canonicalize_dir": True,
-            # Speculatively disabling for https://crbug.com/398058215
-            "remote": False,
+            "remote": remote_run,
+            "platform_ref": "large",
+            "timeout": "10m",
+        },
+        {
+            "name": "android/trace_references",
+            "command_prefix": "python3 ../../build/android/gyp/tracereferences.py",
+            "handler": "android_trace_references",
+            "exclude_input_patterns": [
+                "*.a",
+                "*.cc",
+                "*.h",
+                "*.inc",
+                "*.info",
+                "*.o",
+                "*.pak",
+                "*.sql",
+            ],
+            "canonicalize_dir": True,
+            "remote": remote_run,
             "platform_ref": "large",
             "timeout": "10m",
         },
@@ -381,6 +408,52 @@ def __android_dex_handler(ctx, cmd):
         outputs = cmd.outputs + outputs,
     )
 
+def __android_trace_event_bytecode_rewriter(ctx, cmd):
+    # Sample command:
+    # python3 ../../build/android/gyp/trace_event_bytecode_rewriter.py \
+    #   --stamp obj/chrome/android/trichrome_chrome_bundle.trace_event_rewrite.stamp \
+    #   --depfile gen/chrome/android/trichrome_chrome_bundle__trace_event_rewritten.d \
+    #   --script bin/helper/trace_event_adder \
+    #   --classpath @FileArg\(gen/chrome/android/trichrome_chrome_bundle.build_config.json:android:sdk_jars\) \
+    #   --input-jars @FileArg\(gen/chrome/android/trichrome_chrome_bundle.build_config.json:deps_info:device_classpath\) \
+    #   --output-jars @FileArg\(gen/chrome/android/trichrome_chrome_bundle.build_config.json:deps_info:trace_event_rewritten_device_classpath\)
+    inputs = []
+    outputs = []
+    script = ""
+    for i, arg in enumerate(cmd.args):
+        if arg in ["--input-jars", "--classpath"]:
+            fn, v = __filearg(ctx, cmd.args[i + 1])
+            if fn:
+                inputs.append(ctx.fs.canonpath(fn))
+            for f in v:
+                f, _, _ = f.partition(":")
+                inputs.append(ctx.fs.canonpath(f))
+            continue
+        if arg == "--output-jars":
+            fn, v = __filearg(ctx, cmd.args[i + 1])
+            if fn:
+                inputs.append(ctx.fs.canonpath(fn))
+            for f in v:
+                f, _, _ = f.partition(":")
+                outputs.append(ctx.fs.canonpath(f))
+            continue
+        if arg == "--script":
+            script = cmd.args[i + 1]
+            continue
+
+    # Find runtime jars for trace_event_adder
+    if script == "bin/helper/trace_event_adder":
+        trace_event_adder_json = json.decode(
+            str(ctx.fs.read(ctx.fs.canonpath("gen/build/android/bytecode/trace_event_adder.build_config.json"))),
+        )
+        for path in trace_event_adder_json.get("deps_info", {}).get("host_classpath", []):
+            inputs.append(ctx.fs.canonpath(path))
+
+    ctx.actions.fix(
+        inputs = cmd.inputs + inputs,
+        outputs = cmd.outputs + outputs,
+    )
+
 def __android_proguard_handler(ctx, cmd):
     inputs = []
     outputs = []
@@ -416,6 +489,55 @@ def __android_proguard_handler(ctx, cmd):
     ctx.actions.fix(
         inputs = cmd.inputs + inputs,
         outputs = cmd.outputs + outputs,
+    )
+
+def __android_trace_references_handler(ctx, cmd):
+    # Sample command:
+    # python3 ../../build/android/gyp/tracereferences.py \
+    #   --depfile gen/chrome/android/monochrome_public_bundle__dex.d \
+    #   --tracerefs-json gen/chrome/android/monochrome_public_bundle__dex.tracerefs.json \
+    #   --stamp obj/chrome/android/monochrome_public_bundle__dex.tracereferences.stamp --warnings-as-errors
+    # Sample tracerefs.json:
+    # {
+    #   "r8jar": "../../third_party/r8/cipd/lib/r8.jar",
+    #   "libs": [
+    #     "../../clank/third_party/android_system_sdk/src/android_system.jar",
+    #     "../../third_party/android_sdk/xr_extensions/com.android.extensions.xr.jar",
+    #     "obj/third_party/android_sdk/window_extensions/androidx_window_extensions_java.javac.jar"
+    #   ],
+    #   "jobs": [
+    #     {
+    #       "name": "",
+    #       "jars": [
+    #         "obj/chrome/android/monochrome_public_bundle__base_bundle_module/monochrome_public_bundle__base_bundle_module.r8dex.jar",
+    #         "obj/chrome/android/monochrome_public_bundle__chrome_bundle_module/monochrome_public_bundle__chrome_bundle_module.r8dex.jar",
+    #         "obj/chrome/android/monochrome_public_bundle__dev_ui_bundle_module/monochrome_public_bundle__dev_ui_bundle_module.r8dex.jar",
+    #         "obj/chrome/android/monochrome_public_bundle__stack_unwinder_bundle_module/monochrome_public_bundle__stack_unwinder_bundle_module.r8dex.jar",
+    #         "obj/chrome/android/monochrome_public_bundle__test_dummy_bundle_module/monochrome_public_bundle__test_dummy_bundle_module.r8dex.jar"
+    #       ]
+    #     },
+    #     {
+    #       "name": "base",
+    #       "jars": [
+    #         "obj/chrome/android/monochrome_public_bundle__base_bundle_module/monochrome_public_bundle__base_bundle_module.r8dex.jar"
+    #       ]
+    #     }
+    #   ]
+    # }
+    inputs = []
+    for i, arg in enumerate(cmd.args):
+        if arg == "--tracerefs-json":
+            tracerefs_json = json.decode(str(ctx.fs.read(ctx.fs.canonpath(cmd.args[i + 1]))))
+            break
+
+    for lib in tracerefs_json.get("libs", []):
+        inputs.append(ctx.fs.canonpath(lib))
+    for job in tracerefs_json.get("jobs", []):
+        for jar in job.get("jars", ""):
+            inputs.append(ctx.fs.canonpath(jar))
+
+    ctx.actions.fix(
+        inputs = cmd.inputs + inputs,
     )
 
 def __android_turbine_handler(ctx, cmd):
@@ -489,7 +611,9 @@ __handlers = {
     "android_compile_java": __android_compile_java_handler,
     "android_compile_resources": __android_compile_resources_handler,
     "android_dex": __android_dex_handler,
+    "android_trace_event_bytecode_rewriter": __android_trace_event_bytecode_rewriter,
     "android_proguard": __android_proguard_handler,
+    "android_trace_references": __android_trace_references_handler,
     "android_turbine": __android_turbine_handler,
     "android_write_build_config": __android_write_build_config_handler,
 }
