@@ -1070,6 +1070,21 @@ chromium-metrics-reviews@google.com.
   <token key="SuccessFailure" variants="SuccessFailure"/>
 </histogram>
 
+<histogram name="Arc.DlcInstaller.Install" enum="BooleanSuccess"
+    expires_after="2026-03-24">
+  <owner>tinghaolin@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    Result of checking if the ARC DLC installer successfully installed the ARCVM
+    image from DLC.
+
+    When a user uses a managed device that enables the preload device policy and
+    meets the hardware requirements, the DLC service will install the ARCVM
+    image from DLC. This downloading mechanism is enabled on boards with the
+    arcvm-dlc USE flag (currently, only the reven board).
+  </summary>
+</histogram>
+
 <histogram name="Arc.EngagementTime.ArcTotal" units="ms"
     expires_after="2025-09-14">
   <owner>mduggan@google.com</owner>
