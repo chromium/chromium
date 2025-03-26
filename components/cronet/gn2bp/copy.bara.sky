@@ -37,6 +37,9 @@ origin_files = glob([
     "build/android/CheckInstallApk-debug.apk",
     "build/android/unused_resources/**",
     "build/linux/**",
+    # We don't care about siso, and the contents of the .sisoenv file tend to be
+    # non-deterministic, causing spurious diffs.
+    "build/config/siso/**",
   ]) + glob(["components/cronet/**"]) - glob([
     # Per aosp/2374766
     "components/cronet/native/**",
