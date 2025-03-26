@@ -21,9 +21,7 @@ class AILanguageDetectorFactory final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit AILanguageDetectorFactory(
-      ExecutionContext* context,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+  explicit AILanguageDetectorFactory(ExecutionContext* context);
 
   void Trace(Visitor* visitor) const override;
 
@@ -41,7 +39,6 @@ class AILanguageDetectorFactory final : public ScriptWrappable,
       ScriptPromiseResolver<V8AIAvailability>* resolver,
       language_detection::mojom::blink::LanguageDetectionModelStatus result);
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   Member<LanguageDetectionModel> language_detection_model_;
 };
 

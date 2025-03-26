@@ -67,18 +67,16 @@ class LanguageDetectorCreateTask
       public ExecutionContextClient,
       public AIContextObserver<LanguageDetector> {
  public:
-  LanguageDetectorCreateTask(
-      ScriptState* script_state,
-      scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      ScriptPromiseResolver<LanguageDetector>* resolver,
-      LanguageDetectionModel* model,
-      const LanguageDetectorCreateOptions* options)
+  LanguageDetectorCreateTask(ScriptState* script_state,
+                             ScriptPromiseResolver<LanguageDetector>* resolver,
+                             LanguageDetectionModel* model,
+                             const LanguageDetectorCreateOptions* options)
       : ExecutionContextClient(ExecutionContext::From(script_state)),
         AIContextObserver(script_state,
                           this,
                           resolver,
                           options->getSignalOr(nullptr)),
-        task_runner_(task_runner),
+        task_runner_(AIInterfaceProxy::GetTaskRunner(GetExecutionContext())),
         resolver_(resolver),
         language_detection_model_(model) {
     if (options->hasMonitor()) {
@@ -146,11 +144,8 @@ class LanguageDetectorCreateTask
 
 }  // namespace
 
-AILanguageDetectorFactory::AILanguageDetectorFactory(
-    ExecutionContext* context,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
+AILanguageDetectorFactory::AILanguageDetectorFactory(ExecutionContext* context)
     : ExecutionContextClient(context),
-      task_runner_(task_runner),
       language_detection_model_(
           MakeGarbageCollected<LanguageDetectionModel>()) {}
 
@@ -217,8 +212,7 @@ ScriptPromise<LanguageDetector> AILanguageDetectorFactory::create(
           script_state);
   LanguageDetectorCreateTask* create_task =
       MakeGarbageCollected<LanguageDetectorCreateTask>(
-          script_state, task_runner_, resolver, language_detection_model_,
-          options);
+          script_state, resolver, language_detection_model_, options);
 
   AIInterfaceProxy::GetLanguageDetectionDriverRemote(GetExecutionContext())
       ->GetLanguageDetectionModel(

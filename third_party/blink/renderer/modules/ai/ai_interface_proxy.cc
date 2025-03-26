@@ -36,6 +36,12 @@ void AIInterfaceProxy::Trace(Visitor* visitor) const {
 }
 
 // static
+scoped_refptr<base::SequencedTaskRunner> AIInterfaceProxy::GetTaskRunner(
+    ExecutionContext* execution_context) {
+  return AIInterfaceProxy::From(execution_context)->task_runner_;
+}
+
+// static
 HeapMojoRemote<mojom::blink::TranslationManager>&
 AIInterfaceProxy::GetTranslationManagerRemote(
     ExecutionContext* execution_context) {

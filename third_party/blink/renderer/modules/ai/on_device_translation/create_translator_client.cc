@@ -89,8 +89,7 @@ CreateTranslatorClient::CreateTranslatorClient(
       source_language_(options->sourceLanguage()),
       target_language_(options->targetLanguage()),
       receiver_(this, GetExecutionContext()),
-      task_runner_(
-          GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault)) {
+      task_runner_(AIInterfaceProxy::GetTaskRunner(GetExecutionContext())) {
   if (options->hasMonitor()) {
     monitor_ = MakeGarbageCollected<AICreateMonitor>(GetExecutionContext(),
                                                      task_runner_);

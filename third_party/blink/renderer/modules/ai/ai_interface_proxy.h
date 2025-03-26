@@ -28,6 +28,9 @@ class AIInterfaceProxy final : public GarbageCollected<AIInterfaceProxy>,
 
   void Trace(Visitor* visitor) const override;
 
+  static scoped_refptr<base::SequencedTaskRunner> GetTaskRunner(
+      ExecutionContext* execution_context);
+
   static HeapMojoRemote<mojom::blink::TranslationManager>&
   GetTranslationManagerRemote(ExecutionContext* execution_context);
 
