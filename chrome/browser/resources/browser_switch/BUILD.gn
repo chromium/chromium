@@ -26,6 +26,7 @@ build_webui("build") {
     "internals/app.css",
   ]
 
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit_389737066.json"
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
