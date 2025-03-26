@@ -32,10 +32,8 @@ promise_test(async t => {
 
 promise_test(async t => {
   const request = buildValidNavigatorIdentityRequestWithRequestObject();
-  let credential = await requestIdentityWithActivation(test_driver, request);
-  assert_equals("openid4vp", credential.protocol);
-  assert_equals("fake_test_token", credential.data);
-}, "navigator.identity.get() API succeeds when IdentityRequestProvider#request is an object instead of stringified JSON object");
+  await promise_rejects_js(t, TypeError, requestIdentityWithActivation(test_driver, request));
+}, "navigator.identity.get() API fails when IdentityRequestProvider#request is an object instead of stringified JSON object");
 
 promise_test(async t=> {
   let abortController = new AbortController();
