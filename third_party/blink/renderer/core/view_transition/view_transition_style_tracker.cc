@@ -196,6 +196,13 @@ const String& AnimationUAStyles() {
   return kAnimationUAStyles;
 }
 
+const String& AnimationUAStylesScoped() {
+  DEFINE_STATIC_LOCAL(String, kAnimationUAStyles,
+                      (UncompressResourceAsASCIIString(
+                          IDR_UASTYLE_TRANSITION_ANIMATIONS_SCOPED_CSS)));
+  return kAnimationUAStyles;
+}
+
 // Computes and returns the start offset for element's painting in horizontal or
 // vertical direction.
 // `start` and `end` denote the offset where the element's ink overflow
@@ -2043,8 +2050,11 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
   builder.AddUAStyle(RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
                          ? StaticUAStylesScoped()
                          : StaticUAStyles());
-  if (add_animations)
-    builder.AddUAStyle(AnimationUAStyles());
+  if (add_animations) {
+    builder.AddUAStyle(RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
+                           ? AnimationUAStylesScoped()
+                           : AnimationUAStyles());
+  }
 
   for (auto& entry : element_data_map_) {
     const auto& view_transition_name = entry.key.GetString();

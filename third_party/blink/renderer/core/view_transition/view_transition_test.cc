@@ -655,6 +655,7 @@ TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
 TEST_P(ViewTransitionTest, ScopedPseudoTree) {
   SetHtmlInnerHTML(R"HTML(
     <style>
+      ::view-transition-group(*) { animation-duration: 0s; }
       #scope { width: 200px; height: 300px; contain: strict;
         position: relative; z-index: 0; background: white; }
       #scope div { width: 100px; height: 100px; contain: paint; background: blue }
@@ -688,18 +689,18 @@ TEST_P(ViewTransitionTest, ScopedPseudoTree) {
 
   UpdateAllLifecyclePhasesAndFinishDirectives();
   test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(GetState(transition), State::kAnimating);
 
-  UpdateAllLifecyclePhasesAndFinishDirectives();
   ValidatePseudoElementTree(scope_element, view_transition_names, true);
 
   // Only the scope element should have view transition pseudos.
   EXPECT_FALSE(GetDocument().documentElement()->GetPseudoElement(
       kPseudoIdViewTransition));
 
-  // Finish the animations which should remove the pseudo element tree.
-  FinishTransition();
-  UpdateAllLifecyclePhasesAndFinishDirectives();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetState(transition), State::kFinished);
+
   EXPECT_FALSE(scope_element->GetPseudoElement(kPseudoIdViewTransition));
 }
 
