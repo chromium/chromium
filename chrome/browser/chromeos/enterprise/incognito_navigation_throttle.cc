@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/incognito/incognito_navigation_throttle.h"
+#include "chrome/browser/chromeos/enterprise/incognito_navigation_throttle.h"
 
 #include "base/i18n/message_formatter.h"
 #include "base/numerics/safe_conversions.h"
@@ -24,9 +24,9 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/jstemplate_builder.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/strings/grit/ui_strings.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
-namespace enterprise_incognito {
+namespace chromeos {
 namespace {
 std::string GetIncognitoNavigationBlockedErrorPage(
     base::Value::List blocking_extension,
@@ -150,4 +150,4 @@ void IncognitoNavigationThrottle::ReadMandatoryExtensionsStatus() {
   }
 }
 
-}  // namespace enterprise_incognito
+}  // namespace chromeos

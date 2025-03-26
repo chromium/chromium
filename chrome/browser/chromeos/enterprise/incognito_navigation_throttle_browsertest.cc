@@ -1,7 +1,8 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/enterprise/incognito/incognito_navigation_throttle.h"
+
+#include "chrome/browser/chromeos/enterprise/incognito_navigation_throttle.h"
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -36,7 +37,7 @@
 
 using testing::NotNull;
 
-namespace enterprise_incognito {
+namespace chromeos {
 
 const char16_t kSimplePageContent[] = u"Basic html test.";
 const char kBlockingPageContentSingular[] =
@@ -62,7 +63,7 @@ class IncognitoNavigationThrottleBrowserTest
 
   void SetUpOnMainThread() override {
     embedded_test_server()->AddDefaultHandlers(
-        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+        base::FilePath("content/test/data"));
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -239,4 +240,4 @@ IN_PROC_BROWSER_TEST_F(IncognitoNavigationThrottleBrowserTest,
       IsMissingExtensionsBlockingPageSown(incognito_browser(), extensions));
 }
 
-}  // namespace enterprise_incognito
+}  // namespace chromeos
