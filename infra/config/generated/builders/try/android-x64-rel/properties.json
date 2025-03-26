@@ -29,6 +29,7 @@
                 ],
                 "build_config": "Release",
                 "config": "x64_builder",
+                "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
               },
@@ -59,6 +60,7 @@
                 ],
                 "build_config": "Release",
                 "config": "x64_builder",
+                "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
               },
@@ -89,6 +91,7 @@
                 ],
                 "build_config": "Release",
                 "config": "x64_builder",
+                "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
               },

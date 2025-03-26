@@ -26,6 +26,7 @@
               "legacy_chromium_config": {
                 "build_config": "Release",
                 "config": "x86_builder_mb",
+                "target_arch": "intel",
                 "target_bits": 32,
                 "target_platform": "android"
               },
