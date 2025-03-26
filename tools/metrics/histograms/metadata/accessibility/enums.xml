@@ -231,25 +231,223 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/accessibility/web_contents_accessibility_android.cc:AccessibilityPredicateType) -->
 
-<!-- LINT.IfChange(AccessibilitySetValueRole)-->
+<!-- LINT.IfChange(AccessibilityRole)-->
 
-<enum name="AccessibilitySetValueRole">
-  <summary>
-    Subset of accessibility node roles possibly used for kSetValue.
-  </summary>
+<enum name="AccessibilityRole">
+  <summary>List of all possible accessibility node roles.</summary>
   <int value="0" label="None"/>
+  <int value="1" label="Abbr"/>
+  <int value="2" label="Alert"/>
+  <int value="3" label="AlertDialog"/>
+  <int value="4" label="Application"/>
+  <int value="5" label="Article"/>
+  <int value="6" label="Audio"/>
+  <int value="7" label="Banner"/>
+  <int value="8" label="Blockquote"/>
+  <int value="9" label="Button"/>
+  <int value="10" label="Canvas"/>
+  <int value="11" label="Caption"/>
+  <int value="12" label="Caret"/>
+  <int value="13" label="Cell"/>
+  <int value="14" label="CheckBox"/>
+  <int value="15" label="Client"/>
+  <int value="16" label="Code"/>
   <int value="17" label="ColorWell"/>
+  <int value="18" label="Column"/>
+  <int value="19" label="ColumnHeader"/>
+  <int value="20" label="ComboBoxGrouping"/>
+  <int value="21" label="ComboBoxMenuButton"/>
+  <int value="22" label="Complementary"/>
+  <int value="23" label="Comment"/>
+  <int value="24" label="ContentDeletion"/>
+  <int value="25" label="ContentInsertion"/>
+  <int value="26" label="ContentInfo"/>
   <int value="27" label="Date"/>
   <int value="28" label="DateTime"/>
+  <int value="29" label="Definition"/>
+  <int value="30" label="DescriptionList"/>
+  <int value="31" label="DescriptionListDetailDeprecated"/>
+  <int value="32" label="DescriptionListTermDeprecated"/>
+  <int value="33" label="Desktop"/>
+  <int value="34" label="Details"/>
+  <int value="35" label="Dialog"/>
+  <int value="36" label="DirectoryDeprecated"/>
+  <int value="37" label="DisclosureTriangle"/>
+  <int value="38" label="DocAbstract"/>
+  <int value="39" label="DocAcknowledgments"/>
+  <int value="40" label="DocAfterword"/>
+  <int value="41" label="DocAppendix"/>
+  <int value="42" label="DocBackLink"/>
+  <int value="43" label="DocBiblioEntry"/>
+  <int value="44" label="DocBibliography"/>
+  <int value="45" label="DocBiblioRef"/>
+  <int value="46" label="DocChapter"/>
+  <int value="47" label="DocColophon"/>
+  <int value="48" label="DocConclusion"/>
+  <int value="49" label="DocCover"/>
+  <int value="50" label="DocCredit"/>
+  <int value="51" label="DocCredits"/>
+  <int value="52" label="DocDedication"/>
+  <int value="53" label="DocEndnote"/>
+  <int value="54" label="DocEndnotes"/>
+  <int value="55" label="DocEpigraph"/>
+  <int value="56" label="DocEpilogue"/>
+  <int value="57" label="DocErrata"/>
+  <int value="58" label="DocExample"/>
+  <int value="59" label="DocFootnote"/>
+  <int value="60" label="DocForeword"/>
+  <int value="61" label="DocGlossary"/>
+  <int value="62" label="DocGlossRef"/>
+  <int value="63" label="DocIndex"/>
+  <int value="64" label="DocIntroduction"/>
+  <int value="65" label="DocNoteRef"/>
+  <int value="66" label="DocNotice"/>
+  <int value="67" label="DocPageBreak"/>
+  <int value="68" label="DocPageFooter"/>
+  <int value="69" label="DocPageHeader"/>
+  <int value="70" label="DocPageList"/>
+  <int value="71" label="DocPart"/>
+  <int value="72" label="DocPreface"/>
+  <int value="73" label="DocPrologue"/>
+  <int value="74" label="DocPullquote"/>
+  <int value="75" label="DocQna"/>
+  <int value="76" label="DocSubtitle"/>
+  <int value="77" label="DocTip"/>
+  <int value="78" label="DocToc"/>
+  <int value="79" label="Document"/>
+  <int value="80" label="EmbeddedObject"/>
+  <int value="81" label="Emphasis"/>
+  <int value="82" label="Feed"/>
+  <int value="83" label="Figcaption"/>
+  <int value="84" label="Figure"/>
+  <int value="85" label="Footer"/>
+  <int value="86" label="SectionFooter"/>
+  <int value="87" label="Form"/>
+  <int value="88" label="GenericContainer"/>
+  <int value="89" label="GraphicsDocument"/>
+  <int value="90" label="GraphicsObject"/>
+  <int value="91" label="GraphicsSymbol"/>
+  <int value="92" label="Grid"/>
+  <int value="93" label="Group"/>
+  <int value="94" label="Header"/>
+  <int value="95" label="SectionHeader"/>
+  <int value="96" label="Heading"/>
+  <int value="97" label="Iframe"/>
+  <int value="98" label="IframePresentational"/>
+  <int value="99" label="Image"/>
+  <int value="100" label="ImeCandidate"/>
+  <int value="101" label="InlineTextBox"/>
   <int value="102" label="InputTime"/>
+  <int value="103" label="Keyboard"/>
+  <int value="104" label="LabelText"/>
+  <int value="105" label="LayoutTable"/>
+  <int value="106" label="LayoutTableCell"/>
+  <int value="107" label="LayoutTableRow"/>
+  <int value="108" label="Legend"/>
+  <int value="109" label="LineBreak"/>
+  <int value="110" label="Link"/>
+  <int value="111" label="List"/>
+  <int value="112" label="ListBox"/>
+  <int value="113" label="ListBoxOption"/>
+  <int value="114" label="ListGrid"/>
+  <int value="115" label="ListItem"/>
+  <int value="116" label="ListMarker"/>
+  <int value="117" label="Log"/>
+  <int value="118" label="Main"/>
+  <int value="119" label="Mark"/>
+  <int value="120" label="Marquee"/>
+  <int value="121" label="Math"/>
+  <int value="122" label="Menu"/>
+  <int value="123" label="MenuBar"/>
+  <int value="124" label="MenuItem"/>
+  <int value="125" label="MenuItemCheckBox"/>
+  <int value="126" label="MenuItemRadio"/>
+  <int value="127" label="MenuListOption"/>
+  <int value="128" label="MenuListPopup"/>
+  <int value="129" label="Meter"/>
+  <int value="130" label="Navigation"/>
+  <int value="131" label="Note"/>
+  <int value="132" label="Pane"/>
+  <int value="133" label="Paragraph"/>
+  <int value="134" label="PdfActionableHighlight"/>
+  <int value="135" label="PdfRoot"/>
+  <int value="136" label="PluginObject"/>
+  <int value="137" label="PopUpButton"/>
+  <int value="138" label="PortalDeprecated"/>
+  <int value="139" label="PreDeprecated"/>
+  <int value="140" label="ProgressIndicator"/>
+  <int value="141" label="RadioButton"/>
+  <int value="142" label="RadioGroup"/>
+  <int value="143" label="Region"/>
+  <int value="144" label="RootWebArea"/>
+  <int value="145" label="Row"/>
+  <int value="146" label="RowGroup"/>
+  <int value="147" label="RowHeader"/>
+  <int value="148" label="Ruby"/>
+  <int value="149" label="RubyAnnotation"/>
   <int value="150" label="ScrollBar"/>
+  <int value="151" label="ScrollView"/>
+  <int value="152" label="Search"/>
   <int value="153" label="SearchBox"/>
+  <int value="154" label="Section"/>
   <int value="155" label="Slider"/>
   <int value="156" label="SpinButton"/>
   <int value="157" label="Splitter"/>
+  <int value="158" label="StaticText"/>
+  <int value="159" label="Status"/>
+  <int value="160" label="Strong"/>
+  <int value="161" label="Suggestion"/>
+  <int value="162" label="SvgRoot"/>
+  <int value="163" label="Switch"/>
+  <int value="164" label="Tab"/>
+  <int value="165" label="TabList"/>
+  <int value="166" label="TabPanel"/>
+  <int value="167" label="Table"/>
+  <int value="168" label="TableHeaderContainer"/>
+  <int value="169" label="Term"/>
   <int value="170" label="TextField"/>
   <int value="171" label="TextFieldWithComboBox"/>
+  <int value="172" label="Time"/>
+  <int value="173" label="Timer"/>
+  <int value="174" label="TitleBar"/>
+  <int value="175" label="ToggleButton"/>
+  <int value="176" label="Toolbar"/>
+  <int value="177" label="Tooltip"/>
+  <int value="178" label="Tree"/>
+  <int value="179" label="TreeGrid"/>
+  <int value="180" label="TreeItem"/>
   <int value="181" label="Unknown"/>
+  <int value="182" label="Video"/>
+  <int value="183" label="WebView"/>
+  <int value="184" label="Window"/>
+  <int value="185" label="Subscript"/>
+  <int value="186" label="Superscript"/>
+  <int value="187" label="MathMLMath"/>
+  <int value="188" label="MathMLFraction"/>
+  <int value="189" label="MathMLIdentifier"/>
+  <int value="190" label="MathMLMultiscripts"/>
+  <int value="191" label="MathMLNoneScript"/>
+  <int value="192" label="MathMLNumber"/>
+  <int value="193" label="MathMLOperator"/>
+  <int value="194" label="MathMLOver"/>
+  <int value="195" label="MathMLPrescriptDelimiter"/>
+  <int value="196" label="MathMLRoot"/>
+  <int value="197" label="MathMLRow"/>
+  <int value="198" label="MathMLSquareRoot"/>
+  <int value="199" label="MathMLStringLiteral"/>
+  <int value="200" label="MathMLSub"/>
+  <int value="201" label="MathMLSubSup"/>
+  <int value="202" label="MathMLSup"/>
+  <int value="203" label="MathMLTable"/>
+  <int value="204" label="MathMLTableCell"/>
+  <int value="205" label="MathMLTableRow"/>
+  <int value="206" label="MathMLText"/>
+  <int value="207" label="MathMLUnder"/>
+  <int value="208" label="MathMLUnderOver"/>
+  <int value="209" label="ComboBoxSelect"/>
+  <int value="210" label="DisclosureTriangleGrouped"/>
+  <int value="211" label="SectionWithoutName"/>
+  <int value="212" label="GridCell"/>
 </enum>
 
 <!-- LINT.ThenChange(//ui/accessibility/ax_enums.mojom:Role) -->

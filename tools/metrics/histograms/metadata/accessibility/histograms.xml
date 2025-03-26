@@ -3359,7 +3359,7 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.SetValue.Role" enum="AccessibilitySetValueRole"
+<histogram name="Accessibility.SetValue.Role" enum="AccessibilityRole"
     expires_after="2026-02-06">
   <owner>aleventhal@chromium.org</owner>
   <owner>aluh@chromium.org</owner>
