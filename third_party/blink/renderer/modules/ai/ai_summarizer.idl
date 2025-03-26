@@ -4,6 +4,26 @@
 
 // https://github.com/WICG/writing-assistance-apis
 
+enum AISummarizerType { "tl;dr", "key-points", "teaser", "headline" };
+enum AISummarizerFormat { "plain-text", "markdown" };
+enum AISummarizerLength { "short", "medium", "long" };
+
+dictionary AISummarizerCreateCoreOptions {
+  AISummarizerType type = "key-points";
+  AISummarizerFormat format = "markdown";
+  AISummarizerLength length = "short";
+
+  sequence<DOMString> expectedInputLanguages;
+  sequence<DOMString> expectedContextLanguages;
+  DOMString outputLanguage;
+};
+
+dictionary AISummarizerCreateOptions : AISummarizerCreateCoreOptions {
+  AbortSignal signal;
+  AICreateMonitorCallback monitor;
+  DOMString sharedContext;
+};
+
 dictionary AISummarizerSummarizeOptions {
   DOMString context;
   AbortSignal signal;
@@ -15,6 +35,22 @@ dictionary AISummarizerSummarizeOptions {
   SecureContext
 ]
 interface AISummarizer {
+  [
+    MeasureAs=Summarizer_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<AIAvailability> availability(
+    optional AISummarizerCreateCoreOptions options = {}
+  );
+
+  [
+    MeasureAs=Summarizer_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<AISummarizer> create(optional AISummarizerCreateOptions options = {});
+
   [
     MeasureAs=Summarizer_Summarize,
     CallWith=ScriptState,

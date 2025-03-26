@@ -5,6 +5,26 @@
 // Writer API
 // https://github.com/explainers-by-googlers/writing-assistance-apis
 
+enum AIWriterTone { "formal", "neutral", "casual" };
+enum AIWriterFormat { "plain-text", "markdown" };
+enum AIWriterLength { "short", "medium", "long" };
+
+dictionary AIWriterCreateCoreOptions {
+  AIWriterTone tone = "neutral";
+  AIWriterFormat format = "plain-text";
+  AIWriterLength length = "medium";
+
+  sequence<DOMString> expectedInputLanguages;
+  sequence<DOMString> expectedContextLanguages;
+  DOMString outputLanguage;
+};
+
+dictionary AIWriterCreateOptions : AIWriterCreateCoreOptions {
+  AbortSignal signal;
+  AICreateMonitorCallback monitor;
+  DOMString sharedContext;
+};
+
 dictionary AIWriterWriteOptions {
   DOMString context;
   AbortSignal signal;
@@ -16,6 +36,22 @@ dictionary AIWriterWriteOptions {
   SecureContext
 ]
 interface AIWriter {
+  [
+    MeasureAs=Writer_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<AIAvailability> availability(
+    optional AIWriterCreateCoreOptions options = {}
+  );
+
+  [
+    MeasureAs=Writer_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<AIWriter> create(optional AIWriterCreateOptions options = {});
+
   [
     MeasureAs=Writer_Write,
     CallWith=ScriptState,

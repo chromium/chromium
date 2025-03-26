@@ -16,9 +16,6 @@
 
 namespace blink {
 class AILanguageModelFactory;
-class AIRewriterFactory;
-class AISummarizerFactory;
-class AIWriterFactory;
 
 // The class is the entry point of all the built-in AI APIs. It provides the
 // getters for the factories of different functionalities.
@@ -33,9 +30,6 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
 
   // model_manager.idl implementation.
   AILanguageModelFactory* languageModel();
-  AISummarizerFactory* summarizer();
-  AIRewriterFactory* rewriter();
-  AIWriterFactory* writer();
   AILanguageDetectorFactory* languageDetector();
 
   HeapMojoRemote<mojom::blink::AIManager>& GetAIRemote();
@@ -46,9 +40,6 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AIManager> ai_remote_;
   Member<AILanguageModelFactory> ai_language_model_factory_;
-  Member<AISummarizerFactory> ai_summarizer_factory_;
-  Member<AIWriterFactory> ai_writer_factory_;
-  Member<AIRewriterFactory> ai_rewriter_factory_;
   Member<AILanguageDetectorFactory> ai_language_detector_factory_;
 };
 

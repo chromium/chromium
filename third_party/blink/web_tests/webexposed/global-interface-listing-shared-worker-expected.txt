@@ -8,9 +8,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter languageDetector
 [Worker]     getter languageModel
-[Worker]     getter rewriter
-[Worker]     getter summarizer
-[Worker]     getter writer
 [Worker]     method constructor
 [Worker] interface AICreateMonitor : EventTarget
 [Worker]     attribute @@toStringTag
@@ -50,6 +47,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter maxTopK
 [Worker]     method constructor
 [Worker] interface AIRewriter
+[Worker]     static method availability
+[Worker]     static method create
 [Worker]     attribute @@toStringTag
 [Worker]     getter expectedContextLanguages
 [Worker]     getter expectedInputLanguages
@@ -64,12 +63,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method measureInputUsage
 [Worker]     method rewrite
 [Worker]     method rewriteStreaming
-[Worker] interface AIRewriterFactory
-[Worker]     attribute @@toStringTag
-[Worker]     method availability
-[Worker]     method constructor
-[Worker]     method create
 [Worker] interface AISummarizer
+[Worker]     static method availability
+[Worker]     static method create
 [Worker]     attribute @@toStringTag
 [Worker]     getter expectedContextLanguages
 [Worker]     getter expectedInputLanguages
@@ -84,12 +80,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method measureInputUsage
 [Worker]     method summarize
 [Worker]     method summarizeStreaming
-[Worker] interface AISummarizerFactory
-[Worker]     attribute @@toStringTag
-[Worker]     method availability
-[Worker]     method constructor
-[Worker]     method create
 [Worker] interface AIWriter
+[Worker]     static method availability
+[Worker]     static method create
 [Worker]     attribute @@toStringTag
 [Worker]     getter expectedContextLanguages
 [Worker]     getter expectedInputLanguages
@@ -104,11 +97,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method measureInputUsage
 [Worker]     method write
 [Worker]     method writeStreaming
-[Worker] interface AIWriterFactory
-[Worker]     attribute @@toStringTag
-[Worker]     method availability
-[Worker]     method constructor
-[Worker]     method create
 [Worker] interface AbortController
 [Worker]     attribute @@toStringTag
 [Worker]     getter signal

@@ -33,6 +33,7 @@ void AIInterfaceProxy::Trace(Visitor* visitor) const {
   Supplement<ExecutionContext>::Trace(visitor);
   visitor->Trace(translation_manager_remote_);
   visitor->Trace(language_detection_driver_);
+  visitor->Trace(ai_manager_remote_);
 }
 
 // static
@@ -49,6 +50,21 @@ AIInterfaceProxy::GetTranslationManagerRemote(
       ->GetTranslationManagerRemoteImpl(execution_context);
 }
 
+// static
+HeapMojoRemote<
+    language_detection::mojom::blink::ContentLanguageDetectionDriver>&
+AIInterfaceProxy::GetLanguageDetectionDriverRemote(
+    ExecutionContext* execution_context) {
+  return From(execution_context)
+      ->GetLanguageDetectionDriverRemoteImpl(execution_context);
+}
+
+// static
+HeapMojoRemote<mojom::blink::AIManager>& AIInterfaceProxy::GetAIManagerRemote(
+    ExecutionContext* execution_context) {
+  return From(execution_context)->GetAIManagerRemoteImpl(execution_context);
+}
+
 HeapMojoRemote<mojom::blink::TranslationManager>&
 AIInterfaceProxy::GetTranslationManagerRemoteImpl(
     ExecutionContext* execution_context) {
@@ -57,15 +73,6 @@ AIInterfaceProxy::GetTranslationManagerRemoteImpl(
         translation_manager_remote_.BindNewPipeAndPassReceiver(task_runner_));
   }
   return translation_manager_remote_;
-}
-
-// static
-HeapMojoRemote<
-    language_detection::mojom::blink::ContentLanguageDetectionDriver>&
-AIInterfaceProxy::GetLanguageDetectionDriverRemote(
-    ExecutionContext* execution_context) {
-  return From(execution_context)
-      ->GetLanguageDetectionDriverRemoteImpl(execution_context);
 }
 
 HeapMojoRemote<
@@ -77,6 +84,15 @@ AIInterfaceProxy::GetLanguageDetectionDriverRemoteImpl(
         language_detection_driver_.BindNewPipeAndPassReceiver(task_runner_));
   }
   return language_detection_driver_;
+}
+
+HeapMojoRemote<mojom::blink::AIManager>&
+AIInterfaceProxy::GetAIManagerRemoteImpl(ExecutionContext* execution_context) {
+  if (!ai_manager_remote_.is_bound()) {
+    execution_context->GetBrowserInterfaceBroker().GetInterface(
+        ai_manager_remote_.BindNewPipeAndPassReceiver(task_runner_));
+  }
+  return ai_manager_remote_;
 }
 
 }  // namespace blink

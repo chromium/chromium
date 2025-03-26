@@ -3,9 +3,6 @@ interface AI
     attribute @@toStringTag
     getter languageDetector
     getter languageModel
-    getter rewriter
-    getter summarizer
-    getter writer
     method constructor
 interface AICreateMonitor : EventTarget
     attribute @@toStringTag
@@ -45,6 +42,8 @@ interface AILanguageModelParams
     getter maxTopK
     method constructor
 interface AIRewriter
+    static method availability
+    static method create
     attribute @@toStringTag
     getter expectedContextLanguages
     getter expectedInputLanguages
@@ -59,12 +58,9 @@ interface AIRewriter
     method measureInputUsage
     method rewrite
     method rewriteStreaming
-interface AIRewriterFactory
-    attribute @@toStringTag
-    method availability
-    method constructor
-    method create
 interface AISummarizer
+    static method availability
+    static method create
     attribute @@toStringTag
     getter expectedContextLanguages
     getter expectedInputLanguages
@@ -79,12 +75,9 @@ interface AISummarizer
     method measureInputUsage
     method summarize
     method summarizeStreaming
-interface AISummarizerFactory
-    attribute @@toStringTag
-    method availability
-    method constructor
-    method create
 interface AIWriter
+    static method availability
+    static method create
     attribute @@toStringTag
     getter expectedContextLanguages
     getter expectedInputLanguages
@@ -99,11 +92,6 @@ interface AIWriter
     method measureInputUsage
     method write
     method writeStreaming
-interface AIWriterFactory
-    attribute @@toStringTag
-    method availability
-    method constructor
-    method create
 interface AbortController
     attribute @@toStringTag
     getter signal
