@@ -12,10 +12,10 @@
 #include "base/containers/flat_map.h"
 #include "base/synchronization/lock.h"
 #include "chromeos/components/certificate_provider/certificate_info.h"
+#include "net/base/hash_value.h"
 
 namespace net {
 class X509Certificate;
-struct SHA256HashValue;
 }  // namespace net
 
 namespace chromeos {

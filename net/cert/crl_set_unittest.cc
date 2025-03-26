@@ -12,6 +12,7 @@
 #include <string_view>
 
 #include "base/files/file_util.h"
+#include "crypto/hash.h"
 #include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
@@ -187,8 +188,7 @@ TEST(CRLSetTest, BlockedSubjects) {
 
   std::string_view spki;
   ASSERT_TRUE(asn1::ExtractSPKIFromDERCert(root_der, &spki));
-  SHA256HashValue spki_sha256;
-  crypto::SHA256HashString(spki, spki_sha256.data, sizeof(spki_sha256.data));
+  SHA256HashValue spki_sha256 = crypto::hash::Sha256(base::as_byte_span(spki));
 
   std::string_view subject;
   ASSERT_TRUE(asn1::ExtractSubjectFromDERCert(root_der, &subject));
@@ -206,10 +206,7 @@ TEST(CRLSetTest, BlockedSubjects) {
 
   // When used with the correct hash, that subject should be accepted.
   EXPECT_EQ(CRLSet::GOOD,
-            set->CheckSubject(
-                subject, std::string_view(
-                             reinterpret_cast<const char*>(spki_sha256.data),
-                             sizeof(spki_sha256.data))));
+            set->CheckSubject(subject, base::as_string_view(spki_sha256)));
 }
 
 TEST(CRLSetTest, Expired) {

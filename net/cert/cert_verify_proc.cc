@@ -772,8 +772,9 @@ bool CertVerifyProc::HasNameConstraintsViolation(
     for (const auto& hash : public_key_hashes) {
       if (hash.tag() != HASH_VALUE_SHA256)
         continue;
-      if (memcmp(hash.data(), limit.public_key_hash.data, hash.size()) != 0)
+      if (hash.span() != limit.public_key_hash) {
         continue;
+      }
       if (dns_names.empty() && ip_addrs.empty()) {
         std::vector<std::string> names;
         names.push_back(common_name);

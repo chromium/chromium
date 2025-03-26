@@ -112,7 +112,7 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
 std::string GetHash(const bssl::ParsedCertificate& cert) {
   net::SHA256HashValue hash =
       net::X509Certificate::CalculateFingerprint256(cert.cert_buffer());
-  return base::HexEncode(hash.data);
+  return base::HexEncode(hash);
 }
 
 bool IsVersionConstraintSatisified(

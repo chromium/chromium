@@ -187,8 +187,8 @@ std::string GetDerEncodedX509Cert() {
 
 void GetPrecertSignedEntry(SignedEntryData* entry) {
   entry->type = ct::SignedEntryData::LOG_ENTRY_TYPE_PRECERT;
-  std::string issuer_hash(HexDecode(kDefaultIssuerKeyHash));
-  memcpy(entry->issuer_key_hash.data, issuer_hash.data(), issuer_hash.size());
+  base::span(entry->issuer_key_hash)
+      .copy_from(base::as_byte_span(HexDecode(kDefaultIssuerKeyHash)));
   entry->tbs_certificate = HexDecode(kDefaultDerTbsCert);
 }
 

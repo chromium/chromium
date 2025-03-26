@@ -9,6 +9,7 @@
 #include <string_view>
 #include <tuple>
 
+#include "base/containers/span.h"
 #include "net/base/hash_value.h"
 #include "net/cert/x509_certificate.h"
 
@@ -28,8 +29,7 @@ struct Hasher<T*> : Hasher<const T*> {};
 template <>
 struct Hasher<net::SHA256HashValue> {
   size_t operator()(const net::SHA256HashValue& value) const {
-    const std::string_view value_string_piece(
-        reinterpret_cast<const char*>(&value.data[0]), sizeof(value.data));
+    const std::string_view value_string_piece = base::as_string_view(value);
     return Hasher<std::string_view>{}(value_string_piece);
   }
 };

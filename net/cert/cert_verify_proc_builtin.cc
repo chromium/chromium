@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/network_time/time_tracker/time_tracker.h"
+#include "crypto/hash.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
@@ -689,10 +690,7 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       return false;
     }
 
-    SHA256HashValue root_fingerprint;
-    crypto::SHA256HashString(root->der_cert().AsStringView(),
-                             root_fingerprint.data,
-                             sizeof(root_fingerprint.data));
+    SHA256HashValue root_fingerprint = crypto::hash::Sha256(root->der_cert());
 
     for (const bssl::der::Input& oid : path->user_constrained_policy_set) {
       if (ev_metadata_->HasEVPolicyOID(root_fingerprint, oid)) {

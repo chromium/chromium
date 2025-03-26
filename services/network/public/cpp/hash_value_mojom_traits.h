@@ -15,7 +15,7 @@ template <>
 struct StructTraits<network::mojom::SHA256HashValueDataView,
                     net::SHA256HashValue> {
   static base::span<const uint8_t, 32> data(const net::SHA256HashValue& value) {
-    return value.data;
+    return value;
   }
 
   static bool Read(network::mojom::SHA256HashValueDataView in,
