@@ -11,6 +11,9 @@
         ],
         "experiment_percentage": 100,
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "xr.webxr.static",

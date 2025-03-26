@@ -16,6 +16,9 @@
       {
         "ci_only": true,
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "cronet_sizes",

@@ -556,6 +556,9 @@ targets.binaries.generated_script(
     label = "//chrome/test:chrome_sizes",
     merge = targets.merge(
         script = "//tools/perf/process_perf_results.py",
+        args = [
+            "--upload-skia-json",
+        ],
     ),
 )
 
@@ -770,6 +773,9 @@ targets.binaries.generated_script(
     skip_usage_check = True,
     merge = targets.merge(
         script = "//tools/perf/process_perf_results.py",
+        args = [
+            "--upload-skia-json",
+        ],
     ),
     resultdb = targets.resultdb(
         enable = True,
@@ -918,6 +924,9 @@ targets.binaries.generated_script(
     ],
     merge = targets.merge(
         script = "//tools/perf/process_perf_results.py",
+        args = [
+            "--upload-skia-json",
+        ],
     ),
 )
 
@@ -1045,6 +1054,9 @@ targets.binaries.generated_script(
     skip_usage_check = True,
     merge = targets.merge(
         script = "//tools/perf/process_perf_results.py",
+        args = [
+            "--upload-skia-json",
+        ],
     ),
 )
 
@@ -1814,6 +1826,9 @@ targets.binaries.generated_script(
     skip_usage_check = True,
     merge = targets.merge(
         script = "//tools/perf/process_perf_results.py",
+        args = [
+            "--upload-skia-json",
+        ],
     ),
     resultdb = targets.resultdb(
         enable = True,
@@ -2314,6 +2329,9 @@ targets.binaries.script(
     ],
     merge = targets.merge(
         script = "//tools/perf/process_perf_results.py",
+        args = [
+            "--upload-skia-json",
+        ],
     ),
 )
 
