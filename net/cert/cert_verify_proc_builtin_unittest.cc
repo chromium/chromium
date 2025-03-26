@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -1908,12 +1909,60 @@ class CertVerifyProcBuiltin1QwacTest
     }
   }
 
+  void ExpectHistogramSample(const base::HistogramTester& histograms,
+                             Verify1QwacResult result) {
+    if (GetParam()) {
+      histograms.ExpectUniqueSample("Net.CertVerifier.Qwac.1Qwac", result, 1u);
+    } else {
+      histograms.ExpectTotalCount("Net.CertVerifier.Qwac.1Qwac", 0u);
+    }
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
+TEST_P(CertVerifyProcBuiltin1QwacTest, NotQwac) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{}));
+  {
+    base::HistogramTester histograms;
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf->GetX509CertificateChain(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+
+    // The histogram is not logged if regular verification failed.
+    histograms.ExpectTotalCount("Net.CertVerifier.Qwac.1Qwac", 0u);
+  }
+
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
+  {
+    base::HistogramTester histograms;
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf->GetX509CertificateChain(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+
+    ExpectHistogramSample(histograms, Verify1QwacResult::kNotQwac);
+  }
+}
+
 TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacRequiresEutl) {
-  // TODO(crbug.com/392931068): test histograms
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
   // intermediate->SetCertificatePolicies({"2.5.29.32.0"}); // anyPolicy
 
@@ -1926,6 +1975,7 @@ TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacRequiresEutl) {
       /*additional_trust_anchors=*/{root->GetX509Certificate()}));
 
   {
+    base::HistogramTester histograms;
     CertVerifyResult verify_result;
     NetLogSource verify_net_log_source;
     TestCompletionCallback callback;
@@ -1938,11 +1988,13 @@ TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacRequiresEutl) {
     // successfully but does not have QWAC status set.
     EXPECT_THAT(error, IsOk());
     EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+    ExpectHistogramSample(histograms, Verify1QwacResult::kFailedVerification);
   }
 
   AddMockEutlRoot(intermediate->GetCertBuffer());
 
   {
+    base::HistogramTester histograms;
     CertVerifyResult verify_result;
     NetLogSource verify_net_log_source;
     TestCompletionCallback callback;
@@ -1955,6 +2007,7 @@ TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacRequiresEutl) {
     // successfully with the QWAC status set.
     EXPECT_THAT(error, IsOk());
     EXPECT_EQ(GetParam(), !!(verify_result.cert_status & CERT_STATUS_IS_QWAC));
+    ExpectHistogramSample(histograms, Verify1QwacResult::kValid1Qwac);
   }
 }
 
@@ -1972,6 +2025,7 @@ TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacRequiresPolicies) {
   AddMockEutlRoot(intermediate->GetCertBuffer());
 
   {
+    base::HistogramTester histograms;
     CertVerifyResult verify_result;
     NetLogSource verify_net_log_source;
     TestCompletionCallback callback;
@@ -1984,12 +2038,14 @@ TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacRequiresPolicies) {
     // verifies successfully but does not have QWAC status set.
     EXPECT_THAT(error, IsOk());
     EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+    ExpectHistogramSample(histograms, Verify1QwacResult::kInconsistentBits);
   }
 
   // CABF OV, ETSI QNCP-w
   leaf->SetCertificatePolicies({"2.23.140.1.2.2", "0.4.0.194112.1.5"});
 
   {
+    base::HistogramTester histograms;
     CertVerifyResult verify_result;
     NetLogSource verify_net_log_source;
     TestCompletionCallback callback;
@@ -2002,6 +2058,7 @@ TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacRequiresPolicies) {
     // status set.
     EXPECT_THAT(error, IsOk());
     EXPECT_EQ(GetParam(), !!(verify_result.cert_status & CERT_STATUS_IS_QWAC));
+    ExpectHistogramSample(histograms, Verify1QwacResult::kValid1Qwac);
   }
 }
 
@@ -2023,6 +2080,7 @@ TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacRequiresQcStatements) {
   AddMockEutlRoot(intermediate->GetCertBuffer());
 
   {
+    base::HistogramTester histograms;
     CertVerifyResult verify_result;
     NetLogSource verify_net_log_source;
     TestCompletionCallback callback;
@@ -2035,12 +2093,14 @@ TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacRequiresQcStatements) {
     // verifies successfully but does not have QWAC status set.
     EXPECT_THAT(error, IsOk());
     EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
+    ExpectHistogramSample(histograms, Verify1QwacResult::kInconsistentBits);
   }
 
   // Try again with the correct QcType.
   leaf->SetQwacQcStatements({bssl::der::Input(kEtsiQctWebOid)});
 
   {
+    base::HistogramTester histograms;
     CertVerifyResult verify_result;
     NetLogSource verify_net_log_source;
     TestCompletionCallback callback;
@@ -2053,6 +2113,7 @@ TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacRequiresQcStatements) {
     // QWAC status set.
     EXPECT_THAT(error, IsOk());
     EXPECT_EQ(GetParam(), !!(verify_result.cert_status & CERT_STATUS_IS_QWAC));
+    ExpectHistogramSample(histograms, Verify1QwacResult::kValid1Qwac);
   }
 }
 

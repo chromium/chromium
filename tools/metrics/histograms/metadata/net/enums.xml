@@ -653,6 +653,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Chain contained only one certificate"/>
 </enum>
 
+<!-- LINT.IfChange(NetCertVerifier1QwacResult) -->
+
+<enum name="NetCertVerifier1QwacResult">
+  <int value="0" label="Not a 1-QWAC"/>
+  <int value="1"
+      label="Has some QWAC-like indicators, but they are inconsistent or
+             incomplete"/>
+  <int value="2" label="1-QWAC verification failed"/>
+  <int value="3" label="1-QWAC verification succeeded"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/cert/cert_verify_proc_builtin.h:NetCertVerifier1QwacResult) -->
+
 <enum name="NetErrorPageEvents">
   <int value="0" label="Error Page Shown">
     An error page was shown. This bucket encompasses all others and works as a
