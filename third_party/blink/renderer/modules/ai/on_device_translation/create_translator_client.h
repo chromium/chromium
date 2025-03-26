@@ -13,6 +13,8 @@
 
 namespace blink {
 
+class AICreateMonitor;
+
 class CreateTranslatorClient
     : public GarbageCollected<CreateTranslatorClient>,
       public mojom::blink::TranslationManagerCreateTranslatorClient,

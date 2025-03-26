@@ -40,7 +40,7 @@ class RejectOnDestructionHelper {
   RejectOnDestructionHelper& operator=(RejectOnDestructionHelper&& other) =
       default;
 
-  Persistent<ScriptPromiseResolver<T>> Take() { return std::move(resolver_); }
+  void Reset() { resolver_ = nullptr; }
 
   ~RejectOnDestructionHelper() {
     if (resolver_) {
@@ -51,6 +51,15 @@ class RejectOnDestructionHelper {
  private:
   Persistent<ScriptPromiseResolver<T>> resolver_;
 };
+
+template <typename T>
+base::OnceClosure RejectOnDestruction(ScriptPromiseResolver<T>* resolver) {
+  return WTF::BindOnce(
+      [](RejectOnDestructionHelper<T> resolver_holder) {
+        resolver_holder.Reset();
+      },
+      RejectOnDestructionHelper(resolver));
+}
 
 class LanguageDetectorCreateTask
     : public GarbageCollected<LanguageDetectorCreateTask>,
@@ -79,6 +88,13 @@ class LanguageDetectorCreateTask
   }
 
   void CreateDetector(base::File model_file) {
+    if (!GetExecutionContext() || !resolver_) {
+      return;
+    }
+    if (!model_file.IsValid()) {
+      RejectModelNotAvailable(resolver_);
+      return;
+    }
     language_detection_model_->LoadModelFile(
         std::move(model_file),
         WTF::BindOnce(&LanguageDetectorCreateTask::OnModelLoaded,
@@ -157,27 +173,24 @@ ScriptPromise<V8AIAvailability> AILanguageDetectorFactory::availability(
       MakeGarbageCollected<ScriptPromiseResolver<V8AIAvailability>>(
           script_state);
   ScriptPromise<V8AIAvailability> promise = resolver->Promise();
-  ExecutionContext* execution_context = GetExecutionContext();
 
   GetLanguageDetectionDriverRemote()->GetLanguageDetectionModelStatus(
-      WTF::BindOnce(
-          [](RejectOnDestructionHelper<V8AIAvailability> resolver_holder,
-             ExecutionContext* execution_context,
-             language_detection::mojom::blink::LanguageDetectionModelStatus
-                 result) {
-            if (!execution_context) {
-              return;
-            }
-            auto resolver(resolver_holder.Take());
-            AIAvailability availability =
-                HandleLanguageDetectionModelCheckResult(execution_context,
-                                                        result);
-            resolver->Resolve(AIAvailabilityToV8(availability));
-          },
-          RejectOnDestructionHelper(resolver),
-          WrapWeakPersistent(execution_context)));
+      WTF::BindOnce(&AILanguageDetectorFactory::OnGotStatus,
+                    WrapPersistent(this), WrapPersistent(resolver))
+          .Then(RejectOnDestruction(resolver)));
 
   return promise;
+}
+
+void AILanguageDetectorFactory::OnGotStatus(
+    ScriptPromiseResolver<V8AIAvailability>* resolver,
+    language_detection::mojom::blink::LanguageDetectionModelStatus result) {
+  if (!GetExecutionContext()) {
+    return;
+  }
+  AIAvailability availability =
+      HandleLanguageDetectionModelCheckResult(GetExecutionContext(), result);
+  resolver->Resolve(AIAvailabilityToV8(availability));
 }
 
 ScriptPromise<AILanguageDetector> AILanguageDetectorFactory::create(
@@ -204,16 +217,11 @@ ScriptPromise<AILanguageDetector> AILanguageDetectorFactory::create(
       MakeGarbageCollected<LanguageDetectorCreateTask>(
           script_state, task_runner_, resolver, language_detection_model_,
           options);
-  GetLanguageDetectionDriverRemote()->GetLanguageDetectionModel(WTF::BindOnce(
-      [](RejectOnDestructionHelper<AILanguageDetector> resolver_holder,
-         LanguageDetectorCreateTask* create_task, base::File model_file) {
-        auto resolver(resolver_holder.Take());
-        if (!model_file.IsValid()) {
-          RejectModelNotAvailable(resolver);
-        }
-        create_task->CreateDetector(std::move(model_file));
-      },
-      RejectOnDestructionHelper(resolver), WrapPersistent(create_task)));
+
+  GetLanguageDetectionDriverRemote()->GetLanguageDetectionModel(
+      WTF::BindOnce(&LanguageDetectorCreateTask::CreateDetector,
+                    WrapPersistent(create_task))
+          .Then(RejectOnDestruction(resolver)));
 
   return resolver->Promise();
 }

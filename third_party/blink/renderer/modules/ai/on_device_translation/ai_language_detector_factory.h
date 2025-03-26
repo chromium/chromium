@@ -15,8 +15,6 @@
 
 namespace blink {
 
-class AICreateMonitor;
-
 // `ExecutionContextClient` gives us access to the browser interface broker.
 class AILanguageDetectorFactory final : public ScriptWrappable,
                                         public ExecutionContextClient {
@@ -44,10 +42,9 @@ class AILanguageDetectorFactory final : public ScriptWrappable,
   GetLanguageDetectionDriverRemote();
 
  private:
-  static void OnModelFileReceived(LanguageDetectionModel* model,
-                                  AICreateMonitor* monitor,
-                                  base::OnceClosure on_created_callback,
-                                  base::File model_file);
+  void OnGotStatus(
+      ScriptPromiseResolver<V8AIAvailability>* resolver,
+      language_detection::mojom::blink::LanguageDetectionModelStatus result);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   Member<LanguageDetectionModel> language_detection_model_;
