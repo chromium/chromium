@@ -7070,6 +7070,7 @@ test("unit_tests") {
       "../browser/win/jumplist_update_util_unittest.cc",
       "../browser/win/limited_access_features_unittest.cc",
       "../browser/win/remove_app_compat_entries_unittest.cc",
+      "../browser/win/taskbar_manager_unittest.cc",
       "../browser/win/uninstallation_via_os_settings_unittest.cc",
       "../common/chrome_constants_win_unittest.cc",
       "../common/conflicts/module_watcher_win_unittest.cc",

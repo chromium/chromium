@@ -6266,6 +6266,8 @@ static_library("browser") {
       "win/remove_app_compat_entries.h",
       "win/settings_app_monitor.cc",
       "win/settings_app_monitor.h",
+      "win/taskbar_manager.cc",
+      "win/taskbar_manager.h",
       "win/titlebar_config.cc",
       "win/ui_automation_util.cc",
       "win/ui_automation_util.h",
