@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_PROPERTIES_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_PROPERTIES_H_
 
+#include <optional>
+
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "ui/actions/action_id.h"
 
 namespace page_actions {
@@ -15,11 +18,12 @@ namespace page_actions {
 struct PageActionProperties {
   const char* histogram_name = nullptr;
   bool is_ephemeral = false;
+  PageActionIconType type;
 };
 
 // Get the properties associated with the given action id. The provided action
 // id is expected to exist in the configs array.
-const PageActionProperties& GetPageActionProperties(
+std::optional<PageActionProperties> GetPageActionProperties(
     actions::ActionId page_action_id);
 
 }  // namespace page_actions
