@@ -116,6 +116,10 @@ DictionaryHasValueMatcher::DictionaryHasValueMatcher(
     const base::Value& expected_value)
     : key_(std::move(key)), expected_value_(expected_value.Clone()) {}
 
+DictionaryHasValueMatcher::DictionaryHasValueMatcher(std::string key,
+                                                     Value&& expected_value)
+    : key_(std::move(key)), expected_value_(std::move(expected_value)) {}
+
 DictionaryHasValueMatcher::DictionaryHasValueMatcher(
     const DictionaryHasValueMatcher& other)
     : key_(other.key_), expected_value_(other.expected_value_.Clone()) {}
@@ -157,6 +161,10 @@ void DictionaryHasValueMatcher::DescribeNegationTo(std::ostream* os) const {
 DictionaryHasValuesMatcher::DictionaryHasValuesMatcher(
     const base::Value::Dict& template_value)
     : template_value_(template_value.Clone()) {}
+
+DictionaryHasValuesMatcher::DictionaryHasValuesMatcher(
+    Value::Dict&& template_value)
+    : template_value_(std::move(template_value)) {}
 
 DictionaryHasValuesMatcher::DictionaryHasValuesMatcher(
     const DictionaryHasValuesMatcher& other)
@@ -343,6 +351,15 @@ IsJsonMatcher::IsJsonMatcher(const base::Value::Dict& value)
 
 IsJsonMatcher::IsJsonMatcher(const base::Value::List& value)
     : expected_value_(base::Value(value.Clone())) {}
+
+IsJsonMatcher::IsJsonMatcher(Value&& value)
+    : expected_value_(std::move(value)) {}
+
+IsJsonMatcher::IsJsonMatcher(Value::Dict&& value)
+    : expected_value_(Value(std::move(value))) {}
+
+IsJsonMatcher::IsJsonMatcher(Value::List&& value)
+    : expected_value_(Value(std::move(value))) {}
 
 IsJsonMatcher::IsJsonMatcher(const IsJsonMatcher& other)
     : expected_value_(other.expected_value_.Clone()) {}

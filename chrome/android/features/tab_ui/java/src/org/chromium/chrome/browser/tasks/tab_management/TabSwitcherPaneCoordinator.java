@@ -409,7 +409,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             },
                             filter,
                             bottomSheetController,
-                            true);
+                            /* showNewGroupRow= */ true,
+                            /* destroyOnHide= */ false);
 
             TabBookmarker tabBookmarker = tabBookmarkerSupplier.get();
             mContextMenuCoordinator =

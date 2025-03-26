@@ -353,10 +353,17 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
                           : 1);
                 });
             ON_CALL(*session, SetInput(_))
-                .WillByDefault([&](MultimodalMessage request_metadata) {
-                  EXPECT_THAT(
-                      ToString(request_metadata),
-                      options.expected_context + options.expected_prompt);
+                .WillByDefault([&, initial = true](
+                                   MultimodalMessage request_metadata) mutable {
+                  if (initial && !options.expected_context.empty()) {
+                    initial = false;
+                    EXPECT_THAT(ToString(request_metadata),
+                                options.expected_context);
+                  } else {
+                    EXPECT_THAT(
+                        ToString(request_metadata),
+                        options.expected_context + options.expected_prompt);
+                  }
                 });
 
             EXPECT_CALL(*session, ExecuteModel(_, _))

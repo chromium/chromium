@@ -5,7 +5,8 @@
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router.h"
 
 #include "base/containers/contains.h"
-#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "base/time/time.h"
+#include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/url_matcher/url_matcher.h"
@@ -30,10 +31,9 @@ bool IsEventInReportingSettings(const std::string& event,
 
 }  // namespace
 
-ReportingEventRouter::ReportingEventRouter(content::BrowserContext* context)
-    : context_(context) {
-  reporting_client_ = RealtimeReportingClientFactory::GetForProfile(context);
-}
+ReportingEventRouter::ReportingEventRouter(
+    RealtimeReportingClientBase* reporting_client)
+    : reporting_client_(reporting_client) {}
 
 ReportingEventRouter::~ReportingEventRouter() = default;
 
@@ -50,7 +50,7 @@ void ReportingEventRouter::OnLoginEvent(
     bool is_federated,
     const url::SchemeHostPort& federated_origin,
     const std::u16string& username) {
-  std::optional<enterprise_connectors::ReportingSettings> settings =
+  std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value()) {
     return;
@@ -71,8 +71,9 @@ void ReportingEventRouter::OnLoginEvent(
   }
   event.Set(kKeyLoginUserName, MaskUsername(username));
 
-  reporting_client_->ReportRealtimeEvent(
-      kKeyLoginEvent, std::move(settings.value()), std::move(event));
+  reporting_client_->ReportEventWithTimestampDeprecated(
+      kKeyLoginEvent, std::move(settings.value()), std::move(event),
+      base::Time::Now(), /*include_profile_user_name=*/true);
 }
 
 void ReportingEventRouter::OnPasswordBreach(
@@ -112,15 +113,16 @@ void ReportingEventRouter::OnPasswordBreach(
   event.Set(kKeyTrigger, trigger);
   event.Set(kKeyPasswordBreachIdentities, std::move(identities_list));
 
-  reporting_client_->ReportRealtimeEvent(
-      kKeyPasswordBreachEvent, std::move(settings.value()), std::move(event));
+  reporting_client_->ReportEventWithTimestampDeprecated(
+      kKeyPasswordBreachEvent, std::move(settings.value()), std::move(event),
+      base::Time::Now(), /*include_profile_user_name=*/true);
 }
 
 void ReportingEventRouter::OnUrlFilteringInterstitial(
     const GURL& url,
     const std::string& threat_type,
     const safe_browsing::RTLookupResponse& response) {
-  std::optional<enterprise_connectors::ReportingSettings> settings =
+  std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() || settings->enabled_event_names.count(
                                    kKeyUrlFilteringInterstitialEvent) == 0) {
@@ -139,9 +141,9 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
   event.Set(kKeyEventResult,
             enterprise_connectors::EventResultToString(event_result));
 
-  reporting_client_->ReportRealtimeEvent(kKeyUrlFilteringInterstitialEvent,
-                                         std::move(settings.value()),
-                                         std::move(event));
+  reporting_client_->ReportEventWithTimestampDeprecated(
+      kKeyUrlFilteringInterstitialEvent, std::move(settings.value()),
+      std::move(event), base::Time::Now(), /*include_profile_user_name=*/true);
 }
 
 }  // namespace enterprise_connectors

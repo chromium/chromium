@@ -292,7 +292,7 @@ bool AesDecryptor::UpdateSessionWithJWK(const std::string& session_id,
                                         CdmPromise::Exception* exception,
                                         std::string* error_message) {
   auto open_session = open_sessions_.find(session_id);
-  CHECK(open_session != open_sessions_.end(), base::NotFatalUntil::M130);
+  CHECK(open_session != open_sessions_.end());
   CdmSessionType session_type = open_session->second;
 
   KeyIdAndKeyPairs keys;

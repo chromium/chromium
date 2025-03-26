@@ -87,8 +87,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     protected final UserEducationHelper mUserEducationHelper;
     protected final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     protected final ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
-    protected final ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier =
-            new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIsVisibleSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
@@ -308,11 +306,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                 backgroundColor,
                 HUB_LAYOUT_SHRINK_EXPAND_DURATION_MS,
                 mOnToolbarAlphaChange);
-    }
-
-    @Override
-    public @NonNull ObservableSupplier<Boolean> getHubSearchEnabledStateSupplier() {
-        return mHubSearchEnabledStateSupplier;
     }
 
     private @ColorInt int getAnimationBackgroundColor() {

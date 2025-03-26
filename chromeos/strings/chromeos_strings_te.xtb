@@ -11,6 +11,7 @@
 <translation id="102432830749687801">మీరు స్కూల్ ఖాతాకు యాక్సెస్‌ను కోల్పోయే ముందు దానికి సంబంధించిన డేటాను మీ వ్యక్తిగత ఖాతాకు తరలించడానికి Googleకు చెందిన Content Transfer యాప్‌ను ఉపయోగించారని నిర్ధారించుకోండి.</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />"కు ఒక షార్ట్‌కట్ ఉపయోగించబడుతోంది. కొత్త షార్ట్‌కట్‌ను నొక్కండి. ఇప్పటికే ఉన్న షార్ట్‌కట్‌ను రీప్లేస్ చేయడానికి, ఈ షార్ట్‌కట్‌ను మళ్లీ నొక్కండి.</translation>
 <translation id="1030856839388844477">డేటా వినియోగాన్ని రీసెట్ చేయండి</translation>
+<translation id="1047095725494118091">డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి లేదా మీ <ph name="DEVICE_TYPE" />‌ను రీస్టార్ట్ చేయండి.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> థ్రెడ్‌లు, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">కొత్త ఫీచర్ అందుబాటులో ఉంది, మరింత తెలుసుకోవడానికి పై వైపు బాణం కీని ఉపయోగించండి.</translation>
 <translation id="1049663189809099096">పాస్టెల్ పసుపు రంగు</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">స్క్రీన్ సేవర్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="1094693127011229778">IP అడ్రస్ అందుబాటులో లేదు</translation>
 <translation id="1100902271996134409">ఇమేజ్‌లు క్రియేట్ అవుతున్నాయి...</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> ఆడియో</translation>
 <translation id="1116694919640316211">గురించి</translation>
 <translation id="1118572504348554005">ఈ ఫారమ్ ద్వారా మీరు సబ్‌మిట్ చేసిన ఫీడ్‌బ్యాక్‌ను మా పార్ట్‌నర్‌లతో షేర్ చేసే అవకాశం ఉంది. బగ్‌లను, ఇతర సమస్యలను పరిష్కరించడానికి మీ ఫీడ్‌బ్యాక్ ఉపయోగపడవచ్చు. పాస్‌వర్డ్‌ల వంటి గోప్యమైన సమాచారాన్ని ఇవ్వకండి.</translation>
 <translation id="1119403468619527527">సింప్లిఫై చేయడానికి చాలా తక్కువ పదాలు ఉన్నాయి</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">డార్క్ మోడ్‌ను ఆన్ చేయండి</translation>
 <translation id="2164131940279488868">ఆడియో రికార్డింగ్‌ను ప్రారంభించడానికి మైక్ కనెక్ట్ అయ్యిందని నిర్ధారించుకోండి</translation>
 <translation id="2173302385160625112">మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేయండి</translation>
+<translation id="2176909213844392588"><ph name="LANGUAGE_NAME" /> మాటల టైపింగ్ మోడల్‌ను డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి లేదా మీ <ph name="DEVICE_TYPE" />‌ను రీస్టార్ట్ చేయండి.</translation>
 <translation id="2180197493692062006">ఏదో తప్పు జరిగింది. యాప్‌ను తిరిగి తెరవడానికి ట్రై చేయండి.</translation>
 <translation id="2189104374785738357">APN వివరాలను ఎడిట్ చేయండి</translation>
 <translation id="2195732836444333448">ప్రస్తుతం కెపాసిటీని మించిపోయింది. త్వరగా తిరిగి రండి.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">డాక్యుమెంట్ ఫీడర్ (రెండు వైపులా)</translation>
 <translation id="3201315366910775591">షేర్ చేసిన ఆల్బమ్‌లను ఇతర వ్యక్తులు అప్‌డేట్ చేయవచ్చు</translation>
 <translation id="3211671540163313381">కీ మ్యాపింగ్ డి-ప్యాడ్</translation>
+<translation id="3217462202230355157">మీ మైక్ కనెక్ట్ అయి ఉందని నిర్ధారించుకోండి లేదా మీ <ph name="DEVICE_TYPE" />‌ను రీస్టార్ట్ చేయడానికి ట్రై చేయండి</translation>
 <translation id="3226405216343213872">స్కానర్‌ల కోసం వెతుకుతోంది</translation>
 <translation id="3226657629376379887">లేఅవుట్ చర్యల మెనూ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> విలువను <ph name="CONVERSION_RATE" />తో భాగించండి</translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">ప్రత్యేకం</translation>
 <translation id="3404249063913988450">స్క్రీన్ సేవర్‌ను ఎనేబుల్ చేయి</translation>
 <translation id="3413935475507503304">అప్‌డేట్ చేయడాన్ని కొనసాగించడానికి, 'తర్వాత'ను క్లిక్ చేయండి.</translation>
+<translation id="3416709353545797224"><ph name="DEVICE_TYPE" /> ఆడియో మొత్తం రికార్డ్ అవుతోంది</translation>
 <translation id="3428551088151258685">అవుట్‌డోర్</translation>
 <translation id="3428971106895559033">పాస్టెల్</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">స్కానర్ ఆన్ చేయబడి ఉందని, అలాగే నెట్‌వర్క్ లేదా ప్రత్యక్ష కనెక్షన్ ద్వారా అందుబాటులో ఉందని నిర్ధారించుకోండి</translation>
 <translation id="4159238217853743776">పాక్షికం</translation>
 <translation id="4159784952369912983">వంగపండు రంగు</translation>
+<translation id="416219735020840807">మాటల టైపింగ్ మోడల్‌ను డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి లేదా మీ <ph name="DEVICE_TYPE" />‌ను రీస్టార్ట్ చేయండి.</translation>
 <translation id="4170180284036919717">ఫోటో తీయండి</translation>
 <translation id="4170700058716978431">విఫలమైంది</translation>
 <translation id="4171077696775491955">బ్రైట్‌నెస్‌ను తగ్గిస్తుంది</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">ఎంపిక చేసిన టెక్స్ట్‌ను, సూచనతో రీప్లేస్ అవుతోంది</translation>
 <translation id="5346687412805619883">లోకల్ నెట్‌వర్క్</translation>
 <translation id="5358174242040570474">ఏదో తప్పు జరిగింది. వాల్‌పేపర్‌ను ఎంచుకోవడానికి మళ్లీ ట్రై చేయండి లేదా యాప్‌ను మళ్లీ తెరవండి.</translation>
+<translation id="5368228070728130240">సారాంశం, టైటిల్ క్రియేషన్ కోసం మోడల్‌ను డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి లేదా మీ <ph name="DEVICE_TYPE" />‌ను రీస్టార్ట్ చేయండి.</translation>
 <translation id="5372659122375744710">WiFi నెట్‌వర్క్ సురక్షితంగా లేదు</translation>
 <translation id="5376354385557966694">ఆటోమేటిక్ లైట్ మోడ్</translation>
 <translation id="5378184552853359930">IP రకం</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">విఫలమైన DNS రిజల్యూషన్‌లు</translation>
 <translation id="6768237774506518020">అధిక DNS రిజల్యూషన్ వైఫల్య రేటు</translation>
 <translation id="6786747875388722282">ఎక్స్‌టెన్షన్‌లు</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" /> ఆడియో ఆన్‌లో ఉన్నప్పుడు, ఈ పరికరంలో ప్లే అవుతున్న ఆడియో మొత్తాన్ని రికార్డర్ క్యాప్చర్ చేస్తుంది</translation>
 <translation id="6791471867139427246">కీబోర్డ్ లైట్ రంగు</translation>
 <translation id="6796229976413584781">షార్ట్‌కట్ తొలగించబడింది</translation>
 <translation id="6798678288485555829">టెక్స్ట్ నావిగేషన్</translation>
@@ -1532,6 +1540,7 @@
 <translation id="8010765388850538088">జెనరేటివ్ AI గురించి మరింత తెలుసుకోండి</translation>
 <translation id="8017679124341497925">షార్ట్‌కట్ ఎడిట్ చేయబడింది</translation>
 <translation id="802154636333426148">డౌన్‌లోడ్ విఫలమైంది</translation>
+<translation id="8027467664787098346">ఎంచుకున్న వాల్‌పేపర్ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="8028993641010258682">సైజ్‌</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ఆటోమేటిక్ రంగు మోడ్‌ను ఎనేబుల్ చేయండి</translation>
@@ -1728,6 +1737,7 @@
 <translation id="8930622219860340959">వైర్‌లెస్</translation>
 <translation id="8933650076320258356"><ph name="DIRECTION" /> కోసం <ph name="KEYS" /> కీ ఎంపిక చేయబడింది. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">క్లయింట్ IP అడ్రస్</translation>
+<translation id="8938606491880817721">డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి లేదా మీ <ph name="DEVICE_TYPE" />‌ను రీస్టార్ట్ చేయండి.</translation>
 <translation id="8944651180182756621">లాంచర్ రంగు</translation>
 <translation id="8945308580158685341">తేనెటీగలు</translation>
 <translation id="894617464444543719">పరికర రకం ఫోన్.</translation>

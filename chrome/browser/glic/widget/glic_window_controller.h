@@ -84,8 +84,10 @@ class GlicWindowController : public views::WidgetObserver,
   // Logs in to the account and then re-opens the glic widget after reauth.
   class LogInAndOpen {
    public:
-    LogInAndOpen() = default;
-    ~LogInAndOpen() = default;
+    LogInAndOpen();
+    ~LogInAndOpen();
+    LogInAndOpen(const LogInAndOpen&) = delete;
+    LogInAndOpen& operator=(const LogInAndOpen&) = delete;
 
     enum class State {
       // Indicates that the user needs to log in.
@@ -98,18 +100,18 @@ class GlicWindowController : public views::WidgetObserver,
 
     State state() { return state_; }
 
-    void set_attached_browser(Browser* browser) { attached_browser_ = browser; }
+    void set_attached_browser(base::WeakPtr<Browser> browser) {
+      attached_browser_ = browser;
+    }
 
-    Browser* attached_browser() { return attached_browser_; }
+    Browser* attached_browser() { return attached_browser_.get(); }
 
    private:
     // The current login status. Defaulted to logged in.
     State state_ = State::kPostLogIn;
 
     // The browser to invoke the widget from (if the glic button was clicked).
-    // Browser destruction will result in this class getting destroyed, so this
-    // cannot result in a UaF.
-    raw_ptr<Browser> attached_browser_ = nullptr;
+    base::WeakPtr<Browser> attached_browser_;
   };
 
   GlicWindowController(const GlicWindowController&) = delete;
@@ -282,7 +284,7 @@ class GlicWindowController : public views::WidgetObserver,
 
   GlicWindowAnimator* window_animator() { return glic_window_animator_.get(); }
 
-  LogInAndOpen* log_in_and_open() const { return log_in_and_open_.get(); }
+  LogInAndOpen& log_in_and_open() { return log_in_and_open_; }
 
   Profile* profile() { return profile_; }
 
@@ -464,7 +466,7 @@ class GlicWindowController : public views::WidgetObserver,
 
   // This class tracks when the user needs to login and opens the glic widget
   // after logging back in from a paused profile.
-  std::unique_ptr<LogInAndOpen> log_in_and_open_;
+  LogInAndOpen log_in_and_open_;
 
   // True while RunMoveLoop() has been called on a widget.
   bool in_move_loop_ = false;

@@ -7,7 +7,7 @@
 ### (EVERYONE) To get access to the Chromium Gerrit instance
 
 1. Install
-   [depot_tools](https://www.chromium.org/developers/how-tos/install-depot-tools/).
+   [depot_tools](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up).
 
 2. Set up your account on Gerrit by visiting
    https://chromium-review.googlesource.com/ and signing in once. This makes

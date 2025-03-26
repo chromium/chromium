@@ -15,6 +15,7 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.tab.Tab;
@@ -57,7 +58,7 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
     }
 
     private class CaptureTriggerListener extends TabModelSelectorTabObserver
-            implements ApplicationStatus.ApplicationStateListener {
+            implements ApplicationStatus.ApplicationStateListener, Destroyable {
         private @ApplicationState int mCurrentApplicationState;
 
         private CaptureTriggerListener(TabModelSelector tabModelSelector) {
@@ -68,9 +69,6 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
         @Override
         public void onApplicationStateChange(int newState) {
             mCurrentApplicationState = newState;
-            if (newState == ApplicationState.HAS_DESTROYED_ACTIVITIES) {
-                ApplicationStatus.unregisterApplicationStateListener(this);
-            }
         }
 
         @Override
@@ -98,6 +96,12 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
         @Override
         public void onTabUnregistered(Tab tab) {
             tabClosed(tab);
+        }
+
+        @Override
+        public void destroy() {
+            super.destroy();
+            ApplicationStatus.unregisterApplicationStateListener(this);
         }
 
         private boolean qualifiesForCapture(Tab tab) {
@@ -150,13 +154,15 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
      * Should be called when all tabs are restored. Registers a {@link TabModelSelectorTabObserver}
      * for the regular to capture and delete paint previews as needed. Audits restored tabs to
      * remove any failed deletions.
+     *
      * @param tabModelSelector the TabModelSelector for the activity.
      * @param runAudit whether to delete tabs not in the tabModelSelector.
+     * @return A reference to an observer that should be cleaned up when the activity is destroyed.
      */
-    public void onRestoreCompleted(TabModelSelector tabModelSelector, boolean runAudit) {
-        new CaptureTriggerListener(tabModelSelector);
+    public Destroyable onRestoreCompleted(TabModelSelector tabModelSelector, boolean runAudit) {
+        Destroyable listener = new CaptureTriggerListener(tabModelSelector);
 
-        if (!runAudit || mAuditRunnable != null) return;
+        if (!runAudit || mAuditRunnable != null) return listener;
 
         // Delay actually performing the audit by a bit to avoid contention with the native task
         // runner that handles IO when showing at startup.
@@ -177,6 +183,7 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
                     mAuditRunnable = null;
                 },
                 AUDIT_START_DELAY_MS);
+        return listener;
     }
 
     @VisibleForTesting

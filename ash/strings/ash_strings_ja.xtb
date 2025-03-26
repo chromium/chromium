@@ -1014,6 +1014,7 @@
 <translation id="4351244548802238354">ダイアログを閉じる</translation>
 <translation id="4356872429719185452">アクセス ポイントの詳細を表示します。アクセス ポイントはオンです。</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> 録画中</translation>
+<translation id="4368227575116094370">Google スプレッドシートを作成</translation>
 <translation id="4371348193907997655">キャスト設定</translation>
 <translation id="4371834685492830207">PIN には有効な文字のみを使用してください</translation>
 <translation id="4375482231364171368">アドレスバーで検索する</translation>
@@ -1483,6 +1484,7 @@
 <translation id="5825969630400862129">接続済みデバイスの設定</translation>
 <translation id="5830180081891717894">他 <ph name="WINDOWS" /> 件</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> の「<ph name="ROUTE_TITLE" />」を停止します</translation>
+<translation id="5840658767386246331">Google で検索</translation>
 <translation id="5841296711770970362">次のトラックに移動する</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> のアクセス ポイントはオンです。デバイスが接続されていません</translation>
 <translation id="584525477304726060">長押しして最大化</translation>

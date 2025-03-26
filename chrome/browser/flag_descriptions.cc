@@ -1956,6 +1956,10 @@ const char kFractionalScrollOffsetsDescription[] =
     "Enables fractional scroll offsets inside Blink, exposing non-integer "
     "offsets to web APIs.";
 
+const char kFedCmAlternativeIdentifiersName[] = "FedCmAlternativeIdentifiers";
+const char kFedCmAlternativeIdentifiersDescription[] =
+    "Supports usernames and phone numbers as account identifiers.";
+
 const char kFedCmAuthzName[] = "FedCmAuthz";
 const char kFedCmAuthzDescription[] =
     "Enables RPs to request authorization for custom IdP scopes.";
@@ -2667,6 +2671,48 @@ const char kOmniboxMostVisitedTilesHorizontalRenderGroupName[] =
 const char kOmniboxMostVisitedTilesHorizontalRenderGroupDescription[] =
     "Updates the logic constructing MV tiles to use horizontal render group. "
     "No user-facing changes expected.";
+
+const char kOmniboxNumNtpZpsRecentSearchesName[] =
+    "Omnibox: Recent Searches on new tab page ZPS";
+const char kOmniboxNumNtpZpsRecentSearchesDescription[] =
+    "Controls presence/volume of Recent Searches shown in zero-prefix context "
+    "on the New Tab Page";
+
+const char kOmniboxNumNtpZpsTrendingSearchesName[] =
+    "Omnibox: Trending Searches on new tab page ZPS";
+const char kOmniboxNumNtpZpsTrendingSearchesDescription[] =
+    "Controls presence/volume of Trending Searches shown in zero-prefix "
+    "context on the New Tab Page";
+
+const char kOmniboxNumSrpZpsRecentSearchesName[] =
+    "Omnibox: Recent Searches on the SRP ZPS";
+const char kOmniboxNumSrpZpsRecentSearchesDescription[] =
+    "Controls presence/volume of Recent Searches shown in zero-prefix "
+    "context on the Search Results Page";
+
+const char kOmniboxNumSrpZpsRelatedSearchesName[] =
+    "Omnibox: Related Searches on the SRP ZPS";
+const char kOmniboxNumSrpZpsRelatedSearchesDescription[] =
+    "Controls presence/volume of Related Searches shown in zero-prefix "
+    "context on the Search Results Page";
+
+const char kOmniboxNumWebZpsRecentSearchesName[] =
+    "Omnibox: Recent Searches on the web ZPS";
+const char kOmniboxNumWebZpsRecentSearchesDescription[] =
+    "Controls presence/volume of Recent Searches shown in zero-prefix "
+    "context on the Web";
+
+const char kOmniboxNumWebZpsRelatedSearchesName[] =
+    "Omnibox: Related Searches on the web ZPS";
+const char kOmniboxNumWebZpsRelatedSearchesDescription[] =
+    "Controls presence/volume of Related Searches shown in zero-prefix "
+    "context on the Web";
+
+const char kOmniboxNumWebZpsMostVisitedUrlsName[] =
+    "Omnibox: Most Visited URLs on the web ZPS";
+const char kOmniboxNumWebZpsMostVisitedUrlsDescription[] =
+    "Controls presence/volume of Most Visited URLs shown in zero-prefix "
+    "context on the Web";
 
 const char kOmniboxZeroSuggestPrefetchDebouncingName[] =
     "Omnibox Zero Prefix Suggest Prefetch Request Debouncing";
@@ -7679,10 +7725,6 @@ const char kTabSwitcherColorBlendAnimateName[] =
 const char kTabSwitcherColorBlendAnimateDescription[] =
     "Animates the color transition between incognito and regular tab switcher "
     "panes in the Hub.";
-
-const char kTabSwitcherContextMenuAndroidName[] = "Tab Switcher Context Menu";
-const char kTabSwitcherContextMenuAndroidDescription[] =
-    "Shows a context menu on long pressing a tab card in the tab switcher";
 
 #else
 const char kTaskManagerDesktopRefreshName[] = "Task Manager Desktop Refresh";

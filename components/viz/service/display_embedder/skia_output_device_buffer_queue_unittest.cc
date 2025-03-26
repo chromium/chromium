@@ -193,6 +193,7 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
       SkAlphaType alpha_type,
       gpu::SharedImageUsageSet usage,
       std::string debug_label,
+      bool is_thread_safe,
       gfx::GpuMemoryBufferHandle handle) override {
     NOTREACHED();
   }

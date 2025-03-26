@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 
+#include "media/base/media_switches.h"
+
 namespace blink {
 
 void AudioProcessingProperties::DisableDefaultProperties() {
@@ -46,10 +48,13 @@ AudioProcessingProperties::ToAudioProcessingSettings(
   out.echo_cancellation =
       echo_cancellation_type == EchoCancellationType::kEchoCancellationAec3;
   out.noise_suppression =
-      noise_suppression && !system_noise_suppression_activated;
-
+      noise_suppression &&
+      (media::IsSystemEchoCancellationEnforcedAndAllowNsInTandem() ||
+       !system_noise_suppression_activated);
   out.automatic_gain_control =
-      auto_gain_control && !system_gain_control_activated;
+      auto_gain_control &&
+      (media::IsSystemEchoCancellationEnforcedAndAllowAgcInTandem() ||
+       !system_gain_control_activated);
 
   out.multi_channel_capture_processing = multi_channel_capture_processing;
   return out;

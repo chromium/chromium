@@ -83,7 +83,6 @@ VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kWebViewADPFSocManufacturerBlocklist;
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewEnableADPFRendererMain);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewEnableADPFGpuMain);
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewFrameRateHints);
 #endif
 #if BUILDFLAG(IS_APPLE)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kCALayerNewLimit);

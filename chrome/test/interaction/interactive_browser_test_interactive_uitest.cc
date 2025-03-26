@@ -5,6 +5,8 @@
 #include <memory>
 #include <optional>
 
+#include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
@@ -28,22 +30,31 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/state_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_sequence_views.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/test/widget_activation_waiter.h"
+#include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget_observer.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -617,4 +628,186 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, InitialWindowActive) {
   RunTestSequence(ObserveState(views::test::kCurrentWidgetFocus),
                   WaitForState(views::test::kCurrentWidgetFocus,
                                [widget]() { return widget->GetNativeView(); }));
+}
+
+namespace {
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kHoverView1Id);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kHoverView2Id);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kHoverView3Id);
+
+class HoverDetectionView : public views::View {
+  METADATA_HEADER(HoverDetectionView, views::View)
+
+ public:
+  ~HoverDetectionView() override = default;
+
+  // views::View:
+  gfx::Size CalculatePreferredSize(const views::SizeBounds&) const override {
+    return gfx::Size(200, 50);
+  }
+  void OnMouseMoved(const ui::MouseEvent& event) override {
+    on_mouse_move_callbacks_.Notify(event);
+  }
+  void OnMouseEntered(const ui::MouseEvent& event) override {
+    on_mouse_move_callbacks_.Notify(event);
+  }
+  void OnMouseExited(const ui::MouseEvent& event) override {
+    on_mouse_move_callbacks_.Notify(event);
+  }
+
+  using MouseMoveCallback =
+      base::RepeatingCallback<void(const ui::MouseEvent&)>;
+  auto AddOnMouseMoveCallback(MouseMoveCallback callback) {
+    return on_mouse_move_callbacks_.Add(callback);
+  }
+
+ private:
+  base::RepeatingCallbackList<void(const ui::MouseEvent&)>
+      on_mouse_move_callbacks_;
+};
+
+class LastHoverEventObserver
+    : public ui::test::StateObserver<std::set<ui::EventType>> {
+ public:
+  explicit LastHoverEventObserver(HoverDetectionView* view)
+      : subscription_(view->AddOnMouseMoveCallback(
+            base::BindRepeating(&LastHoverEventObserver::OnHoverEvent,
+                                base::Unretained(this)))) {}
+  ~LastHoverEventObserver() override = default;
+
+  void OnHoverEvent(const ui::MouseEvent& event) {
+    observed_events_.insert(event.type());
+    OnStateObserverStateChanged(observed_events_);
+  }
+
+ private:
+  base::CallbackListSubscription subscription_;
+  std::set<ui::EventType> observed_events_;
+};
+
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(LastHoverEventObserver, kHoverView1State);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(LastHoverEventObserver, kHoverView2State);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(LastHoverEventObserver, kHoverView3State);
+
+BEGIN_METADATA(HoverDetectionView)
+END_METADATA
+
+class HoverDetectionBubbleView : public views::FlexLayoutView,
+                                 public views::BubbleDialogDelegate {
+  METADATA_HEADER(HoverDetectionBubbleView, views::FlexLayoutView)
+
+ public:
+  explicit HoverDetectionBubbleView(views::View* anchor_view)
+      : BubbleDialogDelegate(anchor_view, views::BubbleBorder::TOP_RIGHT) {
+    auto* view = AddChildView(std::make_unique<HoverDetectionView>());
+    view->SetProperty(views::kElementIdentifierKey, kHoverView1Id);
+    views_.push_back(view);
+
+    view = AddChildView(std::make_unique<HoverDetectionView>());
+    view->SetProperty(views::kElementIdentifierKey, kHoverView2Id);
+    views_.push_back(view);
+
+    view = AddChildView(std::make_unique<HoverDetectionView>());
+    view->SetProperty(views::kElementIdentifierKey, kHoverView3Id);
+    views_.push_back(view);
+
+    SetOrientation(views::LayoutOrientation::kVertical);
+  }
+
+  ~HoverDetectionBubbleView() override { views_.clear(); }
+
+  views::View* GetContentsView() override { return this; }
+
+  HoverDetectionView* view(size_t idx) { return views_[idx].get(); }
+
+ private:
+  std::vector<raw_ptr<HoverDetectionView>> views_;
+};
+
+BEGIN_METADATA(HoverDetectionBubbleView)
+END_METADATA
+
+}  // namespace
+
+class InteractiveBrowserTestHoverUiTest : public InteractiveBrowserTestUiTest {
+ public:
+  InteractiveBrowserTestHoverUiTest() = default;
+  ~InteractiveBrowserTestHoverUiTest() override = default;
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTestUiTest::SetUpOnMainThread();
+
+    // Move the mouse somewhere completely outside where the dialog will show.
+    auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    mouse_util().PerformGestures(
+        browser_view->GetNativeWindow(),
+        views::test::InteractionTestUtilMouse::MoveTo(
+            browser_view->GetBoundsInScreen().origin() +
+            gfx::Vector2d(10, 10)));
+
+    // Create and show the bubble.
+    auto* const anchor_view =
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            kToolbarAppMenuButtonElementId,
+            browser()->window()->GetElementContext());
+    CHECK(anchor_view);
+    auto bubble_view = std::make_unique<HoverDetectionBubbleView>(anchor_view);
+    bubble_view_ = bubble_view.get();
+    bubble_widget_ = base::WrapUnique(views::BubbleDialogDelegate::CreateBubble(
+        std::move(bubble_view), views::Widget::InitParams::CLIENT_OWNS_WIDGET));
+    bubble_widget_->Show();
+    bubble_view_->SizeToContents();
+  }
+
+  void TearDownOnMainThread() override {
+    bubble_view_ = nullptr;
+    bubble_widget_.reset();
+    InteractiveBrowserTestUiTest::TearDownOnMainThread();
+  }
+
+ protected:
+  raw_ptr<HoverDetectionBubbleView> bubble_view_ = nullptr;
+  std::unique_ptr<views::Widget> bubble_widget_;
+};
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestHoverUiTest, MoveMouseHoversView) {
+  RunTestSequence(
+      WaitForShow(kHoverView1Id),
+      ObserveState(kHoverView1State, bubble_view_->view(0)),
+      MoveMouseTo(kHoverView1Id),
+      WaitForState(kHoverView1State,
+                   testing::UnorderedElementsAre(ui::EventType::kMouseEntered,
+                                                 ui::EventType::kMouseMoved)));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestHoverUiTest,
+                       MoveMouseHoverMultipleViews) {
+  RunTestSequence(
+      WaitForShow(kHoverView1Id),
+      ObserveState(kHoverView1State, bubble_view_->view(0)),
+      ObserveState(kHoverView2State, bubble_view_->view(1)),
+      ObserveState(kHoverView3State, bubble_view_->view(2)),
+      MoveMouseTo(kHoverView1Id),
+      WaitForState(kHoverView1State,
+                   testing::UnorderedElementsAre(ui::EventType::kMouseEntered,
+                                                 ui::EventType::kMouseMoved)),
+      MoveMouseTo(kHoverView2Id),
+      WaitForState(kHoverView1State,
+                   testing::Contains(ui::EventType::kMouseExited)),
+      WaitForState(kHoverView2State,
+                   testing::UnorderedElementsAre(ui::EventType::kMouseEntered,
+                                                 ui::EventType::kMouseMoved)),
+      MoveMouseTo(kHoverView3Id),
+      WaitForState(kHoverView2State,
+                   testing::Contains(ui::EventType::kMouseExited)),
+      WaitForState(kHoverView3State,
+                   testing::UnorderedElementsAre(ui::EventType::kMouseEntered,
+                                                 ui::EventType::kMouseMoved)),
+      MoveMouseTo(
+          kBrowserViewElementId, base::BindOnce([](ui::TrackedElement* el) {
+            return el->GetScreenBounds().origin() + gfx::Vector2d(10, 10);
+          })),
+      WaitForState(kHoverView3State,
+                   testing::Contains(ui::EventType::kMouseExited)));
 }

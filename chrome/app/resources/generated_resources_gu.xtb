@@ -70,7 +70,6 @@
 <translation id="1042248468362992359">હૉટસ્પૉટનો ઉપયોગ કરવા માટે, મોબાઇલ ડેટાથી કનેક્ટ થાઓ. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1043505821207197890">કંઈક ખોટું થયું. શક્ય છે કે Linux માત્ર આંશિક રીતે જ અપગ્રેડ થાય. વધુ માહિતી માટે લૉગનો રિવ્યૂ કરો. ફાઇલો &gt; મારી ફાઇલો &gt; <ph name="LOG_FILE" />માં લૉગ સાચવવામાં આવ્યા છે</translation>
 <translation id="104385770822424034">ઍક્શન ઉમેરો</translation>
-<translation id="104419033123549300">કીમેપની શૈલી</translation>
 <translation id="1045487161760507186">તમારે પાસવર્ડ યાદ રાખવાની જરૂર નથી કારણ કે તેને તમારા માટે Google Password Managerમાં સાચવવામાં આવે છે</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{આ ડિવાઇસ પર <ph name="BRAND" /> પર 1 પાસવર્ડની આયાત કરી}one{આ ડિવાઇસ પર <ph name="BRAND" /> પર {NUM_PASSWORDS} પાસવર્ડની આયાત કરી}other{આ ડિવાઇસ પર <ph name="BRAND" /> પર {NUM_PASSWORDS} પાસવર્ડની આયાત કરી}}</translation>
 <translation id="1046572983040892965">વિન્ડોને ઉપરની તરફ અને ડાબી બાજુ ખસેડવામાં આવી</translation>
@@ -267,6 +266,7 @@
 <translation id="1175572348579024023">સ્ક્રોલ કરો</translation>
 <translation id="1175914831232945926">અંકો</translation>
 <translation id="1176471985365269981">તમારા ડિવાઇસમાંની ફાઇલોમાં કે ફોલ્ડરોમાં ફેરફાર કરવાની મંજૂરી નથી</translation>
+<translation id="1176864681932214421">AI વડે છબીઓ બનાવો</translation>
 <translation id="1177073277575830464">Androidનું ઝડપી સેટઅપ થઈ ગયું છે. તમારા <ph name="DEVICE_TYPE" /> પર સેટઅપ ચાલુ રાખો.</translation>
 <translation id="1177440945615690056">તમે સેટિંગમાં કોઈપણ યોગ્ય મોબાઇલ નેટવર્ક સાથે કનેક્ટ કરી શકો છો</translation>
 <translation id="1177548198167638471">ફરીથી પૂછશો નહીં</translation>
@@ -302,7 +302,6 @@
 <translation id="1197088940767939838">નારંગી</translation>
 <translation id="11978075283960463">ઍપમાં સ્ટોર કરેલો ડેટા: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">ઓછું વિઝન ધરાવનારા માટે સ્પીચ ટૂલ</translation>
-<translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> દ્વારા “<ph name="WEBSITE_TITLE" />” ટૅબ કાઢી નાખવામાં આવ્યું</translation>
 <translation id="119944043368869598">બધા દૂર કરો</translation>
 <translation id="1199814941632954229">આ પ્રમાણપત્ર પ્રોફાઇલ માટે પ્રમાણપત્રોની જોગવાઈ કરવામાં આવી રહી છે</translation>
 <translation id="120069043972472860">ન જોઇ શકાય તેવી</translation>
@@ -708,7 +707,6 @@
 <translation id="1484176899013802755">સૂર્યપ્રકાશથી તરબતર મેદાન બતાવતું કોઈ વાઇબ્રન્ટ ઑઇલ પેઇન્ટિંગ.</translation>
 <translation id="1484979925941077974">સાઇટ બ્લૂટૂથનો ઉપયોગ કરી રહી છે</translation>
 <translation id="1485015260175968628">તે હવે આ કરી શકે છે:</translation>
-<translation id="1485141095922496924">વર્ઝન <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Microsoft 365 માટે ફાઇલોને OneDriveમાં સ્ટોર કરવાની જરૂર છે. સ્થાનિક ફાઇલો ખસેડવામાં આવશે અને અન્ય લોકેશનની ફાઇલો કૉપિ કરવામાં આવશે. તમારી ફાઇલો Files ઍપમાં Microsoft OneDrive ફોલ્ડરમાં મળી શકે છે.</translation>
 <translation id="1486012259353794050">જ્યારે તમે પ્રશ્નો પૂછો, ત્યારે Google Assistant તમારી સ્ક્રીનના આધારે અનુરૂપ જવાબો પ્રદાન કરે છે</translation>
 <translation id="1486096554574027028">પાસવર્ડ શોધો</translation>
@@ -2701,7 +2699,6 @@
 <translation id="2849936225196189499">ટીકાત્મક</translation>
 <translation id="285033512555869047">બંધ</translation>
 <translation id="2850541429955027218">થીમ ઉમેરો</translation>
-<translation id="2850672011315104382">વિરામ ચિહ્નની શૈલી</translation>
 <translation id="285237063405807022">(લોડ કરી રહ્યાં છીએ)</translation>
 <translation id="2853121255651601031">પાસવર્ડ સાચવ્યો</translation>
 <translation id="2855243985454069333">સિંક કરેલા બધા ડિવાઇસમાંથી ઇતિહાસ ડિલીટ કરે છે</translation>
@@ -3683,6 +3680,7 @@
 <translation id="3582057310199111521">છેતરામણી સાઇટ પર પાસવર્ડ દાખલ કરવામાં આવ્યો અને ડેટા ઉલ્લંઘન જોવા મળ્યું</translation>
 <translation id="3582299299336701326">આછી સ્ક્રીનને ઘેરી અને ઘેરી સ્ક્રીનને આછી બનાવો. વિપરીત રંગમાં બદલવાની સુવિધા ચાલુ અને બંધ કરવા માટે Search + Ctrl + H કી દબાવો.</translation>
 <translation id="3584169441612580296">વાંચો અને તમારા કમ્પ્યુટરમાંથી ફોટો, સંગીત અને અન્ય મીડિયા બદલો</translation>
+<translation id="3586741240886978899">તમે આ સાઇટ પર ઉપયોગ કર્યો છે</translation>
 <translation id="3586806079541226322">આ ફાઇલ ખોલી શકાતી નથી</translation>
 <translation id="3586931643579894722">વિગતો છુપાવો</translation>
 <translation id="3587279952965197737"><ph name="MAX_CHARACTER_COUNT" /> અથવા તેના કરતાં ઓછા અક્ષરો હોવા આવશ્યક છે</translation>
@@ -4394,7 +4392,6 @@
 <translation id="404493185430269859">ડિફૉલ્ટ શોધ એન્જિન</translation>
 <translation id="4044964245574571633">Microsoft OneDrive સ્ટોરેજનો વપરાશ કરે છે</translation>
 <translation id="4045196801416070837">ડિવાઇસના સાઉન્ડ</translation>
-<translation id="4045441967987592849">ફરી ખોલો</translation>
 <translation id="4046013316139505482">આ એક્સ્ટેંશનને આ સાઇટ પરની માહિતી જોવા અને બદલવાની જરૂર પડતી નથી.</translation>
 <translation id="4046123991198612571">આગલો ટ્રૅક</translation>
 <translation id="4046655456159965535">શું બતાવવામાં આવેલો ડેટા ડિલીટ કરીએ?</translation>
@@ -5027,7 +5024,6 @@
 <translation id="4515872537870654449">સર્વિસ માટે Dellનો સંપર્ક કરો. જો પંખો ચાલી રહ્યો ન હોય તો ડૉક શટ ડાઉન થઈ જશે.</translation>
 <translation id="4515942088136451195">તમે શું સાચવી શકો, તે તમારી સંસ્થા નિયંત્રિત કરે છે</translation>
 <translation id="4516395361210407049">ટૂલબારના બટન રીસેટ કરવામાં આવ્યા</translation>
-<translation id="4518840066030486079">શિફ્ટ કી મોડ શૈલી</translation>
 <translation id="4519331665958994620">સાઇટ તમારા કૅમેરાનો ઉપયોગ કરવાનું પૂછી શકે છે</translation>
 <translation id="4519605771716872386">ફાઇલનું સિંક ચાલુ કર્યું</translation>
 <translation id="4519935350946509010">કનેક્શનમાં ભૂલ.</translation>
@@ -5227,6 +5223,7 @@
 <translation id="4653116291358041820">નાનો શૅડો</translation>
 <translation id="4653405415038586100">Linuxની ગોઠવણી કરવામાં ભૂલ આવી</translation>
 <translation id="4654236001025007561">તમારી આસપાસની Chromebook અને Android ડિવાઇસ સાથે ફાઇલો શેર કરો</translation>
+<translation id="4657810666108475055">ટૅબની શોધ</translation>
 <translation id="4657914796247705218">TrackPointની ઝડપ</translation>
 <translation id="4658285806588491142">તમારી સ્ક્રીનને ખાનગી રાખો</translation>
 <translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> ઍપ્લિકેશન ઑફલાઇન ઉપલબ્ધ નથી.</translation>
@@ -5761,7 +5758,6 @@
 <translation id="5045550434625856497">ખોટો પાસવર્ડ</translation>
 <translation id="504561833207953641">હાલના બ્રાઉઝર સત્રમાં ખોલી રહ્યા છીએ.</translation>
 <translation id="504953514574706691">સૂચવેલા ગ્રૂપમાંથી ટૅબ બાકાત કર્યું</translation>
-<translation id="5049614114599109018">ઇનપુટ ઇતિહાસનો ઉપયોગ કરો</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">ચકાસ્યા વિનાની ફાઇલ ડાઉનલોડ કરો</translation>
 <translation id="5051836348807686060">તમે પસંદ કરેલી ભાષાઓ માટે જોડણીતપાસ સમર્થિત નથી</translation>
@@ -6064,7 +6060,6 @@
 <translation id="5256174546894739043">જ્યારે કોઈ સાઇટ તમારા હાથને ટ્રૅક કરવા માગે, ત્યારે પૂછો</translation>
 <translation id="52566111838498928">ફૉન્ટ લોડ કરી રહ્યાં છીએ...</translation>
 <translation id="5256861893479663409">બધી સાઇટ પર</translation>
-<translation id="5258473597674772367">ટૅબનું ગ્રૂપ "<ph name="GROUP_NAME" />" હવે ઉપલબ્ધ રહ્યું નથી</translation>
 <translation id="5258992782919386492">આ ડિવાઇસ પર ઇન્સ્ટૉલ કરો</translation>
 <translation id="5260334392110301220">સ્માર્ટ ક્વોટ</translation>
 <translation id="5260508466980570042">માફ કરશો, તમારો ઈમેઇલ અથવા પાસવર્ડ ચકાસી શકાયો નથી. કૃપા કરી ફરી પ્રયાસ કરો.</translation>
@@ -6502,6 +6497,7 @@
 <translation id="5575528586625653441">ડેમો નોંધણીની વિનંતીમાં સમસ્યા આવી.</translation>
 <translation id="557722062034137776">તમારા ડિવાઇસને ફરીથી સેટ કરવાથી તમારા Google એકાઉન્ટ અથવા આ એકાઉન્ટ સાથે સિંક કરાયેલા કોઈ પણ ડેટા પર અસર થશે નહીં. જોકે, તમારા ડિવાઇસ પર સ્થાનિક રીતે સાચવેલી બધી ફાઇલ ડિલીટ કરવામાં આવશે.</translation>
 <translation id="5578059481725149024">સ્વતઃ સાઇન-ઇન</translation>
+<translation id="5578387000057347457">છબી બનાવવા માટે કસ્ટમ પ્રૉમ્પ્ટ દાખલ કરો અથવા ટેક્સ્ટને હાઇલાઇટ કરો</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" />માં અનુવાદ પૂર્ણ થયો</translation>
 <translation id="558170650521898289">Microsoft Windows Hardware Driver Verification</translation>
 <translation id="5581972110672966454">ડોમેન સાથે ડિવાઇસને જોડી શકાતું નથી. કૃપા કરીને ફરીથી પ્રયાસ કરો અથવા તમારા ડિવાઇસના માલિક અથવા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
@@ -6683,7 +6679,6 @@
 <translation id="571222594670061844">સાઇટ ઓળખ સેવાઓના સાઇન ઇન કરવાના સંકેતો બતાવી શકે છે</translation>
 <translation id="5713033452812927234">તમારા અગાઉના ડિવાઇસમાંથી વિન્ડો ખોલી રહ્યાં છીએ</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" />થી કનેક્ટેડ છે</translation>
-<translation id="5713960379473463904">સ્પેસ ઇનપુટની શૈલી</translation>
 <translation id="5714100381896040477">સ્ક્રીન પરની હિલચાલ મર્યાદિત કરો</translation>
 <translation id="5715711091495208045">પ્લગિન બ્રોકર: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719854774000914513">સાઇટ HID ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
@@ -7776,7 +7771,6 @@ USB ડિવાઇસ</translation>
 <translation id="6519689855001245063">પાત્રતા તપાસી રહ્યાં છીએ</translation>
 <translation id="6520087076882753524">તમે Google પાસવર્ડ મેનેજરમાં સાચવેલા પાસવર્ડ જોઈ શકો છો અને તેમને મેનેજ કરી શકો છો</translation>
 <translation id="6520115099532274511">આ તમે જ હોવાની ચકાસણી <ph name="SITE" /> કરવા માગે છે. Google Password Manager માટે તમારો આલ્ફાન્યૂમેરિક પિન દાખલ કરો</translation>
-<translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" />, ટૅબના ગ્રૂપ "<ph name="GROUP_NAME" />"માં જોડાયા</translation>
 <translation id="6520876759015997832">શોધ પરિણામ <ph name="LIST_SIZE" />માંથી <ph name="LIST_POSITION" />: <ph name="SEARCH_RESULT_TEXT" />. વિભાગ પર નૅવિગેટ કરવા માટે, Enter કી દબાવો.</translation>
 <translation id="6521214596282732365">સામાન્ય રીતે સાઇટ તમારા ફૉન્ટનો ઉપયોગ કરે છે, જેથી તમે ઑનલાઇન ડિઝાઇન અને ગ્રાફિકના સાધનો વડે હાઇ ફિડેલિટી કન્ટેન્ટ બનાવી શકો</translation>
 <translation id="6523574494641144162">Google Password Manager આ પાસવર્ડને તમારા Google એકાઉન્ટમાં સાચવી શક્યું નથી. તમે તેમને આ ડિવાઇસ પર સાચવી શકો છો.</translation>
@@ -7845,6 +7839,7 @@ USB ડિવાઇસ</translation>
 <translation id="6563055593659435495">તમારા ફોન સાથે કોઈ કનેક્શન જાળવી શકાતું નથી. ખાતરી કરો કે તમારો ફોન નજીકમાં, અનલૉક કરેલો હોય અને તેમાં બ્લૂટૂથ અને વાઇ-ફાઇની સેવા ચાલુ કરવામાં આવી હોય.</translation>
 <translation id="6564860838537532172">જ્યારે તમે બ્રાઉઝિંગ ઇતિહાસમાં શોધો, ત્યારે તમારા ઇતિહાસમાંની શોધ, શ્રેષ્ઠ મેળ ધરાવતા પેજનું કન્ટેન્ટ અને જનરેટ થયેલા મૉડલ આઉટપુટ Googleને મોકલવામાં આવે છે તેમજ આ સુવિધાને બહેતર બનાવવા માટે, કદાચ માનવ રિવ્યૂઅર દ્વારા આને જોવામાં આવી શકે છે.</translation>
 <translation id="6565144332292237355">સાઇટ તમારા સ્થાનિક નેટવર્ક પરના કોઈપણ ડિવાઇસને શોધવા અને તેની સાથે કનેક્ટ કરવા માટે આ સુવિધાનો ઉપયોગ કરી શકે છે</translation>
+<translation id="6568283005472142698">ટૅબની શોધ</translation>
 <translation id="6569931898053264308">મધ્યમ પ્રમાણમાં મેમરી બચત</translation>
 <translation id="6570622975915850879">કોઈ અલગ ડિવાઇસનો ઉપયોગ કરો</translation>
 <translation id="65711204837946324">ડાઉનલોડ કરવા માટે પરવાનગીની જરૂર છે</translation>
@@ -8264,7 +8259,6 @@ USB ડિવાઇસ</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />", <ph name="FILE_NAME" />ને <ph name="PRINTER_NAME" /> પર પ્રિન્ટ કરવા માગે છે.</translation>
 <translation id="6846843854964504403">સલામતી માટે રીસેટ</translation>
 <translation id="6847125920277401289">ચાલુ રાખવા માટે સ્પેસ ખાલી કરો</translation>
-<translation id="6848388270925200958">હમણાં, તમારી પાસે કેટલાક કાર્ડ છે, જેનો માત્ર આ ડિવાઇસ પર ઉપયોગ કરી શકાય છે</translation>
 <translation id="6848716236260083778">ફિંગરપ્રિન્ટનું સેટઅપ કરવા માટે, તમારા બાળકને ફિંગરપ્રિન્ટ સેન્સર ટચ કરવા જણાવો. તમારા બાળકની ફિંગરપ્રિન્ટનો ડેટા સુરક્ષિત રીતે સ્ટોર કરવામાં આવે છે અને તે હંમેશાં આ <ph name="DEVICE_TYPE" />માં જ રહે છે.</translation>
 <translation id="6850286078059909152">ટેક્સ્ટનો રંગ</translation>
 <translation id="6850925512806464982">આ ટૅબના ગ્રૂપનો ઍક્સેસ દરેક વ્યક્તિ તરત જ ગુમાવશે અને તેને બધા ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે</translation>
@@ -8652,6 +8646,7 @@ USB ડિવાઇસ</translation>
 <translation id="713122686776214250">પૃ&amp;ષ્ઠ ઉમેરો...</translation>
 <translation id="7131431455372521159">તમામ ટ્રૅક પૉઇન્ટ ડિસ્કનેક્ટ કરવામાં આવ્યા છે</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, રાહ જોઈ રહ્યાં છીએ</translation>
+<translation id="7132886488919643383">વાંચન, લેખન અને રચનામાં સહાય મેળવવા માટે Google AIનો ઉપયોગ કરો</translation>
 <translation id="7134098520442464001">ટેક્સ્ટને વધુ નાનો બનાવો</translation>
 <translation id="7134951043985383439">જોખમી ફાઇલ ડાઉનલોડ કરી</translation>
 <translation id="7135729336746831607">બ્લૂટૂથ ચાલુ કરીએ?</translation>
@@ -8803,7 +8798,6 @@ USB ડિવાઇસ</translation>
 <translation id="7253521419891527137">&amp;વધુ જાણો</translation>
 <translation id="7254951428499890870">શું તમે ખરેખર "<ph name="APP_NAME" />" ને ડાયગ્નોસ્ટિક મોડમાં લોંચ કરવા માગો છો?</translation>
 <translation id="725497546968438223">બુકમાર્ક ફોલ્ડરનું બટન</translation>
-<translation id="7255002516883565667">હમણાં, તમારી પાસે એક કાર્ડ છે જેનો માત્ર આ ડિવાઇસ પર ઉપયોગ કરી શકાય છે</translation>
 <translation id="7255935316994522020">લાગુ કરો</translation>
 <translation id="7256069762010468647">સાઇટ તમારા કૅમેરાનો ઉપયોગ કરી રહી છે</translation>
 <translation id="7256634071279256947">પાછળનો માઇક્રોફોન</translation>
@@ -9313,7 +9307,6 @@ USB ડિવાઇસ</translation>
 <translation id="7625025537587898155">નવી પ્રોફાઇલ ઉમેરો</translation>
 <translation id="7625568159987162309">પરવાનગીઓ અને બધી સાઇટ પર સ્ટોર કરેલો ડેટા જુઓ</translation>
 <translation id="7625823789272218216">ડાબી બાજુએ નવી ટૅબ</translation>
-<translation id="7628392600831846024">પ્રતીકની શૈલી</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), ગ્રેડ <ph name="GRADE" /></translation>
 <translation id="762917478230183172">દરેક કી માટે કોઈ ક્રિયા પસંદ કરો</translation>
 <translation id="7629206210984165492">વશમાં થયેલું</translation>
@@ -9355,6 +9348,7 @@ USB ડિવાઇસ</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 ફિંગરપ્રિન્ટનું સેટઅપ કર્યું}one{{COUNT} ફિંગરપ્રિન્ટનું સેટઅપ કર્યું}other{{COUNT} ફિંગરપ્રિન્ટનું સેટઅપ કર્યું}}</translation>
 <translation id="7650677314924139716">ડેટા વપરાશના હાલના સેટિંગ માત્ર વાઇ-ફાઇ માટે જ સેટ છે</translation>
 <translation id="7650920359639954963">ચાલુ કરવામાં આવ્યું નથી: <ph name="REASON" /></translation>
+<translation id="7651182181030187705">તમારા બધા ડિવાઇસ પર આ બુકમાર્ક મેળવવા માટે, આ તમે જ હોવાની ચકાસણી કરો</translation>
 <translation id="7651400349472467012">ઝટપટ હૉટસ્પૉટ ઉપલબ્ધ છે</translation>
 <translation id="7651784568388208829">ફોન હબ સંબંધિત કાર્ય ચાલુ રાખવા</translation>
 <translation id="765293928828334535">આ વેબસાઇટ પરથી ઍપ, એક્સ્ટેંશન અને વપરાશકર્તા સ્ક્રિપ્ટ ઉમેરી શકાતી નથી</translation>
@@ -9393,6 +9387,7 @@ USB ડિવાઇસ</translation>
 <translation id="7670434942695515800">શ્રેષ્ઠ કાર્યપ્રદર્શન માટે, એકદમ નવા વર્ઝન પર અપગ્રેડ કરો. અપગ્રેડ કરવાનું પૂર્ણ ન થઈ શકવાના કિસ્સામાં, તમારી ફાઇલોનું બૅકઅપ લેવાનો સુઝાવ આપવામાં આવે છે. એક વાર અપગ્રેડ થવાનું શરૂ થશે કે Linux શટ ડાઉન થઈ જશે. આગળ વધતા પહેલાં ખુલી ફાઇલો સાચવો. <ph name="LINK_START" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">સબટાઇટલ</translation>
 <translation id="7671130400130574146">સિસ્ટમ શીર્ષક બાર અને બોર્ડર્સનો ઉપયોગ કરો</translation>
+<translation id="7671139479636735732">તમારા આઇડિયાને સરળતાથી વિઝ્યુઅલાઇઝ કરવા માટે રાઇટ ક્લિક કરો</translation>
 <translation id="767127784612208024">રીસેટ કન્ફર્મ કરવા માટે ટચ કરો</translation>
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" "<ph name="SCANNER_NAME" />" પરથી સ્કૅન કરવા માગે છે.</translation>
 <translation id="7672504401554182757"><ph name="APP_NAME" /> માટે કયું ડિવાઇસ પાસકી ધરાવે છે, તે પસંદ કરો</translation>
@@ -10325,6 +10320,7 @@ USB ડિવાઇસ</translation>
 <translation id="8309458809024885768">પ્રમાણપત્ર પહેલાંથી અસ્તિત્વમાં છે</translation>
 <translation id="8310409247509201074"><ph name="NUM" /> ટૅબ</translation>
 <translation id="831207808878314375">વ્યાખ્યા</translation>
+<translation id="8312841338723044391">લાઇવ</translation>
 <translation id="8314089908545021657">નવા ફોન સાથે જોડાણ બનાવો</translation>
 <translation id="8314381333424235892">એક્સ્ટેંશન ખૂટે છે અથવા અનઇન્સ્ટૉલ કરેલું છે</translation>
 <translation id="831440797644402910">આ ફોલ્ડર ખોલી શકાતું નથી</translation>
@@ -10621,7 +10617,6 @@ USB ડિવાઇસ</translation>
 <translation id="8523493869875972733">ફેરફારો રાખો</translation>
 <translation id="8523849605371521713">પૉલિસી દ્વારા ઉમેરાયેલું</translation>
 <translation id="8524594273111932386">search + નીચેની ઍરો કી</translation>
-<translation id="8524783101666974011">તમારા Google એકાઉન્ટમાં કાર્ડ સાચવો</translation>
 <translation id="8524817717332153865">Mac સિસ્ટમ સેટિંગમાં કૅમેરા અને માઇક્રોફોન બંધ છે</translation>
 <translation id="8524841856047224176">વીડિયો કૉલ અને વધુ માટે તમારા કૅમેરાના બૅકગ્રાઉન્ડને મનગમતા બનાવો</translation>
 <translation id="8525306231823319788">પૂર્ણ સ્ક્રીન</translation>
@@ -11098,7 +11093,6 @@ USB ડિવાઇસ</translation>
 <translation id="8850251000316748990">વધુ જુઓ...</translation>
 <translation id="885246833287407341">API કાર્યના તર્ક</translation>
 <translation id="8853586775156634952">આ કાર્ડ માત્ર આ ડિવાઇસમાં સચવાશે</translation>
-<translation id="8854745870658584490">શૉર્ટકટ માટે પસંદગી</translation>
 <translation id="8855242995793521265">તમારા બ્રાઉઝર અથવા ડિવાઇસને નોંધપાત્ર રીતે ધીમું કરતું નથી.</translation>
 <translation id="8855977033756560989">આ Chromebook Enterprise ડિવાઇસ Chrome Enterprise અપગ્રેડ સાથેના બંડલમાં આવે છે. એન્ટરપ્રાઇઝની ક્ષમતાઓનો લાભ લેવા માટે, આ ડિવાઇસની Google વ્યવસ્થાપક એકાઉન્ટ સાથે નોંધણી કરાવો.</translation>
 <translation id="8856028055086294840">ઍપ અને પેજ રિસ્ટોર કરો</translation>
@@ -11676,6 +11670,7 @@ USB ડિવાઇસ</translation>
 <translation id="953434574221655299">તમે સક્રિય રૂપે તમારા ડિવાઇસનો ઉપયોગ ક્યારે કરો છો, તે જાણવાની મંજૂરી છે</translation>
 <translation id="954705236478705408">કોઈ નવી પ્રોફાઇલનું સેટઅપ કરો</translation>
 <translation id="954749761428814584">ભાષા અને ઇનપુટ પદ્ધતિ</translation>
+<translation id="956013912698841780">કન્ટેન્ટનો સારાંશ આપવા, વ્યાખ્યાઓ મેળવવા, વધુ આત્મવિશ્વાસ સાથે લખવા, છબીઓ બનાવવા અને અન્ય ઘણું કરવા માટે રાઇટ-ક્લિક કરો. હાલમાં મર્યાદિત ઉપલબ્ધતા છે.</translation>
 <translation id="956500788634395331">તમને નુકસાન પહોંચાડવાની સંભાવના હોય એવા એક્સ્ટેંશનથી સુરક્ષિત કર્યા છે</translation>
 <translation id="957179356621191750">6-ડૉટ</translation>
 <translation id="957960681186851048">આ સાઇટે એકથી વધુ ફાઇલોને ઑટોમૅટિક રીતે ડાઉનલોડ કરવાનો પ્રયાસ કર્યો</translation>

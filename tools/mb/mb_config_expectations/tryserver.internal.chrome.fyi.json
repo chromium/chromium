@@ -14,7 +14,6 @@
       "system_webview_shell_package_name": "org.chromium.my_webview_shell",
       "target_cpu": "x86",
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -22,7 +21,6 @@
     "gn_args": {
       "is_chrome_branded": true,
       "is_official_build": true,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -32,7 +30,6 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "target_cpu": "arm64",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -40,7 +37,6 @@
     "gn_args": {
       "is_chrome_branded": true,
       "is_official_build": true,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   }

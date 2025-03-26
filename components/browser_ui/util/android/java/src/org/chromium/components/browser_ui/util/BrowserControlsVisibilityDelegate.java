@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.util;
 
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.BrowserControlsState;
@@ -11,7 +12,7 @@ import org.chromium.cc.input.BrowserControlsState;
 /** A delegate to determine visibility of the browser controls. */
 @NullMarked
 public class BrowserControlsVisibilityDelegate
-        extends ObservableSupplierImpl<@BrowserControlsState Integer> {
+        extends ObservableSupplierImpl<@BrowserControlsState Integer> implements Destroyable {
     /**
      * Constructs a delegate that controls the visibility of the browser controls.
      *
@@ -19,5 +20,10 @@ public class BrowserControlsVisibilityDelegate
      */
     public BrowserControlsVisibilityDelegate(@BrowserControlsState int initialValue) {
         super.set(initialValue);
+    }
+
+    @Override
+    public void destroy() {
+        // This class has nothing to clean up, but derived classes may.
     }
 }

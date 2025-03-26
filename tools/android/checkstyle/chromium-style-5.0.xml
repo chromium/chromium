@@ -214,7 +214,7 @@
       <property name="id" value="FullscreenDialogs"/>
       <property name="severity" value="warning"/>
       <property name="format" value="ThemeOverlay\_BrowserUI\_Fullscreen"/>
-      <property name="message" value="Fullscreen AlertDialogs must use FullscreenAlertDialog and fullscreen Dialogs must use ChromeDialog. Not doing this will break automotive devices. (This check is triggered by the presence of ThemeOverlay_BrowserUI_Fullscreen and does not know if you are already using the correct class)"/>
+      <property name="message" value="Fullscreen AlertDialogs must use FullscreenAlertDialog and fullscreen Dialogs must use ChromeDialog. Not doing this will break automotive devices and edge to edge mode. (This check is triggered by the presence of ThemeOverlay_BrowserUI_Fullscreen and does not know if you are already using the correct class)"/>
     </module>
     <module name="RegexpSinglelineJava">
       <property name="id" value="InclusiveLanguageCheck"/>

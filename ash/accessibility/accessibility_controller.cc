@@ -233,6 +233,8 @@ const FeatureDialogData kFeatureDialogs[] = {
     {FeatureType::kHighContrast,
      prefs::kHighContrastAcceleratorDialogHasBeenAccepted}};
 
+constexpr char kFaceGazeActiveNotificationId[] =
+    "facegaze_active_notification_id";
 constexpr char kNotificationId[] = "chrome://settings/accessibility";
 constexpr char kNotifierAccessibility[] = "ash.accessibility";
 constexpr char kDictationLanguageUpgradedNudgeId[] =
@@ -460,6 +462,8 @@ const gfx::VectorIcon& GetNotificationIcon(A11yNotificationType type) {
     case A11yNotificationType::kDicationOnlyPumpkinDownloaded:
     case A11yNotificationType::kDictationOnlySodaDownloaded:
       return kDictationMenuIcon;
+    case A11yNotificationType::kFaceGazeActive:
+      return kFacegazeIcon;
     default:
       return kNotificationChromevoxIcon;
   }
@@ -468,10 +472,11 @@ const gfx::VectorIcon& GetNotificationIcon(A11yNotificationType type) {
 void ShowAccessibilityNotification(
     const AccessibilityController::A11yNotificationWrapper& wrapper) {
   A11yNotificationType type = wrapper.type;
+  std::string notification_id = wrapper.notification_id;
   const auto& replacements = wrapper.replacements;
   message_center::MessageCenter* message_center =
       message_center::MessageCenter::Get();
-  message_center->RemoveNotification(kNotificationId, false /* by_user */);
+  message_center->RemoveNotification(notification_id, false /* by_user */);
 
   if (type == A11yNotificationType::kNone) {
     return;
@@ -546,6 +551,13 @@ void ShowAccessibilityNotification(
     pinned = false;
     // Use CRITICAL_WARNING to force the notification color to red.
     warning = message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
+  } else if (type == A11yNotificationType::kFaceGazeActive) {
+    title =
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FACEGAZE_ACTIVE_TITLE);
+    catalog_name = NotificationCatalogName::kFaceGazeActive;
+    options.pinned = true;
+    options.buttons.emplace_back(
+        l10n_util::GetStringUTF16(IDS_ASH_FACEGAZE_CLOSE_BUTTON_TEXT));
   } else if (type == A11yNotificationType::kFaceGazeAssetsDownloaded) {
     title = l10n_util::GetStringUTF16(
         IDS_ASH_A11Y_FACEGAZE_ASSETS_DOWNLOADED_TITLE);
@@ -594,7 +606,7 @@ void ShowAccessibilityNotification(
   options.should_make_spoken_feedback_for_popup_updates = false;
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotificationPtr(
-          message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, title,
+          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
           text, display_source, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
@@ -607,7 +619,8 @@ void ShowAccessibilityNotification(
 void RemoveAccessibilityNotification() {
   ShowAccessibilityNotification(
       AccessibilityController::A11yNotificationWrapper(
-          A11yNotificationType::kNone, std::vector<std::u16string>()));
+          A11yNotificationType::kNone, kNotificationId,
+          std::vector<std::u16string>()));
 }
 
 AccessibilityPanelLayoutManager* GetLayoutManager() {
@@ -1918,8 +1931,8 @@ void AccessibilityController::SetSpokenFeedbackEnabled(
   if (enabled && actual_enabled && notify == A11Y_NOTIFICATION_SHOW) {
     type = A11yNotificationType::kSpokenFeedbackEnabled;
   }
-  ShowAccessibilityNotification(
-      A11yNotificationWrapper(type, std::vector<std::u16string>()));
+  ShowAccessibilityNotification(A11yNotificationWrapper(
+      type, kNotificationId, std::vector<std::u16string>()));
 }
 
 bool AccessibilityController::IsSpokenFeedbackSettingVisibleInTray() {
@@ -1940,6 +1953,15 @@ bool AccessibilityController::IsEnterpriseIconVisibleForSelectToSpeak() {
 
 void AccessibilityController::RequestSelectToSpeakStateChange() {
   client_->RequestSelectToSpeakStateChange();
+}
+
+void AccessibilityController::OnFaceGazeActiveNotificationClicked(
+    std::optional<int> button_index) {
+  if (!button_index) {
+    return;
+  }
+
+  RequestDisableFaceGaze();
 }
 
 void AccessibilityController::OnTouchpadNotificationClicked(
@@ -2443,8 +2465,8 @@ void AccessibilityController::BrailleDisplayStateChanged(bool connected) {
   }
   NotifyAccessibilityStatusChanged();
 
-  ShowAccessibilityNotification(
-      A11yNotificationWrapper(type, std::vector<std::u16string>()));
+  ShowAccessibilityNotification(A11yNotificationWrapper(
+      type, kNotificationId, std::vector<std::u16string>()));
 }
 
 void AccessibilityController::SetFocusHighlightRect(
@@ -2553,9 +2575,9 @@ void AccessibilityController::OnDisplayTabletStateChanged(
     // Show accessibility notification when tablet mode transition is completed.
     if (state == display::TabletState::kInTabletMode ||
         state == display::TabletState::kInClamshellMode) {
-      ShowAccessibilityNotification(
-          A11yNotificationWrapper(A11yNotificationType::kSpokenFeedbackEnabled,
-                                  std::vector<std::u16string>()));
+      ShowAccessibilityNotification(A11yNotificationWrapper(
+          A11yNotificationType::kSpokenFeedbackEnabled, kNotificationId,
+          std::vector<std::u16string>()));
     }
   }
 }
@@ -3070,6 +3092,19 @@ void AccessibilityController::UpdateFaceGazeFromPrefs() {
     active_user_prefs_->SetBoolean(
         prefs::kAccessibilityFaceGazeActionsEnabledSentinel, actions_enabled);
   }
+
+  // Manage the pinned notification.
+  if (enabled) {
+    ShowAccessibilityNotification(A11yNotificationWrapper(
+        A11yNotificationType::kFaceGazeActive, kFaceGazeActiveNotificationId,
+        std::vector<std::u16string>(),
+        base::BindRepeating(
+            &AccessibilityController::OnFaceGazeActiveNotificationClicked,
+            GetWeakPtr())));
+  } else {
+    message_center::MessageCenter::Get()->RemoveNotification(
+        kFaceGazeActiveNotificationId, /*by_user=*/false);
+  }
 }
 
 void AccessibilityController::UpdateFlashNotificationsFromPrefs() {
@@ -3198,7 +3233,8 @@ void AccessibilityController::ShowDisableTouchpadDialog() {
 void AccessibilityController::OnDisableTouchpadDialogAccepted() {
   confirmation_dialog_.reset();
   ShowAccessibilityNotification(A11yNotificationWrapper(
-      A11yNotificationType::kTouchpadDisabled, std::vector<std::u16string>(),
+      A11yNotificationType::kTouchpadDisabled, kNotificationId,
+      std::vector<std::u16string>(),
       base::BindRepeating(
           &AccessibilityController::OnTouchpadNotificationClicked,
           GetWeakPtr())));
@@ -3507,7 +3543,7 @@ void AccessibilityController::ActivateSwitchAccess() {
 
   ShowAccessibilityNotification(
       A11yNotificationWrapper(A11yNotificationType::kSwitchAccessEnabled,
-                              std::vector<std::u16string>()));
+                              kNotificationId, std::vector<std::u16string>()));
 }
 
 void AccessibilityController::DeactivateSwitchAccess() {
@@ -3745,8 +3781,9 @@ void AccessibilityController::ShowNotificationForDictation(
       break;
   }
 
-  ShowAccessibilityNotification(A11yNotificationWrapper(
-      notification_type, std::vector<std::u16string>{display_language}));
+  ShowAccessibilityNotification(
+      A11yNotificationWrapper(notification_type, kNotificationId,
+                              std::vector<std::u16string>{display_language}));
 }
 
 void AccessibilityController::ShowNotificationForFaceGaze(
@@ -3775,21 +3812,26 @@ void AccessibilityController::ShowNotificationForFaceGaze(
 
   active_user_prefs_->SetBoolean(notification_shown_pref, true);
   ShowAccessibilityNotification(A11yNotificationWrapper(
-      notification_type, std::vector<std::u16string>()));
+      notification_type, kNotificationId, std::vector<std::u16string>()));
 }
 
 AccessibilityController::A11yNotificationWrapper::A11yNotificationWrapper() =
     default;
 AccessibilityController::A11yNotificationWrapper::A11yNotificationWrapper(
     A11yNotificationType type_in,
+    const std::string& notification_id_in,
     std::vector<std::u16string> replacements_in)
-    : type(type_in), replacements(replacements_in) {}
+    : type(type_in),
+      notification_id(notification_id_in),
+      replacements(replacements_in) {}
 AccessibilityController::A11yNotificationWrapper::A11yNotificationWrapper(
     A11yNotificationType type_in,
+    const std::string& notification_id_in,
     std::vector<std::u16string> replacements_in,
     std::optional<base::RepeatingCallback<void(std::optional<int>)>>
         callback_in)
     : type(type_in),
+      notification_id(notification_id_in),
       replacements(replacements_in),
       callback(std::move(callback_in)) {}
 AccessibilityController::A11yNotificationWrapper::~A11yNotificationWrapper() =

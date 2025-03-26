@@ -424,6 +424,12 @@ BASE_FEATURE(kFedCmUseOtherAccount,
              "FedCmUseOtherAccount",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Support usernames and phone numbers to identify users, instead of
+// (or in addition to) names and emails.
+BASE_FEATURE(kFedCmAlternativeIdentifiers,
+             "FedCmAlternativeIdentifiers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables usage of the FedCM Authz API.
 // Note that actual exposure of the API to web content is controlled by
 // the flag in RuntimeEnabledFeatures on the blink side. See also the use

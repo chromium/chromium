@@ -550,10 +550,33 @@ std::unique_ptr<MainThread> MainThreadSchedulerImpl::CreateMainThread() {
   return std::make_unique<MainThreadImpl>(this);
 }
 
-scoped_refptr<WidgetScheduler>
-MainThreadSchedulerImpl::CreateWidgetScheduler() {
-  return base::MakeRefCounted<WidgetSchedulerImpl>(
-      this, &render_widget_scheduler_signals_);
+scoped_refptr<WidgetScheduler> MainThreadSchedulerImpl::CreateWidgetScheduler(
+    WidgetScheduler::Delegate* delegate) {
+  auto widget_scheduler = base::MakeRefCounted<WidgetSchedulerImpl>(
+      this, &render_widget_scheduler_signals_, delegate);
+  if (base::FeatureList::IsEnabled(kUseWidgetSchedulerForIdlePeriodSignals)) {
+    CHECK(delegate);
+    main_thread_only().widget_schedulers.insert(widget_scheduler);
+    // If we're already receiving BeginMainFrameNotExpectedUntil signals from
+    // the other `WidgetScheduler`s, we need to receive these signals from this
+    // new one as well, otherwise idle periods might unexpectedly stop once
+    // frames stop being produced.
+    //
+    // Note: by default `widget_scheduler` will not receive these signals, so
+    // initialization is only needed if the signals are needed. If that changes,
+    // as a result of idle tasks being posted, the signals will be requested in
+    // `DispatchRequestBeginMainFrameNotExpected()`.
+    if (main_thread_only().compositor_will_send_main_frame_not_expected) {
+      // Defer this until after the current task to allow `delegate` to complete
+      // initialization.
+      control_task_queue_->GetTaskRunnerWithDefaultTaskType()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&MainThreadSchedulerImpl::
+                             InitializeRequestBeginMainFrameNotExpected,
+                         weak_factory_.GetWeakPtr(), widget_scheduler));
+    }
+  }
+  return widget_scheduler;
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -815,6 +838,11 @@ void MainThreadSchedulerImpl::DidCommitFrameToCompositor() {
 
   base::TimeTicks now(helper_.NowTicks());
   if (now < main_thread_only().estimated_next_frame_begin) {
+    // TODO(crbug.com/394906646): The main thread can be hosting multiple
+    // widgets producing frames at the same time (e.g. multiple monitors). We
+    // should account for this when setting the idle period duration rather than
+    // using the most recent value, in case this is running at a different rate.
+    //
     // TODO(rmcilroy): Consider reducing the idle period based on the runtime of
     // the next pending delayed tasks (as currently done in for long idle times)
     idle_helper_.StartShortIdlePeriod(
@@ -832,6 +860,10 @@ void MainThreadSchedulerImpl::BeginFrameNotExpectedSoon() {
   if (helper_.IsShutdown())
     return;
 
+  // TODO(crbug.com/394906646): The main thread can be hosting multiple widgets
+  // producing frames at the same time, e.g. multiple monitors or popup windows.
+  // We should coordinate between this and the other rendering signals so this
+  // doesn't clobber a short idle period.
   idle_helper_.EnableLongIdlePeriod();
   {
     base::AutoLock lock(any_thread_lock_);
@@ -854,6 +886,11 @@ void MainThreadSchedulerImpl::BeginMainFrameNotExpectedUntil(
     // End any previous idle period.
     EndIdlePeriod();
 
+    // TODO(crbug.com/394906646): The main thread can be hosting multiple
+    // widgets producing frames at the same time (e.g. multiple monitors). We
+    // should account for this when setting the idle period duration rather than
+    // using the most recent value, in case this is running at a different rate.
+    //
     // TODO(rmcilroy): Consider reducing the idle period based on the runtime of
     // the next pending delayed tasks (as currently done in for long idle times)
     idle_helper_.StartShortIdlePeriod(now, time);
@@ -1822,7 +1859,7 @@ void MainThreadSchedulerImpl::OnPendingTasksChanged(bool has_tasks) {
   // This is needed because idle task can be posted (and OnPendingTasksChanged
   // called) at any moment, including in the middle of allocating an object,
   // when state is not consistent. Posting a task to dispatch notifications
-  // minimizes the amount of code that runs and sees an inconsistent state .
+  // minimizes the amount of code that runs and sees an inconsistent state.
   control_task_queue_->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -1841,11 +1878,30 @@ void MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected(
       "MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected",
       "has_tasks", has_tasks);
   bool success = false;
-  for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
-    success |= page_scheduler->RequestBeginMainFrameNotExpected(has_tasks);
+  if (base::FeatureList::IsEnabled(kUseWidgetSchedulerForIdlePeriodSignals)) {
+    // If idle tasks are posted before compositing is initialized, the scheduler
+    // will request these signals as soon as it is.
+    for (auto& widget_scheduler : main_thread_only().widget_schedulers) {
+      widget_scheduler->RequestBeginMainFrameNotExpected(has_tasks);
+    }
+    success = true;
+  } else {
+    for (PageSchedulerImpl* page_scheduler :
+         main_thread_only().page_schedulers) {
+      success |= page_scheduler->RequestBeginMainFrameNotExpected(has_tasks);
+    }
   }
   main_thread_only().compositor_will_send_main_frame_not_expected =
       success && has_tasks;
+}
+
+void MainThreadSchedulerImpl::InitializeRequestBeginMainFrameNotExpected(
+    scoped_refptr<WidgetSchedulerImpl> widget_scheduler) {
+  CHECK(base::FeatureList::IsEnabled(kUseWidgetSchedulerForIdlePeriodSignals));
+  if (main_thread_only().widget_schedulers.Contains(widget_scheduler)) {
+    widget_scheduler->RequestBeginMainFrameNotExpected(
+        main_thread_only().compositor_will_send_main_frame_not_expected);
+  }
 }
 
 void MainThreadSchedulerImpl::DidStartProvisionalLoad(
@@ -2724,6 +2780,38 @@ void MainThreadSchedulerImpl::OnWebSchedulingTaskQueuePriorityChanged(
     CHECK(voter);
     voter->SetVoteToEnable(main_thread_only().current_policy.IsQueueEnabled(
         queue, scheduling_settings()));
+  }
+}
+
+const IdleHelper& MainThreadSchedulerImpl::GetIdleHelperForTesting() const {
+  return idle_helper_;
+}
+
+void MainThreadSchedulerImpl::OnWidgetSchedulerWillShutdown(
+    WidgetSchedulerImpl* scheduler) {
+  if (!base::FeatureList::IsEnabled(kUseWidgetSchedulerForIdlePeriodSignals)) {
+    return;
+  }
+
+  auto iter = main_thread_only().widget_schedulers.find(scheduler);
+  CHECK_NE(iter, main_thread_only().widget_schedulers.end());
+  main_thread_only().widget_schedulers.erase(iter);
+
+  // If the thread is hosting multiple widgets, `widget_scheduler` was
+  // producing frames, and `widget_scheduler` had not received a
+  // `BeginFrameNotExpectedSoon` signal, idle periods won't restart until the
+  // next frame, which could cause idle periods to unexpectedly stop. This can
+  // happen, for example, when showing a date picker (popup window).
+  if (main_thread_only().renderer_hidden || idle_helper_.IsInLongIdlePeriod()) {
+    return;
+  }
+  bool no_widgets_expecting_frame = std::ranges::all_of(
+      main_thread_only().widget_schedulers,
+      [](const scoped_refptr<WidgetSchedulerImpl>& widget_scheduler) {
+        return widget_scheduler->IsBeginFrameNotExpectedSoon();
+      });
+  if (no_widgets_expecting_frame) {
+    idle_helper_.EnableLongIdlePeriod();
   }
 }
 

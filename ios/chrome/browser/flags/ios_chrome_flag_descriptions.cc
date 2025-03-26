@@ -114,6 +114,11 @@ const char kAutofillEnableRankingFormulaCreditCardsDescription[] =
     "When enabled, Autofill will use a new ranking formula to rank Autofill "
     "data model credit card suggestions.";
 
+const char kAutofillEnableSupportForHomeAndWorkName[] =
+    "Enable support for home and work addresses";
+const char kAutofillEnableSupportForHomeAndWorkDescription[] =
+    "When enabled, chrome will support home and work addresses from account.";
+
 const char kAutofillEnableVerveCardSupportName[] =
     "Enable autofill support for Verve cards";
 const char kAutofillEnableVerveCardSupportDescription[] =
@@ -285,12 +290,6 @@ const char kMeasurementsName[] = "Measurements experience enable";
 const char kMeasurementsDescription[] =
     "When enabled, one tapping or long pressing on a measurement will trigger "
     "the measurement conversion experience.";
-
-const char kEnableNewParcelTrackingNumberDetectionName[] =
-    "Improve Tracking Number Detection";
-const char kEnableNewParcelTrackingNumberDetectionDescription[] =
-    "When enabled carrier names are parsed out and must match tracking "
-    "numbers.";
 
 const char kEnableExpKitTextClassifierDateName[] =
     "Date with Text Classifier in Experience Kit";
@@ -567,12 +566,6 @@ const char kIOSBrowserEditMenuMetricsDescription[] =
 const char kIOSDetectUsernameInUffName[] = "Detect username in UFF";
 const char kIOSDetectUsernameInUffDescription[] =
     "Detect the username in UFF for saving.";
-
-const char kIOSDisableParcelTrackingName[] = "Disable Parcel Tracking";
-const char kIOSDisableParcelTrackingDescription[] =
-    "Disables the parcel tracking feature; when set, users will not be offered "
-    "to track new parcels nor will they see Magic Stack cards for parcel "
-    "tracking.";
 
 const char kIOSDockingPromoName[] = "Docking Promo";
 const char kIOSDockingPromoDescription[] =

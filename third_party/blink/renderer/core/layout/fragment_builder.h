@@ -223,6 +223,8 @@ class CORE_EXPORT FragmentBuilder {
       const LogicalOffset& child_offset,
       LogicalStaticPosition::InlineEdge = LogicalStaticPosition::kInlineStart,
       LogicalStaticPosition::BlockEdge = LogicalStaticPosition::kBlockStart,
+      LogicalStaticPosition::LogicalAlignmentDirection align_self_direction =
+          LogicalStaticPosition::LogicalAlignmentDirection::kBlock,
       bool is_hidden_for_paint = false,
       bool allow_top_layer_nodes = false);
 

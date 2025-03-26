@@ -779,6 +779,30 @@ constexpr base::FeatureParam<bool> kAndroidHubSearchEnableHistoryProvider{
 
 // <- Android Hub Search
 // ---------------------------------------------------------
+// Power Tools -->
+constexpr base::FeatureParam<size_t> kOmniboxNumNtpZpsRecentSearches{
+    &omnibox::kNumNtpZpsRecentSearches, "omnibox_num_ntp_zps_recent_searches",
+    15};
+constexpr base::FeatureParam<size_t> kOmniboxNumNtpZpsTrendingSearches{
+    &omnibox::kNumNtpZpsTrendingSearches,
+    "omnibox_num_ntp_zps_trending_searches", 5};
+constexpr base::FeatureParam<size_t> kOmniboxNumWebZpsRecentSearches{
+    &omnibox::kNumWebZpsRecentSearches, "omnibox_num_web_zps_recent_searches",
+    15};
+constexpr base::FeatureParam<size_t> kOmniboxNumWebZpsRelatedSearches{
+    &omnibox::kNumWebZpsRelatedSearches, "omnibox_num_web_zps_related_searches",
+    8};
+constexpr base::FeatureParam<size_t> kOmniboxNumWebZpsMostVisitedUrls{
+    &omnibox::kNumWebZpsMostVisitedUrls,
+    "omnibox_num_web_zps_most_visited_urls", 10};
+constexpr base::FeatureParam<size_t> kOmniboxNumSrpZpsRecentSearches{
+    &omnibox::kNumSrpZpsRecentSearches, "omnibox_num_srp_zps_recent_searches",
+    15};
+constexpr base::FeatureParam<size_t> kOmniboxNumSrpZpsRelatedSearches{
+    &omnibox::kNumSrpZpsRelatedSearches, "omnibox_num_srp_zps_related_searches",
+    15};
+// <- Power Tools
+// ---------------------------------------------------------
 // Diagnostics -->
 #if BUILDFLAG(IS_ANDROID)
 inline constexpr base::FeatureParam<bool> kAndroidDiagInputConnection{

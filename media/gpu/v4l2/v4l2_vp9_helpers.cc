@@ -120,7 +120,7 @@ bool AppendVP9SuperFrameIndex(scoped_refptr<DecoderBuffer>& buffer) {
   std::vector<uint8_t> superframe_index = CreateSuperFrameIndex(frame_sizes);
   const size_t vp9_superframe_size = buffer->size() + superframe_index.size();
   auto vp9_superframe = base::HeapArray<uint8_t>::Uninit(vp9_superframe_size);
-  memcpy(vp9_superframe.data(), buffer->data(), buffer->size());
+  memcpy(vp9_superframe.data(), base::span(*buffer).data(), buffer->size());
   memcpy(vp9_superframe.data() + buffer->size(), superframe_index.data(),
          superframe_index.size());
 

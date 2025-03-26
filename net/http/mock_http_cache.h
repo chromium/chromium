@@ -59,7 +59,6 @@ class MockDiskEntry : public disk_cache::Entry,
   void Close() override;
   std::string GetKey() const override;
   base::Time GetLastUsed() const override;
-  base::Time GetLastModified() const override;
   int32_t GetDataSize(int index) const override;
   int ReadData(int index,
                int offset,

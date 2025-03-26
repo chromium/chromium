@@ -48,7 +48,7 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   void SetUp() override { BaseLayoutAlgorithmTest::SetUp(); }
 
   void BuildGridGeometry(const GridLayoutAlgorithm& algorithm,
-                         GapFragmentData::GapGeometry* gap_geometry = nullptr) {
+                         GapGeometry* gap_geometry = nullptr) {
     auto grid_sizing_tree = algorithm.BuildGridSizingTree();
 
     algorithm.InitializeTrackSizes(&grid_sizing_tree);
@@ -262,28 +262,28 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGapGeometry) {
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
 
-  auto* gap_geometry = MakeGarbageCollected<GapFragmentData::GapGeometry>();
+  auto* gap_geometry = MakeGarbageCollected<GapGeometry>();
   BuildGridGeometry(algorithm, gap_geometry);
 
-  Vector<GapFragmentData::GapIntersectionList> expected_column_intersections = {
+  Vector<GapIntersectionList> expected_column_intersections = {
       {
-          GapFragmentData::GapIntersection(LayoutUnit(105), LayoutUnit()),
-          GapFragmentData::GapIntersection(LayoutUnit(105), LayoutUnit(105)),
-          GapFragmentData::GapIntersection(LayoutUnit(105), LayoutUnit(210)),
+          GapIntersection(LayoutUnit(105), LayoutUnit()),
+          GapIntersection(LayoutUnit(105), LayoutUnit(105)),
+          GapIntersection(LayoutUnit(105), LayoutUnit(210)),
       },
       {
-          GapFragmentData::GapIntersection(LayoutUnit(215), LayoutUnit()),
-          GapFragmentData::GapIntersection(LayoutUnit(215), LayoutUnit(105)),
-          GapFragmentData::GapIntersection(LayoutUnit(215), LayoutUnit(210)),
+          GapIntersection(LayoutUnit(215), LayoutUnit()),
+          GapIntersection(LayoutUnit(215), LayoutUnit(105)),
+          GapIntersection(LayoutUnit(215), LayoutUnit(210)),
       },
   };
 
-  Vector<GapFragmentData::GapIntersectionList> expected_row_intersections = {
+  Vector<GapIntersectionList> expected_row_intersections = {
       {
-          GapFragmentData::GapIntersection(LayoutUnit(), LayoutUnit(105)),
-          GapFragmentData::GapIntersection(LayoutUnit(105), LayoutUnit(105)),
-          GapFragmentData::GapIntersection(LayoutUnit(215), LayoutUnit(105)),
-          GapFragmentData::GapIntersection(LayoutUnit(320), LayoutUnit(105)),
+          GapIntersection(LayoutUnit(), LayoutUnit(105)),
+          GapIntersection(LayoutUnit(105), LayoutUnit(105)),
+          GapIntersection(LayoutUnit(215), LayoutUnit(105)),
+          GapIntersection(LayoutUnit(320), LayoutUnit(105)),
       },
   };
 
@@ -339,36 +339,36 @@ TEST_F(GridLayoutAlgorithmTest, GapIntersectionsForGridWithSpanners) {
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
   GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
 
-  auto* gap_geometry = MakeGarbageCollected<GapFragmentData::GapGeometry>();
+  auto* gap_geometry = MakeGarbageCollected<GapGeometry>();
   BuildGridGeometry(algorithm, gap_geometry);
 
-  Vector<GapFragmentData::GapIntersectionList> expected_column_intersections = {
+  Vector<GapIntersectionList> expected_column_intersections = {
       {
-          GapFragmentData::GapIntersection(LayoutUnit(105), LayoutUnit()),
-          GapFragmentData::GapIntersection(LayoutUnit(105), LayoutUnit(105)),
-          GapFragmentData::GapIntersection(LayoutUnit(105), LayoutUnit(215)),
-          GapFragmentData::GapIntersection(LayoutUnit(105), LayoutUnit(320)),
+          GapIntersection(LayoutUnit(105), LayoutUnit()),
+          GapIntersection(LayoutUnit(105), LayoutUnit(105)),
+          GapIntersection(LayoutUnit(105), LayoutUnit(215)),
+          GapIntersection(LayoutUnit(105), LayoutUnit(320)),
       },
       {
-          GapFragmentData::GapIntersection(LayoutUnit(215), LayoutUnit()),
-          GapFragmentData::GapIntersection(LayoutUnit(215), LayoutUnit(105)),
-          GapFragmentData::GapIntersection(LayoutUnit(215), LayoutUnit(215)),
-          GapFragmentData::GapIntersection(LayoutUnit(215), LayoutUnit(320)),
+          GapIntersection(LayoutUnit(215), LayoutUnit()),
+          GapIntersection(LayoutUnit(215), LayoutUnit(105)),
+          GapIntersection(LayoutUnit(215), LayoutUnit(215)),
+          GapIntersection(LayoutUnit(215), LayoutUnit(320)),
       },
   };
 
-  Vector<GapFragmentData::GapIntersectionList> expected_row_intersections = {
+  Vector<GapIntersectionList> expected_row_intersections = {
       {
-          GapFragmentData::GapIntersection(LayoutUnit(), LayoutUnit(105)),
-          GapFragmentData::GapIntersection(LayoutUnit(105), LayoutUnit(105)),
-          GapFragmentData::GapIntersection(LayoutUnit(215), LayoutUnit(105)),
-          GapFragmentData::GapIntersection(LayoutUnit(320), LayoutUnit(105)),
+          GapIntersection(LayoutUnit(), LayoutUnit(105)),
+          GapIntersection(LayoutUnit(105), LayoutUnit(105)),
+          GapIntersection(LayoutUnit(215), LayoutUnit(105)),
+          GapIntersection(LayoutUnit(320), LayoutUnit(105)),
       },
       {
-          GapFragmentData::GapIntersection(LayoutUnit(), LayoutUnit(215)),
-          GapFragmentData::GapIntersection(LayoutUnit(105), LayoutUnit(215)),
-          GapFragmentData::GapIntersection(LayoutUnit(215), LayoutUnit(215)),
-          GapFragmentData::GapIntersection(LayoutUnit(320), LayoutUnit(215)),
+          GapIntersection(LayoutUnit(), LayoutUnit(215)),
+          GapIntersection(LayoutUnit(105), LayoutUnit(215)),
+          GapIntersection(LayoutUnit(215), LayoutUnit(215)),
+          GapIntersection(LayoutUnit(320), LayoutUnit(215)),
       },
   };
 

@@ -1014,6 +1014,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4351244548802238354">Sulje ikkuna</translation>
 <translation id="4356872429719185452">Näytä hotspotin tiedot. Hotspot laitetaan päälle.</translation>
 <translation id="4364101114148522660">Tallenne: <ph name="DURATION" /></translation>
+<translation id="4368227575116094370">Luo Google Sheets ‑taulukko</translation>
 <translation id="4371348193907997655">Striimausasetukset</translation>
 <translation id="4371834685492830207">PIN-koodissa voi olla vain kelvollisia merkkejä</translation>
 <translation id="4375482231364171368">Hae osoitepalkista</translation>
@@ -1483,6 +1484,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5825969630400862129">Yhdistettyjen laitteiden asetukset</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> muuta</translation>
 <translation id="5837036133683224804">Lopeta <ph name="ROUTE_TITLE" /> – <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Hae Googlen kautta</translation>
 <translation id="5841296711770970362">Siirry seuraavaan kappaleeseen</translation>
 <translation id="5842553299352339114">Hotspot (<ph name="DEVICE_NAME" />) on päällä, ei yhdistettyjä laitteita</translation>
 <translation id="584525477304726060">Suurenna painamalla pitkään</translation>

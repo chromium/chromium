@@ -20,7 +20,10 @@
                 "config": "arm64_builder_rel_mb"
               },
               "legacy_chromium_config": {
+                "build_config": "Release",
                 "config": "arm64_builder_rel_mb",
+                "target_arch": "arm",
+                "target_bits": 64,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -46,7 +49,10 @@
                 "config": "arm64_builder_rel_mb"
               },
               "legacy_chromium_config": {
+                "build_config": "Release",
                 "config": "arm64_builder_rel_mb",
+                "target_arch": "arm",
+                "target_bits": 64,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {

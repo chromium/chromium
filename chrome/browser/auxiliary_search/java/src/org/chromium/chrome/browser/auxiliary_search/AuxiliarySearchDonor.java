@@ -46,9 +46,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.auxiliary_search.schema.CustomTabWebPage;
-import org.chromium.chrome.browser.auxiliary_search.schema.TabWebPage;
 import org.chromium.chrome.browser.auxiliary_search.schema.TopSiteWebPage;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -116,7 +114,7 @@ public class AuxiliarySearchDonor {
         mSkipSchemaCheck = AuxiliarySearchUtils.SKIP_SCHEMA_CHECK.getValue();
 
         mSupportMultiDataSource =
-                ChromeFeatureList.sAndroidAppIntegrationMultiDataSource.isEnabled();
+                AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice();
         mSharedTabsWithOsState = AuxiliarySearchUtils.isShareTabsWithOsEnabled();
         boolean shouldInit = mSharedTabsWithOsState || !isShareTabsWithOsEnabledKeyExist();
         if (shouldInit) {
@@ -261,12 +259,10 @@ public class AuxiliarySearchDonor {
     @VisibleForTesting
     List<Class<?>> getSupportedDocumentClasses() {
         List<Class<?>> documents = new ArrayList<>();
+        documents.add(WebPage.class);
         if (mSupportMultiDataSource) {
-            documents.add(TabWebPage.class);
             documents.add(CustomTabWebPage.class);
             documents.add(TopSiteWebPage.class);
-        } else {
-            documents.add(WebPage.class);
         }
         return documents;
     }

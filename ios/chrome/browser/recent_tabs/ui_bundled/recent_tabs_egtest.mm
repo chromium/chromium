@@ -656,8 +656,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       assertWithMatcher:grey_nil()];
 }
 
-// Tests no promo to sync is shown to a signed-in non-syncing user if sync is
-// disabled by policy.
+// Tests no tab sync promo is shown to a signed-in user if the kSyncDisabled
+// policy is present.
 // TODO(crbug.com/40073777): Test fails on official builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #define MAYBE_testNoPromoIfSignedInAndSyncDisabledByPolicy \
@@ -676,20 +676,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
 
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-
-  OpenRecentTabsPanel();
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
-  [SigninEarlGreyUI verifySigninPromoNotVisible];
-}
-
-// Tests no promo is shown to a syncing user with tab sync enabled.
-- (void)testNoPromoIfSyncing {
-  [SigninEarlGrey
-      signinAndEnableLegacySyncFeature:[FakeSystemIdentity fakeIdentity1]];
 
   OpenRecentTabsPanel();
   [[EarlGrey

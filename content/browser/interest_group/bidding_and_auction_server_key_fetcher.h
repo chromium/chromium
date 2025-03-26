@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/interest_group_manager.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -83,13 +84,6 @@ class CONTENT_EXPORT BiddingAndAuctionKeySet {
       origin_scoped_keys_;
 };
 
-enum class TrustedServerAPIType {
-  kInvalid,
-  kBiddingAndAuction,
-  kTrustedKeyValue,
-  kMaxValue = kTrustedKeyValue,
-};
-
 // BiddingAndAuctionServerKeyFetcher manages fetching and caching of the public
 // keys for Bidding and Auction Server endpoints from each of the designated
 // Coordinators with the provided `loader_factory`. Values are cached both in
@@ -98,6 +92,7 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
  public:
   using BiddingAndAuctionServerKeyFetcherCallback = base::OnceCallback<void(
       base::expected<BiddingAndAuctionServerKey, std::string>)>;
+  using TrustedServerAPIType = InterestGroupManager::TrustedServerAPIType;
 
   // `manager` should be the InterestGroupManagerImpl that owns this
   // BiddingAndAuctionServerKeyFetcher.

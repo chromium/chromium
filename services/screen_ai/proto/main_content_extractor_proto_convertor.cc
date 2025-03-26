@@ -188,7 +188,7 @@ void AddSubTree(const ui::AXTree& tree,
                 const ::screenai::BoundingBoxPixels& parent_bounds,
                 gfx::SizeF& tree_dimensions) {
   // Ensure that node id and index are the same.
-  DCHECK(proto.ui_elements_size() == next_unused_node_id);
+  CHECK(proto.ui_elements_size() == next_unused_node_id);
 
   // Create and add proto.
   int current_node_id = next_unused_node_id;
@@ -240,8 +240,8 @@ std::optional<ViewHierarchyAndTreeSize> SnapshotToViewHierarchy(
       tree_dimensions.width());
   proto.mutable_ui_elements(0)->mutable_bounding_box_pixels()->set_bottom(
       tree_dimensions.height());
-  DCHECK_EQ(proto.ui_elements(0).bounding_box().right(), 0);
-  DCHECK_EQ(proto.ui_elements(0).bounding_box().top(), 0);
+  CHECK_EQ(proto.ui_elements(0).bounding_box().right(), 0);
+  CHECK_EQ(proto.ui_elements(0).bounding_box().top(), 0);
 
   // Set relative sizes.
   for (int i = 0; i < proto.ui_elements_size(); i++) {

@@ -51,9 +51,8 @@ class SafetyHubMenuNotificationTest : public testing::Test {
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     EXPECT_TRUE(testing_profile_manager_->SetUp());
-    profile_ = testing_profile_manager_->CreateTestingProfile(
-        "user@example.com", {},
-        /*is_main_profile=*/true);
+    profile_ =
+        testing_profile_manager_->CreateTestingProfile("user@example.com");
     EXPECT_TRUE(profile_);
   }
   ~SafetyHubMenuNotificationTest() override = default;

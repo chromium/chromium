@@ -705,6 +705,11 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
           "ContentSuggestions.Feed.CardAction.ManageHidden"));
       RecordInteraction(stream_type);
       break;
+    case FeedUserActionType::kTappedManageFollowing:
+      base::RecordAction(base::UserMetricsAction(
+          "ContentSuggestions.Feed.CardAction.ManageFollowing"));
+      RecordInteraction(stream_type);
+      break;
     case FeedUserActionType::kAddedToReadLater:
     case FeedUserActionType::kTappedFollowButton:
     case FeedUserActionType::kEphemeralChange:
@@ -721,7 +726,6 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
     case FeedUserActionType::kClosedNativeContextMenu:
     case FeedUserActionType::kOpenedNativePulldownMenu:
     case FeedUserActionType::kClosedNativePulldownMenu:
-    case FeedUserActionType::kTappedManageFollowing:
     case FeedUserActionType::kTappedFollowOnManagementSurface:
     case FeedUserActionType::kTappedUnfollowOnManagementSurface:
     case FeedUserActionType::kTappedFollowOnFollowAccelerator:
@@ -753,6 +757,34 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
       // Nothing additional for these actions. Note that some of these are iOS
       // only.
 
+      break;
+  }
+}
+
+void MetricsReporter::OtherUserAction(FeedUserActionType action_type) {
+  if (IsGoodExplicitInteraction(action_type)) {
+    good_visit_state_.OnGoodExplicitInteraction();
+  }
+
+  ReportUserActionHistogram(action_type);
+  switch (action_type) {
+    case FeedUserActionType::kTappedManageInterests:
+      base::RecordAction(base::UserMetricsAction(
+          "ContentSuggestions.Feed.CardAction.ManageInterests"));
+      break;
+    case FeedUserActionType::kTappedManageActivity:
+      base::RecordAction(base::UserMetricsAction(
+          "ContentSuggestions.Feed.CardAction.ManageActivity"));
+      break;
+    case FeedUserActionType::kTappedManageHidden:
+      base::RecordAction(base::UserMetricsAction(
+          "ContentSuggestions.Feed.CardAction.ManageHidden"));
+      break;
+    case FeedUserActionType::kTappedManageFollowing:
+      base::RecordAction(base::UserMetricsAction(
+          "ContentSuggestions.Feed.CardAction.ManageFollowing"));
+      break;
+    default:
       break;
   }
 }

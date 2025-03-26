@@ -263,6 +263,10 @@ BASE_FEATURE(kLensOverlayAlternativeOnboarding,
              "LensOverlayAlternativeOnboarding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayNavigationHistory,
+             "LensOverlayNavigationHistory",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableTraitCollectionWorkAround,
              "EnableTraitCollectionWorkAround",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -969,7 +973,7 @@ bool IsSaveToPhotosAccountPickerImprovementEnabled() {
 
 BASE_FEATURE(kHomeCustomization,
              "HomeCustomization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsHomeCustomizationEnabled() {
   return base::FeatureList::IsEnabled(kHomeCustomization);

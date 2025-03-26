@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <limits>
+#include <string_view>
 #include <tuple>
 
 #include "base/json/json_reader.h"
@@ -79,12 +80,13 @@ base::LazyInstance<bool>::DestructorAtExit hit_javascript_errors_ =
 // WebrtcTestBase-inheriting test cases do not run in parallel (if they did they
 // would race to look at the log, which is global to all tests).
 bool JavascriptErrorDetectingLogHandler(int severity,
-                                        const char* file,
+                                        std::string_view file,
                                         int line,
                                         size_t message_start,
                                         const std::string& str) {
-  if (file == nullptr || std::string("CONSOLE") != file)
+  if (file != "CONSOLE") {
     return false;
+  }
 
   // TODO(crbug.com/40608140): Fix AppRTC and stop ignoring this error.
   if (str.find("Synchronous XHR in page dismissal") != std::string::npos)

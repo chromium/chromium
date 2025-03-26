@@ -104,20 +104,6 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // to this state.
   virtual ui::AssistiveTech ActiveAssistiveTech() const = 0;
 
-  // Returns true if the browser should be customized for accessibility.
-  virtual bool IsAccessibleBrowser() = 0;
-
-  // Add a callback method that will be called once, a small while after the
-  // browser starts up, when accessibility state histograms are updated.
-  // Use this to register a method to update additional accessibility
-  // histograms.
-  //
-  // Use this variant for a callback that must be run on the UI thread,
-  // for example something that needs to access prefs.
-  virtual void AddUIThreadHistogramCallback(base::OnceClosure callback) = 0;
-
-  virtual void UpdateHistogramsForTesting() = 0;
-
   // Update BrowserAccessibilityState with the current status of performance
   // filtering.
   virtual void SetPerformanceFilteringAllowed(bool allowed) = 0;

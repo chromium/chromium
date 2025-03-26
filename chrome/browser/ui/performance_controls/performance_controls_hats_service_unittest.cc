@@ -41,8 +41,7 @@ class PerformanceControlsHatsServiceTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    TestingProfile* profile =
-        profile_manager_->CreateTestingProfile("Test", true);
+    TestingProfile* profile = profile_manager_->CreateTestingProfile("Test");
 
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -295,8 +294,7 @@ class PerformanceControlsHatsServiceDestructorTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    TestingProfile* profile =
-        profile_manager_->CreateTestingProfile("Test", true);
+    TestingProfile* profile = profile_manager_->CreateTestingProfile("Test");
 
     performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
         local_state_.registry());

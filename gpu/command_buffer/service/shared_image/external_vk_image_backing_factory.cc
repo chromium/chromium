@@ -235,7 +235,9 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     SharedImageUsageSet usage,
     std::string debug_label,
+    bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
+  DCHECK(!is_thread_safe);
   CHECK(CanImportGpuMemoryBuffer(handle.type));
   return ExternalVkImageBacking::CreateFromGMB(
       context_state_, command_pool_.get(), mailbox, std::move(handle), format,

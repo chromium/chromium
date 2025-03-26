@@ -671,5 +671,22 @@ TEST_F(OnDeviceModelServiceTest, Capabilities) {
                                       CapabilityFlags::kAudioInput});
 }
 
+TEST_F(OnDeviceModelServiceTest, CapabilitiesFromFilePath) {
+  auto expect_capabilities = [&](const std::string& data,
+                                 const Capabilities& expected) {
+    FakeFile file(data);
+    ModelAssets assets;
+    assets.weights_path = file.Path();
+    base::test::TestFuture<const Capabilities&> future;
+    service()->GetCapabilities(std::move(assets), future.GetCallback());
+    EXPECT_EQ(expected, future.Take());
+  };
+  expect_capabilities("none", {});
+  expect_capabilities("image", {CapabilityFlags::kImageInput});
+  expect_capabilities("audio", {CapabilityFlags::kAudioInput});
+  expect_capabilities("image audio", {CapabilityFlags::kImageInput,
+                                      CapabilityFlags::kAudioInput});
+}
+
 }  // namespace
 }  // namespace on_device_model

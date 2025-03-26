@@ -1577,6 +1577,9 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_FACEGAZE_CLOSE_BUTTON_TEXT" desc="The text for the close button that is shown in the FaceGaze top bar UI.">
         Turn off Face control
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_FACEGAZE_ACTIVE_TITLE" desc="The title of the notification shown when FaceGaze is active.">
+        Face control active
+      </message>
 
       <!-- Accessibility nudges -->
       <message name="IDS_ASH_ACCESSIBILITY_NUDGE_DICTATION_NO_FOCUSED_TEXT_FIELD" desc="Displayed in a nudge when Dictation is stopped automatically because there is no focused text field.">

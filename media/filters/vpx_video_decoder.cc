@@ -315,9 +315,10 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
   {
     TRACE_EVENT1("media", "vpx_codec_decode", "buffer",
                  buffer->AsHumanReadableString());
-    vpx_codec_err_t status =
-        vpx_codec_decode(vpx_codec_.get(), buffer->data(), buffer->size(),
-                         nullptr /* user_priv */, 0 /* deadline */);
+    auto buffer_span = base::span(*buffer);
+    vpx_codec_err_t status = vpx_codec_decode(
+        vpx_codec_.get(), buffer_span.data(), buffer_span.size(),
+        nullptr /* user_priv */, 0 /* deadline */);
     if (status != VPX_CODEC_OK) {
       if (status == VPX_CODEC_MEM_ERROR) {
         error_status_ = DecoderStatus::Codes::kOutOfMemory;

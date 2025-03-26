@@ -154,6 +154,7 @@ void ComputePropertyTreeNodeUpdate(
       old_node->blend_mode == new_node.blend_mode &&
       old_node->target_id == new_node.target_id &&
       old_node->has_copy_request == new_node.has_copy_request &&
+      old_node->filters == new_node.filters &&
       old_node->backdrop_filters == new_node.backdrop_filters &&
       old_node->backdrop_filter_bounds == new_node.backdrop_filter_bounds &&
       old_node->backdrop_filter_quality == new_node.backdrop_filter_quality &&
@@ -175,6 +176,7 @@ void ComputePropertyTreeNodeUpdate(
   wire->blend_mode = base::checked_cast<uint32_t>(new_node.blend_mode);
   wire->target_id = new_node.target_id;
   wire->copy_output_requests = std::move(copy_requests);
+  wire->filters = new_node.filters;
   wire->backdrop_filters = new_node.backdrop_filters;
   wire->backdrop_filter_bounds = new_node.backdrop_filter_bounds;
   wire->backdrop_filter_quality = new_node.backdrop_filter_quality;

@@ -1718,7 +1718,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.DeleteEmptyMultigenerationQueueDirectories"
-    enum="Boolean" expires_after="2025-04-06">
+    enum="Boolean" expires_after="2025-10-06">
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>

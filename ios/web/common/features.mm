@@ -87,10 +87,6 @@ BASE_FEATURE(kDetectDestroyedNavigationContexts,
              "DetectDestroyedNavigationContexts",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableNewParcelTrackingNumberDetection,
-             "EnableNewParcelTrackingNumberDetection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsWebInspectorSupportEnabled() {
   if (@available(iOS 16.4, *)) {
     return base::FeatureList::IsEnabled(kEnableWebInspector);

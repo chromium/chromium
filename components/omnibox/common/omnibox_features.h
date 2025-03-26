@@ -131,6 +131,15 @@ BASE_DECLARE_FEATURE(kReportApplicationLanguageInSearchRequest);
 BASE_DECLARE_FEATURE(kOmniboxAsyncViewInflation);
 BASE_DECLARE_FEATURE(kUseFusedLocationProvider);
 
+// Omnibox suggestions tuning
+BASE_DECLARE_FEATURE(kNumNtpZpsRecentSearches);
+BASE_DECLARE_FEATURE(kNumNtpZpsTrendingSearches);
+BASE_DECLARE_FEATURE(kNumWebZpsRecentSearches);
+BASE_DECLARE_FEATURE(kNumWebZpsRelatedSearches);
+BASE_DECLARE_FEATURE(kNumWebZpsMostVisitedUrls);
+BASE_DECLARE_FEATURE(kNumSrpZpsRecentSearches);
+BASE_DECLARE_FEATURE(kNumSrpZpsRelatedSearches);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kDiagnostics);
 BASE_DECLARE_FEATURE(kRetainOmniboxOnFocus);

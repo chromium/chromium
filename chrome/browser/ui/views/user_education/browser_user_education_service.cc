@@ -244,6 +244,23 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetMetadata(115, "vykochko@chromium.org",
                                  "Triggered after autofill popup appears.")));
 
+  // TODO(crbug.com/397940269): Check if
+  // `IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION_SCREENREADER`
+  // should be same as
+  // `IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION` once the
+  // strings are finalized. kIPHAutofillHomeWorkProfileSuggestionFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHAutofillHomeWorkProfileSuggestionFeature,
+          autofill::PopupViewViews::kAutofillHomeWorkSuggestionElementId,
+          IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION,
+          IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+          .SetMetadata(136, "vidhanj@google.com",
+                       "Triggered after a home/work suggestion is available to "
+                       "user for filling")));
+
   // kIPHAutofillAiOptInFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(

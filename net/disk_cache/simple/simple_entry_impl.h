@@ -119,7 +119,6 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   // GetLastUsed() should not be called in net::APP_CACHE mode since the times
   // are not updated.
   base::Time GetLastUsed() const override;
-  base::Time GetLastModified() const override;
   int32_t GetDataSize(int index) const override;
   int ReadData(int stream_index,
                int offset,
@@ -378,11 +377,10 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   const bool use_optimistic_operations_;
   std::optional<std::string> key_;
 
-  // |last_used_|, |last_modified_| and |data_size_| are copied from the
+  // |last_used_|  and |data_size_| are copied from the
   // synchronous entry at the completion of each item of asynchronous IO.
   // TODO(clamy): Unify last_used_ with data in the index.
   base::Time last_used_;
-  base::Time last_modified_;
   std::array<int32_t, kSimpleEntryStreamCount> data_size_;
   int32_t sparse_data_size_ = 0;
 

@@ -146,11 +146,6 @@ using signin_metrics::PromoAction;
                        completion:
                            (signin_ui::SignoutCompletionCallback)completion {
   DCHECK(completion);
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForProfile(self.profile);
-  BOOL isSyncConsentGiven =
-      syncService &&
-      syncService->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
   BOOL shouldClearDataOnSignOut =
       self.authService->ShouldClearDataForSignedInPeriodOnSignOut();
 
@@ -165,16 +160,7 @@ using signin_metrics::PromoAction;
   // Because setting `title` to nil automatically forces the title-style text on
   // `message` in the UIAlertController, the attributed message below
   // specifically denotes the font style to apply.
-  if (isSyncConsentGiven) {
-    self.signOutCoordinator.attributedMessage = [[NSAttributedString alloc]
-        initWithString:l10n_util::GetNSString(
-                           IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_SYNC)
-            attributes:@{
-              NSFontAttributeName :
-                  [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
-            }];
-    [self.signOutCoordinator updateAttributedText];
-  } else if (shouldClearDataOnSignOut) {
+  if (shouldClearDataOnSignOut) {
     // If `kIdentityDiscAccountMenu` is enabled, signing out may also cause tabs
     // to be closed, see `MainControllerAuthenticationServiceDelegate::
     //    ClearBrowsingDataForSignedinPeriod`.

@@ -137,7 +137,8 @@ TabGroupSyncDelegateDesktop::TabGroupSyncDelegateDesktop(
 
 TabGroupSyncDelegateDesktop::~TabGroupSyncDelegateDesktop() = default;
 
-void TabGroupSyncDelegateDesktop::HandleOpenTabGroupRequest(
+std::optional<LocalTabGroupID>
+TabGroupSyncDelegateDesktop::HandleOpenTabGroupRequest(
     const base::Uuid& sync_tab_group_id,
     std::unique_ptr<TabGroupActionContext> context) {
   const std::optional<SavedTabGroup> group =
@@ -147,14 +148,14 @@ void TabGroupSyncDelegateDesktop::HandleOpenTabGroupRequest(
   // interstitial, the saved_group could be null, so protect against this by
   // early returning.
   if (!group.has_value()) {
-    return;
+    return std::nullopt;
   }
 
   // Activate the first tab in a group if it is already open.
   if (group->local_group_id().has_value()) {
     SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(
         group->local_group_id().value());
-    return;
+    return group->local_group_id().value();
   }
 
   TabGroupActionContextDesktop* desktop_context =
@@ -166,13 +167,13 @@ void TabGroupSyncDelegateDesktop::HandleOpenTabGroupRequest(
       OpenTabsAndMapToUuids(browser, group.value());
 
   if (tab_guid_mapping.empty()) {
-    // If not tabs were opened, do nothing.
-    return;
+    // If no tabs were opened, do nothing.
+    return std::nullopt;
   }
 
   // Add the tabs to a new group in the tabstrip and link it to `group`.
-  AddOpenedTabsToGroup(browser->tab_strip_model(), std::move(tab_guid_mapping),
-                       group.value());
+  return AddOpenedTabsToGroup(browser->tab_strip_model(),
+                              std::move(tab_guid_mapping), group.value());
 }
 
 void TabGroupSyncDelegateDesktop::CreateLocalTabGroup(

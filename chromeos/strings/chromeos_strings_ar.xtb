@@ -11,6 +11,7 @@
 <translation id="102432830749687801">‏يُرجى التأكّد من استخدام تطبيق "نقل المحتوى" من Google لنقل بيانات حسابك الذي تديره المؤسسة التعليمية إلى حسابك الشخصي قبل فقدان إمكانية الوصول إليه.</translation>
 <translation id="1026212596705997935">يتم حاليًا استخدام هذا الاختصار لتنفيذ الإجراء "<ph name="CONFLICT_ACCEL_NAME" />". يُرجى الضغط على اختصار جديد. لاستبدال الاختصار الحالي، اضغط على هذا الاختصار مرة أخرى.</translation>
 <translation id="1030856839388844477">إعادة ضبط استخدام البيانات</translation>
+<translation id="1047095725494118091">يتعذّر التنزيل. يُرجى إعادة المحاولة أو إعادة تشغيل <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> عملية، <ph name="CPU_MAX_CLOCK_SPEED" /> غيغاهرتز)</translation>
 <translation id="1047773237499189053">تتوفر ميزات جديدة. يمكنك استخدام مفتاح السهم المتجه للأعلى للاطّلاع على مزيد من المعلومات.</translation>
 <translation id="1049663189809099096">أصفر باستيل</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">جارٍ تنزيل شاشة الاستراحة</translation>
 <translation id="1094693127011229778">‏عنوان IP غير متوفّر.</translation>
 <translation id="1100902271996134409">جارٍ إنشاء الصور...</translation>
+<translation id="1107856713690040084">صوت <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">لمحة</translation>
 <translation id="1118572504348554005">قد نشارك مع شركائنا الملاحظات التي يتم إرسالها من خلال هذا النموذج، وذلك لتحديد وحلّ المشاكل والأخطاء التي يتم الإبلاغ عنها، لذا يُرجى عدم إدراج معلومات حساسة، مثل كلمات المرور.</translation>
 <translation id="1119403468619527527">عدد الكلمات قليل جدًا ولا يكفي لتبسيط النص</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">تفعيل الوضع المُعتِم</translation>
 <translation id="2164131940279488868">يُرجى التأكّد من توصيل ميكروفون لبدء تسجيل الصوت</translation>
 <translation id="2173302385160625112">يُرجى التحقُّق من اتصال الإنترنت.</translation>
+<translation id="2176909213844392588">يتعذّر تنزيل نموذج تحويل الصوت إلى نص باللغة <ph name="LANGUAGE_NAME" />. يُرجى إعادة المحاولة أو إعادة تشغيل <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">حدث خطأ. يُرجى إعادة فتح التطبيق.</translation>
 <translation id="2189104374785738357">تعديل تفاصيل اسم نقطة الوصول</translation>
 <translation id="2195732836444333448">تم بلوغ الحدّ الأقصى من الطلبات حاليًا. يُرجى المحاولة مرة أخرى قريبًا.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">وحدة تغذية المستندات (وجهان)</translation>
 <translation id="3201315366910775591">يمكن للمستخدمين الآخرين تعديل الألبومات المشترَكة</translation>
 <translation id="3211671540163313381">لوحة التحكّم في تحديد المفاتيح</translation>
+<translation id="3217462202230355157">يُرجى التأكّد من توصيل الميكروفون أو محاولة إعادة تشغيل <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">جارٍ البحث عن أجهزة مسح ضوئي</translation>
 <translation id="3226657629376379887">قائمة إجراءات التصميم</translation>
 <translation id="3227186760713762082">قسمة قيمة <ph name="CATEGORY_TEXT" /> على <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">مجموعة حصرية</translation>
 <translation id="3404249063913988450">تفعيل شاشة التوقف</translation>
 <translation id="3413935475507503304">لمواصلة عملية التحديث، انقر على "التالي".</translation>
+<translation id="3416709353545797224">تسجيل كلّ الأصوات المشغّلة على <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">خارجي</translation>
 <translation id="3428971106895559033">باستيل</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">يُرجى التأكُّد من تشغيل الماسح الضوئي وتوفّره من خلال شبكتك أو الاتصال المباشر.</translation>
 <translation id="4159238217853743776">جزئي</translation>
 <translation id="4159784952369912983">أرجواني</translation>
+<translation id="416219735020840807">يتعذّر تنزيل نموذج تحويل الصوت إلى نص. يُرجى إعادة المحاولة أو إعادة تشغيل <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4170180284036919717">التقاط صورة</translation>
 <translation id="4170700058716978431">تعذّر إجراء الاختبار.</translation>
 <translation id="4171077696775491955">خفض مستوى السطوع</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">جارٍ استبدال النص المحدّد بالنص المقترَح</translation>
 <translation id="5346687412805619883">الشبكة المحلية</translation>
 <translation id="5358174242040570474">حدث خطأ. يُرجى اختيار خلفية مرة أخرى أو إعادة فتح التطبيق.</translation>
+<translation id="5368228070728130240">يتعذّر تنزيل نموذج إنشاء الملخّص والعنوان. يُرجى إعادة المحاولة أو إعادة تشغيل <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">‏شبكة Wi-Fi غير آمنة.</translation>
 <translation id="5376354385557966694">الوضع الفاتح التلقائي</translation>
 <translation id="5378184552853359930">‏نوع عنوان IP</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS).</translation>
 <translation id="6768237774506518020">‏إن متوسط تعطُّل التحويل باستخدام نظام أسماء النطاقات (DNS) عالٍ.</translation>
 <translation id="6786747875388722282">الإضافات</translation>
+<translation id="6789891265243243337">عندما يكون صوت <ph name="DEVICE_TYPE" /> مفعّلاً، يسجِّل تطبيق "المسجّلة الذكية" كل الأصوات الذي يتم تشغيلها على هذا الجهاز</translation>
 <translation id="6791471867139427246">لون إضاءة لوحة المفاتيح</translation>
 <translation id="6796229976413584781">تم حذف الاختصار.</translation>
 <translation id="6798678288485555829">التنقّل بين أجزاء النص</translation>
@@ -1728,6 +1736,7 @@
 <translation id="8930622219860340959">شبكة لاسلكية</translation>
 <translation id="8933650076320258356">المفتاح الذي تم اختياره هو <ph name="KEYS" /> لـ <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">‏عنوان IP للعميل</translation>
+<translation id="8938606491880817721">يتعذّر التنزيل. يُرجى إعادة المحاولة أو إعادة تشغيل <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8944651180182756621">لون مشغّل التطبيقات</translation>
 <translation id="8945308580158685341">نحل</translation>
 <translation id="894617464444543719">الجهاز هو هاتف.</translation>

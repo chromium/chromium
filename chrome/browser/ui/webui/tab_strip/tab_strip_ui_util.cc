@@ -69,9 +69,6 @@ void MoveGroupAcrossWindows(Browser* source_browser,
     return;
   }
 
-  const TabGroup* group =
-      source_browser->tab_strip_model()->group_model()->GetTabGroup(group_id);
-
   std::optional<tab_groups::TabGroupId> next_tab_dst_group =
       target_tab_strip->GetTabGroupForTab(to_index);
   std::optional<tab_groups::TabGroupId> prev_tab_dst_group =
@@ -85,15 +82,10 @@ void MoveGroupAcrossWindows(Browser* source_browser,
     return;
   }
 
-  target_tab_strip->AddTabGroup(group_id, *group->visual_data());
-
-  const gfx::Range source_tab_indices = group->ListTabs();
-  const int tab_count = source_tab_indices.length();
-  const int from_index = source_tab_indices.start();
-  for (int i = 0; i < tab_count; i++) {
-    MoveTabAcrossWindows(source_browser, from_index, target_browser,
-                         to_index + i, std::make_optional(group_id));
-  }
+  std::unique_ptr<DetachedTabGroup> detached_group =
+      source_browser->tab_strip_model()->DetachTabGroupForInsertion(group_id);
+  target_browser->tab_strip_model()->InsertDetachedTabGroupAt(
+      std::move(detached_group), to_index);
 }
 
 void MoveTabAcrossWindows(Browser* source_browser,

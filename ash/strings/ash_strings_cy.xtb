@@ -1014,6 +1014,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4351244548802238354">Cau deialog</translation>
 <translation id="4356872429719185452">Dangos manylion y boethfan. Mae'r boethfan yn troi ymlaen.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Wrthi'n recordio</translation>
+<translation id="4368227575116094370">Creu Google Sheet</translation>
 <translation id="4371348193907997655">Gosodiadau Castio</translation>
 <translation id="4371834685492830207">Rhaid i PIN gynnwys nodau dilys yn unig</translation>
 <translation id="4375482231364171368">Chwilio yn y bar cyfeiriad</translation>
@@ -1483,6 +1484,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="5825969630400862129">Gosodiadau dyfeisiau cysylltiedig</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> yn rhagor</translation>
 <translation id="5837036133683224804">Stopio <ph name="ROUTE_TITLE" /> ar <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Chwilio gyda Google</translation>
 <translation id="5841296711770970362">Mynd i'r trac nesaf</translation>
 <translation id="5842553299352339114">Mae'r boethfan <ph name="DEVICE_NAME" /> ymlaen, dim dyfeisiau wedi'u cysylltu</translation>
 <translation id="584525477304726060">Daliwch i fwyhau</translation>

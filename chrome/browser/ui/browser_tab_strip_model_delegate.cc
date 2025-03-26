@@ -291,14 +291,14 @@ bool BrowserTabStripModelDelegate::CanReload() const {
 }
 
 void BrowserTabStripModelDelegate::AddToReadLater(
-    content::WebContents* web_contents) {
+    std::vector<content::WebContents*> web_contentses) {
   ReadingListModel* model =
       ReadingListModelFactory::GetForBrowserContext(browser_->profile());
   if (!model || !model->loaded()) {
     return;
   }
 
-  chrome::MoveTabToReadLater(browser_, web_contents);
+  chrome::MoveTabsToReadLater(browser_, web_contentses);
 }
 
 bool BrowserTabStripModelDelegate::SupportsReadLater() {

@@ -149,6 +149,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1455242230282523554">Rādīt valodas iestatījumus</translation>
 <translation id="1459693405370120464">Laikapstākļi</translation>
 <translation id="1460620680449458626">Skaņa ir izslēgta.</translation>
+<translation id="1462439140224375968">Tika izveidots Google dokuments</translation>
 <translation id="14648076227129703">Atļauj piekļuvi kamerai lietotnei <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> un visām lietotnēm un vietnēm, kurām ir kameras atļauja.</translation>
 <translation id="1467432559032391204">Pa kreisi</translation>
 <translation id="146902737843070955">Jūsu administrators pieprasīja šīs izmaiņas.</translation>
@@ -593,6 +594,7 @@ Pretējā gadījumā iebūvētais skārienpaliktnis tiks atkārtoti iespējots, 
 <translation id="301584155502740476">Tīklāja informācijas rādīšana. Tīklājs ir izslēgts.</translation>
 <translation id="3017079585324758401">Fons</translation>
 <translation id="3018135054368884502">Pārtīt multivides saturu uz priekšu</translation>
+<translation id="3026897869154397692">Tika pievienota informācija Kalendāram</translation>
 <translation id="3033545621352269033">Ieslēgts</translation>
 <translation id="3033912566804961911">Apvienot ar darbvietu <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Atvērt failus</translation>
@@ -1481,6 +1483,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5825969630400862129">Saistīto ierīču iestatījumi</translation>
 <translation id="5830180081891717894">Vēl <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Pārtraukt “<ph name="ROUTE_TITLE" />” apraidi ierīcē “<ph name="RECEIVER_NAME" />”</translation>
+<translation id="5840658767386246331">Meklēt, izmantojot Google</translation>
 <translation id="5841296711770970362">Pāriet uz nākamo ierakstu</translation>
 <translation id="5842553299352339114">Šīs ierīces (<ph name="DEVICE_NAME" />) tīklājs ir ieslēgts, un nav pievienota neviena ierīce.</translation>
 <translation id="584525477304726060">Turiet, lai maksimizētu</translation>
@@ -1894,6 +1897,7 @@ Jauna instalācija</translation>
 <translation id="7228968829656641943">Ekrānā atlasiet apgabalu, lai meklētu. Lai aktivizētu tastatūras navigāciju, nospiediet tabulēšanas taustiņu un pēc tam — atstarpes taustiņu.</translation>
 <translation id="7229029500464092426">Izmantotā atmiņa: <ph name="AVAILABLE_MEMORY" /> | Kopējā atmiņa: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Abas peles pogas</translation>
+<translation id="7240636904654154599">Tika izveidota Google izklājlapa</translation>
 <translation id="7244725679040769470">Atlikušais akumulatora uzlādes līmenis ir <ph name="PERCENTAGE" />%. Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Šis Chromebook dators ir jārestartē, lai lietotu atjauninājumu. Tas var ilgt aptuveni 1 minūti.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2408,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8921624153894383499">Google asistents nav pieejams šajā valodā.</translation>
 <translation id="8926951137623668982">Plaukts vienmēr tiek paslēpts</translation>
 <translation id="8929566928381252430">Vai mēģināt izmantot burtslēga taustiņu? Izmantojiet</translation>
+<translation id="8929623844713377237">Tika izveidota kontaktpersona</translation>
 <translation id="8934418770423095813">Izveidot Google dokumentu</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fails}zero{# failu}one{# fails}other{# faili}}</translation>
 <translation id="8936501819958976551">deaktivizēta</translation>

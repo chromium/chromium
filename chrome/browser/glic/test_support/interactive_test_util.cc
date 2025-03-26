@@ -34,9 +34,9 @@ void GlicAppStateObserver::WebUiStateChanged(mojom::WebUiState state) {
 DEFINE_STATE_IDENTIFIER_VALUE(GlicAppStateObserver, kGlicAppState);
 
 LogInAndOpenStateObserver::LogInAndOpenStateObserver(
-    const GlicWindowController& controller)
+    GlicWindowController& controller)
     : PollingStateObserver(
-          [&controller]() { return controller.log_in_and_open()->state(); }) {}
+          [&controller]() { return controller.log_in_and_open().state(); }) {}
 LogInAndOpenStateObserver::~LogInAndOpenStateObserver() = default;
 
 DEFINE_STATE_IDENTIFIER_VALUE(LogInAndOpenStateObserver, kLogInAndOpenState);

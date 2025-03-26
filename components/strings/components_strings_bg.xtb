@@ -32,7 +32,6 @@
 <translation id="1055184225775184556">&amp;Отмяна на добавянето</translation>
 <translation id="1056898198331236512">Предупреждение</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да играете играта с динозавъра в Chrome</translation>
-<translation id="1058479211578257048">Картите се запазват...</translation>
 <translation id="1060136083665017312">Игрови системи и конзоли</translation>
 <translation id="1060320201901229167">Плик Kaku 5</translation>
 <translation id="1062407476771304334">Замяна</translation>
@@ -115,6 +114,7 @@
 <translation id="1195073053842921378">Адресът ще бъде изтрит от това устройство</translation>
 <translation id="1195558154361252544">Известията се блокират автоматично за всички сайтове освен за онези, за които ги разрешите</translation>
 <translation id="1197088940767939838">оранжево</translation>
+<translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> премахна раздела „<ph name="WEBSITE_TITLE" />“</translation>
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1201895884277373915">Още от този сайт</translation>
 <translation id="1202892408424955784">Проследявани продукти</translation>
@@ -409,7 +409,6 @@
 <translation id="1689333818294560261">Псевдоним</translation>
 <translation id="1692622044604477956">Филми и часове на кинопрожекции</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Как можете да управлявате данните си<ph name="END_BOLD" />: Chrome автоматично изтрива темите, които са по-стари от 4 седмици. Докато сърфирате, дадена тема може отново да се покаже в списъка. Също така можете да блокирате темите, които не искате Chrome да споделя със сайтовете, и да изключвате рекламни теми по всяко време от настройките на браузъра.</translation>
-<translation id="1697532407822776718">Готово!</translation>
 <translation id="1699651774646344471">Вече можете да използвате адреси от профила си в Google</translation>
 <translation id="1700542542921501212">Можете да използвате <ph name="SEARCH_ENGINE_NAME" />, за да търсите в мрежата.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -506,6 +505,7 @@
 <translation id="1846432862466000825">Пластмаса (архивна)</translation>
 <translation id="1848640291751752317">изтеглянията</translation>
 <translation id="1848982255014129637">Снимка (силно гланцирана)</translation>
+<translation id="1849438148665368129">Покупката трябва да е под <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="1853392626017747777">Диалоговият прозорец за регистриране на виртуална карта е затворен</translation>
 <translation id="1854180393107901205">Спиране на предаването</translation>
 <translation id="1855370856221982654">Бокс</translation>
@@ -886,7 +886,6 @@
 <translation id="2518584823165598232">Тази карта не е налице. Моля, свържете се с доставчика ѝ.</translation>
 <translation id="2521385132275182522">Телбодиране долу вдясно</translation>
 <translation id="2521736961081452453">Създаване на формуляр</translation>
-<translation id="2523886232349826891">Запазено само на това устройство</translation>
 <translation id="2524461107774643265">Добавяне на още информация</translation>
 <translation id="2526062290525841862">За да стартирате това приложение, активирайте отново режима за програмисти за изолирани уеб приложения</translation>
 <translation id="2526280916094749336">Можете да използвате запазените адреси в различни продукти на Google. Този адрес ще бъде запазен в профила ви в Google (<ph name="ACCOUNT" />).</translation>
@@ -1343,7 +1342,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3362968246557010467">Това правило е копирано автоматично от оттегленото <ph name="OLD_POLICY" />. Препоръчваме ви да използвате него.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> иска да използва устройствата и данните ви за виртуална реалност</translation>
-<translation id="3366477098757335611">Преглед на картите</translation>
 <translation id="3369192424181595722">Грешка в часовника</translation>
 <translation id="3371064404604898522">Задаване на Chrome като браузър по подразбиране</translation>
 <translation id="337363190475750230">Обезпечаването е отменено</translation>
@@ -1742,6 +1740,7 @@
 <translation id="4031179711345676612">Достъпът до микрофона е разрешен</translation>
 <translation id="4036753017940930924">Парцели и земя</translation>
 <translation id="4039506337798853114">За да се покаже курсорът, натиснете |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045441967987592849">Повторно отваряне</translation>
 <translation id="4047351652147966654">18 x 24 инча</translation>
 <translation id="404831776305217138">URL адресът за актуализация на разширението с идентификатор <ph name="EXTENSION_ID" /> е невалиден или използва неподдържана схема. Поддържаните схеми са <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> и <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Ще можете да го използвате в продуктите на Google</translation>
@@ -1902,7 +1901,6 @@
 <translation id="4282280603030594840">Закупуване на превозно средство</translation>
 <translation id="4282346679996504092">Сигналите за този продукт са изключени и отметката е премахната</translation>
 <translation id="4285498937028063278">Освобождаване</translation>
-<translation id="428639260510061158">{NUM_CARDS,plural, =1{Тази карта е запазена в профила ви в Google}other{Тези карти са запазени в профила ви в Google}}</translation>
 <translation id="4287495839370498922">Подобрена поверителност при рекламите в Chrome</translation>
 <translation id="4290920330097335010">Никога да не се разрешава</translation>
 <translation id="4296207570293932800">Вече е налице нова функция за поверителността при рекламите</translation>
@@ -1965,7 +1963,6 @@
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4387692837058041921">Качването на файл в Microsoft OneDrive е поставено на пауза</translation>
-<translation id="4389931020843542579">Групата раздели се зарежда</translation>
 <translation id="4390472908992056574">Периферия</translation>
 <translation id="4395550503472021297">Това правило контролира поведението по подразбиране на следните правила: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Отваря изскачащ прозорец за потвърждаване в уебсайта на банката ви</translation>
@@ -2047,7 +2044,6 @@
 <translation id="4569155249847375786">Потвърдено</translation>
 <translation id="457875822857220463">Бърза доставка</translation>
 <translation id="4579699065574932398">Банкиране</translation>
-<translation id="4582204425268416675">Премахване на картата</translation>
 <translation id="4582595824823167856">Получаване на SMS</translation>
 <translation id="4586607503179159908">Начинът на плащане е потвърден</translation>
 <translation id="4587425331216688090">Адресът да се премахне ли от Chrome?</translation>
@@ -2171,6 +2167,7 @@
 <translation id="4796594887379589189">Идентификатор за отчитане на задания</translation>
 <translation id="4798269756263412078">Ще получавате сигнали, когато има понижение на цената в който и да е сайт. Те ще се изпращат на имейл адреса ви.</translation>
 <translation id="4800132727771399293">Прегледайте датата на валидност и кода за проверка и оптитайте отново</translation>
+<translation id="4800546479758254481">Разрешено е използването на AR</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Инструкции от администратора на устройството ви:</translation>
 <translation id="4811450222531576619">Научете за съответния източник и тема</translation>
@@ -2430,6 +2427,7 @@
 <translation id="5255771248404149177">Издателят на картата ви иска да се увери, че това сте вие</translation>
 <translation id="5255833070095767006">350 x 460 мм</translation>
 <translation id="5257739419779698609">{0,plural, =1{Според администраторско правило копирането на този файл в(ъв) <ph name="DESTINATION_NAME" /> не се препоръчва}other{Според администраторско правило копирането на тези файлове в(ъв) <ph name="DESTINATION_NAME" /> не се препоръчва}}</translation>
+<translation id="5258473597674772367">Групата раздели „<ph name="GROUP_NAME" />“ вече не е налице</translation>
 <translation id="5263867360296733198">Изисква се преглед преди качване</translation>
 <translation id="5266128565379329178">Подвързване в горната част</translation>
 <translation id="5269225904387178860">Четворно перфориране в долната част</translation>
@@ -2704,7 +2702,6 @@
 <translation id="5730040223043577876">Chrome препоръчва да зададете повторно паролата си, ако сте я използвали и на други сайтове.</translation>
 <translation id="5732392974455271431">Родителите ви могат да го отблокират за вас</translation>
 <translation id="573555826359077410">Бутон за създаване на формуляр. Активирайте, за да създадете бързо формуляр в Google Формуляри</translation>
-<translation id="5737183892635480227">{NUM_CARDS,plural, =1{Запазване на картата в профила ви в Google}other{Запазване на картите в профила ви в Google}}</translation>
 <translation id="5738385766833540397">Управлявайте начините, по които получавате сигнали за понижение на цената за продукти, които следите</translation>
 <translation id="573974402615125334">За да споделяте, да се присъединявате и да си сътрудничите в групи раздели, синхронизирайте историята и разделите си</translation>
 <translation id="5740911612628596808">Плик C9</translation>
@@ -2793,7 +2790,6 @@
 <translation id="5921185718311485855">Включено</translation>
 <translation id="5921639886840618607">Картата да се запази ли в профила в Google?</translation>
 <translation id="5921952831792678223">Товарни пикапи</translation>
-<translation id="5922853866070715753">Почти готово</translation>
 <translation id="5923492272538889093">Искате ли да използвате отключването на устройството вместо код за проверка?</translation>
 <translation id="5924510104057992926">Изисква се преглед преди отваряне</translation>
 <translation id="5924782825030413055">Източник на последната актуализация на съгласието:</translation>
@@ -2881,7 +2877,6 @@
 <translation id="6055982527635883756">Плик (архивен)</translation>
 <translation id="6057177372083677067">Онлайн видео</translation>
 <translation id="6058646026409894363">Строително инженерство</translation>
-<translation id="6058977677006700226">Искате ли да използвате картите си на всичките си устройства?</translation>
 <translation id="6059925163896151826">USB устройства</translation>
 <translation id="6060009363608157444">Невалиден режим за DnsOverHttps.</translation>
 <translation id="6061154937977953833">Борба</translation>
@@ -3033,6 +3028,7 @@
 <translation id="6327065120806001832">достъп в локалната мрежа</translation>
 <translation id="6328639280570009161">Опитайте да деактивирате предвижданията за мрежата</translation>
 <translation id="6335029926534404762">Спортни обувки</translation>
+<translation id="6336948221660696475">Не е разрешено използването на VR</translation>
 <translation id="6337133576188860026">Ще освободите по-малко от <ph name="SIZE" />. Някои сайтове може да се заредят по-бавно при следващото ви посещение.</translation>
 <translation id="6337534724793800597">Филтриране на правилата по име</translation>
 <translation id="633770708279464947">Стойността на <ph name="SECURE_DNS_SALT" /> е невалидна и няма да се използва.</translation>
@@ -3076,6 +3072,7 @@
 <translation id="6391700400718590966">Листът за несъответстващи идентификационни данни за сигурни плащания е затворен</translation>
 <translation id="6392799395081100092">Хартия (Vellum)</translation>
 <translation id="6393156038355142111">Предложение за надеждна парола</translation>
+<translation id="6393310910507376797">Не се поддържа от търговеца</translation>
 <translation id="6393956493820063117">Поставянето на информация от <ph name="ORIGIN_NAME" /> тук е блокирано от администраторски правила</translation>
 <translation id="6394852772105848029">Този сайт иска да отвори приложението <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">Скутери и мотопеди</translation>
@@ -3155,6 +3152,7 @@
 <translation id="6519885440226079262">Може да извежда запитвания за проследяване на ръцете ви</translation>
 <translation id="6520026037299163656">Уеб приложения и онлайн инструменти</translation>
 <translation id="65203098586853226">Превежда се от <ph name="SOURCE" /> на <ph name="TARGET" /></translation>
+<translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> се присъедини към групата раздели „<ph name="GROUP_NAME" />“</translation>
 <translation id="6521745193039995384">Не е активно</translation>
 <translation id="6522682797352430154">Класическа музика</translation>
 <translation id="6524830701589638230">Бутон „Управление на настройките за достъпност“. Активирайте, за да персонализирате инструментите за достъпност в настройките на Chrome</translation>
@@ -3228,6 +3226,7 @@
 <translation id="6668389483194953109">Намерено бе име на размер на хартията custom, но свойството custom_size е празно или невалидно.</translation>
 <translation id="6671169470640320959">Финансиране на покупки на автомобили</translation>
 <translation id="6671697161687535275">Предложението за формуляри да се премахне ли от Chromium?</translation>
+<translation id="6675846980676550611">Не е разрешено използването на AR</translation>
 <translation id="6677351035258626477">Бързо хранене</translation>
 <translation id="6679354743514146922">Браузърът Chrome се опитва да попълни паролата ви за <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">Кодът за проверка е запазен</translation>
@@ -3440,7 +3439,6 @@
 <translation id="704738887031336226">Показване на опции за <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />разсрочено плащане<ph name="PAY_OVER_TIME_HELP_LINK_END" /> при плащане</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Опитахте да се свържете с/ъс <ph name="DOMAIN" />, но сървърът предостави сертификат, чийто период на валидност е твърде дълъг, за да е надежден.</translation>
-<translation id="705310974202322020">{NUM_CARDS,plural, =1{Тази карта не може да бъде запазена в момента}other{Тези карти не могат да бъдат запазени в момента}}</translation>
 <translation id="7053983685419859001">Блокиране</translation>
 <translation id="7054717457611655239">От сега нататък запазвайте файловете си в(ъв) <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> потвърди, че сертификатът на този уебсайт е издаден от <ph name="ISSUER" />.</translation>
@@ -3716,6 +3714,7 @@
 <translation id="7512685745044087310">Това правило не може едновременно да бъде задължително и True, затова бе променено на препоръчително.</translation>
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">Достъпът до VR е разрешен този път</translation>
 <translation id="7517201160922869406">Високопроходими автомобили</translation>
 <translation id="7517414872996418597">Плик C10</translation>
 <translation id="7518003948725431193">Не е намерена уеб страница за уеб адреса: <ph name="URL" /></translation>
@@ -3835,7 +3834,6 @@
 <translation id="7690647519407127574">Oufuku Hagaki Postcard</translation>
 <translation id="7693583928066320343">Редът на страниците е получен</translation>
 <translation id="769424100851389104">Стартиране на актуализирането сега</translation>
-<translation id="769721561045429135">В момента имате карти, които могат да се използват само на това устройство. Кликнете върху „Напред“, за да ги прегледате.</translation>
 <translation id="7697837508203274589">Спортни събития на живо</translation>
 <translation id="7698864304447945242">Да се актуализират ли услугите за Google Play за AR?</translation>
 <translation id="7701040980221191251">Няма</translation>
@@ -4000,7 +3998,6 @@
 <translation id="8009225694047762179">Управление на паролите</translation>
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />Изтрийте „бисквитките“ си<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">10 x 11 инча</translation>
-<translation id="8012116502927253373">{NUM_CARDS,plural, =1{Тази карта и адресът й за фактуриране ще бъдат запазени. Ще можете да я използвате, когато сте влезли в профила <ph name="USER_EMAIL" />.}other{Тези карти и адресите им за фактуриране ще бъдат запазени. Ще можете да ги използвате, когато сте влезли в профила <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8012647001091218357">Не можахме да се свържем с родителите ви. Моля, опитайте отново.</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">Туристически агенции и услуги</translation>
@@ -4058,7 +4055,6 @@
 <translation id="8094917007353911263">Използваната от вас мрежа може да изисква да посетите <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
-<translation id="8100588592594801589">Невалидните карти са премахнати</translation>
 <translation id="8103161714697287722">Начин на плащане</translation>
 <translation id="8103643211515685474">Отпечатване въпреки това</translation>
 <translation id="8105368624971345109">Изключване</translation>
@@ -4616,6 +4612,7 @@
 <translation id="9139318394846604261">Пазаруване</translation>
 <translation id="9140198744651252040">Браузърът Chrome иска да използва отпечатък при автоматично попълване на паролите</translation>
 <translation id="9141013498910525015">Управление на адресите</translation>
+<translation id="9141672681283222114">Достъпът до AR е разрешен този път</translation>
 <translation id="9143898823728499852">Данните за тази карта могат да се попълват автоматично, защото профилът ви в <ph name="CARD_ISSUER_NAME" /> е свързан с Google Pay</translation>
 <translation id="9144951720726881238">Дата на валидност:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Влезте в профила си<ph name="END_LINK" />
@@ -4673,6 +4670,7 @@
 <translation id="922152298093051471">Персонализиране на Chrome</translation>
 <translation id="9222403027701923763">Основно и средно образование</translation>
 <translation id="93020190163435405">Стажове</translation>
+<translation id="931598121743515856">Покупката трябва да е над <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">Да се разреши ли на приложението <ph name="APP_NAME" /> да настройва Wi-Fi мрежи?</translation>
 <translation id="936602727769022409">Възможно е да загубите достъп до профила си в Google. Chromium препоръчва да промените паролата си сега. Ще получите подкана за влизане в профила си.</translation>
@@ -4682,13 +4680,13 @@
 <translation id="940524522703752213">Качването на файловете ви в(ъв) <ph name="CLOUD_PROVIDER" /> ще започне след <ph name="MINUTES" /> минути</translation>
 <translation id="944578681290094302">Показване кои награди и предимства са налице за картите ви при плащане. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Научете повече за предимствата за картите<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Chrome блокира използването на „бисквитки“ на трети страни от сайтовете с цел проследяването ви, докато сърфирате.</translation>
-<translation id="945855313015696284">Проверете информацията по-долу и изтрийте невалидните карти</translation>
 <translation id="94613679163347541">Да се извърши ли сравнение за <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо сайт в Google Сайтове</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome ще ограничи „бисквитките“ отново днес}=1{Chrome ще ограничи „бисквитките“ отново утре}other{# дни, докато Chrome ограничи „бисквитките“ отново}}</translation>
 <translation id="949314938206378263">Поискахте да посетите този сайт. Родителят ви може да отговори във Family Link.</translation>
 <translation id="950736567201356821">Тройно перфориране в горната част</translation>
 <translation id="950926967802086924">Ключ за достъп • Google Мениджър на пароли</translation>
+<translation id="955429569736351433">Разрешено е използването на VR</translation>
 <translation id="95721182352849470">жълто 2</translation>
 <translation id="961663415146723894">Подвързване на долната част</translation>
 <translation id="961856697154696964">Данни за сърфир.: Изтриване</translation>

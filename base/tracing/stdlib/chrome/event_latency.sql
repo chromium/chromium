@@ -120,8 +120,12 @@ CREATE PERFETTO TABLE chrome_event_latencies (
   track_id LONG,
   -- Vsync interval (in milliseconds).
   vsync_interval_ms DOUBLE,
-  -- Whether the corresponding frame is janky.
+  -- Whether the corresponding frame is janky based on the
+  -- Event.ScrollJank.DelayedFramesPercentage.FixedWindow metric.
   is_janky_scrolled_frame BOOL,
+  -- Whether the corresponding frame is janky based on the
+  -- Event.ScrollJank.DelayedFramesPercentage.FixedWindow3 metric.
+  is_janky_scrolled_frame_v3 BOOL,
   -- Timestamp of the BufferAvailableToBufferReady substage.
   buffer_available_timestamp LONG,
   -- Timestamp of the BufferReadyToLatch substage.
@@ -150,6 +154,7 @@ SELECT
   slice.track_id,
   extract_arg(arg_set_id, 'event_latency.vsync_interval_ms') AS vsync_interval_ms,
   coalesce(extract_arg(arg_set_id, 'event_latency.is_janky_scrolled_frame'), 0) AS is_janky_scrolled_frame,
+  coalesce(extract_arg(arg_set_id, 'event_latency.is_janky_scrolled_frame_v3'), 0) AS is_janky_scrolled_frame_v3,
   _descendant_slice_begin(slice.id, 'BufferAvailableToBufferReady') AS buffer_available_timestamp,
   _descendant_slice_begin(slice.id, 'BufferReadyToLatch') AS buffer_ready_timestamp,
   coalesce(
@@ -185,8 +190,12 @@ CREATE PERFETTO TABLE chrome_gesture_scroll_updates (
   track_id LONG,
   -- Vsync interval (in milliseconds).
   vsync_interval_ms DOUBLE,
-  -- Whether the corresponding frame is janky.
+  -- Whether the corresponding frame is janky based on the
+  -- Event.ScrollJank.DelayedFramesPercentage.FixedWindow metric.
   is_janky BOOL,
+  -- Whether the corresponding frame is janky based on the
+  -- Event.ScrollJank.DelayedFramesPercentage.FixedWindow3 metric.
+  is_janky_v3 BOOL,
   -- Timestamp of the BufferAvailableToBufferReady substage.
   buffer_available_timestamp LONG,
   -- Timestamp of the BufferReadyToLatch substage.
@@ -220,6 +229,7 @@ WITH
       track_id,
       vsync_interval_ms,
       is_janky_scrolled_frame AS is_janky,
+      is_janky_scrolled_frame_v3 AS is_janky_v3,
       buffer_available_timestamp,
       buffer_ready_timestamp,
       latch_timestamp,
@@ -248,6 +258,7 @@ SELECT
   track_id,
   vsync_interval_ms,
   is_janky,
+  is_janky_v3,
   buffer_available_timestamp,
   buffer_ready_timestamp,
   latch_timestamp,

@@ -707,6 +707,8 @@ static_library("browser") {
     "webdata/payments/payments_autofill_table.h",
     "webdata/payments/payments_sync_bridge_util.cc",
     "webdata/payments/payments_sync_bridge_util.h",
+    "webdata/valuables/loyalty_card_data_type_controller.cc",
+    "webdata/valuables/loyalty_card_data_type_controller.h",
     "webdata/valuables/loyalty_card_sync_bridge.cc",
     "webdata/valuables/loyalty_card_sync_bridge.h",
     "webdata/valuables/loyalty_card_sync_util.cc",

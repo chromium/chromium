@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -108,7 +109,7 @@ class AXTreeFixingServicesRouter
 
   void ToggleAccessibilityState();
 
-  base::ObserverList<WebContentsObserver> web_contents_observers_;
+  std::vector<std::unique_ptr<WebContentsObserver>> web_contents_observers_;
   const raw_ptr<Profile> profile_;
 
 #if BUILDFLAG(IS_CHROMEOS)

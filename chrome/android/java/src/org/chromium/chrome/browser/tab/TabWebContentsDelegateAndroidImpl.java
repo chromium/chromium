@@ -21,6 +21,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ZoomController;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
@@ -41,7 +42,8 @@ import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
 
 /** Implementation class of {@link TabWebContentsDelegateAndroid}. */
-final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndroid {
+final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndroid
+        implements Destroyable {
     private final TabImpl mTab;
     private final TabWebContentsDelegateAndroid mDelegate;
     private final Handler mHandler;
@@ -513,6 +515,11 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @Override
     public boolean isTrustedWebActivity(WebContents webContents) {
         return mDelegate.isTrustedWebActivity(webContents);
+    }
+
+    @Override
+    public void destroy() {
+        mDelegate.destroy();
     }
 
     @NativeMethods

@@ -13,7 +13,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
-#import "components/sync/test/mock_sync_service.h"
+#import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/central_account_view.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/sync_switch_item.h"
@@ -68,15 +68,19 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     system_identity_manager->AddIdentity(fake_system_identity_);
 
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](web::BrowserState* context) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::TestSyncService>();
+            }));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = std::move(builder).Build();
 
-    sync_service_mock_ = static_cast<syncer::MockSyncService*>(
+    sync_service_ = static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetForProfile(profile_.get()));
 
     AuthenticationService* authentication_service =
@@ -93,7 +97,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
         initWithStyle:UITableViewStyleGrouped];
     [consumer_ loadModel];
     mediator_ = [[ManageSyncSettingsMediator alloc]
-          initWithSyncService:sync_service_mock_
+          initWithSyncService:sync_service_
               identityManager:IdentityManagerFactory::GetForProfile(
                                   profile_.get())
         authenticationService:AuthenticationServiceFactory::GetForProfile(
@@ -110,34 +114,6 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     mediator_.isEEAAccount = isEEAAccount;
   }
 
-  void SimulateFirstSetupSyncOff() {
-    ON_CALL(*sync_service_mock_, HasSyncConsent()).WillByDefault(Return(false));
-    ON_CALL(*sync_service_mock_->GetMockUserSettings(),
-            IsSyncEverythingEnabled())
-        .WillByDefault(Return(true));
-    ON_CALL(*sync_service_mock_, GetTransportState())
-        .WillByDefault(Return(syncer::SyncService::TransportState::DISABLED));
-    CoreAccountInfo account_info;
-    account_info.email =
-        base::SysNSStringToUTF8(fake_system_identity_.userEmail);
-    ON_CALL(*sync_service_mock_, GetAccountInfo())
-        .WillByDefault(Return(account_info));
-    ON_CALL(*sync_service_mock_->GetMockUserSettings(),
-            IsCustomPassphraseAllowed())
-        .WillByDefault(Return(true));
-  }
-
-  void SimulateFirstSetupSyncOffWithSignedInAccount() {
-    ON_CALL(*sync_service_mock_, HasSyncConsent()).WillByDefault(Return(false));
-    ON_CALL(*sync_service_mock_, GetTransportState())
-        .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
-    CoreAccountInfo account_info;
-    account_info.email =
-        base::SysNSStringToUTF8(fake_system_identity_.userEmail);
-    ON_CALL(*sync_service_mock_, GetAccountInfo())
-        .WillByDefault(Return(account_info));
-  }
-
  protected:
   // Needed for test profile created by TestProfileIOS().
   web::WebTaskEnvironment task_environment_;
@@ -147,7 +123,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
 
   base::test::ScopedFeatureList feature_list_;
 
-  raw_ptr<syncer::MockSyncService> sync_service_mock_;
+  raw_ptr<syncer::TestSyncService> sync_service_;
   std::unique_ptr<TestProfileIOS> profile_;
 
   ManageSyncSettingsMediator* mediator_ = nullptr;
@@ -161,7 +137,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
 TEST_F(ManageSyncSettingsMediatorTest,
        CheckAccountSwitchItemsForSignedInAccount) {
   CreateManageSyncSettingsMediator();
-  SimulateFirstSetupSyncOffWithSignedInAccount();
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
   // Loads the Sync page.
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
@@ -182,7 +158,7 @@ TEST_F(ManageSyncSettingsMediatorTest,
 TEST_F(ManageSyncSettingsMediatorTest,
        CheckSignOutSectionItemsForSignedInAccount) {
   CreateManageSyncSettingsMediator();
-  SimulateFirstSetupSyncOffWithSignedInAccount();
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
   // Loads the Sync page.
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
@@ -221,10 +197,8 @@ TEST_F(ManageSyncSettingsMediatorTest,
 // signed in account.
 TEST_F(ManageSyncSettingsMediatorTest, TestSyncErrorsForSignedInAccount) {
   CreateManageSyncSettingsMediator();
-  SimulateFirstSetupSyncOffWithSignedInAccount();
-  ON_CALL(*sync_service_mock_, GetUserActionableError())
-      .WillByDefault(
-          Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+  sync_service_->SetPassphraseRequired();
 
   // Loads the account settings page.
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
@@ -254,7 +228,7 @@ TEST_F(ManageSyncSettingsMediatorTest, TestSyncErrorsForSignedInAccount) {
 TEST_F(ManageSyncSettingsMediatorTest, TestAccountStateTransitionOnSignOut) {
   // Create mediator with a signed-in account.
   CreateManageSyncSettingsMediator();
-  SimulateFirstSetupSyncOffWithSignedInAccount();
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 
@@ -268,9 +242,7 @@ TEST_F(ManageSyncSettingsMediatorTest, TestAccountStateTransitionOnSignOut) {
   ASSERT_EQ(expected_num_sections,
             [mediator_.consumer.tableViewModel numberOfSections]);
 
-  // Set sign out expectation with empty account info.
-  ON_CALL(*sync_service_mock_, GetAccountInfo())
-      .WillByDefault(Return(CoreAccountInfo()));
+  sync_service_->SetSignedOut();
 
   // Sign out.
   AuthenticationService* authentication_service =
@@ -294,7 +266,7 @@ TEST_F(ManageSyncSettingsMediatorTest, TestGoogleActivityControlsItem) {
 
   // Create mediator with a signed-in account.
   CreateManageSyncSettingsMediator();
-  SimulateFirstSetupSyncOffWithSignedInAccount();
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 
@@ -314,7 +286,7 @@ TEST_F(ManageSyncSettingsMediatorTest, TestPersonalizeGoogleServicesItem) {
 
   // Create mediator with a signed-in account.
   CreateManageSyncSettingsMediator();
-  SimulateFirstSetupSyncOffWithSignedInAccount();
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 
@@ -334,7 +306,7 @@ TEST_F(ManageSyncSettingsMediatorTest, TestPersonalizeGoogleServicesItemEEA) {
 
   // Create mediator with a signed-in account.
   CreateManageSyncSettingsMediator(true);
-  SimulateFirstSetupSyncOffWithSignedInAccount();
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 
@@ -363,7 +335,7 @@ TEST_F(ManageSyncSettingsMediatorTest,
 
   // Create mediator with a signed-in account.
   CreateManageSyncSettingsMediator(false);
-  SimulateFirstSetupSyncOffWithSignedInAccount();
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 

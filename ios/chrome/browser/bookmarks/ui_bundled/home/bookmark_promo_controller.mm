@@ -101,13 +101,6 @@
   std::optional<SigninPromoAction> signinPromoAction;
   if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     signinPromoAction = SigninPromoAction::kInstantSignin;
-  } else if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
-    // deleted from the codebase. See ConsentLevel::kSync documentation for
-    // details.
-    // If the user is already syncing, the promo should not be visible.
-    self.shouldShowSigninPromo = NO;
-    return;
   } else if (!bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(
                  syncService)) {
     if (self.shouldShowSigninPromo &&

@@ -824,6 +824,14 @@ void TrustedSignalsRequestManager::QueueRequest(RequestImpl* request) {
             automatically_send_requests_ && !queued_requests_.empty());
 
   queued_requests_.insert(request);
+
+  if (type_ == Type::kScoringSignals &&
+      base::FeatureList::IsEnabled(
+          features::kFledgeSellerSignalsRequestsOneAtATime)) {
+    StartBatchedTrustedSignalsRequest();
+    return;
+  }
+
   if (automatically_send_requests_ && !timer_.IsRunning()) {
     timer_.Start(
         FROM_HERE, kAutoSendDelay,

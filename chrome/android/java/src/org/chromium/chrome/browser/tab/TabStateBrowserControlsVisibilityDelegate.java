@@ -49,6 +49,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
     private boolean mIsFocusedNodeEditable;
 
     private final Set<Long> mOutstandingNavigations = new HashSet<>();
+    private final TabObserver mTabObserver;
 
     /**
      * Basic constructor.
@@ -59,8 +60,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         super(BrowserControlsState.BOTH);
 
         mTab = (TabImpl) tab;
-
-        mTab.addObserver(
+        mTabObserver =
                 new EmptyTabObserver() {
                     @SuppressLint("HandlerLeak")
                     private Handler mHandler =
@@ -218,9 +218,16 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
                         // Remove pending handler actions to prevent memory leaks.
                         mHandler.removeCallbacksAndMessages(null);
                     }
-                });
+                };
+        mTab.addObserver(mTabObserver);
+
         onWebContentsUpdated(mTab.getWebContents());
         updateVisibilityConstraints();
+    }
+
+    @Override
+    public void destroy() {
+        mTab.removeObserver(mTabObserver);
     }
 
     private void onWebContentsUpdated(WebContents contents) {

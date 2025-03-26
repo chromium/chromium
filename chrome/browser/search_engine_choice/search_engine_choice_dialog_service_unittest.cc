@@ -32,6 +32,8 @@
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "ui/gfx/native_widget_types.h"
 
+using ::country_codes::CountryId;
+
 namespace {
 
 #if !BUILDFLAG(CHROME_FOR_TESTING)
@@ -138,8 +140,7 @@ class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
 
     // The search engine choice feature is only enabled for countries in the
     // EEA region.
-    const int kBelgiumCountryId =
-        country_codes::CountryCharsToCountryID('B', 'E');
+    const CountryId kBelgiumCountryId("BE");
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kSearchEngineChoiceCountry,
         country_codes::CountryIDToCountryString(kBelgiumCountryId));
@@ -579,8 +580,7 @@ TEST_P(SearchEngineListCountryOverrideParametrizedTest,
        CheckNumberOfSearchEngines) {
   SearchEngineChoiceDialogService* search_engine_choice_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
-  const int kBelgiumCountryId =
-      country_codes::CountryCharsToCountryID('B', 'E');
+  const CountryId kBelgiumCountryId("BE");
   size_t expected_search_engine_list_size =
       TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
           kBelgiumCountryId)

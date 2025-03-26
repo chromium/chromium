@@ -4,5 +4,9 @@
 {
   use: [
     { protocol: [ "fuchsia.logger.Log" ] },
+    {
+      protocol: "fuchsia.logger.LogSink",
+      from: "parent/diagnostics",
+     }
   ],
 }

@@ -89,11 +89,15 @@ std::string GetAudioProcesingPropertiesLogString(
       "echo_cancellation_type: %s, "
       "disable_hw_ns: %s, "
       "auto_gain_control: %s, "
-      "noise_suppression: %s",
+      "noise_suppression: %s, "
+      "system_gain_control: %s, "
+      "system_noise_suppression: %s",
       aec_to_string(properties.echo_cancellation_type),
       base::ToString(properties.disable_hw_noise_suppression).c_str(),
       base::ToString(properties.auto_gain_control).c_str(),
-      base::ToString(properties.noise_suppression).c_str());
+      base::ToString(properties.noise_suppression).c_str(),
+      base::ToString(properties.system_gain_control_activated).c_str(),
+      base::ToString(properties.system_noise_suppression_activated).c_str());
   return str;
 }
 
@@ -407,6 +411,14 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
   media::AudioProcessingSettings audio_processing_settings(
       audio_processing_properties_.ToAudioProcessingSettings(
           num_requested_channels_ > 1));
+  if (audio_processing_properties_.system_noise_suppression_activated &&
+      audio_processing_settings.noise_suppression) {
+    SendLogMessage(StringPrintf("%s() => (NS will run in tandem)", __func__));
+  }
+  if (audio_processing_properties_.system_gain_control_activated &&
+      audio_processing_settings.automatic_gain_control) {
+    SendLogMessage(StringPrintf("%s() => (AGC will run in tandem)", __func__));
+  }
 
   // Determine the audio format required of the AudioCapturerSource.
   const media::AudioParameters input_device_params = device().input;
@@ -483,7 +495,12 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
       Platform::Current()->NewAudioCapturerSource(web_frame, source_config);
   new_source->Initialize(audio_capture_params, this);
   // We need to set the AGC control before starting the stream.
+#if BUILDFLAG(IS_CHROMEOS)
   new_source->SetAutomaticGainControl(true);
+#else
+  new_source->SetAutomaticGainControl(
+      audio_processing_settings.automatic_gain_control);
+#endif
   source_ = std::move(new_source);
   source_->Start();
 

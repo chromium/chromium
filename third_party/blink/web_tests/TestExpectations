@@ -2627,6 +2627,7 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/406109039 external/wpt/css/css-writing-modes/text-orientation-020.html [ Failure ]
 crbug.com/405453040 [ Mac14-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nested-root-capture-with-clip.html [ Failure ]
 crbug.com/405453040 [ Mac14-arm64 ] virtual/threaded/external/wpt/css/css-view-transitions/nested/nested-root-capture-with-clip.html [ Failure ]
 crbug.com/405453040 [ Mac14-arm64 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/nested-root-capture-with-clip.html [ Failure ]
@@ -5085,7 +5086,6 @@ crbug.com/706350 external/wpt/html/browsers/windows/clear-window-name.https.html
 crbug.com/1317074 external/wpt/html/syntax/charset/without-inheritance.html [ Failure ]
 crbug.com/1317074 external/wpt/html/syntax/charset/after-head-after-1kb-crlf.html [ Failure ]
 crbug.com/1317076 external/wpt/html/syntax/speculative-charset/speculative-script.tentative.html [ Failure ]
-crbug.com/1287036 external/wpt/html/cross-origin-embedder-policy/credentialless/reporting-subresource-corp.https.window.html [ Pass Timeout ]
 crbug.com/1287036 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html [ Skip Timeout ]
 crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Pass Timeout ]
 crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-navigation.https.html [ Failure Pass ]
@@ -5375,19 +5375,10 @@ crbug.com/1194958 fast/events/mouse-event-buttons-attribute.html [ Failure Pass 
 # Sheriff 2021-04-09
 crbug.com/1197528 pointer-lock/pointerlockchange-pointerlockerror-events.html [ Failure Pass ]
 
-
 crbug.com/1195295 fast/events/touch/multi-touch-timestamp.html [ Failure Pass ]
-
-
-# Is fixed by PlzDedicatedWorker.
-crbug.com/1060837 external/wpt/html/cross-origin-embedder-policy/reporting-to-frame-owner.https.html [ Timeout ]
-
 
 # TODO(crbug.com/906991): Should be fixed after PlzDedicatedWorker is launched.
 crbug.com/906991 [ Linux ] external/wpt/html/cross-origin-embedder-policy/credentialless/dedicated-worker.https.window.html [ Failure Pass Timeout ]
-
-# These timeout because COEP reporting to a worker is not implemented.
-crbug.com/1197041 external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.https.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2021-04-12
 
@@ -7250,7 +7241,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] fast/forms/label/label-event-order.html [ Failure ]
 [ Debug Mac13 ] virtual/threaded-prefer-compositing/fast/scroll-snap/root-scroller-snap-behaviour/smooth-scroll-snaps-visual-viewport.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/animations/stability/keyframe-timing-function-unset-crash.html [ Skip Timeout ]
-[ Debug Mac13 ] http/tests/devtools/elements/styles-3/styles-add-new-rule-colon.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/content-security-policy/embedded-enforcement/subsumption_algorithm-hashes.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded-preload-scanner/fast/dom/HTMLScriptElement/async-inline-script.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/dark-mode-classifier-transparency-and-num-colors/dark-mode/images/image.html [ Skip Timeout ]
@@ -8828,6 +8818,15 @@ crbug.com/376675482 virtual/shared-storage-fenced-frame-mparch/external/wpt/shar
 
 # Fails on linux-win-cross-rel
 crbug.com/377507247 [ Win10.20h2 ] external/wpt/webidl/ecmascript-binding/window-named-properties-object.html [ Failure ]
+
+# Temporarily disabled to unblock https://crrev.com/c/6382153.
+crbug.com/405312529 http/tests/devtools/elements/styles/edit-css-with-source-url.js [ Failure Pass Timeout ]
+crbug.com/405312529 http/tests/devtools/elements/styles-1/add-new-rule-with-style-after-body.js [ Failure Pass Timeout ]
+crbug.com/405312529 http/tests/devtools/elements/styles-1/commit-selector-mark-matching.js [ Failure Pass Timeout ]
+crbug.com/405312529 http/tests/devtools/elements/styles-1/edit-inspector-stylesheet.js [ Failure Pass Timeout ]
+crbug.com/405312529 http/tests/devtools/elements/styles-3/styles-add-new-rule-colon.js [ Failure Pass Timeout ]
+crbug.com/405312529 http/tests/devtools/elements/styles-3/styles-add-new-rule-to-stylesheet.js [ Failure Pass Timeout ]
+crbug.com/405312529 http/tests/devtools/elements/styles-4/undo-add-new-rule.js [ Failure Pass Timeout ]
 
 # These tests can complete but take too long and timeout.
 crbug.com/376931817 external/wpt/file-system-access/local_FileSystemDirectoryHandle-partitioned-manual.https.tentative.html [ Pass Timeout ]

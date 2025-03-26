@@ -1223,6 +1223,8 @@ class BrowserView : public BrowserWindow,
   // non-tabbed browsers like popups. May not be visible.
   std::unique_ptr<BookmarkBarView> bookmark_bar_view_;
 
+  std::unique_ptr<TabSearchBubbleHost> tab_search_bubble_host_;
+
   // Separator between top container and contents.
   raw_ptr<views::View> contents_separator_ = nullptr;
 

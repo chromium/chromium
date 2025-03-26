@@ -28,7 +28,7 @@ class TabGroupSyncDelegate {
   // Called to open a given saved tab group in the local tab model.
   // The `context` can be used to specify the browser window in which the tab
   // group should be opened.
-  virtual void HandleOpenTabGroupRequest(
+  virtual std::optional<LocalTabGroupID> HandleOpenTabGroupRequest(
       const base::Uuid& sync_tab_group_id,
       std::unique_ptr<TabGroupActionContext> context) = 0;
 

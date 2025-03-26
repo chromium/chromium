@@ -1371,6 +1371,7 @@
     "type": "map",
     "name": "kRegionalSettings",
     "export_items": false,
+    "map_key_type": "country_codes::CountryId",
     "map_aliases": {
       "AD": "ES",  // Andorra
       "AF": "ZZ",  // Afghanistan

@@ -5403,7 +5403,10 @@ TEST_F(BrowserAutofillManagerTest,
   auto form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
   // Make sure the form can not be autofilled now.
-  ASSERT_EQ(0u, form_structure->autofill_count());
+  ASSERT_FALSE(std::ranges::any_of(
+      form_structure->fields(),
+      [](const auto& field) { return field->IsFieldFillable(); }));
+
   for (size_t idx = 0; idx < form_structure->field_count(); ++idx) {
     ASSERT_EQ(UNKNOWN_TYPE, form_structure->field(idx)->heuristic_type());
   }

@@ -219,6 +219,12 @@ TEST_F(LocaleMacTest, formatDate) {
 }
 
 TEST_F(LocaleMacTest, formatTime) {
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::MacOSMajorVersion() == 15) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia.";
+  }
+#endif
+
   EXPECT_EQ("1:23 PM", FormatTime("en_US", 13, 23, 00, 000, true));
   EXPECT_EQ("13:23", FormatTime("fr_FR", 13, 23, 00, 000, true));
   EXPECT_EQ("13:23", FormatTime("ja_JP", 13, 23, 00, 000, true));

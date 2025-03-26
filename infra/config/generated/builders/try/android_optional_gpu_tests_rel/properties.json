@@ -20,7 +20,10 @@
                 "config": "main_builder"
               },
               "legacy_chromium_config": {
+                "build_config": "Debug",
                 "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 32,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {

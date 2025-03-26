@@ -242,13 +242,15 @@ class GlicWindowController::AnchorObserver : public views::ViewObserver,
   raw_ptr<GlicWindowController> controller_;
 };
 
+GlicWindowController::LogInAndOpen::LogInAndOpen() = default;
+GlicWindowController::LogInAndOpen::~LogInAndOpen() = default;
+
 GlicWindowController::GlicWindowController(
     Profile* profile,
     signin::IdentityManager* identity_manager,
     GlicKeyedService* glic_service,
     GlicEnabling* enabling)
     : profile_(profile),
-      log_in_and_open_(std::make_unique<LogInAndOpen>()),
       fre_controller_(
           std::make_unique<GlicFreController>(profile, identity_manager)),
       window_finder_(std::make_unique<WindowFinder>()),
@@ -609,8 +611,8 @@ void GlicWindowController::AuthCheckDoneBeforeShow(
   switch (result) {
     case AuthController::BeforeShowResult::kShowingReauthSigninPage:
       state_ = State::kClosed;
-      log_in_and_open_->set_state(LogInAndOpen::State::kLogIn);
-      log_in_and_open_->set_attached_browser(browser_for_attachment.get());
+      log_in_and_open_.set_state(LogInAndOpen::State::kLogIn);
+      log_in_and_open_.set_attached_browser(browser_for_attachment);
       return;
     case AuthController::BeforeShowResult::kReady:
     case AuthController::BeforeShowResult::kSyncFailed:
@@ -1079,7 +1081,6 @@ void GlicWindowController::CloseFinish(
   if (state_ == State::kClosed) {
     return;
   }
-  log_in_and_open_.reset();
   glic_window_animator_.reset();
   glic_service_->metrics()->OnGlicWindowClose();
   base::UmaHistogramEnumeration("Glic.PanelWebUiState.FinishState2",
@@ -1481,9 +1482,9 @@ void GlicWindowController::EnableChanged() {
   // else. In the case where that happens, the widget still opens. Figure out a
   // better way to approach this flow.
   if (enabling_->IsReadyForProfile(profile_) &&
-      log_in_and_open_->state() == LogInAndOpen::State::kLogIn) {
-    log_in_and_open_->set_state(LogInAndOpen::State::kPostLogIn);
-    Show(log_in_and_open_->attached_browser(), opening_source_.value());
+      log_in_and_open_.state() == LogInAndOpen::State::kLogIn) {
+    log_in_and_open_.set_state(LogInAndOpen::State::kPostLogIn);
+    Show(log_in_and_open_.attached_browser(), *opening_source_);
   }
 }
 

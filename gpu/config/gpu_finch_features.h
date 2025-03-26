@@ -130,7 +130,9 @@ GPU_EXPORT bool IsSyncPointGraphValidationEnabled();
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kANGLEPerContextBlobCache);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kMacSupportMultiThreading);
+#if BUILDFLAG(IS_APPLE)
+GPU_EXPORT BASE_DECLARE_FEATURE(kIOSurfaceMultiThreading);
+#endif
 
 }  // namespace features
 

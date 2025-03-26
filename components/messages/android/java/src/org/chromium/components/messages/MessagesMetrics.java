@@ -373,6 +373,8 @@ public class MessagesMetrics {
                 return "CctAccountMismatchNotice";
             case MessageIdentifier.PROMPT_HATS_CLEAR_BROWSING_DATA:
                 return "PromptHatsClearBrowsingData";
+            case MessageIdentifier.OS_ADVANCED_PROTECTION_SETTING_CHANGED_MESSAGE:
+                return "OsAdvancedProtectionSettingChangedMessage";
             default:
                 return "Unknown";
         }

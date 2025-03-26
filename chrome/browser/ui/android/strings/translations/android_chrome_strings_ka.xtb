@@ -459,7 +459,6 @@
 <translation id="3114507951000454849">გაეცანით დღის სიახლეებს <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">დაწვრილებით</translation>
 <translation id="3123734510202723619">განცხადებები</translation>
-<translation id="3131961580615093332"><ph name="GIVEN_NAME" />-მა შეცვალა ჩანართი „<ph name="TAB_NAME" />“</translation>
 <translation id="3148237711805373460">გადასვლა</translation>
 <translation id="314939179385989105">Chrome-ის მთავარი გვერდი</translation>
 <translation id="3158667104057012316">ხელით არჩეული მიმდევრობით დალაგება</translation>
@@ -677,6 +676,7 @@
 <translation id="4195643157523330669">ახალ ჩანართში გახსნა</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 ჩანართი ამ მოწყობილობაზე}other{# ჩანართი ამ მოწყობილობაზე}}</translation>
 <translation id="4198423547019359126">ჩამოსატვირთი მდებარეობები მიუწვდომელია</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • თქვენ გამოიყენეთ ამ საიტზე</translation>
 <translation id="4214315110991671325">ქუქი-ჩანაწერების დაშვების შემთხვევაში, Chrome-მა, შესაძლოა, გამოიყენოს ისინი წინასწარ ჩატვირთვისთვის.</translation>
 <translation id="4216511743389425832">ამ გვერდის მოსმენა</translation>
 <translation id="4225725533026049334">თვალს ადევნებთ</translation>
@@ -841,14 +841,12 @@
 <translation id="4910889077668685004">გადახდის აპები</translation>
 <translation id="4912413785358399818">ჩანართის გადატანა</translation>
 <translation id="4913169188695071480">განახლების შეწყვეტა</translation>
-<translation id="4918086044614829423">მიღება</translation>
 <translation id="4925120120285606924">ეკრანის ანაბეჭდი <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">თქვენი პაროლების ექსპორტირება და ჩამოტვირთვა მოხდება ტექსტური ფაილის სახით. ისინი ხილული იქნება ყველა ადამიანისა თუ აპისთვის, რომელსაც სამიზნე საქაღალდეზე წვდომა აქვს.</translation>
 <translation id="4926901776383726965">შეგიძლიათ შეინახოთ სურათები და ფაილები ხაზგარეშე რეჟიმში სანახავად ან სხვა აპებში გასაზიარებლად</translation>
 <translation id="4932247056774066048">ვინაიდან <ph name="DOMAIN_NAME" />-ის მიერ მართული ანგარიშიდან გადიხართ, თქვენი Chrome მონაცემები წაიშლება ამ მოწყობილობიდან. ისინი შენარჩუნდება თქვენს Google ანგარიშში.</translation>
 <translation id="4943703118917034429">ვირტუალური რეალობა</translation>
 <translation id="4943872375798546930">შედეგები არ არის</translation>
-<translation id="4953833914914492602">ჩანართების ჯგუფი „<ph name="TAB_GROUP_NAME" />“ აღარ არის ხელმისაწვდომი.</translation>
 <translation id="4957722034734105353">შეიტყვეთ მეტი…</translation>
 <translation id="4961107849584082341">თარგმნეთ ეს გვერდი ნებისმიერ ენაზე</translation>
 <translation id="4964614743143953889">Chrome გაგაფრთხილებთ არაუსაფრთხო საიტებისა და ჩამოტვირთვების შესახებ</translation>
@@ -967,7 +965,6 @@
 <translation id="5526281268548144413">სხვადასხვა ფანჯრებში დახურვა შეუძლებელია</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# წუთის წინ}other{# წუთის წინ}}</translation>
 <translation id="5548606607480005320">უსაფრთხოების შემოწმება</translation>
-<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> შეუერთდა ჩანართების ჯგუფს „<ph name="TAB_GROUP_NAME" />“</translation>
 <translation id="5554520618550346933">პაროლის გამოყენებისას Chrome გაგაფრთხილებთ ხოლმე, თუ აღმოჩნდება, რომ ის ონლაინ გამოქვეყნდა. აღნიშნული ქმედებისას თქვენი პაროლები და მომხმარებლის სახელები დაშიფრული იქნება, რაც ნიშნავს, რომ მათ ვერავინ (მათ შორის, ვერც Google) წაიკითხავს.</translation>
 <translation id="5555525474779371165">აირჩიეთ სასურველი Safe Browsing-ის დაცვის დონე</translation>
 <translation id="5556459405103347317">ხელახლა ჩატვირთვა</translation>
@@ -1184,7 +1181,6 @@
 <translation id="6481963882741794338">მიაბით ერთმანეთს Chrome და სხვა Google სერვისები პერსონალიზებისა და სხვა მიზნით</translation>
 <translation id="6482749332252372425"><ph name="FILE_NAME" /> ვერ ჩამოიტვირთა არასაკმარისი მეხსიერების გამო.</translation>
 <translation id="6486420406192123355">ეს PDF ფაილი დაუცველი კავშირით მოსარგებლე საიტიდან მოდის</translation>
-<translation id="6495590690749880440">გაიხსნას ჩანართების ჯგუფი?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ფაილი ჩამოიტვირთა}other{# ჩამოტვირთვა დასრულდა}}</translation>
 <translation id="6508722015517270189">Chrome-ის გადატვირთვა</translation>
 <translation id="6518133107902771759">გადამოწმება</translation>
@@ -1619,7 +1615,6 @@
 <translation id="8282297628636750033">საიტებზე მუქი თემის გამოყენება (შეძლებისდაგვარად)</translation>
 <translation id="8282950411412455249">უსაფრთხოების პარამეტრებზე გადასვლა</translation>
 <translation id="8306751933352925837">პაროლები მალე შეწყვეტს ამ მოწყობილობაზე მუშაობას. პაროლების გამოყენების გასაგრძელებლად განაახლეთ Google Play Services. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
-<translation id="8307517230426267469"><ph name="GIVEN_NAME" />-მა ამოშალა „<ph name="TAB_NAME" />“</translation>
 <translation id="8310451567823644042">პაროლები მალე შეწყვეტს მუშაობას</translation>
 <translation id="831192587911042850">დაამატებს ამჟამინდელ ვებსაიტს თქვენ მიერ თვალმიდევნებული ვებსაიტების სიას.</translation>
 <translation id="8320212361750431956">ბოლო აქტივობები</translation>

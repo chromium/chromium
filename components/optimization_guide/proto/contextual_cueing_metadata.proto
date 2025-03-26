@@ -59,3 +59,19 @@ message GlicCueingConfiguration {
   // If this list is empty, this cueing configuration is always eligible.
   repeated ContextualCueingConditions conditions = 2;
 }
+
+message GlicZeroStateSuggestionsMetadata {
+  // The contextual zero state suggestions to show for this page.
+  //
+  // If this list is empty, contexutal suggestions are not immediately available
+  // for this page, but still can be obtained using the page content, if
+  // `contextual_suggestions_eligible` is true.
+  repeated string contextual_suggestions = 1;
+
+  // Whether the page is eligible for contextual suggestions.
+  //
+  // If this is false, the client should show generic suggestions instead.
+  // If this is true, the client should show the `contextual_suggestions` if
+  // available, or generic suggestions if not.
+  optional bool contextual_suggestions_eligible = 2;
+}

@@ -42,22 +42,16 @@ namespace {
 // Note: If this code crashes, then the caller has passed in invalid `settings`.
 // Fix the caller, instead of trying to avoid the crash here.
 PageMargins GetCustomMarginsFromJobSettings(const base::Value::Dict& settings) {
-  PageMargins margins_in_microns;
+  PageMargins margins_in_points;
   const base::Value::Dict* custom_margins =
       settings.FindDict(kSettingMarginsCustom);
-  margins_in_microns.top =
-      ConvertUnit(custom_margins->FindInt(kSettingMarginTop).value(),
-                  kPointsPerInch, kMicronsPerInch);
-  margins_in_microns.bottom =
-      ConvertUnit(custom_margins->FindInt(kSettingMarginBottom).value(),
-                  kPointsPerInch, kMicronsPerInch);
-  margins_in_microns.left =
-      ConvertUnit(custom_margins->FindInt(kSettingMarginLeft).value(),
-                  kPointsPerInch, kMicronsPerInch);
-  margins_in_microns.right =
-      ConvertUnit(custom_margins->FindInt(kSettingMarginRight).value(),
-                  kPointsPerInch, kMicronsPerInch);
-  return margins_in_microns;
+  margins_in_points.top = custom_margins->FindInt(kSettingMarginTop).value();
+  margins_in_points.bottom =
+      custom_margins->FindInt(kSettingMarginBottom).value();
+  margins_in_points.left = custom_margins->FindInt(kSettingMarginLeft).value();
+  margins_in_points.right =
+      custom_margins->FindInt(kSettingMarginRight).value();
+  return margins_in_points;
 }
 
 void SetMarginsToJobSettings(const std::string& json_path,
@@ -394,9 +388,8 @@ base::Value::Dict PrintSettingsToJobSettingsDebug(
 
   SetSizeToJobSettings("media_size", settings.requested_media().size_microns,
                        debug);
-  SetMarginsToJobSettings("requested_custom_margins_in_microns",
-                          settings.requested_custom_margins_in_microns(),
-                          debug);
+  SetMarginsToJobSettings("requested_custom_margins_in_points",
+                          settings.requested_custom_margins_in_points(), debug);
   const PageSetup& page_setup = settings.page_setup_device_units();
   SetMarginsToJobSettings("effective_margins", page_setup.effective_margins(),
                           debug);

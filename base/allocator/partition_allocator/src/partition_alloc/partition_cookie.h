@@ -37,12 +37,11 @@ inline constexpr unsigned char kCookieValue[] = {
 
 constexpr size_t kPartitionCookieSizeAdjustment = kCookieSize;
 
-[[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED
-    PA_COMPONENT_EXPORT(PARTITION_ALLOC) void CookieCorruptionDetected(
-        const unsigned char* cookie_ptr,
-        size_t slot_usable_size);
+[[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED PA_COMPONENT_EXPORT(
+    PARTITION_ALLOC) void CookieCorruptionDetected(unsigned char* cookie_ptr,
+                                                   size_t slot_usable_size);
 
-PA_ALWAYS_INLINE void PartitionCookieCheckValue(const unsigned char* cookie_ptr,
+PA_ALWAYS_INLINE void PartitionCookieCheckValue(unsigned char* cookie_ptr,
                                                 size_t slot_usable_size) {
   for (size_t i = 0; i < kCookieSize; ++i, ++cookie_ptr) {
     if (*cookie_ptr != kCookieValue[i]) {
@@ -61,7 +60,7 @@ PA_ALWAYS_INLINE void PartitionCookieWriteValue(unsigned char* cookie_ptr) {
 
 constexpr size_t kPartitionCookieSizeAdjustment = 0;
 
-PA_ALWAYS_INLINE void PartitionCookieCheckValue(const unsigned char* address,
+PA_ALWAYS_INLINE void PartitionCookieCheckValue(unsigned char* address,
                                                 size_t slot_usable_size) {}
 
 PA_ALWAYS_INLINE void PartitionCookieWriteValue(unsigned char* cookie_ptr) {}

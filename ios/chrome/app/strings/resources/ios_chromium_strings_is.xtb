@@ -95,7 +95,6 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chromium-upplifuni
 <translation id="328933489847748230">{count,plural, =1{Sýnir 1 Chromium-glugga}one{Sýnir {count} Chromium-glugga}other{Sýnir {count} Chromium-glugga}}</translation>
 <translation id="3344973607274501920">Chromium gat ekki athugað aðgangsorðin þín. Athugaðu nettenginguna þína.</translation>
 <translation id="3366305173356742781">Chromium-gögn á reikningnum þínum</translation>
-<translation id="33788334537425157">Kveiktu á „Læsa huliðsflipum þegar þú lokar Chromium“.</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mín. Þetta getur falið í sér feril og sjálfvirka útfyllingu.}one{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mín. Þetta getur falið í sér feril og sjálfvirka útfyllingu.}other{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mín. Þetta getur falið í sér feril og sjálfvirka útfyllingu.}}</translation>
 <translation id="3410395242749598859">Einhver Chromium-gögn hafa ekki enn verið vistuð á <ph name="EMAIL" /> þínum.
 Prófaðu að bíða í nokkrar mínútur áður en þú skiptir um reikning. Ef þú skiptir um reikning núna verður þessum gögnum eytt.</translation>

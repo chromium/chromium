@@ -6598,12 +6598,6 @@ TEST_P(DelegatedInkWithPredictionTest, DrawOneTrailAndErase) {
 
 // Confirm that drawing a second trail completely removes the first trail.
 TEST_P(DelegatedInkWithPredictionTest, DrawTwoTrailsAndErase) {
-  if (is_skia_graphite()) {
-    // TODO(399640773): new Skia roll produces slightly different AA pixels.
-    // Skip this test until Skia is rolled into chrome. Then the expected pixels
-    // will be updated afterwards.
-    GTEST_SKIP();
-  }
   // Numbers chosen arbitrarily. No points will be predicted, so a trail made of
   // 2 points will be drawn.
   const gfx::PointF kFirstPoint(140, 48);

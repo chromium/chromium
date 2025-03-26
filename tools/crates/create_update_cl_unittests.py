@@ -99,7 +99,7 @@ class CommitDescriptionTests(unittest.TestCase):
         after = set(["updated_crate@2.0.2", "added@5.0.1"])
         diff = DiffCrateIds(before, after, only_minor_updates=True)
 
-        actual_desc = CreateCommitDescription("Commit title.", diff, False)
+        actual_desc = CreateCommitDescription("Commit title.", diff)
         expected_desc = \
 """Commit title.
 

@@ -34,105 +34,6 @@ namespace {
 using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
 using OmniboxScoringSignals = ::metrics::OmniboxScoringSignals;
 
-// Keep up to date with ClientSummarizedResultType in
-// //tools/metrics/histograms/enums.xml.
-enum class ClientSummarizedResultType : int {
-  kUrl = 0,
-  kSearch = 1,
-  kApp = 2,
-  kContact = 3,
-  kOnDevice = 4,
-  kUnknown = 5,
-  kMaxValue = kUnknown
-};
-
-ClientSummarizedResultType GetClientSummarizedResultType(
-    const OmniboxEventProto::Suggestion::ResultType type) {
-  static const base::NoDestructor<base::flat_map<
-      OmniboxEventProto::Suggestion::ResultType, ClientSummarizedResultType>>
-      kResultTypesToClientSummarizedResultTypes({
-          {OmniboxEventProto::Suggestion::URL_WHAT_YOU_TYPED,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::HISTORY_URL,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::HISTORY_TITLE,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::HISTORY_BODY,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::NAVSUGGEST,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::BOOKMARK_TITLE,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::NAVSUGGEST_PERSONALIZED,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::CLIPBOARD_URL,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::PHYSICAL_WEB,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::PHYSICAL_WEB_OVERFLOW,
-           ClientSummarizedResultType::kUrl},  // More like a URL than a search.
-          {OmniboxEventProto::Suggestion::DOCUMENT,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::SEARCH_WHAT_YOU_TYPED,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_HISTORY,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_OTHER_ENGINE,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_ENTITY,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_TAIL,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_PERSONALIZED,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_PROFILE,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_ANSWER,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::CALCULATOR,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::CLIPBOARD_TEXT,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::CLIPBOARD_IMAGE,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::EXTENSION_APP,
-           ClientSummarizedResultType::kApp},
-          {OmniboxEventProto::Suggestion::APP,
-           ClientSummarizedResultType::kApp},
-          {OmniboxEventProto::Suggestion::CONTACT,
-           ClientSummarizedResultType::kContact},
-          {OmniboxEventProto::Suggestion::APP_RESULT,
-           ClientSummarizedResultType::kOnDevice},
-          {OmniboxEventProto::Suggestion::LEGACY_ON_DEVICE,
-           ClientSummarizedResultType::kOnDevice},
-          {OmniboxEventProto::Suggestion::TILE_SUGGESTION,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::HISTORY_CLUSTER,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::OPEN_TAB,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::STARTER_PACK,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::TAB_SWITCH,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::PEDAL,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::HISTORY_EMBEDDINGS,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::FEATURED_ENTERPRISE_SEARCH,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::HISTORY_EMBEDDINGS_ANSWER,
-           ClientSummarizedResultType::kUrl},
-      });
-
-  const auto it = kResultTypesToClientSummarizedResultTypes->find(type);
-  return it == kResultTypesToClientSummarizedResultTypes->cend()
-             ? ClientSummarizedResultType::kUnknown
-             : it->second;
-}
-
 // Extracts the subset of signals which must be logged by the client in order to
 // train the Omnibox ML Scoring model using server-side training logic.
 void GetScoringSignalsForLogging(const OmniboxScoringSignals& scoring_signals,
@@ -274,6 +175,95 @@ void OmniboxMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   uma_proto->mutable_omnibox_event()->Swap(
       omnibox_events_cache.mutable_omnibox_event());
+}
+
+// static
+ClientSummarizedResultType
+OmniboxMetricsProvider::GetClientSummarizedResultType(
+    metrics::OmniboxEventProto::Suggestion::ResultType type) {
+  static const base::NoDestructor<base::flat_map<
+      OmniboxEventProto::Suggestion::ResultType, ClientSummarizedResultType>>
+      kResultTypesToClientSummarizedResultTypes({
+          {OmniboxEventProto::Suggestion::URL_WHAT_YOU_TYPED,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::HISTORY_URL,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::HISTORY_TITLE,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::HISTORY_BODY,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::NAVSUGGEST,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::BOOKMARK_TITLE,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::NAVSUGGEST_PERSONALIZED,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::CLIPBOARD_URL,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::PHYSICAL_WEB,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::PHYSICAL_WEB_OVERFLOW,
+           ClientSummarizedResultType::kUrl},  // More like a URL than a search.
+          {OmniboxEventProto::Suggestion::DOCUMENT,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::SEARCH_WHAT_YOU_TYPED,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_HISTORY,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_OTHER_ENGINE,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_ENTITY,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_TAIL,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_PERSONALIZED,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_PROFILE,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_ANSWER,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::CALCULATOR,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::CLIPBOARD_TEXT,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::CLIPBOARD_IMAGE,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::EXTENSION_APP,
+           ClientSummarizedResultType::kApp},
+          {OmniboxEventProto::Suggestion::APP,
+           ClientSummarizedResultType::kApp},
+          {OmniboxEventProto::Suggestion::CONTACT,
+           ClientSummarizedResultType::kContact},
+          {OmniboxEventProto::Suggestion::APP_RESULT,
+           ClientSummarizedResultType::kOnDevice},
+          {OmniboxEventProto::Suggestion::LEGACY_ON_DEVICE,
+           ClientSummarizedResultType::kOnDevice},
+          {OmniboxEventProto::Suggestion::TILE_SUGGESTION,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::HISTORY_CLUSTER,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::OPEN_TAB,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::STARTER_PACK,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::TAB_SWITCH,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::PEDAL,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::HISTORY_EMBEDDINGS,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::FEATURED_ENTERPRISE_SEARCH,
+           ClientSummarizedResultType::kSearch},
+          {OmniboxEventProto::Suggestion::HISTORY_EMBEDDINGS_ANSWER,
+           ClientSummarizedResultType::kUrl},
+      });
+
+  const auto it = kResultTypesToClientSummarizedResultTypes->find(type);
+  return it == kResultTypesToClientSummarizedResultTypes->cend()
+             ? ClientSummarizedResultType::kUnknown
+             : it->second;
 }
 
 void OmniboxMetricsProvider::OnURLOpenedFromOmnibox(OmniboxLog* log) {

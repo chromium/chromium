@@ -7,7 +7,6 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "crypto/openssl_util.h"
-#include "crypto/symmetric_key.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/err.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"

@@ -228,9 +228,9 @@ void WriteSavedMostVisited(
   if (profileName == personalProfileName) {
     // If we are in personal profile, data is saved also to "Default". This will
     // be used to retrieve data for a widget with no signed-in account.
-    [suggested_items setObject:data forKey:@"Default"];
+    [suggested_items setObject:data forKey:app_group::kDefaultAccount];
     [last_modification_dates setObject:last_modification_date
-                                forKey:@"Default"];
+                                forKey:app_group::kDefaultAccount];
   }
 
   // Update stored info for all identities in the current profile.

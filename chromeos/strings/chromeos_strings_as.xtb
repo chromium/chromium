@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">দেওবাৰে</translation>
 <translation id="4250229828105606438">স্ক্রীণশ্বট</translation>
 <translation id="4251839292699800785">শৈলীপূৰ্ণ অফিছ</translation>
+<translation id="4252261480746798874">আপুনি "আপোনাৰ নিজৰ সৃষ্টি কৰক" বাছনি কৰিলে, আপুনি এটা কাষ্টম লিখিব পাৰে। আপুনি "এটা থীম বাছনি কৰক" বুলিও বাছনি কৰিব পাৰে আৰু তাৰ পাছত আপোনাৰ AI ৱালপেপাৰ ব্যক্তিগতকৃত কৰিবলৈ আণ্ডাৰলাইন কৰা শব্দবোৰ বাছনি কৰিব পাৰে।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          অধিক অদ্বিতীয় আৰু বৈচিত্ৰময় AI প্ৰতিচ্ছবিৰ বিকল্পসমূহ লাভ কৰিবলৈ "মোক অনুপ্ৰাণিত কৰক" বাছনি কৰক।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          আপুনি নিজৰ ৱালপেপাৰ সৃষ্টি কৰোঁতে, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleৰ সেৱাৰ চৰ্তাৱলী আৰু গোপনীয়তাৰ নীতি<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> অনুসৰি প্ৰতিচ্ছবি সৃষ্টি কৰিবলৈ তথা প্ৰ’ডাক্টটো উন্নত কৰিবলৈ প্ৰম্পট্‌টো Google AI ছাৰ্ভাৰসমূহলৈ পঠিওৱা হয়। যিকোনো ধৰণৰ ব্যক্তিগত, সংবেদনশীল বা গোপন তথ্য অন্তৰ্ভুক্ত নকৰিব।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative AIএ লোকসকলৰ বিষয়ে তথ্যকে ধৰি ভুল কৰিব পাৰে, সেয়ে ইয়াক পুনৰ পৰীক্ষা কৰক। <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />অধিক জানক<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTPৰ বিলম্বতা</translation>
 <translation id="4266143281602681663">ঊণ</translation>
 <translation id="4269815121975886860">ষ্টাৰ্টআপৰ অগ্ৰাধিকাৰসমূহ</translation>

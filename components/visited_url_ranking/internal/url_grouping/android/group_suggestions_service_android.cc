@@ -228,6 +228,19 @@ void GroupSuggestionsServiceAndroid::DidSelectTab(JNIEnv* env,
       tab_id, ConvertIntToTabSelectionType(tab_selection_type), last_id);
 }
 
+void GroupSuggestionsServiceAndroid::WillCloseTab(JNIEnv* env, int tab_id) {
+  group_suggestions_service_->GetTabEventTracker()->WillCloseTab(tab_id);
+}
+
+void GroupSuggestionsServiceAndroid::TabClosureUndone(JNIEnv* env, int tab_id) {
+  group_suggestions_service_->GetTabEventTracker()->TabClosureUndone(tab_id);
+}
+
+void GroupSuggestionsServiceAndroid::TabClosureCommitted(JNIEnv* env,
+                                                         int tab_id) {
+  group_suggestions_service_->GetTabEventTracker()->TabClosureCommitted(tab_id);
+}
+
 void GroupSuggestionsServiceAndroid::DidEnterTabSwitcher(JNIEnv* env) {
   group_suggestions_service_->GetTabEventTracker()->DidEnterTabSwitcher();
 }

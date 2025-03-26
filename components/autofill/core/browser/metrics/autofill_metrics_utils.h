@@ -124,6 +124,13 @@ int GetBucketForAcceptanceMetricsGroupedByFieldType(FieldType field_type,
 int GetDuplicationRank(
     base::span<const DifferingProfileWithTypeSet> min_incompatible_sets);
 
+// Returns 64-bit hash of the string of form global id, which consists of
+// |frame_token| and |renderer_id|.
+uint64_t FormGlobalIdToHash64Bit(const FormGlobalId& form_global_id);
+// Returns 64-bit hash of the string of field global id, which consists of
+// |frame_token| and |renderer_id|.
+uint64_t FieldGlobalIdToHash64Bit(const FieldGlobalId& field_global_id);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_UTILS_H_

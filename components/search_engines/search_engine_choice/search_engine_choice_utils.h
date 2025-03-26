@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/country_codes/country_codes.h"
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url.h"
@@ -179,7 +180,7 @@ struct ChoiceScreenDisplayState {
  public:
   ChoiceScreenDisplayState(
       std::vector<SearchEngineType> search_engines,
-      int country_id,
+      country_codes::CountryId country_id,
       std::optional<int> selected_engine_index = std::nullopt);
   ChoiceScreenDisplayState(const ChoiceScreenDisplayState& other);
   ~ChoiceScreenDisplayState();
@@ -203,7 +204,7 @@ struct ChoiceScreenDisplayState {
   // The country used when generating the list. It should be the country
   // used to determine the set of search engines to show for the current
   // profile.
-  const int country_id;
+  const country_codes::CountryId country_id;
 };
 
 // Contains basic information about the search engine choice screen, notably
@@ -212,7 +213,7 @@ struct ChoiceScreenDisplayState {
 class ChoiceScreenData {
  public:
   ChoiceScreenData(TemplateURL::OwnedTemplateURLVector owned_template_urls,
-                   int country_id,
+                   country_codes::CountryId country_id,
                    const SearchTermsData& search_terms_data);
 
   ChoiceScreenData(const ChoiceScreenData&) = delete;

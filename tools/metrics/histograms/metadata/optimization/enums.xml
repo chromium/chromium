@@ -749,6 +749,7 @@ chromium-metrics-reviews@google.com.
   <int value="87" label="BMO_CREDIT_CARD_TRAVEL_BENEFITS"/>
   <int value="88" label="BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS"/>
   <int value="90" label="GLIC_CONTEXTUAL_CUEING"/>
+  <int value="91" label="GLIC_ZERO_STATE_SUGGESTIONS"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

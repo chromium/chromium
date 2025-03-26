@@ -166,16 +166,19 @@ V8Environment::~V8Environment() {
     return;
   }
 
-  NotifyIsolateWillDestroy();
-  isolate_holder_->isolate()->TerminateExecution();
+  {
+    v8::Isolate::Scope isolate_scope(isolate_holder_->isolate());
+    NotifyIsolateWillDestroy();
+    isolate_holder_->isolate()->TerminateExecution();
 
-  // These maps must be destroyed before context and isolate because they hold
-  // references to global objects.
-  devtools_agent_.reset();
-  identifier_to_module_map_.clear();
-  module_to_identifier_map_.reset();
+    // These maps must be destroyed before context and isolate because they hold
+    // references to global objects.
+    devtools_agent_.reset();
+    identifier_to_module_map_.clear();
+    module_to_identifier_map_.reset();
 
-  context_holder_.reset();
+    context_holder_.reset();
+  }
   isolate_holder_.reset();
 }
 

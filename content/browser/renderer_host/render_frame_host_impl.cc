@@ -12670,7 +12670,7 @@ void RenderFrameHostImpl::ReportBlockingCrossPartitionBlobURL(
 void RenderFrameHostImpl::DoesDocumentHaveStorageAccess(
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(
-      StorageAccessHandle::DoesFrameHaveStorageAccess(this));
+      StorageAccessHandle::DoesDocumentHaveStorageAccess(this));
 }
 
 void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(

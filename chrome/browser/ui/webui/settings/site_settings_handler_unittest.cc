@@ -345,11 +345,9 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     EXPECT_TRUE(testing_profile_manager_->SetUp());
     profile_ = testing_profile_manager_->CreateTestingProfile(
-        kTestUserEmail,
-        {TestingProfile::TestingFactory{
-            HistoryServiceFactory::GetInstance(),
-            HistoryServiceFactory::GetDefaultFactory()}},
-        /*is_main_profile=*/true);
+        kTestUserEmail, {TestingProfile::TestingFactory{
+                            HistoryServiceFactory::GetInstance(),
+                            HistoryServiceFactory::GetDefaultFactory()}});
     EXPECT_TRUE(profile_);
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -142,7 +142,6 @@ SimpleEntryImpl::SimpleEntryImpl(
       entry_hash_(entry_hash),
       use_optimistic_operations_(operations_mode == OPTIMISTIC_OPERATIONS),
       last_used_(Time::Now()),
-      last_modified_(last_used_),
       prioritized_task_runner_(backend_->prioritized_task_runner()),
       net_log_(
           net::NetLogWithSource::Make(net_log,
@@ -362,11 +361,6 @@ Time SimpleEntryImpl::GetLastUsed() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(cache_type_ != net::APP_CACHE);
   return last_used_;
-}
-
-Time SimpleEntryImpl::GetLastModified() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return last_modified_;
 }
 
 int32_t SimpleEntryImpl::GetDataSize(int stream_index) const {
@@ -793,8 +787,8 @@ void SimpleEntryImpl::OpenEntryInternal(
   DCHECK(!synchronous_entry_);
   state_ = STATE_IO_PENDING;
   const base::TimeTicks start_time = base::TimeTicks::Now();
-  auto results = std::make_unique<SimpleEntryCreationResults>(SimpleEntryStat(
-      last_used_, last_modified_, data_size_, sparse_data_size_));
+  auto results = std::make_unique<SimpleEntryCreationResults>(
+      SimpleEntryStat(last_used_, data_size_, sparse_data_size_));
 
   int32_t trailer_prefetch_size = -1;
   base::Time last_used_time;
@@ -845,13 +839,13 @@ void SimpleEntryImpl::CreateEntryInternal(
 
   state_ = STATE_IO_PENDING;
 
-  // Since we don't know the correct values for |last_used_| and
-  // |last_modified_| yet, we make this approximation.
-  last_used_ = last_modified_ = base::Time::Now();
+  // Since we don't know the correct value for |last_used_| yet, we make this
+  // approximation.
+  last_used_ = base::Time::Now();
 
   const base::TimeTicks start_time = base::TimeTicks::Now();
-  auto results = std::make_unique<SimpleEntryCreationResults>(SimpleEntryStat(
-      last_used_, last_modified_, data_size_, sparse_data_size_));
+  auto results = std::make_unique<SimpleEntryCreationResults>(
+      SimpleEntryStat(last_used_, data_size_, sparse_data_size_));
 
   OnceClosure task =
       base::BindOnce(&SimpleSynchronousEntry::CreateEntry, cache_type_, path_,
@@ -900,8 +894,8 @@ void SimpleEntryImpl::OpenOrCreateEntryInternal(
   DCHECK(!synchronous_entry_);
   state_ = STATE_IO_PENDING;
   const base::TimeTicks start_time = base::TimeTicks::Now();
-  auto results = std::make_unique<SimpleEntryCreationResults>(SimpleEntryStat(
-      last_used_, last_modified_, data_size_, sparse_data_size_));
+  auto results = std::make_unique<SimpleEntryCreationResults>(
+      SimpleEntryStat(last_used_, data_size_, sparse_data_size_));
 
   int32_t trailer_prefetch_size = -1;
   base::Time last_used_time;
@@ -964,8 +958,7 @@ void SimpleEntryImpl::CloseInternal() {
   if (synchronous_entry_) {
     OnceClosure task = base::BindOnce(
         &SimpleSynchronousEntry::Close, base::Unretained(synchronous_entry_),
-        SimpleEntryStat(last_used_, last_modified_, data_size_,
-                        sparse_data_size_),
+        SimpleEntryStat(last_used_, data_size_, sparse_data_size_),
         std::move(crc32s_to_write), base::RetainedRef(stream_0_data_),
         results.get());
     OnceClosure reply = base::BindOnce(&SimpleEntryImpl::CloseOperationComplete,
@@ -1054,8 +1047,8 @@ int SimpleEntryImpl::ReadDataInternal(bool sync_possible,
   }
 
   auto result = std::make_unique<SimpleSynchronousEntry::ReadResult>();
-  auto entry_stat = std::make_unique<SimpleEntryStat>(
-      last_used_, last_modified_, data_size_, sparse_data_size_);
+  auto entry_stat = std::make_unique<SimpleEntryStat>(last_used_, data_size_,
+                                                      sparse_data_size_);
   OnceClosure task = base::BindOnce(
       &SimpleSynchronousEntry::ReadData, base::Unretained(synchronous_entry_),
       read_req, entry_stat.get(), base::RetainedRef(buf), result.get());
@@ -1144,8 +1137,8 @@ void SimpleEntryImpl::WriteDataInternal(int stream_index,
   }
 
   // |entry_stat| needs to be initialized before modifying |data_size_|.
-  auto entry_stat = std::make_unique<SimpleEntryStat>(
-      last_used_, last_modified_, data_size_, sparse_data_size_);
+  auto entry_stat = std::make_unique<SimpleEntryStat>(last_used_, data_size_,
+                                                      sparse_data_size_);
   if (truncate) {
     data_size_[stream_index] = offset + buf_len;
   } else {
@@ -1155,9 +1148,9 @@ void SimpleEntryImpl::WriteDataInternal(int stream_index,
 
   auto write_result = std::make_unique<SimpleSynchronousEntry::WriteResult>();
 
-  // Since we don't know the correct values for |last_used_| and
-  // |last_modified_| yet, we make this approximation.
-  last_used_ = last_modified_ = base::Time::Now();
+  // Since we don't know the correct value for |last_used_| yet, we make this
+  // approximation.
+  last_used_ = base::Time::Now();
 
   have_written_[stream_index] = true;
   // Writing on stream 1 affects the placement of stream 0 in the file, the EOF
@@ -1267,10 +1260,10 @@ void SimpleEntryImpl::WriteSparseDataInternal(
     max_sparse_data_size = max_cache_size / kMaxSparseDataSizeDivisor;
   }
 
-  auto entry_stat = std::make_unique<SimpleEntryStat>(
-      last_used_, last_modified_, data_size_, sparse_data_size_);
+  auto entry_stat = std::make_unique<SimpleEntryStat>(last_used_, data_size_,
+                                                      sparse_data_size_);
 
-  last_used_ = last_modified_ = base::Time::Now();
+  last_used_ = base::Time::Now();
 
   auto result = std::make_unique<int>();
   OnceClosure task = base::BindOnce(
@@ -1575,8 +1568,7 @@ void SimpleEntryImpl::ReadSparseOperationComplete(
         net::NetLogEventPhase::NONE, *result);
   }
 
-  SimpleEntryStat entry_stat(*last_used, last_modified_, data_size_,
-                             sparse_data_size_);
+  SimpleEntryStat entry_stat(*last_used, data_size_, sparse_data_size_);
   EntryOperationComplete(std::move(completion_callback), entry_stat, *result);
 }
 
@@ -1604,8 +1596,7 @@ void SimpleEntryImpl::GetAvailableRangeOperationComplete(
   DCHECK(synchronous_entry_);
   DCHECK(result);
 
-  SimpleEntryStat entry_stat(last_used_, last_modified_, data_size_,
-                             sparse_data_size_);
+  SimpleEntryStat entry_stat(last_used_, data_size_, sparse_data_size_);
   UpdateStateAfterOperationComplete(entry_stat, result->net_error);
   if (!completion_callback.is_null()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1656,7 +1647,6 @@ void SimpleEntryImpl::UpdateDataFromEntryStat(
   CHECK_EQ(state_, STATE_IO_PENDING);
 
   last_used_ = entry_stat.last_used();
-  last_modified_ = entry_stat.last_modified();
   for (int i = 0; i < kSimpleEntryStreamCount; ++i) {
     data_size_[i] = entry_stat.data_size(i);
   }
@@ -1686,8 +1676,8 @@ void SimpleEntryImpl::ReadFromBuffer(net::GrowableIOBuffer* in_buf,
 
   out_buf->span().copy_prefix_from(in_buf->span().subspan(
       base::checked_cast<size_t>(offset), base::checked_cast<size_t>(buf_len)));
-  UpdateDataFromEntryStat(SimpleEntryStat(base::Time::Now(), last_modified_,
-                                          data_size_, sparse_data_size_));
+  UpdateDataFromEntryStat(
+      SimpleEntryStat(base::Time::Now(), data_size_, sparse_data_size_));
 }
 
 void SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
@@ -1734,8 +1724,7 @@ void SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
   crc32s_end_offset_[0] = 0;
 
   UpdateDataFromEntryStat(
-      SimpleEntryStat(modification_time, modification_time, data_size_,
-                      sparse_data_size_));
+      SimpleEntryStat(modification_time, data_size_, sparse_data_size_));
 }
 
 }  // namespace disk_cache

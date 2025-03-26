@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 
 #include "base/memory/singleton.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router.h"
 #include "content/public/browser/browser_context.h"
@@ -34,7 +35,8 @@ ReportingEventRouterFactory::~ReportingEventRouterFactory() = default;
 std::unique_ptr<KeyedService>
 ReportingEventRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<ReportingEventRouter>(context);
+  return std::make_unique<ReportingEventRouter>(
+      RealtimeReportingClientFactory::GetForProfile(context));
 }
 
 content::BrowserContext* ReportingEventRouterFactory::GetBrowserContextToUse(

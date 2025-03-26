@@ -103,6 +103,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     SharedImageUsageSet usage,
     std::string debug_label,
+    bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
   auto backing = std::make_unique<AngleVulkanImageBacking>(
       context_state_, mailbox, format, size, color_space, surface_origin,

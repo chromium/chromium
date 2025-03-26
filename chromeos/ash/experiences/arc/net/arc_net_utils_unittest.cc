@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/device_state.h"
@@ -82,7 +83,7 @@ class ArcNetUtilsTest : public testing::Test {
   static struct in_addr StringToIPv4Address(const std::string& buf) {
     struct in_addr addr = {};
     if (!inet_pton(AF_INET, buf.c_str(), &addr)) {
-      memset(&addr, 0, sizeof(addr));
+      UNSAFE_TODO(memset(&addr, 0, sizeof(addr)));
     }
     return addr;
   }
@@ -90,7 +91,7 @@ class ArcNetUtilsTest : public testing::Test {
   static struct in6_addr StringToIPv6Address(const std::string& buf) {
     struct in6_addr addr = {};
     if (!inet_pton(AF_INET6, buf.c_str(), &addr)) {
-      memset(&addr, 0, sizeof(addr));
+      UNSAFE_TODO(memset(&addr, 0, sizeof(addr)));
     }
     return addr;
   }
@@ -546,11 +547,11 @@ TEST_F(ArcNetUtilsTest, TranslateSocketConnectionEvent) {
   EXPECT_NE(msg, nullptr);
   struct in_addr addr = {};
   addr.s_addr = kTestWiFiAddressNBO;
-  EXPECT_EQ(0,
-            memcmp((void*)&addr, (void*)msg->saddr().c_str(), sizeof(in_addr)));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp((void*)&addr, (void*)msg->saddr().c_str(),
+                                  sizeof(in_addr))));
   addr.s_addr = kDestinationAddressNBO;
-  EXPECT_EQ(0,
-            memcmp((void*)&addr, (void*)msg->daddr().c_str(), sizeof(in_addr)));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp((void*)&addr, (void*)msg->daddr().c_str(),
+                                  sizeof(in_addr))));
   EXPECT_EQ(kPort1, msg->sport());
   EXPECT_EQ(kPort2, msg->dport());
   EXPECT_EQ(patchpanel::SocketConnectionEvent::QosCategory::

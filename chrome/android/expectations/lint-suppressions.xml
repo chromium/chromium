@@ -342,10 +342,7 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.feed_setting_option` appears to be unused"/>
     <ignore regexp="The resource `R.string.feed_section_on` appears to be unused"/>
 
-    <!-- TODO(crbug.com/397421764, crbug.com/397422235): 10 strings: Remove once these are used. -->
-    <ignore regexp="The resource `R.string.contextmenu_pin_this_shortcut` appears to be unused"/>
-    <ignore regexp="The resource `R.string.contextmenu_edit_shortcut` appears to be unused"/>
-    <ignore regexp="The resource `R.string.contextmenu_unpin` appears to be unused"/>
+    <!-- TODO(crbug.com/397422235): 7 strings: Remove once these are used. -->
     <ignore regexp="The resource `R.string.edit_shortcut_title_add` appears to be unused"/>
     <ignore regexp="The resource `R.string.edit_shortcut_title_edit` appears to be unused"/>
     <ignore regexp="The resource `R.string.edit_shortcut_hint_name` appears to be unused"/>

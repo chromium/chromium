@@ -48,11 +48,26 @@ class RealtimeReportingClientBase : public KeyedService,
 
   virtual base::WeakPtr<RealtimeReportingClientBase> AsWeakPtr() = 0;
 
+  // Determines if the real-time reporting feature is enabled.
+  // Obtain settings to apply to a reporting event from ConnectorsService.
+  // std::nullopt represents that reporting should not be done.
+  // Declared virtual for tests.
+  virtual std::optional<ReportingSettings> GetReportingSettings() = 0;
+
   // Report an event to the reporting server. This method will not mutate the
   // event, so it is the caller's responsibility to ensure that all relevant
   // fields have been set on the event.
   virtual void ReportEvent(::chrome::cros::reporting::proto::Event event,
                            const ReportingSettings& settings);
+
+  // Function that uploads security events, parameterized with the time. We
+  // should stop using this once the migration for the reporting events from
+  // dictionary to proto is done.
+  void ReportEventWithTimestampDeprecated(const std::string& name,
+                                          const ReportingSettings& settings,
+                                          base::Value::Dict event,
+                                          const base::Time& time,
+                                          bool include_profile_user_name);
 
  protected:
   // Sub-method called by InitRealtimeReportingClient() to make appropriate
@@ -138,12 +153,6 @@ class RealtimeReportingClientBase : public KeyedService,
                                            std::string name,
                                            const ReportingSettings& settings,
                                            base::Time time);
-  // Helper function that uploads security events, parameterized with the time.
-  void ReportEventWithTimestampDeprecated(const std::string& name,
-                                          const ReportingSettings& settings,
-                                          base::Value::Dict event,
-                                          const base::Time& time,
-                                          bool include_profile_user_name);
 
   const std::string GetProfilePolicyClientDescription();
 

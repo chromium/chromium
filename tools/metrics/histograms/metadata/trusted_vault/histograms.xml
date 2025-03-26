@@ -23,7 +23,8 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="SecurityDomainId">
-  <variant name=".ChromeSync" summary="The security domain used for Zuul"/>
+  <variant name=".ChromeSync"
+      summary="The security domain used for Chrome Sync"/>
   <variant name=".HwProtected" summary="The security domain used for passkeys"/>
 </variants>
 
@@ -39,7 +40,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedVault.DeviceRegistered{SecurityDomainId}"
-    enum="Boolean" expires_after="2025-05-03">
+    enum="Boolean" expires_after="2026-05-03">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -52,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedVault.DeviceRegistrationOutcome{SecurityDomainId}"
-    enum="TrustedVaultDeviceRegistrationOutcome" expires_after="2025-05-05">
+    enum="TrustedVaultDeviceRegistrationOutcome" expires_after="2026-05-05">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -63,7 +64,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedVault.DeviceRegistrationState{SecurityDomainId}"
-    enum="TrustedVaultDeviceRegistrationState" expires_after="2025-05-09">
+    enum="TrustedVaultDeviceRegistrationState" expires_after="2026-05-09">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -111,7 +112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedVault.FileWriteSuccess{SecurityDomainId}"
-    enum="Boolean" expires_after="2025-05-03">
+    enum="Boolean" expires_after="2026-05-03">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>

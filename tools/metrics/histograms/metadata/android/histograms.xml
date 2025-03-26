@@ -177,6 +177,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".NearOomReduction"/>
   <variant name=".NotificationBlocked"/>
   <variant name=".OfferNotification"/>
+  <variant name=".OsAdvancedProtectionSettingChangedMessage"/>
   <variant name=".PermissionBlocked"/>
   <variant name=".PermissionUpdate"/>
   <variant name=".PopupBlocked"/>
@@ -4038,7 +4039,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.AssistContent.IsEnterpriseInfoCached"
-    enum="Boolean" expires_after="2025-05-04">
+    enum="Boolean" expires_after="2025-09-07">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -4048,7 +4049,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.AssistContent.IsWorkProfile" enum="Boolean"
-    expires_after="2025-05-04">
+    expires_after="2025-09-07">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -4065,20 +4066,8 @@ chromium-metrics-reviews@google.com.
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
     Recorded when the pdf load starts. Used to compare against
-    Android.Pdf.DocumentLoadResult, which is recorded when the pdf load is
-    complete, to determine how many pdf loads are not complete.
-  </summary>
-</histogram>
-
-<histogram name="Android.Pdf.DocumentLoadResult" enum="Boolean"
-    expires_after="2025-09-07">
-  <owner>shuyng@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the pdf document load results. True means success and false means
-    failure. Recorded when the pdf load is complete. May be recorded when there
-    is no paired Android.Pdf.DocumentLoad, e.g. the pdf document is restored by
-    OS.
+    Android.Pdf.DocumentLoadResult.Detail, which is recorded when the pdf load
+    is complete, to determine how many pdf loads are not complete.
   </summary>
 </histogram>
 
@@ -4094,28 +4083,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Pdf.DocumentLoadResult.Paired" enum="Boolean"
-    expires_after="2025-09-14">
-  <owner>shuyng@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the pdf document load results. True means success and false means
-    failure. Recorded when the pdf load is complete. Only record when there is a
-    paired Android.Pdf.DocumentLoad.
-  </summary>
-</histogram>
-
-<histogram name="Android.Pdf.DocumentLoadTime" units="ms"
-    expires_after="2025-09-07">
-  <owner>shuyng@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the pdf document load time. Recorded when the pdf load is complete.
-    Records successful pdf loads only. May be recorded when there is no paired
-    Android.Pdf.DocumentLoad, e.g. the pdf document is restored by OS.
-  </summary>
-</histogram>
-
 <histogram name="Android.Pdf.DocumentLoadTime.FirstPaired" units="ms"
     expires_after="2025-09-14">
   <owner>shuyng@google.com</owner>
@@ -4124,17 +4091,6 @@ chromium-metrics-reviews@google.com.
     Records the pdf document load time. Recorded when the pdf load is complete.
     Records the first successful load for each explicit pdf load. Only record
     when there is a paired Android.Pdf.DocumentLoad.
-  </summary>
-</histogram>
-
-<histogram name="Android.Pdf.DocumentLoadTime.Paired" units="ms"
-    expires_after="2025-09-14">
-  <owner>shuyng@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the pdf document load time. Recorded when the pdf load is complete.
-    Records successful pdf loads only. Only record when there is a paired
-    Android.Pdf.DocumentLoad.
   </summary>
 </histogram>
 

@@ -6,7 +6,6 @@
 <translation id="1143896152279775643">Hasło zostanie zapisane w menedżerze haseł Google na koncie <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Otwórz nową kartę w Chrome</translation>
 <translation id="1166460004393506534">Usuń dane przeglądania w Chrome</translation>
-<translation id="1171255741903316750">Włącz opcję „Po zamknięciu Chrome blokuj karty incognito”</translation>
 <translation id="1179527450541388808">Uruchamiaj Chrome szybciej z Docka na ekranie głównym iPada.</translation>
 <translation id="1180362651362502943">Nadal korzystaj z danych Chrome na koncie Google.</translation>
 <translation id="1200396280085622191">Używaj Chrome, zawsze gdy klikasz linki w wiadomościach i w innych aplikacjach.</translation>
@@ -178,6 +177,7 @@ Odczekaj kilka minut, zanim się wylogujesz. Jeśli wylogujesz się teraz, te da
 <translation id="5716154293141027663">Otwieraj Chrome po kliknięciu linków w innych aplikacjach</translation>
 <translation id="5752489513673657785">Spersonalizowane karty utworzone dla Ciebie przez Google</translation>
 <translation id="5772407442571703917">Tutaj możesz pobrać Chrome.</translation>
+<translation id="5777468213129569553">Otwórz Chrome</translation>
 <translation id="5779767936254214055">Po zamknięciu Chrome lub przełączeniu się na inną aplikację zablokuj karty incognito.</translation>
 <translation id="5808435672482059465">Wyświetl historię Chrome</translation>
 <translation id="5833027901704861726">Niektóre dane z Chrome nie zostały jeszcze zapisane na koncie <ph name="EMAIL" />.

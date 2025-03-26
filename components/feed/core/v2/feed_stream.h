@@ -186,6 +186,7 @@ class FeedStream : public FeedApi,
                              FeedUserActionType action_type) override;
   void ReportOtherUserAction(const StreamType& stream_type,
                              FeedUserActionType action_type) override;
+  void ReportOtherUserAction(FeedUserActionType action_type) override;
   void ReportInfoCardTrackViewStarted(SurfaceId surface_id,
                                       int info_card_type) override;
   void ReportInfoCardViewed(SurfaceId surface_id,

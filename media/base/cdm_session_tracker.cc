@@ -22,7 +22,7 @@ void CdmSessionTracker::AddSession(const std::string& session_id) {
 
 void CdmSessionTracker::RemoveSession(const std::string& session_id) {
   auto it = session_ids_.find(session_id);
-  CHECK(it != session_ids_.end(), base::NotFatalUntil::M130);
+  CHECK(it != session_ids_.end());
   session_ids_.erase(it);
 }
 

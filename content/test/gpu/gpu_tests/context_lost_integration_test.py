@@ -169,6 +169,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
              ('ContextLost_MacWebGLPreserveDBHighPowerSwitchLosesContext',
               'webgl2-preserve-db-high-power-switch-loses-context.html'),
              ('GpuCrash_InfoForHardwareGpu', 'simple.html'),
+             ('GpuCrash_SoftwareFallbackDisabled', 'simple.html'),
              ('GpuCrash_InfoForDualHardwareGpus', 'webgl-high-perf.html'),
              ('ContextLost_WebGPUBlockedAfterJSNavigation',
               'webgpu-domain-blocking-page1.html'),
@@ -683,8 +684,10 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _GpuCrash_InfoForHardwareGpu(self, test_path: str) -> None:
     # Ensure that info displayed in chrome:gpu for hardware gpu is correct,
     # after gpu process crashes three times and falls back to SwiftShader.
-    self.RestartBrowserIfNecessaryWithArgs(
-        [cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS])
+    self.RestartBrowserIfNecessaryWithArgs([
+        cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS,
+        '--enable-features=AllowSoftwareGLFallbackDueToCrashes'
+    ])
     self._NavigateAndWaitForLoad(test_path)
     # Check WebGL status at browser startup.
     webgl_status = self._GetWebGLFeatureStatus(False)
@@ -705,6 +708,28 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if webgl_status_for_hardware_gpu != 'enabled':
       self.fail('WebGL status for hardware gpu should be "enabled", '
                 'but got %s' % webgl_status_for_hardware_gpu)
+    self._RestartBrowser('must restart after tests that kill the GPU process')
+
+  def _GpuCrash_SoftwareFallbackDisabled(self, test_path: str) -> None:
+    # Ensure that WebGL is using hardware acceleration by default. If the
+    # AllowSoftwareGLFallbackDueToCrashes is disabled and the GPU process
+    # crashes three times then WebGL should be fully disabled.
+    self.RestartBrowserIfNecessaryWithArgs([
+        cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS,
+        '--disable-features=AllowSoftwareGLFallbackDueToCrashes'
+    ])
+    self._NavigateAndWaitForLoad(test_path)
+    # Check WebGL status at browser startup.
+    webgl_status = self._GetWebGLFeatureStatus(False)
+    if webgl_status != 'enabled':
+      self.fail('WebGL should be hardware accelerated initially, but got %s' %
+                webgl_status)
+    # Check WebGL status after three GPU crashes - No software fallback due to
+    # AllowSoftwareGLFallbackDueToCrashes being disabled.
+    self._KillGPUProcess(3, True)
+    webgl_status = self._GetWebGLFeatureStatus(False)
+    if webgl_status != 'disabled_off':
+      self.fail('WebGL should be disabled_off, but got %s' % webgl_status)
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
   def _GpuCrash_InfoForDualHardwareGpus(self, test_path: str) -> None:

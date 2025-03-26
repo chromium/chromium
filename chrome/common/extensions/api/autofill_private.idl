@@ -357,14 +357,26 @@ namespace autofillPrivate {
     DOMString editEntityTypeString;
   };
 
+  // Contains date information: month, day and year.
+  dictionary DateValue {
+    // The year of the date valure, repesented as "YYYY". Example: "2016".
+    DOMString year;
+    // The month of the date value, without leading zeros. Example: "3" for
+    // March, "10" for October.
+    DOMString month;
+    // The day of the date value, without leading zeros. Example: "3", "30".
+    DOMString day;
+  };
+
   // An attribute instance is a typed string value with additional metadata.
   // It is associated with an `EntityInstance`.
   dictionary AttributeInstance {
     // Contains the attribute type name and other relevant information about the
     // attribute type.
     AttributeType type;
-    // The attribute instance value.
-    DOMString value;
+    // The attribute instance value. If the `AttributeTypeDataType` is a `DATE`,
+    // then `value` is a `DateValue`. Otherwise, `value` is a `DOMString`.
+    (DOMString or DateValue) value;
   };
 
   // An entity instance entry which can be saved in the "Autofill with AI"
@@ -420,7 +432,6 @@ namespace autofillPrivate {
   callback IsValidIbanCallback = void(boolean isValid);
   callback GetCreditCardCallback = void(optional CreditCardEntry card);
   callback CheckForDeviceAuthCallback = void(boolean isDeviceAuthAvailable);
-  callback isUserEligibleForAutofillImprovementsCallback = void(boolean eligible);
   callback LoadEntityInstancesCallback = void(EntityInstanceWithLabels[] entries);
   callback GetEntityInstanceByGuid = void(EntityInstance entityInstance);
   callback GetAllEntityTypesCallback = void(EntityType[] entityTypes);
@@ -542,13 +553,6 @@ namespace autofillPrivate {
     // Sets the Sync Autofill toggle value, which corresponds to
     // `syncer::UserSelectableType::kAutofill` in `SyncUserSettings`.
     static void setAutofillSyncToggleEnabled(boolean enabled);
-
-    // Returns if the user is eligible for autofill improvements.
-    static void isUserEligibleForAutofillImprovements(
-        isUserEligibleForAutofillImprovementsCallback callback);
-
-    // Notifies autofill client about the prediction improvements pre changing.
-    static void predictionImprovementsIphFeatureUsed();
 
     // Adds a new entity instance if it doesn't exist yet. Otherwise, it updates
     // the entity instance.

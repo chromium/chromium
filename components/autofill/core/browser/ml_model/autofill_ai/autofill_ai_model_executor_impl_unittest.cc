@@ -76,7 +76,11 @@ TEST_F(AutofillAiModelExecutorImplTest, ValidResponse) {
   const FormData form =
       test::GetFormData({.fields = {{.name = u"Passport number"}}});
   AutofillAiTypeResponse response;
-  response.add_field_responses()->set_field_type(PASSPORT_NUMBER);
+  {
+    auto* field_response = response.add_field_responses();
+    field_response->set_field_type(PASSPORT_NUMBER);
+    field_response->set_field_index(0);
+  }
 
   EXPECT_CALL(
       *model_executor(),
@@ -94,6 +98,102 @@ TEST_F(AutofillAiModelExecutorImplTest, ValidResponse) {
              ElementsAre(FieldIdentifier{
                  .signature = CalculateFieldSignatureForField(form.fields()[0]),
                  .rank_in_signature_group = 0})));
+
+  engine()->GetPredictions(form, std::nullopt);
+}
+
+// Tests that if the field index of a prediction is out of bounds of the
+// fields in the `FormData`, then nothing is written to the cache.
+TEST_F(AutofillAiModelExecutorImplTest, FieldIndexOutOfBounds) {
+  const FormData form =
+      test::GetFormData({.fields = {{.name = u"Passport number"}}});
+  AutofillAiTypeResponse response;
+  {
+    auto* field_response = response.add_field_responses();
+    field_response->set_field_type(PASSPORT_NUMBER);
+    field_response->set_field_index(1);
+  }
+
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kFormsClassifications, _,
+          _, An<OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          OptimizationGuideModelExecutionResult(
+              optimization_guide::AnyWrapProto(response),
+              /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+  EXPECT_CALL(
+      model_cache(),
+      Update(CalculateFormSignature(form),
+             base::test::EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
+
+  engine()->GetPredictions(form, std::nullopt);
+}
+
+// Tests that if the field index of a prediction is negative, then nothing is
+// written to the cache.
+TEST_F(AutofillAiModelExecutorImplTest, FieldIndexNegative) {
+  const FormData form =
+      test::GetFormData({.fields = {{.name = u"Passport number"}}});
+  AutofillAiTypeResponse response;
+  {
+    auto* field_response = response.add_field_responses();
+    field_response->set_field_type(PASSPORT_NUMBER);
+    field_response->set_field_index(-1);
+  }
+
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kFormsClassifications, _,
+          _, An<OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          OptimizationGuideModelExecutionResult(
+              optimization_guide::AnyWrapProto(response),
+              /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+  EXPECT_CALL(
+      model_cache(),
+      Update(CalculateFormSignature(form),
+             base::test::EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
+
+  engine()->GetPredictions(form, std::nullopt);
+}
+
+// Tests that if there are duplicate field indices, then nothing is written
+// into the cache.
+TEST_F(AutofillAiModelExecutorImplTest, DuplicateFieldIndices) {
+  const FormData form =
+      test::GetFormData({.fields = {{.name = u"Passport number"},
+                                    {.name = u"Passport issuing country"}}});
+  AutofillAiTypeResponse response;
+  {
+    auto* field_response = response.add_field_responses();
+    field_response->set_field_type(PASSPORT_NUMBER);
+    field_response->set_field_index(0);
+  }
+  {
+    auto* field_response = response.add_field_responses();
+    field_response->set_field_type(PASSPORT_ISSUING_COUNTRY);
+    field_response->set_field_index(0);
+  }
+
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kFormsClassifications, _,
+          _, An<OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          OptimizationGuideModelExecutionResult(
+              optimization_guide::AnyWrapProto(response),
+              /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+  EXPECT_CALL(
+      model_cache(),
+      Update(CalculateFormSignature(form),
+             base::test::EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
 
   engine()->GetPredictions(form, std::nullopt);
 }

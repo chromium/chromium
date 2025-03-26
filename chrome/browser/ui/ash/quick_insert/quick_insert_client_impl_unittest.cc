@@ -193,8 +193,7 @@ class QuickInsertClientImplTest : public BrowserWithTestWindowTest {
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
     return profile_manager()->CreateTestingProfile(
-        profile_name, GetTestingFactories(), /*is_main_profile=*/false,
-        test_shared_url_loader_factory_);
+        profile_name, GetTestingFactories(), test_shared_url_loader_factory_);
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {

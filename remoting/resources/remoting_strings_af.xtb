@@ -40,6 +40,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="2758123043070977469">Kon nie staaf nie. Probeer weer aanmeld.</translation>
 <translation id="2803375539583399270">Voer PIN in</translation>
 <translation id="2919669478609886916">Jy deel tans hierdie masjien met 'n ander gebruiker. Wil jy aanhou om te deel?</translation>
+<translation id="2929683002824598593">Deel toestel</translation>
 <translation id="2939145106548231838">Staaf om gasheer te wees</translation>
 <translation id="3027681561976217984">Raakmodus</translation>
 <translation id="3106379468611574572">Die afstandrekenaar reageer nie tans op verbindingversoeke nie. Verifeer of dit aanlyn is en probeer weer.</translation>
@@ -117,10 +118,12 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="6178645564515549384">Toestelspesifieke boodskapgasheer vir afstandbystand</translation>
 <translation id="618120821413932081">Dateer afstandresolusie op om met venster ooreen te stem</translation>
 <translation id="6223301979382383752">Maak Skermopname-voorkeure oop</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> het toegang versoek om jou skerm te sien en jou sleutelbord en muis te beheer. Wil jy jou toestel deel?</translation>
 <translation id="6284412385303060032">Gasheer wat op die konsolelogikaskerm loop, het afgeskakel om gordynmodus te steun deur oor te skakel na 'n gasheer wat in 'n spesifieke gebruiker se sessie loop.</translation>
 <translation id="6542902059648396432">Meld 'n probleem aan …</translation>
 <translation id="6583902294974160967">Steundiens</translation>
 <translation id="6612717000975622067">Stuur Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{As jy nie optree nie, sal jou toestel outomaties oor # sekonde begin deel.}other{As jy nie optree nie, sal jou toestel outomaties oor # sekondes begin deel.}}</translation>
 <translation id="6654753848497929428">Deel</translation>
 <translation id="677755392401385740">Gasheer begin vir gebruiker: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Helperprogram om 'n URL op die <ph name="PRODUCT_NAME" />-kliënt oop te maak</translation>

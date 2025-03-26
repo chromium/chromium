@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/split_tabs_button.h"
 #include "components/prefs/pref_member.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -176,6 +177,9 @@ class ToolbarView : public views::AccessiblePaneView,
   MediaToolbarButtonView* media_button() const { return media_button_; }
   BrowserAppMenuButton* app_menu_button() const { return app_menu_button_; }
   HomeButton* home_button() const { return home_; }
+  PinnedActionToolbarButton* tab_search_button() const {
+    return tab_search_button_;
+  }
   AppMenuIconController* app_menu_icon_controller() {
     return &app_menu_icon_controller_;
   }
@@ -309,6 +313,7 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<MediaToolbarButtonView> media_button_ = nullptr;
   raw_ptr<BrowserAppMenuButton> app_menu_button_ = nullptr;
   raw_ptr<views::View> new_tab_button_ = nullptr;
+  raw_ptr<PinnedActionToolbarButton> tab_search_button_ = nullptr;
 
   const raw_ptr<Browser> browser_;
   const raw_ptr<BrowserView> browser_view_;

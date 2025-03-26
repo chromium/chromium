@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">గెస్ట్ మోడ్‌లో పెరిఫెరల్ సపోర్ట్ చేయదు</translation>
 <translation id="1270290102613614947">స్క్రీన్‌పై కనిపించే కీబోర్డ్ నిలిపివేయబడింది</translation>
 <translation id="1272079795634619415">ఆపు</translation>
+<translation id="12741168609094094">సెర్చ్ చేయడానికి, టెక్స్ట్‌ను కాపీ చేయడానికి, ఇంకా మరిన్ని చేయడానికి మీ స్క్రీన్‌పై ఏదైనా ఎంచుకోండి</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" />కు పవర్ అందిస్తోంది</translation>
 <translation id="1275718070701477396">ఎంచుకోబడింది</translation>
 <translation id="1276975447697633661">ఫైల్‌ను ఎంచుకుని, తర్వాత <ph name="KEY" />ని నొక్కండి</translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">హాట్‌స్పాట్ ఆఫ్‌లో ఉంది</translation>
 <translation id="1731815243805539470">మునుపటి యూజర్‌కు మారండి</translation>
 <translation id="1733996486177697563">ముదురు రంగు, లేత రంగు రూపాల మధ్య స్విచ్ అవ్వండి. డెస్క్‌టాప్‌పై నొక్కి, పట్టుకుని, ఆపై వాల్‌పేపర్ &amp; స్టయిల్‌ను ఎంచుకోండి.</translation>
+<translation id="1735992454301033090">ఎంచుకున్న ఏరియా, జరపడానికి బాణం గుర్తు కీలను ఉపయోగించండి</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" బ్లూటూత్ పరికరాలకు కనిపిస్తుంది.</translation>
 <translation id="1737078180382804488">మీ ఫోన్‌లోని నోటిఫికేషన్‌లను చూసే సదుపాయాన్ని సెటప్ చేయడాన్ని విస్మరించండి</translation>
 <translation id="174102739345480129">మార్కర్ ఆఫ్‌లో ఉంది.</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806">గత <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">కీబోర్డ్ షార్ట్‌కట్ మార్చబడింది</translation>
 <translation id="2689613560355655046">డెస్క్ 8</translation>
+<translation id="2692092709110488417">ఫోకస్ చేయడానికి ట్యాబ్‌ను నొక్కి, ఎంచుకున్న ఏరియాను జరపండి</translation>
 <translation id="2695305337569143674">వెబ్</translation>
 <translation id="2697697418792422688">కీబోర్డ్ సెట్టింగ్‌లను చూడండి. <ph name="KEYBOARD_NAME" /> ఎంచుకోబడింది.</translation>
 <translation id="2699913284398121653">మీ స్కూల్ ఖాతా డేటాను మీ వ్యక్తిగత ఖాతాకు తరలించడానికి Content Transfer యాప్‌ను ఉపయోగించండి</translation>
@@ -1033,6 +1036,7 @@
 <translation id="4412698727486357573">సహాయ కేంద్రం</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ఆఫ్‌లో ఉంది.</translation>
 <translation id="4417647906073317561">సెట్టింగ్‌లను ఫోకస్ చేయండి. ఫ్లోలో పొందడానికి టైమర్, టాస్క్, అలాగే మ్యూజిక్‌ను సెట్ చేయండి.</translation>
+<translation id="4418600384772451109">ప్యానెల్‌ను మూసివేయండి</translation>
 <translation id="4424159417645388645">డెస్క్ 5</translation>
 <translation id="4426817706804363424">ఇలాగే కొనసాగించండి!</translation>
 <translation id="4430019312045809116">వాల్యూమ్</translation>
@@ -1485,6 +1489,7 @@
 <translation id="5825969630400862129">కనెక్ట్ చేయబడిన పరికరాల సెట్టింగ్‌లు</translation>
 <translation id="5830180081891717894">మరో <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />లో <ph name="ROUTE_TITLE" /> ఆపివేయి</translation>
+<translation id="5840658767386246331">Googleతో సెర్చ్ చేయండి</translation>
 <translation id="5841296711770970362">తర్వాతి ట్రాక్‌కు వెళ్లండి</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> హాట్‌స్పాట్ ఆన్‌లో ఉంది, పరికరాలేవీ కనెక్ట్ అయి లేవు</translation>
 <translation id="584525477304726060">పెద్దదిగా చేయడానికి నొక్కి, ఉంచండి</translation>
@@ -1516,6 +1521,7 @@
 <translation id="595202126637698455">పనితీరుని గుర్తించడం ప్రారంభించబడింది</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">పర్యవేక్షించబడే వినియోగదారు</translation>
+<translation id="596035801491797438">ఫేస్ కంట్రోల్‌ను ఆఫ్ చేయండి</translation>
 <translation id="5960410286721553511">మీ ఫోన్‌లోని తాజా ఫోటోలు, మీడియాను చూడండి</translation>
 <translation id="5965524703725988602">ముదురు రంగు రూపాన్ని టోగుల్ చేయండి. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">విండోల ద్వారా ముందుకు వెళ్లండి</translation>
@@ -2227,6 +2233,7 @@
 <translation id="8287009018010202411">ప్రొడక్టివిటీ</translation>
 <translation id="828708037801473432">ఆఫ్</translation>
 <translation id="8297006494302853456">బలహీనం</translation>
+<translation id="8300451473979404345">ఎంచుకున్న హ్యాండిల్, జరపడానికి బాణం గుర్తు కీలను ఉపయోగించండి</translation>
 <translation id="8308637677604853869">మునుపటి మెనూ</translation>
 <translation id="830868413617744215">బీటా</translation>
 <translation id="8314772463905284467">Caps Lock ఆన్‌లో ఉంది</translation>
@@ -2287,6 +2294,7 @@
 <translation id="851458219935658693">ప్రస్తుత డెస్క్ నుండి విండోలను చూపండి, అనే రేడియో బటన్ ఎంచుకోబడింది</translation>
 <translation id="851660987304951246">త్వరగా కంటెంట్ సారాంశాన్ని పొందడానికి లేదా ప్రశ్నలను అడగడానికి 'చదవడంలో నాకు సహాయం చేయి' ఫీచర్‌ను ఉపయోగించండి</translation>
 <translation id="8517041960877371778">మీ <ph name="DEVICE_TYPE" /> ఆన్‌లో ఉన్నప్పుడు ఛార్జ్ కాకపోవచ్చు.</translation>
+<translation id="8519329096920173967">Google Lensతో నా స్క్రీన్‌ను సెర్చ్ చేయండి</translation>
 <translation id="8535393432370007982">రంగు ఆధారంగా క్రమపద్ధతిలో అమర్చిన దానిని రద్దు చేశారు</translation>
 <translation id="8536886494750559755">క్విక్ షేర్ సెట్టింగ్‌లను చూపండి. <ph name="TIME_REMAINING" /> పాటు అందరికీ కనిపిస్తాయి</translation>
 <translation id="8539803091108018926">టెక్స్ట్ క్లిప్ బోర్డ్‌కు కాపీ చేయబడింది</translation>

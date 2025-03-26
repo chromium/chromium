@@ -268,13 +268,13 @@ TabGroupSyncServiceProxy::GetTitleForPreviouslyExistingSharedTabGroup(
   return std::nullopt;
 }
 
-void TabGroupSyncServiceProxy::OpenTabGroup(
+std::optional<LocalTabGroupID> TabGroupSyncServiceProxy::OpenTabGroup(
     const base::Uuid& sync_group_id,
     std::unique_ptr<TabGroupActionContext> context) {
   TabGroupActionContextDesktop* desktop_context =
       static_cast<TabGroupActionContextDesktop*>(context.get());
-  service_->OpenSavedTabGroupInBrowser(desktop_context->browser, sync_group_id,
-                                       desktop_context->opening_source);
+  return service_->OpenSavedTabGroupInBrowser(
+      desktop_context->browser, sync_group_id, desktop_context->opening_source);
 }
 
 void TabGroupSyncServiceProxy::UpdateLocalTabGroupMapping(

@@ -14,6 +14,7 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+- chrome.*
 supported_on:
 - chrome_os:114-
 owners:

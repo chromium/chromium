@@ -15,6 +15,7 @@ import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 // clang-format on
 
 const AttributeTypeDataType = chrome.autofillPrivate.AttributeTypeDataType;
+type DateValue = chrome.autofillPrivate.DateValue;
 
 suite('AutofillAiAddOrEditDialogUiTest', function() {
   let dialog: SettingsAutofillAiAddOrEditDialogElement;
@@ -270,6 +271,8 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
   let entityDataManager: TestEntityDataManagerProxy;
   let testEntityInstance: chrome.autofillPrivate.EntityInstance;
   let testAttributeTypes: chrome.autofillPrivate.AttributeType[];
+  let testCountryAttributeInstance: chrome.autofillPrivate.AttributeInstance;
+  let testDateAttributeInstance: chrome.autofillPrivate.AttributeInstance;
 
   async function simulateCountryChange(
       countrySelect: HTMLSelectElement, newCountryCode: string) {
@@ -278,13 +281,49 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     await flushTasks();
   }
 
+  function simulateSelectChange(select: HTMLSelectElement, value: string) {
+    select.value = value;
+    select.dispatchEvent(new CustomEvent('change'));
+  }
+
+  function simulateDateChange(
+      monthSelect: HTMLSelectElement, daySelect: HTMLSelectElement,
+      yearSelect: HTMLSelectElement, newDate: DateValue) {
+    simulateSelectChange(monthSelect, newDate.month);
+    simulateSelectChange(daySelect, newDate.day);
+    simulateSelectChange(yearSelect, newDate.year);
+    return flushTasks();
+  }
+
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
 
-    // For easier testing, all fields are empty except for the country.
+    testCountryAttributeInstance = {
+      type: {
+        typeName: 1,
+        typeNameAsString: 'Country',
+        dataType: AttributeTypeDataType.COUNTRY,
+      },
+      value: 'Germany',
+    };
+    testDateAttributeInstance = {
+      type: {
+        typeName: 2,
+        typeNameAsString: 'Issue date',
+        dataType: AttributeTypeDataType.DATE,
+      },
+      value: {
+        month: '5',
+        day: '20',
+        year: '2025',
+      },
+    };
+
+    // For easier testing, the test entity instance has no attributes. The tests
+    // will populate the attributes they need.
     testEntityInstance = {
       type: {
         typeName: 1,
@@ -292,24 +331,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         addEntityTypeString: 'Add passport',
         editEntityTypeString: 'Edit passport',
       },
-      attributeInstances: [
-        {
-          type: {
-            typeName: 0,
-            typeNameAsString: 'Name',
-            dataType: AttributeTypeDataType.STRING,
-          },
-          value: '',
-        },
-        {
-          type: {
-            typeName: 1,
-            typeNameAsString: 'Country',
-            dataType: AttributeTypeDataType.COUNTRY,
-          },
-          value: 'Germany',
-        },
-      ],
+      attributeInstances: [],
       guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
       nickname: 'My passport',
     };
@@ -323,6 +345,11 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         typeName: 1,
         typeNameAsString: 'Country',
         dataType: AttributeTypeDataType.COUNTRY,
+      },
+      {
+        typeName: 2,
+        typeNameAsString: 'Issue date',
+        dataType: AttributeTypeDataType.DATE,
       },
     ];
     entityDataManager.setGetAllAttributeTypesForEntityTypeNameResponse(
@@ -362,13 +389,9 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         // Set up the test.
         const oldCountryCode = 'DE';
         const newCountryCode = 'CH';
-        if (params.add) {
-          testEntityInstance = {
-            type: testEntityInstance.type,
-            attributeInstances: [],
-            guid: '',
-            nickname: '',
-          };
+        if (!params.add) {
+          testEntityInstance.attributeInstances.push(
+              testCountryAttributeInstance);
         }
         dialog.entityInstance = structuredClone(testEntityInstance);
         document.body.appendChild(dialog);
@@ -418,7 +441,109 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         assertDeepEquals(expectedEntityInstance, dialogConfirmedEvent.detail);
       }));
 
+
+  interface AddOrEditEntityInstanceDateParamsInterface {
+    // True if the user is adding an entity instance, false if the user is
+    // editing an entity instance.
+    add: boolean;
+    // If true, the date is changed. This param should always be true for
+    // adding.
+    changeDate: boolean;
+    // The title of the test.
+    title: string;
+  }
+
+  const addOrEditEntityInstanceDateParams:
+      AddOrEditEntityInstanceDateParamsInterface[] = [
+        {add: true, changeDate: true, title: 'testAddEntityInstanceDate'},
+        {
+          add: false,
+          changeDate: true,
+          title: 'testEditEntityInstanceDate',
+        },
+        {
+          add: false,
+          changeDate: false,
+          title: 'testEditEntityInstanceDontChangeDate',
+        },
+      ];
+
+  addOrEditEntityInstanceDateParams.forEach(
+      (params) => test(params.title, async function() {
+        // Set up the test.
+        const oldDate: DateValue = testDateAttributeInstance.value as DateValue;
+        const newDate: DateValue = {
+          month: '3',
+          day: '25',
+          year: '2024',
+        };
+        if (!params.add) {
+          testEntityInstance.attributeInstances.push(testDateAttributeInstance);
+        }
+        dialog.entityInstance = structuredClone(testEntityInstance);
+        document.body.appendChild(dialog);
+        await entityDataManager.whenCalled(
+            'getAllAttributeTypesForEntityTypeName');
+        await flushTasks();
+
+        // Retrieve the date selectors.
+        const monthSelect = dialog.shadowRoot!.querySelector<HTMLSelectElement>(
+            '#month-select');
+        const daySelect =
+            dialog.shadowRoot!.querySelector<HTMLSelectElement>('#day-select');
+        const yearSelect =
+            dialog.shadowRoot!.querySelector<HTMLSelectElement>('#year-select');
+        assertTrue(!!monthSelect);
+        assertTrue(!!daySelect);
+        assertTrue(!!yearSelect);
+
+        if (params.add) {
+          assertEquals('', monthSelect.value);
+          assertEquals('', daySelect.value);
+          assertEquals('', yearSelect.value);
+          assertTrue(monthSelect.textContent!.includes('No option selected'));
+          assertTrue(daySelect.textContent!.includes('No option selected'));
+          assertTrue(yearSelect.textContent!.includes('No option selected'));
+        } else {
+          assertEquals(oldDate.month, monthSelect.value);
+          assertEquals(oldDate.day, daySelect.value);
+          assertEquals(oldDate.year, yearSelect.value);
+          assertTrue(monthSelect.textContent!.includes(oldDate.month));
+          assertTrue(daySelect.textContent!.includes(oldDate.day));
+          assertTrue(yearSelect.textContent!.includes(oldDate.year));
+        }
+
+        if (params.changeDate) {
+          await simulateDateChange(monthSelect, daySelect, yearSelect, newDate);
+        }
+
+        // Confirm the dialog and verify that the new date is saved.
+        const saveButton =
+            dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+        assertTrue(!!saveButton);
+
+        const dialogConfirmedPromise =
+            eventToPromise('autofill-ai-add-or-edit-done', dialog);
+        saveButton.click();
+
+        const dialogConfirmedEvent = await dialogConfirmedPromise;
+        await flushTasks();
+
+        const expectedEntityInstance = structuredClone(testEntityInstance);
+        expectedEntityInstance.attributeInstances = [{
+          type: {
+            typeName: 2,
+            typeNameAsString: 'Issue date',
+            dataType: AttributeTypeDataType.DATE,
+          },
+          value: params.changeDate ? newDate : oldDate,
+        }];
+
+        assertDeepEquals(expectedEntityInstance, dialogConfirmedEvent.detail);
+      }));
+
   test('testAddOrEditEntityInstanceCountryValidationError', async function() {
+    testEntityInstance.attributeInstances.push(testCountryAttributeInstance);
     dialog.entityInstance = testEntityInstance;
     document.body.appendChild(dialog);
     await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
@@ -459,5 +584,108 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     // anymore and the save button should be enabled.
     assertFalse(isVisible(validationError));
     assertFalse(saveButton.disabled);
+  });
+
+  test('testAddOrEditEntityInstanceDateValidationError', async function() {
+    testEntityInstance.attributeInstances.push(testDateAttributeInstance);
+    dialog.entityInstance = testEntityInstance;
+    document.body.appendChild(dialog);
+    await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
+    await flushTasks();
+
+    // The validation error should not be visible yet and the save button
+    // should be enabled.
+    const validationError =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#validationError');
+    const saveButton =
+        dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+    assertTrue(!!validationError);
+    assertTrue(!!saveButton);
+    assertFalse(isVisible(validationError));
+    assertFalse(saveButton.disabled);
+
+    // Simulate that the user clears the date field.
+    const monthSelect =
+        dialog.shadowRoot!.querySelector<HTMLSelectElement>('#month-select');
+    const daySelect =
+        dialog.shadowRoot!.querySelector<HTMLSelectElement>('#day-select');
+    const yearSelect =
+        dialog.shadowRoot!.querySelector<HTMLSelectElement>('#year-select');
+    assertTrue(!!monthSelect);
+    assertTrue(!!daySelect);
+    assertTrue(!!yearSelect);
+    await simulateDateChange(
+        monthSelect, daySelect, yearSelect, {month: '', day: '', year: ''});
+
+    // All fields are empty, but the save button was not clicked yet, so there
+    // is no validation error.
+    assertFalse(isVisible(validationError));
+    assertFalse(saveButton.disabled);
+
+    saveButton.click();
+    await flushTasks();
+    // All fields are empty and the save button was clicked, so the validation
+    // error should be visible and the save button should be disabled.
+    assertTrue(isVisible(validationError));
+    assertTrue(saveButton.disabled);
+
+    await simulateDateChange(
+        monthSelect, daySelect, yearSelect,
+        {month: '3', day: '17', year: '2024'});
+
+    // One field is not empty, so the validation error should not be visible
+    // anymore and the save button should be enabled.
+    assertFalse(isVisible(validationError));
+    assertFalse(saveButton.disabled);
+
+    // Populate the name field and completely clear the date field.
+    const nameField = dialog.shadowRoot!.querySelector<CrInputElement>(
+        '#attributeInstanceField');
+    assertTrue(!!nameField);
+    nameField.value = 'John Doe';
+    await flushTasks();
+    await simulateDateChange(
+        monthSelect, daySelect, yearSelect, {month: '', day: '', year: ''});
+
+    // One field is not empty, so the validation error should still not be
+    // visible and the save button should be enabled.
+    assertFalse(isVisible(validationError));
+    assertFalse(saveButton.disabled);
+
+    await simulateDateChange(
+        monthSelect, daySelect, yearSelect,
+        {month: '2', day: '', year: '2020'});
+
+    // The date is incomplete, so the validation error should be visible and the
+    // save button should be disabled.
+    assertTrue(isVisible(validationError));
+    assertTrue(saveButton.disabled);
+
+    await simulateDateChange(
+        monthSelect, daySelect, yearSelect,
+        {month: '2', day: '', year: '2020'});
+
+    // The date is incomplete, so the validation error should be visible and the
+    // save button should be disabled.
+    assertTrue(isVisible(validationError));
+    assertTrue(saveButton.disabled);
+
+    await simulateDateChange(
+        monthSelect, daySelect, yearSelect,
+        {month: '9', day: '5', year: '2022'});
+
+    // The date is now valid, so the validation error should be visible and the
+    // save button should be disabled.
+    assertFalse(isVisible(validationError));
+    assertFalse(saveButton.disabled);
+
+    await simulateDateChange(
+        monthSelect, daySelect, yearSelect,
+        {month: '2', day: '30', year: '2022'});
+
+    // The date is now invalid (30th of February), so the validation error
+    // should be visible and the save button should be disabled.
+    assertTrue(isVisible(validationError));
+    assertTrue(saveButton.disabled);
   });
 });

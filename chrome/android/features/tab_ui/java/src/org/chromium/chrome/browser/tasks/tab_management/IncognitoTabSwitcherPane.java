@@ -124,6 +124,8 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     private final @NonNull ResourceButtonData mReferenceButtonData;
     private final @NonNull FullButtonData mEnabledNewTabButtonData;
     private final @NonNull FullButtonData mDisabledNewTabButtonData;
+    private final ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier =
+            new ObservableSupplierImpl<>();
 
     private boolean mIsNativeInitialized;
     private int mLastClosedTabId;
@@ -532,5 +534,10 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 cleanUpRunnable.run();
             }
         }
+    }
+
+    @Override
+    public @NonNull ObservableSupplier<Boolean> getHubSearchEnabledStateSupplier() {
+        return mHubSearchEnabledStateSupplier;
     }
 }

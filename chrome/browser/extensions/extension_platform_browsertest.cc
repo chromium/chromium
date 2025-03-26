@@ -31,14 +31,12 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #else
 #include "base/check.h"
-#include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
 #include "chrome/browser/extensions/platform_test_extension_loader.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -345,16 +343,7 @@ void ExtensionPlatformBrowserTest::DisableExtension(
 void ExtensionPlatformBrowserTest::DisableExtension(
     const ExtensionId& extension_id,
     const DisableReasonSet& disable_reasons) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  ExtensionSystem::Get(profile())->extension_service()->DisableExtension(
-      extension_id, disable_reasons);
-#else
-  DesktopAndroidExtensionSystem* extension_system =
-      static_cast<DesktopAndroidExtensionSystem*>(
-          ExtensionSystem::Get(profile()));
-  ASSERT_TRUE(extension_system);
-  extension_system->DisableExtension(extension_id, disable_reasons);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  extension_registrar()->DisableExtension(extension_id, disable_reasons);
 }
 
 content::WebContents* ExtensionPlatformBrowserTest::GetActiveWebContents()

@@ -1315,10 +1315,7 @@ void GpuDataManagerImplPrivate::AppendGpuCommandLine(
       use_gl = browser_command_line->GetSwitchValueASCII(switches::kUseGL);
       break;
     case gpu::GpuMode::SOFTWARE_GL:
-      if (!gl::HasRequestedSoftwareGLImplementationFromCommandLine(
-              command_line)) {
-        gl::SetSoftwareWebGLCommandLineSwitches(command_line);
-      }
+      gl::SetSoftwareWebGLCommandLineSwitches(command_line);
       break;
     default:
       use_gl = gl::kGLImplementationDisabledName;
@@ -1668,6 +1665,19 @@ void GpuDataManagerImplPrivate::FallBackToNextGpuMode() {
   DCHECK_NE(gpu_mode_, gpu::GpuMode::UNKNOWN);
   if (gpu_mode_ == gpu::GpuMode::DISPLAY_COMPOSITOR)
     OnGpuBlocked();
+}
+
+void GpuDataManagerImplPrivate::FallBackToNextGpuModeDueToCrash() {
+  FallBackToNextGpuMode();
+
+  // If we fell back to sofware GL due to crashes and it is disabled with a
+  // feature. Fall back again.
+  if (gpu_mode_ == gpu::GpuMode::SOFTWARE_GL &&
+      !features::IsSoftwareGLFallbackDueToCrashesAllowed(
+          base::CommandLine::ForCurrentProcess())) {
+    FallBackToNextGpuMode();
+    DCHECK_NE(gpu_mode_, gpu::GpuMode::SOFTWARE_GL);
+  }
 }
 
 void GpuDataManagerImplPrivate::RecordCompositingMode() {

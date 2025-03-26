@@ -10,6 +10,7 @@ namespace performance_manager::policies {
 // List of reasons not to discard a page.
 enum class CannotDiscardReason {
   kNotATab,
+  kAlreadyDiscarded,
   kDiscardAttempted,
   kNoMainFrame,
   kVisible,

@@ -121,7 +121,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_appsearch_appsearch_java") {
     aar_path =
-        "cipd/libs/androidx_appsearch_appsearch/appsearch-1.1.0-SNAPSHOT.aar"
+        "cipd/libs/androidx_appsearch_appsearch/appsearch-1.2.0-SNAPSHOT.aar"
     info_path = "committed/libs/androidx_appsearch_appsearch/androidx_appsearch_appsearch.info"
     enable_bytecode_checks = false
     deps = [
@@ -138,7 +138,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_appsearch_appsearch_builtin_types_java") {
-    aar_path = "cipd/libs/androidx_appsearch_appsearch_builtin_types/appsearch-builtin-types-1.1.0-SNAPSHOT.aar"
+    aar_path = "cipd/libs/androidx_appsearch_appsearch_builtin_types/appsearch-builtin-types-1.2.0-SNAPSHOT.aar"
     info_path = "committed/libs/androidx_appsearch_appsearch_builtin_types/androidx_appsearch_appsearch_builtin_types.info"
     enable_bytecode_checks = false
     deps = [
@@ -151,7 +151,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_appsearch_appsearch_platform_storage_java") {
-    aar_path = "cipd/libs/androidx_appsearch_appsearch_platform_storage/appsearch-platform-storage-1.1.0-SNAPSHOT.aar"
+    aar_path = "cipd/libs/androidx_appsearch_appsearch_platform_storage/appsearch-platform-storage-1.2.0-SNAPSHOT.aar"
     info_path = "committed/libs/androidx_appsearch_appsearch_platform_storage/androidx_appsearch_appsearch_platform_storage.info"
     enable_bytecode_checks = false
     deps = [
@@ -359,6 +359,7 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_annotation_annotation_experimental_java",
       ":androidx_collection_collection_java",
+      ":androidx_compose_runtime_runtime_annotation_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_android_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
@@ -1957,6 +1958,33 @@ if (!limit_android_deps) {
       "//third_party/android_deps:*",
     ]
     deps = [ ":androidx_compose_runtime_runtime_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_compose_runtime_runtime_annotation_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_compose_runtime_runtime_annotation_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt(
+      "androidx_compose_runtime_runtime_annotation_android_java") {
+    aar_path = "cipd/libs/androidx_compose_runtime_runtime_annotation_android/runtime-annotation-android-1.9.0-SNAPSHOT.aar"
+    info_path = "committed/libs/androidx_compose_runtime_runtime_annotation_android/androidx_compose_runtime_runtime_annotation_android.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

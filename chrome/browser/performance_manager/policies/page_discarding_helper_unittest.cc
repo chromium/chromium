@@ -21,6 +21,9 @@
 namespace performance_manager::policies {
 
 using DiscardReason = DiscardEligibilityPolicy::DiscardReason;
+using CanDiscardResult::kDisallowed;
+using CanDiscardResult::kEligible;
+using CanDiscardResult::kProtected;
 using ::testing::Contains;
 using ::testing::Return;
 
@@ -44,13 +47,13 @@ class PageDiscardingHelperTest
   }
 
   // Convenience wrappers for DiscardEligibilityPolicy::CanDiscard().
-  bool CanDiscard(
+  CanDiscardResult CanDiscard(
       const PageNode* page_node,
       DiscardReason discard_reason,
       std::vector<CannotDiscardReason>* cannot_discard_reasons = nullptr) {
     return DiscardEligibilityPolicy::GetFromGraph(graph())->CanDiscard(
-               page_node, discard_reason, kNonVisiblePagesUrgentProtectionTime,
-               cannot_discard_reasons) == CanDiscardResult::kEligible;
+        page_node, discard_reason, kNonVisiblePagesUrgentProtectionTime,
+        cannot_discard_reasons);
   }
 
  protected:
@@ -95,7 +98,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidates) {
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
 
-  EXPECT_TRUE(CanDiscard(page_node2.get(), DiscardReason::URGENT));
+  EXPECT_EQ(kEligible, CanDiscard(page_node2.get(), DiscardReason::URGENT));
 
   process_node()->set_resident_set_kb(1024);
   process_node2->set_resident_set_kb(1024);
@@ -123,7 +126,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesProtected) {
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
 
-  EXPECT_TRUE(CanDiscard(page_node2.get(), DiscardReason::URGENT));
+  EXPECT_EQ(kEligible, CanDiscard(page_node2.get(), DiscardReason::URGENT));
 
   process_node()->set_resident_set_kb(1024);
   process_node2->set_resident_set_kb(1024);
@@ -309,7 +312,7 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidates) {
   AdvanceClock(base::Minutes(30));
   page_node2->SetIsVisible(false);
   AdvanceClock(base::Minutes(30));
-  EXPECT_TRUE(CanDiscard(page_node2.get(), DiscardReason::URGENT));
+  EXPECT_EQ(kEligible, CanDiscard(page_node2.get(), DiscardReason::URGENT));
   EXPECT_GT(page_node()->GetTimeSinceLastVisibilityChange(),
             page_node2->GetTimeSinceLastVisibilityChange());
 
@@ -390,7 +393,7 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesNoRSSData) {
   AdvanceClock(base::Minutes(30));
   page_node()->SetIsVisible(false);
   AdvanceClock(base::Minutes(30));
-  EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::URGENT));
+  EXPECT_EQ(kEligible, CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_GT(page_node2->GetTimeSinceLastVisibilityChange(),
             page_node()->GetTimeSinceLastVisibilityChange());
 
@@ -419,7 +422,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesNoRSSData) {
   AdvanceClock(base::Minutes(30));
   page_node()->SetIsVisible(false);
   AdvanceClock(base::Minutes(30));
-  EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::URGENT));
+  EXPECT_EQ(kEligible, CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_GT(page_node2->GetTimeSinceLastVisibilityChange(),
             page_node()->GetTimeSinceLastVisibilityChange());
 

@@ -259,6 +259,7 @@ source_set("test_support") {
   deps = [
     ":storage",
     "//base/test:test_support",
+    "//content/test:test_support",
     "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",

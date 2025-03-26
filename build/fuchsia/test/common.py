@@ -360,23 +360,23 @@ def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
     with monitors.time_consumption('pkgctl', 'gc'):
         ssh_run(['pkgctl', 'gc'], target_id, check=False)
 
-    def _retry_command(cmd: List[str], package) -> subprocess.CompletedProcess:
+    def _retry_resolve(package) -> None:
         """Helper function for retrying a subprocess.run command."""
 
-        proc = ssh_run(cmd, target_id=target_id, check=False)
-        if proc.returncode == 0:
-            return proc
-        time.sleep(3)
-        monitors.count('pkgctl', 'resolve', package, 'retry').record(1)
-        return ssh_run(cmd, target_id=target_id, check=True)
+        cmd = ['pkgctl', 'resolve',
+               'fuchsia-pkg://%s/%s' % (REPO_ALIAS, package)]
+        retry_counter = monitors.count('pkgctl', 'resolve', package, 'retry')
+        for _ in range(4):
+            proc = ssh_run(cmd, target_id=target_id, check=False)
+            if proc.returncode == 0:
+                return
+            time.sleep(3)
+            retry_counter.record(1)
+        ssh_run(cmd, target_id=target_id, check=True)
 
     for package in packages:
-        resolve_cmd = [
-            'pkgctl', 'resolve',
-            'fuchsia-pkg://%s/%s' % (REPO_ALIAS, package)
-        ]
         with monitors.time_consumption('pkgctl', 'resolve', package):
-            _retry_command(resolve_cmd, package)
+            _retry_resolve(package)
 
 
 def get_ip_address(target_id: Optional[str], ipv4_only: bool = False):

@@ -496,6 +496,8 @@ inline constexpr char kInvalidMatchCount[] =
     "one match specified.";
 inline constexpr char kInvalidMatches[] =
     "Required value 'content_scripts[*].matches' is missing or invalid.";
+inline constexpr char kInvalidUserScriptMimeType[] =
+    "Invalid script mime type: '%s'";
 inline constexpr char16_t kInvalidMIMETypes[] =
     u"Invalid value for 'mime_types'";
 inline constexpr char16_t kInvalidMimeTypesHandler[] =

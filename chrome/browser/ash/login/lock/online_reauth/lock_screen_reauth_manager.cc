@@ -52,7 +52,7 @@ LockScreenReauthManager::LockScreenReauthManager(Profile* primary_profile)
       clock_(base::DefaultClock::GetInstance()),
       in_session_password_sync_manager_(
           InSessionPasswordSyncManager(primary_profile_)) {
-  DCHECK(primary_user_);
+  CHECK(primary_user_);
   auto* session_manager = session_manager::SessionManager::Get();
   // Extra check as SessionManager may be not initialized in some unit
   // tests
@@ -61,7 +61,7 @@ LockScreenReauthManager::LockScreenReauthManager(Profile* primary_profile)
   }
 
   screenlock_bridge_ = proximity_auth::ScreenlockBridge::Get();
-  DCHECK(screenlock_bridge_);
+  CHECK(screenlock_bridge_);
 }
 
 LockScreenReauthManager::~LockScreenReauthManager() {
@@ -265,7 +265,7 @@ void LockScreenReauthManager::SendLockscreenReauthReason() {
 
 void LockScreenReauthManager::OnPasswordUpdateSuccess(
     std::unique_ptr<UserContext> user_context) {
-  DCHECK(user_context);
+  CHECK(user_context);
   OnAuthSuccess(*user_context);
 }
 

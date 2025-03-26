@@ -286,6 +286,7 @@ struct EffectNode {
   // be a valid index in the same effect tree.
   int32 target_id;
 
+  FilterOperations filters;
   FilterOperations backdrop_filters;
   gfx.mojom.RRectF? backdrop_filter_bounds;
   float backdrop_filter_quality;

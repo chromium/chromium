@@ -1054,13 +1054,12 @@
     },
 
     'remoteexec': {
-      'gn_args': 'use_remoteexec=true use_reclient=false',
+      'gn_args': 'use_remoteexec=true',
     },
 
     # windows cross. crbug.com/1213717 crbug.com/1407983
     'remoteexec_win_cross': {
-      'mixins': ['remoteexec'],
-      'gn_args': 'reclient_cfg_dir="//buildtools/reclient_cfgs/win-cross"',
+      'gn_args': 'use_remoteexec=true reclient_cfg_dir="//buildtools/reclient_cfgs/win-cross"',
     },
 
     'resource_allowlisting': {

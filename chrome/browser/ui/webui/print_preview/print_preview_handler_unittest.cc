@@ -1484,8 +1484,7 @@ class ContentAnalysisPrintPreviewHandlerTest
 
 TEST_P(ContentAnalysisPrintPreviewHandlerTest, LocalScanBeforePrinting) {
   TestingProfile* main_profile =
-      testing_profile_manager()->CreateTestingProfile("Main Profile",
-                                                      /*is_main_profile=*/true);
+      testing_profile_manager()->CreateTestingProfile("Main Profile");
   SetProfileForInitialSettings(main_profile);
   Initialize();
 

@@ -29,6 +29,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PATH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PATH_H_
 
+#include <optional>
+
 #include "base/memory/raw_span.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path_types.h"
@@ -150,8 +152,7 @@ class PLATFORM_EXPORT Path {
   // Gets the current point of the current path, which is conceptually the final
   // point reached by the path so far. Note the Path can be empty
   // (isEmpty() == true) and still have a current point.
-  bool HasCurrentPoint() const;
-  gfx::PointF CurrentPoint() const;
+  std::optional<gfx::PointF> CurrentPoint() const;
 
   // TODO(crbug.com/378688986): convert clients to PathBuilder and remove all
   // editing (non-const) methods.

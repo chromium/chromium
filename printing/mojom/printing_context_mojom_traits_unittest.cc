@@ -107,14 +107,12 @@ constexpr char16_t kPrintSettingsDeviceName[] = u"device";
 const PrintSettings::RequestedMedia kPrintSettingsRequestedMedia{
     /*size_microns=*/gfx::Size(/*width=*/215900, /*height=*/279400),
     /*vendor_id=*/"vendor"};
-
-// Converted from points to microns (1 point = 352.7778 microns)
-const PageMargins kPrintSettingsCustomMarginsInMicrons(/*header=*/3528,
-                                                       /*footer=*/5292,
-                                                       /*left=*/7056,
-                                                       /*right=*/8819,
-                                                       /*top=*/10583,
-                                                       /*bottom=*/12347);
+const PageMargins kPrintSettingsCustomMarginsInPoints(/*header=*/10,
+                                                      /*footer=*/15,
+                                                      /*left=*/20,
+                                                      /*right=*/25,
+                                                      /*top=*/30,
+                                                      /*bottom=*/35);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 PrintSettings::AdvancedSettings GenerateSampleAdvancedSettings() {
@@ -274,7 +272,7 @@ PrintSettings GenerateSamplePrintSettingsCustomMarginsWithParams(
   settings.set_rasterize_pdf(kPrintSettingsRasterizePdf2);
   settings.SetOrientation(kPrintSettingsLandscape2);
 
-  settings.SetCustomMargins(kPrintSettingsCustomMarginsInMicrons);
+  settings.SetCustomMargins(kPrintSettingsCustomMarginsInPoints);
 
 #if BUILDFLAG(IS_WIN)
   settings.set_printer_language_type(kPrintSettingsPrinterLanguageType2);
@@ -542,7 +540,7 @@ TEST(PrintingContextMojomTraitsTest,
 
   // Since `kPrintSettingsMarginType1` is not `kCustomMargins` then expect the
   // custom margins to be default values.
-  EXPECT_TRUE(PageMarginsEqual(output.requested_custom_margins_in_microns(),
+  EXPECT_TRUE(PageMarginsEqual(output.requested_custom_margins_in_points(),
                                PageMargins()));
 
   EXPECT_EQ(output.pages_per_sheet(), kPrintSettingsPagesPerSheet1);
@@ -596,8 +594,8 @@ TEST(PrintingContextMojomTraitsTest,
 #endif
 
   EXPECT_EQ(output.is_modifiable(), kPrintSettingsModifiable2);
-  EXPECT_TRUE(PageMarginsEqual(output.requested_custom_margins_in_microns(),
-                               kPrintSettingsCustomMarginsInMicrons));
+  EXPECT_TRUE(PageMarginsEqual(output.requested_custom_margins_in_points(),
+                               kPrintSettingsCustomMarginsInPoints));
   EXPECT_EQ(output.pages_per_sheet(), kPrintSettingsPagesPerSheet2);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

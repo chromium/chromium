@@ -17,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/escape.h"
@@ -34,6 +35,7 @@
 #include "content/browser/webid/federated_auth_user_info_request.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/identity_registry.h"
+#include "content/browser/webid/idp_network_request_manager.h"
 #include "content/browser/webid/jwt_signer.h"
 #include "content/browser/webid/sd_jwt.h"
 #include "content/browser/webid/webid_utils.h"
@@ -53,6 +55,7 @@
 #include "crypto/sha2.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/webid/login_status_account.h"
 #include "third_party/blink/public/common/webid/login_status_options.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
@@ -1400,9 +1403,40 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
       continue;
     }
 
+    if (IsFedCmLightweightModeEnabled()) {
+      std::vector<IdentityRequestAccountPtr> stored_accounts =
+          permission_delegate_->GetAccounts(
+              url::Origin::Create(idp_info->provider->config->config_url));
+      if (stored_accounts.size() > 0) {
+        OnAccountsResponseReceived(
+            std::move(idp_info),
+            {.parse_status = IdpNetworkRequestManager::ParseStatus::kSuccess,
+             .response_code = 200},
+            std::move(stored_accounts));
+        continue;
+      }
+
+      // If there were no stored accounts and the accounts endpoint URL is
+      // empty, behave as though we received an empty accounts response.
+      if (idp_info->endpoints.accounts.is_empty()) {
+        OnAccountsResponseReceived(
+            std::move(idp_info),
+            {.parse_status =
+                 IdpNetworkRequestManager::ParseStatus::kEmptyListError,
+             .response_code = 200},
+            {});
+        continue;
+      }
+    }
+
     GURL accounts_endpoint = idp_info->endpoints.accounts;
     std::string client_id = idp_info->provider->config->client_id;
     const GURL& config_url = idp_info->provider->config->config_url;
+
+    // accounts_endpoint can't be empty here; if Lightweight FedCM is enabled,
+    // that condition is checked in the previous block, and we continue on to
+    // the next IdP. If it's not enabled, an empty accounts_endpoint returns an
+    // error state from the FederatedProviderFetcher and we never get here.
     network_manager_->SendAccountsRequest(
         accounts_endpoint, client_id,
         base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,

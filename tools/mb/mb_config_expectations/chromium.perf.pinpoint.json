@@ -11,7 +11,6 @@
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -29,7 +28,6 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -45,7 +43,6 @@
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -58,7 +55,6 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -76,7 +72,6 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -91,7 +86,6 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -108,7 +102,6 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -123,7 +116,6 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -135,7 +127,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -147,7 +138,6 @@
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "use_gnome_keyring": false,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -157,7 +147,6 @@
       "is_official_build": true,
       "symbol_level": 1,
       "use_gnome_keyring": false,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -169,7 +158,6 @@
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "use_gnome_keyring": false,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -183,7 +171,6 @@
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -195,7 +182,6 @@
       "is_official_build": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -208,7 +194,6 @@
       "is_official_build": true,
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -219,7 +204,6 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -232,7 +216,6 @@
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -244,7 +227,6 @@
       "reclient_cfg_dir": "//buildtools/reclient_cfgs/win-cross",
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -253,7 +235,6 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true
     }
   }

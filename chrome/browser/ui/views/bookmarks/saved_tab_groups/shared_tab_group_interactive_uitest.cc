@@ -477,15 +477,12 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, LeaveGroupPressed) {
   ShareTabGroup(group_id, "fake_collaboration_id",
                 data_sharing::MemberRole::kMember, /*should_sign_in=*/true);
 
-  RunTestSequence(
-      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
-      HoverTabGroupHeader(group_id), ClickMouse(ui_controls::RIGHT),
-      WaitForShow(kTabGroupEditorBubbleId),
-      PressButton(kTabGroupEditorBubbleLeaveGroupButtonId),
-      WaitForHide(kTabGroupEditorBubbleLeaveGroupButtonId),
-      WaitForShow(kDeletionDialogCancelButtonId),
-      PressButton(kDeletionDialogCancelButtonId),
-      WaitForHide(kDeletionDialogCancelButtonId), FinishTabstripAnimations());
+  RunTestSequence(WaitForShow(kTabGroupHeaderElementId),
+                  FinishTabstripAnimations(), HoverTabGroupHeader(group_id),
+                  ClickMouse(ui_controls::RIGHT),
+                  WaitForShow(kTabGroupEditorBubbleId),
+                  EnsurePresent(kTabGroupEditorBubbleLeaveGroupButtonId),
+                  FinishTabstripAnimations());
 }
 
 // Verify members see the leave group button instead of the delete button in the
@@ -496,17 +493,14 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
   ShareTabGroup(group_id, "fake_collaboration_id",
                 data_sharing::MemberRole::kMember, /*should_sign_in=*/true);
 
-  RunTestSequence(
-      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
-      PressButton(kToolbarAppMenuButtonElementId),
-      WaitForShow(AppMenuModel::kTabGroupsMenuItem),
-      SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
-      SelectMenuItem(STGEverythingMenu::kTabGroup),
-      EnsurePresent(STGTabsMenuModel::kLeaveGroupMenuItem),
-      SelectMenuItem(STGTabsMenuModel::kLeaveGroupMenuItem),
-      WaitForShow(kDeletionDialogCancelButtonId),
-      PressButton(kDeletionDialogCancelButtonId), FinishTabstripAnimations(),
-      WaitForHide(kDeletionDialogCancelButtonId));
+  RunTestSequence(WaitForShow(kTabGroupHeaderElementId),
+                  FinishTabstripAnimations(),
+                  PressButton(kToolbarAppMenuButtonElementId),
+                  WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+                  SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+                  SelectMenuItem(STGEverythingMenu::kTabGroup),
+                  EnsurePresent(STGTabsMenuModel::kLeaveGroupMenuItem),
+                  FinishTabstripAnimations());
 }
 
 // Verify members see the recent activity button when activity exists.

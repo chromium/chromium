@@ -909,6 +909,22 @@ message PolicyData {
   // can check that. The value is from ChromeOsDeviceInfo
   // http://google3/ccc/hosted/devices/services/chromeos/common.proto;rcl=436571779;l=549
   optional string license_sku = 38;
+
+  // The K12 user age classification segments for metrics logging. If any values
+  // are added to this enum, the corresponding enum in
+  // `K12AgeClassificationMetricsProvider::AgeClassificationSegment`
+  // (http://shortn/_POBIUl3EIK) should be updated.
+  enum K12AgeClassificationMetricsLogSegment {
+    AGE_UNSPECIFIED = 0;
+    AGE_UNDER_18 = 1;
+    AGE_EQUAL_OR_OVER_18 = 2;
+  }
+
+  // Indicates the segment the user's age classification metrics should be
+  // logged under, `AGE_UNSPECIFIED` if not relevant. This field should only be
+  // set for User Policy response.
+  optional K12AgeClassificationMetricsLogSegment
+      k12_age_classification_metrics_log_segment = 39;
 }
 
 message ClientActionRequired {

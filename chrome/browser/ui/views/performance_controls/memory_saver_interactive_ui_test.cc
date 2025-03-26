@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
@@ -74,8 +75,6 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTabContents);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPerformanceSettingsTab);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAudioIsAudible);
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
-                                    kPageActionButtonVisible);
 
 constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
 
@@ -266,7 +265,8 @@ struct MemorySaverChipInteractiveTestParams {
 
 // Tests the functionality of the Memory Saver page action chip
 class MemorySaverChipInteractiveTest
-    : public MemorySaverInteractiveTestMixin<InteractiveBrowserTest>,
+    : public PageActionInteractiveTestMixin<
+          MemorySaverInteractiveTestMixin<InteractiveBrowserTest>>,
       public ::testing::WithParamInterface<
           MemorySaverChipInteractiveTestParams> {
  public:
@@ -288,6 +288,8 @@ class MemorySaverChipInteractiveTest
     }
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
+    CHECK_EQ(IsPageActionMigrationEnabled(),
+             GetParam().page_actions_migration_enabled);
   }
 
   ~MemorySaverChipInteractiveTest() override = default;
@@ -314,31 +316,14 @@ class MemorySaverChipInteractiveTest
                      ->GetBubble();
   }
 
-  // Utility to reliably wait for the page action view to be visible. When
-  // animating between icon and suggestion chip, the view passes through a state
-  // where its width is 0. If layout runs (for any reason) in that state, layout
-  // sets the view to invisible. In turn, if a test is asserting that the View
-  // is visible, the temporary switch to invisible state will fail the test
-  // assertion. Animation isn't always used, so emitting a custom event when
-  // the view has reached its target state isn't trivial. So, resort to polling
-  // the View for when its reached a stable visible state.
+  using PageActionInteractiveTestMixin::WaitForPageActionButtonVisible;
+
   auto WaitForPageActionButtonVisible() {
     MultiStep steps;
     if (IsPageActionMigrationEnabled()) {
-      steps += Steps(
-          PollState(kPageActionButtonVisible,
-                    [this]() {
-                      auto* view =
-                          BrowserView::GetBrowserViewForBrowser(browser())
-                              ->toolbar_button_provider()
-                              ->GetPageActionView(kActionShowMemorySaverChip);
-                      return view->GetVisible() && !view->is_animating_label();
-                    }),
-          WaitForState(kPageActionButtonVisible, true),
-          StopObservingState(kPageActionButtonVisible));
+      steps += WaitForPageActionButtonVisible(kActionShowMemorySaverChip);
     } else {
       steps += WaitForShow(kMemorySaverChipElementId);
-      AddDescriptionPrefix(steps, "WaitForPageActionButtonVisible()");
     }
     return steps;
   }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -297,7 +299,16 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   }
 
   test::CompletePageLoadForAllWebContents();
-  ui_test_utils::WaitUntilBrowserBecomeActive(app_browser_1);
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+
+  content::WebContents* contents_to_finish =
+      app_browser_1->tab_strip_model()->GetActiveWebContents();
+
+  // `kLandingPage` should be obtained first when the browser is launched, and
+  // `kFinalPage` is added later when navigation capturing happens.
+  EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
+                  contents_to_finish, "launchParamsTargetUrls"),
+              testing::ElementsAre(GetLandingPage(), GetFinalPage()));
 
   // `app_browser_1` should still be at the landing page.
   EXPECT_EQ(GetLandingPage(), app_browser_1->tab_strip_model()

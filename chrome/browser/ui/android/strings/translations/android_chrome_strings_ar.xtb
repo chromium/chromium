@@ -69,7 +69,7 @@
 <translation id="1258753120186372309">‏ رسم شعار Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263063910731171689">‏سيظهر لك الآن محتوى من موقع "<ph name="SITE_NAME" />" وحوله في القسم "تتم متابعته حاليًا". يتم حفظ المواقع الإلكترونية وعمليات البحث التي تُتابعها في حسابك على Google. يمكنك إدارة المحتوى الذي تُتابعه من خلال الإعدادات في أي وقت.</translation>
 <translation id="1263231323834454256">قائمة القراءة</translation>
-<translation id="1269129608791067105">سيظهر لك السجلّ هنا.</translation>
+<translation id="1269129608791067105">سيظهر لك السجلّ هنا</translation>
 <translation id="1273937721055267968">حظر <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">النقر للتوسيع</translation>
 <translation id="1289129165308566697">عرض سجلّ التصفح على الأجهزة الأخرى</translation>
@@ -461,7 +461,6 @@
 <translation id="3114507951000454849">الاطّلاع على أخبار اليوم <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">المزيد من التفاصيل</translation>
 <translation id="3123734510202723619">الإعلامات</translation>
-<translation id="3131961580615093332">تم تغيير علامة التبويب "<ph name="TAB_NAME" />" من قِبل "<ph name="GIVEN_NAME" />"</translation>
 <translation id="3148237711805373460">الانتقال إلى الإعدادات</translation>
 <translation id="314939179385989105">‏الصفحة الرئيسية لمتصفّح Chrome</translation>
 <translation id="3158667104057012316">جارٍ الترتيب يدويًا</translation>
@@ -806,7 +805,7 @@
 <translation id="4769095993849849966">الاسم الجديد للملف</translation>
 <translation id="4769632191812288342">يتم توفير الحماية العادية حاليًا</translation>
 <translation id="4773122030389014189">مشاركة مجموعة علامات التبويب "<ph name="GROUP_NAME" />"</translation>
-<translation id="4775646243557794597">تم حذف <ph name="TIME_PERIOD" />.</translation>
+<translation id="4775646243557794597">تم حذف <ph name="TIME_PERIOD" /></translation>
 <translation id="4777866634702576038">هل تريد حذف مجموعة علامات التبويب؟</translation>
 <translation id="4778653490315793244">ما من محتوى متوفّر حتى الآن</translation>
 <translation id="4782929588435725897">‫<ph name="SEARCH_ENGINE" /> هو محرك البحث التلقائي</translation>
@@ -843,14 +842,12 @@
 <translation id="4910889077668685004">تطبيقات الدفع</translation>
 <translation id="4912413785358399818">نقل علامة التبويب</translation>
 <translation id="4913169188695071480">إيقاف إعادة التحميل</translation>
-<translation id="4918086044614829423">قبول</translation>
 <translation id="4925120120285606924">لقطة شاشة بتاريخ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">سيتم تصدير كلمات المرور الخاصة بك وتنزيلها كملف نصي. وستكون مرئية لأي شخص وأي تطبيق لديه إمكانية الوصول إلى هذا الملف النصي.</translation>
 <translation id="4926901776383726965">يمكنك حفظ الصور والملفات لعرضها بلا اتصال بالإنترنت أو مشاركتها في تطبيقات أخرى.</translation>
 <translation id="4932247056774066048">‏لأنك بصدد الخروج من حساب تتم إدارته من خلال <ph name="DOMAIN_NAME" />، سيتم حذف بيانات Chrome من هذا الجهاز. وستظل البيانات في حسابك على Google.</translation>
 <translation id="4943703118917034429">الواقع الافتراضي</translation>
 <translation id="4943872375798546930">لا نتائج</translation>
-<translation id="4953833914914492602">لم تعُد مجموعة علامات التبويب "<ph name="TAB_GROUP_NAME" />" متوفّرة</translation>
 <translation id="4957722034734105353">مزيد من المعلومات...</translation>
 <translation id="4961107849584082341">ترجمة هذه الصفحة إلى أي لغة</translation>
 <translation id="4964614743143953889">‏يحذرك Chrome بشأن المواقع الإلكترونية وعمليات التنزيل غير الآمنة</translation>
@@ -969,7 +966,6 @@
 <translation id="5526281268548144413">لا يمكن إغلاق علامات التبويب في نوافذ متعددة</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{قبل دقيقة واحدة}zero{قبل # دقيقة}two{قبل دقيقتَين}few{قبل # دقائق}many{قبل # دقيقة}other{قبل # دقيقة}}</translation>
 <translation id="5548606607480005320">التحقّق من الأمان</translation>
-<translation id="5551564597369878730">تم انضمام "<ph name="GIVEN_NAME" />" إلى مجموعة علامات التبويب "<ph name="TAB_GROUP_NAME" />"</translation>
 <translation id="5554520618550346933">‏عندما تستخدم كلمة مرور، يحذّرك Chrome مما إذا كان قد تم نشرها على الإنترنت. وأثناء هذه العملية، يتم تشفير كلمات المرور وأسماء المستخدمين حتى لا يتمكّن أي طرف آخر من الاطّلاع عليها، بما في ذلك Google.</translation>
 <translation id="5555525474779371165">اختيار حماية "التصفُّح الآمن"</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
@@ -990,7 +986,7 @@
 <translation id="5626134646977739690">الاسم:</translation>
 <translation id="5628604359369369630">الصفحات غير المقروءة المتاحة بلا إنترنت</translation>
 <translation id="5631483240431073854">إدارة علامات التبويب المفتوحة</translation>
-<translation id="5641456720590409793">‏قد يتم حفظ <ph name="BEGIN_LINK1" />سجلّ البحث<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بيانات الأنشطة الأخرى<ph name="END_LINK2" /> في حسابك على Google.</translation>
+<translation id="5641456720590409793">‏قد يتم حفظ <ph name="BEGIN_LINK1" />سجلّ البحث<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بيانات الأنشطة الأخرى<ph name="END_LINK2" /> في حسابك على Google</translation>
 <translation id="5648166631817621825">آخر 7 أيام</translation>
 <translation id="5655963694829536461">البحث في صفحة عمليات التنزيل</translation>
 <translation id="5657871969392618475">معلوماتك مؤمَّنة باستخدام قفل للملف الشخصي</translation>
@@ -1186,7 +1182,6 @@
 <translation id="6481963882741794338">‏ربط Chrome وخدمات Google الأخرى لأغراض تخصيص الخيارات وأغراض أخرى</translation>
 <translation id="6482749332252372425">تعذّر تنزيل الملف <ph name="FILE_NAME" /> لعدم توفر مساحة لتخزين.</translation>
 <translation id="6486420406192123355">‏ملف PDF هذا متوفّر على موقع إلكتروني يستخدم اتصالاً غير آمن</translation>
-<translation id="6495590690749880440">هل تريد فتح مجموعة علامات التبويب؟</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{تم تنزيل ملف واحد.}zero{اكتملت # عملية تنزيل.}two{اكتملت عمليتا تنزيل.}few{اكتملت # عمليات تنزيل.}many{اكتملت # عملية تنزيل.}other{اكتملت # علمية تنزيل.}}</translation>
 <translation id="6508722015517270189">‏إعادة تشغيل Chrome</translation>
 <translation id="6518133107902771759">تحقق</translation>
@@ -1597,7 +1592,7 @@
 </translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" ومستخدمًا واحدًا آخر (<ph name="NUMBER_OF_OTHER_MEMBERS" />)}zero{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" و<ph name="NUMBER_OF_OTHER_MEMBERS" /> مستخدم آخر}two{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" ومستخدمَين آخرَين (<ph name="NUMBER_OF_OTHER_MEMBERS" />)}few{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" و<ph name="NUMBER_OF_OTHER_MEMBERS" /> مستخدمِين آخرِين}many{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" و<ph name="NUMBER_OF_OTHER_MEMBERS" /> مستخدمًا آخر}other{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" و<ph name="NUMBER_OF_OTHER_MEMBERS" /> مستخدم آخر}}</translation>
 <translation id="8209050860603202033">فتح الصورة</translation>
-<translation id="8210770465353466621">ستظهر لك علامات التبويب هنا.</translation>
+<translation id="8210770465353466621">ستظهر لك علامات التبويب هنا</translation>
 <translation id="8211101263765532799">ستفقد قريبًا إمكانية الوصول إلى بعض كلمات المرور</translation>
 <translation id="8215740705341534369">بطاقة جانبية</translation>
 <translation id="8218622182176210845">إدارة حسابك</translation>
@@ -1623,7 +1618,6 @@
 <translation id="8282297628636750033">تطبيق "المظهر الداكن" على المواقع، إن أمكن ذلك</translation>
 <translation id="8282950411412455249">الانتقال إلى إعدادات الأمان</translation>
 <translation id="8306751933352925837">‏ستفقد قريبًا إمكانية الوصول إلى كلمات المرور على هذا الجهاز. لمواصلة استخدام كلمات المرور، يجب تحديث "خدمات Google Play". <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
-<translation id="8307517230426267469">تمّت إزالة علامة التبويب "<ph name="TAB_NAME" />" من قِبل "<ph name="GIVEN_NAME" />"</translation>
 <translation id="8310451567823644042">ستفقد قريبًا إمكانية الوصول إلى كلمات المرور</translation>
 <translation id="831192587911042850">تعمل هذه الميزة على إضافة الموقع الإلكتروني الحالي إلى قائمة المواقع الإلكترونية التي تتابعها.</translation>
 <translation id="8320212361750431956">الأنشطة الحديثة</translation>

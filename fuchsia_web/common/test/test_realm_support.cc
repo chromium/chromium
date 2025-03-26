@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 
 using ::component_testing::ChildRef;
+using ::component_testing::Dictionary;
 using ::component_testing::Directory;
 using ::component_testing::ParentRef;
 using ::component_testing::Protocol;
@@ -89,9 +90,18 @@ void AddRouteFromParent(RealmBuilder& realm_builder,
                                .targets = {std::move(child_ref)}});
 }
 
+void AddDictionaryRouteFromParent(RealmBuilder& realm_builder,
+                                  std::string_view child_name,
+                                  std::string_view dictionary_name) {
+  ChildRef child_ref{std::string_view(child_name.data(), child_name.size())};
+  realm_builder.AddRoute(Route{.capabilities = {Dictionary{dictionary_name}},
+                               .source = ParentRef{},
+                               .targets = {std::move(child_ref)}});
+}
+
 void AddSyslogRoutesFromParent(RealmBuilder& realm_builder,
                                std::string_view child_name) {
-  AddRouteFromParent(realm_builder, child_name, "fuchsia.logger.LogSink");
+  AddDictionaryRouteFromParent(realm_builder, child_name, "diagnostics");
 }
 
 void AddVulkanRoutesFromParent(RealmBuilder& realm_builder,

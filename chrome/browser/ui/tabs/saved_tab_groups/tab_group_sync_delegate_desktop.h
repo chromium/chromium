@@ -34,7 +34,7 @@ class TabGroupSyncDelegateDesktop : public TabGroupSyncDelegate {
   ~TabGroupSyncDelegateDesktop() override;
 
   // TabGroupSyncDelegate implementation.
-  void HandleOpenTabGroupRequest(
+  std::optional<LocalTabGroupID> HandleOpenTabGroupRequest(
       const base::Uuid& sync_tab_group_id,
       std::unique_ptr<TabGroupActionContext> context) override;
   void CreateLocalTabGroup(const SavedTabGroup& tab_group) override;

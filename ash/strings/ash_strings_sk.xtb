@@ -1014,6 +1014,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4351244548802238354">Zavrieť dialógové okno</translation>
 <translation id="4356872429719185452">Zobraziť podrobnosti o hotspote. Hotspot sa zapína.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Nahráva sa</translation>
+<translation id="4368227575116094370">Vytvoriť tabuľku Google</translation>
 <translation id="4371348193907997655">Nastavenia prenosu</translation>
 <translation id="4371834685492830207">PIN musí obsahovať iba platné znaky</translation>
 <translation id="4375482231364171368">Vyhľadávanie na paneli s adresou</translation>
@@ -1483,6 +1484,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5825969630400862129">Nastavenia pripojených zariadení</translation>
 <translation id="5830180081891717894">Ešte <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Zastaviť prenos obsahu <ph name="ROUTE_TITLE" /> do zariadenia <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Hľadať pomocou Googlu</translation>
 <translation id="5841296711770970362">Prechod na ďalšiu skladbu</translation>
 <translation id="5842553299352339114">Hotspot v zariadení <ph name="DEVICE_NAME" /> je zapnutý, nie sú pripojené žiadne zariadenia</translation>
 <translation id="584525477304726060">Pridržaním maximalizujte</translation>

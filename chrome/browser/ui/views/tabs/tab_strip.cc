@@ -1299,8 +1299,9 @@ void TabStrip::OnGroupClosed(const tab_groups::TabGroupId& group) {
   tab_container_->OnGroupClosed(group);
 }
 
-void TabStrip::AddTabToSplit(int split_index) {
-  tab_at(split_index)->set_split(true);
+void TabStrip::SetSplit(int split_index,
+                        std::optional<split_tabs::SplitTabId> split_id) {
+  tab_at(split_index)->SetSplit(split_id.value());
   InvalidateLayout();
   SchedulePaint();
 }
@@ -1873,7 +1874,7 @@ Tab* TabStrip::GetAdjacentTab(const Tab* tab, int offset) {
 }
 
 std::vector<Tab*> TabStrip::GetTabsInSplit(const Tab* tab) {
-  if (!tab->split()) {
+  if (!tab->split().has_value()) {
     return {};
   }
 
@@ -1881,11 +1882,13 @@ std::vector<Tab*> TabStrip::GetTabsInSplit(const Tab* tab) {
   // TODO(agale): In the future this might need to support more than two tab
   // splits.
   Tab* start_tab = tab->controller()->GetAdjacentTab(tab, -1);
-  if (start_tab && start_tab->split()) {
+  if (start_tab && start_tab->split().has_value() &&
+      start_tab->split().value() == current_tab->split().value()) {
     return {start_tab, current_tab};
   }
   Tab* const end_tab = tab->controller()->GetAdjacentTab(tab, 1);
-  if (end_tab && end_tab->split()) {
+  if (end_tab && end_tab->split().has_value() &&
+      end_tab->split().value() == current_tab->split().value()) {
     return {current_tab, end_tab};
   }
 
@@ -1917,7 +1920,7 @@ bool TabStrip::HoverCardIsShowingForTab(Tab* tab) {
 }
 
 void TabStrip::ShowHover(Tab* tab, TabStyle::ShowHoverStyle style) {
-  if (tab->split()) {
+  if (tab->split().has_value()) {
     for (Tab* split_tab : GetTabsInSplit(tab)) {
       split_tab->tab_style_views()->ShowHover(style);
     }
@@ -1927,7 +1930,7 @@ void TabStrip::ShowHover(Tab* tab, TabStyle::ShowHoverStyle style) {
 }
 
 void TabStrip::HideHover(Tab* tab, TabStyle::HideHoverStyle style) {
-  if (tab->split()) {
+  if (tab->split().has_value()) {
     for (Tab* split_tab : GetTabsInSplit(tab)) {
       split_tab->tab_style_views()->HideHover(style);
     }

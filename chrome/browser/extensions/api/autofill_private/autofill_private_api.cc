@@ -96,6 +96,8 @@ static const char kErrorCardDataUnavailable[] = "Credit card data unavailable";
 static const char kErrorDataUnavailable[] = "Autofill data unavailable.";
 static const char kErrorAutofillAiUnavailable[] =
     "Autofill AI data unavailable.";
+static const char kErrorAutofillAiInvalidData[] =
+    "The provided Autofill AI entity/attribute is invalid.";
 static const char kErrorAutofillAiTypeNameOutOfBounds[] =
     "The provided Autofill AI entity/attribute type name is out of bounds.";
 static const char kErrorAutofillAiEntityInstanceNotFound[] =
@@ -968,33 +970,6 @@ AutofillPrivateSetAutofillSyncToggleEnabledFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateIsUserEligibleForAutofillImprovementsFunction
-
-// TODO(crbug.com/393318914): Remove function.
-ExtensionFunction::ResponseAction
-AutofillPrivateIsUserEligibleForAutofillImprovementsFunction::Run() {
-  Profile* profile =
-      Profile::FromBrowserContext(GetSenderWebContents()->GetBrowserContext());
-  return RespondNow(WithArguments(autofill_ai::IsUserEligible(profile)));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivatePredictionImprovementsIphFeatureUsedFunction
-
-ExtensionFunction::ResponseAction
-AutofillPrivatePredictionImprovementsIphFeatureUsedFunction::Run() {
-  autofill::ContentAutofillClient* client =
-      autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
-  if (!client) {
-    return RespondNow(Error(kErrorDataUnavailable));
-  }
-
-  client->NotifyIphFeatureUsed(
-      autofill::AutofillClient::IphFeature::kAutofillAi);
-  return RespondNow(NoArguments());
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateAddOrUpdateEntityInstanceFunction
 
 ExtensionFunction::ResponseAction
@@ -1008,9 +983,10 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
       parameters->entity_instance;
   std::optional<EntityInstance> entity_instance =
       autofill_ai_util::PrivateApiEntityInstanceToEntityInstance(
-          private_api_entity_instance);
+          private_api_entity_instance,
+          g_browser_process->GetApplicationLocale());
   if (!entity_instance.has_value()) {
-    return RespondNow(Error(kErrorAutofillAiTypeNameOutOfBounds));
+    return RespondNow(Error(kErrorAutofillAiInvalidData));
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());

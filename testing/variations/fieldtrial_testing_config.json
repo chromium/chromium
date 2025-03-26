@@ -710,21 +710,6 @@
             ]
         }
     ],
-    "AndroidUseFrameIntervalDecider": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseFrameIntervalDecider"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidUseFrameIntervalDeciderNewAndroidFeatures": [
         {
             "platforms": [
@@ -4892,6 +4877,21 @@
             ]
         }
     ],
+    "ChromeOSOobePersonalizedOnboardingHoldback": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Holdback",
+                    "disable_features": [
+                        "OobePersonalizedOnboarding"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSPrintingIppUsb": [
         {
             "platforms": [
@@ -6285,24 +6285,6 @@
             ]
         }
     ],
-    "ContentUsesBrowserThemeColorMode": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ContentUsesBrowserThemeColorMode"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContextualSearchBox": [
         {
             "platforms": [
@@ -6315,7 +6297,7 @@
                 {
                     "name": "Enabled_InnerHtml",
                     "params": {
-                        "file-upload-limit-bytes": "200000000",
+                        "auto-focus-searchbox": "false",
                         "send-page-url-for-contextualization": "true",
                         "show-contextual-searchbox-ghost-loader-loading-state": "true",
                         "use-inner-html-as-context": "true",
@@ -11730,6 +11712,21 @@
             ]
         }
     ],
+    "IOSAutofillCorrectUserEditedBitInParsedField": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillCorrectUserEditedBitInParsedField"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAutofillFixPostFillingPaymentSheet": [
         {
             "platforms": [
@@ -12380,6 +12377,21 @@
             ]
         }
     ],
+    "IOSPasskeysM2": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSPasskeysM2"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPasswordBottomSheetV2": [
         {
             "platforms": [
@@ -12410,22 +12422,41 @@
             ]
         }
     ],
-    "IOSReactivationNotifications": [
+    "IOSProactiveTipsNotifications": [
         {
             "platforms": [
                 "ios"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "LensFirst_7day",
                     "enable_features": [
                         "IOSReactivationNotifications"
                     ]
                 },
                 {
-                    "name": "ESBFirst",
+                    "name": "LensFirst_3Day",
+                    "params": {
+                        "reactivation_trigger_time": "72h"
+                    },
+                    "enable_features": [
+                        "IOSReactivationNotifications"
+                    ]
+                },
+                {
+                    "name": "ESBFirst_7Day",
                     "params": {
                         "reactivation_order": "8,7,1"
+                    },
+                    "enable_features": [
+                        "IOSReactivationNotifications"
+                    ]
+                },
+                {
+                    "name": "ESBFirst_3Day",
+                    "params": {
+                        "reactivation_order": "8,7,1",
+                        "reactivation_trigger_time": "72h"
                     },
                     "enable_features": [
                         "IOSReactivationNotifications"
@@ -16751,25 +16782,6 @@
             ]
         }
     ],
-    "PartitionVisitedLinkDatabaseWithSelfLinks": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "PartitionVisitedLinkDatabaseWithSelfLinks",
-                    "enable_features": [
-                        "PartitionVisitedLinkDatabaseWithSelfLinks"
-                    ]
-                }
-            ]
-        }
-    ],
     "PassHistogramSharedMemoryOnLaunch": [
         {
             "platforms": [
@@ -18698,21 +18710,6 @@
             ]
         }
     ],
-    "ProjectorUseDVSPlaybackEndpoint": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ProjectorUseDVSPlaybackEndpoint"
-                    ]
-                }
-            ]
-        }
-    ],
     "PropagateWebViewNetworkingSignals": [
         {
             "platforms": [
@@ -18990,6 +18987,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FledgePrepareSellerContextsInAdvance"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ProtectedAudienceSellerSignalsRequestsOneAtATime": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeSellerSignalsRequestsOneAtATime"
                     ]
                 }
             ]
@@ -19631,6 +19647,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ReduceAcceptLanguage"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ReduceAcceptLanguageHTTP": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReduceAcceptLanguageHTTP"
                     ]
                 }
             ]
@@ -22560,6 +22595,24 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ShelfStackedHotseat"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ShopCardIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250321",
+                    "params": {
+                        "ShopCardVariant": "arm_3"
+                    },
+                    "enable_features": [
+                        "ShopCard"
                     ]
                 }
             ]

@@ -9,15 +9,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/connectors_service_base.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
@@ -70,17 +65,18 @@ ChromeEnterpriseRealTimeUrlLookupService::
     ChromeEnterpriseRealTimeUrlLookupService(
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         VerdictCacheManager* cache_manager,
-        Profile* profile,
         base::RepeatingCallback<ChromeUserPopulation()>
             get_user_population_callback,
         std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
-        enterprise_connectors::ConnectorsService* connectors_service,
+        enterprise_connectors::ConnectorsServiceBase* connectors_service,
         ReferrerChainProvider* referrer_chain_provider,
         PrefService* pref_service,
         signin::IdentityManager* identity_manager,
         policy::ManagementService* management_service,
         bool is_off_the_record,
-        bool is_guest_session)
+        bool is_guest_session,
+        base::RepeatingCallback<std::string()> get_profile_email_callback,
+        base::RepeatingCallback<bool()> is_profile_affiliated_callback)
     : RealTimeUrlLookupServiceBase(
           url_loader_factory,
           cache_manager,
@@ -88,14 +84,15 @@ ChromeEnterpriseRealTimeUrlLookupService::
           referrer_chain_provider,
           pref_service,
           /*webui_delegate=*/WebUIInfoSingleton::GetInstance()),
-      profile_(profile),
       connectors_service_(connectors_service),
       token_fetcher_(std::move(token_fetcher)),
       pref_service_(pref_service),
       identity_manager_(identity_manager),
       management_service_(management_service),
       is_off_the_record_(is_off_the_record),
-      is_guest_session_(is_guest_session) {}
+      is_guest_session_(is_guest_session),
+      get_profile_email_callback_(get_profile_email_callback),
+      is_profile_affiliated_callback_(is_profile_affiliated_callback) {}
 
 ChromeEnterpriseRealTimeUrlLookupService::
     ~ChromeEnterpriseRealTimeUrlLookupService() = default;
@@ -115,7 +112,7 @@ bool ChromeEnterpriseRealTimeUrlLookupService::
   // managed device.
   if (management_service_->HasManagementAuthority(
           policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) &&
-      !enterprise_util::IsProfileAffiliated(profile_)) {
+      !is_profile_affiliated_callback_.Run()) {
     return false;
   }
 
@@ -270,7 +267,7 @@ bool ChromeEnterpriseRealTimeUrlLookupService::CanSendRTSampleRequest() const {
 }
 
 std::string ChromeEnterpriseRealTimeUrlLookupService::GetUserEmail() const {
-  return enterprise_connectors::GetProfileEmail(profile_);
+  return get_profile_email_callback_.Run();
 }
 
 std::string ChromeEnterpriseRealTimeUrlLookupService::GetBrowserDMTokenString()
@@ -282,7 +279,7 @@ std::string ChromeEnterpriseRealTimeUrlLookupService::GetProfileDMTokenString()
     const {
 #if !BUILDFLAG(IS_CHROMEOS)
   if (!connectors_service_->GetBrowserDmToken().has_value() ||
-      enterprise_util::IsProfileAffiliated(profile_)) {
+      is_profile_affiliated_callback_.Run()) {
     return connectors_service_->GetProfileDmToken().value_or("");
   }
 #endif

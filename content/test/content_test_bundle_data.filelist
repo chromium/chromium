@@ -2092,9 +2092,12 @@ data/accessibility/css/pseudo-element-alternative-text-expected-android.txt
 data/accessibility/css/pseudo-element-alternative-text-expected-auralinux.txt
 data/accessibility/css/pseudo-element-alternative-text-expected-blink.txt
 data/accessibility/css/pseudo-element-alternative-text.html
+data/accessibility/css/pseudo-element-check-mark-expected-auralinux.txt
 data/accessibility/css/pseudo-element-check-mark-expected-blink.txt
+data/accessibility/css/pseudo-element-check-mark-override-content-alternative-text-expected-auralinux.txt
 data/accessibility/css/pseudo-element-check-mark-override-content-alternative-text-expected-blink.txt
 data/accessibility/css/pseudo-element-check-mark-override-content-alternative-text.html
+data/accessibility/css/pseudo-element-check-mark-override-content-expected-auralinux.txt
 data/accessibility/css/pseudo-element-check-mark-override-content-expected-blink.txt
 data/accessibility/css/pseudo-element-check-mark-override-content.html
 data/accessibility/css/pseudo-element-check-mark.html

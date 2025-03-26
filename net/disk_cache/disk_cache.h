@@ -344,9 +344,6 @@ class NET_EXPORT Entry {
   // Returns the time when this cache entry was last used.
   virtual base::Time GetLastUsed() const = 0;
 
-  // Returns the time when this cache entry was last modified.
-  virtual base::Time GetLastModified() const = 0;
-
   // Returns the size of the cache data with the given index.
   virtual int32_t GetDataSize(int index) const = 0;
 

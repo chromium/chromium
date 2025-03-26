@@ -13,25 +13,25 @@ namespace regional_capabilities {
 
 std::unique_ptr<RegionalCapabilitiesService> CreateServiceWithFakeClient(
     PrefService& profile_prefs,
-    int country_id) {
+    CountryId country_id) {
   return std::make_unique<RegionalCapabilitiesService>(
       profile_prefs,
       std::make_unique<FakeRegionalCapabilitiesServiceClient>(country_id));
 }
 
 FakeRegionalCapabilitiesServiceClient::FakeRegionalCapabilitiesServiceClient(
-    int country_id)
+    CountryId country_id)
     : country_id_(country_id) {}
 
 FakeRegionalCapabilitiesServiceClient::
     ~FakeRegionalCapabilitiesServiceClient() = default;
 
-int FakeRegionalCapabilitiesServiceClient::GetFallbackCountryId() {
+CountryId FakeRegionalCapabilitiesServiceClient::GetFallbackCountryId() {
   return country_id_;
 }
 
 void FakeRegionalCapabilitiesServiceClient::FetchCountryId(
-    base::OnceCallback<void(int)> on_country_id_fetched) {
+    base::OnceCallback<void(CountryId)> on_country_id_fetched) {
   std::move(on_country_id_fetched).Run(country_id_);
 }
 

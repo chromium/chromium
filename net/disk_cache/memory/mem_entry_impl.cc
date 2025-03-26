@@ -123,13 +123,11 @@ int MemEntryImpl::GetStorageSize() const {
   return storage_size;
 }
 
-void MemEntryImpl::UpdateStateOnUse(EntryModified modified_enum) {
+void MemEntryImpl::UpdateStateOnUse() {
   if (!doomed_ && backend_)
     backend_->OnEntryUpdated(this);
 
   last_used_ = MemBackendImpl::Now(backend_);
-  if (modified_enum == ENTRY_WAS_MODIFIED)
-    last_modified_ = last_used_;
 }
 
 void MemEntryImpl::Doom() {
@@ -170,10 +168,6 @@ std::string MemEntryImpl::GetKey() const {
 
 Time MemEntryImpl::GetLastUsed() const {
   return last_used_;
-}
-
-Time MemEntryImpl::GetLastModified() const {
-  return last_modified_;
 }
 
 int32_t MemEntryImpl::GetDataSize(int index) const {
@@ -291,8 +285,7 @@ MemEntryImpl::MemEntryImpl(base::WeakPtr<MemBackendImpl> backend,
     : key_(key),
       child_id_(child_id),
       parent_(parent),
-      last_modified_(MemBackendImpl::Now(backend)),
-      last_used_(last_modified_),
+      last_used_(MemBackendImpl::Now(backend)),
       backend_(backend) {
   backend_->OnEntryInserted(this);
   net_log_ = net::NetLogWithSource::Make(
@@ -340,7 +333,7 @@ int MemEntryImpl::InternalReadData(int index, int offset, IOBuffer* buf,
       end_offset > entry_size)
     buf_len = entry_size - offset;
 
-  UpdateStateOnUse(ENTRY_WAS_NOT_MODIFIED);
+  UpdateStateOnUse();
   buf->span().copy_prefix_from(
       base::as_byte_span(data_[index])
           .subspan(u_offset, base::checked_cast<size_t>(buf_len)));
@@ -418,7 +411,7 @@ int MemEntryImpl::InternalWriteData(int index, int offset, IOBuffer* buf,
     }
   }
 
-  UpdateStateOnUse(ENTRY_WAS_MODIFIED);
+  UpdateStateOnUse();
 
   return buf_len;
 }
@@ -483,7 +476,7 @@ int MemEntryImpl::InternalReadSparseData(int64_t offset,
     io_buf->DidConsume(ret);
   }
 
-  UpdateStateOnUse(ENTRY_WAS_NOT_MODIFIED);
+  UpdateStateOnUse();
   return io_buf->BytesConsumed();
 }
 
@@ -555,7 +548,7 @@ int MemEntryImpl::InternalWriteSparseData(int64_t offset,
     io_buf->DidConsume(ret);
   }
 
-  UpdateStateOnUse(ENTRY_WAS_MODIFIED);
+  UpdateStateOnUse();
   return io_buf->BytesConsumed();
 }
 

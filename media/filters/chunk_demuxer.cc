@@ -849,7 +849,7 @@ Ranges<base::TimeDelta> ChunkDemuxer::GetBufferedRanges(
 
   auto itr = source_state_map_.find(id);
 
-  CHECK(itr != source_state_map_.end(), base::NotFatalUntil::M130);
+  CHECK(itr != source_state_map_.end());
   return itr->second->GetBufferedRanges(duration_, state_ == ENDED);
 }
 
@@ -860,7 +860,7 @@ base::TimeDelta ChunkDemuxer::GetLowestPresentationTimestamp(
 
   auto itr = source_state_map_.find(id);
 
-  CHECK(itr != source_state_map_.end(), base::NotFatalUntil::M130);
+  CHECK(itr != source_state_map_.end());
   return itr->second->GetLowestPresentationTimestamp();
 }
 
@@ -871,7 +871,7 @@ base::TimeDelta ChunkDemuxer::GetHighestPresentationTimestamp(
 
   auto itr = source_state_map_.find(id);
 
-  CHECK(itr != source_state_map_.end(), base::NotFatalUntil::M130);
+  CHECK(itr != source_state_map_.end());
   return itr->second->GetHighestPresentationTimestamp();
 }
 

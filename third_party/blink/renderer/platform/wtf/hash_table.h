@@ -53,11 +53,6 @@
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #endif
 
-#if DUMP_HASHTABLE_STATS_PER_TABLE
-#include <type_traits>
-#include "third_party/blink/renderer/platform/wtf/DataLog.h"
-#endif
-
 #if DUMP_HASHTABLE_STATS
 #if DUMP_HASHTABLE_STATS_PER_TABLE
 
@@ -122,7 +117,7 @@ struct WTF_EXPORT HashTableStats {
   // method within a mutex.
   int maxCollisions;
   int numCollisions;
-  int collisionGraph[4096];
+  std::array<int, 4096> collisionGraph;
 
   void copy(const HashTableStats* other);
   void recordCollisionAtCount(int count);
@@ -155,7 +150,9 @@ class HashTableStatsPtr<Allocator, false> final {
       const std::unique_ptr<HashTableStats>& other) {
     if (!other)
       return nullptr;
-    return std::make_unique<HashTableStats>(*other);
+    std::unique_ptr<HashTableStats> obj = Create();
+    obj->copy(other.get());
+    return obj;
   }
 
   static void swap(std::unique_ptr<HashTableStats>& stats,
@@ -901,6 +898,10 @@ class HashTable final {
         ,
         access_forbidden_(0),
         modifications_(0)
+#endif
+#if DUMP_HASHTABLE_STATS_PER_TABLE
+        ,
+        stats_(nullptr)
 #endif
   {
   }
@@ -1723,6 +1724,10 @@ Value* HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::RehashTo(
 
   HashTable new_hash_table(RawStorageTag{}, new_table, new_table_size);
 
+#if DUMP_HASHTABLE_STATS_PER_TABLE
+  HashTableStatsPtr<Allocator>::swap(stats_, new_hash_table.stats_);
+#endif
+
   Value* new_entry = nullptr;
   for (unsigned i = 0; i != table_size_; ++i) {
     if (IsEmptyOrDeletedBucket(table_[i])) {
@@ -1757,8 +1762,10 @@ Value* HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::RehashTo(
   deleted_count_ = 0;
 
 #if DUMP_HASHTABLE_STATS_PER_TABLE
-  if (!stats_)
+  HashTableStatsPtr<Allocator>::swap(stats_, new_hash_table.stats_);
+  if (!stats_) {
     stats_ = HashTableStatsPtr<Allocator>::Create();
+  }
 #endif
 
   return new_entry;

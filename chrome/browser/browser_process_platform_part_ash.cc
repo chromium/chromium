@@ -45,7 +45,6 @@
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller.h"
-#include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller_delegate_impl.h"
 #include "chromeos/ash/components/scheduler_config/scheduler_configuration_manager.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
@@ -169,17 +168,13 @@ void BrowserProcessPlatformPart::DestroyUserManager() {
 
 void BrowserProcessPlatformPart::
     InitializeDeviceRestrictionScheduleController() {
-  device_restriction_schedule_controller_delegate_impl_ = std::make_unique<
-      policy::DeviceRestrictionScheduleControllerDelegateImpl>();
   device_restriction_schedule_controller_ =
       policy::DeviceRestrictionScheduleController::Create(
-          *device_restriction_schedule_controller_delegate_impl_,
           CHECK_DEREF(g_browser_process->local_state()));
 }
 
 void BrowserProcessPlatformPart::ShutdownDeviceRestrictionScheduleController() {
   device_restriction_schedule_controller_.reset();
-  device_restriction_schedule_controller_delegate_impl_.reset();
 }
 
 void BrowserProcessPlatformPart::InitializeDeviceDisablingManager() {

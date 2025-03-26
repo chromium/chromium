@@ -849,9 +849,9 @@ BASE_FEATURE(kANGLEPerContextBlobCache,
              "ANGLEPerContextBlobCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
-BASE_FEATURE(kMacSupportMultiThreading,
-             "SupportMacMultiThreading",
+#if BUILDFLAG(IS_APPLE)
+BASE_FEATURE(kIOSurfaceMultiThreading,
+             "IOSurfaceMultiThreading",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

@@ -181,4 +181,47 @@ void BaguetteInstaller::OnOpenFd(BaguetteInstallerCallback callback,
   std::move(callback).Run(InstallResult::Success, std::move(image));
 }
 
+void BaguetteInstaller::Uninstall(base::OnceCallback<void(bool)> callback) {
+  ash::DlcserviceClient::Get()->GetExistingDlcs(base::BindOnce(
+      [](base::WeakPtr<BaguetteInstaller> weak_this,
+         base::OnceCallback<void(bool)> callback, std::string_view err,
+         const dlcservice::DlcsWithContent& dlcs_with_content) {
+        if (!weak_this) {
+          return;
+        }
+
+        if (err != dlcservice::kErrorNone) {
+          LOG(ERROR) << "Failed to list installed DLCs: " << err;
+          std::move(callback).Run(false);
+          return;
+        }
+        for (const auto& dlc : dlcs_with_content.dlc_infos()) {
+          if (dlc.id() == kToolsDlcName) {
+            VLOG(1) << "DLC present, removing";
+            weak_this->RemoveDlc(std::move(callback));
+            return;
+          }
+        }
+        VLOG(1) << "No DLC present, skipping";
+        std::move(callback).Run(true);
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void BaguetteInstaller::RemoveDlc(base::OnceCallback<void(bool)> callback) {
+  ash::DlcserviceClient::Get()->Uninstall(
+      kToolsDlcName,
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> callback, std::string_view err) {
+            if (err == dlcservice::kErrorNone) {
+              VLOG(1) << "Removed DLC";
+              std::move(callback).Run(true);
+            } else {
+              LOG(ERROR) << "Failed to remove termina-tools-dlc: " << err;
+              std::move(callback).Run(false);
+            }
+          },
+          std::move(callback)));
+}
+
 }  // namespace crostini

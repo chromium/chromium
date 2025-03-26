@@ -85,8 +85,7 @@
       break;
     case WhatsNewPrimaryAction::kChromePasswordManager:
       // Handles actions that open Chrome Password Manager.
-      [self.settingsHandler showSavedPasswordsSettingsFromViewController:nil
-                                                        showCancelButton:NO];
+      [self.settingsHandler showSavedPasswordsSettingsFromViewController:nil];
       break;
     case WhatsNewPrimaryAction::kNoAction:
     case WhatsNewPrimaryAction::kError:

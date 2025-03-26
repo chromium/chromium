@@ -144,4 +144,14 @@ public class ReaderModeActionProviderTest {
         verify(mMockSignalAccumulator).setHasReaderMode(true);
         verify(mMockSignalAccumulator).notifySignalAvailable();
     }
+
+    @Test
+    public void testDestroy() {
+        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+        provider.getAction(mMockTab, mMockSignalAccumulator);
+        provider.destroy();
+        setReaderModeBackendSignal(true);
+        verify(mMockSignalAccumulator, never()).setHasReaderMode(anyBoolean());
+        verify(mMockSignalAccumulator, never()).notifySignalAvailable();
+    }
 }

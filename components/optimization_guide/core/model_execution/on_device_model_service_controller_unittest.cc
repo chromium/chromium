@@ -329,11 +329,6 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     test_controller_->Init();
   }
 
-  std::map<ModelBasedCapabilityKey, OnDeviceModelAdaptationController>&
-  GetModelAdaptationControllers() const {
-    return test_controller_->model_adaptation_controllers_;
-  }
-
   std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession(
       const std::optional<SessionConfigParams>& params = std::nullopt) {
     return test_controller_->CreateSession(kFeature, FailOnRemoteFallback(),
@@ -527,8 +522,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session_test);
 
-  EXPECT_EQ(2u, GetModelAdaptationControllers().size());
-
   ResponseHolder compose_response;
   session_compose->ExecuteModel(PageUrlRequest("foo"),
                                 compose_response.GetStreamingCallback());
@@ -587,9 +580,6 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
       ModelBasedCapabilityKey::kTest, base::DoNothing(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session_test);
-
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(1u, GetModelAdaptationControllers().size());
 
   ResponseHolder compose_response;
   session_compose->ExecuteModel(PageUrlRequest("foo"),

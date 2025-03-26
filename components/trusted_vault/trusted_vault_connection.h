@@ -285,6 +285,7 @@ class TrustedVaultConnection {
   // returned object is destroyed earlier. Caller should hold returned request
   // object until |callback| call or until request needs to be cancelled.
   // |trusted_vault_keys| must be ordered by version and must not be empty.
+  // TODO(crbug.com/406191378): Rename to ...RecoveryFactor.
   [[nodiscard]] virtual std::unique_ptr<Request> RegisterAuthenticationFactor(
       const CoreAccountInfo& account_info,
       const MemberKeysSource& member_keys_source,
@@ -323,6 +324,7 @@ class TrustedVaultConnection {
   // `DownloadAuthenticationFactorsRegistrationStateResult`.)
   // |keep_alive_callback| will be called whenever there's a partial response
   // from the server, i.e. we got a response but we still need more data.
+  // TODO(crbug.com/406191378): Rename to ...RecoveryFactor.
   [[nodiscard]] virtual std::unique_ptr<Request>
   DownloadAuthenticationFactorsRegistrationState(
       const CoreAccountInfo& account_info,

@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
-<translation id="1215127405478249895">Tabs überprüfen</translation>
+<translation id="1215127405478249895">Tabs im Überblick</translation>
 <translation id="1275718070701477396">Ausgewählt</translation>
 <translation id="1356944128023012143">Liste synchronisierter Geräte und ausgewählter Tabs von diesen Geräten. Tabs werden beim Schließen des neuen Wiederherstellungsworkflows wiederhergestellt.</translation>
 <translation id="1816430105422765050">Unter diesem Menüpunkt zu anderen synchronisierten Geräten wechseln.</translation>
@@ -14,7 +14,7 @@
 <translation id="4509609396389120020">Tabs von anderen Geräten abrufen</translation>
 <translation id="4619615317237390068">Tabs von anderen Geräten</translation>
 <translation id="4811934403802581334">Alle Tabs, die für das aktuell ausgewählte Gerät ausgewählt sind, werden wiederhergestellt.</translation>
-<translation id="5336031759968328813">Alle Tabs ansehen</translation>
+<translation id="5336031759968328813">Alle Tabs im Überblick</translation>
 <translation id="5494920125229734069">Alle auswählen</translation>
 <translation id="5972844218283131174">Auswahl für alle aufheben</translation>
 <translation id="791922009843073162">Die Auswahl aller Tabs wird aufgehoben oder alle Tabs, für die die Auswahl aufgehoben wurde, werden ausgewählt.</translation>

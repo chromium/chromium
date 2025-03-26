@@ -8,6 +8,7 @@
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util_win.h"
@@ -283,7 +284,7 @@ ScreenWinHeadless::DisplayInfosFromScreenInfo(
     const std::wstring device_name =
         GetHeadlessDisplayDeviceNameFromDisplayId(synthesized_display_id);
     CHECK_LT(device_name.length() + 1, std::size(monitor_info.szDevice));
-    wcscpy(monitor_info.szDevice, device_name.c_str());
+    UNSAFE_TODO(wcscpy(monitor_info.szDevice, device_name.c_str()));
 
     const float device_scale_factor =
         forced_device_scale_factor.value_or(screen_info.device_pixel_ratio);

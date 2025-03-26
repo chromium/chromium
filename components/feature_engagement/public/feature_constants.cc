@@ -652,7 +652,7 @@ BASE_FEATURE(kIPHHomeCustomizationMenuFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSLensOverlayEntrypointTipFeature,
              "IPH_iOSLensOverlayEntrypointTip",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSLensOverlayEscapeHatchTipFeature,
              "IPH_iOSLensOverlayEscapeHatchTip",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -715,6 +715,9 @@ BASE_FEATURE(kIPHAutofillDisabledVirtualCardSuggestionFeature,
 BASE_FEATURE(kIPHAutofillExternalAccountProfileSuggestionFeature,
              "IPH_AutofillExternalAccountProfileSuggestion",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHAutofillHomeWorkProfileSuggestionFeature,
+             "IPH_AutofillHomeWorkProfileSuggestion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAutofillAiOptInFeature,
              "IPH_AutofillAiOptIn",
              base::FEATURE_ENABLED_BY_DEFAULT);

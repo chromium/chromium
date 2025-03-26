@@ -136,6 +136,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
 
   gpu::GpuMode GetGpuMode() const;
   void FallBackToNextGpuMode();
+  void FallBackToNextGpuModeDueToCrash();
 
   bool CanFallback() const { return !fallback_modes_.empty(); }
 

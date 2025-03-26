@@ -177,6 +177,8 @@ std::string GetStringNameForOptimizationType(
       return "BmoCreditCardWholesaleClubBenefits";
     case proto::OptimizationType::GLIC_CONTEXTUAL_CUEING:
       return "GlicContextualCueing";
+    case proto::OptimizationType::GLIC_ZERO_STATE_SUGGESTIONS:
+      return "GlicZeroStateSuggestions";
   }
 
   // The returned string is used to record histograms for the optimization type.

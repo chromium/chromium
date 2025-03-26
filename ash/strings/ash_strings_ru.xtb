@@ -1014,6 +1014,7 @@
 <translation id="4351244548802238354">Закрыть</translation>
 <translation id="4356872429719185452">Показать сведения о точке доступа. Точка доступа включается.</translation>
 <translation id="4364101114148522660">Идет запись (<ph name="DURATION" />)</translation>
+<translation id="4368227575116094370">Создать таблицу Google</translation>
 <translation id="4371348193907997655">Настройки трансляции</translation>
 <translation id="4371834685492830207">PIN-код должен содержать только разрешенные символы.</translation>
 <translation id="4375482231364171368">Искать в адресной строке</translation>
@@ -1483,6 +1484,7 @@
 <translation id="5825969630400862129">Настройки подключенных устройств</translation>
 <translation id="5830180081891717894">ещё <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Остановить трансляцию <ph name="ROUTE_TITLE" /> на устройство "<ph name="RECEIVER_NAME" />"</translation>
+<translation id="5840658767386246331">Найти в Google</translation>
 <translation id="5841296711770970362">Перейти к следующему треку</translation>
 <translation id="5842553299352339114">Точка доступа <ph name="DEVICE_NAME" /> сейчас работает. К ней не подключено ни одно устройство.</translation>
 <translation id="584525477304726060">Чтобы развернуть окно, удерживайте его</translation>

@@ -9,108 +9,42 @@
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_rewriter_create_options.h"
-#include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_rewriter.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
+#include "third_party/blink/renderer/modules/ai/ai_writing_assistance_create_client.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
 namespace {
 
-class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
-                             public mojom::blink::AIManagerCreateRewriterClient,
-                             public AIContextObserver<AIRewriter> {
+class CreateRewriterClient final
+    : public AIWritingAssistanceCreateClient<
+          mojom::blink::AIRewriter,
+          mojom::blink::AIManagerCreateRewriterClient,
+          AIRewriterCreateOptions,
+          AIRewriter> {
  public:
   CreateRewriterClient(ScriptState* script_state,
                        AI* ai,
                        ScriptPromiseResolver<AIRewriter>* resolver,
                        AIRewriterCreateOptions* options)
-      : AIContextObserver(script_state,
-                          ai,
-                          resolver,
-                          options->getSignalOr(nullptr)),
-        ai_(ai),
-        receiver_(this, ai->GetExecutionContext()),
-        options_(options) {
-    mojo::PendingRemote<mojom::blink::AIManagerCreateRewriterClient>
-        client_remote;
-    receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
-                   ai->GetTaskRunner());
-    ai_->GetAIRemote()->CreateRewriter(std::move(client_remote),
-                                       ToMojoRewriterCreateOptions(options));
-  }
-  ~CreateRewriterClient() override = default;
-
-  CreateRewriterClient(const CreateRewriterClient&) = delete;
-  CreateRewriterClient& operator=(const CreateRewriterClient&) = delete;
+      : AIWritingAssistanceCreateClient(script_state, ai, resolver, options) {}
 
   void Trace(Visitor* visitor) const override {
-    AIContextObserver::Trace(visitor);
-    visitor->Trace(ai_);
-    visitor->Trace(receiver_);
-    visitor->Trace(options_);
+    AIWritingAssistanceCreateClient::Trace(visitor);
   }
 
-  void OnResult(
-      mojo::PendingRemote<mojom::blink::AIRewriter> rewriter) override {
-    if (!GetResolver()) {
-      return;
-    }
-    if (rewriter) {
-      GetResolver()->Resolve(MakeGarbageCollected<AIRewriter>(
-          ai_->GetExecutionContext(), ai_->GetTaskRunner(), std::move(rewriter),
-          options_));
-    } else {
-      GetResolver()->RejectWithDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          kExceptionMessageUnableToCreateSession);
-    }
-    Cleanup();
+  // AIWritingAssistanceCreateClient:
+  void RemoteCreate(
+      mojo::PendingRemote<mojom::blink::AIManagerCreateRewriterClient>
+          client_remote) override {
+    ai_->GetAIRemote()->CreateRewriter(std::move(client_remote),
+                                       ToMojoRewriterCreateOptions(options_));
   }
-
-  void OnError(mojom::blink::AIManagerCreateClientError error) override {
-    if (!GetResolver()) {
-      return;
-    }
-
-    using mojom::blink::AIManagerCreateClientError;
-
-    switch (error) {
-      case AIManagerCreateClientError::kUnableToCreateSession:
-      case AIManagerCreateClientError::kUnableToCalculateTokenSize: {
-        GetResolver()->RejectWithDOMException(
-            DOMExceptionCode::kInvalidStateError,
-            kExceptionMessageUnableToCreateSession);
-        break;
-      }
-      case AIManagerCreateClientError::kInitialInputTooLarge: {
-        GetResolver()->RejectWithDOMException(
-            DOMExceptionCode::kQuotaExceededError,
-            kExceptionMessageInputTooLarge);
-        break;
-      }
-      case AIManagerCreateClientError::kUnsupportedLanguage: {
-        GetResolver()->RejectWithDOMException(
-            DOMExceptionCode::kNotSupportedError,
-            kExceptionMessageUnsupportedLanguages);
-        break;
-      }
-    }
-    Cleanup();
-  }
-
-  void ResetReceiver() override { receiver_.reset(); }
-
- private:
-  Member<AI> ai_;
-  HeapMojoReceiver<mojom::blink::AIManagerCreateRewriterClient,
-                   CreateRewriterClient>
-      receiver_;
-  Member<AIRewriterCreateOptions> options_;
 };
 
 }  // namespace
@@ -181,7 +115,8 @@ ScriptPromise<AIRewriter> AIRewriterFactory::create(
   }
 
   MakeGarbageCollected<CreateRewriterClient>(script_state, ai_, resolver,
-                                             options);
+                                             options)
+      ->Create();
   return promise;
 }
 

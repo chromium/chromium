@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">Chủ Nhật</translation>
 <translation id="4250229828105606438">Ảnh chụp màn hình</translation>
 <translation id="4251839292699800785">Văn phòng thời thượng</translation>
+<translation id="4252261480746798874">Khi chọn "Tạo hình nền của riêng bạn", bạn có thể viết một câu lệnh tuỳ chỉnh. Bạn cũng có thể chọn "Chọn chủ đề" rồi chọn các từ gạch chân để cá nhân hoá hình nền AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Chọn "Truyền cảm hứng cho tôi" để xem thêm lựa chọn hình ảnh đa dạng và độc đáo do AI tạo.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Khi bạn tạo hình nền của riêng mình, hệ thống sẽ gửi câu lệnh đến các máy chủ của Google để tạo hình ảnh và cải thiện sản phẩm, theo <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Điều khoản dịch vụ và Chính sách quyền riêng tư của Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Đừng nhập thông tin mang tính cá nhân, nhạy cảm hoặc bí mật.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI tạo sinh có thể có sai sót (kể cả thông tin về con người), vậy nên bạn cần xác minh thông tin. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Tìm hiểu thêm<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">Độ trễ của yêu cầu HTTP</translation>
 <translation id="4266143281602681663">sợi len</translation>
 <translation id="4269815121975886860">Lựa chọn ưu tiên về quy trình khởi động</translation>

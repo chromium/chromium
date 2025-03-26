@@ -599,7 +599,7 @@ bool MediaFoundationCdm::OnSessionId(
                 << ", session_id=" << session_id;
 
   auto itr = pending_sessions_.find(session_token);
-  CHECK(itr != pending_sessions_.end(), base::NotFatalUntil::M130);
+  CHECK(itr != pending_sessions_.end());
   auto session = std::move(itr->second);
   DCHECK(session);
   pending_sessions_.erase(itr);

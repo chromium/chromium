@@ -75,6 +75,9 @@ extern const char kAutofillEnableRankingFormulaAddressProfilesDescription[];
 extern const char kAutofillEnableRankingFormulaCreditCardsName[];
 extern const char kAutofillEnableRankingFormulaCreditCardsDescription[];
 
+extern const char kAutofillEnableSupportForHomeAndWorkName[];
+extern const char kAutofillEnableSupportForHomeAndWorkDescription[];
+
 extern const char kAutofillEnableVerveCardSupportName[];
 extern const char kAutofillEnableVerveCardSupportDescription[];
 
@@ -164,9 +167,6 @@ extern const char kPhoneNumberDescription[];
 
 extern const char kMeasurementsName[];
 extern const char kMeasurementsDescription[];
-
-extern const char kEnableNewParcelTrackingNumberDetectionName[];
-extern const char kEnableNewParcelTrackingNumberDetectionDescription[];
 
 extern const char kEnableExpKitTextClassifierDateName[];
 extern const char kEnableExpKitTextClassifierDateDescription[];
@@ -326,9 +326,6 @@ extern const char kIOSBrowserEditMenuMetricsDescription[];
 
 extern const char kIOSDetectUsernameInUffName[];
 extern const char kIOSDetectUsernameInUffDescription[];
-
-extern const char kIOSDisableParcelTrackingName[];
-extern const char kIOSDisableParcelTrackingDescription[];
 
 extern const char kIOSDockingPromoName[];
 extern const char kIOSDockingPromoDescription[];

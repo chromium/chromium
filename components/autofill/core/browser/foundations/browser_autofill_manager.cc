@@ -582,7 +582,7 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
       form_structure, form_data,
       client.GetPersonalDataManager().address_data_manager());
 
-  if (!autofill_ai_shows_bubble && form_structure.IsAutofillable()) {
+  if (!autofill_ai_shows_bubble) {
     // Update Personal Data with the form's submitted data.
     client.GetFormDataImporter()->ImportAndProcessFormData(
         form_structure, client.IsAutofillProfileEnabled(),

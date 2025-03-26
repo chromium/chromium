@@ -209,12 +209,13 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     SharedImageUsageSet usage,
     std::string debug_label,
+    bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
   // MacOS does not support external sampler.
   CHECK(!format.PrefersExternalSampler());
   return CreateSharedImageGMBs(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(debug_label), std::move(handle), /*is_thread_safe=*/false);
+      std::move(debug_label), std::move(handle), is_thread_safe);
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -275,7 +276,7 @@ bool IOSurfaceImageBackingFactory::IsSupported(
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
   if (thread_safe &&
-      !base::FeatureList::IsEnabled(features::kMacSupportMultiThreading)) {
+      !base::FeatureList::IsEnabled(features::kIOSurfaceMultiThreading)) {
     return false;
   }
 

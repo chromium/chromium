@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_APPS_LINK_CAPTURING_LINK_CAPTURING_FEATURE_TEST_SUPPORT_H_
 
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
@@ -16,6 +18,7 @@ class Profile;
 namespace content {
 class DOMMessageQueue;
 class NavigationHandle;
+class WebContents;
 }  // namespace content
 
 namespace testing {
@@ -115,6 +118,16 @@ ResolveWebContentsWaitingForLaunchQueueFlush();
 // allowing this function to exit.
 testing::AssertionResult WaitForNavigationFinishedMessage(
     content::DOMMessageQueue& message_queue);
+
+// Looks for the existence of `params_variable_name` in `contents` assuming that
+// urls are stored in it, and returns them.
+// One of the use-cases this is used more consistently is by returning the urls
+// enqueued in the launch queue of the site currently loaded in `contents`
+// inside `params_variable_name`. This will CHECK-fail if `params_variable_name`
+// exists but it doesn't store a list or the list doesn't contain any strings.
+std::vector<GURL> GetLaunchParamUrlsInContents(
+    content::WebContents* contents,
+    const std::string& params_variable_name);
 
 }  // namespace apps::test
 

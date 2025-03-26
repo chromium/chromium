@@ -149,6 +149,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1455242230282523554">Onyesha mipangilio ya lugha</translation>
 <translation id="1459693405370120464">Hali ya Hewa</translation>
 <translation id="1460620680449458626">Umezima sauti.</translation>
+<translation id="1462439140224375968">Imetayarisha Hati ya Google</translation>
 <translation id="14648076227129703">Hatua hii huruhusu ufikiaji wa kamera katika <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> na programu pamoja na tovuti zote zilizo na ruhusa ya kufikia kamera</translation>
 <translation id="1467432559032391204">Kushoto</translation>
 <translation id="146902737843070955">Msimamizi wako ameomba badiliko hili</translation>
@@ -593,6 +594,7 @@ Vinginevyo, padi ya kugusa iliyojumuishwa kwenye kifaa itawashwa tena baada ya <
 <translation id="301584155502740476">Onyesha maelezo ya mtandao pepe. Umezima mtandao pepe.</translation>
 <translation id="3017079585324758401">Mandhari ya nyuma</translation>
 <translation id="3018135054368884502">Sogeza mbele maudhui</translation>
+<translation id="3026897869154397692">Yamewekwa kwenye Kalenda</translation>
 <translation id="3033545621352269033">Imewashwa</translation>
 <translation id="3033912566804961911">Unganisha na <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Fungua Mafaili</translation>
@@ -1012,6 +1014,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4351244548802238354">Funga kidirisha</translation>
 <translation id="4356872429719185452">Onyesha maelezo ya mtandao pepe. Mtandao pepe unawashwa.</translation>
 <translation id="4364101114148522660">Inarekodi  <ph name="DURATION" /></translation>
+<translation id="4368227575116094370">Tayarisha Jedwali la Google</translation>
 <translation id="4371348193907997655">Mipangilio ya Kutuma</translation>
 <translation id="4371834685492830207">Ni lazima PIN iwe na herufi sahihi pekee</translation>
 <translation id="4375482231364171368">Tafuta sehemu ya anwani</translation>
@@ -1481,6 +1484,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="5825969630400862129">Mipangilio ya vifaa vilivyounganishwa</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> zaidi</translation>
 <translation id="5837036133683224804">Komesha <ph name="ROUTE_TITLE" /> kwenye <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Tafuta kwa kutumia Google</translation>
 <translation id="5841296711770970362">Cheza wimbo unaofuata</translation>
 <translation id="5842553299352339114">Mtandao pepe wa <ph name="DEVICE_NAME" /> umewashwa, hakuna vifaa vilivyounganishwa</translation>
 <translation id="584525477304726060">Shikilia ili upanue dirisha</translation>
@@ -1894,6 +1898,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7228968829656641943">Chagua ili utafute kwenye skrini yangu. Bonyeza kitufe cha 'tab' kisha 'space' ili utumie kibodi.</translation>
 <translation id="7229029500464092426">Hifadhi ya <ph name="AVAILABLE_MEMORY" /> kati ya jumla ya hifadhi ya <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Vitufe vyote viwili vya kipanya</translation>
+<translation id="7240636904654154599">Imetayarisha Jedwali la Google</translation>
 <translation id="7244725679040769470">Zimesalia asilimia <ph name="PERCENTAGE" /> za chaji ya betri. Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ili utumie sasisho, unahitaji kuzima kisha uwashe Chromebook hii. Hatua hii inaweza kuchukua hadi dakika moja.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2405,6 +2410,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8921624153894383499">Programu ya Mratibu wa Google haina huduma ya lugha hii.</translation>
 <translation id="8926951137623668982">Rafu inafichwa kila wakati</translation>
 <translation id="8929566928381252430">Je, unajaribu kutumia kitufe cha Caps Lock? Tumia</translation>
+<translation id="8929623844713377237">Anwani imewekwa</translation>
 <translation id="8934418770423095813">Unda Hati ya Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Faili 1}other{Faili #}}</translation>
 <translation id="8936501819958976551">kimezimwa</translation>

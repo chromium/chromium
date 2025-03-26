@@ -1115,6 +1115,9 @@ extern const char kExtensionsOnChromeUrlsDescription[];
 extern const char kFractionalScrollOffsetsName[];
 extern const char kFractionalScrollOffsetsDescription[];
 
+extern const char kFedCmAlternativeIdentifiersName[];
+extern const char kFedCmAlternativeIdentifiersDescription[];
+
 extern const char kFedCmAuthzName[];
 extern const char kFedCmAuthzDescription[];
 
@@ -1562,6 +1565,27 @@ extern const char kOmniboxMostVisitedTilesHorizontalRenderGroupDescription[];
 
 extern const char kOmniboxMostVisitedTilesTitleWrapAroundName[];
 extern const char kOmniboxMostVisitedTilesTitleWrapAroundDescription[];
+
+extern const char kOmniboxNumNtpZpsRecentSearchesName[];
+extern const char kOmniboxNumNtpZpsRecentSearchesDescription[];
+
+extern const char kOmniboxNumNtpZpsTrendingSearchesName[];
+extern const char kOmniboxNumNtpZpsTrendingSearchesDescription[];
+
+extern const char kOmniboxNumWebZpsRecentSearchesName[];
+extern const char kOmniboxNumWebZpsRecentSearchesDescription[];
+
+extern const char kOmniboxNumWebZpsRelatedSearchesName[];
+extern const char kOmniboxNumWebZpsRelatedSearchesDescription[];
+
+extern const char kOmniboxNumWebZpsMostVisitedUrlsName[];
+extern const char kOmniboxNumWebZpsMostVisitedUrlsDescription[];
+
+extern const char kOmniboxNumSrpZpsRecentSearchesName[];
+extern const char kOmniboxNumSrpZpsRecentSearchesDescription[];
+
+extern const char kOmniboxNumSrpZpsRelatedSearchesName[];
+extern const char kOmniboxNumSrpZpsRelatedSearchesDescription[];
 
 extern const char kOmniboxOnDeviceHeadSuggestionsName[];
 extern const char kOmniboxOnDeviceHeadSuggestionsDescription[];
@@ -2887,9 +2911,6 @@ extern const char kTabStripTransitionInDesktopWindowDescription[];
 
 extern const char kTabSwitcherColorBlendAnimateName[];
 extern const char kTabSwitcherColorBlendAnimateDescription[];
-
-extern const char kTabSwitcherContextMenuAndroidName[];
-extern const char kTabSwitcherContextMenuAndroidDescription[];
 
 extern const char kHideTabletToolbarDownloadButtonName[];
 extern const char kHideTabletToolbarDownloadButtonDescription[];

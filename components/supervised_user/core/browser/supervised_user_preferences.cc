@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "components/google/core/common/google_util.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
@@ -186,6 +187,16 @@ bool IsSafeSitesEnabled(const PrefService& pref_service) {
 
 bool IsSubjectToParentalControls(const PrefService& pref_service) {
   return pref_service.GetString(prefs::kSupervisedUserId) == kChildAccountSUID;
+}
+
+bool IsGoogleSafeSearchEnforced(const PrefService& pref_service) {
+  return pref_service.GetBoolean(policy::policy_prefs::kForceGoogleSafeSearch);
+}
+
+void SetGoogleSafeSearch(PrefService& pref_service,
+                         GoogleSafeSearchStateStatus status) {
+  pref_service.SetBoolean(policy::policy_prefs::kForceGoogleSafeSearch,
+                          static_cast<bool>(status));
 }
 
 }  // namespace supervised_user

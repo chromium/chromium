@@ -3170,9 +3170,11 @@ void TabStripModel::MoveTabsAndSetPropertiesImpl(
 }
 
 void TabStripModel::AddToReadLaterImpl(const std::vector<int>& indices) {
+  std::vector<WebContents*> web_contentses;
   for (int index : indices) {
-    delegate_->AddToReadLater(GetWebContentsAt(index));
+    web_contentses.push_back(GetWebContentsAt(index));
   }
+  delegate_->AddToReadLater(web_contentses);
 }
 
 void TabStripModel::InsertTabAtIndexImpl(

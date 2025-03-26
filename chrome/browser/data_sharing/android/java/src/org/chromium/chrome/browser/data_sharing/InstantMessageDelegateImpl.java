@@ -20,6 +20,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
@@ -35,6 +37,7 @@ import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig.DataSharingAvatarCallback;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
@@ -51,6 +54,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Responsible for displaying browser and OS messages for share. This is effectively a singleton,
@@ -423,13 +427,29 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                     action.run();
                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                 };
+        AtomicReference<PropertyModel> propertyModel = new AtomicReference<>();
         Callback<Boolean> onVisibleChange =
                 (fullyVisible) -> {
                     if (fullyVisible) {
                         onSuccess.run();
+                    } else {
+                        // For shared tab group related messages, we want to show any message only
+                        // once. Once a message gets hidden for whatever reason (e.g. timeout, user
+                        // switching apps, switching activities, switching to tab switcher etc), we
+                        // want to dismiss the message. This is to avoid confusion to the user later
+                        // when the message is shown out of context. We use a PostTask here to avoid
+                        // a crash that happens since the message dispatcher is still not done
+                        // hiding the message before it could process the dismissal.
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT,
+                                () -> {
+                                    messageDispatcher.dismissMessage(
+                                            propertyModel.get(),
+                                            DismissReason.DISMISSED_BY_FEATURE);
+                                });
                     }
                 };
-        PropertyModel propertyModel =
+        propertyModel.set(
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(MessageBannerProperties.MESSAGE_IDENTIFIER, messageIdentifier)
                         .with(MessageBannerProperties.TITLE, title)
@@ -443,7 +463,8 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                                 MessageBannerProperties.TINT_NONE)
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION, onPrimary)
                         .with(MessageBannerProperties.ON_FULLY_VISIBLE, onVisibleChange)
-                        .build();
-        messageDispatcher.enqueueWindowScopedMessage(propertyModel, /* highPriority= */ false);
+                        .build());
+        messageDispatcher.enqueueWindowScopedMessage(
+                propertyModel.get(), /* highPriority= */ false);
     }
 }

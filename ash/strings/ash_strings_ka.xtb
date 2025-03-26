@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">პერიფერიული მოწყობილობა მხარდაუჭერელია სტუმრის რეჟიმში</translation>
 <translation id="1270290102613614947">ეკრანული კლავიატურა გამორთულია</translation>
 <translation id="1272079795634619415">შეწყვეტა</translation>
+<translation id="12741168609094094">აირჩიეთ ნებისმიერი რამ თქვენს ეკრანზე, რომ მოიძიოთ, დააკოპიროთ ტექსტი და სხვა</translation>
 <translation id="1275285675049378717">ელკვება მიეწოდება: <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">შერჩეული</translation>
 <translation id="1276975447697633661">აირჩიეთ ფაილი, შემდეგ კი დააჭერით აირჩიეთ <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">უსადენო ქსელი გამორთულია</translation>
 <translation id="1731815243805539470">წინა მომხმარებელზე გადართვა</translation>
 <translation id="1733996486177697563">გადაერთეთ მუქ და ღია თემებს შორის. ხანგრძლივად შეეხეთ დესკტოპს, შემდეგ კი აირჩიეთ „ფონი და სტილი“.</translation>
+<translation id="1735992454301033090">მონიშნულია არეალი, გადასაადგილებლად გამოიყენეთ ისრიანი კლავიშები</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />“ ხილულია Bluetooth მოწყობილობებისთვის.</translation>
 <translation id="1737078180382804488">თქვენი ტელეფონის შეტყობინებების ნახვის დაყენების დახურვა</translation>
 <translation id="174102739345480129">მარკერი გამორთულია.</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806">გასული კვირის <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">კლავიატურის მალსახმობი შეიცვალა</translation>
 <translation id="2689613560355655046">სამუშაო მაგიდა 8</translation>
+<translation id="2692092709110488417">დააჭირეთ Tab-ს, რომ ფოკუსირდეთ მონიშნულ არეალზე და გადააადგილოთ ის</translation>
 <translation id="2695305337569143674">ვები</translation>
 <translation id="2697697418792422688">კლავიატურის პარამეტრების ჩვენება. არჩეულია <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">სასკოლო ანგარიშის მონაცემების პერსონალურ ანგარიშში გადასატანად გამოიყენეთ კონტენტის ტრანსფერის აპი.</translation>
@@ -1032,6 +1035,7 @@
 <translation id="4412698727486357573">დახმარების ცენტრი</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> გამორთულია.</translation>
 <translation id="4417647906073317561">ფოკუსირების რეჟიმის პარამეტრები. დააყენეთ ტაიმები, ამოცანა და მუსიკა, რომ შეუდგეთ საქმეს.</translation>
+<translation id="4418600384772451109">არის დახურვა</translation>
 <translation id="4424159417645388645">სამუშაო მაგიდა 5</translation>
 <translation id="4426817706804363424">ყოჩაღ!</translation>
 <translation id="4430019312045809116">ხმა</translation>
@@ -1484,6 +1488,7 @@
 <translation id="5825969630400862129">დაკავშირებული მოწყობილობების პარამეტრები</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> სხვა</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" />-ის შეწყვეტა „<ph name="RECEIVER_NAME" />“-ში</translation>
+<translation id="5840658767386246331">Google-ით ძიება</translation>
 <translation id="5841296711770970362">მომდევნო ჩანაწერზე გადასვლა</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" />-ის უსადენო ქსელი ჩართულია, მოწყობილობები დაკავშირებული არ არის</translation>
 <translation id="584525477304726060">გეჭიროთ გასაშლელად</translation>
@@ -2227,6 +2232,7 @@
 <translation id="8287009018010202411">პროდუქტიულობა</translation>
 <translation id="828708037801473432">გამორთვა</translation>
 <translation id="8297006494302853456">სუსტი</translation>
+<translation id="8300451473979404345">არჩეულია სახელური, გადასაადგილებლად გამოიყენეთ ისრიანი კლავიშები</translation>
 <translation id="8308637677604853869">წინა მენიუ</translation>
 <translation id="830868413617744215">ბეტა</translation>
 <translation id="8314772463905284467">Caps Lock ჩართულია</translation>
@@ -2287,6 +2293,7 @@
 <translation id="851458219935658693">ამჟამინდელი სამუშაო მაგიდის ფანჯრების ჩვენება, არჩეულია არჩევანის ღილაკი</translation>
 <translation id="851660987304951246">გამოიყენეთ წაკითხვაში დახმარება, რომ სწრაფად შეაჯამოთ კონტენტი ან შეკითხვები დასვათ</translation>
 <translation id="8517041960877371778">თქვენი <ph name="DEVICE_TYPE" /> შეიძლება არ დაიტენოს, როცა ის ჩართულია.</translation>
+<translation id="8519329096920173967">ჩემს ეკრანზე ძიება Google Lens-ით</translation>
 <translation id="8535393432370007982">ფერის მიხედვით დალაგების გაუქმება</translation>
 <translation id="8536886494750559755">სწრაფი გაზიარების პარამეტრების ჩვენება. ხილულია ყველასთვის <ph name="TIME_REMAINING" />-ით</translation>
 <translation id="8539803091108018926">ტექსტი დაკოპირებულია გაცვლის ბუფერში</translation>

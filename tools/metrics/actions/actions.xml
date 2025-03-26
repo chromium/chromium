@@ -28548,51 +28548,6 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
-<action name="NoticeQueue.PrivacySandboxNotice.QueueOnStartup">
-  <owner>aashnas@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <description>
-    Recorded when a Privacy Sandbox notice is required on startup and added to
-    the queue.
-  </description>
-</action>
-
-<action name="NoticeQueue.PrivacySandboxNotice.QueueOnThOrNav">
-  <owner>aashnas@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <description>
-    Recorded when a Privacy Sandbox notice is required on tab helper creation or
-    user navigation and added to the queue.
-  </description>
-</action>
-
-<action name="NoticeQueue.PrivacySandboxNotice.ReleaseOnDMA">
-  <owner>aashnas@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <description>
-    Recorded when a Privacy Sandbox notice is suppressed for the rest of the
-    session after a DMA notice and removed from the queue.
-  </description>
-</action>
-
-<action name="NoticeQueue.PrivacySandboxNotice.ReleaseOnShown">
-  <owner>aashnas@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <description>
-    Recorded when a Privacy Sandbox notice is successfully shown and removed
-    from the queue.
-  </description>
-</action>
-
-<action name="NoticeQueue.PrivacySandboxNotice.ReleaseOnThOrNav">
-  <owner>aashnas@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <description>
-    Recorded when a Privacy Sandbox notice is not required on tab helper
-    creation or user navigation and removed from the queue.
-  </description>
-</action>
-
 <action name="Notifications.Mute">
   <owner>dewittj@chromium.org</owner>
   <description>
@@ -47883,6 +47838,8 @@ should be able to be added at any place in this file.
       label="For AutofillDisabledVirtualCardSuggestion feature."/>
   <suffix name="AutofillExternalAccountProfileSuggestion"
       label="For AutofillExternalAccountProfileSuggestion feature."/>
+  <suffix name="AutofillHomeWorkProfileSuggestion"
+      label="For AutofillHomeWorkProfileSuggestion feature."/>
   <suffix name="AutofillVirtualCardCVCSuggestion"
       label="For autofill suggestion of virtual cards."/>
   <suffix name="AutofillVirtualCardSuggestion"
@@ -48442,6 +48399,7 @@ should be able to be added at any place in this file.
 
 <action-suffix separator="." ordering="suffix">
   <suffix name="DownloadItem" label="Download a suggested item."/>
+  <suffix name="EditItem" label="Open a modal dialog to edit a custom item."/>
   <suffix name="LearnMore" label="Open the learn more link for product help."/>
   <suffix name="OpenItemInIncognitoTab"
       label="Open a suggested item in an incognito tab."/>
@@ -48450,8 +48408,10 @@ should be able to be added at any place in this file.
       label="Open a suggested item in a new tab in group."/>
   <suffix name="OpenItemInNewWindow"
       label="Open a suggested item in a new window."/>
+  <suffix name="PinItem" label="Convert a suggested item to a custom item."/>
   <suffix name="RemoveItem" label="Remove a suggested item."/>
   <suffix name="Shown" label="Context menu is opened."/>
+  <suffix name="UnpinItem" label="Remove a custom item."/>
   <affected-action name="ContextualSuggestions.ContextMenu"/>
   <affected-action name="ExploreSites.ContextMenu"/>
   <affected-action name="Suggestions.ContextMenu"/>
@@ -49021,6 +48981,7 @@ should be able to be added at any place in this file.
       label="Show read anything side panel action"/>
   <suffix name="kActionSidePanelShowReadingList"
       label="Show reading list side panel action"/>
+  <suffix name="kActionTabSearch" label="Tab search action"/>
   <suffix name="kActionTaskManager" label="Task manager action"/>
   <affected-action name="Actions.PinnedToolbarButton.Pinned"/>
   <affected-action name="Actions.PinnedToolbarButton.Pinned.ByContextMenu"/>

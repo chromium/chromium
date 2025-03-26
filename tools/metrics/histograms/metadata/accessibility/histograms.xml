@@ -770,8 +770,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The caret blink interval rate, in milliseconds, chosen by the user, from 12
     possible values in chrome os settings. 0ms means &quot;do not blink&quot;,
-    and the default value is 500ms. Logged once, 45 seconds after startup. For
-    how users adjust the setting from settings, see
+    and the default value is 500ms. Logged once after startup. For how users
+    adjust the setting from settings, see
     ChromeOS.Settings.Accessibility.CaretBlinkInterval, which logs each time the
     setting changes.
   </summary>
@@ -782,8 +782,8 @@ chromium-metrics-reviews@google.com.
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    The color correction filter intensity chosen by the user. Logged once, 45
-    seconds after startup. For how users adjust the setting from settings, see
+    The color correction filter intensity chosen by the user. Logged once after
+    startup. For how users adjust the setting from settings, see
     ChromeOS.Settings.Accessibility.ColorCorrection.FilterAmount, which logs
     each time the setting changes.
   </summary>
@@ -794,7 +794,7 @@ chromium-metrics-reviews@google.com.
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    The color correction filter type chosen by the user. Logged once, 45 seconds
+    The color correction filter type chosen by the user. Logged once seconds
     after startup. For how users adjust the setting from settings, see
     ChromeOS.Settings.Accessibility.ColorCorrection.FilterType, which logs each
     time the setting changes.
@@ -924,8 +924,8 @@ chromium-metrics-reviews@google.com.
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Cursor size of the Chrome OS Large Cursor (logged once 45 secs after
-    startup). This replaced Accessibility.CrosLargeCursorSize in M124.
+    Cursor size of the Chrome OS Large Cursor (logged once after startup). This
+    replaced Accessibility.CrosLargeCursorSize in M124.
   </summary>
 </histogram>
 
@@ -1289,7 +1289,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<!-- This set of histograms is recorded once, 45 seconds after startup.
+<!-- This set of histograms is recorded once after startup.
 Do not add new variants to this histogram unless they are recorded in the same way,
 even if they fit the naming pattern. -->
 
@@ -1299,7 +1299,7 @@ even if they fit the naming pattern. -->
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Note: This metric is logged once 45 seconds after startup.
+    Note: This metric is logged once after startup.
 
     Whether the user has enabled the Chrome OS feature: {SettingType}
   </summary>
@@ -1444,6 +1444,18 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.EngineUse.PageNavsUntilStart" units="count"
+    expires_after="2025-09-14">
+  <owner>mschillaci@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    This histogram tracks the number of page navigations from start-up until the
+    kWebContents AXMode is first used, up until 10000. This is tracked only one
+    per instance, and is recorded as the accessibility code is enable.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.EngineUse.TimeUntilStart" units="ms"
     expires_after="2025-09-14">
   <owner>mschillaci@google.com</owner>
@@ -1523,8 +1535,8 @@ even if they fit the naming pattern. -->
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Whether the Chrome accessibility image label setting is on for Android.
-    Logged once 45 secs after profile open, which always happens when the
-    browser starts.
+    Logged when the profile opens via browser startup, and any time an image
+    labelling setting changes.
   </summary>
 </histogram>
 
@@ -1546,8 +1558,8 @@ even if they fit the naming pattern. -->
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Whether the Chrome accessibility image label setting for Android is set to
-    only be enabled on a Wi-Fi connection. Logged once 45 secs after profile
-    open, which always happens when the browser starts.
+    only be enabled on a Wi-Fi connection. Logged when the profile opens via
+    browser startup, and any time an image labelling setting changes.
   </summary>
 </histogram>
 
@@ -1634,10 +1646,11 @@ even if they fit the naming pattern. -->
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Whether the Chrome accessibility image label setting is on. Logged once 45
-    secs after profile open. Only logged for regular profiles, Incognito
-    profiles, and guest off-the-record profiles, as these are the only profiles
-    that can display web content.
+    Whether the Chrome accessibility image label setting is on. Logged when the
+    profile opens via browser startup, and any time an image labelling setting
+    changes. Only logged for regular profiles, Incognito profiles, and guest
+    off-the-record profiles, as these are the only profiles that can display web
+    content.
   </summary>
 </histogram>
 
@@ -2062,8 +2075,8 @@ even if they fit the naming pattern. -->
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Whether the Chrome OS OOBE startup sound is enabled (logged once 45 secs
-    after startup).
+    Whether the Chrome OS OOBE startup sound is enabled (logged once after
+    startup).
   </summary>
 </histogram>
 
@@ -3445,8 +3458,8 @@ even if they fit the naming pattern. -->
   <owner>almaher@microsoft.com</owner>
   <summary>
     Tracks which Windows high contrast theme is set in system settings (logged
-    once 45 secs after startup). AccessibilityHighContrastColorScheme::None
-    indicates that high contrast mode is not enabled.
+    once after startup). AccessibilityHighContrastColorScheme::None indicates
+    that high contrast mode is not enabled.
   </summary>
 </histogram>
 

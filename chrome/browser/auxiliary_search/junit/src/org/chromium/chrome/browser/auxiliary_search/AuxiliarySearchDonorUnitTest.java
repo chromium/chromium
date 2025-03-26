@@ -48,7 +48,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.auxiliary_search.schema.CustomTabWebPage;
-import org.chromium.chrome.browser.auxiliary_search.schema.TabWebPage;
 import org.chromium.chrome.browser.auxiliary_search.schema.TopSiteWebPage;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -88,13 +87,7 @@ public class AuxiliarySearchDonorUnitTest {
         assertTrue(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
 
         AuxiliarySearchDonor.setSkipInitializationForTesting(true);
-        mAuxiliarySearchDonor = AuxiliarySearchDonor.createDonorForTesting();
-        try {
-            when(mAppSearchSession.get()).thenReturn(mSession);
-            mAuxiliarySearchDonor.setAppSearchSessionForTesting(mAppSearchSession);
-        } catch (Exception e) {
-            // Just continue.
-        }
+        createAndInitAuxiliarySearchDonor();
     }
 
     @Test
@@ -290,15 +283,14 @@ public class AuxiliarySearchDonorUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE})
     public void testSharedPreferenceKeyIsUpdated() {
+        assertFalse(
+                AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
         testSharedPreferenceKeyIsUpdatedImpl(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET);
-    }
 
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE})
-    public void testSharedPreferenceKeyIsUpdated_multiDataSourceEnabled() {
+        when(mHooks.isMultiDataTypeEnabledOnDevice()).thenReturn(true);
+        assertTrue(AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
+        createAndInitAuxiliarySearchDonor();
         testSharedPreferenceKeyIsUpdatedImpl(
                 ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_V2_SET);
     }
@@ -341,15 +333,15 @@ public class AuxiliarySearchDonorUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE})
     public void testDoNotSetSchemaAgain() {
+        assertFalse(
+                AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
         testDoNotSetSchemaAgainImpl(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET);
-    }
 
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE})
-    public void testDoNotSetSchemaAgain_MultiDataSourceEnabled() {
+        // Enables multiple data source.
+        when(mHooks.isMultiDataTypeEnabledOnDevice()).thenReturn(true);
+        assertTrue(AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
+        createAndInitAuxiliarySearchDonor();
         testDoNotSetSchemaAgainImpl(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_V2_SET);
     }
 
@@ -488,17 +480,15 @@ public class AuxiliarySearchDonorUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE})
     public void testGetSchemaSetPreferenceKey() {
         assertEquals(
                 ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET,
                 mAuxiliarySearchDonor.getSchemaSetPreferenceKey());
-    }
 
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE})
-    public void testGetSchemaSetPreferenceKey_MultiDataSourceEnabled() {
+        // Enables multiple data source.
+        when(mHooks.isMultiDataTypeEnabledOnDevice()).thenReturn(true);
+        assertTrue(AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
+        createAndInitAuxiliarySearchDonor();
         assertEquals(
                 ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_V2_SET,
                 mAuxiliarySearchDonor.getSchemaSetPreferenceKey());
@@ -520,15 +510,14 @@ public class AuxiliarySearchDonorUnitTest {
         List<Class<?>> list = mAuxiliarySearchDonor.getSupportedDocumentClasses();
         assertEquals(1, list.size());
         assertTrue(list.contains(WebPage.class));
-    }
 
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE})
-    public void testGetSupportedDocumentClasses_MultiDataSourceEnabled() {
-        List<Class<?>> list = mAuxiliarySearchDonor.getSupportedDocumentClasses();
+        // Enables multiple data source.
+        when(mHooks.isMultiDataTypeEnabledOnDevice()).thenReturn(true);
+        assertTrue(AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
+        createAndInitAuxiliarySearchDonor();
+        list = mAuxiliarySearchDonor.getSupportedDocumentClasses();
         assertEquals(3, list.size());
-        assertTrue(list.contains(TabWebPage.class));
+        assertTrue(list.contains(WebPage.class));
         assertTrue(list.contains(CustomTabWebPage.class));
         assertTrue(list.contains(TopSiteWebPage.class));
     }
@@ -559,6 +548,16 @@ public class AuxiliarySearchDonorUnitTest {
             return new SearchResult.Builder("package", "database").setDocument(appInfo).build();
         } catch (AppSearchException e) {
             return null;
+        }
+    }
+
+    private void createAndInitAuxiliarySearchDonor() {
+        mAuxiliarySearchDonor = AuxiliarySearchDonor.createDonorForTesting();
+        try {
+            when(mAppSearchSession.get()).thenReturn(mSession);
+            mAuxiliarySearchDonor.setAppSearchSessionForTesting(mAppSearchSession);
+        } catch (Exception e) {
+            // Just continue.
         }
     }
 }

@@ -12,6 +12,7 @@
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -60,12 +61,13 @@ Printer CreateAutoconfPrinter() {
 // Check the values populated in |printer_info| match the values of |printer|.
 void CheckGenericPrinterInfo(const Printer& printer,
                              const base::Value::Dict& printer_info) {
-  ExpectDictStringValue(printer.id(), printer_info, "printerId");
-  ExpectDictStringValue(printer.display_name(), printer_info, "printerName");
-  ExpectDictStringValue(printer.description(), printer_info,
-                        "printerDescription");
-  ExpectDictStringValue(printer.make_and_model(), printer_info,
-                        "printerMakeAndModel");
+  EXPECT_THAT(printer_info,
+              base::test::IsSupersetOfValue(
+                  base::Value::Dict()
+                      .Set("printerId", printer.id())
+                      .Set("printerName", printer.display_name())
+                      .Set("printerDescription", printer.description())
+                      .Set("printerMakeAndModel", printer.make_and_model())));
 
   base::Value::Dict printer_status_dict =
       printer.printer_status().ConvertToValue();
@@ -92,9 +94,11 @@ void CheckPrinterInfoUri(const base::Value::Dict& printer_info,
                          const std::string& protocol,
                          const std::string& address,
                          const std::string& queue) {
-  ExpectDictStringValue(address, printer_info, "printerAddress");
-  ExpectDictStringValue(queue, printer_info, "printerQueue");
-  ExpectDictStringValue(protocol, printer_info, "printerProtocol");
+  EXPECT_THAT(printer_info, base::test::IsSupersetOfValue(
+                                base::Value::Dict()
+                                    .Set("printerAddress", address)
+                                    .Set("printerQueue", queue)
+                                    .Set("printerProtocol", protocol)));
 }
 
 }  // anonymous namespace

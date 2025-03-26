@@ -52,7 +52,6 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -65,7 +64,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -74,18 +72,13 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "capture_mode_util.h"
-#include "components/lens/lens_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/search_engines/template_url.h"
 #include "components/user_manager/user_type.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "net/base/url_util.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/network/public/cpp/header_util.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -98,7 +91,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/codec/jpeg_codec.h"
-#include "ui/gfx/image/image_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -147,7 +139,6 @@ constexpr char kUsesDefaultCapturePathPrefName[] =
     "ash.capture_mode.uses_default_capture_path";
 
 constexpr char kShareToYouTubeURL[] = "https://youtube.com/upload";
-constexpr char kLensWebQFMetadataURL[] = "https://lens.google.com/qfmetadata";
 
 // TODO: crbug.com/388287849 - Clear this pref.
 // The name of a boolean pref that determines whether we can show the demo tools
@@ -167,71 +158,9 @@ constexpr char kCanShowSunfishRegionNudge[] =
 // The ID for the toast shown when text is copied to clipboard.
 constexpr char kCaptureModeTextCopiedToastId[] = "capture_mode_text_copied";
 
-// Lens POST request parameters.
-constexpr char kQueryParamEntryPointName[] = "ep";
-constexpr char kQueryParamEntryPointValueLauncher[] = "63";
-constexpr char kQueryParamEntryPointValueScreenshot[] = "64";
-constexpr char kQueryParamSurfaceName[] = "s";
-constexpr char kQueryParamSurfaceValue[] = "43";
-constexpr char kQueryParamViewportWidthName[] = "vpw";
-constexpr char kQueryParamViewportHeightName[] = "vph";
-constexpr char kQueryParamStartTimeName[] = "st";
-
 // An invalid IDS value used as a placeholder to not show a message in a
 // notification.
 constexpr int kNoMessage = -1;
-
-// The default HTTP status code we set if the response header does not contain
-// a successful status code.
-constexpr int kHttpPostFailNoConnection = -1;
-
-// The expected message id for the query forumlation metadata response body.
-constexpr char kQFMetadataResponseMessageId[] =
-    "fetch_query_formulation_metadata_response";
-
-// Query Formulation Metadata Response constants.
-constexpr int kQFMetadataResponseMinSize = 3;
-constexpr int kQFMetadataResponseFieldMessageIdIdx = 0;
-constexpr int kQFMetadataResponseFieldDetectedText = 2;
-constexpr int kDetectedTextFieldTextLayout = 0;
-constexpr int kTextLayoutFieldParagraphs = 0;
-constexpr int kParagraphMinSize = 2;
-constexpr int kParagraphFieldLines = 1;
-constexpr int kLineFieldWords = 0;
-constexpr int kWordMinSize = 3;
-constexpr int kWordFieldPlainText = 1;
-constexpr int kWordFieldTextSeparator = 2;
-
-// TODO: crbug.com/399425007 - Properly define this annotation.
-constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("chromeos_lens_web_image_search",
-                                        R"(
-        semantics {
-          sender: "..."
-          description: "..."
-          trigger: "..."
-          internal {
-            contacts {
-                email: "chromeos-wm@google.com"
-            }
-          }
-          user_data {
-            type: ACCESS_TOKEN
-            type: IMAGE
-            type: USAGE_AND_PERFORMANCE_METRICS
-          }
-          data: "..."
-          destination: GOOGLE_OWNED_SERVICE
-          last_reviewed: "2025-03-13"
-        }
-        policy {
-          cookies_allowed: YES
-          cookies_store: "..."
-          setting: "..."
-          chrome_policy {}
-        }
-        comments: "..."
-      )");
 
 // The screenshot notification button index.
 enum ScreenshotNotificationButtonIndex {
@@ -675,133 +604,6 @@ gfx::Rect CalculateSearchResultPanelScreenBounds(
   }
 
   return bounds;
-}
-
-// Returns true if the given `image` is too large to be uploaded to the Lens Web
-// API as-is and needs to be downscaled first.
-bool NeedsDownscale(const gfx::Image& image) {
-  return (image.Height() * image.Width() > lens::kMaxAreaForImageSearch) &&
-         (image.Width() > lens::kMaxPixelsForImageSearch ||
-          image.Height() > lens::kMaxPixelsForImageSearch);
-}
-
-// Attempts to parse the `response` as if it was a
-// `FetchQueryFormulationMetadataResponse` encoded in JSON, and store the
-// formatted text in `extracted_text`. Returns true if the response was
-// successfully parsed (even if the text was empty), and false otherwise. See
-// `google3/google/internal/lens/frontend/api/v1/service.proto` for more details
-// about the expected response.
-bool ParseQueryFormulationMetadataResponse(
-    const data_decoder::DataDecoder::ValueOrError& response,
-    std::string& extracted_text) {
-  if (!response.has_value() || !response->is_list() ||
-      response->GetList().empty()) {
-    return false;
-  }
-
-  const base::Value::List* metadata_response =
-      response->GetList()[0].GetIfList();
-  if (!metadata_response ||
-      metadata_response->size() < kQFMetadataResponseMinSize) {
-    return false;
-  }
-
-  // Verify we have the right type of response message.
-  const std::string* message_id =
-      (*metadata_response)[kQFMetadataResponseFieldMessageIdIdx].GetIfString();
-  if (!message_id || (*message_id) != kQFMetadataResponseMessageId) {
-    return false;
-  }
-
-  // Deconstruct the metadata response in order to build our string for Copy
-  // Text.
-  const base::Value::List* detected_text =
-      (*metadata_response)[kQFMetadataResponseFieldDetectedText].GetIfList();
-  if (!detected_text || detected_text->empty()) {
-    return false;
-  }
-
-  // If we don't have a `text_layout` object, then there may not be any text to
-  // detect, so we should return true.
-  const base::Value::List* text_layout =
-      (*detected_text)[kDetectedTextFieldTextLayout].GetIfList();
-  if (!text_layout) {
-    return true;
-  }
-  if (text_layout->empty()) {
-    return false;
-  }
-
-  const base::Value::List* paragraph_list =
-      (*text_layout)[kTextLayoutFieldParagraphs].GetIfList();
-  if (!paragraph_list || paragraph_list->empty()) {
-    return false;
-  }
-
-  // Begin constructing the extracted text by looping through a sequence of
-  // paragraphs, lines, and words.
-  for (int i = 0; i < static_cast<int>(paragraph_list->size()); i++) {
-    const base::Value::List* paragraph = (*paragraph_list)[i].GetIfList();
-    if (!paragraph || paragraph->size() < kParagraphMinSize) {
-      continue;
-    }
-
-    const base::Value::List* line_list =
-        (*paragraph)[kParagraphFieldLines].GetIfList();
-    if (!line_list || line_list->empty()) {
-      continue;
-    }
-
-    // Add an extra newline between each paragraph (i.e., before each
-    // paragraph after the first).
-    if (i > 0) {
-      extracted_text += "\n";
-    }
-
-    for (int j = 0; j < static_cast<int>(line_list->size()); j++) {
-      const base::Value::List* line = (*line_list)[j].GetIfList();
-      if (!line || line->empty()) {
-        continue;
-      }
-
-      const base::Value::List* word_list = (*line)[kLineFieldWords].GetIfList();
-      if (!word_list || word_list->empty()) {
-        continue;
-      }
-
-      // Add a newline between each line (i.e., before each line after the
-      // first).
-      if (j > 0) {
-        extracted_text += "\n";
-      }
-
-      for (const base::Value& word_value : *word_list) {
-        const base::Value::List* word = word_value.GetIfList();
-        if (!word || word->size() < kWordMinSize) {
-          continue;
-        }
-
-        const std::string* plain_text =
-            (*word)[kWordFieldPlainText].GetIfString();
-        if (!plain_text) {
-          continue;
-        }
-
-        extracted_text += *plain_text;
-
-        // Add the text separator if it exists.
-        const std::string* separator =
-            (*word)[kWordFieldTextSeparator].GetIfString();
-        if (!separator) {
-          continue;
-        }
-
-        extracted_text += *separator;
-      }
-    }
-  }
-
-  return true;
 }
 
 }  // namespace
@@ -2268,13 +2070,21 @@ void CaptureModeController::OnImageCapturedForSearch(
     return;
   }
 
-  // The Lens Web API needs an access token for authentication, so request
-  // that first. Otherwise, we can start the image search right away.
   if (features::IsSunfishLensWebEnabled()) {
     const gfx::Image image = gfx::Image::CreateFrom1xBitmap(bitmap);
-    delegate_->GetPrimaryAccountAccessToken(base::BindRepeating(
-        &CaptureModeController::OnAccessTokenAvailableForImageSearch,
-        weak_ptr_factory_.GetWeakPtr(), image, image_search_token));
+    const bool is_standalone_session =
+        capture_mode_session_->active_behavior()->behavior_type() ==
+        BehaviorType::kSunfish;
+    delegate_->SendLensWebRegionSearch(
+        image, is_standalone_session,
+        base::BindRepeating(&CaptureModeController::OnSearchUrlFetched,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            user_capture_region_, gfx::ImageSkia()),
+        base::BindRepeating(&CaptureModeController::OnLensTextDetectionComplete,
+                            weak_ptr_factory_.GetWeakPtr(), image_search_token),
+        base::BindRepeating(&CaptureModeController::OnLensWebError,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            image_search_token));
     return;
   }
 
@@ -2288,241 +2098,6 @@ void CaptureModeController::OnImageCapturedForSearch(
                           image),
       base::BindRepeating(&CaptureModeController::OnLensTextDetectionComplete,
                           weak_ptr_factory_.GetWeakPtr(), image_search_token));
-}
-
-// TODO: crbug.com/395939382 - Implement the resource request once a valid
-// `access_token` is returned.
-void CaptureModeController::OnAccessTokenAvailableForImageSearch(
-    const gfx::Image& original_image,
-    base::WeakPtr<BaseCaptureModeSession> image_search_token,
-    const std::string& access_token) {
-  // If the session is no longer valid, we can just return early.
-  if (!image_search_token) {
-    return;
-  }
-
-  // If the access token is empty, let the user know that an error has occurred.
-  if (access_token.empty()) {
-    capture_mode_session_->ShowActionContainerError(
-        l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC));
-    return;
-  }
-
-  // Create the POST request and add the access token for authentication.
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->method = net::HttpRequestHeaders::kPostMethod;
-  resource_request->headers.SetHeader(
-      net::HttpRequestHeaders::kAuthorization,
-      base::StringPrintf("Bearer %s", access_token.c_str()));
-
-  gfx::Image image = original_image;
-  if (NeedsDownscale(original_image)) {
-    image = gfx::ResizedImageForMaxDimensions(
-        original_image, lens::kMaxPixelsForImageSearch,
-        lens::kMaxPixelsForImageSearch, lens::kMaxAreaForImageSearch);
-  }
-
-  // Create the search URL and encode the image for the body of the request.
-  TemplateURLRef::PostContent post_content;
-  GURL search_url = delegate_->GetBaseSearchURLAndPostContent(
-      image, original_image.Size(), &post_content);
-
-  // Append necessary parameters to the URL.
-  // Entry point.
-  std::string entry_point_value =
-      (capture_mode_session_->active_behavior()->behavior_type() ==
-       BehaviorType::kSunfish)
-          ? kQueryParamEntryPointValueLauncher
-          : kQueryParamEntryPointValueScreenshot;
-  search_url = net::AppendOrReplaceQueryParameter(
-      search_url, kQueryParamEntryPointName, entry_point_value);
-
-  // Client surface (e.g., Photos, YouTube, Chromnient, etc.).
-  search_url = net::AppendOrReplaceQueryParameter(
-      search_url, kQueryParamSurfaceName, kQueryParamSurfaceValue);
-
-  // Viewport dimensions.
-  search_url = net::AppendOrReplaceQueryParameter(
-      search_url, kQueryParamViewportWidthName,
-      base::NumberToString(capture_mode::kSearchResultsPanelWebViewWidth));
-  search_url = net::AppendOrReplaceQueryParameter(
-      search_url, kQueryParamViewportHeightName,
-      base::NumberToString(capture_mode::kSearchResultsPanelWebViewHeight));
-
-  // Start time.
-  const std::string epoch_time =
-      base::NumberToString(base::Time::Now().InMillisecondsSinceUnixEpoch());
-  search_url = net::AppendOrReplaceQueryParameter(
-      search_url, kQueryParamStartTimeName, epoch_time);
-
-  resource_request->url = search_url;
-
-  // Create a `SimpleURLLoader` to upload the image data and send the resource
-  // request.
-  std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
-      network::SimpleURLLoader::Create(std::move(resource_request),
-                                       kTrafficAnnotation);
-  network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
-  simple_url_loader->AttachStringForUpload(post_content.second,
-                                           post_content.first);
-  uploads_in_progress_.insert(uploads_in_progress_.begin(),
-                              std::move(simple_url_loader));
-
-  if (!url_loader_factory_) {
-    // Lazily create the URLLoaderFactory.
-    url_loader_factory_ = delegate_->GetSharedURLLoaderFactory();
-    CHECK(url_loader_factory_);
-  }
-
-  simple_url_loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory_.get(),
-      base::BindOnce(&CaptureModeController::OnDispatchCompleteForImageSearch,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     simple_url_loader_ptr->GetWeakPtr(), image_search_token,
-                     access_token));
-}
-
-void CaptureModeController::OnAccessTokenAvailableForCopyText(
-    std::string vsr_id,
-    base::WeakPtr<BaseCaptureModeSession> image_search_token,
-    const std::string& access_token) {
-  // Create a new GET request for the text metadata.
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->headers.SetHeader(
-      net::HttpRequestHeaders::kAuthorization,
-      base::StringPrintf("Bearer %s", access_token.c_str()));
-
-  GURL text_url(kLensWebQFMetadataURL);
-  text_url = net::AppendOrReplaceQueryParameter(text_url, "vsrid", vsr_id);
-  resource_request->url = text_url;
-
-  std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
-      network::SimpleURLLoader::Create(std::move(resource_request),
-                                       kTrafficAnnotation);
-  network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
-  uploads_in_progress_.insert(uploads_in_progress_.begin(),
-                              std::move(simple_url_loader));
-
-  simple_url_loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory_.get(),
-      base::BindOnce(&CaptureModeController::OnDispatchCompleteForCopyText,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     simple_url_loader_ptr->GetWeakPtr(), image_search_token,
-                     access_token));
-}
-
-void CaptureModeController::OnDispatchCompleteForImageSearch(
-    base::WeakPtr<const network::SimpleURLLoader> url_loader,
-    base::WeakPtr<BaseCaptureModeSession> image_search_token,
-    const std::string& access_token,
-    std::unique_ptr<std::string> response_body) {
-  absl::Cleanup deferred_runner = [this, url_loader]() {
-    uploads_in_progress_.remove_if(base::MatchesUniquePtr(url_loader.get()));
-  };
-
-  // If the image search token is no longer valid, delete the `SimpleURLLoader`
-  // and return early.
-  if (!image_search_token) {
-    return;
-  }
-
-  const network::SimpleURLLoader* simple_url_loader = url_loader.get();
-  CHECK(simple_url_loader);
-
-  // We only consider the request a success if we both get a response and the
-  // header is present, otherwise it's a failure.
-  int response_code = kHttpPostFailNoConnection;
-  if (simple_url_loader->ResponseInfo() &&
-      simple_url_loader->ResponseInfo()->headers) {
-    response_code = simple_url_loader->ResponseInfo()->headers->response_code();
-  }
-
-  // If the response code is not a success, return early and let the user know
-  // an error has occurred.
-  if (!network::IsSuccessfulStatus(response_code)) {
-    capture_mode_session_->ShowActionContainerError(
-        l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC));
-    return;
-  }
-
-  // Pass in an empty image, as the Lens Web API uses its own thumbnail from the
-  // image we uploaded previously.
-  const GURL final_url = simple_url_loader->GetFinalURL();
-  ShowSearchResultsPanel(gfx::ImageSkia(), final_url);
-
-  // No other actions to take if we are not using the Lens Web API for Copy
-  // Text.
-  if (!features::IsSunfishLensWebCopyTextEnabled()) {
-    capture_mode_session_->ShowActionContainerError(
-        l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC));
-    return;
-  }
-
-  // Get the vsr ID from the redirect URL so it can be used again in the
-  // /qfmetadata request.
-  std::string vsr_id;
-  if (!net::GetValueForKeyInQuery(final_url, "vsrid", &vsr_id)) {
-    return;
-  }
-
-  // Get a new access token, as they are short lived and we don't want to risk
-  // the original expiring.
-  delegate_->GetPrimaryAccountAccessToken(base::BindRepeating(
-      &CaptureModeController::OnAccessTokenAvailableForCopyText,
-      weak_ptr_factory_.GetWeakPtr(), vsr_id, image_search_token));
-}
-
-void CaptureModeController::OnDispatchCompleteForCopyText(
-    base::WeakPtr<const network::SimpleURLLoader> url_loader,
-    base::WeakPtr<BaseCaptureModeSession> image_search_token,
-    const std::string& access_token,
-    std::unique_ptr<std::string> response_body) {
-  absl::Cleanup deferred_runner = [this, url_loader]() {
-    uploads_in_progress_.remove_if(base::MatchesUniquePtr(url_loader.get()));
-  };
-
-  // If the session is no longer valid, we can just return early.
-  if (!image_search_token) {
-    return;
-  }
-
-  // If there is no response body, return early and let the user know an error
-  // has occurred.
-  if (!response_body) {
-    capture_mode_session_->ShowActionContainerError(
-        l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC));
-    return;
-  }
-
-  // Response body that has a form of JSON contains protection characters
-  // against XSSI that have to be removed. See go/xssi.
-  std::string json_data = std::move(*response_body);
-  json_data =
-      json_data.substr(std::min(json_data.find('\n'), json_data.size()));
-
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      json_data, base::BindOnce(&CaptureModeController::OnJsonParsed,
-                                weak_ptr_factory_.GetWeakPtr()));
-}
-
-void CaptureModeController::OnJsonParsed(
-    data_decoder::DataDecoder::ValueOrError result) {
-  std::string extracted_text;
-  // Attempty to parse the JSON further to get the extracted text. If
-  // unsuccessful, return early and let the user know an error has occurred.
-  if (!ParseQueryFormulationMetadataResponse(result, extracted_text)) {
-    capture_mode_session_->ShowActionContainerError(
-        l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC));
-    return;
-  }
-
-  // If the extracted text is empty, we can simply return without showing the
-  // Copy Text button.
-  if (extracted_text.empty()) {
-    return;
-  }
-
-  AddCopyTextButton(extracted_text);
 }
 
 void CaptureModeController::OnTextDetectionComplete(
@@ -2637,6 +2212,20 @@ void CaptureModeController::OnSearchUrlFetched(const gfx::Rect& captured_region,
   if (captured_region == user_capture_region_) {
     ShowSearchResultsPanel(image, url);
   }
+}
+
+void CaptureModeController::OnLensWebError(
+    base::WeakPtr<BaseCaptureModeSession> image_search_token) {
+  // TODO: crbug.com/406072681 - Show an error message if the session is no
+  // longer active, such as in the case of clicking the Search with Lens button
+  // in a regular session.
+  if (!image_search_token) {
+    return;
+  }
+
+  CHECK(IsActive());
+  capture_mode_session_->ShowActionContainerError(
+      l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC));
 }
 
 void CaptureModeController::OnSearchResultClicked() {

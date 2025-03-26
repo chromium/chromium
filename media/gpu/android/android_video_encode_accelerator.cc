@@ -475,7 +475,7 @@ void AndroidVideoEncodeAccelerator::DequeueOutput() {
   }
 
   const auto it = frame_timestamp_map_.find(presentaion_timestamp);
-  CHECK(it != frame_timestamp_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != frame_timestamp_map_.end());
   const base::TimeDelta frame_timestamp = it->second;
   frame_timestamp_map_.erase(it);
 

@@ -1957,7 +1957,8 @@ net::CookieSettingOverrides URLLoader::CalculateCookieSettingOverrides(
   // each other's storage access API grants. This must be updated on redirects.
   if (net::cookie_util::ShouldAddInitialStorageAccessApiOverride(
           request.url, request.storage_access_api_status,
-          request.request_initiator, emit_metrics)) {
+          request.request_initiator, emit_metrics,
+          request.credentials_mode == mojom::CredentialsMode::kInclude)) {
     overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
   }
 
@@ -3577,6 +3578,10 @@ bool URLLoader::ShouldSetLoadWithStorageAccess() const {
             url_request_->url())) {
       return net::cookie_util::ActivateStorageAccessLoadOutcome::
           kFailureHeaderDisabled;
+    }
+    if (!url_request_->storage_access_status().IsSet()) {
+      url_request_->set_storage_access_status(
+          url_request_->CalculateStorageAccessStatus());
     }
     if (!url_request_->storage_access_status()
              .GetStatusForThirdPartyContext()) {

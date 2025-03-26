@@ -138,6 +138,9 @@ found in the LICENSE file.
       <message name="IDS_GLIC_ERROR_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for the glic error notice.">
         Try again
       </message>
+      <message name="IDS_GLIC_NOTICE_CLOSE_BUTTON_LABEL" translateable="false" desc="Accessible label for the dialog notice and FRE close buttons.">
+        Close
+      </message>
 
       <!-- Experimental Glic settings -->
       <message name="IDS_SETTINGS_GLIC_PAGE_TITLE" translateable="false" desc="Title of the Glic settings subpage. Also shown as page title in tabstrip.">

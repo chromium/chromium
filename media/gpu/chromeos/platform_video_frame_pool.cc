@@ -353,7 +353,7 @@ void PlatformVideoFramePool::OnFrameReleased(
   base::AutoLock auto_lock(lock_);
 
   auto it = frames_in_use_.find(origin_frame->tracking_token());
-  CHECK(it != frames_in_use_.end(), base::NotFatalUntil::M130);
+  CHECK(it != frames_in_use_.end());
   frames_in_use_.erase(it);
 
   if (IsSameFormat_Locked(origin_frame->format(), origin_frame->coded_size(),

@@ -213,8 +213,6 @@ std::vector<AutofillProfile> FetchAddresses(
 // Evaluates whether or not the option to move the address to the account should
 // be available when navigating to the details page of the given address.
 - (BOOL)offerMigrateToAccountForAddress:(const AutofillProfile&)address {
-  BOOL syncIsEnabled = _personalDataManager->address_data_manager()
-                           .IsSyncFeatureEnabledForAutofill();
   BOOL addressIsLocalOrSyncable = !address.IsAccountProfile();
   BOOL addressIsEligibleForAccountMigration =
       addressIsLocalOrSyncable &&
@@ -222,8 +220,7 @@ std::vector<AutofillProfile> FetchAddresses(
           _personalDataManager->address_data_manager(), address);
   BOOL userEmailIsValid = [self userEmail] != nil;
 
-  return !syncIsEnabled && addressIsEligibleForAccountMigration &&
-         userEmailIsValid;
+  return addressIsEligibleForAccountMigration && userEmailIsValid;
 }
 
 // Returns the user's identity email address.

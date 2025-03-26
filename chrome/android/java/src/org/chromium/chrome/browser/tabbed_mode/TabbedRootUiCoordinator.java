@@ -116,6 +116,7 @@ import org.chromium.chrome.browser.privacy_sandbox.SurfaceType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIphController;
 import org.chromium.chrome.browser.readaloud.ReadAloudIphController;
+import org.chromium.chrome.browser.safe_browsing.AdvancedProtectionCoordinator;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextIphController;
@@ -249,6 +250,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
     private @Nullable BookmarkOpener mBookmarkOpener;
     private @NonNull ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
+    private @NonNull AdvancedProtectionCoordinator mAdvancedProtectionCoordinator;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -625,6 +627,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mLoadingFullscreenCoordinator = null;
         }
 
+        if (mAdvancedProtectionCoordinator != null) {
+            mAdvancedProtectionCoordinator.destroy();
+            mAdvancedProtectionCoordinator = null;
+        }
+
         super.onDestroy();
     }
 
@@ -738,6 +745,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
         assert mLayoutManager != null;
+
+        mAdvancedProtectionCoordinator = new AdvancedProtectionCoordinator(mWindowAndroid);
 
         UmaSessionStats.registerSyntheticFieldTrial(
                 "AndroidNavigationMode",
@@ -1538,6 +1547,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 new NotificationPermissionController(mWindowAndroid, rationaleUIDelegateSupplier);
         NotificationPermissionController.attach(mWindowAndroid, mNotificationPermissionController);
         if (mNotificationPermissionController.requestPermissionIfNeeded(/* contextual= */ false)) {
+            return true;
+        }
+
+        if (mAdvancedProtectionCoordinator.showMessageOnStartupIfNeeded()) {
             return true;
         }
 

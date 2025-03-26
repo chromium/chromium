@@ -14,9 +14,12 @@ EmptyTabGroupSyncDelegate::EmptyTabGroupSyncDelegate() = default;
 
 EmptyTabGroupSyncDelegate::~EmptyTabGroupSyncDelegate() = default;
 
-void EmptyTabGroupSyncDelegate::HandleOpenTabGroupRequest(
+std::optional<LocalTabGroupID>
+EmptyTabGroupSyncDelegate::HandleOpenTabGroupRequest(
     const base::Uuid& sync_tab_group_id,
-    std::unique_ptr<TabGroupActionContext> context) {}
+    std::unique_ptr<TabGroupActionContext> context) {
+  return std::nullopt;
+}
 
 std::unique_ptr<ScopedLocalObservationPauser>
 EmptyTabGroupSyncDelegate::CreateScopedLocalObserverPauser() {

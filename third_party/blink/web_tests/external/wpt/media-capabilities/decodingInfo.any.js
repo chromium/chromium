@@ -141,7 +141,7 @@ promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'application/ogg; codec=vorbis',
+      contentType: 'application/ogg; codecs=vorbis',
       width: 800,
       height: 600,
       bitrate: 3000,
@@ -154,7 +154,7 @@ promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     audio: {
-      contentType: 'application/ogg; codec=theora',
+      contentType: 'application/ogg; codecs=theora',
       channels: 2,
     },
   }));

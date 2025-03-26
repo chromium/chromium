@@ -7,7 +7,12 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_observer.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
@@ -17,7 +22,7 @@ namespace glic {
 extern void* kGlicWidgetIdentifier;
 
 // Glic panel widget.
-class GlicWidget : public views::Widget {
+class GlicWidget : public views::Widget, public ThemeServiceObserver {
  public:
   GlicWidget(const Widget&) = delete;
   GlicWidget& operator=(const Widget&) = delete;
@@ -42,9 +47,18 @@ class GlicWidget : public views::Widget {
   gfx::Size GetMinimumSize() const override;
 
  private:
-  explicit GlicWidget(InitParams params);
+  GlicWidget(ThemeService* theme_service, InitParams params);
+
+  // views::Widget::
+  ui::ColorProviderKey GetColorProviderKey() const override;
+
+  // ThemeServiceObserver:
+  void OnThemeChanged() override;
 
   gfx::Size minimum_widget_size_;
+
+  base::ScopedObservation<ThemeService, ThemeServiceObserver>
+      theme_service_observation_{this};
 };
 
 }  // namespace glic

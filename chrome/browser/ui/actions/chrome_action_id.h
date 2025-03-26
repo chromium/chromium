@@ -464,7 +464,6 @@
   E(kActionContentContextAccessibilityLabelsToggleOnce, \
     IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE_ONCE) \
   /* Tab Search */ \
-  E(kActionTabSearch, IDC_TAB_SEARCH) \
   E(kActionTabSearchClose, IDC_TAB_SEARCH_CLOSE) \
   /* Views debug commands. */ \
   E(kActionDebugToggleTabletMode, IDC_DEBUG_TOGGLE_TABLET_MODE) \
@@ -563,6 +562,7 @@
   E(kActionShowPasswordsBubbleOrPage) \
   E(kActionManagePasswordsForPage, IDC_MANAGE_PASSWORDS_FOR_PAGE) \
   E(kActionCopyUrl, IDC_COPY_URL) \
+  E(kActionTabSearch, IDC_TAB_SEARCH) \
 
 #define CHROME_ACTION_IDS \
     CHROME_COMMON_ACTION_IDS \

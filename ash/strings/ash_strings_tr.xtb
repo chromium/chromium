@@ -149,6 +149,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1455242230282523554">Dil ayarlarını gösterin</translation>
 <translation id="1459693405370120464">Hava durumu</translation>
 <translation id="1460620680449458626">Ses kapalı.</translation>
+<translation id="1462439140224375968">Google Dokümanı oluşturuldu</translation>
 <translation id="14648076227129703">Bu işlem, <ph name="APP1_NAME" /> ve <ph name="APP2_NAME" /> uygulamalarının yanı sıra kamera izni olan tüm uygulamaların ve web sitelerinin kameraya erişmesine izin verir</translation>
 <translation id="1467432559032391204">Sola</translation>
 <translation id="146902737843070955">Yöneticiniz bu değişikliği istedi</translation>
@@ -593,6 +594,7 @@ Aksi takdirde yerleşik dokunmatik alan <ph name="TIMEOUT_SECONDS" /> sonra yeni
 <translation id="301584155502740476">Hotspot ayrıntılarını göster. Hotspot kapalı.</translation>
 <translation id="3017079585324758401">Arka plan</translation>
 <translation id="3018135054368884502">Medyayı ileri sarın</translation>
+<translation id="3026897869154397692">Takvime eklendi</translation>
 <translation id="3033545621352269033">Açık</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> ile birleştir</translation>
 <translation id="3036649622769666520">Dosya Aç</translation>
@@ -1481,6 +1483,7 @@ Bağlı cihaz yok.</translation>
 <translation id="5825969630400862129">Bağlı cihaz ayarları</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> tane daha</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> adlı alıcıya <ph name="ROUTE_TITLE" /> yayınını durdur</translation>
+<translation id="5840658767386246331">Google ile Arama</translation>
 <translation id="5841296711770970362">Sonraki parçaya gidin</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> hotspot'u açık, hiçbir cihaz bağlı değil</translation>
 <translation id="584525477304726060">Büyütmek için basılı tutun</translation>
@@ -1894,6 +1897,7 @@ Yeni yüklenmiş</translation>
 <translation id="7228968829656641943">Ekranda arama yapmak için seçin. Klavyeyle gezinmek için sekme ve ardından boşluk tuşuna basın.</translation>
 <translation id="7229029500464092426">Bellek <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> toplam</translation>
 <translation id="7239814253344511868">Her iki fare düğmesi</translation>
+<translation id="7240636904654154599">Google E-Tablosu oluşturuldu</translation>
 <translation id="7244725679040769470">Yaklaşık %<ph name="PERCENTAGE" /> kaldı. Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Bir güncellemenin uygulanması için bu Chromebook'un yeniden başlatılması gerekiyor. Bu işlem bir dakika kadar sürebilir.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2408,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8921624153894383499">Google Asistan bu dili konuşmuyor.</translation>
 <translation id="8926951137623668982">Raf her zaman gizleniyor</translation>
 <translation id="8929566928381252430">Caps Lock tuşunu kullanmaya mı çalışıyorsunuz? Şunu kullanın:</translation>
+<translation id="8929623844713377237">Kişi oluşturuldu</translation>
 <translation id="8934418770423095813">Google Dokümanı Oluştur</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 dosya}other{# dosya}}</translation>
 <translation id="8936501819958976551">devre dışı</translation>

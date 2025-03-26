@@ -266,8 +266,8 @@ class CastStartStopMediaNotificationProviderImplTest
     // starts the GPU service thread.
     MediaNotificationProviderImplTest::SetUp();
 
-    profile_ = crosapi_environment_.profile_manager()->CreateTestingProfile(
-        "Profile", /*is_main_profile=*/true);
+    profile_ =
+        crosapi_environment_.profile_manager()->CreateTestingProfile("Profile");
     InitProvider();
   }
 

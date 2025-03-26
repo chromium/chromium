@@ -85,6 +85,7 @@ UIImage* CloseButtonImage(BOOL highlighted) {
     return;
   }
   _webView = view;
+  _webView.translatesAutoresizingMaskIntoConstraints = NO;
   _webView.hidden = _webViewHidden;
   [self.view addSubview:_webView];
   AddSameConstraints(_webView, self.view);

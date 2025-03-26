@@ -195,6 +195,13 @@ class TestInterestGroupManager : public content::InterestGroupManager {
                                      base::OnceClosure callback) override {
     NOTREACHED();
   }
+  void AddTrustedServerKeysDebugOverride(
+      TrustedServerAPIType api,
+      const url::Origin& coordinator,
+      std::string serialized_keys,
+      base::OnceCallback<void(std::optional<std::string>)> callback) override {
+    NOTREACHED();
+  }
 
  private:
   std::vector<InterestGroupDataKey> data_keys_;
