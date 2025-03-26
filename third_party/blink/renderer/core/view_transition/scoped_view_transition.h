@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_SCOPED_VIEW_TRANSITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_SCOPED_VIEW_TRANSITION_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
+
 namespace blink {
 
 class DOMViewTransition;
@@ -14,7 +16,7 @@ class ScriptState;
 class V8ViewTransitionCallback;
 class ViewTransitionOptions;
 
-class ScopedViewTransition {
+class CORE_EXPORT ScopedViewTransition {
  public:
   static DOMViewTransition* startViewTransition(
       ScriptState*,

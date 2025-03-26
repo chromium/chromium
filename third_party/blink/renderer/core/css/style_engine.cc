@@ -3865,6 +3865,22 @@ void StyleEngine::RecalcTransitionPseudoStyle() {
       });
 }
 
+void StyleEngine::RebuildTransitionPseudoLayoutTrees() {
+  ViewTransitionUtils::ForEachTransition(
+      *document_, [&](ViewTransition& transition) {
+        Element* scope = transition.Scope();
+        if (!scope) {
+          scope = document_->documentElement();
+        }
+        if (!scope || !scope->InActiveDocument()) {
+          return;
+        }
+
+        // TODO(crbug.com/405117185): Use only the v-t-names inside the scope.
+        scope->RebuildTransitionPseudoLayoutTree(view_transition_names_);
+      });
+}
+
 void StyleEngine::RecalcStyle() {
   RecalcStyle(
       {}, StyleRecalcContext::FromAncestors(style_recalc_root_.RootElement()));
@@ -3931,8 +3947,7 @@ void StyleEngine::RebuildLayoutTree(Element* size_container) {
     RebuildLayoutTreeForTraversalRootAncestors(root_element.GetReattachParent(),
                                                container_parent);
     if (size_container == nullptr) {
-      document_->documentElement()->RebuildTransitionPseudoLayoutTree(
-          view_transition_names_);
+      RebuildTransitionPseudoLayoutTrees();
     }
     layout_tree_rebuild_root_.Clear();
     propagate_to_root = IsA<HTMLHtmlElement>(root_element) ||

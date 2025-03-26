@@ -10981,10 +10981,7 @@ void Element::ClearTransitionPseudoTreeIfNeeded(
 
 void Element::RebuildTransitionPseudoLayoutTree(
     const Vector<AtomicString>& view_transition_names) {
-  DCHECK_EQ(this, GetDocument().documentElement());
-
-  const bool has_transition =
-      !!ViewTransitionUtils::GetTransition(GetDocument());
+  const bool has_transition = !!ViewTransitionUtils::GetTransition(*this);
   if (!has_transition) {
     DCHECK(!GetPseudoElement(kPseudoIdViewTransition));
     return;
