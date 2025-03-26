@@ -306998,6 +306998,71 @@
      ]
     },
     "embedded": {
+     "image-embedding-nested-data-url-png.html": [
+      "ff54e38b1a48c1692a4e7cb3c7ab44a82e0e36bf",
+      [
+       null,
+       [
+        [
+         "/svg/struct/reftests/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "image-embedding-nested-data-url.html": [
+      "7e58c3e7e10b0b5679b02f77dde8cb2479bbf96e",
+      [
+       null,
+       [
+        [
+         "/svg/struct/reftests/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "image-embedding-nested-external-data-url-png.html": [
+      "0935507c045f71ff195ff7141b6171c9099ceb78",
+      [
+       null,
+       [
+        [
+         "/svg/struct/reftests/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "image-embedding-nested-http-url.sub.html": [
+      "f3d8a79b999ab50790c7c2cbbac29dc5ebbb4c9d",
+      [
+       null,
+       [
+        [
+         "/svg/struct/reftests/reference/green-100x100.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "image-embedding-nesteder-data-url.html": [
+      "48fb4fa48b7439dde62fbe82a0ff20ff5d64e550",
+      [
+       null,
+       [
+        [
+         "/svg/struct/reftests/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "image-embedding-svg-nested-svg-in-foreignobject.html": [
       "880305253c59fe4d7af9808894f82bd88a6aa760",
       [
@@ -401363,7 +401428,7 @@
          []
         ],
         "parse-error-expected.txt": [
-         "4455cd15af8e67a8b7ed7b67f3d17f1dc165a63b",
+         "1ede06b55802e9f9aa6feefff11f2d7d9adb2d9d",
          []
         ],
         "parse-error.json": [
@@ -415417,6 +415482,10 @@
      []
     ],
     "resources": {
+     "child.html": [
+      "4d6895125a2acaad00cc2bc849e026a2632dd88e",
+      []
+     ],
      "post_name_on_load.html": [
       "4679a6e6ec73ea4c2dae646b0f027dd7f2ce6823",
       []
@@ -422332,6 +422401,12 @@
      "reference": {
       "green-rect-100x100.svg": [
        "120941444a4898197d6b6001f9908a6cd48b62ba",
+       []
+      ]
+     },
+     "support": {
+      "external-with-data-url.svg": [
+       "e5f707c79809cfcc2eabc3361b291cdae8114ad0",
        []
       ]
      }
@@ -609583,7 +609658,7 @@
         ]
        ],
        "2d.text.measure.selection-rects-baselines.tentative.html": [
-        "8ef5e83199c395d1de79b7730b47c2c9342d074e",
+        "5e8c7bcc73d4e2d03d98b84ec1556bffa210366d",
         [
          null,
          {}
@@ -609597,7 +609672,7 @@
         ]
        ],
        "2d.text.measure.selection-rects.tentative.html": [
-        "4cde3807fd6c3fb634ac45ce63341005c8234cf9",
+        "ee9ad76cdcbd0413e627cab5ab5d3270b5972148",
         [
          null,
          {}
@@ -623501,7 +623576,7 @@
         ]
        ],
        "2d.text.measure.selection-rects-baselines.tentative.html": [
-        "fc1683bcce17a948e3580a64357da5a7927ce289",
+        "60c3e66b55b6b12fadb35b52d220dc58e262d0a6",
         [
          null,
          {}
@@ -623529,7 +623604,7 @@
         ]
        ],
        "2d.text.measure.selection-rects.tentative.html": [
-        "95a8c8b4955c80963553f0607a37063809a02da8",
+        "c194c860d8f1092d62b3e222863396bb5935be2f",
         [
          null,
          {}
@@ -646153,7 +646228,7 @@
          ]
         ],
         "parse-error.html": [
-         "88fb23a00d963b97e789deb5750e8a6ad62b533a",
+         "3c079f0654b16c476693afa7e56358afad30d748",
          [
           null,
           {}
@@ -691914,6 +691989,13 @@
       {
        "timeout": "long"
       }
+     ]
+    ],
+    "callback-iframe-different-origin.html": [
+     "5e66b36d7123a26e9ee142fa792e305d8440f5e4",
+     [
+      null,
+      {}
      ]
     ],
     "callback-iframe.html": [
