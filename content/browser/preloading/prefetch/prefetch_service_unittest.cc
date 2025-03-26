@@ -4444,7 +4444,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   std::string histogram_suffix =
       GetPrefetchEagernessHistogramSuffix(GetParam());
   base::TimeDelta block_until_head_timeout =
-      PrefetchBlockUntilHeadTimeout(prefetch_type);
+      PrefetchBlockUntilHeadTimeout(prefetch_type, /*is_nav_prerender=*/false);
   histogram_tester.ExpectTotalCount(
       base::StringPrintf(
           "PrefetchProxy.AfterClick.BlockUntilHeadDuration2NoBias.Served.%s",
