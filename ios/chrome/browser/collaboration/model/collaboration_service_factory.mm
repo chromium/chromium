@@ -46,12 +46,8 @@ CollaborationServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
-  bool isFeatureEnabled = base::FeatureList::IsEnabled(
-                              data_sharing::features::kDataSharingFeature) ||
-                          base::FeatureList::IsEnabled(
-                              data_sharing::features::kDataSharingJoinOnly);
-
-  if (!isFeatureEnabled || profile->IsOffTheRecord()) {
+  if (!data_sharing::features::IsDataSharingFunctionalityEnabled() ||
+      profile->IsOffTheRecord()) {
     return std::make_unique<EmptyCollaborationService>();
   }
 

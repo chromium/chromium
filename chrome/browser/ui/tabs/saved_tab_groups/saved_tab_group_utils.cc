@@ -686,9 +686,7 @@ bool SavedTabGroupUtils::AreSavedTabGroupsSyncedForProfile(Profile* profile) {
 
 // static
 bool SavedTabGroupUtils::SupportsSharedTabGroups() {
-  return tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled() &&
-         base::FeatureList::IsEnabled(
-             data_sharing::features::kDataSharingFeature);
+  return data_sharing::features::IsDataSharingFunctionalityEnabled();
 }
 
 // static
