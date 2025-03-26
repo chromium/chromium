@@ -54,6 +54,8 @@ void RecordLobsterBlockedReason(LobsterSystemCheck failed_reason) {
     case LobsterSystemCheck::kUnsupportedFormFactor:
       RecordLobsterState(LobsterMetricState::kBlockedByFormFactor);
       return;
+    case LobsterSystemCheck::kUnsupportedPolicy:
+      RecordLobsterState(LobsterMetricState::kBlockedByPolicy);
   }
 }
 

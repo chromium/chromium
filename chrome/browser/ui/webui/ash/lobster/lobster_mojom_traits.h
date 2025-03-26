@@ -159,6 +159,7 @@ struct EnumTraits<lobster::mojom::WebUIMetricEvent, ash::LobsterMetricState> {
       case ash::LobsterMetricState::kBlockedByHardware:
       case ash::LobsterMetricState::kBlockedByKioskMode:
       case ash::LobsterMetricState::kBlockedByFormFactor:
+      case ash::LobsterMetricState::kBlockedByPolicy:
         return lobster::mojom::WebUIMetricEvent::kUnknown;
     }
   }
