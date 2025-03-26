@@ -177,7 +177,7 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "gpu/gr_shader_cache/cache_0x?",
         "gpu/mapped_memory/manager_0x?",
         "gpu/shared_images",
-        "gpu/media_texture_owner_?",
+        "gpu/media_texture_owner_0x?",
         "gpu/transfer_buffer_memory/buffer_0x?",
         "gpu/transfer_cache/cache_0x?",
         "gpu/transfer_cache/cache_0x?/avg_image_size",
