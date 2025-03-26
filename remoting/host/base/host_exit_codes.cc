@@ -13,6 +13,7 @@ const NameMapElement<HostExitCodes> kHostExitCodeStrings[] = {
     {kInitializationFailed, "INITIALIZATION_FAILED"},
     {kInvalidCommandLineExitCode, "INVALID_COMMAND_LINE"},
     {kNoPermissionExitCode, "NO_PERMISSION"},
+    {kAgentProcessBrokerDisconnected, "AGENT_PROCESS_BROKER_DISCONNECTED"},
     {kInvalidHostConfigurationExitCode, "INVALID_HOST_CONFIGURATION"},
     {kInvalidHostIdExitCode, "INVALID_HOST_ID"},
     {kInvalidOAuthCredentialsExitCode, "INVALID_OAUTH_CREDENTIALS"},
