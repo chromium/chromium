@@ -641,7 +641,7 @@ void GlicWindowController::AuthCheckDoneBeforeShow(
   }
 
   // Immediately hook up the WebView to the WebContents.
-  GetGlicView()->web_view()->SetWebContents(contents_->web_contents());
+  GetGlicView()->SetWebContents(contents_->web_contents());
 
   // Make the web view invisible for now, then fade it in after the open
   // animation finishes.
@@ -821,6 +821,11 @@ void GlicWindowController::ShowFinish() {
   if (state_ == State::kClosed || state_ == State::kOpen) {
     return;
   }
+
+  // Update the background color after fading in the webview so the transition
+  // isn't visible. This will be the widget background color the user sees next
+  // time.
+  GetGlicView()->UpdateBackgroundColor();
 
   // In the case that the open animation was skipped, the web view should still
   // be visible now.
@@ -1017,6 +1022,7 @@ void GlicWindowController::ShouldEnableDragResize(bool enabled) {
 
   if (base::FeatureList::IsEnabled(features::kGlicUserResize)) {
     GetGlicWidget()->widget_delegate()->SetCanResize(enabled);
+    GetGlicView()->UpdateBackgroundColor();
   }
 }
 
