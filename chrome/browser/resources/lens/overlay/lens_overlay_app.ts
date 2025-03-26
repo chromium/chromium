@@ -141,9 +141,14 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         type: Boolean,
         value: false,
       },
+      enableGhostLoader: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableGhostLoader'),
+      },
       showGhostLoader: {
         type: Boolean,
         computed: `computeShowGhostLoader(
+                enableGhostLoader,
                 isSearchboxFocused,
                 autocompleteRequestStarted,
                 showErrorState,
@@ -213,6 +218,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private toastMessage: string = '';
   // What the current page content type is.
   private pageContentType: PageContentType = PageContentType.kUnknown;
+  // Whether the ghost loader is enabled via feature flag.
+  private enableGhostLoader: boolean;
   // Whether to show the ghost loader.
   private showGhostLoader: boolean;
   // What the placeholder text should be.
@@ -479,7 +486,9 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   }
 
   private computeShowGhostLoader(): boolean {
-    if (this.suppressGhostLoader) {
+    // Ghost loader is disabled by the feature flag or suppressed by the
+    // LensOverlayController.
+    if (!this.enableGhostLoader || this.suppressGhostLoader) {
       return false;
     }
     // Show the ghost loader if there is focus on the searchbox, and there is
@@ -673,7 +682,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private getSearchboxAriaDescription(): string {
     // Get the the text from the ghost loader to add to the searchbox aria
     // description.
-    return this.$.searchboxGhostLoader.getText();
+    return this.showGhostLoader ? this.$.searchboxGhostLoader.getText() : '';
   }
 
   setSearchboxFocusForTesting(isFocused: boolean) {
