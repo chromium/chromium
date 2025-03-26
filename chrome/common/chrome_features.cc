@@ -27,7 +27,7 @@ BASE_FEATURE(kAppPreloadService,
 // as long as the PWA is on the start menu.  b/40285965.
 BASE_FEATURE(kAppSpecificNotifications,
              "AppSpecificNotifications",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, invokes `SetProcessPriorityBoost` to disable priority boosting
 // when a thread is taken out of the wait state. The default Windows behavior is
