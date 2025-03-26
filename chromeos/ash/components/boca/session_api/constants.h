@@ -78,6 +78,7 @@ inline constexpr char kFavIcon[] = "faviconUrl";
 inline constexpr char kContentConfigs[] = "contentConfigs";
 inline constexpr char kActiveBundle[] = "activeBundle";
 inline constexpr char kLocked[] = "locked";
+inline constexpr char kLockToAppHome[] = "lockToAppHome";
 inline constexpr char kLockedNavigationOptions[] = "lockedNavigationOptions";
 inline constexpr char kNavigationType[] = "navigationType";
 inline constexpr char kSeconds[] = "seconds";

@@ -251,6 +251,8 @@ void ParseSessionConfigProtoFromJson(base::Value::Dict* session_dict,
       auto* active_bundle = on_task_config->mutable_active_bundle();
       active_bundle->set_locked(
           active_bundle_dict->FindBool(kLocked).value_or(false));
+      active_bundle->set_lock_to_app_home(
+          active_bundle_dict->FindBool(kLockToAppHome).value_or(false));
       auto* content_configs_list =
           active_bundle_dict->FindList(kContentConfigs);
       if (content_configs_list) {
@@ -466,6 +468,8 @@ void ParseOnTaskConfigJsonFromProto(::boca::OnTaskConfig* on_task_config,
   if (on_task_config && on_task_config->has_active_bundle()) {
     base::Value::Dict bundle;
     bundle.Set(kLocked, on_task_config->active_bundle().locked());
+    bundle.Set(kLockToAppHome,
+               on_task_config->active_bundle().lock_to_app_home());
     base::Value::List content_configs;
     for (const auto& content :
          on_task_config->active_bundle().content_configs()) {

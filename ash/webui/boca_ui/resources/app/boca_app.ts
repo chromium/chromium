@@ -169,6 +169,7 @@ export declare interface ControlledTab {
  */
 export declare interface OnTaskConfig {
   isLocked: boolean;
+  isPaused?: boolean;
   tabs: ControlledTab[];
 }
 
