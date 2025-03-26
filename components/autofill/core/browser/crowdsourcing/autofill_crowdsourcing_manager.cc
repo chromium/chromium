@@ -874,9 +874,6 @@ std::tuple<GURL, std::string> AutofillCrowdsourcingManager::GetRequestURLAndMeth
     if (GetPayloadLength(request_data.payload) <= kMaxQueryGetSize) {
       resource_id = request_data.payload;
       method = "GET";
-      base::UmaHistogramBoolean(kUmaApiUrlIsTooLong, false);
-    } else {
-      base::UmaHistogramBoolean(kUmaApiUrlIsTooLong, true);
     }
     base::UmaHistogramBoolean(kUmaMethod, method != "GET");
   }
