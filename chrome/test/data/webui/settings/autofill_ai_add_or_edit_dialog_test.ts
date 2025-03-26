@@ -6,7 +6,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {CrButtonElement, CrInputElement, SettingsAutofillAiAddOrEditDialogElement} from 'chrome://settings/lazy_load.js';
 import {EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -297,6 +297,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.documentElement.lang = 'en';
 
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
@@ -508,7 +509,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
           assertEquals(oldDate.month, monthSelect.value);
           assertEquals(oldDate.day, daySelect.value);
           assertEquals(oldDate.year, yearSelect.value);
-          assertTrue(monthSelect.textContent!.includes(oldDate.month));
+          assertTrue(monthSelect.textContent!.includes('Mar'));
           assertTrue(daySelect.textContent!.includes(oldDate.day));
           assertTrue(yearSelect.textContent!.includes(oldDate.year));
         }
@@ -687,5 +688,46 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     // should be visible and the save button should be disabled.
     assertTrue(isVisible(validationError));
     assertTrue(saveButton.disabled);
+  });
+
+  test('testMonthPickerChangeLocale', async function() {
+    testEntityInstance.attributeInstances.push(testDateAttributeInstance);
+    dialog.entityInstance = testEntityInstance;
+    document.documentElement.lang = 'cs';
+    document.body.appendChild(dialog);
+    await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
+    await flushTasks();
+
+    const allSelectorOptions =
+        dialog.shadowRoot!.querySelectorAll<HTMLElement>('option');
+    // The abbreviations are formatted so that they match the way they are found
+    // inside the `textContent` of <option> elements. This way, "led" will not
+    // match "New Caledonia" from the country picker.
+    const czechMonthsAbbreviations = [
+      ' led\n',
+      ' úno\n',
+      ' bře\n',
+      ' dub\n',
+      ' kvě\n',
+      ' čvn\n',
+      ' čvc\n',
+      ' srp\n',
+      ' zář\n',
+      ' říj\n',
+      ' lis\n',
+      ' pro\n',
+    ];
+    const firstOptionInTheMonthSelectorIndex =
+        Array.from(allSelectorOptions)
+            .findIndex(
+                option =>
+                    option.textContent!.includes(czechMonthsAbbreviations[0]!));
+    assertNotEquals(firstOptionInTheMonthSelectorIndex, -1);
+
+    for (let i = 0, j = firstOptionInTheMonthSelectorIndex;
+         i < czechMonthsAbbreviations.length; i++, j++) {
+      assertTrue(allSelectorOptions.item(j).textContent!.includes(
+          czechMonthsAbbreviations[i]!));
+    }
   });
 });

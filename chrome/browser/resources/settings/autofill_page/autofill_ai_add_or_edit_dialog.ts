@@ -268,9 +268,11 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   }
 
   private getMonthName_(month: string): string {
-    // TODO(crbug.com/393318914): Use names instead of numbers ("Jan", "Feb",
-    // etc.).
-    return month;
+    const date = new Date();
+    date.setMonth(Number(month) - 1);
+    const formatter = new Intl.DateTimeFormat(
+        document.documentElement.lang, {month: 'short'});
+    return formatter.format(date);
   }
 
 
