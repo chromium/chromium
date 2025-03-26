@@ -55,13 +55,15 @@ using ::private_join_and_compute::ECGroup;
 using ::private_join_and_compute::ECPoint;
 using ::testing::StartsWith;
 
+constexpr size_t kGetProbabilisticRevealTokenResponseMaxBodySize = 40 * 1024;
 constexpr char kIssuerServerUrl[] =
     "https://prod.probabilisticrevealtoken.goog/v1/ipblinding/"
     "getProbabilisticRevealToken";
 
 absl::StatusOr<std::string> GetTestPublicKeyBytes(uint64_t private_key) {
   Context context;
-  ASSIGN_OR_RETURN(ECGroup group, ECGroup::Create(NID_secp224r1, &context));
+  ASSIGN_OR_RETURN(ECGroup group,
+                   ECGroup::Create(NID_X9_62_prime256v1, &context));
   ASSIGN_OR_RETURN(ECPoint g, group.GetFixedGenerator());
   ASSIGN_OR_RETURN(ECPoint y, g.Mul(context.CreateBigNum(private_key)));
   return y.ToBytesCompressed();
@@ -200,7 +202,8 @@ TEST_F(IpProtectionProbabilisticRevealTokenDirectFetcherRetrieverTest,
 
 TEST_F(IpProtectionProbabilisticRevealTokenDirectFetcherRetrieverTest,
        LargeResponseWithinLimit) {
-  const std::string response_str = std::string(32 * 1024, 'a');
+  const std::string response_str =
+      std::string(kGetProbabilisticRevealTokenResponseMaxBodySize, 'a');
   SetResponse(response_str);
   base::test::TestFuture<base::expected<std::optional<std::string>, int>>
       result_future;
@@ -213,7 +216,8 @@ TEST_F(IpProtectionProbabilisticRevealTokenDirectFetcherRetrieverTest,
 
 TEST_F(IpProtectionProbabilisticRevealTokenDirectFetcherRetrieverTest,
        LargeResponseOverLimit) {
-  const std::string response_str = std::string(32 * 1024 + 1, 'a');
+  const std::string response_str =
+      std::string(kGetProbabilisticRevealTokenResponseMaxBodySize + 1, 'a');
   SetResponse(response_str);
   base::test::TestFuture<base::expected<std::optional<std::string>, int>>
       result_future;
@@ -267,9 +271,9 @@ class IpProtectionProbabilisticRevealTokenDirectFetcherTest
             response_proto.add_tokens();
         token->set_version(1);
         std::string i_string = base::NumberToString(i);
-        // Pad the token string to 29 characters (including "token", the index,
+        // Pad the token string to 33 characters (including "token", the index,
         // and "-u"). Example: "token0-u---------------------".
-        int padding_length = 22 - i_string.size();
+        int padding_length = 26 - i_string.size();
         std::string padding(padding_length, '-');
         token->set_u(base::StrCat({"token", i_string, "-u", padding}));
         token->set_e(base::StrCat({"token", i_string, "-e", padding}));
@@ -621,8 +625,9 @@ TEST_F(IpProtectionProbabilisticRevealTokenDirectFetcherTest,
           /*num_tokens=*/400);
   response_proto.set_num_tokens_with_signal(123);
   const std::string response_str = response_proto.SerializeAsString();
-  // When last checked (01/24/2025) response_str.size() is 26447.
-  ASSERT_LT(response_str.size(), std::size_t(32 * 1024));
+  // When last checked (03/25/2025) response_str.size() is 29659.
+  ASSERT_LT(response_str.size(),
+            std::size_t(kGetProbabilisticRevealTokenResponseMaxBodySize));
 
   SetResponse(response_str);
   base::test::TestFuture<std::optional<TryGetProbabilisticRevealTokensOutcome>,
@@ -660,7 +665,8 @@ TEST_F(IpProtectionProbabilisticRevealTokenDirectFetcherTest,
           /*num_tokens=*/1000);
   const std::string response_str = response_proto.SerializeAsString();
   // When last checked (01/24/2025) response_str.size() is 66047.
-  ASSERT_GT(response_str.size(), std::size_t(32 * 1024));
+  ASSERT_GT(response_str.size(),
+            std::size_t(kGetProbabilisticRevealTokenResponseMaxBodySize));
 
   SetResponse(response_str);
 
@@ -730,7 +736,8 @@ TEST_F(IpProtectionProbabilisticRevealTokenDirectFetcherTest,
       BuildProbabilisticRevealTokenResponse(
           /*num_tokens=*/1000);
   std::string response_str = large_response_proto.SerializeAsString();
-  ASSERT_GT(response_str.size(), std::size_t(32 * 1024));
+  ASSERT_GT(response_str.size(),
+            std::size_t(kGetProbabilisticRevealTokenResponseMaxBodySize));
   SetResponse(response_str);
 
   base::test::TestFuture<std::optional<TryGetProbabilisticRevealTokensOutcome>,
@@ -823,7 +830,8 @@ TEST_F(
       BuildProbabilisticRevealTokenResponse(
           /*num_tokens=*/1000);
   std::string response_str = large_response_proto.SerializeAsString();
-  ASSERT_GT(response_str.size(), std::size_t(32 * 1024));
+  ASSERT_GT(response_str.size(),
+            std::size_t(kGetProbabilisticRevealTokenResponseMaxBodySize));
   SetResponse(response_str);
 
   base::test::TestFuture<std::optional<TryGetProbabilisticRevealTokensOutcome>,
@@ -872,7 +880,8 @@ TEST_F(
       BuildProbabilisticRevealTokenResponse(
           /*num_tokens=*/1000);
   std::string response_str = large_response_proto.SerializeAsString();
-  ASSERT_GT(response_str.size(), std::size_t(32 * 1024));
+  ASSERT_GT(response_str.size(),
+            std::size_t(kGetProbabilisticRevealTokenResponseMaxBodySize));
   SetResponse(response_str);
 
   base::test::TestFuture<std::optional<TryGetProbabilisticRevealTokensOutcome>,

@@ -18,8 +18,8 @@ namespace ip_protection {
 namespace {
 
 // Size of a PRT when TLS serialized, before base64 encoding.
-constexpr size_t kPRTSize = 71;
-constexpr size_t kPRTPointSize = 29;
+constexpr size_t kPRTSize = 79;
+constexpr size_t kPRTPointSize = 33;
 constexpr size_t kEpochIdSize = 8;
 
 // Deserialize a given prt serialized using
@@ -130,36 +130,41 @@ TEST_F(IpProtectionPRTSerializeTest, SerializeEmptyPRT) {
 }
 
 TEST_F(IpProtectionPRTSerializeTest, WrongVersion) {
-  ProbabilisticRevealToken token{2, std::string(29, 'u'), std::string(29, 'e'),
+  ProbabilisticRevealToken token{2, std::string(kPRTPointSize, 'u'),
+                                 std::string(kPRTPointSize, 'e'),
                                  std::string(8, '0')};
   std::optional<std::string> res = token.SerializeAndEncode();
   EXPECT_FALSE(res.has_value());
 }
 
 TEST_F(IpProtectionPRTSerializeTest, WrongUSize) {
-  ProbabilisticRevealToken token{1, std::string(30, 'u'), std::string(29, 'e'),
+  ProbabilisticRevealToken token{1, std::string(kPRTPointSize + 1, 'u'),
+                                 std::string(kPRTPointSize, 'e'),
                                  std::string(8, '0')};
   std::optional<std::string> res = token.SerializeAndEncode();
   EXPECT_FALSE(res.has_value());
 }
 
 TEST_F(IpProtectionPRTSerializeTest, WrongESize) {
-  ProbabilisticRevealToken token{1, std::string(29, 'u'), std::string(28, 'e'),
+  ProbabilisticRevealToken token{1, std::string(kPRTPointSize, 'u'),
+                                 std::string(kPRTPointSize - 1, 'e'),
                                  std::string(8, '0')};
   std::optional<std::string> res = token.SerializeAndEncode();
   EXPECT_FALSE(res.has_value());
 }
 
 TEST_F(IpProtectionPRTSerializeTest, WrongEpochIdSize) {
-  ProbabilisticRevealToken token{1, std::string(29, 'u'), std::string(29, 'e'),
+  ProbabilisticRevealToken token{1, std::string(kPRTPointSize, 'u'),
+                                 std::string(kPRTPointSize, 'e'),
                                  std::string(9, '0')};
   std::optional<std::string> res = token.SerializeAndEncode();
   EXPECT_FALSE(res.has_value());
 }
 
 TEST_F(IpProtectionPRTSerializeTest, Success) {
-  ProbabilisticRevealToken expected_token{
-      1, std::string(29, 'u'), std::string(29, 'e'), std::string(8, '0')};
+  ProbabilisticRevealToken expected_token{1, std::string(kPRTPointSize, 'u'),
+                                          std::string(kPRTPointSize, 'e'),
+                                          std::string(8, '0')};
   std::optional<std::string> res = expected_token.SerializeAndEncode();
   ASSERT_TRUE(res.has_value());
   ProbabilisticRevealToken token;
