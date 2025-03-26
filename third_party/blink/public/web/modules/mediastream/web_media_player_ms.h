@@ -111,7 +111,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
 
   // Playback controls.
   void Play() override;
-  void Pause() override;
+  void Pause(PauseReason pause_reason) override;
   void Seek(double seconds) override;
   void SetRate(double rate) override;
   void SetVolume(double volume) override;
