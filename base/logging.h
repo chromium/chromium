@@ -317,14 +317,10 @@ BASE_EXPORT int GetVlogLevelHelper(const char* file_start, size_t N);
 template <size_t N>
 int GetVlogLevel(const char (&file)[N]) {
   // Disable runtime VLOG()s in official builds. This saves ~135k on the
-  // android-binary-size bot in crrev.com/c/6344673 and ~460k of chrome.stripped
-  // on Linux (tested locally by pbos@, 2025-03-14). Parts of the code can, and
+  // android-binary-size bot in crrev.com/c/6344673. Parts of the code can, and
   // do, override ENABLED_VLOG_LEVEL to collect logs in the wild. The rest is
   // dead-code stripped.
-  //
-  // This is currently disabled on ChromeOS as anecdata seems to suggest that
-  // they rely much more on capturing logs in the wild.
-#if defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_CHROMEOS)
+#if defined(OFFICIAL_BUILD) && BUILDFLAG(IS_ANDROID)
   return -1;
 #else
   return GetVlogLevelHelper(file, N);
