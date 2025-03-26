@@ -65,8 +65,7 @@ public class FeedManagementMediatorTest {
         assertEquals(
                 intent.getData(), Uri.parse("https://myactivity.google.com/myactivity?product=50"));
         verify(mFeedServiceBridgeJniMock)
-                .reportOtherUserActionForStream(
-                        TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_ACTIVITY);
+                .reportOtherUserAction(TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_ACTIVITY);
     }
 
     @Test
@@ -80,8 +79,8 @@ public class FeedManagementMediatorTest {
                 intent.getData(),
                 Uri.parse("https://www.google.com/preferences/interests/yourinterests?sh=n"));
         verify(mFeedServiceBridgeJniMock)
-                .reportOtherUserActionForStream(
-                        TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_FOLLOWING);
+                .reportOtherUserAction(
+                        TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
     }
 
     @Test
@@ -95,7 +94,7 @@ public class FeedManagementMediatorTest {
                 intent.getData(),
                 Uri.parse("https://www.google.com/preferences/interests/hidden?sh=n"));
         verify(mFeedServiceBridgeJniMock)
-                .reportOtherUserActionForStream(
-                        TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_HIDDEN);
+                .reportOtherUserAction(
+                        TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
     }
 }
