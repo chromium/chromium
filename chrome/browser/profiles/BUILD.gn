@@ -294,6 +294,7 @@ source_set("profiles_extra_parts_impl") {
     ]
   } else {
     deps += [
+      "//chrome/browser/accessibility/tree_fixing:service",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/autofill",
       "//chrome/browser/contextual_cueing",

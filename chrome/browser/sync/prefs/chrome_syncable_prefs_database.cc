@@ -8,6 +8,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "build/build_config.h"
+#include "chrome/browser/accessibility/tree_fixing/pref_names.h"
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"

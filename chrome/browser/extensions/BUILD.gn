@@ -833,6 +833,7 @@ source_set("extensions") {
       "//chrome/browser:font_pref",
       "//chrome/browser:primitives",
       "//chrome/browser:shell_integration",
+      "//chrome/browser/accessibility/tree_fixing:prefs",
       "//chrome/browser/apps:user_type_filter",
       "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/chooser_controller",
