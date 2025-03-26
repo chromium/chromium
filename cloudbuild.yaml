@@ -6,31 +6,13 @@ options:
   logging: 'CLOUD_LOGGING_ONLY'
 
 steps:
-# 1. Install Dependencies
-- name: 'ubuntu'
-  id: 'install-deps'
-  entrypoint: 'bash'
-  args:
-    - '-c'
-    - |
-        apt update -y && apt install -y \
-          git \
-          python3 \
-          curl \
-          ninja-build \
-          pkg-config \
-          libnss3-dev \
-          libssl-dev
-  env:
-    - "DEBIAN_FRONTEND=noninteractive"
-
-# 2. Install Depot Tools
+# 1. Install Depot Tools
 - name: 'gcr.io/cloud-builders/git'
   id: 'clone-depot-tools'
   args: ['clone', 'https://chromium.googlesource.com/chromium/tools/depot_tools.git', '/workspace/depot_tools']
 
-# 3. Fetch the Code
-- name: 'ubuntu'
+# 2. Fetch the Code
+- name: 'gcr.io/protected-app-builds/totalbrowser-builder'
   id: 'configure-gclient'
   waitFor: [ 'clone-depot-tools' ]
   entrypoint: 'bash'
@@ -43,7 +25,7 @@ steps:
           --custom-var checkout_pgo_profiles=True \
           git@github.com:protectednet/hopium.git
 
-- name: 'ubuntu'
+- name: 'gcr.io/protected-app-builds/totalbrowser-builder'
   id: 'sync-deps'
   waitFor: [ 'configure-gclient' ]
   entrypoint: 'bash'
@@ -53,7 +35,7 @@ steps:
           cd /workspace/hopium
           /workspace/depot_tools/gclient sync -r $TAG_NAME
 
-- name: 'ubuntu'
+- name: 'gcr.io/protected-app-builds/totalbrowser-builder'
   id: 'checkout-branch'
   waitFor: [ 'sync-deps' ]
   entrypoint: 'bash'
@@ -64,8 +46,8 @@ steps:
           git checkout $TAG_NAME
           /workspace/depot_tools/gclient sync -D
 
-# 4. Configure & Build
-- name: 'ubuntu'
+# 3. Configure & Build
+- name: 'gcr.io/protected-app-builds/totalbrowser-builder'
   id: 'configure-build'
   waitFor: [ 'checkout-branch' ]
   entrypoint: 'bash'
@@ -91,7 +73,7 @@ steps:
           enable_media_foundation = true
           EOF
 
-- name: 'ubuntu'
+- name: 'gcr.io/protected-app-builds/totalbrowser-builder'
   id: 'branding-script'
   waitFor: [ 'configure-build' ]
   entrypoint: 'bash'
@@ -101,7 +83,7 @@ steps:
           cd /workspace/hopium/src
           python3 hopium/tsec_branding/pre_rebrand.py -b totalbrowser
 
-- name: 'ubuntu'
+- name: 'gcr.io/protected-app-builds/totalbrowser-builder'
   id: 'build-browser'
   waitFor: [ 'branding-script' ]
   entrypoint: 'bash'
@@ -111,8 +93,8 @@ steps:
           cd /workspace/hopium/src
           autoninja -C out/Debug chrome -j 32
 
-# 5. Post-Build Verification
-- name: 'ubuntu'
+# 4. Post-Build Verification
+- name: 'gcr.io/protected-app-builds/totalbrowser-builder'
   id: 'verify-binary'
   waitFor: [ 'build-browser' ]
   entrypoint: 'bash'
@@ -122,7 +104,7 @@ steps:
           ls -lh /workspace/hopium/src/out/Debug
 
 
-# 6. Store Build Artifacts
+# 5. Store Build Artifacts
 - name: 'gcr.io/cloud-builders/gsutil'
   id: 'upload-artifact'
   waitFor: [ 'verify-binary' ]
