@@ -49069,11 +49069,14 @@ should be able to be added at any place in this file.
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">
-  <suffix name="AddTabToGroup"
-      label="Recorded when the 'Add to group' option in the context menu is
-             selected."/>
   <suffix name="AddToBookmark"
       label="Recorded when the 'Add to bookmarks' option in the context menu
+             is selected."/>
+  <suffix name="AddToGroup"
+      label="Recorded when the 'Add to group' option in the context menu is
+             selected."/>
+  <suffix name="AddToNewGroup"
+      label="Recorded when the 'Add to new group' option in the context menu
              is selected."/>
   <suffix name="CloseTab"
       label="Recorded when the 'Close tab' option in the context menu is
