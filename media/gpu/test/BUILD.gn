@@ -7,7 +7,8 @@ import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 
 # TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
-if (enable_av1_decoder && (use_v4l2_codec || use_vaapi || is_win)) {
+if (enable_av1_decoder &&
+    (use_v4l2_codec || use_vaapi || is_win || is_android)) {
   test("video_decode_accelerator_tests") {
     testonly = true
     sources = [
@@ -76,6 +77,14 @@ if (enable_av1_decoder && (use_v4l2_codec || use_vaapi || is_win)) {
       "//media/gpu:buildflags",
       "//testing/gtest",
     ]
+
+    if (is_android) {
+      deps += [
+        # The test needs the java dependencies to add the java classes for their
+        # native counterparts to the test apk.
+        "//media/base/android:media_java",
+      ]
+    }
   }
 
   test("video_encode_accelerator_perf_tests") {
