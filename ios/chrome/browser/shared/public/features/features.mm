@@ -637,7 +637,7 @@ bool IsWebChannelsEnabled() {
   }
   std::string launched_countries[6] = {"AU", "CA", "GB", "NZ", "US", "ZA"};
   if (base::Contains(launched_countries,
-                     country_codes::GetCurrentCountryCode())) {
+                     country_codes::GetCurrentCountryID().CountryCode())) {
     return true;
   }
   return base::FeatureList::IsEnabled(kEnableWebChannels);
@@ -732,7 +732,7 @@ bool IsFeedAblationEnabled() {
 bool IsFollowUIUpdateEnabled() {
   std::string launched_countries[1] = {"US"};
   if (base::Contains(launched_countries,
-                     country_codes::GetCurrentCountryCode())) {
+                     country_codes::GetCurrentCountryID().CountryCode())) {
     return true;
   }
   return base::FeatureList::IsEnabled(kEnableFollowUIUpdate);

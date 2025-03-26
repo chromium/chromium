@@ -175,11 +175,10 @@ class TemplateURLPrepopulateDataTest : public testing::Test {
   }
 
   void OverrideCountryId(CountryId country_id) {
-    OverrideCountryCommandLine(
-        country_codes::CountryIDToCountryString(country_id));
+    OverrideCountryCommandLine(country_id.CountryCode());
   }
 
-  void OverrideCountryCommandLine(std::string country_string) {
+  void OverrideCountryCommandLine(std::string_view country_string) {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kSearchEngineChoiceCountry)) {
       base::CommandLine::ForCurrentProcess()->RemoveSwitch(
@@ -225,20 +224,16 @@ TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
 
     if (regional_capabilities::IsEeaCountry(country_id)) {
       EXPECT_GE(kNumberOfSearchEngines, kMinEea)
-          << " for country "
-          << country_codes::CountryIDToCountryString(country_id);
+          << " for country " << country_id.CountryCode();
       EXPECT_LE(kNumberOfSearchEngines,
                 TemplateURLPrepopulateData::kMaxEeaPrepopulatedEngines)
-          << " for country "
-          << country_codes::CountryIDToCountryString(country_id);
+          << " for country " << country_id.CountryCode();
     } else {
       EXPECT_GE(kNumberOfSearchEngines, kMinRow)
-          << " for country "
-          << country_codes::CountryIDToCountryString(country_id);
+          << " for country " << country_id.CountryCode();
       EXPECT_LE(kNumberOfSearchEngines,
                 TemplateURLPrepopulateData::kMaxRowPrepopulatedEngines)
-          << " for country "
-          << country_codes::CountryIDToCountryString(country_id);
+          << " for country " << country_id.CountryCode();
     }
   }
 }
@@ -904,12 +899,11 @@ class TemplateURLPrepopulateDataListTest
 
   static std::string ParamToTestSuffix(
       const ::testing::TestParamInfo<CountryId>& info) {
-    return country_codes::CountryIDToCountryString(info.param);
+    return std::string(info.param.CountryCode());
   }
 
   TemplateURLPrepopulateDataListTest()
-      : country_id_(GetParam()),
-        country_code_(country_codes::CountryIDToCountryString(country_id_)) {}
+      : country_id_(GetParam()), country_code_(country_id_.CountryCode()) {}
 
   void SetUp() override {
     if (kSkippedCountries.contains(country_id_)) {

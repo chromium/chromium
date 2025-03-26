@@ -265,7 +265,7 @@ TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry_Disabled) {
   histogram_tester().ExpectUniqueSample(
       "Search.ChoiceDebug.UnknownCountryIdStored",
       1 /* kDontClearInvalidCountry */, 1);
-  EXPECT_EQ(GetPrefCountry(), country_codes::CountryId::kUnknownCountryCode);
+  EXPECT_EQ(GetPrefCountry(), country_codes::CountryId().Serialize());
 }
 
 TEST_F(RegionalCapabilitiesServiceTest, ClearPrefForUnknownCountry_Valid) {
