@@ -231,7 +231,7 @@ TEST(CustomElementTest,
       scope.GetFrame().DomWindow()->customElements();
   NonThrowableExceptionState should_not_throw;
   {
-    CEReactionsScope reactions;
+    CEReactionsScope reactions(scope.GetIsolate());
     TestCustomElementDefinitionBuilder builder;
     registry->DefineInternal(script_state, AtomicString("a-a"), builder,
                              ElementDefinitionOptions::Create(),
