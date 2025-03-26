@@ -60,6 +60,7 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -179,6 +180,7 @@ class WizardControllerTestBase : public ::testing::Test {
   WizardControllerTestBase() = default;
 
   void SetUp() override {
+    session_manager_ = std::make_unique<session_manager::SessionManager>();
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
@@ -186,6 +188,7 @@ class WizardControllerTestBase : public ::testing::Test {
     AshTestHelper::InitParams params;
     params.start_session = false;
     params.local_state = profile_manager_->local_state()->Get();
+    params.create_session_manager = false;
     test_context_factories_ = std::make_unique<ui::TestContextFactories>(
         /*enable_pixel_output=*/false);
     ash_test_helper_ = std::make_unique<AshTestHelper>(
@@ -251,6 +254,7 @@ class WizardControllerTestBase : public ::testing::Test {
     TestingBrowserProcess::GetGlobal()->platform_part()->StartTearDown();
     profile_ = nullptr;
     profile_manager_.reset();
+    session_manager_.reset();
   }
 
   void FakeInstallAttributesForDemoMode() {
@@ -269,6 +273,7 @@ class WizardControllerTestBase : public ::testing::Test {
 
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_{std::make_unique<user_manager::FakeUserManager>()};
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<ui::TestContextFactories> test_context_factories_;

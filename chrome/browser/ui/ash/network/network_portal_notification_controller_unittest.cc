@@ -47,7 +47,7 @@ class NetworkPortalNotificationControllerTest
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-
+    controller_ = std::make_unique<NetworkPortalNotificationController>();
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
         std::make_unique<SystemNotificationHelper>());
     display_service_ = std::make_unique<NotificationDisplayServiceTester>(
@@ -61,13 +61,14 @@ class NetworkPortalNotificationControllerTest
 
   void TearDown() override {
     NetworkPortalSigninController::Shutdown();
+    controller_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
 
  protected:
   void PortalStateChanged(const NetworkState* network,
                           NetworkState::PortalState portal_state) {
-    controller_.PortalStateChanged(network, portal_state);
+    controller_->PortalStateChanged(network, portal_state);
   }
 
   bool HasNotification() {
@@ -75,7 +76,7 @@ class NetworkPortalNotificationControllerTest
   }
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  NetworkPortalNotificationController controller_;
+  std::unique_ptr<NetworkPortalNotificationController> controller_;
 };
 
 TEST_F(NetworkPortalNotificationControllerTest, NetworkStateChangedPortal) {

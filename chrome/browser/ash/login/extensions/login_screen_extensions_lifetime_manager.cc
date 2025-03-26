@@ -37,19 +37,18 @@ LoginScreenExtensionsLifetimeManager::LoginScreenExtensionsLifetimeManager(
       extension_system_(
           extensions::ExtensionSystem::Get(signin_original_profile_)),
       extensions_process_manager_(
-          extensions::ProcessManager::Get(signin_original_profile_)),
-      session_manager_(session_manager::SessionManager::Get()) {
+          extensions::ProcessManager::Get(signin_original_profile_)) {
   DCHECK(signin_original_profile_);
   DCHECK(extension_system_);
   DCHECK(extensions_process_manager_);
-  DCHECK(session_manager_);
+  DCHECK(session_manager::SessionManager::Get());
 
   auto* const extension_registry =
       extensions::ExtensionRegistry::Get(signin_original_profile_);
   DCHECK(extension_registry);
   extension_registry_observation_.Observe(extension_registry);
 
-  session_manager_observation_.Observe(session_manager_);
+  session_manager_observation_.Observe(session_manager::SessionManager::Get());
 
   ProfileManager* const profile_manager = g_browser_process->profile_manager();
   DCHECK(profile_manager);
@@ -118,7 +117,7 @@ bool LoginScreenExtensionsLifetimeManager::
   // transition states between the login screen and the user session, since the
   // user may still see some pieces of the login screen that rely on these
   // extensions.
-  return session_manager_->session_state() !=
+  return session_manager::SessionManager::Get()->session_state() !=
          session_manager::SessionState::ACTIVE;
 }
 

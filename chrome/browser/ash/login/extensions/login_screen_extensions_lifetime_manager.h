@@ -71,7 +71,6 @@ class LoginScreenExtensionsLifetimeManager final
   raw_ptr<Profile> const signin_original_profile_;
   raw_ptr<extensions::ExtensionSystem> const extension_system_;
   raw_ptr<extensions::ProcessManager> const extensions_process_manager_;
-  raw_ptr<session_manager::SessionManager> const session_manager_;
 
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>

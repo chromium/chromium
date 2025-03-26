@@ -20,6 +20,7 @@
 #include "chromeos/ash/services/bluetooth_config/fake_discovery_session_manager.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
+#include "components/session_manager/core/session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::hid_detection {
@@ -74,6 +75,9 @@ class BluetoothHidDetectorImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    scoped_bluetooth_config_test_helper_ =
+        std::make_unique<bluetooth_config::ScopedBluetoothConfigTestHelper>();
     bluetooth_hid_detector_ = std::make_unique<BluetoothHidDetectorImpl>();
   }
 
@@ -82,6 +86,9 @@ class BluetoothHidDetectorImplTest : public testing::Test {
     // destroyed.
     if (IsDiscoverySessionActive())
       StopBluetoothHidDetection(/*is_using_bluetooth=*/false);
+    bluetooth_hid_detector_.reset();
+    scoped_bluetooth_config_test_helper_.reset();
+    session_manager_.reset();
   }
 
   FakeBluetoothHidDetectorDelegate* StartBluetoothHidDetection(
@@ -111,25 +118,25 @@ class BluetoothHidDetectorImplTest : public testing::Test {
   // the Bluetooth adapter and persists that state which is restored when HID
   // detection finishes.
   void SimulateBluetoothToggledByUi(bool enabled) {
-    scoped_bluetooth_config_test_helper_.fake_bluetooth_power_controller()
+    scoped_bluetooth_config_test_helper_->fake_bluetooth_power_controller()
         ->SetBluetoothEnabledState(enabled);
   }
 
   // Sets the state of the Bluetooth adapter without any persistence. This
   // simulates the adapter changing without any user interaction.
   void SetAdapterState(BluetoothSystemState system_state) {
-    scoped_bluetooth_config_test_helper_.fake_adapter_state_controller()
+    scoped_bluetooth_config_test_helper_->fake_adapter_state_controller()
         ->SetSystemState(system_state);
   }
 
   BluetoothSystemState GetAdapterState() {
-    return scoped_bluetooth_config_test_helper_.fake_adapter_state_controller()
+    return scoped_bluetooth_config_test_helper_->fake_adapter_state_controller()
         ->GetAdapterState();
   }
 
   bool IsDiscoverySessionActive() {
     return scoped_bluetooth_config_test_helper_
-        .fake_discovery_session_manager()
+        ->fake_discovery_session_manager()
         ->IsDiscoverySessionActive();
   }
 
@@ -140,7 +147,7 @@ class BluetoothHidDetectorImplTest : public testing::Test {
     paired_device->device_properties = BluetoothDeviceProperties::New();
     std::vector<PairedBluetoothDevicePropertiesPtr> paired_devices;
     paired_devices.push_back(mojo::Clone(paired_device));
-    scoped_bluetooth_config_test_helper_.fake_device_cache()->SetPairedDevices(
+    scoped_bluetooth_config_test_helper_->fake_device_cache()->SetPairedDevices(
         std::move(paired_devices));
     base::RunLoop().RunUntilIdle();
   }
@@ -183,7 +190,7 @@ class BluetoothHidDetectorImplTest : public testing::Test {
   std::vector<raw_ptr<FakeDevicePairingHandler, VectorExperimental>>
   GetDevicePairingHandlers() {
     return scoped_bluetooth_config_test_helper_
-        .fake_discovery_session_manager()
+        ->fake_discovery_session_manager()
         ->device_pairing_handlers();
   }
 
@@ -254,7 +261,7 @@ class BluetoothHidDetectorImplTest : public testing::Test {
     for (auto& device : unpaired_devices_) {
       unpaired_devices.push_back(device.Clone());
     }
-    scoped_bluetooth_config_test_helper_.fake_discovered_devices_provider()
+    scoped_bluetooth_config_test_helper_->fake_discovered_devices_provider()
         ->SetDiscoveredDevices(std::move(unpaired_devices));
   }
 
@@ -278,8 +285,10 @@ class BluetoothHidDetectorImplTest : public testing::Test {
   // detection is stopped in TearDown().
   std::vector<std::unique_ptr<FakeBluetoothHidDetectorDelegate>> delegates_;
 
-  bluetooth_config::ScopedBluetoothConfigTestHelper
+  std::unique_ptr<bluetooth_config::ScopedBluetoothConfigTestHelper>
       scoped_bluetooth_config_test_helper_;
+
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
 
   std::unique_ptr<hid_detection::BluetoothHidDetectorImpl>
       bluetooth_hid_detector_;

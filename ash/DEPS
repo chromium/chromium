@@ -194,5 +194,6 @@ specific_include_rules = {
     # Allowed to access user_manager in test code to set up testing environment
     # close to the production.
     "+components/user_manager",
+    "+components/session_manager/core",
   ]
 }

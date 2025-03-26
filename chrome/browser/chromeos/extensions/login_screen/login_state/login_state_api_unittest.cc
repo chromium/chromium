@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension.h"
