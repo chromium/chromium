@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,9 +56,6 @@ public class AwComponentUpdateServiceTest {
                 .putBoolean(AwComponentUpdateService.KEY_UNEXPECTED_EXIT, false)
                 .apply();
     }
-
-    @After
-    public void tearDown() {}
 
     @Test
     @SmallTest

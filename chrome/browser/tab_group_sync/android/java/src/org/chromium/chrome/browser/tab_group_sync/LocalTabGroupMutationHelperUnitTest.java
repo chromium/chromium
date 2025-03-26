@@ -18,7 +18,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -114,9 +113,6 @@ public class LocalTabGroupMutationHelperUnitTest {
         when(mTab1.getTitle()).thenReturn(TAB_TITLE_1);
         when(mTab2.getUrl()).thenReturn(TAB_URL_2);
     }
-
-    @After
-    public void tearDown() {}
 
     private void addOneTab() {
         List<Tab> tabs = new ArrayList<>();

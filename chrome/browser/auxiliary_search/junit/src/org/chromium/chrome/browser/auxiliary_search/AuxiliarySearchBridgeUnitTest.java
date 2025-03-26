@@ -19,7 +19,6 @@ import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -71,9 +70,6 @@ public final class AuxiliarySearchBridgeUnitTest {
         mBridge = new AuxiliarySearchBridge(mProfile);
         assertNotNull(mBridge);
     }
-
-    @After
-    public void tearDown() {}
 
     @Test
     @SmallTest

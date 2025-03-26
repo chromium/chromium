@@ -296,6 +296,7 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
     @DisableHardwareAcceleration
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SuppressWarnings("UnusedMethod")
     public void testGcAfterUsingJavascriptObject() throws Throwable {
         runAwContentsGcTest(
                 () -> {
