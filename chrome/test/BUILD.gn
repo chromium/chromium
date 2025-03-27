@@ -3548,6 +3548,7 @@ if (!is_android) {
         "//chrome/browser/glic:glic",
         "//chrome/browser/glic:impl",
         "//chrome/browser/glic:test_support",
+        "//chrome/renderer/actor:browser_tests",
       ]
     }
 

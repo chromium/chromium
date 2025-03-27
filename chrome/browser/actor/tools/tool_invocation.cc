@@ -11,7 +11,6 @@
 
 using content::RenderFrameHost;
 using optimization_guide::proto::ActionInformation;
-using optimization_guide::proto::ActionTarget;
 using tabs::TabInterface;
 
 namespace actor {
@@ -42,36 +41,6 @@ TabInterface* ToolInvocation::FindTargetTab() const {
   // but since we can't yet find frames (see above TODO) always return the
   // focused web_contents (they should be the same for now anyway).
   return &target_tab_.get();
-}
-
-int ToolInvocation::GetTargetDOMNodeId() const {
-  CHECK(IsTargetingPage());
-  return GetActionTarget().content_node_id();
-}
-
-const ActionTarget& ToolInvocation::GetActionTarget() const {
-  switch (action_information_.action_info_case()) {
-    case ActionInformation::ActionInfoCase::kClick:
-      return action_information_.click().target();
-    case ActionInformation::ActionInfoCase::kType:
-      return action_information_.type().target();
-    case ActionInformation::ActionInfoCase::kScroll:
-      return action_information_.scroll().target();
-    case ActionInformation::ActionInfoCase::kMoveMouse:
-      return action_information_.move_mouse().target();
-    case ActionInformation::ActionInfoCase::kDragAndRelease:
-      // TODO(crbug.com/398849001): if from and to can differ we'll need
-      // something something more sophisticated (this becomes tab-targeting).
-      return action_information_.drag_and_release().from_target();
-    case ActionInformation::ActionInfoCase::kSelect:
-      return action_information_.select().target();
-    case ActionInformation::ActionInfoCase::kNavigate:
-    case ActionInformation::ActionInfoCase::kBack:
-    case ActionInformation::ActionInfoCase::kForward:
-    case ActionInformation::ActionInfoCase::kWait:
-    case ActionInformation::ActionInfoCase::ACTION_INFO_NOT_SET:
-      NOTREACHED();
-  }
 }
 
 bool ToolInvocation::IsTargetingPage() const {

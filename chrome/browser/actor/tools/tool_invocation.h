@@ -51,8 +51,6 @@ class ToolInvocation {
   const optimization_guide::proto::ActionInformation& GetActionInfo() const;
 
  private:
-  const optimization_guide::proto::ActionTarget& GetActionTarget() const;
-
   optimization_guide::proto::ActionInformation action_information_;
 
   // TODO(crbug.com/398849001): It'd be better if ActionInformation provided a
