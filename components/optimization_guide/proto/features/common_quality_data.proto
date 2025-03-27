@@ -196,7 +196,7 @@ message PageContext {
 
 // The page content represented as a tree of semantic chunks and (in the
 // future) annotated with additional information about the page.
-// Next ID: 5
+// Next ID: 6
 message AnnotatedPageContent {
   AnnotatedPageContentVersion version = 1;
 
@@ -211,6 +211,9 @@ message AnnotatedPageContent {
   // for the entire page. Includes interaction information for the main frame
   // and embedded iframes.
   PageInteractionInfo page_interaction_info = 4;
+
+  // The rect of the viewport for the tab. i.e., screenshot dimensions.
+  BoundingRect viewport_geometry = 5;
 }
 
 // The ContentNode tree is a sparse representation of the DOM tree for a web

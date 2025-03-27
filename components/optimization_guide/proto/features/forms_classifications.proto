@@ -32,17 +32,63 @@ message FormsClassificationsLoggingData {
   ModelExecutionInfo model_execution_info = 4;
 }
 
-enum AutofillAiFieldEventType {
-  AUTOFILL_AI_FIELD_EVENT_TYPE_SUGGESTION_SHOWN = 0;
-  AUTOFILL_AI_FIELD_EVENT_TYPE_SUGGESTION_FILLED = 1;
-  AUTOFILL_AI_FIELD_EVENT_TYPE_EDITED_AUTOFILLED_FIELD = 2;
+// Next ID: 6
+message AutofillAiTypeRequest {
+  // The context of the page that the form is on.
+  PageContext page_context = 1;
+
+  // The form to predict values for. It is expected that the values for each
+  // field are empty.
+  FormData form_data = 2;
+
+  // A screenshot of the form.
+  // This is optional and may be used by the model to improve predictions.
+  FormMedia media = 3;
+
+  // The annotated page content of the page that the form is on.
+  AnnotatedPageContent annotated_page_content = 5;
+
+  reserved 4;
 }
 
-enum FormatStringSource {
-  FORMAT_STRING_SOURCE_UNSET = 0;
-  FORMAT_STRING_SOURCE_HEURISTICS = 1;
-  FORMAT_STRING_SOURCE_ML_MODEL = 2;
-  FORMAT_STRING_SOURCE_SERVER = 3;
+message FormMedia {
+  // Screenshots in base64-encoded PNG format
+  repeated bytes screenshots = 1;
+}
+
+message AutofillAiTypeResponse {
+  // A list of field-level type predictions for the form.
+  repeated FieldTypeResponse field_responses = 1;
+}
+
+// Next ID: 6
+message FieldTypeResponse {
+  // Do not use - use field_index instead.
+  string field_global_id = 1 [deprecated = true];
+
+  // The (zero-based) index of the field among those passed in the request that
+  // this prediction refers to.
+  int32 field_index = 5;
+
+  // The predicted type for the field.
+  int32 field_type = 2;
+
+  // Optional formatting metadata for downstream use.
+  // Example formats: "dd/mm/yyyy" for dates, "NAME_FIRST_LAST" for names.
+  string formatting_meta = 3;
+
+  // The confidence score for the prediction, ranging from 0.0 to 1.0.
+  // Higher values indicate greater confidence in the predicted type.
+  float confidence = 4;
+}
+
+message FormTypeQuality {
+  // User-provided feedback on the predictions.
+  UserFeedback user_feedback = 1;
+
+  AutofillAiFieldEvent field_event = 2;
+
+  AutofillAiKeyMetrics key_metrics = 3;
 }
 
 // See `AutofillAiUkmLogger::FieldEvent`.
@@ -151,61 +197,20 @@ message AutofillAiKeyMetrics {
   string domain = 7;
 }
 
-// Next ID: 6
-message AutofillAiTypeRequest {
-  // The context of the page that the form is on.
-  PageContext page_context = 1;
+enum AutofillAiFieldEventType {
+  AUTOFILL_AI_FIELD_EVENT_TYPE_SUGGESTION_SHOWN = 0;
 
-  // The form to predict values for. It is expected that the values for each
-  // field are empty.
-  FormData form_data = 2;
+  AUTOFILL_AI_FIELD_EVENT_TYPE_SUGGESTION_FILLED = 1;
 
-  // A screenshot of the form.
-  // This is optional and may be used by the model to improve predictions.
-  FormMedia media = 3;
-
-  // The annotated page content of the page that the form is on.
-  AnnotatedPageContent annotated_page_content = 5;
-
-  reserved 4;
+  AUTOFILL_AI_FIELD_EVENT_TYPE_EDITED_AUTOFILLED_FIELD = 2;
 }
 
-message FormMedia {
-  // Screenshots in base64-encoded PNG format
-  repeated bytes screenshots = 1;
-}
+enum FormatStringSource {
+  FORMAT_STRING_SOURCE_UNSET = 0;
 
-message AutofillAiTypeResponse {
-  // A list of field-level type predictions for the form.
-  repeated FieldTypeResponse field_responses = 1;
-}
+  FORMAT_STRING_SOURCE_HEURISTICS = 1;
 
-// Next ID: 6
-message FieldTypeResponse {
-  // Do not use - use field_index instead.
-  string field_global_id = 1 [deprecated = true];
+  FORMAT_STRING_SOURCE_ML_MODEL = 2;
 
-  // The (zero-based) index of the field among those passed in the request that
-  // this prediction refers to.
-  int32 field_index = 5;
-
-  // The predicted type for the field.
-  int32 field_type = 2;
-
-  // Optional formatting metadata for downstream use.
-  // Example formats: "dd/mm/yyyy" for dates, "NAME_FIRST_LAST" for names.
-  string formatting_meta = 3;
-
-  // The confidence score for the prediction, ranging from 0.0 to 1.0.
-  // Higher values indicate greater confidence in the predicted type.
-  float confidence = 4;
-}
-
-message FormTypeQuality {
-  // User-provided feedback on the predictions.
-  UserFeedback user_feedback = 1;
-
-  AutofillAiFieldEvent field_event = 2;
-
-  AutofillAiKeyMetrics key_metrics = 3;
+  FORMAT_STRING_SOURCE_SERVER = 3;
 }
