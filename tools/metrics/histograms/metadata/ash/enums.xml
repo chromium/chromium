@@ -243,6 +243,19 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="17" label="Nothing to Challenge-response"/>
 </enum>
 
+<!-- LINT.IfChange(BabelOrcaStreamEndReason) -->
+
+<enum name="BabelOrcaStreamEndReason">
+  <int value="0" label="Ended by client"/>
+  <int value="1" label="Connection closed with success"/>
+  <int value="2" label="Connection closed with error"/>
+  <int value="3" label="Stream parsing error"/>
+  <int value="4" label="Parsing service disconnected"/>
+  <int value="5" label="Timeout waiting for data"/>
+</enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/boca/babelorca/tachyon_streaming_client.h:StreamEndReason) -->
+
 <enum name="BackGestureEndScenarioType">
   <int value="0" label="Swiped back on non-snapped window and aborted"/>
   <int value="1" label="Swiped back on non-snapped window and went back"/>

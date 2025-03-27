@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -32,7 +33,10 @@
 
 namespace ash::babelorca {
 namespace {
+
 constexpr base::TimeDelta kReceiveTimeout = base::Minutes(1);
+constexpr char kStreamEndReasonUma[] = "Ash.Boca.Babelorca.StreamEndReason";
+
 }  // namespace
 
 TachyonStreamingClient::TachyonStreamingClient(
@@ -45,6 +49,10 @@ TachyonStreamingClient::TachyonStreamingClient(
 
 TachyonStreamingClient::~TachyonStreamingClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (url_loader_) {
+    base::UmaHistogramEnumeration(kStreamEndReasonUma,
+                                  StreamEndReason::kEndedByClient);
+  }
 }
 
 void TachyonStreamingClient::StartRequest(
@@ -101,10 +109,14 @@ void TachyonStreamingClient::OnComplete(bool success) {
   timeout_timer_.Stop();
   MaybeRecordUma(url_loader_.get(), request_data_.get());
   if (success) {
+    base::UmaHistogramEnumeration(kStreamEndReasonUma,
+                                  StreamEndReason::kConnectionClosedSuccess);
     std::move(request_data_->response_cb)
         .Run(TachyonResponse(TachyonResponse::Status::kOk));
     return;
   }
+  base::UmaHistogramEnumeration(kStreamEndReasonUma,
+                                StreamEndReason::kConnectionClosedError);
   HandleResponse(std::move(url_loader_), std::move(request_data_),
                  std::move(auth_failure_cb_), /*response_body=*/nullptr);
 }
@@ -137,6 +149,8 @@ void TachyonStreamingClient::OnParsed(
   //  and stream_status is not present.
   if (parsing_state == mojom::ParsingState::kError || stream_status.is_null()) {
     LOG(ERROR) << "Stream closed with parsing state: " << parsing_state;
+    base::UmaHistogramEnumeration(kStreamEndReasonUma,
+                                  StreamEndReason::kParseError);
     std::move(request_data_->response_cb)
         .Run(TachyonResponse(TachyonResponse::Status::kInternalError));
     return;
@@ -145,6 +159,10 @@ void TachyonStreamingClient::OnParsed(
   VLOG_IF(1, !response.ok())
       << "Stream closed with error. Status: " << stream_status->code
       << ", message: " << stream_status->message;
+  base::UmaHistogramEnumeration(kStreamEndReasonUma,
+                                response.ok()
+                                    ? StreamEndReason::kConnectionClosedSuccess
+                                    : StreamEndReason::kConnectionClosedError);
   if (response.status() == TachyonResponse::Status::kAuthError) {
     std::move(auth_failure_cb_).Run(std::move(request_data_));
     return;
@@ -156,6 +174,8 @@ void TachyonStreamingClient::OnParsed(
 void TachyonStreamingClient::OnParsingServiceDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(ERROR) << "Parsing service disconnected";
+  base::UmaHistogramEnumeration(kStreamEndReasonUma,
+                                StreamEndReason::kParsingServiceDisconnected);
   url_loader_.reset();
   parsing_service_.reset();
   timeout_timer_.Stop();
@@ -166,6 +186,7 @@ void TachyonStreamingClient::OnParsingServiceDisconnected() {
 void TachyonStreamingClient::OnTimeout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Streaming request timeout";
+  base::UmaHistogramEnumeration(kStreamEndReasonUma, StreamEndReason::kTimeout);
   url_loader_.reset();
   parsing_service_.reset();
   std::move(request_data_->response_cb)
