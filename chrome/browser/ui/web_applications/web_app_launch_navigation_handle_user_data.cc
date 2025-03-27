@@ -6,7 +6,6 @@
 
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
-#include "chrome/browser/web_applications/web_app_launch_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
