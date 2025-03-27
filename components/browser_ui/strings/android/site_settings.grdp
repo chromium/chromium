@@ -1160,4 +1160,27 @@
       =1 {<ph name="SITE_COUNT">%1$s<ex>1</ex></ph> site}
       other {<ph name="SITE_COUNT">%1$s<ex>9</ex></ph> sites}}
   </message>
+
+  <!-- Serial port -->
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_SERIAL_PORT_ASK" desc="Summary text explaining that the serial port permission is set to ask the user for permission to access individual devices. To be shown in the list of permission categories.">
+    Ask before allowing sites to connect to a device (recommended)
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_SERIAL_PORT_BLOCKED" desc="Summary text explaining that the serial port permission is set to block all requests for access to devices. To be shown in the list of permission categories.">
+    Block sites from connecting to devices
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_SERIAL_PORT_A11Y" desc="The screen reader announcement describing a toggle with two states, controlling sites can request permission to use serial ports. It is important to keep this string as two full sentences terminated by a period.">
+    When on, sites can ask to use serial ports. When off, sites can’t use serial ports.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_SERIAL_PORT" desc="Title for serial port settings, which control which of the user's serial ports can be accessed from websites.">
+    Serial port
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_SERIAL_PORT_PAGE_DESCRIPTION" desc="Description of the serial ports content settings">
+    Sites usually connect to serial ports for data transfer features, like setting up your network
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_SERIAL_PORT_ASK" desc="Primary text corresponding to the ask button in the serial port permission radio button group.">
+    Sites can ask to connect to serial ports
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_SERIAL_PORT_BLOCK" desc="Primary text corresponding to the block button in the serial port permission radio button group.">
+    Don't allow sites to connect to serial ports
+  </message>
 </grit-part>

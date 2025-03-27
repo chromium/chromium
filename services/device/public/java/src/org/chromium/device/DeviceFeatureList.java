@@ -24,4 +24,5 @@ public abstract class DeviceFeatureList {
             "BatteryStatusManagerBroadcastReceiverInBackground";
     public static final String WEBAUTHN_REMOTE_DESKTOP_ALLOWED_ORIGINS =
             "WebAuthenticationRemoteDesktopAllowedOriginsPolicy";
+    public static final String BLUETOOTH_RFCOMM_ANDROID = "BluetoothRfcommAndroid";
 }
