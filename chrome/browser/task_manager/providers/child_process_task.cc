@@ -17,6 +17,7 @@
 #include "chrome/browser/process_resource_usage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -27,16 +28,19 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/common/process_type.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "extensions/browser/extension_registry.h"  // nogncheck
-#include "extensions/common/extension_set.h"        // nogncheck
-#endif                                              // !BUILDFLAG(IS_ANDROID)
-
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "extensions/browser/extension_registry.h"  // nogncheck
+#include "extensions/common/extension_set.h"        // nogncheck
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#endif
 
 namespace task_manager {
 
@@ -112,6 +116,11 @@ std::u16string GetLocalizedTitle(const std::u16string& title,
         case ChildProcessTask::ProcessSubtype::kSpareRenderProcess:
           return l10n_util::GetStringUTF16(
               IDS_TASK_MANAGER_SPARE_RENDERER_PREFIX);
+#if BUILDFLAG(ENABLE_GLIC)
+        case ChildProcessTask::ProcessSubtype::kGlicRenderProcess:
+          return l10n_util::GetStringUTF16(
+              IDS_TASK_MANAGER_GLIC_RENDERER_PREFIX);
+#endif
         case ChildProcessTask::ProcessSubtype::kUnknownRenderProcess:
           return l10n_util::GetStringUTF16(
               IDS_TASK_MANAGER_UNKNOWN_RENDERER_PREFIX);
@@ -229,6 +238,9 @@ Task::SubType ChildProcessTask::GetSubType() const {
   switch (process_subtype_) {
     case ChildProcessTask::ProcessSubtype::kSpareRenderProcess:
       return Task::SubType::kSpareRenderer;
+#if BUILDFLAG(ENABLE_GLIC)
+    case ChildProcessTask::ProcessSubtype::kGlicRenderProcess:
+#endif
     case ChildProcessTask::ProcessSubtype::kUnknownRenderProcess:
       return Task::SubType::kUnknownRenderer;
     default:
