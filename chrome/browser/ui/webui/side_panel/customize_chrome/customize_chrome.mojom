@@ -142,6 +142,9 @@ interface CustomizeChromePageHandler {
   // Triggers a call to |CustomizeChromePage.SetTheme()|.
   UpdateTheme();
 
+  // Triggers a call to |CustomizeChromePage.SetThemeEditable()|.
+  UpdateThemeEditable(bool is_theme_editable);
+
   // Sets Chrome's theme according to the default color.
   SetDefaultColor();
 
@@ -209,6 +212,8 @@ interface CustomizeChromePage {
   SetMostVisitedSettings(bool custom_links_enabled, bool visible);
   // Sets the current theme.
   SetTheme(Theme theme);
+  // Sets whether edit theme should be enabled.
+  SetThemeEditable(bool is_theme_editable);
   // Scrolls side panel to |section|. Possibly a response to a call to
   // |CustomizeChromePageHandler.UpdateScrollToSection()|.
   ScrollToSection(CustomizeChromeSection section);
