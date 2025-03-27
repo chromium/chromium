@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_ENTERPRISE_URL_LOOKUP_SERVICE_H_
-#define CHROME_BROWSER_SAFE_BROWSING_CHROME_ENTERPRISE_URL_LOOKUP_SERVICE_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_REALTIME_CHROME_ENTERPRISE_URL_LOOKUP_SERVICE_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_REALTIME_CHROME_ENTERPRISE_URL_LOOKUP_SERVICE_H_
 
 #include <memory>
 #include <string>
@@ -42,6 +42,10 @@ class PrefService;
 namespace safe_browsing {
 
 class ReferrerChainProvider;
+
+// TODO(crbug.com/406211981): Migrate unit tests to components and remove the
+// comment below.
+// Note: Unit tests for this class are in chrome/browser/safe_browsing.
 
 // This class implements the real time lookup feature for a given user/profile.
 // It is separated from the base class for logic that is related to enterprise
@@ -159,4 +163,4 @@ class ChromeEnterpriseRealTimeUrlLookupService
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_CHROME_ENTERPRISE_URL_LOOKUP_SERVICE_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_REALTIME_CHROME_ENTERPRISE_URL_LOOKUP_SERVICE_H_
