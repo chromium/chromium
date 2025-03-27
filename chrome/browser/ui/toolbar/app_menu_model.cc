@@ -894,7 +894,8 @@ void ToolsMenuModel::Build(Browser* browser) {
     if (features::HasTabSearchToolbarButton()) {
       // TODO(crbug.com/404319632): Update with proper icon
       AddItemWithStringIdAndVectorIcon(this, IDC_TAB_SEARCH,
-                                       IDS_TAB_SEARCH_MENU, kSearchMenuIcon);
+                                       IDS_TAB_SEARCH_MENU,
+                                       vector_icons::kExpandMoreIcon);
     }
 
     if (base::FeatureList::IsEnabled(features::kTabOrganizationAppMenuItem) &&
