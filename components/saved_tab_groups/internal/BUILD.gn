@@ -175,6 +175,7 @@ source_set("unit_tests") {
     ":tab_group_sync_bridge",
     "//base",
     "//base/test:test_support",
+    "//components/data_sharing/public:features",
     "//components/data_sharing/public:logger",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",

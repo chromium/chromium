@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/logger.h"
 #include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -1824,7 +1825,8 @@ TEST_F(TabGroupSyncServiceTest, TabTitleSanitizedAfterMakeTabGroupShared) {
 }
 
 TEST_F(TabGroupSyncServiceTest, GetTabTitleFromOptGuide) {
-  feature_list_.InitWithFeatures({tab_groups::kEnableTabTitleSanitization}, {});
+  feature_list_.InitWithFeatures({data_sharing::features::kDataSharingFeature},
+                                 {});
   tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
                                        GURL("https://foo.com"), u"title");
 
