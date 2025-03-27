@@ -97,12 +97,16 @@ testing::Matcher<ash::LobsterImageCandidate> EqLobsterImageCandidate(
     int expected_id,
     const SkBitmap& expected_bitmap,
     uint32_t expected_generation_seed,
-    std::string_view expected_query) {
+    std::string_view expected_user_query,
+    std::string_view expected_rewritten_query) {
   return testing::AllOf(
       testing::Field(&ash::LobsterImageCandidate::id, expected_id),
       testing::Field(&ash::LobsterImageCandidate::image_bytes,
                      AreJpgBytesClose(expected_bitmap)),
       testing::Field(&ash::LobsterImageCandidate::seed,
                      expected_generation_seed),
-      testing::Field(&ash::LobsterImageCandidate::query, expected_query));
+      testing::Field(&ash::LobsterImageCandidate::user_query,
+                     expected_user_query),
+      testing::Field(&ash::LobsterImageCandidate::rewritten_query,
+                     expected_rewritten_query));
 }
