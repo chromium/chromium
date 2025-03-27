@@ -1539,6 +1539,12 @@ const char kEnableIsolatedWebAppManagedGuestSessionInstallDescription[] =
     "into a managed guest session.";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+const char kEnableIsolatedWebAppAllowlistName[] =
+    "Enable an allowlist for Isolated Web Apps";
+const char kEnableIsolatedWebAppAllowlistDescription[] =
+    "Enables an allowlist for Isolated Web Apps, restricting installation and "
+    "updates to only those apps that are allowlisted.";
+
 const char kEnableIsolatedWebAppDevModeName[] =
     "Enable Isolated Web App Developer Mode";
 const char kEnableIsolatedWebAppDevModeDescription[] =

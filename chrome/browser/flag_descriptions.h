@@ -935,6 +935,9 @@ extern const char kEnableIsolatedWebAppManagedGuestSessionInstallName[];
 extern const char kEnableIsolatedWebAppManagedGuestSessionInstallDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+extern const char kEnableIsolatedWebAppAllowlistName[];
+extern const char kEnableIsolatedWebAppAllowlistDescription[];
+
 extern const char kEnableIsolatedWebAppDevModeName[];
 extern const char kEnableIsolatedWebAppDevModeDescription[];
 
