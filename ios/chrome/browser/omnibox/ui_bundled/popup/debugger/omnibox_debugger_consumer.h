@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_POPUP_DEBUG_INFO_CONSUMER_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_POPUP_DEBUG_INFO_CONSUMER_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_DEBUGGER_CONSUMER_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_DEBUGGER_CONSUMER_H_
 
 #import <UIKit/UIKit.h>
 
@@ -13,7 +13,7 @@
 @protocol OmniboxEvent;
 
 /// An abstract consumer of omnibox popup debug info.
-@protocol PopupDebugInfoConsumer <NSObject>
+@protocol OmniboxDebuggerConsumer <NSObject>
 
 /// Gives the consumer a new variation IDs string to display.
 - (void)setVariationIDString:(NSString*)string;
@@ -38,4 +38,4 @@
                                             responseCode:(NSInteger)code;
 @end
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_POPUP_DEBUG_INFO_CONSUMER_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_OMNIBOX_DEBUGGER_CONSUMER_H_

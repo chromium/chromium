@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/remote_suggestions_service_observer_bridge.h"
 
-@protocol PopupDebugInfoConsumer;
+@protocol OmniboxDebuggerConsumer;
 @protocol RemoteSuggestionsServiceObserver;
 @protocol AutocompleteControllerObserver;
 class AutocompleteController;
@@ -32,7 +32,7 @@ class RemoteSuggestionsService;
 - (void)disconnect;
 
 /// The omnibox debugger consumer.
-@property(nonatomic, weak) id<PopupDebugInfoConsumer> consumer;
+@property(nonatomic, weak) id<OmniboxDebuggerConsumer> consumer;
 
 @end
 

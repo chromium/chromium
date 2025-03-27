@@ -10,8 +10,8 @@
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_autocomplete_event.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_debugger_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_remote_suggestion_event.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/popup_debug_info_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/remote_suggestions_service_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "services/network/public/cpp/resource_request.h"
@@ -56,7 +56,7 @@
   }
 }
 
-- (void)setConsumer:(id<PopupDebugInfoConsumer,
+- (void)setConsumer:(id<OmniboxDebuggerConsumer,
                         RemoteSuggestionsServiceObserver,
                         AutocompleteControllerObserver>)consumer {
   DCHECK(experimental_flags::IsOmniboxDebuggingEnabled());
