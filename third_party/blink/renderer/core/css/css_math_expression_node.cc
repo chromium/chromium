@@ -3365,10 +3365,14 @@ CSSValueID TransformAnchorCSSValueID(
   }
 }
 
-float TransformAnchorPercentage(float from,
-                                LogicalAxis logical_axis,
-                                const TryTacticTransform& transform) {
-  return FlipLogical(logical_axis, transform) ? (100.0f - from) : from;
+const CSSPrimitiveValue* TransformAnchorPercentage(
+    const CSSPrimitiveValue* from,
+    LogicalAxis logical_axis,
+    const TryTacticTransform& transform) {
+  if (FlipLogical(logical_axis, transform)) {
+    return from->SubtractFrom(100.0, CSSPrimitiveValue::UnitType::kPercentage);
+  }
+  return from;
 }
 
 }  // namespace
@@ -3385,15 +3389,10 @@ const CSSMathExpressionNode* CSSMathExpressionAnchorQuery::TransformAnchors(
     if (from != to) {
       transformed_value = CSSIdentifierValue::Create(to);
     }
-  } else if (const auto* percentage =
-                 DynamicTo<CSSPrimitiveValue>(value_.Get())) {
-    DCHECK(percentage->IsPercentage());
-    float from = percentage->GetFloatValue();
-    float to = TransformAnchorPercentage(from, logical_axis, transform);
-    if (from != to) {
-      transformed_value = CSSNumericLiteralValue::Create(
-          to, CSSPrimitiveValue::UnitType::kPercentage);
-    }
+  } else if (const auto* from = DynamicTo<CSSPrimitiveValue>(value_.Get())) {
+    DCHECK(from->IsPercentage());
+    transformed_value =
+        TransformAnchorPercentage(from, logical_axis, transform);
   }
 
   // The fallback can contain anchors.
