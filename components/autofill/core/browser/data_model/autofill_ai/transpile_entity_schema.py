@@ -116,6 +116,17 @@ def generate_cpp_functions(schema):
   yield '  return AttributeTypeNameToString(name_);'
   yield '}'
   yield ''
+  yield 'bool AttributeType::is_disambiguation_type() const {'
+  yield '  switch (name_) {'
+  for entity in schema:
+    for attribute in entity["disambiguation order"]:
+      yield f'    case {attribute_name(entity["name"], attribute)}:'
+      yield f'      return true;'
+  yield f'    default:'
+  yield f'      return false;'
+  yield '  }'
+  yield '}'
+  yield ''
   yield 'EntityType AttributeType::entity_type() const {'
   yield '  switch (name_) {'
   for entity, attribute in ((entity['name'], attribute) for entity in schema for attribute in entity['attributes']):
