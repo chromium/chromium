@@ -539,7 +539,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         record(UserAction.EXIT_INK2_ANNOTATION_MODE);
         break;
       case AnnotationMode.TEXT:
-        // TODO (crbug.com/402546554): Add text annotation metrics.
+        record(UserAction.EXIT_INK2_TEXT_ANNOTATION_MODE);
         break;
       case AnnotationMode.NONE:
         break;
@@ -553,7 +553,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         record(UserAction.ENTER_INK2_ANNOTATION_MODE);
         break;
       case AnnotationMode.TEXT:
-        // TODO (crbug.com/402546554): Add text annotation metrics.
+        record(UserAction.ENTER_INK2_TEXT_ANNOTATION_MODE);
         break;
       case AnnotationMode.NONE:
         break;

@@ -67,8 +67,11 @@ chrome.test.runTests([
       mockMetricsPrivate.assertCount(
           UserAction.ENTER_INK2_ANNOTATION_MODE, expected.ink2.enter);
       mockMetricsPrivate.assertCount(
+          UserAction.ENTER_INK2_TEXT_ANNOTATION_MODE, expected.text.enter);
+      mockMetricsPrivate.assertCount(
           UserAction.EXIT_INK2_ANNOTATION_MODE, expected.ink2.exit);
-      // TODO (crbug.com/402547554): Add checks for text annotation metrics.
+      mockMetricsPrivate.assertCount(
+          UserAction.EXIT_INK2_TEXT_ANNOTATION_MODE, expected.text.exit);
 
       // Also confirm that the side panel metrics get recorded.
       mockMetricsPrivate.assertCount(
