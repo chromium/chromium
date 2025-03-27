@@ -774,6 +774,31 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   // BitmapGpuChannelLostObserver implementation.
   void OnGpuChannelLost() override { resource_host()->NotifyGpuContextLost(); }
 
+  void OnResourceReturnedFromCompositor(
+      scoped_refptr<CanvasResource>&& resource) override {
+    if (resource->IsRecycleable() && resource->HasOneRef()) {
+      RecycleResource(std::move(resource));
+    }
+  }
+
+  void RecycleResource(scoped_refptr<CanvasResource>&& resource) {
+    // We don't want to keep an arbitrary large number of canvases.
+    if (canvas_resources_.size() >
+        static_cast<unsigned int>(kMaxRecycledCanvasResources)) {
+      return;
+    }
+
+    // Need to check HasOneRef() because if there are outstanding references to
+    // the resource, it cannot be safely recycled. In addition, we must check
+    // whether the state of the resource provider has changed such that the
+    // resource has become unusable in the interim.
+    if (resource->HasOneRef() && resource_recycling_enabled_ &&
+        !IsSingleBuffered() && IsResourceUsable(resource.get())) {
+      RegisterUnusedResource(std::move(resource));
+      MaybePostUnusedResourcesReclaimTask();
+    }
+  }
+
   scoped_refptr<CanvasResource> NewOrRecycledResource() {
     if (canvas_resources_.empty()) {
       scoped_refptr<CanvasResource> resource = CreateResource();
@@ -834,6 +859,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
       resource_pointer->OnMemoryDump(pmd, cached_path);
     }
   }
+
+  // The maximum number of in-flight resources waiting to be used for
+  // recycling.
+  static constexpr int kMaxRecycledCanvasResources = 3;
 
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
@@ -1889,32 +1918,6 @@ cc::ImageDecodeCache* CanvasResourceProvider::ImageDecodeCacheF16() {
         kRGBA_F16_SkColorType);
   }
   return &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
-}
-
-void CanvasResourceProvider::OnResourceReturnedFromCompositor(
-    scoped_refptr<CanvasResource>&& resource) {
-  if (resource->IsRecycleable() && resource->HasOneRef()) {
-    RecycleResource(std::move(resource));
-  }
-}
-
-void CanvasResourceProvider::RecycleResource(
-    scoped_refptr<CanvasResource>&& resource) {
-  // We don't want to keep an arbitrary large number of canvases.
-  if (canvas_resources_.size() >
-      static_cast<unsigned int>(kMaxRecycledCanvasResources)) {
-    return;
-  }
-
-  // Need to check HasOneRef() because if there are outstanding references to
-  // the resource, it cannot be safely recycled. In addition, we must check
-  // whether the state of the resource provider has changed such that the
-  // resource has become unusable in the interim.
-  if (resource->HasOneRef() && resource_recycling_enabled_ &&
-      !IsSingleBuffered() && IsResourceUsable(resource.get())) {
-    RegisterUnusedResource(std::move(resource));
-    MaybePostUnusedResourcesReclaimTask();
-  }
 }
 
 void CanvasResourceProvider::SetResourceRecyclingEnabled(bool value) {
