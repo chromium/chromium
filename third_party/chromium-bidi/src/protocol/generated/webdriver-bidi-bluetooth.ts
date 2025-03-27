@@ -50,6 +50,13 @@ export namespace Bluetooth {
     manufacturerData?: [...Bluetooth.BluetoothManufacturerData[]];
   };
 }
+export type BluetoothCommand =
+  | Bluetooth.HandleRequestDevicePrompt
+  | Bluetooth.SimulateAdapter
+  | Bluetooth.DisableSimulation
+  | Bluetooth.SimulatePreconnectedPeripheral
+  | Bluetooth.SimulateAdvertisement
+  | Record<string, never>;
 export namespace Bluetooth {
   export type HandleRequestDevicePrompt = {
     method: 'bluetooth.handleRequestDevicePrompt';

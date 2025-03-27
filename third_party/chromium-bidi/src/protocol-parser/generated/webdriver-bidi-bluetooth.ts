@@ -63,6 +63,16 @@ export namespace Bluetooth {
     }),
   );
 }
+export const BluetoothCommandSchema = z.lazy(() =>
+  z.union([
+    Bluetooth.HandleRequestDevicePromptSchema,
+    Bluetooth.SimulateAdapterSchema,
+    Bluetooth.DisableSimulationSchema,
+    Bluetooth.SimulatePreconnectedPeripheralSchema,
+    Bluetooth.SimulateAdvertisementSchema,
+    z.object({}),
+  ]),
+);
 export namespace Bluetooth {
   export const HandleRequestDevicePromptSchema = z.lazy(() =>
     z.object({
