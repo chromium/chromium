@@ -9,6 +9,7 @@
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash::auth {
@@ -133,6 +134,15 @@ void PinFactorEditor::SetPinWithContext(
     return;
   }
   AccountId account_id = context->GetAccountId();
+
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+  if (!user) {
+    LOG(ERROR) << "Invalid auth token: user does not exist";
+    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
+    return;
+  }
+
   ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
   pin_backend_->Set(
       account_id, auth_token, pin,
