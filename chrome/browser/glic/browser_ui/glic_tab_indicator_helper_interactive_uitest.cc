@@ -214,8 +214,11 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                   WaitForState(kTab2AlertState, IsNotAccessing()));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
-                       DeactivatingWindowWithGlicAttachedShouldNotAlert) {
+// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
+// kGlicAlwaysDetached is now default true.
+IN_PROC_BROWSER_TEST_F(
+    GlicTabIndicatorHelperUiTest,
+    DISABLED_DeactivatingWindowWithGlicAttachedShouldNotAlert) {
 #if BUILDFLAG(IS_LINUX)
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
     GTEST_SKIP()
@@ -264,16 +267,11 @@ IN_PROC_BROWSER_TEST_F(
                   WaitForState(kTab1AlertState, IsAccessing()));
 }
 
-// TODO(crbug.com/404281597): Re-enable this test.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_MinimizingWindowWithGlicAttachedShouldNotAlert \
-  DISABLED_MinimizingWindowWithGlicAttachedShouldNotAlert
-#else
-#define MAYBE_MinimizingWindowWithGlicAttachedShouldNotAlert \
-  MinimizingWindowWithGlicAttachedShouldNotAlert
-#endif  // BUILDFLAG(IS_LINUX)
-IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
-                       MAYBE_MinimizingWindowWithGlicAttachedShouldNotAlert) {
+// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
+// kGlicAlwaysDetached is now default true.
+IN_PROC_BROWSER_TEST_F(
+    GlicTabIndicatorHelperUiTest,
+    DISABLED_MinimizingWindowWithGlicAttachedShouldNotAlert) {
   Browser* const browser2 = CreateBrowser(browser()->profile());
   RunTestSequence(LoadStartingPage(), OpenGlicWindow(GlicWindowMode::kAttached),
                   ObserveState(kTab1AlertState, browser(), 0),

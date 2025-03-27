@@ -353,7 +353,9 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
   EXPECT_FALSE(border->IsShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedWindowChange) {
+// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
+// kGlicAlwaysDetached is now default true.
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedWindowChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   auto tester = std::make_unique<TesterImpl>(border);

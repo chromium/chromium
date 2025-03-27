@@ -312,7 +312,7 @@ BASE_FEATURE(kGlic, "Glic", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicActor, "GlicActor", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the Glic feature is always detached.
-BASE_FEATURE(kGlicDetached, "GlicDetached", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicDetached, "GlicDetached", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to sync @google.com account cookies. This is only for development and
 // testing.
