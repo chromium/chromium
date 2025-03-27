@@ -20,6 +20,8 @@
 
 namespace optimization_guide {
 
+class OnDeviceModelComponentStateManager;
+
 // Base model files and metadata suitable for a FakeOnDeviceModelService.
 class FakeBaseModelAsset {
  public:
@@ -28,6 +30,7 @@ class FakeBaseModelAsset {
     proto::OnDeviceModelExecutionConfig config;
     std::string version = "0.0.1";
   };
+  FakeBaseModelAsset();
   explicit FakeBaseModelAsset(Content&& content);
   explicit FakeBaseModelAsset(
       proto::OnDeviceModelValidationConfig&& validation_config);
@@ -39,6 +42,12 @@ class FakeBaseModelAsset {
   const base::FilePath& path() const { return temp_dir_.GetPath(); }
 
   const std::string& version() const { return version_; }
+
+  // Returns a fake manifest content for this asset.
+  base::Value::Dict Manifest() const;
+
+  // Pass this asset to manager->SetReady.
+  void SetReadyIn(OnDeviceModelComponentStateManager& manager) const;
 
  private:
   std::string version_;

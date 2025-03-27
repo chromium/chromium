@@ -13,6 +13,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
+#include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/test_on_device_model_component_state_manager.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -112,7 +113,7 @@ class OnDeviceModelAdaptationLoaderTest : public testing::Test {
   }
 
   void SetBaseModelStateChanged() {
-    on_device_component_state_manager_.SetReady(temp_dir());
+    on_device_component_state_manager_.SetReady(base_model_asset_);
   }
 
   void SendAdaptationModelUpdated(
@@ -138,6 +139,7 @@ class OnDeviceModelAdaptationLoaderTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple local_state_;
+  FakeBaseModelAsset base_model_asset_;
   base::ScopedTempDir temp_dir_;
   TestOnDeviceModelComponentStateManager on_device_component_state_manager_{
       &local_state_};
