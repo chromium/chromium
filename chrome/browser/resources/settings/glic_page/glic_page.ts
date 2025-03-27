@@ -57,11 +57,6 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       registeredShortcut_: {
         type: String,
         value: '',

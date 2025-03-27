@@ -43,14 +43,6 @@ export class SettingsPrivacySandboxPageElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       focusConfig: {
         type: Object,
         observer: 'focusConfigChanged_',

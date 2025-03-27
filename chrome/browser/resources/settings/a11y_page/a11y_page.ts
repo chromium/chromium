@@ -88,14 +88,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
         notify: true,
       },
 
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       // <if expr="not is_chromeos">
       /**
        * Read-only reference to the languages model provided by the
