@@ -22,15 +22,15 @@ promise_test(async t => {
   recorder.setUpNavigationAPIListeners();
 
   navigation.addEventListener("navigate", e => {
-    e.intercept({ commit: "after-transition",
+    e.intercept({ async precommitHandler() {
+                    recorder.record("precommitHandler start");
+                    await new Promise(r => t.step_timeout(r, 0));
+                    recorder.record("precommitHandler async step");
+                  },
                   async handler() {
                     recorder.record("handler start");
                     await new Promise(r => t.step_timeout(r, 0));
-                    recorder.record("handler async step 1a");
-                    e.commit();
-                    recorder.record("handler async step 1b");
-                    await new Promise(r => t.step_timeout(r, 0));
-                    recorder.record("handler async step 2");
+                    recorder.record("handler async step");
                   }
                 });
   });
@@ -45,16 +45,16 @@ promise_test(async t => {
   recorder.assert([
     /* event name, location.hash value, navigation.transition properties */
     ["navigate", "", null],
-    ["handler start", "", { from, navigationType: "push" }],
+    ["precommitHandler start", "", { from, navigationType: "push" }],
     ["promise microtask", "", { from, navigationType: "push" }],
-    ["handler async step 1a", "", { from, navigationType: "push" }],
+    ["precommitHandler async step", "", { from, navigationType: "push" }],
     ["currententrychange", "#1", { from, navigationType: "push" }],
-    ["handler async step 1b", "#1", { from, navigationType: "push" }],
+    ["handler start", "#1", { from, navigationType: "push" }],
     ["committed fulfilled", "#1", { from, navigationType: "push" }],
-    ["handler async step 2", "#1", { from, navigationType: "push" }],
+    ["handler async step", "#1", { from, navigationType: "push" }],
     ["navigatesuccess", "#1", { from, navigationType: "push" }],
     ["finished fulfilled", "#1", null],
     ["transition.finished fulfilled", "#1", null],
   ]);
-}, "event and promise ordering for same-document navigation.navigate() intercepted by intercept() with { commit: 'after-transition' }");
+}, "event and promise ordering for same-document navigation.navigate() intercepted by intercept() with a precommitHandler");
 </script>

@@ -26,58 +26,58 @@ async function testUrlDidNotChangeImmediately(listener) {
 
 promise_test(async t => {
   await testUrlDidNotChangeImmediately(e => {
-    e.intercept({ commit: "after-transition" });
-    e.intercept({ commit: "after-transition" });
+    e.intercept({ precommitHandler: async () => {} });
+    e.intercept({ precommitHandler: async () => {} });
   });
-}, "after-transition + after-transition");
+}, "precommitHandler + precommitHandler");
 
 promise_test(async t => {
   await testUrlDidNotChangeImmediately(e => {
-    e.intercept({ commit: "after-transition" });
+    e.intercept({ precommitHandler: async () => {} });
     e.intercept();
   });
-}, "after-transition + (not provided)");
-
-promise_test(async t => {
-  await testUrlDidChangeImmediately(e => {
-    e.intercept({ commit: "after-transition" });
-    e.intercept({ commit: "immediate" });
-  });
-}, "after-transition + immediate");
+}, "precommitHandler + (not provided)");
 
 promise_test(async t => {
   await testUrlDidNotChangeImmediately(e => {
-    e.intercept({ commit: "immediate" });
-    e.intercept({ commit: "after-transition" });
+    e.intercept({ precommitHandler: async () => {} });
+    e.intercept({ handler: async () => {} });
   });
-}, "immediate + after-transition");
+}, "precommitHandler + handler");
+
+promise_test(async t => {
+  await testUrlDidNotChangeImmediately(e => {
+    e.intercept({ handler: async () => {} });
+    e.intercept({ precommitHandler: async () => {} });
+  });
+}, "handler + precommitHandler");
 
 promise_test(async t => {
   await testUrlDidChangeImmediately(e => {
-    e.intercept({ commit: "immediate" });
+    e.intercept({ handler: async () => {} });
     e.intercept();
   });
-}, "immediate + (not provided)");
+}, "handler + (not provided)");
 
 promise_test(async t => {
   await testUrlDidChangeImmediately(e => {
-    e.intercept({ commit: "immediate" });
-    e.intercept({ commit: "immediate" });
+    e.intercept({ handler: async () => {} });
+    e.intercept({ handler: async () => {} });
   });
-}, "immediate + immediate");
+}, "handler + handler");
 
 promise_test(async t => {
   await testUrlDidNotChangeImmediately(e => {
     e.intercept();
-    e.intercept({ commit: "after-transition" });
+    e.intercept({ precommitHandler: async () => {} });
   });
-}, "(not provided) + after-transition");
+}, "(not provided) + precommitHandler");
 
 promise_test(async t => {
   await testUrlDidChangeImmediately(e => {
     e.intercept();
-    e.intercept({ commit: "immediate" });
+    e.intercept({ handler: async () => {} });
   });
-}, "(not provided) + immediate");
+}, "(not provided) + handler");
 </script>
 </body>

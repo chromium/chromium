@@ -5,7 +5,7 @@
 <body>
 <script>
 promise_test(async t => {
-  navigation.addEventListener("navigate", e => e.intercept({ commit: "after-transition" }), { once: "true" });
+  navigation.addEventListener("navigate", e => e.intercept({ precommitHandler: async () => {} }), { once: "true" });
 
   let navigateerror_called = false;
   navigation.onnavigateerror = t.step_func(() => {
@@ -20,6 +20,6 @@ promise_test(async t => {
 
   assert_equals(location.hash, "#1");
   assert_true(navigateerror_called);
-}, "Cancel a { commit: 'after-transition' } navigation before commit() by starting a new navigation");
+}, "Cancel a navigation with a precommitHandler before commit by starting a new navigation");
 </script>
 </body>

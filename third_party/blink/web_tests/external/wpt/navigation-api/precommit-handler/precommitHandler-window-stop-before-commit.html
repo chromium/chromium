@@ -10,7 +10,7 @@ promise_test(async t => {
   await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
 
   navigation.onnavigate = e => {
-    e.intercept({ commit: "after-transition" });
+    e.intercept({ precommitHandler: async () => {} });
   };
 
   navigation.onnavigatesuccess = t.unreached_func("navigatesuccess must not fire");
@@ -28,6 +28,6 @@ promise_test(async t => {
 
   assert_equals(location.hash, "");
   assert_true(navigateerror_called);
-}, " { commit: 'after-transition' } with window.stop() before commit");
+}, " precommitHandler with window.stop() before commit");
 </script>
 </body>

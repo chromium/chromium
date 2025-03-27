@@ -13,11 +13,12 @@ promise_test(async t => {
 
   i.contentWindow.navigation.onnavigate = t.step_func(e => {
     assert_false(e.cancelable);
-    // intercept() should throw with commit: "after-transition" because e.cancelable is false.
+    // intercept() with a precommitHandler is forbidden because e.cancelable is false.
     let iframe_constructor = i.contentWindow.DOMException;
-    assert_throws_dom("InvalidStateError", iframe_constructor, () => e.intercept({ commit: "after-transition" }));
+    assert_throws_dom("InvalidStateError", iframe_constructor,
+                      () => e.intercept({ precommitHandler: async () => {} }));
   });
   await i.contentWindow.navigation.back().finished;
-}, "{ commit: 'after-transition' } for an uncancelable traverse navigation");
+}, "precommitHandler for an uncancelable traverse navigation");
 </script>
 </body>

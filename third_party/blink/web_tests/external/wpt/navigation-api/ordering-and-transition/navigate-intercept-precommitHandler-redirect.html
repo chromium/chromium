@@ -22,19 +22,17 @@ promise_test(async t => {
   recorder.setUpNavigationAPIListeners();
 
   navigation.addEventListener("navigate", e => {
-    e.intercept({ commit: "after-transition",
+    e.intercept({ async precommitHandler(controller) {
+                    recorder.record("precommitHandler start");
+                    await new Promise(r => t.step_timeout(r, 0));
+                    recorder.record("precommitHandler async step 1a");
+                    controller.redirect("#2");
+                    recorder.record("precommitHandler async step 1b");
+                  },
                   async handler() {
                     recorder.record("handler start");
                     await new Promise(r => t.step_timeout(r, 0));
-                    recorder.record("handler async step 1a");
-                    e.redirect("#2");
-                    recorder.record("handler async step 1b");
-                    await new Promise(r => t.step_timeout(r, 0));
-                    recorder.record("handler async step 2a");
-                    e.commit();
-                    recorder.record("handler async step 2b");
-                    await new Promise(r => t.step_timeout(r, 0));
-                    recorder.record("handler async step 3");
+                    recorder.record("handler async step 1");
                   }
                 });
   });
@@ -49,18 +47,17 @@ promise_test(async t => {
   recorder.assert([
     /* event name, location.hash value, navigation.transition properties */
     ["navigate", "", null],
-    ["handler start", "", { from, navigationType: "push" }],
+    ["precommitHandler start", "", { from, navigationType: "push" }],
     ["promise microtask", "", { from, navigationType: "push" }],
-    ["handler async step 1a", "", { from, navigationType: "push" }],
-    ["handler async step 1b", "", { from, navigationType: "push" }],
-    ["handler async step 2a", "", { from, navigationType: "push" }],
+    ["precommitHandler async step 1a", "", { from, navigationType: "push" }],
+    ["precommitHandler async step 1b", "", { from, navigationType: "push" }],
     ["currententrychange", "#2", { from, navigationType: "push" }],
-    ["handler async step 2b", "#2", { from, navigationType: "push" }],
+    ["handler start", "#2", { from, navigationType: "push" }],
     ["committed fulfilled", "#2", { from, navigationType: "push" }],
-    ["handler async step 3", "#2", { from, navigationType: "push" }],
+    ["handler async step 1", "#2", { from, navigationType: "push" }],
     ["navigatesuccess", "#2", { from, navigationType: "push" }],
     ["finished fulfilled", "#2", null],
     ["transition.finished fulfilled", "#2", null],
   ]);
-}, "event and promise ordering for same-document navigation.navigate() intercepted by intercept() with { commit: 'after-transition' } and a redirect()");
+}, "event and promise ordering for same-document navigation.navigate() intercepted by intercept() with a precommitHandler that redirects");
 </script>

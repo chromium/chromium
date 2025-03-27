@@ -19,7 +19,7 @@ promise_test(async t => {
 
   // Go back and wait for the navigate event to fire. This traversal will be deferred.
   let promises_should_not_commit = assertBothRejectDOM(t, navigation.back(), "AbortError");
-  navigation.addEventListener("navigate", e => e.intercept({ commit: "after-transition", handler: () => new Promise(r => t.step_timeout(r, 1000)) }), { once: "true" });
+  navigation.addEventListener("navigate", e => e.intercept({ precommitHandler: () => new Promise(r => t.step_timeout(r, 1000)) }), { once: "true" });
   await new Promise(resolve => navigation.addEventListener("navigate", resolve, { once: "true" }));
 
   // While the traversal is deferred, start a new navigation and commit immediately.
@@ -31,6 +31,6 @@ promise_test(async t => {
 
   assert_equals(location.hash, "#2");
   assert_true(navigateerror_called);
-}, "Cancel a { commit: 'after-transition' } traversal before commit() by starting a new navigation");
+}, "Cancel a precommitHandler traversal before commit by starting a new navigation");
 </script>
 </body>

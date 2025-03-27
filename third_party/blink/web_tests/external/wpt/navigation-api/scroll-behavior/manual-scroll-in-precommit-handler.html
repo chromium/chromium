@@ -15,11 +15,11 @@ promise_test(async t => {
   navigation.onnavigate = e => {
     e.intercept({
       scroll: "manual",
-      commit: "after-transition",
-      handler: t.step_func(() => {
+      precommitHandler: t.step_func(() => {
         assert_throws_dom("InvalidStateError", () => e.scroll());
         assert_not_equals(window.scrollY, 0);
-        e.commit();
+      }),
+      handler: t.step_func(() => {
         e.scroll();
         assert_equals(window.scrollY, 0);
       })
@@ -27,6 +27,6 @@ promise_test(async t => {
   }
   await navigation.back().finished;
   assert_equals(window.scrollY, 0);
-}, "scroll: scroll() before commit()");
+}, "scroll: scroll() in precommitHandler throws");
 </script>
 </body>

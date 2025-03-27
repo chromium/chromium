@@ -12,28 +12,23 @@ promise_test(async t => {
   let start_hash = location.hash;
   navigation.onnavigate = t.step_func(e => {
     e.intercept({
-      handler: t.step_func(() => {
+      precommitHandler: t.step_func(controller => {
         assert_equals(location.hash, start_hash);
         assert_equals(new URL(e.destination.url).hash, "#push");
 
-        e.redirect("#redirect1");
+        controller.redirect("#redirect1");
         assert_equals(location.hash, start_hash);
         assert_equals(new URL(e.destination.url).hash, "#redirect1");
 
-        e.redirect("#redirect2");
+        controller.redirect("#redirect2");
         assert_equals(location.hash, start_hash);
         assert_equals(new URL(e.destination.url).hash, "#redirect2");
-
-        e.commit();
-        assert_equals(location.hash, "#redirect2");
-        assert_equals(new URL(e.destination.url).hash, "#redirect2");
       }),
-      commit: "after-transition"
     });
   });
   await navigation.navigate("#push").committed;
   assert_equals(location.hash, "#redirect2");
   assert_equals(navigation.entries().length, start_length + 1);
-}, "redirect() then commit()");
+}, "precommitHandler redirect() push");
 </script>
 </body>

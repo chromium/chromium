@@ -23,8 +23,7 @@ promise_test(async t => {
       stopped_first_traverse = true;
       t.step_timeout(() => window.stop(), 0);
     }
-    e.intercept({ commit: "after-transition",
-                  handler: () => new Promise(r => t.step_timeout(r, 10)) });
+    e.intercept({ precommitHandler: () => new Promise(r => t.step_timeout(r, 10)) });
   });
 
   let navigatesuccess_called = false;
@@ -52,6 +51,6 @@ promise_test(async t => {
   assert_equals(navigation.currentEntry.index, start_index + 1);
   assert_equals(location.hash, "#1");
   assert_true(navigatesuccess_called);
-}, " { commit: 'after-transition' } traverse with window.stop() before commit");
+}, " precommitHandler traverse with window.stop() before commit");
 </script>
 </body>
