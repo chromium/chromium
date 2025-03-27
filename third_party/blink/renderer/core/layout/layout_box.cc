@@ -1121,7 +1121,8 @@ LayoutBlock* LayoutBox::GetScrollMarkerGroup() {
     return nullptr;
   }
   LayoutBox* content_box = ContentLayoutBox();
-  if (!content_box || !content_box->IsScrollContainer()) {
+  if (!content_box || (!content_box->IsScrollContainer() &&
+                       !content_box->IsDocumentElement())) {
     return nullptr;
   }
   if (auto* element = DynamicTo<Element>(GetNode())) {

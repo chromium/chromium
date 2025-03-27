@@ -3672,7 +3672,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
     }
   }
 
-  AttachPseudoElement(kPseudoIdScrollMarkerGroupBefore, context);
+  AttachLayoutPrecedingPseudoElements(context);
 
   AttachContext children_context(context);
   LayoutObject* layout_object = nullptr;
@@ -3702,13 +3702,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
   }
   children_context.use_previous_in_flow = true;
 
-  // The order for buttons is described in
-  // https://drafts.csswg.org/css-overflow-5/#scroll-buttons.
-  AttachPseudoElement(kPseudoIdScrollButtonBlockStart, context);
-  AttachPseudoElement(kPseudoIdScrollButtonInlineStart, context);
-  AttachPseudoElement(kPseudoIdScrollButtonInlineEnd, context);
-  AttachPseudoElement(kPseudoIdScrollButtonBlockEnd, context);
-  AttachPseudoElement(kPseudoIdScrollMarkerGroupAfter, context);
+  AttachLayoutSucceedingPseudoElements(context);
 
   if (skipped_container_descendants &&
       (!layout_object || !layout_object->IsEligibleForSizeContainment())) {
@@ -4194,7 +4188,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   if (const ComputedStyle* style = GetComputedStyle()) {
     child_recalc_context
         .has_scroller_ancestor_with_scroll_marker_group_property |=
-        style->IsScrollContainer() && !style->ScrollMarkerGroupNone();
+        (style->IsScrollContainer() || IsDocumentElement()) &&
+        !style->ScrollMarkerGroupNone();
     if (style->CanMatchSizeContainerQueries(*this)) {
       // IsSuppressed() means we are at the root of a container subtree called
       // from UpdateStyleAndLayoutTreeForContainer(). If so, we can not skip
@@ -9249,6 +9244,19 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
     }
   }
   if (const ComputedStyle* style = GetComputedStyle()) {
+    if (IsDocumentElement()) {
+      // The root element is never a scroll container, but is scrolled by the
+      // viewport, which is always (programmatically) scrollable.
+      // ::scroll-marker-group pseudo element boxes are generated as children of
+      // the root element box, and not as siblings which is the case for other
+      // elements.
+      if (pseudo_id == kPseudoIdScrollMarkerGroupBefore) {
+        return style->HasScrollMarkerGroupBefore();
+      }
+      if (pseudo_id == kPseudoIdScrollMarkerGroupAfter) {
+        return style->HasScrollMarkerGroupAfter();
+      }
+    }
     return style->CanGeneratePseudoElement(pseudo_id);
   }
   return false;
