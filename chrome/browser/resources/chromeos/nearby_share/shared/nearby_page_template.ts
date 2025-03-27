@@ -112,6 +112,7 @@ export class NearbyPageTemplateElement extends PolymerElement {
   cancelButtonEventName: string;
   cancelButtonLabel: string|null;
   closeOnly: boolean;
+  override title: string;
   subTitle: string|null;
   utilityButtonLabel: string|null;
   utilityButtonEventName: string;

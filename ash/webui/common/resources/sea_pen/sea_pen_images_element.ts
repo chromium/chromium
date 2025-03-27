@@ -212,6 +212,8 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   private showError_: boolean;
   private cameraFeed_: HTMLVideoElement|null;
   private isSeaPenTextInputEnabled_: boolean;
+  private isManagedSeaPenFeedbackEnabled_: boolean;
+  private showHistory_: boolean;
   private seaPenQuery_: SeaPenQuery|null;
   private textQueryHistory_: TextQueryHistoryEntry[]|null;
   private latestTextQuery_: string|null;

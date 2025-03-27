@@ -96,6 +96,7 @@ export class AmbientSubpageElement extends WithPersonalizationStore {
   private duration_: number|null;
   private temperatureUnit_: TemperatureUnit|null;
   private topicSource_: TopicSource|null;
+  private loading_: boolean;
   private isOnline_: boolean;
 
   // Refetch albums if the user is currently viewing ambient subpage, focuses

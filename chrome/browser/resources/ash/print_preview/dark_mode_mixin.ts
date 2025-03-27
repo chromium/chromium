@@ -12,9 +12,6 @@ export const DarkModeMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
     Constructor<DarkModeMixinInterface> => {
       class DarkModeMixin extends superClass {
-        private boundOnChange_: (() => void)|null = null;
-        inDarkMode: boolean;
-
         static get properties() {
           return {
             /** Whether or not the OS is in dark mode. */
@@ -24,6 +21,9 @@ export const DarkModeMixin = dedupingMixin(
             },
           };
         }
+
+        private boundOnChange_: (() => void)|null = null;
+        inDarkMode: boolean;
 
         override connectedCallback() {
           super.connectedCallback();

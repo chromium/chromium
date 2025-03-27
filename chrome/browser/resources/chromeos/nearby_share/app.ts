@@ -50,7 +50,7 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
   static get properties() {
     return {
       /** Mirroring the enum so that it can be used from HTML bindings. */
-      Page: {
+      pageEnum_: {
         type: Object,
         value: Page,
       },
