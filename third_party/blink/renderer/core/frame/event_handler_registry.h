@@ -34,7 +34,7 @@ class CORE_EXPORT EventHandlerRegistry final
     : public GarbageCollected<EventHandlerRegistry> {
  public:
   explicit EventHandlerRegistry(LocalFrame&);
-  virtual ~EventHandlerRegistry();
+  ~EventHandlerRegistry();
 
   // Supported event handler classes. Note that each one may correspond to
   // multiple event types.
