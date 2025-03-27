@@ -108,6 +108,7 @@ component("ozone_base") {
     "public/platform_menu_utils.h",
     "public/platform_screen.cc",
     "public/platform_screen.h",
+    "public/platform_session_manager.h",
     "public/platform_user_input_monitor.cc",
     "public/platform_user_input_monitor.h",
     "public/platform_utils.h",
