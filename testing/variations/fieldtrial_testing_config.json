@@ -21657,22 +21657,6 @@
             ]
         }
     ],
-    "ScreencastServerBasedUSMRNNTLocales": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InternalServerSideSpeechRecognitionUSMModelFinch",
-                        "ProjectorUseUSMForS3"
-                    ]
-                }
-            ]
-        }
-    ],
     "ScrimForBrowserWindowModal": [
         {
             "platforms": [
