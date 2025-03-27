@@ -53,7 +53,7 @@ struct TabDragData final {
   std::optional<int> source_model_index = std::nullopt;
 
   // If attached this is the view in `attached_context_`.
-  raw_ptr<TabSlotView, DanglingUntriaged> attached_view = nullptr;
+  raw_ptr<TabSlotView> attached_view = nullptr;
 
   // Is the tab pinned?
   bool pinned = false;

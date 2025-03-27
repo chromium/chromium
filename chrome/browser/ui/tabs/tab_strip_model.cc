@@ -411,7 +411,7 @@ std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupForInsertion(
   return DetachTabGroupImpl(group_id);
 }
 
-void TabStripModel::InsertDetachedTabGroupAt(
+gfx::Range TabStripModel::InsertDetachedTabGroupAt(
     std::unique_ptr<DetachedTabGroup> group,
     int index) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
@@ -424,7 +424,7 @@ void TabStripModel::InsertDetachedTabGroupAt(
     tab->OnAddedToModel(this);
   }
 
-  InsertDetachedTabGroupImpl(std::move(group), index);
+  return InsertDetachedTabGroupImpl(std::move(group), index);
 }
 
 tabs::TabModel* TabStripModel::GetTabModelAtIndex(int index) const {
@@ -558,10 +558,9 @@ std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
                                             active_index_in_group);
 }
 
-void TabStripModel::InsertDetachedTabGroupImpl(
+gfx::Range TabStripModel::InsertDetachedTabGroupImpl(
     std::unique_ptr<DetachedTabGroup> detached_group,
     int index) {
-
   CHECK(detached_group->collection_);
 
   const tab_groups::TabGroupId& group_id =
@@ -623,6 +622,8 @@ void TabStripModel::InsertDetachedTabGroupImpl(
 
   // Send group attach notification.
   OnTabGroupAttached(group_collection);
+
+  return tabs_in_group;
 }
 
 std::unique_ptr<DetachedTab> TabStripModel::DetachTabImpl(
