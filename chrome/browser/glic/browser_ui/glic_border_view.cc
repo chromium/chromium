@@ -51,7 +51,7 @@ constexpr static base::TimeDelta kEmphasisRampDownDuration =
 constexpr static base::TimeDelta kEmphasisDuration = base::Milliseconds(1500);
 // Time since creation will roll over after this time to prevent growing
 // indefinitely.
-constexpr static base::TimeDelta kMaxTime = base::Days(1);
+constexpr static base::TimeDelta kMaxTime = base::Hours(1);
 
 float ClampAndInterpolate(gfx::Tween::Type type,
                           float t,

@@ -89,7 +89,7 @@ class GlicBorderView : public views::View,
   // Sets the necessary bits to start ramping down the opacity once it's called.
   void StartRampingDown();
 
-  // Returns the effect evolution time; wraps after a day.
+  // Returns the effect evolution time; wraps after an hour.
   float GetEffectTime() const;
 
   // Returns a value from 0 to 1 indicating progress through the effect.

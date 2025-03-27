@@ -583,17 +583,17 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, EnsureTimeWraps) {
   tester.WaitForAnimationStart();
   float seconds = border->GetEffectTimeForTesting();
 
-  tester.AdvanceTimeAndTickAnimation(base::Days(0.5));
-  float seconds_half_day = border->GetEffectTimeForTesting();
+  tester.AdvanceTimeAndTickAnimation(base::Hours(0.5));
+  float seconds_half_an_hour = border->GetEffectTimeForTesting();
 
   // Should not have wrapped.
-  EXPECT_LT(seconds, seconds_half_day);
+  EXPECT_LT(seconds, seconds_half_an_hour);
 
-  tester.AdvanceTimeAndTickAnimation(base::Days(0.5));
+  tester.AdvanceTimeAndTickAnimation(base::Hours(0.5));
 
-  // Now that more than a day has passed, we should have wrapped (and so the
-  // ms since creation should be lower than at the half-day mark).
-  EXPECT_GT(seconds_half_day, border->GetEffectTimeForTesting());
+  // Now that more than an hour has passed, we should have wrapped (and so the
+  // ms since creation should be lower than at the half-hour mark).
+  EXPECT_GT(seconds_half_an_hour, border->GetEffectTimeForTesting());
 }
 
 // Ensures that the effect time starts from where it was left off when
