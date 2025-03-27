@@ -103,6 +103,8 @@ steps:
         - |
             set -e
             cd /workspace/hopium/src
+            mkdir -p out/Debug
+            touch out/Debug/args.gn
             /workspace/depot_tools/gn args out/Debug <<EOF
             is_component_build = false
             is_debug = false
