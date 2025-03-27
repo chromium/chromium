@@ -510,21 +510,13 @@ class FakeLocalFrameWithBeforeUnload : public content::FakeLocalFrame {
 
   bool was_before_unload_called() const { return was_before_unload_called_; }
 
-  void RunBeforeUnloadCallback() {
-    ASSERT_TRUE(before_unload_callback_);
-    std::move(before_unload_callback_)
-        .Run(true, base::TimeTicks::Now(), base::TimeTicks::Now());
-  }
-
   // FakeLocalFrame:
   void BeforeUnload(bool is_reload, BeforeUnloadCallback callback) override {
     was_before_unload_called_ = true;
-    before_unload_callback_ = std::move(callback);
   }
 
  private:
   bool was_before_unload_called_ = false;
-  BeforeUnloadCallback before_unload_callback_;
 };
 
 // Verifies BeforeUnload() is not sent to renderer if there is no before
