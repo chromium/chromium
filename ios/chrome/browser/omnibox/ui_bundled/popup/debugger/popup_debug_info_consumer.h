@@ -7,6 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/omnibox/browser/remote_suggestions_service.h"
+
+@protocol OmniboxRemoteSuggestionEvent;
+@protocol OmniboxEvent;
+
 /// An abstract consumer of omnibox popup debug info.
 @protocol PopupDebugInfoConsumer <NSObject>
 
@@ -16,6 +21,21 @@
 /// Removes all objects from the debug info.
 - (void)removeAllObjects;
 
+/// Informs the consumer about a new omnibox event.
+- (void)registerNewOmniboxEvent:(id<OmniboxEvent>)event;
+
+/// Updates the status of a remote suggestion event using the provided request
+/// body.
+- (void)updateRemoteSuggestionEventWithRequestIdentifier:
+            (const base::UnguessableToken&)requestIdentifier
+                                             requestBody:(NSString*)requestBody;
+
+/// Updates the status of a remote suggestion event using the provided response
+/// details.
+- (void)updateRemoteSuggestionEventWithRequestIdentifier:
+            (const base::UnguessableToken&)requestIdentifier
+                                            responseBody:(NSString*)responseBody
+                                            responseCode:(NSInteger)code;
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_DEBUGGER_POPUP_DEBUG_INFO_CONSUMER_H_

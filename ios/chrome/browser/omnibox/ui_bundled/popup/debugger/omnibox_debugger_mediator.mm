@@ -4,13 +4,17 @@
 
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_debugger_mediator.h"
 
+#import "base/strings/utf_string_conversions.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/remote_suggestions_service.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/autocomplete_controller_observer_bridge.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_autocomplete_event.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_remote_suggestion_event.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/popup_debug_info_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/remote_suggestions_service_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "services/network/public/cpp/resource_request.h"
 
 @implementation OmniboxDebuggerMediator {
   // Autocomolete controller.
@@ -58,7 +62,7 @@
   DCHECK(experimental_flags::IsOmniboxDebuggingEnabled());
 
   _autocompleteObserverBridge =
-      std::make_unique<AutocompleteControllerObserverBridge>(consumer);
+      std::make_unique<AutocompleteControllerObserverBridge>(self);
   _autocompleteController->AddObserver(_autocompleteObserverBridge.get());
 
   // Observe the remote suggestions service if it's available. It might not
@@ -66,12 +70,60 @@
   if (_remoteSuggestionsService) {
     _remoteSuggestionsServiceObserverBridge =
         std::make_unique<RemoteSuggestionsServiceObserverBridge>(
-            consumer, _remoteSuggestionsService);
+            self, _remoteSuggestionsService);
     _remoteSuggestionsService->AddObserver(
         _remoteSuggestionsServiceObserverBridge.get());
   }
 
   _consumer = consumer;
+}
+
+#pragma mark - RemoteSuggestionsServiceObserver
+
+- (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
+    createdRequestWithIdentifier:
+        (const base::UnguessableToken&)requestIdentifier
+                         request:(const network::ResourceRequest*)request {
+  OmniboxRemoteSuggestionEvent* event = [[OmniboxRemoteSuggestionEvent alloc]
+      initWithUniqueIdentifier:requestIdentifier];
+  event.requestURL = base::SysUTF8ToNSString(request->url.spec());
+
+  [self.consumer registerNewOmniboxEvent:event];
+}
+
+- (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
+    startedRequestWithIdentifier:
+        (const base::UnguessableToken&)requestIdentifier
+                     requestBody:(NSString*)requestBody
+                       URLLoader:(network::SimpleURLLoader*)URLLoader {
+  [self.consumer
+      updateRemoteSuggestionEventWithRequestIdentifier:requestIdentifier
+                                           requestBody:requestBody];
+}
+
+- (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
+    completedRequestWithIdentifier:
+        (const base::UnguessableToken&)requestIdentifier
+                      responseCode:(NSInteger)code
+                      responseBody:(NSString*)responseBody {
+  [self.consumer
+      updateRemoteSuggestionEventWithRequestIdentifier:requestIdentifier
+                                          responseBody:responseBody
+                                          responseCode:code];
+}
+
+#pragma mark - AutocompleteControllerObserver
+
+- (void)autocompleteController:(AutocompleteController*)controller
+             didStartWithInput:(const AutocompleteInput&)input {
+}
+
+- (void)autocompleteController:(AutocompleteController*)controller
+    didUpdateResultChangingDefaultMatch:(BOOL)defaultMatchChanged {
+  OmniboxAutocompleteEvent* event = [[OmniboxAutocompleteEvent alloc]
+      initWithAutocompleteController:controller];
+
+  [self.consumer registerNewOmniboxEvent:event];
 }
 
 #pragma mark - OmniboxAutocompleteControllerDebuggerDelegate

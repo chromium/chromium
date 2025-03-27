@@ -261,42 +261,15 @@ const NSInteger kRemoteSuggestionServiceResponseBodyJsonStartingIndex = 4;
   [_tableView reloadData];
 }
 
-#pragma mark - AutocompleteControllerObserver
-
-- (void)autocompleteController:(AutocompleteController*)controller
-             didStartWithInput:(const AutocompleteInput&)input {
-}
-
-- (void)autocompleteController:(AutocompleteController*)controller
-    didUpdateResultChangingDefaultMatch:(BOOL)defaultMatchChanged {
-  OmniboxAutocompleteEvent* event = [[OmniboxAutocompleteEvent alloc]
-      initWithAutocompleteController:controller];
-
+- (void)registerNewOmniboxEvent:(id<OmniboxEvent>)event {
   [_events insertObject:event atIndex:0];
-
   [_tableView reloadData];
 }
 
-#pragma mark - RemoteSuggestionsServiceObserver
-
-- (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
-    createdRequestWithIdentifier:
-        (const base::UnguessableToken&)requestIdentifier
-                         request:(const network::ResourceRequest*)request {
-  OmniboxRemoteSuggestionEvent* event = [[OmniboxRemoteSuggestionEvent alloc]
-      initWithUniqueIdentifier:requestIdentifier];
-  event.requestURL = base::SysUTF8ToNSString(request->url.spec());
-
-  [_events insertObject:event atIndex:0];
-
-  [_tableView reloadData];
-}
-
-- (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
-    startedRequestWithIdentifier:
-        (const base::UnguessableToken&)requestIdentifier
-                     requestBody:(NSString*)requestBody
-                       URLLoader:(network::SimpleURLLoader*)URLLoader {
+- (void)updateRemoteSuggestionEventWithRequestIdentifier:
+            (const base::UnguessableToken&)requestIdentifier
+                                             requestBody:
+                                                 (NSString*)requestBody {
   NSUInteger indexOfFoundEventElement =
       [_events indexOfObjectPassingTest:^BOOL(id<OmniboxEvent> event,
                                               NSUInteger, BOOL*) {
@@ -315,11 +288,10 @@ const NSInteger kRemoteSuggestionServiceResponseBodyJsonStartingIndex = 4;
   }
 }
 
-- (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
-    completedRequestWithIdentifier:
-        (const base::UnguessableToken&)requestIdentifier
-                      responseCode:(NSInteger)code
-                      responseBody:(NSString*)responseBody {
+- (void)updateRemoteSuggestionEventWithRequestIdentifier:
+            (const base::UnguessableToken&)requestIdentifier
+                                            responseBody:(NSString*)responseBody
+                                            responseCode:(NSInteger)code {
   NSUInteger indexOfFoundEventElement =
       [_events indexOfObjectPassingTest:^BOOL(id<OmniboxEvent> event,
                                               NSUInteger, BOOL*) {
