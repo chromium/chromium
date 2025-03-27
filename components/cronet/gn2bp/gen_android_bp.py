@@ -41,8 +41,9 @@ import shlex
 
 import gn_utils
 import targets as gn2bp_targets
-PARENT_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.pardir))
+
+PARENT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                           os.pardir))
 
 sys.path.insert(0, os.path.join(PARENT_ROOT, "license"))
 import license_utils
@@ -298,8 +299,10 @@ ldflag_allowlist = [
     "-Wl,--icf=all",
 ]
 
+
 def get_linker_script_ldflag(script_path):
   return f'-Wl,--script,{tree_path}/{script_path}'
+
 
 _FEATURE_REGEX = "feature=\\\"(.+)\\\""
 _RUST_FLAGS_TO_REMOVE = [
@@ -313,6 +316,7 @@ _RUST_FLAGS_TO_REMOVE = [
     "@",  # Used by build_script outputs to have rustc load flags from a file.
     "-Z",  # Those are unstable features, completely remove those.
 ]
+
 
 class JniZeroTargetType(enum.Enum):
   GENERATOR = enum.auto()
@@ -348,12 +352,14 @@ def get_jni_zero_generator_proxy_and_placeholder_paths(module):
 def always_disable(module, arch):
   return None
 
+
 def enable_zlib(module, arch):
   # Requires crrev/c/4109079
   if arch == 'common':
     module.shared_libs.add('libz')
   else:
     module.target[arch].shared_libs.add('libz')
+
 
 def enable_boringssl(module, arch):
   # Do not add boringssl targets to cc_genrules. This happens, because protobuf targets are
@@ -369,11 +375,14 @@ def enable_boringssl(module, arch):
   shared_libs.add(f'{MODULE_PREFIX}libssl')
   shared_libs.add(f'{MODULE_PREFIX}libpki')
 
+
 def add_androidx_experimental_java_deps(module, arch):
   module.libs.add("androidx.annotation_annotation-experimental")
 
+
 def add_androidx_annotation_java_deps(module, arch):
   module.libs.add("androidx.annotation_annotation")
+
 
 def add_protobuf_lite_runtime_java_deps(module, arch):
   # TODO: this seems wrong - we are using Chromium's protoc, not AOSP's, so we
@@ -382,80 +391,105 @@ def add_protobuf_lite_runtime_java_deps(module, arch):
   # runtime library.
   module.static_libs.add("libprotobuf-java-lite")
 
+
 def add_androidx_core_java_deps(module, arch):
   module.libs.add("androidx.core_core")
+
 
 def add_jsr305_java_deps(module, arch):
   module.static_libs.add("jsr305")
 
+
 def add_errorprone_annotation_java_deps(module, arch):
   module.libs.add("error_prone_annotations")
+
 
 def add_androidx_collection_java_deps(module, arch):
   module.libs.add("androidx.collection_collection")
 
+
 def add_junit_java_deps(module, arch):
   module.static_libs.add("junit")
 
+
 def add_truth_java_deps(module, arch):
   module.static_libs.add("truth")
+
 
 def add_hamcrest_java_deps(module, arch):
   module.static_libs.add("hamcrest-library")
   module.static_libs.add("hamcrest")
 
+
 def add_mockito_java_deps(module, arch):
   module.static_libs.add("mockito")
+
 
 def add_guava_java_deps(module, arch):
   module.static_libs.add("guava")
 
+
 def add_androidx_junit_java_deps(module, arch):
   module.static_libs.add("androidx.test.ext.junit")
+
 
 def add_androidx_test_runner_java_deps(module, arch):
   module.static_libs.add("androidx.test.runner")
 
+
 def add_androidx_test_rules_java_deps(module, arch):
   module.static_libs.add("androidx.test.rules")
 
+
 def add_android_test_base_java_deps(module, arch):
   module.libs.add("android.test.base")
+
 
 def add_accessibility_test_framework_java_deps(module, arch):
   # BaseActivityTestRule.java depends on this but BaseActivityTestRule.java is not used in aosp.
   pass
 
+
 def add_espresso_java_deps(module, arch):
   module.static_libs.add("androidx.test.espresso.contrib")
 
+
 def add_android_test_mock_java_deps(module, arch):
   module.libs.add("android.test.mock.stubs")
+
 
 def add_androidx_multidex_java_deps(module, arch):
   # Androidx-multidex is disabled on unbundled branches.
   pass
 
+
 def add_androidx_test_monitor_java_deps(module, arch):
   module.libs.add("androidx.test.monitor")
+
 
 def add_androidx_ui_automator_java_deps(module, arch):
   module.static_libs.add("androidx.test.uiautomator_uiautomator")
 
+
 def add_androidx_test_annotation_java_deps(module, arch):
   module.static_libs.add("androidx.test.rules")
+
 
 def add_androidx_test_core_java_deps(module, arch):
   module.static_libs.add("androidx.test.core")
 
+
 def add_androidx_activity_activity(module, arch):
   module.static_libs.add("androidx.activity_activity")
+
 
 def add_androidx_fragment_fragment(module, arch):
   module.static_libs.add("androidx.fragment_fragment")
 
+
 def add_rustversion_deps(module, arch):
   module.proc_macros.add("librustversion")
+
 
 # Android equivalents for third-party libraries that the upstream project
 # depends on. This will be applied to normal and testing targets.
@@ -1006,7 +1040,7 @@ def is_supported_source_file(name):
 
 
 def normalize_rust_flags(
-        rust_flags: List[str]) -> Dict[str, Union[Set[str], None]]:
+    rust_flags: List[str]) -> Dict[str, Union[Set[str], None]]:
   """
   Normalizes the rust params where it tries to put (key, value) param
   as a dictionary key. A key without value will have None as value.
@@ -1571,12 +1605,14 @@ class WriteBuildDateHeaderSanitizer(BaseActionSanitizer):
     self._set_arg_at(0, '$(out)')
     super()._sanitize_args()
 
+
 class WriteBuildFlagHeaderSanitizer(BaseActionSanitizer):
 
   def _sanitize_args(self):
     self._set_value_arg('--gen-dir', '.')
     self._set_value_arg('--output', '$(out)')
     super()._sanitize_args()
+
 
 class GnRunBinarySanitizer(BaseActionSanitizer):
 
@@ -1805,6 +1841,7 @@ class JavaJniRegistrationGeneratorSanitizer(JniRegistrationGeneratorSanitizer):
   def get_deps(self):
     return {}
 
+
 class VersionSanitizer(BaseActionSanitizer):
 
   def _sanitize_args(self):
@@ -1820,12 +1857,14 @@ class VersionSanitizer(BaseActionSanitizer):
     tool_files.add('build/util/android_chrome_version.py')
     return tool_files
 
+
 class JavaCppEnumSanitizer(BaseActionSanitizer):
 
   def _sanitize_args(self):
     self._update_all_args(self._sanitize_filepath_with_location_tag)
     self._set_value_arg('--srcjar', '$(out)')
     super()._sanitize_args()
+
 
 class MakeDafsaSanitizer(BaseActionSanitizer):
 
@@ -1834,6 +1873,7 @@ class MakeDafsaSanitizer(BaseActionSanitizer):
     # (e.g. registry_controlled_domain.cc)
     return True
 
+
 class JavaCppFeatureSanitizer(BaseActionSanitizer):
 
   def _sanitize_args(self):
@@ -1841,12 +1881,14 @@ class JavaCppFeatureSanitizer(BaseActionSanitizer):
     self._set_value_arg('--srcjar', '$(out)')
     super()._sanitize_args()
 
+
 class JavaCppStringSanitizer(BaseActionSanitizer):
 
   def _sanitize_args(self):
     self._update_all_args(self._sanitize_filepath_with_location_tag)
     self._set_value_arg('--srcjar', '$(out)')
     super()._sanitize_args()
+
 
 class WriteNativeLibrariesJavaSanitizer(BaseActionSanitizer):
 
@@ -1916,7 +1958,9 @@ class FilterZipSanitizer(BaseActionSanitizer):
       # being filtered out. Instead, do the right thing and generate a
       # non-placeholder NativeLibraries.
       globs = globs[1:-1]
-      globs = [glob for glob in globs.split(', ') if "NativeLibraries" not in glob]
+      globs = [
+          glob for glob in globs.split(', ') if "NativeLibraries" not in glob
+      ]
       globs = ", ".join(globs)
       return f'[{globs}]'
 
@@ -1994,6 +2038,7 @@ def get_action_sanitizer(gn, target, type, arch, is_test_target):
     raise Exception('Unsupported action %s from %s' %
                     (target.script, target.name))
 
+
 def create_action_foreach_modules(blueprint, gn, target, is_test_target):
   """ The following assumes that rebase_path exists in the args.
   The args of an action_foreach contains hints about which output files are generated
@@ -2046,7 +2091,6 @@ def create_action_foreach_modules(blueprint, gn, target, is_test_target):
   ]
 
 
-
 def create_action_module_internal(gn,
                                   target,
                                   type,
@@ -2069,6 +2113,7 @@ def create_action_module_internal(gn,
   target.deps = sanitizer.get_deps()
 
   return module
+
 
 def get_cmd_condition(arch):
   '''
@@ -2112,6 +2157,7 @@ def merge_cmd(modules, genrule_type):
     merged_cmd.extend(module.cmd)
     merged_cmd.append(';fi;')
   return merged_cmd
+
 
 def merge_modules(modules, genrule_type):
   '''
@@ -2239,16 +2285,20 @@ def create_bindgen_module(blueprint: Blueprint, target,
   return module
 
 
-def create_generated_headers_export_module(
-  blueprint: Blueprint, cc_genrule_module: Module) -> Module:
+def create_generated_headers_export_module(blueprint: Blueprint,
+                                           cc_genrule_module: Module) -> Module:
   '''
   Creates a cc_library_headers module that merely re-exports headers that are
   generated by a cc_genrule module. This is useful in scenarios where a module
   has no way of directly depending on generated headers.
   '''
   cc_genrule_module_name = cc_genrule_module.name
-  module = Module("cc_library_headers", f"{cc_genrule_module_name}_export_generated_headers", cc_genrule_module.gn_target)
-  module.export_generated_headers = module.generated_headers = [cc_genrule_module_name]
+  module = Module("cc_library_headers",
+                  f"{cc_genrule_module_name}_export_generated_headers",
+                  cc_genrule_module.gn_target)
+  module.export_generated_headers = module.generated_headers = [
+      cc_genrule_module_name
+  ]
   module.build_file_path = cc_genrule_module.build_file_path
   module.defaults = [cc_defaults_module]
   module.host_supported = cc_genrule_module.host_supported
@@ -2318,10 +2368,12 @@ def _get_cflags(cflags, defines):
   cflags |= set("-D%s" % define.replace("\"", "\\\"") for define in defines)
   return cflags
 
+
 def _set_linker_script(module, libs):
   for lib in libs:
     if lib.endswith(".lds"):
       module.ldflags.add(get_linker_script_ldflag(gn_utils.label_to_path(lib)))
+
 
 def set_module_flags(module, module_type, cflags, defines, ldflags, libs):
   module.cflags.update(_get_cflags(cflags, defines))
@@ -2337,6 +2389,7 @@ def set_module_flags(module, module_type, cflags, defines, ldflags, libs):
       module.cpp_std = flag[len('-std='):]
     if '-fexceptions' in flag:
       module.cppflags.add('-fexceptions')
+
 
 def set_module_include_dirs(module, cflags, include_dirs):
   for flag in cflags:
@@ -2530,14 +2583,16 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
       for arch_name, arch in target.get_archs().items():
         _set_rust_flags(module.target[arch_name], arch.rust_flags, arch_name)
 
-    if module.type in ("rust_proc_macro", "rust_binary", "rust_ffi_static", "rust_bindgen"):
+    if module.type in ("rust_proc_macro", "rust_binary", "rust_ffi_static",
+                       "rust_bindgen"):
       # We may end up (in)directly depending on cc modules, e.g. through the
       # rust bindgen "generated headers" library we may generate. Our cc modules
       # set this. We need to be consistent, otherwise Soong will complain about
       # the incompatible dependency.
       module.target['host'].compile_multilib = '64'
 
-    if module.type in ("rust_bindgen", "rust_ffi_static", "cc_genrule", "cc_library_static", "cc_binary"):
+    if module.type in ("rust_bindgen", "rust_ffi_static", "cc_genrule",
+                       "cc_library_static", "cc_binary"):
       # If we don't add this, then some types of AOSP builds fail due to an
       # issue with proc_macro2 - see https://crbug.com/392704960.
       # Note: technically we only need this on modules that ultimately depend
@@ -2707,7 +2762,8 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
               # headers, and then depending on that. See also
               # http://crbug.com/394069879.
               module_target.header_libs.add(
-                create_generated_headers_export_module(blueprint, dep_module).name)
+                  create_generated_headers_export_module(blueprint,
+                                                         dep_module).name)
             else:
               module_target.generated_headers.update(dep_module.genrule_headers)
           module_target.srcs.update(dep_module.genrule_srcs)
@@ -2839,6 +2895,7 @@ def turn_off_allocator_shim_for_musl(module):
     # of glibc but for android.
     module.target['glibc'].srcs.add(allocation_shim)
 
+
 def create_cc_defaults_module():
   defaults = Module('cc_defaults', cc_defaults_module, '//gn:default_deps')
   defaults.cflags = [
@@ -2888,6 +2945,7 @@ def create_cc_defaults_module():
   defaults.min_sdk_version = _MIN_SDK_VERSION
   defaults.apex_available.add(tethering_apex)
   return defaults
+
 
 def create_blueprint_for_targets(gn, targets, test_targets):
   """Generate a blueprint for a list of GN targets."""
@@ -3029,6 +3087,7 @@ def _rebase_module(module: Module, blueprint_path: str) -> Union[Module, None]:
 
   return module_copy
 
+
 def _path_to_name(path: str) -> str:
   path = path.replace("/", "_").lower()
   return f"{MODULE_PREFIX}{path}_license"
@@ -3064,8 +3123,8 @@ def _maybe_create_license_module(path: str) -> Union[Module, None]:
 
 
 def _get_longest_matching_blueprint(
-        current_blueprint_path: str,
-        all_blueprints: Dict[str, Blueprint]) -> Union[Blueprint, None]:
+    current_blueprint_path: str,
+    all_blueprints: Dict[str, Blueprint]) -> Union[Blueprint, None]:
   longest_path_matching = None
   for (blueprint_path, search_blueprint) in all_blueprints.items():
     if (search_blueprint.get_license_module()
@@ -3077,6 +3136,7 @@ def _get_longest_matching_blueprint(
   if longest_path_matching:
     return all_blueprints[longest_path_matching]
   return None
+
 
 def finalize_package_modules(blueprints: Dict[str, Blueprint]):
   """
@@ -3115,7 +3175,7 @@ def finalize_package_modules(blueprints: Dict[str, Blueprint]):
 
 
 def create_license_modules(
-        blueprints: Dict[str, Blueprint]) -> Dict[str, Module]:
+    blueprints: Dict[str, Blueprint]) -> Dict[str, Module]:
   """
   Creates license module (if possible) for each blueprint passed, a license
   module will be created if a README.chromium exists in the same directory as
@@ -3249,8 +3309,7 @@ def main():
   parser.add_argument(
       'targets',
       nargs=argparse.REMAINDER,
-      help='Targets to include in the blueprint (e.g., "//:perfetto_tests")'
-  )
+      help='Targets to include in the blueprint (e.g., "//:perfetto_tests")')
   parser.add_argument(
       '--suffix',
       help='The suffix to the Android.bp filename. Pass "" if no suffix.',

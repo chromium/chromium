@@ -40,8 +40,7 @@ _COPYBARA_CONFIG_PATH = os.path.join(REPOSITORY_ROOT,
 _COPYBARA_PATH = os.path.join(REPOSITORY_ROOT,
                               'tools/copybara/copybara/copybara_deploy.jar')
 _GENERATE_BUILD_SCRIPT_PATH = os.path.join(
-    REPOSITORY_ROOT,
-    'components/cronet/gn2bp/generate_build_scripts_output.py')
+    REPOSITORY_ROOT, 'components/cronet/gn2bp/generate_build_scripts_output.py')
 _GENERATE_LICENSE_SCRIPT_PATH = os.path.join(
     REPOSITORY_ROOT,
     'components/cronet/license/create_android_metadata_license.py')
@@ -100,6 +99,7 @@ def _run_gn2bp(desc_files: Set[tempfile.NamedTemporaryFile],
     base_cmd += ["--channel", channel]
     return cronet_utils.run(base_cmd)
 
+
 def _run_generate_build_scripts(output_path: str) -> int:
   """Run generate_build_scripts_output.py.
 
@@ -112,6 +112,7 @@ def _run_generate_build_scripts(output_path: str) -> int:
       '--output',
       output_path,
   ])
+
 
 def _write_desc_json(gn_out_dir: str,
                      temp_file: tempfile.NamedTemporaryFile) -> int:
@@ -217,6 +218,7 @@ def _fill_desc_file_for_arch(arch, desc_file, delete_temporary_files):
       # Exit if we failed to generate any of the desc.json files.
       print(f"Failed to generate desc file for arch: {arch}")
       sys.exit(-1)
+
 
 def main():
   parser = argparse.ArgumentParser()
