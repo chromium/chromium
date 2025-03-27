@@ -36,7 +36,6 @@
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/deferred_initialization_task_names.h"
-#import "ios/chrome/app/launch_screen_view_controller.h"
 #import "ios/chrome/app/profile/application_storage_metrics.h"
 #import "ios/chrome/app/profile/certificate_policy_profile_agent.h"
 #import "ios/chrome/app/profile/docking_promo_profile_agent.h"
@@ -388,13 +387,6 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   if (initStage >= ProfileInitStage::kUIReady) {
     return;
   }
-
-  // If the application is not yet ready to present the UI, install
-  // a LaunchScreenViewController as the root view of the connected
-  // SceneState. This ensures that there is no "blank" window.
-  LaunchScreenViewController* launchScreen =
-      [[LaunchScreenViewController alloc] init];
-  [sceneState setRootViewController:launchScreen makeKeyAndVisible:YES];
 
   [sceneState addObserver:self];
 }

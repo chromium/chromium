@@ -54,6 +54,7 @@
 #import "ios/chrome/app/deferred_initialization_task_names.h"
 #import "ios/chrome/app/enterprise_app_agent.h"
 #import "ios/chrome/app/fast_app_terminate_buildflags.h"
+#import "ios/chrome/app/launch_screen_view_controller.h"
 #import "ios/chrome/app/memory_monitor.h"
 #import "ios/chrome/app/profile/profile_controller.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -878,6 +879,16 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
+  // Install a LaunchScreenViewController as root view for the newly connected
+  // SceneState and make the window visible (but do not force it above all the
+  // other windows by making it key window). This ensures that something will
+  // be displayed during the blocking steps of the application and/or profile
+  // initialisation (e.g. fetching variation seeds, load profiles' preferences,
+  // migrating session storage, ...).
+  UIWindow* window = sceneState.window;
+  window.rootViewController = [[LaunchScreenViewController alloc] init];
+  window.hidden = NO;
+
   if (appState.initStage < AppInitStage::kFinal) {
     return;
   }
