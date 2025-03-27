@@ -303,11 +303,16 @@ public class StripLayoutHelper
 
                 @Override
                 public void didChangeGroupRootId(int oldRootId, int newRootId) {
+                    // TODO(crbug.com/375271955): Migrate to keying groups on stableId so we don't
+                    //  have to update dependencies here.
+                    releaseResourcesForGroupTitle(oldRootId);
+
                     StripLayoutGroupTitle groupTitle = findGroupTitle(oldRootId);
                     if (groupTitle != null) {
                         groupTitle.updateRootId(newRootId);
                         // Refresh properties since removing the root tab may have cleared the ones
                         // associated with the oldRootId before updating to the newRootId here.
+                        mLayerTitleCache.transferAvatarToNewRootId(oldRootId, newRootId);
                         updateGroupTextAndSharedState(groupTitle);
                         updateGroupTitleTint(groupTitle);
                     }
@@ -335,7 +340,7 @@ public class StripLayoutHelper
                         int oldRootId,
                         @Nullable Token oldTabGroupId,
                         @DidRemoveTabGroupReason int removalReason) {
-                    releaseResourcesForGroupTitle(oldTabGroupId);
+                    releaseResourcesForGroupTitle(oldRootId);
                     if (mGroupIdToHideSupplier.get() == oldRootId) {
                         // Clear the hidden group ID if the group has been removed from the model.
                         mGroupIdToHideSupplier.set(Tab.INVALID_TAB_ID);
@@ -345,8 +350,6 @@ public class StripLayoutHelper
                     if (oldRootId == mLastSyncedGroupRootIdForIph) {
                         dismissTabStripSyncIph();
                     }
-                    onWillCloseView(
-                            StripLayoutUtils.findGroupTitle(mStripGroupTitles, oldTabGroupId));
                 }
             };
 
@@ -2194,8 +2197,7 @@ public class StripLayoutHelper
                 mDataSharingService,
                 mCollaborationService,
                 (avatarRes) -> {
-                    mLayerTitleCache.registerSharedGroupAvatar(
-                            groupTitle.getTabGroupId(), avatarRes);
+                    mLayerTitleCache.registerSharedGroupAvatar(groupTitle.getRootId(), avatarRes);
                 },
                 () -> updateGroupTextAndSharedState(groupTitle));
     }
@@ -2208,7 +2210,7 @@ public class StripLayoutHelper
      */
     private void clearSharedTabGroup(@NonNull StripLayoutGroupTitle groupTitle) {
         groupTitle.clearSharedTabGroup();
-        mLayerTitleCache.removeSharedGroupAvatar(groupTitle.getTabGroupId());
+        mLayerTitleCache.removeSharedGroupAvatar(groupTitle.getRootId());
         updateGroupTextAndSharedState(groupTitle);
     }
 
@@ -2990,8 +2992,8 @@ public class StripLayoutHelper
     }
 
     @Override
-    public void releaseResourcesForGroupTitle(Token groupId) {
-        mLayerTitleCache.removeGroupTitle(groupId);
+    public void releaseResourcesForGroupTitle(int rootId) {
+        mLayerTitleCache.removeGroupTitle(rootId);
     }
 
     @Override
@@ -3162,7 +3164,7 @@ public class StripLayoutHelper
     private void updateGroupTitleBitmapIfNeeded(@NonNull StripLayoutGroupTitle groupTitle) {
         if (groupTitle.isVisible()) {
             mLayerTitleCache.getUpdatedGroupTitle(
-                    groupTitle.getTabGroupId(), groupTitle.getTitle(), mIncognito);
+                    groupTitle.getRootId(), groupTitle.getTitle(), mIncognito);
             mRenderHost.requestRender();
         }
     }
@@ -3217,9 +3219,6 @@ public class StripLayoutHelper
      */
     private void updateGroupTextAndSharedState(StripLayoutGroupTitle groupTitle, String titleText) {
         assert groupTitle != null;
-        // Ignore updates for closing group indicators. This prevents assertion errors from using
-        // stale group properties.
-        if (groupTitle.willClose()) return;
 
         // 1. Update indicator text and width.
         titleText = getDefaultGroupTitleTextIfEmpty(groupTitle.getTabGroupId(), titleText);
@@ -4550,7 +4549,6 @@ public class StripLayoutHelper
     private void onWillCloseView(StripLayoutView view) {
         if (view == null) return;
 
-        view.setWillClose();
         if (view == mDelayedReorderView) resetDelayedReorderState();
         if (view == mReorderDelegate.getInteractingView()) stopReorderMode();
     }

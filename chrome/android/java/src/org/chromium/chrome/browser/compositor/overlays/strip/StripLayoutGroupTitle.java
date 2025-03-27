@@ -39,9 +39,9 @@ public class StripLayoutGroupTitle extends StripLayoutView {
         /**
          * Releases the resources associated with this group indicator.
          *
-         * @param groupId The ID of this group indicator.
+         * @param rootId The root ID of the given group indicator.
          */
-        void releaseResourcesForGroupTitle(Token groupId);
+        void releaseResourcesForGroupTitle(int rootId);
 
         /**
          * Rebuilds the resources associated with this group indicator.
@@ -138,8 +138,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
             int rootId,
             Token tabGroupId) {
         super(incognito, delegate, context);
-        assert rootId != Tab.INVALID_TAB_ID && tabGroupId != null
-                : "Tried to create a group title for an invalid group.";
+        assert rootId != Tab.INVALID_TAB_ID : "Tried to create a group title for an invalid group.";
         mRootId = rootId;
         mDelegate = delegate;
         mTabGroupId = tabGroupId;
@@ -152,7 +151,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
         if (newVisibility) {
             mDelegate.rebuildResourcesForGroupTitle(this);
         } else {
-            mDelegate.releaseResourcesForGroupTitle(mTabGroupId);
+            mDelegate.releaseResourcesForGroupTitle(mRootId);
         }
     }
 
