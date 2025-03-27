@@ -1637,12 +1637,13 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
     sceneState = sceneDelegate.sceneState;     // recreate a new SceneState
     sceneState.currentOrigin = savedOrigin;
     sceneState.connectionOptions = savedConnectionOptions;
-    sceneState.activationLevel = SceneActivationLevelBackground;
     sceneState.scene = scene;
 
     // Reconnect the scene. This will attach a profile automatically based
     // on the information stored in the ProfileAttributesStorageIOS.
-    [self appState:self.appState sceneConnected:sceneState];
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:UISceneWillConnectNotification
+                      object:scene];
     DCHECK(sceneState.profileState);
 
     // Restore the saved activation level.
