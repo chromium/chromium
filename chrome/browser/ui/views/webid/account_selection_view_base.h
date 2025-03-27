@@ -80,22 +80,18 @@ class BrandIconImageView : public views::ImageView {
   METADATA_HEADER(BrandIconImageView, views::ImageView)
 
  public:
-  BrandIconImageView(
-      int image_size,
-      bool should_circle_crop,
-      base::RepeatingClosure on_image_set = base::DoNothing());
+  explicit BrandIconImageView(int image_size);
   BrandIconImageView(const BrandIconImageView&) = delete;
   BrandIconImageView& operator=(const BrandIconImageView&) = delete;
   ~BrandIconImageView() override;
 
-  void CropAndSetImage(const gfx::Image& image);
+  // This method will crop the given `image` if `should_circle_crop` and will
+  // attempt to set it into the BrandIconImageView. Returns whether the image
+  // was successfully set or not.
+  bool SetBrandIconImage(const gfx::Image& image, bool should_circle_crop);
 
  private:
   int image_size_;
-  bool should_circle_crop_;
-  base::RepeatingClosure on_image_set_;
-
-  base::WeakPtrFactory<BrandIconImageView> weak_ptr_factory_{this};
 };
 
 class AccountHoverButton : public HoverButton {

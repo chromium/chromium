@@ -191,33 +191,31 @@ void AccountHoverButtonSecondaryView::SetDisabledOpacity() {
       kArrowIconSize));
 }
 
-BrandIconImageView::BrandIconImageView(int image_size,
-                                       bool should_circle_crop,
-                                       base::RepeatingClosure on_image_set)
-    : image_size_(image_size),
-      should_circle_crop_(should_circle_crop),
-      on_image_set_(std::move(on_image_set)) {}
+BrandIconImageView::BrandIconImageView(int image_size)
+    : image_size_(image_size) {
+  SetImageSize(gfx::Size(image_size_, image_size_));
+}
 
 BrandIconImageView::~BrandIconImageView() = default;
 
-void BrandIconImageView::CropAndSetImage(const gfx::Image& image) {
-  if (image.Width() != image.Height() ||
+bool BrandIconImageView::SetBrandIconImage(const gfx::Image& image,
+                                           bool should_circle_crop) {
+  if (image.Width() != image.Height()) {
+    return false;
+  }
+  if (should_circle_crop &&
       image.Width() < (image_size_ / kMaskableWebIconSafeZoneRatio)) {
-    return;
+    return false;
   }
   const gfx::ImageSkia& original_image = image.AsImageSkia();
   gfx::ImageSkia cropped_idp_image =
-      should_circle_crop_
+      should_circle_crop
           ? CreateCircleCroppedImage(original_image, image_size_)
           : gfx::ImageSkiaOperations::CreateResizedImage(
                 original_image, skia::ImageOperations::RESIZE_BEST,
                 gfx::Size(image_size_, image_size_));
   SetImage(ui::ImageModel::FromImageSkia(cropped_idp_image));
-
-  if (!on_image_set_) {
-    return;
-  }
-  std::move(on_image_set_).Run();
+  return true;
 }
 
 BEGIN_METADATA(BrandIconImageView)

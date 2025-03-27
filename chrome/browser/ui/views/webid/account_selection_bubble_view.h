@@ -73,9 +73,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   FRIEND_TEST_ALL_PREFIXES(AccountSelectionBubbleViewTest,
                            WebContentsLargeEnoughToFitDialog);
 
-  // Returns a View containing the logo of the identity provider. Creates the
-  // `header_icon_view_` if `has_idp_icon` is true.
-  std::unique_ptr<views::View> CreateHeaderView(bool has_idp_icon);
+  // Returns a View containing the logo of the identity provider.
+  std::unique_ptr<views::View> CreateHeaderView();
 
   // Returns a View for single account chooser. It contains the account
   // information, disclosure text and a button for the user to confirm the
@@ -114,10 +113,14 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   // Updates the header title, the header icon visibility and the header back
   // button visibiltiy. `idp_image` is not empty when we need to set a header
-  // image based on the IDP.
+  // image based on the IDP. `should_circle_crop_header_icon` determines whether
+  // the icon passed should be cropped or not. Some icons like the RP icon are
+  // not meant to be cropped, and some icons like the badged account icon are
+  // cropped on the backend, so they should not be cropped here.
   void UpdateHeader(const gfx::Image& idp_image,
                     const std::u16string& title,
-                    bool show_back_button);
+                    bool show_back_button,
+                    bool should_circle_crop_header_icon);
 
   // Removes all children except for `header_view_`.
   void RemoveNonHeaderChildViews();
