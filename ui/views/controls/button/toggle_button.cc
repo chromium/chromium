@@ -407,12 +407,6 @@ void ToggleButton::UpdateThumb() {
     InkDrop::Get(this)->GetInkDrop()->SetHovered(
         !slide_animation_.is_animating());
   }
-  if (FocusRing::Get(this)) {
-    // Updating the thumb changes the result of GetFocusRingPath(), make sure
-    // the focus ring gets updated to match this new state.
-    FocusRing::Get(this)->InvalidateLayout();
-    FocusRing::Get(this)->SchedulePaint();
-  }
 }
 
 SkColor ToggleButton::GetTrackColor(bool is_on) const {
