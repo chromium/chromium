@@ -36,8 +36,7 @@
 
 - (instancetype)initWithAppState:(AppState*)appState
                          profile:(ProfileIOS*)profile {
-  constexpr ActivationLevelPolicy policy = ActivationLevelPolicy::kImmediate;
-  if ((self = [super initWithAppState:appState propagationPolicy:policy])) {
+  if ((self = [super initWithAppState:appState])) {
     DCHECK(profile);
     DCHECK(!profile->IsOffTheRecord());
     self.activationLevel = SceneActivationLevelForegroundInactive;

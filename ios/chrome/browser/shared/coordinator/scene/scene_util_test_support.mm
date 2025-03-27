@@ -67,8 +67,7 @@
 @implementation SceneStateWithFakeScene
 
 - (instancetype)initWithScene:(id)scene appState:(AppState*)appState {
-  constexpr ActivationLevelPolicy policy = ActivationLevelPolicy::kImmediate;
-  if ((self = [super initWithAppState:appState propagationPolicy:policy])) {
+  if ((self = [super initWithAppState:appState])) {
     [self setScene:scene];
   }
   return self;
