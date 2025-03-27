@@ -55,6 +55,9 @@ id<GREYMatcher> TabStripGroupCellMatcher(NSString* title) {
 // Adds a shared tab group. User's role depends on its fake identity.
 void AddSharedGroup() {
   [TabGroupAppInterface prepareFakeSharedTabGroups:1];
+  // Sleep for 1 second to make sure that the shared group data are correctly
+  // fetched.
+  base::PlatformThread::Sleep(base::Seconds(1));
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabStripGroupCellMatcher(
                                                           kGroupTitle)];
 }
@@ -108,19 +111,12 @@ void AddSharedGroup() {
 // Tests that deleting a shared tab group from tab strip works.
 - (void)testTabStripSharedGroupDeleteSharedGroup {
   if (@available(iOS 17, *)) {
-    // TODO(crbug.com/404239595): Test fails on iPad iOS 17.5 simulator.
-    EARL_GREY_TEST_DISABLED(@"This test fails on iPad devices.");
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
-#if !TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"This test fails on iPad devices.");
-  }
-#endif
   AddSharedGroup();
 
   // Long press the group.
