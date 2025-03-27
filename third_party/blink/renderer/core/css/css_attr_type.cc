@@ -86,11 +86,12 @@ const CSSValue* CSSAttrType::Parse(StringView text,
     CSSParserTokenStream stream(text);
     CSSPrimitiveValue* number_value = css_parsing_utils::ConsumeNumber(
         stream, context, CSSPrimitiveValue::ValueRange::kAll);
-    if (!number_value) {
-      return nullptr;
+    if (CSSNumericLiteralValue* literal =
+            DynamicTo<CSSNumericLiteralValue>(number_value)) {
+      return MakeGarbageCollected<CSSNumericLiteralValue>(
+          literal->GetDoubleValue(), *dimension_unit_);
     }
-    return MakeGarbageCollected<CSSNumericLiteralValue>(
-        number_value->GetDoubleValue(), *dimension_unit_);
+    return nullptr;
   }
   if (IsSyntax()) {
     return syntax_->Parse(text, context, false);
