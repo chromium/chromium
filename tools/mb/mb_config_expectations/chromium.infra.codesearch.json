@@ -10,6 +10,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "android",
+      "use_reclient": true,
       "use_remoteexec": true
     }
   },
@@ -24,6 +25,7 @@
       "symbol_level": 1,
       "target_os": "chromeos",
       "use_cups": true,
+      "use_reclient": true,
       "use_remoteexec": true
     }
   },
@@ -48,6 +50,7 @@
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
       "use_platform_icu_alternatives": true,
+      "use_reclient": true,
       "use_remoteexec": true,
       "use_thin_lto": false
     }
@@ -62,6 +65,7 @@
       "is_component_build": false,
       "is_debug": false,
       "target_os": "fuchsia",
+      "use_reclient": true,
       "use_remoteexec": true
     }
   },
@@ -76,6 +80,7 @@
       "symbol_level": 1,
       "target_environment": "device",
       "target_os": "ios",
+      "use_reclient": true,
       "use_remoteexec": true
     }
   },
@@ -88,6 +93,7 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
+      "use_reclient": true,
       "use_remoteexec": true
     }
   },
@@ -101,6 +107,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "mac",
+      "use_reclient": true,
       "use_remoteexec": true
     }
   },
@@ -115,6 +122,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "android",
+      "use_reclient": true,
       "use_remoteexec": true
     }
   },
@@ -127,6 +135,7 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
+      "use_reclient": true,
       "use_remoteexec": true
     }
   }

@@ -287,7 +287,7 @@
     'tryserver.webrtc': {
       'android_chromium_compile': 'android_release_trybot_remoteexec',
       'linux_chromium_compile': 'release_trybot_remoteexec',
-      'linux_chromium_compile_dbg': 'debug_bot_remoteexec',
+      'linux_chromium_compile_dbg': 'debug_bot_remoteexec_reclient',
       'mac_chromium_compile': 'gpu_tests_release_trybot_remoteexec',
       'webrtc_linux_chromium': 'release_trybot_blink',
       'win_chromium_compile': 'gpu_tests_release_trybot_resource_allowlisting_remoteexec',
@@ -302,7 +302,7 @@
   # is not necessarily so.
   'configs': {
     'android_debug_bot_remoteexec': [
-      'android', 'debug_bot_remoteexec', 'use_siso',
+      'android', 'debug_bot_remoteexec', 'use_siso', 'reclient',
     ],
 
     'android_debug_bot_remoteexec_external_fastbuild': [
@@ -320,11 +320,11 @@
     ],
 
     'android_release_trybot_remoteexec': [
-      'android', 'release_trybot_remoteexec', 'strip_debug_info',
+      'android', 'release_trybot_remoteexec', 'strip_debug_info', 'reclient',
     ],
 
     'asan_lsan_release_trybot_remoteexec': [
-      'asan', 'lsan', 'release_trybot_minimal_symbols_remoteexec', 'use_siso'
+      'asan', 'lsan', 'release_trybot_minimal_symbols_remoteexec', 'use_siso', 'reclient',
     ],
 
     'cast_binary_size_remoteexec': [
@@ -390,15 +390,19 @@
     ],
 
     'debug_bot_blink': [
-      'debug_bot_blink', 'use_siso',
+      'debug_bot_blink', 'use_siso', 'reclient',
     ],
 
     'debug_bot_remoteexec': [
       'debug_bot_remoteexec',
     ],
 
+    'debug_bot_remoteexec_reclient': [
+      'debug_bot_remoteexec', 'reclient',
+    ],
+
     'gpu_tests_android_release_trybot_arm64_remoteexec': [
-      'gpu_tests', 'android', 'release_trybot_minimal_symbols_remoteexec', 'arm64', 'static_angle', 'use_siso',
+      'gpu_tests', 'android', 'release_trybot_minimal_symbols_remoteexec', 'arm64', 'static_angle', 'use_siso', 'reclient',
     ],
 
     'gpu_tests_chromeos_jacuzzi_release_trybot_dcheck_off_no_symbols_remoteexec_skylab': [
@@ -406,27 +410,27 @@
     ],
 
     'gpu_tests_debug_bot_x86_no_symbols_remoteexec': [
-      'gpu_tests', 'debug_bot_remoteexec', 'x86', 'no_symbols'
+      'gpu_tests', 'debug_bot_remoteexec', 'x86', 'no_symbols', 'reclient',
     ],
 
     'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_remoteexec': [
-      'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'x86', 'resource_allowlisting', 'use_siso',
+      'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'x86', 'resource_allowlisting', 'use_siso', 'reclient',
     ],
 
     'gpu_tests_release_trybot_minimal_symbols_remoteexec': [
-      'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'use_siso',
+      'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'use_siso', 'reclient',
     ],
 
     'gpu_tests_release_trybot_ptr_comp_remoteexec': [
-      'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'v8_pointer_compression', 'use_siso',
+      'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'v8_pointer_compression', 'use_siso', 'reclient',
     ],
 
     'gpu_tests_release_trybot_remoteexec': [
-      'gpu_tests', 'release_trybot_remoteexec',
+      'gpu_tests', 'release_trybot_remoteexec', 'reclient',
     ],
 
     'gpu_tests_release_trybot_resource_allowlisting_remoteexec': [
-      'gpu_tests', 'release_trybot_remoteexec', 'resource_allowlisting',
+      'gpu_tests', 'release_trybot_remoteexec', 'reclient', 'resource_allowlisting',
     ],
 
     'mac_clang_tot_official': [
@@ -635,39 +639,39 @@
     ],
 
     'release_bot_blink': [
-      'release_bot_blink', 'use_siso',
+      'release_bot_blink', 'use_siso', 'reclient',
     ],
 
     'release_bot_blink_v8_debug_remoteexec': [
-      'release_bot_blink', 'v8_enable_debugging_features', 'use_siso',
+      'release_bot_blink', 'v8_enable_debugging_features', 'use_siso', 'reclient'
     ],
 
     'release_bot_remoteexec': [
-      'release_bot_remoteexec',
+      'release_bot_remoteexec', 'reclient',
     ],
 
     'release_bot_remoteexec_siso': [
-      'release_bot_remoteexec', 'use_siso',
+      'release_bot_remoteexec', 'use_siso', 'reclient',
     ],
 
     'release_trybot_blink': [
-      'release_trybot_blink',
+      'release_trybot_blink', 'reclient',
     ],
 
     'release_trybot_blink_do_typecheck': [
-      'release_trybot_blink', 'devtools_do_typecheck', 'use_siso',
+      'release_trybot_blink', 'devtools_do_typecheck', 'use_siso', 'reclient',
     ],
 
     'release_trybot_blink_siso': [
-      'release_trybot_blink', 'use_siso',
+      'release_trybot_blink', 'use_siso', 'reclient',
     ],
 
     'release_trybot_remoteexec': [
-      'release_trybot_remoteexec',
+      'release_trybot_remoteexec', 'reclient',
     ],
 
     'release_trybot_remoteexec_siso': [
-      'release_trybot_remoteexec', 'use_siso',
+      'release_trybot_remoteexec', 'use_siso', 'reclient',
     ],
   },
 
@@ -778,26 +782,26 @@
     # Same as regulary codesearch without blink_enable_generated_code_formatting
     'codesearch_cronet_remoteexec': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['remoteexec', 'clang', 'shared', 'debug', 'minimal_symbols'],
+      'mixins': ['remoteexec', 'reclient', 'clang', 'shared', 'debug', 'minimal_symbols'],
     },
 
     # Same as regular codesearch except ios does not allow component builds
     'codesearch_ios_remoteexec': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['remoteexec', 'clang', 'debug', 'minimal_symbols',
+      'mixins': ['remoteexec', 'reclient', 'clang', 'debug', 'minimal_symbols',
                  'blink_enable_generated_code_formatting'],
     },
 
     'codesearch_release_remoteexec': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['release', 'static', 'remoteexec',
+      'mixins': ['release', 'static', 'remoteexec', 'reclient',
                  'blink_enable_generated_code_formatting'],
     },
 
     # Settings used by the codesearch builders to generate cross-references.
     'codesearch_remoteexec': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['remoteexec', 'clang', 'shared', 'debug', 'minimal_symbols',
+      'mixins': ['remoteexec', 'reclient', 'clang', 'shared', 'debug', 'minimal_symbols',
                  'blink_enable_generated_code_formatting'],
     },
 
@@ -1015,6 +1019,11 @@
       'gn_args': 'proprietary_codecs=true',
     },
 
+    # TODO: crbug.com/379584977 - Remove this mixin after dropping reclient.
+    'reclient': {
+      'gn_args': 'use_reclient=true',
+    },
+
     # Historically, a 'release' bot had DCHECKs turned off. DCHECKs are now
     # enabled by default, but explicitly turning them off here preserves
     # backwards compatibility. TODO: We should probably come up with better
@@ -1037,10 +1046,6 @@
       'mixins': ['release_bot_blink', 'minimal_symbols', 'dcheck_always_on'],
     },
 
-    'release_trybot_blink': {
-      'mixins': ['release_bot_blink', 'minimal_symbols', 'dcheck_always_on'],
-    },
-
     'release_trybot_dcheck_off_remoteexec': {
       'mixins': ['release_trybot_remoteexec', 'dcheck_off'],
     },
@@ -1054,12 +1059,13 @@
     },
 
     'remoteexec': {
-      'gn_args': 'use_remoteexec=true',
+      'gn_args': 'use_remoteexec=true use_reclient=false',
     },
 
     # windows cross. crbug.com/1213717 crbug.com/1407983
     'remoteexec_win_cross': {
-      'gn_args': 'use_remoteexec=true reclient_cfg_dir="//buildtools/reclient_cfgs/win-cross"',
+      'mixins': ['remoteexec'],
+      'gn_args': 'reclient_cfg_dir="//buildtools/reclient_cfgs/win-cross"',
     },
 
     'resource_allowlisting': {
