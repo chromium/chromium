@@ -1213,9 +1213,10 @@ CanvasResourceProvider::CreateSharedImageProvider(
     }
   }
 
+  // TODO(crbug.com/404887530) : Remove or Rename IsGMBAllowed() since
+  // CanvasResourceProvider no longer uses GMBs.
   const bool is_gpu_memory_buffer_image_allowed =
-      is_gpu_compositing_enabled && IsGMBAllowed(size, format, capabilities) &&
-      SharedGpuContext::GetGpuMemoryBufferManager();
+      is_gpu_compositing_enabled && IsGMBAllowed(size, format, capabilities);
 
   if (raster_mode == RasterMode::kCPU && !is_gpu_memory_buffer_image_allowed)
     return nullptr;
@@ -1310,10 +1311,11 @@ CanvasResourceProvider::CreatePassThroughProvider(
       context_provider_wrapper->ContextProvider()
           .SharedImageInterface()
           ->GetCapabilities();
-  // Either swap_chain or gpu memory buffer should be enabled for this be used
+  // Either swap_chain or gpu memory buffer should be enabled for this be used.
+  // TODO(crbug.com/404887530) : Remove or Rename IsGMBAllowed() since
+  // CanvasResourceProvider no longer uses GMBs.
   if (!shared_image_capabilities.shared_image_swap_chain &&
-      (!IsGMBAllowed(size, format, capabilities) ||
-       !Platform::Current()->GetGpuMemoryBufferManager())) {
+      !IsGMBAllowed(size, format, capabilities)) {
     return nullptr;
   }
 
