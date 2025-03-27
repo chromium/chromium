@@ -82,7 +82,6 @@ class ColorSpace;
 
 namespace gpu {
 class GpuChannelHost;
-class GpuMemoryBufferManager;
 }
 
 namespace media {
@@ -535,10 +534,6 @@ class BLINK_PLATFORM_EXPORT Platform {
       const blink::WebURL& document_url,
       base::OnceCallback<
           void(std::unique_ptr<blink::WebGraphicsContext3DProvider>)> callback);
-
-  virtual gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() {
-    return nullptr;
-  }
 
   // When true, animations will run on a compositor thread independently from
   // the blink main thread.

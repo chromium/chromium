@@ -872,14 +872,6 @@ void RendererBlinkPlatformImpl::OnGpuChannelEstablished(
 
 //------------------------------------------------------------------------------
 
-gpu::GpuMemoryBufferManager*
-RendererBlinkPlatformImpl::GetGpuMemoryBufferManager() {
-  RenderThreadImpl* thread = RenderThreadImpl::current();
-  return thread ? thread->GetGpuMemoryBufferManager() : nullptr;
-}
-
-//------------------------------------------------------------------------------
-
 blink::WebString RendererBlinkPlatformImpl::ConvertIDNToUnicode(
     const blink::WebString& host) {
   return WebString::FromUTF16(url_formatter::IDNToUnicode(host.Ascii()));
