@@ -3264,7 +3264,8 @@ AnchorQuery CSSMathExpressionAnchorQuery::ToQuery(
     if (const CSSPrimitiveValue* percentage =
             DynamicTo<CSSPrimitiveValue>(*value_)) {
       DCHECK(percentage->IsPercentage());
-      return AnchorQuery(type_, anchor_specifier, percentage->GetFloatValue(),
+      return AnchorQuery(type_, anchor_specifier,
+                         percentage->ComputePercentage(length_resolver),
                          CSSAnchorValue::kPercentage);
     }
     const CSSIdentifierValue& side = To<CSSIdentifierValue>(*value_);
