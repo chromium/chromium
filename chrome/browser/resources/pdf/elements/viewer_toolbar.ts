@@ -70,27 +70,11 @@ export class ViewerToolbarElement extends CrLitElement {
 
   static override get properties() {
     return {
-      // <if expr="enable_ink or enable_pdf_ink2">
-      annotationAvailable: {type: Boolean},
-      annotationMode: {
-        type: String,
-        reflect: true,
-      },
-      // </if>
-
-      // <if expr="enable_pdf_ink2">
-      canRedoAnnotation_: {type: Boolean},
-      canUndoAnnotation_: {type: Boolean},
-      // </if>
-
       docTitle: {type: String},
       docLength: {type: Number},
       embeddedViewer: {type: Boolean},
       hasEdits: {type: Boolean},
       hasEnteredAnnotationMode: {type: Boolean},
-      // <if expr="enable_pdf_ink2">
-      hasInk2Edits: {type: Boolean},
-      // </if>
       formFieldFocus: {type: String},
       loadProgress: {type: Number},
 
@@ -101,9 +85,6 @@ export class ViewerToolbarElement extends CrLitElement {
 
       pageNo: {type: Number},
       pdfCr23Enabled: {type: Boolean},
-      // <if expr="enable_pdf_ink2">
-      pdfInk2Enabled: {type: Boolean},
-      // </if>
 
       rotated: {type: Boolean},
       strings: {type: Object},
@@ -122,9 +103,25 @@ export class ViewerToolbarElement extends CrLitElement {
       printingEnabled_: {type: Boolean},
       viewportZoomPercent_: {type: Number},
 
+      // <if expr="enable_ink or enable_pdf_ink2">
+      annotationAvailable: {type: Boolean},
+      annotationMode: {
+        type: String,
+        reflect: true,
+      },
+      // </if>
+
       // <if expr="enable_ink">
       showAnnotationsModeDialog_: {type: Boolean},
       // </if> enable_ink
+
+      // <if expr="enable_pdf_ink2">
+      hasInk2Edits: {type: Boolean},
+      pdfInk2Enabled: {type: Boolean},
+      canRedoAnnotation_: {type: Boolean},
+      canUndoAnnotation_: {type: Boolean},
+      pdfTextAnnotationsEnabled_: {type: Boolean},
+      // </if>
     };
   }
 
@@ -133,9 +130,6 @@ export class ViewerToolbarElement extends CrLitElement {
   embeddedViewer: boolean = false;
   hasEdits: boolean = false;
   hasEnteredAnnotationMode: boolean = false;
-  // <if expr="enable_pdf_ink2">
-  hasInk2Edits: boolean = false;
-  // </if>
   formFieldFocus: FormFieldFocusType = FormFieldFocusType.NONE;
   loadProgress: number = 0;
   pageNo: number = 0;
@@ -155,18 +149,25 @@ export class ViewerToolbarElement extends CrLitElement {
   private viewportZoomPercent_: number = 0;
 
   // <if expr="enable_ink or enable_pdf_ink2">
+  // Reactive properties common to ink and ink2
   annotationAvailable: boolean = false;
   annotationMode: AnnotationMode = AnnotationMode.NONE;
   // </if>
 
   // <if expr="enable_ink">
+  // Ink reactive properties
   protected showAnnotationsModeDialog_: boolean = false;
   // </if>
 
   // <if expr="enable_pdf_ink2">
+  // Ink2 reactive properties
+  hasInk2Edits: boolean = false;
   pdfInk2Enabled: boolean = false;
   protected canRedoAnnotation_: boolean = false;
   protected canUndoAnnotation_: boolean = false;
+  protected pdfTextAnnotationsEnabled_: boolean = false;
+
+  // Ink2 class members
   private currentStroke: number = 0;
   private mostRecentStroke: number = 0;
   private pluginController_: PluginController = PluginController.getInstance();
@@ -217,6 +218,10 @@ export class ViewerToolbarElement extends CrLitElement {
     this.printingEnabled_ = loadTimeData.getBoolean('printingEnabled');
     this.pdfAnnotationsEnabled_ =
         loadTimeData.getBoolean('pdfAnnotationsEnabled');
+    // <if expr="enable_pdf_ink2">
+    this.pdfTextAnnotationsEnabled_ =
+        loadTimeData.getBoolean('pdfTextAnnotationsEnabled');
+    // </if>
   }
 
   protected onSidenavToggleClick_() {
@@ -450,6 +455,11 @@ export class ViewerToolbarElement extends CrLitElement {
   // </if>
 
   // <if expr="enable_ink or enable_pdf_ink2">
+  // Gets a CSS class of "active" if `mode` is the active annotation mode.
+  protected getActive_(mode: AnnotationMode): string {
+    return mode === this.annotationMode ? 'active' : '';
+  }
+
   protected onAnnotationClick_() {
     const newAnnotationMode = this.annotationMode === AnnotationMode.DRAW ?
         AnnotationMode.NONE :
@@ -490,6 +500,12 @@ export class ViewerToolbarElement extends CrLitElement {
   // </if> enable_ink or enable_pdf_ink2
 
   // <if expr="enable_pdf_ink2">
+  protected onTextAnnotationClick_() {
+    this.setAnnotationMode(
+        this.annotationMode === AnnotationMode.TEXT ? AnnotationMode.NONE :
+                                                      AnnotationMode.TEXT);
+  }
+
   /**
    * Handles whether the undo and redo buttons should be enabled or disabled
    * when a new ink stroke is added to the page.
