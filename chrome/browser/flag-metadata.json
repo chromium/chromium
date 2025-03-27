@@ -1806,6 +1806,11 @@
     "expiry_milestone": 126
   },
   {
+    "name": "css-masonry-layout",
+    "owners": ["ethavar@microsoft.com", "celestepan@microsoft.com"],
+    "expiry_milestone": 142
+  },
+  {
     "name": "css-safe-area-max-inset",
     "owners": ["skobes@chromium.org"],
     "expiry_milestone": 137

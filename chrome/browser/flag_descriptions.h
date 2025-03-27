@@ -213,6 +213,9 @@ extern const char kCrosSwitcherDescription[];
 extern const char kCssGamutMappingName[];
 extern const char kCssGamutMappingDescription[];
 
+extern const char kCssMasonryLayoutName[];
+extern const char kCssMasonryLayoutDescription[];
+
 extern const char kCssTextBoxTrimName[];
 extern const char kCssTextBoxTrimDescription[];
 

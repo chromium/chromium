@@ -1190,6 +1190,7 @@
     {
       name: "CSSMasonryLayout",
       status: "test",
+      public: true,
     },
     // https://drafts.csswg.org/css-values-5/#progress
     // media-progress()
