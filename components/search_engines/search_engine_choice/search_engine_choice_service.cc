@@ -119,17 +119,6 @@ void MarkSearchEngineChoiceCompleted(PrefService& prefs) {
                   version_info::GetVersionNumber());
 }
 
-std::optional<base::Time> GetChoiceScreenCompletionTimestamp(
-    PrefService& prefs) {
-  if (!prefs.HasPrefPath(
-          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
-    return std::nullopt;
-  }
-
-  return base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(prefs.GetInt64(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)));
-}
-
 // Returns true if the version is valid and can be compared to the current
 // Chrome version.
 bool IsValidVersionFormat(const base::Version& version) {
