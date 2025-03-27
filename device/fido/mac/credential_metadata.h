@@ -18,7 +18,6 @@
 #include "base/feature_list.h"
 #include "crypto/aead.h"
 #include "crypto/hmac.h"
-#include "crypto/symmetric_key.h"
 #include "device/fido/features.h"
 
 namespace device {

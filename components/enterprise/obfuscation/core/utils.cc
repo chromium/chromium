@@ -17,7 +17,6 @@
 #include "crypto/aead.h"
 #include "crypto/hkdf.h"
 #include "crypto/random.h"
-#include "crypto/symmetric_key.h"
 
 namespace enterprise_obfuscation {
 

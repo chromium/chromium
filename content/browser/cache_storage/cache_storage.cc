@@ -48,7 +48,6 @@
 #include "content/browser/cache_storage/cache_storage_scheduler.h"
 #include "content/browser/cache_storage/cache_storage_trace_utils.h"
 #include "content/common/background_fetch/background_fetch_types.h"
-#include "crypto/symmetric_key.h"
 #include "net/base/directory_lister.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/blob/blob_storage_context.h"
@@ -58,7 +57,6 @@
 
 using blink::mojom::CacheStorageError;
 using blink::mojom::StorageType;
-using crypto::SymmetricKey;
 
 namespace content {
 
