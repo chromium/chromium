@@ -5,5 +5,5 @@ Content-Security-Policy: trusted-types other-policy-name
 Content-Security-Policy-Report-Only: trusted-types other-policy-name
 Content-Security-Policy: trusted-types *
 Content-Security-Policy-Report-Only: trusted-types *
-Content-Security-Policy: trusted-types none
-Content-Security-Policy-Report-Only: trusted-types none
+Content-Security-Policy: trusted-types 'none'
+Content-Security-Policy-Report-Only: trusted-types 'none'

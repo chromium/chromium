@@ -5605,6 +5605,13 @@
       ]
      ],
      "crashtests": {
+      "chrome-405422528-crash.html": [
+       "fcf7407b5f754aa236ddd053f67fb3a15fc6e1d9",
+       [
+        null,
+        {}
+       ]
+      ],
       "viewport-unit-inline-style-crash.html": [
        "4c38e18781bfdbcddce02c1cc5cd3336a7529e85",
        [
@@ -137373,6 +137380,19 @@
        ]
       ]
      },
+     "grid-flex-spanning-items-001.html": [
+      "f9358b65db96d2e7c184ccabd79c5a95765de90c",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/grid-flex-spanning-items-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "grid-in-table-cell-with-img.html": [
       "492a5866b71cf503ea41c9cb4d862e96c4ee4d18",
       [
@@ -157687,6 +157707,19 @@
          {}
         ]
        ],
+       "clip-path-animation-geometry-box-delay.html": [
+        "a6040d445a90c35f811ba31a70622b1b88351af1",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-animation-non-shape-delay-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "clip-path-animation-incompatible-shapes1.html": [
         "88c6862aa9ede58f0d2d0b384f2454ed6130c86f",
         [
@@ -157917,6 +157950,19 @@
          [
           [
            "/css/css-masking/clip-path/animations/clip-path-animation-polygon-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "clip-path-animation-reference-delay.html": [
+        "4afecbbf9870560718be1ec454d40261326928b5",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-animation-non-shape-delay-ref.html",
            "=="
           ]
          ],
@@ -173622,6 +173668,19 @@
        [
         [
          "/css/css-overflow/paint-containment-svg-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "root-scroll-marker.html": [
+      "48f3a81338a8f0c0445ab1365349d047493e92fc",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/root-scroll-marker-ref.html",
          "=="
         ]
        ],
@@ -252411,6 +252470,19 @@
          ],
          {}
         ]
+       ],
+       "at-rule-types-shared-elements.html": [
+        "50dc5ba1f43b95927f1c2a7559d68ce2bf2b10d7",
+        [
+         null,
+         [
+          [
+           "/css/css-view-transitions/navigation/with-types/at-rule-types-shared-elements-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
        ]
       }
      },
@@ -292427,7 +292499,7 @@
        ]
       ],
       "hidden-until-found-001.html": [
-       "3c87b985dcc885208017f38229fdf853ed748a67",
+       "0fa46f523cd8161879093a78af3a84632e58c91f",
        [
         null,
         [
@@ -292440,7 +292512,7 @@
        ]
       ],
       "hidden-until-found-004.html": [
-       "3ca6feb7a3dd41ab5067b952372962a6446cfda8",
+       "2c0c643c307479b40e3ff4a18a8e97b05117c9fc",
        [
         null,
         [
@@ -292453,7 +292525,7 @@
        ]
       ],
       "hidden-until-found-005.html": [
-       "fabf636ec94850c7eea86b4e4bafafb1f795fd66",
+       "2c4df955aee922c7f53db4b8d432cbe751a7a14a",
        [
         null,
         [
@@ -292466,7 +292538,7 @@
        ]
       ],
       "hidden-until-found-007.html": [
-       "7b11a92cc93940d99769804951ad3fb6c3929094",
+       "64c39c4153a58f2049f50c265dae7346e6b313ee",
        [
         null,
         [
@@ -305830,6 +305902,34 @@
     ]
    },
    "scroll-animations": {
+    "animation-trigger": {
+     "animation-trigger-fill-mode-both.tentative.html": [
+      "237bbb996702d35e3992ce51afb42298398443c2",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/animation-trigger/animation-trigger-fill-mode-both-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "animation-trigger-fill-mode-none.tentative.html": [
+      "81dae8a2f724845c35c50d1413af6796e62797a3",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/animation-trigger/animation-trigger-fill-mode-none-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ]
+    },
     "css": {
      "animation-fill-outside-range-test.html": [
       "c63a5f07662dd04b9b97209b27ec575866680216",
@@ -347012,6 +347112,10 @@
        ]
       }
      },
+     "grid-flex-spanning-items-001-ref.html": [
+      "ec65437e8f385b016dff2f28ac3f82d3500ff91f",
+      []
+     ],
      "grid-fragmentation-between-rows-001-print-ref.tentative.html": [
       "78464712c5cb698fd26a7a12b6c522d4bda946d6",
       []
@@ -349140,7 +349244,7 @@
      ],
      "parsing": {
       "WEB_FEATURES.yml": [
-       "023eb5f6e051bdb858b88e1d70bdbb1f07efe816",
+       "d60ed3efd4ce9e1c4703439b0976b3e625e3bfab",
        []
       ],
       "gradient-interpolation-method-computed-expected.txt": [
@@ -350958,6 +351062,10 @@
        ],
        "clip-path-animation-non-keyframe-timing-function-ref.html": [
         "d351f80a26fa93866afaed00f872a7800078d6c7",
+        []
+       ],
+       "clip-path-animation-non-shape-delay-ref.html": [
+        "1bd7107cbbd2083b779bb0e82a8341d4576afbbd",
         []
        ],
        "clip-path-animation-none-ref.html": [
@@ -353710,6 +353818,10 @@
        []
       ]
      },
+     "root-scroll-marker-ref.html": [
+      "24d3fab4ef1e109a62006799a55b344fd0178759",
+      []
+     ],
      "rounded-overflow-clip-visible-ref.html": [
       "3a25b794d8d4136c2a7c8c94e5d9eb80daceedc7",
       []
@@ -355857,7 +355969,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "ac89c2b73139a5c5c475fdfa06794088cd406236",
+      "c197d348edf390027106ab541eedba8d83a8ed56",
       []
      ],
      "active-selection-051-ref.html": [
@@ -369630,6 +369742,10 @@
         "bf5a73c73ee014ecf5777f77b9282d8f947f58af",
         []
        ],
+       "at-rule-types-shared-elements.html": [
+        "c9cff7f473410e36bad847c37eb3dbdd1369f9ae",
+        []
+       ],
        "auto-name-from-id.html": [
         "71ea52a273e3fca98440cdefc50c77c722663a21",
         []
@@ -369718,7 +369834,13 @@
       "transition-to-prerender-ref.html": [
        "7df899fdca151dd273063323733c0c20fedb3bb3",
        []
-      ]
+      ],
+      "with-types": {
+       "at-rule-types-shared-elements-ref.html": [
+        "2fc574c0f793c57645d9c2e058b1f525b512d401",
+        []
+       ]
+      }
      },
      "nested": {
       "nested-opacity-ref.html": [
@@ -374429,7 +374551,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "cc952ac20098092f75ff503d4bdded9c9ee2ed99",
+      "b090111be0ad9c6be864fa0710948f9dc7a6fb7b",
       []
      ],
      "dynamic-range-expected.txt": [
@@ -396492,11 +396614,11 @@
        []
       ],
       "hidden-until-found-005-ref.html": [
-       "0ca77849a4696c741333c59ca6ab3d5e17c055ae",
+       "e128e1e71395b138e96ac078b8f4616ebf8c6531",
        []
       ],
       "hidden-until-found-006-ref.html": [
-       "e14ba82c278e2c1fc4ecb864871bd6a961c28622",
+       "d8b9761694c396cdab6dfd2b382989c1c3604ab0",
        []
       ],
       "resources": {
@@ -396513,7 +396635,7 @@
         []
        ],
        "container-ref.html": [
-        "e2df59014b06c6f44a506b6e4fd7d56537ae5fa4",
+        "53986abdd1fce970445f7310ab4dfafa59b068d9",
         []
        ],
        "hidden-until-found-text-fragment.html": [
@@ -396521,7 +396643,7 @@
         []
        ],
        "spacer-and-container-ref.html": [
-        "816a6c9a9d800688217a581e7ec0c2164c1f9ec7",
+        "474da70708383ed52e99549b136adfd4a829d0c6",
         []
        ]
       }
@@ -416652,6 +416774,14 @@
      []
     ],
     "animation-trigger": {
+     "animation-trigger-fill-mode-both-ref.html": [
+      "62b74fb778f1acb5e481ad8135b9b34a06a69d24",
+      []
+     ],
+     "animation-trigger-fill-mode-none-ref.html": [
+      "229a31dec909a69aad6e7d86d4d009948db2df74",
+      []
+     ],
      "support": {
       "support.js": [
        "f5aa18e82f19f7fa56b2853e2c46b21342b7d970",
@@ -422024,6 +422154,10 @@
      []
     ],
     "readable-byte-streams": {
+     "WEB_FEATURES.yml": [
+      "a35508fc0dc65d5fcbf785289c5bd05674de7b32",
+      []
+     ],
      "patched-global.any-expected.txt": [
       "2e9003101aab1f0e532cc10f52d40f1885b1679f",
       []
@@ -422188,6 +422322,10 @@
      ]
     },
     "transferable": {
+     "WEB_FEATURES.yml": [
+      "4ecacf5edbc7daca0cc2f94e71c3b8daf8ee52d4",
+      []
+     ],
      "resources": {
       "create-wasm-module.js": [
        "37064af95c55c00e27d5f73b8fc3b0603ac63077",
@@ -424036,7 +424174,7 @@
      []
     ],
     "modify-attributes-in-callback-expected.txt": [
-     "874eb73e808f505d96dfa8c0339664203dc34964",
+     "9a1eb057f50d3a7150b6d949d55a49625c8da8ee",
      []
     ],
     "no-require-trusted-types-for-report-only.html.headers": [
@@ -424057,10 +424195,6 @@
       []
      ]
     },
-    "set-attributes-mutations-in-callback.tentative-expected.txt": [
-     "a91b1a080f69962b888486d055255327776098ef",
-     []
-    ],
     "set-attributes-require-trusted-types-default-policy-expected.txt": [
      "05039edea5d5b9c9a15d0449df3493984be7d263",
      []
@@ -424078,7 +424212,11 @@
      []
     ],
     "should-trusted-type-policy-creation-be-blocked-by-csp-002-expected.txt": [
-     "0d1fa5fa7bd1f597228c51704f98fd1819737642",
+     "894439787e788546b8e446810fee8491a9635da8",
+     []
+    ],
+    "should-trusted-type-policy-creation-be-blocked-by-csp-005.html.headers": [
+     "7e28a4dbc8e80bb47e340df23428a51fabd09aaa",
      []
     ],
     "support": {
@@ -424222,12 +424360,72 @@
       "c17d57d19ae4ef9d3e584d10fc39065823cb2f73",
       []
      ],
-     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker.js": [
-      "c5c512d98a2748bfbe12880b7003a6845806c6a2",
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker-allow-duplicates-tt-policy-name.js": [
+      "59d9711f1225a9ebbe91afe8f0cc12888cf183bc",
       []
      ],
-     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker.js.headers": [
-      "c27bd116d8d25f28a411097e6d53b1dc30f3bdc5",
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker-allow-duplicates-tt-policy-name.js.headers": [
+      "9fa44d4200b670da44b6b98699aeef3a5f5392de",
+      []
+     ],
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker-location.js": [
+      "fc4773f923809e96bf44b8af4e34c92ee7bd0ceb",
+      []
+     ],
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker-location.js.headers": [
+      "7e28a4dbc8e80bb47e340df23428a51fabd09aaa",
+      []
+     ],
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker-multiple-violations.js": [
+      "74d4429c3949863c209492d093d26e103f165153",
+      []
+     ],
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker-multiple-violations.js.headers": [
+      "5edaafc1ff6769a5e1c6a5d7d20e1d79aa44ded9",
+      []
+     ],
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker-none.js": [
+      "8d0ba3da646a5c8e3cfc5031094b240d865125e4",
+      []
+     ],
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker-none.js.headers": [
+      "7e28a4dbc8e80bb47e340df23428a51fabd09aaa",
+      []
+     ],
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker-tt-policy-name-allow-duplicates.js": [
+      "ed3524005eafdc3d8f9fdfcbc4f0b91008eeabba",
+      []
+     ],
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker-tt-policy-name-allow-duplicates.js.headers": [
+      "673b327086267519e887ea7753da73901d757d13",
+      []
+     ],
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker-tt-policy-name-none.js": [
+      "d34bd04eaeb4c9256e67391fe9ac22b6899f6caf",
+      []
+     ],
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker-tt-policy-name-none.js.headers": [
+      "55cf94e10e624d47acfd0283e8fa35529a1e9185",
+      []
+     ],
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker-tt-policy-name.js": [
+      "985ee43e833b7e7ac00072e3eb92f51534b8cec6",
+      []
+     ],
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker-tt-policy-name.js.headers": [
+      "96b79d71c5d506851a6f708b7b67b98e1a9a2813",
+      []
+     ],
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker-wildcard.js": [
+      "004530def32d301d56235c0b45b420d10656feb2",
+      []
+     ],
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker-wildcard.js.headers": [
+      "b93b85d4a352ddfb355a4e708e3b4f50111326f9",
+      []
+     ],
+     "should-trusted-type-policy-creation-be-blocked-by-csp-location.js": [
+      "11390a6318497968e40fd9393fa6a6bf9266a163",
       []
      ],
      "trusted-types-reporting-check-report-create-policy-worker.js": [
@@ -430483,6 +430681,10 @@
     ],
     "RTCRtpScriptTransform-sender-worker-single-frame.js": [
      "06fa607635a68aa0e866cbb83b47dc0b0ddf6f86",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "0df5a2c40ef70132caa3ee324837f3d5fd4496f9",
      []
     ],
     "helper.js": [
@@ -487831,6 +488033,13 @@
        {}
       ]
      ],
+     "anchor-position-flip-sibling-index.html": [
+      "5fa17dc057a62d7b07c83c8203c30cab8bb668ff",
+      [
+       null,
+       {}
+      ]
+     ],
      "anchor-position-grid-001.html": [
       "92fb4d275b8988641ed0736969e918703e4d649d",
       [
@@ -487938,6 +488147,13 @@
      ],
      "anchor-position-principal-box.html": [
       "9bb1fd4c4da814e3d621e5b65e0d3af3324333d7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-position-sibling-index.html": [
+      "ade6b4a0e01469119d451082ff31f4743e2cb245",
       [
        null,
        {}
@@ -494706,7 +494922,7 @@
        ]
       ],
       "content-visibility-auto-text-fragment.html": [
-       "d5184d72a4ebc9192c1d15a4334fe603048e91b8",
+       "923c5af04f438a690a1048b6729fe51abc7a2932",
        [
         null,
         {
@@ -506381,6 +506597,15 @@
      ],
      "resizer-transform.tentative.html": [
       "7b1af7f8f9029b2e0a98a2f1a45390d28495e24a",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "root-scroll-marker-activation-and-scroll-tracking.html": [
+      "524e5399022a106133491edd9b926550439c7961",
       [
        null,
        {
@@ -518720,7 +518945,7 @@
        ]
       ],
       "transition-timing-function-computed.html": [
-       "cb110549d0b072311d6f00e23bb5452170b0f43c",
+       "3bf1e818e7769c8f4f048f53fc1f4a2220d78441",
        [
         null,
         {}
@@ -518734,7 +518959,7 @@
        ]
       ],
       "transition-timing-function-valid.html": [
-       "658ef76bbe84d47864570be49726d36e75b1b555",
+       "5c7214e4041dcec617dc83ebca2c99c6b9bcd302",
        [
         null,
         {}
@@ -631347,14 +631572,14 @@
      },
      "the-hidden-attribute": {
       "beforematch-element-fragment-navigation.html": [
-       "812a55f3187f60bda3ae702142de47168b1d8abd",
+       "9be5f9baa6d0453a50e4e287e007685ffa9a42bf",
        [
         null,
         {}
        ]
       ],
       "beforematch-scroll-to-text-fragment.html": [
-       "dddab4c6ba8621fb27e63835311930f2b53f41df",
+       "618493addeac829e672c4da5844ae03521704562",
        [
         null,
         {
@@ -631377,7 +631602,7 @@
        ]
       ],
       "hidden-until-found-002.html": [
-       "a454e3a0091d1f5913b7656114bc1e7650c14949",
+       "e947274bedb89ad4cb162082f5e42c10e5365dad",
        [
         null,
         {
@@ -631393,7 +631618,7 @@
        ]
       ],
       "hidden-until-found-text-fragment.html": [
-       "05220f7ce11b5c4d59d20904d2c6303c2107f25c",
+       "aa8a989509f5f68c7bf589d4ee2e399f1a7a0f6e",
        [
         null,
         {
@@ -634646,7 +634871,7 @@
      },
      "the-details-element": {
       "auto-expand-details-text-fragment.html": [
-       "321d82c02d0e1b04d2dd3cafb1d47a6776f36db7",
+       "7cc3cc22964a07a3448464bcc9ffaae8086397c8",
        [
         null,
         {
@@ -726518,7 +726743,7 @@
      ]
     ],
     "should-trusted-type-policy-creation-be-blocked-by-csp-001.html": [
-     "6e51bd5ef198a7419539e63b835b4f07becfcea3",
+     "1816a34746fe0f101594f027b68f49646cc4cf2c",
      [
       null,
       {
@@ -726527,7 +726752,7 @@
      ]
     ],
     "should-trusted-type-policy-creation-be-blocked-by-csp-002.html": [
-     "ef1a4bde3782b5dfb5a3e1471f6b9e38217d6f1f",
+     "fc1906a7c99fdb82e9c2e6a7870471cf6ad3f6f0",
      [
       null,
       {
@@ -726536,7 +726761,7 @@
      ]
     ],
     "should-trusted-type-policy-creation-be-blocked-by-csp-003.html": [
-     "55f1479e3db0e88684a171cfee5a948e5cae8fe9",
+     "052fbb8cbfb94023cadb003e858647de0d2b139e",
      [
       null,
       {
@@ -726545,7 +726770,16 @@
      ]
     ],
     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker.html": [
-     "7e928d2d7192e694d632ce5907c430a673653bf8",
+     "5726db94bf374996de8049af62036b69150b7608",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "should-trusted-type-policy-creation-be-blocked-by-csp-005.html": [
+     "8d10bcb30132755e9301913b0eebeee48c754f01",
      [
       null,
       {
