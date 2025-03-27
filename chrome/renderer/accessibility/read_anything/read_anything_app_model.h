@@ -206,6 +206,9 @@ class ReadAnythingAppModel {
     requires_tree_lang_ = requires_tree_lang;
   }
 
+  bool will_hide() const { return will_hide_; }
+  void set_will_hide(bool will_hide) { will_hide_ = will_hide; }
+
   const std::vector<ui::AXNodeID>& content_node_ids() const {
     return content_node_ids_;
   }
@@ -455,6 +458,8 @@ class ReadAnythingAppModel {
   // asynchronously from the language determination so we need to keep track of
   // that here.
   bool requires_tree_lang_ = false;
+
+  bool will_hide_ = false;
 
   // List of observers of model state changes.
   base::ObserverList<ModelObserver, /*check_empty=*/true> observers_;

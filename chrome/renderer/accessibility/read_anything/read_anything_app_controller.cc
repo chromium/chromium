@@ -1798,6 +1798,22 @@ void ReadAnythingAppController::OnTtsEngineInstalled() {
 }
 #endif
 
+void ReadAnythingAppController::OnReadingModeHidden() {
+  model_.set_will_hide(true);
+  if (read_aloud_model_.speech_playing()) {
+    read_aloud_model_.LogSpeechStop(
+        ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode);
+  }
+}
+
+void ReadAnythingAppController::OnTabWillDetach() {
+  model_.set_will_hide(true);
+  if (read_aloud_model_.speech_playing()) {
+    read_aloud_model_.LogSpeechStop(
+        ReadAloudAppModel::ReadAloudStopSource::kCloseTabOrWindow);
+  }
+}
+
 void ReadAnythingAppController::SetDefaultLanguageCode(
     const std::string& code) {
   std::string default_lang = std::string(language::ExtractBaseLanguage(code));
@@ -1907,6 +1923,12 @@ void ReadAnythingAppController::IncrementMetricCount(
 
 void ReadAnythingAppController::LogSpeechStop(int source) {
   if (!IsReadAloudEnabled()) {
+    return;
+  }
+
+  // Don't log speech stopping if the reading mode panel is going to hide. That
+  // case is logged separately.
+  if (model_.will_hide()) {
     return;
   }
 

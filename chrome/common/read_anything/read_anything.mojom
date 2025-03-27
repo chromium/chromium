@@ -287,6 +287,15 @@ interface UntrustedPage {
   // Notifies the WebUI that the ScreenAI service is ready on this device.
   ScreenAIServiceReady();
 
+  // Notifies the WebUI that the current reading mode panel is hidden. This
+  // might be due to a different side panel opening, the side panel closing
+  // while reading mode is open, or a new tab opening. If reading mode is closed
+  // because of the tab closing, OnTabWillDetach is called instead.
+  OnReadingModeHidden();
+
+  // Notifies the WebUI that current tab will detach so it can clean up.
+  OnTabWillDetach();
+
   // Notifies the WebUI that an image has been downloaded for a given node.
   OnImageDataDownloaded(ax.mojom.AXTreeID tree_id,
     int32 node_id,

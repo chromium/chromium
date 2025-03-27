@@ -368,6 +368,47 @@ TEST_F(ReadAnythingAppControllerTest, OnDeviceLocked_OnlyLogsIfSpeechPlaying) {
 }
 #endif
 
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeHidden_OnlyLogsIfSpeechPlaying) {
+  read_aloud_model().set_speech_playing(false);
+  base::HistogramTester histogram_tester;
+
+  controller().OnReadingModeHidden();
+  EXPECT_EQ(0, histogram_tester.GetTotalSum(
+                   ReadAloudAppModel::kSpeechStopSourceHistogramName));
+
+  EnableReadAloud();
+  controller().OnReadingModeHidden();
+  EXPECT_EQ(0, histogram_tester.GetTotalSum(
+                   ReadAloudAppModel::kSpeechStopSourceHistogramName));
+
+  read_aloud_model().set_speech_playing(true);
+  controller().OnReadingModeHidden();
+  histogram_tester.ExpectUniqueSample(
+      ReadAloudAppModel::kSpeechStopSourceHistogramName,
+      ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode, 1);
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnTabWillDetach_OnlyLogsIfSpeechPlaying) {
+  read_aloud_model().set_speech_playing(false);
+  base::HistogramTester histogram_tester;
+
+  controller().OnTabWillDetach();
+  EXPECT_EQ(0, histogram_tester.GetTotalSum(
+                   ReadAloudAppModel::kSpeechStopSourceHistogramName));
+
+  EnableReadAloud();
+  controller().OnTabWillDetach();
+  EXPECT_EQ(0, histogram_tester.GetTotalSum(
+                   ReadAloudAppModel::kSpeechStopSourceHistogramName));
+
+  read_aloud_model().set_speech_playing(true);
+  controller().OnTabWillDetach();
+  histogram_tester.ExpectUniqueSample(
+      ReadAloudAppModel::kSpeechStopSourceHistogramName,
+      ReadAloudAppModel::ReadAloudStopSource::kCloseTabOrWindow, 1);
+}
+
 TEST_F(ReadAnythingAppControllerTest, OnUrlInformationSet_LogsReload) {
   EnableReadAloud();
   read_aloud_model().set_speech_playing(true);

@@ -144,6 +144,9 @@ class ReadAnythingUntrustedPageHandler :
       const translate::LanguageDetectionDetails& details) override;
   void OnTranslateDriverDestroyed(translate::TranslateDriver* driver) override;
 
+  // ReadAnythingSidePanelController::Observer:
+  void OnTabWillDetach() override;
+
   // ash::SessionObserver
 #if BUILDFLAG(IS_CHROMEOS)
   void OnLockStateChanged(bool locked) override;
@@ -198,15 +201,13 @@ class ReadAnythingUntrustedPageHandler :
 
   // ReadAnythingSidePanelController::Observer:
   void Activate(bool active) override;
+  void OnSidePanelControllerDestroyed() override;
 
   void SetDefaultLanguageCode(const std::string& code);
 
   // Sends the language code of the new page, or the default if a language can't
   // be determined.
   void SetLanguageCode(const std::string& code);
-
-  // ReadAnythingSidePanelController::Observer:
-  void OnSidePanelControllerDestroyed() override;
 
   void SetUpPdfObserver();
 
@@ -242,6 +243,8 @@ class ReadAnythingUntrustedPageHandler :
   // Whether the Read Anything feature is currently active. The feature is
   // active when it is currently shown in the Side Panel.
   bool active_ = true;
+  // Whether the tab is going to detach soon.
+  bool tab_will_detach_ = false;
 
   // The current language being used in the app.
   std::string current_language_code_ = "en-US";

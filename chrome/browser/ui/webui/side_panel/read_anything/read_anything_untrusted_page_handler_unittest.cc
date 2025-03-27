@@ -13,6 +13,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/read_anything/read_anything.mojom-forward.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
@@ -86,6 +87,8 @@ class MockPage : public read_anything::mojom::UntrustedPage {
   MOCK_METHOD(void, SetLanguageCode, (const std::string&));
   MOCK_METHOD(void, SetDefaultLanguageCode, (const std::string&));
   MOCK_METHOD(void, ScreenAIServiceReady, ());
+  MOCK_METHOD(void, OnReadingModeHidden, ());
+  MOCK_METHOD(void, OnTabWillDetach, ());
   MOCK_METHOD(void,
               OnGetVoicePackInfo,
               (read_anything::mojom::VoicePackInfoPtr voice_pack_info));
@@ -202,6 +205,13 @@ class ReadAnythingUntrustedPageHandlerTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
+  ReadAnythingSidePanelController* side_panel_controller() {
+    return browser()
+        ->GetActiveTabInterface()
+        ->GetTabFeatures()
+        ->read_anything_side_panel_controller();
+  }
+
   ChromeTranslateClient* GetChromeTranslateClient() {
     return ChromeTranslateClient::FromWebContents(
         browser()
@@ -259,6 +269,22 @@ class ReadAnythingUntrustedPageHandlerTest : public BrowserWithTestWindowTest {
   }
 
   void OnSpeechRateChange(double rate) { handler_->OnSpeechRateChange(rate); }
+
+  void OnTabWillDetach() { handler_->OnTabWillDetach(); }
+
+  void Activate(bool active) {
+    SidePanelEntry* entry = browser()
+                                ->GetActiveTabInterface()
+                                ->GetTabFeatures()
+                                ->side_panel_registry()
+                                ->GetEntryForKey(SidePanelEntry::Key(
+                                    SidePanelEntry::Id::kReadAnything));
+    if (active) {
+      side_panel_controller()->OnEntryShown(entry);
+    } else {
+      side_panel_controller()->OnEntryHidden(entry);
+    }
+  }
 
   void OnImageDataRequested(const ui::AXTreeID& target_tree_id,
                             ui::AXNodeID target_node_id) {
@@ -943,5 +969,32 @@ TEST_F(ReadAnythingUntrustedPageHandlerTest, OnUpdateLanguageStatus_Unknown) {
           })));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest, OnTabWillDetach) {
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  OnTabWillDetach();
+  EXPECT_CALL(page_, OnTabWillDetach).Times(1);
+  EXPECT_CALL(page_, OnReadingModeHidden).Times(0);
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest,
+       Activate_OnDeactivateTab_NotifiesPage) {
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  Activate(false);
+  EXPECT_CALL(page_, OnReadingModeHidden).Times(1);
+}
+
+TEST_F(ReadAnythingUntrustedPageHandlerTest,
+       Activate_OnActivateTab_DoesNotNotifyPage) {
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  Activate(true);
+  EXPECT_CALL(page_, OnReadingModeHidden).Times(0);
+}
 
 }  // namespace

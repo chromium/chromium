@@ -134,6 +134,8 @@ class ReadAnythingAppController
   void ScreenAIServiceReady() override;
   void OnGetVoicePackInfo(
       read_anything::mojom::VoicePackInfoPtr voice_pack_info) override;
+  void OnReadingModeHidden() override;
+  void OnTabWillDetach() override;
 #if BUILDFLAG(IS_CHROMEOS)
   void OnDeviceLocked() override;
 #else

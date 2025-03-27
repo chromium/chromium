@@ -185,6 +185,8 @@ void ReadAnythingSidePanelController::TabWillDetach(
     return;
   }
 
+  observers_.Notify(
+      &ReadAnythingSidePanelController::Observer::OnTabWillDetach);
   auto* coordinator =
       tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
   // TODO(https://crbug.com/360163254): BrowserWithTestWindowTest currently does
