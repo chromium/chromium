@@ -277,5 +277,38 @@ TEST_F(StyleVariablesTest, DifferentValueSize) {
   EXPECT_NE(vars1, vars2);
 }
 
+TEST_F(StyleVariablesTest, CollisionComparison) {
+  // Generate strings until we find two that go into the same slot
+  // (this will always happen in at most n+1 tries). (This test
+  // presupposes 64-bit, and will generally be a no-op on 32-bit.)
+  AtomicString s1, s2;
+  std::array<AtomicString, 16> strings;
+  for (unsigned i = 0; i < 17; ++i) {
+    char buf[16];
+    snprintf(buf, sizeof(buf), "--s-%u", i);
+    AtomicString s(buf);
+    unsigned slot = (reinterpret_cast<uintptr_t>(s.Impl()) >> 4) & 15;
+    if (strings[slot].IsNull()) {
+      strings[slot] = s;
+    } else {
+      s1 = strings[slot];
+      s2 = s;
+      break;
+    }
+  }
+  ASSERT_FALSE(s1.IsNull());
+  ASSERT_FALSE(s2.IsNull());
+
+  // Due to the collision, vars1 will have a child. vars2 will not.
+  StyleVariables vars1;
+  vars1.SetData(s1, nullptr);
+  vars1.SetData(s2, nullptr);
+
+  StyleVariables vars2;
+
+  // This will crash if we don't deal with nullptr comparisons properly.
+  EXPECT_NE(vars1, vars2);
+}
+
 }  // namespace
 }  // namespace blink

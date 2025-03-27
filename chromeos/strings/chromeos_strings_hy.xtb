@@ -704,6 +704,16 @@
 <translation id="4249717042534905822">կիրակի օրը</translation>
 <translation id="4250229828105606438">Սքրինշոթ</translation>
 <translation id="4251839292699800785">Ոճային գրասենյակ</translation>
+<translation id="4252261480746798874">Սեղմեք «Ստեղծել ձեր պաստառները»՝ ձեր սեփական հարցումը գրելու համար, կամ «Ընտրել թեմա», որպեսզի ընդգծված բառերն օգտագործեք ԱԲ պաստառների անհատականացման համար։
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Ընտրեք «Ոգեշնչիր ինձ»՝ ԱԲ պատկերների ավելի յուրօրինակ և բազմազան տարբերակներ ստանալու համար։
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Երբ դուք ստեղծում եք ձեր սեփական պաստառը, հարցումն ուղարկվում է Google-ի սերվերներին՝ պատկերներ գեներացնելու և պրոդուկտը բարելավելու համար՝ համաձայն <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ի օգտագործման պայմանների և գաղտնիության քաղաքականության<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />։ Մի՛ ներառեք անձնական, զգայուն կամ կոնֆիդենցիալ տեղեկություններ։
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Գեներատիվ արհեստական բանականությունը կարող է սխալներ թույլ տալ, այդ թվում՝ մարդկանց մասին, ուստի ստուգեք դրա տրամադրած պատասխանները։ <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Իմանալ ավելին<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP-ի հապաղում</translation>
 <translation id="4266143281602681663">կծիկ</translation>
 <translation id="4269815121975886860">Մեկնարկի նախընտրանքներ</translation>

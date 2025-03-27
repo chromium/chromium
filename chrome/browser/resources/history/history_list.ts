@@ -152,6 +152,8 @@ export class HistoryListElement extends HistoryListElementBase {
   searchedTerm: string = '';
   selectedItems: Set<number> = new Set();
   pendingDelete: boolean = false;
+  private lastFocused_: HTMLElement|null;
+  private listBlurred_: boolean;
   lastSelectedIndex: number;
   queryState: QueryState;
   scrollTarget: HTMLElement = document.documentElement;

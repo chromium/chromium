@@ -338,6 +338,11 @@ QueryResultMap CPUMeasurementMonitor::UpdateAndGetCPUMeasurements(
 
 void CPUMeasurementMonitor::RecordMemoryMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!graph_) {
+    // Don't record any metrics if not currently monitoring.
+    return;
+  }
+
   constexpr size_t kNumContextTypes = std::variant_size<ResourceContext>::value;
 
   // Estimates for each live ResourceContext type by index into the

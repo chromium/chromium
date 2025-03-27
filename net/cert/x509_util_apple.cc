@@ -129,8 +129,7 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromSecCertificate(
 }
 
 SHA256HashValue CalculateFingerprint256(SecCertificateRef cert) {
-  SHA256HashValue sha256;
-  memset(sha256.data, 0, sizeof(sha256.data));
+  SHA256HashValue sha256 = {0};
 
   base::apple::ScopedCFTypeRef<CFDataRef> cert_data(
       SecCertificateCopyData(cert));
@@ -142,7 +141,7 @@ SHA256HashValue CalculateFingerprint256(SecCertificateRef cert) {
   DCHECK_NE(CFDataGetLength(cert_data.get()), 0);
 
   CC_SHA256(CFDataGetBytePtr(cert_data.get()), CFDataGetLength(cert_data.get()),
-            sha256.data);
+            sha256.data());
 
   return sha256;
 }

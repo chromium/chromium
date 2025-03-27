@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">ඉරිදා</translation>
 <translation id="4250229828105606438">තිරරූපය</translation>
 <translation id="4251839292699800785">හැඩකාර කාර්යාලය</translation>
+<translation id="4252261480746798874">ඔබ "ඔබේම එකක් තනන්න" තේරූ විට, ඔබට අභිරුචි විමසුමක් ලිවිය හැක. ඔබට "තේමාවක් තෝරන්න" තෝරාගෙන ඔබේ AI බිතුපත පුද්ගලායනය කිරීමට යටින් ඉරි ඇඳ ඇති වචන තෝරා ගත හැක.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ඉතා අද්විතීය සහ විවිධ AI රූප විකල්ප ලබා ගැනීමට "මා ප්‍රබෝධමත් කරන්න" තෝරන්න.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ඔබ ඔබේම බිතුපතක් නිර්මාණය කරන විට, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google හි සේවා නියම සහ පෞද්ගලිකත්ව ප්‍රතිපත්තියට<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> යටත්ව, රූප ජනනය කිරීමට සහ නිෂ්පාදනය වැඩි දියුණු කිරීමට Google සේවාදායකයන් වෙත විමසුමක් යවනු ලැබේ. පුද්ගලික, සංවේදී, හෝ රහසිගත කිසිවක් ඇතුළත් නොකරන්න.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          උත්පාදක AI හට පුද්ගලයින් ගැන පවා වැරදි සිදු විය හැක, එබැවින් එය දෙවරක් පරීක්ෂා කරන්න. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />තව දැන ගන්න<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP පමාව</translation>
 <translation id="4266143281602681663">කැටි නූල</translation>
 <translation id="4269815121975886860">ආරම්භක මනාප</translation>

@@ -9,11 +9,11 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 
 namespace net {
 class IOBuffer;
-struct SHA256HashValue;
 
 // This class is used to read the binary of the shared dictionary.
 class NET_EXPORT SharedDictionary : public base::RefCounted<SharedDictionary> {

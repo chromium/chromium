@@ -75,9 +75,13 @@ class SESSIONS_EXPORT LiveTabContext {
   // has been created by TabRestoreService.
   // |original_session_type| indicates the type of session entry the tab
   // belongs to.
+  // |restored_from_group_or_window_context| when true indicates if the tab we
+  // are restoring is part of a window or group which is trying to restore all
+  // of its tabs.
   virtual LiveTab* AddRestoredTab(const tab_restore::Tab& tab,
                                   int tab_index,
                                   bool select,
+                                  bool restored_from_group_or_window_context,
                                   tab_restore::Type original_session_type) = 0;
 
   // Note: |tab.platform_data| may be null (e.g., if restoring from last session

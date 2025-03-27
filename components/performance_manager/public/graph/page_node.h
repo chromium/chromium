@@ -52,18 +52,6 @@ class PageNode : public TypedNode<PageNode> {
 
   using LifecycleState = mojom::LifecycleState;
 
-  // Reasons for which a frame can become the embedder of a page.
-  enum class EmbeddingType {
-    // Returned if this node doesn't have an embedder.
-    kInvalid,
-    // This page is a guest view. This can be many things (<webview>, <appview>,
-    // etc) but is backed by the same inner/outer WebContents mechanism.
-    kGuestView
-  };
-
-  // Returns a string for a PageNode::EmbeddingType enumeration.
-  static const char* ToString(PageNode::EmbeddingType embedding_type);
-
   // Loading state of a page.
   enum class LoadingState {
     // No top-level document has started loading yet.
@@ -112,10 +100,6 @@ class PageNode : public TypedNode<PageNode> {
   // Gets the unique token identifying this node for resource attribution. This
   // token will not be reused after the node is destroyed.
   virtual resource_attribution::PageContext GetResourceContext() const = 0;
-
-  // Returns the type of relationship this node has with its embedder, if it has
-  // an embedder.
-  virtual EmbeddingType GetEmbeddingType() const = 0;
 
   // Returns the type of the page.
   virtual PageType GetType() const = 0;
@@ -237,8 +221,6 @@ class PageNode : public TypedNode<PageNode> {
 // Observer interface for page nodes.
 class PageNodeObserver : public base::CheckedObserver {
  public:
-  using EmbeddingType = PageNode::EmbeddingType;
-
   PageNodeObserver();
 
   PageNodeObserver(const PageNodeObserver&) = delete;
@@ -297,10 +279,8 @@ class PageNodeObserver : public base::CheckedObserver {
   // change, or had the embedder removed. This can happen if a page is opened
   // via webviews, guestviews etc, or when that relationship is subsequently
   // severed or reparented.
-  virtual void OnEmbedderFrameNodeChanged(
-      const PageNode* page_node,
-      const FrameNode* previous_embedder,
-      EmbeddingType previous_embedder_type) {}
+  virtual void OnEmbedderFrameNodeChanged(const PageNode* page_node,
+                                          const FrameNode* previous_embedder) {}
 
   // Invoked when the GetType property changes.
   virtual void OnTypeChanged(const PageNode* page_node,
@@ -385,11 +365,6 @@ class PageNodeObserver : public base::CheckedObserver {
   virtual void OnAboutToBeDiscarded(const PageNode* page_node,
                                     const PageNode* new_page_node) {}
 };
-
-// std::ostream support for PageNode::EmbeddingType.
-std::ostream& operator<<(
-    std::ostream& os,
-    performance_manager::PageNode::EmbeddingType embedding_type);
 
 }  // namespace performance_manager
 

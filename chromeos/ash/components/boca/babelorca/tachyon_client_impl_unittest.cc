@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/boca/babelorca/proto/testing_message.pb.h"
@@ -30,6 +31,10 @@ using RequestDataPtr = std::unique_ptr<RequestDataWrapper>;
 
 constexpr char kOAuthToken[] = "oauth-token";
 constexpr char kUrl[] = "https://test.com";
+constexpr char kUmaName[] = "Test";
+constexpr char kUmaPath[] =
+    "Ash.Boca.Babelorca.Test.HttpResponseCodeOrNetError";
+
 const net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("babelorca-testid",
                                         R"(semantics { sender "client test"})");
@@ -41,6 +46,7 @@ class TachyonClientImplTest : public testing::Test {
         kTrafficAnnotationTag, kUrl, /*max_retries_param=*/1,
         result_future_.GetCallback());
     request_data->content_data = "request-body";
+    request_data->uma_name = kUmaName;
     return request_data;
   }
 
@@ -59,6 +65,7 @@ class TachyonClientImplTest : public testing::Test {
 };
 
 TEST_F(TachyonClientImplTest, SuccessfulRequest) {
+  base::HistogramTester uma_recorder;
   network::TestURLLoaderFactory url_loader_factory;
   TestingMessage response;
   response.set_int_field(9999);
@@ -74,9 +81,12 @@ TEST_F(TachyonClientImplTest, SuccessfulRequest) {
   ASSERT_TRUE(result_proto.ParseFromString(result.response_body()));
   EXPECT_EQ(result_proto.int_field(), 9999);
   EXPECT_FALSE(auth_failure_future()->IsReady());
+  EXPECT_EQ(uma_recorder.GetBucketCount(kUmaPath, net::HttpStatusCode::HTTP_OK),
+            1);
 }
 
 TEST_F(TachyonClientImplTest, NetworkFailure) {
+  base::HistogramTester uma_recorder;
   network::TestURLLoaderFactory url_loader_factory;
   url_loader_factory.AddResponse(
       GURL(kUrl), network::mojom::URLResponseHead::New(), "",
@@ -89,9 +99,13 @@ TEST_F(TachyonClientImplTest, NetworkFailure) {
   auto result = result_future()->Take();
   EXPECT_EQ(result.status(), TachyonResponse::Status::kNetworkError);
   EXPECT_FALSE(auth_failure_future()->IsReady());
+  EXPECT_EQ(
+      uma_recorder.GetBucketCount(kUmaPath, net::Error::ERR_NETWORK_CHANGED),
+      1);
 }
 
 TEST_F(TachyonClientImplTest, HttpError) {
+  base::HistogramTester uma_recorder;
   network::TestURLLoaderFactory url_loader_factory;
   url_loader_factory.AddResponse(kUrl, "error",
                                  net::HttpStatusCode::HTTP_PRECONDITION_FAILED);
@@ -103,6 +117,9 @@ TEST_F(TachyonClientImplTest, HttpError) {
   auto result = result_future()->Take();
   EXPECT_EQ(result.status(), TachyonResponse::Status::kHttpError);
   EXPECT_FALSE(auth_failure_future()->IsReady());
+  EXPECT_EQ(uma_recorder.GetBucketCount(
+                kUmaPath, net::HttpStatusCode::HTTP_PRECONDITION_FAILED),
+            1);
 }
 
 TEST_F(TachyonClientImplTest, AuthError) {

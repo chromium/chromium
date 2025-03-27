@@ -32,6 +32,7 @@ class LocalFilesMigrationDialogElement extends HTMLElement {
   private cloudProvider: CloudProvider|null = null;
   private dialog: CrDialogElement;
   private dismissButton: CrButtonElement;
+  private uploadOrDeleteNowButton: CrButtonElement;
 
   constructor() {
     super();
@@ -41,8 +42,9 @@ class LocalFilesMigrationDialogElement extends HTMLElement {
 
     this.dialog = this.$('cr-dialog');
 
-    this.$('#upload-now-button')
-        .addEventListener('click', () => this.onUploadNowButtonClicked_());
+    this.uploadOrDeleteNowButton = this.$('#upload-or-delete-now-button');
+    this.uploadOrDeleteNowButton.addEventListener(
+        'click', () => this.onUploadOrDeleteNowButtonClicked_());
     this.dismissButton = this.$('#dismiss-button');
     this.dismissButton.addEventListener(
         'click', () => this.onDismissButtonClicked_());
@@ -70,24 +72,33 @@ class LocalFilesMigrationDialogElement extends HTMLElement {
       cloudProvider: CloudProvider, remainingTime: TimeUnitAndValue,
       startDateAndTime: string) {
     this.cloudProvider = cloudProvider;
-    const providerName = this.getCloudProviderName_(cloudProvider);
 
     const startMessage = this.$('#start-message');
-    startMessage.innerText = loadTimeData.getStringF(
-        'uploadStartMessage', providerName, startDateAndTime);
-
     const doneMessage = this.$('#done-message');
-    doneMessage.innerText =
-        loadTimeData.getStringF('uploadDoneMessage', providerName);
 
+    if (this.cloudProvider === CloudProvider.kDelete) {
+      startMessage.innerText =
+          loadTimeData.getStringF('deleteStartMessage', startDateAndTime);
+      doneMessage.innerText = loadTimeData.getString('deleteStoreMessage');
+      this.uploadOrDeleteNowButton.innerText =
+          loadTimeData.getStringF('deleteNow');
+    } else {
+      const providerName = this.getCloudProviderName_(cloudProvider);
+      startMessage.innerText = loadTimeData.getStringF(
+          'uploadStartMessage', providerName, startDateAndTime);
+      doneMessage.innerText =
+          loadTimeData.getStringF('uploadDoneMessage', providerName);
+      this.uploadOrDeleteNowButton.innerText =
+          loadTimeData.getStringF('uploadNow');
+    }
     this.updateRemainingTime_(remainingTime);
     // Show after all the text is ready, so that screen readers can properly
     // access it.
     this.dialog.showModal();
   }
 
-  private onUploadNowButtonClicked_() {
-    this.proxy.handler.uploadNow();
+  private onUploadOrDeleteNowButtonClicked_() {
+    this.proxy.handler.uploadOrDeleteNow();
   }
 
   private onDismissButtonClicked_() {
@@ -105,32 +116,77 @@ class LocalFilesMigrationDialogElement extends HTMLElement {
           `Remaining time must be positive, got ${remainingTime.value}`);
       return;
     }
+    try {
+      const titleText = (this.cloudProvider === CloudProvider.kDelete) ?
+          this.getDeleteTitleText_(remainingTime) :
+          this.getCloudProviderTitleText_(remainingTime);
+      const title = this.$('#header');
+      title.innerText = `${titleText}`;
+      this.dialog.setTitleAriaLabel(titleText);
+    } catch (error) {
+      console.error('Error setting the dialog title: ', error);
+    }
 
-    const providerName = this.getCloudProviderName_(this.cloudProvider);
+    this.dismissButton.innerText = this.getDismissButtonText_(remainingTime);
+  }
+
+  private getCloudProviderTitleText_(remainingTime: TimeUnitAndValue): string {
+    if (this.cloudProvider === null) {
+      throw new Error(
+          'Function should only be called after cloudProvider is set');
+    }
+    if (this.cloudProvider === CloudProvider.kDelete) {
+      throw new Error('Function should not be called for the Delete option');
+    }
+    let providerName: string;
+    try {
+      providerName = this.getCloudProviderName_(this.cloudProvider);
+    } catch (error) {
+      throw error;
+    }
     const remainingTimeValue = remainingTime.value;
     const plural = remainingTimeValue > 1;
-    let titleText: string;
+
     switch (remainingTime.unit) {
       case TimeUnit.kHours:
-        titleText = plural ?
+        return plural ?
             loadTimeData.getStringF(
-                'titleHours', providerName, remainingTimeValue) :
-            loadTimeData.getStringF('titleHour', providerName);
-        this.dismissButton.innerText =
-            loadTimeData.getStringF('uploadInHours', remainingTimeValue);
-        break;
+                'uploadTitleHours', providerName, remainingTimeValue) :
+            loadTimeData.getStringF('uploadTitleHour', providerName);
       case TimeUnit.kMinutes:
-        titleText = plural ?
+        return plural ?
             loadTimeData.getStringF(
-                'titleMinutes', providerName, remainingTimeValue) :
-            loadTimeData.getStringF('titleMinute', providerName);
-        this.dismissButton.innerText =
-            loadTimeData.getStringF('uploadInMinutes', remainingTimeValue);
-        break;
+                'uploadTitleMinutes', providerName, remainingTimeValue) :
+            loadTimeData.getStringF('uploadTitleMinute', providerName);
     }
-    const title = this.$('#header');
-    title.innerText = `${titleText}`;
-    this.dialog.setTitleAriaLabel(titleText);
+  }
+
+  private getDeleteTitleText_(remainingTime: TimeUnitAndValue): string {
+    const remainingTimeValue = remainingTime.value;
+    const plural = remainingTimeValue > 1;
+
+    switch (remainingTime.unit) {
+      case TimeUnit.kHours:
+        return plural ?
+            loadTimeData.getStringF('deleteTitleHours', remainingTimeValue) :
+            loadTimeData.getString('deleteTitleHour');
+      case TimeUnit.kMinutes:
+        return plural ?
+            loadTimeData.getStringF('deleteTitleMinutes', remainingTimeValue) :
+            loadTimeData.getString('deleteTitleMinute');
+    }
+  }
+
+  private getDismissButtonText_(remainingTime: TimeUnitAndValue) {
+    const remainingTimeValue = remainingTime.value;
+    const prefix =
+        this.cloudProvider === CloudProvider.kDelete ? 'deleteIn' : 'uploadIn';
+    switch (remainingTime.unit) {
+      case TimeUnit.kHours:
+        return loadTimeData.getStringF(`${prefix}Hours`, remainingTimeValue);
+      case TimeUnit.kMinutes:
+        return loadTimeData.getStringF(`${prefix}Minutes`, remainingTimeValue);
+    }
   }
 
   private getCloudProviderName_(cloudProvider: CloudProvider) {
@@ -139,6 +195,8 @@ class LocalFilesMigrationDialogElement extends HTMLElement {
         return loadTimeData.getString('oneDrive');
       case CloudProvider.kGoogleDrive:
         return loadTimeData.getString('googleDrive');
+      case CloudProvider.kDelete:
+        throw new Error('Function should not be called for the Delete option');
     }
   }
 }

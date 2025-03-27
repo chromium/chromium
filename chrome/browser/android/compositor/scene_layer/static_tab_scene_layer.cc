@@ -70,8 +70,6 @@ void StaticTabSceneLayer::UpdateTabLayer(
     jint default_background_color,
     jfloat x,
     jfloat y,
-    jfloat static_to_view_blend,
-    jfloat saturation,
     const JavaParamRef<jobject>& joffset_tag) {
   DCHECK(tab_content_manager_)
       << "TabContentManager must be set before updating the layer";
@@ -94,8 +92,11 @@ void StaticTabSceneLayer::UpdateTabLayer(
     }
   }
 
-  content_layer_->SetProperties(id, can_use_live_layer, static_to_view_blend,
-                                false, 1.f, saturation, false, gfx::Rect());
+  content_layer_->SetProperties(
+      id, can_use_live_layer, /* static_to_view_blend= */ 0.f,
+      /* should_override_content_alpha= */ false,
+      /* content_alpha_override= */ 1.f, /* saturation= */ 1.f,
+      /* should_clip= */ false, /* clip= */ gfx::Rect());
 
   content_layer_->layer()->SetPosition(gfx::PointF(x, y));
   content_layer_->layer()->SetIsDrawable(true);

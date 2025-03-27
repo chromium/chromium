@@ -386,9 +386,6 @@ void SearchResultsPanel::OnDisplayMetricsChanged(
   RefreshPanelBounds();
 }
 
-void SearchResultsPanel::OnWillChangeFocus(View* focused_before,
-                                           View* focused_now) {}
-
 void SearchResultsPanel::OnDidChangeFocus(View* focused_before,
                                           View* focused_now) {
   // Update the focus ring of the previously focused view, if available.

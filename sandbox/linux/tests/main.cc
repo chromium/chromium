@@ -41,7 +41,7 @@ void RunPostTestsChecks(const base::FilePath& orig_cwd) {
 }  // namespace sandbox
 
 #if !defined(SANDBOX_USES_BASE_TEST_SUITE)
-void UnitTestAssertHandler(std::string_view file,
+void UnitTestAssertHandler(const char* file,
                            int line,
                            std::string_view message,
                            std::string_view stack_trace) {

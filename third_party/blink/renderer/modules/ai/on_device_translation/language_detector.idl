@@ -1,0 +1,41 @@
+dictionary LanguageDetectionResult {
+  DOMString? detectedLanguage; // null represents unknown language
+  double confidence;
+};
+
+[
+    RuntimeEnabled=LanguageDetectionAPI,
+    Exposed=(Window, Worker),
+    SecureContext
+]
+interface LanguageDetector {
+  [
+    MeasureAs=LanguageDetector_Detect,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<sequence<LanguageDetectionResult>> detect(DOMString input,
+    optional LanguageDetectorDetectOptions options = {});
+
+  [
+    MeasureAs=LanguageDetector_Destroy,
+    CallWith=ScriptState
+  ]
+  undefined destroy();
+
+[
+  MeasureAs=LanguageDetector_MeasureInputUsage,
+  CallWith=ScriptState,
+  RaisesException
+]
+  Promise<double> measureInputUsage(
+    DOMString input,
+    optional LanguageDetectorDetectOptions options = {}
+  );
+  [MeasureAs=LanguageDetector_InputQuota]
+  readonly attribute unrestricted double inputQuota;
+};
+
+dictionary LanguageDetectorDetectOptions {
+  AbortSignal signal;
+};

@@ -2302,6 +2302,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.RendererSideContentDecoding.CreateDataPipe"
+    enum="CreateDataPipeMojoResult" expires_after="2025-06-18">
+  <owner>horo@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Result of creating the Mojo data pipe used between the decoding thread and
+    the data receiving thread in the renderer process for the
+    RendererSideContentDecoding feature. Recorded whenever the renderer process
+    receives a resource that needs to be decoded, and the
+    RendererSideContentDecoding feature is enabled.
+  </summary>
+</histogram>
+
 <histogram
     name="Network.SharedDictionary.CreateBrotliSourceStreamWithDictionary"
     units="microseconds" expires_after="2025-08-24">

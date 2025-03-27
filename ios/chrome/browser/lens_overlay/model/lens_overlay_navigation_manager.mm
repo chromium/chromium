@@ -165,11 +165,11 @@ void LensOverlayNavigationManager::RegisterSubNavigation(
   }
 
   // To prevent dark mode toggles from creating new navigation history entries,
-  // remove the dark mode parameter from the URL. The parameter that determines
-  // the interface style is kept in sync with the system preference and appended
-  // before the URL is loaded.
+  // set a default dark mode parameter for the URL. The parameter that
+  // determines the interface style is kept in sync with the system preference
+  // and updated before the URL is loaded.
   if (url.has_query()) {
-    url = net::AppendOrReplaceQueryParameter(url, "cs", std::nullopt);
+    url = net::AppendOrReplaceQueryParameter(url, "cs", "0");
   }
 
   // Add sub navigation if it's not a reload.

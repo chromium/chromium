@@ -967,6 +967,11 @@ void LocalStorageImpl::OnCommitResult(leveldb::Status status) {
 }
 
 void LocalStorageImpl::DeleteStaleStorageAreas() {
+  if (!database_) {
+    // Due to the delay before LocalStorageImpl::DeleteStaleStorageAreas is invoked
+    // it's possible `database_` existed before, but no longer.
+    return;
+  }
   database_->RunDatabaseTask(
       base::BindOnce([](const DomStorageDatabase& db) {
         std::vector<DomStorageDatabase::KeyValuePair> data;

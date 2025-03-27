@@ -50,6 +50,7 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/lens_overlay_consent_dialog_animation_player_button_color.colorset/Contents.json",
     "Assets.xcassets/lens_overlay_consent_dialog_description_color.colorset/Contents.json",
     "Assets.xcassets/light_only_grey_200_color.colorset/Contents.json",
+    "Assets.xcassets/magic_stack_edit_button_background_color.colorset/Contents.json",
     "Assets.xcassets/mdc_ink_color.colorset/Contents.json",
     "Assets.xcassets/mdc_secondary_ink_color.colorset/Contents.json",
     "Assets.xcassets/omnibox_keyboard_button_color.colorset/Contents.json",

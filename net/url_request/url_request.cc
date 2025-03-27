@@ -1396,8 +1396,6 @@ void URLRequest::set_socket_tag(const SocketTag& socket_tag) {
 }
 
 StorageAccessStatusCache URLRequest::CalculateStorageAccessStatus() const {
-  CHECK_EQ(is_redirecting(), deferred_redirect_info_.has_value());
-
   // `Delegate::OnReceivedRedirect` may set `defer_redirect` inside of
   // `URLRequest::ReceivedRedirect` to true, which in turn sets the
   // `deferred_redirect_info_` that has to be used when calculating new storage

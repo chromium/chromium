@@ -650,7 +650,6 @@ void HttpStreamPool::AttemptManager::ProcessPendingJob() {
     return;
   }
 
-  CHECK(!CanUseExistingQuicSession());
   DCHECK(!HasAvailableSpdySession());
 
   MaybeAttemptConnection(/*exclude_ip_endpoint=*/std::nullopt,
@@ -839,7 +838,15 @@ bool HttpStreamPool::AttemptManager::IsStalledByPoolLimit() {
     return false;
   }
 
-  if (CanUseExistingQuicSession() || HasAvailableSpdySession()) {
+  if (CanUseExistingQuicSession()) {
+    // There could be a matching QUIC session if an existing QUIC session
+    // receives an HTTP/3 Origin frame while `this` is attempting QUIC session
+    // establishment. In such case, QuicSessionAttempt will close the new
+    // session later. See QuicSessionAttempt::DoConfirmConnection().
+    return false;
+  }
+
+  if (HasAvailableSpdySession()) {
     CHECK_EQ(PendingPreconnectCount(), 0u);
     return false;
   }
@@ -1322,7 +1329,19 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
               TcpBasedAttemptState::kAllEndpointsFailed &&
           !quic_task_) {
         // Tried all endpoints.
-        DCHECK(most_recent_tcp_error_.has_value());
+        // TODO(crbug.com/403373872): Replace the following `if` with CHECK()
+        // once we identify the root cause.
+        if (!most_recent_tcp_error_.has_value()) {
+          const bool is_svcb_optional = IsSvcbOptional();
+          ConnectionAttempts connection_attempts = connection_attempts_;
+          std::vector<ServiceEndpoint> endpoints =
+              service_endpoint_request_->GetEndpointResults();
+          base::debug::Alias(&is_svcb_optional);
+          base::debug::Alias(&connection_attempts_);
+          base::debug::Alias(&endpoints);
+          DEBUG_ALIAS_FOR_GURL(url_buf, stream_key().destination().GetURL());
+          NOTREACHED();
+        }
         HandleFinalError(*most_recent_tcp_error_);
       }
       return;

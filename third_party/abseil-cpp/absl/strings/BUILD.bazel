@@ -172,8 +172,9 @@ cc_test(
     ],
 )
 
-cc_test(
+cc_binary(
     name = "escaping_benchmark",
+    testonly = True,
     srcs = [
         "escaping_benchmark.cc",
         "internal/escaping_test_common.h",
@@ -185,7 +186,6 @@ cc_test(
         ":strings",
         "//absl/base:raw_logging_internal",
         "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
     ],
 )
 
@@ -241,8 +241,9 @@ cc_test(
     ],
 )
 
-cc_test(
+cc_binary(
     name = "ascii_benchmark",
+    testonly = True,
     srcs = ["ascii_benchmark.cc"],
     copts = ABSL_TEST_COPTS,
     tags = ["benchmark"],
@@ -250,7 +251,6 @@ cc_test(
     deps = [
         ":strings",
         "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
     ],
 )
 
@@ -268,8 +268,25 @@ cc_test(
     ],
 )
 
-cc_test(
+cc_binary(
+    name = "damerau_levenshtein_distance_benchmark",
+    testonly = True,
+    srcs = [
+        "internal/damerau_levenshtein_distance_benchmark.cc",
+    ],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = ["benchmark"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":strings",
+        "@google_benchmark//:benchmark_main",
+    ],
+)
+
+cc_binary(
     name = "memutil_benchmark",
+    testonly = True,
     srcs = [
         "internal/memutil.h",
         "internal/memutil_benchmark.cc",
@@ -281,7 +298,6 @@ cc_test(
         ":strings",
         "//absl/base:core_headers",
         "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
     ],
 )
 
@@ -332,8 +348,9 @@ cc_test(
     ],
 )
 
-cc_test(
+cc_binary(
     name = "string_view_benchmark",
+    testonly = True,
     srcs = ["string_view_benchmark.cc"],
     copts = ABSL_TEST_COPTS,
     tags = ["benchmark"],
@@ -344,7 +361,6 @@ cc_test(
         "//absl/base:core_headers",
         "//absl/base:raw_logging_internal",
         "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
     ],
 )
 
@@ -365,9 +381,9 @@ cc_test(
     ],
 )
 
-cc_test(
+cc_binary(
     name = "charset_benchmark",
-    size = "small",
+    testonly = True,
     srcs = [
         "charset_benchmark.cc",
     ],
@@ -380,7 +396,6 @@ cc_test(
         ":charset",
         "//absl/log:check",
         "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
     ],
 )
 
@@ -928,7 +943,6 @@ cc_test(
     srcs = ["cordz_test.cc"],
     copts = ABSL_TEST_COPTS,
     tags = [
-        "benchmark",
         "no_test_android_arm",
         "no_test_android_arm64",
         "no_test_android_x86",
@@ -970,8 +984,25 @@ cc_test(
     ],
 )
 
-cc_test(
+cc_binary(
+    name = "substitute_benchmark",
+    testonly = True,
+    srcs = ["substitute_benchmark.cc"],
+    copts = ABSL_TEST_COPTS,
+    tags = [
+        "benchmark",
+    ],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":strings",
+        "//absl/base:core_headers",
+        "@google_benchmark//:benchmark_main",
+    ],
+)
+
+cc_binary(
     name = "str_replace_benchmark",
+    testonly = True,
     srcs = ["str_replace_benchmark.cc"],
     copts = ABSL_TEST_COPTS,
     tags = ["benchmark"],
@@ -980,7 +1011,6 @@ cc_test(
         ":strings",
         "//absl/base:raw_logging_internal",
         "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
     ],
 )
 
@@ -1014,8 +1044,9 @@ cc_test(
     ],
 )
 
-cc_test(
+cc_binary(
     name = "str_split_benchmark",
+    testonly = True,
     srcs = ["str_split_benchmark.cc"],
     copts = ABSL_TEST_COPTS,
     tags = ["benchmark"],
@@ -1024,7 +1055,6 @@ cc_test(
         ":strings",
         "//absl/base:raw_logging_internal",
         "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
     ],
 )
 
@@ -1041,8 +1071,9 @@ cc_test(
     ],
 )
 
-cc_test(
+cc_binary(
     name = "ostringstream_benchmark",
+    testonly = True,
     srcs = ["internal/ostringstream_benchmark.cc"],
     copts = ABSL_TEST_COPTS,
     tags = ["benchmark"],
@@ -1050,7 +1081,6 @@ cc_test(
     deps = [
         ":internal",
         "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
     ],
 )
 
@@ -1086,8 +1116,9 @@ cc_test(
     ],
 )
 
-cc_test(
+cc_binary(
     name = "str_join_benchmark",
+    testonly = True,
     srcs = ["str_join_benchmark.cc"],
     copts = ABSL_TEST_COPTS,
     tags = ["benchmark"],
@@ -1095,7 +1126,6 @@ cc_test(
     deps = [
         ":strings",
         "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
     ],
 )
 
@@ -1114,18 +1144,19 @@ cc_test(
     ],
 )
 
-cc_test(
+cc_binary(
     name = "str_cat_benchmark",
+    testonly = True,
     srcs = ["str_cat_benchmark.cc"],
     copts = ABSL_TEST_COPTS,
     tags = ["benchmark"],
     visibility = ["//visibility:private"],
     deps = [
+        ":str_format",
         ":strings",
         "//absl/random",
         "//absl/random:distributions",
         "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
     ],
 )
 
@@ -1152,8 +1183,9 @@ cc_test(
     ],
 )
 
-cc_test(
+cc_binary(
     name = "numbers_benchmark",
+    testonly = True,
     srcs = ["numbers_benchmark.cc"],
     copts = ABSL_TEST_COPTS,
     tags = ["benchmark"],
@@ -1164,7 +1196,6 @@ cc_test(
         "//absl/random",
         "//absl/random:distributions",
         "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
     ],
 )
 
@@ -1226,8 +1257,9 @@ cc_test(
     ],
 )
 
-cc_test(
+cc_binary(
     name = "charconv_benchmark",
+    testonly = True,
     srcs = [
         "charconv_benchmark.cc",
     ],
@@ -1237,7 +1269,6 @@ cc_test(
     deps = [
         ":strings",
         "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
     ],
 )
 

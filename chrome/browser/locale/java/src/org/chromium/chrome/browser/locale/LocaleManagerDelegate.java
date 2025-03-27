@@ -16,6 +16,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -37,6 +38,7 @@ import org.chromium.ui.base.PageTransition;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Base class for defining methods where different behavior is required by downstream targets.
@@ -79,6 +81,11 @@ public class LocaleManagerDelegate {
                     Context context = ContextUtils.getApplicationContext();
                     SettingsNavigationFactory.createSettingsNavigation()
                             .startSettings(context, SearchEngineSettings.class);
+                    if (Objects.equals(
+                            actionData, Snackbar.UMA_SEARCH_ENGINE_CHANGED_NOTIFICATION)) {
+                        RecordHistogram.recordBooleanHistogram(
+                                "Search.SearchEngineChangedSnackbar.SettingsTapped", true);
+                    }
                 }
             };
 
@@ -332,7 +339,9 @@ public class LocaleManagerDelegate {
                                 mSnackbarController,
                                 Snackbar.TYPE_NOTIFICATION,
                                 Snackbar.UMA_SEARCH_ENGINE_CHANGED_NOTIFICATION)
-                        .setAction(context.getString(R.string.settings), null)
+                        .setAction(
+                                context.getString(R.string.settings),
+                                Snackbar.UMA_SEARCH_ENGINE_CHANGED_NOTIFICATION)
                         .setDuration(SNACKBAR_DURATION_MS);
         manager.showSnackbar(snackbar);
     }

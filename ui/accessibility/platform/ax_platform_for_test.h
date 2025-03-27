@@ -23,6 +23,8 @@ class AXPlatformForTest : public AXPlatform::Delegate {
   AXPlatformForTest& operator=(const AXPlatformForTest&) = delete;
   ~AXPlatformForTest() override;
 
+  void DetachFromThread();
+
   // AXPlatform::Delegate:
   AXMode GetProcessMode() override;
   void SetProcessMode(AXMode new_mode) override;

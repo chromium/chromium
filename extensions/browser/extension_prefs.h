@@ -759,11 +759,6 @@ class ExtensionPrefs : public KeyedService {
   // extension's dictionary, which is keyed on the extension ID.
   void MigrateObsoleteExtensionPrefs();
 
-  // Updates an extension to use the new withholding pref key if it doesn't have
-  // it yet, removing the old key in the process.
-  // TODO(tjudkins): Remove this and the obsolete key in M83.
-  void MigrateToNewWithholdingPref();
-
 #if BUILDFLAG(IS_CHROMEOS)
   // Updates pref that were scheduled to be applied after Chrome restarts. This
   // function should only be called from the constructor of the ExtensionPrefs

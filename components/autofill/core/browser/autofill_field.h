@@ -335,12 +335,13 @@ class AutofillField : public FormFieldData {
     return password_requirements_;
   }
 
-  // The ordering ordering matters: higher values overrule lower vaules (e.g.,
+  // The ordering ordering matters: higher values overrule lower values (e.g.,
   // kServer overrules kHeuristics).
   enum class FormatStringSource {
-    kUnset = 0,       // The format string hasn't been set yet.
-    kHeuristics = 1,  // The format string has been set by local heuristics.
-    kServer = 2,      // The format string has been set by the server.
+    kUnset = 0,        // No format string set.
+    kHeuristics = 1,   // Set by local heuristics.
+    kModelResult = 2,  // Set by a direct model response
+    kServer = 3,       // Set by an (Autofill) server response.
   };
 
   // The format of the value expected by the web document. For now, format

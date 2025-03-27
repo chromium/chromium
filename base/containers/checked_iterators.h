@@ -17,7 +17,6 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/containers/util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 
@@ -217,23 +216,6 @@ class CheckedContiguousIterator {
     // So `current_[rhs]` will be a valid dereference of a pointer in the
     // allocation (it is not the pointer toone-past-the-end).
     return UNSAFE_BUFFERS(current_[rhs]);
-  }
-
-  [[nodiscard]] static bool IsRangeMoveSafe(
-      const CheckedContiguousIterator& from_begin,
-      const CheckedContiguousIterator& from_end,
-      const CheckedContiguousIterator& to) {
-    if (from_end < from_begin) {
-      return false;
-    }
-    const auto from_begin_uintptr = get_uintptr(from_begin.current_);
-    const auto from_end_uintptr = get_uintptr(from_end.current_);
-    const auto to_begin_uintptr = get_uintptr(to.current_);
-    const auto to_end_uintptr =
-        get_uintptr((to + std::distance(from_begin, from_end)).current_);
-
-    return to_begin_uintptr >= from_end_uintptr ||
-           to_end_uintptr <= from_begin_uintptr;
   }
 
  private:

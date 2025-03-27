@@ -88,7 +88,10 @@ source_set("features") {
     "features.cc",
     "features.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/data_sharing/public:features",
+  ]
   public_deps = []
 }
 

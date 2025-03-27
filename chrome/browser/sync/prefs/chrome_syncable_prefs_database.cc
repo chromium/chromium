@@ -8,6 +8,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "build/build_config.h"
+#include "chrome/browser/accessibility/tree_fixing/pref_names.h"
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
@@ -388,6 +389,7 @@ enum {
   kPinnedCastMigrationComplete = 100323,
   kAccessibilityAXTreeFixingEnabled = 100324,
   kTabSearchMigrationComplete = 100325,
+  kReadAloudPlaybackMode = 100326,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -433,6 +435,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kMergeableDict}},
     {prefs::kReadAloudSpeed,
      {syncable_prefs_ids::kReadAloudSpeed, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kReadAloudPlaybackMode,
+     {syncable_prefs_ids::kReadAloudPlaybackMode, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kReadAloudHighlightingEnabled,

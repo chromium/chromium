@@ -2,6 +2,7 @@ include_rules = [
   "+components/services/filesystem",
   "+mojo/public",
   "+third_party/ced",
+  "+third_party/lzma_sdk",
   "+third_party/zlib",
   "+third_party/zlib/google",
 ]

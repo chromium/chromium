@@ -710,7 +710,8 @@ class WPTResultsProcessor:
             artifact_output_dir=self.fs.dirname(self.artifacts_dir),
             expectations=None,
             test_file_location=result.file_path,
-            html_summary=result.summarize(product))
+            html_summary=result.summarize(product),
+            additional_tags=self._tags(result))
         _log.debug(
             'Reported result for %s, iteration %d (actual: %s, '
             'expected: %s, artifacts: %s)', result.name, self._iteration,
@@ -720,6 +721,21 @@ class WPTResultsProcessor:
         if self._iteration == 0:
             self._num_failures_by_status[result.actual] += 1
         self._results_by_name[test].append(result)
+
+    def _tags(self, result: WPTResult) -> List[Tuple[str, str]]:
+        # Add tags needed by the Blink Unexpected Pass Finder.
+        #
+        # TODO(crbug.com/406299273): Use the same logic to generate tags for all
+        # test results.
+        test_cls = wpttest.manifest_test_cls[result.test_type]
+        # Units are in seconds.
+        base_timeout = test_cls.default_timeout
+        base_timeout *= self.port.get_option('timeout_multiplier') or 1
+        tags = [('web_tests_base_timeout', str(base_timeout))]
+        for exp_file in self.port.used_expectations_files():
+            tags.append(('web_tests_used_expectation_file',
+                         self.port.relative_test_filename(exp_file)))
+        return tags
 
     def _handle_unexpected_result(self, result: WPTResult):
         if result.actual == ResultType.Failure:

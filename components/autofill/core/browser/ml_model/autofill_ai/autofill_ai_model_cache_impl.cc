@@ -15,7 +15,9 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -81,15 +83,45 @@ void AutofillAiModelCacheImpl::Update(
 }
 
 bool AutofillAiModelCacheImpl::Contains(FormSignature form_signature) const {
-  auto it = in_memory_cache_.find(form_signature);
-  return it != in_memory_cache_.end() &&
-         it->second.creation_time() >=
-             SerializeTime(base::Time::Now() - max_cache_age_);
+  return GetRawEntry(form_signature).has_value();
 }
 
 void AutofillAiModelCacheImpl::Erase(FormSignature form_signature) {
   in_memory_cache_.erase(form_signature);
   EraseInDatabase({form_signature});
+}
+
+base::flat_map<AutofillAiModelCache::FieldIdentifier,
+               AutofillAiModelCache::FieldPrediction>
+AutofillAiModelCacheImpl::GetFieldPredictions(
+    FormSignature form_signature) const {
+  base::optional_ref<const CacheEntryWithMetadata> cache_entry =
+      GetRawEntry(form_signature);
+  if (!cache_entry || (cache_entry->field_identifiers_size() !=
+                       cache_entry->server_response().field_responses_size())) {
+    return {};
+  }
+
+  const optimization_guide::proto::AutofillAiTypeResponse& server_response =
+      cache_entry->server_response();
+  std::vector<std::pair<FieldIdentifier, FieldPrediction>> result;
+  result.reserve(cache_entry->field_identifiers_size());
+  for (int i = 0; i < cache_entry->field_identifiers_size(); ++i) {
+    const AutofillAiModelCacheEntryWithMetadata_FieldIdentifier& identifier =
+        cache_entry->field_identifiers(i);
+    const optimization_guide::proto::FieldTypeResponse& prediction =
+        server_response.field_responses(i);
+    result.emplace_back(
+        FieldIdentifier{
+            .signature = FieldSignature(identifier.field_signature()),
+            .rank_in_signature_group =
+                identifier.field_rank_in_signature_group()},
+        FieldPrediction{
+            .field_type =
+                ToSafeFieldType(prediction.field_type(), NO_SERVER_DATA),
+            .format_string = base::UTF8ToUTF16(prediction.formatting_meta())});
+  }
+  return std::move(result);
 }
 
 std::map<FormSignature, AutofillAiModelCache::CacheEntryWithMetadata>
@@ -109,6 +141,17 @@ void AutofillAiModelCacheImpl::OnHistoryDeletions(
       std::make_unique<Database::KeyEntryVector>(),
       base::BindRepeating([](const std::string&) { return true; }),
       base::DoNothing());
+}
+
+base::optional_ref<const AutofillAiModelCache::CacheEntryWithMetadata>
+AutofillAiModelCacheImpl::GetRawEntry(FormSignature form_signature) const {
+  auto it = in_memory_cache_.find(form_signature);
+  if (it == in_memory_cache_.end() ||
+      it->second.creation_time() <
+          SerializeTime(base::Time::Now() - max_cache_age_)) {
+    return std::nullopt;
+  }
+  return it->second;
 }
 
 void AutofillAiModelCacheImpl::TrimEntries() {

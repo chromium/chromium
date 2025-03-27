@@ -696,7 +696,6 @@
 <translation id="2187317261103489799">കണ്ടെത്തുക (ഡിഫോൾട്ട്)</translation>
 <translation id="2188375229972301266">താഴെ ഒന്നിലധികം പഞ്ച് ചെയ്യുക</translation>
 <translation id="2194856509914051091">പരിഗണിക്കേണ്ട കാര്യങ്ങൾ</translation>
-<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" /> എന്നതിനെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="2200678913752027654">തംബ്‌സ് ഡൗൺ ബട്ടൺ, നിങ്ങൾ ഈ നിർദ്ദേശം എന്തുകൊണ്ട് ഡിസ്‌ലൈക്ക് ചെയ്യുന്നു എന്നതിനെ കുറിച്ചുള്ള വിശദമായ ഫീഡ്‌ബാക്ക് സമർപ്പിക്കാനുള്ള ഫോം തുറക്കാൻ Enter അമർത്തുക</translation>
 <translation id="2202627062836089804">നിങ്ങളുടെ കാർഡിന്റെ പുറകിൽ</translation>
 <translation id="2204482073374652408">അപ്‌ഡേറ്റ് ചെയ്യൽ പൂർത്തിയായി!</translation>
@@ -1809,6 +1808,7 @@
 <translation id="4150099059797363385">Envelope Chinese #4</translation>
 <translation id="4151403195736952345">ആഗോള ഡിഫോൾട്ട് ഉപയോഗിക്കുക (കണ്ടെത്തുക)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{പേജ് 1}other{പേജ് {COUNT}}}</translation>
+<translation id="4152670763139331043">{NUM_TABS,plural, =1{ഒരു ടാബ്}other{# ടാബുകൾ}}</translation>
 <translation id="4154277373259957087">പേയ്‌മെന്റ് രീതികൾ പൂരിപ്പിക്കുന്നതിന് മുമ്പ് ഇത് നിങ്ങളാണെന്ന് Chrome ഇപ്പോൾ പരിശോധിച്ചുറപ്പിക്കും. <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> എന്നതിൽ നിങ്ങൾക്ക് ഏതുസമയത്തും ഇത് അപ്ഡേറ്റ് ചെയ്യാം.</translation>
 <translation id="415440494507469262">താരതമ്യ പട്ടികയിലേക്ക് ടാബ് ചേർക്കുക</translation>
 <translation id="4159784952369912983">പര്‍പ്പിള്‍</translation>
@@ -2531,7 +2531,6 @@
             <ph name="LIST_ITEM" />ഫോമുകളിൽ നൽകിയ വിവരങ്ങൾ
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">വിപരീത ക്രമത്തിൽ ഫേസ് അപ്പ്</translation>
-<translation id="5445340838622821110">നിങ്ങൾ കാലക്രമേണ പേ ചെയ്യുമ്പോൾ, ഒരു ഒറ്റത്തവണ വെർച്വൽ കാർഡ് നമ്പർ പൂരിപ്പിക്കും. ഈ നമ്പർ ഈ വാങ്ങലിന് മാത്രമുള്ളതാണ്. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" /> സൈറ്റിനെ, അത് നിങ്ങളെ കുറിച്ച് സംരക്ഷിച്ചിരിക്കുന്ന വിവരങ്ങൾ ഉപയോഗിക്കാൻ അനുവദിക്കുക</translation>
 <translation id="5451331376824595378">Chrome സുരക്ഷാ ഇവന്റുകൾ ഫ്ലാഗ് ചെയ്യുമ്പോൾ, ഇവന്റുകളുമായി ബന്ധപ്പെട്ട പ്രസക്തമായ ഡാറ്റ നിങ്ങളുടെ അഡ്‌മിന് അയയ്ക്കുന്നു. Chrome-ൽ നിങ്ങൾ സന്ദർശിക്കുന്ന പേജുകളുടെ URL-കൾ, നിങ്ങൾ ഡാറ്റ പകർത്തിയ പേജുകളുടെ URL-കൾ, ഫയലിന്റെ പേരുകൾ അല്ലെങ്കിൽ മെറ്റാഡാറ്റ, IP വിലാസങ്ങൾ, ബ്രൗസർ അല്ലെങ്കിൽ ടാബ് ക്രാഷുകൾ, വെബ് അധിഷ്ഠിത ആപ്പുകളിലേക്കും നിങ്ങളുടെ ഉപകരണത്തിലേക്കും Chrome-ലേക്കും സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങൾ ഉപയോഗിച്ച ഉപയോക്തൃ നാമം എന്നിൽ ഇതിൽ ഉൾപ്പെടാം.</translation>
 <translation id="5452270690849572955">ഈ <ph name="HOST_NAME" /> പേജ് കണ്ടെത്താനായില്ല</translation>
@@ -3998,7 +3997,6 @@
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />നിങ്ങളുടെ കുക്കികൾ ഇല്ലാതാക്കി ശ്രമിക്കൂ<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">10 x 11 ഇഞ്ച്</translation>
 <translation id="8012647001091218357">ഇപ്പോൾ ഞങ്ങൾക്ക് നിങ്ങളുടെ രക്ഷകർത്താക്കളെ ബന്ധപ്പെടാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
-<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">ട്രാവൽ ഏജൻസികളും സേവനങ്ങളും</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, സിസ്റ്റത്തിന്റെ ഡിഫോൾട്ട് ബ്രൗസറായി Chrome സജ്ജീകരിക്കാൻ, tab അമർത്തിയ ശേഷം Enter അമർത്തുക</translation>
 <translation id="8027077570865220386">ട്രേ 15</translation>

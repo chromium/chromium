@@ -62,6 +62,9 @@ class MigrationNotificationManager : public KeyedService {
       MigrationDestination destination,
       const base::FilePath& destination_path);
 
+  // Shows a notification that the user's files were successfully removed.
+  void ShowDeletionCompletedNotification();
+
   // Shows a notification that migration completed with errors.
   void ShowMigrationErrorNotification(MigrationDestination destination,
                                       const std::string& folder_name,

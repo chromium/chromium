@@ -29,7 +29,7 @@ BASE_FEATURE(kLauncherLocalImageSearchRelevance,
 
 BASE_FEATURE(kLauncherImageSearchIca,
              "LauncherImageSearchIca",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kICASupportedByHardware,
              "ICASupportedByHardware",

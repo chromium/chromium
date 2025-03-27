@@ -93,6 +93,8 @@ class VideoEncoder {
   // Force key frame.
   void ForceKeyFrame();
 
+  bool IsFlushSupported();
+
   // Get the current state of the video encoder.
   EncoderState GetState() const;
 

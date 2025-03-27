@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 #include "content/public/browser/browser_thread.h"
@@ -127,9 +128,9 @@ void AXTreeFixingScreenAIService::HandleServiceDisconnect() {
 }
 
 void AXTreeFixingScreenAIService::ProcessScreenAIMainNodeIdentificationResult(
+    int request_id,
     const ui::AXTreeID& tree_id,
-    int node_id,
-    int request_id) {
+    int node_id) {
   // TODO(crbug.com/399383663): Add metrics, internal logic, etc.
   main_node_identification_delegate_->OnMainNodeIdentified(tree_id, node_id,
                                                            request_id);

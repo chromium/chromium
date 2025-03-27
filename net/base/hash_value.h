@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef NET_BASE_HASH_VALUE_H_
 #define NET_BASE_HASH_VALUE_H_
 
@@ -14,6 +9,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <array>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -26,33 +22,7 @@
 
 namespace net {
 
-struct NET_EXPORT SHA256HashValue {
-  unsigned char data[32];
-};
-
-inline bool operator==(const SHA256HashValue& lhs, const SHA256HashValue& rhs) {
-  return memcmp(lhs.data, rhs.data, sizeof(lhs.data)) == 0;
-}
-
-inline bool operator!=(const SHA256HashValue& lhs, const SHA256HashValue& rhs) {
-  return memcmp(lhs.data, rhs.data, sizeof(lhs.data)) != 0;
-}
-
-inline bool operator<(const SHA256HashValue& lhs, const SHA256HashValue& rhs) {
-  return memcmp(lhs.data, rhs.data, sizeof(lhs.data)) < 0;
-}
-
-inline bool operator>(const SHA256HashValue& lhs, const SHA256HashValue& rhs) {
-  return memcmp(lhs.data, rhs.data, sizeof(lhs.data)) > 0;
-}
-
-inline bool operator<=(const SHA256HashValue& lhs, const SHA256HashValue& rhs) {
-  return memcmp(lhs.data, rhs.data, sizeof(lhs.data)) <= 0;
-}
-
-inline bool operator>=(const SHA256HashValue& lhs, const SHA256HashValue& rhs) {
-  return memcmp(lhs.data, rhs.data, sizeof(lhs.data)) >= 0;
-}
+using SHA256HashValue = std::array<uint8_t, 32>;
 
 enum HashValueTag {
   HASH_VALUE_SHA256,
@@ -88,6 +58,9 @@ class NET_EXPORT HashValue {
   size_t size() const;
   unsigned char* data();
   const unsigned char* data() const;
+
+  base::span<uint8_t> span();
+  base::span<const uint8_t> span() const;
 
   // Iterate memory as bytes up to the end of its logical size.
   iterator begin() {

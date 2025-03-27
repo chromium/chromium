@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
-#include "components/performance_manager/scenario_api/performance_scenarios.h"
+#include "components/performance_manager/scenario_api/performance_scenario_memory.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

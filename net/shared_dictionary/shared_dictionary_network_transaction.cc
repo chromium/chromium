@@ -222,8 +222,8 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
     shared_dictionary_.reset();
     return;
   }
-  dictionary_hash_base64_ = base::StrCat(
-      {":", base::Base64Encode(shared_dictionary_->hash().data), ":"});
+  dictionary_hash_base64_ =
+      base::StrCat({":", base::Base64Encode(shared_dictionary_->hash()), ":"});
   request_headers->SetHeader(shared_dictionary::kAvailableDictionaryHeaderName,
                              dictionary_hash_base64_);
   if (enable_shared_zstd_) {

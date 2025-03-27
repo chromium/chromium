@@ -104,7 +104,7 @@ BASE_FEATURE(kEnableFatalCrashEventsObserver,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableChromeFatalCrashEventsObserver,
              "EnableChromeFatalCrashEventsObserver",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableKioskVisionTelemetry,
              "EnableKioskVisionTelemetry",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -252,7 +252,6 @@ void MetricReportingManager::Shutdown() {
   // `chrome_fatal_crash_events_observer_` before the actual class is destructed
   // by `event_observer_managers_`.
   fatal_crash_events_observer_ = nullptr;
-  chrome_fatal_crash_events_observer_ = nullptr;
   event_observer_managers_.clear();
   info_collectors_.clear();
   telemetry_collectors_.clear();
@@ -717,7 +716,6 @@ void MetricReportingManager::InitFatalCrashCollectors() {
   if (base::FeatureList::IsEnabled(kEnableChromeFatalCrashEventsObserver)) {
     std::unique_ptr<ChromeFatalCrashEventsObserver>
         chrome_fatal_crash_observer = ChromeFatalCrashEventsObserver::Create();
-    chrome_fatal_crash_events_observer_ = chrome_fatal_crash_observer.get();
     event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
         std::move(chrome_fatal_crash_observer),
         chrome_crash_event_report_queue_.get(), &reporting_settings_,

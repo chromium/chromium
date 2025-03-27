@@ -41,6 +41,7 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -306,11 +307,15 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
   NOTREACHED();
 }
 
+// A field is active if it contributes to the form signature and it is are
+// included in queries to the Autofill server.
 size_t CountActiveFieldsInForms(
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
   size_t active_field_count = 0;
   for (const FormStructure* form : forms) {
-    active_field_count += form->active_field_count();
+    active_field_count += std::ranges::count_if(
+        form->fields(),
+        [](const auto& field) { return !IsCheckable(field->check_status()); });
   }
   return active_field_count;
 }
@@ -869,9 +874,6 @@ std::tuple<GURL, std::string> AutofillCrowdsourcingManager::GetRequestURLAndMeth
     if (GetPayloadLength(request_data.payload) <= kMaxQueryGetSize) {
       resource_id = request_data.payload;
       method = "GET";
-      base::UmaHistogramBoolean(kUmaApiUrlIsTooLong, false);
-    } else {
-      base::UmaHistogramBoolean(kUmaApiUrlIsTooLong, true);
     }
     base::UmaHistogramBoolean(kUmaMethod, method != "GET");
   }

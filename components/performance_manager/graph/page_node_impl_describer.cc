@@ -91,10 +91,6 @@ base::Value::Dict PageNodeImplDescriber::DescribePageNodeData(
   result.Set("notification_permission",
              PermissionStatusToString(
                  page_node_impl->notification_permission_status_.value()));
-  if (page_node_impl->embedding_type_ != PageNode::EmbeddingType::kInvalid) {
-    result.Set("embedding_type",
-               PageNode::ToString(page_node_impl->embedding_type_));
-  }
   result.Set("resource_context",
              page_node_impl->GetResourceContext().ToString());
 

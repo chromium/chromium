@@ -78,15 +78,6 @@ class PLATFORM_EXPORT MediaPlayerClient : public WebMediaPlayerClient {
     kAudioTrackKindCommentary
   };
 
-  // Reason for a PausePlayback call, for better diagnostic messages.
-  enum class PauseReason {
-    kUnknown,
-    kPageHidden,
-    kSuspendedPlayerIdleTimeout,
-    kRemotePlayStateChange,
-    kFrameHidden,
-  };
-
   static const int kMediaRemotingStopNoText = -1;
 
   virtual void NetworkStateChanged() = 0;
@@ -159,7 +150,7 @@ class PLATFORM_EXPORT MediaPlayerClient : public WebMediaPlayerClient {
   virtual void ResumePlayback() = 0;
 
   // Request the player to pause playback.
-  virtual void PausePlayback(PauseReason) = 0;
+  virtual void PausePlayback(WebMediaPlayer::PauseReason) = 0;
 
   // Notify the client that the media player started playing content.
   virtual void DidPlayerStartPlaying() = 0;

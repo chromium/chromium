@@ -93,7 +93,10 @@
 
 #include "base/win/windows_h_disallowed.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -944,14 +947,33 @@ void DevToolsWindow::ScheduleShow(const DevToolsToggleAction& action) {
 }
 
 void DevToolsWindow::Show(const DevToolsToggleAction& action) {
-#if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-#else
   if (life_stage_ == kClosing)
     return;
 
   if (action.type() == DevToolsToggleAction::kNoOp)
     return;
+
+#if BUILDFLAG(IS_ANDROID)
+  if (TabModelList::models().empty()) {
+    return;
+  }
+
+  TabModel* tab_model = TabModelList::models()[0];
+  if (!tab_model) {
+    return;
+  }
+
+  if (!owned_main_web_contents_) {
+    return;
+  }
+  // TODO(crbug.com/406406862): Show it in a web app window instead of a tab.
+  tab_model->CreateTab(
+      nullptr,
+      OwnedMainWebContents::TakeWebContents(std::move(owned_main_web_contents_))
+          .release(),
+      true);
+  OverrideAndSyncDevToolsRendererPrefs();
+#else
   if (is_docked_) {
     DCHECK(can_dock_);
     content::WebContents* inspected_web_contents = GetInspectedWebContents();
@@ -1013,9 +1035,8 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
   }
   if (toolbox_web_contents_)
     UpdateBrowserWindow();
-
-  DoAction(action);
 #endif
+  DoAction(action);
 }
 
 // static

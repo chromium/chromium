@@ -35,7 +35,7 @@ namespace {
 
 bool IsLoggingOn(LogLevel level, std::string_view file) {
   if (level == LogLevel::kVerbose) {
-    return ::logging::GetVlogLevelHelper(file) > 0;
+    return ::logging::GetVlogLevelHelper(file.data(), file.size()) > 0;
   }
   return ::logging::ShouldCreateLogMessage(MapLogLevel(level));
 }

@@ -92,8 +92,9 @@ class OmniboxAction : public base::RefCountedThreadSafe<OmniboxAction> {
     // early exit. If this returns false, the caller should open the WebUI.
     virtual bool OpenJourneys(const std::string& query);
 
-    // Opens the lens overlay.
-    virtual void OpenLensOverlay() = 0;
+    // Opens the lens overlay. If `show` is true, the overlay UI is presented
+    // and if it's false then lens is used to contextualize without showing UI.
+    virtual void OpenLensOverlay(bool show) = 0;
 
     // Passes the contextual search request to Lens to handle fulfillment. Lens
     // uses the destination URL to grab the query and keep any additional

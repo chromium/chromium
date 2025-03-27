@@ -9,8 +9,9 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {InkColorSelectorElement} from './ink_color_selector.js';
 
 export function getHtml(this: InkColorSelectorElement) {
-  return html`
+  return html`<!--_html_template_start_-->
     <cr-grid role="radiogroup" columns="5" focus-selector=".color-chip"
+        aria-label="$i18n{ink2Color}"
         @cr-grid-focus-changed="${this.onCrGridFocusChanged_}">
       ${this.getCurrentBrushColors_().map(item => html`
         <label class="color-item">
@@ -24,5 +25,5 @@ export function getHtml(this: InkColorSelectorElement) {
               ?checked="${this.isCurrentColor_(item.color)}">
         </label>`)}
     </cr-grid>
-  `;
+  <!--_html_template_end_-->`;
 }

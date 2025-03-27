@@ -1440,7 +1440,7 @@ const std::vector<EngineAndTier> GetPrepopulationSetFromCountryID(
     UNHANDLED_COUNTRY(VU)  // Vanuatu
     UNHANDLED_COUNTRY(WS)  // Samoa
     UNHANDLED_COUNTRY(ZM)  // Zambia
-    case country_codes::CountryId::kUnknownCountryCode:
+    case country_codes::CountryId().Serialize():
     default:  // Unhandled location
       END_UNHANDLED_COUNTRIES(default)
   }

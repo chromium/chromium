@@ -80,33 +80,33 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 //
 // Calculations here are to have a rough estimate and assumes following.
 // Calculations are for version 1 (only supported version so far, browser will
-// verify this) and curve secp224r1. Exact size depends on how proto messages
-// are serialized.
+// verify this) and curve NID_X9_62_prime256v1. Exact size depends on how proto
+// messages are serialized.
 //
 // At most 400 tokens are allowed in a single response and browser will verify
 // it after deserializing response.
 //
 // - Assume `bytes` and `repeated` fields use 8 bytes for size.
-// - A token takes (4 + 37 + 37) 78 bytes. A response has at most 400 tokens.
-//   GetProbabilisticRevealTokenResponse.tokens might take as much as 400*78 + 8
-//   (31208) bytes.
-// - public_key takes (29 + 8) 37 bytes.
+// - A token takes (4 + 41 + 41) 86 bytes. A response has at most 400 tokens.
+//   GetProbabilisticRevealTokenResponse.tokens might take as much as 400*86 + 8
+//   (34408) bytes.
+// - public_key takes (33 + 8) 41 bytes.
 // - expiration_time_seconds take 8 bytes.
 // - next_epoch_start_time_seconds take 8 bytes.
 // - num_tokens_with_signal takes 4 bytes.
 // - epoch_id takes 8 bytes.
 //
-// This means response can be as much as (31208 + 37 + 8 + 8 + 4 + 8) 31273.
-// Limit is set to 32 * 1024 (32768) which gives more than our rough estimate.
+// This means response can be as much as (34408 + 41 + 8 + 8 + 4 + 8) 34477.
+// Limit is set to 40 * 1024 (40960) which gives more than our rough estimate.
 //
-// Serialized response with 400 tokens size is 26443, obtained by tweaking test
+// Serialized response with 400 tokens size is 29659, obtained by tweaking test
 // TryGetProbabilisticRevealTokensLargeResponse.
-constexpr size_t kGetProbabilisticRevealTokenResponseMaxBodySize = 32 * 1024;
+constexpr size_t kGetProbabilisticRevealTokenResponseMaxBodySize = 40 * 1024;
 constexpr char kProtobufContentType[] = "application/x-protobuf";
 constexpr int32_t kMinNumberOfTokens = 10;
 constexpr int32_t kMaxNumberOfTokens = 400;
 constexpr int32_t kTokenVersion = 1;
-constexpr int32_t kTokenSize = 29;
+constexpr int32_t kTokenSize = 33;
 constexpr int32_t kMinNumTokensWithSignal = 0;
 constexpr int32_t kEpochIdSize = 8;
 constexpr base::TimeDelta kMinExpirationTimeDelta = base::Hours(3);

@@ -48,7 +48,6 @@ class TabListRowView : public views::View,
   void RemovedFromWidget() override;
 
   // views::FocusChangeListener:
-  void OnWillChangeFocus(views::View* before, views::View* now) override {}
   void OnDidChangeFocus(views::View* before, views::View* now) override;
 
   // TabListModel::Observer:

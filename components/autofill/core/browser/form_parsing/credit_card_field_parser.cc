@@ -277,7 +277,7 @@ bool CreditCardFieldParser::LikelyCardMonthSelectField(
   };
   // If in doubt, return false.
   return matches_december(field->options().back()) &&
-         !std::ranges::any_of(field->options(), matches_year);
+         std::ranges::none_of(field->options(), matches_year);
 }
 
 // static

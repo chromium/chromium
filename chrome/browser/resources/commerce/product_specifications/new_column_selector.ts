@@ -40,8 +40,8 @@ export class NewColumnSelectorElement extends CrLitElement {
     };
   }
 
-  excludedUrls: string[] = [];
-  isTableFull: boolean = false;
+  accessor excludedUrls: string[] = [];
+  accessor isTableFull: boolean = false;
 
   override render() {
     return getHtml.bind(this)();

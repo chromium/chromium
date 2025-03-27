@@ -85,6 +85,13 @@ class GlicFreController {
   // Notify FRE controller that the user clicked "no thanks" in the FRE.
   void OnNoThanksClicked();
 
+  // Attempts to warm the FRE web contents.
+  void TryPreload();
+
+  // Returns true if the FRE web contents are loaded (either because it has been
+  // preloaded or because it is visible).
+  bool IsWarmed() const;
+
   // Returns the WebContents from the dialog view.
   content::WebContents* GetWebContents();
 
@@ -105,6 +112,7 @@ class GlicFreController {
                            UpdateLauncherOnFreCompletion);
   void ShowFreDialogAfterAuthCheck(base::WeakPtr<Browser> browser,
                                    AuthController::BeforeShowResult result);
+  void TryPreloadAfterAuthCheck(AuthController::BeforeShowResult result);
   static void OnCheckIsDefaultBrowserFinished(
       version_info::Channel channel,
       shell_integration::DefaultWebClientState state);
@@ -119,7 +127,11 @@ class GlicFreController {
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<views::Widget> fre_widget_;
-  raw_ptr<GlicFreDialogView> fre_view_;
+  std::unique_ptr<GlicFreDialogView> fre_view_;
+  // This is owned by the GlicFreDialogView but we retain a pointer to it so
+  // that we can continue to reference it even after `fre_view_` relinquishes
+  // ownership to the widget.
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   AuthController auth_controller_;
 
   // Tracks the tab that the FRE dialog is shown on.

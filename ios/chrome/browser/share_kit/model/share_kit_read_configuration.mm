@@ -17,7 +17,3 @@
 @implementation ShareKitReadGroupWithTokenConfiguration
 
 @end
-
-@implementation ShareKitReadConfiguration
-
-@end

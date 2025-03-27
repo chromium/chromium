@@ -20,7 +20,7 @@ SpeculationCandidate::SpeculationCandidate(
     mojom::blink::SpeculationEagerness eagerness,
     network::mojom::blink::NoVarySearchPtr no_vary_search,
     mojom::blink::SpeculationInjectionType injection_type,
-    Vector<std::optional<AtomicString>> tags,
+    Vector<WTF::String> tags,
     SpeculationRuleSet* rule_set,
     HTMLAnchorElementBase* anchor)
     : url_(url),
@@ -45,20 +45,12 @@ void SpeculationCandidate::Trace(Visitor* visitor) const {
 }
 
 mojom::blink::SpeculationCandidatePtr SpeculationCandidate::ToMojom() const {
-  Vector<WTF::String> tags;
-  tags.ReserveInitialCapacity(tags_.size());
-  for (const std::optional<AtomicString>& tag : tags_) {
-    if (tag.has_value()) {
-      tags.push_back(WTF::String(tag.value()));
-    }
-  }
-
   return mojom::blink::SpeculationCandidate::New(
       url_, action_,
       mojom::blink::Referrer::New(KURL(referrer_.referrer),
                                   referrer_.referrer_policy),
       requires_anonymous_client_ip_when_cross_origin_, target_hint_, eagerness_,
-      no_vary_search_.Clone(), injection_type_, std::move(tags));
+      no_vary_search_.Clone(), injection_type_, tags_);
 }
 
 bool SpeculationCandidate::IsSimilarFromAuthorPerspectiveExceptForTags(

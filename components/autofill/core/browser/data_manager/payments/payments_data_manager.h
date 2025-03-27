@@ -734,6 +734,12 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       const sync_pb::PaymentInstrumentCreationOption&
           payment_instrument_creation_option);
 
+  // Checks whether at least one eligible price range specifies `currency_code`
+  // as the currency.
+  bool HasEligibleCurrencyPriceRangeForBnplIssuer(
+      const std::vector<BnplIssuer::EligiblePriceRange>& eligible_price_ranges,
+      const std::string& currency_code) const;
+
   // Decides which database type to use for server and local cards.
   std::unique_ptr<PaymentsDatabaseHelper> database_helper_;
 

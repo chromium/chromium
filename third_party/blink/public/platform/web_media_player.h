@@ -121,6 +121,43 @@ class WebMediaPlayer {
   // of pre-rendering)
   enum LoadTiming { kImmediate, kDeferred };
 
+  // This is the reason supplied to `WebMediaPlayer::Pause()`. A
+  // `WebMediaPlayer` can be paused for many reasons that affect the internal
+  // state — including resumption strategies — differently. For example, a
+  // player can be paused to optimize a background tab, in which case
+  // foregrounding the tab could resume playback. Conversely, a non-optimized
+  // backgrounded tab can pause its media explicitly via
+  // `HTMLMediaElement::pause()`; in that case, foregrounding the tab should NOT
+  // resume playback.
+  enum class PauseReason {
+    // The player's tab is in the background.
+    kPageHidden,
+    // The player's frame is not rendered.
+    kFrameHidden,
+    // The player has been backgrounded for too long and will be paused to save
+    // resources.
+    kSuspendedPlayerIdleTimeout,
+    // The remote cast device has requested to pause the media.
+    kRemotePlayStateChange,
+    kEndOfPlayback,
+    // HTMLMediaElement::pause() was called.
+    kPauseCalled,
+    // The Browser process has requested to pause the media.
+    // TODO(crbug.com/40623496): Make sure that this is only used when there is
+    // a user gesture.
+    kPauseRequestedByUser,
+    kPauseRequestedInternally,
+    // The media element has been removed from the document.
+    kRemovedFromDocument,
+    // The Autoplay policy has requested to pause the media. This can happen
+    // when a muted HTMLMediaElement has started autoplaying and is not rendered
+    // in the viewport anymore.
+    kAutoplayAutoPause,
+    // The audio description track is lagging behind and we need to pause for it
+    // to catch up.
+    kLetAudioDescriptionFinish,
+  };
+
   // For video.requestVideoFrameCallback(). https://wicg.github.io/video-rvfc/
   struct VideoFramePresentationMetadata {
     uint32_t presented_frames;
@@ -143,7 +180,7 @@ class WebMediaPlayer {
 
   // Playback controls.
   virtual void Play() = 0;
-  virtual void Pause() = 0;
+  virtual void Pause(PauseReason pause_reason) = 0;
   virtual void Seek(double seconds) = 0;
   virtual void SetRate(double) = 0;
   virtual void SetVolume(double) = 0;

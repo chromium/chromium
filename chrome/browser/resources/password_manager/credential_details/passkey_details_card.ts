@@ -48,7 +48,7 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
   static get properties() {
     return {
       passkey: Object,
-      interactions_: {
+      interactionsEnum_: {
         type: Object,
         value: PasswordViewPageInteractions,
       },

@@ -110,8 +110,7 @@ CreateSharedTabGroupDataChangeProcessor() {
 std::unique_ptr<SyncDataTypeConfiguration>
 MaybeCreateSyncConfigurationForSharedTabGroupData(
     syncer::OnceDataTypeStoreFactory store_factory) {
-  if (!base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature)) {
+  if (!data_sharing::features::IsDataSharingFunctionalityEnabled()) {
     return nullptr;
   }
 
@@ -130,8 +129,7 @@ CreateSharedTabGroupAccountDataChangeProcessor() {
 std::unique_ptr<SyncDataTypeConfiguration>
 MaybeCreateSyncConfigurationForSharedTabGroupAccountData(
     syncer::OnceDataTypeStoreFactory store_factory) {
-  if (!base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature) ||
+  if (!data_sharing::features::IsDataSharingFunctionalityEnabled() ||
       !base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData)) {
     return nullptr;
   }

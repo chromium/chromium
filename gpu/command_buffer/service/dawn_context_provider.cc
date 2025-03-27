@@ -828,6 +828,9 @@ void DawnSharedContext::OnError(wgpu::ErrorType error_type,
 namespace {
 static constexpr char kDawnMemoryDumpPrefix[] = "gpu/dawn";
 
+static constexpr char kAllocatorMemoryDumpPrefix[] =
+    "gpu/vulkan/graphite_allocator";
+
 class DawnMemoryDump : public dawn::native::MemoryDump {
  public:
   explicit DawnMemoryDump(base::trace_event::ProcessMemoryDump* pmd)
@@ -862,10 +865,9 @@ class DawnMemoryDump : public dawn::native::MemoryDump {
 bool DawnSharedContext::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
+  using base::trace_event::MemoryAllocatorDump;
   if (args.level_of_detail ==
       base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
-    using base::trace_event::MemoryAllocatorDump;
-
     const dawn::native::MemoryUsageInfo mem_usage =
         dawn::native::ComputeEstimatedMemoryUsageInfo(device_.Get());
 
@@ -892,9 +894,27 @@ bool DawnSharedContext::OnMemoryDump(
         ->AddScalar(MemoryAllocatorDump::kNameSize,
                     MemoryAllocatorDump::kUnitsBytes, mem_usage.buffersUsage);
   } else {
-    DawnMemoryDump dump(pmd);
-    dawn::native::DumpMemoryStatistics(device_.Get(), &dump);
+    DawnMemoryDump dawnMemoryDump(pmd);
+    dawn::native::DumpMemoryStatistics(device_.Get(), &dawnMemoryDump);
   }
+
+  if (backend_type() == wgpu::BackendType::Vulkan) {
+    // For Graphite-Vulkan backend, report vulkan allocator dumps and
+    // statistics.
+    auto* dump = pmd->GetOrCreateAllocatorDump(kAllocatorMemoryDumpPrefix);
+    const dawn::native::AllocatorMemoryInfo allocator_usage =
+        dawn::native::GetAllocatorMemoryInfo(device_.Get());
+    // `allocated_size` is memory allocated from the device, used is what is
+    // actually used.
+    dump->AddScalar("allocated_size", MemoryAllocatorDump::kUnitsBytes,
+                    allocator_usage.totalAllocatedMemory);
+    dump->AddScalar("used_size", MemoryAllocatorDump::kUnitsBytes,
+                    allocator_usage.totalUsedMemory);
+    dump->AddScalar(
+        "fragmentation_size", MemoryAllocatorDump::kUnitsBytes,
+        allocator_usage.totalAllocatedMemory - allocator_usage.totalUsedMemory);
+  }
+
   return true;
 }
 

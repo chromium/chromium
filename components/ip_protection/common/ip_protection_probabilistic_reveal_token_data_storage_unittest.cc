@@ -28,6 +28,8 @@ namespace ip_protection {
 
 namespace {
 
+constexpr size_t kPRTPointSize = 33;
+
 int VersionFromMetaTable(sql::Database& db) {
   sql::Statement s(
       db.GetUniqueStatement("SELECT value FROM meta WHERE key='version'"));
@@ -194,8 +196,9 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest, StoreTokenOutcome) {
 
   // Store 3 tokens across two calls.
   OpenDatabase();
-  outcome.tokens.emplace_back(/*version=*/1, std::string(29, 'u'),
-                              std::string(29, 'e'), std::string(8, '0'));
+  outcome.tokens.emplace_back(/*version=*/1, std::string(kPRTPointSize, 'u'),
+                              std::string(kPRTPointSize, 'e'),
+                              std::string(8, '0'));
   outcome.expiration_time_seconds = 123;
   outcome.next_epoch_start_time_seconds = 456;
   outcome.num_tokens_with_signal = 100;
@@ -203,10 +206,12 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest, StoreTokenOutcome) {
   storage()->StoreTokenOutcome(outcome);
 
   TryGetProbabilisticRevealTokensOutcome outcome2;
-  outcome2.tokens.emplace_back(/*version=*/1, std::string(29, 'u'),
-                              std::string(29, 'e'), std::string(8, '0'));
-  outcome2.tokens.emplace_back(/*version=*/1, std::string(29, 'u'),
-                              std::string(29, 'e'), std::string(8, '0'));
+  outcome2.tokens.emplace_back(/*version=*/1, std::string(kPRTPointSize, 'u'),
+                               std::string(kPRTPointSize, 'e'),
+                               std::string(8, '0'));
+  outcome2.tokens.emplace_back(/*version=*/1, std::string(kPRTPointSize, 'u'),
+                               std::string(kPRTPointSize, 'e'),
+                               std::string(8, '0'));
   outcome2.expiration_time_seconds = 234;
   outcome2.next_epoch_start_time_seconds = 567;
   outcome2.num_tokens_with_signal = 200;
@@ -254,8 +259,9 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest, OpenCorruptedDatabase) {
 
   // Trigger the lazy-initialization by attempting to store a token.
   TryGetProbabilisticRevealTokensOutcome outcome;
-  outcome.tokens.emplace_back(/*version=*/1, std::string(29, 'u'),
-                              std::string(29, 'e'), std::string(8, '0'));
+  outcome.tokens.emplace_back(/*version=*/1, std::string(kPRTPointSize, 'u'),
+                              std::string(kPRTPointSize, 'e'),
+                              std::string(8, '0'));
   outcome.expiration_time_seconds = 123;
   outcome.next_epoch_start_time_seconds = 456;
   outcome.num_tokens_with_signal = 100;

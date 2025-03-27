@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Та хандах эрхээ алдахаасаа өмнө сургуулийн бүртгэлийнхээ өгөгдлийг хувийн бүртгэл рүүгээ зөөхөд Google-н Контент шилжүүлэх аппыг ашиглахаа мартуузай.</translation>
 <translation id="1026212596705997935">Товчлолыг "<ph name="CONFLICT_ACCEL_NAME" />"-д ашиглаж байна. Шинэ товчлолыг дарна уу. Одоо байгаа товчлолыг солихын тулд энэ товчлолыг дахин дарна уу.</translation>
 <translation id="1030856839388844477">Дата ашиглалтыг шинэчлэх</translation>
+<translation id="1047095725494118091">Татах боломжгүй байна. Дахин оролдох эсвэл өөрийн <ph name="DEVICE_TYPE" />-г дахин эхлүүлнэ үү.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> уялдаат, <ph name="CPU_MAX_CLOCK_SPEED" />Гц)</translation>
 <translation id="1047773237499189053">Шинэ онцлог боломжтой байна. Нэмэлт мэдээлэл авах бол Дээш суман товчийг ашиглана уу.</translation>
 <translation id="1049663189809099096">пастел шар</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Дэлгэц амраагчийг татаж байна</translation>
 <translation id="1094693127011229778">IP хаяг боломжгүй байна</translation>
 <translation id="1100902271996134409">Зургууд үүсгэж байна...</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" />-н аудио</translation>
 <translation id="1116694919640316211">Тухай</translation>
 <translation id="1118572504348554005">Бид энэ маягтаар илгээсэн санал хүсэлтийг алдаа болон таны бидэнд мэдээлсэн бусад асуудлыг шийдэхийн тулд түншүүд рүүгээ илгээж магадгүй. Нууц үг зэрэг эмзэг мэдээлэл бүү оруулаарай.</translation>
 <translation id="1119403468619527527">Хялбар болгоход хэт цөөн үг байна</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Бараан горимыг асаах</translation>
 <translation id="2164131940279488868">Аудио бичиж эхлэхийн тулд микрофон холбогдсон эсэхийг баталгаажуулна уу</translation>
 <translation id="2173302385160625112">Интернэт холболтоо шалгана уу</translation>
+<translation id="2176909213844392588"><ph name="LANGUAGE_NAME" /> хэлээрх сийрүүлгийн загварыг татах боломжгүй байна. Дахин оролдох эсвэл өөрийн <ph name="DEVICE_TYPE" />-г дахин эхлүүлнэ үү.</translation>
 <translation id="2180197493692062006">Алдаа гарлаа. Аппыг дахин нээж үзнэ үү.</translation>
 <translation id="2189104374785738357">APN-н дэлгэрэнгүйг засах</translation>
 <translation id="2195732836444333448">Ачаалалтай байна. Удахгүй эргэн ирээрэй.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Документыг дамжуулах тавиур (Хоёр талаар нь)</translation>
 <translation id="3201315366910775591">Дундын цомгийг бусад хүн шинэчлэх боломжтой</translation>
 <translation id="3211671540163313381">Товч харгалзуулалтын D-pad</translation>
+<translation id="3217462202230355157">Микрофоноо холбогдсон эсэхийг нягтлах эсвэл өөрийн <ph name="DEVICE_TYPE" />-г дахин эхлүүлж үзнэ үү</translation>
 <translation id="3226405216343213872">Сканнерыг хайж байна</translation>
 <translation id="3226657629376379887">Бүдүүвчийн үйлдлийн цэс</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />-н утгыг <ph name="CONVERSION_RATE" />-д хуваана уу</translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Онцгой</translation>
 <translation id="3404249063913988450">Дэлгэц амраагчийг идэвхжүүлэх</translation>
 <translation id="3413935475507503304">Шинэчлэлтийг үргэлжлүүлэхийн тулд Дараах дээр товшино уу.</translation>
+<translation id="3416709353545797224"><ph name="DEVICE_TYPE" />-н бүх аудиог бичиж байна</translation>
 <translation id="3428551088151258685">гадаа</translation>
 <translation id="3428971106895559033">пастел</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Сканнер асаалттай бөгөөд таны сүлжээ эсвэл шууд холболтоор боломжтой эсэхийг шалгана уу</translation>
 <translation id="4159238217853743776">Хэсэгчилсэн</translation>
 <translation id="4159784952369912983">Нил ягаан</translation>
+<translation id="416219735020840807">Сийрүүлгийн загварыг татах боломжгүй байна. Дахин оролдох эсвэл өөрийн <ph name="DEVICE_TYPE" />-г дахин эхлүүлнэ үү.</translation>
 <translation id="4170180284036919717">Зураг авах</translation>
 <translation id="4170700058716978431">АМЖИЛТГҮЙ БОЛЛОО</translation>
 <translation id="4171077696775491955">гэрэлтүүлгийг багасгах</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Сонгосон текстийг зөвлөмжөөр сольж байна</translation>
 <translation id="5346687412805619883">Дотоод сүлжээ</translation>
 <translation id="5358174242040570474">Алдаа гарлаа. Дэлгэцийн зураг дахин сонгох эсвэл аппыг дахин нээж үзнэ үү.</translation>
+<translation id="5368228070728130240">Хураангуй, нэр үүсгэх загварыг татах боломжгүй байна. Дахин оролдох эсвэл өөрийн <ph name="DEVICE_TYPE" />-г дахин эхлүүлнэ үү.</translation>
 <translation id="5372659122375744710">Wi-Fi сүлжээ аюулгүй биш байна</translation>
 <translation id="5376354385557966694">Автомат гэрэлтэй горим</translation>
 <translation id="5378184552853359930">IP төрөл</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">DNS-н тайлал амжилтгүй</translation>
 <translation id="6768237774506518020">DNS-н тайллын алдааны өндөр хувь</translation>
 <translation id="6786747875388722282">Өргөтгөлүүд</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" />-н аудио асаалттай байхад Дуу хураагуур энэ төхөөрөмж дээр тоглуулж буй бүх аудиог бичнэ</translation>
 <translation id="6791471867139427246">гарын гэрлийн өнгө</translation>
 <translation id="6796229976413584781">Товчлолыг устгасан</translation>
 <translation id="6798678288485555829">Текстийн навигац</translation>
@@ -1728,6 +1736,7 @@
 <translation id="8930622219860340959">Утасгүй</translation>
 <translation id="8933650076320258356">Сонгосон товч нь <ph name="DIRECTION" />-н <ph name="KEYS" /> байна. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Клиентийн IP хаяг</translation>
+<translation id="8938606491880817721">Татах боломжгүй байна. Дахин оролдох эсвэл өөрийн <ph name="DEVICE_TYPE" />-г дахин эхлүүлнэ үү.</translation>
 <translation id="8944651180182756621">Эхлүүлэгчийн өнгө</translation>
 <translation id="8945308580158685341">зөгийнүүд</translation>
 <translation id="894617464444543719">Төхөөрөмж нь утас байна.</translation>

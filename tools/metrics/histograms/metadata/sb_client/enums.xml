@@ -126,6 +126,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unspecified"/>
   <int value="1" label="Intelligent scan verdict safe"/>
   <int value="2" label="Scam experiment verdict 1"/>
+  <int value="3" label="Scam experiment verdict 2"/>
+  <int value="1000" label="Scam experiment verdict catch all"/>
 </enum>
 
 <!-- LINT.IfChange(SafeBrowsingAndroidGetReferringAppInfoResult) -->

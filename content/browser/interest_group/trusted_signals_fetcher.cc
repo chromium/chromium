@@ -408,11 +408,8 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
   auto client_security_state = network::mojom::ClientSecurityState::New();
   client_security_state->ip_address_space = ip_address_space;
   client_security_state->is_web_secure_context = true;
-  // This call is needed to respect the various features that affect the policy.
   client_security_state->private_network_request_policy =
-      DerivePrivateNetworkRequestPolicy(
-          ip_address_space, /*is_web_secure_context=*/true,
-          PrivateNetworkRequestContext::kSubresource);
+      network::mojom::PrivateNetworkRequestPolicy::kBlock;
   trusted_params.client_security_state = std::move(client_security_state);
 
   auction_downloader_ = std::make_unique<auction_worklet::AuctionDownloader>(

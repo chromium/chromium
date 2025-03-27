@@ -66,6 +66,7 @@ class LiveTabContextBrowserAgent
       const sessions::tab_restore::Tab& tab,
       int tab_index,
       bool select,
+      bool restored_from_group_or_window_context,
       sessions::tab_restore::Type original_session_type) override;
   sessions::LiveTab* ReplaceRestoredTab(
       const sessions::tab_restore::Tab& tab) override;

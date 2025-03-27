@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.device.bluetooth.wrapper.BluetoothSocketWrapper;
 import org.chromium.device.bluetooth.wrapper.ThreadUtilsWrapper;
 
@@ -25,6 +26,7 @@ import java.io.OutputStream;
  *
  * <p>Lifetime is controlled by device::BluetoothSocketAndroid.
  */
+@NullMarked
 public class ChromeBluetoothSocket {
     private static final String TAG = "Bluetooth";
 

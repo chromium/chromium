@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -143,7 +144,12 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         // Verify
         verify(mTabDragSource)
                 .startGroupDragAction(
-                        mContainerView, GROUP_ID, DRAG_START_POINT, TAB_WIDTH, TAB_WIDTH);
+                        mContainerView,
+                        GROUP_ID,
+                        /* isGroupShared= */ false,
+                        DRAG_START_POINT,
+                        TAB_WIDTH,
+                        TAB_WIDTH);
     }
 
     @Test
@@ -447,6 +453,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         when(mTabDragSource.startGroupDragAction(
                         Mockito.eq(mContainerView),
                         eq(GROUP_ID),
+                        anyBoolean(),
                         eq(DRAG_START_POINT),
                         anyFloat(),
                         anyFloat()))

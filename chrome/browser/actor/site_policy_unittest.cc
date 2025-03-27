@@ -19,16 +19,6 @@ namespace actor {
 
 namespace {
 
-class FakeTabInterface : public tabs::MockTabInterface {
- public:
-  explicit FakeTabInterface(content::WebContents* contents)
-      : contents_(contents) {}
-  content::WebContents* GetContents() const override { return contents_; }
-
- private:
-  raw_ptr<content::WebContents> contents_;
-};
-
 class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
  public:
   ActorSitePolicyTest() = default;
@@ -52,7 +42,10 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
   void CheckUrl(const GURL& url, bool expected_allowed) {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                                url);
-    FakeTabInterface tab(web_contents());
+
+    tabs::MockTabInterface tab;
+    ON_CALL(tab, GetContents).WillByDefault(::testing::Return(web_contents()));
+
     base::test::TestFuture<bool> allowed;
     MayActOnTab(tab, allowed.GetCallback());
     // The result should not be provided synchronously.

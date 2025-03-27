@@ -77,7 +77,6 @@ class ASH_EXPORT QuickInsertSearchFieldView
                       const ui::KeyEvent& key_event) override;
 
   // views::FocusChangeListener:
-  void OnWillChangeFocus(View* focused_before, View* focused_now) override;
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
   // Should be called every time the contents of the text field changes, even

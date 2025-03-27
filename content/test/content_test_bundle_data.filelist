@@ -2536,6 +2536,9 @@ data/accessibility/event/description-change-no-relation-expected-uia-win.txt
 data/accessibility/event/description-change-no-relation-expected-win.txt
 data/accessibility/event/description-change-no-relation.html
 data/accessibility/event/description-change.html
+data/accessibility/event/description-changed-pane-title-expected-android.txt
+data/accessibility/event/description-changed-pane-title.html
+data/accessibility/event/description-changed-subtree.html
 data/accessibility/event/disabled-state-changed-expected-auralinux.txt
 data/accessibility/event/disabled-state-changed-expected-win.txt
 data/accessibility/event/disabled-state-changed.html

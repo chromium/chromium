@@ -46,6 +46,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kListenToThisPageEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterUint64Pref(kReadAloudSalt, 0);
+  registry->RegisterIntegerPref(prefs::kReadAloudPlaybackMode, user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 void RegisterLocalPrefs(PrefRegistrySimple* registry) {

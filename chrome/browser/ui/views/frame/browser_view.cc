@@ -98,6 +98,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/tab_search_toolbar_button_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -3172,6 +3173,20 @@ void BrowserView::MaybeShowExperimentalAIIPH() {
   }
 }
 
+void BrowserView::MaybeShowTabStripToolbarButtonIPH() {
+  if (!browser()->is_type_normal()) {
+    return;
+  }
+  bool should_show =
+      features::HasTabSearchToolbarButton() &&
+      toolbar_->pinned_toolbar_actions_container()->IsActionPinned(
+          kActionTabSearch);
+  if (should_show) {
+    MaybeShowFeaturePromo(
+        feature_engagement::kIPHTabSearchToolbarButtonFeature);
+  }
+}
+
 void BrowserView::DestroyBrowser() {
   // After this returns other parts of Chrome are going to be shutdown. Close
   // the window now so that we are deleted immediately and aren't left holding
@@ -3785,6 +3800,20 @@ void BrowserView::OnSplitTabCreated(
       browser_->tab_strip_model()->GetActiveTab();
   if (active_tab->IsSplit()) {
     ShowSplitView();
+  }
+}
+
+void BrowserView::OnSplitTabRemoved(
+    std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+    split_tabs::SplitTabId split_id,
+    SplitTabRemoveReason reason) {
+  const bool is_split_active = std::any_of(
+      tabs.begin(), tabs.end(), [](std::pair<tabs::TabInterface*, int>& tab) {
+        return tab.first->IsActivated();
+      });
+
+  if (is_split_active) {
+    HideSplitView();
   }
 }
 
@@ -5110,6 +5139,7 @@ void BrowserView::AddedToWidget() {
 
   MaybeInitializeWebUITabStrip();
   MaybeShowWebUITabStripIPH();
+  MaybeShowTabStripToolbarButtonIPH();
 
   // Want to show this promo, but not right at startup.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

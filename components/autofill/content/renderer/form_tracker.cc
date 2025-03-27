@@ -491,7 +491,8 @@ void FormTracker::UpdateLastInteractedElement(
                 unsafe_render_frame()->GetWebFrame()->GetDocument(),
                 last_interacted_.form.GetForm(), agent_->field_data_manager(),
                 agent_->GetCallTimerState(
-                    CallTimerState::CallSite::kUpdateLastInteractedElement))
+                    CallTimerState::CallSite::kUpdateLastInteractedElement),
+                agent_->button_titles_cache())
           : std::nullopt;
 }
 

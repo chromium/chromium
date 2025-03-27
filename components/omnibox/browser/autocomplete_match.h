@@ -77,16 +77,8 @@ struct RichAutocompletionParams {
   static RichAutocompletionParams& GetParams();
   static void ClearParamsForTesting();
   bool enabled;
-  bool autocomplete_titles;
-  bool autocomplete_titles_shortcut_provider;
-  int autocomplete_titles_min_char;
-  bool autocomplete_non_prefix_all;
-  bool autocomplete_non_prefix_shortcut_provider;
-  int autocomplete_non_prefix_min_char;
-  bool autocomplete_shortcut_text;
-  int autocomplete_shortcut_text_min_char;
-  bool counterfactual;
-  bool autocomplete_prefer_urls_over_prefixes;
+  size_t autocomplete_titles_min_char;
+  size_t autocomplete_shortcut_text_min_char;
 };
 
 enum class IphType {
@@ -224,9 +216,9 @@ struct AutocompleteMatch {
   // numeric values should never be reused.
   enum class RichAutocompletionType {
     kNone = 0,
-    kUrlNonPrefix = 1,
+    // kUrlNonPrefix = 1, // deprecated
     kTitlePrefix = 2,
-    kTitleNonPrefix = 3,
+    // kTitleNonPrefix = 3, // deprecated
     kShortcutTextPrefix = 4,
     kMaxValue = kShortcutTextPrefix,
   };
@@ -683,13 +675,10 @@ struct AutocompleteMatch {
   // - Split autocomplete |secondary_text|
   // Returns false if none of the autocompletions were appropriate (or the
   // features were disabled).
-  bool TryRichAutocompletion(const std::u16string& primary_text,
+  bool TryRichAutocompletion(const AutocompleteInput& input,
+                             const std::u16string& primary_text,
                              const std::u16string& secondary_text,
-                             const AutocompleteInput& input,
                              const std::u16string& shortcut_text = u"");
-
-  // True if `inline_autocompletion` and `prefix_autocompletion` are both empty.
-  bool IsEmptyAutocompletion() const;
 
   // Serialise this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
@@ -758,20 +747,11 @@ struct AutocompleteMatch {
   // omnibox, if this match becomes the default match.  It may be empty.
   std::u16string inline_autocompletion;
   // Whether rich autocompletion triggered; i.e. this suggestion *is or could
-  // have been* rich autocompleted. This is usually redundant and checking
-  // whether `prefix_autocompletion` is non-empty should be used instead to
-  // determine if this suggestion *is* rich autocompleted. But for
-  // counterfactual variations, `prefix_autocompletion` isn't copied when
-  // deduping matches to avoid showing rich autocompletion and so can't be used
-  // to trigger logging.
+  // have been* rich autocompleted.
   // TODO(manukh): remove `rich_autocompletion_triggered` when counterfactual
   //  experiments end.
   RichAutocompletionType rich_autocompletion_triggered =
       RichAutocompletionType::kNone;
-  // The inline autocompletion to display before the user's input in the
-  // omnibox, if this match becomes the default match. Always empty if
-  // non-prefix autocompletion is disabled.
-  std::u16string prefix_autocompletion;
 
   // If false, the omnibox should prevent this match from being the
   // default match.  Providers should set this to true only if the

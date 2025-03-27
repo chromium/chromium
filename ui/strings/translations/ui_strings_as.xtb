@@ -38,6 +38,7 @@
 <translation id="19085484004813472">এইটো এটা নতুন সুবিধা</translation>
 <translation id="2006524834898217237">নিশ্চিত হৈ লওক যে এই ডিভাইচটো ইণ্টাৰনেটৰ সৈতে সংযুক্ত হৈ আছে।</translation>
 <translation id="208586643495776849">অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />ইনক’গনিট’ ম’ডত অনুমতি দিয়ক<ph name="END_BOLD" /> সুবিধাটো অন কৰক</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{১দিন}one{#দিন}other{#দিন}}</translation>
 <translation id="2148716181193084225">আজি</translation>
 <translation id="2168039046890040389">Page Up</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">আপোনাৰ স্ক্ৰীনত স্পর্শ লক্ষ্যসমূহত টিপক।</translation>
 <translation id="2295140143284145483">সমীক্ষা</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> টি.বি./ছেকেণ্ড</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> আইডিৰ এক্সেটেনশ্বনৰ অৱস্থান নিৰ্ধাৰণ কৰিব পৰা নগ’ল। আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।}one{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> আইডিৰ এক্সেটেনশ্বনসমূহৰ অৱস্থান নিৰ্ধাৰণ কৰিব পৰা নগ’ল। আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> আইডিৰ এক্সেটেনশ্বনসমূহৰ অৱস্থান নিৰ্ধাৰণ কৰিব পৰা নগ’ল। আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।}}</translation>
 <translation id="2353636109065292463">আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি থকা হৈছে</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2388990488038464401">আপোনাৰ ফ'নৰ পৰা এই নম্বৰটো লৈ কল কৰিবনে?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">সকলো মচক</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{১ দিনত}one{# দিনত}other{# দিনত}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> স্তম্ভটো অধঃক্ৰমত সজোৱা হৈছে।</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{এক্সটেনশ্বন বিচাৰি পোৱা নাই}one{এক্সটেনশ্বনসমূহ বিচাৰি পোৱা নাই}other{এক্সটেনশ্বনসমূহ বিচাৰি পোৱা নাই}}</translation>
 <translation id="3036649622769666520">ফাইল খোলক</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> এম.বি.</translation>
 <translation id="3087734570205094154">একেবাৰে তলি</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">ইয়াৰপৰা এটা কল কৰক</translation>
 <translation id="3306688585798492231">বিল্ট-ইন ডিছপ্লে’</translation>
 <translation id="335581015389089642">কথন</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />সবিশেষ<ph name="END_BOLD" />ত ক্লিক কৰক</translation>
 <translation id="3389286852084373014">পাঠখিনি যথেষ্ট দীঘল</translation>
 <translation id="3406306243914553062">HTML সমল</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{১ দিন বাকী আছে}one{# দিন বাকী আছে}other{# দিন বাকী আছে}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> স্তম্ভটো ঊৰ্ধ্বক্ৰমত সজোৱা হৈছে।</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{১টা নপঢ়া জাননী}one{#টা নপঢ়া জাননী}other{#টা নপঢ়া জাননী}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{ইনক’গনিট’ ম’ডত নিম্নলিখিত এক্সটেনশ্বনটো অন কৰক:}one{ইনক’গনিট’ ম’ডত নিম্নলিখিত এক্সটেনশ্বনসমূহ অন কৰক:}other{ইনক’গনিট’ ম’ডত নিম্নলিখিত এক্সটেনশ্বনসমূহ অন কৰক:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{১মাহ পূর্বে}one{#মাহ পূর্বে}other{#মাহ পূর্বে}}</translation>
 <translation id="4289300219472526559">কথা কওক</translation>
 <translation id="4289540628985791613">ৰূপৰেখা</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">সংখ্যা</translation>
 <translation id="4746179598275229723">এক্সটেনশ্বন আনপিন কৰা আছে</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{১ মাহ বাকী আছে}one{# মাহ বাকী আছে}other{# মাহ বাকী আছে}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{ইনক’গনিট’ ম’ড ব্যৱহাৰ কৰিবলৈ, আপোনাৰ প্ৰতিষ্ঠানক এটা এক্সটেনশ্বনৰ প্ৰয়োজন}one{ইনক’গনিট’ ম’ড ব্যৱহাৰ কৰিবলৈ, আপোনাৰ প্ৰতিষ্ঠানক কিছুমান এক্সটেনশ্বনৰ প্ৰয়োজন}other{ইনক’গনিট’ ম’ড ব্যৱহাৰ কৰিবলৈ, আপোনাৰ প্ৰতিষ্ঠানক কিছুমান এক্সটেনশ্বনৰ প্ৰয়োজন}}</translation>
+<translation id="482932175346970750">আপোনাৰ ব্ৰাউজাৰত <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> টাইপ কৰক</translation>
 <translation id="4888938634149558681">কল কৰক</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{১ ছেকেণ্ড}one{# ছেকেণ্ড}other{# ছেকেণ্ড}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;পেষ্ট কৰক</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> পি.বি.</translation>
 <translation id="5278860589123563674">পঠিয়াব পৰা নগ’ল</translation>
+<translation id="5283101102242354279">ইনক’গনিট’ ম’ডত এটা এক্সটেনশ্বন অন কৰক:</translation>
 <translation id="528468243742722775">সমাপ্ত</translation>
 <translation id="5329858601952122676">&amp;মচক</translation>
 <translation id="5361107212971249203">পাঠ</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">পাছৰবাৰ এইটো ৰিষ্টাৰ্ট কৰিলে আপোনাৰ এপ্লিকেশ্বনৰ ডিছপ্লে’ৰ ছেটিংসমূহ কার্যকৰী হ’ব।</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{১ মিনিট বাকী আছে}one{# মিনিট বাকী আছে}other{# মিনিট বাকী আছে}}</translation>
+<translation id="7252604552361840748">ওপৰত উল্লিখিত এক্সটেনশ্বনটো বিচাৰক</translation>
 <translation id="7363164521834647158">প্ৰত্যুত্তৰ পঠিয়াওক</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{১মিনিট পূৰ্বে}one{#মিনিট পূৰ্বে}other{#মিনিট পূৰ্বে}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

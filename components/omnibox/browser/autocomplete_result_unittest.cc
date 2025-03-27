@@ -2574,6 +2574,9 @@ TEST_F(AutocompleteResultTest, Desktop_MostVisitedSitesGrouping) {
       omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
       scoped_config;
   scoped_config.Get().enabled = true;
+  scoped_config.Get().max_suggestions = 8U;
+  scoped_config.Get().max_url_suggestions = 4U;
+  scoped_config.Get().max_search_suggestions = 4U;
 
   const auto group1 = omnibox::GROUP_MOST_VISITED;
   const auto group2 = omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;

@@ -174,7 +174,7 @@ void SharedDictionaryWriterOnDisk::MaybeFinish() {
   entry_.reset();
   DCHECK_EQ(written_size_, total_size_);
   net::SHA256HashValue sha256;
-  secure_hash_->Finish(sha256.data, sizeof(sha256.data));
+  secure_hash_->Finish(sha256);
   std::move(callback_).Run(Result::kSuccess, total_size_, sha256);
 }
 

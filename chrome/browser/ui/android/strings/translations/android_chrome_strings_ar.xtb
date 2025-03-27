@@ -250,6 +250,7 @@
 <translation id="2172905120685242547">هل تريد إغلاق النافذة؟</translation>
 <translation id="2173302385160625112">يُرجى التحقُّق من اتصال الإنترنت.</translation>
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
+<translation id="2181097965834437145">عرض شريط الإشارات أو إخفاؤه</translation>
 <translation id="2184272387334793084">سجِّل الدخول للوصول إلى كلمات المرور والإعدادات الأخرى على جميع أجهزتك</translation>
 <translation id="218608176142494674">المشاركة</translation>
 <translation id="219283042927675668">علامات التبويب في المجموعة</translation>
@@ -698,7 +699,7 @@
 <translation id="4285498937028063278">إزالة التثبيت</translation>
 <translation id="4285846616383034558">ملفات تعريف الارتباط وذاكرة التخزين المؤقّت والبيانات الأخرى للمواقع الإلكترونية</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />تفعيل قفل الشاشة في إعدادات Android<ph name="END_LINK" /></translation>
-<translation id="4296252229500326964">علامة تبويب جديدة في وضع التصفُّح المتخفي</translation>
+<translation id="4296252229500326964">علامة تبويب جديدة للتصفُّح المتخفي</translation>
 <translation id="4298388696830689168">المواقع المرتبطة</translation>
 <translation id="4303044213806199882">‏chrome_لقطة شاشة_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">الإعدادات الأساسية</translation>
@@ -927,7 +928,7 @@
 <translation id="5327248766486351172">الاسم</translation>
 <translation id="5328542107300944283">الاستخدام مع <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">طلبات الإذن</translation>
-<translation id="534580735623577507">لم تتم زيارة أي مواقع إلكترونية خلال <ph name="TIME_PERIOD" />.</translation>
+<translation id="534580735623577507">لم تتم زيارة أي مواقع في <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">الحماية المُحسّنة مفعّلة.</translation>
 <translation id="5375374982898812658">ستفقد على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"، وسيتم حذفها من جميع أجهزتك</translation>
 <translation id="5375577065097716013">‏ابحث في الصور عبر "عدسة Google‏" <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>

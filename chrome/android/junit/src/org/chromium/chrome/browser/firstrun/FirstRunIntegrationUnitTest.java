@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.UserManager;
@@ -32,8 +33,10 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.webapps.WebApkIntentDataProviderFactory;
@@ -293,5 +296,13 @@ public final class FirstRunIntegrationUnitTest {
         Assert.assertEquals(
                 mContext.getPackageName(),
                 Shadows.shadowOf(freCompleteLaunchIntent).getSavedIntent().getPackage());
+    }
+
+    @Test
+    @Config(qualifiers = "large")
+    @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
+    public void testFirstRunActivityScreenLayoutLarge() {
+        Activity firstRunActivity = createActivity(FirstRunActivity.class, new Intent());
+        Assert.assertEquals(Color.BLACK, firstRunActivity.getWindow().getStatusBarColor());
     }
 }

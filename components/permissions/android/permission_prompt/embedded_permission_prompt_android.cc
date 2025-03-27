@@ -95,7 +95,7 @@ void EmbeddedPermissionPromptAndroid::Closing() {
   // than only one dismiss reason of clicking outside the dialog. We are
   // grouping all of them into one single type for now and might expose others
   // later.
-  prompt_model_->RecordOsMetrics(permissions::OsScreenAction::DISMISSED_SCRIM);
+  prompt_model_->RecordOsMetrics(permissions::OsScreenAction::kDismissedScrim);
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kDismissedScrim);
   prompt_model_->SetDelegateAction(Action::kDismiss);
@@ -138,7 +138,7 @@ void EmbeddedPermissionPromptAndroid::Resumed() {
 }
 
 void EmbeddedPermissionPromptAndroid::SystemSettingsShown() {
-  prompt_model_->RecordOsMetrics(permissions::OsScreenAction::SYSTEM_SETTINGS);
+  prompt_model_->RecordOsMetrics(permissions::OsScreenAction::kSystemSettings);
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kSystemSettings);
 }
@@ -146,12 +146,12 @@ void EmbeddedPermissionPromptAndroid::SystemSettingsShown() {
 void EmbeddedPermissionPromptAndroid::SystemPermissionResolved(bool accepted) {
   if (accepted) {
     prompt_model_->RecordOsMetrics(
-        permissions::OsScreenAction::OS_PROMPT_ALLOWED);
+        permissions::OsScreenAction::kOsPromptAllowed);
     MaybeUpdateDialogWithNewScreenVariant();
   } else {
     prompt_model_->PrecalculateVariantsForMetrics();
     prompt_model_->RecordOsMetrics(
-        permissions::OsScreenAction::OS_PROMPT_DENIED);
+        permissions::OsScreenAction::kOsPromptDenied);
     prompt_model_->SetDelegateAction(Action::kDismiss);
     delegate()->FinalizeCurrentRequests();
   }

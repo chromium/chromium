@@ -10,7 +10,9 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -44,10 +46,12 @@ namespace contextual_cueing {
 
 ContextualCueingService::ContextualCueingService(
     page_content_annotations::PageContentExtractionService*
-        page_content_extraction_service)
+        page_content_extraction_service,
+    OptimizationGuideKeyedService* optimization_guide_keyed_service)
     : recent_nudge_tracker_(kNudgeCapCount.Get(), kNudgeCapTime.Get()),
       recent_visited_origins_(kVisitedDomainsLimit.Get()),
-      page_content_extraction_service_(page_content_extraction_service) {
+      page_content_extraction_service_(page_content_extraction_service),
+      optimization_guide_keyed_service_(optimization_guide_keyed_service) {
   CHECK(base::FeatureList::IsEnabled(contextual_cueing::kContextualCueing));
 
   if (kEnablePageContentExtraction.Get()) {
@@ -95,7 +99,6 @@ void ContextualCueingService::CueingNudgeDismissed() {
 }
 
 void ContextualCueingService::CueingNudgeClicked() {
-
   dismiss_count_ = 0;
 }
 
@@ -121,12 +124,12 @@ bool ContextualCueingService::IsNudgeBlockedByBackoffRule() const {
 }
 
 void ContextualCueingService::OnNudgeActivity(
-    const GURL& url,
-    ukm::SourceId source_id,
+    content::WebContents* web_contents,
     base::TimeTicks document_available_time,
     tabs::GlicNudgeActivity activity) {
   std::optional<base::TimeTicks> nudge_time =
       recent_nudge_tracker_.GetMostRecentNudgeTime();
+  const GURL& url = web_contents->GetLastCommittedURL();
   NudgeInteraction interaction;
   bool log_ukm = false;
   switch (activity) {
@@ -161,9 +164,45 @@ void ContextualCueingService::OnNudgeActivity(
   // activities result in a UKM call.
   if (log_ukm) {
     CHECK(nudge_time);
-    LogNudgeInteractionUKM(source_id, interaction, document_available_time,
-                           *nudge_time);
+    LogNudgeInteractionUKM(
+        web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(), interaction,
+        document_available_time, *nudge_time);
   }
+
+  // Temporary trigger for suggestions request, to be removed when UI is ready.
+  if (activity == tabs::GlicNudgeActivity::kNudgeClicked &&
+      base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
+    ZeroStateSuggestionsPageData::CreateForPage(
+        web_contents->GetPrimaryPage(), url,
+        reinterpret_cast<const char*>(web_contents->GetTitle().c_str()),
+        optimization_guide_keyed_service_, base::DoNothing());
+  }
+}
+
+void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
+    content::WebContents* web_contents,
+    bool is_fre,
+    GlicSuggestionsCallback callback) {
+  // TODO(crbug.com/405988283): Add branch for hints suggestions.
+
+  // Remote suggestions generation.
+  ZeroStateSuggestionsPageData::CreateForPage(
+      web_contents->GetPrimaryPage(), web_contents->GetLastCommittedURL(),
+      reinterpret_cast<const char*>(web_contents->GetTitle().c_str()),
+      optimization_guide_keyed_service_,
+      base::BindOnce(&ContextualCueingService::OnSuggestionsReceived,
+                     GetWeakPtr(), web_contents, std::move(callback)));
+}
+
+void ContextualCueingService::OnSuggestionsReceived(
+    content::WebContents* web_contents,
+    GlicSuggestionsCallback callback,
+    std::optional<std::vector<std::string>> suggestions) {
+  if (ZeroStateSuggestionsPageData::GetForPage(
+          web_contents->GetPrimaryPage())) {
+    ZeroStateSuggestionsPageData::DeleteForPage(web_contents->GetPrimaryPage());
+  }
+  std::move(callback).Run(suggestions);
 }
 
 void ContextualCueingService::OnPageContentExtracted(

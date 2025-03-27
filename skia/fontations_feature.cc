@@ -15,6 +15,6 @@ BASE_FEATURE(kFontationsLinuxSystemFonts,
 // SkFontMgr instantiation in skia/ext/font_utils.cc
 BASE_FEATURE(kFontationsAndroidSystemFonts,
              "FontationsAndroidSystemFonts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace skia

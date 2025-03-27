@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_REPORTING_EVENT_ROUTER_FACTORY_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_REPORTING_EVENT_ROUTER_FACTORY_H_
 
-#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router.h"
+#include "components/enterprise/connectors/core/reporting_event_router.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"

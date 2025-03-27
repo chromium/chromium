@@ -475,8 +475,7 @@ int TabGroupHeader::GetCollapsedHeaderWidth() const {
 }
 
 bool SupportsDataSharing() {
-  return base::FeatureList::IsEnabled(
-      data_sharing::features::kDataSharingFeature);
+  return data_sharing::features::IsDataSharingFunctionalityEnabled();
 }
 
 bool TabGroupHeader::ShouldShowHeaderIcon() const {

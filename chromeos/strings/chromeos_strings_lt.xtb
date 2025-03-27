@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Įsitikinkite, kad naudojate „Google“ programą „Turinio perkėlimo įrankis“, kad perkeltumėte mokyklos paskyros duomenis į asmeninę paskyrą, kol nepraradote prieigos.</translation>
 <translation id="1026212596705997935">Naudojamas „<ph name="CONFLICT_ACCEL_NAME" />“ spartusis klavišas. Paspauskite naują spartųjį klavišą. Jei norite pakeisti esamą spartųjį klavišą, dar kartą paspauskite šį spartųjį klavišą.</translation>
 <translation id="1030856839388844477">Nustatyti duomenų naudojimą iš naujo</translation>
+<translation id="1047095725494118091">Nepavyko atsisiųsti. Bandykite dar kartą arba paleiskite „<ph name="DEVICE_TYPE" />“ iš naujo.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (grupių: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Pasiekiama nauja funkcija, spustelėkite rodyklės aukštyn klavišą, kad sužinotumėte daugiau.</translation>
 <translation id="1049663189809099096">pastelinės geltonos spalvos</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Atsisiunčiama ekrano užsklanda</translation>
 <translation id="1094693127011229778">IP adresas nepasiekiamas</translation>
 <translation id="1100902271996134409">Kuriami vaizdai...</translation>
+<translation id="1107856713690040084">„<ph name="DEVICE_TYPE" />“ garsas</translation>
 <translation id="1116694919640316211">Apie</translation>
 <translation id="1118572504348554005">Galime bendrinti per šią formą pateiktus atsiliepimus su partneriais, siekdami pašalinti triktis ir kitas problemas, apie kurias pranešate. Neįtraukite neskelbtinos informacijos, pvz., slaptažodžių.</translation>
 <translation id="1119403468619527527">Per mažai žodžių, kad būtų galima supaprastinti</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Įjungti tamsų režimą</translation>
 <translation id="2164131940279488868">Įsitikinkite, jog mikrofonas prijungtas, kad galėtumėte pradėti garso įrašymą</translation>
 <translation id="2173302385160625112">Patikrinkite interneto ryšį</translation>
+<translation id="2176909213844392588">Nepavyko atsisiųsti <ph name="LANGUAGE_NAME" /> k. transkribavimo modelio. Bandykite dar kartą arba paleiskite „<ph name="DEVICE_TYPE" />“ iš naujo.</translation>
 <translation id="2180197493692062006">Kažkas nepavyko. Pabandykite iš naujo atidaryti programą.</translation>
 <translation id="2189104374785738357">APN išsamios informacijos redagavimas</translation>
 <translation id="2195732836444333448">Šiuo metu esame užimti. Pabandykite vėliau.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Dokumentų tiektuvas (dvipusis)</translation>
 <translation id="3201315366910775591">Bendrinamus albumus gali atnaujinti kiti žmonės</translation>
 <translation id="3211671540163313381">Klavišų schemų valdymo pultas</translation>
+<translation id="3217462202230355157">Įsitikinkite, kad mikrofonas prijungtas, arba bandykite iš naujo paleisti „<ph name="DEVICE_TYPE" />“</translation>
 <translation id="3226405216343213872">Ieškoma skaitytuvų</translation>
 <translation id="3226657629376379887">Išdėstymo veiksmų meniu</translation>
 <translation id="3227186760713762082">Reikia padalyti kategorijos „<ph name="CATEGORY_TEXT" />“ vertę iš <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Išskirtiniai</translation>
 <translation id="3404249063913988450">Įgalinti ekrano užsklandą</translation>
 <translation id="3413935475507503304">Jei norite tęsti atnaujinimo procesą, spustelėkite „Kitas“.</translation>
+<translation id="3416709353545797224">Visų „<ph name="DEVICE_TYPE" />“ garsų įrašymas</translation>
 <translation id="3428551088151258685">lauke</translation>
 <translation id="3428971106895559033">pastelinis</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> proc.</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Įsitikinkite, kad skaitytuvas įjungtas ir pasiekiamas tinkle arba tiesioginiu ryšiu</translation>
 <translation id="4159238217853743776">Dalinis</translation>
 <translation id="4159784952369912983">Violetinė</translation>
+<translation id="416219735020840807">Nepavyko atsisiųsti transkribavimo modelio. Bandykite dar kartą arba paleiskite „<ph name="DEVICE_TYPE" />“ iš naujo.</translation>
 <translation id="4170180284036919717">Fotografuoti</translation>
 <translation id="4170700058716978431">NESĖKMINGAS</translation>
 <translation id="4171077696775491955">sumažinti šviesumą</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Pasirinktas tekstas pakeičiamas pasiūlymu</translation>
 <translation id="5346687412805619883">Vietinis tinklas</translation>
 <translation id="5358174242040570474">Kažkas ne taip. Pabandykite pasirinkti ekrano foną dar kartą arba atidaryti programą iš naujo.</translation>
+<translation id="5368228070728130240">Nepavyko atsisiųsti suvestinės ir pavadinimo kūrimo modelio. Bandykite dar kartą arba paleiskite „<ph name="DEVICE_TYPE" />“ iš naujo.</translation>
 <translation id="5372659122375744710">„Wi-Fi“ tinklas nesaugus</translation>
 <translation id="5376354385557966694">Automatinis šviesus režimas</translation>
 <translation id="5378184552853359930">IP tipas</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">Nepavykę DNS nustatymo veiksmai</translation>
 <translation id="6768237774506518020">Aukštas DNS nustatymo trikčių rodiklis</translation>
 <translation id="6786747875388722282">Plėtiniai</translation>
+<translation id="6789891265243243337">Kai „<ph name="DEVICE_TYPE" />“ garso išvestis įjungta, garso įrašytuvas užfiksuoja visus šiame įrenginyje leidžiamus garsus</translation>
 <translation id="6791471867139427246">klaviatūros šviesos spalva</translation>
 <translation id="6796229976413584781">Spartusis klavišas ištrintas</translation>
 <translation id="6798678288485555829">Teksto naršymas</translation>
@@ -1728,6 +1736,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8930622219860340959">Belaidis</translation>
 <translation id="8933650076320258356">Pasirinktas klavišas yra „<ph name="KEYS" />“, skirtas veiksmui „<ph name="DIRECTION" />“. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Kliento IP adresas</translation>
+<translation id="8938606491880817721">Nepavyko atsisiųsti. Bandykite dar kartą arba paleiskite „<ph name="DEVICE_TYPE" />“ iš naujo.</translation>
 <translation id="8944651180182756621">Paleidimo priemonės spalva</translation>
 <translation id="8945308580158685341">bitės</translation>
 <translation id="894617464444543719">Įrenginys yra telefonas.</translation>

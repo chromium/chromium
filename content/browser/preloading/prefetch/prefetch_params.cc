@@ -188,8 +188,23 @@ int PrefetchCanaryCheckRetries() {
       features::kPrefetchUseContentRefactor, "canary_check_retries", 1);
 }
 
-base::TimeDelta PrefetchBlockUntilHeadTimeout(
-    const PrefetchType& prefetch_type) {
+base::TimeDelta PrefetchBlockUntilHeadTimeout(const PrefetchType& prefetch_type,
+                                              bool is_nav_prerender) {
+  // Don't set a timeout for prerender because
+  //
+  // - The intention of prefetch ahead of prerender is not sending additional
+  //   fetch request. The options of the behavior of the timeout case are
+  //   1. (Current behavior) Making prerender fail, or 2. Falling back to
+  //   network.
+  // - 1 reduces the prerender activation rate.
+  //
+  // For more details, see
+  // https://docs.google.com/document/d/1ZP7lYrtqZL9jC2xXieNY_UBMJL1sCrfmzTB8K6v4sD4/edit?resourcekey=0-fkbeQhkT3PhBb9FnnPgnZA&tab=t.wphan8fb23kr
+  if (!features::kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout.Get() &&
+      is_nav_prerender) {
+    return base::Seconds(0);
+  }
+
   int timeout_in_milliseconds = 0;
   if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
     switch (prefetch_type.GetEagerness()) {

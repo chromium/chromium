@@ -16,6 +16,7 @@
 #include <type_traits>
 
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
@@ -113,7 +114,7 @@ V4L2VideoDecoderDelegateVP8::V4L2VideoDecoderDelegateVP8(
   DCHECK(surface_handler_);
 }
 
-V4L2VideoDecoderDelegateVP8::~V4L2VideoDecoderDelegateVP8() {}
+V4L2VideoDecoderDelegateVP8::~V4L2VideoDecoderDelegateVP8() = default;
 
 scoped_refptr<VP8Picture> V4L2VideoDecoderDelegateVP8::CreateVP8Picture() {
   scoped_refptr<V4L2DecodeSurface> dec_surface =
@@ -121,7 +122,7 @@ scoped_refptr<VP8Picture> V4L2VideoDecoderDelegateVP8::CreateVP8Picture() {
   if (!dec_surface)
     return nullptr;
 
-  return new V4L2VP8Picture(dec_surface);
+  return base::MakeRefCounted<V4L2VP8Picture>(dec_surface);
 }
 
 bool V4L2VideoDecoderDelegateVP8::SubmitDecode(

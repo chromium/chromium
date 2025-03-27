@@ -92,9 +92,13 @@ be deprecated fairly easily, removing support for a policy is a much bigger
 issue, because admins might be relying on that functionality.
 
 The two main reasons for removing support for a policy are:
-1.  It was a policy that was always documented as having a limited lifespan,
+
+1.  It is a policy that was always documented as having a limited lifespan,
     such as an escape hatch policy.
-1.  The feature this policy impacts was removed from Chrome.
+
+1.  The feature this policy impacts is being removed from Chrome. In such cases,
+    policy support should be removed in the same Chrome milestone as the feature
+    removal.
 
 If you want to remove support for another reason, please reach out to
 [Chrome enterprise team](mailto:chromium-enterprise@chromium.org)
@@ -105,22 +109,33 @@ If the policy was never launched, `YourPolicyName.yaml` can be deleted and you
 may replace the policy name in `policies.yaml` by an empty string.
 
 Otherwise, follow these steps:
-1. Update `YourPolicyName.yaml` to mark the poilcy as no longer supported.
-   - Set 'deprecated' to True if the policy skipped past the deprecation state.
-   - Update `supported_on` to correctly list the last milestone the policy is
-     supported on.
-1. If the last milestone lies in the future file a bug to clean up the policy
-   supporting code as soon as the milestone has been reached. Set its NextAction
-   field to a date shortly after the expected branch date for that version. Add
-   a comment in the yaml file with the bug number for reference.
-1. Lastly after the last supported version has been branched:
-   - remove all the code that implements the policy behavior after the milestone
-     has been reached.
-   - Update the related tests in the under `policy/test/data/pref_mapping` by
-     removing all test related to that policy and any resulting empty file.
-1. Notify [Chrome enterprise team](mailto:chromium-enterprise@chromium.org) to
-   ensure this removal of support is mentioned in the enterprise release notes.
-   - Ideally, a policy should be deprecated for at least 3 milestones before
+
+1.  Update `YourPolicyName.yaml` to mark the poilcy as no longer supported.
+
+    -   Set `deprecated` to True if the policy skipped past the deprecation
+        state.
+    -   Update `supported_on` to correctly list the last milestone the policy is
+        supported on.
+        -   For example, if the impacted feature is being removed in M110, set
+            `supported_on` to `X-109`. The policy would have no effect in M110,
+            so the last supported milestone is M109.
+
+1.  If the last milestone lies in the future file a bug to clean up the policy
+    supporting code as soon as the milestone has been reached. Set its
+    NextAction field to a date shortly after the expected branch date for that
+    version. Add a comment in the yaml file with the bug number for reference.
+
+1.  Lastly after the last supported version has been branched:
+
+    -   remove all the code that implements the policy behavior after the
+        milestone has been reached.
+    -   Update the related tests in the under `policy/test/data/pref_mapping` by
+        removing all test related to that policy and any resulting empty file.
+
+1.  Notify [Chrome enterprise team](mailto:chromium-enterprise@chromium.org) to
+    ensure this removal of support is mentioned in the enterprise release notes.
+
+    -   Ideally, a policy should be deprecated for at least 3 milestones before
         removing support. This gives admins time to migrate away from the
         policy.
 

@@ -22,6 +22,8 @@ namespace media::vaapi_test {
 // compressed slice data buffers memory.
 class H264Picture : public base::RefCountedThreadSafe<H264Picture> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   using Vector = std::vector<scoped_refptr<H264Picture>>;
 
   enum Field {

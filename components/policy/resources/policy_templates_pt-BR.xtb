@@ -1042,6 +1042,11 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="1675391557079742340">Ativar a codificação de conteúdo <ph name="ZSTANDARD_SHORTNAME" /> de publicidade no cabeçalho Accept-Encoding</translation>
+<translation id="167550754083555945">Configurar políticas de relatórios de nuvem.
+
+Para dispositivos gerenciados, quando <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> é deixada sem definição ou desativada, essas políticas são ignoradas no nível do navegador. Em plataformas diferentes do <ph name="PRODUCT_OS_NAME" />, essa política só é compatível com navegadores registrados no <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
+
+Para perfis gerenciados, quando a política <ph name="CLOUD_PROFILE_REPORTING_ENABLED_POLICY_NAME" /> não for definida ou for desativada, essas políticas serão ignoradas no nível do perfil.</translation>
 <translation id="1678137412645922426">Controla o uso de <ph name="AES_KL_NAME" /> na criptografia de armazenamento do usuário, se compatível</translation>
 <translation id="1682063842123336408">É necessário ter espaço livre em disco (em GB) para instalar o <ph name="PLUGIN_VM_NAME" />.
 
@@ -2936,6 +2941,15 @@ Observação: para ver mais exemplos detalhados, acesse The Chromium Projects em
 <translation id="305106159605171619">A redução do user agent foi desativada e não foi ativada por testes de campo e de origem.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">Não permitir o uso do Chrome for Testing</translation>
+<translation id="3060608694980129910">Esta política controla os relatórios de nuvem do <ph name="PRODUCT_NAME" /> de indicadores de segurança de um perfil gerenciado específico.
+
+Quando a política é ativada, ela fornece um relatório dos indicadores de segurança sobre o dispositivo, navegador e perfil para o servidor do gerenciador de dispositivos.
+
+Quando a política é desativada ou deixada sem definição, ela não aciona a coleta e o upload de indicadores de segurança.
+
+O relatório tem informações sobre o uso e o estado do perfil, incluindo, entre outros, a versão do sistema operacional, a versão do navegador, as extensões instaladas e as políticas aplicadas.
+
+Esta política só pode ser definida como uma política do usuário em nuvem.</translation>
 <translation id="3063302084011279315">Desativar o Screencast</translation>
 <translation id="3063307261083019730">Não permitir que as páginas com o cabeçalho <ph name="CACHE_CONTROL_NO_STORE_NAME" /> sejam armazenadas no cache de avanço e retorno.</translation>
 <translation id="3064530882228745118">Usar a consulta CNAME ao negociar a autenticação do Kerberos</translation>
@@ -4850,27 +4864,6 @@ Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="4480694116501920047">Forçar SafeSearch</translation>
 <translation id="4481202456143946404">A versão válida dos Termos de Serviço derivados do Google3 CL que introduziu uma nova versão dos Termos.</translation>
-<translation id="4481804933320714808">Este é um recurso Beta. Como ele está em desenvolvimento e disponível para nossos trusted testers, pode sofrer mudanças e atualizações.
-
-Esta política permite que os administradores definam um agregador de pesquisa corporativo designado para fornecer recomendações e resultados de pesquisa na barra de endereço quando for acionado por uma palavra-chave específica. É possível iniciar uma pesquisa digitando a palavra-chave especificada no campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> com ou sem o prefixo @ (por exemplo, <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />), seguida da barra de espaço ou tecla Tab, na barra de endereço.
-
-Estes campos são obrigatórios: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-O campo <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde ao nome do mecanismo de pesquisa mostrado ao usuário na barra de endereço.
-
-O campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde à palavra-chave inserida pelo usuário para acionar a pesquisa. O atalho pode incluir palavras e caracteres simples, mas não pode incluir espaços nem começar com o símbolo @. Os atalhos precisam ser exclusivos.
-
-O campo <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica o URL em que a pesquisa será feita. Digite o endereço da Web da página de resultados do mecanismo de pesquisa e use <ph name="SEARCH_TERM_MARKER" /> no lugar da consulta.
-
-O campo <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica o URL que fornece sugestões de pesquisa. Se <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> contiver <ph name="SEARCH_TERM_MARKER" />, o Chrome vai receber sugestões de pesquisa por uma solicitação GET no URL, substituindo <ph name="SEARCH_TERM_MARKER" /> pela consulta de pesquisa do usuário. Caso contrário, uma solicitação POST será feita, e a consulta do usuário será transmitida nos parâmetros POST na chave <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
-
-O campo <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica o URL de uma imagem que será usada nas sugestões de pesquisa. Um ícone padrão será usado quando este campo não estiver definido. Recomendamos usar um favicon (exemplo: <ph name="ICON_URL_EXAMPLE" />).
-
-O campo <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica se a barra de endereço <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> é necessária para mostrar as recomendações de pesquisa. Se esse campo não for definido, a barra de endereço <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> não será obrigatória.
-
-No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas no <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas no <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4481952213163895432">Desativar a hotword do Google Assistente</translation>
 <translation id="4482784169143060077">Ativar upgrades automáticos do HTTPS</translation>
 <translation id="4483120730995943109">A função setTimeout() do JavaScript com um tempo limite de 0 ms não vai ser limitada a 1 ms.</translation>
@@ -5838,6 +5831,7 @@ Quando a política não está definida ou é desativada, os cookies e os dados p
 <translation id="5152787786897382519">O Chromium e o Google Chrome têm alguns grupos de políticas que dependem umas das outras para oferecer controle sobre um recurso. Esses conjuntos são representados pelos seguintes grupos de políticas. Como essas políticas podem ter diversas fontes, apenas os valores da fonte de maior prioridade serão aplicados. Os valores de uma fonte de menor prioridade presente no mesmo grupo serão ignorados. A ordem da prioridade está definida em <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Ícone dos experimentos do navegador na barra de ferramentas</translation>
 <translation id="5159674159887919923">Não enviar mais dados de hardware no ChromeOS Flex</translation>
+<translation id="5162571264806471078">Ativar os relatórios de nuvem de indicadores de segurança em perfis gerenciados</translation>
 <translation id="5162982931329320509">Lista de domínios a serem resolvidos usando DNS sobre HTTPS. Outros domínios não incluídos na lista não serão resolvidos usando DNS sobre HTTPS. Esta política é ignorada quando o modo de DNS seguro está desativado (DNS em texto simples usado sempre).
 
 Se a lista estiver vazia ou não for definida, todos os domínios serão resolvidos usando DNS sobre HTTPS sempre que possível. Esse é o mesmo comportamento de uma lista de domínios incluídos com o valor ["*"].
@@ -6552,6 +6546,7 @@ Observação: esta política não se aplica ao modo convidado ou de navegação 
       Isso não é recomendado, pois a extensão nameConstraints, que restringe os nomes de host para os quais um determinado certificado pode ser autorizado, pode ser ignorada.
 
       Se esta política não for definida ou for definida como false, os certificados de servidor sem a extensão subjectAlternativeName que contém um nome DNS ou endereço IP não serão confiáveis.</translation>
+<translation id="5576376485226897323">Desativar os relatórios de nuvem de indicadores de segurança do usuário</translation>
 <translation id="5576377426850850084">Usar autenticação do NTLM</translation>
 <translation id="5577475143148445339">Contém o número de dias e a porcentagem do conjunto de dispositivos que precisa ser atualizada após esse período.</translation>
 <translation id="5582429816116769246">Permite controlar se os usuários podem acessar impressoras que não sejam de empresas.
@@ -6837,6 +6832,7 @@ Quando ela está desativada ou é deixada sem definição, os Glanceables não s
       Se a política for definida como falsa ou se não for definida, as informações não serão enviadas.
       Se ela for definida como verdadeira, as informações sobre os VPD do dispositivo serão enviadas.
       Os VPD são um conjunto de dados informativos e de configuração, como números de série e peças, associados ao dispositivo.</translation>
+<translation id="5760861224093391268">Desativar a autenticação própria ao informar os indicadores de segurança do usuário</translation>
 <translation id="5762969307102447459">Desativar o preenchimento automático de endereços</translation>
 <translation id="5765780083710877561">Descrição:</translation>
 <translation id="5766438888216077649">Não defina a propriedade <ph name="WINDOW_OPENER_PROPERTY" /> para links direcionados a <ph name="BLANK_PAGE_NAME" /></translation>
@@ -7021,6 +7017,15 @@ Se a política for desativada, os sons no "Modo sem distrações" também serão
 <translation id="5893303508158298667">Se a <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> for ativada, definir <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> como "Ativada" ou deixá-la sem definição permitirá que clientes remotos usem servidores de redirecionamento para se conectar a esta máquina quando uma conexão direta não estiver disponível (por exemplo, por conta de uma restrição de firewall).
 
       Se a política for desativada, o acesso remoto não será desativado, mas apenas conexões da mesma rede serão permitidas (e não conexões NAT transversal ou de redirecionamento).</translation>
+<translation id="5895049442553435093">Esta política controla como o <ph name="PRODUCT_NAME" /> usa a autenticação primária de usuário ao informar indicadores de segurança de usuários para um perfil gerenciado específico.
+
+Esta política está ativada. A autenticação primária será usada ao fazer o upload de indicadores de segurança.
+
+Se a política for desativada ou deixada sem definição, a autenticação primária não será usada ao fazer o upload de indicadores de segurança.
+
+Os relatórios de indicadores de segurança do usuário só são enviados quando o <ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME" /> está ativado.
+
+Esta política só pode ser definida como uma política do usuário em nuvem.</translation>
 <translation id="5895569286536062756">Ativar o recurso "Selecionar para ouvir" na tela de login</translation>
 <translation id="5895861015839311441">Informa dados de telemetria de uso do app para usuários afiliados.
 
@@ -9289,6 +9294,7 @@ Agora, os espaços em branco serão preservados em todos os URLs de dados, indep
 Se esta política for definida como verdadeira ou deixada sem definição, o novo comportamento será ativado.
 
 Se ela for definida como falsa, o comportamento antigo será ativado.</translation>
+<translation id="7366637365754181686">Ativar os relatórios de nuvem dos indicadores de segurança do usuário</translation>
 <translation id="7366948865469126526">Desativar a conversão de unidades das Respostas rápidas</translation>
 <translation id="7367734504783638685">Sincronização de senhas entre provedores SSO terceirizados e dispositivos Chrome</translation>
 <translation id="7372831798009983116">Ativar o recurso de acessibilidade de clique automático</translation>
@@ -11223,6 +11229,7 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
 <translation id="8807728576820212213">Ativar a integração do Lens</translation>
 <translation id="8809082103104823938">Suporte a GIFs no seletor de emojis</translation>
 <translation id="8812091410765157924">Permitir que os pop-ups abertos direcionados a <ph name="BLANK_PAGE_NAME" /> interajam com a página que solicitou a abertura do pop-up caso ela aceite essa interação explicitamente</translation>
+<translation id="8812631362927615118">Ativar a autenticação própria ao informar indicadores de segurança do usuário</translation>
 <translation id="8816370949847593408">A execução de apps do Chrome pode ser bloqueada, dependendo do status da descontinuação.</translation>
 <translation id="8818768076343557335">Prever ações de rede em qualquer rede que não seja a de celular.
           Uso suspenso na versão 50 e removido na 52. Depois da versão 52, se o valor 1 for definido, ele será tratado como 0: prever ações de rede em qualquer conexão de rede.</translation>

@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Hiki ni kipengele kipya</translation>
 <translation id="2006524834898217237">Hakikisha kwamba kifaa hiki kimeunganishwa kwenye intaneti.</translation>
 <translation id="208586643495776849">Tafadhali jaribu tena</translation>
+<translation id="2111134541987263231">Washa <ph name="BEGIN_BOLD" />Ruhusu katika Hali fiche<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{Siku 1}other{Siku #}}</translation>
 <translation id="2148716181193084225">Leo</translation>
 <translation id="2168039046890040389">Ukurasa mmoja juu</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Gusa viashirio vya kugusa kwenye skrini yako.</translation>
 <translation id="2295140143284145483">Utafiti</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Huwezi kutambua mahali kilipo kiendelezi chenye kitambulisho <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Wasiliana na msimamizi wako.}other{Huwezi kufahamu vilipo viendelezi vyenye vitambulisho vya <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Wasiliana na msimamizi wako.}}</translation>
 <translation id="2353636109065292463">Inaangalia muunganisho wako wa intaneti</translation>
 <translation id="2359808026110333948">Endelea</translation>
 <translation id="2388990488038464401">Je, ungependa kutumia simu yako kupigia namba hii?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Futa Vyote</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{siku 1}other{siku #}}</translation>
 <translation id="2922712708897119705">Safu wima ya <ph name="COLUMN_NAME" /> imepangwa katika mpangilio wa kushuka.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Imeshindwa kupata kiendelezi}other{Imeshindwa kupata viendelezi}}</translation>
 <translation id="3036649622769666520">Fungua Mafaili</translation>
 <translation id="3049748772180311791">MB <ph name="QUANTITY" /></translation>
 <translation id="3087734570205094154">Chini</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Piga simu ukitumia</translation>
 <translation id="3306688585798492231">Skrini iliyo ndani ya mfumo</translation>
 <translation id="335581015389089642">Usemi</translation>
+<translation id="3372635229069101468">Bofya <ph name="BEGIN_BOLD" />Maelezo<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">Maandishi ni makubwa mno</translation>
 <translation id="3406306243914553062">Maudhui ya HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Imesalia siku 1}other{Zimesalia siku #}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Safu wima ya <ph name="COLUMN_NAME" /> imepangwa kwa mpangilio wa kupanda.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{Arifa 1 Haijasomwa}other{Arifa # Hazijasomwa}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Washa kiendelezi kifuatacho katika Hali fiche:}other{Washa viendelezi vifuatavyo katika Hali fiche:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Mwezi 1 uliopita}other{Miezi # iliyopita}}</translation>
 <translation id="4289300219472526559">Anza Kuzungumza</translation>
 <translation id="4289540628985791613">Muhtasari</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">namba</translation>
 <translation id="4746179598275229723">Kiendelezi kimebanduliwa</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Umesalia mwezi 1}other{Imesalia miezi #}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Ili utumie Hali fiche, shirika lako linahitaji kiendelezi}other{Ili utumie Hali fiche, shirika lako linahitaji baadhi ya viendelezi}}</translation>
+<translation id="482932175346970750">Andika <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> kwenye kivinjari chako</translation>
 <translation id="4888938634149558681">Piga simu</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{Sekunde 1}other{Sekunde #}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Bandika</translation>
 <translation id="520299402983819650">PB <ph name="QUANTITY" /></translation>
 <translation id="5278860589123563674">Imeshindwa kutuma</translation>
+<translation id="5283101102242354279">Washa kiendelezi katika Hali fiche:</translation>
 <translation id="528468243742722775">Mwisho</translation>
 <translation id="5329858601952122676">&amp;Futa</translation>
 <translation id="5361107212971249203">ujumbe</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Mipangilio ya onyesho la programu yako itaanza kutumika utakapoizima kisha uiwashe.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Imesalia dakika 1}other{Zimesalia dakika #}}</translation>
+<translation id="7252604552361840748">Tafuta kiendelezi hapo juu</translation>
 <translation id="7363164521834647158">Tuma jibu</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Dakika 1 iliyopita}other{Dakika # zilizopita}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

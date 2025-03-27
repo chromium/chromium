@@ -40,6 +40,8 @@ class MEDIA_GPU_EXPORT CodecImageGroup
     : public base::RefCountedThreadSafe<CodecImageGroup>,
       public gpu::RefCountedLockHelperDrDc {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // NOTE: Construction happens on the correct thread to access |bundle| and
   // any overlay it contains.  All other access to this class will happen on
   // |task_runner|, including destruction.
@@ -52,9 +54,9 @@ class MEDIA_GPU_EXPORT CodecImageGroup
   void AddCodecImage(CodecImage* image);
 
  protected:
-  virtual ~CodecImageGroup();
-  friend class base::RefCountedThreadSafe<CodecImageGroup>;
   friend class base::DeleteHelper<CodecImageGroup>;
+  friend class base::RefCountedThreadSafe<CodecImageGroup>;
+  virtual ~CodecImageGroup();
 
   // Notify us that |image| is no longer in use.
   void OnCodecImageUnused(CodecImage* image);

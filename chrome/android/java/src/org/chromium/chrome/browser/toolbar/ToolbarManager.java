@@ -37,6 +37,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.ValueChangedCallback;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -126,6 +127,7 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsContentDelegate;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewResourceFrameLayout;
@@ -290,6 +292,7 @@ public class ToolbarManager
     private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
 
     private @Nullable ReloadButtonCoordinator mReloadButtonCoordinator;
+    private @Nullable BackButtonCoordinator mBackButtonCoordinator;
 
     private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private int mFullscreenFocusToken = TokenHolder.INVALID_TOKEN;
@@ -382,10 +385,6 @@ public class ToolbarManager
         private ObservableSupplier<Integer> mCurrentConstraintDelegate;
 
         void onTabSwitched(Tab newTab) {
-            if (!ToolbarFeatures.shouldSuppressCaptures()) {
-                return;
-            }
-
             if (mCurrentConstraintDelegate != null) {
                 mCurrentConstraintDelegate.removeObserver(this);
                 mCurrentConstraintDelegate = null;
@@ -906,6 +905,27 @@ public class ToolbarManager
                             browsingModeThemeColorProvider);
         }
 
+        NavigationPopup.HistoryDelegate historyDelegate =
+                (tab) -> {
+                    HistoryManagerUtils.showHistoryManager(
+                            tab.getWindowAndroid().getActivity().get(), tab, tab.getProfile());
+                };
+
+        ImageButton backButton = mControlContainer.findViewById(R.id.back_button);
+        if (backButton != null) {
+            mBackButtonCoordinator =
+                    new BackButtonCoordinator(
+                            backButton,
+                            () -> {
+                                setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
+                                final boolean isSuccess = mToolbarTabController.back();
+                                if (isSuccess) RecordUserAction.record("MobileToolbarBack");
+                            },
+                            browsingModeThemeColorProvider,
+                            mActivityTabProvider,
+                            historyDelegate);
+        }
+
         mToolbarLongPressMenuHandler =
                 new ToolbarLongPressMenuHandler(
                         /* context= */ mActivity,
@@ -935,7 +955,8 @@ public class ToolbarManager
                         initializeWithIncognitoColors,
                         mConstraintsProxy,
                         onLongClickListener,
-                        progressBar);
+                        progressBar,
+                        historyDelegate);
         mTabStripHeightSupplier = new ObservableSupplierImpl<>(mToolbar.getTabStripHeight());
         mActionModeController =
                 new ActionModeController(
@@ -1565,12 +1586,8 @@ public class ToolbarManager
             boolean initializeWithIncognitoColors,
             ObservableSupplier<Integer> constraintsSupplier,
             OnLongClickListener onLongClickListener,
-            ToolbarProgressBar progressBar) {
-        NavigationPopup.HistoryDelegate historyDelegate =
-                (tab) -> {
-                    HistoryManagerUtils.showHistoryManager(
-                            tab.getWindowAndroid().getActivity().get(), tab, tab.getProfile());
-                };
+            ToolbarProgressBar progressBar,
+            NavigationPopup.HistoryDelegate historyDelegate) {
         TopToolbarCoordinator toolbar =
                 new TopToolbarCoordinator(
                         controlContainer,
@@ -2149,6 +2166,10 @@ public class ToolbarManager
         if (mReloadButtonCoordinator != null) {
             mReloadButtonCoordinator.destroy();
             mReloadButtonCoordinator = null;
+        }
+
+        if (mBackButtonCoordinator != null) {
+            mBackButtonCoordinator.destroy();
         }
 
         if (mOverviewModeMenuButtonCoordinator != null) {

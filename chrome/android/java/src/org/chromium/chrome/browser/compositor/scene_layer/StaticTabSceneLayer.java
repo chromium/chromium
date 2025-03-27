@@ -63,8 +63,6 @@ public class StaticTabSceneLayer extends SceneLayer {
                         model.get(LayoutTab.BACKGROUND_COLOR),
                         x,
                         y,
-                        model.get(LayoutTab.STATIC_TO_VIEW_BLEND),
-                        model.get(LayoutTab.SATURATION),
                         model.get(LayoutTab.CONTENT_OFFSET_TAG));
     }
 
@@ -105,8 +103,6 @@ public class StaticTabSceneLayer extends SceneLayer {
                 int backgroundColor,
                 float x,
                 float y,
-                float staticToViewBlend,
-                float saturation,
                 OffsetTag contentLayerOffsetToken);
 
         void setTabContentManager(

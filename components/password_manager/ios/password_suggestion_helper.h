@@ -90,6 +90,15 @@ class WebState;
     passwordFillDataForUsername:(NSString*)username
                      forFrameId:(const std::string&)frameId;
 
+// Retrieves password form fill data for the corresponding `frameId`,
+// `username`, and contextual information.
+- (std::unique_ptr<password_manager::FillData>)
+    passwordFillDataForUsername:(NSString*)username
+        likelyRealPasswordField:(bool)passwordField
+                 formIdentifier:(autofill::FormRendererId)formId
+                fieldIdentifier:(autofill::FieldRendererId)fieldId
+                        frameId:(const std::string&)frameId;
+
 // The following methods should be called to maintain the correct state along
 // with password forms.
 

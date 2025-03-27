@@ -11,6 +11,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -94,6 +95,38 @@ public class ReadAloudPrefsUnitTest {
     public void testSetSpeed() {
         ReadAloudPrefs.setSpeed(mPrefService, 2f);
         verify(mPrefService).setDouble(eq("readaloud.speed"), eq(2d));
+    }
+
+    @Test
+    public void setPlaybackMode() {
+        ReadAloudPrefs.setPlaybackMode(mPrefService, PlaybackMode.OVERVIEW);
+        verify(mPrefService).setInteger(eq("readaloud.playback_mode"), eq(PlaybackMode.OVERVIEW.getValue()));
+    }
+
+    @Test
+    public void getPlayackMode_default() {
+        assertEquals(PlaybackMode.UNSPECIFIED, ReadAloudPrefs.getPlaybackMode(mPrefService));
+    }
+
+    @Test
+    public void getPlaybackMode_nonDefault() {
+        mPrefService.setInteger("readaloud.playback_mode", 2);
+        assertEquals(PlaybackMode.OVERVIEW, ReadAloudPrefs.getPlaybackMode(mPrefService));
+    }
+
+    @Test
+    public void setPlaybackMode_metric() {
+        ReadAloudPrefs.setSpeed(mPrefService, 1.0f);
+
+        final String histogramName = "ReadAloud.SpeedChange";
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, 3);
+        ReadAloudPrefs.setSpeed(mPrefService, 1.2f);
+        histogram.assertExpected();
+
+        histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, 6);
+        ReadAloudPrefs.setSpeed(mPrefService, 3.0f);
+        histogram.assertExpected();
     }
 
     @Test

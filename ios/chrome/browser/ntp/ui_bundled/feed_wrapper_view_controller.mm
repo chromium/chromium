@@ -7,8 +7,8 @@
 #import <UIKit/UIKit.h>
 
 #import "base/check.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @implementation FeedWrapperViewController {

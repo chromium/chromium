@@ -124,6 +124,10 @@ class LobsterSystemStateProviderImplBaseTest : public testing::Test {
         ash::prefs::kOrcaConsentStatus,
         static_cast<int>(chromeos::editor_menu::EditorConsentStatus::kUnset));
     pref_.registry()->RegisterBooleanPref(ash::prefs::kLobsterEnabled, true);
+    pref_.registry()->RegisterIntegerPref(
+        ash::prefs::kLobsterEnterprisePolicySettings,
+        base::to_underlying(
+            ash::LobsterEnterprisePolicyValue::kAllowedWithModelImprovement));
   }
 
   void SetUpEligibleHardware() {
@@ -175,6 +179,12 @@ class LobsterSystemStateProviderImplBaseTest : public testing::Test {
     system_state_provider_.OnDisplayTabletStateChanged(
         is_in_tablet_mode ? display::TabletState::kInTabletMode
                           : display::TabletState::kInClamshellMode);
+  }
+
+  void SetPolicyValue(
+      ash::LobsterEnterprisePolicyValue enterprise_policy_value) {
+    pref_.SetInteger(ash::prefs::kLobsterEnterprisePolicySettings,
+                     base::to_underlying(enterprise_policy_value));
   }
 
   ash::LobsterSystemState GetSystemState(
@@ -447,6 +457,47 @@ INSTANTIATE_TEST_SUITE_P(
                                     ash::LobsterStatus::kEnabled)));
 
 TEST_P(LobsterSystemStateProviderImplTabletModeTest,
+       ChecksTheSystemStateStatus) {
+  EXPECT_EQ(GetSystemState(GetValidTextInputContext()).status,
+            std::get<1>(GetParam()));
+}
+
+class LobsterSystemStateProviderImplEnterprisePolicyTest
+    : public LobsterSystemStateProviderImplBaseTest,
+      public ::testing::WithParamInterface<std::tuple<
+          /*enterprise_policy_value=*/ash::LobsterEnterprisePolicyValue,
+          /*expected_lobster_status=*/ash::LobsterStatus>> {
+ public:
+  void SetUp() override {
+    SetUpEligibleHardware();
+    SetConsentStatus(chromeos::editor_menu::EditorConsentStatus::kApproved);
+    SetSettingsToggle(/*enabled=*/true);
+    SetOnlineStatus(true);
+    SetActiveIme("xkb:us::eng");
+    SetCountryCode("au");
+    SetAccountCapabilityValue(true);
+    SetTabletModeState(/*is_in_tablet_mode=*/false);
+    SetPolicyValue(std::get<0>(GetParam()));
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LobsterSystemStateProviderImplEnterprisePolicyTest,
+    testing::Values(
+        std::make_tuple(/*enterprise_policy_value=*/ash::
+                            LobsterEnterprisePolicyValue::kDisabled,
+                        ash::LobsterStatus::kBlocked),
+        std::make_tuple(
+            /*enterprise_policy_value=*/ash::LobsterEnterprisePolicyValue::
+                kAllowedWithModelImprovement,
+            ash::LobsterStatus::kEnabled),
+        std::make_tuple(
+            /*enterprise_policy_value=*/ash::LobsterEnterprisePolicyValue::
+                kAllowedWithoutModelImprovement,
+            ash::LobsterStatus::kEnabled)));
+
+TEST_P(LobsterSystemStateProviderImplEnterprisePolicyTest,
        ChecksTheSystemStateStatus) {
   EXPECT_EQ(GetSystemState(GetValidTextInputContext()).status,
             std::get<1>(GetParam()));

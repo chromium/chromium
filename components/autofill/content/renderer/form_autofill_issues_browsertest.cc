@@ -243,7 +243,8 @@ TEST_F(FormAutofillIssuesTest, FormLabelForNameError) {
   WebLocalFrame* web_frame = GetMainFrame();
   FormData form_data = *form_util::ExtractFormData(
       web_frame->GetDocument(), WebFormElementFromHTML(kHtml),
-      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy);
+      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy,
+      /*button_titles_cache=*/nullptr);
 
   std::vector<FormIssue> form_issues =
       CheckForLabelsWithIncorrectForAttributeForTesting(
@@ -266,7 +267,8 @@ TEST_F(FormAutofillIssuesTest, FormLabelForMatchesNonExistingIdError) {
   WebLocalFrame* web_frame = GetMainFrame();
   FormData form_data = *form_util::ExtractFormData(
       web_frame->GetDocument(), WebFormElementFromHTML(kHtml),
-      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy);
+      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy,
+      /*button_titles_cache=*/nullptr);
 
   std::vector<FormIssue> form_issues =
       CheckForLabelsWithIncorrectForAttributeForTesting(

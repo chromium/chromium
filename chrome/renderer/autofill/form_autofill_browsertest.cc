@@ -316,7 +316,8 @@ static constexpr CallTimerState kUpdateFormCacheCallTimerStateDummy = {
 FormData FindForm(const blink::WebFormControlElement& element) {
   if (auto p = FindFormAndFieldForFormControlElement(
           element, *base::MakeRefCounted<FieldDataManager>(),
-          kExtractFormDataCallTimerStateDummy, /*extract_options=*/{},
+          kExtractFormDataCallTimerStateDummy, /*button_titles_cache=*/nullptr,
+          /*extract_options=*/{},
           /*form_cache=*/{})) {
     return p->first;
   }
@@ -376,7 +377,8 @@ class FormAutofillTest : public test::AutofillRendererTest {
       DenseSet<ExtractOption> extract_options = {}) {
     return form_util::ExtractFormData(
         GetDocument(), form, *base::MakeRefCounted<FieldDataManager>(),
-        kExtractFormDataCallTimerStateDummy, extract_options);
+        kExtractFormDataCallTimerStateDummy, /*button_titles_cache=*/nullptr,
+        extract_options);
   }
 
   std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
@@ -385,7 +387,8 @@ class FormAutofillTest : public test::AutofillRendererTest {
       DenseSet<ExtractOption> extract_options = {}) {
     return form_util::FindFormAndFieldForFormControlElement(
         control, *base::MakeRefCounted<FieldDataManager>(),
-        kExtractFormDataCallTimerStateDummy, extract_options,
+        kExtractFormDataCallTimerStateDummy, /*button_titles_cache=*/nullptr,
+        extract_options,
         /*form_cache=*/{});
   }
 

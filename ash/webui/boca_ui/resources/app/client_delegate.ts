@@ -72,6 +72,7 @@ export function getSessionConfigMojomToUI(session: Config|
             }),
     onTaskConfig: {
       isLocked: session.onTaskConfig.isLocked,
+      isPaused: session.onTaskConfig.isPaused,
       tabs: session.onTaskConfig.tabs.map((item: ControlledTabMojom) => {
         return {
           tab: {
@@ -180,6 +181,7 @@ export class ClientDelegateFactory {
           }),
           onTaskConfig: {
             isLocked: sessionConfig.onTaskConfig?.isLocked,
+            isPaused: sessionConfig.onTaskConfig?.isPaused,
             tabs:
                 sessionConfig.onTaskConfig?.tabs.map((item: ControlledTab) => {
                   return {
@@ -226,6 +228,7 @@ export class ClientDelegateFactory {
         const result = await pageHandler.updateOnTaskConfig(
             {
               isLocked: onTaskConfig.isLocked,
+              isPaused: onTaskConfig.isPaused ? onTaskConfig.isPaused : false,
               tabs: onTaskConfig.tabs.map((item: ControlledTab) => {
                 return {
                   tab: {

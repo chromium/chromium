@@ -15,6 +15,7 @@
 #include <array>
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/trace_event/trace_event.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/test/h264_dpb.h"
@@ -132,7 +133,7 @@ scoped_refptr<H264Picture> H264VaapiWrapper::CreatePicture(const H264SPS* sps) {
   scoped_refptr<SharedVASurface> surface = SharedVASurface::Create(
       *va_device_, va_config_->va_rt_format(), size, attribute);
 
-  return base::WrapRefCounted(new H264Picture(surface));
+  return base::MakeRefCounted<H264Picture>(surface);
 }
 
 void H264VaapiWrapper::SubmitFrameMetadata(

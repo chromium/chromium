@@ -88,10 +88,8 @@ TranslationManagerImpl* TranslationManagerImpl::GetOrCreate(
     return translation_manager_for_test_;
   }
 
-  // Currently two TranslationManagers can be bound, for self.ai.translator and
-  // for self.translator.
-  // TODO(crbug.com/322229993): Remove this when we delete the legacy Translator
-  // API.
+  // TODO(crbug.com/322229993): Now that only one TranslationManager can be
+  // bound, we can remove this.
   if (auto* manager = static_cast<TranslationManagerImpl*>(
           context_user_data->GetUserData(kTranslationManagerUserDataKey))) {
     return manager;

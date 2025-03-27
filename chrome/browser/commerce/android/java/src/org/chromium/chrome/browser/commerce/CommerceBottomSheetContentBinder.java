@@ -11,9 +11,11 @@ import android.widget.FrameLayout.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 public class CommerceBottomSheetContentBinder {
     public static void bind(PropertyModel model, LinearLayout view, PropertyKey propertyKey) {
         if (propertyKey == CommerceBottomSheetContentProperties.CUSTOM_VIEW) {

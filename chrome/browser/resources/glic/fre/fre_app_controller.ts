@@ -55,11 +55,14 @@ export class FreAppController {
       this.offline();
     });
     window.addEventListener('load', () => {
-      // Allow WebUI close button to close the window. This close button is
+      // Allow WebUI close buttons to close the window. Close buttons are
       // present on all UI states except for `FreWebUiState.kReady`.
-      document.querySelector('.close-button')!.addEventListener('click', () => {
-        freHandler.dismissFre();
-      });
+      const buttons = document.querySelectorAll('.close-button');
+      for (const button of buttons) {
+        button.addEventListener('click', () => {
+          freHandler.dismissFre();
+        });
+      }
     });
 
     if (navigator.onLine) {

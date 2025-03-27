@@ -36,6 +36,7 @@ import java.lang.annotation.Target;
 /** Host view for the new background tab animation. */
 public class NewBackgroundTabAnimationHostView extends FrameLayout {
     private static final long CURVED_MOTION_DURATION_MS = 400L;
+    private static final long LINK_SCALE_DURATION_MS = 120L;
     private final int[] mTargetLocation = new int[2];
 
     @IntDef({
@@ -93,9 +94,10 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
             int endY = mTargetLocation[1];
 
             ObjectAnimator curvedAnimator = getCurvedMotionAnimator(originX, originY, endX, endY);
-            AnimatorSet rotateAnimator =
-                    mFakeTabSwitcherButton.getRotateAnimator(/* incrementCount= */ true);
-            backgroundAnimation.playSequentially(curvedAnimator, rotateAnimator);
+            AnimatorSet transitionAnimator = getTransitionAnimator();
+            AnimatorSet fadeOutAnimator = mFakeTabSwitcherButton.getRotateFadeOutAnimator();
+            backgroundAnimation.playSequentially(
+                    curvedAnimator, transitionAnimator, fadeOutAnimator);
         }
 
         return backgroundAnimation;
@@ -161,21 +163,37 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
                 ViewCurvedMotionAnimatorFactory.build(
                         mLinkIcon, originX, originY, finalX, finalY, /* isClockwise= */ mIsRtl);
         animator.setDuration(CURVED_MOTION_DURATION_MS);
-        animator.setInterpolator(Interpolators.NEW_BACKGROUND_TAB_ANIMATION_INTERPOLATOR);
+        animator.setInterpolator(Interpolators.NEW_BACKGROUND_TAB_ANIMATION_PATH_INTERPOLATOR);
         animator.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationStart(Animator animation) {
                         mLinkIcon.setVisibility(View.VISIBLE);
                     }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mLinkIcon.setVisibility(View.INVISIBLE);
-                    }
                 });
 
         return animator;
+    }
+
+    /**
+     * Returns the {@link AnimatorSet} for the transition between the Link icon and the "very sunny"
+     * asset. {@link #mLinkIcon} will do a scale down animation and {@link #mFakeTabSwitcherButton}
+     * will start the rotate fade in animation.
+     */
+    private AnimatorSet getTransitionAnimator() {
+        mLinkIcon.setPivotX(mLinkIcon.getMeasuredWidth() / 2f);
+        mLinkIcon.setPivotY(0f);
+
+        AnimatorSet rotateFadeInAnimator =
+                mFakeTabSwitcherButton.getRotateFadeInAnimator(/* incrementCount= */ true);
+        ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(mLinkIcon, View.SCALE_X, 1f, 0f);
+        scaleXAnimator.setDuration(LINK_SCALE_DURATION_MS);
+        ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(mLinkIcon, View.SCALE_Y, 1f, 0f);
+        scaleYAnimator.setDuration(LINK_SCALE_DURATION_MS);
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(rotateFadeInAnimator, scaleXAnimator, scaleYAnimator);
+        return animatorSet;
     }
 
     /**

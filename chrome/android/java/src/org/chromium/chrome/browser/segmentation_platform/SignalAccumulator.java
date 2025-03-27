@@ -78,6 +78,10 @@ public class SignalAccumulator {
         proceedToNextStepIfReady();
     }
 
+    public boolean hasTimedOut() {
+        return mHasTimedOut;
+    }
+
     /**
      * @return Whether the page is price tracking eligible. Default is false.
      */

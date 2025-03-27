@@ -304,6 +304,10 @@ constexpr base::FeatureParam<bool> kLensOverlaySendLensInputsForLensSuggest{
     &kLensOverlayContextualSearchbox, "send-lens-inputs-for-lens-suggest",
     false};
 
+constexpr base::FeatureParam<bool> kEnableContextualSearchboxGhostLoader{
+    &kLensOverlayContextualSearchbox,
+    "enable-contextual-searchbox-ghost-loader", true};
+
 constexpr base::FeatureParam<bool>
     kShowContextualSearchboxGhostLoaderLoadingState{
         &kLensOverlayContextualSearchbox,
@@ -316,6 +320,9 @@ constexpr base::FeatureParam<base::TimeDelta> kLensSearchboxAutocompleteTimeout{
 constexpr base::FeatureParam<bool> kShowContextualSearchboxSearchSuggest{
     &kLensOverlayContextualSearchbox,
     "show-contextual-searchbox-search-suggest", false};
+
+constexpr base::FeatureParam<bool> kShowContextualSearchboxZeroPrefixSuggest{
+    &kLensOverlayContextualSearchbox, "enable-zps-suggestions", true};
 
 constexpr base::FeatureParam<bool>
     kLensOverlaySendLensVisualInteractionDataForLensSuggest{
@@ -835,6 +842,10 @@ std::string GetLensOverlayTranslateEndpointURL() {
   return kTranslateEndpointUrl.Get();
 }
 
+bool EnableContextualSearchboxGhostLoader() {
+  return kEnableContextualSearchboxGhostLoader.Get();
+}
+
 bool ShowContextualSearchboxGhostLoaderLoadingState() {
   return kShowContextualSearchboxGhostLoaderLoadingState.Get();
 }
@@ -921,6 +932,10 @@ bool PageContentUploadRequestIdFixEnabled() {
 
 bool UpdateViewportEachQueryEnabled() {
   return kUpdateViewportEachQuery.Get();
+}
+
+bool ShowContextualSearchboxZeroPrefixSuggest() {
+  return kShowContextualSearchboxZeroPrefixSuggest.Get();
 }
 
 bool IsUpdatedClientContextEnabled() {

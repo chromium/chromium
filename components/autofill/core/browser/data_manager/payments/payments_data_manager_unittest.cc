@@ -2498,6 +2498,28 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_NoEligiblePriceRange) {
 
   EXPECT_TRUE(linked_bnpl_issuers.empty());
 }
+
+// This test verifies that a linked BNPL issuer is not returned when it meets
+// initial criteria but lacks an eligible price range specifying 'USD' currency.
+TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_NonUsdPriceRangeRejected) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstruments(
+      {test::CreatePaymentInstrumentWithLinkedBnplIssuer(
+          /*instrument_id=*/1234L,
+          /*issuer_id=*/std::string(kBnplAffirmIssuerId), /*currency=*/"CAD",
+          /*min_price_in_micros=*/5000000, /*max_price_in_micros=*/35000000)}));
+
+  // `Refresh()` must be called to ensure that the linked BNPL issuer payment
+  // instruments are loaded again from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  // No linked BNPL issuers should be cached as there is no eligible price
+  // range present.
+  EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -3761,6 +3783,37 @@ TEST_F(
 
   // The number of unlinked BNPL issuers should remain the same.
   EXPECT_EQ(payments_data_manager().GetUnlinkedBnplIssuers().size(), 1u);
+}
+
+// This test verifies that an unlinked BNPL issuer is not returned when it meets
+// initial criteria but lacks an eligible price range specifying 'USD' currency.
+TEST_F(PaymentsDataManagerTest,
+       GetUnlinkedBnplIssuers_NonUsdPriceRangeRejected) {
+  // Create a BNPL payment creation option.
+  sync_pb::PaymentInstrumentCreationOption creation_option;
+  creation_option.set_id("1234");
+
+  sync_pb::BnplCreationOption* bnpl_option =
+      creation_option.mutable_buy_now_pay_later_option();
+  bnpl_option->set_issuer_id(kBnplAffirmIssuerId);
+
+  sync_pb::EligiblePriceRange eligible_price_range;
+  eligible_price_range.set_currency("CAD");
+  eligible_price_range.set_min_price_in_micros(50);
+  eligible_price_range.set_max_price_in_micros(200);
+  *bnpl_option->add_eligible_price_range() = eligible_price_range;
+
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
+      {creation_option}));
+
+  // We need to call `Refresh()` to ensure that the BNPL issuer payment
+  // instrument creation options are loaded again from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  // No unlinked BNPL issuers should be cached as there is no eligible price
+  // range present.
+  EXPECT_TRUE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
 }
 
 // Tests that `GetBnplIssuers` returns all linked and unlinked buy-now-pay-later

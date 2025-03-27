@@ -114,6 +114,7 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   void DidInsert(base::PassKey<TabStripModel>);
 
   // TabInterface overrides:
+  base::WeakPtr<TabInterface> GetWeakPtr() override;
   content::WebContents* GetContents() const override;
   base::CallbackListSubscription RegisterWillDiscardContents(
       TabInterface::WillDiscardContentsCallback callback) override;

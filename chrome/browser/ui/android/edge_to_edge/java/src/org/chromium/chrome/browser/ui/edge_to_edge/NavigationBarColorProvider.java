@@ -5,7 +5,10 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** An interface for broadcasting changes to the navigation bar color. */
+@NullMarked
 public interface NavigationBarColorProvider {
     /** An observer to be notified of changes to the navigation bar color. */
     interface Observer {

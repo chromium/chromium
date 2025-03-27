@@ -123,4 +123,8 @@ struct ViewTransitionState {
   // Document. This is used for paint holding during a LocalFrame<->LocalFrame
   // subframe navigation, i.e., a navigation in an in-process iframe.
   viz.mojom.ViewTransitionElementResourceId subframe_snapshot_id;
+
+  // A map from element id to a unique string for view-transition-name: auto
+  // matching.
+  map<string, string> id_to_auto_name_map;
 };

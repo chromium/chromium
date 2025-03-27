@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.content.Context;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningUserAction;
 import org.chromium.chrome.browser.password_manager.HelpUrlLauncher;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
@@ -23,6 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Mediator for the password access loss dialog meant to be shown in Chrome settings. It handles
  * interactions with the UI.
  */
+@NullMarked
 class PasswordAccessLossDialogSettingsMediator implements ModalDialogProperties.Controller {
     private final Activity mActivity;
     private final ModalDialogManager mModalDialogManager;

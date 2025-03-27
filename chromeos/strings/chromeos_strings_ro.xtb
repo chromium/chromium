@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Folosește aplicația Transferul conținutului de la Google pentru a muta datele din contul școlar în contul personal înainte să pierzi accesul.</translation>
 <translation id="1026212596705997935">Comanda rapidă este folosită pentru <ph name="CONFLICT_ACCEL_NAME" />. Introdu o nouă comandă rapidă. Pentru a înlocui comanda rapidă inițială, introdu din nou această comandă rapidă.</translation>
 <translation id="1030856839388844477">Resetează utilizarea datelor</translation>
+<translation id="1047095725494118091">Nu se poate descărca. Încearcă din nou sau repornește <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fire, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Funcție nouă disponibilă; folosește tasta săgeată în sus ca să afli mai multe.</translation>
 <translation id="1049663189809099096">galben pastelat</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Se descarcă screensaverul</translation>
 <translation id="1094693127011229778">Adresa IP nu este disponibilă</translation>
 <translation id="1100902271996134409">Se creează imaginile…</translation>
+<translation id="1107856713690040084">Sunetul dispozitivului <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Despre</translation>
 <translation id="1118572504348554005">Este posibil să le trimitem feedback primit prin intermediul acestui formular partenerilor noștri pentru a remedia erorile și alte probleme pe care ni le raportezi. Nu include informații sensibile, cum ar fi parolele.</translation>
 <translation id="1119403468619527527">Prea puține cuvinte pentru a simplifica</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Activează modul întunecat</translation>
 <translation id="2164131940279488868">Asigură-te că ai un microfon conectat pentru a începe înregistrarea audio</translation>
 <translation id="2173302385160625112">Verifică-ți conexiunea la internet</translation>
+<translation id="2176909213844392588">Nu se poate descărca modelul de transcriere <ph name="LANGUAGE_NAME" />. Încearcă din nou sau repornește <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">A apărut o eroare. Încearcă să redeschizi aplicația.</translation>
 <translation id="2189104374785738357">Modifică detaliile APN</translation>
 <translation id="2195732836444333448">La capacitate maximă. Revino în curând.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Alimentator de documente (față-verso)</translation>
 <translation id="3201315366910775591">Albumele comune pot fi actualizate de alți utilizatori</translation>
 <translation id="3211671540163313381">D-pad pentru maparea tastelor</translation>
+<translation id="3217462202230355157">Verifică dacă microfonul este conectat sau repornește <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Se caută scanere</translation>
 <translation id="3226657629376379887">Meniu de acțiuni pentru aspect</translation>
 <translation id="3227186760713762082">Împarte valoarea pentru <ph name="CATEGORY_TEXT" /> la <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Exclusive</translation>
 <translation id="3404249063913988450">Activează screensaverul</translation>
 <translation id="3413935475507503304">Ca să continui cu actualizarea, dă clic pe Înainte.</translation>
+<translation id="3416709353545797224">Se înregistrează tot conținutul audio de pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">în aer liber</translation>
 <translation id="3428971106895559033">pastelat</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Scanerul trebuie să fie pornit și disponibil prin rețea sau prin conexiune directă</translation>
 <translation id="4159238217853743776">Parțial</translation>
 <translation id="4159784952369912983">Mov</translation>
+<translation id="416219735020840807">Nu se poate descărca modelul de transcriere. Încearcă din nou sau repornește <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4170180284036919717">Fotografiază</translation>
 <translation id="4170700058716978431">NEREUȘIT</translation>
 <translation id="4171077696775491955">redu luminozitatea</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Se înlocuiește textul selectat cu sugestia</translation>
 <translation id="5346687412805619883">Rețea locală</translation>
 <translation id="5358174242040570474">A apărut o eroare. Încearcă din nou să alegi o imagine de fundal sau redeschide aplicația.</translation>
+<translation id="5368228070728130240">Nu se poate descărca modelul pentru crearea de rezumate și titluri. Încearcă din nou sau repornește <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">Rețeaua Wi-Fi nu este sigură</translation>
 <translation id="5376354385557966694">Modul luminos automat</translation>
 <translation id="5378184552853359930">Tip de adresă IP</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">Rezolvări DNS nereușite</translation>
 <translation id="6768237774506518020">Rată de eroare ridicată a rezolvărilor DNS</translation>
 <translation id="6786747875388722282">Extensii</translation>
+<translation id="6789891265243243337">Când sunetul este activat pe <ph name="DEVICE_TYPE" />, Recorder înregistrează tot conținutul audio redat pe acest dispozitiv</translation>
 <translation id="6791471867139427246">culoarea iluminării tastaturii</translation>
 <translation id="6796229976413584781">Comanda rapidă a fost ștearsă</translation>
 <translation id="6798678288485555829">Navigare în text</translation>
@@ -1728,6 +1736,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8933650076320258356">Tasta selectată este <ph name="KEYS" /> pentru <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Adresa IP a clientului</translation>
+<translation id="8938606491880817721">Nu se poate descărca. Încearcă din nou sau repornește <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8944651180182756621">Culoarea lansatorului</translation>
 <translation id="8945308580158685341">albine</translation>
 <translation id="894617464444543719">Dispozitivul este un telefon.</translation>

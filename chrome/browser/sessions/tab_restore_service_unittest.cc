@@ -123,6 +123,7 @@ class MockLiveTabContext : public sessions::LiveTabContext {
               ((const sessions::tab_restore::Tab&),
                int,
                bool,
+               bool,
                sessions::tab_restore::Type),
               (override));
   MOCK_METHOD(sessions::LiveTab*,

@@ -4516,8 +4516,9 @@ public class StripLayoutHelper
         }
     }
 
-    public void maybeMergeToGroupOnDrop(int draggedTabId, int index) {
-        mReorderDelegate.handleTabDropForExternalView(mStripGroupTitles, draggedTabId, index);
+    public void maybeMergeToGroupOnDrop(List<Integer> tabIds, int index) {
+        // TODO(crbug.com/405166521) Expand collapsed tabs when merged to group.
+        mReorderDelegate.handleDropForExternalView(mStripGroupTitles, tabIds, index);
     }
 
     public void stopReorderMode() {

@@ -27,7 +27,7 @@ BASE_FEATURE(kAppPreloadService,
 // as long as the PWA is on the start menu.  b/40285965.
 BASE_FEATURE(kAppSpecificNotifications,
              "AppSpecificNotifications",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, invokes `SetProcessPriorityBoost` to disable priority boosting
 // when a thread is taken out of the wait state. The default Windows behavior is
@@ -424,6 +424,10 @@ BASE_FEATURE(kGlicSizingFitWindow,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicWarming, "GlicWarming", base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicFreWarming,
+             "GlicFreWarming",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicWarmMultiple,
              "GlicWarmMultiple",
@@ -1623,6 +1627,12 @@ BASE_FEATURE(kEventBasedLogUpload,
 // go/legacy-log-upload-migration.
 BASE_FEATURE(kPeriodicLogUploadMigration,
              "PeriodicLogUploadMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// A feature to enable periodic log K12 user age classification. See
+// go/teachers-on-chromeos-data.
+BASE_FEATURE(kK12AgeClassificationMetricsProvider,
+             "K12AgeClassificationMetricsProvider",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

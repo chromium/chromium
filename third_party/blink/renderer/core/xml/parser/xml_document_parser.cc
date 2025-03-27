@@ -1089,7 +1089,7 @@ void XMLDocumentParser::StartElementNs(
                                                             is)) {
       throw_on_dynamic_markup_insertions.emplace(document_);
       document_->GetAgent().event_loop()->PerformMicrotaskCheckpoint();
-      reactions.emplace();
+      reactions.emplace(isolate);
     }
   }
 

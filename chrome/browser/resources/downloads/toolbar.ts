@@ -52,9 +52,9 @@ export class DownloadsToolbarElement extends CrLitElement {
   }
 
   private mojoHandler_: PageHandlerInterface|null = null;
-  hasClearableDownloads: boolean = false;
-  spinnerActive: boolean = false;
-  items: MojomData[] = [];
+  accessor hasClearableDownloads: boolean = false;
+  accessor spinnerActive: boolean = false;
+  accessor items: MojomData[] = [];
 
   override firstUpdated() {
     this.mojoHandler_ = BrowserProxy.getInstance().handler;

@@ -101,6 +101,8 @@ constexpr auto kDumpProviderAllowlist =
 
 // A list of string names that are allowed for the memory allocator dumps in
 // background mode.
+// NOTE: There is no generic pattern matching support and only names containing
+// "0x?" match "0x" followed by hex digits.
 constexpr auto kAllocatorDumpNameAllowlist =
     base::MakeFixedFlatSet<std::string_view>({
 // clang-format off
@@ -175,11 +177,12 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "gpu/gr_shader_cache/cache_0x?",
         "gpu/mapped_memory/manager_0x?",
         "gpu/shared_images",
-        "gpu/media_texture_owner_?",
+        "gpu/media_texture_owner_0x?",
         "gpu/transfer_buffer_memory/buffer_0x?",
         "gpu/transfer_cache/cache_0x?",
         "gpu/transfer_cache/cache_0x?/avg_image_size",
         "gpu/vulkan/vma_allocator_0x?",
+        "gpu/vulkan/graphite_allocator",
         "history/delta_file_service/leveldb_0x?",
         "history/usage_reports_buffer/leveldb_0x?",
 #if BUILDFLAG(IS_MAC)

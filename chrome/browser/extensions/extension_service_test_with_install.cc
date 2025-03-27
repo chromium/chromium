@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
+#include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_creator.h"
@@ -285,7 +286,13 @@ void ExtensionServiceTestWithInstall::UpdateExtension(
   CRXFileInfo crx_info(path, GetTestVerifierFormat());
   crx_info.extension_id = id;
 
-  auto installer = service()->CreateUpdateInstaller(crx_info, true);
+  // Create an ExtensionUpdater and use it to create a CrxInstaller.
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  ExtensionUpdater updater(profile());
+  updater.Init(prefs, prefs->pref_service(),
+               /*frequency_seconds=*/600, /*cache=*/nullptr,
+               ExtensionDownloader::Factory());
+  auto installer = updater.CreateUpdateInstaller(crx_info, true);
 
   if (installer) {
     base::RunLoop run_loop;

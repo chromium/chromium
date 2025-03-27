@@ -124,8 +124,10 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     private LinkedHashSet<Integer> mThemeResIds = new LinkedHashSet<>();
     private ServiceTracingProxyProvider mServiceTracingProxyProvider;
     private InsetObserver mInsetObserver;
-    private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
-    private EdgeToEdgeManager mEdgeToEdgeManager;
+    // Created in #onCreate
+    private @Nullable EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
+    // Created in #onCreate
+    private @Nullable EdgeToEdgeManager mEdgeToEdgeManager;
     private EdgeToEdgeLayoutCoordinator mEdgeToEdgeLayoutCoordinator;
 
     @Override
@@ -647,13 +649,13 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      * Returns the {@link EdgeToEdgeStateProvider} for checking and requesting changes to the
      * edge-to-edge state.
      */
-    protected EdgeToEdgeStateProvider getEdgeToEdgeStateProvider() {
+    protected @Nullable EdgeToEdgeStateProvider getEdgeToEdgeStateProvider() {
         return mEdgeToEdgeStateProvider;
     }
 
     /** Returns the {@link EdgeToEdgeManager} for access to core edge-to-edge logic. */
     @VisibleForTesting
-    public EdgeToEdgeManager getEdgeToEdgeManager() {
+    public @Nullable EdgeToEdgeManager getEdgeToEdgeManager() {
         return mEdgeToEdgeManager;
     }
 

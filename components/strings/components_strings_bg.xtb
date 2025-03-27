@@ -696,7 +696,6 @@
 <translation id="2187317261103489799">Откриване (по подразбиране)</translation>
 <translation id="2188375229972301266">Няколко перфорации в долната част</translation>
 <translation id="2194856509914051091">Обмислете следните неща</translation>
-<translation id="2198071643181968308">Научете повече за <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Бутон „Не ми харесва“. Натиснете Enter, за да отворите формуляр за изпращане на подробни отзиви за причината, поради която не харесвате това предложение</translation>
 <translation id="2202627062836089804">задната страна на картата ви</translation>
 <translation id="2204482073374652408">Актуализирането завърши!</translation>
@@ -901,6 +900,7 @@
 <translation id="2539524384386349900">Откриване</translation>
 <translation id="2541219929084442027">Страниците, които преглеждате в разделите в режим „инкогнито“, няма да останат в историята на браузъра, хранилището за „бисквитки“ или историята на търсенето, след като затворите всички раздели в този режим. Изтеглените от вас файлове или създадените от вас отметки обаче ще бъдат запазени.</translation>
 <translation id="2542106216580219892">Сърфинг</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – За да излезете от режима на цял екран, натиснете и задръжте |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Администраторът рестартира устройството ви</translation>
 <translation id="2544644783021658368">Един документ</translation>
 <translation id="254524874071906077">Задаване на Chrome като браузър по подразбиране</translation>
@@ -1809,6 +1809,7 @@
 <translation id="4150099059797363385">Плик, китайски №4</translation>
 <translation id="4151403195736952345">Използване на глобалната стандартна стойност (Откриване)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Страница 1}other{Страница {COUNT}}}</translation>
+<translation id="4152670763139331043">{NUM_TABS,plural, =1{1 раздел}other{# раздела}}</translation>
 <translation id="4154277373259957087">Chrome вече ще потвърждава самоличността ви, преди да попълва начините на плащане. Можете да актуализирате това по всяко време в „<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />“.</translation>
 <translation id="415440494507469262">Добавяне на раздел към таблицата за сравнение</translation>
 <translation id="4159784952369912983">лилаво</translation>
@@ -2531,7 +2532,6 @@
 <ph name="LIST_ITEM" />информацията, въведена във формуляри.
 <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">В обратен ред с отпечатаната страна нагоре</translation>
-<translation id="5445340838622821110">Когато плащате на вноски, се попълва еднократен номер на виртуалната карта. Този номер е само за тази покупка. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Разрешаване на <ph name="SITE" /> да използва запазената за вас информация</translation>
 <translation id="5451331376824595378">Когато Chrome открие събития, свързани със сигурността, данните за тях се изпращат до администратора ви. Те могат да включват URL адресите на посещаваните от вас страници в Chrome, URL адресите на страниците, от които сте копирали данни, имена или метаданни на файлове, сривовете на браузъра или разделите, както и потребителското име, с което влизате в уеб базирани приложения, на устройството си и в Chrome.</translation>
 <translation id="5452270690849572955">Тази страница на <ph name="HOST_NAME" /> не може да бъде намерена</translation>
@@ -3933,6 +3933,7 @@
 <translation id="7887885240995164102">Преминаване в режим „Картина в картината“</translation>
 <translation id="7888575728750733395">Режим на изобразяване на цветовете при отпечатване</translation>
 <translation id="7890748547282909375">Влезте в Microsoft OneDrive, за да запазите екранната снимка</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – За да се покаже курсорът, натиснете |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">настройки за плащане</translation>
 <translation id="7894280532028510793">Ако изписването е правилно, <ph name="BEGIN_LINK" />стартирайте мрежова диагностика<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Плик 7 x 9 инча</translation>
@@ -3999,7 +4000,6 @@
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />Изтрийте „бисквитките“ си<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">10 x 11 инча</translation>
 <translation id="8012647001091218357">Не можахме да се свържем с родителите ви. Моля, опитайте отново.</translation>
-<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">Туристически агенции и услуги</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да зададете Chrome като браузър по подразбиране за системата</translation>
 <translation id="8027077570865220386">Тава 15</translation>
@@ -4626,6 +4626,7 @@
 <translation id="9155646082713385498">Списания</translation>
 <translation id="9157595877708044936">Настройва се...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Файлът „<ph name="FILE_NAME" />“ може да включва деликатно съдържание}other{<ph name="FILE_COUNT" /> файла може да включват деликатно съдържание}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – За да излезете от режима на цял екран, натиснете |<ph name="ACCELERATOR" />|</translation>
 <translation id="9165305804774426672">Посещаваните от вас сайтове също могат да определят какво харесвате въз основа на активността ви в тях. Ако например посетите даден сайт, в който се продават обувки за бягане на дълги разстояния, той може да реши, че се интересувате от участие в маратони.</translation>
 <translation id="9166851138617700776">Още за предложените от сайтовете реклами и измерването на рекламите</translation>
 <translation id="9167054383925257837">информацията за браузъра и операционната система на устройството (например версиите на браузъра и операционната система);</translation>

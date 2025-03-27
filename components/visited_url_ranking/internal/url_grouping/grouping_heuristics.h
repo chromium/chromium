@@ -60,10 +60,10 @@ class GroupingHeuristics {
   friend class GroupingHeuristicsTest;
 
   // Same as GetSuggestions(), but runs only the heuristics in the
-  // `heuristics_to_run` list.
+  // `heuristics_priority` list.
   void GetSuggestions(
       std::vector<URLVisitAggregate> candidates,
-      const std::vector<GroupSuggestion::SuggestionReason>& heuristics_to_run,
+      const std::vector<GroupSuggestion::SuggestionReason>& heuristics_priority,
       SuggestionsCallback callback);
 
   base::flat_map<GroupSuggestion::SuggestionReason, std::unique_ptr<Heuristic>>

@@ -114,6 +114,13 @@ const std::string& GetFresnelAPIKey() {
 const std::string& GetBocaAPIKey() {
   return GetApiKeyCacheInstance().api_key_boca();
 }
+
+const std::string& GetCrosSystemGeoAPIKey() {
+  return GetApiKeyCacheInstance().api_key_cros_system_geo();
+}
+const std::string& GetCrosChromeGeoAPIKey() {
+  return GetApiKeyCacheInstance().api_key_cros_chrome_geo();
+}
 #endif
 
 const std::string& GetMetricsKey() {

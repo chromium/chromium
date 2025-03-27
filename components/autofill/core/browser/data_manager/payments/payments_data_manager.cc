@@ -2225,8 +2225,9 @@ void PaymentsDataManager::CacheIfLinkedBnplPaymentInstrument(
   }
 
   // A linked BNPL issuer is only valid if there is at least one eligible price
-  // range.
-  if (eligible_price_ranges.empty()) {
+  // range specifies 'USD' as the currency.
+  if (!HasEligibleCurrencyPriceRangeForBnplIssuer(eligible_price_ranges,
+                                                  "USD")) {
     return;
   }
 
@@ -2298,13 +2299,25 @@ void PaymentsDataManager::CacheIfBnplPaymentInstrumentCreationOption(
   }
 
   // An unlinked BNPL issuer is only valid if there is at least one eligible
-  // price range.
-  if (eligible_price_ranges.empty()) {
+  // price range specifies 'USD' as the currency.
+  if (!HasEligibleCurrencyPriceRangeForBnplIssuer(eligible_price_ranges,
+                                                  "USD")) {
     return;
   }
 
   unlinked_bnpl_issuers_.emplace_back(std::nullopt, bnpl_issuer.issuer_id(),
                                       std::move(eligible_price_ranges));
+}
+
+bool PaymentsDataManager::HasEligibleCurrencyPriceRangeForBnplIssuer(
+    const std::vector<BnplIssuer::EligiblePriceRange>& eligible_price_ranges,
+    const std::string& currency_code) const {
+  return std::any_of(
+      eligible_price_ranges.begin(), eligible_price_ranges.end(),
+      [&currency_code](
+          const BnplIssuer::EligiblePriceRange& eligible_price_range) {
+        return eligible_price_range.currency == currency_code;
+      });
 }
 
 }  // namespace autofill

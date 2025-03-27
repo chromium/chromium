@@ -60,10 +60,14 @@ fi
 # We should url encode DEBUG_URL so that it matches the url chrome navigates to.
 RENDERER_PID_RE='Renderer url="([^"]+)" \(([0-9]+)\) paused waiting for debugger'
 
+CONTINUE="kill -s SIGUSR1"
 if [ -z "$DEBUGGER" ]; then
-  if which lldb > /dev/null; then
+  if [[ "$TERM_PROGRAM" == "vscode" || "$TERM_PROGRAM" == "cider" ]]; then
+    DEBUGGER="vscode"
+    CONTINUE="process signal SIGUSR1"
+  elif which lldb > /dev/null; then
     DEBUGGER="lldb"
-    CONTINUE="continue"
+    CONTINUE="process signal SIGUSR1"
   elif which gdb > /dev/null; then
     DEBUGGER="gdb -q"
     CONTINUE="signal SIGUSR1"
@@ -136,6 +140,20 @@ if [ -n "$RENDERER_PID" ]; then
   signal_renderers ${NEXT_LINE} &
   SIGNAL_PID=$!
   # print yellow message
-  echo -e "\n\033[1;33mDebugging renderer, use '$CONTINUE' to run.\033[0m\n"
-  $DEBUGGER -p $RENDERER_PID
+  echo -e "\n\033[1;33mDebugging renderer process ${RENDERER_PID}, $CONTINUE to run.\033[0m\n"
+  if [[ "$DEBUGGER" == "manual" || "$DEBUGGER" == "vscode" ]]; then
+    if [[ "$DEBUGGER" == "vscode" ]]; then
+      echo "Set target pid in vscode launch.json to ${RENDERER_PID}"
+    else
+      echo "Attach debugger to pid ${RENDERER_PID}"
+    fi
+    # Wait for user to continue.
+    read -r -p "Press enter to continue..."
+    kill -s SIGUSR1 ${RENDERER_PID}
+
+    # Wait for browser process to finish.
+    wait $BROWSER_PID
+  else
+    $DEBUGGER -p $RENDERER_PID
+  fi
 fi

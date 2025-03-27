@@ -200,7 +200,7 @@ BASE_FEATURE(kPreventDuplicateImageDecodes,
 
 BASE_FEATURE(kInitImageDecodeLastUseTime,
              "InitImageDecodeLastUseTime",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDynamicSafeAreaInsetsSupportedByCC,
              "DynamicSafeAreaInsetsSupportedByCC",

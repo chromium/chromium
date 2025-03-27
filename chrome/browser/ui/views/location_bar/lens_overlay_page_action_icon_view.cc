@@ -162,7 +162,7 @@ void LensOverlayPageActionIconView::UpdateImpl() {
   // (3) It is always hidden in the NTP.
   // The overlay is unavailable on the NTP as it is unlikely to be useful to
   // users on the page, it would also appear immediately when a new tab or
-  // window is created due to focus immediatey jumping into the location bar.
+  // window is created due to focus immediately jumping into the location bar.
   // `tab` is nullptr during construction of class Browser, during LocationBar
   // construction.
   auto* tab = browser_->GetActiveTabInterface();

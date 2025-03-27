@@ -57,6 +57,9 @@ export class PrivacySandboxDialogNoticeStepElement extends
     };
   }
 
+  private expanded_: boolean;
+  private siteSuggestedAdsLearnMoreExpanded_: boolean;
+  private adMeasurementLearnMoreExpanded_: boolean;
   private hideNoticePage_: boolean;
 
   private onNoticeSiteSuggestedAdsLearnMoreExpanded_(

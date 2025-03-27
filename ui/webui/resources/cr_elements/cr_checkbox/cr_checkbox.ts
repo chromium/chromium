@@ -139,6 +139,18 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     this.getRipple().clear();
   }
 
+  // <if expr="is_win">
+  // This click handler just forwards clicks to the host to fix a bug in NVDA
+  // where the lack of a click handler on a focusable element does not
+  // propagate clicks to a host element.
+  // See https://github.com/nvaccess/nvda/issues/17855.
+  protected onCheckboxClick_(e: Event) {
+    e.stopPropagation();
+    e.preventDefault();
+    this.click();
+  }
+  // </if>
+
   private async onClick_(e: Event) {
     if (this.disabled || (e.target as HTMLElement).tagName === 'A') {
       return;

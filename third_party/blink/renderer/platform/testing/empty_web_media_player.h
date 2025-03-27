@@ -28,7 +28,7 @@ class EmptyWebMediaPlayer : public WebMediaPlayer {
                   CorsMode,
                   bool is_cache_disabled) override;
   void Play() override {}
-  void Pause() override {}
+  void Pause(PauseReason pause_reason) override {}
   void Seek(double seconds) override {}
   void SetRate(double) override {}
   void SetVolume(double) override {}

@@ -4,25 +4,34 @@
 
 #include "third_party/webrtc_overrides/p2p/base/fake_connection_factory.h"
 
+#include <cstdint>
+#include <memory>
 #include <string_view>
+#include <utility>
 
-#include "third_party/webrtc/p2p/base/basic_packet_socket_factory.h"
-#include "third_party/webrtc/p2p/base/fake_port_allocator.h"
-#include "third_party/webrtc/p2p/base/port.h"
+#include "base/synchronization/waitable_event.h"
+#include "third_party/webrtc/api/candidate.h"
+#include "third_party/webrtc/api/task_queue/task_queue_base.h"
+#include "third_party/webrtc/p2p/base/connection.h"
+#include "third_party/webrtc/p2p/base/p2p_constants.h"
+#include "third_party/webrtc/p2p/base/port_allocator.h"
+#include "third_party/webrtc/p2p/base/port_interface.h"
+#include "third_party/webrtc/p2p/test/fake_port_allocator.h"
+#include "third_party/webrtc/rtc_base/net_helper.h"
+#include "third_party/webrtc/rtc_base/socket_address.h"
+#include "third_party/webrtc_overrides/environment.h"
 #include "third_party/webrtc_overrides/rtc_base/fake_socket_factory.h"
 
 namespace blink {
 
-FakeConnectionFactory::FakeConnectionFactory(rtc::Thread* thread,
+FakeConnectionFactory::FakeConnectionFactory(webrtc::TaskQueueBase* thread,
                                              base::WaitableEvent* readyEvent)
     : readyEvent_(readyEvent),
       sf_(std::make_unique<blink::FakeSocketFactory>()),
-      socket_factory_(
-          std::make_unique<rtc::BasicPacketSocketFactory>(sf_.get())),
       allocator_(
-          std::make_unique<cricket::FakePortAllocator>(thread,
-                                                       socket_factory_.get(),
-                                                       nullptr)) {}
+          std::make_unique<cricket::FakePortAllocator>(WebRtcEnvironment(),
+                                                       sf_.get(),
+                                                       thread)) {}
 
 void FakeConnectionFactory::Prepare(uint32_t allocator_flags) {
   if (sessions_.size() > 0) {

@@ -31,6 +31,7 @@
 #include "google/protobuf/stubs/common.h"
 #include "absl/base/call_once.h"
 #include "absl/base/casts.h"
+#include "absl/base/optimization.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
 #include "google/protobuf/any.h"
@@ -73,7 +74,7 @@ PROTOBUF_EXPORT inline void InitProtobufDefaults() {
   // as there are no calls to this function from off the main thread, before
   // main() starts, this is safe. After main() starts,
   // init_protobuf_defaults_state will always be true.
-  if (PROTOBUF_PREDICT_FALSE(!init_protobuf_defaults_state)) {
+  if (ABSL_PREDICT_FALSE(!init_protobuf_defaults_state)) {
     InitProtobufDefaultsSlow();
   }
 }

@@ -300,8 +300,8 @@ test("media_perftests") {
     "//testing:run_perf_test",
   ]
 
-  if (enable_av1_decoder &&
-      ((is_chromeos && (use_v4l2_codec || use_vaapi)) || is_win)) {
+  if (enable_av1_decoder && ((is_chromeos && (use_v4l2_codec || use_vaapi)) ||
+                             is_win || is_android)) {
     data_deps += [ "//media/gpu/test/:video_encode_accelerator_tests" ]
   }
 }

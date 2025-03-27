@@ -42,6 +42,7 @@ public class TabGroupMetadataUnitTest {
     private static final @ColorInt int TAB_GROUP_COLOR = 0;
     private static final String TAB_GROUP_TITLE = "Title";
     private static final boolean TAB_GROUP_COLLAPSED = true;
+    private static final boolean IS_GROUP_SHARED = false;
     private static final boolean IS_INCOGNITO = false;
     private Intent mIntent = new Intent();
     private TabGroupMetadata mTabGroupMetadata;
@@ -59,6 +60,7 @@ public class TabGroupMetadataUnitTest {
                         TAB_GROUP_COLOR,
                         TAB_GROUP_TITLE,
                         TAB_GROUP_COLLAPSED,
+                        IS_GROUP_SHARED,
                         IS_INCOGNITO);
         IntentHandler.setTabGroupMetadata(mIntent, mTabGroupMetadata);
 

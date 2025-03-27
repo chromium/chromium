@@ -322,36 +322,6 @@ chromium-metrics-reviews@google.com.
   <token key="RootType" variants="VolumeManagerRootType"/>
 </histogram>
 
-<histogram name="FileBrowser.Diversion.Commit.{Reason}.{Part}"
-    enum="FuseboxPosixErrorCode" expires_after="2025-04-06">
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    The error code returned when committing a (temporary) diversion file to its
-    (persistent) backing file system, broken down by whether we stopped because
-    of an explicit finish (e.g. the shadowed file was renamed) or an idle
-    timeout. There are two parts to the diversion process. The first part
-    concerns any errors when reading from or writing to the work-in-progress
-    temporary file. The second part concerns moving the now-complete temporary
-    file to the backing file system.
-  </summary>
-  <token key="Reason" variants="DiversionStoppedReason"/>
-  <token key="Part">
-    <variant name="PartOne"/>
-    <variant name="PartTwo"/>
-  </token>
-</histogram>
-
-<histogram name="FileBrowser.Diversion.EnsureFileExists.ShouldDivert"
-    enum="Boolean" expires_after="2025-04-06">
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Whether we should start redirecting I/O to a diversion file, whenever
-    DiversionBackendDelegate::EnsureFileExists is called.
-  </summary>
-</histogram>
-
 <histogram name="FileBrowser.DownloadDestination.IsGoogleDrive.Changed"
     enum="BooleanEnabled" expires_after="2025-07-01">
   <owner>simmonsjosh@google.com</owner>
@@ -472,7 +442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.ExtractTask.Status"
-    enum="FileManagerExtractStatus" expires_after="2025-04-01">
+    enum="FileManagerExtractStatus" expires_after="2026-04-01">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Tracks success/error rate of extracting archive contents.</summary>

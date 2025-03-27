@@ -45,6 +45,8 @@ See the [junit_unit_tests](https://cs.chromium.org/chromium/src/testing/android/
 
 ### JUnit tests with Robolectric
 
+Example: [ExampleRobolectricTest](/chrome/android/junit/src/org/chromium/chrome/browser/ExampleRobolectricTest.java)
+
 Build these types of test using the `robolectric_binary` GN template.
 
 Robolectric is a unit testing framework that lets you run tests with Android
@@ -62,11 +64,12 @@ This works even for static and final methods.
 
 #### Useful Tips
 
-* Use `@RunWith(BaseRobolectricTestRunner.class)` for all Chromium Robolectric tests.
-* You can specify the Android SDK to run your test with with `@Config(sdk = ??)`.
-
-> Currently, only SDK levels 18, 21, and 25 are supported in Chromium
-> but more can be added on request.
+* Use `@RunWith(BaseRobolectricTestRunner.class)` for all Chromium Robolectric
+  tests.
+* `@Config(manifest = Config.NONE)` can be used when Android resources aren't
+  needed. The test runs faster with an empty manifest.
+* You can specify the Android SDK to run your test with with
+  `@Config(sdk = ??)`.
 
 #### Example Code
 

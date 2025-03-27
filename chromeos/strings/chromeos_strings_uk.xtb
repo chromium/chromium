@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">у неділю</translation>
 <translation id="4250229828105606438">Знімок екрана</translation>
 <translation id="4251839292699800785">Стильний офіс</translation>
+<translation id="4252261480746798874">Якщо ви вибрали варіант "Створіть власні", введіть свій запит. Ви також можете натиснути "Виберіть тему", щоб персоналізувати шпалери від ШІ, натискаючи підкреслені слова.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Якщо хочете переглянути більше унікальних і різноманітних зображень, створених ШІ, натисніть "Надихни мене".
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Коли ви створюєте власні шпалери, запит надсилається на сервери Google, щоб генерувати зображення й покращувати продукт відповідно до <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Загальних положень і умов та Політики конфіденційності Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Не вказуйте особисту, чутливу чи конфіденційну інформацію.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративний ШІ може припускатися помилок (зокрема щодо людей), тому радимо ретельно перевіряти його відповіді. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Докладніше<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">Затримка HTTP</translation>
 <translation id="4266143281602681663">пряжі</translation>
 <translation id="4269815121975886860">Запуск</translation>

@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
+#include "third_party/blink/renderer/core/view_transition/scoped_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -150,10 +151,10 @@ class ViewTransitionTest : public testing::Test,
   }
 
   void ValidatePseudoElementTree(
+      Element* scope,
       const Vector<WTF::AtomicString>& view_transition_names,
       bool has_incoming_image) {
-    auto* transition_pseudo = GetDocument().documentElement()->GetPseudoElement(
-        kPseudoIdViewTransition);
+    auto* transition_pseudo = scope->GetPseudoElement(kPseudoIdViewTransition);
     ASSERT_TRUE(transition_pseudo);
     EXPECT_TRUE(transition_pseudo->GetComputedStyle());
     EXPECT_TRUE(transition_pseudo->GetLayoutObject());
@@ -583,6 +584,7 @@ TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
   ScriptState* script_state = GetScriptState();
   ScriptState::Scope scope(script_state);
   DummyExceptionStateForTesting exception_state;
+  Element* root_element = GetDocument().documentElement();
 
   struct Data {
     STACK_ALLOCATED();
@@ -620,7 +622,7 @@ TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
   const Vector<AtomicString> view_transition_names = {
       AtomicString("root"), AtomicString("e1"), AtomicString("e2"),
       AtomicString("e3")};
-  ValidatePseudoElementTree(view_transition_names, false);
+  ValidatePseudoElementTree(root_element, view_transition_names, false);
 
   // Finish the prepare phase, mutate the DOM and start the animation.
   UpdateAllLifecyclePhasesAndFinishDirectives();
@@ -641,13 +643,65 @@ TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
   // The start phase should generate pseudo elements for rendering new live
   // content.
   UpdateAllLifecyclePhasesAndFinishDirectives();
-  ValidatePseudoElementTree(view_transition_names, true);
+  ValidatePseudoElementTree(root_element, view_transition_names, true);
 
   // Finish the animations which should remove the pseudo element tree.
   FinishTransition();
   UpdateAllLifecyclePhasesAndFinishDirectives();
   EXPECT_FALSE(GetDocument().documentElement()->GetPseudoElement(
       kPseudoIdViewTransition));
+}
+
+TEST_P(ViewTransitionTest, ScopedPseudoTree) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      ::view-transition-group(*) { animation-duration: 0s; }
+      #scope { width: 200px; height: 300px; contain: strict;
+        position: relative; z-index: 0; background: white; }
+      #scope div { width: 100px; height: 100px; contain: paint; background: blue }
+    </style>
+    <div id=scope>
+      <div id=e1 style="view-transition-name: e1"></div>
+      <div id=e2 style="view-transition-name: e2"></div>
+      <div id=e3 style="view-transition-name: e3"></div>
+    </div>
+  )HTML");
+
+  auto* document = &GetDocument();
+  Element* scope_element = document->getElementById(AtomicString("scope"));
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  auto lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
+  auto* callback = V8ViewTransitionCallback::Create(
+      v8::Function::New(script_state->GetContext(), lambda,
+                        v8::External::New(script_state->GetIsolate(), document))
+          .ToLocalChecked());
+
+  auto* transition = ScopedViewTransition::startViewTransition(
+      script_state, *scope_element, callback, IGNORE_EXCEPTION_FOR_TESTING);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  const Vector<AtomicString> view_transition_names = {
+      AtomicString("e1"), AtomicString("e2"), AtomicString("e3")};
+  ValidatePseudoElementTree(scope_element, view_transition_names, false);
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetState(transition), State::kAnimating);
+
+  ValidatePseudoElementTree(scope_element, view_transition_names, true);
+
+  // Only the scope element should have view transition pseudos.
+  EXPECT_FALSE(GetDocument().documentElement()->GetPseudoElement(
+      kPseudoIdViewTransition));
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetState(transition), State::kFinished);
+
+  EXPECT_FALSE(scope_element->GetPseudoElement(kPseudoIdViewTransition));
 }
 
 TEST_P(ViewTransitionTest, ViewTransitionElementInvalidation) {

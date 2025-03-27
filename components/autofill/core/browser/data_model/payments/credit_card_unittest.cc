@@ -1710,6 +1710,40 @@ TEST(CreditCardTest, IsDeletable) {
   EXPECT_FALSE(card.IsDeletable());
 }
 
+TEST(CreditCardTest, LabelPieces_WithNickname) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableNewFopDisplayDesktop);
+  CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                  "https://www.example.com/");
+  // Set the card as Mastercard.
+  test::SetCreditCardInfo(&card, "John Dillinger", "5105 1051 0510 5100", "01",
+                          "2020", "1");
+  card.SetNickname(u"Nickname");
+  const std::u16string network_and_last_four =
+      UTF8ToUTF16(std::string("Mastercard  ") +
+                  test::ObfuscatedCardDigitsAsUTF8("5100", 2));
+
+  EXPECT_EQ(card.LabelPieces().first, u"Nickname");
+  EXPECT_EQ(card.LabelPieces().second, network_and_last_four);
+}
+
+TEST(CreditCardTest, LabelPieces_WithoutNickname) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableNewFopDisplayDesktop);
+  CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                  "https://www.example.com/");
+  // Set the card as Mastercard.
+  test::SetCreditCardInfo(&card, "John Dillinger", "5105 1051 0510 5100", "01",
+                          "2020", "1");
+  const std::u16string network_and_last_four =
+      UTF8ToUTF16(std::string("Mastercard  ") +
+                  test::ObfuscatedCardDigitsAsUTF8("5100", 2));
+  EXPECT_EQ(card.LabelPieces().first, network_and_last_four);
+  EXPECT_EQ(card.LabelPieces().second, u"");
+}
+
 struct CreditCardMatchingTypesCase {
   CreditCardMatchingTypesCase(const char* value,
                               const char* card_exp_month,

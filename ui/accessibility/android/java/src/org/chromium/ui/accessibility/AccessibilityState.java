@@ -16,6 +16,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.Activity;
+import android.app.UiModeManager;
+import android.app.UiModeManager.ContrastChangeListener;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -29,6 +31,7 @@ import android.util.Pair;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.autofill.AutofillManager;
+import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -251,6 +254,9 @@ public class AccessibilityState {
     private static @Nullable ServicesObserver sAnimationDurationScaleObserver;
     private static @Nullable ServicesObserver sDisplayInversionEnabledObserver;
     private static @Nullable ServicesObserver sTextContrastObserver;
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private static @Nullable ContrastChangeListener sContrastChangeListener;
 
     private static @Nullable AccessibilityManager sAccessibilityManager;
 
@@ -494,7 +500,17 @@ public class AccessibilityState {
                         /*Settings.Secure.ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED*/
                         "high_text_contrast_enabled",
                         0);
-        sHighContrastEnabled = highTextContrastEnabled == 1;
+        float contrastLevel = 0f;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            UiModeManager uiModeManager =
+                (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+            // This value can be between -1 and 1, but in practice the UI
+            // exposes 0 (default), 0.5 (medium), or 1 (high).
+            contrastLevel = uiModeManager.getContrast();
+        }
+        // If high text contrast is enabled or the colour contrast level is high,
+        // then high contrast is enabled.
+        sHighContrastEnabled = highTextContrastEnabled == 1 || contrastLevel == 1f;
     }
 
     protected static List<AccessibilityServiceInfo> getRunningServiceInfoList() {
@@ -909,6 +925,11 @@ public class AccessibilityState {
                         ThreadUtils.getUiThreadHandler(),
                         AccessibilityState::processExtraStateChange);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            sContrastChangeListener = (contrast) ->
+                AccessibilityState.processExtraStateChange();
+        }
+
         // We want to be notified whenever the user has updated the animator duration scale.
         contentResolver.registerContentObserver(
                 Settings.Global.getUriFor(Settings.Global.ANIMATOR_DURATION_SCALE),
@@ -941,13 +962,24 @@ public class AccessibilityState {
                 false,
                 sDisplayInversionEnabledObserver);
 
-        // We want to be notified if the user changes their contrast settings.
+        // We want to be notified if the user changes their text contrast settings.
         contentResolver.registerContentObserver(
                 Settings.Secure.getUriFor(
                         /*Settings.Secure.ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED*/
                         "high_text_contrast_enabled"),
                 false,
                 sTextContrastObserver);
+
+        // We want to be notified if the user changes their colour contrast settings.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            Context context = ContextUtils.getApplicationContext();
+            UiModeManager uiModeManager =
+                (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+            if (uiModeManager != null && sContrastChangeListener != null) {
+                uiModeManager.addContrastChangeListener(context.getMainExecutor(),
+                    sContrastChangeListener);
+            }
+        }
 
         sHasRegisteredObservers = true;
     }
@@ -998,11 +1030,20 @@ public class AccessibilityState {
         assert sAnimationDurationScaleObserver != null;
         assert sDisplayInversionEnabledObserver != null;
         assert sTextContrastObserver != null;
-        ContentResolver contentResolver = ContextUtils.getApplicationContext().getContentResolver();
+        Context context = ContextUtils.getApplicationContext();
+        ContentResolver contentResolver = context.getContentResolver();
         contentResolver.unregisterContentObserver(sAccessibilityServicesObserver);
         contentResolver.unregisterContentObserver(sAnimationDurationScaleObserver);
         contentResolver.unregisterContentObserver(sDisplayInversionEnabledObserver);
         contentResolver.unregisterContentObserver(sTextContrastObserver);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            UiModeManager uiModeManager =
+                (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+            if (uiModeManager != null && sContrastChangeListener != null) {
+                uiModeManager.removeContrastChangeListener(sContrastChangeListener);
+            }
+            sContrastChangeListener = null;
+        }
         sState = null;
         sPreInitCachedValuePerformGesturesEnabled = null;
         sInitialized = false;

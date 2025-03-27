@@ -55,12 +55,8 @@ std::unique_ptr<KeyedService>
 CollaborationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   DCHECK(context);
-  bool isFeatureEnabled = base::FeatureList::IsEnabled(
-                              data_sharing::features::kDataSharingFeature) ||
-                          base::FeatureList::IsEnabled(
-                              data_sharing::features::kDataSharingJoinOnly);
-
-  if (!isFeatureEnabled || context->IsOffTheRecord()) {
+  if (!data_sharing::features::IsDataSharingFunctionalityEnabled() ||
+      context->IsOffTheRecord()) {
     return std::make_unique<EmptyCollaborationService>();
   }
 

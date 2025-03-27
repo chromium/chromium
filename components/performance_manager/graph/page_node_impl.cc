@@ -53,7 +53,6 @@ PageNodeImpl::~PageNodeImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(nullptr, opener_frame_node_);
   DCHECK_EQ(nullptr, embedder_frame_node_);
-  DCHECK_EQ(EmbeddingType::kInvalid, embedding_type_);
 }
 
 const std::string& PageNodeImpl::GetBrowserContextID() const {
@@ -64,12 +63,6 @@ const std::string& PageNodeImpl::GetBrowserContextID() const {
 resource_attribution::PageContext PageNodeImpl::GetResourceContext() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return resource_attribution::PageContext::FromPageNode(this);
-}
-
-PageNodeImpl::EmbeddingType PageNodeImpl::GetEmbeddingType() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(embedder_frame_node_ || embedding_type_ == EmbeddingType::kInvalid);
-  return embedding_type_;
 }
 
 PageType PageNodeImpl::GetType() const {
@@ -393,7 +386,6 @@ FrameNodeImpl* PageNodeImpl::opener_frame_node() const {
 
 FrameNodeImpl* PageNodeImpl::embedder_frame_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(embedder_frame_node_ || embedding_type_ == EmbeddingType::kInvalid);
   return embedder_frame_node_;
 }
 
@@ -452,44 +444,36 @@ void PageNodeImpl::ClearOpenerFrameNode() {
   }
 }
 
-void PageNodeImpl::SetEmbedderFrameNodeAndEmbeddingType(
-    FrameNodeImpl* embedder,
-    EmbeddingType embedding_type) {
+void PageNodeImpl::SetEmbedderFrameNode(FrameNodeImpl* embedder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(embedder);
   DCHECK(graph()->NodeInGraph(embedder));
   DCHECK_NE(this, embedder->page_node());
-  DCHECK_NE(EmbeddingType::kInvalid, embedding_type);
 
   auto* previous_embedder = embedder_frame_node_.get();
-  auto previous_type = embedding_type_;
 
   if (previous_embedder) {
     previous_embedder->RemoveEmbeddedPage(PassKey(), this);
   }
   embedder_frame_node_ = embedder;
-  embedding_type_ = embedding_type;
   embedder->AddEmbeddedPage(PassKey(), this);
 
   for (auto& observer : GetObservers()) {
-    observer.OnEmbedderFrameNodeChanged(this, previous_embedder, previous_type);
+    observer.OnEmbedderFrameNodeChanged(this, previous_embedder);
   }
 }
 
-void PageNodeImpl::ClearEmbedderFrameNodeAndEmbeddingType() {
+void PageNodeImpl::ClearEmbedderFrameNode() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(nullptr, embedder_frame_node_);
-  DCHECK_NE(EmbeddingType::kInvalid, embedding_type_);
 
   auto* previous_embedder = embedder_frame_node_.get();
-  auto previous_type = embedding_type_;
 
   embedder_frame_node_->RemoveEmbeddedPage(PassKey(), this);
   embedder_frame_node_ = nullptr;
-  embedding_type_ = EmbeddingType::kInvalid;
 
   for (auto& observer : GetObservers()) {
-    observer.OnEmbedderFrameNodeChanged(this, previous_embedder, previous_type);
+    observer.OnEmbedderFrameNodeChanged(this, previous_embedder);
   }
 }
 
@@ -514,7 +498,7 @@ void PageNodeImpl::OnBeforeLeavingGraph() {
 
   // Sever embedder relationships.
   if (embedder_frame_node_) {
-    ClearEmbedderFrameNodeAndEmbeddingType();
+    ClearEmbedderFrameNode();
   }
 
   DCHECK_EQ(0u, frame_node_count_);

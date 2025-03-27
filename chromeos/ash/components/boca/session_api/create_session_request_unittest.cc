@@ -223,15 +223,17 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithFullInputAndSucceed) {
       "\"google\",\"url\":\"https://google.com\"},{\"faviconUrl\":\"data:image/"
       "123\",\"lockedNavigationOptions\":{\"navigationType\":2},\"title\":"
       "\"youtube\",\"url\":\"https://"
-      "youtube.com\"}],\"locked\":true}}},\"main\":{\"captionsConfig\":{"
-      "\"captionsEnabled\":true,\"translationsEnabled\":true},\"onTaskConfig\":"
-      "{\"activeBundle\":{\"contentConfigs\":[{\"faviconUrl\":\"data:image/"
+      "youtube.com\"}],\"lockToAppHome\":false,\"locked\":true}}},\"main\":{"
+      "\"captionsConfig\":{\"captionsEnabled\":true,\"translationsEnabled\":"
+      "true},\"onTaskConfig\":{\"activeBundle\":{\"contentConfigs\":[{"
+      "\"faviconUrl\":\"data:image/"
       "123\",\"lockedNavigationOptions\":{\"navigationType\":1},\"title\":"
       "\"google\",\"url\":\"https://google.com\"},{\"faviconUrl\":\"data:image/"
       "123\",\"lockedNavigationOptions\":{\"navigationType\":2},\"title\":"
       "\"youtube\",\"url\":\"https://"
-      "youtube.com\"}],\"locked\":true}}}},\"teacher\":{\"email\":\"teacher@"
-      "gmail.com\",\"fullName\":\"teacher\",\"gaiaId\":\"1\"}}";
+      "youtube.com\"}],\"lockToAppHome\":false,\"locked\":true}}}},\"teacher\":"
+      "{\"email\":\"teacher@gmail.com\",\"fullName\":\"teacher\",\"gaiaId\":"
+      "\"1\"}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_EQ(true, result.has_value());

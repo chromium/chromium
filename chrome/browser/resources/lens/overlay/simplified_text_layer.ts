@@ -77,6 +77,10 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   private listenerIds: number[] = [];
   // Whether the user is in the middle of selecting a new region.
   private isSelectingRegion: boolean = false;
+  // Whether to send an event to the parent selection overlay to show the
+  // context menu after detecting text in a region. Set to false if the context
+  // menu was already shown.
+  private shouldShowContextMenuIfDetectsText: boolean = true;
   // Timeout for onTextReceived for the full image response text. The selected
   // region context menu should not be shown until either the text is received
   // or the timeout elapses.      ;
@@ -163,6 +167,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   onSelectionStart(): void {
     this.isSelectingRegion = true;
     this.hasActionedText = false;
+    this.shouldShowContextMenuIfDetectsText = true;
     // Hide highlighted lines but do not clear them in order to allow them to
     // fade out.
     this.hideHighlightedLines = true;
@@ -228,10 +233,16 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
       return;
     }
 
+    const showOrUpdateEventName = this.shouldShowContextMenuIfDetectsText ?
+        'show-selected-region-context-menu' :
+        'update-selected-region-context-menu';
+    // Only ever show the region context menu once per region selection. All
+    // other times it should only update the context menu.
+    this.shouldShowContextMenuIfDetectsText = false;
     // If there is region text in the interaction response,
     if (this.regionTextResponse) {
       if (this.regionTextResponse.receivedWords.length > 0) {
-        this.fire('show-selected-region-context-menu', {
+        this.fire(showOrUpdateEventName, {
           box,
           selectionStartIndex: 0,
           selectionEndIndex: this.regionTextResponse.receivedWords.length - 1,
@@ -242,7 +253,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
 
       // Do not show the detected text context menu items if there was no text
       // found in the region.
-      this.fire('show-selected-region-context-menu', {
+      this.fire(showOrUpdateEventName, {
         box,
         selectionStartIndex: -1,
         selectionEndIndex: -1,
@@ -259,7 +270,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
       // context menu but do not send the selection indices so that options for
       // detected text are not shown.
       if (selection.iou > 0.1) {
-        this.fire('show-selected-region-context-menu', {
+        this.fire(showOrUpdateEventName, {
           box,
           selectionStartIndex: selection.startIndex,
           selectionEndIndex: selection.endIndex,
@@ -272,7 +283,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
 
     // Do not show the detected text context menu items if there was no text
     // found in the region.
-    this.fire('show-selected-region-context-menu', {
+    this.fire(showOrUpdateEventName, {
       box,
       selectionStartIndex: -1,
       selectionEndIndex: -1,

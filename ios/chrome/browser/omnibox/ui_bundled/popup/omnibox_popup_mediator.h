@@ -12,13 +12,10 @@
 #import "components/history/core/browser/top_sites.h"
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/favicon_retriever.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/image_retriever.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_debug_info_consumer.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/remote_suggestions_service_observer_bridge.h"
 #import "ui/base/window_open_disposition.h"
 
 @protocol ApplicationCommands;
@@ -31,7 +28,6 @@ class FaviconLoader;
 @class OmniboxPopupPresenter;
 @class SceneState;
 @protocol SnackbarCommands;
-class AutocompleteController;
 
 namespace image_fetcher {
 class ImageDataFetcher;
@@ -79,11 +75,7 @@ class Tracker;
 @property(nonatomic, readonly, assign) FaviconLoader* faviconLoader;
 
 @property(nonatomic, weak) id<AutocompleteResultConsumer> consumer;
-/// Consumer for debug info.
-@property(nonatomic, weak) id<PopupDebugInfoConsumer,
-                              RemoteSuggestionsServiceObserver,
-                              AutocompleteControllerObserver>
-    debugInfoConsumer;
+
 @property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
 /// Browser scene state to notify about events happening in this popup.
 @property(nonatomic, weak) SceneState* sceneState;
@@ -113,12 +105,7 @@ class Tracker;
              initWithFetcher:
                  (std::unique_ptr<image_fetcher::ImageDataFetcher>)imageFetcher
                faviconLoader:(FaviconLoader*)faviconLoader
-      autocompleteController:(AutocompleteController*)autocompleteController
-    remoteSuggestionsService:(RemoteSuggestionsService*)remoteSuggestionsService
                      tracker:(feature_engagement::Tracker*)tracker;
-
-// Disconnects all observers set by the mediator.
-- (void)disconnect;
 
 @end
 

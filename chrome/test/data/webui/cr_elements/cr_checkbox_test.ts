@@ -11,6 +11,10 @@ import {keyDownOn, keyUpOn, pressAndReleaseKeyOn} from 'chrome://webui-test/keyb
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue, assertLT, assertGT} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// <if expr="is_win">
+import {assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+// </if>
 // clang-format on
 
 suite('cr-checkbox', function() {
@@ -121,6 +125,25 @@ suite('cr-checkbox', function() {
     await whenChanged;
     assertChecked();
   });
+
+  // <if expr="is_win">
+  test('Clicking checkbox clicks host', async () => {
+    let changeCount = 0;
+    checkbox.addEventListener('change', () => {
+      changeCount++;
+    });
+
+    const whenHostClicked = eventToPromise('click', checkbox);
+    const whenInnerCheckboxClicked = eventToPromise('click', innerCheckbox);
+    innerCheckbox.click();
+    const innerCheckboxClick = await whenInnerCheckboxClicked;
+    assertTrue(innerCheckboxClick.defaultPrevented);
+    const hostClick = await whenHostClicked;
+    await microtasksFinished();
+    assertNotEquals(innerCheckboxClick, hostClick);
+    assertEquals(1, changeCount);
+  });
+  // </if>
 
   // Test that the control is not affected by user interaction when disabled.
   test('ToggleWhenDisabled', async () => {

@@ -121,9 +121,6 @@
           return [SaveCardInfobarModalOverlayCoordinator class];
         case InfobarType::kInfobarTypeTranslate:
           return [TranslateInfobarModalOverlayCoordinator class];
-        case InfobarType::kInfobarTypeParcelTracking:
-          // TODO(crbug.com/391002352): remove kInfobarTypeParcelTracking.
-          NOTREACHED();
         default:
           break;
       }

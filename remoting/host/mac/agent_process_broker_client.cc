@@ -13,13 +13,16 @@
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "remoting/host/ipc_constants.h"
+#include "remoting/host/mac/agent_process_broker_constants.h"
 #include "remoting/host/mojom/agent_process_broker.mojom.h"
 
 namespace remoting {
 
 AgentProcessBrokerClient::AgentProcessBrokerClient(
+    base::OnceClosure on_termination_requested,
     base::OnceClosure on_disconnected)
-    : on_disconnected_(std::move(on_disconnected)) {}
+    : on_termination_requested_(std::move(on_termination_requested)),
+      on_disconnected_(std::move(on_disconnected)) {}
 
 AgentProcessBrokerClient::~AgentProcessBrokerClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -66,7 +69,7 @@ void AgentProcessBrokerClient::OnAgentProcessLaunched(
       std::make_unique<mojo::Receiver<mojom::AgentProcess>>(agent_process);
   broker_remote_->OnAgentProcessLaunched(
       agent_process_receiver_->BindNewPipeAndPassRemote());
-  agent_process_receiver_->set_disconnect_handler(base::BindOnce(
+  agent_process_receiver_->set_disconnect_with_reason_handler(base::BindOnce(
       &AgentProcessBrokerClient::OnAgentProcessRemoteDisconnected,
       base::Unretained(this)));
 }
@@ -79,9 +82,20 @@ void AgentProcessBrokerClient::OnBrokerDisconnected() {
   RunDisconnectedCallback();
 }
 
-void AgentProcessBrokerClient::OnAgentProcessRemoteDisconnected() {
+void AgentProcessBrokerClient::OnAgentProcessRemoteDisconnected(
+    uint32_t custom_reason,
+    const std::string& description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LOG(WARNING) << "Agent process remote has disconnected.";
+  if (custom_reason == kTerminateAgentProcessBrokerReason) {
+    LOG(WARNING) << "Agent process was requested to be terminated.";
+    if (on_termination_requested_) {
+      std::move(on_termination_requested_).Run();
+    }
+    return;
+  }
+
+  LOG(WARNING) << "Agent process remote has disconnected: " << description
+               << " (" << custom_reason << ")";
   RunDisconnectedCallback();
 }
 

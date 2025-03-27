@@ -54,7 +54,8 @@ bool StructTraits<blink::mojom::ViewTransitionStateDataView,
          data.ReadTransitionToken(&out->transition_token) &&
          data.ReadSnapshotRootSizeAtCapture(
              &out->snapshot_root_size_at_capture) &&
-         data.ReadSubframeSnapshotId(&out->subframe_snapshot_id);
+         data.ReadSubframeSnapshotId(&out->subframe_snapshot_id) &&
+         data.ReadIdToAutoNameMap(&out->id_to_auto_name_map);
 }
 
 }  // namespace mojo

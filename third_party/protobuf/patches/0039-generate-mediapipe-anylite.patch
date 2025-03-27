@@ -34,10 +34,10 @@ index e6a89222c432f..f515316381b81 100644
  }
  
 diff --git a/src/google/protobuf/compiler/cpp/message.cc b/src/google/protobuf/compiler/cpp/message.cc
-index 7bd9e9f7d0668..0c9632cd0899d 100644
+index 825c685fe43de..1b4b8e6051772 100644
 --- a/src/google/protobuf/compiler/cpp/message.cc
 +++ b/src/google/protobuf/compiler/cpp/message.cc
-@@ -2303,28 +2303,32 @@ void MessageGenerator::GenerateClassMethods(io::Printer* p) {
+@@ -2444,30 +2444,34 @@ void MessageGenerator::GenerateClassMethods(io::Printer* p) {
      return;
    }
    if (IsAnyMessage(descriptor_)) {
@@ -56,33 +56,37 @@ index 7bd9e9f7d0668..0c9632cd0899d 100644
 +                  p->Emit(
 +                      R"cc(
 +                        bool $classname$::GetAnyFieldDescriptors(
-+                            const ::$proto_ns$::Message& message,
-+                            const ::$proto_ns$::FieldDescriptor** type_url_field,
-+                            const ::$proto_ns$::FieldDescriptor** value_field) {
++                            const $pb$::Message& message,
++                            const $pb$::FieldDescriptor** type_url_field,
++                            const $pb$::FieldDescriptor** value_field) {
 +                          return ::_pbi::GetAnyFieldDescriptors(message, type_url_field, value_field);
 +                        }
 +                      )cc");
 +                }}},
 +              R"cc(
 +                $any_field_descriptor$;
-+                bool $classname$::ParseAnyTypeUrl(::absl::string_view type_url,
-+                                                  std::string* full_type_name) {
++                bool $classname$::ParseAnyTypeUrl(
++                    //~
++                    ::absl::string_view type_url,
++                    std::string* $nonnull$ full_type_name) {
 +                  return ::_pbi::ParseAnyTypeUrl(type_url, full_type_name);
                  }
 -                p->Emit(
 -                    R"cc(
 -                      bool $classname$::GetAnyFieldDescriptors(
--                          const ::$proto_ns$::Message& message,
--                          const ::$proto_ns$::FieldDescriptor** type_url_field,
--                          const ::$proto_ns$::FieldDescriptor** value_field) {
+-                          const $pb$::Message& message,
+-                          const $pb$::FieldDescriptor** type_url_field,
+-                          const $pb$::FieldDescriptor** value_field) {
 -                        return ::_pbi::GetAnyFieldDescriptors(message, type_url_field, value_field);
 -                      }
 -                    )cc");
 -              }}},
 -            R"cc(
 -              $any_field_descriptor$;
--              bool $classname$::ParseAnyTypeUrl(::absl::string_view type_url,
--                                                std::string* full_type_name) {
+-              bool $classname$::ParseAnyTypeUrl(
+-                  //~
+-                  ::absl::string_view type_url,
+-                  std::string* $nonnull$ full_type_name) {
 -                return ::_pbi::ParseAnyTypeUrl(type_url, full_type_name);
 -              }
 -            )cc");

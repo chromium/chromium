@@ -226,6 +226,18 @@ BASE_FEATURE(kBocaOnTaskPod,
              "BocaOnTaskPod",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables Boca OnTask enter locked mode countdown duration on
+// ChromeOS.
+BASE_FEATURE(kBocaLockedModeCustomCountdownDuration,
+             "BocaLockedModeCustomCountdownDuration",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Time duration for entering locked mode countdown.
+constexpr base::FeatureParam<base::TimeDelta>
+    kBocaLockedModeCountdownDurationInSeconds{
+        &kBocaLockedModeCustomCountdownDuration,
+        "BocaLockedModeCountdownDurationInSeconds", base::Seconds(5)};
+
 // Enables or disables Boca sending student heartbeat requests on ChromeOS.
 BASE_FEATURE(kBocaStudentHeartbeat,
              "BocaStudentHeartbeat",
@@ -563,6 +575,12 @@ BASE_FEATURE(kDemoModeSignIn,
 // Controls whether demo mode applies CBX wallpaper logic.
 BASE_FEATURE(kDemoModeWallpaperUpdate,
              "DemoModeWallpaperUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether clean up local files between shopper session when demo mode
+// sign in is enable. No-op if demo mode sign in is disabled.
+BASE_FEATURE(kDemoModeSignInFileCleanup,
+             "DemoModeSignInFileCleanup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Toggle different display features based on user setting and power state
@@ -1723,7 +1741,7 @@ BASE_FEATURE(kFeatureManagementLocalImageSearch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables lobster feature.
-BASE_FEATURE(kLobster, "Lobster", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLobster, "Lobster", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enabling this testing flag will force the Lobster disclaimer screen to be
 // shown every time Lobster is triggered, even if users have previously approved
@@ -3405,6 +3423,10 @@ bool IsBocaOnTaskPodEnabled() {
   return base::FeatureList::IsEnabled(kBocaOnTaskPod);
 }
 
+bool IsBocaLockedModeCustomCountdownDurationEnabled() {
+  return base::FeatureList::IsEnabled(kBocaLockedModeCustomCountdownDuration);
+}
+
 bool IsBocaStudentHeartbeatEnabled() {
   return base::FeatureList::IsEnabled(kBocaStudentHeartbeat);
 }
@@ -3499,6 +3521,10 @@ bool IsDemoModeSignInEnabled() {
 
 bool IsDemoModeWallpaperUpdateEnabled() {
   return base::FeatureList::IsEnabled(kDemoModeWallpaperUpdate);
+}
+
+bool IsDemoModeSignInFileCleanupEnabled() {
+  return base::FeatureList::IsEnabled(kDemoModeSignInFileCleanup);
 }
 
 bool IsDeskTemplateSyncEnabled() {

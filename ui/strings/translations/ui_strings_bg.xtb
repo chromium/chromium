@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Това е нова функция</translation>
 <translation id="2006524834898217237">Проверете дали устройството е свързано с интернет.</translation>
 <translation id="208586643495776849">Моля, опитайте отново</translation>
+<translation id="2111134541987263231">Включете опцията <ph name="BEGIN_BOLD" />Да се разреши в режим „инкогнито“<ph name="END_BOLD" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 д.}other{# д.}}</translation>
 <translation id="2148716181193084225">днес</translation>
 <translation id="2168039046890040389">Страница нагоре</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Докоснете съответните цели на екрана.</translation>
 <translation id="2295140143284145483">Анкета</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> ТБ/сек</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Не може да се намери разширение с идентификатор <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Обърнете се към администратора си.}other{Не могат да се намерят разширения с идентификатори <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Обърнете се към администратора си.}}</translation>
 <translation id="2353636109065292463">Връзката с интернет се проверява</translation>
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2388990488038464401">Искате ли да се обадите на този номер от телефона си?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Изтриване на всички</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{след 1 д}other{след # д}}</translation>
 <translation id="2922712708897119705">Колоната <ph name="COLUMN_NAME" /> е сортирана в низходящ ред.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Разширението не е намерено}other{Разширенията не са намерени}}</translation>
 <translation id="3036649622769666520">Отваряне на файлове</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
 <translation id="3087734570205094154">Най-долу</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Извършване на обаждане от</translation>
 <translation id="3306688585798492231">Вграден екран</translation>
 <translation id="335581015389089642">Speech</translation>
+<translation id="3372635229069101468">Кликнете върху <ph name="BEGIN_BOLD" />Подробности<ph name="END_BOLD" />.</translation>
 <translation id="3389286852084373014">Текстът е твърде голям</translation>
 <translation id="3406306243914553062">HTML съдържание</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Остава 1 ден}other{Остават # дни}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Колоната <ph name="COLUMN_NAME" /> е сортирана във възходящ ред.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрочетено известие}other{# непрочетени известия}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Включете следното разширение в режим „инкогнито“:}other{Включете следните разширения в режим „инкогнито“:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Преди 1 месец}other{Преди # месеца}}</translation>
 <translation id="4289300219472526559">Start Speaking</translation>
 <translation id="4289540628985791613">Общ преглед</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">номер</translation>
 <translation id="4746179598275229723">Разширението бе освободено</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Остава 1 месец}other{Остават # месеца}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{За да използвате режим „инкогнито“, организацията ви изисква разширение}other{За да използвате режим „инкогнито“, организацията ви изисква някои разширения}}</translation>
+<translation id="482932175346970750">Въведете <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> в браузъра си.</translation>
 <translation id="4888938634149558681">Обаждане</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 секунда}other{# секунди}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Поставяне</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
 <translation id="5278860589123563674">Изпращането не бе успешно</translation>
+<translation id="5283101102242354279">Включване на разширение в режим „инкогнито“:</translation>
 <translation id="528468243742722775">Край</translation>
 <translation id="5329858601952122676">&amp;Изтриване</translation>
 <translation id="5361107212971249203">текст</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Настройките за дисплея на приложението ви ще влязат в сила при следващото му рестартиране.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Остава 1 мин}other{Остават # мин}}</translation>
+<translation id="7252604552361840748">Намерете разширението по-горе.</translation>
 <translation id="7363164521834647158">Изпращане на отговор</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Преди 1 мин}other{Преди # мин}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>

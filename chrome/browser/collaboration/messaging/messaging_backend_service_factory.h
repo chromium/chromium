@@ -26,9 +26,9 @@ class MessagingBackendService;
 class MessagingBackendServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Gets the MessagingBackendService for the profile. Returns null for
-  // incognito.
-  // The caller is responsible for checking that the
-  // data_sharing::features::kDataSharingFeature is enabled.
+  // incognito/guest. If the data sharing functionality is turned off or
+  // sync is disabled or the collaboration service is not enabled, returns
+  // an empty MessagingBackendService.
   static MessagingBackendService* GetForProfile(Profile* profile);
 
   // Gets the lazy singleton instance of MessagingBackendServiceFactory.

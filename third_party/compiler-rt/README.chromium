@@ -1,0 +1,13 @@
+Name: compiler-rt
+Short Name: compiler-rt
+URL: https://compiler-rt.llvm.org/
+Version: N/A
+Revision: DEPS
+License: NCSA, Apache-with-LLVM-Exception, MIT
+License File: src/LICENSE.TXT
+Security Critical: yes
+Shipped: yes
+
+Description:
+
+compiler-rt for Chromium.

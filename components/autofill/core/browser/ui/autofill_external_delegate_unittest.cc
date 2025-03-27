@@ -60,6 +60,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
@@ -992,7 +993,7 @@ TEST_F(AutofillExternalDelegateTest,
 
 // Test that the Autofill delegate allows previewing `kLoyaltyCardEntry`
 // suggestions.
-TEST_F(AutofillExternalDelegateTest, ExternalDelegatePreviewsLoyalyCardEntry) {
+TEST_F(AutofillExternalDelegateTest, ExternalDelegatePreviewsLoyaltyCardEntry) {
   IssueOnQuery();
 
   EXPECT_CALL(client(),
@@ -1015,6 +1016,57 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegatePreviewsLoyalyCardEntry) {
                          loyalty_card_value, SuggestionType::kLoyaltyCardEntry,
                          std::optional(LOYALTY_MEMBERSHIP_ID)));
   external_delegate().DidSelectSuggestion(suggestions[0]);
+}
+
+// Test that the Autofill delegate allows filling `kLoyaltyCardEntry`
+// suggestions.
+TEST_F(AutofillExternalDelegateTest, ExternalDelegateFillsLoyaltyCardEntry) {
+  IssueOnQuery();
+
+  EXPECT_CALL(client(),
+              ShowAutofillSuggestions(PopupOpenArgsAre(SuggestionVectorIdsAre(
+                                          SuggestionType::kLoyaltyCardEntry)),
+                                      _));
+  LoyaltyCard loyalty_card = test::CreateLoyaltyCard();
+  std::vector<Suggestion> suggestions;
+  const std::u16string masked_loyalty_card_value = u"**********1234";
+  suggestions.emplace_back(/*main_text=*/masked_loyalty_card_value,
+                           SuggestionType::kLoyaltyCardEntry);
+  suggestions[0].main_text.value = masked_loyalty_card_value;
+  suggestions[0].payload = Suggestion::Guid(loyalty_card.id().value());
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+
+  EXPECT_CALL(driver(), RendererShouldClearPreviewedForm());
+  EXPECT_CALL(manager(),
+              FillOrPreviewField(mojom::ActionPersistence::kPreview,
+                                 mojom::FieldActionType::kReplaceAll,
+                                 HasQueriedFormId(), HasQueriedFieldId(),
+                                 masked_loyalty_card_value,
+                                 SuggestionType::kLoyaltyCardEntry,
+                                 std::optional(LOYALTY_MEMBERSHIP_ID)));
+  external_delegate().DidSelectSuggestion(suggestions[0]);
+
+  const std::u16string full_loyalty_card_value = u"LOYALTYCARD1234";
+  EXPECT_CALL(client(), HideAutofillSuggestions(
+                            SuggestionHidingReason::kAcceptSuggestion));
+  EXPECT_CALL(manager(),
+              FillOrPreviewField(mojom::ActionPersistence::kFill,
+                                 mojom::FieldActionType::kReplaceAll,
+                                 HasQueriedFormId(), HasQueriedFieldId(),
+                                 full_loyalty_card_value,
+                                 SuggestionType::kLoyaltyCardEntry,
+                                 std::optional(LOYALTY_MEMBERSHIP_ID)));
+
+  ON_CALL(*client().GetValuableManager(), FetchValue)
+      .WillByDefault([full_loyalty_card_value](
+                         ValuableId valuable_id,
+                         MockValuableManager::OnValuableFetchedCallback
+                             on_valuable_fetched) {
+        std::move(on_valuable_fetched).Run(full_loyalty_card_value);
+      });
+
+  external_delegate().DidAcceptSuggestion(suggestions[0],
+                                          SuggestionPosition{.row = 0});
 }
 
 // Test that the Autofill delegate routes the merchant promo code suggestions

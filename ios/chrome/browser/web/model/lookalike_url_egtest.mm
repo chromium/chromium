@@ -304,6 +304,11 @@ const char kLookalikeInNewTabContent[] = "New tab";
 // Tests that performing session restoration to a lookalike URL warning page
 // preserves navigation history.
 - (void)testRestoreToWarningPagePreservesHistory {
+  // TODO(crbug.com/405302626): Test fails on iOS 18.4. Re-enable when fixed.
+  if (@available(iOS 18.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iOS 18.4.");
+  }
+
   // Build up navigation history that consists of a safe URL, a warning page,
   // and the suggested safe URL.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echoall")];

@@ -43,6 +43,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
 #include "components/autofill/core/browser/integrators/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/integrators/valuables/valuable_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -765,7 +766,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kIbanEntry:
-    case SuggestionType::kLoyaltyCardEntry:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kSeePromoCodeDetails:
@@ -923,6 +923,30 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
             suggestion.main_text.value, SuggestionType::kIdentityCredential,
             EMAIL_ADDRESS);
       }
+      break;
+    }
+    case SuggestionType::kLoyaltyCardEntry: {
+      const std::string guid =
+          std::get<Suggestion::Guid>(suggestion.payload).value();
+      // User chooses a Loyalty Card suggestion. A request to unmask the card
+      // will be sent to the server, and the card value will be filled if the
+      // request is successful.
+      manager_->client().GetValuableManager()->FetchValue(
+          ValuableId(guid),
+          base::BindOnce(
+              [](base::WeakPtr<AutofillExternalDelegate> delegate,
+                 const std::u16string& value) {
+                if (delegate) {
+                  delegate->manager_->FillOrPreviewField(
+                      mojom::ActionPersistence::kFill,
+                      mojom::FieldActionType::kReplaceAll,
+                      delegate->query_form_, delegate->query_field_, value,
+                      SuggestionType::kLoyaltyCardEntry, LOYALTY_MEMBERSHIP_ID);
+                  // TODO(crbug.com/405371277): Call
+                  // OnSingleFieldSuggestionSelected.
+                }
+              },
+              GetWeakPtr()));
       break;
     }
     case SuggestionType::kTitle:
@@ -1378,10 +1402,6 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
                            GetWeakPtr()));
       manager_->OnSingleFieldSuggestionSelected(
           suggestion, query_form_.global_id(), query_field_.global_id());
-      break;
-    case SuggestionType::kLoyaltyCardEntry:
-      // TODO(crbug.com/404436027) Implement.
-      NOTIMPLEMENTED();
       break;
     case SuggestionType::kMerchantPromoCodeEntry:
       // User selected an Autocomplete or Merchant Promo Code field, so we fill

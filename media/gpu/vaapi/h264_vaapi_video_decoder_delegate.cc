@@ -14,6 +14,7 @@
 #include <array>
 
 #include "base/memory/aligned_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/cdm_context.h"
 #include "media/gpu/h264_dpb.h"
@@ -98,7 +99,7 @@ scoped_refptr<H264Picture> H264VaapiVideoDecoderDelegate::CreateH264Picture() {
     return nullptr;
   }
 
-  return new VaapiH264Picture(std::move(va_surface_handle));
+  return base::MakeRefCounted<VaapiH264Picture>(std::move(va_surface_handle));
 }
 
 // Fill |va_pic| with default/neutral values.

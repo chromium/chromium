@@ -70,6 +70,7 @@
 #include "absl/base/internal/low_level_alloc.h"
 #include "absl/base/internal/thread_identity.h"
 #include "absl/base/internal/tsan_mutex_interface.h"
+#include "absl/base/nullability.h"
 #include "absl/base/port.h"
 #include "absl/base/thread_annotations.h"
 #include "absl/synchronization/internal/kernel_timeout.h"
@@ -580,14 +581,15 @@ class ABSL_SCOPED_LOCKABLE MutexLock {
   // Calls `mu->Lock()` and returns when that call returns. That is, `*mu` is
   // guaranteed to be locked when this object is constructed. Requires that
   // `mu` be dereferenceable.
-  explicit MutexLock(Mutex* mu) ABSL_EXCLUSIVE_LOCK_FUNCTION(mu) : mu_(mu) {
+  explicit MutexLock(Mutex* absl_nonnull mu) ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)
+      : mu_(mu) {
     this->mu_->Lock();
   }
 
   // Like above, but calls `mu->LockWhen(cond)` instead. That is, in addition to
   // the above, the condition given by `cond` is also guaranteed to hold when
   // this object is constructed.
-  explicit MutexLock(Mutex* mu, const Condition& cond)
+  explicit MutexLock(Mutex* absl_nonnull mu, const Condition& cond)
       ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)
       : mu_(mu) {
     this->mu_->LockWhen(cond);
@@ -601,7 +603,7 @@ class ABSL_SCOPED_LOCKABLE MutexLock {
   ~MutexLock() ABSL_UNLOCK_FUNCTION() { this->mu_->Unlock(); }
 
  private:
-  Mutex* const mu_;
+  Mutex* absl_nonnull const mu_;
 };
 
 // ReaderMutexLock
@@ -610,11 +612,12 @@ class ABSL_SCOPED_LOCKABLE MutexLock {
 // releases a shared lock on a `Mutex` via RAII.
 class ABSL_SCOPED_LOCKABLE ReaderMutexLock {
  public:
-  explicit ReaderMutexLock(Mutex* mu) ABSL_SHARED_LOCK_FUNCTION(mu) : mu_(mu) {
+  explicit ReaderMutexLock(Mutex* absl_nonnull mu) ABSL_SHARED_LOCK_FUNCTION(mu)
+      : mu_(mu) {
     mu->ReaderLock();
   }
 
-  explicit ReaderMutexLock(Mutex* mu, const Condition& cond)
+  explicit ReaderMutexLock(Mutex* absl_nonnull mu, const Condition& cond)
       ABSL_SHARED_LOCK_FUNCTION(mu)
       : mu_(mu) {
     mu->ReaderLockWhen(cond);
@@ -628,7 +631,7 @@ class ABSL_SCOPED_LOCKABLE ReaderMutexLock {
   ~ReaderMutexLock() ABSL_UNLOCK_FUNCTION() { this->mu_->ReaderUnlock(); }
 
  private:
-  Mutex* const mu_;
+  Mutex* absl_nonnull const mu_;
 };
 
 // WriterMutexLock

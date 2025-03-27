@@ -250,6 +250,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2172905120685242547">Close window?</translation>
 <translation id="2173302385160625112">Check your Internet connection</translation>
 <translation id="2175927920773552910">QR code</translation>
+<translation id="2181097965834437145">Show or hide the bookmarks bar</translation>
 <translation id="2184272387334793084">Sign in to get your passwords and more on all your devices</translation>
 <translation id="218608176142494674">Sharing</translation>
 <translation id="219283042927675668">Tabs in group</translation>
@@ -820,6 +821,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restore tab group of <ph name="TAB_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />, as a new background tab group.}other{Restore tab group of <ph name="TAB_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />, as a new background tab group.}}</translation>
 <translation id="4837753911714442426">Open options to print page</translation>
 <translation id="4844633725025837809">For added safety, encrypt passwords on your device before they‘re saved to Google Password Manager</translation>
+<translation id="4849731766219625109">Use your <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> account</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="4852014461738377247">Signing in\u2026</translation>
 <translation id="4860895144060829044">Call</translation>
@@ -1557,6 +1559,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8073388330009372546">Open image in new tab</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8078096376109663956">Share text only</translation>
+<translation id="8078348702936632821">Pin this shortcut</translation>
 <translation id="8084114998886531721">Saved password</translation>
 <translation id="8084285576995584326">Control your Google Account data</translation>
 <translation id="8084864785646838999">Some of your history might not show up here. To see all your Chrome history, open full Chrome history. Also, your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>

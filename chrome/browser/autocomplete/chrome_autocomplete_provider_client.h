@@ -123,7 +123,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   void CloseIncognitoWindows() override;
   void PromptPageTranslation() override;
   bool OpenJourneys(const std::string& query) override;
-  void OpenLensOverlay() override;
+  void OpenLensOverlay(bool show) override;
   void IssueContextualSearchRequest(
       const GURL& destination_url,
       AutocompleteMatchType::Type match_type,

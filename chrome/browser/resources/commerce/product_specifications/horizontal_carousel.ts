@@ -86,9 +86,9 @@ export class HorizontalCarouselElement extends CrLitElement {
     };
   }
 
-  showForwardButton: boolean = false;
-  protected canScroll_: boolean = false;
-  protected showBackButton_: boolean = false;
+  accessor showForwardButton: boolean = false;
+  protected accessor canScroll_: boolean = false;
+  protected accessor showBackButton_: boolean = false;
 
   private intersectionObserver_: IntersectionObserver|null = null;
   private resizeObserver_: ResizeObserver|null = null;

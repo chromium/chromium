@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.multiwindow;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -1191,19 +1192,22 @@ public class MultiInstanceManagerApi31UnitTest {
         // Create `TabGroupMetadata` with a list of grouped tabs for tab group reparenting.
         TabGroupMetadata tabGroupMetadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
-                        mGroupedTabs, INSTANCE_ID_1, mTab1.getId());
+                        mGroupedTabs, INSTANCE_ID_1, mTab1.getId(), /* isGroupShared= */ false);
 
         doNothing()
                 .when(mMultiInstanceManager)
-                .moveTabGroupAction(any(), eq(tabGroupMetadata), eq(tabAtIndex));
+                .moveTabGroupAction(any(), eq(tabGroupMetadata), eq(tabAtIndex), any());
 
         // Action
         mMultiInstanceManager.moveTabGroupToWindow(
-                mTabbedActivityTask63, tabGroupMetadata, tabAtIndex);
+                mTabbedActivityTask63,
+                tabGroupMetadata,
+                tabAtIndex,
+                /* onFinishedRunnable= */ null);
 
         // Verify moveTabGroupAction and getCurrentInstanceInfo are each called once.
         verify(mMultiInstanceManager, times(1))
-                .moveTabGroupAction(any(), eq(tabGroupMetadata), eq(tabAtIndex));
+                .moveTabGroupAction(any(), eq(tabGroupMetadata), eq(tabAtIndex), any());
         verify(mMultiInstanceManager, times(1)).getInstanceInfoFor(any());
     }
 
@@ -1282,39 +1286,14 @@ public class MultiInstanceManagerApi31UnitTest {
     @Config(sdk = 31)
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID)
     public void testReparentGroupToRunningActivity() {
-        // Setup.
-        mMultiInstanceManager.mTestBuildInstancesList = true;
-        TabGroupMetadata tabGroupMetadata =
-                new TabGroupMetadata(
-                        /* rootId= */ -1,
-                        /* selectedTabId= */ -1,
-                        INSTANCE_ID_1,
-                        /* tabGroupId= */ null,
-                        /* tabIdsToUrls= */ null,
-                        /* tabGroupColor= */ 0,
-                        /* tabGroupTitle= */ null,
-                        /* tabGroupCollapsed= */ false,
-                        /* isIncognito= */ false);
-        allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true);
+        doTestReparentGroupToRunningActivity(/* isGroupShared= */ false);
+    }
 
-        // Trigger a group reparent.
-        mMultiInstanceManager.reparentTabGroupToRunningActivity(
-                mTabbedActivityTask62, tabGroupMetadata, /* tabAtIndex= */ 0);
-
-        // Verify we pause the TabGroupSyncService to stop observing local changes.
-        verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges */ false);
-
-        // Verify we pause the TabPersistentStore.
-        verify(mTabPersistentStore).pauseSaveTabList();
-        verify(mTabPersistentStore).resumeSaveTabList(mOnSaveTabListRunnableCaptor.capture());
-
-        // Verify we only send the reparent intent after the Runnable runs.
-        verify(mTabbedActivityTask62, never()).onNewIntent(any());
-        mOnSaveTabListRunnableCaptor.getValue().run();
-        verify(mTabbedActivityTask62).onNewIntent(any());
-
-        // Verify we resume the TabGroupSyncService to begin observing local changes.
-        verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges */ true);
+    @Test
+    @Config(sdk = 31)
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID)
+    public void testReparentGroupToRunningActivity_sharedTabGroup() {
+        doTestReparentGroupToRunningActivity(/* isGroupShared= */ true);
     }
 
     @Test
@@ -1497,6 +1476,53 @@ public class MultiInstanceManagerApi31UnitTest {
             verify(mTabbedActivityTask62).startActivity(any(), any());
             verify(appTask63).finishAndRemoveTask();
             verify(mActivityManager, never()).moveTaskToFront(taskId63, 0);
+        }
+    }
+
+    private void doTestReparentGroupToRunningActivity(boolean isGroupShared) {
+        // Setup.
+        mMultiInstanceManager.mTestBuildInstancesList = true;
+        TabGroupMetadata tabGroupMetadata =
+                new TabGroupMetadata(
+                        /* rootId= */ -1,
+                        /* selectedTabId= */ -1,
+                        INSTANCE_ID_1,
+                        /* tabGroupId= */ null,
+                        /* tabIdsToUrls= */ null,
+                        /* tabGroupColor= */ 0,
+                        /* tabGroupTitle= */ null,
+                        /* tabGroupCollapsed= */ false,
+                        isGroupShared,
+                        /* isIncognito= */ false);
+        allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true);
+
+        // Create onFinishedRunnable when the group is not shared.
+        Runnable onFinishedRunnable = isGroupShared ? null : mock(Runnable.class);
+
+        // Trigger a group reparent.
+        mMultiInstanceManager.reparentTabGroupToRunningActivity(
+                mTabbedActivityTask62, tabGroupMetadata, /* tabAtIndex= */ 0, onFinishedRunnable);
+
+        // Verify we pause the TabGroupSyncService to stop observing local changes.
+        verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges */ false);
+
+        // Verify we pause the TabPersistentStore.
+        verify(mTabPersistentStore).pauseSaveTabList();
+        verify(mTabPersistentStore).resumeSaveTabList(mOnSaveTabListRunnableCaptor.capture());
+
+        // Verify we only send the reparent intent after the Runnable runs.
+        verify(mTabbedActivityTask62, never()).onNewIntent(any());
+        mOnSaveTabListRunnableCaptor.getValue().run();
+        verify(mTabbedActivityTask62).onNewIntent(any());
+
+        // Verify we resume the TabGroupSyncService to begin observing local changes.
+        verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges */ true);
+
+        // Verify the onFinishedRunnable is executed for unshared group.
+        if (isGroupShared) {
+            assertNull(onFinishedRunnable);
+        } else {
+            verify(onFinishedRunnable).run();
         }
     }
 }

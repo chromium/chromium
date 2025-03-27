@@ -204,7 +204,7 @@ DnsConfig CreateValidDnsConfig();
 
 DnsResourceRecord BuildTestDnsRecord(std::string name,
                                      uint16_t type,
-                                     std::string rdata,
+                                     base::span<const uint8_t> rdata,
                                      base::TimeDelta ttl = base::Days(1));
 
 DnsResourceRecord BuildTestCnameRecord(std::string name,

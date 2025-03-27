@@ -90,9 +90,9 @@ class AXTreeFixingScreenAIService final {
   // Internal method that processes results from the ScreenAI service before
   // returning the results to the owner of this instance via the provided
   // delegate.
-  void ProcessScreenAIMainNodeIdentificationResult(const ui::AXTreeID& tree_id,
-                                                   int node_id,
-                                                   int request_id);
+  void ProcessScreenAIMainNodeIdentificationResult(int request_id,
+                                                   const ui::AXTreeID& tree_id,
+                                                   int node_id);
 
   // Delegate provided by client to receive main node identification results.
   // Use a raw_ref since we do not own the delegate or control its lifecycle.

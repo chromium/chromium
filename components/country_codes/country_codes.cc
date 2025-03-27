@@ -113,7 +113,7 @@ CountryId GetCountryIDFromPrefs(PrefService* prefs) {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(country_codes::kCountryIDAtInstall,
-                                CountryId::kUnknownCountryCode);
+                                CountryId().Serialize());
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -182,25 +182,4 @@ CountryId GetCurrentCountryID() {
 }
 
 #endif  // OS_*
-
-std::string CountryIDToCountryString(CountryId country_id) {
-  if (!country_id.IsValid()) {
-    return kCountryCodeUnknown;
-  }
-
-  // Decode the country code string from the provided integer. The first two
-  // bytes of the country ID represent two ASCII chars.
-  std::string country_code = {static_cast<char>(country_id.Serialize() >> 8),
-                              static_cast<char>(country_id.Serialize())};
-  country_code = base::ToUpperASCII(country_code);
-
-  // Validate the code that was produced by feeding it back into the system.
-  return (CountryId(country_code) == country_id) ? country_code
-                                                 : kCountryCodeUnknown;
-}
-
-std::string GetCurrentCountryCode() {
-  return CountryIDToCountryString(GetCurrentCountryID());
-}
-
 }  // namespace country_codes

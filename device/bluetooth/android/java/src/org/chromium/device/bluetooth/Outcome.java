@@ -24,7 +24,7 @@ public class Outcome<T> {
     private @Nullable Exception mException;
 
     /** Creates an Outcome with the given result. */
-    Outcome(T result) {
+    Outcome(@Nullable T result) {
         mResult = result;
     }
 

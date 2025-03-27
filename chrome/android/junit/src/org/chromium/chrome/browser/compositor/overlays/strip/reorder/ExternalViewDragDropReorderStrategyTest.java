@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.floatThat;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -30,6 +31,11 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.tab.Tab;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /** Tests for {@link ExternalViewDragDropReorderStrategy}. */
 @Config(qualifiers = "sw600dp")
@@ -224,8 +230,8 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
     @Test
     public void testHandleDrop() {
         // Mock interacting view in group
+        when(mTabForInteractingView.getTabGroupId()).thenReturn(GROUP_ID);
         when(mTabGroupModelFilter.isTabInTabGroup(mTabForInteractingView)).thenReturn(true);
-        when(mTabForInteractingView.getRootId()).thenReturn(INTERACTING_VIEW_ROOT_ID);
 
         // Start and stop reorder to set interacting view on stop.
         mStrategy.startReorderMode(mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
@@ -236,14 +242,16 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                 mStrategy.getInteractingViewDuringStopForTesting());
 
         // Call
-        int draggedTabId = 100;
+        List<Integer> list = new ArrayList<>(Arrays.asList(100, 101, 102)); // Arbitrary values.
         int dropIndex = 1;
-        mStrategy.handleDrop(mGroupTitles, draggedTabId, dropIndex);
+        mStrategy.handleDrop(mGroupTitles, list, dropIndex);
 
         // Verify
-        verify(mTabGroupModelFilter).mergeTabsToGroup(draggedTabId, INTERACTING_VIEW_ID, true);
-        verify(mModel).moveTab(draggedTabId, dropIndex);
-        verify(mAnimationHost, times(3)).startAnimations(anyList(), any());
+        for (Integer tabId : list) {
+            verify(mTabGroupModelFilter).mergeTabsToGroup(tabId, INTERACTING_VIEW_ID, true);
+            verify(mModel).moveTab(tabId, dropIndex);
+            verify(mAnimationHost, times(3)).startAnimations(anyList(), any());
+        }
         assertNull(
                 "mInteractingViewDuringStop should be null",
                 mStrategy.getInteractingViewDuringStopForTesting());
@@ -258,7 +266,8 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
         // Call
         int draggedTabId = 100; // Arbitrary value.
         int dropIndex = 1;
-        mStrategy.handleDrop(mGroupTitles, draggedTabId, dropIndex);
+        when(mModel.getTabById(anyInt())).thenReturn(mTabForInteractingView);
+        mStrategy.handleDrop(mGroupTitles, Collections.singletonList(draggedTabId), dropIndex);
 
         // Verify
         verify(mTabGroupModelFilter, times(0))

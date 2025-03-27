@@ -688,9 +688,6 @@ void FindBarHost::OnWillChangeFocus(views::View* focused_before,
   }
 }
 
-void FindBarHost::OnDidChangeFocus(views::View* focused_before,
-                                   views::View* focused_now) {}
-
 void FindBarHost::AnimationProgressed(const gfx::Animation* animation) {
   // First, we calculate how many pixels to slide the widget.
   gfx::Size pref_size = view_->GetPreferredSize();

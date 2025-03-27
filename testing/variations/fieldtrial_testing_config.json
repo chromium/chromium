@@ -1989,21 +1989,6 @@
             ]
         }
     ],
-    "AutofillEnablePaymentSettingsCardPromoAndScanCard": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnablePaymentSettingsCardPromoAndScanCard"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableSupportForParsingWithSharedLabels": [
         {
             "platforms": [
@@ -7186,28 +7171,6 @@
             ]
         }
     ],
-    "DIPSOnHTTPCache": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AnyBounceTrigger",
-                    "params": {
-                        "triggering_action": "bounce"
-                    },
-                    "enable_features": [
-                        "DIPS"
-                    ]
-                }
-            ]
-        }
-    ],
     "DOMParserIncludeShadowRoots": [
         {
             "platforms": [
@@ -8096,21 +8059,6 @@
                 "chromeos",
                 "linux",
                 "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DirectCompositorThreadIpc"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DirectCompositorThreadIpcWin": [
-        {
-            "platforms": [
-                "windows"
             ],
             "experiments": [
                 {
@@ -9158,22 +9106,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ShoppingPDPMetrics"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EnablePixPayFlow": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableSyncingOfPixBankAccounts",
-                        "EnablePixPayments"
                     ]
                 }
             ]
@@ -13019,24 +12951,6 @@
             ]
         }
     ],
-    "InitImageDecodeLastUseTime": [
-        {
-            "platforms": [
-                "android",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InitImageDecodeLastUseTime"
-                    ]
-                }
-            ]
-        }
-    ],
     "InlineFullscreenPerfExperiment": [
         {
             "platforms": [
@@ -13068,21 +12982,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "InputScenarioPriorityBoost"
-                    ]
-                }
-            ]
-        }
-    ],
-    "InputVizard": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InputOnViz"
                     ]
                 }
             ]
@@ -13605,12 +13504,12 @@
                         "lcpp_adjust_image_load_priority_override_first_n_boost": "true",
                         "lcpp_enable_image_load_priority_for_htmlimageelement": "false",
                         "lcpp_enable_perf_improvements": "true",
-                        "lcpp_histogram_sliding_window_size": "1000",
                         "lcpp_image_load_priority": "medium",
                         "lcpp_max_element_locator_length": "1024",
                         "lcpp_max_histogram_buckets": "10",
                         "lcpp_max_hosts_to_track": "100",
-                        "lcpp_recorded_lcp_element_types": "image_only"
+                        "lcpp_recorded_lcp_element_types": "image_only",
+                        "lcpp_sliding_window_size": "1000"
                     },
                     "enable_features": [
                         "LCPCriticalPathPredictor"
@@ -18973,25 +18872,6 @@
             ]
         }
     ],
-    "ProtectedAudiencePrepareSellerContextsStudy": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FledgePrepareSellerContextsInAdvance"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProtectedAudienceSellerSignalsRequestsOneAtATime": [
         {
             "platforms": [
@@ -24112,21 +23992,6 @@
             ]
         }
     ],
-    "TraceBinderIpc": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TraceBinderIpc"
-                    ]
-                }
-            ]
-        }
-    ],
     "TraceSiteInstanceGetProcessCreation": [
         {
             "platforms": [
@@ -26450,21 +26315,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WebViewDisableCHIPS"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebViewEnableADPFGpuMain": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebViewEnableADPFGpuMain"
                     ]
                 }
             ]

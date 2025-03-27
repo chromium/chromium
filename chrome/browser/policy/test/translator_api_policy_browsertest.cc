@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(TranslatorAPIPolicyTest,
   ASSERT_EQ(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), R"(
       (async () => {
         try {
-          window._translator = await ai.translator.create({
+          window._translator = await Translator.create({
               sourceLanguage: 'en',
               targetLanguage: 'ja',
             });

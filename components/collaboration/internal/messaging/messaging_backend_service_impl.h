@@ -108,12 +108,6 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
 
   // DataSharingChangeNotifier::Observer.
   void OnDataSharingChangeNotifierInitialized() override;
-  void OnGroupAdded(const data_sharing::GroupId& group_id,
-                    const std::optional<data_sharing::GroupData>& group_data,
-                    const base::Time& event_time) override;
-  void OnGroupRemoved(const data_sharing::GroupId& group_id,
-                      const std::optional<data_sharing::GroupData>& group_data,
-                      const base::Time& event_time) override;
   void OnGroupMemberAdded(const data_sharing::GroupData& group_data,
                           const GaiaId& member_gaia_id,
                           const base::Time& event_time) override;
