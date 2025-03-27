@@ -1442,4 +1442,7 @@ Additional details:
   <message name="IDS_POLICY_SKYVAULT_DELETION_COMPLETED_MESSAGE" desc="The message for the notification informing the user that their local files were removed due to SkyVault policy.">
     From now on, save your files to cloud storage
   </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_BANNER" desc="The Files App banner displayed in local folders before local files are removed due to SkyVault policies.">
+    Local files will be deleted on <ph name="DATE_TIME">$1<ex>8/25/24 2:44:30 PM PST</ex></ph>. Make sure any critical business or personal data is stored externally.
+  </message>
 </grit-part>
