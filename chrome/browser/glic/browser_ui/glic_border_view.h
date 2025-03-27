@@ -70,6 +70,7 @@ class GlicBorderView : public views::View,
     virtual void AnimationStarted() = 0;
     virtual void EmphasisRestarted() = 0;
     virtual void RampDownStarted() = 0;
+    virtual void FocusedTabChanged(const GURL& actual_url) = 0;
   };
   void set_tester(Tester* tester) { tester_ = tester; }
 

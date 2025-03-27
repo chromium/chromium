@@ -65,6 +65,12 @@ class TesterImpl : public GlicBorderView::Tester {
     ramp_down_started_ = true;
     wait_for_ramp_down_started_.Quit();
   }
+  void FocusedTabChanged(const GURL& actual_url) override {
+    actual_url_ = actual_url;
+    if (actual_url_ == expected_url_) {
+      wait_for_focused_tab_changed_.Quit();
+    }
+  }
 
   void WaitForAnimationStart() {
     if (animation_started_) {
@@ -85,6 +91,14 @@ class TesterImpl : public GlicBorderView::Tester {
       return;
     }
     wait_for_ramp_down_started_.Run();
+  }
+
+  void WaitForFocusedTabChange(const GURL& expected_url) {
+    expected_url_ = expected_url;
+    if (expected_url_ == actual_url_) {
+      return;
+    }
+    wait_for_focused_tab_changed_.Run();
   }
 
   // Flush out the ramp down animation.
@@ -113,6 +127,10 @@ class TesterImpl : public GlicBorderView::Tester {
 
   bool ramp_down_started_ = false;
   base::RunLoop wait_for_ramp_down_started_;
+
+  GURL actual_url_;
+  GURL expected_url_;
+  base::RunLoop wait_for_focused_tab_changed_;
 };
 
 class GlicBorderViewUiTest : public test::InteractiveGlicTest {
@@ -299,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateReset) {
   EXPECT_FALSE(border->GetVisible());
 }
 
-// Ensures that the border animation is restarted when tab focus changes.
+// Ensures that the emphasis animation is restarted when tab focus changes.
 IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
@@ -324,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
   tester.WaitForEmphasisRestarted();
 
   // Since the active tab has changed, only the emphasis animation should
-  // restart. This `OnAnimationStep()` resets the timeline of the emphasis
+  // restart. Ticking the animation resets the timeline of the emphasis
   // animation.
   tester.AdvanceTimeAndTickAnimation(base::TimeDelta());
   // Opacity isn't reset.
@@ -346,6 +364,62 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
       border->emphasis_for_testing(),
       1.f - gfx::Tween::CalculateValue(gfx::Tween::Type::EASE_IN_OUT_2, 0.234),
       kFloatComparisonTolerance);
+
+  CloseGlicWindow();
+  tester.WaitForRampDownStarted();
+  tester.FinishRampDown();
+  EXPECT_FALSE(border->IsShowing());
+}
+
+// Ensures that only the emphasis animation is restarted when the focused tab is
+// destroyed.
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabDestroyed) {
+  auto* border = browser()->window()->AsBrowserView()->glic_border();
+  ASSERT_TRUE(border);
+  TesterImpl tester(border);
+
+  // Adding a new tab so the focus changes to the new tab.
+  auto new_tab_url = GURL(chrome::kChromeUINewTabURL);
+  chrome::AddTabAt(browser(), new_tab_url,
+                   /*index=*/-1, /*foreground=*/true);
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
+  tester.WaitForFocusedTabChange(new_tab_url);
+
+  StartBorderAnimation();
+  tester.WaitForAnimationStart();
+  EXPECT_TRUE(border->IsShowing());
+
+  // T=0s.
+  tester.AdvanceTimeAndTickAnimation(base::TimeDelta());
+
+  // T=1.333s.
+  tester.AdvanceTimeAndTickAnimation(base::Seconds(1.333));
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 1.f, kFloatComparisonTolerance);
+
+  // Destroying the active tab.
+  chrome::CloseWebContents(browser(),
+                           browser()->tab_strip_model()->GetActiveWebContents(),
+                           /*add_to_history=*/false);
+  tester.WaitForEmphasisRestarted();
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 0);
+
+  // Since the active tab is destroyed, only the emphasis animation should
+  // restart. Ticking the animation resets the timeline of the emphasis
+  // animation.
+  tester.AdvanceTimeAndTickAnimation(base::TimeDelta());
+  // Opacity isn't reset.
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  // Emphasis is reset.
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+
+  // T=1.444s. For emphasis, T=0.111s.
+  tester.AdvanceTimeAndTickAnimation(base::Seconds(0.111));
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  // 0.111/0.5=0.222, 1-(1-0.222)**2=0.394
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.394, kFloatComparisonTolerance);
 
   CloseGlicWindow();
   tester.WaitForRampDownStarted();
@@ -732,6 +806,61 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
   EXPECT_NEAR(border->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->progress_for_testing(), 0.f, kFloatComparisonTolerance);
+  EXPECT_FALSE(border->IsShowing());
+}
+
+// Ensures that when PrefersReducedMotion is true and the focused tab is
+// destroyed, the border stays as is without replaying the opacity ramp
+// up animation.
+IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
+                       FocusedTabDestroyed) {
+  ASSERT_TRUE(gfx::Animation::PrefersReducedMotion());
+  auto* border = browser()->window()->AsBrowserView()->glic_border();
+  ASSERT_TRUE(border);
+  TesterImpl tester(border);
+
+  // Adding a new tab so the focus changes to the new tab.
+  auto new_tab_url = GURL(chrome::kChromeUINewTabURL);
+  chrome::AddTabAt(browser(), new_tab_url,
+                   /*index=*/-1, /*foreground=*/true);
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
+  tester.WaitForFocusedTabChange(new_tab_url);
+
+  StartBorderAnimation();
+  tester.WaitForAnimationStart();
+  EXPECT_TRUE(border->IsShowing());
+
+  // T=0s.
+  tester.AdvanceTimeAndTickAnimation(base::TimeDelta());
+
+  // T=1.333s.
+  tester.AdvanceTimeAndTickAnimation(base::Seconds(1.333));
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+
+  // Destroying the active tab.
+  chrome::CloseWebContents(browser(),
+                           browser()->tab_strip_model()->GetActiveWebContents(),
+                           /*add_to_history=*/false);
+  // Use the tester to wait for the UI change to populate.
+  tester.WaitForEmphasisRestarted();
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 0);
+
+  // The opacity must remain unchanged and emphasis must remain 0.
+  tester.AdvanceTimeAndTickAnimation(base::TimeDelta());
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+
+  // T=1.444s.
+  tester.AdvanceTimeAndTickAnimation(base::Seconds(1.444));
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+
+  CloseGlicWindow();
+  tester.WaitForRampDownStarted();
+  tester.FinishRampDown();
   EXPECT_FALSE(border->IsShowing());
 }
 
