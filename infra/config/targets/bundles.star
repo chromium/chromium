@@ -5774,7 +5774,6 @@ targets.bundle(
         "linux_chromeos_specific_gtests",
         "linux_flavor_specific_chromium_gtests",
         "non_android_chromium_gtests",
-        "pixel_experimental_browser_tests_gtests",
     ],
 )
 
@@ -6252,18 +6251,6 @@ targets.bundle(
             swarming = targets.swarming(
                 shards = 3,
             ),
-        ),
-    },
-)
-
-targets.bundle(
-    name = "pixel_experimental_browser_tests_gtests",
-    targets = [
-        "pixel_experimental_browser_tests",
-    ],
-    per_test_modifications = {
-        "pixel_experimental_browser_tests": targets.mixin(
-            experiment_percentage = 100,
         ),
     },
 )
