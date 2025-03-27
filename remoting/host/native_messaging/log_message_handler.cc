@@ -4,8 +4,6 @@
 
 #include "remoting/host/native_messaging/log_message_handler.h"
 
-#include <string_view>
-
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -57,7 +55,7 @@ const char* LogMessageHandler::kDebugMessageTypeName = "_debug_log";
 
 // static
 bool LogMessageHandler::OnLogMessage(logging::LogSeverity severity,
-                                     std::string_view file,
+                                     const char* file,
                                      int line,
                                      size_t message_start,
                                      const std::string& str) {
@@ -71,7 +69,7 @@ bool LogMessageHandler::OnLogMessage(logging::LogSeverity severity,
 
 void LogMessageHandler::PostLogMessageToCorrectThread(
     logging::LogSeverity severity,
-    std::string_view file,
+    const char* file,
     int line,
     size_t message_start,
     const std::string& str) {
@@ -103,7 +101,7 @@ void LogMessageHandler::PostLogMessageToCorrectThread(
 }
 
 void LogMessageHandler::SendLogMessageToClient(logging::LogSeverity severity,
-                                               std::string_view file,
+                                               const char* file,
                                                int line,
                                                size_t message_start,
                                                const std::string& str) {

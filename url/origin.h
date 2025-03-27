@@ -62,6 +62,10 @@ namespace net {
 class SchemefulSite;
 }  // namespace net
 
+namespace optimization_guide {
+class SecurityOriginSerializer;
+}
+
 namespace url {
 
 namespace mojom {
@@ -359,6 +363,7 @@ class COMPONENT_EXPORT(URL) Origin {
   friend COMPONENT_EXPORT(URL) std::ostream& operator<<(std::ostream& out,
                                                         const Origin& origin);
   friend class blink::StorageKeyTest;
+  friend class optimization_guide::SecurityOriginSerializer;
 
   // Origin::Nonce is a wrapper around base::UnguessableToken that generates
   // the random value only when the value is first accessed. The lazy generation

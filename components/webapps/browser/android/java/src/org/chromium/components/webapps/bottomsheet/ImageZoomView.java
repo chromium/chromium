@@ -18,8 +18,7 @@ import org.chromium.components.webapps.R;
 @NullMarked
 public class ImageZoomView extends FullscreenAlertDialog {
     public ImageZoomView(Context context, Bitmap bitmap) {
-        // TODO(crbug.com/401075913): Support shouldPadForContent in //components.
-        super(context, /* shouldPadForContent= */ false);
+        super(context);
 
         View view = LayoutInflater.from(context).inflate(R.layout.image_zoom_view, null);
         view.setOnClickListener(v -> dismiss());

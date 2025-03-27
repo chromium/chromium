@@ -9,6 +9,7 @@ import android.graphics.PointF;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -120,6 +121,8 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             return;
         }
         // 3. Otherwise, update drop indicator if necessary.
+        // TODO(crbug.com/384978938): Hide drop indicator if merging into the target group isn't
+        //  allowed (e.g. merging a shared group into a non-shared group).
         StripLayoutTab hoveredTab =
                 (StripLayoutTab)
                         StripLayoutUtils.findViewAtPositionX(
@@ -169,12 +172,16 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
         return mInteractingView;
     }
 
-    /** Merges dropped tab to interacting view's tab group, if one exists. */
-    void handleDrop(StripLayoutGroupTitle[] groupTitles, int draggedTabId, int dropIndex) {
+    /** Merges dropped tabs to interacting view's tab group, if one exists. */
+    void handleDrop(StripLayoutGroupTitle[] groupTitles, List<Integer> tabIds, int dropIndex) {
         if (mInteractingViewDuringStop == null) return;
 
         StripLayoutTab interactingView = (StripLayoutTab) mInteractingViewDuringStop;
         Tab interactingTab = mModel.getTabById(interactingView.getTabId());
+
+        @Nullable
+        StripLayoutGroupTitle groupTitle =
+                StripLayoutUtils.findGroupTitle(groupTitles, interactingTab.getTabGroupId());
 
         // 1. If hovered on tab is not part of group, no-op.
         if (!mTabGroupModelFilter.isTabInTabGroup(interactingTab)) {
@@ -182,15 +189,19 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             return;
         }
 
-        // 2. Merge dragged tab to hovered tab's group at drop index.
-        mTabGroupModelFilter.mergeTabsToGroup(
-                draggedTabId, interactingTab.getId(), /* skipUpdateTabModel= */ true);
-        mModel.moveTab(draggedTabId, dropIndex);
+        // 2. Merge all tabs in dragged tab group to hovered tab's group at drop index.
+        for (int tabId : tabIds) {
+            mTabGroupModelFilter.mergeTabsToGroup(
+                    tabId, interactingTab.getId(), /* skipUpdateTabModel= */ true);
+            mModel.moveTab(tabId, dropIndex);
+        }
 
-        // 3. Animate bottom indicator. Done after merging the dragged tab to group,
+        // 3. Animate bottom indicator. Done after merging the dragged tab group to group,
         // so that the calculated bottom indicator width will be correct.
-        StripLayoutGroupTitle groupTitle =
-                StripLayoutUtils.findGroupTitle(groupTitles, interactingTab.getRootId());
+        runOnDropAnimation(groupTitle);
+    }
+
+    private void runOnDropAnimation(StripLayoutGroupTitle groupTitle) {
         List<Animator> animators = new ArrayList<>();
         updateBottomIndicatorWidthForTabReorder(
                 mAnimationHost.getAnimationHandler(),

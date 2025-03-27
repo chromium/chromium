@@ -402,7 +402,6 @@ after discussions on the right group.
     </sender>
     <sender name="Webstore">
       <annotation id="content_hash_verification_job"/>
-      <annotation id="webstore_data_fetcher"/>
       <annotation id="webstore_install_helper"/>
       <annotation id="webstore_installer"/>
     </sender>

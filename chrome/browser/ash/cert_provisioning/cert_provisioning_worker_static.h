@@ -73,8 +73,7 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
                                 chromeos::platform_keys::Status status);
 
   void GenerateKeyForVa();
-  void OnGenerateKeyForVaDone(base::TimeTicks start_time,
-                              const attestation::TpmChallengeKeyResult& result);
+  void OnGenerateKeyForVaDone(const attestation::TpmChallengeKeyResult& result);
 
   void StartCsr();
   void OnStartCsrDone(policy::DeviceManagementStatus status,
@@ -89,7 +88,6 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
 
   void BuildVaChallengeResponse();
   void OnBuildVaChallengeResponseDone(
-      base::TimeTicks start_time,
       const attestation::TpmChallengeKeyResult& result);
 
   void RegisterKey();
@@ -101,8 +99,7 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
   void OnMarkKeyDone(chromeos::platform_keys::Status status);
 
   void SignCsr();
-  void OnSignCsrDone(base::TimeTicks start_time,
-                     std::vector<uint8_t> signature,
+  void OnSignCsrDone(std::vector<uint8_t> signature,
                      chromeos::platform_keys::Status status);
 
   void FinishCsr();

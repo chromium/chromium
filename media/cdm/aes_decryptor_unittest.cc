@@ -302,7 +302,8 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
           base::BindRepeating(&MockCdmClient::OnSessionExpirationUpdate,
                               base::Unretained(&cdm_client_)),
           base::BindOnce(&AesDecryptorTest::OnCdmCreated,
-                         base::Unretained(this)));
+                         base::Unretained(this)),
+          /*is_debugger_attached=*/false);
 
       base::RunLoop().RunUntilIdle();
 #else

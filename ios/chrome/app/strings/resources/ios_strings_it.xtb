@@ -561,7 +561,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3380352560400387991">Questo sito sta tentando di aprire un'applicazione. Uscirai dalla modalità di navigazione in incognito.</translation>
 <translation id="3392923070107623576">Mantieni l'organizzazione creando gruppi di schede</translation>
 <translation id="3404232721752787413">Salva in Google Foto</translation>
-<translation id="3404744938087714423">Se esci verrà disattivata la sincronizzazione.</translation>
 <translation id="3406506285180498376">Condividi pagina…</translation>
 <translation id="340669334496430859">Ultima modifica</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -781,7 +780,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4334428914252001502">1 articolo da leggere.</translation>
 <translation id="4338258232580025606">Impossibile accedere</translation>
 <translation id="4338650699862464074">Invia a Google gli URL delle pagine che visiti.</translation>
-<translation id="4342054591427973606">{count,plural, =1{Questo indirizzo verrà eliminato da questo dispositivo e da altri dispositivi su cui hai eseguito l'accesso.}other{Questi indirizzi verranno eliminati da questo dispositivo e da altri dispositivi su cui hai eseguito l'accesso.}}</translation>
 <translation id="4342946437867096381">Hai già salvato una password per questo sito nel tuo Account Google. Google può scegliere automaticamente la password più recente.</translation>
 <translation id="4365121137632832185">Gruppo di schede. Espanso.</translation>
 <translation id="4367971618859387374">Nome visualizzato</translation>
@@ -1165,7 +1163,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5963939892571022323">Non è possibile creare un link al testo evidenziato.</translation>
 <translation id="5971459446352190251">Ricerca di codici QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 preferito eliminato}other{{count} preferiti eliminati}}</translation>
-<translation id="5972844218283131174">Deseleziona tutte</translation>
+<translation id="5972844218283131174">Deseleziona tutto</translation>
 <translation id="5977976211062815271">Su questo dispositivo</translation>
 <translation id="598634819525651074">Area</translation>
 <translation id="5988097621740394599">Visualizza i cali di prezzo nelle tue schede.</translation>
@@ -1289,7 +1287,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6449554712554071184">Il gruppo verrà eliminato definitivamente dal tuo dispositivo.</translation>
 <translation id="6452534462676960500">Nuova attività</translation>
-<translation id="6459307836338400162">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, apri le sezioni <ph name="BEGIN_LINK" />Sincronizzazione<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Dettagli nascosti</translation>
 <translation id="646394917185284261">File</translation>
 <translation id="6464397691496239022">I siti possono utilizzare i cookie per migliorare la tua esperienza di navigazione, ad esempio per mantenere l'accesso o memorizzare gli articoli aggiunti al carrello.
@@ -1639,7 +1636,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7933880123415105005">Cerca su <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Pagina aggiunta al tuo elenco di lettura nel tuo account, {email}}other{{count} pagine aggiunte al tuo elenco di lettura nel tuo account, {email}}}</translation>
-<translation id="7947953824732555851">Accetta e accedi</translation>
 <translation id="7952670906562503188">Stai per eliminare {passkey_count} passkey e l'elenco di siti e app per cui hai scelto di non salvare mai i dati di accesso. Gli account creati per siti e app non verranno eliminati.</translation>
 <translation id="7958575506592576831">Info sicurezza pagina</translation>
 <translation id="7961015016161918242">Mai</translation>
@@ -1928,7 +1924,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9013605037177245304">Attiva le notifiche</translation>
 <translation id="9029650858822697271">Il tuo account è stato disconnesso</translation>
 <translation id="9032405509996909363">Conferma eliminazione dei dati di navigazione</translation>
-<translation id="9034759925968272072">Non verrai disconnesso dal tuo Account Google. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione alla pagina <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Larghezza di banda</translation>
 <translation id="9042893549633094279">Privacy e sicurezza</translation>
 <translation id="9055580485132823283">Stai per eliminare {password_count} password, {passkey_count} passkey e l'elenco di siti e app per cui hai scelto di non salvare mai i dati di accesso. Gli account creati per siti e app non verranno eliminati.</translation>

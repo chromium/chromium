@@ -412,8 +412,6 @@ void MessageView::OnSlideOut() {
   message_center->RemoveNotification(notification_id_copy, /*by_user=*/true);
 }
 
-void MessageView::OnWillChangeFocus(views::View* before, views::View* now) {}
-
 void MessageView::OnDidChangeFocus(views::View* before, views::View* now) {
   if (Contains(before) || Contains(now) ||
       (GetControlButtonsView() && (GetControlButtonsView()->Contains(before) ||

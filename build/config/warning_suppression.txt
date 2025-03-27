@@ -1,0 +1,9 @@
+# Copyright 2025 The Chromium Project. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Warning suppression mappings are listed here on a per-warning basis.
+# Upstream docs: https://clang.llvm.org/docs/WarningSuppressionMappings.html
+# We'll put the policy here too when it's written.
+# Don't use this file until the policy is written.
+# See crbug.com/404297941 for more information.

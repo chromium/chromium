@@ -461,6 +461,68 @@ TEST_F(OnDeviceModelServiceControllerTest, BaseModelExecutionSuccess) {
   EXPECT_FALSE(fake_launcher_.is_service_running());
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, TokenLimits) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {
+          {"on_device_model_min_tokens_for_context", "10"},
+          {"on_device_model_max_tokens_for_context", "10"},
+          {"on_device_model_max_tokens_for_execute", "5"},
+          {"on_device_model_max_tokens_for_output", "2"},
+      });
+  auto config = SimpleComposeConfig();
+  config.mutable_input_config()->set_min_context_tokens(5);
+  config.mutable_input_config()->set_max_context_tokens(5);
+  config.mutable_input_config()->set_max_execute_tokens(3);
+  config.mutable_output_config()->set_max_output_tokens(1);
+  FakeAdaptationAsset compose_asset({.config = config});
+  Initialize(InitializeParams{
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset},
+  });
+  auto session = CreateSession();
+  const TokenLimits& limits = session->GetTokenLimits();
+  EXPECT_EQ(limits.max_tokens, 17u);
+  EXPECT_EQ(limits.min_context_tokens, 5u);
+  EXPECT_EQ(limits.max_context_tokens, 5u);
+  EXPECT_EQ(limits.max_execute_tokens, 3u);
+  EXPECT_EQ(limits.max_output_tokens, 1u);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, TokenLimitsCapped) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {
+          {"on_device_model_min_tokens_for_context", "10"},
+          {"on_device_model_max_tokens_for_context", "10"},
+          {"on_device_model_max_tokens_for_execute", "5"},
+          {"on_device_model_max_tokens_for_output", "2"},
+      });
+  auto config = SimpleComposeConfig();
+  config.mutable_input_config()->set_min_context_tokens(1000);
+  config.mutable_input_config()->set_max_context_tokens(1000);
+  config.mutable_input_config()->set_max_execute_tokens(1000);
+  config.mutable_output_config()->set_max_output_tokens(1000);
+  FakeAdaptationAsset compose_asset({.config = config});
+  Initialize(InitializeParams{
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset},
+  });
+  auto session = CreateSession();
+  const TokenLimits& limits = session->GetTokenLimits();
+  EXPECT_EQ(limits.max_tokens, 17u);
+  EXPECT_EQ(limits.min_context_tokens, 17u);
+  EXPECT_EQ(limits.max_context_tokens, 17u);
+  EXPECT_EQ(limits.max_execute_tokens, 17u);
+  EXPECT_EQ(limits.max_output_tokens, 17u);
+}
+
 TEST_F(OnDeviceModelServiceControllerTest, AdaptationModelExecutionSuccess) {
   FakeAdaptationAsset compose_asset({
       .config = SimpleComposeConfig(),

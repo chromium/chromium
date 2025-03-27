@@ -443,6 +443,8 @@ class ViewTransitionStyleTracker
   HashMap<AtomicString, AncestorGroupNames> group_state_map_;
 
   base::Token token_;
+
+  HashMap<AtomicString, AtomicString> id_to_auto_name_map_;
 };
 
 }  // namespace blink

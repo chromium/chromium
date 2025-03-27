@@ -505,6 +505,7 @@
 <translation id="1846432862466000825">ପ୍ଲାଷ୍ଟିକ (ଆର୍କାଇଭାଲ)</translation>
 <translation id="1848640291751752317">ଡାଉନଲୋଡ</translation>
 <translation id="1848982255014129637">ଫଟୋ (ହାଇ-ଗ୍ଲସ)</translation>
+<translation id="1849438148665368129">କ୍ରୟ ମୂଲ୍ୟ <ph name="CHECKOUT_AMOUNT_MAXIMUM" />ରୁ କମ ହେବା ଆବଶ୍ୟକ</translation>
 <translation id="1853392626017747777">ଭର୍ଚୁଆଲ କାର୍ଡ ପଞ୍ଜିକରଣ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="1854180393107901205">କାଷ୍ଟ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1855370856221982654">ବକ୍ସିଂ</translation>
@@ -695,7 +696,6 @@
 <translation id="2187317261103489799">ଚିହ୍ନଟ କରନ୍ତୁ (ଡିଫଲ୍ଟ)</translation>
 <translation id="2188375229972301266">ତଳ ପଟରେ ଏକାଧିକ ପଞ୍ଚ୍</translation>
 <translation id="2194856509914051091">ବିଚାରଯୋଗ୍ୟ ବିଷୟଗୁଡ଼ିକ</translation>
-<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" /> ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="2200678913752027654">ଥମ୍ବସ ଡାଉନ ବଟନ, ଆପଣ ଏହି ପରାମର୍ଶକୁ କାହିଁକି ନାପସନ୍ଦ କରନ୍ତି ସେ ବିଷୟରେ ଏକ ବିସ୍ତୃତ ମତାମତ ଦାଖଲ କରିବା ପାଇଁ ଏକ ଫର୍ମ ଖୋଲିବାକୁ 'ଏଣ୍ଟର' ଦବାନ୍ତୁ</translation>
 <translation id="2202627062836089804">ଆପଣଙ୍କ କାର୍ଡର ପଛପଟେ</translation>
 <translation id="2204482073374652408">ଅପଡେଟ କରିବା ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି!</translation>
@@ -1805,6 +1805,7 @@
 <translation id="4150099059797363385">ଏନଭେଲପ ଚାଇନିଜ #4</translation>
 <translation id="4151403195736952345">ଗ୍ଲୋବାଲ ଡିଫଳ୍ଟ ବ୍ୟବହାର କରନ୍ତୁ (ଚିହ୍ନଟ କରନ୍ତୁ)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{ପୃଷ୍ଠା 1}other{ପୃଷ୍ଠା {COUNT}}}</translation>
+<translation id="4152670763139331043">{NUM_TABS,plural, =1{1ଟି ଟାବ୍‌}other{#ଟି ଟାବ୍‌}}</translation>
 <translation id="4154277373259957087">ପେମେଣ୍ଟ ପଦ୍ଧତିଗୁଡ଼ିକୁ ପୂରଣ କରିବା ପୂର୍ବରୁ Chrome ବର୍ତ୍ତମାନ ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଯାଞ୍ଚ କରିବ। ଆପଣ <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />ରେ ଯେ କୌଣସି ସମୟରେ ଏହାକୁ ଅପଡେଟ କରିପାରିବେ।</translation>
 <translation id="415440494507469262">କମ୍ପାରିଜନ ଟେବୁଲରେ ଟାବ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4159784952369912983">ବାଇଗଣୀ</translation>
@@ -2163,6 +2164,7 @@
 <translation id="4796594887379589189">ଜବ୍ ଆକାଉଣ୍ଟ ID</translation>
 <translation id="4798269756263412078">ଯଦି କୌଣସି ସାଇଟରେ ମୂଲ୍ୟ ହ୍ରାସ ପାଏ, ତେବେ ଆଲର୍ଟ ପାଆନ୍ତୁ। ଆପଣଙ୍କ ଇମେଲକୁ ଆଲର୍ଟ ପଠାଯିବ।</translation>
 <translation id="4800132727771399293">ସମୟ ସୀମା ସମାପ୍ତ ହେବାର ତାରିଖ ଏବଂ CVCକୁ ଯାଞ୍ଚ କରିବା ସହିତ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
+<translation id="4800546479758254481">ARକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">ଆପଣଙ୍କ ଡିଭାଇସ୍ ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ଠାରୁ ନିର୍ଦ୍ଦେଶଗୁଡ଼ିକ:</translation>
 <translation id="4811450222531576619">ଏହାର ସୋର୍ସ ଏବଂ ବିଷୟ ସମ୍ବନ୍ଧରେ ଜାଣନ୍ତୁ</translation>
@@ -2526,7 +2528,6 @@
             <ph name="LIST_ITEM" />ଫର୍ମଗୁଡ଼ିକରେ ଲେଖାଯାଇଥିବା ସୂଚନା
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">ଓଲଟା ଅର୍ଡରରେ ଫେସ୍ ଅପ୍</translation>
-<translation id="5445340838622821110">ଯେତେବେଳେ ଆପଣ ସମୟ ସହିତ ପେମେଣ୍ଟ ଦିଅନ୍ତି, ସେତେବେଳେ ଏକ ଥର ପାଇଁ ଭର୍ଚୁଆଲ କାର୍ଡ ନମ୍ବର ପୂରଣ ହୁଏ। ଏହି ନମ୍ବର କେବଳ ଏହି କ୍ରୟ ପାଇଁ। <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">ଆପଣଙ୍କ ବିଷୟରେ <ph name="SITE" /> ସେଭ କରିଥିବା ସୂଚନା ବ୍ୟବହାର କରିବା ପାଇଁ ଏହି ସାଇଟକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="5451331376824595378">Chrome ଦ୍ୱାରା ସୁରକ୍ଷା ଇଭେଣ୍ଟଗୁଡ଼ିକ ଫ୍ଲାଗ କରାଗଲେ, ଇଭେଣ୍ଟ ବିଷୟରେ ପ୍ରାସଙ୍ଗିକ ଡାଟା ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ ପଠାଯାଏ। ଏଥିରେ ଆପଣ Chromeରେ ଭିଜିଟ କରୁଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକର URL, ଆପଣ ଡାଟା କପି କରିଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକର URL, ଫାଇଲଗୁଡ଼ିକର ନାମ କିମ୍ବା ମେଟାଡାଟା, IP ଠିକଣା, ବ୍ରାଉଜର ବା ଟାବ କ୍ରାସ ଏବଂ ୱେବ ଆଧାରିତ ଆପ୍ଲିକେସନ, ଆପଣଙ୍କ ଡିଭାଇସ ଓ Chromeରେ ସାଇନ ଇନ କରିବା ପାଇଁ ଆପଣ ବ୍ୟବହାର କରୁଥିବା ୟୁଜରନେମ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ।</translation>
 <translation id="5452270690849572955">ଏହି <ph name="HOST_NAME" /> ପୃଷ୍ଠା ମିଳିଲା ନାହିଁ</translation>
@@ -3022,6 +3023,7 @@
 <translation id="6327065120806001832">ସ୍ଥାନୀୟ ନେଟୱାର୍କକୁ ଆକ୍ସେସ</translation>
 <translation id="6328639280570009161">ନେଟ୍‌ୱର୍କ ପୁର୍ବାନୁମାନ ଅକ୍ଷମ କରି ଦେଖନ୍ତୁ</translation>
 <translation id="6335029926534404762">ଆଥଲେଟିକ ଜୋତା</translation>
+<translation id="6336948221660696475">VRକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="6337133576188860026"><ph name="SIZE" />ଠାରୁ କମ୍ ଖାଲି କରନ୍ତି। କିଛି ଆପଣଙ୍କର ପରବର୍ତ୍ତୀ ଭ୍ରମଣ ସମୟରେ ଆହୁରି ଧୀରେ ଲୋଡ୍ ହୋଇପାରନ୍ତି।</translation>
 <translation id="6337534724793800597">ନାମ ଅନୁଯାୟୀ ନୀତିଗୁଡ଼ିକ ଫିଲ୍ଟର୍‍ କରନ୍ତୁ</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> ମୂଲ୍ୟ ଅବୈଧ ଅଟେ ଏବଂ ଏହାକୁ ବ୍ୟବହାର କରାଯିବ ନାହିଁ।</translation>
@@ -3065,6 +3067,7 @@
 <translation id="6391700400718590966">ସୁରକ୍ଷିତ ପେମେଣ୍ଟ କ୍ରେଡେନସିଆଲ୍ ସହ ମେଳ ହେଉଥିବା କୌଣସି କ୍ରେଡେନସିଆଲ୍ ସିଟ୍ ବନ୍ଦ କରାଯାଇନାହିଁ</translation>
 <translation id="6392799395081100092">କାଗଜ (ଭେଲମ)</translation>
 <translation id="6393156038355142111">ଜଟିଳ ପାସ୍‌ୱର୍ଡ ପରାମର୍ଶ କରନ୍ତୁ</translation>
+<translation id="6393310910507376797">ମାର୍ଚେଣ୍ଟ ସପୋର୍ଟ କରୁନାହିଁ</translation>
 <translation id="6393956493820063117">ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ଦ୍ୱାରା <ph name="ORIGIN_NAME" />ରୁ ଏହି ଲୋକେସନକୁ ପେଷ୍ଟ କରିବା ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="6394852772105848029">ଏହି ସାଇଟ <ph name="APP_NAME" /> ଆପକୁ ଖୋଲିବା ପାଇଁ ଚାହୁଁଛି</translation>
 <translation id="639673288733510393">ସ୍କୁଟର ଏବଂ ମୋପେଡଗୁଡ଼ିକ</translation>
@@ -3218,6 +3221,7 @@
 <translation id="6668389483194953109">ପେପର ଆକାର ନାମ "କଷ୍ଟମ" ମିଳିଲା, କିନ୍ତୁ "custom_size" ପ୍ରପର୍ଟି ଖାଲି ଅଛି କିମ୍ବା ଅବୈଧ ଅଟେ।</translation>
 <translation id="6671169470640320959">ଅଟୋ ଫାଇନାନ୍ସିଂ</translation>
 <translation id="6671697161687535275">Chromiumରୁ ପରାମର୍ଶରୁ କାଢ଼ି ଦେବେ?</translation>
+<translation id="6675846980676550611">ARକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="6677351035258626477">ଫାଷ୍ଟ ଫୁଡ</translation>
 <translation id="6679354743514146922">Chrome ବ୍ରାଉଜର <ph name="APP_NAME" />ରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ପୂରଣ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି।</translation>
 <translation id="6681790815630918386">CVC ସେଭ କରାଯାଇଛି</translation>
@@ -3704,6 +3708,7 @@
 <translation id="7512685745044087310">ଏହି ନୀତିକୁ "ସତ୍ୟ" ଏବଂ ବାଧ୍ୟତାମୂଳକ ଭାବରେ ସେଟ୍ କରାଯାଇପାରିବ ନାହିଁ, ତେଣୁ ଏହାକୁ 'ସୁପାରିଶ କରାଯାଇଛି' ଭାବେ ପରିବର୍ତ୍ତନ କରାଯାଇଛି।</translation>
 <translation id="7514365320538308">ଡାଉନ୍‌‌ଲୋଡ୍‌ କରନ୍ତୁ</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">ଏହି ଥର VRକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="7517201160922869406">ଅଫ-ରୋଡ ଗାଡ଼ିଗୁଡ଼ିକ</translation>
 <translation id="7517414872996418597">ଏନଭେଲପ C10</translation>
 <translation id="7518003948725431193">ଏହି ୱେବ୍ ଠିକଣା ପାଇଁ କୌଣସି ୱେବ୍‌ପୃଷ୍ଠା ମିଳିଲା ନାହିଁ: <ph name="URL" /></translation>
@@ -3988,7 +3993,6 @@
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />ଆପଣଙ୍କ କୁକୀଗୁଡ଼ିକୁ ଡିଲିଟ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">10 x 11 ଇଞ୍ଚ</translation>
 <translation id="8012647001091218357">ଆମେ ଏହି ସମୟରେ ଆପଣଙ୍କ ମାତାପିତାଙ୍କ ନିକଟରେ ପହଞ୍ଚି ପାରିଲୁ ନାହିଁ। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
-<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">ଟ୍ରାଭେଲ ଏଜେନ୍ସି ଏବଂ ସେବା</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeକୁ ସିଷ୍ଟମର ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରିବା ପାଇଁ Tab ତା'ପରେ Enter ଦବାନ୍ତୁ</translation>
 <translation id="8027077570865220386">ଟ୍ରେ 15</translation>
@@ -4601,6 +4605,7 @@
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9140198744651252040">Chrome ବ୍ରାଉଜର ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଅଟୋଫିଲ କରିବା ପାଇଁ ଟିପଚିହ୍ନ ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="9141013498910525015">ଠିକଣାଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="9141672681283222114">ଏହି ଥର ARକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="9143898823728499852">ଆପଣଙ୍କ <ph name="CARD_ISSUER_NAME" /> ଆକାଉଣ୍ଟକୁ Google Pay ସହ ଲିଙ୍କ କରାଯାଇଥିବା ଯୋଗୁଁ ଆପଣ ଏହି କାର୍ଡକୁ ଅଟୋଫିଲ କରିପାରିବେ</translation>
 <translation id="9144951720726881238">ମିଆଦ ଶେଷ ହେଉଥିବା ତାରିଖ:</translation>
 <translation id="9145910032514306808">ଲେଖିବାରେ ସହାୟତା ପାଇବା ପାଇଁ ପୁଣି <ph name="BEGIN_LINK" />ସାଇନ ଇନ<ph name="END_LINK" /> କରି ଏହି ଟାବକୁ ଫେରନ୍ତୁ</translation>
@@ -4657,6 +4662,7 @@
 <translation id="922152298093051471">Chromeକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="9222403027701923763">ପ୍ରାଇମେରୀ ଏବଂ ସେକେଣ୍ଡାରୀ ସ୍କୁଲିଂ (K-12)</translation>
 <translation id="93020190163435405">ଇଣ୍ଟର୍ନସିପ</translation>
+<translation id="931598121743515856">କ୍ରୟ ମୂଲ୍ୟ <ph name="CHECKOUT_AMOUNT_MINIMUM" />ଠାରୁ ଅଧିକ ହେବା ଆବଶ୍ୟକ</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">ୱାଇ-ଫାଇ ନେଟୱାର୍କଗୁଡ଼ିକୁ ସେଟ ଅପ କରିବା ପାଇଁ <ph name="APP_NAME" /> ଆପକୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="936602727769022409">ଆପଣ, ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟକୁ ଆକ୍ସେସ୍‌ ହରାଇପାରନ୍ତି। ବର୍ତ୍ତମାନ Chromium ଆପଣଙ୍କୁ ପାସ୍‌ୱର୍ଡ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସୁପାରିସ୍‌ କରୁଛି। ଆପଣଙ୍କୁ ସାଇନ୍‌ ଇନ୍‌ ପାଇଁ କୁହାଯିବ।</translation>
@@ -4672,6 +4678,7 @@
 <translation id="949314938206378263">ତୁମେ ଏହି ସାଇଟକୁ ଭିଜିଟ କରିବା ପାଇଁ ପଚାରିଛ। ତୁମର ବାପାମା Family Linkରେ ପ୍ରତ୍ୟୁତ୍ତର ଦେଇପାରିବେ।</translation>
 <translation id="950736567201356821">ଉପର ପଟରେ ତିନୋଟି ପଞ୍ଚ୍</translation>
 <translation id="950926967802086924">ପାସକୀ • Google Password Manager</translation>
+<translation id="955429569736351433">VRକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="95721182352849470">ହଳଦିଆ 2</translation>
 <translation id="961663415146723894">ତଳ ପଟରେ ବାଇଣ୍ଡ</translation>
 <translation id="961856697154696964">ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କର</translation>

@@ -8,23 +8,12 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter languageDetector
 [Worker]     getter languageModel
-[Worker]     getter rewriter
-[Worker]     getter summarizer
-[Worker]     getter translator
-[Worker]     getter writer
 [Worker]     method constructor
 [Worker] interface AICreateMonitor : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter ondownloadprogress
 [Worker]     method constructor
 [Worker]     setter ondownloadprogress
-[Worker] interface AILanguageDetector
-[Worker]     attribute @@toStringTag
-[Worker]     getter inputQuota
-[Worker]     method constructor
-[Worker]     method destroy
-[Worker]     method detect
-[Worker]     method measureInputUsage
 [Worker] interface AILanguageDetectorFactory
 [Worker]     attribute @@toStringTag
 [Worker]     method availability
@@ -58,6 +47,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter maxTopK
 [Worker]     method constructor
 [Worker] interface AIRewriter
+[Worker]     static method availability
+[Worker]     static method create
 [Worker]     attribute @@toStringTag
 [Worker]     getter expectedContextLanguages
 [Worker]     getter expectedInputLanguages
@@ -72,12 +63,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method measureInputUsage
 [Worker]     method rewrite
 [Worker]     method rewriteStreaming
-[Worker] interface AIRewriterFactory
-[Worker]     attribute @@toStringTag
-[Worker]     method availability
-[Worker]     method constructor
-[Worker]     method create
 [Worker] interface AISummarizer
+[Worker]     static method availability
+[Worker]     static method create
 [Worker]     attribute @@toStringTag
 [Worker]     getter expectedContextLanguages
 [Worker]     getter expectedInputLanguages
@@ -92,27 +80,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method measureInputUsage
 [Worker]     method summarize
 [Worker]     method summarizeStreaming
-[Worker] interface AISummarizerFactory
-[Worker]     attribute @@toStringTag
-[Worker]     method availability
-[Worker]     method constructor
-[Worker]     method create
-[Worker] interface AITranslator
-[Worker]     attribute @@toStringTag
-[Worker]     getter inputQuota
-[Worker]     getter sourceLanguage
-[Worker]     getter targetLanguage
-[Worker]     method constructor
-[Worker]     method destroy
-[Worker]     method measureInputUsage
-[Worker]     method translate
-[Worker]     method translateStreaming
-[Worker] interface AITranslatorFactory
-[Worker]     attribute @@toStringTag
-[Worker]     method availability
-[Worker]     method constructor
-[Worker]     method create
 [Worker] interface AIWriter
+[Worker]     static method availability
+[Worker]     static method create
 [Worker]     attribute @@toStringTag
 [Worker]     getter expectedContextLanguages
 [Worker]     getter expectedInputLanguages
@@ -127,11 +97,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method measureInputUsage
 [Worker]     method write
 [Worker]     method writeStreaming
-[Worker] interface AIWriterFactory
-[Worker]     attribute @@toStringTag
-[Worker]     method availability
-[Worker]     method constructor
-[Worker]     method create
 [Worker] interface AbortController
 [Worker]     attribute @@toStringTag
 [Worker]     getter signal
@@ -1351,6 +1316,13 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter selectedTrack
 [Worker]     method @@iterator
 [Worker]     method constructor
+[Worker] interface LanguageDetector
+[Worker]     attribute @@toStringTag
+[Worker]     getter inputQuota
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method detect
+[Worker]     method measureInputUsage
 [Worker] interface Lock
 [Worker]     attribute @@toStringTag
 [Worker]     getter mode
@@ -2307,6 +2279,18 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method enqueue
 [Worker]     method error
 [Worker]     method terminate
+[Worker] interface Translator
+[Worker]     static method availability
+[Worker]     static method create
+[Worker]     attribute @@toStringTag
+[Worker]     getter inputQuota
+[Worker]     getter sourceLanguage
+[Worker]     getter targetLanguage
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method measureInputUsage
+[Worker]     method translate
+[Worker]     method translateStreaming
 [Worker] interface TrustedHTML
 [Worker]     static method fromLiteral
 [Worker]     attribute @@toStringTag

@@ -1,0 +1,85 @@
+source_set("shop_card") {
+  sources = [
+    "shop_card_action_delegate.h",
+    "shop_card_commands.h",
+    "shop_card_item.h",
+    "shop_card_item.mm",
+    "shop_card_mediator.h",
+    "shop_card_mediator.mm",
+    "shop_card_prefs.h",
+    "shop_card_prefs.mm",
+    "shop_card_view.h",
+    "shop_card_view.mm",
+  ]
+  deps = [
+    ":price_tracking_shop_card",
+    ":shop_card_data",
+    "//base",
+    "//base:base",
+    "//components/bookmarks/browser:browser",
+    "//components/commerce/core:commerce_constants",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
+    "//components/image_fetcher/core:core",
+    "//components/payments/core:core",
+    "//components/payments/core:currency_formatter",
+    "//components/power_bookmarks/core:core",
+    "//components/power_bookmarks/core:core",
+    "//components/prefs:prefs",
+    "//components/prefs/ios:ios",
+    "//components/url_formatter",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
+    "//ios/chrome/browser/price_notifications/ui_bundled/cells:cells",
+    "//ios/chrome/browser/shared/model/application_context:application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/ui/util:util",
+    "//ios/chrome/common/ui/colors:colors",
+    "//ios/chrome/common/ui/util:util",
+    "//url:url",
+  ]
+}
+
+source_set("shop_card_data") {
+  sources = [
+    "shop_card_data.h",
+    "shop_card_data.mm",
+  ]
+  deps = [
+    "//base:base",
+    "//url:url",
+  ]
+}
+
+source_set("price_tracking_shop_card") {
+  sources = [
+    "shop_card_price_tracking_view.h",
+    "shop_card_price_tracking_view.mm",
+  ]
+  deps = [ "//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption:tab_resumption" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "shop_card_mediator+testing.h",
+    "shop_card_mediator_unittest.mm",
+  ]
+  deps = [
+    ":shop_card",
+    "//components/bookmarks/browser:browser",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/image_fetcher/core:core",
+    "//components/power_bookmarks/core:core",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test:test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands:commands",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

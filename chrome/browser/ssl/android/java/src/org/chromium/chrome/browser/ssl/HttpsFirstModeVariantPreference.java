@@ -11,6 +11,8 @@ import android.widget.RadioGroup;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 
@@ -19,6 +21,7 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayou
  * enabled. When HTTPS-First Mode is off, the HttpsFirstModeVariantPreference is disabled. (This is
  * a boolean choice but displayed as a radio button group.)
  */
+@NullMarked
 class HttpsFirstModeVariantPreference extends Preference
         implements RadioGroup.OnCheckedChangeListener {
     // UI elements. These fields are assigned only once, in onBindViewHolder.
@@ -48,6 +51,7 @@ class HttpsFirstModeVariantPreference extends Preference
         callChangeListener(mHttpsFirstModeSetting);
     }
 
+    @Initializer
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);

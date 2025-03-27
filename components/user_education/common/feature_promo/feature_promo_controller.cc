@@ -676,61 +676,7 @@ void FeaturePromoControllerCommon::RecordPromoNotShown(
 
   // Record Failure as user action
   std::string failure_action_name = "UserEducation.MessageNotShown.";
-  switch (failure) {
-    case FeaturePromoResult::kCanceled:
-      failure_action_name.append("Canceled");
-      break;
-    case FeaturePromoResult::kError:
-      failure_action_name.append("Error");
-      break;
-    case FeaturePromoResult::kBlockedByUi:
-      failure_action_name.append("BlockedByUi");
-      break;
-    case FeaturePromoResult::kBlockedByPromo:
-      failure_action_name.append("BlockedByPromo");
-      break;
-    case FeaturePromoResult::kBlockedByConfig:
-      failure_action_name.append("BlockedByConfig");
-      break;
-    case FeaturePromoResult::kSnoozed:
-      failure_action_name.append("Snoozed");
-      break;
-    case FeaturePromoResult::kBlockedByContext:
-      failure_action_name.append("BlockedByContext");
-      break;
-    case FeaturePromoResult::kFeatureDisabled:
-      failure_action_name.append("FeatureDisabled");
-      break;
-    case FeaturePromoResult::kPermanentlyDismissed:
-      failure_action_name.append("PermanentlyDismissed");
-      break;
-    case FeaturePromoResult::kBlockedByGracePeriod:
-      failure_action_name.append("BlockedByGracePeriod");
-      break;
-    case FeaturePromoResult::kBlockedByCooldown:
-      failure_action_name.append("BlockedByCooldown");
-      break;
-    case FeaturePromoResult::kRecentlyAborted:
-      failure_action_name.append("RecentlyAborted");
-      break;
-    case FeaturePromoResult::kExceededMaxShowCount:
-      failure_action_name.append("ExceededMaxShowCount");
-      break;
-    case FeaturePromoResult::kBlockedByNewProfile:
-      failure_action_name.append("BlockedByNewProfile");
-      break;
-    case FeaturePromoResult::kBlockedByReshowDelay:
-      failure_action_name.append("BlockedByReshowDelay");
-      break;
-    case FeaturePromoResult::kTimedOut:
-      failure_action_name.append("TimedOut");
-      break;
-    case FeaturePromoResult::kAlreadyQueued:
-      failure_action_name.append("AlreadyQueued");
-      break;
-    default:
-      NOTREACHED();
-  }
+  failure_action_name.append(FeaturePromoResult::GetFailureName(failure));
   base::RecordComputedAction(failure_action_name);
 }
 

@@ -183,7 +183,7 @@ class MockWebMediaPlayerClient : public MediaPlayerClient {
   MOCK_METHOD0(OnPictureInPictureStateChange, void());
   MOCK_CONST_METHOD0(CouldPlayIfEnoughData, bool());
   MOCK_METHOD0(ResumePlayback, void());
-  MOCK_METHOD1(PausePlayback, void(MediaPlayerClient::PauseReason));
+  MOCK_METHOD1(PausePlayback, void(WebMediaPlayer::PauseReason));
   MOCK_METHOD0(DidPlayerStartPlaying, void());
   MOCK_METHOD1(DidPlayerPaused, void(bool));
   MOCK_METHOD1(DidPlayerMutedStatusChange, void(bool));
@@ -691,7 +691,9 @@ class WebMediaPlayerImplTest
 
   void Play() { wmpi_->Play(); }
 
-  void Pause() { wmpi_->Pause(); }
+  void Pause(WebMediaPlayer::PauseReason pause_reason) {
+    wmpi_->Pause(pause_reason);
+  }
 
   void ScheduleIdlePauseTimer() { wmpi_->ScheduleIdlePauseTimer(); }
   void FireIdlePauseTimer() { wmpi_->background_pause_timer_.FireNow(); }
@@ -1711,7 +1713,7 @@ TEST_F(WebMediaPlayerImplTest, ResumeEnded) {
   SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
   Play();
   // Cause PlayerGone
-  Pause();
+  Pause(WebMediaPlayer::PauseReason::kPauseCalled);
   BackgroundPlayer(BackgroundBehaviorType::Page);
 
   testing::Mock::VerifyAndClearExpectations(&delegate_);
@@ -2219,13 +2221,13 @@ TEST_F(WebMediaPlayerImplTest, VideoLockedWhenPausedWhenHidden) {
 
   // Pause without a user gesture doesn't lock the player.
   GetWebLocalFrame()->ConsumeTransientUserActivation();
-  Pause();
+  Pause(WebMediaPlayer::PauseReason::kPauseCalled);
   EXPECT_FALSE(IsVideoLockedWhenPausedWhenHidden());
 
   // With a user gesture, pause does lock the player.
   GetWebLocalFrame()->NotifyUserActivation(
       mojom::UserActivationNotificationType::kTest);
-  Pause();
+  Pause(WebMediaPlayer::PauseReason::kPauseCalled);
   EXPECT_TRUE(IsVideoLockedWhenPausedWhenHidden());
 
   // Foregrounding the player unsets the lock.
@@ -2262,14 +2264,21 @@ TEST_F(WebMediaPlayerImplTest,
   EXPECT_FALSE(IsPausedBecausePageHidden());
   EXPECT_FALSE(IsPausedBecauseFrameHidden());
 
+  EXPECT_CALL(client_, PausePlayback(WebMediaPlayer::PauseReason::kFrameHidden))
+      .Times(1);
   BackgroundPlayer(BackgroundBehaviorType::Frame);
   EXPECT_FALSE(IsPausedBecausePageHidden());
   EXPECT_TRUE(IsPausedBecauseFrameHidden());
 
+  EXPECT_CALL(client_, PausePlayback(WebMediaPlayer::PauseReason::kFrameHidden))
+      .Times(2);
   BackgroundPlayer(BackgroundBehaviorType::Page);
   EXPECT_FALSE(IsPausedBecausePageHidden());
   EXPECT_TRUE(IsPausedBecauseFrameHidden());
 
+  // Foregrounding the player should not resume playback automatically, but only
+  // reset `WebMediaPlayerImpl::visibility_pause_reason_`.
+  EXPECT_CALL(client_, ResumePlayback()).Times(0);
   ForegroundPlayer(BackgroundBehaviorType::Page);
   EXPECT_FALSE(IsPausedBecausePageHidden());
   EXPECT_TRUE(IsPausedBecauseFrameHidden());
@@ -2306,19 +2315,70 @@ TEST_F(WebMediaPlayerImplTest,
   EXPECT_FALSE(IsPausedBecausePageHidden());
   EXPECT_FALSE(IsPausedBecauseFrameHidden());
 
+  EXPECT_CALL(client_, PausePlayback(WebMediaPlayer::PauseReason::kPageHidden))
+      .Times(1);
   BackgroundPlayer(BackgroundBehaviorType::Page);
   EXPECT_TRUE(IsPausedBecausePageHidden());
   EXPECT_FALSE(IsPausedBecauseFrameHidden());
 
+  EXPECT_CALL(client_, PausePlayback(WebMediaPlayer::PauseReason::kFrameHidden))
+      .Times(2);
   BackgroundPlayer(BackgroundBehaviorType::Frame);
   EXPECT_FALSE(IsPausedBecausePageHidden());
   EXPECT_TRUE(IsPausedBecauseFrameHidden());
 
+  // Foregrounding the player should not resume playback automatically, but only
+  // reset `WebMediaPlayerImpl::visibility_pause_reason_`.
+  EXPECT_CALL(client_, ResumePlayback()).Times(0);
   ForegroundPlayer(BackgroundBehaviorType::Page);
   EXPECT_FALSE(IsPausedBecausePageHidden());
   EXPECT_TRUE(IsPausedBecauseFrameHidden());
 
   ForegroundPlayer(BackgroundBehaviorType::Frame);
+  EXPECT_FALSE(IsPausedBecausePageHidden());
+  EXPECT_FALSE(IsPausedBecauseFrameHidden());
+}
+
+TEST_F(WebMediaPlayerImplTest, PauseMutedVideoWhenPageIsHidden) {
+  // Adding a demuxer and loading a media is necessary to make sure that the
+  // pipeline will start and that `WebMediaPlayerImpl::PauseVideoIfNeeded` won't
+  // return early.
+  std::unique_ptr<media::MockDemuxer> demuxer =
+      std::make_unique<NiceMock<media::MockDemuxer>>();
+  ON_CALL(*demuxer, IsSeekable()).WillByDefault(Return(true));
+  SetUpMediaSuspend(true);
+  InitializeWebMediaPlayerImpl(std::move(demuxer));
+  // We need to load a media file to start the pipeline.
+  Load(kVideoOnlyTestFile);
+  EXPECT_FALSE(IsSuspended());
+
+  media::PipelineMetadata metadata;
+  metadata.has_video = true;
+  metadata.video_decoder_config = TestVideoConfig::Normal();
+  EXPECT_CALL(delegate_, DidMediaMetadataChange(_, false, true, _)).Times(2);
+  OnMetadata(metadata);
+
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
+  SetSeeking(false);
+  Play();
+  EXPECT_FALSE(IsPausedBecausePageHidden());
+  EXPECT_FALSE(IsPausedBecauseFrameHidden());
+
+  EXPECT_CALL(client_, PausePlayback(WebMediaPlayer::PauseReason::kPageHidden))
+      .Times(1);
+  BackgroundPlayer(BackgroundBehaviorType::Page);
+  EXPECT_TRUE(IsPausedBecausePageHidden());
+  EXPECT_FALSE(IsPausedBecauseFrameHidden());
+
+  // HTMLMediaElement::pause is called when the page is hidden.
+  Pause(WebMediaPlayer::PauseReason::kPauseCalled);
+  EXPECT_FALSE(IsPausedBecausePageHidden());
+  EXPECT_FALSE(IsPausedBecauseFrameHidden());
+
+  // Showing the page again should not affect the paused state and should not
+  // resume playback.
+  EXPECT_CALL(client_, ResumePlayback()).Times(0);
+  ForegroundPlayer(BackgroundBehaviorType::Page);
   EXPECT_FALSE(IsPausedBecausePageHidden());
   EXPECT_FALSE(IsPausedBecauseFrameHidden());
 }
@@ -2390,9 +2450,9 @@ TEST_F(WebMediaPlayerImplTest, BackgroundIdlePauseTimerDependsOnAudio) {
   ScheduleIdlePauseTimer();
   EXPECT_TRUE(IsIdlePauseTimerRunning());
 
-  EXPECT_CALL(client_,
-              PausePlayback(
-                  MediaPlayerClient::PauseReason::kSuspendedPlayerIdleTimeout));
+  EXPECT_CALL(
+      client_,
+      PausePlayback(WebMediaPlayer::PauseReason::kSuspendedPlayerIdleTimeout));
   FireIdlePauseTimer();
   base::RunLoop().RunUntilIdle();
 }
@@ -2421,7 +2481,7 @@ TEST_F(WebMediaPlayerImplTest, InfiniteDuration) {
   EXPECT_EQ(base::TimeDelta(), GetCurrentTimeInternal());
 
   // Pause should not pick up infinity for the current time.
-  wmpi_->Pause();
+  wmpi_->Pause(WebMediaPlayer::PauseReason::kPauseCalled);
   EXPECT_EQ(0, wmpi_->CurrentTime());
   EXPECT_EQ(base::TimeDelta(), GetCurrentTimeInternal());
 

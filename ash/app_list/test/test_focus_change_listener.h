@@ -19,8 +19,6 @@ class TestFocusChangeListener : public views::FocusChangeListener {
   ~TestFocusChangeListener() override;
 
   // views::FocusChangeListener:
-  void OnWillChangeFocus(views::View* focused_before,
-                         views::View* focused_now) override {}
   void OnDidChangeFocus(views::View* focused_before,
                         views::View* focused_now) override;
 

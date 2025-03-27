@@ -99,6 +99,10 @@ class WebContentsTester {
   // main frame of |opener|.
   virtual void SetOpener(WebContents* opener) = 0;
 
+  // Simulate this WebContents' main frame having a live original opener chain
+  // where the root of the chain points to the main frame of `opener`.
+  virtual void SetOriginalOpener(WebContents* opener) = 0;
+
   // Sets the process state for the primary main frame renderer.
   virtual void SetIsCrashed(base::TerminationStatus status, int error_code) = 0;
 

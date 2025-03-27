@@ -307,7 +307,7 @@ BASE_EXPORT std::string_view TrimString(std::string_view input,
 
 // Truncates a string to the nearest UTF-8 character that will leave
 // the string less than or equal to the specified byte size.
-BASE_EXPORT void TruncateUTF8ToByteSize(const std::string& input,
+BASE_EXPORT void TruncateUTF8ToByteSize(std::string_view input,
                                         const size_t byte_size,
                                         std::string* output);
 BASE_EXPORT std::string_view TruncateUTF8ToByteSize(std::string_view input,

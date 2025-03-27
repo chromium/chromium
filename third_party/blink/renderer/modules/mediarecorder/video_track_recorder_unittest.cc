@@ -215,15 +215,17 @@ class FakeVideoEncodeAcceleratorWithFrameDelay final
         on_bitstream_buffers_ready_cb_(
             std::move(on_bitstream_buffers_ready_cb)) {}
 
-  bool Initialize(const Config& config,
-                  Client* client,
-                  std::unique_ptr<media::MediaLog> media_log) override {
+  media::EncoderStatus Initialize(
+      const Config& config,
+      Client* client,
+      std::unique_ptr<media::MediaLog> media_log) override {
     if (media::FakeVideoEncodeAccelerator::Initialize(config, client,
-                                                      std::move(media_log))) {
+                                                      std::move(media_log))
+            .is_ok()) {
       SetFrameDelay(frame_delay_);
-      return true;
+      return {media::EncoderStatus::Codes::kOk};
     }
-    return false;
+    return {media::EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   void UseOutputBitstreamBuffer(media::BitstreamBuffer buffer) override {

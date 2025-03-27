@@ -21,7 +21,7 @@ Running: changeSelector
 element.style { ()
 
 [expanded] 
-[$#inspected$], a, hr { (inspector-stylesheet:1 -> inspector-stylesheet:1:20)
+[$#inspected$], a, hr { (*inspector-stylesheet:1 -> inspector-stylesheet:1:20)
 
 [expanded] 
 [$div$] { (user agent stylesheet)

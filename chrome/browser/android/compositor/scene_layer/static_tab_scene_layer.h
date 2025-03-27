@@ -43,8 +43,6 @@ class StaticTabSceneLayer : public SceneLayer {
                       jint default_background_color,
                       jfloat x,
                       jfloat y,
-                      jfloat static_to_view_blend,
-                      jfloat saturation,
                       const base::android::JavaParamRef<jobject>& joffset_tag);
 
   void SetTabContentManager(

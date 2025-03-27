@@ -62,9 +62,13 @@ void AssertValidOrigin(
     const url::Origin& expected) {
   EXPECT_EQ(proto_origin.opaque(), expected.opaque());
 
-  url::Origin actual = url::Origin::Create(GURL(proto_origin.value()));
-  EXPECT_TRUE(actual.IsSameOriginWith(expected))
-      << "actual: " << actual << ", expected: " << expected;
+  if (expected.opaque()) {
+    EXPECT_EQ(proto_origin.value(), expected.GetNonceForTesting()->ToString());
+  } else {
+    url::Origin actual = url::Origin::Create(GURL(proto_origin.value()));
+    EXPECT_TRUE(actual.IsSameOriginWith(expected))
+        << "actual: " << actual << ", expected: " << expected;
+  }
 }
 
 class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
@@ -327,7 +331,9 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_EQ(iframe.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
   const auto& iframe_data = iframe.content_attributes().iframe_data();
-  EXPECT_TRUE(iframe_data.frame_data().security_origin().opaque());
+  AssertValidOrigin(iframe_data.frame_data().security_origin(),
+                    ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)
+                        ->GetLastCommittedOrigin());
   EXPECT_FALSE(iframe_data.likely_ad_frame());
 
   EXPECT_EQ(iframe.children_nodes().size(), 1);
@@ -343,7 +349,9 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_EQ(iframe.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
   const auto& iframe_data = iframe.content_attributes().iframe_data();
-  EXPECT_TRUE(iframe_data.frame_data().security_origin().value().empty());
+  AssertValidOrigin(iframe_data.frame_data().security_origin(),
+                    ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)
+                        ->GetLastCommittedOrigin());
   EXPECT_FALSE(iframe_data.likely_ad_frame());
 
   EXPECT_EQ(iframe.children_nodes().size(), 1);

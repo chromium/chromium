@@ -551,6 +551,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="2872353916818027657">Vaihda ensisijainen näyttö</translation>
 <translation id="2872961005593481000">Sammuta</translation>
 <translation id="2876338922445400217">Lähennä näkymää</translation>
+<translation id="2876760662374103627">Kasvo-ohjaus käytössä</translation>
 <translation id="2878884018241093801">Ei viimeaikaisia kohteita</translation>
 <translation id="2880541185262491188">Liian monta virheellistä PIN-yritystä. Odota <ph name="TIME_LEFT" /> ja yritä uudelleen</translation>
 <translation id="2883271196820422439">Jatka hiiren painikkeiden käyttöä</translation>
@@ -1516,6 +1517,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="595202126637698455">Tehokkuuden seuranta on käytössä</translation>
 <translation id="5955304353782037793">sov.</translation>
 <translation id="5958529069007801266">Valvottu käyttäjä</translation>
+<translation id="596035801491797438">Laita kasvo-ohjaus pois päältä</translation>
 <translation id="5960410286721553511">Katsele puhelimesi viimeisimpiä kuvia ja mediaa</translation>
 <translation id="5965524703725988602">Tumma teema päälle/pois. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Siirry eteenpäin ikkunoiden välillä</translation>

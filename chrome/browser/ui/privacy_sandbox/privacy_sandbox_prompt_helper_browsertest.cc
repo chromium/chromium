@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
 }
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
-                       MultipleBrowserWindows) {
+                       DISABLED_MultipleBrowserWindows) {
   // Check that if multiple browser windows are opened, and navigated to
   // appropriate tabs, two prompts are opened.
   base::HistogramTester histogram_tester;

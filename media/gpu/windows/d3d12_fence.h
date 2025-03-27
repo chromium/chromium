@@ -17,6 +17,8 @@ namespace media {
 // D3D12Fence wraps a ID3D12Fence pointer and its last signaled fence value.
 class D3D12Fence : public base::RefCountedThreadSafe<D3D12Fence> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   explicit D3D12Fence(ComD3D12Fence fence);
 
   static scoped_refptr<D3D12Fence> Create(

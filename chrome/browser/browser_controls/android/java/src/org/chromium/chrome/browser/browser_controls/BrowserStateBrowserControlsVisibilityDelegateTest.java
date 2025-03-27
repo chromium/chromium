@@ -87,12 +87,6 @@ public class BrowserStateBrowserControlsVisibilityDelegateTest {
         int token = mDelegate.showControlsPersistent();
         assertEquals(BrowserControlsState.SHOWN, constraints());
         mDelegate.releasePersistentShowingToken(token);
-
-        // If the controls are not shown for the mimimum allowed time, then a task is posted to
-        // keep them shown for longer.  Ensure the controls can not be hidden until this delayed
-        // task has been run.
-        assertEquals(BrowserControlsState.SHOWN, constraints());
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertEquals(BrowserControlsState.BOTH, constraints());
 
         verify(mCallback, times(2)).onResult(Mockito.anyInt());

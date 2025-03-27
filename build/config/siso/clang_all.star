@@ -87,15 +87,19 @@ __input_deps = {
     ],
     "third_party/llvm-build/Release+Asserts/bin/clang": [
         "build/config/unsafe_buffers_paths.txt",
+        "build/config/warning_suppression.txt",
     ],
     "third_party/llvm-build/Release+Asserts/bin/clang++": [
         "build/config/unsafe_buffers_paths.txt",
+        "build/config/warning_suppression.txt",
     ],
     "third_party/llvm-build/Release+Asserts/bin/clang-cl": [
         "build/config/unsafe_buffers_paths.txt",
+        "build/config/warning_suppression.txt",
     ],
     "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe": [
         "build/config/unsafe_buffers_paths.txt",
+        "build/config/warning_suppression.txt",
     ],
     "third_party/llvm-build/Release+Asserts/bin/lld-link": [
         "build/config/c++/libc++.natvis",

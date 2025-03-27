@@ -25,7 +25,7 @@ class LenientMockPageNodeObserver : public PageNodeObserver {
               (override));
   MOCK_METHOD(void,
               OnEmbedderFrameNodeChanged,
-              (const PageNode*, const FrameNode*, EmbeddingType),
+              (const PageNode*, const FrameNode*),
               (override));
   MOCK_METHOD(void, OnTypeChanged, (const PageNode*, PageType), (override));
   MOCK_METHOD(void, OnIsFocusedChanged, (const PageNode*), (override));

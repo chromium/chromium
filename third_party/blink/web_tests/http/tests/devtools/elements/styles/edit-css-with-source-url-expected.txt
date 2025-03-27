@@ -27,7 +27,7 @@ Dumping matched rules:
 element.style { ()
 
 [expanded] 
-#inspected { (foo.css:1 -> foo.css:1:13)
+#inspected { (*foo.css:1 -> foo.css:1:13)
     color: green;
     : ;
 

@@ -164,9 +164,6 @@ bool QuickInsertSearchFieldView::HandleKeyEvent(views::Textfield* sender,
   return key_event_handler_->HandleKeyEvent(key_event);
 }
 
-void QuickInsertSearchFieldView::OnWillChangeFocus(View* focused_before,
-                                                   View* focused_now) {}
-
 void QuickInsertSearchFieldView::OnDidChangeFocus(View* focused_before,
                                                   View* focused_now) {
   if (focused_now == textfield_) {

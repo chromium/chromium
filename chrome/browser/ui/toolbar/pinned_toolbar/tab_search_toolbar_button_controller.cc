@@ -6,6 +6,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -19,6 +20,10 @@ TabSearchToolbarButtonController::~TabSearchToolbarButtonController() = default;
 
 void TabSearchToolbarButtonController::OnBubbleInitializing() {
   bubble_showing_ = true;
+  auto* tab_search_action_item = actions::ActionManager::Get().FindAction(
+      kActionTabSearch,
+      browser_view_->browser()->browser_actions()->root_action_item());
+  tab_search_action_item->SetIsShowingBubble(true);
   PinnedToolbarActionsContainer* pinned_toolbar_actions_container =
       browser_view_->toolbar()->pinned_toolbar_actions_container();
 
@@ -32,6 +37,10 @@ void TabSearchToolbarButtonController::OnBubbleInitializing() {
 
 void TabSearchToolbarButtonController::OnBubbleDestroying() {
   bubble_showing_ = false;
+  auto* tab_search_action_item = actions::ActionManager::Get().FindAction(
+      kActionTabSearch,
+      browser_view_->browser()->browser_actions()->root_action_item());
+  tab_search_action_item->SetIsShowingBubble(false);
   PinnedToolbarActionsContainer* pinned_toolbar_actions_container =
       browser_view_->toolbar()->pinned_toolbar_actions_container();
 

@@ -115,12 +115,13 @@ TEST_F(GroupingHeuristicsTest, HeuristicsEmptyAggregates) {
 TEST_F(GroupingHeuristicsTest, RecentlyOpenedHeuristic) {
   std::vector<URLVisitAggregate> candidates = {};
 
-  // 3 tabs are below 600 seconds time limit to be considered recent and should
+  // 4 tabs are below 600 seconds time limit to be considered recent and should
   // be grouped.
   candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
   candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
   candidates.push_back(CreateVisitForTab(base::Seconds(350), 113));
   candidates.push_back(CreateVisitForTab(base::Seconds(800), 114));
+  candidates.push_back(CreateVisitForTab(base::Seconds(30), 115));
 
   std::optional<GroupSuggestions> suggestions =
       GetSuggestionsFor(std::move(candidates),
@@ -131,7 +132,7 @@ TEST_F(GroupingHeuristicsTest, RecentlyOpenedHeuristic) {
   const auto& suggestion = suggestions->suggestions[0];
   EXPECT_EQ(GroupSuggestion::SuggestionReason::kRecentlyOpened,
             suggestion.suggestion_reason);
-  EXPECT_THAT(suggestion.tab_ids, ElementsAre(111, 112, 113));
+  EXPECT_THAT(suggestion.tab_ids, ElementsAre(111, 112, 113, 115));
   EXPECT_EQ("Group recently opened tabs?", suggestion.promo_header);
   EXPECT_EQ("Organize recently opened tabs.", suggestion.promo_contents);
   EXPECT_EQ(u"today", suggestion.suggested_name);

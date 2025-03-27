@@ -5,23 +5,65 @@
 #include "third_party/blink/renderer/modules/ai/ai_writer.h"
 
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_writer_write_options.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
+#include "third_party/blink/renderer/modules/ai/ai_writing_assistance_create_client.h"
 
 namespace blink {
+
+template <>
+void AIWritingAssistanceCreateClient<mojom::blink::AIWriter,
+                                     mojom::blink::AIManagerCreateWriterClient,
+                                     AIWriterCreateOptions,
+                                     AIWriter>::
+    RemoteCreate(mojo::PendingRemote<mojom::blink::AIManagerCreateWriterClient>
+                     client_remote) {
+  HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
+      AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
+  ai_manager_remote->CreateWriter(std::move(client_remote),
+                                  ToMojoWriterCreateOptions(options_));
+}
+
+// static
+template <>
+AIMetrics::AISessionType
+AIWritingAssistanceBase<AIWriter,
+                        mojom::blink::AIWriter,
+                        mojom::blink::AIManagerCreateWriterClient,
+                        AIWriterCreateCoreOptions,
+                        AIWriterCreateOptions,
+                        AIWriterWriteOptions>::GetSessionType() {
+  return AIMetrics::AISessionType::kWriter;
+}
+
+// static
+template <>
+void AIWritingAssistanceBase<AIWriter,
+                             mojom::blink::AIWriter,
+                             mojom::blink::AIManagerCreateWriterClient,
+                             AIWriterCreateCoreOptions,
+                             AIWriterCreateOptions,
+                             AIWriterWriteOptions>::
+    RemoteCanCreate(HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote,
+                    AIWriterCreateCoreOptions* options,
+                    CanCreateCallback callback) {
+  ai_manager_remote->CanCreateWriter(ToMojoWriterCreateOptions(options),
+                                     std::move(callback));
+}
 
 AIWriter::AIWriter(ExecutionContext* execution_context,
                    scoped_refptr<base::SequencedTaskRunner> task_runner,
                    mojo::PendingRemote<mojom::blink::AIWriter> pending_remote,
                    AIWriterCreateOptions* options)
-    : AIWritingAssistanceBase<mojom::blink::AIWriter,
+    : AIWritingAssistanceBase<AIWriter,
+                              mojom::blink::AIWriter,
+                              mojom::blink::AIManagerCreateWriterClient,
+                              AIWriterCreateCoreOptions,
                               AIWriterCreateOptions,
                               AIWriterWriteOptions>(
           execution_context,
           task_runner,
           std::move(pending_remote),
           std::move(options),
-          AIMetrics::AISessionType::kWriter,
           /*echo_whitespace_input=*/false) {}
 
 void AIWriter::Trace(Visitor* visitor) const {

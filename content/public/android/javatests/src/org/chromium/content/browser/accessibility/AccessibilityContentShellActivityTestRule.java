@@ -114,11 +114,14 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         mWcax.setAccessibilityTrackerForTesting(mTracker);
     }
 
-    public void setupTestFrameworkForBasicMode() {
+    public void setupTestFrameworkForBasicMode(boolean includeEventMaskByDefault) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
-                    AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
+                    if (includeEventMaskByDefault) {
+                        AccessibilityState.setStateMaskForTesting(
+                                EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
+                    }
                 });
 
         mWcax = getWebContentsAccessibility();
@@ -128,12 +131,33 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         mWcax.setAccessibilityTrackerForTesting(mTracker);
     }
 
-    public void setupTestFrameworkForFormControlsMode() {
+    public void setupTestFrameworkForFormControlsMode(boolean includeEventMaskByDefault) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
                     AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(true);
-                    AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
+                    if (includeEventMaskByDefault) {
+                        AccessibilityState.setStateMaskForTesting(
+                                EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
+                    }
+                });
+
+        mWcax = getWebContentsAccessibility();
+        mNodeProvider = getAccessibilityNodeProvider();
+
+        mTracker = new AccessibilityActionAndEventTracker();
+        mWcax.setAccessibilityTrackerForTesting(mTracker);
+    }
+
+    public void setupTestFrameworkForCompleteMode(boolean includeEventMaskByDefault) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+                    AccessibilityState.setIsScreenReaderEnabledForTesting(true);
+                    if (includeEventMaskByDefault) {
+                        AccessibilityState.setStateMaskForTesting(
+                                EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
+                    }
                 });
 
         mWcax = getWebContentsAccessibility();

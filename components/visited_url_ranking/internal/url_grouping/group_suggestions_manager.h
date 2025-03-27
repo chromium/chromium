@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_VISITED_URL_RANKING_INTERNAL_URL_GROUPING_GROUP_SUGGESTIONS_MANAGER_H_
 #define COMPONENTS_VISITED_URL_RANKING_INTERNAL_URL_GROUPING_GROUP_SUGGESTIONS_MANAGER_H_
 
+#include "base/containers/flat_set.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions.h"
+#include "components/visited_url_ranking/public/url_grouping/group_suggestions_delegate.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_service.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 
@@ -33,6 +36,11 @@ class GroupSuggestionsManager {
 
   bool GetCurrentComputationForTesting() const;
 
+  void set_suggestion_computed_callback_for_testing(
+      base::RepeatingClosure callback) {
+    suggestion_computed_callback_ = std::move(callback);
+  }
+
  private:
   class GroupSuggestionComputer;
 
@@ -41,14 +49,25 @@ class GroupSuggestionsManager {
     GroupSuggestionsService::Scope scope;
   };
 
+  using SuggestedTabs = base::flat_set<int>;
+  using SuggestionResults =
+      std::map<SuggestedTabs, GroupSuggestionsDelegate::UserResponseMetadata>;
+
   void ShowSuggestion(const GroupSuggestionsService::Scope& scope,
                       std::optional<GroupSuggestions> suggestions);
+
+  void OnSuggestionResult(
+      const std::vector<int>& tab_ids,
+      GroupSuggestionsDelegate::UserResponseMetadata user_response);
 
   const raw_ptr<VisitedURLRankingService> visited_url_ranking_service_;
   base::flat_map<GroupSuggestionsDelegate*, DelegateMetadata>
       registered_delegates_;
 
+  base::RepeatingClosure suggestion_computed_callback_;
+
   std::unique_ptr<GroupSuggestionComputer> suggestion_computer_;
+  SuggestionResults suggestion_results_;
 
   base::WeakPtrFactory<GroupSuggestionsManager> weak_ptr_factory_{this};
 };

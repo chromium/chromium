@@ -9,7 +9,9 @@
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/ios/features.h"
 
 using autofill::FieldRendererId;
 using autofill::FormRendererId;
@@ -135,24 +137,51 @@ std::vector<UsernameAndRealm> AccountSelectFillData::RetrieveSuggestions(
 }
 
 std::unique_ptr<FillData> AccountSelectFillData::GetFillData(
+    const std::u16string& username,
+    autofill::FormRendererId form_renderer_id,
+    autofill::FieldRendererId field_renderer_id,
+    bool is_likely_real_password_field) const {
+  const FormInfo* requested_form = GetFormInfo(
+      form_renderer_id, field_renderer_id, is_likely_real_password_field);
+  if (!requested_form) {
+    return nullptr;
+  }
+  autofill::FieldRendererId password_field_id =
+      is_likely_real_password_field ? field_renderer_id
+                                    : autofill::FieldRendererId();
+
+  return GetFillData(username, requested_form, password_field_id);
+}
+
+std::unique_ptr<FillData> AccountSelectFillData::GetFillData(
     const std::u16string& username) const {
   if (!last_requested_form_) {
     DUMP_WILL_BE_NOTREACHED();
     return nullptr;
   }
+  return GetFillData(username, last_requested_form_,
+                     last_requested_password_field_id_);
+}
+
+std::unique_ptr<FillData> AccountSelectFillData::GetFillData(
+    const std::u16string& username,
+    const FormInfo* requested_form,
+    autofill::FieldRendererId password_field_id) const {
+  // There must be a `requested_form` at this point. It is the responsibility of
+  // the caller to ensure that.
+  CHECK(requested_form);
 
   auto it = std::ranges::find(credentials_, username, &Credential::username);
   if (it == credentials_.end())
     return nullptr;
   const Credential& credential = *it;
   auto result = std::make_unique<FillData>();
-  result->origin = last_requested_form_->origin;
-  result->form_id = last_requested_form_->form_id;
-  result->username_element_id = last_requested_form_->username_element_id;
+  result->origin = requested_form->origin;
+  result->form_id = requested_form->form_id;
+  result->username_element_id = requested_form->username_element_id;
   result->username_value = credential.username;
-  result->password_element_id = last_requested_password_field_id_.is_null()
-                                    ? last_requested_form_->password_element_id
-                                    : last_requested_password_field_id_;
+  result->password_element_id =
+      password_field_id ?: requested_form->password_element_id;
   result->password_value = credential.password;
   return result;
 }

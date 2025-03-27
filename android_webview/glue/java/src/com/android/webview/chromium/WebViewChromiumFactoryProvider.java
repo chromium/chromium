@@ -765,10 +765,12 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                                 return sharedStatics.getSafeBrowsingPrivacyPolicyUrl();
                             }
 
+                            @SuppressWarnings("UnusedMethod")
                             public boolean isMultiProcessEnabled() {
                                 return sharedStatics.isMultiProcessEnabled();
                             }
 
+                            @SuppressWarnings("UnusedMethod")
                             public String getVariationsHeader() {
                                 return sharedStatics.getVariationsHeader();
                             }

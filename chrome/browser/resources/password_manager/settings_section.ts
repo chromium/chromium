@@ -165,10 +165,12 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
 
   private blockedSites_: BlockedSite[];
   private hasPasskeys_: boolean;
+  private passwordManagerDisabled_: boolean;
   private hasPasswordsToExport_: boolean;
   private isPasskeyUpgradeSettingsToggleVisible_: boolean;
   private showPasswordsImporter_: boolean;
   private showMovePasswordsDialog_: boolean;
+  private canAddShortcut_: boolean;
   private trustedVaultBannerState_: TrustedVaultBannerState;
   private movePasswordsLabel_: string;
   private passwordsOnDevice_: chrome.passwordsPrivate.PasswordUiEntry[] = [];

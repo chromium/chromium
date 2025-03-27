@@ -198,6 +198,13 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
         test_server_->GetURL(kInAppPaymentsApp.update_path));
   }
 
+  void TearDown() override {
+    // Avoid dangling pointers.
+    service_->updater()->SetExtensionCacheForTesting(nullptr);
+    test_extension_cache_.reset();
+    ExtensionServiceTestBase::TearDown();
+  }
+
   void AwaitCheckForExternalUpdates() {
     base::RunLoop run_loop;
     external_provider_manager()

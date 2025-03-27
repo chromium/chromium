@@ -29,13 +29,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
@@ -59,7 +57,6 @@ import java.util.function.BooleanSupplier;
 
 /** Unit tests for {@link ToolbarControlContainer}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
 public class ToolbarControlContainerTest {
     private static final String BLOCK_NAME = "Android.TopToolbar.BlockCaptureReason";
     private static final String ALLOW_NAME = "Android.TopToolbar.AllowCaptureReason";
@@ -386,11 +383,6 @@ public class ToolbarControlContainerTest {
 
     @Test
     public void testIsDirty_Fullscreen() {
-        FeatureOverrides.newBuilder()
-                .enable(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
-                .param("block_for_fullscreen", true)
-                .apply();
-
         final @ToolbarSnapshotDifference int difference = ToolbarSnapshotDifference.URL_TEXT;
         when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(true);
         makeAndInitAdapter();

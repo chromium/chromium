@@ -666,13 +666,12 @@ SHA256HashValue X509Certificate::CalculateFingerprint256(
     const CRYPTO_BUFFER* cert) {
   SHA256HashValue sha256;
 
-  SHA256(CRYPTO_BUFFER_data(cert), CRYPTO_BUFFER_len(cert), sha256.data);
+  SHA256(CRYPTO_BUFFER_data(cert), CRYPTO_BUFFER_len(cert), sha256.data());
   return sha256;
 }
 
 SHA256HashValue X509Certificate::CalculateChainFingerprint256() const {
-  SHA256HashValue sha256;
-  memset(sha256.data, 0, sizeof(sha256.data));
+  SHA256HashValue sha256 = {0};
 
   SHA256_CTX sha256_ctx;
   SHA256_Init(&sha256_ctx);
@@ -682,7 +681,7 @@ SHA256HashValue X509Certificate::CalculateChainFingerprint256() const {
     SHA256_Update(&sha256_ctx, CRYPTO_BUFFER_data(cert.get()),
                   CRYPTO_BUFFER_len(cert.get()));
   }
-  SHA256_Final(sha256.data, &sha256_ctx);
+  SHA256_Final(sha256.data(), &sha256_ctx);
 
   return sha256;
 }

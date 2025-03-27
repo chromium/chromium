@@ -7,7 +7,9 @@
 
 #include <map>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/autofill_ai_model_cache.pb.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -29,6 +31,17 @@ class AutofillAiModelCache : public KeyedService {
 
     friend constexpr bool operator==(const FieldIdentifier&,
                                      const FieldIdentifier&) = default;
+    friend constexpr auto operator<=>(const FieldIdentifier&,
+                                      const FieldIdentifier&) = default;
+  };
+
+  // The part of the model response relevant for type predictions in Autofill.
+  struct FieldPrediction {
+    FieldType field_type = NO_SERVER_DATA;
+    std::u16string format_string;
+
+    friend constexpr bool operator==(const FieldPrediction&,
+                                     const FieldPrediction&) = default;
   };
 
   // Updates the entry with key `form_signature`. If the `form_signature` is
@@ -49,6 +62,12 @@ class AutofillAiModelCache : public KeyedService {
   // creation dates).
   virtual std::map<FormSignature, CacheEntryWithMetadata> GetAllEntries()
       const = 0;
+
+  // Returns a "parsed" version of the field predictions for a given
+  // `form_signature`. Returns an empty map if there is no cache entry for
+  // `form_signature`.
+  virtual base::flat_map<FieldIdentifier, FieldPrediction> GetFieldPredictions(
+      FormSignature form_signature) const = 0;
 };
 
 }  // namespace autofill

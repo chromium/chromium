@@ -404,15 +404,6 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
-    public void testIsReadyForTextureCapture_NoSuppression() {
-        CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
-        Assert.assertTrue(result.isReady);
-        Assert.assertEquals(TopToolbarAllowCaptureReason.UNKNOWN, result.allowReason);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
     public void testIsReadyForTextureCapture_HasFocus() {
         mToolbarTablet.onUrlFocusChange(/* hasFocus= */ true);
         CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
@@ -582,7 +573,6 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
     public void testIsReadyForTextureCapture_InTabSwitcher() {
         mToolbarTablet.setTabSwitcherMode(/* inTabSwitcherMode= */ true);
         CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
@@ -591,7 +581,6 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
     public void testIsReadyForTextureCapture_ButtonShowAnimationInProgress() {
         mToolbarTablet.setToolbarButtonsVisibleForTesting(false);
         mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
@@ -616,7 +605,6 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
     public void testIsReadyForTextureCapture_ButtonHideAnimationInProgress() {
         mToolbarTablet.setToolbarButtonsVisibleForTesting(true);
         mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
@@ -641,7 +629,6 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
     public void testIsReadyForTextureCapture_Snapshot() {
         {
             CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
@@ -732,10 +719,6 @@ public final class ToolbarTabletUnitTest {
                 "Home button tint is incorrect.",
                 activityFocusTint.getDefaultColor(),
                 mHomeButton.getImageTintList().getDefaultColor());
-        Assert.assertEquals(
-                "Back button tint is incorrect.",
-                activityFocusTint.getDefaultColor(),
-                mBackButton.getImageTintList().getDefaultColor());
         Assert.assertEquals(
                 "Forward button tint is incorrect.",
                 activityFocusTint.getDefaultColor(),

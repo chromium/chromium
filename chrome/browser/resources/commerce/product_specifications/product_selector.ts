@@ -40,8 +40,8 @@ export class ProductSelectorElement extends CrLitElement {
     };
   }
 
-  selectedItem: UrlListEntry|null = null;
-  excludedUrls: string[] = [];
+  accessor selectedItem: UrlListEntry|null = null;
+  accessor excludedUrls: string[] = [];
 
   override render() {
     return getHtml.bind(this)();

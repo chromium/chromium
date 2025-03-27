@@ -49,11 +49,6 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
 
       searchTerm: String,
 
-      elementClass_: {
-        type: String,
-        computed: 'computeElementClass_(first)',
-      },
-
       /**
        * The number of accounts in a group as a formatted string.
        */
@@ -71,7 +66,7 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
   private tooltipText_: string;
   private deviceOnlyCredentialsAccessibilityLabelText_: string;
 
-  private computeElementClass_(): string {
+  private getElementClass_(): string {
     return this.first ? 'flex-centered' : 'flex-centered hr';
   }
 

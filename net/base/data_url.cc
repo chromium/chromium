@@ -149,7 +149,7 @@ bool DataURL::Parse(const GURL& url,
     // of the data, and should be stripped. Otherwise, the escaped whitespace
     // could be part of the payload, so don't strip it.
     if (base64_encoded) {
-      if (IsSimdutfBase64SupportEnabled()) {
+      if (base::FeatureList::IsEnabled(features::kSimdutfBase64Support)) {
         if (IsFurtherOptimizeParsingDataUrlsEnabled()) {
           // Based on https://fetch.spec.whatwg.org/#data-url-processor, we can
           // always use forgiving-base64 decode.

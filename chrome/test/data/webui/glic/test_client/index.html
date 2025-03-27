@@ -9,6 +9,7 @@ found in the LICENSE file.
 <style>
   html {
     height: 100%;
+    background-color: #00ff00;
   }
   body {
     background-color: white;
@@ -428,6 +429,20 @@ found in the LICENSE file.
     <p>Microphone access denied by OS. Please enable in OS settings.</p>
     <button id="openOsSettingsButton">Open OS Settings</button>
   </div>
+</div>
+<div class="section">
+  <h1>Test actInFocusedTab()</h1>
+  <div>
+    <button id="executeAction">Execute Action</button>
+    <label> <input type="text" id="actionProtoEncodedText" />
+      Action Proto, base64-encoded from http://shortn/_Iyf96Pob5S
+    </label>
+  </div>
+  <div id="actionUpdatedScreenshot">
+    <img id="actionUpdatedScreenshotImg" />
+  </div>
+  <span id="actionUpdatedContextResult"></span>
+  <span id="actionStatus"></span>
 </div>
 <br />
 <div id="status"></div>

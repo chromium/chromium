@@ -38,14 +38,6 @@ export class SettingsDownloadsPageElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       autoOpenDownloads_: {
         type: Boolean,
         value: false,

@@ -43,16 +43,14 @@ void TestOmniboxEditModel::OnPopupDataChanged(
     const std::u16string& temporary_text,
     bool is_temporary_text,
     const std::u16string& inline_autocompletion,
-    const std::u16string& prefix_autocompletion,
     const std::u16string& keyword,
     const std::u16string& keyword_placeholder,
     bool is_keyword_hint,
     const std::u16string& additional_text,
     const AutocompleteMatch& match) {
   OmniboxEditModel::OnPopupDataChanged(
-      temporary_text, is_temporary_text, inline_autocompletion,
-      prefix_autocompletion, keyword, keyword_placeholder, is_keyword_hint,
-      additional_text, match);
+      temporary_text, is_temporary_text, inline_autocompletion, keyword,
+      keyword_placeholder, is_keyword_hint, additional_text, match);
   text_ = is_temporary_text ? temporary_text : inline_autocompletion;
   is_temporary_text_ = is_temporary_text;
 }

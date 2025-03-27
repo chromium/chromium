@@ -102,24 +102,20 @@ TEST(OptRecordRdataTest, ParseOptRecordWithLongerSizeThanData) {
 TEST(OptRecordRdataTest, CreateEdeOpt) {
   OptRecordRdata::EdeOpt opt0(22, std::string("Don Quixote"));
 
-  std::string expected_data(
-      "\x00\x16"
-      "Don Quixote",
-      13);
+  constexpr uint8_t expected_data[] = {0x00, 0x16, 'D', 'o', 'n', ' ', 'Q',
+                                       'u',  'i',  'x', 'o', 't', 'e'};
 
-  std::string expected_data1(
-      "\x00\x08"
-      "Manhattan",
-      11);
+  constexpr uint8_t expected_data1[] = {0x00, 0x08, 'M', 'a', 'n', 'h',
+                                        'a',  't',  't', 'a', 'n'};
 
-  ASSERT_EQ(opt0.data(), base::as_byte_span(expected_data));
+  ASSERT_EQ(opt0.data(), expected_data);
   ASSERT_EQ(opt0.info_code(), 22u);
   ASSERT_EQ(opt0.extra_text(), std::string("Don Quixote"));
 
   std::unique_ptr<OptRecordRdata::EdeOpt> opt1 =
-      OptRecordRdata::EdeOpt::Create(base::as_byte_span(expected_data1));
+      OptRecordRdata::EdeOpt::Create(expected_data1);
 
-  ASSERT_EQ(opt1->data(), base::as_byte_span(expected_data1));
+  ASSERT_EQ(opt1->data(), expected_data1);
   ASSERT_EQ(opt1->info_code(), 8u);
   ASSERT_EQ(opt1->extra_text(), std::string("Manhattan"));
 }
@@ -270,13 +266,12 @@ TEST(OptRecordRdataTest, EdeRecordNoExtraText) {
       0x00, 0x05   // Info Code
   };
 
-  std::string expected_data("\x00\x05", 2);
+  const uint8_t expected_data[] = {0x00, 0x05};
 
   std::unique_ptr<OptRecordRdata> rdata_obj = OptRecordRdata::Create(rdata);
   ASSERT_THAT(rdata_obj, NotNull());
   ASSERT_THAT(rdata_obj->GetEdeOpts(), SizeIs(1));
-  ASSERT_EQ(rdata_obj->GetEdeOpts()[0]->data(),
-            base::as_byte_span(expected_data));
+  ASSERT_EQ(rdata_obj->GetEdeOpts()[0]->data(), expected_data);
   ASSERT_EQ(rdata_obj->GetEdeOpts()[0]->info_code(), 5u);
   ASSERT_EQ(rdata_obj->GetEdeOpts()[0]->extra_text(), "");
 }
@@ -305,16 +300,13 @@ TEST(OptRecordRdataTest, EdeRecordUnknownInfoCode) {
       'B',  'O',  'S', 'T', 'O', 'N'  // Extra Text ("BOSTON")
   };
 
-  std::string expected_data(
-      "\x00\x44"
-      "BOSTON",
-      8);
+  const uint8_t expected_data[] = {0x00, 0x44, 'B', 'O', 'S', 'T', 'O', 'N'};
 
   std::unique_ptr<OptRecordRdata> rdata_obj = OptRecordRdata::Create(rdata);
   ASSERT_THAT(rdata_obj, NotNull());
   ASSERT_THAT(rdata_obj->GetEdeOpts(), SizeIs(1));
   auto* opt = rdata_obj->GetEdeOpts()[0];
-  ASSERT_EQ(opt->data(), base::as_byte_span(expected_data));
+  ASSERT_EQ(opt->data(), expected_data);
   ASSERT_EQ(opt->info_code(), 68u);
   ASSERT_EQ(opt->extra_text(), std::string("BOSTON", 6));
   ASSERT_EQ(opt->GetEnumFromInfoCode(),
@@ -325,16 +317,22 @@ TEST(OptRecordRdataTest, CreatePaddingOpt) {
   std::unique_ptr<OptRecordRdata::PaddingOpt> opt0 =
       std::make_unique<OptRecordRdata::PaddingOpt>(12);
 
-  std::string expected_data(12, '\0');
-  std::string expected_data1("MASSACHUSETTS");
+  constexpr const uint8_t expected_data[] = {
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00  // 12 null characters
+  };
 
-  ASSERT_EQ(opt0->data(), base::as_byte_span(expected_data));
+  // For std::string expected_data1("MASSACHUSETTS");
+  constexpr const uint8_t expected_data1[] = {'M', 'A', 'S', 'S', 'A', 'C', 'H',
+                                              'U', 'S', 'E', 'T', 'T', 'S'};
+
+  ASSERT_EQ(opt0->data(), expected_data);
   ASSERT_THAT(opt0->data(), SizeIs(12u));
 
   std::unique_ptr<OptRecordRdata::PaddingOpt> opt1 =
       std::make_unique<OptRecordRdata::PaddingOpt>("MASSACHUSETTS");
 
-  ASSERT_EQ(opt1->data(), base::as_byte_span(expected_data1));
+  ASSERT_EQ(opt1->data(), expected_data1);
   ASSERT_THAT(opt1->data(), SizeIs(13u));
 }
 
@@ -439,18 +437,14 @@ TEST(OptRecordRdataTest, TestGetOptsOrder) {
   rdata_obj0.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(5, data2));
   ASSERT_EQ(rdata_obj0.OptCount(), 3u);
 
-  std::string expected_data("\x11\x11", 2);
-  std::string expected_data1("\x22\x22", 2);
-  std::string expected_data2("\x33\x33", 2);
+  constexpr const uint8_t expected_data[] = {0x11, 0x11};
+  constexpr const uint8_t expected_data1[] = {0x22, 0x22};
+  constexpr const uint8_t expected_data2[] = {0x33, 0x33};
 
   auto opts = rdata_obj0.GetOpts();
-  ASSERT_EQ(opts[0]->data(),
-            base::as_byte_span(expected_data));  // opt code 5 (inserted first)
-  ASSERT_EQ(
-      opts[1]->data(),
-      base::as_byte_span(expected_data1));  // opt code 5 (inserted second)
-  ASSERT_EQ(opts[2]->data(),
-            base::as_byte_span(expected_data2));  // opt code 10
+  ASSERT_EQ(opts[0]->data(), expected_data);   // opt code 5 (inserted first)
+  ASSERT_EQ(opts[1]->data(), expected_data1);  // opt code 5 (inserted second)
+  ASSERT_EQ(opts[2]->data(), expected_data2);  // opt code 10
 }
 
 }  // namespace

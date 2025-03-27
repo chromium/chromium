@@ -518,7 +518,10 @@ public class MultiInstanceManager
     }
 
     public void moveTabGroupToWindow(
-            Activity activity, TabGroupMetadata tabGroupMetadata, int atIndex) {
+            Activity activity,
+            TabGroupMetadata tabGroupMetadata,
+            int atIndex,
+            @Nullable Runnable onFinishedRunnable) {
         // Not implemented
     }
 

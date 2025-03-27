@@ -503,6 +503,26 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
                   FinishTabstripAnimations());
 }
 
+// Verify remove last tab will display the close last tab dialog.
+IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, GroupCloseLastTab) {
+  TabGroupId group_id = CreateNewTabGroup();
+  ShareTabGroup(group_id, "fake_collaboration_id",
+                data_sharing::MemberRole::kMember, /*should_sign_in=*/false);
+
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
+      Do([&]() {
+        BrowserView* browser_view =
+            static_cast<BrowserView*>(browser()->window());
+        browser_view->tabstrip()->CloseTab(browser_view->tabstrip()->tab_at(0),
+                                           CloseTabSource::kFromMouse);
+      }),
+      WaitForShow(kDataSharingSigninPromptDialogCancelButtonElementId),
+      PressButton(kDataSharingSigninPromptDialogCancelButtonElementId),
+      WaitForHide(kDataSharingSigninPromptDialogCancelButtonElementId),
+      FinishTabstripAnimations());
+}
+
 // Verify members see the recent activity button when activity exists.
 IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, RecentActivity) {
   std::string collaboration_id = "fake_collaboration_id";

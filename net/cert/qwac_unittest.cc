@@ -82,7 +82,7 @@ TEST(ParseQcStatements, MultipleStatementsSomeWithInfo) {
 }
 
 TEST(HasQwacQcStatements, Empty) {
-  EXPECT_FALSE(HasQwacQcStatements({}));
+  EXPECT_EQ(QwacQcStatementsStatus::kNotQwac, HasQwacQcStatements({}));
 }
 
 TEST(ParseQcTypeInfo, InvalidSequence) {
@@ -154,7 +154,8 @@ TEST(HasQwacQcStatements, Valid) {
   statements.emplace_back(bssl::der::Input(kEtsiQcsQcTypeOid),
                           bssl::der::Input(kQctWebOidSequence));
 
-  EXPECT_TRUE(HasQwacQcStatements(statements));
+  EXPECT_EQ(QwacQcStatementsStatus::kHasQwacStatements,
+            HasQwacQcStatements(statements));
 }
 
 // A QcStatement which has a id-etsi-qcs-QcCompliance statement but does not
@@ -165,7 +166,8 @@ TEST(HasQwacQcStatements, NoQcType) {
   statements.emplace_back(bssl::der::Input(kEtsiQcsQcComplianceOid),
                           bssl::der::Input());
 
-  EXPECT_FALSE(HasQwacQcStatements(statements));
+  EXPECT_EQ(QwacQcStatementsStatus::kInconsistent,
+            HasQwacQcStatements(statements));
 }
 
 // A QcStatement which has a id-etsi-qcs-QcCompliance statement and a
@@ -183,7 +185,8 @@ TEST(HasQwacQcStatements, WrongQcType) {
   statements.emplace_back(bssl::der::Input(kEtsiQcsQcTypeOid),
                           bssl::der::Input(kQctEsealOidSequence));
 
-  EXPECT_FALSE(HasQwacQcStatements(statements));
+  EXPECT_EQ(QwacQcStatementsStatus::kInconsistent,
+            HasQwacQcStatements(statements));
 }
 
 // A QcStatement which has a id-etsi-qcs-QcType statement of type
@@ -198,30 +201,38 @@ TEST(HasQwacQcStatements, NoQcCompliance) {
   statements.emplace_back(bssl::der::Input(kEtsiQcsQcTypeOid),
                           bssl::der::Input(kQctWebOidSequence));
 
-  EXPECT_FALSE(HasQwacQcStatements(statements));
+  EXPECT_EQ(QwacQcStatementsStatus::kInconsistent,
+            HasQwacQcStatements(statements));
 }
 
 TEST(Has1QwacPolicies, TestPolicyCases) {
   struct TestCase {
-    bool expected_qwacness;
+    QwacPoliciesStatus expected_qwacness;
     std::vector<bssl::der::Input> policies;
   } kTestCases[] = {
-      // Expected cases:
-      {true, {bssl::der::Input(kCabfBrEvOid), bssl::der::Input(kQevcpwOid)}},
-      {true, {bssl::der::Input(kCabfBrIvOid), bssl::der::Input(kQncpwOid)}},
-      {true, {bssl::der::Input(kCabfBrOvOid), bssl::der::Input(kQncpwOid)}},
+      // Expected QWAC cases:
+      {QwacPoliciesStatus::kHasQwacPolicies,
+       {bssl::der::Input(kCabfBrEvOid), bssl::der::Input(kQevcpwOid)}},
+      {QwacPoliciesStatus::kHasQwacPolicies,
+       {bssl::der::Input(kCabfBrIvOid), bssl::der::Input(kQncpwOid)}},
+      {QwacPoliciesStatus::kHasQwacPolicies,
+       {bssl::der::Input(kCabfBrOvOid), bssl::der::Input(kQncpwOid)}},
       // Mismatch between EV/non-EV policies:
-      {false, {bssl::der::Input(kCabfBrEvOid), bssl::der::Input(kQncpwOid)}},
-      {false, {bssl::der::Input(kCabfBrIvOid), bssl::der::Input(kQevcpwOid)}},
-      {false, {bssl::der::Input(kCabfBrOvOid), bssl::der::Input(kQevcpwOid)}},
-      // Only has one half of the policies:
-      {false, {bssl::der::Input(kCabfBrEvOid)}},
-      {false, {bssl::der::Input(kCabfBrIvOid)}},
-      {false, {bssl::der::Input(kCabfBrOvOid)}},
-      {false, {bssl::der::Input(kQevcpwOid)}},
-      {false, {bssl::der::Input(kQncpwOid)}},
+      {QwacPoliciesStatus::kInconsistent,
+       {bssl::der::Input(kCabfBrEvOid), bssl::der::Input(kQncpwOid)}},
+      {QwacPoliciesStatus::kInconsistent,
+       {bssl::der::Input(kCabfBrIvOid), bssl::der::Input(kQevcpwOid)}},
+      {QwacPoliciesStatus::kInconsistent,
+       {bssl::der::Input(kCabfBrOvOid), bssl::der::Input(kQevcpwOid)}},
+      // Only has EU policies but doesn't have any CABF policy:
+      {QwacPoliciesStatus::kInconsistent, {bssl::der::Input(kQevcpwOid)}},
+      {QwacPoliciesStatus::kInconsistent, {bssl::der::Input(kQncpwOid)}},
+      // Only has CABF policies:
+      {QwacPoliciesStatus::kNotQwac, {bssl::der::Input(kCabfBrEvOid)}},
+      {QwacPoliciesStatus::kNotQwac, {bssl::der::Input(kCabfBrIvOid)}},
+      {QwacPoliciesStatus::kNotQwac, {bssl::der::Input(kCabfBrOvOid)}},
       // No policies:
-      {false, {}},
+      {QwacPoliciesStatus::kNotQwac, {}},
   };
 
   constexpr uint8_t kUnrelated[] = {0x01, 0x02, 0x03};

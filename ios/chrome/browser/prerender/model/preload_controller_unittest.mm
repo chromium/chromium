@@ -59,12 +59,12 @@ class TestNetworkChangeNotifier : public net::NetworkChangeNotifier {
 class PreloadControllerTest : public PlatformTest {
  protected:
   void SetUp() override {
-    TestProfileIOS::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
-    profile_ = std::move(test_cbs_builder).Build();
+    profile_ = std::move(test_profile_builder).Build();
     // Set up a NetworkChangeNotifier so that the test can simulate Wi-Fi vs.
     // cellular connection.
     network_change_notifier_.reset(new TestNetworkChangeNotifier);

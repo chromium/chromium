@@ -43,12 +43,7 @@ std::unique_ptr<SyncDataTypeConfiguration>
 MaybeCreateSharedTabGroupDataTypeConfiguration(
     version_info::Channel channel,
     syncer::DataTypeStoreService* data_type_store_service) {
-  bool data_sharing_enabled =
-      base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature) ||
-      base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingJoinOnly);
-  if (!data_sharing_enabled) {
+  if (!data_sharing::features::IsDataSharingFunctionalityEnabled()) {
     return nullptr;
   }
 
@@ -63,12 +58,7 @@ std::unique_ptr<SyncDataTypeConfiguration>
 MaybeCreateSharedTabGroupAccountDataTypeConfiguration(
     version_info::Channel channel,
     syncer::DataTypeStoreService* data_type_store_service) {
-  bool data_sharing_enabled =
-      base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature) ||
-      base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingJoinOnly);
-  if (!data_sharing_enabled ||
+  if (!data_sharing::features::IsDataSharingFunctionalityEnabled() ||
       !base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData)) {
     return nullptr;
   }

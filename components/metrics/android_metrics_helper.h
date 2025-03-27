@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -30,7 +31,7 @@ enum class CpuAbiBitnessSupport {
 
 // AndroidMetricsHelper is responsible for helping to log information related to
 // system-level information about the Android device as well as the process.
-class AndroidMetricsHelper {
+class COMPONENT_EXPORT(METRICS) AndroidMetricsHelper {
  public:
   AndroidMetricsHelper(const AndroidMetricsHelper&) = delete;
   AndroidMetricsHelper& operator=(const AndroidMetricsHelper&) = delete;

@@ -6,6 +6,7 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_state_test_util.h"
@@ -14,7 +15,9 @@
 
 class ReaderModeJavaScriptFeatureTest : public PlatformTest {
  public:
-  ReaderModeJavaScriptFeatureTest() : valid_url_(GURL("https://example.com")) {}
+  ReaderModeJavaScriptFeatureTest() : valid_url_(GURL("https://example.com")) {
+    ReaderModeTabHelper::CreateForWebState(web_state());
+  }
 
   web::ScriptMessage ScriptMessageForUrl(const GURL& url) {
     return web::ScriptMessage(ValidDerivedFeatures(),
@@ -37,7 +40,7 @@ class ReaderModeJavaScriptFeatureTest : public PlatformTest {
  protected:
   std::unique_ptr<base::Value> ValidDerivedFeatures() {
     return std::make_unique<base::Value>(base::Value::Dict()
-                                             .Set("time", 0.0)
+                                             .Set("time", 10.0)
                                              .Set("numElements", 0.0)
                                              .Set("numAnchors", 0.0)
                                              .Set("numForms", 0.0)
@@ -122,4 +125,6 @@ TEST_F(ReaderModeJavaScriptFeatureTest, ValidDerivedFeatures) {
           ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength,
           1)));
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicLatencyHistogram, 1);
+  histogram_tester_.ExpectUniqueTimeSample(kReaderModeHeuristicLatencyHistogram,
+                                           base::Milliseconds(10), 1);
 }

@@ -24,10 +24,10 @@ mojom::CloudProvider ConvertCloudProviderToMojo(
     MigrationDestination destination) {
   switch (destination) {
     case MigrationDestination::kNotSpecified:
-    // TODO(399392370): Adapt dialog for the delete case.
-    case MigrationDestination::kDelete:
       NOTREACHED()
           << "Case should not be reached, cloud provider must be specified.";
+    case MigrationDestination::kDelete:
+      return mojom::CloudProvider::kDelete;
     case MigrationDestination::kGoogleDrive:
       return mojom::CloudProvider::kGoogleDrive;
     case MigrationDestination::kOneDrive:
@@ -129,7 +129,7 @@ void LocalFilesMigrationPageHandler::GetInitialDialogInfo(
                           formatted_date_time);
 }
 
-void LocalFilesMigrationPageHandler::UploadNow() {
+void LocalFilesMigrationPageHandler::UploadOrDeleteNow() {
   if (callback_) {
     std::move(callback_).Run(DialogAction::kUploadNow);
   }

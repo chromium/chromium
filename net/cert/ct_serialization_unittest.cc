@@ -105,8 +105,7 @@ TEST_F(CtSerializationTest, EncodesSignedEntryForPrecert) {
   // First two bytes are the log entry type.
   EXPECT_EQ(std::string("\x00\x01", 2), encoded.substr(0, 2));
   // Next comes the 32-byte issuer key hash
-  EXPECT_THAT(encoded.substr(2, 32),
-              ElementsAreArray(entry.issuer_key_hash.data));
+  EXPECT_THAT(encoded.substr(2, 32), ElementsAreArray(entry.issuer_key_hash));
   // Then the length of the TBS cert (604 bytes = 0x237)
   EXPECT_EQ(std::string("\x00\x02\x37", 3), encoded.substr(34, 3));
   // Then the TBS cert itself
@@ -240,7 +239,7 @@ TEST_F(CtSerializationTest, EncodesMerkleTreeLeafForPrecert) {
   EXPECT_EQ(std::string("\x00\x01", 2), encoded.substr(10, 2)) <<
       "Log entry type encoded incorrectly";
   EXPECT_THAT(encoded.substr(12, 32),
-              ElementsAreArray(tree_leaf.signed_entry.issuer_key_hash.data))
+              ElementsAreArray(tree_leaf.signed_entry.issuer_key_hash))
       << "Issuer key hash encoded incorrectly";
   EXPECT_EQ(std::string("\x00\x02\x37", 3), encoded.substr(44, 3)) <<
       "TBS certificate length encoded incorrectly";

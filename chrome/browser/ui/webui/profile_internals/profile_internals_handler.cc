@@ -43,10 +43,12 @@ std::string ProfileInternalsHandler::CountryIdToDebugString(
     return "unknown";
   }
 
-  return country_codes::CountryIDToCountryString(
-      country_id->GetRestricted(regional_capabilities::CountryAccessKey(
-          regional_capabilities::CountryAccessReason::
-              kProfileInternalsDisplayInDebugUi)));
+  return std::string(
+      country_id
+          ->GetRestricted(regional_capabilities::CountryAccessKey(
+              regional_capabilities::CountryAccessReason::
+                  kProfileInternalsDisplayInDebugUi))
+          .CountryCode());
 }
 
 // static
@@ -145,7 +147,8 @@ base::Value::Dict ProfileInternalsHandler::CreateProfileEntry(
       g_browser_process->variations_service()
           ? g_browser_process->variations_service()->GetLatestCountry()
           : "not available");
-  profile_entry.Set("localeCountry", country_codes::GetCurrentCountryCode());
+  profile_entry.Set("localeCountry",
+                    country_codes::GetCurrentCountryID().CountryCode());
 
   return profile_entry;
 }

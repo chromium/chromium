@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/spdy/spdy_session.h"
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <map>
 #include <string>
@@ -17,7 +13,10 @@
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -380,11 +379,11 @@ base::Value::Dict NetLogSpdyGreasedFrameParams(spdy::SpdyStreamId stream_id,
 
 // Helper function to return the total size of an array of objects
 // with .size() member functions.
-template <typename T, size_t N>
-size_t GetTotalSize(const T (&arr)[N]) {
+template <typename T>
+size_t GetTotalSize(const T& container_of_containers) {
   size_t total_size = 0;
-  for (size_t i = 0; i < N; ++i) {
-    total_size += arr[i].size();
+  for (const auto& container : container_of_containers) {
+    total_size += container.size();
   }
   return total_size;
 }
@@ -1927,12 +1926,11 @@ int SpdySession::DoReadComplete(int result) {
   last_read_time_ = time_func_();
 
   DCHECK(buffered_spdy_framer_.get());
-  char* data = read_buffer_->data();
-  while (result > 0) {
-    uint32_t bytes_processed =
-        buffered_spdy_framer_->ProcessInput(data, result);
-    result -= bytes_processed;
-    data += bytes_processed;
+  base::span<uint8_t> available_data = read_buffer_->first(result);
+  while (!available_data.empty()) {
+    size_t bytes_processed = buffered_spdy_framer_->ProcessInput(
+        reinterpret_cast<char*>(available_data.data()), available_data.size());
+    available_data = available_data.subspan(bytes_processed);
 
     if (availability_state_ == STATE_DRAINING) {
       return ERR_CONNECTION_CLOSED;
@@ -2190,20 +2188,24 @@ void SpdySession::SendInitialData() {
   if (send_window_update)
     initial_frame_size += window_update_frame->size();
   auto initial_frame_data = std::make_unique<char[]>(initial_frame_size);
-  size_t offset = 0;
 
-  memcpy(initial_frame_data.get() + offset, spdy::kHttp2ConnectionHeaderPrefix,
-         spdy::kHttp2ConnectionHeaderPrefixSize);
-  offset += spdy::kHttp2ConnectionHeaderPrefixSize;
+  // The Quiche interfaces use raw pointers, so have to UNSAFE_TODO() here and
+  // below to use those APIs. Unclear if cleaning up Quiche APIs is in-scope for
+  // the spanification effort, so using UNSAFE_TODO() rather than
+  // UNSAFE_BUFFERS() for now.
+  auto initial_data_span =
+      UNSAFE_TODO(base::span(initial_frame_data.get(), initial_frame_size));
+  base::SpanWriter initial_data_writer(initial_data_span);
 
-  memcpy(initial_frame_data.get() + offset, settings_frame->data(),
-         settings_frame->size());
-  offset += settings_frame->size();
+  initial_data_writer.Write(UNSAFE_TODO(
+      base::span(spdy::kHttp2ConnectionHeaderPrefix,
+                 static_cast<size_t>(spdy::kHttp2ConnectionHeaderPrefixSize))));
+  initial_data_writer.Write(*settings_frame);
 
   if (send_window_update) {
-    memcpy(initial_frame_data.get() + offset, window_update_frame->data(),
-           window_update_frame->size());
+    initial_data_writer.Write(*window_update_frame);
   }
+  CHECK_EQ(initial_data_writer.remaining(), 0u);
 
   auto initial_frame = std::make_unique<spdy::SpdySerializedFrame>(
       std::move(initial_frame_data), initial_frame_size);

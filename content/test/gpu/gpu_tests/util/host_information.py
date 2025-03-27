@@ -296,8 +296,8 @@ def _HandleNonAppleGpu(gpu: dict) -> _Gpu:
         vendor_id = constants.GpuVendor[vendor_name]
 
   if vendor_id is None:
-    raise RuntimeError('Unable to determine GPU vendor ID. Raw GPU info: %s' %
-                       gpu)
+    raise RuntimeError(
+        f'Unable to determine GPU vendor ID. Raw GPU info: {gpu}')
 
   return _Gpu(vendor_id, device_id)
 

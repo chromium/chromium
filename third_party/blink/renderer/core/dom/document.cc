@@ -7578,14 +7578,6 @@ void Document::FinishedParsing() {
 
   if (IsInOutermostMainFrame() && !IsInitialEmptyDocument() &&
       Url().ProtocolIsInHTTPFamily()) {
-    // Record histograms of ShapeText.
-    base::UmaHistogramMicrosecondsTimes(
-        "Blink.Layout.InlineNode.ShapeText.TotalTime.InOutermostMainFrame3",
-        data_->accumulated_shape_text_elapsed_time_);
-    base::UmaHistogramMicrosecondsTimes(
-        "Blink.Layout.InlineNode.ShapeText.MaxTime.InOutermostMainFrame3",
-        data_->max_shape_text_elapsed_time_);
-
     // Record histograms of SVGImage.
     base::UmaHistogramCounts100(
         "Blink.Layout.SVGImage.Count.InOutermostMainFrame",
@@ -7596,11 +7588,6 @@ void Document::FinishedParsing() {
 
     // UKM data is sampled at a frequency of `kUkmSamplingRate`.
     if (base::RandDouble() < kUkmSamplingRate) {
-      ukm::builders::Blink_ShapeText(UkmSourceID())
-          .SetTotalTime(
-              data_->accumulated_shape_text_elapsed_time_.InMicroseconds())
-          .SetMaxTime(data_->max_shape_text_elapsed_time_.InMicroseconds())
-          .Record(UkmRecorder());
       ukm::builders::Blink_SVGImage(UkmSourceID())
           .SetCount(ukm::GetExponentialBucketMinForCounts1000(
               data_->svg_image_processed_count_))
@@ -7879,12 +7866,6 @@ FontMatchingMetrics* Document::GetFontMatchingMetrics() {
   font_matching_metrics_ = std::make_unique<FontMatchingMetrics>(
       dom_window_, GetTaskRunner(TaskType::kInternalDefault));
   return font_matching_metrics_.get();
-}
-
-void Document::MaybeRecordShapeTextElapsedTime(base::TimeDelta elapsed_time) {
-  data_->accumulated_shape_text_elapsed_time_ += elapsed_time;
-  data_->max_shape_text_elapsed_time_ =
-      std::max(data_->max_shape_text_elapsed_time_, elapsed_time);
 }
 
 void Document::MaybeRecordSvgImageProcessingTime(
@@ -9673,7 +9654,7 @@ void Document::UpdateScrollMarkerGroupRelations() {
   }
   scroll_marker_group_to_scrollable_areas_.clear();
   if (document_element_) {
-    ::blink::RecalcScrollMarkerContainRelations(*document_element_, nullptr);
+    RecalcScrollMarkerContainRelations(*document_element_, nullptr);
   }
   needs_scroll_marker_contain_relations_update_ = false;
 }
@@ -9685,6 +9666,7 @@ void Document::UpdateScrollMarkerGroupToScrollableAreasMap() {
   for (auto& [scroll_marker_group, scrollable_areas] :
        scroll_marker_group_to_scrollable_areas_) {
     scroll_marker_group->UpdateScrollableAreaSubscriptions(scrollable_areas);
+    scroll_marker_group->UpdateSelectedScrollMarker();
   }
   needs_scroll_marker_groups_map_update_ = false;
 }

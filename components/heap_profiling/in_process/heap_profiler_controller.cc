@@ -175,8 +175,11 @@ void LogProfilerStats(std::optional<ProcessType> process_type,
                       const base::PoissonAllocationSamplerStats& profiler_stats,
                       size_t num_samples) {
   const double hit_rate =
-      static_cast<double>(profiler_stats.address_cache_hits) /
-      (profiler_stats.address_cache_hits + profiler_stats.address_cache_misses);
+      profiler_stats.address_cache_hits
+          ? (static_cast<double>(profiler_stats.address_cache_hits) /
+             (profiler_stats.address_cache_hits +
+              profiler_stats.address_cache_misses))
+          : 0.0;
   base::UmaHistogramCounts100000(
       ProcessHistogramName("HeapProfiling.InProcess.SamplesPerSnapshot",
                            process_type),
@@ -205,6 +208,19 @@ void LogProfilerStats(std::optional<ProcessType> process_type,
             process_type),
         bucket_length);
   }
+}
+
+// Retrieves a snapshot from the SamplingHeapProfiler and logs metrics about
+// profiler performance.
+std::vector<base::SamplingHeapProfiler::Sample> RetrieveAndLogSnapshot(
+    ProcessType process_type) {
+  auto samples = base::SamplingHeapProfiler::Get()->GetSamples(0);
+  const base::PoissonAllocationSamplerStats profiler_stats =
+      base::PoissonAllocationSampler::Get()->GetAndResetStats();
+  LogProfilerStats(process_type, profiler_stats, samples.size());
+  // Also summarize over all process types.
+  LogProfilerStats(std::nullopt, profiler_stats, samples.size());
+  return samples;
 }
 
 }  // namespace
@@ -401,6 +417,22 @@ void HeapProfilerController::TakeSnapshotInChildProcess(
                                     std::move(on_first_snapshot_callback_))));
 }
 
+void HeapProfilerController::LogMetricsWithoutSnapshotInChildProcess(
+    base::PassKey<ChildProcessSnapshotController>) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_NE(process_type_, ProcessType::kBrowser);
+  snapshot_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](ProcessType process_type, scoped_refptr<StoppedFlag> stopped) {
+            if (!stopped->data.IsSet()) {
+              // Log metrics about the snapshot, but don't upload it to UMA.
+              RetrieveAndLogSnapshot(process_type);
+            }
+          },
+          process_type_, stopped_));
+}
+
 // static
 void HeapProfilerController::AppendCommandLineSwitchForTesting(
     base::CommandLine* command_line,
@@ -493,14 +525,7 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
         "HeapProfiling.InProcess.TotalSampledMemory", scaled_sampled_memory);
   };
 
-  std::vector<Sample> samples =
-      base::SamplingHeapProfiler::Get()->GetSamples(0);
-
-  const base::PoissonAllocationSamplerStats profiler_stats =
-      base::PoissonAllocationSampler::Get()->GetAndResetStats();
-  LogProfilerStats(process_type, profiler_stats, samples.size());
-  // Also summarize over all process types.
-  LogProfilerStats(std::nullopt, profiler_stats, samples.size());
+  std::vector<Sample> samples = RetrieveAndLogSnapshot(process_type);
 
   base::ModuleCache module_cache;
   sampling_profiler::CallStackProfileParams params(

@@ -90,6 +90,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(DeviceFormFactor.PHONE)
 @Batch(Batch.PER_CLASS)
+@EnableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabGroupUiTest {
 
     @ClassRule
@@ -210,7 +211,6 @@ public class TabGroupUiTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testRenderStrip_toggleNotificationBubble() throws IOException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         AtomicReference<ViewGroup> controlsReference = new AtomicReference<>();
@@ -300,6 +300,7 @@ public class TabGroupUiTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testRenderStrip_BackgroundAddTab() throws IOException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
@@ -343,7 +344,56 @@ public class TabGroupUiTest {
                     // Disable animation to reduce flakiness.
                     stripRecyclerView.setItemAnimator(null);
                 });
-        mRenderTestRule.render(recyclerViewReference.get(), "3rd_tab_selected");
+        mRenderTestRule.render(recyclerViewReference.get(), "background_add_tab");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testRenderStrip_BackgroundAddTab_ResizeableView() throws IOException {
+        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
+        TabUiTestHelper.addBlankTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 3);
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Select the first tab in group and add one new tab to group.
+        clickFirstCardFromTabSwitcher(cta);
+        clickNthTabInDialog(cta, 0);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab tab =
+                            cta.getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams("about:blank"),
+                                            "About Test",
+                                            TabLaunchType.FROM_SYNC_BACKGROUND,
+                                            null,
+                                            TabModel.INVALID_TAB_INDEX);
+                    TabGroupModelFilter filter =
+                            cta.getTabModelSelector()
+                                    .getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(false);
+                    filter.mergeListOfTabsToGroup(
+                            List.of(tab), filter.getRepresentativeTabAt(0), /* notify= */ false);
+                });
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.tab_list_recycler_view),
+                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isCompletelyDisplayed()));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
+                    RecyclerView stripRecyclerView =
+                            bottomToolbar.findViewById(R.id.tab_list_recycler_view);
+                    recyclerViewReference.set(stripRecyclerView);
+                    // Disable animation to reduce flakiness.
+                    stripRecyclerView.setItemAnimator(null);
+                });
+        mRenderTestRule.render(recyclerViewReference.get(), "resizeable_background_add_tab");
     }
 
     @Test

@@ -723,13 +723,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Failed - mojo instance not found"/>
 </enum>
 
-<enum name="ArcWallpaperApi">
-  <summary>Defines the Wallpaper APIs called from Android.</summary>
-  <int value="0" label="Set"/>
-  <int value="1" label="SetDefault"/>
-  <int value="2" label="Get"/>
-</enum>
-
 <enum name="BooleanIsCustomNotification">
   <int value="0" label="Not Custom Notification"/>
   <int value="1" label="Is Custom Notification"/>

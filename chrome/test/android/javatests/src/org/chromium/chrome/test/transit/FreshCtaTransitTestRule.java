@@ -46,6 +46,28 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
     }
 
     /**
+     * Start the test in a web page served by the test server.
+     *
+     * @param url the URL of the page to load
+     * @return the active entry {@link PageStation}
+     */
+    public WebPageStation startOnUrl(String url) {
+        return ChromeTabbedActivityEntryPoints.startOnUrl(mActivityTestRule, url);
+    }
+
+    /**
+     * Start the test in a web page served by the test server.
+     *
+     * @param relativeUrl the relative URL of the page to serve and load
+     * @return the active entry {@link PageStation}
+     */
+    public WebPageStation startOnTestServerUrl(String relativeUrl) {
+        assert relativeUrl.startsWith("/") : "|relativeUrl| must be relative";
+        String fullUrl = mActivityTestRule.getTestServer().getURL(relativeUrl);
+        return ChromeTabbedActivityEntryPoints.startOnUrl(mActivityTestRule, fullUrl);
+    }
+
+    /**
      * Start the test in an NTP.
      *
      * @return the active entry {@link RegularNewTabPageStation}

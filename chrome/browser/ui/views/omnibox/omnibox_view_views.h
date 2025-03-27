@@ -130,7 +130,6 @@ class OmniboxViewViews
   bool IsSelectAll() const override;
   void GetSelectionBounds(std::u16string::size_type* start,
                           std::u16string::size_type* end) const override;
-  size_t GetAllSelectionsLength() const override;
   void SelectAll(bool reversed) override;
   void RevertAll() override;
   void SetFocus(bool is_user_initiated) override;
@@ -188,10 +187,8 @@ class OmniboxViewViews
   // Update the field with |text| and set the selection. |ranges| should not be
   // empty; even text with no selections must have at least 1 empty range in
   // |ranges| to indicate the cursor position.
-  void SetTextAndSelectedRanges(const std::u16string& text,
-                                const std::vector<gfx::Range>& ranges);
-
-  void SetSelectedRanges(const std::vector<gfx::Range>& ranges);
+  void SetTextAndSelectedRange(const std::u16string& text,
+                               const gfx::Range& selection);
 
   // Returns the selected text.
   std::u16string_view GetSelectedText() const;
@@ -233,9 +230,7 @@ class OmniboxViewViews
                                    bool save_original_selection,
                                    bool notify_text_changed) override;
   void OnInlineAutocompleteTextMaybeChanged(
-      const std::u16string& display_text,
-      std::vector<gfx::Range> selections,
-      const std::u16string& prefix_autocompletion,
+      const std::u16string& user_text,
       const std::u16string& inline_autocompletion) override;
   void OnInlineAutocompleteTextCleared() override;
   void OnRevertTemporaryText(const std::u16string& display_text,
@@ -338,11 +333,11 @@ class OmniboxViewViews
   base::CallbackListSubscription popup_view_opened_subscription_;
 
   // Selection persisted across temporary text changes, like popup suggestions.
-  std::vector<gfx::Range> saved_temporary_selection_ = {{}};
+  gfx::Range saved_temporary_selection_;
 
   // Holds the user's selection across focus changes.  There is only a saved
   // selection if this range IsValid().
-  std::vector<gfx::Range> saved_selection_for_focus_change_;
+  gfx::Range saved_selection_for_focus_change_;
 
   // Tracking state before and after a possible change.
   State state_before_change_;

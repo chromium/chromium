@@ -595,17 +595,15 @@ namespace rfc6962 {
 std::string HashLeaf(const std::string& leaf) {
   const char kLeafPrefix[] = {'\x00'};
 
-  SHA256HashValue sha256;
-  memset(sha256.data, 0, sizeof(sha256.data));
+  SHA256HashValue sha256 = {0};
 
   std::unique_ptr<crypto::SecureHash> hash(
       crypto::SecureHash::Create(crypto::SecureHash::SHA256));
   hash->Update(kLeafPrefix, 1);
   hash->Update(leaf.data(), leaf.size());
-  hash->Finish(sha256.data, sizeof(sha256.data));
+  hash->Finish(sha256);
 
-  return std::string(reinterpret_cast<const char*>(sha256.data),
-                     sizeof(sha256.data));
+  return std::string(base::as_string_view(sha256));
 }
 
 // Calculates the root hash of a Merkle tree, given its leaf data and size.

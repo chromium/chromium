@@ -9,7 +9,6 @@ import android.os.Build.VERSION_CODES;
 import android.view.Window;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.core.graphics.Insets;
 import androidx.core.os.BuildCompat;
@@ -21,6 +20,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.ViewportFit;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -37,9 +38,10 @@ import java.lang.annotation.RetentionPolicy;
  * A util helper class to know if e2e is on and eligible for current session and to record metrics
  * when necessary.
  */
+@NullMarked
 public class EdgeToEdgeUtils {
     private static final String TAG = "E2E_Utils";
-    private static Boolean sIsTargetSdkEnforceEdgeToEdge;
+    private static @Nullable Boolean sIsTargetSdkEnforceEdgeToEdge;
     private static boolean sAlwaysDrawWebEdgeToEdgeForTesting;
 
     private static final String ELIGIBLE_HISTOGRAM = "Android.EdgeToEdge.Eligible";
@@ -150,7 +152,7 @@ public class EdgeToEdgeUtils {
      * @param activity The current active activity.
      * @return Whether the activity is eligible for edge to edge based on device configuration.
      */
-    public static boolean recordEligibility(@NonNull Activity activity) {
+    public static boolean recordEligibility(Activity activity) {
         boolean eligible = true;
 
         // TODO(crbug.com/397756951): Replace with hasTappableNavigationBar()
@@ -304,7 +306,7 @@ public class EdgeToEdgeUtils {
      * Returns whether the given Tab has a web page that was already rendered with
      * viewport-fit=cover.
      */
-    static boolean getWasViewportFitCover(@NonNull Tab tab) {
+    static boolean getWasViewportFitCover(Tab tab) {
         assert tab != null;
         SafeAreaInsetsTracker safeAreaInsetsTracker =
                 DisplayCutoutController.getSafeAreaInsetsTracker(tab);

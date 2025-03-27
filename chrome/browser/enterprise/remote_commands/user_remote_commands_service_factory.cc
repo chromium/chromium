@@ -14,7 +14,7 @@
 namespace enterprise_commands {
 
 BASE_FEATURE(kUserRemoteCommands,
-             "kUserRemoteCommands",
+             "UserRemoteCommands",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static

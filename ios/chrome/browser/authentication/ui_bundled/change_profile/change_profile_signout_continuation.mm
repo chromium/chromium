@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_signout_continuation.h"
 
 #import "base/functional/callback_helpers.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -72,12 +74,9 @@ void ChangeProfileSignoutContinuation(
   authentication_service->SignOut(signout_source_metric,
                                   base::CallbackToBlock(std::move(completion)));
 
+  // TODO(crbug.com/406274746): Consider removing `should_record_metrics`.
   if (should_record_metrics) {
-    // TODO(crbug.com/40066949): Remove buckets related to sync-the-feature, and
-    // maybe rename histogram.
-    signin_metrics::RecordSignoutForceClearDataChoice(
-        /*force_clear_data=*/false);
-    signin_metrics::RecordSignoutUserAction(/*force_clear_data=*/false);
+    base::RecordAction(base::UserMetricsAction("Signin_Signout"));
   }
 }
 

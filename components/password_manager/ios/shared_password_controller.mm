@@ -53,6 +53,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/constants.h"
+#import "components/password_manager/ios/features.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
@@ -719,9 +720,22 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       NSString* username = [suggestion.value
           substringToIndex:suggestion.value.length -
                            kPasswordFormSuggestionSuffix.length];
+      bool stateless = base::FeatureList::IsEnabled(
+          password_manager::features::kIOSStatelessFillDataFlow);
+
       std::unique_ptr<password_manager::FillData> fillData =
-          [self.suggestionHelper passwordFillDataForUsername:username
-                                                  forFrameId:frameId];
+          stateless
+              ? [self.suggestionHelper
+                    passwordFillDataForUsername:username
+                        likelyRealPasswordField:
+                            suggestion.metadata.likely_from_real_password_field
+                                 formIdentifier:suggestion.params
+                                                    ->form_renderer_id
+                                fieldIdentifier:suggestion.params
+                                                    ->field_renderer_id
+                                        frameId:suggestion.params->frame_id]
+              : [self.suggestionHelper passwordFillDataForUsername:username
+                                                        forFrameId:frameId];
 
       if (!fillData) {
         completion();

@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,6 +67,30 @@ TEST_F(BnplMetricsTest, LogBnplIssuersSyncedCountAtStartup) {
 
   histogram_tester.ExpectTotalCount("Autofill.Bnpl.IssuersSyncedCount.Startup",
                                     2);
+}
+
+TEST_F(BnplMetricsTest, LogBnplTosDialogShownZip) {
+  base::HistogramTester histogram_tester;
+  LogBnplTosDialogShown(kBnplZipIssuerId);
+  histogram_tester.ExpectUniqueSample("Autofill.Bnpl.TosDialogShown.Zip",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+}
+
+TEST_F(BnplMetricsTest, LogBnplTosDialogShownAffirm) {
+  base::HistogramTester histogram_tester;
+  LogBnplTosDialogShown(kBnplAffirmIssuerId);
+  histogram_tester.ExpectUniqueSample("Autofill.Bnpl.TosDialogShown.Affirm",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+}
+
+TEST_F(BnplMetricsTest, LogBnplTosDialogShownAfterpay) {
+  base::HistogramTester histogram_tester;
+  LogBnplTosDialogShown(kBnplAfterpayIssuerId);
+  histogram_tester.ExpectUniqueSample("Autofill.Bnpl.TosDialogShown.Afterpay",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||

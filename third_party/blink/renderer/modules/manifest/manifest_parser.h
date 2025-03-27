@@ -564,6 +564,10 @@ class MODULES_EXPORT ManifestParser {
 
   String ParseVersion(const JSONObject* object);
 
+  // Parses the `update_token` field in the manifest iff the `id` is defined in
+  // the manifest. Returns `String()` which is null otherwise.
+  String ParseUpdateToken(const JSONObject* object, bool has_custom_id);
+
   void AddErrorInfo(const String& error_msg,
                     bool critical = false,
                     int error_line = 0,

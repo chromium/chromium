@@ -15,14 +15,16 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
+#include "components/manta/proto/manta.pb.h"
 #include "components/manta/snapper_provider.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/size.h"
-
 namespace {
 
 constexpr gfx::Size kPreviewImageSize = gfx::Size(512, 512);
@@ -99,8 +101,9 @@ ash::LobsterErrorCode MantaToLobsterStatusCode(
     case manta::MantaStatusCode::kGenericError:
     case manta::MantaStatusCode::kMalformedResponse:
     case manta::MantaStatusCode::kNoIdentityManager:
-    case manta::MantaStatusCode::kImageHasPerson:
       return ash::LobsterErrorCode::kUnknown;
+    case manta::MantaStatusCode::kImageHasPerson:
+      return ash::LobsterErrorCode::kContainsPeople;
     case manta::MantaStatusCode::kInvalidInput:
       return ash::LobsterErrorCode::kInvalidArgument;
     case manta::MantaStatusCode::kResourceExhausted:
@@ -250,7 +253,9 @@ void LobsterImageProviderFromSnapper::OnCandidatesRequested(
       base::BarrierCallback<std::optional<ash::LobsterImageCandidate>>(
           response->output_data_size(),
           base::BindOnce(&LobsterImageProviderFromSnapper::OnImagesSanitized,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                         weak_ptr_factory_.GetWeakPtr(),
+                         std::move(response->filtered_data()),
+                         std::move(callback)));
 
   for (auto& data : *response->mutable_output_data()) {
     SanitizePreviewJpgBytes(data, data_decoder.get(),
@@ -260,6 +265,8 @@ void LobsterImageProviderFromSnapper::OnCandidatesRequested(
 }
 
 void LobsterImageProviderFromSnapper::OnImagesSanitized(
+    const ::google::protobuf::RepeatedPtrField<::manta::proto::FilteredData>&
+        filtered_data,
     ash::RequestCandidatesCallback callback,
     const std::vector<std::optional<ash::LobsterImageCandidate>>&
         sanitized_image_candidates) {
@@ -270,5 +277,29 @@ void LobsterImageProviderFromSnapper::OnImagesSanitized(
       image_candidates.push_back(candidate.value());
     }
   }
-  std::move(callback).Run(std::move(image_candidates));
+
+  if (!image_candidates.empty()) {
+    std::move(callback).Run(std::move(image_candidates));
+    return;
+  }
+
+  // If there is no valid image, returns errors based on the filtered reasons.
+  for (auto& filtered_datum : filtered_data) {
+    if (filtered_datum.additional_reasons_size() > 0) {
+      if (std::find(filtered_datum.additional_reasons().begin(),
+                    filtered_datum.additional_reasons().end(),
+                    manta::proto::FilteredReason::IMAGE_SAFETY_PERSON) !=
+          filtered_datum.additional_reasons().end()) {
+        std::move(callback).Run(base::unexpected(ash::LobsterError(
+            /*status_code=*/ash::LobsterErrorCode::kContainsPeople,
+            /*message=*/l10n_util::GetStringUTF8(
+                IDS_CHROMEOS_LOBSTER_CONTAINS_PERSON_ERROR_RESPONSE))));
+        return;
+      }
+    }
+  }
+  // All the images were filtered out due to our safety filters.
+  std::move(callback).Run(base::unexpected(ash::LobsterError(
+      /*status_code=*/ash::LobsterErrorCode::kBlockedOutputs,
+      "the output is blocked")));
 }

@@ -42,7 +42,6 @@ import java.util.concurrent.TimeUnit;
 
 /** This class provides information for the auxiliary search. */
 public class AuxiliarySearchProvider {
-
     /** The version of tab donation's metadata. */
     @IntDef({MetaDataVersion.V1, MetaDataVersion.MULTI_TYPE_V2, MetaDataVersion.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
@@ -50,6 +49,20 @@ public class AuxiliarySearchProvider {
         int V1 = 0;
         int MULTI_TYPE_V2 = 1;
         int NUM_ENTRIES = 2;
+    }
+
+    /** An interface to handle events in {@link MostVisitedSites}. */
+    interface Observer {
+        /** This is called when the list of most visited URLs is initially available or updated. */
+        void onSiteSuggestionsAvailable(@Nullable List<AuxiliarySearchDataEntry> entries);
+
+        /**
+         * This is called when a previously uncached icon has been fetched. Parameters guaranteed to
+         * be non-null.
+         *
+         * @param siteUrl URL of site with newly-cached icon.
+         */
+        void onIconMadeAvailable(GURL siteUrl);
     }
 
     /* Only donate the recent 7 days accessed tabs.*/
@@ -106,6 +119,15 @@ public class AuxiliarySearchProvider {
         // We will get up to 100 tabs as default. This is controlled by feature
         // AuxiliarySearchDonation.
         mAuxiliarySearchBridge.getNonSensitiveHistoryData(callback);
+    }
+
+    /**
+     * Sets an observer and immediately fetches the current most visited sites suggestions.
+     *
+     * @param observer The observer to receive suggestions when they are ready.
+     */
+    public void setObserver(AuxiliarySearchProvider.Observer observer) {
+        mAuxiliarySearchBridge.setObserver(observer);
     }
 
     @VisibleForTesting

@@ -88,6 +88,7 @@ export class ModuleHeaderElement extends PolymerElement {
   dismissText: string;
   disableText: string;
   moreActionsText: string;
+  private iconStyle_: string;
 
   private computeIconStyle_() {
     return `-webkit-mask-image: url(${this.iconSrc});`;

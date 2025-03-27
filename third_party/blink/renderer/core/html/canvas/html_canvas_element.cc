@@ -130,27 +130,6 @@ namespace blink {
 
 namespace {
 
-bool AdjustGetOrCreate2DCanvasProvider() {
-  // The change to GetOrCreateCanvasResourceProvider() is safe only if the below
-  // new features are also enabled, as (a) our reasoning about the
-  // GetOrCreateCanvasResourceProvider() change is built on the behavior enabled
-  // by these features feature, and (b) if we were to ever disable the below
-  // features but leave the GetOrCreateCanvasResourceProvider() change in place
-  // we would be putting the codebase in an untested state.
-  if (!CanvasRenderingContext::
-          CheckProviderInCanCreateCanvas2dResourceProvider()) {
-    return false;
-  }
-
-  if (!CanvasRenderingContext::
-          CheckProviderInCanvas2DRenderingContextIsPaintable()) {
-    return false;
-  }
-
-  return base::FeatureList::IsEnabled(
-      features::kAdjustGetOrCreate2DCanvasProvider);
-}
-
 // These two constants determine if a newly created canvas starts with
 // acceleration disabled. Specifically:
 // 1. More than `kDisableAccelerationThreshold` canvases have been created.
@@ -1651,7 +1630,30 @@ void HTMLCanvasElement::SetResourceProviderForTesting(
 }
 
 void HTMLCanvasElement::DiscardResourceProvider() {
-  canvas2d_bridge_.reset();
+  // Historically this method dropped `canvas2d_bridge_`. However, changing
+  // CanvasRenderingContext2D::IsPaintable() to check for the presence of the
+  // resource provider instead of the bridge has the intentional behavioral
+  // change that we no longer guard recreation of the resource provider in
+  // CanvasRenderingContext2D::Restore() by a check of IsPaintable() being true.
+  // In this case, it is necessary to preserve the bridge (and hibernation
+  // handler) to preserve the invariant that the hibernation handler is present
+  // whenever there is a valid resource provider for Canvas2D. We can simply
+  // clear hibernation rather than dropping the bridge entirely.
+  if (CanvasRenderingContext::
+          CheckProviderInCanvas2DRenderingContextIsPaintable()) {
+    if (IsHibernating()) {
+      // Ensure consistency of metrics reporting across the change from the
+      // previous code flow.
+      // TODO(crbug.com/40280152): Determine how we want to report metrics here
+      // in the long-term once the dust has settled on the killswitch removal.
+      CanvasHibernationHandler::ReportHibernationEvent(
+          CanvasHibernationHandler::HibernationEvent::
+              kHibernationEndedWithTeardown);
+      GetHibernationHandler()->Clear();
+    }
+  } else {
+    canvas2d_bridge_.reset();
+  }
   ResetLayer();
   CanvasResourceHost::DiscardResourceProvider();
   dirty_rect_ = gfx::Rect();
@@ -2116,7 +2118,8 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext() {
 CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
     RasterModeHint hint) {
   if (IsRenderingContext2D()) {
-    if (!AdjustGetOrCreate2DCanvasProvider()) {
+    if (!CanvasRenderingContext::
+            CheckProviderInCanvas2DRenderingContextIsPaintable()) {
       Canvas2DLayerBridge* bridge = GetOrCreateCanvas2DLayerBridge();
       if (bridge == nullptr) {
         return nullptr;
@@ -2133,7 +2136,8 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
       return resource_provider;
     }
 
-    if (AdjustGetOrCreate2DCanvasProvider()) {
+    if (CanvasRenderingContext::
+            CheckProviderInCanvas2DRenderingContextIsPaintable()) {
       if (did_fail_to_create_resource_provider_) {
         return nullptr;
       }
@@ -2156,7 +2160,8 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
     resource_provider = RecreateCanvasResourceProviderFor2DContext(
         canvas2d_bridge_->GetHibernationHandler());
 
-    if (AdjustGetOrCreate2DCanvasProvider()) {
+    if (CanvasRenderingContext::
+            CheckProviderInCanvas2DRenderingContextIsPaintable()) {
       UpdateMemoryUsage();
 
       if (context_) {

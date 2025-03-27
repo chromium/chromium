@@ -696,7 +696,6 @@
 <translation id="2187317261103489799">पत्ता लगाउनुहोस् (डिफल्ट मान)</translation>
 <translation id="2188375229972301266">फेदमा एकभन्दा बढी प्वाल</translation>
 <translation id="2194856509914051091">विचार गर्नु पर्ने कुराहरू</translation>
-<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" /> का बारेमा थप जान्नुहोस्</translation>
 <translation id="2200678913752027654">थम्ज डाउन बटन, तपाईंलाई यो सुझाव मन नपर्नुको कारणका बारेमा विस्तृत प्रतिक्रिया पेस गर्नका निम्ति फाराम खोल्न इन्टर थिच्नुहोस्</translation>
 <translation id="2202627062836089804">आफ्नो कार्डको पछाडिको भाग</translation>
 <translation id="2204482073374652408">अपडेट गर्ने कार्य सम्पन्न भयो!</translation>
@@ -901,6 +900,7 @@
 <translation id="2539524384386349900">पत्ता लगाउनुहोस्</translation>
 <translation id="2541219929084442027">तपाईंले आफ्ना सबै इन्कोग्निटो ट्याबहरू बन्द गरेपछि तपाईंले ती इन्कोग्निटो ट्याबमा हेर्ने पेजहरू तपाईंको ब्राजउरको इतिहास, कुकी स्टोर वा खोजको इतिहासमा भण्डारण हुने छैनन्। तपाईंले डाउनलोड गर्ने कुनै फाइल वा बनाउने कुनै बुकमार्क भने भण्डारण गरिने छ।</translation>
 <translation id="2542106216580219892">सर्फिङ</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – फुल स्क्रिन मोडबाट बाहिरिन |<ph name="ACCELERATOR" />| थिचिराख्नुहोस्</translation>
 <translation id="2544546346215446551">तपाईंका एड्मिनले तपाईंको डिभाइस रिस्टार्ट गर्नुभयो</translation>
 <translation id="2544644783021658368">एउटा कागजात</translation>
 <translation id="254524874071906077">Chrome लाई डिफल्ट ब्राउजरको रूपमा सेट गर्नुहोस्</translation>
@@ -1807,6 +1807,7 @@
 <translation id="4150099059797363385">Envelope Chinese #4</translation>
 <translation id="4151403195736952345">विश्वव्यापी डिफल्ट (पत्ता लगाउनुहोस्) प्रयोग गर्नुहोस्</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{पृष्ठ १}other{पृष्ठ {COUNT}}}</translation>
+<translation id="4152670763139331043">{NUM_TABS,plural, =1{१ ट्याब}other{# ट्याबहरू}}</translation>
 <translation id="4154277373259957087">Chrome ले अब भुक्तानी विधिसम्बन्धी जानकारी भर्नुअघि भुक्तानी गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्ने छ। तपाईं <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> मा गई जुनसुकै बेला यो कुरा बदल्न सक्नुहुन्छ।</translation>
 <translation id="415440494507469262">तुलनात्मक जानकारी भएको तालिकामा ट्याब हाल्नुहोस्</translation>
 <translation id="4159784952369912983">बैजनी</translation>
@@ -2529,7 +2530,6 @@
             <ph name="LIST_ITEM" />फारमहरूमा भरिएको जानकारी
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">विपरीत क्रम तर माथितिर फर्काएर</translation>
-<translation id="5445340838622821110">तपाईंले किस्तामा भुक्तानी गर्नुभयो भने एक पटके भर्चुअल कार्ड नम्बर भरिन्छ। यो नम्बर यस खरिदका लागि मात्र प्रयोग गर्न सकिन्छ। <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" /> लाई उक्त साइटले तपाईंका बारेमा सेभ गरेको जानकारी प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="5451331376824595378">Chrome ले सुरक्षासँग जोडिएका घटनाहरूका बारेमा रिपोर्ट गर्दा ती घटनासँग सम्बन्धित डेटा तपाईंका एड्मिनलाई पठाइन्छ। यो डेटामा तपाईंले Chrome मा खोल्नुभएका पेजका URL, तपाईंले जुन पेजहरूबाट डेटा कपी गर्नुभएको थियो ती पेजका URL, फाइलका नाम वा मेटाडेटा, IP एड्रेस, ब्राउजर वा ट्याब क्र्यास हुने समस्यासम्बन्धी जानकारी तथा तपाईंले आफ्नो डिभाइस, Chrome र वेबमा आधारित एपहरूमा साइन इन गर्न प्रयोग गर्ने युजरनेम समावेश हुन सक्छन्।</translation>
 <translation id="5452270690849572955">यो <ph name="HOST_NAME" /> को पृष्ठ फेला पार्न सक्दैन</translation>
@@ -3930,6 +3930,7 @@
 <translation id="7887885240995164102">picture-in-picture मोडमा प्रविष्टि गर्नुहोस्‌</translation>
 <translation id="7888575728750733395">प्रिन्टिङ रेन्डर गर्ने प्रक्रियाको उद्देश्य</translation>
 <translation id="7890748547282909375">स्क्रिनसट सेभ गर्न Microsoft OneDrive मा साइन इन गर्नुहोस्</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – आफ्नो कर्सर देखाउन |<ph name="ACCELERATOR" />| थिच्नुहोस्</translation>
 <translation id="7892865709991296481">भुक्तानीसम्बन्धी सेटिङ</translation>
 <translation id="7894280532028510793">हिज्जे सही छ भने <ph name="BEGIN_LINK" />'नेटवर्कका डाइगोन्स्टिक्स' चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 in</translation>
@@ -3996,7 +3997,6 @@
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />कुकीहरू मेटाई हेर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">१० x ११ इन्च</translation>
 <translation id="8012647001091218357">हामी अहिले तपाईँको अविभावकमा पुग्न सकेनौं। कृपया फेरि प्रयास गर्नुहोस्।</translation>
-<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">ट्राभल एजेन्सी तथा सेवा</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome लाई सिस्टमको डिफल्ट ब्राउजर बनाउन ट्याब थिच्नुहोस् अनि इन्टर थिच्नुहोस्</translation>
 <translation id="8027077570865220386">ट्रे १५</translation>
@@ -4623,6 +4623,7 @@
 <translation id="9155646082713385498">पत्रिकाहरू</translation>
 <translation id="9157595877708044936">सेटिङ गर्दै...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> मा संवेदनशील सामग्री समावेश हुन सक्छ}other{<ph name="FILE_COUNT" /> वटा फाइलमा संवेदनशील सामग्री समावेश हुन सक्छ}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – फुल स्क्रिन मोडबाट बाहिरिन |<ph name="ACCELERATOR" />| थिच्नुहोस्</translation>
 <translation id="9165305804774426672">तपाईंले खोल्ने साइटहरूले तपाईंले साइटमा गरेका गतिविधिका आधारमा तपाईंलाई मन पर्ने कुराहरू निर्धारण गर्न पनि सक्छन्। उदाहरणका लागि, तपाईं लामो दूरीको दौडमा लगाइने जुत्ता बेच्ने कुनै साइटमा जानुभयो भने उक्त साइटले तपाईं म्याराथन दौडमा रुचि राख्नुहुन्छ भन्ने कुरा बुझ्न सक्छ।</translation>
 <translation id="9166851138617700776">"साइटले सिफारिस गरेका विज्ञापनहरू" र "विज्ञापनको पर्फर्मेन्स मापन गर्ने सुविधा" का बारेमा थप जानकारी</translation>
 <translation id="9167054383925257837">ब्राउजर तथा डिभाइसको OS सम्बन्धी जानकारी (ब्राउजर तथा OS का संस्करण जस्ता)</translation>

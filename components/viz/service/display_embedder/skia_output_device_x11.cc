@@ -109,18 +109,19 @@ void SkiaOutputDeviceX11::Present(const std::optional<gfx::Rect>& update_rect,
     DCHECK_GE(pixels_->size(), dst_info.computeMinByteSize());
     SkPixmap dst_pixmap(dst_info, pixels_->data(), dst_info.minRowBytes());
 
-    if (gr_context_) {
+    if (context_state_->gr_context()) {
       bool result = sk_surface_->readPixels(dst_pixmap, rect.x(), rect.y());
       LOG_IF(FATAL, !result)
           << "Failed to read pixels from offscreen SkSurface.";
     } else {
-      CHECK(graphite_context_);
+      auto* graphite_context = context_state_->graphite_context();
+      CHECK(graphite_context);
       ReadPixelsContext context;
-      graphite_context_->asyncRescaleAndReadPixels(
+      graphite_context->asyncRescaleAndReadPixels(
           sk_surface_.get(), dst_info, gfx::RectToSkIRect(rect),
           SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
           &OnReadPixelsDone, &context);
-      graphite_context_->submit(skgpu::graphite::SyncToCpu::kYes);
+      graphite_context->submit(skgpu::graphite::SyncToCpu::kYes);
       LOG_IF(FATAL, !context.async_result)
           << "Failed to read pixels from offscreen SkSurface.";
       libyuv::CopyPlane(

@@ -6,9 +6,12 @@ package org.chromium.android_webview;
 
 import org.jni_zero.JNINamespace;
 
+import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * WebResponseCallback can be called from any thread, and can be called either during
@@ -19,14 +22,19 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 @JNINamespace("android_webview")
 public final class WebResponseCallback {
     private static final String TAG = "WebRspnsCllbck";
-    private final int mRequestId;
     private AwContentsClient mAwContentsClient;
     private final AwWebResourceRequest mRequest;
-    private boolean mInterceptCalled;
 
-    public WebResponseCallback(int requestId, AwWebResourceRequest request) {
-        mRequestId = requestId;
+    private final JniOnceCallback<AwWebResourceInterceptResponse> mResponseCallback;
+
+    /** Callback from native code should only be called once. */
+    private final AtomicBoolean mInterceptCalled = new AtomicBoolean(false);
+
+    public WebResponseCallback(
+            AwWebResourceRequest request,
+            final JniOnceCallback<AwWebResourceInterceptResponse> responseCallback) {
         mRequest = request;
+        mResponseCallback = responseCallback;
     }
 
     public void intercept(WebResourceResponseInfo response) {
@@ -46,15 +54,10 @@ public final class WebResponseCallback {
                                 new AwContentsClient.AwWebResourceError());
             }
         }
-
-        if (!AwContentsIoThreadClientJni.get()
-                .finishShouldInterceptRequest(
-                        mRequestId,
-                        new AwWebResourceInterceptResponse(
-                                response, /* raisedException= */ false))) {
+        if (mInterceptCalled.getAndSet(true)) {
             throw new IllegalStateException("Request has already been responded to.");
         }
-        mInterceptCalled = true;
+        mResponseCallback.onResult(new AwWebResourceInterceptResponse(response, false));
     }
 
     public void setAwContentsClient(AwContentsClient client) {
@@ -62,10 +65,13 @@ public final class WebResponseCallback {
     }
 
     public void clientRaisedException() {
-        AwContentsIoThreadClientJni.get()
-                .finishShouldInterceptRequest(
-                        mRequestId,
-                        new AwWebResourceInterceptResponse(null, /* raisedException= */ true));
+        if (mInterceptCalled.getAndSet(true)) {
+            // Prevent the underlying callback from being invoked twice, which is an
+            // error.
+            return;
+        }
+        mResponseCallback.onResult(
+                new AwWebResourceInterceptResponse(null, /* raisedException= */ true));
     }
 
     // Performs cleanup in the possible event where the callback object goes unused.
@@ -73,16 +79,17 @@ public final class WebResponseCallback {
     @Override
     protected void finalize() throws Throwable {
         try {
-            if (!mInterceptCalled) {
-                String errMsg =
-                        "Client's shouldInterceptRequestAsync implementation did not respond for "
-                                + mRequest.url;
-                Log.e(TAG, errMsg);
-                clientRaisedException();
-            }
+            boolean intercepted = mInterceptCalled.get();
             RecordHistogram.recordBooleanHistogram(
                     "Android.WebView.ShouldInterceptRequest.Async.CallbackLeakedWithoutResponse",
-                    !mInterceptCalled);
+                    !intercepted);
+            if (!intercepted) {
+                Log.e(
+                        TAG,
+                        "Client's shouldInterceptRequestAsync implementation did not respond for "
+                                + mRequest.url);
+                clientRaisedException();
+            }
         } finally {
             super.finalize(); // Call superclass finalize() to ensure proper cleanup.
         }

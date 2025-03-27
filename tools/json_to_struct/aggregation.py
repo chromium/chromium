@@ -68,17 +68,6 @@ def GetAggregationDetails(description) -> AggregationDetails:
       AggregationDetails populated with relevant fields. This is always
       returned, even if the data object does not include aggregation descriptor.
   """
-  # Temporarily support both aggregation types until we clean them up.
-  # TODO(b:404850650): clean this up after migrating all structs to new
-  # declaration.
-  generate_array = description.get('generate_array', None)
-  if generate_array:
-    return AggregationDetails(kind=AggregationKind.ARRAY,
-                              name=generate_array.get('array_name'),
-                              export_items=True,
-                              elements={},
-                              map_key_type=None)
-
   aggregation = description.get('aggregation', {})
   kind = AggregationKind(aggregation.get('type', 'none'))
   name = aggregation.get('name', None)

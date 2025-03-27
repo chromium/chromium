@@ -185,6 +185,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
 
     @Override
     public void destroy() {
+        removeDelayedCallbacks();
         mIsVisibleSupplier.removeObserver(mVisibilityObserver);
         destroyTabSwitcherPaneCoordinator();
     }

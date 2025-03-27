@@ -681,7 +681,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
   RunTestSequence(
       ResizeRelativeToOverflow(-1),
       MaybeShowPromo(feature_engagement::kIPHTabSearchFeature,
-                     user_education::FeaturePromoResult::kBlockedByUi),
+                     user_education::FeaturePromoResult::kWindowTooSmall),
       ResizeRelativeToOverflow(1),
       MaybeShowPromo(feature_engagement::kIPHTabSearchFeature),
       PressClosePromoButton());

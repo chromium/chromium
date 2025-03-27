@@ -148,6 +148,16 @@ inline constexpr std::array kSpanifyManualPathsToIgnore = {
     "ui/gl/gl_mock_autogen_gl.h",
     "ui/gl/gl_stub_autogen_gl.cc",
     "ui/gl/gl_stub_autogen_gl.h",
+
+    // Exclude these generated files.
+    //
+    // An example of `spanify` picking them up can be seen at
+    // https://crrev.com/c/6389460/1/third_party/blink/renderer/core/xml/xpath_grammar_generated.cc
+    //
+    // while a proper "rewrite" would require manipulating bison, e.g.
+    // https://crrev.com/c/6357073
+    "third_party/blink/renderer/core/xml/xpath_grammar_generated.h",
+    "third_party/blink/renderer/core/xml/xpath_grammar_generated.cc",
 };
 
 #endif  // TOOLS_CLANG_SPANIFY_SPANIFYMANUALPATHSTOIGNORE_H_

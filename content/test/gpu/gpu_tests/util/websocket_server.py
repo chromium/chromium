@@ -89,8 +89,8 @@ class WebsocketServer():
       return self.websocket.recv(timeout)
     except TimeoutError as e:
       raise WebsocketReceiveMessageTimeoutError(
-          'Timed out after %d seconds waiting for websocket message' %
-          timeout) from e
+          f'Timed out after {timeout} seconds waiting for websocket message'
+      ) from e
 
 
 class _ServerThread(threading.Thread):

@@ -2312,7 +2312,7 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
   gl::ScopedProgressReporter scoped_process_reporter(
       context_state_->progress_reporter());
   output_device_->Submit(
-      sync_cpu,
+      context_state_, sync_cpu,
       base::BindOnce(&SkiaOutputSurfaceImplOnGpu::PostSubmit,
                      base::Unretained(this), std::move(frame), skip_present));
 }

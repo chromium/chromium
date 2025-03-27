@@ -51,7 +51,6 @@ void TestSetAllowedToBeDefault(int caseI,
                                const std::string input_text,
                                bool input_prevent_inline_autocomplete,
                                const std::string match_inline_autocompletion,
-                               const std::string match_prefix_autocompletion,
                                const std::string expected_inline_autocompletion,
                                bool expected_allowed_to_be_default_match) {
   AutocompleteInput input(base::UTF8ToUTF16(input_text),
@@ -61,7 +60,6 @@ void TestSetAllowedToBeDefault(int caseI,
 
   AutocompleteMatch match;
   match.inline_autocompletion = base::UTF8ToUTF16(match_inline_autocompletion);
-  match.prefix_autocompletion = base::UTF8ToUTF16(match_prefix_autocompletion);
 
   match.SetAllowedToBeDefault(input);
 
@@ -621,313 +619,36 @@ TEST_F(AutocompleteMatchTest, SetAllowedToBeDefault) {
   // 1) input text in ["goo", "goo ", "goo  "]
   // 2) input prevent_inline_autocomplete in [false, true]
   // 3) match inline_autocompletion in ["", "gle.com", " gle.com", "  gle.com"]
-  // match_prefix_autocompletion will be "" for all these cases
-  TestSetAllowedToBeDefault(1, "goo", false, "", "", "", true);
-  TestSetAllowedToBeDefault(2, "goo", false, "gle.com", "", "gle.com", true);
-  TestSetAllowedToBeDefault(3, "goo", false, " gle.com", "", " gle.com", true);
-  TestSetAllowedToBeDefault(4, "goo", false, "  gle.com", "", "  gle.com",
-                            true);
-  TestSetAllowedToBeDefault(5, "goo ", false, "", "", "", true);
-  TestSetAllowedToBeDefault(6, "goo ", false, "gle.com", "", "gle.com", false);
-  TestSetAllowedToBeDefault(7, "goo ", false, " gle.com", "", "gle.com", true);
-  TestSetAllowedToBeDefault(8, "goo ", false, "  gle.com", "", " gle.com",
-                            true);
-  TestSetAllowedToBeDefault(9, "goo  ", false, "", "", "", true);
-  TestSetAllowedToBeDefault(10, "goo  ", false, "gle.com", "", "gle.com",
-                            false);
-  TestSetAllowedToBeDefault(11, "goo  ", false, " gle.com", "", " gle.com",
-                            false);
-  TestSetAllowedToBeDefault(12, "goo  ", false, "  gle.com", "", "gle.com",
-                            true);
-  TestSetAllowedToBeDefault(13, "goo", true, "", "", "", true);
-  TestSetAllowedToBeDefault(14, "goo", true, "gle.com", "", "gle.com", false);
-  TestSetAllowedToBeDefault(15, "goo", true, " gle.com", "", " gle.com", false);
-  TestSetAllowedToBeDefault(16, "goo", true, "  gle.com", "", "  gle.com",
-                            false);
-  TestSetAllowedToBeDefault(17, "goo ", true, "", "", "", true);
-  TestSetAllowedToBeDefault(18, "goo ", true, "gle.com", "", "gle.com", false);
-  TestSetAllowedToBeDefault(19, "goo ", true, " gle.com", "", " gle.com",
-                            false);
-  TestSetAllowedToBeDefault(20, "goo ", true, "  gle.com", "", "  gle.com",
-                            false);
-  TestSetAllowedToBeDefault(21, "goo  ", true, "", "", "", true);
-  TestSetAllowedToBeDefault(22, "goo  ", true, "gle.com", "", "gle.com", false);
-  TestSetAllowedToBeDefault(23, "goo  ", true, " gle.com", "", " gle.com",
-                            false);
-  TestSetAllowedToBeDefault(24, "goo  ", true, "  gle.com", "", "  gle.com",
-                            false);
-}
-
-TEST_F(AutocompleteMatchTest, SetAllowedToBeDefault_PrefixAutocompletion) {
-  // Verify that a non-empty prefix autocompletion will prevent an empty inline
-  // autocompletion from bypassing the other default match requirements.
-  TestSetAllowedToBeDefault(0, "xyz", true, "", "prefix", "", false);
+  TestSetAllowedToBeDefault(1, "goo", false, "", "", true);
+  TestSetAllowedToBeDefault(2, "goo", false, "gle.com", "gle.com", true);
+  TestSetAllowedToBeDefault(3, "goo", false, " gle.com", " gle.com", true);
+  TestSetAllowedToBeDefault(4, "goo", false, "  gle.com", "  gle.com", true);
+  TestSetAllowedToBeDefault(5, "goo ", false, "", "", true);
+  TestSetAllowedToBeDefault(6, "goo ", false, "gle.com", "gle.com", false);
+  TestSetAllowedToBeDefault(7, "goo ", false, " gle.com", "gle.com", true);
+  TestSetAllowedToBeDefault(8, "goo ", false, "  gle.com", " gle.com", true);
+  TestSetAllowedToBeDefault(9, "goo  ", false, "", "", true);
+  TestSetAllowedToBeDefault(10, "goo  ", false, "gle.com", "gle.com", false);
+  TestSetAllowedToBeDefault(11, "goo  ", false, " gle.com", " gle.com", false);
+  TestSetAllowedToBeDefault(12, "goo  ", false, "  gle.com", "gle.com", true);
+  TestSetAllowedToBeDefault(13, "goo", true, "", "", true);
+  TestSetAllowedToBeDefault(14, "goo", true, "gle.com", "gle.com", false);
+  TestSetAllowedToBeDefault(15, "goo", true, " gle.com", " gle.com", false);
+  TestSetAllowedToBeDefault(16, "goo", true, "  gle.com", "  gle.com", false);
+  TestSetAllowedToBeDefault(17, "goo ", true, "", "", true);
+  TestSetAllowedToBeDefault(18, "goo ", true, "gle.com", "gle.com", false);
+  TestSetAllowedToBeDefault(19, "goo ", true, " gle.com", " gle.com", false);
+  TestSetAllowedToBeDefault(20, "goo ", true, "  gle.com", "  gle.com", false);
+  TestSetAllowedToBeDefault(21, "goo  ", true, "", "", true);
+  TestSetAllowedToBeDefault(22, "goo  ", true, "gle.com", "gle.com", false);
+  TestSetAllowedToBeDefault(23, "goo  ", true, " gle.com", " gle.com", false);
+  TestSetAllowedToBeDefault(24, "goo  ", true, "  gle.com", "  gle.com", false);
 }
 
 TEST_F(AutocompleteMatchTest, TryRichAutocompletion) {
   auto test = [](const std::string input_text,
                  bool input_prevent_inline_autocomplete,
                  const std::string primary_text,
-                 const std::string secondary_text, bool shortcut_provider,
-                 bool expected_return,
-                 AutocompleteMatch::RichAutocompletionType
-                     expected_rich_autocompletion_triggered,
-                 const std::string expected_inline_autocompletion,
-                 const std::string expected_prefix_autocompletion,
-                 const std::string expected_additional_text,
-                 bool expected_allowed_to_be_default_match) {
-    AutocompleteInput input(base::UTF8ToUTF16(input_text),
-                            metrics::OmniboxEventProto::OTHER,
-                            TestSchemeClassifier());
-    input.set_prevent_inline_autocomplete(input_prevent_inline_autocomplete);
-
-    AutocompleteMatch match;
-    EXPECT_EQ(
-        match.TryRichAutocompletion(base::UTF8ToUTF16(primary_text),
-                                    base::UTF8ToUTF16(secondary_text), input,
-                                    shortcut_provider ? u"non-empty" : u""),
-        expected_return);
-
-    EXPECT_EQ(match.rich_autocompletion_triggered,
-              expected_rich_autocompletion_triggered);
-
-    EXPECT_EQ(base::UTF16ToUTF8(match.inline_autocompletion).c_str(),
-              expected_inline_autocompletion);
-    EXPECT_EQ(base::UTF16ToUTF8(match.prefix_autocompletion).c_str(),
-              expected_prefix_autocompletion);
-    EXPECT_EQ(base::UTF16ToUTF8(match.additional_text).c_str(),
-              expected_additional_text);
-    EXPECT_EQ(match.allowed_to_be_default_match,
-              expected_allowed_to_be_default_match);
-  };
-
-  // We won't test every possible combination of rich autocompletion parameters,
-  // but for now, only the state with all enabled. If we decide to launch a
-  // different combination, we can update these tests.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kRichAutocompletion,
-        {
-            {"RichAutocompletionAutocompleteTitles", "true"},
-            {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
-            {"RichAutocompletionAutocompleteTitlesMinChar", "0"},
-            {"RichAutocompletionAutocompleteNonPrefixMinChar", "0"},
-        });
-    RichAutocompletionParams::ClearParamsForTesting();
-
-    // Prefer autocompleting primary text prefix. Should not set
-    // |rich_autocompletion_triggered|.
-    {
-      SCOPED_TRACE("primary prefix");
-      test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary", false, true,
-           AutocompleteMatch::RichAutocompletionType::kNone, "_mixd_x_primary",
-           "", "", true);
-    }
-
-    // Otherwise, prefer secondary text prefix.
-    {
-      SCOPED_TRACE("secondary prefix");
-      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, true,
-           AutocompleteMatch::RichAutocompletionType::kTitlePrefix,
-           "_mixd_x_secondary", "", "y_mixd_x_primary", true);
-    }
-
-    // Otherwise, prefer primary text non-prefix (wordbreak).
-    {
-      SCOPED_TRACE("primary non-prefix");
-      test("x", false, "y_mixd_x_primary", "y_mixd_x_secondary", false, true,
-           AutocompleteMatch::RichAutocompletionType::kUrlNonPrefix, "_primary",
-           "y_mixd_", "", true);
-    }
-
-    // Otherwise, prefer secondary text non-prefix (wordbreak).
-    {
-      SCOPED_TRACE("secondary non-prefix");
-      test("x", false, "y_mid_y_primary", "y_mixd_x_secondary", false, true,
-           AutocompleteMatch::RichAutocompletionType::kTitleNonPrefix,
-           "_secondary", "y_mixd_", "y_mid_y_primary", true);
-    }
-
-    // We don't explicitly test that non-wordbreak matches aren't autocompleted,
-    // because we rely on providers to not provide suggestions that only match
-    // the input at non-wordbreaks.
-
-    // Otherwise, don't autocomplete but still set |additional_text|.
-    {
-      SCOPED_TRACE("no autocompletion applicable");
-      test("x", false, "y_mid_y_primary", "y_mid_y_secondary", false, false,
-           AutocompleteMatch::RichAutocompletionType::kNone, "", "", "", false);
-    }
-
-    // Don't autocomplete if |prevent_inline_autocomplete| is true.
-    {
-      SCOPED_TRACE("prevent inline autocomplete");
-      test("x", true, "x_mixd_x_primary", "x_mixd_x_secondary", false, false,
-           AutocompleteMatch::RichAutocompletionType::kNone, "", "", "", false);
-    }
-  }
-
-  // Check min char limits.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kRichAutocompletion,
-        {
-            {"RichAutocompletionAutocompleteTitles", "true"},
-            {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
-            {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-            {"RichAutocompletionAutocompleteNonPrefixMinChar", "2"},
-        });
-    RichAutocompletionParams::ClearParamsForTesting();
-
-    // Do autocomplete URL non-prefix if input is greater than limits.
-    {
-      SCOPED_TRACE("min char shorter than input");
-      test("x_prim", false, "y_mixd_x_primary", "x_mixd_x_secondary", false,
-           true, AutocompleteMatch::RichAutocompletionType::kUrlNonPrefix,
-           "ary", "y_mixd_", "", true);
-    }
-
-    // Usually, title autocompletion is preferred to non-prefix. Autocomplete
-    // non-prefix if title autocompletion has a limit larger than the input.
-    {
-      SCOPED_TRACE(
-          "title min char longer & non-prefix min char shorter than input");
-      test("x_", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, true,
-           AutocompleteMatch::RichAutocompletionType::kUrlNonPrefix, "primary",
-           "y_mixd_", "", true);
-    }
-
-    // Don't autocomplete title and non-prefix if input is less than limits.
-    {
-      SCOPED_TRACE("min char longer than input");
-      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, false,
-           AutocompleteMatch::RichAutocompletionType::kNone, "", "", "", false);
-    }
-  }
-
-  // Don't autocomplete if IsRichAutocompletionEnabled is disabled
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(omnibox::kRichAutocompletion);
-    RichAutocompletionParams::ClearParamsForTesting();
-    SCOPED_TRACE("feature disabled");
-    test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary", false, false,
-         AutocompleteMatch::RichAutocompletionType::kNone, "", "", "", false);
-  }
-
-  // Don't autocomplete if the RichAutocompletionCounterfactual param is
-  // enabled; do set |rich_autocompletion_triggered| if it would have
-  // autocompleted.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kRichAutocompletion,
-        {
-            {"RichAutocompletionAutocompleteTitles", "true"},
-            {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
-            {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-            {"RichAutocompletionAutocompleteNonPrefixMinChar", "2"},
-            {"RichAutocompletionCounterfactual", "true"},
-        });
-    RichAutocompletionParams::ClearParamsForTesting();
-
-    // Do trigger if input is greater than limits.
-    {
-      SCOPED_TRACE("min char shorter than input, counterfactual");
-      test("x_prim", false, "y_mixd_x_primary", "x_mixd_x_secondary", false,
-           false, AutocompleteMatch::RichAutocompletionType::kUrlNonPrefix, "",
-           "", "", false);
-    }
-
-    {
-      SCOPED_TRACE(
-          "title min char longer & non-prefix min char shorter than input, "
-          "counterfactual");
-      test("x_", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, false,
-           AutocompleteMatch::RichAutocompletionType::kUrlNonPrefix, "", "", "",
-           false);
-    }
-
-    // Don't trigger if input is less than limits.
-    {
-      SCOPED_TRACE("min char longer than input, counterfactual");
-      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, false,
-           AutocompleteMatch::RichAutocompletionType::kNone, "", "", "", false);
-    }
-  }
-
-  // Prefer non-prefix URLs to prefix title autocompletion only if the
-  // appropriate param is set.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kRichAutocompletion,
-        {
-            {"RichAutocompletionAutocompleteTitles", "true"},
-            {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
-            {"RichAutocompletionAutocompletePreferUrlsOverPrefixes", "true"},
-        });
-    RichAutocompletionParams::ClearParamsForTesting();
-
-    {
-      SCOPED_TRACE("prefer URLs over prefixes");
-      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, true,
-           AutocompleteMatch::RichAutocompletionType::kUrlNonPrefix, "_primary",
-           "y_mixd_", "", true);
-    }
-  }
-
-  // Autocomplete only shortcut suggestions.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kRichAutocompletion,
-        {
-            {"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
-            {"RichAutocompletionAutocompleteNonPrefixShortcutProvider", "true"},
-            {"RichAutocompletionAutocompleteTitlesMinChar", "0"},
-            {"RichAutocompletionAutocompleteNonPrefixMinChar", "0"},
-        });
-    RichAutocompletionParams::ClearParamsForTesting();
-    // Trigger if the suggestion is from the shortcut provider.
-    {
-      SCOPED_TRACE("shortcut");
-      test("x", false, "primary x x", "x x secondary", true, true,
-           AutocompleteMatch::RichAutocompletionType::kTitlePrefix,
-           " x secondary", "", "primary x x", true);
-    }
-
-    // Don't trigger if the suggestion is not from the shortcut provider.
-    {
-      SCOPED_TRACE("not shortcut");
-      test("x", false, "primary x x", "x x secondary", false, false,
-           AutocompleteMatch::RichAutocompletionType::kNone, "", "", "", false);
-    }
-  }
-
-  // Autocomplete inputs with spaces.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kRichAutocompletion,
-        {
-            {"RichAutocompletionAutocompleteTitles", "true"},
-            {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
-        });
-    RichAutocompletionParams::ClearParamsForTesting();
-    {
-      SCOPED_TRACE("input with spaces");
-      test("x x", false, "primary x x", "secondary x x", true, true,
-           AutocompleteMatch::RichAutocompletionType::kUrlNonPrefix, "",
-           "primary ", "", true);
-    }
-  }
-}
-
-TEST_F(AutocompleteMatchTest, TryRichAutocompletionShortcutText) {
-  auto test = [](const std::string input_text, const std::string primary_text,
                  const std::string secondary_text,
                  const std::string shortcut_text, bool expected_return,
                  AutocompleteMatch::RichAutocompletionType
@@ -938,11 +659,12 @@ TEST_F(AutocompleteMatchTest, TryRichAutocompletionShortcutText) {
     AutocompleteInput input(base::UTF8ToUTF16(input_text),
                             metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
+    input.set_prevent_inline_autocomplete(input_prevent_inline_autocomplete);
 
     AutocompleteMatch match;
     EXPECT_EQ(
-        match.TryRichAutocompletion(base::UTF8ToUTF16(primary_text),
-                                    base::UTF8ToUTF16(secondary_text), input,
+        match.TryRichAutocompletion(input, base::UTF8ToUTF16(primary_text),
+                                    base::UTF8ToUTF16(secondary_text),
                                     base::UTF8ToUTF16(shortcut_text)),
         expected_return);
 
@@ -951,58 +673,121 @@ TEST_F(AutocompleteMatchTest, TryRichAutocompletionShortcutText) {
 
     EXPECT_EQ(base::UTF16ToUTF8(match.inline_autocompletion).c_str(),
               expected_inline_autocompletion);
-    EXPECT_TRUE(match.prefix_autocompletion.empty());
     EXPECT_EQ(base::UTF16ToUTF8(match.additional_text).c_str(),
               expected_additional_text);
     EXPECT_EQ(match.allowed_to_be_default_match,
               expected_allowed_to_be_default_match);
   };
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kRichAutocompletion,
-      {
-          {"RichAutocompletionAutocompleteTitles", "true"},
-          {"RichAutocompletionAutocompleteShortcutText", "true"},
-      });
-  RichAutocompletionParams::ClearParamsForTesting();
-
-  // Prefer URL prefix AC when the input prefix matches the URL, title, and
-  // shortcut text.
   {
-    SCOPED_TRACE("URL");
-    test("prefix", "prefix-url.com/suffix", "prefix title suffix",
-         "prefix shortcut text suffix", true,
-         AutocompleteMatch::RichAutocompletionType::kNone, "-url.com/suffix",
-         "", true);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kRichAutocompletion,
+        {
+            {"RichAutocompletionAutocompleteTitlesMinChar", "0"},
+            {"RichAutocompletionAutocompleteShortcutTextMinChar", "0"},
+        });
+    RichAutocompletionParams::ClearParamsForTesting();
+
+    // The combinations that are allowed to be autocompleted, in order of
+    // preference:
+    // - Non-shortcut, prefix,     primary   - autocomplete
+    // - Non-shortcut, prefix,     secondary - no
+    // - Non-shortcut, non-prefix, primary   - no
+    // - Non-shortcut, non-prefix, secondary - no
+    // - Shortcut,     prefix,     primary   - autocomplete
+    // - Shortcut,     prefix,     secondary - autocomplete
+    // - Shortcut,     prefix,     shortcut  - autocomplete
+    // - Shortcut,     non-prefix, primary   - no
+    // - Shortcut,     non-prefix, secondary - no
+
+    {
+      SCOPED_TRACE("non-shortcut, prefix, primary text");
+      // This case shouldn't set `rich_autocompletion_triggered`.
+      test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary", "", true,
+           AutocompleteMatch::RichAutocompletionType::kNone, "_mixd_x_primary",
+           "", true);
+    }
+
+    {
+      SCOPED_TRACE("non-shortcut, all other cases text");
+      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", "", false,
+           AutocompleteMatch::RichAutocompletionType::kNone, "", "", false);
+    }
+
+    {
+      SCOPED_TRACE("shortcut, prefix, primary text");
+      test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary",
+           "x_mixd_x_shortcut", true,
+           AutocompleteMatch::RichAutocompletionType::kNone, "_mixd_x_primary",
+           "", true);
+    }
+
+    {
+      SCOPED_TRACE("shortcut, prefix, secondary text");
+      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary",
+           "x_mixd_x_shortcut", true,
+           AutocompleteMatch::RichAutocompletionType::kTitlePrefix,
+           "_mixd_x_secondary", "y_mixd_x_primary", true);
+    }
+
+    {
+      SCOPED_TRACE("shortcut, prefix, shortcut text");
+      test("x", false, "y_mixd_x_primary", "y_mixd_x_secondary",
+           "x_mixd_x_shortcut", true,
+           AutocompleteMatch::RichAutocompletionType::kShortcutTextPrefix,
+           "_mixd_x_shortcut", "y_mixd_x_primary", true);
+    }
+
+    {
+      SCOPED_TRACE("shortcut, all other cases");
+      test("x", false, "y_mixd_x_primary", "y_mixd_x_secondary",
+           "y_mixd_x_shortcut", false,
+           AutocompleteMatch::RichAutocompletionType::kNone, "", "", false);
+    }
+
+    {
+      SCOPED_TRACE("Autocomplete input with spaces");
+      test("x x", false, "primary", "x x secondary", "x x shortcut", true,
+           AutocompleteMatch::RichAutocompletionType::kTitlePrefix,
+           " secondary", "primary", true);
+    }
   }
 
-  // Prefer title prefix AC when the input prefix matches the title and shortcut
-  // text.
   {
-    SCOPED_TRACE("Title");
-    test("prefix ", "prefix-url.com/suffix", "prefix title suffix",
-         "prefix shortcut text suffix", true,
-         AutocompleteMatch::RichAutocompletionType::kTitlePrefix,
-         "title suffix", "prefix-url.com/suffix", true);
-  }
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kRichAutocompletion,
+        {
+            {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
+            {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"},
+        });
+    RichAutocompletionParams::ClearParamsForTesting();
 
-  // Do shortcut text prefix AC when title and URL don't prefix match, even if
-  // they non-prefix match.
-  {
-    SCOPED_TRACE("Shortcut text");
-    test("short", "url.com/shortcut", "title shortcut", "shortcut text", true,
-         AutocompleteMatch::RichAutocompletionType::kShortcutTextPrefix,
-         "cut text", "url.com/shortcut", true);
-  }
+    {
+      SCOPED_TRACE("Do autocomplete title if input is greater than limits");
+      test("x_mixd", false, "y_mixd_x_primary", "x_mixd_x_secondary",
+           "x_mixd_x_shortcut", true,
+           AutocompleteMatch::RichAutocompletionType::kTitlePrefix,
+           "_x_secondary", "y_mixd_x_primary", true);
+    }
 
-  // Don't shortcut text AC when the shortcut text doesn't prefix match, even if
-  // it does non-prefix match.
-  {
-    SCOPED_TRACE("None");
-    test("suffix", "prefix-url.com/suffix", "prefix title suffix",
-         "prefix shortcut text suffix", false,
-         AutocompleteMatch::RichAutocompletionType::kNone, "", "", false);
+    {
+      SCOPED_TRACE("Do autocomplete shortcut if input is greater than limits");
+      test("x_mixd", false, "y_mixd_x_primary", "y_mixd_x_secondary",
+           "x_mixd_x_shortcut", true,
+           AutocompleteMatch::RichAutocompletionType::kShortcutTextPrefix,
+           "_x_shortcut", "y_mixd_x_primary", true);
+    }
+
+    {
+      SCOPED_TRACE(
+          "Don't autocomplete title or shortcut if input is shorter than "
+          "limits");
+      test("x", false, "y_mixd_x_primary", "y_mixd_x_secondary",
+           "x_mixd_x_shortcut", false,
+           AutocompleteMatch::RichAutocompletionType::kNone, "", "", false);
+    }
   }
 }
 

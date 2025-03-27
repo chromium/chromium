@@ -63,8 +63,10 @@ export class PrivacySandboxDialogConsentStepElement extends
     };
   }
 
+  private expanded_: boolean;
   private hideConsentNoticePage_: boolean;
   private shouldShowAdTopicsContentParity_: boolean;
+  private consentContentV2FirstDescription_: string;
 
   override ready() {
     super.ready();

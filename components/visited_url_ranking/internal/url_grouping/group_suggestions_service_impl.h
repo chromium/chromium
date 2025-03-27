@@ -37,12 +37,16 @@ class GroupSuggestionsServiceImpl : public GroupSuggestionsService,
                         const Scope& scope) override;
   void UnregisterDelegate(GroupSuggestionsDelegate* delegate) override;
 
+  GroupSuggestionsManager* group_suggestions_manager_for_testing() {
+    return group_suggestions_manager_.get();
+  }
+
  private:
   void OnNewSuggestionTabEvent();
 
   const raw_ptr<VisitedURLRankingService> visited_url_ranking_service_;
   const raw_ptr<TabEventsVisitTransformer> tab_events_transformer_;
-  std::unique_ptr<GroupSuggestionsManager> suggestions_state_tracker_;
+  std::unique_ptr<GroupSuggestionsManager> group_suggestions_manager_;
   std::unique_ptr<TabEventTrackerImpl> tab_tracker_;
 
   base::WeakPtrFactory<GroupSuggestionsServiceImpl> weak_ptr_factory_{this};

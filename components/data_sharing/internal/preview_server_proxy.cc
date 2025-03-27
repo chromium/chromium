@@ -149,9 +149,6 @@ std::optional<sync_pb::SharedTab> ParseSharedTab(
   }
 
   auto* title = dict.FindString(kTitleKey);
-  if (!title) {
-    return std::nullopt;
-  }
 
   auto* shared_tab_group_guid = dict.FindString(kSharedTabGroupGuidKey);
   if (!shared_tab_group_guid) {
@@ -164,7 +161,9 @@ std::optional<sync_pb::SharedTab> ParseSharedTab(
   std::optional<sync_pb::SharedTab> shared_tab =
       std::make_optional<sync_pb::SharedTab>();
   shared_tab->set_url(*url);
-  shared_tab->set_title(*title);
+  if (title) {
+    shared_tab->set_title(*title);
+  }
   shared_tab->set_shared_tab_group_guid(*shared_tab_group_guid);
   if (custom_compressed) {
     std::string decoded;

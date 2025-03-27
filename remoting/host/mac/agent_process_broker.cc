@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/ipc_constants.h"
+#include "remoting/host/mac/agent_process_broker_constants.h"
 #include "remoting/host/mojo_caller_security_checker.h"
 #include "remoting/host/mojom/agent_process_broker.mojom.h"
 
@@ -70,6 +71,13 @@ void AgentProcessBroker::AgentProcess::SuspendProcess() {
   remote->SuspendProcess();
   is_active = false;
   HOST_LOG << GetAgentProcessLogString("suspended");
+}
+
+void AgentProcessBroker::AgentProcess::TerminateProcess() {
+  remote.ResetWithReason(
+      kTerminateAgentProcessBrokerReason,
+      "Agent process requested to be terminated by the broker.");
+  HOST_LOG << GetAgentProcessLogString("terminated");
 }
 
 std::string AgentProcessBroker::AgentProcess::GetAgentProcessLogString(
@@ -186,10 +194,8 @@ void AgentProcessBroker::TrimProcessList(
               return p1->is_active && !p2->is_active;
             });
   while (processes.size() > 1) {
-    const AgentProcess* process = processes.back();
-    HOST_LOG << process->GetAgentProcessLogString("closed");
-    // This destroys the remote, which triggers the disconnect callback on the
-    // client and terminates the process.
+    AgentProcess* process = processes.back();
+    process->TerminateProcess();
     // Note: this will invalidate the storage that `processes.back()` references
     // to.
     agent_processes_.erase(process->reference_id);

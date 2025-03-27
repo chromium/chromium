@@ -372,10 +372,13 @@ void WebrtcVideoEncoderGpu::Core::BeginInitialization() {
       kTargetFrameRate,
       media::VideoEncodeAccelerator::Config::StorageType::kShmem,
       media::VideoEncodeAccelerator::Config::ContentType::kDisplay);
-  video_encode_accelerator_ =
+  auto accelerator_or_error =
       media::GpuVideoEncodeAcceleratorFactory::CreateVEA(
           config, this, gpu::GpuPreferences(), CreateGpuWorkarounds(),
           CreateGpuDevice());
+  video_encode_accelerator_ = accelerator_or_error.has_value()
+                                  ? std::move(accelerator_or_error).value()
+                                  : nullptr;
 
   if (!video_encode_accelerator_) {
     LOG(ERROR) << "Could not create VideoEncodeAccelerator";

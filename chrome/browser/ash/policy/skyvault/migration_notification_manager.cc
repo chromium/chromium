@@ -13,9 +13,11 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
@@ -28,6 +30,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
+#include "chrome/common/chrome_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
@@ -44,7 +47,8 @@ namespace {
 std::unique_ptr<message_center::Notification> CreateNotificationPtr(
     const std::u16string title,
     const std::u16string message,
-    base::RepeatingCallback<void(std::optional<int>)> callback) {
+    base::RepeatingCallback<void(std::optional<int>)> callback =
+        base::DoNothing()) {
   message_center::RichNotificationData optional_fields;
   optional_fields.never_timeout = true;
   return ash::CreateSystemNotificationPtr(
@@ -122,11 +126,12 @@ void MigrationNotificationManager::ShowMigrationInfoDialog(
     MigrationDestination destination,
     base::Time migration_start_time,
     base::OnceClosure migration_callback) {
-  if (destination == MigrationDestination::kDelete) {
-    // TODO(399392370): Adapt dialog for the delete case.
+  if (destination == MigrationDestination::kDelete &&
+      !base::FeatureList::IsEnabled(features::kSkyVaultV3)) {
+    LOG(ERROR) << "Destination set to MigrationDestination::kDelete, but the "
+                  "flag is disabled; ignoring.";
     return;
   }
-
   LocalFilesMigrationDialog::Show(destination, migration_start_time,
                                   std::move(migration_callback));
 }
@@ -146,8 +151,7 @@ void MigrationNotificationManager::ShowMigrationProgressNotification(
       provider_str,
       /*offset=*/nullptr);
 
-  auto notification = CreateNotificationPtr(title, message,
-                                            /*callback=*/base::DoNothing());
+  auto notification = CreateNotificationPtr(title, message);
 
   NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
@@ -181,6 +185,18 @@ void MigrationNotificationManager::ShowMigrationCompletedNotification(
       base::BindRepeating(&HandleCompletedNotificationClick, profile(),
                           destination_path));
   notification->set_buttons({message_center::ButtonInfo(button)});
+
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
+      NotificationHandler::Type::TRANSIENT, *notification,
+      /*metadata=*/nullptr);
+}
+
+void MigrationNotificationManager::ShowDeletionCompletedNotification() {
+  std::u16string title =
+      l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_DELETION_COMPLETED_TITLE);
+  std::u16string message =
+      l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_DELETION_COMPLETED_MESSAGE);
+  auto notification = CreateNotificationPtr(title, message);
 
   NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, *notification,

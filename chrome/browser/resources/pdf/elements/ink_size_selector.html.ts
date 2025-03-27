@@ -11,9 +11,9 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {InkSizeSelectorElement} from './ink_size_selector.js';
 
 export function getHtml(this: InkSizeSelectorElement) {
-  return html`
+  return html`<!--_html_template_start_-->
     <cr-radio-group selectable-elements="selectable-icon-button"
-        .selected="${this.currentSizeString_()}"
+        .selected="${this.currentSizeString_()}" aria-label="$i18n{ink2Size}"
         @selected-changed="${this.onSelectedChanged_}">
       ${this.getCurrentBrushSizes_().map(item => html`
         <selectable-icon-button icon="pdf:${item.icon}"
@@ -21,5 +21,5 @@ export function getHtml(this: InkSizeSelectorElement) {
         </selectable-icon-button>
       `)}
     </cr-radio-group>
-  `;
+  <!--_html_template_end_-->`;
 }

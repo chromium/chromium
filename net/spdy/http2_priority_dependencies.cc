@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/spdy/http2_priority_dependencies.h"
+
+#include <array>
+#include <list>
+#include <map>
+#include <utility>
+#include <vector>
 
 #include "base/not_fatal_until.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 
 namespace net {
 

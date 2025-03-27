@@ -2556,6 +2556,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2751454300227269244">Mund nach rechts bewegen</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> möchte die ID‑Nummer deines Sicherheitsschlüssels wissen. Die Website weiß dann genau, welchen Sicherheitsschlüssel du verwendest.</translation>
 <translation id="275213133112113418">Deine Karte wurde gespeichert</translation>
+<translation id="2752805177271551234">Eingabeverlauf verwenden</translation>
 <translation id="2754226775788136540">Suche nach für <ph name="PRIMARY_EMAIL" /> gespeicherte Geräte mit Unterstützung der Funktion „Schnelles Pairing“</translation>
 <translation id="2754825024506485820">Im Google Play Store findest du alle Apps, die du brauchst – so kannst du deine Produktivität steigern und dich unterhalten lassen. Du kannst Apps jederzeit installieren.</translation>
 <translation id="2755349111255270002">Dieses <ph name="DEVICE_TYPE" /> zurücksetzen</translation>
@@ -2588,7 +2589,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2771816809568414714">Käse</translation>
 <translation id="2772936498786524345">Ninja</translation>
 <translation id="2773288106548584039">Unterstützung älterer Browser</translation>
-<translation id="2773621783913034737">Tabs deaktivieren</translation>
 <translation id="2774876860084746535">Intellektuell</translation>
 <translation id="2775047284666165174">„<ph name="LOCAL_FOLDER" />“ ist nur auf diesem Gerät gespeichert. Wenn du diesen Ordner in den Ordner „<ph name="LOCAL_FOLDER" />“ verschiebst, ist er auf deinen anderen Geräten nicht mehr verfügbar.</translation>
 <translation id="2775104091073479743">Fingerabdrücke bearbeiten</translation>
@@ -4021,6 +4021,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3798632811625902122">Das Bluetooth-Gerät „<ph name="DEVICE" />“ bittet um Erlaubnis für Kopplung.</translation>
 <translation id="3798670284305777884">Lautsprecher (intern)</translation>
 <translation id="3799128412641261490">Einstellungen für Schalterzugriff</translation>
+<translation id="3800764353337460026">Symbolstil</translation>
 <translation id="3800828618615365228">Google Chrome und Chrome OS – Zusatzbedingungen</translation>
 <translation id="3800898876950197674">Gib dein Passwort ein, um diese Erweiterung zuzulassen.</translation>
 <translation id="3801449494961771207">Standardstimme für die Sprachausgabe</translation>
@@ -5328,6 +5329,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4735506354605317060">Cursor einkreisen</translation>
 <translation id="4735793370946506039">Weitere Informationen zu „Erweitertes Safe Browsing“.</translation>
 <translation id="4735803855089279419">Das System konnte die Gerätekennungen für dieses Gerät nicht ermitteln.</translation>
+<translation id="4735819417216076266">Eingabestil für Leerzeichen</translation>
 <translation id="4735846817388402006">Klicken, um den Zugriff von „<ph name="EXTENSIONS_REQUESTING_ACCESS" />“ auf <ph name="ORIGIN" /> zu erlauben</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="473936925429402449">Ausgewählt, zusätzlicher Inhalt <ph name="CURRENT_ELEMENT" /> von <ph name="TOTAL_ELEMENTS" /></translation>
@@ -6589,7 +6591,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5642508497713047">CRL-Signaturgeber</translation>
 <translation id="5643191124441701136">Der Sicherheitscode befindet sich auf der Vorderseite deiner Karte</translation>
 <translation id="5643321261065707929">Kostenpflichtiges Netzwerk</translation>
-<translation id="5643717184207603910">Schnelle Leistung beibehalten</translation>
 <translation id="5646376287012673985">Standort</translation>
 <translation id="5646558797914161501">Geschäftsmann</translation>
 <translation id="5648021990716966815">Mikrofonanschluss</translation>
@@ -6694,7 +6695,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5734362860645681824">Kommunikation</translation>
 <translation id="5734697361979786483">Dateifreigabe hinzufügen</translation>
 <translation id="573520097779121706">Verwende die Tasten „7“, „8“, „9“, „u“, „o“, „j“, „k“ und „l“, um den Cursor zu bewegen</translation>
-<translation id="5735513236153491131">Leistung steigern</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Diese Daten oder dein Gerät entsprechen nicht allen Sicherheitsrichtlinien deiner Organisation. Frage deinen Administrator, was korrigiert werden muss.}=1{Diese Datei oder dein Gerät entspricht nicht allen Sicherheitsrichtlinien deiner Organisation. Frage deinen Administrator, was korrigiert werden muss.}other{Diese Dateien entsprechen nicht allen Sicherheitsrichtlinien deiner Organisation. Frage deinen Administrator, was korrigiert werden muss.}}</translation>
 <translation id="5738093759615225354">Du benötigst diesen Passkey, um dich auf deinem Computer anzumelden</translation>
 <translation id="5739017626473506901">Melde dich an, damit <ph name="USER_NAME" /> ein Konto einer Bildungseinrichtung hinzufügen kann</translation>
@@ -7899,7 +7899,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6611972847767394631">Hier findest du deine Tabs</translation>
 <translation id="661266467055912436">Verbessert die Sicherheit für dich und alle im Internet.</translation>
 <translation id="6613267708691765962">Nach Malware wird gesucht…</translation>
-<translation id="6614172284067813496">Seite zur Leseliste hinzugefügt</translation>
 <translation id="6615455863669487791">Zeigen</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Die Website kann deinen Standort verfolgen</translation>
@@ -7919,6 +7918,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6628328486509726751">Hochgeladen am <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Erhöhte Sicherheit</translation>
+<translation id="6630452975878488444">Auswahltastaturkürzel</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> fordert ständigen Zugriff auf ein Zertifikat an, um sich in deinem Namen zu authentifizieren.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{Gruppe verlassen}other{Gruppen verlassen}}</translation>
 <translation id="6635362468090274700">Andere Personen können nur Daten mit dir teilen, wenn du dich sichtbar machst.<ph name="BR" /><ph name="BR" />Wenn du dich vorübergehend sichtbar machen möchtest, öffne den Statusbereich und schalte „Nearby-Sichtbarkeit“ ein.</translation>
@@ -8609,7 +8609,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7114054701490058191">Die Passwörter stimmen nicht überein</translation>
 <translation id="7114648273807173152">Wenn du Smart Lock für die Anmeldung in deinem Google-Konto verwenden möchtest, gehe zu "Einstellungen" &gt; "Verbundene Geräte" &gt; "Mein Smartphone" &gt; "Smart Lock".</translation>
 <translation id="7115361495406486998">Keine erreichbaren Kontakte</translation>
-<translation id="7115731767122970828">Leistung steigern</translation>
 <translation id="7116554090938189816">Das SSL-Zertifikat für den Drucker ist abgelaufen. Starte den Drucker neu und versuche es dann noch einmal.</translation>
 <translation id="7117228822971127758">Bitte versuche es später noch einmal</translation>
 <translation id="7118268675952955085">Screenshot</translation>
@@ -8778,7 +8777,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7243092385765551741">Passkey löschen?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (höchste Qualität)</translation>
 <translation id="7246230585855757313">Stecke den Sicherheitsschlüssel wieder ein und versuche es noch einmal</translation>
-<translation id="7248802599439396696">Tabs deaktivieren</translation>
 <translation id="7249197363678284330">Du kannst diese Einstellung in der Adressleiste ändern.</translation>
 <translation id="7249764475759804559">Diese App beim Öffnen von Dateien als Option anbieten</translation>
 <translation id="7250616558727237648">Das Gerät, mit dem du Dateien teilen möchtest, hat nicht reagiert. Versuche es noch einmal.</translation>
@@ -9091,6 +9089,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7465777686629334728">Verwaltete Entwicklungsumgebung (<ph name="SPECIFIC_NAME" />) entfernen</translation>
 <translation id="7465778193084373987">URL zum Zurückrufen von Netscape-Zertifikaten</translation>
 <translation id="7466431077154602932">Kompaktansicht</translation>
+<translation id="7466861475611330213">Satzzeichenstil</translation>
 <translation id="746861123368584540">Erweiterung geladen</translation>
 <translation id="7469612367552312334">Ein • Du kannst Alltagssprache verwenden, um in deinem Browserverlauf nach Websites zu suchen, die du besucht hast</translation>
 <translation id="7470131554696493512">Zugriff auf den Arbeitsspeicher (RAM) und dessen Freigabe durch Thunderbolt- oder USB4-Zubehör blockieren</translation>
@@ -9332,6 +9331,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7646772052135772216">Passwortsynchronisierung funktioniert nicht</translation>
 <translation id="7647403192093989392">Keine neuen Aktivitäten</translation>
 <translation id="7648023614017258011">Chrome prüft das Installationspaket</translation>
+<translation id="7648048654005891115">Keymap-Stil</translation>
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7650141368285545431">Passkey eines anderen Geräts verwenden</translation>
 <translation id="7650178491875594325">Lokale Daten wiederherstellen</translation>
@@ -10545,7 +10545,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8466052016039127321">Vorherige Sitzung kann nicht fortgesetzt werden</translation>
 <translation id="8467326454809944210">Andere Sprache auswählen</translation>
 <translation id="8468087214092422866">Suchen nach Bluetooth-Geräten nicht erlauben</translation>
-<translation id="8469863130477774813">Leistungssteigerung möglich</translation>
 <translation id="8470513973197838199">Gespeicherte Passwörter für <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Websites verwenden normalerweise USB-Geräte für Funktionen wie das Drucken eines Dokuments oder das Speichern auf einem Speichergerät</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{Alle Passwörter sind eindeutig}=1{{COUNT} mehrfach verwendetes Passwort}other{{COUNT} mehrfach verwendete Passwörter}}</translation>
@@ -11082,6 +11081,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8846163936679269230">eSIM-Profile zurücksetzen</translation>
 <translation id="8846239054091760429">Mono-Audio, Starten, automatische Untertitel und weitere Einstellungen</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8848709220963126773">Moduswechsel mit Umschalttaste</translation>
 <translation id="8849001918648564819">Verborgen</translation>
 <translation id="8849219423513870962">Entfernen des eSIM-Profils „<ph name="PROFILE_NAME" />“ abbrechen</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> von <ph name="CHECKING" /></translation>

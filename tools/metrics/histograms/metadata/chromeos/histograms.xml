@@ -1113,21 +1113,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
-<histogram
-    name="ChromeOS.CertProvisioning.CsrSignTime{CertProvisioningProtocolVersion}.{CertProvisioningScope}"
-    units="ms" expires_after="2025-04-01">
-  <owner>miersh@google.com</owner>
-  <owner>gschwarz@google.com</owner>
-  <summary>
-    The amount of time it took the {CertProvisioningProtocolVersion} certificate
-    provisioning worker with scope {CertProvisioningScope} to sign a CSR.
-    Emitted after the sign is complete.
-  </summary>
-  <token key="CertProvisioningScope" variants="AllCertProvisioningScopes"/>
-  <token key="CertProvisioningProtocolVersion"
-      variants="AllCertProvisioningProtocolVersions"/>
-</histogram>
-
 <histogram name="ChromeOS.CertProvisioning.DmStatus.Dynamic"
     enum="EnterpriseDeviceManagementStatus" expires_after="2026-02-01">
   <owner>miersh@google.com</owner>
@@ -1154,21 +1139,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram
-    name="ChromeOS.CertProvisioning.KeypairGenerationTime{CertProvisioningProtocolVersion}.{CertProvisioningScope}"
-    units="ms" expires_after="2025-04-01">
-  <owner>miersh@google.com</owner>
-  <owner>gschwarz@google.com</owner>
-  <summary>
-    The amount of time it took the {CertProvisioningProtocolVersion} certificate
-    provisioning worker with scope {CertProvisioningScope} to generate one key
-    pair. Emitted after the generation is complete.
-  </summary>
-  <token key="CertProvisioningScope" variants="AllCertProvisioningScopes"/>
-  <token key="CertProvisioningProtocolVersion"
-      variants="AllCertProvisioningProtocolVersions"/>
-</histogram>
-
-<histogram
     name="ChromeOS.CertProvisioning.Result{CertProvisioningProtocolVersion}.{CertProvisioningScope}"
     enum="CertProvisioningWorkerState" expires_after="2025-08-10">
   <owner>miersh@google.com</owner>
@@ -1178,21 +1148,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     of times the {CertProvisioningProtocolVersion} certificate provisioning
     worker with scope {CertProvisioningScope} finished on every state. For other
     states: number of times the worker failed on every state.
-  </summary>
-  <token key="CertProvisioningScope" variants="AllCertProvisioningScopes"/>
-  <token key="CertProvisioningProtocolVersion"
-      variants="AllCertProvisioningProtocolVersions"/>
-</histogram>
-
-<histogram
-    name="ChromeOS.CertProvisioning.VaTime{CertProvisioningProtocolVersion}.{CertProvisioningScope}"
-    units="ms" expires_after="2025-04-01">
-  <owner>miersh@google.com</owner>
-  <owner>gschwarz@google.com</owner>
-  <summary>
-    The amount of time it took the {CertProvisioningProtocolVersion} certificate
-    provisioning worker with scope {CertProvisioningScope} to build one Verified
-    Access response. Emitted after the response is built.
   </summary>
   <token key="CertProvisioningScope" variants="AllCertProvisioningScopes"/>
   <token key="CertProvisioningProtocolVersion"

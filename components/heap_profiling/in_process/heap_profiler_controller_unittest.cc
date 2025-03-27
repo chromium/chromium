@@ -379,6 +379,8 @@ class ProfilerSetUpMixin {
 constexpr char kTestChildTypeSwitch[] = "heap-profiler-test-child-type";
 constexpr char kTestNumAllocationsSwitch[] =
     "heap-profiler-test-num-allocations";
+constexpr char kTestExpectChildProfileSwitch[] =
+    "heap-profiler-expect-child-profile";
 
 // Runs the heap profiler in a multiprocess test child. This is used instead of
 // HeapProfilerControllerTest::CreateHeapProfiler() in tests that create real
@@ -399,6 +401,8 @@ class MultiprocessTestChild final : public mojom::TestConnector,
   MultiprocessTestChild& operator=(const MultiprocessTestChild&) = delete;
 
   void RunTestInChild() {
+    base::HistogramTester histogram_tester;
+
     // Get the process type and number of allocations to simulate.
     const base::CommandLine* command_line =
         base::CommandLine::ForCurrentProcess();
@@ -407,6 +411,8 @@ class MultiprocessTestChild final : public mojom::TestConnector,
     ASSERT_TRUE(base::StringToInt(
         command_line->GetSwitchValueASCII(kTestChildTypeSwitch),
         &process_type));
+    const ProfilerProcessType profiler_process_type =
+        static_cast<ProfilerProcessType>(process_type);
     int num_allocations = 0;
     ASSERT_TRUE(base::StringToInt(
         command_line->GetSwitchValueASCII(kTestNumAllocationsSwitch),
@@ -429,9 +435,8 @@ class MultiprocessTestChild final : public mojom::TestConnector,
 
     // Start the heap profiler and wait for TakeSnapshot() messages from the
     // parent.
-    HeapProfilerController controller(
-        version_info::Channel::STABLE,
-        static_cast<ProfilerProcessType>(process_type));
+    HeapProfilerController controller(version_info::Channel::STABLE,
+                                      profiler_process_type);
     controller.SuppressRandomnessForTesting();
     ASSERT_TRUE(controller.IsEnabled());
     controller.StartIfEnabled();
@@ -447,6 +452,37 @@ class MultiprocessTestChild final : public mojom::TestConnector,
 
     // Loop until the TestConnector::Disconnect() message.
     task_env().RunUntilQuit();
+
+    // Profiler stats should be logged whether or not a snapshot was taken, as
+    // long as the child is profiled at all.
+    size_t expected_histogram_count =
+        command_line->HasSwitch(kTestExpectChildProfileSwitch) ? 1 : 0;
+    switch (profiler_process_type) {
+      case ProfilerProcessType::kGpu:
+        histogram_tester.ExpectTotalCount(
+            "HeapProfiling.InProcess.SamplesPerSnapshot.GPU",
+            expected_histogram_count);
+        break;
+      case ProfilerProcessType::kNetworkService:
+        histogram_tester.ExpectTotalCount(
+            "HeapProfiling.InProcess.SamplesPerSnapshot.Network",
+            expected_histogram_count);
+        break;
+      case ProfilerProcessType::kRenderer:
+        histogram_tester.ExpectTotalCount(
+            "HeapProfiling.InProcess.SamplesPerSnapshot.Renderer",
+            expected_histogram_count);
+        break;
+      case ProfilerProcessType::kUtility:
+        histogram_tester.ExpectTotalCount(
+            "HeapProfiling.InProcess.SamplesPerSnapshot.Utility",
+            expected_histogram_count);
+        break;
+      default:
+        FAIL() << "Unexpected process type " << process_type;
+    }
+    histogram_tester.ExpectTotalCount(
+        "HeapProfiling.InProcess.SamplesPerSnapshot", expected_histogram_count);
   }
 
   // mojom::TestConnector:
@@ -568,6 +604,9 @@ class MultiprocessTestParent {
         base::NumberToString(static_cast<int>(process_type)));
     child_command_line.AppendSwitchASCII(kTestNumAllocationsSwitch,
                                          base::NumberToString(num_allocations));
+    if (should_profile) {
+      child_command_line.AppendSwitch(kTestExpectChildProfileSwitch);
+    }
 
     // Attach a mojo channel to the child.
     mojo::PlatformChannel channel;
@@ -622,6 +661,7 @@ class MultiprocessTestParent {
 class MockSnapshotController : public mojom::SnapshotController {
  public:
   MOCK_METHOD(void, TakeSnapshot, (uint32_t, uint32_t), (override));
+  MOCK_METHOD(void, LogMetricsWithoutSnapshot, (), (override));
 };
 
 // Configurations of the HeapProfiler* features to test.
@@ -1344,7 +1384,7 @@ MULTIPROCESS_TEST_MAIN(HeapProfilerControllerChildMain) {
   MultiprocessTestChild child(kMultipleChildConfigs[0].GetEnabledFeatures(),
                               kMultipleChildConfigs[0].GetDisabledFeatures());
   child.RunTestInChild();
-  return 0;
+  return ::testing::Test::HasFailure();
 }
 
 TEST_P(HeapProfilerControllerMultipleChildTest, EndToEnd) {

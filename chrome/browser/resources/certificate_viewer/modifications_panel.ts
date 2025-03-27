@@ -59,14 +59,14 @@ export class ModificationsPanelElement extends ModificationsPanelElementBase {
     };
   }
 
-  constraints: string[] = [];
-  trustStateValue: string = '0';
-  isEditable: boolean = false;
+  accessor constraints: string[] = [];
+  accessor trustStateValue: string = '0';
+  accessor isEditable: boolean = false;
 
-  protected editControlsEnabled: boolean = true;
-  protected addConstraintErrorMessage: string = '';
-  protected deleteConstraintErrorMessage: string = '';
-  protected trustStateErrorMessage: string = '';
+  protected accessor editControlsEnabled: boolean = true;
+  protected accessor addConstraintErrorMessage: string = '';
+  protected accessor deleteConstraintErrorMessage: string = '';
+  protected accessor trustStateErrorMessage: string = '';
 
   // Clear all error messages in this element.
   private clearErrorMessages() {

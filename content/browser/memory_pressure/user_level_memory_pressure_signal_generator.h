@@ -44,14 +44,12 @@ class UserLevelMemoryPressureSignalGenerator {
   void StartPeriodicTimer(base::TimeDelta interval);
   void StartReportingTimer();
 
-  static std::pair<uint64_t, uint64_t>
-  GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
+  static uint64_t GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
 
   static void NotifyMemoryPressure();
 
   static void ReportBeforeAfterMetrics(
       uint64_t total_pmf_visible_or_higher_priority_renderers,
-      uint64_t total_pmf,
       const char* suffix_name);
 
   static std::optional<uint64_t> GetPrivateFootprint(

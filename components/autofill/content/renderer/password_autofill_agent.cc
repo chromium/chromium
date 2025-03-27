@@ -1635,7 +1635,7 @@ std::optional<FormData> PasswordAutofillAgent::GetFormDataFromWebForm(
     const SynchronousFormCache& form_cache) {
   return CreateFormDataFromWebForm(
       web_form, field_data_manager(), &username_detector_cache_,
-      &button_titles_cache_,
+      autofill_agent_->button_titles_cache(),
       autofill_agent_->GetCallTimerState(
           CallTimerState::CallSite::kGetFormDataFromWebForm),
       form_cache);
@@ -1658,7 +1658,7 @@ PasswordAutofillAgent::GetFormDataFromUnownedInputElements(
       *web_frame, field_data_manager(), &username_detector_cache_,
       autofill_agent_->GetCallTimerState(
           CallTimerState::CallSite::kGetFormDataFromUnownedInputElements),
-      form_cache);
+      autofill_agent_->button_titles_cache(), form_cache);
 }
 
 void PasswordAutofillAgent::InformAboutFormClearing(
@@ -1820,6 +1820,7 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
               user_input, field_data_manager(),
               autofill_agent_->GetCallTimerState(
                   CallTimerState::CallSite::kShowSuggestionPopup),
+              autofill_agent_->button_titles_cache(),
               /*extract_options=*/{}, form_cache)) {
     form = std::move(form_and_field->first);
     field = *form_and_field->second;
@@ -2082,8 +2083,7 @@ void PasswordAutofillAgent::OnFormSubmitted(FormData submitted_form) {
   // TODO(crbug.com/40947729): Replace with `GetFormDataFromWebForm` with
   // `SynchronousFormCache` when `AutofillOptimizeFormExtraction` launches.
   ProcessFormDataAfterCreation(submitted_form, form_element,
-                               &username_detector_cache_,
-                               &button_titles_cache_);
+                               &username_detector_cache_);
 
   if (!HasTextInputs(submitted_form)) {
     return;
@@ -2337,8 +2337,8 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutClearedForm(
   if (std::optional<FormData> form_data = form_util::ExtractFormData(
           document, cleared_form, field_data_manager(),
           autofill_agent_->GetCallTimerState(
-              CallTimerState::CallSite::
-                  kNotifyPasswordManagerAboutClearedForm))) {
+              CallTimerState::CallSite::kNotifyPasswordManagerAboutClearedForm),
+          autofill_agent_->button_titles_cache())) {
     GetPasswordManagerDriver().PasswordFormCleared(*form_data);
   }
 }

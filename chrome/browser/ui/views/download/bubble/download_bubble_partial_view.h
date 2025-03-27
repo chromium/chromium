@@ -44,7 +44,6 @@ class DownloadBubblePartialView : public DownloadBubblePrimaryView,
 
   // views::FocusChangeListener:
   void OnWillChangeFocus(views::View* before, views::View* now) override;
-  void OnDidChangeFocus(views::View* before, views::View* now) override {}
 
  private:
   // Run the |on_interacted_closure_|.

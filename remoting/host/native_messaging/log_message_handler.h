@@ -45,17 +45,17 @@ class LogMessageHandler {
   // TODO(yuweih): Reimplement this class using using a message queue which is
   // protected by |g_log_message_handler_lock|.
   static bool OnLogMessage(int severity,
-                           std::string_view file,
+                           const char* file,
                            int line,
                            size_t message_start,
                            const std::string& str);
   void PostLogMessageToCorrectThread(int severity,
-                                     std::string_view file,
+                                     const char* file,
                                      int line,
                                      size_t message_start,
                                      const std::string& str);
   void SendLogMessageToClient(int severity,
-                              std::string_view file,
+                              const char* file,
                               int line,
                               size_t message_start,
                               const std::string& str);

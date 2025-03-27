@@ -524,23 +524,6 @@ void ExtensionBrowserTest::ReloadExtension(
   observer_->WaitForExtensionViewsToLoad();
 }
 
-void ExtensionBrowserTest::UnloadExtension(
-    const extensions::ExtensionId& extension_id) {
-  extension_service()->UnloadExtension(extension_id,
-                                       UnloadedExtensionReason::DISABLE);
-}
-
-void ExtensionBrowserTest::UninstallExtension(
-    const extensions::ExtensionId& extension_id) {
-  extension_service()->UninstallExtension(
-      extension_id, UNINSTALL_REASON_FOR_TESTING, nullptr);
-}
-
-void ExtensionBrowserTest::EnableExtension(
-    const extensions::ExtensionId& extension_id) {
-  extension_service()->EnableExtension(extension_id);
-}
-
 bool ExtensionBrowserTest::WaitForPageActionVisibilityChangeTo(int count) {
   return observer_->WaitForPageActionVisibilityChangeTo(count);
 }

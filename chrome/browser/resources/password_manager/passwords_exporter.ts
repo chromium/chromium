@@ -45,7 +45,7 @@ export class PasswordsExporterElement extends PasswordsExporterElementBase {
       },
 
       /** Whether password export error dialog is shown. */
-      showExportErrorDialog_: {
+      showPasswordsExportErrorDialog_: {
         type: Boolean,
         value: false,
       },

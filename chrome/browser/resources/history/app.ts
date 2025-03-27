@@ -315,6 +315,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private selectedTab_: number;
   private lastRecordedSelectedPageHistogramValue_: HistoryPageViewHistogram =
       HistoryPageViewHistogram.END;
+  private showTabs_: boolean;
   private showHistoryClusters_: boolean;
   private tabsIcons_: string[];
   private tabsNames_: string[];

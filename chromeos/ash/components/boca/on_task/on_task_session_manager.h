@@ -111,7 +111,7 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
   // involves disabling relevant extensions and pinning the window if
   // `lock_window` is true, or re-enabling extensions and unpinning the window
   // otherwise.
-  void LockOrUnlockWindow(bool lock_window, base::TimeDelta countdown);
+  void LockOrUnlockWindow(bool lock_window);
 
   // Show enter locked mode notification and lock the Boca SWA window.
   void EnterLockedMode();
@@ -157,6 +157,8 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
   const std::unique_ptr<SystemWebAppLaunchHelper> system_web_app_launch_helper_;
 
   std::unique_ptr<OnTaskNotificationsManager> notifications_manager_;
+
+  base::TimeDelta notification_countdown_duration_;
 
   base::WeakPtrFactory<OnTaskSessionManager> weak_ptr_factory_{this};
 };

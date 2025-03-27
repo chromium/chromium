@@ -1405,6 +1405,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.SearchEngineChangedSnackbar.SettingsTapped"
+    enum="Boolean" expires_after="2025-09-01">
+  <owner>triploblastic@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    When users change search engine in os settings and come back to Chrome a
+    snackbar is shown with a button to take them to the chrome settings page.
+    This histogram is recorded when users click on that button.
+
+    The snackbar is only shown if Chrome was in the background during the search
+    engine update in os settings and then Chrome is foregrounded again. Because
+    we depend on broadcast events to show the snackbar. On cold starts we simply
+    import the settings from os on Chrome update and don't show the snackbar.
+
+    Android only.
+  </summary>
+</histogram>
+
 <histogram name="Search.SearchEngineCountryDelegate.Connection{Result}Time"
     units="ms" expires_after="2025-09-07">
   <owner>triploblastic@chromium.org</owner>

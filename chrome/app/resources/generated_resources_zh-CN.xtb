@@ -2553,6 +2553,7 @@
 <translation id="2751454300227269244">将嘴向右移</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> 想知道您的安全密钥的 ID 编号。此网站将会确切地知道您正在使用哪个安全密钥。</translation>
 <translation id="275213133112113418">您的卡已保存</translation>
+<translation id="2752805177271551234">使用输入历史记录功能</translation>
 <translation id="2754226775788136540">正在查找已保存到 <ph name="PRIMARY_EMAIL" /> 的快速配对设备</translation>
 <translation id="2754825024506485820">查找您所需的应用 - 从办公类应用到娱乐类应用，Google Play 商店应有尽有。您随时可安装应用。</translation>
 <translation id="2755349111255270002">重置此 <ph name="DEVICE_TYPE" /></translation>
@@ -2585,7 +2586,6 @@
 <translation id="2771816809568414714">奶酪</translation>
 <translation id="2772936498786524345">忍者</translation>
 <translation id="2773288106548584039">旧版浏览器支持</translation>
-<translation id="2773621783913034737">将标签页设为非活跃状态</translation>
 <translation id="2774876860084746535">理智</translation>
 <translation id="2775047284666165174">“<ph name="LOCAL_FOLDER" />”仅会保存到此设备上。如果您将此文件夹移至“<ph name="LOCAL_FOLDER" />”，您将无法再在其他设备上获取它。</translation>
 <translation id="2775104091073479743">修改指纹</translation>
@@ -4018,6 +4018,7 @@
 <translation id="3798632811625902122">蓝牙设备“<ph name="DEVICE" />”希望获得配对许可。</translation>
 <translation id="3798670284305777884">扬声器（内部）</translation>
 <translation id="3799128412641261490">开关控制设置</translation>
+<translation id="3800764353337460026">符号样式</translation>
 <translation id="3800828618615365228">Google Chrome 和 Chrome 操作系统附加条款</translation>
 <translation id="3800898876950197674">要允许使用此扩展程序，请输入密码。</translation>
 <translation id="3801449494961771207">系统默认文字转语音声音</translation>
@@ -5324,6 +5325,7 @@
 <translation id="4735506354605317060">圆圈指针</translation>
 <translation id="4735793370946506039">详细了解增强型安全浏览。</translation>
 <translation id="4735803855089279419">系统未能识别此设备的设备标识符。</translation>
+<translation id="4735819417216076266">空格输入样式</translation>
 <translation id="4735846817388402006">点击此按钮即可允许“<ph name="EXTENSIONS_REQUESTING_ACCESS" />”访问 <ph name="ORIGIN" /></translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="473936925429402449">已选择，第 <ph name="CURRENT_ELEMENT" /> 项附加内容，共 <ph name="TOTAL_ELEMENTS" /> 项</translation>
@@ -6585,7 +6587,6 @@
 <translation id="5642508497713047">CRL 签名人</translation>
 <translation id="5643191124441701136">您的安全码位于银行卡的正面</translation>
 <translation id="5643321261065707929">按流量计费的网络</translation>
-<translation id="5643717184207603910">保持快速性能</translation>
 <translation id="5646376287012673985">位置信息</translation>
 <translation id="5646558797914161501">商务人士</translation>
 <translation id="5648021990716966815">麦克风耳机插孔</translation>
@@ -6690,7 +6691,6 @@
 <translation id="5734362860645681824">通讯</translation>
 <translation id="5734697361979786483">添加文件共享</translation>
 <translation id="573520097779121706">使用 7、8、9、u、o、j、k、l 键可移动光标</translation>
-<translation id="5735513236153491131">立即提升</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{这些数据或您的设备不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}=1{此文件或您的设备不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}other{这些文件不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}}</translation>
 <translation id="5738093759615225354">您需要使用此通行密钥才能登录计算机</translation>
 <translation id="5739017626473506901">请登录以帮助<ph name="USER_NAME" />添加学校账号</translation>
@@ -7895,7 +7895,6 @@
 <translation id="6611972847767394631">您可在此处找到自己的标签页</translation>
 <translation id="661266467055912436">为您和网络上的所有人提供更好的安全保障。</translation>
 <translation id="6613267708691765962">正在扫描以检测是否有恶意软件…</translation>
-<translation id="6614172284067813496">页面已添加到阅读清单</translation>
 <translation id="6615455863669487791">演示一下</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">该网站可能会跟踪您的位置</translation>
@@ -7915,6 +7914,7 @@
 <translation id="6628328486509726751">上传时间：<ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6630117778953264026">安全再升级</translation>
+<translation id="6630452975878488444">选择快捷方式</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" />希望获得某个证书的永久访问权限，以便代表您进行自我身份验证。</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{退出分组}other{退出分组}}</translation>
 <translation id="6635362468090274700">任何人都无法与您分享内容，除非您将自己设为可见。<ph name="BR" /><ph name="BR" />若要将自己设为暂时可见，请打开状态区，然后开启“附近分享”的高可见度模式。</translation>
@@ -8605,7 +8605,6 @@
 <translation id="7114054701490058191">密码不符</translation>
 <translation id="7114648273807173152">要使用 Smart Lock 登录您的 Google 账号，请依次转到“设置”&gt;“已连接的设备”&gt;“您的手机”&gt;“Smart Lock”。</translation>
 <translation id="7115361495406486998">没有可设为分享对象的联系人</translation>
-<translation id="7115731767122970828">立即提升</translation>
 <translation id="7116554090938189816">打印机 SSL 证书已过期。请重启打印机，然后重试。</translation>
 <translation id="7117228822971127758">请稍后重试</translation>
 <translation id="7118268675952955085">屏幕截图</translation>
@@ -8774,7 +8773,6 @@
 <translation id="7243092385765551741">要删除通行密钥吗？</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" />（最佳）</translation>
 <translation id="7246230585855757313">请重新插入您的安全密钥，然后再试一次</translation>
-<translation id="7248802599439396696">将标签页设为非活跃状态</translation>
 <translation id="7249197363678284330">在地址栏中更改此设置。</translation>
 <translation id="7249764475759804559">将此应用添加为文件打开方式选项</translation>
 <translation id="7250616558727237648">目标设备未响应您的文件分享请求。请重试。</translation>
@@ -9087,6 +9085,7 @@
 <translation id="7465777686629334728">移除代管式开发环境 (<ph name="SPECIFIC_NAME" />)</translation>
 <translation id="7465778193084373987">Netscape 证书吊销网址</translation>
 <translation id="7466431077154602932">精简视图</translation>
+<translation id="7466861475611330213">标点样式</translation>
 <translation id="746861123368584540">扩展程序已加载完毕</translation>
 <translation id="7469612367552312334">已开启 • 使用日常用语搜索您的浏览记录，并查找您访问过的网站</translation>
 <translation id="7470131554696493512">禁止 Thunderbolt 或 USB4 配件访问和共享内存 (RAM)</translation>
@@ -9328,6 +9327,7 @@
 <translation id="7646772052135772216">无法同步密码</translation>
 <translation id="7647403192093989392">近期无活动</translation>
 <translation id="7648023614017258011">Chrome 正在验证安装包</translation>
+<translation id="7648048654005891115">键盘映射样式</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7650141368285545431">使用另一部设备中的通行密钥</translation>
 <translation id="7650178491875594325">恢复本地数据</translation>
@@ -9784,7 +9784,7 @@
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> 的所有网页</translation>
 <translation id="7950629216186736592">原因：LBS 仅支持 http://、https:// 和 file:// 网址。</translation>
 <translation id="7950814699499457511">已开启 • 此扩展程序尚未发布隐私权规范，例如如何收集和使用数据</translation>
-<translation id="7951265006188088697">如要添加或管理 Google Pay 付款方式，请访问您的 <ph name="BEGIN_LINK" />Google 账号<ph name="END_LINK" /></translation>
+<translation id="7951265006188088697">如要添加或管理 Google Pay 支付方式，请访问您的 <ph name="BEGIN_LINK" />Google 账号<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">停用虚拟卡</translation>
 <translation id="795240231873601803">为工作账号和学校账号使用企业注册</translation>
 <translation id="7952708427581814389">网站可以请求查看您剪贴板中的文字和图片</translation>
@@ -10541,7 +10541,6 @@
 <translation id="8466052016039127321">无法恢复上一个会话</translation>
 <translation id="8467326454809944210">选择另一种语言</translation>
 <translation id="8468087214092422866">不得寻找蓝牙设备</translation>
-<translation id="8469863130477774813">可提升性能</translation>
 <translation id="8470513973197838199">已保存用于登录 <ph name="ORIGIN" /> 的密码</translation>
 <translation id="8471525937465764768">网站通常会连接到 USB 设备以实现某些功能（例如打印文档或保存到存储设备）</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{您的每个密码都互不重复}=1{有 {COUNT} 个重复使用的密码}other{有 {COUNT} 个重复使用的密码}}</translation>
@@ -11078,6 +11077,7 @@
 <translation id="8846163936679269230">重置 eSIM 卡配置文件</translation>
 <translation id="8846239054091760429">单声道音频、启动、实时字幕等</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8848709220963126773">使用 Shift 键进行模式切换</translation>
 <translation id="8849001918648564819">已隐藏</translation>
 <translation id="8849219423513870962">取消移除名为“<ph name="PROFILE_NAME" />”的 eSIM 卡配置文件</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> 个（共 <ph name="CHECKING" /> 个）</translation>

@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/reading_list_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
@@ -983,6 +984,31 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetMetadata(92, "tluk@chromium.org",
                                  "Triggered once when there are more than 8 "
                                  "tabs in the tab strip.")));
+
+  // kIPHTabSearchToolbarButtonFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHTabSearchToolbarButtonFeature,
+          kTabSearchButtonElementId, IDS_TAB_SEARCH_TOOLBAR_BUTTON_PROMO_BODY,
+          IDS_TAB_SEARCH_TOOLBAR_BUTTON_PROMO_ACTION,
+          base::BindRepeating(
+              [](ui::ElementContext context,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* browser =
+                    chrome::FindBrowserWithUiElementContext(context);
+                if (browser) {
+                  PinnedToolbarActionsModel::Get(browser->profile())
+                      ->UpdatePinnedState(kActionTabSearch, false);
+                }
+              }))
+          .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
+          .SetBubbleIcon(kLightbulbOutlineIcon)
+          .SetBubbleTitleText(IDS_TAB_SEARCH_TOOLBAR_BUTTON_PROMO_TITLE)
+          .SetMetadata(136, "emshack@chromium.org",
+                       "Triggered when the tab search button has been moved "
+                       "into the toolbar.")
+          .SetPromoSubtype(
+              FeaturePromoSpecification::PromoSubtype::kActionableAlert)));
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   // kIPHWebUITabStripFeature:

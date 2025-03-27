@@ -17,6 +17,7 @@ import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/gn_logs.gni")
+import("//build/toolchain/rbe.gni")
 import("//build/util/generate_wrapper.gni")
 import("//chrome/enterprise_companion/buildflags.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
@@ -1854,14 +1855,21 @@ if (is_chromeos && enable_js_type_check) {
   }
 }
 
+if (use_remoteexec) {
+  # Different nesting levels technically work, but cache hits are basically zero.
+  assert(
+      rebase_path("//", root_build_dir) == "../../",
+      "In order for remote builds (use_remoteexec=true) to have cache hits, output directories should be nested two directories deep within src (e.g. \"out/Debug\", or \"foo/bar\"). Found: $root_build_dir")
+}
+
+# GN evaluates each .gn file once per toolchain, so restricting to default
+# toolchain will ensure write_file() is called only once.
+assert(current_toolchain == default_toolchain)
+
 # Write debug logs to gn_logs.txt.
 _lines = [
            "Generated during 'gn gen' by //BUILD.gn.",
            "",
          ] + build_gn_logs
-
-# GN evaluates each .gn file once per toolchain, so restricting to default
-# toolchain will ensure write_file() is called only once.
-assert(current_toolchain == default_toolchain)
 
 write_file("$root_build_dir/gn_logs.txt", _lines)

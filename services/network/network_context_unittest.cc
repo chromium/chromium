@@ -11221,10 +11221,6 @@ TEST_F(StorageAccessHeaderNetworkContextTest,
               ElementsAre(Not(Contains(Key(kSecFetchStorageAccess)))));
 
   histogram_tester.ExpectUniqueSample(
-      kStorageAccessStatusHistogram, /*sample=*/
-      net::cookie_util::StorageAccessStatusOutcome::kValueActive,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
       kSecFetchStorageAccessHistogram, /*sample=*/
       net::cookie_util::SecFetchStorageAccessOutcome::
           kOmittedRequestOmitsCredentials,

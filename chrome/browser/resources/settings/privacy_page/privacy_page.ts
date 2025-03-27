@@ -81,14 +81,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       isGuest_: {
         type: Boolean,
         value() {

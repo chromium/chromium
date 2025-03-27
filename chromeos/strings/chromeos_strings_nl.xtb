@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Gebruik de app Contentoverdracht van Google om de gegevens van je schoolaccount over te zetten naar je persoonlijke account voordat je de toegang kwijtraakt.</translation>
 <translation id="1026212596705997935">Sneltoets wordt gebruikt voor <ph name="CONFLICT_ACCEL_NAME" />. Druk op een nieuwe sneltoets. Druk opnieuw op deze sneltoets om de bestaande sneltoets te vervangen.</translation>
 <translation id="1030856839388844477">Datagebruik resetten</translation>
+<translation id="1047095725494118091">Kan niet downloaden. Probeer het opnieuw of start je <ph name="DEVICE_TYPE" /> opnieuw op.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nieuwe functie beschikbaar, gebruik de pijl-omhoog voor meer informatie.</translation>
 <translation id="1049663189809099096">pastelgeel</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Screensaver downloaden</translation>
 <translation id="1094693127011229778">IP-adres is niet beschikbaar</translation>
 <translation id="1100902271996134409">Afbeeldingen maken...</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" />-audio</translation>
 <translation id="1116694919640316211">Over</translation>
 <translation id="1118572504348554005">We kunnen de feedback die via dit formulier wordt ingediend, delen met onze partners om bugs en andere problemen op te lossen die je aan ons meldt. Voeg geen gevoelige informatie toe, zoals wachtwoorden.</translation>
 <translation id="1119403468619527527">Te weinig woorden om te vereenvoudigen</translation>
@@ -292,6 +294,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="2163937499206714165">Donkere modus aanzetten</translation>
 <translation id="2164131940279488868">Zorg dat er een microfoon is aangesloten om audio op te nemen</translation>
 <translation id="2173302385160625112">Controleer je internetverbinding</translation>
+<translation id="2176909213844392588">Kan transcriptiemodel voor het <ph name="LANGUAGE_NAME" /> niet downloaden. Probeer het opnieuw of start je <ph name="DEVICE_TYPE" /> opnieuw op.</translation>
 <translation id="2180197493692062006">Er is iets misgegaan. Open de app opnieuw.</translation>
 <translation id="2189104374785738357">APN-gegevens bewerken</translation>
 <translation id="2195732836444333448">We zitten op dit moment op de maximale capaciteit. Probeer het later nog eens.</translation>
@@ -480,6 +483,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="3199982728237701504">Documentfeeder (dubbelzijdig)</translation>
 <translation id="3201315366910775591">Gedeelde albums kunnen worden geüpdatet door andere mensen</translation>
 <translation id="3211671540163313381">D-pad voor toetstoewijzing</translation>
+<translation id="3217462202230355157">Zorg dat je microfoon is aangesloten of start je <ph name="DEVICE_TYPE" /> opnieuw op</translation>
 <translation id="3226405216343213872">Zoeken naar scanners</translation>
 <translation id="3226657629376379887">Actiemenu voor indeling</translation>
 <translation id="3227186760713762082">Deel de waarde voor <ph name="CATEGORY_TEXT" /> door <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="3383623117265110236">Exclusief</translation>
 <translation id="3404249063913988450">Screensaver aanzetten</translation>
 <translation id="3413935475507503304">Klik op Volgende om door te gaan met de update.</translation>
+<translation id="3416709353545797224">Alle <ph name="DEVICE_TYPE" />-audio opnemen</translation>
 <translation id="3428551088151258685">buiten</translation>
 <translation id="3428971106895559033">pastel</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="4155551848414053977">Zorg dat de scanner aanstaat en beschikbaar is via je netwerk of een directe verbinding.</translation>
 <translation id="4159238217853743776">Gedeeltelijk</translation>
 <translation id="4159784952369912983">Paars</translation>
+<translation id="416219735020840807">Kan transcriptiemodel niet downloaden. Probeer het opnieuw of start je <ph name="DEVICE_TYPE" /> opnieuw op.</translation>
 <translation id="4170180284036919717">Foto maken</translation>
 <translation id="4170700058716978431">MISLUKT</translation>
 <translation id="4171077696775491955">helderheid omlaag</translation>
@@ -952,6 +958,7 @@ Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck 
 <translation id="5344619683981067131">Geselecteerde tekst vervangen door suggestie</translation>
 <translation id="5346687412805619883">Lokaal netwerk</translation>
 <translation id="5358174242040570474">Er is iets misgegaan. Probeer nog een keer een achtergrond te kiezen of open de app opnieuw.</translation>
+<translation id="5368228070728130240">Kan model voor het maken van overzichten en titels niet downloaden. Probeer het opnieuw of start je <ph name="DEVICE_TYPE" /> opnieuw op.</translation>
 <translation id="5372659122375744710">Wifi-netwerk is niet beveiligd</translation>
 <translation id="5376354385557966694">Automatisch lichte modus</translation>
 <translation id="5378184552853359930">IP-type</translation>
@@ -1257,6 +1264,7 @@ Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck 
 <translation id="6766275201586212568">Mislukte DNS-omzettingen</translation>
 <translation id="6768237774506518020">Hoog percentage mislukte DNS-omzettingen</translation>
 <translation id="6786747875388722282">Extensies</translation>
+<translation id="6789891265243243337">Als <ph name="DEVICE_TYPE" />-audio aanstaat, neemt Recorder alle audio op die op dit apparaat wordt afgespeeld</translation>
 <translation id="6791471867139427246">kleur van toetsenbordverlichting</translation>
 <translation id="6796229976413584781">Sneltoets verwijderd</translation>
 <translation id="6798678288485555829">Tekstnavigatie</translation>
@@ -1728,6 +1736,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8930622219860340959">Draadloos</translation>
 <translation id="8933650076320258356">De geselecteerde toets is <ph name="KEYS" /> voor <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">IP-adres van client</translation>
+<translation id="8938606491880817721">Kan niet downloaden. Probeer het opnieuw of start je <ph name="DEVICE_TYPE" /> opnieuw op.</translation>
 <translation id="8944651180182756621">Launcher-kleur</translation>
 <translation id="8945308580158685341">bijen</translation>
 <translation id="894617464444543719">Apparaat is een telefoon.</translation>

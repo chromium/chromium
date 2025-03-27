@@ -118,6 +118,12 @@ bool is_password_field(const std::unique_ptr<AutofillField>& field) {
   return field->form_control_type() == FormControlType::kInputPassword;
 }
 
+// A field is active if it contributes to the form signature and it is are
+// included in queries to the Autofill server.
+bool is_active(const AutofillField& field) {
+  return !IsCheckable(field.check_status());
+}
+
 // Returns true if at least `num` fields satisfy `p`.
 // This is useful if `num` is significantly smaller than `fields.size()` because
 // it may avoid iterating over all of `fields`. It's equivalent to
@@ -152,9 +158,6 @@ FormStructure::FormStructure(const FormData& form)
       child_frames_(form.child_frames()) {
   // Copy the form fields.
   for (const FormFieldData& field : form.fields()) {
-    if (!IsCheckable(field.check_status())) {
-      ++active_field_count_;
-    }
     fields_.push_back(std::make_unique<AutofillField>(field));
   }
 
@@ -371,14 +374,19 @@ bool FormStructure::ShouldBeParsed(ShouldBeParsedParams params,
     return false;
   }
 
-  if (active_field_count() < params.min_required_fields &&
-      (active_field_count() <
-           params.required_fields_for_forms_with_only_password_fields ||
+  if (!AtLeastNumSatisfy(fields(), params.min_required_fields, is_active) &&
+      (!AtLeastNumSatisfy(
+           fields(), params.required_fields_for_forms_with_only_password_fields,
+           is_active) ||
        !std::ranges::all_of(fields_, is_password_field)) &&
       std::ranges::none_of(fields_, has_autocomplete)) {
     LOG_AF(log_manager) << LoggingScope::kAbortParsing
                         << LogMessage::kAbortParsingNotEnoughFields
-                        << active_field_count() << *this;
+                        << std::ranges::count_if(fields_,
+                                                 [](const auto& field) {
+                                                   return is_active(*field);
+                                                 })
+                        << *this;
     return false;
   }
 
@@ -401,22 +409,24 @@ bool FormStructure::ShouldBeParsed(ShouldBeParsedParams params,
 }
 
 bool FormStructure::ShouldRunHeuristics() const {
-  return active_field_count() >= kMinRequiredFieldsForHeuristics &&
+  return AtLeastNumSatisfy(fields(), kMinRequiredFieldsForHeuristics,
+                           is_active) &&
          HasAllowedScheme(source_url_);
 }
 
 bool FormStructure::ShouldRunHeuristicsForSingleFields() const {
-  return active_field_count() > 0 && HasAllowedScheme(source_url_);
+  return AtLeastNumSatisfy(fields(), 1, is_active) &&
+         HasAllowedScheme(source_url_);
 }
 
 bool FormStructure::ShouldBeQueried() const {
-  return (active_field_count() >= kMinRequiredFieldsForQuery ||
+  return (AtLeastNumSatisfy(fields(), kMinRequiredFieldsForQuery, is_active) ||
           std::ranges::any_of(fields_, is_password_field)) &&
          ShouldBeParsed();
 }
 
 bool FormStructure::ShouldBeUploaded() const {
-  return active_field_count() >= kMinRequiredFieldsForUpload &&
+  return AtLeastNumSatisfy(fields(), kMinRequiredFieldsForUpload, is_active) &&
          ShouldBeParsed();
 }
 
@@ -800,10 +810,6 @@ const AutofillField* FormStructure::GetFieldById(FieldGlobalId field_id) const {
 AutofillField* FormStructure::GetFieldById(FieldGlobalId field_id) {
   return const_cast<AutofillField*>(
       std::as_const(*this).GetFieldById(field_id));
-}
-
-size_t FormStructure::active_field_count() const {
-  return active_field_count_;
 }
 
 bool FormStructure::is_form_element() const {

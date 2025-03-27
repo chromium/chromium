@@ -83,12 +83,12 @@ pub enum AuditCriteria {
 pub fn create_vet_config<'a>(
     packages: impl IntoIterator<Item = &'a cargo_metadata::Package>,
     is_removed: impl Fn(&'a cargo_metadata::PackageId) -> bool,
-    mut find_group: impl FnMut(&'a cargo_metadata::PackageId) -> Group,
+    mut find_group: impl FnMut(&'a cargo_metadata::Package) -> Group,
     mut find_shipped: impl FnMut(&'a cargo_metadata::PackageId) -> Option<bool>,
 ) -> Result<VetConfigToml> {
     let mut vet_config_toml = VetConfigToml { policies: Vec::new() };
     for package in packages {
-        let group = find_group(&package.id);
+        let group = find_group(package);
         let shipped = find_shipped(&package.id);
 
         let mut crate_name = package.name.clone();

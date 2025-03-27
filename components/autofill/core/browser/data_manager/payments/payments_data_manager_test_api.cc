@@ -51,11 +51,11 @@ void PaymentsDataManagerTestApi::AddBnplIssuer(const BnplIssuer& bnpl_issuer) {
       payments_data_manager_->unlinked_bnpl_issuers_;
 
   // No duplicated issuer should be inserted into the BNPL issuer list.
-  CHECK(!std::ranges::any_of(
+  CHECK(std::ranges::none_of(
       linked_issuers, [&](const BnplIssuer& saved_bnpl_issuer) {
         return saved_bnpl_issuer.issuer_id() == bnpl_issuer.issuer_id();
       }));
-  CHECK(!std::ranges::any_of(
+  CHECK(std::ranges::none_of(
       unlinked_issuers, [&](const BnplIssuer& saved_bnpl_issuer) {
         return saved_bnpl_issuer.issuer_id() == bnpl_issuer.issuer_id();
       }));

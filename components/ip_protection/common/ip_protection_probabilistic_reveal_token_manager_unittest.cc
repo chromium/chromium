@@ -72,7 +72,7 @@ class MockIssuer {
     std::unique_ptr<ECGroup> group;
     {
       ASSIGN_OR_RETURN(ECGroup local_group,
-                       ECGroup::Create(NID_secp224r1, context.get()));
+                       ECGroup::Create(NID_X9_62_prime256v1, context.get()));
       group = std::make_unique<ECGroup>(std::move(local_group));
     }
 

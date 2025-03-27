@@ -1349,6 +1349,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="39" label="Blocked by feature flag restrictions"/>
   <int value="40" label="Blocked by unsupported hardware"/>
   <int value="41" label="Blocked by Kiosk mode"/>
+  <int value="42" label="Blocked by form factor"/>
+  <int value="43" label="Blocked by policy"/>
 </enum>
 
 <enum name="LockScreenUserClickTarget">

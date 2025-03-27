@@ -86,6 +86,15 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest,
   void DisableExtension(const ExtensionId& extension_id,
                         const DisableReasonSet& disable_reasons);
 
+  // Unloads the extension with the given `extension_id`.
+  void UnloadExtension(const ExtensionId& extension_id);
+
+  // Uninstalls the extension with the given `extension_id`.
+  void UninstallExtension(const ExtensionId& extension_id);
+
+  // Enables the extension with the given `extension_id`.
+  void EnableExtension(const ExtensionId& extension_id);
+
   // Returns the WebContents of the currently active tab.
   // Note that when the test first launches, this will be the same as the
   // default tab's web_contents(). However, if the test creates new tabs and

@@ -261,6 +261,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Clicked"/>
 </enum>
 
+<!-- LINT.IfChange(PageActionIconType) -->
+
 <enum name="PageActionIconType">
   <int value="0" label="Bookmarks Star"/>
   <int value="1" label="Click to Call"/>
@@ -269,18 +271,18 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Find"/>
   <int value="5" label="Memory Saver"/>
   <int value="6" label="Intent Picker"/>
-  <int value="7" label="Local Card Migration"/>
+  <int value="7" label="(Deprecated) Local Card Migration"/>
   <int value="8" label="Manage Passwords"/>
   <int value="9" label="Payments Offer Notification"/>
   <int value="10" label="Price Tracking"/>
   <int value="11" label="PWA Install"/>
-  <int value="12" label="QR Code Generator"/>
+  <int value="12" label="(Deprecated) QR Code Generator"/>
   <int value="13" label="(Deprecated) Reader Mode"/>
   <int value="14" label="Autofill Address"/>
   <int value="15" label="Save Card"/>
-  <int value="16" label="Send Tab to Self"/>
+  <int value="16" label="(Deprecated) Send Tab to Self"/>
   <int value="17" label="Sharing Hub"/>
-  <int value="18" label="Side Search"/>
+  <int value="18" label="(Deprecated) Side Search"/>
   <int value="19" label="SMS Remote Fetcher"/>
   <int value="20" label="Translate"/>
   <int value="21" label="Virtual Card Enroll"/>
@@ -289,12 +291,14 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="Save IBAN"/>
   <int value="25" label="Mandatory Reauth"/>
   <int value="26" label="Price Insights"/>
-  <int value="27" label="Read Anything"/>
+  <int value="27" label="(Deprecated) Read Anything"/>
   <int value="28" label="Product Specifications"/>
   <int value="29" label="Lens Overlay"/>
   <int value="30" label="Discounts"/>
   <int value="31" label="Optimization Guide"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/page_action/page_action_icon_type.h:PageActionIconType) -->
 
 <enum name="PageActionPageEvent">
   <int value="0" label="Page Shown"/>

@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
+#include "media/base/encoder_status.h"
 #include "media/base/video_util.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/windows/d3d12_video_encode_av1_delegate.h"
@@ -112,7 +113,7 @@ D3D12VideoEncodeAccelerator::GetSupportedProfiles() {
   return *supported_profiles.get();
 }
 
-bool D3D12VideoEncodeAccelerator::Initialize(
+EncoderStatus D3D12VideoEncodeAccelerator::Initialize(
     const Config& config,
     Client* client,
     std::unique_ptr<MediaLog> media_log) {
@@ -132,19 +133,19 @@ bool D3D12VideoEncodeAccelerator::Initialize(
 
   if (!video_device_) {
     MEDIA_LOG(ERROR, media_log_) << "Failed to get D3D12 video device";
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   if (config.HasSpatialLayer()) {
     MEDIA_LOG(ERROR, media_log_) << "Only L1T{1,2,3} mode is supported";
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   error_occurred_ = false;
   encoder_task_runner_->PostTask(
       FROM_HERE, BindOnce(&D3D12VideoEncodeAccelerator::InitializeTask,
                           encoder_weak_this_, config));
-  return true;
+  return {EncoderStatus::Codes::kOk};
 }
 
 void D3D12VideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,

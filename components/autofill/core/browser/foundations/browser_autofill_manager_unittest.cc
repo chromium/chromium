@@ -6854,12 +6854,16 @@ class BrowserAutofillManagerWithAiModelTest
         .WillByDefault(Return(&executor_));
   }
 
-  void SeeForm(bool may_run_model) {
-    FormData form =
-        test::GetFormData({.fields = {{.name = u"First name"},
-                                      {.name = u"Last name"},
-                                      {.name = u"Passport number"}}});
+  FormData GetSampleForm() {
+    return test::GetFormData({.fields = {{.name = u"First name"},
+                                         {.name = u"Last name"},
+                                         {.name = u"Passport number"},
+                                         {.name = u"Passport issue date"}}});
+  }
 
+  FormGlobalId SeeForm(bool may_run_model,
+                       bool add_autofill_ai_predictions = true) {
+    FormData form = GetSampleForm();
     FormStructure* form_structure = nullptr;
     {
       auto fs = std::make_unique<FormStructure>(form);
@@ -6874,32 +6878,41 @@ class BrowserAutofillManagerWithAiModelTest
       AutofillQueryResponse response;
       AutofillQueryResponse::FormSuggestion* form_suggestion =
           response.add_form_suggestions();
-      AddFieldPredictionsToForm(
+
+      auto add_predictions = [&](const FormFieldData& field,
+                                 std::vector<FieldPrediction> predictions) {
+        if (!add_autofill_ai_predictions) {
+          std::erase_if(predictions, [](const auto& prediction) {
+            return prediction.source() == FieldPrediction::SOURCE_AUTOFILL_AI;
+          });
+        }
+        AddFieldPredictionsToForm(field, predictions, form_suggestion);
+      };
+
+      add_predictions(
           form.fields()[0],
           {CreateFieldPrediction(NAME_FIRST,
                                  FieldPrediction::SOURCE_AUTOFILL_DEFAULT),
            CreateFieldPrediction(PASSPORT_NAME_TAG,
-                                 FieldPrediction::SOURCE_AUTOFILL_AI)},
-          form_suggestion);
-      AddFieldPredictionsToForm(
+                                 FieldPrediction::SOURCE_AUTOFILL_AI)});
+      add_predictions(
           form.fields()[1],
           {CreateFieldPrediction(NAME_LAST,
                                  FieldPrediction::SOURCE_AUTOFILL_DEFAULT),
            CreateFieldPrediction(PASSPORT_NAME_TAG,
-                                 FieldPrediction::SOURCE_AUTOFILL_AI)},
-          form_suggestion);
-      AddFieldPredictionsToForm(
+                                 FieldPrediction::SOURCE_AUTOFILL_AI)});
+      add_predictions(
           form.fields()[2],
           {CreateFieldPrediction(PASSPORT_NUMBER,
-                                 FieldPrediction::SOURCE_AUTOFILL_AI)},
-          form_suggestion);
+                                 FieldPrediction::SOURCE_AUTOFILL_AI)});
       form_suggestion->set_run_autofill_ai_model(may_run_model);
-      ASSERT_TRUE(response.SerializeToString(&server_response));
+      response.SerializeToString(&server_response);
     }
 
     test_api(manager()).OnLoadedServerPredictions(
         base::Base64Encode(server_response),
         test::GetEncodedSignatures(*form_structure));
+    return form.global_id();
   }
 
   MockAutofillAiModelCache& cache() { return cache_; }
@@ -6965,6 +6978,84 @@ TEST_F(BrowserAutofillManagerWithAiModelTest,
   ON_CALL(cache(), Contains).WillByDefault(Return(false));
   EXPECT_CALL(executor(), GetPredictions).Times(0);
   SeeForm(/*may_run_model=*/true);
+}
+
+// Tests that cache results are used to populate field server types.
+TEST_F(BrowserAutofillManagerWithAiModelTest, CacheResultUsed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAiServerModel,
+      {{"autofill_ai_model_use_cache_results", "true"}});
+
+  // Get the same form that will be seen to calculate the field signatures.
+  const FormData form = GetSampleForm();
+  const FieldSignature field_signature1 =
+      CalculateFieldSignatureForField(form.fields()[2]);
+  const FieldSignature field_signature2 =
+      CalculateFieldSignatureForField(form.fields()[3]);
+  const FormSignature form_signature = CalculateFormSignature(form);
+
+  using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;
+  using ModelFieldPrediction = AutofillAiModelCache::FieldPrediction;
+  auto predictions = base::flat_map<FieldIdentifier, ModelFieldPrediction>(
+      {std::pair{FieldIdentifier{.signature = field_signature1},
+                 ModelFieldPrediction{.field_type = PASSPORT_NUMBER}},
+       std::pair{FieldIdentifier{.signature = field_signature2},
+                 ModelFieldPrediction{.field_type = PASSPORT_ISSUE_DATE,
+                                      .format_string = u"D.M.YYYY"}}});
+
+  EXPECT_CALL(cache(), Contains(form_signature)).WillOnce(Return(true));
+  EXPECT_CALL(cache(), GetFieldPredictions(form_signature))
+      .WillOnce(Return(predictions));
+  EXPECT_CALL(executor(), GetPredictions).Times(0);
+  const FormGlobalId form_id =
+      SeeForm(/*may_run_model=*/true, /*add_autofill_ai_predictions=*/false);
+
+  // Check that we set predictions on the form.
+  const FormStructure* const fs = manager().FindCachedFormById(form_id);
+  ASSERT_TRUE(fs);
+  EXPECT_EQ(fs->field(0)->GetAutofillAiServerTypePredictions(), std::nullopt);
+  EXPECT_EQ(fs->field(1)->GetAutofillAiServerTypePredictions(), std::nullopt);
+  EXPECT_EQ(fs->field(2)->GetAutofillAiServerTypePredictions(),
+            PASSPORT_NUMBER);
+  EXPECT_EQ(fs->field(3)->GetAutofillAiServerTypePredictions(),
+            PASSPORT_ISSUE_DATE);
+  ASSERT_TRUE(fs->field(3)->format_string().has_value());
+  EXPECT_EQ(fs->field(3)->format_string().value(), u"D.M.YYYY");
+  EXPECT_EQ(fs->field(3)->format_string_source(),
+            AutofillField::FormatStringSource::kModelResult);
+}
+
+// Tests that if the form has at least one existing AutofillAI prediction, then
+// the cache is not used for populating predictions.
+TEST_F(BrowserAutofillManagerWithAiModelTest,
+       CacheResultsDoNotOverrideAiServerPredictions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAiServerModel,
+      {{"autofill_ai_model_use_cache_results", "true"}});
+
+  // Get the same form that will be seen to calculate the field signatures.
+  const FormData form = GetSampleForm();
+  const FieldSignature field_signature1 =
+      CalculateFieldSignatureForField(form.fields()[2]);
+  const FieldSignature field_signature2 =
+      CalculateFieldSignatureForField(form.fields()[3]);
+  const FormSignature form_signature = CalculateFormSignature(form);
+
+  using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;
+  using ModelFieldPrediction = AutofillAiModelCache::FieldPrediction;
+  auto predictions = base::flat_map<FieldIdentifier, ModelFieldPrediction>(
+      {std::pair{FieldIdentifier{.signature = field_signature1},
+                 ModelFieldPrediction{.field_type = PASSPORT_NUMBER}},
+       std::pair{FieldIdentifier{.signature = field_signature2},
+                 ModelFieldPrediction{.field_type = PASSPORT_ISSUE_DATE,
+                                      .format_string = u"D.M.YYYY"}}});
+
+  ON_CALL(cache(), Contains(form_signature)).WillByDefault(Return(true));
+  EXPECT_CALL(cache(), GetFieldPredictions(form_signature)).Times(0);
+  EXPECT_CALL(executor(), GetPredictions).Times(0);
+  SeeForm(/*may_run_model=*/false);
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||

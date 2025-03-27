@@ -67,7 +67,7 @@ bool OverrideTranslateTriggerInIndia() {
   if (base::FeatureList::IsEnabled(language::kDisableGeoLanguageModel)) {
     return false;
   }
-  return country_codes::GetCurrentCountryCode() == "IN";
+  return country_codes::GetCurrentCountryID().CountryCode() == "IN";
 #else
   return false;
 #endif

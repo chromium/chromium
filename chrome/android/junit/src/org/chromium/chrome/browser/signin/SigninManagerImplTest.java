@@ -72,7 +72,6 @@ import org.chromium.components.signin.identitymanager.PrimaryAccountError;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.test.util.TestAccounts;
-import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
@@ -100,7 +99,6 @@ public class SigninManagerImplTest {
     @Mock private PrefService mPrefService;
     @Mock private IdentityMutator mIdentityMutator;
     @Mock private ExternalAuthUtils mExternalAuthUtils;
-    @Mock private SyncService mSyncService;
     @Mock private Profile mProfile;
     @Mock private SigninManager.SignInStateObserver mSignInStateObserver;
 
@@ -219,7 +217,6 @@ public class SigninManagerImplTest {
                         eq(SigninAccessPoint.START_PAGE),
                         any());
 
-        verify(mSyncService, never()).setSyncRequested();
         // Signin should be complete and callback should be invoked.
         verify(callback).onSignInComplete();
         verify(callback, never()).onSignInAborted();
@@ -711,8 +708,7 @@ public class SigninManagerImplTest {
                                 NATIVE_SIGNIN_MANAGER,
                                 mProfile,
                                 mIdentityManager,
-                                mIdentityMutator,
-                                mSyncService);
+                                mIdentityMutator);
         mSigninManager.addSignInStateObserver(mSignInStateObserver);
     }
 }

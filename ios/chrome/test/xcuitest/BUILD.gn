@@ -31,7 +31,7 @@ source_set("device_check_xcuitests") {
   sources = [ "device_check_xctest.mm" ]
   deps = [
     "//base/test:test_support",
-    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:content_suggestions_constant",
     "//ios/testing:system_alert_handler",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -41,6 +41,7 @@ source_set("hooks") {
   testonly = true
   sources = [ "xcuitests_hook.mm" ]
   deps = [
+    "//base/test:test_support",
     "//components/feature_engagement/public",
     "//components/signin/internal/identity_manager",
     "//ios/chrome/app:tests_hook",

@@ -23,7 +23,7 @@ class CORE_EXPORT CEReactionsScope final {
  public:
   static CEReactionsScope* Current();
 
-  CEReactionsScope();
+  explicit CEReactionsScope(v8::Isolate*);
 
   CEReactionsScope(const CEReactionsScope&) = delete;
   CEReactionsScope& operator=(const CEReactionsScope&) = delete;
@@ -38,7 +38,7 @@ class CORE_EXPORT CEReactionsScope final {
   static CEReactionsScope* top_of_stack_;
   CustomElementReactionStack* stack_ = nullptr;
   CEReactionsScope* prev_;
-  std::optional<v8::TryCatch> try_catch_;
+  v8::TryCatch try_catch_;
 };
 
 }  // namespace blink

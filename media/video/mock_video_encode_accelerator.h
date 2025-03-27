@@ -5,9 +5,9 @@
 #ifndef MEDIA_VIDEO_MOCK_VIDEO_ENCODE_ACCELERATOR_H_
 #define MEDIA_VIDEO_MOCK_VIDEO_ENCODE_ACCELERATOR_H_
 
-#include "media/video/video_encode_accelerator.h"
-
 #include "media/base/bitstream_buffer.h"
+#include "media/base/encoder_status.h"
+#include "media/video/video_encode_accelerator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace media {
@@ -25,9 +25,9 @@ class MockVideoEncodeAccelerator : public VideoEncodeAccelerator {
   MOCK_METHOD0(GetSupportedProfiles,
                VideoEncodeAccelerator::SupportedProfiles());
   MOCK_METHOD3(Initialize,
-               bool(const VideoEncodeAccelerator::Config& config,
-                    VideoEncodeAccelerator::Client* client,
-                    std::unique_ptr<MediaLog> media_log));
+               EncoderStatus(const VideoEncodeAccelerator::Config& config,
+                             VideoEncodeAccelerator::Client* client,
+                             std::unique_ptr<MediaLog> media_log));
   MOCK_METHOD2(Encode,
                void(scoped_refptr<VideoFrame> frame, bool force_keyframe));
   MOCK_METHOD1(UseOutputBitstreamBuffer, void(BitstreamBuffer buffer));

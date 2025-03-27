@@ -46,12 +46,14 @@ PrefetchMatchResolver::CandidateData::~CandidateData() = default;
 PrefetchMatchResolver::PrefetchMatchResolver(
     PrefetchContainer::Key navigated_key,
     PrefetchServiceWorkerState expected_service_worker_state,
+    bool is_nav_prerender,
     base::WeakPtr<PrefetchService> prefetch_service,
     Callback callback)
     : navigated_key_(std::move(navigated_key)),
       expected_service_worker_state_(expected_service_worker_state),
       prefetch_service_(std::move(prefetch_service)),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      is_nav_prerender_(is_nav_prerender) {
   switch (expected_service_worker_state_) {
     case PrefetchServiceWorkerState::kAllowed:
       NOTREACHED();
@@ -86,22 +88,21 @@ void PrefetchMatchResolver::FindPrefetch(
   TRACE_EVENT0("loading", "PrefetchMatchResolver::FindPrefetch");
   // See the comment of `self_`.
   auto prefetch_match_resolver = base::WrapUnique(new PrefetchMatchResolver(
-      std::move(navigated_key), expected_service_worker_state,
+      std::move(navigated_key), expected_service_worker_state, is_nav_prerender,
       prefetch_service.GetWeakPtr(), std::move(callback)));
   PrefetchMatchResolver& ref = *prefetch_match_resolver.get();
   ref.self_ = std::move(prefetch_match_resolver);
 
-  ref.FindPrefetchInternal(is_nav_prerender, prefetch_service,
+  ref.FindPrefetchInternal(prefetch_service,
                            std::move(serving_page_metrics_container));
 }
 
 void PrefetchMatchResolver::FindPrefetchInternal(
-    bool is_nav_prerender,
     PrefetchService& prefetch_service,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container) {
   auto [candidates, servable_states] = prefetch_service.CollectMatchCandidates(
-      navigated_key_, is_nav_prerender,
+      navigated_key_, is_nav_prerender_,
       std::move(serving_page_metrics_container));
   // Consume `candidates`.
   for (auto& prefetch_container : candidates) {
@@ -217,10 +218,10 @@ void PrefetchMatchResolver::StartWaitFor(
   CHECK(!candidate_data->timeout_timer);
 
   // TODO(crbug.com/356552413): Merge
-  // https://chromium-review.googlesource.com/c/chromium/src/+/5668924 and write
-  // tests.
-  base::TimeDelta timeout =
-      PrefetchBlockUntilHeadTimeout(prefetch_container.GetPrefetchType());
+  // https://chromium-review.googlesource.com/c/chromium/src/+/5668924 and
+  // write tests.
+  base::TimeDelta timeout = PrefetchBlockUntilHeadTimeout(
+      prefetch_container.GetPrefetchType(), is_nav_prerender_);
   if (timeout.is_positive()) {
     candidate_data->timeout_timer = std::make_unique<base::OneShotTimer>();
     candidate_data->timeout_timer->Start(

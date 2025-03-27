@@ -48,7 +48,7 @@ class MockWebMediaPlayer : public WebMediaPlayer {
     return LoadTiming::kImmediate;
   }
   void Play() override {}
-  void Pause() override {}
+  void Pause(PauseReason pause_reason) override {}
   void Seek(double seconds) override {}
   void SetRate(double) override {}
   void SetVolume(double) override {}

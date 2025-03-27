@@ -27,7 +27,7 @@ const char kLog4[] = "Unremarkable maple";
 base::LazyInstance<std::vector<std::string>>::DestructorAtExit g_standard_logs =
     LAZY_INSTANCE_INITIALIZER;
 bool HandleStandardLogMessage(int severity,
-                              std::string_view file,
+                              const char* file,
                               int line,
                               size_t message_start,
                               const std::string& str) {

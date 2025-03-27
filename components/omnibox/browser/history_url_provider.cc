@@ -1166,8 +1166,8 @@ AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
   // into the middle of a punycode sequence fixed up to Unicode.  In this case,
   // there can be no inline autocompletion, and the match must not be allowed to
   // be default.
-  if (match.TryRichAutocompletion(match.contents, match.description,
-                                  params.input_before_fixup)) {
+  if (match.TryRichAutocompletion(params.input_before_fixup, match.contents,
+                                  match.description)) {
     // If rich autocompletion applies, we skip trying the alternatives below.
   } else if (inline_autocomplete_offset != std::u16string::npos) {
     DCHECK(inline_autocomplete_offset <= match.fill_into_edit.length());

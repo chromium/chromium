@@ -5,11 +5,17 @@
 #ifndef CHROME_BROWSER_GLIC_WIDGET_GLIC_VIEW_H_
 #define CHROME_BROWSER_GLIC_WIDGET_GLIC_VIEW_H_
 
+#include <optional>
+
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace gfx {
 class Rect;
@@ -19,7 +25,6 @@ namespace views {
 class WebView;
 }  // namespace views
 
-class BrowserFrameBoundsChangeAnimation;
 class Profile;
 
 namespace glic {
@@ -43,20 +48,24 @@ class GlicView : public views::View {
 
   bool IsPointWithinDraggableArea(const gfx::Point& point);
 
+  void SetWebContents(content::WebContents* web_contents);
+
+  // Try to get the background color from the web UI and use it as this view's
+  // background color. Only call after the client is initialized.
+  void UpdateBackgroundColor();
+
   views::WebView* web_view() { return web_view_; }
 
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
  private:
+  std::optional<SkColor> GetClientBackgroundColor();
+
   base::WeakPtr<ui::AcceleratorTarget> accelerator_delegate_;
   raw_ptr<views::WebView> web_view_;
   // Defines the areas of the view from which it can be dragged. These areas can
   // be updated by the glic web client.
   std::vector<gfx::Rect> draggable_areas_;
-
-  // Animates programmatic changes to bounds (e.g. via `resizeTo()`
-  // `resizeBy()` and `setContentsSize()` calls).
-  std::unique_ptr<BrowserFrameBoundsChangeAnimation> bounds_change_animation_;
 };
 
 }  // namespace glic

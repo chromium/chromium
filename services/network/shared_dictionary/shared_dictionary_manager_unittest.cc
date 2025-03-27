@@ -1112,7 +1112,7 @@ TEST_P(SharedDictionaryManagerTest, WriteAndReadDictionary) {
   secure_hash->Update(data1.c_str(), data1.size());
   secure_hash->Update(data2.c_str(), data2.size());
   net::SHA256HashValue sha256;
-  secure_hash->Finish(sha256.data, sizeof(sha256.data));
+  secure_hash->Finish(sha256);
 
   if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();

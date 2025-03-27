@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/quick_start/logging.h"
-
 #include <stddef.h>
-
-#include <string_view>
 
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#include "chromeos/ash/components/quick_start/logging.h"
 
 namespace ash::quick_start {
 
@@ -29,7 +27,7 @@ std::vector<std::string>& GetStandardLogs() {
 }
 
 bool HandleStandardLogMessage(int severity,
-                              std::string_view file,
+                              const char* file,
                               int line,
                               size_t message_start,
                               const std::string& str) {

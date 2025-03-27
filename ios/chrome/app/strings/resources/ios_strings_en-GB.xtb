@@ -560,7 +560,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3380352560400387991">This site is trying to open an application. This will take you out of Incognito.</translation>
 <translation id="3392923070107623576">Stay organised by creating tab groups</translation>
 <translation id="3404232721752787413">Save in Google Photos</translation>
-<translation id="3404744938087714423">Signing out turns off sync.</translation>
 <translation id="3406506285180498376">Share page…</translation>
 <translation id="340669334496430859">Last modified</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -780,7 +779,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4334428914252001502">One unread article.</translation>
 <translation id="4338258232580025606">Cannot sign in</translation>
 <translation id="4338650699862464074">Sends URLs of pages that you visit to Google.</translation>
-<translation id="4342054591427973606">{count,plural, =1{This address will be deleted from this and your other signed-in devices.}other{These addresses will be deleted from this and your other signed-in devices.}}</translation>
 <translation id="4342946437867096381">You already saved a password for this site in your Google Account. Google can choose the most recent password for you.</translation>
 <translation id="4365121137632832185">Tab group. Expanded.</translation>
 <translation id="4367971618859387374">Display name</translation>
@@ -1288,7 +1286,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">This will permanently delete the group from your device.</translation>
 <translation id="6452534462676960500">New activity</translation>
-<translation id="6459307836338400162">For more settings that relate to privacy, security and data collection, see both <ph name="BEGIN_LINK" />Sync<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />Google Services<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Details hidden</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6464397691496239022">Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping basket.
@@ -1638,7 +1635,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7933880123415105005">Search <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Page added to your reading list in your account, {email}}other{{count} pages added to your reading list in your account, {email}}}</translation>
-<translation id="7947953824732555851">Accept and sign in</translation>
 <translation id="7952670906562503188">You are about to delete {passkey_count} passkeys and the list of sites and apps for which you chose to never save sign-in info. Any account that you created for sites and apps won't be deleted.</translation>
 <translation id="7958575506592576831">Page security info</translation>
 <translation id="7961015016161918242">Never</translation>
@@ -1927,7 +1923,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9013605037177245304">Turn on notifications</translation>
 <translation id="9029650858822697271">You were signed out</translation>
 <translation id="9032405509996909363">Confirm delete browsing data</translation>
-<translation id="9034759925968272072">You won't be signed out of your Google Account. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
 <translation id="9042893549633094279">Privacy and security</translation>
 <translation id="9055580485132823283">You are about to delete {password_count} passwords, {passkey_count} passkeys and the list of sites and apps for which you chose to never save sign-in info. Any account that you created for sites and apps won't be deleted.</translation>

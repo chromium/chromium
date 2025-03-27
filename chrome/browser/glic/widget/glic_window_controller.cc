@@ -73,11 +73,12 @@ constexpr char kHistogramGlicPanelPresentationTime[] =
 
 #if BUILDFLAG(IS_MAC)
 constexpr int kFocusToggleAcceleratorModifiers =
-    ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN;
+    ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN;
 #else
 constexpr int kFocusToggleAcceleratorModifiers =
-    ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN;
+    ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN;
 #endif
+constexpr ui::KeyboardCode kFocusToggleAcceleratorKey = ui::VKEY_G;
 
 mojom::PanelState CreatePanelState(bool widget_visible,
                                    Browser* attached_browser) {
@@ -545,7 +546,7 @@ bool GlicWindowController::AcceleratorPressed(
     Close();
     return true;
   }
-  if (accelerator.key_code() == ui::VKEY_A &&
+  if (accelerator.key_code() == kFocusToggleAcceleratorKey &&
       accelerator.modifiers() == kFocusToggleAcceleratorModifiers) {
     // Transfer focus back to the browser.
     if (IsAttached()) {
@@ -578,8 +579,8 @@ void GlicWindowController::AddAccelerators() {
   }
 
   glic_view->AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-  glic_view->AddAccelerator(
-      ui::Accelerator(ui::VKEY_A, kFocusToggleAcceleratorModifiers));
+  glic_view->AddAccelerator(ui::Accelerator(kFocusToggleAcceleratorKey,
+                                            kFocusToggleAcceleratorModifiers));
 #if BUILDFLAG(IS_WIN)
   glic_view->AddAccelerator(ui::Accelerator(ui::VKEY_SPACE, ui::EF_ALT_DOWN));
 #endif
@@ -640,7 +641,7 @@ void GlicWindowController::AuthCheckDoneBeforeShow(
   }
 
   // Immediately hook up the WebView to the WebContents.
-  GetGlicView()->web_view()->SetWebContents(contents_->web_contents());
+  GetGlicView()->SetWebContents(contents_->web_contents());
 
   // Make the web view invisible for now, then fade it in after the open
   // animation finishes.
@@ -820,6 +821,11 @@ void GlicWindowController::ShowFinish() {
   if (state_ == State::kClosed || state_ == State::kOpen) {
     return;
   }
+
+  // Update the background color after fading in the webview so the transition
+  // isn't visible. This will be the widget background color the user sees next
+  // time.
+  GetGlicView()->UpdateBackgroundColor();
 
   // In the case that the open animation was skipped, the web view should still
   // be visible now.
@@ -1016,6 +1022,7 @@ void GlicWindowController::ShouldEnableDragResize(bool enabled) {
 
   if (base::FeatureList::IsEnabled(features::kGlicUserResize)) {
     GetGlicWidget()->widget_delegate()->SetCanResize(enabled);
+    GetGlicView()->UpdateBackgroundColor();
   }
 }
 
@@ -1420,6 +1427,12 @@ void GlicWindowController::Preload() {
   }
 }
 
+void GlicWindowController::PreloadFre() {
+  if (fre_controller_->ShouldShowFreDialog()) {
+    fre_controller_->TryPreload();
+  }
+}
+
 void GlicWindowController::Reload() {
   if (GetFreWebContents()) {
     GetFreWebContents()->ReloadFocusedFrame();
@@ -1429,7 +1442,7 @@ void GlicWindowController::Reload() {
   }
 }
 
-bool GlicWindowController::IsWarmed() {
+bool GlicWindowController::IsWarmed() const {
   return !!contents_;
 }
 

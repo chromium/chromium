@@ -111,6 +111,7 @@ inline constexpr char kShownCountHistoryScopePromo[] =
     "omnibox.shown_count_history_scope_promo";
 inline constexpr char kShownCountHistoryEmbeddingsScopePromo[] =
     "omnibox.shown_count_history_embeddings_scope_promo";
+inline constexpr char kFocusedSrpWebCount[] = "omnibox.focused_srp_web_count";
 
 // Many of the prefs defined above are registered locally where they're used.
 // New prefs should be added here and ordered the same as they're defined above.

@@ -411,7 +411,7 @@ void NetInternalsTest::MessageHandler::RgisterTestSharedDictionary(
   CHECK(dictionary_json_string);
   base::Value::Dict dict = base::test::ParseJsonDict(*dictionary_json_string);
   net::SHA256HashValue hash_value;
-  base::HexStringToSpan(*dict.FindString("hash"), hash_value.data);
+  base::HexStringToSpan(*dict.FindString("hash"), hash_value);
   const std::string* id_string = dict.FindString("id");
   network_context_for_testing_.RegisterTestSharedDictionary(
       net::SharedDictionaryIsolationKey(

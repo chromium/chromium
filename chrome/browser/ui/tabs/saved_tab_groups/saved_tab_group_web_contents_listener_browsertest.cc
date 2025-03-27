@@ -33,20 +33,13 @@ constexpr char kThirdURL[] = "https://url3.com";
 
 }  // anonymous namespace
 
-class ListenerDeferredTest : public InProcessBrowserTest,
-                             public ::testing::WithParamInterface<bool> {
+class ListenerDeferredTest : public InProcessBrowserTest {
  public:
   ListenerDeferredTest() {
-    if (GetParam()) {
-      features_.InitWithFeatures(
-          {data_sharing::features::kDataSharingFeature,
-           tab_groups::kTabGroupSyncServiceDesktopMigration},
-          {});
-    } else {
-      features_.InitWithFeatures(
-          {data_sharing::features::kDataSharingFeature},
-          {tab_groups::kTabGroupSyncServiceDesktopMigration});
-    }
+    features_.InitWithFeatures(
+        {data_sharing::features::kDataSharingFeature,
+         tab_groups::kTabGroupSyncServiceDesktopMigration},
+        {});
   }
 
   void SetUpOnMainThread() override {
@@ -119,8 +112,6 @@ class ListenerDeferredTest : public InProcessBrowserTest,
     saved_tab_guid_ = tab.saved_tab_guid();
   }
 
-  bool IsServiceMigrationEnabled() const { return GetParam(); }
-
   void AttemptNavigationFromSync(const GURL& url) {
     ASSERT_FALSE(test_tab_->GetContents()->IsLoading());
 
@@ -171,17 +162,9 @@ class ListenerDeferredTest : public InProcessBrowserTest,
         tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile());
     EXPECT_TRUE(service);
 
-    tab_groups::SavedTabGroupModel* model = nullptr;
-    if (IsServiceMigrationEnabled()) {
-      auto* service_impl =
-          static_cast<tab_groups::TabGroupSyncServiceImpl*>(service);
-      model = service_impl->GetModelForTesting();
-    } else {
-      auto* service_impl =
-          static_cast<tab_groups::TabGroupSyncServiceProxy*>(service);
-      model = service_impl->GetModelForTesting();
-    }
-    return model;
+    auto* service_impl =
+        static_cast<tab_groups::TabGroupSyncServiceImpl*>(service);
+    return service_impl->GetModelForTesting();
   }
 
   raw_ptr<tabs::TabInterface> other_tab_;
@@ -190,11 +173,7 @@ class ListenerDeferredTest : public InProcessBrowserTest,
   std::optional<base::Uuid> saved_tab_guid_;
 };
 
-INSTANTIATE_TEST_SUITE_P(SavedTabGroupWebContentsListenerParameterized,
-                         ListenerDeferredTest,
-                         testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(ListenerDeferredTest, NavigatesWhenStartsForegrounded) {
+IN_PROC_BROWSER_TEST_F(ListenerDeferredTest, NavigatesWhenStartsForegrounded) {
   ForegroundTestTab();
   SaveGroup();
 
@@ -206,7 +185,7 @@ IN_PROC_BROWSER_TEST_P(ListenerDeferredTest, NavigatesWhenStartsForegrounded) {
   EXPECT_EQ(GURL(kThirdURL), CurrentTabURL());
 }
 
-IN_PROC_BROWSER_TEST_P(ListenerDeferredTest,
+IN_PROC_BROWSER_TEST_F(ListenerDeferredTest,
                        DoesntNavigateWhenStartsBackgrounded) {
   BackgroundTestTab();
   SaveGroup();
@@ -219,7 +198,7 @@ IN_PROC_BROWSER_TEST_P(ListenerDeferredTest,
   EXPECT_EQ(GURL(kFirstURL), CurrentTabURL());
 }
 
-IN_PROC_BROWSER_TEST_P(ListenerDeferredTest, ForegroundingAllowsNavigtation) {
+IN_PROC_BROWSER_TEST_F(ListenerDeferredTest, ForegroundingAllowsNavigtation) {
   BackgroundTestTab();
   SaveGroup();
   EXPECT_EQ(GURL(kFirstURL), CurrentTabURL());
@@ -230,7 +209,7 @@ IN_PROC_BROWSER_TEST_P(ListenerDeferredTest, ForegroundingAllowsNavigtation) {
   EXPECT_EQ(GURL(kSecondURL), CurrentTabURL());
 }
 
-IN_PROC_BROWSER_TEST_P(ListenerDeferredTest,
+IN_PROC_BROWSER_TEST_F(ListenerDeferredTest,
                        ForegroundingAfterANavigationNavigates) {
   BackgroundTestTab();
   SaveGroup();
@@ -244,7 +223,7 @@ IN_PROC_BROWSER_TEST_P(ListenerDeferredTest,
   EXPECT_EQ(GURL(kSecondURL), CurrentTabURL());
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     ListenerDeferredTest,
     DoesntNavigateWhenBackgroundedAfterStartingForegrounded) {
   ForegroundTestTab();
@@ -260,7 +239,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(GURL(kFirstURL), CurrentTabURL());
 }
 
-IN_PROC_BROWSER_TEST_P(ListenerDeferredTest,
+IN_PROC_BROWSER_TEST_F(ListenerDeferredTest,
                        OnlyNavigatesMostRecentNavigationURLOnForeground) {
   BackgroundTestTab();
   SaveGroup();

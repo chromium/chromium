@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Girişi itirməzdən əvvəl məktəb hesabı datasını şəxsi hesaba köçürmək üçün Google-un Kontent transferi tətbiqindən istifadə edin.</translation>
 <translation id="1026212596705997935">Qısayol "<ph name="CONFLICT_ACCEL_NAME" />" üçün istifadə edilir. Yeni qısayol üzərinə basın. Mövcud qısayolu əvəzləmək üçün bu qısayolun üzərinə yenidən basın.</translation>
 <translation id="1030856839388844477">Data istifadəsini sıfırlayın</translation>
+<translation id="1047095725494118091">Endirmək mümkün deyil. Təkrar cəhd edin və ya <ph name="DEVICE_TYPE" /> cihazını yenidən başladın.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> mövzu, <ph name="CPU_MAX_CLOCK_SPEED" /> GHs)</translation>
 <translation id="1047773237499189053">Yeni funksiya əlçatandır, ətraflı məlumat üçün Yuxarı ox düyməsini istifadə edin.</translation>
 <translation id="1049663189809099096">pastel sarı</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Ekran qoruyucusu endirilir</translation>
 <translation id="1094693127011229778">İP ünvanı əlçatan deyil</translation>
 <translation id="1100902271996134409">Şəkillər yaradılır...</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> audiosu</translation>
 <translation id="1116694919640316211">Haqqında</translation>
 <translation id="1118572504348554005">Bildirdiyiniz baq və digər problemləri həll etmək üçün bu formadakı rəyi partnyorlarımızla paylaşa bilərik. Parol kimi həssas məlumat daxil etməyin.</translation>
 <translation id="1119403468619527527">Sadələşdirmək üçün çox az söz</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Qaranlıq rejimi aktiv edin</translation>
 <translation id="2164131940279488868">Audio yazmağa başlamaq üçün mikrofon qoşulmalıdır</translation>
 <translation id="2173302385160625112">İnternet bağlantısını yoxlayın</translation>
+<translation id="2176909213844392588"><ph name="LANGUAGE_NAME" /> transkripsiya modelini endirmək mümkün deyil. Təkrar cəhd edin və ya <ph name="DEVICE_TYPE" /> cihazını yenidən başladın.</translation>
 <translation id="2180197493692062006">Xəta oldu. Tətbiqi yenidən açmağa çalışın.</translation>
 <translation id="2189104374785738357">APN detallarını redaktə edin</translation>
 <translation id="2195732836444333448">Hazırda doludur. Sonra yoxlayın.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Sənəd Bəsləyici (İki tərəfli)</translation>
 <translation id="3201315366910775591">Digər şəxslər paylaşılan albomları yeniləyə bilər</translation>
 <translation id="3211671540163313381">Düymə uyğunlaşdırması - D-pad</translation>
+<translation id="3217462202230355157">Mikrofonun qoşulduğuna əmin olun və ya <ph name="DEVICE_TYPE" /> cihazını yenidən başladın</translation>
 <translation id="3226405216343213872">Skanerlər axtarılır</translation>
 <translation id="3226657629376379887">Tərtibat üzrə əməliyyatlar menyusu</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> dəyərini <ph name="CONVERSION_RATE" /> ilə bölün</translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Eksklüziv</translation>
 <translation id="3404249063913988450">Ekran qoruyucusunu aktiv edin</translation>
 <translation id="3413935475507503304">Güncəlləməyə keçmək üçün "Növbəti" seçiminə toxunun.</translation>
+<translation id="3416709353545797224">Bütün <ph name="DEVICE_TYPE" /> audiosu qeydə alınır</translation>
 <translation id="3428551088151258685">açıq məkan</translation>
 <translation id="3428971106895559033">pastel</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Skanerin aktiv olduğuna, şəbəkə və ya birbaşa qoşulma üzərindən əlçatan olduğuna əmin olun</translation>
 <translation id="4159238217853743776">Qismən</translation>
 <translation id="4159784952369912983">Bənövşəyi</translation>
+<translation id="416219735020840807">Transkripsiya modelini endirmək mümkün deyil. Təkrar cəhd edin və ya <ph name="DEVICE_TYPE" /> cihazını yenidən başladın.</translation>
 <translation id="4170180284036919717">Foto çəkin</translation>
 <translation id="4170700058716978431">UĞURSUZ OLDU</translation>
 <translation id="4171077696775491955">parlaqlığı azaldın</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Seçilmiş mətn təklif ilə əvəz edilir</translation>
 <translation id="5346687412805619883">Lokal Şəbəkə</translation>
 <translation id="5358174242040570474">Xəta oldu. Yenidən divar kağızı seçin və ya tətbiqi yenidən açın.</translation>
+<translation id="5368228070728130240">Xülasə və başlıq yaratma üçün modeli endirmək mümkün deyil. Təkrar cəhd edin və ya <ph name="DEVICE_TYPE" /> cihazını yenidən başladın.</translation>
 <translation id="5372659122375744710">WiFi şəbəkəsi güvənli deyil</translation>
 <translation id="5376354385557966694">Avtomatik işıqlı rejim</translation>
 <translation id="5378184552853359930">IP növü</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">DNS həlləri alınmadı</translation>
 <translation id="6768237774506518020">DNS həllinin alınmama faizi yüksəkdir</translation>
 <translation id="6786747875388722282">Artırmalar</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" /> audiosu aktiv olduqda Diktofon həmin cihazda səslənən bütün audionu qeydə alır</translation>
 <translation id="6791471867139427246">klaviatura işıq rəngi</translation>
 <translation id="6796229976413584781">Qısayol silindi</translation>
 <translation id="6798678288485555829">Mətn naviqasiyası</translation>
@@ -1728,6 +1736,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8930622219860340959">Simsiz</translation>
 <translation id="8933650076320258356"><ph name="DIRECTION" /> üçün seçilmiş düymə: <ph name="KEYS" /> <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Müştərinin IP ünvanı</translation>
+<translation id="8938606491880817721">Endirmək mümkün deyil. Təkrar cəhd edin və ya <ph name="DEVICE_TYPE" /> cihazını yenidən başladın.</translation>
 <translation id="8944651180182756621">Başladıcı rəngi</translation>
 <translation id="8945308580158685341">arılar</translation>
 <translation id="894617464444543719">Cihaz telefondur.</translation>

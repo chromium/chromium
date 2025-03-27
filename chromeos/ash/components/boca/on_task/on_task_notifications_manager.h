@@ -19,6 +19,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/boca/on_task/notification_constants.h"
 #include "chromeos/ash/components/boca/on_task/on_task_notification_blocker.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
@@ -63,7 +64,8 @@ class OnTaskNotificationsManager {
         int message_id,
         message_center::NotifierId notifier_id,
         base::RepeatingClosure completion_callback = base::DoNothing(),
-        base::TimeDelta countdown_period = base::Seconds(1),
+        base::TimeDelta countdown_period =
+            kDefaultOnTaskNotificationCountdownDuration,
         bool is_counting_down = false);
     NotificationCreateParams(const NotificationCreateParams& other);
     NotificationCreateParams& operator=(const NotificationCreateParams& other);

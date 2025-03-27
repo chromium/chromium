@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Il s'agit d'une nouvelle fonctionnalité</translation>
 <translation id="2006524834898217237">Assurez-vous que cet appareil est bien connecté à Internet.</translation>
 <translation id="208586643495776849">Veuillez réessayer</translation>
+<translation id="2111134541987263231">Activez l'option <ph name="BEGIN_BOLD" />Autoriser en navigation privée<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 j}one{# j}other{# j}}</translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="2168039046890040389">Page précédente</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Appuyez sur les cibles tactiles affichées à l'écran.</translation>
 <translation id="2295140143284145483">Enquête</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> To/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Impossible de trouver l'extension associée à l'ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contactez votre administrateur.}one{Impossible de trouver l'extension associée à l'ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contactez votre administrateur.}other{Impossible de trouver les extensions associées aux ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> Contactez votre administrateur.}}</translation>
 <translation id="2353636109065292463">Vérifier votre connexion Internet</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2388990488038464401">Appeler ce numéro depuis votre téléphone ?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Tout supprimer</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{dans 1 j}one{dans # j}other{dans # j}}</translation>
 <translation id="2922712708897119705">Colonne <ph name="COLUMN_NAME" /> triée par ordre décroissant.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Extension introuvable}one{Extension introuvable}other{Extensions introuvables}}</translation>
 <translation id="3036649622769666520">Ouvrir les fichiers</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> Mo</translation>
 <translation id="3087734570205094154">En bas</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Passer un appel avec</translation>
 <translation id="3306688585798492231">Écran de l'appareil</translation>
 <translation id="335581015389089642">Voix</translation>
+<translation id="3372635229069101468">Cliquez sur <ph name="BEGIN_BOLD" />Détails<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">Volume de texte trop important</translation>
 <translation id="3406306243914553062">Contenu HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 jour restant}one{# jour restant}other{# jours restants}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Colonne <ph name="COLUMN_NAME" /> triée par ordre croissant.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 notification non lue}one{# notification non lue}other{# notifications non lues}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Activez l'extension suivante en mode navigation privée :}one{Activez l'extension suivante en mode navigation privée :}other{Activez les extensions suivantes en mode navigation privée :}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Il y a 1 mois}one{Il y a # mois}other{Il y a # mois}}</translation>
 <translation id="4289300219472526559">Commencer à parler</translation>
 <translation id="4289540628985791613">Présentation</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">numéro</translation>
 <translation id="4746179598275229723">Extension retirée</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 mois restant}one{# mois restant}other{# mois restants}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Pour utiliser la navigation privée, votre organisation requiert une extension}one{Pour utiliser la navigation privée, votre organisation requiert une extension}other{Pour utiliser la navigation privée, votre organisation requiert certaines extensions}}</translation>
+<translation id="482932175346970750">Saisissez <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> dans votre navigateur</translation>
 <translation id="4888938634149558681">Passer un appel</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 seconde}one{# seconde}other{# secondes}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">C&amp;oller</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> Po</translation>
 <translation id="5278860589123563674">Échec de l'envoi</translation>
+<translation id="5283101102242354279">Pour activer une extension en mode navigation privée :</translation>
 <translation id="528468243742722775">Fin</translation>
 <translation id="5329858601952122676">&amp;Supprimer</translation>
 <translation id="5361107212971249203">texte</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Les paramètres d'affichage de votre application s'appliqueront à son prochain redémarrage.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min restante}one{# min restante}other{# min restantes}}</translation>
+<translation id="7252604552361840748">Repérez l'extension ci-dessus</translation>
 <translation id="7363164521834647158">Envoyer la réponse</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Il y a 1 min}one{Il y a # min}other{Il y a # min}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>

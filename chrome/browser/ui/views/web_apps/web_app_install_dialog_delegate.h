@@ -96,9 +96,12 @@ class WebAppInstallDialogDelegate : public ui::DialogModelDelegate,
 
   ~WebAppInstallDialogDelegate() override;
 
-  // Starts observing the install dialog's widget for picture in picture
-  // occlusion or size changes if any.
-  void StartObservingWidgetForChanges(views::Widget* install_dialog_widget);
+  // Once the install dialog is shown, start tracking the widget for:
+  // 1. Observing it to prevent picture in picture occlusion.
+  // 2. Observing it for size changes so that it can be closed if needed.
+  // 3. Tracking it as a security dialog so that extension popups do not appear
+  // over it.
+  void OnWidgetShownStartTracking(views::Widget* install_dialog_widget);
 
   void OnAccept();
   void OnCancel();

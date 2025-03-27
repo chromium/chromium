@@ -697,7 +697,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest, TestPepcUkm) {
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
           permissions::ElementAnchoredBubbleAction::kGranted,
-          permissions::ElementAnchoredBubbleVariant::ASK, 0),
+          permissions::ElementAnchoredBubbleVariant::kAsk, 0),
 
       // Now mic+camera are granted.
       ClickOnPEPCElement("camera"),
@@ -708,7 +708,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest, TestPepcUkm) {
           permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
           permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
           permissions::ElementAnchoredBubbleAction::kDenied,
-          permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED, 0),
+          permissions::ElementAnchoredBubbleVariant::kPreviouslyGranted, 0),
 
       ClickOnPEPCElement("microphone"),
       InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
@@ -718,7 +718,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest, TestPepcUkm) {
           permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC,
           permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC,
           permissions::ElementAnchoredBubbleAction::kOk,
-          permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED, 0),
+          permissions::ElementAnchoredBubbleVariant::kPreviouslyGranted, 0),
 
       // Mic is granted, camera is blocked. Triggering the double permission
       // prompt will show the screen that is only for camera, while the prompt
@@ -731,7 +731,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest, TestPepcUkm) {
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
           permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
           permissions::ElementAnchoredBubbleAction::kGrantedOnce,
-          permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_DENIED, 0),
+          permissions::ElementAnchoredBubbleVariant::kPreviouslyDenied, 0),
 
       // Both permissions are granted. Dismiss the prompt via clicking on the
       // scrim.
@@ -749,7 +749,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest, TestPepcUkm) {
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
           permissions::ElementAnchoredBubbleAction::kDismissedScrim,
-          permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED, 0));
+          permissions::ElementAnchoredBubbleVariant::kPreviouslyGranted, 0));
 }
 
 IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,

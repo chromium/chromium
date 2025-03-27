@@ -441,7 +441,7 @@ void CertProvisioningWorkerDynamic::GenerateKeyForVa() {
           /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
           GetKeyName(cert_profile_.profile_id), profile_,
           base::BindOnce(&CertProvisioningWorkerDynamic::OnGenerateKeyForVaDone,
-                         weak_factory_.GetWeakPtr(), base::TimeTicks::Now()),
+                         weak_factory_.GetWeakPtr()),
           /*signals=*/std::nullopt);
       break;
     case KeyType::kEc:
@@ -450,18 +450,14 @@ void CertProvisioningWorkerDynamic::GenerateKeyForVa() {
           /*will_register_key=*/true, ::attestation::KEY_TYPE_ECC,
           GetKeyName(cert_profile_.profile_id), profile_,
           base::BindOnce(&CertProvisioningWorkerDynamic::OnGenerateKeyForVaDone,
-                         weak_factory_.GetWeakPtr(), base::TimeTicks::Now()),
+                         weak_factory_.GetWeakPtr()),
           /*signals=*/std::nullopt);
   }
 }
 
 void CertProvisioningWorkerDynamic::OnGenerateKeyForVaDone(
-    base::TimeTicks start_time,
     const attestation::TpmChallengeKeyResult& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  RecordKeypairGenerationTime(cert_profile_.protocol_version, cert_scope_,
-                              base::TimeTicks::Now() - start_time);
 
   if (result.result_code ==
       attestation::TpmChallengeKeyResultCode::kGetCertificateFailedError) {
@@ -641,17 +637,13 @@ void CertProvisioningWorkerDynamic::BuildVaChallengeResponse() {
       std::move(va_challenge_),
       base::BindOnce(
           &CertProvisioningWorkerDynamic::OnBuildVaChallengeResponseDone,
-          weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+          weak_factory_.GetWeakPtr()));
   va_challenge_.clear();
 }
 
 void CertProvisioningWorkerDynamic::OnBuildVaChallengeResponseDone(
-    base::TimeTicks start_time,
     const attestation::TpmChallengeKeyResult& challenge_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  RecordVerifiedAccessTime(cert_profile_.protocol_version, cert_scope_,
-                           base::TimeTicks::Now() - start_time);
 
   if (!challenge_result.IsSuccess()) {
     failure_message_no_pii_ = ConstructFailureMessage(challenge_result);
@@ -809,7 +801,7 @@ void CertProvisioningWorkerDynamic::BuildProofOfPossession() {
           public_key_,
           base::BindRepeating(
               &CertProvisioningWorkerDynamic::OnBuildProofOfPossessionDone,
-              weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+              weak_factory_.GetWeakPtr()));
       break;
     case em::CertProvSignatureAlgorithm::SIGNATURE_ALGORITHM_ECDSA_SHA256:
       platform_keys_service_->SignEcdsa(
@@ -817,7 +809,7 @@ void CertProvisioningWorkerDynamic::BuildProofOfPossession() {
           public_key_, chromeos::platform_keys::HASH_ALGORITHM_SHA256,
           base::BindRepeating(
               &CertProvisioningWorkerDynamic::OnBuildProofOfPossessionDone,
-              weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+              weak_factory_.GetWeakPtr()));
       break;
     case em::CertProvSignatureAlgorithm::SIGNATURE_ALGORITHM_UNSPECIFIED:
       failure_message_no_pii_ = "Unknown signature algorithm";
@@ -830,13 +822,9 @@ void CertProvisioningWorkerDynamic::BuildProofOfPossession() {
 }
 
 void CertProvisioningWorkerDynamic::OnBuildProofOfPossessionDone(
-    base::TimeTicks start_time,
     std::vector<uint8_t> signature,
     chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  RecordDataSignTime(cert_profile_.protocol_version, cert_scope_,
-                     base::TimeTicks::Now() - start_time);
 
   if (status != chromeos::platform_keys::Status::kSuccess) {
     failure_message_no_pii_ =

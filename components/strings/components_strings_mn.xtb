@@ -696,7 +696,6 @@
 <translation id="2187317261103489799">Илрүүлэх (өгөгдмөл)</translation>
 <translation id="2188375229972301266">Доод буланд олон нүх цоолох</translation>
 <translation id="2194856509914051091">Анхаарч үзэх зүйлс</translation>
-<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" />-н талаар нэмэлт мэдээлэл авах</translation>
 <translation id="2200678913752027654">"Муу" товч, танд энэ зөвлөмж яагаад таалагдаагүй талаар нарийвчилсан санал хүсэлт илгээхэд зориулсан маягтыг нээхийн тулд Enter дээр дарна уу</translation>
 <translation id="2202627062836089804">таны картын ар тал</translation>
 <translation id="2204482073374652408">Шинэчилж дууслаа!</translation>
@@ -901,6 +900,7 @@
 <translation id="2539524384386349900">Илрүүлэх</translation>
 <translation id="2541219929084442027">Таныг бүх Нууцлалтай табаа хаасны дараагаар таны Нууцлалтай табуудад үзсэн хуудаснууд таны хөтчийн түүх, күүкиний дэлгүүр эсвэл хайлтын түүхэд үлдэхгүй. Таны татсан аливаа файл эсвэл үүсгэсэн хавчуургыг хадгална.</translation>
 <translation id="2542106216580219892">Сөрфинг</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – Бүтэн дэлгэцээс гарахын тулд |<ph name="ACCELERATOR" />| дээр удаан дарна уу</translation>
 <translation id="2544546346215446551">Таны администратор таны төхөөрөмжийг дахин эхлүүлсэн</translation>
 <translation id="2544644783021658368">Дан документ</translation>
 <translation id="254524874071906077">Chrome-ийг стандарт веб хөтөч болго</translation>
@@ -1810,6 +1810,7 @@
 <translation id="4150099059797363385">Хятад дугтуй #4</translation>
 <translation id="4151403195736952345">Global default-г ашиглах (Илрүүлэх)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Хуудас 1}other{Хуудас {COUNT}}}</translation>
+<translation id="4152670763139331043">{NUM_TABS,plural, =1{1 цонх}other{# цонх}}</translation>
 <translation id="4154277373259957087">Chrome одоо төлбөрийн хэрэгслийг бөглөхөөс өмнө таныг мөн болохыг баталгаажуулна. Та үүнийг хүссэн үедээ <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />-д шинэчлэх боломжтой.</translation>
 <translation id="415440494507469262">Харьцуулалтын хүснэгтэд таб нэмэх</translation>
 <translation id="4159784952369912983">Нил ягаан</translation>
@@ -2532,7 +2533,6 @@
             <ph name="LIST_ITEM" />Маягтуудад оруулсан мэдээлэл
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Нүүрээр нь дээш харуулж, хуудасны урвуу дарааллаар</translation>
-<translation id="5445340838622821110">Таныг цаг хугацааны явцад төлөхөд нэг удаагийн виртуал картын дугаарыг бөглөдөг. Энэ дугаар нь зөвхөн уг худалдан авалтад зориулагдсан. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" />-д таны талаар хадгалсан мэдээллээ ашиглахыг зөвшөөрнө үү</translation>
 <translation id="5451331376824595378">Аюулгүй байдлын үйлдлийг Chrome-с дарцагласан үед тухайн үйлдлийн талаарх хамааралтай өгөгдлийг танай администраторт илгээдэг. Үүнд таны Chrome-д зочилсон хуудасны URL, таны өгөгдөл хуулсан хуудасны URL, файлын нэр, мета өгөгдөл, IP хаяг, хөтөч, табын гэмтэл, таны вебд суурилсан аппликейшн, өөрийн төхөөрөмж, Chrome-д нэвтрэхдээ ашигладаг хэрэглэгчийн нэр багтаж болно.</translation>
 <translation id="5452270690849572955">Энэ <ph name="HOST_NAME" /> хуудас олдсонгүй</translation>
@@ -3932,6 +3932,7 @@
 <translation id="7887885240995164102">Дэлгэц доторх дэлгэц горимд орох</translation>
 <translation id="7888575728750733395">Хэвлэхэд өнгө буулгах тодорхойлолт</translation>
 <translation id="7890748547282909375">Дэлгэцийн агшныг хадгалахын тулд Microsoft OneDrive-д нэвтэрнэ үү</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – Курсороо харуулахын тулд |<ph name="ACCELERATOR" />| дээр дарна уу</translation>
 <translation id="7892865709991296481">төлбөрийн тохиргоо</translation>
 <translation id="7894280532028510793">Хэрэв алдаагүй, зөв бичсэн бол <ph name="BEGIN_LINK" />Сүлжээний оношилгоог ажиллуулж үзнэ үү<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Дугтуй 7 x 9 инч</translation>
@@ -3998,7 +3999,6 @@
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />Күүкинүүдээ устгаж үзэх<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">10 x 11 инч</translation>
 <translation id="8012647001091218357">Бид таны эцэг, эхтэй холбоо тогтоох боломжгүй байна. Та дахин хандаж үзнэ үү.</translation>
-<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">Аяллын агентлаг болон үйлчилгээнүүд</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-г системийн өгөгдмөл хөтөч болгон тохируулахын тулд tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="8027077570865220386">Тавиур 15</translation>
@@ -4625,6 +4625,7 @@
 <translation id="9155646082713385498">Сэтгүүлүүд</translation>
 <translation id="9157595877708044936">Тохиргоог хийж байна ...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> эмзэг контент агуулж байж магадгүй}other{<ph name="FILE_COUNT" /> файл эмзэг контент агуулж байж магадгүй}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – Бүтэн дэлгэцээс гарахын тулд |<ph name="ACCELERATOR" />| дээр дарна уу</translation>
 <translation id="9165305804774426672">Таны зочилсон сайтууд мөн сайт дээрх үйл ажиллагаанд тань тулгуурлан таны юунд дуртайг тодорхойлох боломжтой. Жишээ нь, хэрэв та холын зайн гүйлтийн гутал зардаг сайтад зочилсон бол тухайн сайт таныг марафонд гүйх сонирхолтой гэж үзэж болох юм.</translation>
 <translation id="9166851138617700776">Сайтын санал болгосон зар болон зарын хэмжигдэхүүний тухай дэлгэрэнгүй</translation>
 <translation id="9167054383925257837">Хөтөч болон төхөөрөмжийн OS-н мэдээлэл (хөтөч, OS-н хувилбар гэх мэт)</translation>

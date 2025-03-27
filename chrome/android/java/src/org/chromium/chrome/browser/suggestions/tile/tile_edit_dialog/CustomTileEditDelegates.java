@@ -18,6 +18,18 @@ import java.lang.annotation.Target;
 @NullMarked
 class CustomTileEditDelegates {
     @IntDef({
+        DialogMode.ADD_SHORTCUT,
+        DialogMode.EDIT_SHORTCUT,
+    })
+    @Target(ElementType.TYPE_USE)
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DialogMode {
+        int ADD_SHORTCUT = 0;
+        int EDIT_SHORTCUT = 1;
+        int NUM_ENTRIES = 2;
+    }
+
+    @IntDef({
         UrlErrorCode.NONE,
         UrlErrorCode.INVALID_URL,
         UrlErrorCode.DUPLICATE_URL,
@@ -55,11 +67,11 @@ class CustomTileEditDelegates {
         /**
          * Submits the changes to the tile.
          *
-         * @param title The new title of the tile.
+         * @param name The new name of the tile.
          * @param url The new URL of the tile.
          * @return True if the submission was successful, false otherwise.
          */
-        boolean submitChange(String title, GURL url);
+        boolean submitChange(String name, GURL url);
     }
 
     /**
@@ -69,14 +81,18 @@ class CustomTileEditDelegates {
      */
     interface MediatorToView {
         /**
-         * Sets the delegate for handling user interactions.
+         * Sets the mode under which the dialog is used.
          *
-         * @param delegate The delegate to receive interaction events.
+         * @param mode The mode to use.
          */
-        void setTitle(String title);
+        void setDialogMode(@DialogMode int mode);
 
-        /** Sets the focus to the URL input field. */
-        void focusOnUrl();
+        /**
+         * Sets the value in the Name input field.
+         *
+         * @param name The value set.
+         */
+        void setName(String name);
 
         /**
          * Sets the error message for the URL input field. Note that the error clears automatically
@@ -99,6 +115,9 @@ class CustomTileEditDelegates {
          * @param enable True to enable, false to disable.
          */
         void toggleSaveButton(boolean enable);
+
+        /** Sets the focus to the URL input field. */
+        void focusOnUrl();
     }
 
     /** Interface to handle interactions from the View. */
@@ -113,10 +132,10 @@ class CustomTileEditDelegates {
         /**
          * Notifies the delegate when the Save button is clicked.
          *
-         * @param title The title entered by the user.
-         * @param urlText The URL entered by the user.
+         * @param name The tile name entered by the user.
+         * @param urlText The tile URL entered by the user.
          */
-        void onSave(String title, String urlText);
+        void onSave(String name, String urlText);
 
         /** Notifies the delegate when the Close button is clicked. */
         void onCancel();

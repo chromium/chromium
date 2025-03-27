@@ -209,14 +209,44 @@ void DataSharingSDKDelegateDesktop::OnReadGroups(
   std::move(callback).Run(result);
 }
 
+void DataSharingSDKDelegateDesktop::OnReadGroupWithToken(
+    ReadGroupWithTokenCallback callback,
+    data_sharing::mojom::ReadGroupWithTokenResultPtr mojom_result) {
+  if (mojom_result->status_code != 0) {
+    std::move(callback).Run(base::unexpected(
+        absl::Status(static_cast<absl::StatusCode>(mojom_result->status_code),
+                     "Read Groups with token failed")));
+    return;
+  }
+  data_sharing_pb::ReadGroupsResult result;
+  *result.add_group_data() = ConvertGroup(mojom_result->group);
+  std::move(callback).Run(result);
+}
+
 void DataSharingSDKDelegateDesktop::ReadGroupWithToken(
     const data_sharing_pb::ReadGroupWithTokenParams& params,
     base::OnceCallback<void(
         const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&)>
         callback) {
-  // TODO(crbug.com/402208925): Implement this.
-  std::move(callback).Run(base::unexpected(absl::Status(
-      absl::StatusCode::kUnimplemented, "Read Groups not implemented")));
+  MaybeLoadWebContents(base::BindOnce(
+      [](data_sharing_pb::ReadGroupWithTokenParams params,
+         ReadGroupWithTokenCallback callback,
+         DataSharingSDKDelegateDesktop* delegate,
+         content::WebContents* web_contents) {
+        DataSharingPageHandler* handler =
+            static_cast<DataSharingUI*>(
+                web_contents->GetWebUI()->GetController())
+                ->page_handler();
+        CHECK(handler);
+        auto mojom_param = data_sharing::mojom::ReadGroupWithTokenParam::New();
+        mojom_param->group_id = params.group_id();
+        mojom_param->access_token = params.access_token();
+        handler->ReadGroupWithToken(
+            std::move(mojom_param),
+            base::BindOnce(&DataSharingSDKDelegateDesktop::OnReadGroupWithToken,
+                           base::Unretained(delegate), std::move(callback)));
+      },
+      params, std::move(callback), this));
 }
 
 void DataSharingSDKDelegateDesktop::OnLeaveGroup(

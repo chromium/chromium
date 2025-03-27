@@ -1599,6 +1599,21 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Bnpl.TosDialogShown.{IssuerName}" enum="BooleanShown"
+    expires_after="2025-07-01">
+  <owner>longsheng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The count for the number of times the BNPL ToS Dialog is shown. Records true
+    every time the dialog is shown.
+  </summary>
+  <token key="IssuerName">
+    <variant name="Affirm"/>
+    <variant name="Afterpay"/>
+    <variant name="Zip"/>
+  </token>
+</histogram>
+
 <histogram
     name="Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents"
     enum="ShowCardsFromGoogleAccountButtonEvent" expires_after="2025-08-31">
@@ -4553,20 +4568,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
-<histogram name="Autofill.Popup.NextIdleTimeTicksDelay" units="ms"
-    expires_after="2025-05-04">
-  <owner>jkeitel@google.com</owner>
-  <owner>schwering@google.com</owner>
-  <summary>
-    Records how long it took for the UI thread in the browser process to become
-    idle and record the TimeTicks at which the Autofill popup was shown. It is a
-    safe-guard metric: For the majority of cases, this time should be
-    negligible. Emitted whenever an Autofill popup (or keyboard acessory on
-    Android) is shown and the AutofillPopupImprovedTimingChecks feature is
-    enabled.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.Popup.VisibleDuration" units="ms"
     expires_after="2025-06-06">
   <owner>vykochko@google.com</owner>
@@ -5093,6 +5094,13 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     should switch from GET to POST, and if there are certain sizes of queries
     which are prone to failure.
   </summary>
+</histogram>
+
+<histogram name="Autofill.Query.GetUrlLength" units="bytes"
+    expires_after="2026-03-26">
+  <owner>doland@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>The length of url of GET request sent to Autofill Server.</summary>
 </histogram>
 
 <histogram name="Autofill.Query.HttpResponseOrErrorCode"

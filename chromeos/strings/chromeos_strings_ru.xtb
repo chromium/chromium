@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Используйте приложение "Перенос контента" от Google, чтобы заранее перенести информацию из учебного аккаунта в личный.</translation>
 <translation id="1026212596705997935">Это сочетание клавиш используется для действия "<ph name="CONFLICT_ACCEL_NAME" />". Нажмите его ещё раз, чтобы заменить исходное сочетание клавиш, или выберите новое.</translation>
 <translation id="1030856839388844477">Сбросить данные</translation>
+<translation id="1047095725494118091">При скачивании произошла ошибка. Повторите попытку или перезагрузите <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоки: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">Доступна новая функция. Чтобы получить подробную информацию, нажмите на стрелку вверх.</translation>
 <translation id="1049663189809099096">пастельно-желтый</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Скачивание заставки</translation>
 <translation id="1094693127011229778">IP-адрес недоступен.</translation>
 <translation id="1100902271996134409">Создание изображений…</translation>
+<translation id="1107856713690040084">Аудио <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">О продукте</translation>
 <translation id="1118572504348554005">Чтобы устранять ошибки, о которых сообщают пользователи, мы можем передавать нашим партнерам отзывы, оставленные с помощью этой формы. Не указывайте в ней пароли и другую конфиденциальную информацию.</translation>
 <translation id="1119403468619527527">Выделено слишком мало слов</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Включить тёмную тему</translation>
 <translation id="2164131940279488868">Перед началом записи аудио убедитесь, что у вас подключен микрофон.</translation>
 <translation id="2173302385160625112">Проверьте подключение к интернету.</translation>
+<translation id="2176909213844392588">Не удается скачать модель для расшифровки аудио на этом языке: <ph name="LANGUAGE_NAME" />. Повторите попытку или перезагрузите <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">Произошла ошибка. Попробуйте открыть приложение заново.</translation>
 <translation id="2189104374785738357">Изменение данных точки доступа</translation>
 <translation id="2195732836444333448">На сервере недостаточно ресурсов. Попробуйте ещё раз немного позже.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Автоподатчик документов (двусторонний)</translation>
 <translation id="3201315366910775591">Другие пользователи могут обновлять общие альбомы</translation>
 <translation id="3211671540163313381">D-pad для привязки клавиш</translation>
+<translation id="3217462202230355157">Убедитесь, что микрофон подключен, или перезагрузите <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3226405216343213872">Поиск сканеров…</translation>
 <translation id="3226657629376379887">Меню действий, связанных с раскладкой</translation>
 <translation id="3227186760713762082">Разделите значение "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Эксклюзивно</translation>
 <translation id="3404249063913988450">Включить заставку</translation>
 <translation id="3413935475507503304">Чтобы выполнить обновление, нажмите "Далее".</translation>
+<translation id="3416709353545797224">Записываются все звуки с устройства <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">под открытым небом</translation>
 <translation id="3428971106895559033">пастельный</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Убедитесь, что сканер работает и доступен для подключения напрямую или по сети.</translation>
 <translation id="4159238217853743776">Окна разного размера</translation>
 <translation id="4159784952369912983">Фиолетовый</translation>
+<translation id="416219735020840807">Не удалось скачать модель для расшифровки аудио. Повторите попытку или перезагрузите <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4170180284036919717">Сделать снимок</translation>
 <translation id="4170700058716978431">ОШИБКА</translation>
 <translation id="4171077696775491955">уменьшить яркость</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Замена выделенного текста предложенным</translation>
 <translation id="5346687412805619883">Локальная сеть</translation>
 <translation id="5358174242040570474">Произошла ошибка. Выберите обои ещё раз или закройте и снова откройте приложение.</translation>
+<translation id="5368228070728130240">Не удалось скачать модель для создания заглавий и кратких пересказов. Повторите попытку или перезагрузите <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">Сеть Wi-Fi недостаточно безопасна.</translation>
 <translation id="5376354385557966694">Автоматическая светлая тема</translation>
 <translation id="5378184552853359930">Тип IP-адреса</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">невыполненные преобразования DNS</translation>
 <translation id="6768237774506518020">большое число невыполненных преобразований DNS</translation>
 <translation id="6786747875388722282">Расширения</translation>
+<translation id="6789891265243243337">При включенном параметре "Аудио <ph name="DEVICE_TYPE" />" Диктофон записывает любое аудио, которое звучит на этом устройстве.</translation>
 <translation id="6791471867139427246">цвет подсветки клавиатуры</translation>
 <translation id="6796229976413584781">Сочетание клавиш удалено</translation>
 <translation id="6798678288485555829">Навигация по тексту</translation>
@@ -1728,6 +1736,7 @@
 <translation id="8930622219860340959">Беспроводная связь</translation>
 <translation id="8933650076320258356">Выбрана клавиша "<ph name="KEYS" />", которая определяет направление (<ph name="DIRECTION" />). <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">IP-адрес клиента</translation>
+<translation id="8938606491880817721">Не удалось скачать модель. Повторите попытку или перезагрузите <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8944651180182756621">Цвет панели запуска</translation>
 <translation id="8945308580158685341">пчелы</translation>
 <translation id="894617464444543719">Это телефон.</translation>

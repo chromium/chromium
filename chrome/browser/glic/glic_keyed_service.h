@@ -168,6 +168,7 @@ class GlicKeyedService : public KeyedService {
   bool IsActiveWebContents(content::WebContents* contents);
 
   virtual void TryPreload();
+  virtual void TryPreloadFre();
   void Reload();
 
   Profile* profile() const { return profile_; }

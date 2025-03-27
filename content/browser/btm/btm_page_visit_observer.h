@@ -87,6 +87,8 @@ class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
   void WebAuthnAssertionRequestSucceeded(
       RenderFrameHost* render_frame_host) override;
 
+  void SetClockForTesting(base::Clock* clock) { clock_ = CHECK_DEREF(clock); }
+
  private:
   // Execute the visit callback with a tuple from the pending queue.
   void ReportVisit();

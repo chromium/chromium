@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Enne juurdepääsu kaotamist kasutage kindlasti Google’i rakendust Sisuedastus, et kanda koolikonto andmed üle isiklikule kontole.</translation>
 <translation id="1026212596705997935">Otseteed kasutatakse käsu „<ph name="CONFLICT_ACCEL_NAME" />“ jaoks. Vajutage uut klahvikombinatsiooni. Olemasoleva otsetee asendamiseks vajutage seda klahvikombinatsiooni uuesti.</translation>
 <translation id="1030856839388844477">Andmekasutuse lähtestamine</translation>
+<translation id="1047095725494118091">Ei saa alla laadida. Proovige uuesti või taaskäivitage <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> haru, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Uued funktsioonid on saadaval. Lisateabe saamiseks kasutage ülesnoolt.</translation>
 <translation id="1049663189809099096">pastellkollane</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Ekraanisäästja allalaadimine</translation>
 <translation id="1094693127011229778">IP-aadress pole saadaval</translation>
 <translation id="1100902271996134409">Kujutiste loomine …</translation>
+<translation id="1107856713690040084">Seadme <ph name="DEVICE_TYPE" /> heli</translation>
 <translation id="1116694919640316211">Teave</translation>
 <translation id="1118572504348554005">Võime selle vormi kaudu saadetud tagasisidet jagada oma partneritega, et teha veaotsingut vigade ja muude probleemide jaoks, millest meid teavitate. Ärge lisage delikaatset teavet, näiteks paroole.</translation>
 <translation id="1119403468619527527">Lihtsustamiseks on liiga vähe sõnu</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Tumeda režiimi sisselülitamine</translation>
 <translation id="2164131940279488868">Heli salvestamise alustamiseks veenduge, et mikrofon oleks ühendatud</translation>
 <translation id="2173302385160625112">Kontrollige Interneti-ühendust</translation>
+<translation id="2176909213844392588">Transkriptsioonimudelit (<ph name="LANGUAGE_NAME" />) ei saa alla laadida. Proovige uuesti või taaskäivitage <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">Midagi läks valesti. Proovige rakendus uuesti avada.</translation>
 <translation id="2189104374785738357">APN-i üksikasjade muutmine</translation>
 <translation id="2195732836444333448">Maht on praegu täis. Tulge varsti tagasi.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Dokumendisöötur (kahepoolne)</translation>
 <translation id="3201315366910775591">Teised võivad jagatud albumeid värskendada.</translation>
 <translation id="3211671540163313381">Klahvide vastendamine, juhtimisklahvistik</translation>
+<translation id="3217462202230355157">Veenduge, et mikrofon oleks ühendatud, või proovige <ph name="DEVICE_TYPE" /> taaskäivitada</translation>
 <translation id="3226405216343213872">Skannerite otsimine</translation>
 <translation id="3226657629376379887">Paigutuse toimingute menüü</translation>
 <translation id="3227186760713762082">Jagage <ph name="CATEGORY_TEXT" /> arvuga <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Eksklusiivne</translation>
 <translation id="3404249063913988450">Ekraanisäästja lubamine</translation>
 <translation id="3413935475507503304">Värskendamisega jätkamiseks klõpsake nupul Järgmine.</translation>
+<translation id="3416709353545797224">Seadme <ph name="DEVICE_TYPE" /> kõigi helide salvestamine</translation>
 <translation id="3428551088151258685">loodus</translation>
 <translation id="3428971106895559033">pastelne</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Veenduge, et skanner oleks sisse lülitatud ja teie võrgus või otseühenduse kaudu saadaval</translation>
 <translation id="4159238217853743776">Osaline</translation>
 <translation id="4159784952369912983">Lilla</translation>
+<translation id="416219735020840807">Transkriptsioonimudelit ei saa alla laadida. Proovige uuesti või taaskäivitage <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4170180284036919717">Pildista</translation>
 <translation id="4170700058716978431">EBAÕNNESTUS</translation>
 <translation id="4171077696775491955">vähendab heledust</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Valitud teksti asendamine soovitusega</translation>
 <translation id="5346687412805619883">Kohalik võrk</translation>
 <translation id="5358174242040570474">Midagi läks valesti. Proovige taustapilt uuesti valida või avage rakendus uuesti.</translation>
+<translation id="5368228070728130240">Kokkuvõtete ja pealkirjade loomise mudelit ei saa alla laadida. Proovige uuesti või taaskäivitage <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">WiFi-võrk pole turvaline</translation>
 <translation id="5376354385557966694">Automaatne hele režiim</translation>
 <translation id="5378184552853359930">IP tüüp</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">Ebaõnnestunud DNS-lahendused</translation>
 <translation id="6768237774506518020">DNS-lahenduste ebaõnnestumiste kõrge määr</translation>
 <translation id="6786747875388722282">Laiendused</translation>
+<translation id="6789891265243243337">Kui seadme <ph name="DEVICE_TYPE" /> heli on sisse lülitatud, jäädvustab helisalvesti kõik selles seadmes esitatavad helid.</translation>
 <translation id="6791471867139427246">klaviatuurivalguse värv</translation>
 <translation id="6796229976413584781">Otsetee kustutati</translation>
 <translation id="6798678288485555829">Tekstis navigeerimine</translation>
@@ -1728,6 +1736,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8930622219860340959">Raadiovõrk</translation>
 <translation id="8933650076320258356">Suuna <ph name="DIRECTION" /> jaoks on valitud klahv <ph name="KEYS" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Kliendi IP-aadress</translation>
+<translation id="8938606491880817721">Ei saa alla laadida. Proovige uuesti või taaskäivitage <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8944651180182756621">Käivitaja värv</translation>
 <translation id="8945308580158685341">mesilased</translation>
 <translation id="894617464444543719">Seade on telefon.</translation>

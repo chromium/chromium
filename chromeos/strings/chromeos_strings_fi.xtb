@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Muista siirtää koulutilin data henkilökohtaiselle tilillesi Googlen Sisällön siirto ‑sovelluksella ennen kuin menetät pääsyn.</translation>
 <translation id="1026212596705997935">Pikanäppäintä käytetään tähän: "<ph name="CONFLICT_ACCEL_NAME" />". Paina uutta pikanäppäintä. Jos haluat korvata nykyisen pikanäppäimen, paina tätä pikanäppäintä uudelleen.</translation>
 <translation id="1030856839388844477">Nollaa datan käyttö</translation>
+<translation id="1047095725494118091">Ei voi ladata. Yritä uudelleen tai käynnistä <ph name="DEVICE_TYPE" /> uudelleen.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> viestiketju, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Uusi ominaisuus saatavilla, tutki sitä painamalla ylänuolta.</translation>
 <translation id="1049663189809099096">pastellinkeltainen</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Ladataan näytönsäästäjää</translation>
 <translation id="1094693127011229778">IP-osoite ei ole käytettävissä</translation>
 <translation id="1100902271996134409">Luodaan kuvia…</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" />-ääni</translation>
 <translation id="1116694919640316211">Tietoja asetuksista</translation>
 <translation id="1118572504348554005">Saatamme jakaa tämän lomakkeen kautta lähetetyn palautteen yhteistyökumppaneillemme bugien ja muiden ilmoittamiesi virheiden korjausta varten. Älä kerro arkaluontoisia tietoja, esimerkiksi salasanaa.</translation>
 <translation id="1119403468619527527">Sanoja on liian vähän yksinkertaistamista varten</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Ota tumma tila käyttöön</translation>
 <translation id="2164131940279488868">Varmista, että mikrofoni on yhdistetty, jotta voit aloittaa äänen tallennuksen</translation>
 <translation id="2173302385160625112">Tarkista internetyhteytesi</translation>
+<translation id="2176909213844392588">Ei voi ladata transkriptiomallia, jonka kieli on <ph name="LANGUAGE_NAME" />. Yritä uudelleen tai käynnistä <ph name="DEVICE_TYPE" /> uudelleen.</translation>
 <translation id="2180197493692062006">Jotain meni pieleen. Kokeile avata sovellus uudelleen.</translation>
 <translation id="2189104374785738357">Muokkaa APN-tietoja</translation>
 <translation id="2195732836444333448">Kapasiteettia ei juuri nyt ole riittävästi. Tarkista tilanne pian uudelleen.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Syöttölaite (kaksipuolinen)</translation>
 <translation id="3201315366910775591">Muut voivat päivittää jaettuja albumeita</translation>
 <translation id="3211671540163313381">Näppäinkartan suuntanäppäimet</translation>
+<translation id="3217462202230355157">Varmista, että mikrofoni on kytketty, tai yritä käynnistää <ph name="DEVICE_TYPE" /> uudelleen</translation>
 <translation id="3226405216343213872">Haetaan skannereita</translation>
 <translation id="3226657629376379887">Asettelun toimintovalikko</translation>
 <translation id="3227186760713762082">Jaa <ph name="CATEGORY_TEXT" /> tällä luvulla: <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Eksklusiivinen</translation>
 <translation id="3404249063913988450">Ota näytönsäästäjä käyttöön</translation>
 <translation id="3413935475507503304">Jatka päivitystä valitsemalla Seuraava</translation>
+<translation id="3416709353545797224">Tallennetaan kaikkea laitteen (<ph name="DEVICE_TYPE" />) audiota</translation>
 <translation id="3428551088151258685">ulkona</translation>
 <translation id="3428971106895559033">pastelli</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Varmista, että skanneri on päällä ja käytettävissä verkkosi tai suoran yhteyden kautta</translation>
 <translation id="4159238217853743776">Osittainen</translation>
 <translation id="4159784952369912983">Violetti</translation>
+<translation id="416219735020840807">Transkriptiomallia ei voi ladata. Yritä uudelleen tai käynnistä <ph name="DEVICE_TYPE" /> uudelleen.</translation>
 <translation id="4170180284036919717">Ota kuva</translation>
 <translation id="4170700058716978431">EPÄONNISTUI</translation>
 <translation id="4171077696775491955">vähennä kirkkautta.</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Valittu teksti korvataan ehdotuksella</translation>
 <translation id="5346687412805619883">Paikallinen verkko</translation>
 <translation id="5358174242040570474">Jotain meni pieleen. Kokeile valita taustakuva uudelleen tai avaa sovellus.</translation>
+<translation id="5368228070728130240">Yhteenveto- ja nimenluontimallia ei voi ladata. Yritä uudelleen tai käynnistä <ph name="DEVICE_TYPE" /> uudelleen.</translation>
 <translation id="5372659122375744710">Wi-Fi-verkko ei ole suojattu</translation>
 <translation id="5376354385557966694">Automaattinen vaalea tila</translation>
 <translation id="5378184552853359930">IP-tyyppi</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">Hylätyt DNS-selvitykset</translation>
 <translation id="6768237774506518020">Suuri DNS-selvitysten hylkäysprosentti</translation>
 <translation id="6786747875388722282">Laajennukset</translation>
+<translation id="6789891265243243337">Kun laitteen (<ph name="DEVICE_TYPE" />) audio on päällä, Tallentaja tallentaa kaiken laitteella toistettavan audion</translation>
 <translation id="6791471867139427246">näppäimistön vaaleat värit</translation>
 <translation id="6796229976413584781">Pikanäppäin poistettu</translation>
 <translation id="6798678288485555829">Tekstissä siirtyminen</translation>
@@ -1728,6 +1736,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8930622219860340959">Langaton</translation>
 <translation id="8933650076320258356">Valittu avain on <ph name="KEYS" /> (<ph name="DIRECTION" />). <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Asiakkaan IP-osoite</translation>
+<translation id="8938606491880817721">Lataaminen ei onnistu. Yritä uudelleen tai käynnistä <ph name="DEVICE_TYPE" /> uudelleen.</translation>
 <translation id="8944651180182756621">Käynnistysohjelman väri</translation>
 <translation id="8945308580158685341">mehiläiset</translation>
 <translation id="894617464444543719">Laite on puhelin.</translation>

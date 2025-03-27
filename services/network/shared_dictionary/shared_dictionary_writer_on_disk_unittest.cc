@@ -41,7 +41,7 @@ net::SHA256HashValue GetHash(const std::string& data) {
       crypto::SecureHash::Create(crypto::SecureHash::SHA256);
   secure_hash->Update(data.c_str(), data.size());
   net::SHA256HashValue sha256;
-  secure_hash->Finish(sha256.data, sizeof(sha256.data));
+  secure_hash->Finish(sha256);
   return sha256;
 }
 

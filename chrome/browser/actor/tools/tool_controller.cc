@@ -4,36 +4,37 @@
 
 #include "chrome/browser/actor/tools/tool_controller.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/memory/safe_ref.h"
+#include "base/notimplemented.h"
+#include "chrome/browser/actor/tools/navigate_tool.h"
+#include "chrome/browser/actor/tools/page_tool.h"
+#include "chrome/browser/actor/tools/tool.h"
+#include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_invocation.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
-#include "components/tab_collections/public/tab_interface.h"
-#include "content/public/browser/render_frame_host.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "url/gurl.h"
 
 using content::RenderFrameHost;
-using mojo::AssociatedRemote;
+using optimization_guide::proto::ActionInformation;
 using tabs::TabInterface;
 
 namespace actor {
 
-namespace {
-// Callback for the reply to the InvokeTool call on a page-level request. This
-// is mainly a helper to hold the mojo interface until the reply is received.
-void PageInvokeToolReply(
-    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
-        chrome_render_frame,
-    ToolInvocation::ResultCallback result_callback,
-    bool result_success) {
-  std::move(result_callback).Run(result_success);
+ToolController::ActiveState::ActiveState(
+    std::unique_ptr<Tool> tool,
+    ToolInvocation::ResultCallback completion_callback)
+    : tool(std::move(tool)),
+      completion_callback(std::move(completion_callback)) {
+  CHECK(this->tool);
+  CHECK(!this->completion_callback.is_null());
 }
-}  // namespace
+ToolController::ActiveState::~ActiveState() = default;
 
 ToolController::ToolController() {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
@@ -41,40 +42,90 @@ ToolController::ToolController() {
 
 ToolController::~ToolController() = default;
 
+std::unique_ptr<Tool> ToolController::CreateTool(
+    RenderFrameHost& frame,
+    const ToolInvocation& invocation) {
+  switch (invocation.GetActionInfo().action_info_case()) {
+    case ActionInformation::kClick:
+    case ActionInformation::kType:
+    case ActionInformation::kScroll:
+    case ActionInformation::kMoveMouse:
+    case ActionInformation::kDragAndRelease:
+    case ActionInformation::kSelect: {
+      // PageTools are all implemented in the renderer so share the PageTool
+      // implementation to shuttle them there.
+      return std::make_unique<PageTool>(frame, invocation);
+    }
+    case ActionInformation::kNavigate: {
+      TabInterface* tab = invocation.FindTargetTab();
+      GURL url(invocation.GetActionInfo().navigate().url());
+      return std::make_unique<NavigateTool>(*tab, url);
+    }
+    case ActionInformation::kBack:
+      // TODO(crbug.com/402730958): Implement
+      NOTIMPLEMENTED();
+      return nullptr;
+    case ActionInformation::kForward:
+      // TODO(crbug.com/402730309): Implement
+      NOTIMPLEMENTED();
+      return nullptr;
+    case ActionInformation::kWait:
+      // TODO(crbug.com/402730309): Implement
+      NOTIMPLEMENTED();
+      return nullptr;
+    case ActionInformation::ACTION_INFO_NOT_SET:
+      NOTREACHED();
+  }
+}
+
 void ToolController::Invoke(const ToolInvocation& invocation,
                             ToolInvocation::ResultCallback result_callback) {
-  TabInterface* target_tab = invocation.FindTargetTab();
-  if (!target_tab) {
+  RenderFrameHost* target_frame = invocation.FindTargetFrame();
+  if (!target_frame) {
     // The tab for this action was closed.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(result_callback), false));
+    PostResponseTask(std::move(result_callback), false);
     return;
   }
 
-  if (invocation.IsTargetingPage()) {
-    RenderFrameHost* frame = invocation.FindTargetFrame();
+  std::unique_ptr<Tool> created_tool = CreateTool(*target_frame, invocation);
 
-    AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
-    frame->GetRemoteAssociatedInterfaces()->GetInterface(&chrome_render_frame);
-
-    auto request = actor::mojom::ToolInvocation::New();
-    // TODO(crbug.com/398849001): Fill this struct out
-    request->dom_node_id = invocation.GetTargetDOMNodeId();
-
-    // Bind the mojo remote into the callback to keep it alive in order to
-    // receive the response.
-    chrome::mojom::ChromeRenderFrame::Proxy_* chrome_render_frame_proxy =
-        chrome_render_frame.get();
-    auto reply_callback =
-        base::BindOnce(&PageInvokeToolReply, std::move(chrome_render_frame),
-                       std::move(result_callback));
-
-    chrome_render_frame_proxy->InvokeTool(std::move(request),
-                                          std::move(reply_callback));
-  } else {
-    CHECK(invocation.IsTargetingTab());
-    // TODO(crbug.com/402731599): Implement tab-level actions.
+  if (!created_tool) {
+    // Tool not found.
+    PostResponseTask(std::move(result_callback), false);
+    return;
   }
+
+  active_state_.emplace(std::move(created_tool), std::move(result_callback));
+
+  active_state_->tool->Validate(base::BindOnce(
+      &ToolController::ValidationComplete, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ToolController::ValidationComplete(bool success) {
+  if (!active_state_) {
+    return;
+  }
+
+  // TODO(crbug.com/389739308): Provide more detail of failure to the caller.
+  if (!success) {
+    CompleteToolRequest(/*result=*/false);
+    return;
+  }
+
+  // TODO(crbug.com/389739308): Ensure the acting tab remains valid (i.e. alive
+  // and focused), return error otherwise.
+
+  // Pass this by SafeRef since `this` owns the tool and any async behavior in
+  // the tool should be tied to its lifetime.
+  active_state_->tool->Invoke(base::BindOnce(
+      &ToolController::CompleteToolRequest, weak_ptr_factory_.GetSafeRef()));
+}
+
+void ToolController::CompleteToolRequest(bool result) {
+  CHECK(active_state_);
+  PostResponseTask(std::move(active_state_->completion_callback), result);
+
+  active_state_.reset();
 }
 
 }  // namespace actor

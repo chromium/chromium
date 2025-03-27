@@ -61,12 +61,8 @@ DataSharingServiceFactory::~DataSharingServiceFactory() = default;
 std::unique_ptr<KeyedService>
 DataSharingServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  bool isFeatureEnabled = base::FeatureList::IsEnabled(
-                              data_sharing::features::kDataSharingFeature) ||
-                          base::FeatureList::IsEnabled(
-                              data_sharing::features::kDataSharingJoinOnly);
-
-  if (!isFeatureEnabled || context->IsOffTheRecord()) {
+  if (!features::IsDataSharingFunctionalityEnabled() ||
+      context->IsOffTheRecord()) {
     return std::make_unique<EmptyDataSharingService>();
   }
 

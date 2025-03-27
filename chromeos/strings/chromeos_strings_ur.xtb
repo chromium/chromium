@@ -11,6 +11,7 @@
 <translation id="102432830749687801">‏رسائی کھونے سے پہلے اپنے اسکول اکاؤنٹ کے ڈیٹا کو اپنے ذاتی اکاؤنٹ میں منتقل کرنے کیلئے Google کی مواد کی منتقلی ایپ کا استعمال کرنا نہ بھولیں۔</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />" کے لیے شارٹ کٹ استعمال کیا جا رہا ہے۔ ایک نیا شارٹ کٹ دبائیں۔ موجودہ شارٹ کٹ تبدیل کرنے کے لیے، اس شارٹ کٹ کو دوبارہ دبائیں۔</translation>
 <translation id="1030856839388844477">ڈیٹا کا استعمال ری سیٹ کریں</translation>
+<translation id="1047095725494118091">ڈاؤن لوڈ نہیں کر سکتے۔ دوبارہ کوشش کریں یا اپنے <ph name="DEVICE_TYPE" /> کو ری سٹارٹ کریں۔</translation>
 <translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> تھریڈز، GHz<ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">نئی خصوصیت دستیاب ہے، مزید جاننے کے لئے اوپر تیر کے نشان کی کلید کا استعمال کریں۔</translation>
 <translation id="1049663189809099096">پیسٹل پیلا</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">اسکرین سیور ڈاؤن لوڈ ہو رہا ہے</translation>
 <translation id="1094693127011229778">‏IP پتہ دستیاب نہیں ہے</translation>
 <translation id="1100902271996134409">تصاویر تخلیق ہو رہی ہے...</translation>
+<translation id="1107856713690040084">‫<ph name="DEVICE_TYPE" /> آڈیو</translation>
 <translation id="1116694919640316211">تعارف</translation>
 <translation id="1118572504348554005">ہم اس فارم کے ذریعے جمع کرائے گئے تاثرات کا اپنے پارٹنرز کے ساتھ بگز اور دیگر مسائل جن کی آپ ہمیں رپورٹ کرتے ہیں کو حل کرنے کے لیے اشتراک کر سکتے ہیں۔ پاس ورڈز جیسی حساس معلومات شامل نہ کریں۔</translation>
 <translation id="1119403468619527527">آسان بنانے کے لیے بہت کم الفاظ</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">تاریک وضع آن کریں</translation>
 <translation id="2164131940279488868">آڈیو ریکارڈ کرنا شروع کرنے کے لیے یقینی بنائيں کہ کوئی مائيک منسلک ہے</translation>
 <translation id="2173302385160625112">اپنا انٹرنیٹ کنکشن چیک کریں</translation>
+<translation id="2176909213844392588">‫<ph name="LANGUAGE_NAME" /> کے ٹرانسکرپشن ماڈل کو ڈاؤن لوڈ نہیں کیا جا سکتا۔ دوبارہ کوشش کریں یا اپنے <ph name="DEVICE_TYPE" /> کو ری سٹارٹ کریں۔</translation>
 <translation id="2180197493692062006">کچھ غلط ہوگیا۔ ایپ کو دوبار کھولنے کی کوشش کریں۔</translation>
 <translation id="2189104374785738357">‏APN کی تفصیلات میں ترمیم کریں</translation>
 <translation id="2195732836444333448">فی الحال گنجائش نہیں ہے۔ بعد میں واپس آئیں۔</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">دستاویز فیڈر (دو طرفہ)</translation>
 <translation id="3201315366910775591">اشتراک کردہ البمز کو دیگر لوگ اپ ڈیٹ کر سکتے ہیں</translation>
 <translation id="3211671540163313381">‏کلید کی نقشہ سازی کا D-pad</translation>
+<translation id="3217462202230355157">یقینی بنائیں کہ آپ کا مائیک منسلک ہے یا اپنا <ph name="DEVICE_TYPE" /> ری سٹارٹ کرنے کی کوشش کریں</translation>
 <translation id="3226405216343213872">اسکینرز کی تلاش جاری ہے</translation>
 <translation id="3226657629376379887">لے آؤٹ کارروائیوں کا مینیو</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> قدر کو <ph name="CONVERSION_RATE" /> سے تقسیم کریں</translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">خصوصی</translation>
 <translation id="3404249063913988450">اسکرین سیور فعال کریں</translation>
 <translation id="3413935475507503304">اپ ڈیٹ کے ساتھ آگے بڑھنے کے لیے اگلے پر کلک کریں۔</translation>
+<translation id="3416709353545797224">سبھی <ph name="DEVICE_TYPE" /> آڈیو کو ریکارڈ کیا جا رہا ہے</translation>
 <translation id="3428551088151258685">آؤٹ ڈور</translation>
 <translation id="3428971106895559033">پھیکا زرد رنگ</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">یقینی بنائیں کہ اسکینر آن ہے اور آپ کے نیٹ ورک یا براہ راست کنکشن کے ذریعے دستیاب ہے</translation>
 <translation id="4159238217853743776">جزوی</translation>
 <translation id="4159784952369912983">جامنی</translation>
+<translation id="416219735020840807">ٹرانسکرپشن ماڈل ڈاؤن لوڈ نہیں کر سکتے۔ دوبارہ کوشش کریں یا اپنے <ph name="DEVICE_TYPE" /> کو ری سٹارٹ کریں۔</translation>
 <translation id="4170180284036919717">ایک تصویر لیں</translation>
 <translation id="4170700058716978431">ناکام</translation>
 <translation id="4171077696775491955">چمک کم کریں</translation>
@@ -698,6 +704,16 @@
 <translation id="4249717042534905822">اتوار کو</translation>
 <translation id="4250229828105606438">اسکرین شاٹ</translation>
 <translation id="4251839292699800785">اسٹائلش آفس</translation>
+<translation id="4252261480746798874">‏جب آپ "اپنا خود کا بنائیں" کو منتخب کرتے ہیں تو آپ ایک حسب ضرورت پرامپٹ لکھ سکتے ہیں۔ آپ "ایک تھیم منتخب کریں" کا بھی انتخاب کر سکتے ہیں اور پھر اپنے AI وال پیپر کو ذاتی نوعیت کا بنانے کے لیے انڈر لائن کردہ الفاظ کا بھی انتخاب کر سکتے ہیں۔
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          مزید منفرد اور متنوع AI تصاویر کے اختیارات حاصل کرنے کے لیے "مجھے آئیڈیاز فراہم کریں" کو منتخب کریں۔
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          جب آپ اپنا خود کا وال پیپر بناتے ہیں تو تصاویر تخلیق کرنے اور پروڈکٹ کو بہتر بنانے کیلئے پرامپٹ Google سرورز کو بھیجا جاتا ہے، یہ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google کی سروس کی شرائط اور رازداری کی پالیسی<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> سے مشروط ہے۔ کوئی بھی ذاتی، حساس یا رازدارانہ چیز شامل نہ کریں۔
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          تخلیق کر سکنے والا AI غلطیاں کر سکتا ہے، بشمول لوگوں کے بارے میں، لہذا اسے دوبارہ چیک کریں۔ <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />مزید جانیں<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">‏HTTPS کی درخواستوں میں تاخیر</translation>
 <translation id="4266143281602681663">دھاگا</translation>
 <translation id="4269815121975886860">ابتدائی ترجیحات</translation>
@@ -942,6 +958,7 @@
 <translation id="5344619683981067131">منتخب ٹیکسٹ کو تجویز سے تبدیل کیا جار ہا ہے</translation>
 <translation id="5346687412805619883">مقامی نیٹ ورک</translation>
 <translation id="5358174242040570474">کچھ غلط ہوگیا۔ وال پیپر کو دوبارہ منتخب کرنے کی کوشش کریں یا ایپ کو دوبارہ کھولیں۔</translation>
+<translation id="5368228070728130240">خلاصہ اور عنوان کی تخلیق کا ماڈل ڈاؤن لوڈ نہیں کر سکتے۔ دوبارہ کوشش کریں یا اپنے <ph name="DEVICE_TYPE" /> کو ری سٹارٹ کریں۔</translation>
 <translation id="5372659122375744710">‏WiFi نیٹ ورک محفوظ نہیں ہے</translation>
 <translation id="5376354385557966694">خودکار لائٹ موڈ</translation>
 <translation id="5378184552853359930">‏IP کی قسم</translation>
@@ -1247,6 +1264,7 @@
 <translation id="6766275201586212568">‏ناکام DNS ریزولیوشنز</translation>
 <translation id="6768237774506518020">‏DNS ریزولیوشن ناکام ہونے کی زیادہ شرح</translation>
 <translation id="6786747875388722282">توسیعات</translation>
+<translation id="6789891265243243337">‫<ph name="DEVICE_TYPE" /> آڈیو آن ہونے پر، ریکارڈر اس آلے پر چلنے والی تمام آڈیوز کو کیپچر کرتا ہے</translation>
 <translation id="6791471867139427246">کی بورڈ کا ہلکا رنگ</translation>
 <translation id="6796229976413584781">شارٹ کٹ حذف کیا گیا</translation>
 <translation id="6798678288485555829">ٹیکسٹ نیویگیشن</translation>
@@ -1718,6 +1736,7 @@
 <translation id="8930622219860340959">وائرلیس</translation>
 <translation id="8933650076320258356"><ph name="DIRECTION" /> کے لیے <ph name="KEYS" /> کلید منتخب کی گئی ہے۔ <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">‏کلائنٹ IP پتہ</translation>
+<translation id="8938606491880817721">ڈاؤن لوڈ نہیں کر سکتے۔ دوبارہ کوشش کریں یا اپنے <ph name="DEVICE_TYPE" /> کو ری سٹارٹ کریں۔</translation>
 <translation id="8944651180182756621">لانچر کا رنگ</translation>
 <translation id="8945308580158685341">شہد کی مکھیاں</translation>
 <translation id="894617464444543719">آلہ ایک فون ہے۔</translation>

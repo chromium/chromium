@@ -1715,7 +1715,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
       extension_offset.set_y(0);
 
       if (!inner_.GetRadii().TopLeft().IsZero()) {
-        if (outer_.GetCornerCurvature().TopLeft() >= 1) {
+        if (outer_.GetCornerCurvature().TopLeft() >= 2) {
           FindIntersection(
               edge_quad[0], edge_quad[1],
               gfx::PointF(
@@ -1726,7 +1726,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                   edge_quad[1].y() + inner_.GetRadii().TopLeft().height()),
               edge_quad[1]);
         } else {
-          edge_quad[1] = inner_.TopLeftCorner().HullPoint();
+          edge_quad[1] = inner_.TopLeftCorner().Center();
         }
         DCHECK(bound_quad1.y() <= edge_quad[1].y());
         bound_quad1.set_y(edge_quad[1].y());
@@ -1749,7 +1749,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
       }
 
       if (!inner_.GetRadii().TopRight().IsZero()) {
-        if (inner_.GetCornerCurvature().TopRight() >= 1) {
+        if (inner_.GetCornerCurvature().TopRight() >= 2) {
           FindIntersection(
               edge_quad[3], edge_quad[2],
               gfx::PointF(
@@ -1760,7 +1760,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                   edge_quad[2].y() + inner_.GetRadii().TopRight().height()),
               edge_quad[2]);
         } else {
-          edge_quad[2] = inner_.TopRightCorner().HullPoint();
+          edge_quad[2] = inner_.TopRightCorner().Center();
         }
         if (bound_quad1.y() < edge_quad[2].y()) {
           bound_quad1.set_y(edge_quad[2].y());
@@ -1802,7 +1802,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
       extension_offset.set_y(kExtensionLength);
 
       if (!inner_.GetRadii().TopLeft().IsZero()) {
-        if (outer_.GetCornerCurvature().TopLeft() >= 1) {
+        if (outer_.GetCornerCurvature().TopLeft() >= 2) {
           FindIntersection(
               edge_quad[3], edge_quad[2],
               gfx::PointF(
@@ -1814,7 +1814,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
               edge_quad[2]);
 
         } else {
-          edge_quad[2] = inner_.TopLeftCorner().HullPoint();
+          edge_quad[2] = inner_.TopLeftCorner().Center();
         }
         DCHECK(bound_quad2.x() <= edge_quad[2].x());
         bound_quad1.set_x(edge_quad[2].x());
@@ -1837,7 +1837,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
       }
 
       if (!inner_.GetRadii().BottomLeft().IsZero()) {
-        if (outer_.GetCornerCurvature().BottomLeft() >= 1) {
+        if (outer_.GetCornerCurvature().BottomLeft() >= 2) {
           FindIntersection(
               edge_quad[0], edge_quad[1],
               gfx::PointF(
@@ -1848,7 +1848,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                   edge_quad[1].y() - inner_.GetRadii().BottomLeft().height()),
               edge_quad[1]);
         } else {
-          edge_quad[1] = inner_.BottomLeftCorner().HullPoint();
+          edge_quad[1] = inner_.BottomLeftCorner().Center();
         }
         if (bound_quad1.x() < edge_quad[1].x()) {
           bound_quad1.set_x(edge_quad[1].x());
@@ -1890,7 +1890,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
       extension_offset.set_y(0);
 
       if (!inner_.GetRadii().BottomLeft().IsZero()) {
-        if (outer_.GetCornerCurvature().BottomLeft() >= 1) {
+        if (outer_.GetCornerCurvature().BottomLeft() >= 2) {
           FindIntersection(
               edge_quad[3], edge_quad[2],
               gfx::PointF(
@@ -1901,7 +1901,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                   edge_quad[2].y() - inner_.GetRadii().BottomLeft().height()),
               edge_quad[2]);
         } else {
-          edge_quad[2] = inner_.BottomLeftCorner().HullPoint();
+          edge_quad[2] = inner_.BottomLeftCorner().Center();
         }
         DCHECK(bound_quad2.y() >= edge_quad[2].y());
         bound_quad1.set_y(edge_quad[2].y());
@@ -1924,7 +1924,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
       }
 
       if (!inner_.GetRadii().BottomRight().IsZero()) {
-        if (outer_.GetCornerCurvature().BottomRight() >= 1) {
+        if (outer_.GetCornerCurvature().BottomRight() >= 2) {
           FindIntersection(
               edge_quad[0], edge_quad[1],
               gfx::PointF(
@@ -1935,7 +1935,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                   edge_quad[1].y() - inner_.GetRadii().BottomRight().height()),
               edge_quad[1]);
         } else {
-          edge_quad[1] = inner_.BottomRightCorner().HullPoint();
+          edge_quad[1] = inner_.BottomRightCorner().Center();
         }
         if (bound_quad1.y() > edge_quad[1].y()) {
           bound_quad1.set_y(edge_quad[1].y());
@@ -1975,7 +1975,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
       extension_offset.set_y(-kExtensionLength);
 
       if (!inner_.GetRadii().TopRight().IsZero()) {
-        if (outer_.GetCornerCurvature().TopRight() >= 1) {
+        if (outer_.GetCornerCurvature().TopRight() >= 2) {
           FindIntersection(
               edge_quad[0], edge_quad[1],
               gfx::PointF(
@@ -1986,7 +1986,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                   edge_quad[1].y() + inner_.GetRadii().TopRight().height()),
               edge_quad[1]);
         } else {
-          edge_quad[1] = inner_.TopRightCorner().HullPoint();
+          edge_quad[1] = inner_.TopRightCorner().Center();
         }
         DCHECK(bound_quad1.x() >= edge_quad[1].x());
         bound_quad1.set_x(edge_quad[1].x());
@@ -2009,7 +2009,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
       }
 
       if (!inner_.GetRadii().BottomRight().IsZero()) {
-        if (outer_.GetCornerCurvature().BottomRight() >= 1) {
+        if (outer_.GetCornerCurvature().BottomRight() >= 2) {
           FindIntersection(
               edge_quad[3], edge_quad[2],
               gfx::PointF(
@@ -2020,7 +2020,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                   edge_quad[2].y() - inner_.GetRadii().BottomRight().height()),
               edge_quad[2]);
         } else {
-          edge_quad[2] = inner_.BottomRightCorner().HullPoint();
+          edge_quad[2] = inner_.BottomRightCorner().Center();
         }
         if (bound_quad1.x() > edge_quad[2].x()) {
           bound_quad1.set_x(edge_quad[2].x());

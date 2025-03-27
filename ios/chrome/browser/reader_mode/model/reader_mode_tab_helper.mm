@@ -4,12 +4,76 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/time/time.h"
+#import "components/dom_distiller/core/extraction_utils.h"
+#import "components/dom_distiller/ios/distiller_page_utils.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
+#import "third_party/dom_distiller_js/dom_distiller.pb.h"
+#import "third_party/dom_distiller_js/dom_distiller_json_converter.h"
+
+namespace {
+
+// Determine if the page load is eligible for triggering the reader mode
+// heuristic.
+bool CanTriggerReaderModeHeuristic() {
+  if (!base::FeatureList::IsEnabled(kEnableReaderModeDistillerHeuristic)) {
+    return false;
+  }
+  const double page_load_probability =
+      kReaderModeDistillerPageLoadProbability.Get();
+  if (page_load_probability <= 0.0 || page_load_probability > 1.0) {
+    // Invalid probability range. Disable the Reader Mode feature.
+    return false;
+  }
+
+  const double rand_double = base::RandDouble();
+  return rand_double < page_load_probability;
+}
+
+// Records the classification accuracy of the Reader Mode heuristic by
+// comparing the distillation of the page to the heuristic result.
+void RecordReaderModeHeuristicClassification(bool is_distillable_page,
+                                             ReaderModeHeuristicResult result) {
+  ReaderModeHeuristicClassification classification;
+  switch (result) {
+    case ReaderModeHeuristicResult::kMalformedResponse:
+    case ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength:
+    case ReaderModeHeuristicResult::kReaderModeNotEligibleContentOnly:
+    case ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength: {
+      classification = is_distillable_page
+                           ? ReaderModeHeuristicClassification::
+                                 kPageNotEligibleWithPopulatedDistill
+                           : ReaderModeHeuristicClassification::
+                                 kPageNotEligibleWithEmptyDistill;
+      break;
+    }
+    case ReaderModeHeuristicResult::kReaderModeEligible: {
+      classification = is_distillable_page
+                           ? ReaderModeHeuristicClassification::
+                                 kPageEligibleWithPopulatedDistill
+                           : ReaderModeHeuristicClassification::
+                                 kPageEligibleWithEmptyDistill;
+      break;
+    }
+  }
+  UMA_HISTOGRAM_ENUMERATION(kReaderModeHeuristicClassificationHistogram,
+                            classification);
+}
+
+// Records the time elapsed from the execution of the distillation JavaScript to
+// the result callback.
+void RecordReaderModeDistillationLatency(base::TimeDelta elapsed) {
+  UMA_HISTOGRAM_TIMES(kReaderModeDistillerLatencyHistogram, elapsed);
+}
+
+}  // namespace
 
 ReaderModeTabHelper::ReaderModeTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
@@ -54,19 +118,41 @@ void ReaderModeTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state_ = nullptr;
 }
 
-bool ReaderModeTabHelper::CanTriggerReaderModeHeuristic() {
-  if (!base::FeatureList::IsEnabled(kEnableReaderModeDistillerHeuristic)) {
-    return false;
-  }
-  const double page_load_probability =
-      kReaderModeDistillerPageLoadProbability.Get();
-  if (page_load_probability <= 0.0 || page_load_probability > 1.0) {
-    // Invalid probability range. Disable the Reader Mode feature.
-    return false;
-  }
+void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
+    const GURL& url,
+    ReaderModeHeuristicResult result) {
+  UMA_HISTOGRAM_ENUMERATION(kReaderModeHeuristicResultHistogram, result);
 
-  const double rand_double = base::RandDouble();
-  return rand_double < page_load_probability;
+  // Gets the instance of the WebFramesManager from `web_state_` that can
+  // execute the DOM distiller JavaScript in the isolated content world.
+  web::WebFramesManager* web_frames_manager =
+      web_state_->GetWebFramesManager(web::ContentWorld::kIsolatedWorld);
+  if (!web_frames_manager) {
+    return;
+  }
+  web::WebFrame* main_frame = web_frames_manager->GetMainWebFrame();
+  if (!main_frame) {
+    return;
+  }
+  // If the current WebState URL is not the same as the one processed by the
+  // heuristic then abort next steps.
+  if (url != web_state_->GetVisibleURL()) {
+    return;
+  }
+  // TODO(crbug.com/405309236): The distillation should be moved into the
+  // core DOM distiller logic. This extraction is for metrics collection
+  // purposes only.
+  dom_distiller::proto::DomDistillerOptions options;
+  main_frame->ExecuteJavaScript(
+      base::UTF8ToUTF16(dom_distiller::GetDistillerScriptWithOptions(options)),
+      base::BindOnce(&ReaderModeTabHelper::PageDistillationCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), result,
+                     base::TimeTicks::Now()));
+}
+
+void ReaderModeTabHelper::RecordReaderModeHeuristicLatency(
+    const base::TimeDelta& delta) {
+  UMA_HISTOGRAM_TIMES(kReaderModeHeuristicLatencyHistogram, delta);
 }
 
 void ReaderModeTabHelper::TriggerReaderModeHeuristic() {
@@ -76,12 +162,43 @@ void ReaderModeTabHelper::TriggerReaderModeHeuristic() {
   web::WebFramesManager* web_frames_manager =
       ReaderModeJavaScriptFeature::GetInstance()->GetWebFramesManager(
           web_state_);
+  if (!web_frames_manager) {
+    return;
+  }
   web::WebFrame* web_frame = web_frames_manager->GetMainWebFrame();
   if (!web_frame) {
     return;
   }
   ReaderModeJavaScriptFeature::GetInstance()->TriggerReaderModeHeuristic(
       web_frame);
+}
+
+void ReaderModeTabHelper::PageDistillationCompleted(
+    ReaderModeHeuristicResult heuristic_result,
+    base::TimeTicks start_time,
+    const base::Value* value) {
+  // If ExecuteJavaScript completion is run after WebState is destroyed, do
+  // not continue metrics collection.
+  if (!web_state_ || web_state_->IsBeingDestroyed()) {
+    return;
+  }
+  RecordReaderModeDistillationLatency(base::TimeTicks::Now() - start_time);
+
+  std::unique_ptr<dom_distiller::proto::DomDistillerResult> distiller_result =
+      std::make_unique<dom_distiller::proto::DomDistillerResult>();
+  bool found_content = false;
+  base::Value result_as_value =
+      dom_distiller::ParseValueFromScriptResult(value);
+  if (!result_as_value.is_none()) {
+    found_content =
+        dom_distiller::proto::json::DomDistillerResult::ReadFromValue(
+            result_as_value, distiller_result.get());
+  }
+
+  bool is_distillable_page =
+      found_content && !distiller_result->distilled_content().html().empty();
+  RecordReaderModeHeuristicClassification(is_distillable_page,
+                                          heuristic_result);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(ReaderModeTabHelper)

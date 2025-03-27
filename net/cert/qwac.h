@@ -100,15 +100,26 @@ std::optional<std::vector<QcStatement>> ParseQcStatements(
 NET_EXPORT std::optional<std::vector<bssl::der::Input>> ParseQcTypeInfo(
     bssl::der::Input statement_info);
 
-// Returns true if the given QcStatements extension (as returned by
-// ParseQcStatements) indicates the certificate is a QWAC.
-NET_EXPORT_PRIVATE bool HasQwacQcStatements(
-    const std::vector<QcStatement>& qc_statements);
+enum class QwacQcStatementsStatus {
+  kNotQwac,
+  kInconsistent,
+  kHasQwacStatements,
+};
+// Returns kHasQwacStatements if the given QcStatements extension (as returned
+// by ParseQcStatements) indicates the certificate is a QWAC.
+NET_EXPORT_PRIVATE QwacQcStatementsStatus
+HasQwacQcStatements(const std::vector<QcStatement>& qc_statements);
 
-// Returns true if the set of policy OIDs contains a suitable combination of
-// policies to be a 1-QWAC.
-NET_EXPORT_PRIVATE bool Has1QwacPolicies(
-    const std::set<bssl::der::Input>& policy_set);
+enum class QwacPoliciesStatus {
+  kNotQwac,
+  kInconsistent,
+  kHasQwacPolicies,
+};
+
+// Returns kHasQwacPolicies if the set of policy OIDs contains a suitable
+// combination of policies to be a 1-QWAC.
+NET_EXPORT_PRIVATE QwacPoliciesStatus
+Has1QwacPolicies(const std::set<bssl::der::Input>& policy_set);
 
 }  // namespace net
 

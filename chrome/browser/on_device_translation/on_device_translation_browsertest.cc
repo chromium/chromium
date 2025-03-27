@@ -267,7 +267,7 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
     // Need to navigate to an empty page to reset the state of the
     // TranslationManagerImpl.
     NavigateToEmptyPage();
-    // Calls TranslationAvailable() via JS API (ai.translator.availability()) to
+    // Calls TranslationAvailable() via JS API (Translator.availability()) to
     // verify the result string.
     TestTranslationAvailable(
         browser(), sourceLang, targetLang,
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 
   // Create a translator.
   EXPECT_EQ(EvalJsCatchingError(R"(
-      window._testPromise = ai.translator.create({
+      window._testPromise = Translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
@@ -406,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 
   // Create a translator.
   EXPECT_EQ(EvalJsCatchingError(R"(
-      window._testPromise = ai.translator.create({
+      window._testPromise = Translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   //   2. En => Es.
   //   3. En => Ja.
   EXPECT_EQ(EvalJsCatchingError(R"(
-      window._testEnJaPromise1 = ai.translator.create({
+      window._testEnJaPromise1 = Translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
         window._testEnJaPromise1Resolved = true;
       });
 
-      window._testEnEsPromise = ai.translator.create({
+      window._testEnEsPromise = Translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'es',
         });
@@ -488,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
         window._testEnEsPromiseResolved = true;
       });
 
-      window._testEnJaPromise2 = ai.translator.create({
+      window._testEnJaPromise2 = Translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       window._testPromisesResolved = false;
       const kMaxPendingTaskCount = %zd;
       for (let i = 0; i < kMaxPendingTaskCount; ++i) {
-        const promise = ai.translator.create({
+        const promise = Translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
@@ -598,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 
   // Calling create() one more time fails.
   EXPECT_EQ(EvalJsCatchingError(R"(
-      await ai.translator.create({
+      await Translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
@@ -690,7 +690,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, TranslationFailure) {
   // mock_translate_kit_lib.cc.
 
   EXPECT_EQ(EvalJsCatchingError(R"(
-      const translator = await ai.translator.create({
+      const translator = await Translator.create({
         sourceLanguage: 'en',
         targetLanguage: 'ja',
       });
@@ -712,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, CrashWhileTranslating) {
   // a crash in the mock TranslateKit component. See comments in
   // mock_translate_kit_lib.cc.
   EXPECT_EQ(EvalJsCatchingError(R"(
-      window._translator = await ai.translator.create({
+      window._translator = await Translator.create({
         sourceLanguage: 'en',
         targetLanguage: 'ja',
       });
@@ -750,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 #endif  // BUILDFLAG(IS_WIN)
 
   EXPECT_EQ(EvalJsCatchingError(R"(
-            const translator = await ai.translator.create({
+            const translator = await Translator.create({
               sourceLanguage: 'en',
               targetLanguage: 'ja',
             });
@@ -778,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       CreateConsoleObserver("The translation library is not compatible.");
 
   EXPECT_EQ(EvalJsCatchingError(R"(
-            const translator = await ai.translator.create({
+            const translator = await Translator.create({
               sourceLanguage: 'en',
               targetLanguage: 'ja',
             });
@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       CreateConsoleObserver("Failed to initialize the translation library.");
 
   EXPECT_EQ(EvalJsCatchingError(R"(
-            const translator = await ai.translator.create({
+            const translator = await Translator.create({
               sourceLanguage: 'en',
               targetLanguage: 'ja',
             });
@@ -831,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       "The translation library failed to create a translator.");
 
   EXPECT_EQ(EvalJsCatchingError(R"(
-            const translator = await ai.translator.create({
+            const translator = await Translator.create({
               sourceLanguage: 'ja',
               targetLanguage: 'en',
             });
@@ -892,7 +892,7 @@ class OnDeviceTranslationProgressMonitorBrowserTest
     EXPECT_EQ(EvalJsCatchingError(base::StringPrintf(R"(
                   self.progressEvents = [];
 
-                  self.createTranslatorPromise = ai.translator.create({
+                  self.createTranslatorPromise = Translator.create({
                     sourceLanguage: '%s',
                     targetLanguage: '%s',
                     monitor(m) {
@@ -1103,7 +1103,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
                            "available");
 }
 
-// Tests that `ai.translator.availability()` for a translation
+// Tests that `Translator.availability()` for a translation
 // containing a language outside of English + the user's preferred languages.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
                        TranslatorAvailabilityMaskedForNonPreferredLanguages) {
@@ -1187,7 +1187,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
 
   EXPECT_CALL(manager, GetTranslatorDownloadDelay()).Times(0);
   EXPECT_NE(EvalJsCatchingError(R"(
-      const translator = await ai.translator.create({
+      const translator = await Translator.create({
         sourceLanguage: 'en',
         targetLanguage: 'xx',
       });
@@ -1237,7 +1237,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
   // causes a crash in the mock TranslateKit component. See comments in
   // mock_translate_kit_lib.cc.
   EXPECT_EQ(EvalJsCatchingError(R"(
-            const translator = await ai.translator.create({
+            const translator = await Translator.create({
               sourceLanguage: 'cause_crash',
               targetLanguage: 'ja',
             });
@@ -1274,7 +1274,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, NoExistFileHandling) {
   NavigateToEmptyPage();
 
   EXPECT_EQ(EvalJsCatchingError(R"(
-      const translator = await ai.translator.create({
+      const translator = await Translator.create({
         sourceLanguage: 'en',
         targetLanguage: 'ja',
       });
@@ -1332,7 +1332,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   EXPECT_EQ(EvalJsCatchingError(R"(
       window._testIframe = document.createElement('iframe');
       document.body.appendChild(window._testIframe);
-      window._testIframe.contentWindow.ai.translator.create({
+      window._testIframe.contentWindow.Translator.create({
           sourceLanguage: 'en',
           targetLanguage: 'ja',
         });
@@ -1379,7 +1379,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Test that Translator API works.
   EXPECT_EQ(EvalJsCatchingError(R"(
-      window._translator = await ai.translator.create({
+      window._translator = await Translator.create({
         sourceLanguage: 'en',
         targetLanguage: 'ja',
       });
@@ -1434,7 +1434,7 @@ IN_PROC_BROWSER_TEST_F(
       window._iframe = document.createElement('iframe');
       document.body.appendChild(window._iframe);
       const translator =
-          await window._iframe.contentWindow.ai.translator.create({
+          await window._iframe.contentWindow.Translator.create({
             sourceLanguage: 'en',
             targetLanguage: 'ja',
           });
@@ -1654,15 +1654,15 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
         iframe.src = location.href;
         document.body.appendChild(iframe);
         await loadPromise;
-        const iframeAITranslator = iframe.contentWindow.ai.translator;
+        const iframeTranslator = iframe.contentWindow.Translator;
         document.body.removeChild(iframe);
-        await iframeAITranslator.availability({
+        await iframeTranslator.availability({
           sourceLanguage: "en",
           targetLanguage: "es"
         });
       )"),
             "InvalidStateError: Failed to execute 'availability' on "
-            "'AITranslatorFactory': The execution context is not valid.");
+            "'Translator': The execution context is not valid.");
 }
 
 // Test the behavior of `availability()` for an unsupported language.
@@ -1857,7 +1857,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, UseBothLegacyAndNewAPI) {
 
   // Test that Translator legacy API works.
   EXPECT_EQ(EvalJsCatchingError(R"(
-      const translator = await ai.translator.create({
+      const translator = await Translator.create({
         sourceLanguage: 'en',
         targetLanguage: 'ja',
       });
@@ -1867,7 +1867,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, UseBothLegacyAndNewAPI) {
 
   // Test that Translator new API works.
   EXPECT_EQ(EvalJsCatchingError(R"(
-      const translator = await ai.translator.create({
+      const translator = await Translator.create({
         sourceLanguage: 'en',
         targetLanguage: 'ja',
       });
@@ -1972,7 +1972,7 @@ class OnDeviceTranslationCrossOriginBrowserTest
     const std::string_view translateTestScript = R"(
       (async () => {
         try {
-          window._translator = await ai.translator.create({
+          window._translator = await Translator.create({
             sourceLanguage: 'en',
             targetLanguage: 'ja',
           });
@@ -2004,7 +2004,7 @@ class OnDeviceTranslationCrossOriginBrowserTest
     const std::string_view translateTestScript = R"(
       (async () => {
         try {
-          return await ai.translator.availability({
+          return await Translator.availability({
             sourceLanguage: 'en',
             targetLanguage: 'ja',
           });
@@ -2319,29 +2319,25 @@ class OnDeviceTranslationOriginTrialBrowserTest : public InProcessBrowserTest {
         .ExtractBool();
   }
 
-  // Tests that `window.ai.translator.availability` and
-  // `window.ai.translator.availability` don't exist.
+  // Tests that `window.Translator.availability` and
+  // `window.Translator.availability` don't exist.
   void ExpectAPIDisabled() {
-    if (!IsDefinedJs("window.ai")) {
-      // `window.ai` is not there, we're done.
-      return;
-    }
-    if (!IsDefinedJs("window.ai.translator")) {
-      // `window.ai.translator` is not there, we're done.
+    if (!IsDefinedJs("window.Translator")) {
+      // `window.Translator` is not there, we're done.
       return;
     }
 
     // We expect to find the detection API but no translate API.
-    EXPECT_FALSE(IsDefinedJs("window.ai.translator.availability"));
-    EXPECT_FALSE(IsDefinedJs("window.ai.translator.create"));
+    EXPECT_FALSE(IsDefinedJs("window.Translator.availability"));
+    EXPECT_FALSE(IsDefinedJs("window.Translator.create"));
   }
 
-  // Tests that `window.ai.translator.availability` and
-  // `window.ai.translator.availability` both exist.
+  // Tests that `window.Translator.availability` and
+  // `window.Translator.availability` both exist.
   void ExpectAPIEnabled() {
-    EXPECT_TRUE(IsDefinedJs("window.ai.translator"));
-    EXPECT_TRUE(IsDefinedJs("window.ai.translator.availability"));
-    EXPECT_TRUE(IsDefinedJs("window.ai.translator.create"));
+    EXPECT_TRUE(IsDefinedJs("window.Translator"));
+    EXPECT_TRUE(IsDefinedJs("window.Translator.availability"));
+    EXPECT_TRUE(IsDefinedJs("window.Translator.create"));
   }
 
  private:

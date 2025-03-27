@@ -1374,9 +1374,21 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Invalid"/>
 </enum>
 
-<!-- LINT.IfChange(ReaderModeHeuristicState) -->
+<!-- LINT.IfChange(ReaderModeHeuristicClassification) -->
 
-<enum name="ReaderModeHeuristicState">
+<enum name="ReaderModeHeuristicClassification">
+  <int value="0" label="Correct match: Page not eligible with empty distill"/>
+  <int value="1"
+      label="Incorrect match: Page not eligible with populated distill"/>
+  <int value="2" label="Incorrect match: Page eligible with empty distill"/>
+  <int value="3" label="Correct match: Page eligible with populated distill"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeHeuristicClassification) -->
+
+<!-- LINT.IfChange(ReaderModeHeuristicResult) -->
+
+<enum name="ReaderModeHeuristicResult">
   <int value="0" label="Malformed Response"/>
   <int value="1" label="Eligible"/>
   <int value="2" label="Not eligible (content only)"/>
@@ -1384,7 +1396,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Not eligible (content and length)"/>
 </enum>
 
-<!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeHeuristicState) -->
+<!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeHeuristicResult) -->
 
 <enum name="TextSelectionDetectedEntityType">
   <int value="0" label="Unknown"/>

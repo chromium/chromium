@@ -1603,6 +1603,9 @@
       {
         "isolate_profile_data": true,
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "chrome_sizes",

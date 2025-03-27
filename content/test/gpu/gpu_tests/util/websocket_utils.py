@@ -28,10 +28,10 @@ def HandleWebsocketReceiveTimeoutError(tab: ct.Tab, start_time: float) -> None:
 
 def HandlePrematureSocketClose(original_error: wss.ClientClosedConnectionError,
                                start_time: float) -> None:
+  elapsed = time.time() - start_time
   raise RuntimeError(
-      'Detected closed websocket (%.3f seconds since test start) - likely '
-      'caused by a renderer crash' %
-      (time.time() - start_time)) from original_error
+      f'Detected closed websocket ({elapsed:.3f} seconds since test start) - '
+      f'likely caused by a renderer crash') from original_error
 
 
 def GetScaledConnectionTimeout(num_jobs: int) -> float:

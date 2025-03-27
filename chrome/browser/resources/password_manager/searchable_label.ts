@@ -24,6 +24,7 @@ export class SearchableLabelElement extends PolymerElement {
     };
   }
 
+  override title: string;
   searchTerm: string;
 
   static get observers() {

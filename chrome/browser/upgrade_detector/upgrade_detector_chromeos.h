@@ -63,7 +63,7 @@ class UpgradeDetectorChromeos : public UpgradeDetector,
   void CalculateDeadlines();
 
   // UpgradeDetector:
-  void OnMonitoredPrefsChanged() override;
+  void RecomputeSchedule() override;
 
   // ash::UpdateEngineClient::Observer implementation.
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;
@@ -105,6 +105,8 @@ class UpgradeDetectorChromeos : public UpgradeDetector,
 
   // Indicates whether there is an update in progress.
   bool update_in_progress_;
+
+  base::WeakPtrFactory<UpgradeDetectorChromeos> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UPGRADE_DETECTOR_UPGRADE_DETECTOR_CHROMEOS_H_

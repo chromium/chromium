@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">게스트 모드에서는 주변기기가 지원되지 않습니다.</translation>
 <translation id="1270290102613614947">터치 키보드 사용 중지됨</translation>
 <translation id="1272079795634619415">중지</translation>
+<translation id="12741168609094094">화면에서 원하는 항목을 선택하여 검색, 텍스트 복사 등의 작업을 수행하세요.</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> 전원 공급 중</translation>
 <translation id="1275718070701477396">선택됨</translation>
 <translation id="1276975447697633661">파일을 선택한 후 <ph name="KEY" /> 키 누르기</translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">핫스팟 사용 중지됨</translation>
 <translation id="1731815243805539470">이전 사용자로 전환</translation>
 <translation id="1733996486177697563">밝은 테마와 어두운 테마 간에 전환합니다. 바탕화면을 길게 터치한 후 배경화면/스타일을 선택하세요.</translation>
+<translation id="1735992454301033090">선택된 영역, 화살표 키를 사용하여 이동하세요.</translation>
 <translation id="1736898441010944794">블루투스 기기에 "<ph name="NAME" />"이(가) 표시됩니다.</translation>
 <translation id="1737078180382804488">휴대전화 알림 보기 설정 닫기</translation>
 <translation id="174102739345480129">마커가 꺼졌습니다.</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> 지난주</translation>
 <translation id="2687510499067466116">단축키 변경됨</translation>
 <translation id="2689613560355655046">데스크 8</translation>
+<translation id="2692092709110488417">Tab 키를 눌러 선택한 영역에 초점을 맞추고 이동하세요.</translation>
 <translation id="2695305337569143674">웹</translation>
 <translation id="2697697418792422688">키보드 설정을 표시합니다. <ph name="KEYBOARD_NAME" />이(가) 선택되었습니다.</translation>
 <translation id="2699913284398121653">콘텐츠 전송 앱을 사용하여 학교 계정 데이터를 개인 계정으로 이전하세요</translation>
@@ -551,6 +554,7 @@
 <translation id="2872353916818027657">기본 모니터 전환</translation>
 <translation id="2872961005593481000">종료</translation>
 <translation id="2876338922445400217">화면 확대</translation>
+<translation id="2876760662374103627">페이스 컨트롤 활성화됨</translation>
 <translation id="2878884018241093801">최근 항목이 없습니다.</translation>
 <translation id="2880541185262491188">PIN 입력 횟수 한도를 초과했습니다. <ph name="TIME_LEFT" /> 후에 다시 시도해 주세요.</translation>
 <translation id="2883271196820422439">마우스 키 재개</translation>
@@ -1032,6 +1036,7 @@
 <translation id="4412698727486357573">고객센터</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> 기능이 꺼져 있습니다.</translation>
 <translation id="4417647906073317561">집중 모드 설정. 타이머, 할 일, 음악을 설정하여 집중해 보세요.</translation>
+<translation id="4418600384772451109">패널 닫기</translation>
 <translation id="4424159417645388645">데스크 5</translation>
 <translation id="4426817706804363424">잘하셨습니다.</translation>
 <translation id="4430019312045809116">볼륨</translation>
@@ -2228,6 +2233,7 @@
 <translation id="8287009018010202411">생산성</translation>
 <translation id="828708037801473432">사용 안함</translation>
 <translation id="8297006494302853456">약함</translation>
+<translation id="8300451473979404345">선택된 핸들, 화살표 키를 사용하여 이동하세요</translation>
 <translation id="8308637677604853869">이전 메뉴</translation>
 <translation id="830868413617744215">베타</translation>
 <translation id="8314772463905284467">Caps Lock이 켜져 있습니다.</translation>
@@ -2288,6 +2294,7 @@
 <translation id="851458219935658693">현재 데스크의 창 표시, 라디오 버튼 선택됨</translation>
 <translation id="851660987304951246">콘텐츠를 빠르게 요약하거나 질문하려면 읽기 지원을 사용하세요</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" />이(가) 켜져 있는 동안에는 충전되지 않을 수 있습니다.</translation>
+<translation id="8519329096920173967">Google 렌즈로 화면 검색</translation>
 <translation id="8535393432370007982">색상별 정렬 순서 실행취소</translation>
 <translation id="8536886494750559755">Quick Share 설정을 표시합니다. <ph name="TIME_REMAINING" /> 동안 모든 사용자에게 공개됩니다.</translation>
 <translation id="8539803091108018926">텍스트가 클립보드에 복사됨</translation>

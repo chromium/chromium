@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">अतिथी मोडमध्ये पेरिफेरलला सपोर्ट नाही</translation>
 <translation id="1270290102613614947">ऑन-स्क्रीन कीबोर्ड अक्षम</translation>
 <translation id="1272079795634619415">थांबा</translation>
+<translation id="12741168609094094">शोधण्यासाठी, मजकूर कॉपी करण्यासाठी आणि आणखी बरेच काही करण्यासाठी तुमच्या स्क्रीनवरील कोणतीही गोष्ट निवडा</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> चार्ज करत आहे</translation>
 <translation id="1275718070701477396">निवडले</translation>
 <translation id="1276975447697633661">फाइल निवडा, त्यानंतर <ph name="KEY" /> दाबा</translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">हॉटस्पॉट बंद आहे</translation>
 <translation id="1731815243805539470">मागील वापरकर्त्यावर स्विच करा</translation>
 <translation id="1733996486177697563">गडद आणि फिकट थीमदरम्यान स्विच करा. डेस्कटॉपवर स्‍पर्श करून धरून ठेवा, त्यानंतर वॉलपेपर आणि स्टाइल निवडा.</translation>
+<translation id="1735992454301033090">निवडलेला भाग, हलवण्यासाठी अ‍ॅरो की ड्रॅग करा</translation>
 <translation id="1736898441010944794">ब्लूटूथ डिव्‍हाइसना "<ph name="NAME" />" दृश्यमान आहे.</translation>
 <translation id="1737078180382804488">तुमच्या फोनमधील सूचना पाहण्याचे सेट करणे डिसमिस करा</translation>
 <translation id="174102739345480129">मार्कर बंद आहे.</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806">मागील आठवड्यामधील <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">कीबोर्ड शॉर्टकट बदलला आहे</translation>
 <translation id="2689613560355655046">डेस्‍क ८</translation>
+<translation id="2692092709110488417">निवडलेला भाग फोकस करण्यासाठी आणि हलवण्यासाठी टॅब प्रेस करा</translation>
 <translation id="2695305337569143674">वेब</translation>
 <translation id="2697697418792422688">कीबोर्ड सेटिंग्ज दाखवा. <ph name="KEYBOARD_NAME" /> निवडला.</translation>
 <translation id="2699913284398121653">तुमच्या शाळेचा खाते डेटा तुमच्या वैयक्तिक खात्यामध्ये हलवण्यासाठी आशय ट्रान्सफर ॲप वापरा</translation>
@@ -551,6 +554,7 @@
 <translation id="2872353916818027657">प्राथमिक मॉनिटर स्वॅप करा</translation>
 <translation id="2872961005593481000">बंद करा</translation>
 <translation id="2876338922445400217">स्क्रीनवर झूम इन करा</translation>
+<translation id="2876760662374103627">चेहरा नियंत्रण अ‍ॅक्टिव्ह आहे</translation>
 <translation id="2878884018241093801">अलीकडील कोणतेही आयटम नाहीत</translation>
 <translation id="2880541185262491188">पिन पडताळणीचे खूप जास्त प्रयत्न. <ph name="TIME_LEFT" /> प्रतीक्षा करा आणि पुन्‍हा प्रयत्‍न करा</translation>
 <translation id="2883271196820422439">माउस की पुन्‍हा सुरू करा</translation>
@@ -1032,6 +1036,7 @@
 <translation id="4412698727486357573">मदत केंद्र</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> बंद आहे.</translation>
 <translation id="4417647906073317561">फोकस सेटिंग्ज. फ्लोमध्ये येण्यासाठी टायमर, टास्क आणि संगीत सेट करा.</translation>
+<translation id="4418600384772451109">पॅनल बंद करा</translation>
 <translation id="4424159417645388645">डेस्‍क ५</translation>
 <translation id="4426817706804363424">शाब्बास!</translation>
 <translation id="4430019312045809116">व्हॉल्यूम</translation>
@@ -2228,6 +2233,7 @@
 <translation id="8287009018010202411">उत्पादनक्षमता</translation>
 <translation id="828708037801473432">बंद</translation>
 <translation id="8297006494302853456">कमकुवत</translation>
+<translation id="8300451473979404345">निवडलेले हँडल, हलवण्यासाठी अ‍ॅरो की ड्रॅग करा</translation>
 <translation id="8308637677604853869">मागील मेनू</translation>
 <translation id="830868413617744215">बीटा</translation>
 <translation id="8314772463905284467">Caps Lock सूरू आहे</translation>
@@ -2288,6 +2294,7 @@
 <translation id="851458219935658693">सध्याच्या डेस्कवरील विंडो दाखवा, रेडिओ बटण निवडले</translation>
 <translation id="851660987304951246">आशयाचा झटपट सारांश देण्यासाठी किंवा प्रश्न विचारण्यासाठी मला वाचण्यात मदत करा वापरा</translation>
 <translation id="8517041960877371778">तुमचे <ph name="DEVICE_TYPE" /> सुरू केले असताना कदाचित चार्ज होणार नाही.</translation>
+<translation id="8519329096920173967">Google Lens वापरून माझी स्क्रीन शोधा</translation>
 <translation id="8535393432370007982">रंगानुसार क्रमवारीचा क्रम पहिल्यासारखा करा</translation>
 <translation id="8536886494750559755">क्विक शेअर सेटिंग्ज दाखवा. <ph name="TIME_REMAINING" /> साठी प्रत्येकासाठी दृश्यमान असेल</translation>
 <translation id="8539803091108018926">मजकूर क्लिपबोर्डवर कॉपी केला</translation>

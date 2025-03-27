@@ -551,6 +551,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="2872353916818027657">Prepnúť primárny monitor</translation>
 <translation id="2872961005593481000">Vypnúť</translation>
 <translation id="2876338922445400217">Priblíženie na obrazovke</translation>
+<translation id="2876760662374103627">Ovládanie tvárou je aktívne</translation>
 <translation id="2878884018241093801">Žiadne nedávne položky</translation>
 <translation id="2880541185262491188">Príliš veľa pokusov o zadanie kódu PIN. Počkajte <ph name="TIME_LEFT" /> a skúste to znova.</translation>
 <translation id="2883271196820422439">Obnoviť myš klávesnicou</translation>
@@ -1516,6 +1517,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="595202126637698455">Sledovanie výkonnosti je povolené</translation>
 <translation id="5955304353782037793">aplikácia</translation>
 <translation id="5958529069007801266">Kontrolovaný používateľ</translation>
+<translation id="596035801491797438">Vypnúť ovládanie tvárou</translation>
 <translation id="5960410286721553511">Pozrite si najnovšie fotky a médiá z telefónu</translation>
 <translation id="5965524703725988602">Prepnúť tmavý motív. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Prechádzanie oknami vpred</translation>

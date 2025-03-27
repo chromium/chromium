@@ -11,6 +11,7 @@
 
 #include <va/va.h>
 
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/test/macros.h"
@@ -73,7 +74,7 @@ scoped_refptr<H265Picture> H265VaapiWrapper::CreateH265Picture(
 
   scoped_refptr<SharedVASurface> surface = SharedVASurface::Create(
       *va_device_, va_config_->va_rt_format(), size, attribute);
-  return base::WrapRefCounted(new vaapi_test::H265Picture(surface));
+  return base::MakeRefCounted<vaapi_test::H265Picture>(surface);
 }
 
 bool H265VaapiWrapper::IsChromaSamplingSupported(

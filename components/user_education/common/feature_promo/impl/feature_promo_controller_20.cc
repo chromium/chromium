@@ -211,12 +211,12 @@ FeaturePromoResult FeaturePromoController20::CanShowPromoCommon(
   ui::TrackedElement* const anchor_element =
       anchor_spec->GetAnchorElement(GetAnchorContext(), std::nullopt);
   if (!anchor_element) {
-    return FeaturePromoResult::kBlockedByUi;
+    return FeaturePromoResult::kAnchorNotVisible;
   }
 
   // Some contexts and anchors are not appropriate for showing normal promos.
-  if (!CanShowPromoForElement(anchor_element)) {
-    return FeaturePromoResult::kBlockedByUi;
+  if (const auto result = CanShowPromoForElement(anchor_element); !result) {
+    return result;
   }
 
   // Output additional information it was requested.
@@ -559,10 +559,10 @@ FeaturePromoController20::GetCommonWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-bool FeaturePromoController20::CanShowPromoForElement(
+FeaturePromoResult FeaturePromoController20::CanShowPromoForElement(
     ui::TrackedElement* anchor_element) const {
   // Default implementation for testing.
-  return true;
+  return FeaturePromoResult::Success();
 }
 
 }  // namespace user_education

@@ -882,8 +882,6 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
 }
 
 TEST_F(FrameNodeImplTest, PageRelationships) {
-  using EmbeddingType = PageNode::EmbeddingType;
-
   auto process = CreateNode<ProcessNodeImpl>();
   auto pageA = CreateNode<PageNodeImpl>();
   auto frameA1 = CreateFrameNodeAutoId(process.get(), pageA.get());
@@ -907,32 +905,24 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   frameB1->SeverPageRelationshipsAndMaybeReparentForTesting();
 
   // You can't clear an embedder if you don't already have one.
-  EXPECT_DCHECK_DEATH(pageB->ClearEmbedderFrameNodeAndEmbeddingType());
+  EXPECT_DCHECK_DEATH(pageB->ClearEmbedderFrameNode());
 
   // You can't be an embedder for your own frame tree.
-  EXPECT_DCHECK_DEATH(pageA->SetEmbedderFrameNodeAndEmbeddingType(
-      frameA1.get(), EmbeddingType::kGuestView));
+  EXPECT_DCHECK_DEATH(pageA->SetEmbedderFrameNode(frameA1.get()));
 
-  // You can't set a null embedder or an invalid embedded type.
-  EXPECT_DCHECK_DEATH(pageB->SetEmbedderFrameNodeAndEmbeddingType(
-      nullptr, EmbeddingType::kInvalid));
-  EXPECT_DCHECK_DEATH(pageB->SetEmbedderFrameNodeAndEmbeddingType(
-      frameA1.get(), EmbeddingType::kInvalid));
+  // You can't set a null embedder.
+  EXPECT_DCHECK_DEATH(pageB->SetEmbedderFrameNode(nullptr));
 
   EXPECT_EQ(nullptr, pageB->embedder_frame_node());
   EXPECT_EQ(nullptr, ppageB->GetEmbedderFrameNode());
-  EXPECT_EQ(EmbeddingType::kInvalid, ppageB->GetEmbeddingType());
   EXPECT_TRUE(frameA1->embedded_page_nodes().empty());
   EXPECT_TRUE(pframeA1->GetEmbeddedPageNodes().empty());
 
   // Set an embedder relationship.
-  EXPECT_CALL(obs, OnEmbedderFrameNodeChanged(pageB.get(), nullptr,
-                                              EmbeddingType::kInvalid));
-  pageB->SetEmbedderFrameNodeAndEmbeddingType(frameA1.get(),
-                                              EmbeddingType::kGuestView);
+  EXPECT_CALL(obs, OnEmbedderFrameNodeChanged(pageB.get(), nullptr));
+  pageB->SetEmbedderFrameNode(frameA1.get());
   EXPECT_EQ(frameA1.get(), pageB->embedder_frame_node());
   EXPECT_EQ(frameA1.get(), ppageB->GetEmbedderFrameNode());
-  EXPECT_EQ(EmbeddingType::kGuestView, ppageB->GetEmbeddingType());
   EXPECT_EQ(1u, frameA1->embedded_page_nodes().size());
   EXPECT_EQ(1u, pframeA1->GetEmbeddedPageNodes().size());
   EXPECT_TRUE(base::Contains(frameA1->embedded_page_nodes(), pageB.get()));
@@ -949,11 +939,9 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   testing::Mock::VerifyAndClear(&obs);
 
   // Manually clear the embedder relationship (initiated from the page).
-  EXPECT_CALL(obs, OnEmbedderFrameNodeChanged(pageB.get(), frameA1.get(),
-                                              EmbeddingType::kGuestView));
-  pageB->ClearEmbedderFrameNodeAndEmbeddingType();
+  EXPECT_CALL(obs, OnEmbedderFrameNodeChanged(pageB.get(), frameA1.get()));
+  pageB->ClearEmbedderFrameNode();
   EXPECT_EQ(nullptr, pageB->embedder_frame_node());
-  EXPECT_EQ(EmbeddingType::kInvalid, pageB->GetEmbeddingType());
   EXPECT_EQ(frameA1.get(), pageC->opener_frame_node());
   EXPECT_TRUE(frameA1->embedded_page_nodes().empty());
   testing::Mock::VerifyAndClear(&obs);
@@ -962,7 +950,6 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   EXPECT_CALL(obs, OnOpenerFrameNodeChanged(pageC.get(), frameA1.get()));
   frameA1->SeverPageRelationshipsAndMaybeReparentForTesting();
   EXPECT_EQ(nullptr, pageC->embedder_frame_node());
-  EXPECT_EQ(EmbeddingType::kInvalid, pageC->GetEmbeddingType());
   EXPECT_TRUE(frameA1->opened_page_nodes().empty());
   EXPECT_TRUE(frameA1->embedded_page_nodes().empty());
   testing::Mock::VerifyAndClear(&obs);

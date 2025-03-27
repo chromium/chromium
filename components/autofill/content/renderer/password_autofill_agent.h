@@ -671,10 +671,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // username predictions.
   UsernameDetectorCache username_detector_cache_;
 
-  // Stores the mapping from a form element's ID to results of button titles
-  // heuristics for that form.
-  form_util::ButtonTitlesCache button_titles_cache_;
-
   // Flag to prevent that multiple PasswordManager.FirstRendererFillingResult
   // UMA metrics are recorded per page load. This is reset on
   // DidCommitProvisionalLoad() but only for non-same-document-navigations.

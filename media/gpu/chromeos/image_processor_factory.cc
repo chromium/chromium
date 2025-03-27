@@ -171,7 +171,7 @@ std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
 
     return v4l2_vda_helpers::CreateImageProcessor(
         input_fourcc, *output_fourcc, input_size, output_size, visible_rect,
-        output_storage_type, num_buffers, new V4L2Device(),
+        output_storage_type, num_buffers, base::MakeRefCounted<V4L2Device>(),
         ImageProcessor::OutputMode::IMPORT, std::move(client_task_runner),
         std::move(error_cb));
   }

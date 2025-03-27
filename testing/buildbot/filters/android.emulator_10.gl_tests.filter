@@ -1,0 +1,22 @@
+# https://crbug.com/1342710
+-CopyType/GLCopyTextureCHROMIUMES3Test.CopyTextureCubeMap/0
+-CopyType/GLCopyTextureCHROMIUMES3Test.CopyTextureLevel/0
+-CopyType/GLCopyTextureCHROMIUMES3Test.FormatCombinations*
+-CopyType/GLCopyTextureCHROMIUMTest.ImmutableTexture/0
+-CopyType/GLCopyTextureCHROMIUMTest.ImmutableTexture/1
+
+# https://crbug.com/1342713
+-GLBGRAMipMapTest.GenerateMipmapsSucceeds
+
+# https://crbug.com/1342713: GL_BGRA_EXT is broken in Android emulator.
+-GLTextureImageBackingFactory*/BGRA_8888
+
+# https://crbug.com/1189284
+-AHardwareBufferImageBackingFactoryTest.Basic/GaneshGL
+-AHardwareBufferImageBackingFactoryTest.CanHaveMultipleReaders/GaneshGL
+-AHardwareBufferImageBackingFactoryTest.CannotReadWhileWriting/GaneshGL
+-AHardwareBufferImageBackingFactoryTest.CannotWriteWhileReading/GaneshGL
+-AHardwareBufferImageBackingFactoryTest.ConcurrentReadWrite/GaneshGL
+-AHardwareBufferImageBackingFactoryTest.InitialData/GaneshGL
+-AHardwareBufferImageBackingFactoryTest.OnlyOneWriter/GaneshGL
+-AHardwareBufferImageBackingFactoryTest.Overlay/GaneshGL

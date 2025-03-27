@@ -7,7 +7,6 @@ package org.chromium.components.translate;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -27,9 +26,6 @@ public class TranslateOptionsTest {
     private static final int[] UMA_HASH_CODES = {10, 20, 30};
 
     private static final String[] CONTENT_LANGUAGES_CODES = {"es", "fr"};
-
-    @Before
-    public void setUp() {}
 
     @Test
     @SmallTest

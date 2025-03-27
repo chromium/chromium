@@ -57,6 +57,9 @@
           "tools/fuchsia/size_tests/fyi_sizes_smoketest.json"
         ],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "fuchsia_sizes",

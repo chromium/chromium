@@ -185,8 +185,9 @@ template <bool IS_STACK_FRAMES, bool IS_WITH_CONTEXT>
 ABSL_ATTRIBUTE_NOINLINE
 ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS  // May read random elements from stack.
 ABSL_ATTRIBUTE_NO_SANITIZE_MEMORY   // May read random elements from stack.
-static int UnwindImpl(void** result, int* sizes, int max_depth, int skip_count,
-                      const void *ucp, int *min_dropped_frames) {
+static int UnwindImpl(void **result, uintptr_t *frames, int *sizes,
+                      int max_depth, int skip_count, const void *ucp,
+                      int *min_dropped_frames) {
 #ifdef __GNUC__
   void **frame_pointer = reinterpret_cast<void**>(__builtin_frame_address(0));
 #else
@@ -223,8 +224,15 @@ static int UnwindImpl(void** result, int* sizes, int max_depth, int skip_count,
       result[n] = reinterpret_cast<void *>(
           absl::debugging_internal::StripPointerMetadata(prev_return_address));
       if (IS_STACK_FRAMES) {
-        sizes[n] = static_cast<int>(
-            ComputeStackFrameSize(prev_frame_pointer, frame_pointer));
+        if (frames != nullptr) {
+          frames[n] = absl::debugging_internal::StripPointerMetadata(
+                          prev_frame_pointer) +
+                      2 * sizeof(void *) /* go past the return address */;
+        }
+        if (sizes != nullptr) {
+          sizes[n] = static_cast<int>(
+              ComputeStackFrameSize(prev_frame_pointer, frame_pointer));
+        }
       }
       n++;
     }

@@ -91,6 +91,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1269405891096105529">Periférico não suportado no Modo convidado</translation>
 <translation id="1270290102613614947">Teclado no ecrã desativado</translation>
 <translation id="1272079795634619415">Parar</translation>
+<translation id="12741168609094094">Selecione qualquer coisa no ecrã para pesquisar, copiar texto e muito mais</translation>
 <translation id="1275285675049378717">A carregar <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Linha selecionada</translation>
 <translation id="1276975447697633661">Selecione o ficheiro e, em seguida, prima <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1720230731642245863">A zona Wi-Fi está desativada</translation>
 <translation id="1731815243805539470">Mudar para o utilizador anterior</translation>
 <translation id="1733996486177697563">Alterne entre o tema claro e escuro. Toque sem soltar no ambiente de trabalho e selecione Estilo e fundo de ecrã.</translation>
+<translation id="1735992454301033090">Área selecionada, use as teclas de seta para a mover</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" visível para dispositivos Bluetooth.</translation>
 <translation id="1737078180382804488">Ignorar configuração da visualização das notificações do telemóvel</translation>
 <translation id="174102739345480129">O marcador está desativado.</translation>
@@ -494,6 +496,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> da semana passada</translation>
 <translation id="2687510499067466116">O atalho de teclado foi alterado</translation>
 <translation id="2689613560355655046">Espaço de trabalho 8</translation>
+<translation id="2692092709110488417">Prima Tab para focar e mover a área selecionada</translation>
 <translation id="2695305337569143674">Web</translation>
 <translation id="2697697418792422688">Veja as definições do teclado. Seleção: <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Use a app Transferência de conteúdo para mover os dados da sua conta escolar para a sua conta pessoal</translation>
@@ -551,6 +554,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="2872353916818027657">Trocar monitor principal</translation>
 <translation id="2872961005593481000">Encerrar</translation>
 <translation id="2876338922445400217">Aumentar o zoom no ecrã</translation>
+<translation id="2876760662374103627">Controlo facial ativo</translation>
 <translation id="2878884018241093801">Nenhum item recente</translation>
 <translation id="2880541185262491188">Demasiadas tentativas de introdução do PIN. Aguarde <ph name="TIME_LEFT" /> e tente novamente</translation>
 <translation id="2883271196820422439">Retomar teclas do rato</translation>
@@ -1032,6 +1036,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4412698727486357573">Centro de Ajuda</translation>
 <translation id="4412944820643904175">A funcionalidade <ph name="FEATURE_NAME" /> está desativada.</translation>
 <translation id="4417647906073317561">Definições do Modo sem distrações. Defina um temporizador, uma tarefa e uma música para se concentrar.</translation>
+<translation id="4418600384772451109">Fechar painel</translation>
 <translation id="4424159417645388645">Espaço de trabalho 5</translation>
 <translation id="4426817706804363424">Muito bem!</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -1516,6 +1521,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="595202126637698455">Rastreio do desempenho ativado</translation>
 <translation id="5955304353782037793">aplicação</translation>
 <translation id="5958529069007801266">Utilizador supervisionado</translation>
+<translation id="596035801491797438">Desativar controlo facial</translation>
 <translation id="5960410286721553511">Veja as fotos e os conteúdos multimédia recentes do telemóvel</translation>
 <translation id="5965524703725988602">Ative/desative o tema escuro. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Avançar através das janelas</translation>
@@ -2227,6 +2233,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8287009018010202411">Produtividade</translation>
 <translation id="828708037801473432">Desativada</translation>
 <translation id="8297006494302853456">Fraca</translation>
+<translation id="8300451473979404345">Indicador selecionado, use as teclas de seta para o mover</translation>
 <translation id="8308637677604853869">Menu anterior</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock está ativado</translation>
@@ -2287,6 +2294,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="851458219935658693">Mostrar janelas do espaço de trabalho atual, botão de opção selecionado</translation>
 <translation id="851660987304951246">Use Ajuda-me a ler para resumir rapidamente o conteúdo ou fazer perguntas</translation>
 <translation id="8517041960877371778">O <ph name="DEVICE_TYPE" /> pode não carregar enquanto estiver ligado.</translation>
+<translation id="8519329096920173967">Pesquisar o meu ecrã com o Google Lens</translation>
 <translation id="8535393432370007982">Anular ordenação por cor</translation>
 <translation id="8536886494750559755">Mostre as definições da Partilha rápida. Visível para todos durante <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Texto copiado para a área de transferência</translation>

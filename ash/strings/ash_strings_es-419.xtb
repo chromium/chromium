@@ -551,6 +551,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <p
 <translation id="2872353916818027657">Intercambiar monitor principal</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="2876338922445400217">Acercar la pantalla</translation>
+<translation id="2876760662374103627">Control con gestos faciales activo</translation>
 <translation id="2878884018241093801">No hay elementos recientes</translation>
 <translation id="2880541185262491188">Demasiados intentos de ingresar PIN. Espera <ph name="TIME_LEFT" /> y vuelve a intentarlo</translation>
 <translation id="2883271196820422439">Reanudar teclas del mouse</translation>
@@ -1015,6 +1016,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4351244548802238354">Cerrar cuadro de diálogo</translation>
 <translation id="4356872429719185452">Mostrar detalles del hotspot. Se está activando el hotspot.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> Grabando</translation>
+<translation id="4368227575116094370">Crear hoja de cálculo de Google</translation>
 <translation id="4371348193907997655">Configuración de transmisión</translation>
 <translation id="4371834685492830207">El PIN debe contener solo caracteres válidos</translation>
 <translation id="4375482231364171368">Buscar en la barra de direcciones</translation>
@@ -1516,6 +1518,7 @@ No hay dispositivos conectados.</translation>
 <translation id="595202126637698455">Seguimiento de rendimiento habilitado</translation>
 <translation id="5955304353782037793">apl</translation>
 <translation id="5958529069007801266">Usuario supervisado</translation>
+<translation id="596035801491797438">Desactivar el Control con gestos faciales</translation>
 <translation id="5960410286721553511">Mira las fotos y el contenido multimedia recientes del teléfono</translation>
 <translation id="5965524703725988602">Activar o desactivar el Tema oscuro. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Desplazarse hacia adelante por las ventanas</translation>

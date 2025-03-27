@@ -1466,15 +1466,49 @@ class LcppDataMapFeatures
   LcppDataMapFeatures() {
     scoped_feature_list_.InitWithFeatures(GetParam(),
                                           /*disabled_features=*/{});
+    constexpr char kSlidingWindowSize[] = "5";
+    constexpr char kMaxHistogramBuckets[] = "2";
     scoped_feature_list_for_sliding_window_and_buckets_
         .InitWithFeaturesAndParameters(
-            {{blink::features::kLCPCriticalPathPredictor,
-              {{blink::features::
-                    kLCPCriticalPathPredictorHistogramSlidingWindowSize.name,
-                "5"},
-               {blink::features::kLCPCriticalPathPredictorMaxHistogramBuckets
-                    .name,
-                "2"}}}},
+            {
+                {blink::features::kLCPCriticalPathPredictor,
+                 {{blink::features::kLCPCriticalPathPredictorSlidingWindowSize
+                       .name,
+                   kSlidingWindowSize},
+                  {blink::features::kLCPCriticalPathPredictorMaxHistogramBuckets
+                       .name,
+                   kMaxHistogramBuckets}}},
+                {blink::features::kLCPScriptObserver,
+                 {{blink::features::kLCPScriptObserverSlidingWindowSize.name,
+                   kSlidingWindowSize},
+                  {blink::features::kLCPScriptObserverMaxHistogramBuckets.name,
+                   kMaxHistogramBuckets}}},
+                {blink::features::kLCPPFontURLPredictor,
+                 {{blink::features::kLCPPFontURLPredictorSlidingWindowSize.name,
+                   kSlidingWindowSize},
+                  {blink::features::kLCPPFontURLPredictorMaxHistogramBuckets
+                       .name,
+                   kMaxHistogramBuckets}}},
+                {blink::features::kHttpDiskCachePrewarming,
+                 {{blink::features::kHttpDiskCachePrewarmingSlidingWindowSize
+                       .name,
+                   kSlidingWindowSize},
+                  {blink::features::kHttpDiskCachePrewarmingMaxHistogramBuckets
+                       .name,
+                   kMaxHistogramBuckets}}},
+                {blink::features::kLCPPAutoPreconnectLcpOrigin,
+                 {{blink::features::kLCPPAutoPreconnectSlidingWindowSize.name,
+                   kSlidingWindowSize},
+                  {blink::features::kLCPPAutoPreconnectMaxHistogramBuckets.name,
+                   kMaxHistogramBuckets}}},
+                {blink::features::kLCPPDeferUnusedPreload,
+                 {{blink::features::kLCPPDeferUnusedPreloadSlidingWindowSize
+                       .name,
+                   kSlidingWindowSize},
+                  {blink::features::kLCPPDeferUnusedPreloadMaxHistogramBuckets
+                       .name,
+                   kMaxHistogramBuckets}}},
+            },
             {});
   }
 

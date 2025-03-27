@@ -10,6 +10,10 @@
 
 class Profile;
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
+
 namespace tree_fixing {
 
 class AXTreeFixingServicesRouter;
@@ -31,8 +35,11 @@ class AXTreeFixingServicesRouterFactory : public ProfileKeyedServiceFactory {
   ~AXTreeFixingServicesRouterFactory() override;
 
   // BrowserContextKeyedServiceFactory:
+  bool ServiceIsCreatedWithBrowserContext() const override;
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+  void RegisterProfilePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
 };
 
 }  // namespace tree_fixing

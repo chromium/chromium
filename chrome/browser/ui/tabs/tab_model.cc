@@ -160,6 +160,10 @@ void TabModel::DidInsert(base::PassKey<TabStripModel>) {
   did_insert_callback_list_.Notify(this);
 }
 
+base::WeakPtr<TabInterface> TabModel::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 content::WebContents* TabModel::GetContents() const {
   return contents_;
 }

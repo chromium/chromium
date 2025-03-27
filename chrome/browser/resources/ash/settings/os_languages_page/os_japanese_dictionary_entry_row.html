@@ -8,10 +8,7 @@
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-  }
-
-  .entry-input {
-    margin-inline-end: 5px;
+    gap: 16px
   }
 
   .category-div {
@@ -36,11 +33,10 @@
   <cr-input value="[[entry.key]]"
      label="$i18n{japaneseDictionaryReading}"
      type="text"
-     class="entry-input"
      on-change="saveReading_"></cr-input>
   <cr-input value="[[entry.value]]"
      label="$i18n{japaneseDictionaryWord}"
-     type="text" class="entry-input"
+     type="text"
      on-change="saveWord_"></cr-input>
   <div class="category-div" >
     <div class="cr-form-field-label category-label">$i18n{japaneseDictionaryCategory}</div>
@@ -48,7 +44,7 @@
       These Japanese terms are not translated on purpose since they are technical linguistic terms
       The option values needs to corresponds to the int value of the mojo enum JpPosType.
     -->
-    <select id="posDropdownMenu" class="md-select" class="entry-input" on-change="onOptionChanged_">
+    <select id="posDropdownMenu" class="md-select" on-change="onOptionChanged_">
        <template is="dom-repeat" items="[[posTypeOptions_]]">
          <option value="[[item.value]]"
             selected="[[isSelectedOption_(item.value)]]">
@@ -59,7 +55,7 @@
   </div>
   <cr-input value="[[entry.comment]]"
      label="$i18n{japaneseDictionaryComment}"
-     type="text" class="entry-input"
+     type="text"
      on-change="saveComment_"></cr-input>
   <cr-icon-button class="delete-icon"
      iron-icon="cr:close"

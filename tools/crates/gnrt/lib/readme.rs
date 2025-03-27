@@ -36,7 +36,7 @@ pub fn readme_files_from_packages<'a>(
     deps: impl IntoIterator<Item = &'a cargo_metadata::Package>,
     paths: &paths::ChromiumPaths,
     extra_config: &BuildConfig,
-    mut find_group: impl FnMut(&'a cargo_metadata::PackageId) -> Group,
+    mut find_group: impl FnMut(&'a cargo_metadata::Package) -> Group,
     mut find_security_critical: impl FnMut(&'a cargo_metadata::PackageId) -> Option<bool>,
     mut find_shipped: impl FnMut(&'a cargo_metadata::PackageId) -> Option<bool>,
 ) -> Result<HashMap<PathBuf, ReadmeFile>> {
@@ -61,7 +61,7 @@ pub fn readme_file_from_package<'a>(
     package: &'a cargo_metadata::Package,
     paths: &paths::ChromiumPaths,
     extra_config: &BuildConfig,
-    find_group: &mut dyn FnMut(&'a cargo_metadata::PackageId) -> Group,
+    mut find_group: impl FnMut(&'a cargo_metadata::Package) -> Group,
     find_security_critical: &mut dyn FnMut(&'a cargo_metadata::PackageId) -> Option<bool>,
     find_shipped: &mut dyn FnMut(&'a cargo_metadata::PackageId) -> Option<bool>,
 ) -> Result<(PathBuf, ReadmeFile)> {
@@ -76,7 +76,7 @@ pub fn readme_file_from_package<'a>(
         .third_party_cargo_root
         .join("vendor")
         .join(format!("{}-{}", package.name, package.version));
-    let group = find_group(&package.id);
+    let group = find_group(package);
 
     let security_critical = find_security_critical(&package.id).unwrap_or(match group {
         Group::Safe | Group::Sandbox => true,

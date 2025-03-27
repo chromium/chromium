@@ -138,8 +138,10 @@ void PerformanceManager::RemoveObserver(PerformanceManagerObserver* observer) {
 
 // static
 void PerformanceManager::RecordMemoryMetrics() {
-  resource_attribution::internal::QueryScheduler::GetFromGraph()
-      ->RecordMemoryMetrics();
+  if (IsAvailable()) {
+    resource_attribution::internal::QueryScheduler::GetFromGraph()
+        ->RecordMemoryMetrics();
+  }
 }
 
 }  // namespace performance_manager

@@ -81,6 +81,9 @@ class CollaborationService : public KeyedService,
       const tab_groups::EitherGroupID& either_id,
       CollaborationServiceShareOrManageEntryPoint entry) = 0;
 
+  // Cancels all the flows currently displayed.
+  virtual void CancelAllFlows(base::OnceCallback<void()> finish_callback) = 0;
+
   // Get the current ServiceStatus.
   virtual ServiceStatus GetServiceStatus() = 0;
 

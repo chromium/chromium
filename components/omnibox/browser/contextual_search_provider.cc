@@ -17,6 +17,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -27,6 +28,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
@@ -34,18 +36,27 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace {
 
+// Relevance for pedal-like action matches to be provided when not in keyword
+// mode and input is empty.
+constexpr int kAdvertActionRelevance = 10000;
+
+// The internal default verbatim match relevance.
+constexpr int kDefaultMatchRelevance = 1500;
+
 // Relevance value to use if it was not set explicitly by the server.
-constexpr int kDefaultResultRelevance = 100;
+constexpr int kDefaultSuggestResultRelevance = 100;
 
 // Populates |results| with the response if it can be successfully parsed for
 // |input|. Returns true if the response can be successfully parsed.
@@ -66,7 +77,7 @@ bool ParseRemoteResponse(const std::string& response_json,
 
   return SearchSuggestionParser::ParseSuggestResults(
       *response_data, input, client->GetSchemeClassifier(),
-      /*default_result_relevance=*/kDefaultResultRelevance,
+      /*default_result_relevance=*/kDefaultSuggestResultRelevance,
       /*is_keyword_result=*/true, results);
 }
 
@@ -88,25 +99,24 @@ void ContextualSearchProvider::Start(
 
   if (!starter_pack_engine) {
     // Only surface the action matches that help the user find their way into
-    // the '@page' scope.
-    if (input.IsZeroSuggest() ||
-        input.type() == metrics::OmniboxInputType::EMPTY) {
+    // the '@page' scope. Requirements: non-SRP, non-NTP, with empty input.
+    // TODO(crbug.com/406276335): Move and condition on zero suggest response to
+    //  the ZeroSuggestProvider so it can inhibit the ad actions for some pages.
+    if (omnibox::IsOtherWebPage(input.current_page_classification()) &&
+        (input.IsZeroSuggest() ||
+         input.type() == metrics::OmniboxInputType::EMPTY)) {
       AddPageSearchActionMatches();
     }
     return;
   }
   input_keyword_ = starter_pack_engine->keyword();
 
+  AddDefaultMatch(input.text());
+
   if (input.lens_overlay_suggest_inputs().has_value()) {
     done_ = false;
     StartSuggestRequest(std::move(input));
-    // TODO(crbug.com/405453922): As long as some match is produced to keep
-    //  in keyword mode, this placeholder could be eliminated.
-    AddPlaceholderMatch(u"Request in progress");
   } else {
-    // TODO(crbug.com/404886458): Remove placeholder once async lens input
-    //  handling is ready.
-    AddPlaceholderMatch(u"Lens inputs not ready yet");
     done_ = true;
   }
 }
@@ -144,12 +154,6 @@ bool ContextualSearchProvider::ShouldAppendExtraParams(
 }
 
 void ContextualSearchProvider::StartSuggestRequest(AutocompleteInput input) {
-  // Note: Queries are not yet supported. If it is kept, the current behavior
-  // will be to mismatch between `input_text` and `query` empty string, failing
-  // the parse early in SearchSuggestionParser::ParseSuggestResults.
-  // This could also be worked around (hackishly) by mutating the response.
-  input.UpdateText(u"", 0u, {});
-
   TemplateURLRef::SearchTermsArgs search_terms_args;
 
   // TODO(crbug.com/404608703): Consider new types or taking from `input`.
@@ -189,6 +193,12 @@ void ContextualSearchProvider::SuggestRequestCompleted(
     return;
   }
 
+  // Note: Queries are not yet supported. If it is kept, the current behavior
+  // will be to mismatch between `input_text` and `query` empty string, failing
+  // the parse early in SearchSuggestionParser::ParseSuggestResults.
+  std::u16string input_text = input.text();
+  input.UpdateText(u"", 0u, {});
+
   SearchSuggestionParser::Results results;
   if (!ParseRemoteResponse(SearchSuggestionParser::ExtractJsonData(
                                source, std::move(response_body)),
@@ -202,22 +212,19 @@ void ContextualSearchProvider::SuggestRequestCompleted(
   done_ = true;
 
   // Convert the results into |matches_| and notify the listeners.
+  // Some match must be available in order to stay in keyword mode,
+  // but an empty result set is possible. The default match will
+  // always be added first for a consistent keyword experience.
+  matches_.clear();
+  suggestion_groups_map_.clear();
+  AddDefaultMatch(input_text);
   ConvertSuggestResultsToAutocompleteMatches(results, input);
-
-  if (matches_.empty()) {
-    // Some match must be available in order to stay in keyword mode.
-    AddPlaceholderMatch(u"Request completed with no matches");
-  }
-
   NotifyListeners(/*updated_matches=*/true);
 }
 
 void ContextualSearchProvider::ConvertSuggestResultsToAutocompleteMatches(
     const SearchSuggestionParser::Results& results,
     const AutocompleteInput& input) {
-  matches_.clear();
-  suggestion_groups_map_.clear();
-
   // Add all the SuggestResults to the map. We display all ZeroSuggest search
   // suggestions as unbolded.
   MatchMap map;
@@ -251,19 +258,9 @@ void ContextualSearchProvider::ConvertSuggestResultsToAutocompleteMatches(
   for (const auto& entry : results.suggestion_groups_map) {
     suggestion_groups_map_[entry.first].MergeFrom(entry.second);
   }
-
-  // TODO(crbug.com/405453922): This shouldn't be necessary once we have
-  //  a default match that by itself keeps the omnibox in keyword mode.
-  for (AutocompleteMatch& match : matches_) {
-    match.keyword = input_keyword_;
-    match.transition = ui::PAGE_TRANSITION_KEYWORD;
-    match.allowed_to_be_default_match = true;
-  }
 }
 
 void ContextualSearchProvider::AddPageSearchActionMatches() {
-  constexpr int kAdvertActionRelevance = 10000;
-
   // These matches are effectively pedals that don't require any query matching.
   AutocompleteMatch match(this, kAdvertActionRelevance, false,
                           AutocompleteMatchType::PEDAL);
@@ -285,18 +282,26 @@ void ContextualSearchProvider::AddPageSearchActionMatches() {
   matches_.push_back(match);
 }
 
-void ContextualSearchProvider::AddPlaceholderMatch(
-    std::u16string_view contents) {
-  int relevance = matches_.empty() ? 10000 : matches_.back().relevance - 1;
-  AutocompleteMatch placeholder(this, relevance, false,
-                                AutocompleteMatchType::SEARCH_SUGGEST);
-  placeholder.contents = contents;
-  placeholder.contents_class = {{0, ACMatchClassification::NONE}};
+void ContextualSearchProvider::AddDefaultMatch(std::u16string_view input_text) {
+  std::u16string_view text =
+      base::TrimWhitespace(input_text, base::TrimPositions::TRIM_ALL);
+
+  AutocompleteMatch match(this, kDefaultMatchRelevance, false,
+                          AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+  if (text.empty()) {
+    match.contents =
+        l10n_util::GetStringUTF16(IDS_STARTER_PACK_PAGE_EMPTY_QUERY_MATCH_TEXT);
+    match.contents_class = {{0, ACMatchClassification::DIM}};
+  } else {
+    match.contents = text;
+    match.contents_class = {{0, ACMatchClassification::NONE}};
+    match.subtypes.insert(omnibox::SUBTYPE_CONTEXTUAL_SEARCH);
+  }
 
   // These are necessary to avoid the omnibox dropping out of keyword mode.
-  placeholder.keyword = input_keyword_;
-  placeholder.transition = ui::PAGE_TRANSITION_KEYWORD;
-  placeholder.allowed_to_be_default_match = true;
+  match.keyword = input_keyword_;
+  match.transition = ui::PAGE_TRANSITION_KEYWORD;
+  match.allowed_to_be_default_match = true;
 
-  matches_.push_back(placeholder);
+  matches_.push_back(match);
 }

@@ -992,7 +992,9 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
   // ensure once the async processes finish, no new full image request has
   // started.
   latest_full_image_request_data_ = std::make_unique<LensServerFetchRequest>(
-      GetNextRequestId(RequestIdUpdateMode::kFullImageRequest),
+      GetNextRequestId(initial_request_id_
+                           ? RequestIdUpdateMode::kFullImageRequest
+                           : RequestIdUpdateMode::kInitialRequest),
       /*query_start_time=*/base::TimeTicks::Now());
   int current_sequence_id = latest_full_image_request_data_->sequence_id();
 
@@ -1891,10 +1893,10 @@ LensOverlayQueryController::CreateClientContext() {
   lens::LensOverlayClientContext context;
   if (lens::features::IsUpdatedClientContextEnabled()) {
     context.set_surface(lens::SURFACE_LENS_OVERLAY);
-    context.set_platform(lens::LENS_OVERLAY);
+    context.set_platform(lens::PLATFORM_LENS_OVERLAY);
   } else {
     context.set_surface(lens::SURFACE_CHROMIUM);
-    context.set_platform(lens::WEB);
+    context.set_platform(lens::PLATFORM_WEB);
     context.mutable_rendering_context()->set_rendering_environment(
         lens::RENDERING_ENV_LENS_OVERLAY);
   }

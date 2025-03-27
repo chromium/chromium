@@ -109,8 +109,7 @@ The following arguments are supported:
 )""";
 
 // Default video to be used if no test video was specified.
-constexpr base::FilePath::CharType kDefaultTestVideoPath[] =
-    FILE_PATH_LITERAL("bear_320x192_40frames.yuv.webm");
+constexpr char kDefaultTestVideoPath[] = "bear_320x192_40frames.yuv.webm";
 
 // The number of frames to encode for bitrate check test cases.
 // TODO(hiroh): Decrease this values to make the test faster.
@@ -444,6 +443,9 @@ TEST_F(VideoEncoderTest, KeyFrameOnFirstFrameOfGOP) {
 #endif  // BUILDFLAG(IS_WIN)
 
 // Test forcing key frame to the first and second frames.
+#if !BUILDFLAG(IS_ANDROID)
+// Forcing keyframe is best-effort on Android and having 2 keyframes in a
+// row is often not possible.
 TEST_F(VideoEncoderTest, ForceTheFirstAndSecondKeyFrames) {
   if (g_env->SpatialLayers().size() > 1) {
     GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
@@ -474,6 +476,7 @@ TEST_F(VideoEncoderTest, ForceTheFirstAndSecondKeyFrames) {
   EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Execute Flush() in the middle of encoding. Supporting this is required for
 // Flush() and ChabgeOptions() in media::VideoEncoder API.
@@ -487,6 +490,9 @@ TEST_F(VideoEncoderTest, FlushIntheMiddle) {
 
   auto encoder = CreateVideoEncoder(g_env->Video(), GetDefaultConfig());
   const size_t middle_frame = config.num_frames_to_encode / 2;
+  if (!encoder->IsFlushSupported()) {
+    GTEST_SKIP() << "Flush is not supported";
+  }
 
   // Encode until the middle of stream and request force_keyframe.
   encoder->EncodeUntil(VideoEncoder::kFrameReleased, middle_frame);
@@ -937,8 +943,9 @@ int main(int argc, char** argv) {
   // Check if a video was specified on the command line.
   base::CommandLine::StringVector args = cmd_line->GetArgs();
   base::FilePath video_path =
-      (args.size() >= 1) ? base::FilePath(args[0])
-                         : base::FilePath(media::test::kDefaultTestVideoPath);
+      (args.size() >= 1)
+          ? base::FilePath(args[0])
+          : media::GetTestDataFilePath(media::test::kDefaultTestVideoPath);
   base::FilePath video_metadata_path =
       (args.size() >= 2) ? base::FilePath(args[1]) : base::FilePath();
   std::string codec = "h264";

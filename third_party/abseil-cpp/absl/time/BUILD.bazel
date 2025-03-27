@@ -131,8 +131,9 @@ cc_test(
     ],
 )
 
-cc_test(
+cc_binary(
     name = "time_benchmark",
+    testonly = True,
     srcs = [
         "civil_time_benchmark.cc",
         "clock_benchmark.cc",
