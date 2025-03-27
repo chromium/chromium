@@ -58,6 +58,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
       enterprise_connectors::ConnectorsServiceBase* connectors_service,
       ReferrerChainProvider* referrer_chain_provider,
       PrefService* pref_service,
+      WebUIDelegate* webui_delegate,
       signin::IdentityManager* identity_manager,
       policy::ManagementService* management_service,
       bool is_off_the_record,

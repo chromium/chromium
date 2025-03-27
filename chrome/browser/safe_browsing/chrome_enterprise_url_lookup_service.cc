@@ -14,7 +14,6 @@
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
@@ -69,6 +68,7 @@ ChromeEnterpriseRealTimeUrlLookupService::
         enterprise_connectors::ConnectorsServiceBase* connectors_service,
         ReferrerChainProvider* referrer_chain_provider,
         PrefService* pref_service,
+        WebUIDelegate* webui_delegate,
         signin::IdentityManager* identity_manager,
         policy::ManagementService* management_service,
         bool is_off_the_record,
@@ -76,13 +76,12 @@ ChromeEnterpriseRealTimeUrlLookupService::
         base::RepeatingCallback<std::string()> get_profile_email_callback,
         base::RepeatingCallback<bool()> is_profile_affiliated_callback,
         bool is_command_line_switch_supported)
-    : RealTimeUrlLookupServiceBase(
-          url_loader_factory,
-          cache_manager,
-          get_user_population_callback,
-          referrer_chain_provider,
-          pref_service,
-          /*webui_delegate=*/WebUIInfoSingleton::GetInstance()),
+    : RealTimeUrlLookupServiceBase(url_loader_factory,
+                                   cache_manager,
+                                   get_user_population_callback,
+                                   referrer_chain_provider,
+                                   pref_service,
+                                   webui_delegate),
       connectors_service_(connectors_service),
       token_fetcher_(std::move(token_fetcher)),
       pref_service_(pref_service),
