@@ -75,7 +75,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
   ServiceWorkerClient(const ServiceWorkerClient& other) = delete;
   ServiceWorkerClient& operator=(const ServiceWorkerClient& other) = delete;
 
-  virtual ~ServiceWorkerClient();
+  ~ServiceWorkerClient();
 
   ServiceWorkerContainerHostForClient* container_host() {
     return container_host_.get();
