@@ -4,6 +4,7 @@
 
 #include "base/metrics/bucket_ranges.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "base/containers/span.h"
@@ -11,8 +12,31 @@
 
 namespace base {
 
+namespace {
+
+constexpr bool is_sorted_and_unique(
+    base::span<const HistogramBase::Sample32> c) {
+  // Return true if we cannot find any adjacent pair {a, b} where a >= b.
+  return std::adjacent_find(c.begin(), c.end(),
+                            std::greater_equal<HistogramBase::Sample32>()) ==
+         c.end();
+}
+
+}  // namespace
+
 BucketRanges::BucketRanges(size_t num_ranges)
     : ranges_(num_ranges, 0), checksum_(0) {}
+
+BucketRanges::BucketRanges(base::span<const HistogramBase::Sample32> data)
+    : ranges_(data.begin(), data.end()), checksum_(0) {
+  // Because the range values must be in sorted order, it suffices to only
+  // validate that the first one is non-negative.
+  if (!ranges_.empty() && ranges_[0] >= 0 && is_sorted_and_unique(ranges_)) {
+    ResetChecksum();
+  } else {
+    ranges_.clear();
+  }
+}
 
 BucketRanges::~BucketRanges() = default;
 
