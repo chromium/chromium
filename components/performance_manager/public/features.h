@@ -72,6 +72,12 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kPerformanceControlsPPMSurveyMaxDelay);
 
+// Controls whether survey responses will be tagged as "Selected For Uniform
+// Sample". The subset of responses with this tag approximate the general
+// population, no matter how many responses are received in individual segments.
+BASE_DECLARE_FEATURE_PARAM(bool,
+                           kPerformanceControlsPPMSurveyUniformSampleValue);
+
 // Defines the names and boundaries of up to 3 segments for the PPM survey.
 // There's no kPerformanceControlsPPMSurveySegmentMaxMemoryGB3 because there's
 // never a 4th segment, so segment 3 has no maximum.

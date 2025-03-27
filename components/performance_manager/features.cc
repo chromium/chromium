@@ -70,6 +70,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "ppm_survey_max_delay",
                    base::Minutes(60));
 
+BASE_FEATURE_PARAM(bool,
+                   kPerformanceControlsPPMSurveyUniformSampleValue,
+                   &kPerformanceControlsPPMSurvey,
+                   "ppm_survey_uniform_sample",
+                   true);
+
 // Depending on platform, clients will be split into 1-3 segments based on the
 // amount of physical RAM they have. "ppm_survey_segment_name1" through
 // "ppm_survey_segment_name3" give the names of the segments, which will be
