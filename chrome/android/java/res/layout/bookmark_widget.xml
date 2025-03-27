@@ -27,6 +27,8 @@ found in the LICENSE file.
         android:id="@+id/empty_message"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/bookmark_widget_min_height"
+        android:paddingBottom="@dimen/bookmark_widget_min_height"
         android:gravity="center"
         android:text="@string/bookmark_widget_empty_msg"
         android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
