@@ -23895,22 +23895,17 @@
             ]
         }
     ],
-    "ThrottleMainFrameTo60Hz": [
+    "ThrottleMainFrameTo60HzV2": [
         {
             "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "ThrottledUrgentInput_20250325",
                     "enable_features": [
-                        "ThrottleMainFrameTo60Hz"
+                        "ThrottleMainFrameTo60Hz",
+                        "UrgentMainFrameForInput"
                     ]
                 }
             ]
@@ -24422,27 +24417,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UploadOfficeToCloud"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UrgentMainFrameForInput": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UrgentMainFrameForInput"
                     ]
                 }
             ]
