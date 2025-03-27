@@ -37,7 +37,7 @@ index cae9ebe01ec2c..b84b55e4d8762 100644
  #define PROTOBUF_UNUSED
  #endif
  
-+#if __has_attribute(no_sanitize)
++#if defined(__has_attribute) && __has_attribute(no_sanitize)
 +#define PROTOBUF_NO_SANITIZE(...) __attribute__((no_sanitize(__VA_ARGS__)))
 +#else
 +#define PROTOBUF_NO_SANITIZE(...)
