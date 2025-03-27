@@ -2127,17 +2127,13 @@ class LayerTreeHostTestEffectTreeSync : public LayerTreeHostTest {
         break;
       case 5:
         node->filters = blur_filter_;
-        node->is_currently_animating_filter = true;
         break;
       case 6:
-        node->is_currently_animating_filter = true;
         break;
       case 7:
-        node->is_currently_animating_filter = false;
         break;
       case 8:
         node->filters = sepia_filter_;
-        node->is_currently_animating_filter = true;
         break;
     }
   }

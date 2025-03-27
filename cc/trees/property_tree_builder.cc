@@ -137,12 +137,6 @@ bool HasPotentialOpacityAnimation(const MutatorHost& host, Layer* layer) {
          layer->OpacityCanAnimateOnImplThread();
 }
 
-bool FilterIsAnimating(const MutatorHost& host, Layer* layer) {
-  return host.IsAnimatingProperty(layer->element_id(),
-                                  layer->GetElementTypeForAnimation(),
-                                  TargetProperty::FILTER);
-}
-
 bool HasPotentiallyRunningFilterAnimation(const MutatorHost& host,
                                           Layer* layer) {
   return host.HasPotentiallyRunningAnimationForProperty(
@@ -540,8 +534,6 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
   node->subtree_hidden = layer->hide_layer_and_subtree();
   node->is_currently_animating_opacity =
       OpacityIsAnimating(*mutator_host_, layer);
-  node->is_currently_animating_filter =
-      FilterIsAnimating(*mutator_host_, layer);
   node->effect_changed = layer->subtree_property_changed();
   node->subtree_has_copy_request = layer->subtree_has_copy_request();
   node->render_surface_reason = render_surface_reason;

@@ -2294,9 +2294,6 @@ bool PropertyTrees::ElementIsAnimatingChanged(
       case TargetProperty::FILTER:
         if (EffectNode* effect_node =
                 effect_tree_mutable().FindNodeFromElementId(element_id)) {
-          if (mask.currently_running[property])
-            effect_node->is_currently_animating_filter =
-                state.currently_running[property];
           if (mask.potentially_animating[property])
             effect_node->has_potential_filter_animation =
                 state.potentially_animating[property];
@@ -2311,9 +2308,6 @@ bool PropertyTrees::ElementIsAnimatingChanged(
       case TargetProperty::BACKDROP_FILTER:
         if (EffectNode* effect_node =
                 effect_tree_mutable().FindNodeFromElementId(element_id)) {
-          if (mask.currently_running[property])
-            effect_node->is_currently_animating_backdrop_filter =
-                state.currently_running[property];
           if (mask.potentially_animating[property])
             effect_node->has_potential_backdrop_filter_animation =
                 state.potentially_animating[property];
