@@ -223,7 +223,6 @@
 <translation id="1363028406613469049">ჩანაწერი</translation>
 <translation id="1364822246244961190">ეს წესები დაბლოკილია, მათი მნიშვნელობა იგნორირებული იქნება.</translation>
 <translation id="1368318639262510626">დინოზავრთა თამაში. პიქსელირებული დინოზავრი თავიდან ირიდებს კაქტუსებთან და პტეროდაქტილებთან დაჯახებას, უდაბური ლანდშაფტის სიღრმეებში გარბენისას. აუდიომინიშნების გაგონებისას დააჭირეთ შორისის ღილაკს, რათა გადაახტუნოთ დაბრკოლებებზე.</translation>
-<translation id="1369735141991626842">ველების შევსება ხელოვნური ინტელექტის მეშვეობით</translation>
 <translation id="1374468813861204354">შემოთავაზებები</translation>
 <translation id="1375198122581997741">ვერსიის შესახებ</translation>
 <translation id="1375293861397106342">ყველა ვარიანტი, როგორც წესი, <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -539,7 +538,6 @@
 <translation id="1919526244108283799">400 x 600 მმ</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{არცერთი}=1{1 საიტი}other{# საიტი}}</translation>
 <translation id="192095259937375524">ამ ჩანართის გაზიარების ღილაკი, ამ ჩანართის გასაზიარებლად ისეთი ხელსაწყოების მეშვეობით, როგორიცაა ბმულის გაზიარება, QR კოდის შექმნა, ტრანსლირება და სხვა, გაააქტიურეთ ის</translation>
-<translation id="1921479021518565778">შემოთავაზებები ჩაიტვირთა</translation>
 <translation id="1924727005275031552">სიახლე</translation>
 <translation id="1927439846988093361">თმის მოვლა</translation>
 <translation id="1935353813610900265">ისტორიაში ძიების შესახებ გამოხმაურება შექმნილია AI-ს დახმარებით</translation>
@@ -974,6 +972,7 @@
 <translation id="2688186765492306706">500 x 760 მმ</translation>
 <translation id="2688969097326701645">გაგრძელება</translation>
 <translation id="2690699652723742414">ბოლო 30 დღე</translation>
+<translation id="2691385045260836588">მოდელი</translation>
 <translation id="2691924980723297736">გაფრთხილება უსაფრთხოების შესახებ</translation>
 <translation id="2697248912349197812">ჰკითხეთ <ph name="KEYWORD_SHORT_NAME" />-ს</translation>
 <translation id="2699273987028089219">ხელმისაწვდომია ქვემენიუ, გამოიყენეთ <ph name="SHORTCUT" /> დამატებით ვარიანტებზე გადასასვლელად.</translation>
@@ -1529,6 +1528,7 @@
 <translation id="3664782872746246217">საკვანძო სიტყვები:</translation>
 <translation id="3665100783276035932">საიტების უმეტესობამ მოლოდინისამებრ უნდა იმუშაოს</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />შეიტყვეთ მეტი<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">ნომერი</translation>
 <translation id="3670229581627177274">Bluetooth-ის ჩართვა</translation>
 <translation id="3671117652518853176">როცა ის გამორთულია, შესაძლოა, ზოგჯერ მოგეთხოვოთ დადასტურება უსაფრთხოების მიზნებით</translation>
 <translation id="3671540257457995106">გსურთ ზომის შეცვლის დაშვება?</translation>
@@ -1543,7 +1543,6 @@
 <translation id="3681007416295224113">სერტიფიკატის ინფორმაცია</translation>
 <translation id="3681421644246505351">Chrome ინიშნავს ინტერესებს თქვენ მიერ ვების დათვალიერების ბოლოდროინდელი ისტორიის საფუძველზე.</translation>
 <translation id="3682094733650754138">არჩეული იყო მისამართის შევსების ვარიანტი</translation>
-<translation id="3687493962714153124">ხელოვნური ინტელექტის მეშვეობით ავტომატური შევსების მართვა</translation>
 <translation id="3687920599421452763">ფურგონები და მინივენები</translation>
 <translation id="3693327506115126094">აირჩიეთ თქვენი ვინაობის დადასტურების მეთოდი</translation>
 <translation id="3698353241727597930">თქვენმა ადმინისტრატორმა დააყენა პარამეტრები, რომ შეინახოს <ph name="FILES" /> თქვენი კომპანიის მიერ მართულ <ph name="CLOUD_STORAGE" /> მეხსიერებაში. ამ ფაილებმა შეიძლება გაიაროს მონიტორინგი, აუდიტი და შეიძლება ისინი შენახული იყოს, როცა მათ წაშლით.</translation>
@@ -1697,6 +1696,7 @@
 <translation id="3950820424414687140">შესვლა</translation>
 <translation id="3953505489397572035">ეს ფასი სტანდარტულია</translation>
 <translation id="3958057596965527988">4 x 4 დუიმი</translation>
+<translation id="3959969108528118741">მფლობელი</translation>
 <translation id="3961148744525529027">გადახდების დამმუშავებლის გვერდი ნახევრადგახსნილია</translation>
 <translation id="3962859241508114581">წინა ჩანაწერი</translation>
 <translation id="3963721102035795474">წამკითხველის რეჟიმი</translation>
@@ -1922,7 +1922,6 @@
 <translation id="4312866146174492540">დაბლოკვა (ნაგულისხმევი)</translation>
 <translation id="4314815835985389558">სინქრონიზაციის მართვა</translation>
 <translation id="4316057107946726368">შეიყვანეთ ორმხრივად გასასწორებელი შეტყობინება, რომლის სიგრძეც მაქსიმუმ <ph name="MAX_CHAR_COUNT" /> სიმბოლოა. გამოყენებულია <ph name="MAX_CHAR_COUNT" />-დან <ph name="ACTUAL_CHAR_COUNT" /> სიმბოლო.</translation>
-<translation id="431740489189220419">შემოთავაზებები იტვირთება</translation>
 <translation id="4318213823155573975">ქუდები და თავსაბურავები</translation>
 <translation id="4318312030194671742">Paint Preview Compositor Service</translation>
 <translation id="4318566738941496689">თქვენი მოწყობილობის სახელი და ქსელის მისამართი</translation>
@@ -2329,6 +2328,7 @@
 <translation id="5087286274860437796">სერვერის ამჟამინდელი სერტიფიკატი არასწორია.</translation>
 <translation id="5087580092889165836">ბარათის დამატება</translation>
 <translation id="5088142053160410913">შეტყობინება ოპერატორისთვის</translation>
+<translation id="5089810972385038852">შტატი</translation>
 <translation id="5090647584136241764">დაამატეთ ჩანართები მსგავსი პროდუქტებით, რათა მარტივად შეადაროთ სასურველი დეტალები</translation>
 <translation id="5093232627742069661">დაკეცვა Z-ის ფორმით</translation>
 <translation id="5094747076828555589">ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერთიფიკატი არ ენდობა Chromium-ს. ეს შეიძლება იყოს გამოწვეული არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის გადაჭრით.</translation>
@@ -2467,6 +2467,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />ნაგულისხმევი საძიებო სისტემა საშუალებას გაძლევთ, მოიძიოთ კონტენტი ვებში და ის, ასევე, ხელს უწყობს Chromium-ის ფუნქციების მუშაობას<ph name="END_BOLD" /> — მაგალითად, მისამართთა ზოლიდან და ვებში არსებული სურათებიდან ძიებას. კონკრეტული ფუნქციები, შესაძლოა, მიუწვდომელი იყოს, თუ ისინი მხარდაუჭერელია თქვენი საძიებო სისტემის მიერ.</translation>
 <translation id="5323043727018853753">ჩაშენებული კონტენტი დაშვებულია</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> / <ph name="NUM_MATCHES" />-დან</translation>
+<translation id="5327248766486351172">სახელი</translation>
 <translation id="5329858041417644019">თქვენი ბრაუზერი არ არის მართული</translation>
 <translation id="5331585574693522196">ნაგულისხმევად დაყენება</translation>
 <translation id="5332219387342487447">მიწოდების მეთოდი</translation>
@@ -2680,7 +2681,6 @@
 <translation id="569000877158168851">„DnsOverHttpsTemplates“-ის მნიშვნელობა შეუსაბამოა და არ იქნება გამოყენებული, თუ „DnsOverHttpsMode“ წესების მნიშვნელობად არ არის მითითებული „<ph name="SECURE_DNS_MODE_AUTOMATIC" />“ ან „<ph name="SECURE_DNS_MODE_SECURE" />“.</translation>
 <translation id="5691848789297492617">ბარათის შენახვა გახსნილია სრულ სიმაღლეზე.</translation>
 <translation id="5695542892312572833">გსურთ, გამოიყენოთ Windows Hello შენაძენების დასადასტურებლად და განსახორციელებლად?</translation>
-<translation id="5697827549745555938">თქვენ მიერ შენახული ინფორმაცია და ეს გვერდი გაეგზავნება Google-ს, რათა შეამოწმოს, დაეხმარება თუ არა ავტომატური შევსება ამ ფორმის შევსებაში. ეს მონაცემები შეიძლება ნახონ ადამიანმა მიმომხილველებმა, ამ ფუნქციის გაუმჯობესების მიზნით.</translation>
 <translation id="5699628521141772782">რძის პროდუქტები და კვერცხი</translation>
 <translation id="5700761515355162635">მესამე მხარის ქუქი-ჩანაწერები დაშვებულია</translation>
 <translation id="5701381305118179107">ცენტრირება</translation>
@@ -3109,6 +3109,7 @@
 <translation id="6440503408713884761">იგნორირებული</translation>
 <translation id="6443406338865242315">თქვენ მიერ დაინსტალირებული გაფართოებები და დანამატები</translation>
 <translation id="6444329331928531170">პენსიაზე გასვლა და პენსია</translation>
+<translation id="6445051938772793705">ქვეყანა</translation>
 <translation id="6446608382365791566">დამატებითი ინფორმაციის მითითება</translation>
 <translation id="6447842834002726250">ქუქი ფაილები</translation>
 <translation id="6448371595882710519">შეიტყვეთ მეტი მონაცემთა მართვის საშუალებების შესახებ</translation>
@@ -3589,7 +3590,6 @@
 <translation id="7316521168101843192">ფაილი ინახება Microsoft OneDrive-ში</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">კავშირთან დაკავშირებული დახმარება</translation>
-<translation id="7321111802407017850">შეინახეთ თქვენი ინფორმაცია ავტომატური შევსებისთვის</translation>
 <translation id="7323804146520582233">სექციის „<ph name="SECTION" />“ დამალვა</translation>
 <translation id="733354035281974745">მოწყობილობის ადგილობრივი ანგარიშის უგულებელყოფა</translation>
 <translation id="7334320624316649418">გადალაგების &amp;გამეორება</translation>

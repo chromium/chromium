@@ -403,6 +403,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1264956950255940376">Entornar o ollo esquerdo</translation>
 <translation id="1265094893042958831">Xerando suxestións para esta páxina…</translation>
 <translation id="1265279736024499987">As túas aplicacións e opcións de configuración sincronizaranse en todos os dispositivos Chrome OS Flex nos que teñas a sesión iniciada na túa conta de Google. Para ver as opcións de sincronización do navegador, accede á <ph name="LINK_BEGIN" />configuración de Chrome<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Despois de facer unha captura de pantalla ou unha busca na pantalla, mostra máis accións, como engadir a Calendar, crear Documentos de Google e moito máis.</translation>
 <translation id="126710816202626562">Idioma da tradución:</translation>
 <translation id="1267649802567297774">Imaxe xerada <ph name="INDEX" /> de <ph name="SUBJECT" />. Estilo: <ph name="STYLE" />. Estado de ánimo: <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1563,9 +1564,9 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2081816110395725788">Activar modo de suspensión mentres se use a batería</translation>
 <translation id="2082187087049518845">Agrupar pestana</translation>
 <translation id="2082510809738716738">Escolle unha cor para o tema</translation>
-<translation id="208547068587548667">Iniciar sesión en <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Téntao de novo</translation>
 <translation id="208634871997892083">VPN sempre activada</translation>
+<translation id="208654914566977272">Accións suxeridas ao facer unha busca na pantalla</translation>
 <translation id="2087822576218954668">Imprimir: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Non poderás inscribirte ata que non teñas instalado <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Punto de seguimento integrado</translation>
@@ -3997,7 +3998,6 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3778740492972734840">&amp;Ferramentas para programadores</translation>
 <translation id="3778868487658107119">Faille preguntas e pídelle que faga cousas. Esta función personalizada de Google sempre está lista para axudarche.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{un historial de navegación de # sitio}other{un historial de navegación de # sitios}}</translation>
-<translation id="3779244863011082655">Usar unha conta distinta de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> non puido comprobar se os teus contrasinais se viron afectados por violacións da seguranza dos datos. Téntao de novo máis tarde.</translation>
 <translation id="3781742599892759500">Acceso ao micrófono de Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5501,6 +5501,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4848191975108266266">"Ok Google" para ir ao Asistente de Google</translation>
 <translation id="4849286518551984791">Tempo universal coordenado (UTC/GMT)</translation>
 <translation id="4849517651082200438">Non instalar</translation>
+<translation id="4849731766219625109">Usar a túa conta de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="485053257961878904">Non se puido configurar a sincronización das notificacións</translation>
 <translation id="4850548109381269495">Comproba a túa conexión a Internet nos dous dispositivos e activa o Bluetooth. Despois, téntao de novo.</translation>
 <translation id="4850669014075537160">Desprazamento</translation>
@@ -5689,6 +5690,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4979510648199782334">Completouse a configuración de Microsoft 365</translation>
 <translation id="4980805016576257426">Esta extensión contén software malicioso.</translation>
 <translation id="4983159853748980742">Non se compartiu o teu contrasinal. Comproba a conexión a Internet e asegúrate de que tes a sesión iniciada en Chrome. Despois, téntao de novo.</translation>
+<translation id="498624032394115435">Calquera persoa que teña a ligazón poderá editar todas as pestanas.</translation>
 <translation id="4986706507552097681">Sempre podes escoller na configuración o contido que queres sincronizar. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="4986728572522335985">Con esta opción, eliminaranse todos os datos almacenados na chave de seguranza, incluídos os PIN</translation>
 <translation id="4987944280765486504">O teu Chromebook reiniciarase cando se complete a descarga. Nese momento, poderás continuar coa configuración.</translation>
@@ -8295,7 +8297,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6873571253135628430">Cambiar os permisos do sitio</translation>
 <translation id="6876155724392614295">Ciclismo</translation>
 <translation id="6876469544038980967">Non é útil</translation>
-<translation id="687838958001010630">Calquera persoa que teña a ligazón poderá editar todas as pestanas</translation>
 <translation id="6878422606530379992">Sensores permitidos</translation>
 <translation id="6878862640969460273">Horizontal</translation>
 <translation id="6880587130513028875">Bloqueáronse as imaxes nesta páxina.</translation>

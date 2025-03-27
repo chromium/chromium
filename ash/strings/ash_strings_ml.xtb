@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">അതിഥി മോഡിൽ പെരിഫറൽ പിന്തുണയ്‌ക്കുന്നില്ല</translation>
 <translation id="1270290102613614947">ഓൺ-സ്‌ക്രീൻ കീബോർഡ് പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="1272079795634619415">നിര്‍ത്തുക</translation>
+<translation id="12741168609094094">തിരയാനും ടെക്സ്റ്റ് പകർത്താനും മറ്റും നിങ്ങളുടെ സ്‌ക്രീനിൽ എന്തെങ്കിലും തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> ചാർജ് ചെയ്യുന്നു</translation>
 <translation id="1275718070701477396">തിരഞ്ഞെടുത്തു</translation>
 <translation id="1276975447697633661">ഫയൽ തിരഞ്ഞെടുക്കുക, തുടർന്ന് <ph name="KEY" /> അമർത്തുക</translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">ഹോട്ട്സ്പോട്ട് ഓഫാണ്</translation>
 <translation id="1731815243805539470">മുമ്പത്തെ ഉപയോക്താവിലേക്ക് മാറുക</translation>
 <translation id="1733996486177697563">ഡാർക്ക്, ലൈറ്റ് തീമുകൾ തമ്മിൽ മാറുക. ഡെസ്‌ക്ടോപ്പിൽ സ്‌പർശിച്ചുപിടിച്ച ശേഷം വാൾപേപ്പറും സ്റ്റൈലും തിരഞ്ഞെടുക്കുക.</translation>
+<translation id="1735992454301033090">തിരഞ്ഞെടുത്ത ഏരിയ നീക്കാൻ അമ്പടയാള കീകൾ ഉപയോഗിക്കുക</translation>
 <translation id="1736898441010944794">Bluetooth ഉപകരണങ്ങൾക്ക് "<ph name="NAME" />" ദൃശ്യമാണ്.</translation>
 <translation id="1737078180382804488">നിങ്ങളുടെ ഫോണിലെ അറിയിപ്പുകൾ കാണുന്നത് സജ്ജീകരിക്കുന്നത് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="174102739345480129">മാർക്കർ ഓഫാണ്.</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806">കഴിഞ്ഞ ആഴ്‌ചയിൽ <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">കീബോഡ് കുറുക്കുവഴികള്‍ മാറ്റി</translation>
 <translation id="2689613560355655046">ഡെസ്ക് 8</translation>
+<translation id="2692092709110488417">തിരഞ്ഞെടുത്ത ഏരിയ ഫോക്കസ് ചെയ്യാനും നീക്കാനും ടാബ് അമർത്തുക</translation>
 <translation id="2695305337569143674">വെബ്</translation>
 <translation id="2697697418792422688">കീബോർഡ് ക്രമീകരണം കാണിക്കുക. <ph name="KEYBOARD_NAME" /> തിരഞ്ഞെടുത്തു.</translation>
 <translation id="2699913284398121653">നിങ്ങളുടെ സ്‌കൂൾ അക്കൗണ്ട് ഡാറ്റ നിങ്ങളുടെ വ്യക്തിഗത അക്കൗണ്ടിലേക്ക് നീക്കാൻ ഉള്ളടക്ക കൈമാറ്റ ആപ്പ് ഉപയോഗിക്കുക</translation>
@@ -1033,6 +1036,7 @@
 <translation id="4412698727486357573">സഹായ കേന്ദ്രം</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ഓഫാണ്.</translation>
 <translation id="4417647906073317561">ഫോക്കസ് ക്രമീകരണം. ഫ്ലോയിൽ ചേരാൻ ടൈമർ, ടാസ്‌ക്, സംഗീതം എന്നിവ സജ്ജീകരിക്കുക.</translation>
+<translation id="4418600384772451109">പാനൽ അടയ്‌ക്കുക</translation>
 <translation id="4424159417645388645">ഡെസ്ക് 5</translation>
 <translation id="4426817706804363424">ഇനിയും നേടാനുണ്ട്!</translation>
 <translation id="4430019312045809116">അളവ്</translation>
@@ -2230,6 +2234,7 @@
 <translation id="8287009018010202411">ഉൽപ്പാദനക്ഷമത</translation>
 <translation id="828708037801473432">ഓഫാണ്</translation>
 <translation id="8297006494302853456">ദുര്‍ബലം</translation>
+<translation id="8300451473979404345">തിരഞ്ഞെടുത്ത ഹാൻഡിൽ നീക്കാൻ അമ്പടയാള കീകൾ ഉപയോഗിക്കുക</translation>
 <translation id="8308637677604853869">മുൻ മെനു</translation>
 <translation id="830868413617744215">ബീറ്റ</translation>
 <translation id="8314772463905284467">Caps Lock ഓൺ ആണ്</translation>
@@ -2290,6 +2295,7 @@
 <translation id="851458219935658693">നിലവിലെ ഡെസ്‌കിൽ നിന്ന് വിൻഡോകൾ കാണിക്കുക, റേഡിയോ ബട്ടൺ തിരഞ്ഞെടുത്തു</translation>
 <translation id="851660987304951246">ഉള്ളടക്കം വേഗത്തിൽ സംഗ്രഹിക്കാനോ ചോദ്യങ്ങൾ ചോദിക്കാനോ 'എന്നെ വായിക്കാൻ സഹായിക്കൂ' ഉപയോഗിക്കുക</translation>
 <translation id="8517041960877371778">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഓണായിരിക്കുമ്പോൾ അത് ചാർജ്ജാകാതിരിക്കാം.</translation>
+<translation id="8519329096920173967">Google Lens ഉപയോഗിച്ച് എന്റെ സ്ക്രീൻ തിരയുക</translation>
 <translation id="8535393432370007982">നിറം അനുസരിച്ചുള്ള അടുക്കൽ ക്രമം പഴയപടിയാക്കുക</translation>
 <translation id="8536886494750559755">ക്വിക്ക് ഷെയർ ക്രമീകരണം കാണിക്കുക. എല്ലാവർക്കും <ph name="TIME_REMAINING" /> നേരത്തേക്ക് ദൃശ്യമാണ്</translation>
 <translation id="8539803091108018926">ക്ലിപ്പ്ബോർഡിലേക്ക് ടെക്‌സ്‌റ്റ് പകർത്തി</translation>

@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Assurez-vous d'utiliser l'appli Transfert de contenus de Google pour déplacer les données de votre compte scolaire vers votre compte personnel avant de perdre l'accès.</translation>
 <translation id="1026212596705997935">Le raccourci est actuellement utilisé pour <ph name="CONFLICT_ACCEL_NAME" />. Appuyez sur un nouveau raccourci. Pour remplacer le raccourci existant, appuyez de nouveau dessus.</translation>
 <translation id="1030856839388844477">Réinitialiser la consommation des données</translation>
+<translation id="1047095725494118091">Téléchargement impossible. Réessayez ou redémarrez votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nouvelle fonctionnalité disponible. Cliquez sur la flèche vers le haut pour en savoir plus.</translation>
 <translation id="1049663189809099096">jaune pastel</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Téléchargement de l'économiseur d'écran</translation>
 <translation id="1094693127011229778">Adresse IP indisponible</translation>
 <translation id="1100902271996134409">Création d'images...</translation>
+<translation id="1107856713690040084">Audio du <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">À propos</translation>
 <translation id="1118572504348554005">Les commentaires que vous transmettez via ce formulaire peuvent être partagés avec nos partenaires afin de résoudre des bugs et d'autres problèmes que vous nous signalez. N'incluez pas d'informations sensibles, comme un mot de passe.</translation>
 <translation id="1119403468619527527">Trop peu de mots pour simplifier</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Appliquer le mode sombre</translation>
 <translation id="2164131940279488868">Assurez-vous qu'un micro est connecté pour commencer à enregistrer l'audio</translation>
 <translation id="2173302385160625112">Vérifiez votre connexion Internet</translation>
+<translation id="2176909213844392588">Impossible de télécharger le modèle de transcription <ph name="LANGUAGE_NAME" />. Réessayez ou redémarrez votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">Un problème est survenu. Essayez de rouvrir l'appli.</translation>
 <translation id="2189104374785738357">Modifier les détails de l'APN</translation>
 <translation id="2195732836444333448">Capacité maximale atteinte. Réessayez plus tard.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Chargeur de document (recto verso)</translation>
 <translation id="3201315366910775591">Les albums partagés peuvent être mis à jour par d'autres personnes</translation>
 <translation id="3211671540163313381">Pavé directionnel du mappage des touches</translation>
+<translation id="3217462202230355157">Vérifiez que votre micro est bien connecté ou essayez de redémarrer votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Recherche de scanners…</translation>
 <translation id="3226657629376379887">Menu d'actions de la mise en page</translation>
 <translation id="3227186760713762082">Diviser la valeur <ph name="CATEGORY_TEXT" /> par <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Exclusivité</translation>
 <translation id="3404249063913988450">Activer l'économiseur d'écran</translation>
 <translation id="3413935475507503304">Pour lancer la mise à jour, cliquez sur "Suivant".</translation>
+<translation id="3416709353545797224">Enregistrer tout l'audio du <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">en extérieur</translation>
 <translation id="3428971106895559033">pastel</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Assurez-vous que le scanner est allumé et disponible pour la connexion réseau ou filaire.</translation>
 <translation id="4159238217853743776">Partiel</translation>
 <translation id="4159784952369912983">Violet</translation>
+<translation id="416219735020840807">Impossible de télécharger le modèle de transcription. Réessayez ou redémarrez votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4170180284036919717">Prendre une photo</translation>
 <translation id="4170700058716978431">ÉCHEC</translation>
 <translation id="4171077696775491955">baisser la luminosité</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Remplacement du texte sélectionné par la suggestion…</translation>
 <translation id="5346687412805619883">Réseau local</translation>
 <translation id="5358174242040570474">Un problème est survenu. Choisissez à nouveau un fond d'écran ou rouvrez l'appli.</translation>
+<translation id="5368228070728130240">Impossible de télécharger le modèle de résumé et de création de titre. Réessayez ou redémarrez votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">Réseau Wi-Fi non sécurisé</translation>
 <translation id="5376354385557966694">Mode clair automatique</translation>
 <translation id="5378184552853359930">Type d'adresse IP</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">Échec de résolutions DNS</translation>
 <translation id="6768237774506518020">Taux d'échec élevé des résolutions DNS</translation>
 <translation id="6786747875388722282">Extensions</translation>
+<translation id="6789891265243243337">Lorsque l'audio du <ph name="DEVICE_TYPE" /> est activé, l'Enregistreur capture tout le contenu audio lu sur cet appareil</translation>
 <translation id="6791471867139427246">couleur éclairage clavier</translation>
 <translation id="6796229976413584781">Raccourci supprimé</translation>
 <translation id="6798678288485555829">Parcourir du texte</translation>
@@ -1728,6 +1736,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8930622219860340959">Sans fil</translation>
 <translation id="8933650076320258356">La touche <ph name="KEYS" /> est sélectionnée pour <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" />.</translation>
 <translation id="8936793075252196307">Adresse IP du client</translation>
+<translation id="8938606491880817721">Téléchargement impossible. Réessayez ou redémarrez votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8944651180182756621">Couleur du Lanceur d'applications</translation>
 <translation id="8945308580158685341">abeilles</translation>
 <translation id="894617464444543719">L'appareil est un téléphone.</translation>

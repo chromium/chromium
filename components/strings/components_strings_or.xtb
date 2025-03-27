@@ -223,7 +223,6 @@
 <translation id="1363028406613469049">ଟ୍ରାକ୍‌ କରନ୍ତୁ</translation>
 <translation id="1364822246244961190">ଏହି ନୀତିକୁ ଅବରୋଧ କରାଯାଇଛି, ଏହାର ମୂଲ୍ୟକୁ ଅଣଦେଖା କରାଯିବ।</translation>
 <translation id="1368318639262510626">Dino ଗେମ୍। ଏକ ପିକ୍ସେଲେଟ୍ କରାଯାଇଥିବା ଡାଇନୋସର୍ ନାଗଫେଣୀ ଓ ଉଡ଼ୁଥିବା ପକ୍ଷୀମାନଙ୍କଠାରୁ ନିଜକୁ ବଞ୍ଚାଇ ଏକ ଜନଶୂନ୍ୟ ରାସ୍ତାରେ ଦୌଡ଼ୁଛି। ଆପଣ ଏକ ଅଡିଓ ସଙ୍କେତ ଶୁଣିଲେ, ବାଧାଗୁଡ଼ିକୁ ଅତିକ୍ରମ କରିବା ପାଇଁ ସ୍ପେସ୍ କୀକୁ ଦବାନ୍ତୁ।</translation>
-<translation id="1369735141991626842">AI ମାଧ୍ୟମରେ ଫିଲ୍ଡଗୁଡ଼ିକୁ ପୂରଣ କରନ୍ତୁ</translation>
 <translation id="1374468813861204354">ପ୍ରସ୍ତାବଗୁଡ଼ିକ</translation>
 <translation id="1375198122581997741">ସଂସ୍କରଣ ସମ୍ଵନ୍ଧରେ</translation>
 <translation id="1375293861397106342">ସମସ୍ତ ବିକଳ୍ପ ସାଧାରଣତଃ <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -539,7 +538,6 @@
 <translation id="1919526244108283799">400 x 600 ମିମି</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{କୌଣସିଟି ନୁହେଁ}=1{1ଟି ସାଇଟ୍}other{#ଟି ସାଇଟ୍}}</translation>
 <translation id="192095259937375524">'ଏହି ଟାବକୁ ସେୟାର କରନ୍ତୁ' ବଟନ, ଲିଙ୍କ ସେୟାର କରି, ଏକ QR କୋଡ ତିଆରି କରି, କାଷ୍ଟ କରି ଏବଂ ଆହୁରି ଅନେକ ଉପାୟରେ ଏହି ଟାବକୁ ସେୟାର କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
-<translation id="1921479021518565778">ପରାମର୍ଶଗୁଡ଼ିକ ଲୋଡ ହୋଇଛି</translation>
 <translation id="1924727005275031552">ନୂଆ</translation>
 <translation id="1927439846988093361">କେଶର ଯତ୍ନ</translation>
 <translation id="1935353813610900265">AI ଦ୍ୱାରା ପରିଚାଳିତ ଇତିହାସ ସର୍ଚ୍ଚ ପାଇଁ ମତାମତ ପଠାନ୍ତୁ</translation>
@@ -900,6 +898,7 @@
 <translation id="2539524384386349900">ଚିହ୍ନଟ କରନ୍ତୁ</translation>
 <translation id="2541219929084442027">ଆପଣଙ୍କର ସମସ୍ତ ଇନକଗ୍ନିଟୋ ଟାବକୁ ଆପଣ ବନ୍ଦ କରିଦେବା ପରେ, ଇନକଗ୍ନିଟୋ ଟାବରେ ଆପଣ ଦେଖୁଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକ ଆପଣଙ୍କ ବ୍ରାଉଜରର ଇତିହାସ, କୁକୀ ଷ୍ଟୋର୍ କିମ୍ବା ସନ୍ଧାନ ଇତିହାସରେ ରହିବ ନାହିଁ। ଆପଣ ଡାଉନଲୋଡ୍ କରିଥିବା ଯେ କୌଣସି ଫାଇଲ୍ କିମ୍ବା ତିଆରି କରିଥିବା ବୁକମାର୍କଗୁଡ଼ିକୁ ରଖାଯିବ।</translation>
 <translation id="2542106216580219892">ସର୍ଫିଂ</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯିବା ପାଇଁ, |<ph name="ACCELERATOR" />|କୁ ଦବାଇ ଧରି ରଖନ୍ତୁ</translation>
 <translation id="2544546346215446551">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପଣଙ୍କର ଡିଭାଇସକୁ ରିଷ୍ଟାର୍ଟ କରିଛନ୍ତି</translation>
 <translation id="2544644783021658368">ଗୋଟିଏ ଡକ୍ୟୁମେଣ୍ଟ</translation>
 <translation id="254524874071906077">Chromeକୁ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରନ୍ତୁ</translation>
@@ -973,6 +972,7 @@
 <translation id="2688186765492306706">500 x 760 ମିମି</translation>
 <translation id="2688969097326701645">ହଁ, ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2690699652723742414">ଗତ 30 ଦିନ</translation>
+<translation id="2691385045260836588">ମଡେଲ୍</translation>
 <translation id="2691924980723297736">ସୁରକ୍ଷା ଚେତାବନୀ</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />କୁ ପଚାରନ୍ତୁ</translation>
 <translation id="2699273987028089219">ସବମେନୁ ଉପଲବ୍ଧ, ଅତିରିକ୍ତ ବିକଳ୍ପଗୁଡ଼ିକୁ ନାଭିଗେଟ କରିବା ପାଇଁ <ph name="SHORTCUT" /> ବ୍ୟବହାର କରନ୍ତୁ।</translation>
@@ -1525,6 +1525,7 @@
 <translation id="3664782872746246217">କୀୱାର୍ଡଗୁଡ଼ିକ:</translation>
 <translation id="3665100783276035932">ଅଧିକାଂଶ ସାଇଟ ଆଶା କରାଯାଉଥିବା ପରି କାମ କରିବା ଉଚିତ</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">ନମ୍ବର</translation>
 <translation id="3670229581627177274">ବ୍ଲୁ-ଟୁଥ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="3671117652518853176">ବନ୍ଦ ଥିଲେ, ସୁରକ୍ଷା ଉଦ୍ଦେଶ୍ୟଗୁଡ଼ିକ ପାଇଁ ଯାଞ୍ଚ କରିବାକୁ ବେଳେବେଳେ ଆପଣଙ୍କୁ କୁହାଯାଇପାରେ</translation>
 <translation id="3671540257457995106">ରିସାଇଜ୍ କରିବା ପାଇଁ ଅନୁମତି ଦେବେ?</translation>
@@ -1539,7 +1540,6 @@
 <translation id="3681007416295224113">ସାର୍ଟିଫିକେଟ୍ ସୂଚନା</translation>
 <translation id="3681421644246505351">Chrome ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ବ୍ରାଉଜିଂ ଇତିହାସ ଆଧାରରେ ଆପଣଙ୍କ ରୁଚି ଥିବା ବିଷୟଗୁଡ଼ିକୁ ନୋଟ କରେ।</translation>
 <translation id="3682094733650754138">'ଠିକଣା ପୂରଣ କରନ୍ତୁ' ବିକଳ୍ପକୁ ଚୟନ କରାଯାଇଛି</translation>
-<translation id="3687493962714153124">AI ମାଧ୍ୟମରେ ଅଟୋଫିଲକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="3687920599421452763">ଭ୍ୟାନ ଏବଂ ମିନିଭ୍ୟାନଗୁଡ଼ିକ</translation>
 <translation id="3693327506115126094">ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଆପଣ କିପରି ଯାଞ୍ଚ କରିବେ ତାହା ବାଛନ୍ତୁ</translation>
 <translation id="3698353241727597930">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="FILES" /> ଆପଣଙ୍କର ଏଣ୍ଟରପ୍ରାଇଜ-ଦ୍ୱାରା ପରିଚାଳିତ <ph name="CLOUD_STORAGE" /> ଷ୍ଟୋରେଜରେ ସେଭ କରିବା ପାଇଁ କନଫିଗର କରିଛି। ଆପଣ ଏହି ଫାଇଲଗୁଡ଼ିକୁ ଡିଲିଟ କଲେ, ସେଗୁଡ଼ିକୁ ମନିଟର, ଅଡିଟ କରାଯାଇପାରେ କିମ୍ବା ରଖାଯାଇପାରେ।</translation>
@@ -1692,6 +1692,7 @@
 <translation id="3950820424414687140">ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="3953505489397572035">ଏହି ମୂଲ୍ୟ ସାଧାରଣ ଅଟେ</translation>
 <translation id="3958057596965527988">4 x 4 ଇଞ୍ଚ</translation>
+<translation id="3959969108528118741">ମାଲିକ</translation>
 <translation id="3961148744525529027">ପେମେଣ୍ଟ ହ୍ୟାଣ୍ଡଲର୍ ସିଟ୍ ଅଧା ଖୋଲା ଅଛି</translation>
 <translation id="3962859241508114581">ପୂର୍ବବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
 <translation id="3963721102035795474">ରିଡର୍‌ ମୋଡ୍‌</translation>
@@ -1917,7 +1918,6 @@
 <translation id="4312866146174492540">ବ୍ଲକ୍ କରନ୍ତୁ (ଡିଫଲ୍ଟ)</translation>
 <translation id="4314815835985389558">ସିଙ୍କ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="4316057107946726368">ଦୟାକରି ସର୍ବାଧିକ <ph name="MAX_CHAR_COUNT" /> କେରେକ୍ଟର ଥିବା ଏକ ଜଷ୍ଟିଫିକେସନ ମେସେଜ ଲେଖନ୍ତୁ। <ph name="MAX_CHAR_COUNT" /> କେରେକ୍ଟର ମଧ୍ୟରୁ <ph name="ACTUAL_CHAR_COUNT" /> ବ୍ୟବହୃତ ହୋଇଛି।</translation>
-<translation id="431740489189220419">ପରାମର୍ଶ ଲୋଡ କରାଯାଉଛି</translation>
 <translation id="4318213823155573975">ହେଡୱେର</translation>
 <translation id="4318312030194671742">ପେଣ୍ଟ୍ ପ୍ରିଭ୍ୟୁ କମ୍ପୋଜିଟର୍ ସେବା</translation>
 <translation id="4318566738941496689">ଆପଣଙ୍କ ଡିଭାଇସ୍‍ର ନାମ ଏବଂ ନେଟ୍‍ୱାର୍କର ଠିକଣା</translation>
@@ -2324,6 +2324,7 @@
 <translation id="5087286274860437796">ସର୍ଭର୍‍ର ସାର୍ଟିଫିକେଟ୍ ଏହି ସମୟରେ ବୈଧ ନୁହେଁ।</translation>
 <translation id="5087580092889165836">କାର୍ଡ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5088142053160410913">ଅପରେଟର ପାଇଁ ମେସେଜ୍</translation>
+<translation id="5089810972385038852">ରାଜ୍ୟ</translation>
 <translation id="5090647584136241764">ଆପଣଙ୍କ ପାଇଁ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ହୋଇଥିବା ବିବରଣୀକୁ ସହଜରେ ତୁଳନା କରିବା ପାଇଁ ସମାନ ପ୍ରଡକ୍ଟଗୁଡ଼ିକ ସହ ଟାବ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5093232627742069661">Z-ଫୋଲ୍ଡ</translation>
 <translation id="5094747076828555589">ଏହି ସର୍ଭର୍ ଏହା ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ ଯେ, ଏହା ଏକ <ph name="DOMAIN" /> ଅଟେ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍ Chromium ଦ୍ୱାରା ବିଶ୍ୱସନୀୟ ନୁହେଁ। ଏହା ହୁଏତ ଏକ ଭୁଲ୍ କନ୍‌ଫିଗ୍‍‍ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।</translation>
@@ -2462,6 +2463,7 @@
 <translation id="531996107159483074">ଠିକଣା ବାରରୁ ଏବଂ ୱେବ ପୃଷ୍ଠାରେ ଥିବା ଇମେଜଗୁଡ଼ିକରୁ ସର୍ଚ୍ଚ କରିବା ପରି <ph name="BEGIN_BOLD" />ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ଆପଣଙ୍କୁ ୱେବରେ ସର୍ଚ୍ଚ କରିବାକୁ ଦିଏ ଏବଂ Chromium ଫିଚରଗୁଡ଼ିକୁ ପରିଚାଳିତ କରେ<ph name="END_BOLD" />। ଯଦି ଆପଣଙ୍କ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ଏହାକୁ ସମର୍ଥନ କରେ ନାହିଁ ତେବେ ଏକ ଫିଚର ଉପଲବ୍ଧ ହୋଇନପାରେ।</translation>
 <translation id="5323043727018853753">ଏମ୍ବେଡ କରାଯାଇଥିବା ବିଷୟବସ୍ତୁକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" /> ମଧ୍ୟରେ <ph name="MATCH_POSITION" /></translation>
+<translation id="5327248766486351172">ନାମ</translation>
 <translation id="5329858041417644019">ଆପଣଙ୍କର ବ୍ରାଉଜର୍ ପରିଚାଳିତ ନୁହେଁ</translation>
 <translation id="5331585574693522196">ଡିଫଲ୍ଟ ଭାବେ ସେଟ କରନ୍ତୁ</translation>
 <translation id="5332219387342487447">ସିପିଂ ପଦ୍ଧତି</translation>
@@ -2674,7 +2676,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates ମୂଲ୍ୟ ପ୍ରାସଙ୍ଗିକ ନୁହେଁ, DnsOverHttpsMode ନୀତି <ph name="SECURE_DNS_MODE_AUTOMATIC" /> କିମ୍ବା <ph name="SECURE_DNS_MODE_SECURE" />କୁ ସେଟ୍ କରାନଯିବା ପର୍ଯ୍ୟନ୍ତ ଏହା ବ୍ୟବହାର କରାଯିବ ନାହିଁ।</translation>
 <translation id="5691848789297492617">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଥିବା କାର୍ଡ ସେଭ କରନ୍ତୁ।</translation>
 <translation id="5695542892312572833">ଆପଣଙ୍କ କ୍ରୟକୁ ଯାଞ୍ଚ କରିବା ଏବଂ ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ Windows Hello ବ୍ୟବହାର କରିବେ?</translation>
-<translation id="5697827549745555938">ଅଟୋଫିଲ ଏହି ଫର୍ମ ପୂରଣ କରିବାରେ ସହାୟତା କରିପାରିବ ନା ନାହିଁ ତାହା ଜାଣିବା ପାଇଁ ଆପଣ ସେଭ କରିଥିବା ସୂଚନା ଏବଂ ଏହି ପୃଷ୍ଠାକୁ Googleକୁ ପଠାଯାଏ। ଏହି ଫିଚରକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଡାଟାକୁ ମାନବ ସମୀକ୍ଷକମାନେ ଦେଖିପାରନ୍ତି।</translation>
 <translation id="5699628521141772782">ଡେରି ଏବଂ ଅଣ୍ଡା</translation>
 <translation id="5700761515355162635">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="5701381305118179107">କେନ୍ଦ୍ର</translation>
@@ -3102,6 +3103,7 @@
 <translation id="6440503408713884761">ଅଣଦେଖା କରାଗଲା</translation>
 <translation id="6443406338865242315">ଆପଣ କେଉଁ ଏକ୍ସଟେନସନ୍ ଏବଂ ପ୍ଲଗଇନଗୁଡ଼ିକ ଇନଷ୍ଟଲ୍ କରିଛନ୍ତି</translation>
 <translation id="6444329331928531170">ଅବସର ଗ୍ରହଣ ଏବଂ ପେନସନ</translation>
+<translation id="6445051938772793705">ଦେଶ</translation>
 <translation id="6446608382365791566">ଅଧିକ ସୂଚନା ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6447842834002726250">କୁକୀଗୁଡିକ</translation>
 <translation id="6448371595882710519">ଡାଟା ନିୟନ୍ତ୍ରଣ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
@@ -3582,7 +3584,6 @@
 <translation id="7316521168101843192">Microsoft OneDriveରେ ଫାଇଲ ସେଭ କରାଯାଉଛି</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ସଂଯୋଗ ସହାୟତା</translation>
-<translation id="7321111802407017850">ଅଟୋଫିଲ କରିବା ପାଇଁ ଆପଣଙ୍କ ସୂଚନାକୁ ସେଭ କରନ୍ତୁ</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" ବିଭାଗ ଲୁଚାନ୍ତୁ</translation>
 <translation id="733354035281974745">ସ୍ଥାନୀୟ ଡିଭାଇସ୍ ଆକାଉଣ୍ଟ ଓଭର୍‌ରାଇଡ୍</translation>
 <translation id="7334320624316649418">&amp;ରି-ଡୁକୁ ପୁନଃକ୍ରମରେ ରଖନ୍ତୁ</translation>
@@ -3927,6 +3928,7 @@
 <translation id="7887885240995164102">ପିକଚର୍-ଇନ୍-ପିକଚର୍ ଲେଖନ୍ତୁ</translation>
 <translation id="7888575728750733395">ପ୍ରିଣ୍ଟ ରେଣ୍ଡରିଂ ଇଣ୍ଟେଣ୍ଟ</translation>
 <translation id="7890748547282909375">ସ୍କ୍ରିନସଟ ସେଭ କରିବା ପାଇଁ Microsoft OneDriveରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – ଆପଣଙ୍କ କର୍ସର ଦେଖାଇବା ପାଇଁ, |<ph name="ACCELERATOR" />|କୁ ଦବାନ୍ତୁ</translation>
 <translation id="7892865709991296481">ପେମେଣ୍ଟ ସେଟିଂସ</translation>
 <translation id="7894280532028510793">ଯଦି ବନାନ ସଠିକ୍ ଅଛି, ତେବେ <ph name="BEGIN_LINK" />ନେଟୱାର୍କ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ ଚଲାଇବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="7901831439558593470">ଏନଭେଲପ 7 x 9 in</translation>
@@ -4618,6 +4620,7 @@
 <translation id="9155646082713385498">ମେଗାଜିନ</translation>
 <translation id="9157595877708044936">ସେଟ୍‍‍ଅପ୍ କରାଯାଉଛି...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />ରେ ସମ୍ବେଦନଶୀଳ ବିଷୟବସ୍ତୁ ଥାଇପାରେ}other{<ph name="FILE_COUNT" /> ଫାଇଲରେ ସମ୍ବେଦନଶୀଳ ବିଷୟବସ୍ତୁ ଥାଇପାରେ}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯିବା ପାଇଁ, |<ph name="ACCELERATOR" />| ଦବାନ୍ତୁ</translation>
 <translation id="9165305804774426672">ସାଇଟରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପ ଆଧାରରେ ଆପଣ କଣ ପସନ୍ଦ କରନ୍ତି ତାହା ମଧ୍ୟ ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟଗୁଡ଼ିକ ନିର୍ଦ୍ଧାରଣ କରିପାରିବ। ଉଦାହରଣ ସ୍ୱରୂପ, ଯଦି ଆପଣ ଦୀର୍ଘ-ଦୂରତା ପାଇଁ ଦୌଡ଼ିବା ଜୋତା ବିକ୍ରି କରୁଥିବା କୌଣସି ସାଇଟକୁ ଭିଜିଟ କରନ୍ତି, ତେବେ ମାରାଥନରେ ଦୌଡ଼ିବା ପାଇଁ ଆପଣ ଆଗ୍ରହୀ ବୋଲି ସାଇଟ ସ୍ଥିର କରିପାରେ।</translation>
 <translation id="9166851138617700776">ସାଇଟ ଦ୍ୱାରା-ପରାମର୍ଶ ଦିଆଯାଇଥିବା ବିଜ୍ଞାପନ ଏବଂ ବିଜ୍ଞାପନର ପରିମାପ ବିଷୟରେ ଅଧିକ</translation>
 <translation id="9167054383925257837">ବ୍ରାଉଜର ଏବଂ ଡିଭାଇସ OS ସୂଚନା (ଯେପରି ବ୍ରାଉଜର ଏବଂ OS ଭର୍ସନଗୁଡ଼ିକ)</translation>

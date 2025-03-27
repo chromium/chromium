@@ -1575,7 +1575,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2081816110395725788">Idle power on battery</translation>
 <translation id="2082187087049518845">Group Tab</translation>
 <translation id="2082510809738716738">Pick a theme colour</translation>
-<translation id="208547068587548667">Sign in to <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Please try again</translation>
 <translation id="208634871997892083">Always-on VPN</translation>
 <translation id="208654914566977272">Suggested actions when searching your screen</translation>
@@ -4010,7 +4009,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3778740492972734840">&amp;Developer tools</translation>
 <translation id="3778868487658107119">Ask it questions. Tell it to do things. It's your personal Google, always ready to help.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{your browsing history of # site}other{your browsing history of # sites}}</translation>
-<translation id="3779244863011082655">Use a different <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> account</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> can’t check your passwords against data breaches. Try again later.</translation>
 <translation id="3781742599892759500">Linux microphone access</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5514,6 +5512,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4848191975108266266">Google Assistant "Ok Google"</translation>
 <translation id="4849286518551984791">Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">Don't Install</translation>
+<translation id="4849731766219625109">Use your <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> account</translation>
 <translation id="485053257961878904">Could not set up notifications syncing</translation>
 <translation id="4850548109381269495">On both devices, check your Internet connection and turn on Bluetooth. Then try again.</translation>
 <translation id="4850669014075537160">Scrolling</translation>
@@ -5702,6 +5701,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4979510648199782334">Microsoft 365 setup complete</translation>
 <translation id="4980805016576257426">This extension contains malware.</translation>
 <translation id="4983159853748980742">Your password wasn’t shared. Check your internet connection and make sure you’re signed in to Chrome. Then try again.</translation>
+<translation id="498624032394115435">Anyone with the link can edit all tabs.</translation>
 <translation id="4986706507552097681">You can always choose what to sync in settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="4986728572522335985">This will delete all data on the security key, including its PIN</translation>
 <translation id="4987944280765486504">Your Chromebook will restart once the download is complete and you can continue setup.</translation>
@@ -8311,7 +8311,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6873571253135628430">Change site permissions</translation>
 <translation id="6876155724392614295">Cycle</translation>
 <translation id="6876469544038980967">Not helpful</translation>
-<translation id="687838958001010630">Anyone with the link can edit all tabs</translation>
 <translation id="6878422606530379992">Sensors allowed</translation>
 <translation id="6878862640969460273">Landscape</translation>
 <translation id="6880587130513028875">Images were blocked on this page.</translation>

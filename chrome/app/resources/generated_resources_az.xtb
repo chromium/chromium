@@ -1561,7 +1561,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2081816110395725788">Batareya istifadəsi zamanı fəaliyyətsiz rejim</translation>
 <translation id="2082187087049518845">Tabeli qrupa əlavə edin</translation>
 <translation id="2082510809738716738">Tema rəngi seçin</translation>
-<translation id="208547068587548667"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hesabına daxil olun</translation>
 <translation id="208586643495776849">Yenidən cəhd edin</translation>
 <translation id="208634871997892083">VPN həmişə aktiv</translation>
 <translation id="208654914566977272">Ekranda axtarış edərkən təklif edilən əməliyyatlar</translation>
@@ -2005,6 +2004,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2373666622366160481">Kağıza sığdırın</translation>
 <translation id="2375406435414127095">Telefonunuzu qoşun</translation>
 <translation id="2376056713414548745">Ucadan oxuyun</translation>
+<translation id="2376122016044804363">Mübadilə buferinə kopiyalama təsdiqi</translation>
 <translation id="2377667304966270281">Ağır Zədələr</translation>
 <translation id="237828693408258535">Bu səhifə tərcümə edilsin?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Bu artırma tezliklə dəstəklənməyə bilər}other{Bu artırmalar tezliklə dəstəklənməyə bilər}}</translation>
@@ -3159,6 +3159,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3192586965067888278">Problemi ətraflı təsvir edin. Rəy mütəxəssisin nəzərdən keçirməsi üçün Google-a göndəriləcək və Google məhsul və xidmətlərini təkmilləşdirmək, yaxud tərtib etmək üçün istifadə edilə bilər.</translation>
 <translation id="3192947282887913208">Audio Fayllar</translation>
 <translation id="3193695589337931419">Sistem Siqnal Utilitləri</translation>
+<translation id="3194095220941877499">Link, şəkil və ya videoları kopiyaladıqda təsdiq göstərir</translation>
 <translation id="3196912927885212665">Android telefonu ilə quraşdırmaq üçün Chromebook-un Bluetooth-u aktiv olmalıdır</translation>
 <translation id="3197453258332670132">Sağ düymə ilə toxunduqda və ya basıb saxladıqda mətn seçiminizlə əlaqəli məlumatlar göstərilsin</translation>
 <translation id="3199127022143353223">Serverlər</translation>
@@ -3996,7 +3997,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3778740492972734840">&amp;Developer alətləri</translation>
 <translation id="3778868487658107119">Ona suallar verin və iş tapşırın. Bu Sizin şəxsi Google'dur, hər zaman kömək etməyə hazırdır.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# sayt üzrə brauzer tarixçəniz}other{# sayt üzrə brauzer tarixçəniz}}</translation>
-<translation id="3779244863011082655">Başqa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hesabını istifadə edin</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> parollarınızı məlumat pozuntularına qarşı yoxlaya bilmir. Sonra cəhd edin.</translation>
 <translation id="3781742599892759500">Linux mikrofona girişi</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5498,6 +5498,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4848191975108266266">Google Assistent üçün "Ok Google" ifadəsi</translation>
 <translation id="4849286518551984791">Uyğunlaşdırılmış Universal Vaxt (UTC / GMT)</translation>
 <translation id="4849517651082200438">Quraşdırmayın</translation>
+<translation id="4849731766219625109"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hesabınızdan istifadə edin</translation>
 <translation id="485053257961878904">Bildirişlərin sinxronlaşdırılmasını ayarlamaq mümkün olmadı</translation>
 <translation id="4850548109381269495">Hər iki cihazda internet bağlantısını yoxlayın və Bluetooth-u aktiv edin. Sonra yenidən cəhd edin.</translation>
 <translation id="4850669014075537160">Sürüşmə</translation>
@@ -5686,6 +5687,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4979510648199782334">Microsoft 365 ayarlaması tamamlandı</translation>
 <translation id="4980805016576257426">Bu artırmada virus var.</translation>
 <translation id="4983159853748980742">Parol paylaşılmadı. İnternet bağlantısını yoxlayın və Chrome-a daxil olun. Sonra cəhd edin.</translation>
+<translation id="498624032394115435">Keçidi olan hər kəs bütün tablara düzəliş edə bilər.</translation>
 <translation id="4986706507552097681">Sinxronizasiya seçimlərini ayarlarda edə bilərsiniz. Google tarixçənizə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
 <translation id="4986728572522335985">Bu əməliyyat PIN kod daxil olmaqla təhlükəsizlik açarınızdakı bütün verilənləri siləcək</translation>
 <translation id="4987944280765486504">Endirmə tamamlandıqda Chromebook yenidən başladılacaq və ayarlamaya davam edə biləcəksiniz.</translation>
@@ -8293,7 +8295,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6873571253135628430">Sayt icazələrini dəyişin</translation>
 <translation id="6876155724392614295">Velosiped</translation>
 <translation id="6876469544038980967">Faydalı deyil</translation>
-<translation id="687838958001010630">Keçidi olan hər kəs bütün tablara düzəliş edə bilər</translation>
 <translation id="6878422606530379992">Sensorlara icazə verilib</translation>
 <translation id="6878862640969460273">Landşaft</translation>
 <translation id="6880587130513028875">Bu səhifədə şəkillər bloklanıb.</translation>

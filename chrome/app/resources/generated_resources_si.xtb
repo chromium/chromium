@@ -404,6 +404,7 @@
 <translation id="1264956950255940376">වම් ඇසින් වපර ලෙස බලන්න</translation>
 <translation id="1265094893042958831">මෙම පිටුව සඳහා යෝජනා උත්පාදනය කරමින්…</translation>
 <translation id="1265279736024499987">ඔබගේ යෙදුම් සහ සැකසීම් ඔබ ඔබගේ Google ගිණුම සමග පුරා ඇති සියලු ChromeOS Flex උපාංග හරහා සමමුහුර්ත වනු ඇත. බ්‍රවුසර සමමුහුර්ත විකල්ප සඳහා, <ph name="LINK_BEGIN" />Chrome සැකසීම්<ph name="LINK_END" /> වෙත යන්න.</translation>
+<translation id="1267081565119405990">තිර රුවක් ගත් පසු හෝ ඔබේ තිරය සෙවීමෙන් පසු, දින දර්ශනයට එක් කිරීම, Google Docs නිර්මාණය කිරීම සහ තවත් බොහෝ ක්‍රියා පෙන්වන්න.</translation>
 <translation id="126710816202626562">පරිවර්තන භාශාව:</translation>
 <translation id="1267649802567297774"><ph name="MOOD" /> මනෝභාවය සමග <ph name="STYLE" /> විලාසය තුළ <ph name="SUBJECT" /> න් <ph name="INDEX" /> ජනිත රූපය.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1563,9 +1564,9 @@
 <translation id="2081816110395725788">බැටරිය මත බලය අකර්මණ්‍ය කරන්න</translation>
 <translation id="2082187087049518845">පටිත්ත සමූහ කරන්න</translation>
 <translation id="2082510809738716738">තේමා වර්ණයක් තෝරන්න</translation>
-<translation id="208547068587548667"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> වෙත පුරන්න</translation>
 <translation id="208586643495776849">නැවත උත්සාහ කරන්න</translation>
 <translation id="208634871997892083">සැම විට-ක්‍රියාත්මක VPN</translation>
+<translation id="208654914566977272">ඔබේ තිරය සොයන විට යෝජිත ක්‍රියාමාර්ග</translation>
 <translation id="2087822576218954668">මුද්‍රණය කරන්න: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">බඳවා ගැනීම ඔබ <ph name="DEVICE_OS" /> ස්ථාපනය කිරීමෙන් පසුව පමණක් සහාය දැක්වේ.</translation>
 <translation id="2088564884469682888">තිළැලි TrackPoint</translation>
@@ -3995,7 +3996,6 @@
 <translation id="3778740492972734840">ප්‍රවර්ධක මෙවලම්</translation>
 <translation id="3778868487658107119">එයින් ප්‍රශ්න අසන්න. දේවල් කිරීමට එයට කියන්න. එය හැමවිටම උදවු කිරීමට සූදානම්, ඔබේම Google වේ.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# අඩවියක ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය}one{# අඩවියක ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය}other{# අඩවියක ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය}}</translation>
-<translation id="3779244863011082655">වෙනස් <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ගිණුමක් භාවිත කරන්න</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> හට දත්ත කඩකිරීම්වලට එරෙහිව ඔබේ මුරපද පරීක්ෂා කළ නොහැක. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="3781742599892759500">ලිනක්ස් මයික්‍රොෆෝන ප්‍රවේශය</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5500,6 +5500,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4848191975108266266">Google සහකරු "Ok Google"</translation>
 <translation id="4849286518551984791">සමකක්ෂ විශ්වීය වේලාව (UTC/GMT)</translation>
 <translation id="4849517651082200438">ස්ථාපනය නොකරන්න</translation>
+<translation id="4849731766219625109">ඔබේ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ගිණුම භාවිතා කරන්න</translation>
 <translation id="485053257961878904">දැනුම්දීම් සමමුහුර්තකරණය පිහිටුවීමට නොහැකි විය</translation>
 <translation id="4850548109381269495">උපාංග දෙකෙහිම, ඔබේ අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කර බ්ලූටූත් ක්‍රියාත්මක කරන්න. අනතුරුව, නැවත උත්සාහ කරන්න.</translation>
 <translation id="4850669014075537160">අනුචලනය</translation>
@@ -5688,6 +5689,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4979510648199782334">Microsoft 365 පිහිටුවීම සම්පූර්ණයි</translation>
 <translation id="4980805016576257426">මෙම දිගුවේ අනිෂ්ට මෘදුකාංග අඩංගු වේ.</translation>
 <translation id="4983159853748980742">ඔබේ මුරපදය බෙදා ගෙන නැත. ඔබේ අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කර ඔබ Chrome වෙත පුරනය වී ඇති බව සහතික කර ගන්න. පසුව, නැවත උත්සාහ කරන්න.</translation>
+<translation id="498624032394115435">සබැඳිය සහිත ඕනෑම අයෙකුට සියලු පටිති සංස්කරණය කළ හැක.</translation>
 <translation id="4986706507552097681">ඔබට සැමවිටම සැකසීම් තුළ සමමුහු කළ යුතු දෙය තෝරා ගත හැක. Google ඔබේ ඉතිහාසය මත පදනම්ව සෙවීම් සහ අනෙකුත් සේවාවන් පෞද්ගලීකරණය කිරීමට ඉඩ ඇත.</translation>
 <translation id="4986728572522335985">මෙය එහි රහස් අංකය ඇතුළුව ආරක්‍ෂක යතුර මත සියලුම දත්ත මකයි</translation>
 <translation id="4987944280765486504">බාගැනීම සම්පූර්ණ වූ පසු ඔබේ Chromebook නැවත ආරම්භ වන අතර ඔබට පිහිටුවීම දිගටම කරගෙන යාමට හැක.</translation>
@@ -8297,7 +8299,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6873571253135628430">අඩවි අවසර වෙනස් කරන්න</translation>
 <translation id="6876155724392614295">පාපැදිය</translation>
 <translation id="6876469544038980967">උපකාරී නොවේ</translation>
-<translation id="687838958001010630">සබැඳිය සහිත ඕනෑම අයෙකුට සියලු පටිති සංස්කරණය කළ හැක</translation>
 <translation id="6878422606530379992">සංවේදකවලට ඉඩ දී ඇත</translation>
 <translation id="6878862640969460273">භූදර්ශන</translation>
 <translation id="6880587130513028875">මෙම පිටුව මත අනුරූ අවහිර කර ඇත.</translation>

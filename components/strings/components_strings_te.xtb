@@ -218,7 +218,6 @@
 <translation id="1363028406613469049">ట్రాక్ చేయండి</translation>
 <translation id="1364822246244961190">ఈ విధానాన్ని బ్లాక్ చేస్తే, దీని విలువ విస్మరించబడుతుంది.</translation>
 <translation id="1368318639262510626">డైనో గేమ్. పిక్సెలేటెడ్ డైనోసార్ ఒక నిర్జనమైన ల్యాండ్‌స్కేప్‌లో కాక్టస్, టెరోడాక్టిల్స్‌ను తప్పించుకుంటూ పరుగెత్తుతున్నట్టు ఉంటుంది. మీరు ఆడియో క్యూను విన్నప్పుడు, అడ్డంకులపై నుండి దూకడానికి spaceను నొక్కండి.</translation>
-<translation id="1369735141991626842">AI సహాయంతో ఫీల్డ్‌లను నింపండి</translation>
 <translation id="1374468813861204354">సూచనలు</translation>
 <translation id="1375198122581997741">వెర్షన్ గురించి</translation>
 <translation id="1375293861397106342">అన్ని ఆప్షన్‌లు సాధారణంగా <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -534,7 +533,6 @@
 <translation id="1919526244108283799">400 x 600 మి.మీ.</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{ఏమీ లేవు}=1{1 సైట్}other{# సైట్‌లు}}</translation>
 <translation id="192095259937375524">'ఈ ట్యాబ్‌ను షేర్ చేయండి' బటన్, 'లింక్‌ను షేర్ చేయడం', 'QR కోడ్‌ను క్రియేట్ చేయడం', 'ప్రసారం చేయడం' ఇంకా మరెన్నో ఆప్షన్‌ల ద్వారా ఈ ట్యాబ్‌ను షేర్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
-<translation id="1921479021518565778">సూచనలు లోడ్ అయ్యాయి</translation>
 <translation id="1924727005275031552">కొత్త</translation>
 <translation id="1927439846988093361">జుట్టు సంరక్షణ</translation>
 <translation id="1935353813610900265">AI సహాయంతో సెర్చ్ హిస్టరీకి సంబంధించి ఫీడ్‌బ్యాక్‌ను పంపండి</translation>
@@ -969,6 +967,7 @@
 <translation id="2688186765492306706">500 x 760 మి.మీ.</translation>
 <translation id="2688969097326701645">అవును, కొనసాగించండి</translation>
 <translation id="2690699652723742414">గత 30 రోజులు</translation>
+<translation id="2691385045260836588">మోడల్</translation>
 <translation id="2691924980723297736">భద్రతా హెచ్చరిక</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />‌ని అడగండి</translation>
 <translation id="2699273987028089219">సబ్‌మెనూ అందుబాటులో ఉంది, అదనపు ఆప్షన్‌లకు నావిగేట్ చేయడానికి <ph name="SHORTCUT" />‌ని ఉపయోగించండి.</translation>
@@ -1524,6 +1523,7 @@
 <translation id="3664782872746246217">కీవర్డ్‌లు:</translation>
 <translation id="3665100783276035932">చాలా సైట్‌లు ఊహించిన విధంగానే పని చేస్తాయి</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />మరింత తెలుసుకోండి<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">నంబర్</translation>
 <translation id="3670229581627177274">బ్లూటూత్‌ను ఆన్ చేయండి</translation>
 <translation id="3671117652518853176">ఆఫ్ చేసినప్పుడు, సెక్యూరిటీ కారణాల దృష్ట్యా అప్పుడప్పుడూ వెరిఫై చేయమని మిమ్మల్ని అడగవచ్చు</translation>
 <translation id="3671540257457995106">సైజ్‌ మార్చడానికి అనుమతించాలా?</translation>
@@ -1538,7 +1538,6 @@
 <translation id="3681007416295224113">సర్టిఫికెట్ సమాచారం</translation>
 <translation id="3681421644246505351">మీ ఇటీవలి బ్రౌజింగ్ హిస్టరీని బట్టి మీకు ఆసక్తి ఉన్న టాపిక్‌లను Chrome నోట్ చేస్తుంది.</translation>
 <translation id="3682094733650754138">అడ్రస్‌ను పూరించే ఆప్షన్‌ను ఎంచుకున్నారు</translation>
-<translation id="3687493962714153124">AI సహాయంతో ఆటోఫిల్‌ను మేనేజ్ చేయండి</translation>
 <translation id="3687920599421452763">వ్యాన్‌లు &amp; మినీవ్యాన్‌లు</translation>
 <translation id="3693327506115126094">ఇది మీరేనని మీరు ఎలా వెరిఫై చేయాలో ఎంచుకోండి</translation>
 <translation id="3698353241727597930">మీ ఎంటర్‌ప్రైజ్ మేనేజ్ చేసే <ph name="CLOUD_STORAGE" /> నిల్వలో <ph name="FILES" /> సేవ్ చేయడానికి మీ అడ్మినిస్ట్రేటర్ కాన్ఫిగర్ చేశారు. మీరు వాటిని తొలగించినప్పుడు ఈ ఫైళ్లు పర్యవేక్షించబడవచ్చు, ఆడిట్ చేయబడవచ్చు, అలాగే ఉంచబడవచ్చు.</translation>
@@ -1692,6 +1691,7 @@
 <translation id="3950820424414687140">సైన్ ఇన్</translation>
 <translation id="3953505489397572035">ఈ ధర సాధారణంగా ఉంది</translation>
 <translation id="3958057596965527988">4 x 4 అంగుళాలు</translation>
+<translation id="3959969108528118741">ఓనర్</translation>
 <translation id="3961148744525529027">చెల్లింపు హ్యాండ్లర్ షీట్ సగం తెరవబడింది</translation>
 <translation id="3962859241508114581">మునుపటి ట్రాక్</translation>
 <translation id="3963721102035795474">పాఠకుని మోడ్</translation>
@@ -1917,7 +1917,6 @@
 <translation id="4312866146174492540">బ్లాక్ చేయండి (డిఫాల్ట్)</translation>
 <translation id="4314815835985389558">సింక్‌ను నిర్వహించండి</translation>
 <translation id="4316057107946726368">దయచేసి గరిష్టంగా <ph name="MAX_CHAR_COUNT" /> అక్షరాలను కలిగి ఉన్న సమర్థన మెసేజ్‌ను ఎంటర్ చేయండి. <ph name="MAX_CHAR_COUNT" /> అక్షరాలకు గానూ <ph name="ACTUAL_CHAR_COUNT" /> అక్షరాలు ఉపయోగించబడ్డాయి.</translation>
-<translation id="431740489189220419">సూచనలు లోడ్ అవుతున్నాయి</translation>
 <translation id="4318213823155573975">తలకు ధరించేవి</translation>
 <translation id="4318312030194671742">పెయింట్ ప్రివ్యూ కంపోజిటర్ సర్వీస్</translation>
 <translation id="4318566738941496689">మీ పరికరం పేరు, నెట్‌వర్క్ అడ్రస్‌</translation>
@@ -2324,6 +2323,7 @@
 <translation id="5087286274860437796">ప్రస్తుతం సర్వర్ ప్రమాణపత్రం చెల్లదు.</translation>
 <translation id="5087580092889165836">కార్డ్‌ను జోడించండి</translation>
 <translation id="5088142053160410913">ఆపరేటర్‌కు మెసేజ్‌ పంపు</translation>
+<translation id="5089810972385038852">రాష్ట్రం</translation>
 <translation id="5090647584136241764">మీకు అవసరమైన వివరాలను సులభంగా కంపార్ చేయడానికి ఒకే రకమైన ప్రోడక్ట్‌లను కలిగి ఉన్న ట్యాబ్‌లను జోడించండి</translation>
 <translation id="5093232627742069661">Z-ఫోల్డ్</translation>
 <translation id="5094747076828555589">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రాన్ని Chromium విశ్వసించలేదు. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడిచేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
@@ -2462,6 +2462,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్ వెబ్‌లో సెర్చ్ చేయడానికి మిమ్మల్ని అనుమతిస్తుంది, అదే విధంగా Chromium ఫీచర్‌లను శక్తిమంతం చేస్తుంది<ph name="END_BOLD" /> అంటే అడ్రస్ బార్ నుండి, వెబ్ పేజీలలోని ఇమేజ్‌ల నుండి సెర్చ్ చేయడం వంటివి సులభంగా చేయగలుగుతారు. మీ సెర్చ్ ఇంజిన్ సపోర్ట్ చేయకపోతే, ఏదైనా ఫీచర్ అందుబాటులో ఉండకపోయే అవకాశం ఉంది.</translation>
 <translation id="5323043727018853753">పొందుపరిచిన కంటెంట్‌కు అనుమతి ఉంది</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" />లో <ph name="MATCH_POSITION" /></translation>
+<translation id="5327248766486351172">పేరు</translation>
 <translation id="5329858041417644019">మీ బ్రౌజర్ నిర్వహించబడటం లేదు</translation>
 <translation id="5331585574693522196">ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేయండి</translation>
 <translation id="5332219387342487447">షిప్పింగ్ పద్ధతి</translation>
@@ -2675,7 +2676,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates విలువ ఔచిత్యంగా లేదు, DnsOverHttpsMode విధానాన్ని <ph name="SECURE_DNS_MODE_AUTOMATIC" />కు లేదా <ph name="SECURE_DNS_MODE_SECURE" />కు సెట్ చేస్తే మినహా, అది ఉపయోగించబడదు.</translation>
 <translation id="5691848789297492617">సేవ్ చేసిన కార్డ్ సమాచారం స్క్రీన్ పూర్తిగా తెరవబడింది.</translation>
 <translation id="5695542892312572833">మీ కొనుగోలును వెరిఫై చేసి, పూర్తి చేయడానికి Windows Helloను ఉపయోగించాలా?</translation>
-<translation id="5697827549745555938">ఈ ఫారమ్‌ను నింపడంలో ఆటోఫిల్ సహాయం చేయగలదో లేదో చూడటానికి మీరు సేవ్ చేసిన సమాచారం, ఈ పేజీ Googleకు పంపబడతాయి. ఈ ఫీచర్‌ను మెరుగుపరచడానికి రివ్యూవర్‌లు ఈ డేటాను రివ్యూ చేయవచ్చు.</translation>
 <translation id="5699628521141772782">పాల ఉత్పత్తులు &amp; గుడ్లు</translation>
 <translation id="5700761515355162635">థర్డ్-పార్టీ కుక్కీలు అనుమతించబడతాయి</translation>
 <translation id="5701381305118179107">మధ్యకు</translation>
@@ -3104,6 +3104,7 @@
 <translation id="6440503408713884761">విస్మరించబడింది</translation>
 <translation id="6443406338865242315">ఏ ఎక్స్‌టెన్షన్‌లు మరియు ప్లగిన్‌లను మీరు ఇన్‌స్టాల్ చేశారు</translation>
 <translation id="6444329331928531170">పదవీ విరమణ &amp; పెన్షన్</translation>
+<translation id="6445051938772793705">దేశం</translation>
 <translation id="6446608382365791566">మరింత సమాచారాన్ని జోడించండి</translation>
 <translation id="6447842834002726250">కుక్కీలు</translation>
 <translation id="6448371595882710519">డేటా కంట్రోల్స్ గురించి మరింత తెలుసుకోండి</translation>
@@ -3585,7 +3586,6 @@
 <translation id="7316521168101843192">ఫైల్‌ను Microsoft OneDriveకు సేవ్ చేస్తోంది</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">కనెక్షన్ సహాయం</translation>
-<translation id="7321111802407017850">ఆటోఫిల్ చేయడానికి మీ సమాచారాన్ని సేవ్ చేయండి</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" విభాగాన్ని దాచు</translation>
 <translation id="733354035281974745">పరికర స్థానిక ఖాతా భర్తీ</translation>
 <translation id="7334320624316649418">&amp;మళ్లీ క్రమం చేయడాన్ని రిపీట్‌ చేయి</translation>

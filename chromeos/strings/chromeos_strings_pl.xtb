@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Zanim utracisz dostęp, użyj naszej aplikacji Przenoszenie treści, aby przesłać dane z konta szkolnego na konto osobiste.</translation>
 <translation id="1026212596705997935">Skrót jest używany do opcji „<ph name="CONFLICT_ACCEL_NAME" />”. Naciśnij nowy skrót. Aby zastąpić pierwotny skrót, naciśnij ten skrót ponownie.</translation>
 <translation id="1030856839388844477">Resetuj użycie danych</translation>
+<translation id="1047095725494118091">Nie można pobrać. Spróbuj jeszcze raz lub uruchom ponownie urządzenie <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (wątki: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Dostępna jest nowa funkcja. Aby dowiedzieć się więcej, naciśnij klawisz strzałki w górę.</translation>
 <translation id="1049663189809099096">pastelowy żółty</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Pobieram wygaszacz ekranu</translation>
 <translation id="1094693127011229778">Adres IP jest niedostępny</translation>
 <translation id="1100902271996134409">Tworzę obrazy…</translation>
+<translation id="1107856713690040084">Dźwięk z systemu urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Informacje</translation>
 <translation id="1118572504348554005">Opinie, które przesyłasz za pomocą tego formularza, możemy udostępniać naszym partnerom, aby pomagać im w naprawianiu błędów i rozwiązywaniu innych problemów, jakie do nas zgłaszasz. Nie podawaj informacji poufnych, takich jak hasła.</translation>
 <translation id="1119403468619527527">Za mało słów do uproszczenia</translation>
@@ -291,6 +293,7 @@
 <translation id="2163937499206714165">Włącz tryb ciemny</translation>
 <translation id="2164131940279488868">Aby rozpocząć nagrywanie dźwięku, sprawdź, czy został podłączony mikrofon</translation>
 <translation id="2173302385160625112">Sprawdź połączenie z internetem</translation>
+<translation id="2176909213844392588">Nie udało się pobrać modelu transkrypcji w języku: <ph name="LANGUAGE_NAME" />. Spróbuj jeszcze raz lub uruchom ponownie urządzenie <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">Coś poszło nie tak. Spróbuj ponownie otworzyć aplikację.</translation>
 <translation id="2189104374785738357">Edytuj szczegóły punktu APN</translation>
 <translation id="2195732836444333448">Usługa zajęta. Spróbuj ponownie wkrótce.</translation>
@@ -479,6 +482,7 @@
 <translation id="3199982728237701504">Podajnik dokumentów (dwustronny)</translation>
 <translation id="3201315366910775591">Inni użytkownicy mogą aktualizować albumy udostępnione</translation>
 <translation id="3211671540163313381">Mapowanie pada kierunkowego</translation>
+<translation id="3217462202230355157">Sprawdź, czy mikrofon jest podłączony, lub uruchom ponownie urządzenie <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Szukam skanerów</translation>
 <translation id="3226657629376379887">Menu działań dotyczących układu</translation>
 <translation id="3227186760713762082">Podziel wartość <ph name="CATEGORY_TEXT" /> przez <ph name="CONVERSION_RATE" /></translation>
@@ -514,6 +518,7 @@
 <translation id="3383623117265110236">Na wyłączność</translation>
 <translation id="3404249063913988450">Włącz wygaszacz ekranu</translation>
 <translation id="3413935475507503304">Aby rozpocząć aktualizację, kliknij Dalej.</translation>
+<translation id="3416709353545797224">Nagrywanie wszystkich dźwięków z urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">na zewnątrz</translation>
 <translation id="3428971106895559033">pastelowym</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -677,6 +682,7 @@
 <translation id="4155551848414053977">Upewnij się, że skaner jest włączony i dostępny przez sieć lub połączenie bezpośrednie</translation>
 <translation id="4159238217853743776">Częściowy</translation>
 <translation id="4159784952369912983">Purpurowy</translation>
+<translation id="416219735020840807">Nie udało się pobrać modelu transkrypcji. Spróbuj jeszcze raz lub uruchom ponownie urządzenie <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4170180284036919717">Zrób zdjęcie</translation>
 <translation id="4170700058716978431">NEGATYWNY</translation>
 <translation id="4171077696775491955">zmniejsz jasność</translation>
@@ -950,6 +956,7 @@
 <translation id="5344619683981067131">Zastępuję zaznaczony tekst sugestią</translation>
 <translation id="5346687412805619883">Sieć lokalna</translation>
 <translation id="5358174242040570474">Coś poszło nie tak. Spróbuj jeszcze raz wybrać tapetę lub ponownie otwórz aplikację.</translation>
+<translation id="5368228070728130240">Nie udało się pobrać modelu do tworzenia podsumowań i tytułów. Spróbuj jeszcze raz lub uruchom ponownie urządzenie <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">Sieć Wi-Fi nie jest bezpieczna</translation>
 <translation id="5376354385557966694">Automatyczny tryb jasny</translation>
 <translation id="5378184552853359930">Typ adresu IP</translation>
@@ -1255,6 +1262,7 @@
 <translation id="6766275201586212568">błędy rozpoznawania nazw DNS</translation>
 <translation id="6768237774506518020">dużo błędów rozpoznania nazwy DNS</translation>
 <translation id="6786747875388722282">Rozszerzenia</translation>
+<translation id="6789891265243243337">Gdy dźwięk na urządzeniu <ph name="DEVICE_TYPE" /> jest włączony, Dyktafon rejestruje cały dźwięk odtwarzany na tym urządzeniu</translation>
 <translation id="6791471867139427246">kolor podświetlenia klawiatury</translation>
 <translation id="6796229976413584781">Skrót został usunięty</translation>
 <translation id="6798678288485555829">Nawigacja po tekście</translation>
@@ -1528,6 +1536,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8010765388850538088">Dowiedz się więcej o generatywnej AI</translation>
 <translation id="8017679124341497925">Skrót był edytowany</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
+<translation id="8027467664787098346">Więcej informacji o wybranej tapecie</translation>
 <translation id="8028993641010258682">Rozmiar</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Włącz automatyczny tryb kolorów</translation>
@@ -1724,6 +1733,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8930622219860340959">Sieć bezprzewodowa</translation>
 <translation id="8933650076320258356">Wybrany klawisz dla kierunku <ph name="DIRECTION" /> to <ph name="KEYS" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Adres IP klienta</translation>
+<translation id="8938606491880817721">Nie udało się pobrać. Spróbuj jeszcze raz lub uruchom ponownie urządzenie <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8944651180182756621">Kolor Menu z aplikacjami</translation>
 <translation id="8945308580158685341">pszczoły</translation>
 <translation id="894617464444543719">Urządzenie to telefon.</translation>

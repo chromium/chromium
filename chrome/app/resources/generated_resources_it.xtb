@@ -1367,6 +1367,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="193565226207940518">Strumento di assistenza</translation>
 <translation id="1935995810530254458">Copia comunque</translation>
 <translation id="1936157145127842922">Mostra nella cartella</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Pagina aggiunta all'elenco di lettura}other{Pagine aggiunte all'elenco di lettura}}</translation>
 <translation id="1936931585862840749">Specifica un numero per indicare la quantità di copie da stampare (da 1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Impossibile importare il tipo di architettura del contenitore <ph name="ARCHITECTURE_CONTAINER" /> con questo dispositivo che invece è <ph name="ARCHITECTURE_DEVICE" />. Puoi provare a ripristinare questo contenitore in un diverso dispositivo oppure puoi accedere ai file all'interno dell'immagine del contenitore aprendoli nell'app File.</translation>
 <translation id="1938351510777341717">Comando esterno</translation>
@@ -1565,7 +1566,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2081816110395725788">Inattività durante l'utilizzo della batteria</translation>
 <translation id="2082187087049518845">Aggiungi scheda a nuovo gruppo</translation>
 <translation id="2082510809738716738">Scegli un colore per il tema</translation>
-<translation id="208547068587548667">Accedi a <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Riprova</translation>
 <translation id="208634871997892083">VPN sempre attiva</translation>
 <translation id="208654914566977272">Azioni suggerite durante la ricerca sullo schermo</translation>
@@ -2981,6 +2981,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3045447014237878114">Questo sito ha scaricato automaticamente più file</translation>
 <translation id="3046178388369461825">Lo spazio sul disco Linux sta per esaurirsi</translation>
 <translation id="304644035656848980">Anteprima del microfono</translation>
+<translation id="3046892784550338476">Versione <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Pagina web, completa</translation>
 <translation id="304747341537320566">Motori di riconoscimento vocale</translation>
 <translation id="3047678109605649715">Non sono presenti voci in <ph name="LANGUAGE" /> sul tuo dispositivo. Libera spazio sul dispositivo e riprova.</translation>
@@ -3999,7 +4000,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3778740492972734840">&amp;Strumenti per sviluppatori</translation>
 <translation id="3778868487658107119">Chiedigli tutto quello che vuoi e fatti aiutare nelle tue attività. Google è personalizzato per te ed è sempre al tuo fianco.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{la tua cronologia di navigazione di # sito}other{la tua cronologia di navigazione di # siti}}</translation>
-<translation id="3779244863011082655">Utilizza un account <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> diverso</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> non può controllare se le tue password sono state compromesse nell'ambito di violazioni dei dati. Riprova più tardi.</translation>
 <translation id="3781742599892759500">Accesso al microfono su Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5502,6 +5502,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4848191975108266266">Hotword "Ok Google" dell'Assistente Google</translation>
 <translation id="4849286518551984791">Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">Non installare</translation>
+<translation id="4849731766219625109">Usa il tuo account <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="485053257961878904">Impossibile configurare la sincronizzazione delle notifiche</translation>
 <translation id="4850548109381269495">Controlla la connessione a internet su entrambi i dispositivi e attiva il Bluetooth. Quindi riprova.</translation>
 <translation id="4850669014075537160">Scorrimento</translation>
@@ -5690,6 +5691,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4979510648199782334">Configurazione di Microsoft 365 completata</translation>
 <translation id="4980805016576257426">Questa estensione contiene malware.</translation>
 <translation id="4983159853748980742">La tua password non è stata condivisa. Controlla la connessione a internet e assicurati di aver eseguito l'accesso a Chrome, quindi riprova.</translation>
+<translation id="498624032394115435">Chiunque abbia il link può modificare tutte le schede.</translation>
 <translation id="4986706507552097681">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="4986728572522335985">Questa operazione eliminerà tutti i dati sul token di sicurezza, incluso il suo PIN</translation>
 <translation id="4987944280765486504">Chromebook verrà riavviato al termine del download e potrai continuare la configurazione.</translation>
@@ -8296,7 +8298,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6873571253135628430">Modifica le autorizzazioni dei siti</translation>
 <translation id="6876155724392614295">Bicicletta</translation>
 <translation id="6876469544038980967">Non utili</translation>
-<translation id="687838958001010630">Chiunque abbia il link può modificare tutte le schede</translation>
 <translation id="6878422606530379992">Sensori consentiti</translation>
 <translation id="6878862640969460273">Orizzontale</translation>
 <translation id="6880587130513028875">Le immagini sono state bloccate in questa pagina.</translation>

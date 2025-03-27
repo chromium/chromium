@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">Отворите подешавања Chromium-а у iOS-у, па додирните Default Browser App (Подразумевана апликација за прегледач) и изаберите Chromium.</translation>
 <translation id="3102849287235003384">Да бисте се одјавили са Google налога на свим веб-сајтовима, <ph name="BEGIN_LINK" />одјавите се из Chromium-а<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Желите да подесите Chromium за подразумевани прегледач?</translation>
+<translation id="3180939591219927904">Укључите Закључај картице без архивирања после затварања Chromium-а</translation>
 <translation id="3242612358525156339">У подешавањима уређаја отворите „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ и изаберите „Chromium“</translation>
 <translation id="328933489847748230">{count,plural, =1{Сада се приказује 1 Chromium прозор}one{Сада се приказује {count} Chromium прозор}few{Сада се приказују {count} Chromium прозора}other{Сада се приказује {count} Chromium прозора}}</translation>
 <translation id="3344973607274501920">Chromium није успео да вам провери лозинке. Проверите интернет везу.</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Изабрани подаци су уклоњени из Chromium-а и са синхронизованих уређаја. Google налог можда има друге облике историје прегледања, попут претрага и активности у другим Google услугама на history.google.com.</translation>
 <translation id="7395825497086981028">Лозинка се чува у Менаџеру лозинки за <ph name="EMAIL" /></translation>
+<translation id="7504829997542308412">Отворите Chromium</translation>
 <translation id="7531461704633548377">Из Chromium-а</translation>
 <translation id="7554983317097061001">Савет за Chromium: Преместите Chromium на траку с апликацијама</translation>
 <translation id="7576863740961052505">Управљање подешавањима Chromium-а</translation>

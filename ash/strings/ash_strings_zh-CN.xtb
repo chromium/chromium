@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">在访客模式下，无法使用外围设备</translation>
 <translation id="1270290102613614947">屏幕键盘已停用</translation>
 <translation id="1272079795634619415">停止</translation>
+<translation id="12741168609094094">选择屏幕上的任何内容即可搜索、复制文字等</translation>
 <translation id="1275285675049378717">正在为 <ph name="POWER_SOURCE" />充电</translation>
 <translation id="1275718070701477396">已选择</translation>
 <translation id="1276975447697633661">选择相应文件，然后按 <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">热点已关闭</translation>
 <translation id="1731815243805539470">切换到上一个用户</translation>
 <translation id="1733996486177697563">在深色主题和浅色主题之间切换。轻触并按住相应桌面，然后选择“壁纸和风格”。</translation>
+<translation id="1735992454301033090">已选择区域，使用箭头键即可移动</translation>
 <translation id="1736898441010944794">“<ph name="NAME" />”对蓝牙设备可见。</translation>
 <translation id="1737078180382804488">取消设置查看手机中的通知</translation>
 <translation id="174102739345480129">标记工具已关闭。</translation>
@@ -370,7 +372,7 @@
 <translation id="2293443480080733021">您打算专注于什么任务？按 Enter 键即可添加任务。</translation>
 <translation id="229397294990920565">移动数据网络正在关闭…</translation>
 <translation id="2295777434187870477">麦克风已开启，使用切换开关可将麦克风静音。</translation>
-<translation id="2302092602801625023">该账号由 Family Link 管理</translation>
+<translation id="2302092602801625023">这个账号是通过 Family Link 管理的</translation>
 <translation id="2303600792989757991">“切换窗口”概述</translation>
 <translation id="2304702218354340897">确定要关闭人脸操控功能吗？</translation>
 <translation id="2305738328104302723">Google 任务列表：<ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806">上周的<ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">键盘快捷键已更改</translation>
 <translation id="2689613560355655046">桌面 8</translation>
+<translation id="2692092709110488417">按 Tab 键可将焦点移至所选区域并移动</translation>
 <translation id="2695305337569143674">网络</translation>
 <translation id="2697697418792422688">显示键盘设置。已选择“<ph name="KEYBOARD_NAME" />”。</translation>
 <translation id="2699913284398121653">使用 Content Transfer 应用将学校账号数据转移到个人账号</translation>
@@ -1032,6 +1035,7 @@
 <translation id="4412698727486357573">帮助中心</translation>
 <translation id="4412944820643904175">“<ph name="FEATURE_NAME" />”功能已关闭。</translation>
 <translation id="4417647906073317561">专注模式设置。您可以设置定时器、任务和音乐，让自己进入状态。</translation>
+<translation id="4418600384772451109">关闭面板</translation>
 <translation id="4424159417645388645">桌面 5</translation>
 <translation id="4426817706804363424">好样的！</translation>
 <translation id="4430019312045809116">音量</translation>
@@ -2227,6 +2231,7 @@
 <translation id="8287009018010202411">效率</translation>
 <translation id="828708037801473432">已关闭</translation>
 <translation id="8297006494302853456">弱</translation>
+<translation id="8300451473979404345">已选择手柄，使用箭头键即可移动</translation>
 <translation id="8308637677604853869">上一菜单</translation>
 <translation id="830868413617744215">测试版</translation>
 <translation id="8314772463905284467">Caps Lock 已打开</translation>
@@ -2287,6 +2292,7 @@
 <translation id="851458219935658693">显示当前桌面中的窗口，已选中单选按钮</translation>
 <translation id="851660987304951246">使用“帮我读”功能可快速总结内容或提问</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在开启时可能无法充电。</translation>
+<translation id="8519329096920173967">使用 Google 智能镜头搜索屏幕上的内容</translation>
 <translation id="8535393432370007982">撤消按颜色排序</translation>
 <translation id="8536886494750559755">显示“快速分享”设置。<ph name="TIME_REMAINING" />内所有人都可以看到该设备</translation>
 <translation id="8539803091108018926">已将文本复制到剪贴板</translation>
