@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
@@ -24,6 +25,13 @@
 using performance_manager::features::kPerformanceControlsPPMSurvey;
 using performance_manager::features::kPerformanceControlsPPMSurveyMaxDelay;
 using performance_manager::features::kPerformanceControlsPPMSurveyMinDelay;
+using performance_manager::features::
+    kPerformanceControlsPPMSurveySegmentMaxMemoryGB1;
+using performance_manager::features::
+    kPerformanceControlsPPMSurveySegmentMaxMemoryGB2;
+using performance_manager::features::kPerformanceControlsPPMSurveySegmentName1;
+using performance_manager::features::kPerformanceControlsPPMSurveySegmentName2;
+using performance_manager::features::kPerformanceControlsPPMSurveySegmentName3;
 
 PerformanceControlsHatsService::PerformanceControlsHatsService(Profile* profile)
     : profile_(profile),
@@ -80,13 +88,14 @@ void PerformanceControlsHatsService::OpenedNewTabPage() {
 
   auto launch_survey_if_enabled =
       [hats_service, battery_saver_mode, memory_saver_mode](
-          const base::Feature& feature, const std::string& trigger) {
+          const base::Feature& feature, const std::string& trigger,
+          const SurveyStringData& string_data = {}) {
         if (base::FeatureList::IsEnabled(feature)) {
           hats_service->LaunchSurvey(
               trigger, base::DoNothing(), base::DoNothing(),
-              {{"Memory Saver Mode Enabled", memory_saver_mode},
-               {"Battery Saver Mode Enabled", battery_saver_mode}},
-              {});
+              {{kMemorySaverPSDName, memory_saver_mode},
+               {kBatterySaverPSDName, battery_saver_mode}},
+              string_data);
         }
       };
 
@@ -96,9 +105,11 @@ void PerformanceControlsHatsService::OpenedNewTabPage() {
       kHatsSurveyTriggerPerformanceControlsPerformance);
 
   // Survey to correlate UMA metrics with Poor Performance Moments.
-  if (MayLaunchPPMSurvey()) {
+  if (auto ppm_segment_name = GetPPMSurveySegmentName();
+      !ppm_segment_name.empty() && MayLaunchPPMSurvey()) {
     launch_survey_if_enabled(kPerformanceControlsPPMSurvey,
-                             kHatsSurveyTriggerPerformanceControlsPPM);
+                             kHatsSurveyTriggerPerformanceControlsPPM,
+                             {{kPerformanceSegmentPSDName, ppm_segment_name}});
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -167,4 +178,20 @@ bool PerformanceControlsHatsService::MayLaunchPPMSurvey() const {
     return false;
   }
   return true;
+}
+
+std::string PerformanceControlsHatsService::GetPPMSurveySegmentName() {
+  uint64_t system_ram = memory_mb_for_testing_.value_or(
+      base::SysInfo::AmountOfPhysicalMemoryMB());
+  size_t max_memory1 = kPerformanceControlsPPMSurveySegmentMaxMemoryGB1.Get();
+  size_t max_memory2 = kPerformanceControlsPPMSurveySegmentMaxMemoryGB2.Get();
+  if (max_memory1 == 0 || system_ram <= max_memory1 * 1024) {
+    // Segment 1 has no upper bound, or the system RAM is in its bounds.
+    return kPerformanceControlsPPMSurveySegmentName1.Get();
+  }
+  if (max_memory2 == 0 || system_ram <= max_memory2 * 1024) {
+    // Segment 2 has no upper bound, or the system RAM is in its bounds.
+    return kPerformanceControlsPPMSurveySegmentName2.Get();
+  }
+  return kPerformanceControlsPPMSurveySegmentName3.Get();
 }

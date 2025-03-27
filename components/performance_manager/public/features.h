@@ -8,6 +8,8 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
@@ -69,6 +71,20 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kPerformanceControlsPPMSurveyMinDelay);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kPerformanceControlsPPMSurveyMaxDelay);
+
+// Defines the names and boundaries of up to 3 segments for the PPM survey.
+// There's no kPerformanceControlsPPMSurveySegmentMaxMemoryGB3 because there's
+// never a 4th segment, so segment 3 has no maximum.
+BASE_DECLARE_FEATURE_PARAM(std::string,
+                           kPerformanceControlsPPMSurveySegmentName1);
+BASE_DECLARE_FEATURE_PARAM(std::string,
+                           kPerformanceControlsPPMSurveySegmentName2);
+BASE_DECLARE_FEATURE_PARAM(std::string,
+                           kPerformanceControlsPPMSurveySegmentName3);
+BASE_DECLARE_FEATURE_PARAM(size_t,
+                           kPerformanceControlsPPMSurveySegmentMaxMemoryGB1);
+BASE_DECLARE_FEATURE_PARAM(size_t,
+                           kPerformanceControlsPPMSurveySegmentMaxMemoryGB2);
 
 // This enables performance intervention to run in demo mode. While in demo
 // mode, performance intervention will ignore rate throttling and CPU thresholds
