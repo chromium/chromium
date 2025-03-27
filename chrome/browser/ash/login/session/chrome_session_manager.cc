@@ -253,7 +253,10 @@ void StartUserSession(user_manager::UserManager* user_manager,
   // If we have recently restarted in-session after a chrome crash, we need
   // to initialize `AuthHub` in in-session mode.
   // See documentation in `auth_hub.h` for more details.
-  AuthHub::Get()->InitializeForMode(AuthHubMode::kInSession);
+
+  if (ash::features::IsAuthPanelUsingAuthHub()) {
+    AuthHub::Get()->InitializeForMode(AuthHubMode::kInSession);
+  }
 }
 
 void LaunchShimlessRma() {

@@ -1398,6 +1398,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTrilinearFilteringEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsUnmanagedDeviceDeviceTrustConnectorFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUseAuthPanelInSessionEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAuthPanelUsingAuthHub();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowPasswordlessSetupEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowPasswordlessRecoveryEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLocalAuthenticationWithPinEnabled();
