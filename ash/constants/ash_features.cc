@@ -2633,7 +2633,7 @@ BASE_FEATURE(kSeaPenDemoMode,
 // Enables sea pen prompt rewrite feature.
 BASE_FEATURE(kSeaPenQueryRewrite,
              "SeaPenQueryRewrite",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables sea pen feature with next templates.
 BASE_FEATURE(kSeaPenUseExptTemplate,
