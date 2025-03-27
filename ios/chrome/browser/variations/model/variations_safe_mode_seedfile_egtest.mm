@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 // The tests in this file should roughly correspond to the tests in
 // chrome/browser/metrics/variations/variations_safe_mode_browsertest.cc when
-// not being in the treatment group of the Seed File experiment. "Roughly"
+// the client is in the treatment group of the Seed File experiment. "Roughly"
 // because there is a significant difference between the tests.
 //
 // The browser tests use a HistogramTester to check if Chrome is running in safe
@@ -23,23 +23,28 @@
 // HistogramTester before shutting down Chrome isn't helpful because the
 // tester is not persisted across sessions.
 
-@interface VariationsSafeModeTestCase : ChromeTestCase
+@interface VariationsSafeModeSeedFileTestCase : ChromeTestCase
 @end
 
-@implementation VariationsSafeModeTestCase
+@implementation VariationsSafeModeSeedFileTestCase
 
 #pragma mark - Helpers
 
 // Returns an AppLaunchConfiguration that shuts down Chrome cleanly and
 // relaunches it without using the field trial testing config. Shutting down
 // cleanly flushes local state. Disabling the testing config means that the only
-// field trials after the relaunch, if any, are client-side field trials.
+// field trials after the relaunch, if any, are client-configured field trials
+// and those that are forced via command-line flags.
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  // Force the channel to stable so that the client participates in the
+  // SeedFileTrial study. Using any channel other than UNKNOWN will participate
+  // in the study.
   config.additional_args = {"--disable-field-trial-config",
                             "--disable-variations-seed-fetch",
-                            "--force-fieldtrials=SeedFileTrial/Control_V7"};
+                            "--force-fieldtrials=SeedFileTrial/SeedFiles_V7",
+                            "--fake-variations-channel=stable"};
   return config;
 }
 
@@ -51,9 +56,13 @@
 - (AppLaunchConfiguration)appConfigurationForCrashing {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByKilling;
+  // Force the channel to stable so that the client participates in the
+  // SeedFileTrial study. Using any channel other than UNKNOWN will participate
+  // in the study.
   config.additional_args = {"--disable-field-trial-config",
                             "--disable-variations-seed-fetch",
-                            "--force-fieldtrials=SeedFileTrial/Control_V7"};
+                            "--force-fieldtrials=SeedFileTrial/SeedFiles_V7",
+                            "--fake-variations-channel=stable"};
   return config;
 }
 
@@ -62,6 +71,12 @@
 - (AppLaunchConfiguration)appConfigurationForCleanRestart {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  // Force the channel to stable so that the client participates in the
+  // SeedFileTrial study. Using any channel other than UNKNOWN will participate
+  // in the study.
+  config.additional_args = {"--disable-variations-seed-fetch",
+                            "--force-fieldtrials=SeedFileTrial/SeedFiles_V7",
+                            "--fake-variations-channel=stable"};
   return config;
 }
 

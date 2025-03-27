@@ -63,10 +63,12 @@
 }
 
 + (BOOL)hasSafeSeed {
-  PrefService* prefService = GetApplicationContext()->GetLocalState();
-  const std::string& safe_seed =
-      prefService->GetString(variations::prefs::kVariationsSafeCompressedSeed);
-  return !safe_seed.empty();
+  return !GetApplicationContext()
+              ->GetVariationsService()
+              ->GetSeedStoreForTesting()
+              ->GetSafeSeedReaderWriterForTesting()
+              ->GetSeedData()
+              .data.empty();
 }
 
 + (void)setTestSafeSeedAndSignature {
