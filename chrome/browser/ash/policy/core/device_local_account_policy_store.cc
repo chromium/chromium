@@ -32,9 +32,11 @@ DeviceLocalAccountPolicyStore::DeviceLocalAccountPolicyStore(
     const std::string& account_id,
     ash::SessionManagerClient* session_manager_client,
     ash::DeviceSettingsService* device_settings_service,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> first_load_task_runner)
     : UserCloudPolicyStoreBase(background_task_runner,
                                PolicyScope::POLICY_SCOPE_USER),
+      first_load_task_runner_(first_load_task_runner),
       account_id_(account_id),
       session_manager_client_(session_manager_client),
       device_settings_service_(device_settings_service) {}
@@ -245,7 +247,7 @@ void DeviceLocalAccountPolicyStore::Validate(
   }
 
   auto validator = std::make_unique<UserCloudPolicyValidator>(
-      std::move(policy_response), background_task_runner());
+      std::move(policy_response), GetValidationTaskRunner());
   validator->ValidateUsername(account_id_);
   validator->ValidatePolicyType(dm_protocol::kChromePublicAccountPolicyType);
   // The timestamp is verified when storing a new policy downloaded from the
@@ -282,6 +284,18 @@ void DeviceLocalAccountPolicyStore::Validate(
         /*signature_validation_public_key=*/key->as_string(),
         /*validator=*/validator.get());
   }
+}
+
+scoped_refptr<base::SequencedTaskRunner>
+DeviceLocalAccountPolicyStore::GetValidationTaskRunner() const {
+  // Before the store has policies, this returns the high priority
+  // `first_load_task_runner_`. Once the store gets policies, this returns the
+  // low priority `background_task_runner()`.
+  //
+  // This is necessary because MGS launch blocks on device local account policy
+  // load, so policy tasks should run in a high USER_VISIBLE priority runner.
+  // See crbug.com/263949579.
+  return has_policy() ? background_task_runner() : first_load_task_runner_;
 }
 
 }  // namespace policy

@@ -237,6 +237,7 @@ void CloudExternalDataPolicyObserverTest::SetUp() {
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
           shared_url_loader_factory_);
 
   user_policy_provider_.SetDefaultReturns(

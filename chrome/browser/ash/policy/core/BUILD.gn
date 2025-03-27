@@ -211,6 +211,7 @@ source_set("unit_tests") {
     "device_cloud_policy_store_ash_unittest.cc",
     "device_local_account_external_cache_unittest.cc",
     "device_local_account_policy_service_unittest.cc",
+    "device_local_account_policy_store_unittest.cc",
     "device_local_account_unittest.cc",
     "device_policy_decoder_unittest.cc",
     "reporting_user_tracker_unittest.cc",
@@ -221,6 +222,7 @@ source_set("unit_tests") {
 
   deps = [
     ":core",
+    ":test_support",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
