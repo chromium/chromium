@@ -435,11 +435,11 @@ public class SelectableListToolbar<E> extends Toolbar
             case NavigationButton.NONE:
                 break;
             case NavigationButton.SEARCH_BACK:
-                // Create a LayerDrawable to hold the search box button highlight background as well
+                // Create a LayerDrawable to hold the search box icon highlight background as well
                 // as the navigation icon drawable.
                 var navigationBackgroundDrawable =
                         AppCompatResources.getDrawable(
-                                getContext(), R.drawable.search_box_button_ripple);
+                                getContext(), R.drawable.search_box_icon_background);
                 var navigationLayerDrawable =
                         new LayerDrawable(
                                 new Drawable[] {

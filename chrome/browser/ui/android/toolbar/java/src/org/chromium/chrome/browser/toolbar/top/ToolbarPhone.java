@@ -2166,12 +2166,12 @@ public class ToolbarPhone extends ToolbarLayout
     private void updateRippleBackground() {
         var toolbarIconRippleId =
                 isIncognitoBranded()
-                        ? R.drawable.toolbar_button_ripple_incognito
-                        : R.drawable.toolbar_button_ripple;
+                        ? R.drawable.default_icon_background_baseline
+                        : R.drawable.default_icon_background;
         var omniboxIconRippleId =
                 isIncognitoBranded()
-                        ? R.drawable.omnibox_button_ripple_incognito
-                        : R.drawable.omnibox_button_ripple;
+                        ? R.drawable.search_box_icon_background_baseline
+                        : R.drawable.search_box_icon_background;
         mHomeButton.setBackgroundResource(toolbarIconRippleId);
         getTabSwitcherButtonCoordinator()
                 .getContainerView()
