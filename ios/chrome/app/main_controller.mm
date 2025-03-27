@@ -54,7 +54,6 @@
 #import "ios/chrome/app/deferred_initialization_task_names.h"
 #import "ios/chrome/app/enterprise_app_agent.h"
 #import "ios/chrome/app/fast_app_terminate_buildflags.h"
-#import "ios/chrome/app/launch_screen_view_controller.h"
 #import "ios/chrome/app/memory_monitor.h"
 #import "ios/chrome/app/profile/profile_controller.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -1633,16 +1632,6 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
     const WindowActivityOrigin savedOrigin = sceneState.currentOrigin;
     UISceneConnectionOptions* savedConnectionOptions =
         sceneState.connectionOptions;
-
-    // Install a new root view controller before destroying the UI (since it
-    // does not support dismissing the root view controller after the Browser
-    // has been destroyed).
-    // TODO(crbug.com/376667510): SceneDelegate should manage the view
-    // controller and this should be unnecessary (in fact, it should be possible
-    // to install a temporary view controller to perform an animation).
-    LaunchScreenViewController* launchScreen =
-        [[LaunchScreenViewController alloc] init];
-    [sceneState setRootViewController:launchScreen makeKeyAndVisible:YES];
 
     [sceneDelegate sceneDidDisconnect:scene];  // destroy the old SceneState
     sceneState = sceneDelegate.sceneState;     // recreate a new SceneState

@@ -393,7 +393,6 @@ source_set("app_internal") {
     ":change_profile_continuation",
     ":enterprise_app_agent",
     ":fast_app_terminate_buildflags",
-    ":launch_screen_ui",
     ":mode",
     ":safe_mode_app_state_agent",
     ":task_names",
