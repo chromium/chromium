@@ -213,6 +213,14 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
   // 6.  Let |signature-match| be `true` if |signature-metadata| is empty, and
   //     `false` otherwise.
   //
+  //      (Our implementation is ordered differently from the spec: we check
+  //       signature validity and match against integrity expectations in the
+  //       network stack, directly after receiving headers. This means we're
+  //       already done with signature-based SRI checks for network requests at
+  //       this point, but we still might need to perform checks for resources
+  //       that didn't come from the network (e.g. resources which were cached
+  //       on the basis of one request, but are now being used in a context with
+  //       different integrity requirements).
   if (RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled(feature_context) &&
       !CheckSignaturesImpl(parsed_metadata.public_keys, resource_url,
                            raw_headers, integrity_report)) {
@@ -319,8 +327,11 @@ bool SubresourceIntegrity::CheckSignaturesImpl(
   //      over response using algorithm and public key.
   //
   //      (Our implementation is ordered differently from the spec: we check
-  //       signature validity in the network stack, directly after receiving
-  //       headers. This means we'll only get to this point in cases where
+  //       signature validity and match against integrity expectations in the
+  //       network stack, directly after receiving headers. This means we're
+  //       already done with server-initiated SRI checks at this point.
+  //
+  //       This means we'll only get to this point in cases where
   //       the signature is both valid for SRI, and verifies as internally
   //       consistent (e.g. the public key in the `keyid` field can be used
   //       to validate the signature base.

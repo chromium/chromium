@@ -5,9 +5,10 @@
 const valid_digest = "sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:";
 const valid_signature = `signature=:gHim9e5Pk2H7c9BStOmxSmkyc8+ioZgoxynu3d4INAT4dwfj5LhvaV9DFnEQ9p7C0hzW4o4Qpkm5aApd6WLLCw==:`;
 const valid_signature_input = `signature=("unencoded-digest";sf);keyid="JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";tag="sri"`;
+const invalid_key = `ed25519-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=`;
 
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  const {page, session, dp} = await testRunner.startBlank("Verifies issue creation for a `Signature-Input` which has expired.");
+  const {page, session, dp} = await testRunner.startBlank("Verifies issue creation for a valid signature which mismatches integrity.");
 
   // Navigate to an arbitrary file, enable audits, and wait for an issue to
   // appear. We'll perform the test via the `fetch()` call below.
@@ -20,8 +21,8 @@ const valid_signature_input = `signature=("unencoded-digest";sf);keyid="JrQLj5P/
   let testURL = new URL('/inspector-protocol/resources/sri-message-signature-test.php', self.origin);
   testURL.searchParams.set('digest', valid_digest);
   testURL.searchParams.set('signature', valid_signature);
-  testURL.searchParams.set('input', valid_signature_input + ";expires=1");
-  await session.evaluate(`fetch('${testURL.href}')`);
+  testURL.searchParams.set('input', valid_signature_input);
+  await session.evaluate(`fetch('${testURL.href}', { integrity: "${invalid_key}" })`);
 
   // Dump the issue:
   const issue = await issuePromise;

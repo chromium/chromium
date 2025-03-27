@@ -98,6 +98,7 @@ enum SRIMessageSignatureError {
   kValidationFailedSignatureExpired,
   kValidationFailedInvalidLength,
   kValidationFailedSignatureMismatch,
+  kValidationFailedIntegrityMismatch,
 };
 
 // Represents an issue we'll deliver to devtools to help developers
@@ -108,6 +109,10 @@ struct SRIMessageSignatureIssue {
   // kValidationFailedSignatureMismatch will populate the signature base over
   // which signature verification failed.
   string? signature_base;
+
+  // kValidationFailedIntegrityMismatch will populate the expected public keys
+  // which failed to match any signatures' public key.
+  array<string>? integrity_assertions;
 };
 
 // Contains the set of valid message signatures for a given response, along with
