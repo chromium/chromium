@@ -1491,6 +1491,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         /* tabIdsToUrls= */ null,
                         /* tabGroupColor= */ 0,
                         /* tabGroupTitle= */ null,
+                        /* mhtmlTabTitle= */ null,
                         /* tabGroupCollapsed= */ false,
                         isGroupShared,
                         /* isIncognito= */ false);

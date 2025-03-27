@@ -146,6 +146,7 @@ public class TabGroupUtilsUnitTest {
                         TAB_IDS_TO_URLS,
                         /* tabGroupColor= */ 0,
                         TAB_GROUP_TITLE,
+                        /* mhtmlTabTitle= */ null,
                         /* tabGroupCollapsed= */ true,
                         /* isGroupShared= */ false,
                         /* isIncognito= */ false);

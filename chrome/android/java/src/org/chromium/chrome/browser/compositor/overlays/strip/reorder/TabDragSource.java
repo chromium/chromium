@@ -248,7 +248,6 @@ public class TabDragSource implements View.OnDragListener {
 
         // TODO(crbug.com/380327012): Block drag for last group when homepage enabled and is set to
         //  a custom url.
-
         // Allow drag to create new instance based on feature checks / current instance count.
         allowDragToCreateInstance =
                 allowDragToCreateInstance
@@ -539,6 +538,12 @@ public class TabDragSource implements View.OnDragListener {
         if (tabGroupMetadata == null) {
             return false;
         }
+
+        if (disallowDragWithMhtmlTab(
+                mWindowAndroid.getContext().get(), tabGroupMetadata.mhtmlTabTitle)) {
+            return false;
+        }
+
         boolean tabGroupDraggedBelongToCurrentModel =
                 doesBelongToCurrentModel(tabGroupMetadata.isIncognito);
 
@@ -712,6 +717,22 @@ public class TabDragSource implements View.OnDragListener {
      */
     private void showDroppedDifferentModelToast(Context context) {
         Toast.makeText(context, R.string.tab_dropped_different_model, Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Checks if the dragged group contains an MHTML tab (identified via a non-null tab title) and
+     * shows a toast message to inform the user that the tab cannot be moved.
+     *
+     * @param context The context to use for showing the toast.
+     * @param tabTitle The title of the tab that cannot be moved. If null, no toast is shown.
+     * @return {@code true} if the toast was shown, {@code false} otherwise.
+     */
+    // TODO(crbug.com/384979079): Record metrics.
+    private boolean disallowDragWithMhtmlTab(Context context, @Nullable String tabTitle) {
+        if (tabTitle == null) return false;
+        String text = context.getString(R.string.tab_cannot_be_moved, tabTitle);
+        Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+        return true;
     }
 
     private boolean doesBelongToCurrentModel(boolean draggedIncognito) {

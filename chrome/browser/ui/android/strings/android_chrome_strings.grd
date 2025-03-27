@@ -5177,6 +5177,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TAB_DROPPED_DIFFERENT_MODEL" desc="Toast that appears when a tab is dropped into tab strip with a different profile (regular v.s. incognito).">
         You can find all open tabs in the tab switcher
       </message>
+      <message name="IDS_TAB_CANNOT_BE_MOVED" desc="Toast that appears when attempting to move a tab group containing an MHTML tab into another window.">
+        Tab <ph name="TAB_TITLE">%1$s<ex>Google</ex></ph> can't be moved
+      </message>
 
       <message name="IDS_CLOSE_TAB" desc="Context menu option that allows the user to close the selected tab.">
         Close tab
