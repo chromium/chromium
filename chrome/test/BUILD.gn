@@ -3606,9 +3606,9 @@ if (!is_android) {
       sources +=
           [ "../browser/screen_ai/main_content_extraction_browsertest.cc" ]
 
-      # Add a data dependency for screen_ai_service_router_browsertest.cc to
-      # notify testing builders that this test needs this library, which will
-      # need to be downloaded from CIPD as defined in //DEPS.
+      # Add a data dependency to notify testing builders that this test needs
+      # ScreenAI library, which will be downloaded from CIPD as defined in
+      # //DEPS.
       data_deps += [ "//third_party/screen-ai:screen_ai" ]
     }
 
@@ -3774,6 +3774,15 @@ if (!is_android) {
             "//pdf",
           ]
         }
+      }
+
+      if (enable_screen_ai_browsertests) {
+        sources += [ "../browser/pdf/pdf_searchify_browsertest.cc" ]
+
+        # Add a data dependency to notify testing builders that this test needs
+        # ScreenAI library, which will be downloaded from CIPD as defined in
+        # //DEPS.
+        data_deps += [ "//third_party/screen-ai:screen_ai" ]
       }
     }
 
