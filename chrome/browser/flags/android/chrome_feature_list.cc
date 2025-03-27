@@ -323,6 +323,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kReengagementNotification,
     &kRelatedSearchesAllLanguage,
     &kRelatedSearchesSwitch,
+    &kRemoveTabFocusOnShowingAndSelect,
     &kReportParentalControlSitesChild,
     &kRightEdgeGoesForwardGestureNav,
     &kSearchInCCT,
@@ -1070,6 +1071,10 @@ BASE_FEATURE(kRelatedSearchesAllLanguage,
 
 BASE_FEATURE(kRelatedSearchesSwitch,
              "RelatedSearchesSwitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRemoveTabFocusOnShowingAndSelect,
+             "RemoveTabFocusOnShowingAndSelect",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReportParentalControlSitesChild,
