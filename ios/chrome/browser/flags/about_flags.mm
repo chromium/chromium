@@ -2601,6 +2601,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayNavigationHistoryName,
      flag_descriptions::kLensOverlayNavigationHistoryDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensOverlayNavigationHistory)},
+    {"page-action-menu", flag_descriptions::kPageActionMenuName,
+     flag_descriptions::kPageActionMenuDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kPageActionMenu)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -1037,6 +1037,11 @@ const char kOptimizationGuidePushNotificationClientDescription[] =
     "Enables the client that handles incoming push notifications on behalf of "
     "the optimization guide.";
 
+const char kPageActionMenuName[] = "Page Action Menu";
+const char kPageActionMenuDescription[] =
+    "When enabled, the entry point for the Page Action Menu becomes available "
+    "for actions relating to the web page.";
+
 const char kPageContentAnnotationsName[] = "Page content annotations";
 const char kPageContentAnnotationsDescription[] =
     "Enables page content to be annotated on-device.";

@@ -612,6 +612,9 @@ extern const char kOptimizationGuidePushNotificationClientDescription[];
 extern const char kOneTapForMapsName[];
 extern const char kOneTapForMapsDescription[];
 
+extern const char kPageActionMenuName[];
+extern const char kPageActionMenuDescription[];
+
 extern const char kPageContentAnnotationsName[];
 extern const char kPageContentAnnotationsDescription[];
 
