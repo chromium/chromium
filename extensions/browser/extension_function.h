@@ -136,13 +136,13 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
                               ExtensionFunction,
                               content::BrowserThread::DeleteOnUIThread> {
  public:
-  enum ResponseType {
+  enum class ResponseType {
     // The function has succeeded.
-    SUCCEEDED,
+    kSucceeded,
     // The function has failed.
-    FAILED,
+    kFailed,
     // The input message is malformed.
-    BAD_MESSAGE
+    kBadMessage,
   };
 
   using ResponseCallback = base::OnceCallback<void(
