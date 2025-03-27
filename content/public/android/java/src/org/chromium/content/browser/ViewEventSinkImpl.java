@@ -13,9 +13,9 @@ import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
-import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContents.UserDataFactory;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
@@ -45,9 +45,8 @@ public final class ViewEventSinkImpl implements ViewEventSink, ActivityStateObse
 
     public static ViewEventSinkImpl from(WebContents webContents) {
         ViewEventSinkImpl ret =
-                ((WebContentsImpl) webContents)
-                        .getOrSetUserData(
-                                ViewEventSinkImpl.class, UserDataFactoryLazyHolder.INSTANCE);
+                webContents.getOrSetUserData(
+                        ViewEventSinkImpl.class, UserDataFactoryLazyHolder.INSTANCE);
         assert ret != null;
         return ret;
     }

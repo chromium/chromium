@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Parcelable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.UserData;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -619,4 +620,50 @@ public interface WebContents extends Parcelable {
     void captureContentAsBitmapForTesting(Callback<Bitmap> callback);
 
     void setSupportsForwardTransitionAnimation(boolean supports);
+
+    /**
+     * Factory interface passed to {@link #getOrSetUserData()} for instantiation of class as user
+     * data.
+     *
+     * <p>Constructor method reference comes handy for class Foo to provide the factory. Use lazy
+     * initialization to avoid having to generate too many anonymous references. <code>
+     * public class Foo {
+     *     static final class FoofactoryLazyHolder {
+     *         private static final UserDataFactory<Foo> INSTANCE = Foo::new;
+     *     }
+     *     ....
+     *
+     *     webContents.getOrsetUserData(Foo.class, FooFactoryLazyHolder.INSTANCE);
+     *
+     *     ....
+     * }
+     * </code>
+     *
+     * @param <T> Class to instantiate.
+     */
+    public interface UserDataFactory<T> {
+        T create(WebContents webContents);
+    }
+
+    /**
+     * Retrieves or stores a user data object for this WebContents.
+     *
+     * @param key Class instance of the object used as the key.
+     * @param userDataFactory Factory that creates an object of the generic class. A new object is
+     *     created if it hasn't been created and non-null factory is given.
+     * @return The created or retrieved user data object. Can be null if the object was not created
+     *     yet, or {@code userDataFactory} is null, or the internal data storage is already
+     *     garbage-collected.
+     */
+    public <T extends UserData> @Nullable T getOrSetUserData(
+            Class<T> key, @Nullable UserDataFactory<T> userDataFactory);
+
+    /**
+     * Removes the UserData object associated with the given key for this WebContents.
+     *
+     * @param <T> The type of the user data object to remove.
+     * @param key The class object representing the type of user data to remove. If no user data
+     *     object of this type exists, this method has no effect.
+     */
+    public <T extends UserData> void removeUserData(Class<T> key);
 }

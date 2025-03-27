@@ -14,10 +14,9 @@ import org.chromium.base.UserData;
 import org.chromium.build.annotations.DoNotInline;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.content.browser.webcontents.WebContentsImpl;
-import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.JavascriptInjector;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContents.UserDataFactory;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -47,9 +46,8 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
      */
     public static @Nullable JavascriptInjector fromWebContents(WebContents webContents) {
         JavascriptInjectorImpl javascriptInjector =
-                ((WebContentsImpl) webContents)
-                        .getOrSetUserData(
-                                JavascriptInjectorImpl.class, UserDataFactoryLazyHolder.INSTANCE);
+                webContents.getOrSetUserData(
+                        JavascriptInjectorImpl.class, UserDataFactoryLazyHolder.INSTANCE);
         return javascriptInjector;
     }
 
