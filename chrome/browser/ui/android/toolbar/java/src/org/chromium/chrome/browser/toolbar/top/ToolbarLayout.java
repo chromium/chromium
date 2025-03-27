@@ -62,8 +62,8 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.ui.MotionEventUtils;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
