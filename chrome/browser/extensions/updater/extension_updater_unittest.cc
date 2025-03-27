@@ -171,6 +171,8 @@ constexpr char kExtensionManifestKey[] =
     "mmrBg0EEIsyLRmUmfyVEfvcIUOZxFqn4A9D2aaRSvNHy9qkasZMBDEql8Nt2iNZm/"
     "kGS7sizidDV6Bc/vyLNiH1gKOXBQ42JIxKjgtrmnhGV2giw2vJGwIDAQAB";
 
+constexpr base::TimeDelta kUpdateFrequency = base::Seconds(15);
+
 // Extracts the integer value of the |authuser| query parameter. Returns 0 if
 // the parameter is not set.
 int GetAuthUserQueryValue(const GURL& url) {
@@ -389,8 +391,6 @@ void SetupPendingExtensionManagerForTest(
         kMarkAcknowledged, kRemoteInstall));
   }
 }
-
-static const int kUpdateFrequencySecs = 15;
 
 // Takes a string with KEY=VALUE parameters separated by '&' in |params| and
 // puts the key/value pairs into |result|. For keys with no value, the empty
@@ -637,8 +637,8 @@ class ExtensionUpdaterTest : public testing::Test {
 
     // Set up and start the updater.
     ExtensionUpdater updater(profile());
-    updater.Init(extension_prefs(), pref_service(), 60 * 60 * 24, nullptr,
-                 factory.GetDownloaderFactory());
+    updater.InitAndEnable(extension_prefs(), pref_service(), base::Days(1),
+                          nullptr, factory.GetDownloaderFactory());
     updater.set_crx_installer_factory_for_test(&crx_installer_factory);
     updater.Start();
 
@@ -1432,8 +1432,8 @@ class ExtensionUpdaterTest : public testing::Test {
     TestDownloaderFactory factory(helper.url_loader_factory());
     TestCrxInstallerFactory crx_installer_factory;
     ExtensionUpdater updater(profile());
-    updater.Init(extension_prefs(), pref_service(), kUpdateFrequencySecs,
-                 nullptr, factory.GetDownloaderFactory());
+    updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
+                          nullptr, factory.GetDownloaderFactory());
     updater.set_crx_installer_factory_for_test(&crx_installer_factory);
     MockExtensionDownloaderDelegate downloader_delegate;
     downloader_delegate.DelegateTo(&updater);
@@ -1470,8 +1470,8 @@ class ExtensionUpdaterTest : public testing::Test {
     TestDownloaderFactory factory(helper.url_loader_factory());
     TestCrxInstallerFactory crx_installer_factory;
     ExtensionUpdater updater(profile());
-    updater.Init(extension_prefs(), pref_service(), kUpdateFrequencySecs,
-                 nullptr, factory.GetDownloaderFactory());
+    updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
+                          nullptr, factory.GetDownloaderFactory());
     updater.set_crx_installer_factory_for_test(&crx_installer_factory);
     MockExtensionDownloaderDelegate downloader_delegate;
     downloader_delegate.DelegateTo(&updater);
@@ -1631,8 +1631,8 @@ class ExtensionUpdaterTest : public testing::Test {
     crx_installer_factory.AddFakeCrxInstaller(kTestExtensionId, mock_installer);
 
     ExtensionUpdater updater(prefs_->profile());
-    updater.Init(extension_prefs(), pref_service(), kUpdateFrequencySecs,
-                 nullptr, factory.GetDownloaderFactory());
+    updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
+                          nullptr, factory.GetDownloaderFactory());
     updater.set_crx_installer_factory_for_test(&crx_installer_factory);
     MockExtensionDownloaderDelegate& downloader_delegate = helper.delegate();
     downloader_delegate.DelegateTo(&updater);
@@ -1760,8 +1760,8 @@ class ExtensionUpdaterTest : public testing::Test {
         enable_oauth2 ? factory.GetAuthenticatedDownloaderFactory()
                       : factory.GetDownloaderFactory();
     ExtensionUpdater updater(profile());
-    updater.Init(extension_prefs(), pref_service(), kUpdateFrequencySecs,
-                 nullptr, downloader_factory);
+    updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
+                          nullptr, downloader_factory);
     updater.set_crx_installer_factory_for_test(&crx_installer_factory);
 
     MockExtensionDownloaderDelegate downloader_delegate;
@@ -1974,8 +1974,8 @@ class ExtensionUpdaterTest : public testing::Test {
     TestDownloaderFactory factory(helper.url_loader_factory());
     TestCrxInstallerFactory crx_installer_factory;
     ExtensionUpdater updater(profile());
-    updater.Init(extension_prefs(), pref_service(), kUpdateFrequencySecs,
-                 nullptr, factory.GetDownloaderFactory());
+    updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
+                          nullptr, factory.GetDownloaderFactory());
     updater.set_crx_installer_factory_for_test(&crx_installer_factory);
     updater.Start();
     updater.EnsureDownloaderCreated();
@@ -2170,8 +2170,8 @@ class ExtensionUpdaterTest : public testing::Test {
       prefs->SetActiveBit(id, true);
 
     ExtensionUpdater updater(profile());
-    updater.Init(extension_prefs(), pref_service(), kUpdateFrequencySecs,
-                 nullptr, factory.GetDownloaderFactory());
+    updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
+                          nullptr, factory.GetDownloaderFactory());
     updater.set_crx_installer_factory_for_test(&crx_installer_factory);
     updater.Start();
     updater.CheckNow(ExtensionUpdater::CheckParams());
@@ -2273,8 +2273,8 @@ class ExtensionUpdaterTest : public testing::Test {
     SetExtensions(tmp, ExtensionList());
 
     ExtensionUpdater updater(profile());
-    updater.Init(extension_prefs(), pref_service(), kUpdateFrequencySecs,
-                 nullptr, factory.GetDownloaderFactory());
+    updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
+                          nullptr, factory.GetDownloaderFactory());
     updater.set_crx_installer_factory_for_test(&crx_installer_factory);
     updater.Start();
     updater.EnsureDownloaderCreated();
@@ -2532,8 +2532,8 @@ TEST_F(ExtensionUpdaterTest, TestNonAutoUpdateableLocations) {
   TestDownloaderFactory factory(helper.url_loader_factory());
   TestCrxInstallerFactory crx_installer_factory;
   ExtensionUpdater updater(profile());
-  updater.Init(extension_prefs(), pref_service(), kUpdateFrequencySecs, nullptr,
-               factory.GetDownloaderFactory());
+  updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
+                        nullptr, factory.GetDownloaderFactory());
   updater.set_crx_installer_factory_for_test(&crx_installer_factory);
   MockExtensionDownloaderDelegate downloader_delegate;
   factory.OverrideDownloaderDelegate(&downloader_delegate);
@@ -2555,8 +2555,8 @@ TEST_F(ExtensionUpdaterTest, TestUpdatingDisabledExtensions) {
   TestDownloaderFactory factory(helper.url_loader_factory());
   TestCrxInstallerFactory crx_installer_factory;
   ExtensionUpdater updater(profile());
-  updater.Init(extension_prefs(), pref_service(), kUpdateFrequencySecs, nullptr,
-               factory.GetDownloaderFactory());
+  updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
+                        nullptr, factory.GetDownloaderFactory());
   updater.set_crx_installer_factory_for_test(&crx_installer_factory);
   NiceMock<MockUpdateService> update_service;
   OverrideUpdateService(&updater, &update_service);
@@ -2590,8 +2590,8 @@ TEST_F(ExtensionUpdaterTest, TestUpdatingRemotelyDisabledExtensions) {
   TestDownloaderFactory factory(helper.url_loader_factory());
   TestCrxInstallerFactory crx_installer_factory;
   ExtensionUpdater updater(profile());
-  updater.Init(extension_prefs(), pref_service(), kUpdateFrequencySecs, nullptr,
-               factory.GetDownloaderFactory());
+  updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
+                        nullptr, factory.GetDownloaderFactory());
   updater.set_crx_installer_factory_for_test(&crx_installer_factory);
   NiceMock<MockUpdateService> update_service;
   OverrideUpdateService(&updater, &update_service);
@@ -2643,8 +2643,8 @@ TEST_F(ExtensionUpdaterTest, TestPendingInstall) {
   TestDownloaderFactory factory(helper.url_loader_factory());
   TestCrxInstallerFactory crx_installer_factory;
   ExtensionUpdater updater(profile());
-  updater.Init(extension_prefs(), pref_service(), kUpdateFrequencySecs, nullptr,
-               factory.GetDownloaderFactory());
+  updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
+                        nullptr, factory.GetDownloaderFactory());
   updater.set_crx_installer_factory_for_test(&crx_installer_factory);
   NiceMock<MockUpdateService> update_service;
   OverrideUpdateService(&updater, &update_service);
@@ -2809,8 +2809,8 @@ TEST_F(ExtensionUpdaterTest, TestCheckSoon) {
   TestDownloaderFactory factory(helper.url_loader_factory());
   TestCrxInstallerFactory crx_installer_factory;
   ExtensionUpdater updater(profile());
-  updater.Init(extension_prefs(), pref_service(), kUpdateFrequencySecs, nullptr,
-               factory.GetDownloaderFactory());
+  updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
+                        nullptr, factory.GetDownloaderFactory());
   updater.set_crx_installer_factory_for_test(&crx_installer_factory);
   EXPECT_FALSE(updater.WillCheckSoon());
   updater.Start();
@@ -2843,8 +2843,8 @@ TEST_F(ExtensionUpdaterTest, TestUninstallWhileUpdateCheck) {
   ASSERT_TRUE(registry->enabled_extensions().GetByID(id));
 
   ExtensionUpdater updater(profile());
-  updater.Init(extension_prefs(), pref_service(), kUpdateFrequencySecs, nullptr,
-               factory.GetDownloaderFactory());
+  updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
+                        nullptr, factory.GetDownloaderFactory());
   updater.set_crx_installer_factory_for_test(&crx_installer_factory);
   ExtensionUpdater::CheckParams params;
   params.ids = {id};
@@ -2923,8 +2923,8 @@ class CanUseUpdateServiceTest : public ExtensionUpdaterTest {
         downloader_test_helper_.url_loader_factory());
     crx_installer_factory_ = std::make_unique<TestCrxInstallerFactory>();
     updater_ = std::make_unique<ExtensionUpdater>(profile());
-    updater_->Init(extension_prefs(), pref_service(), kUpdateFrequencySecs,
-                   nullptr, factory_->GetDownloaderFactory());
+    updater_->InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
+                            nullptr, factory_->GetDownloaderFactory());
     updater_->set_crx_installer_factory_for_test(crx_installer_factory_.get());
 
     store_extension_ =

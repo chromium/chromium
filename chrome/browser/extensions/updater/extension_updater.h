@@ -133,12 +133,11 @@ class ExtensionUpdater : public KeyedService,
 
   // Initializes and enables the updater. Does not start it. Use Start() for
   // that.
-  // TODO(crbug.com/404943906): Rename to InitAndEnable().
-  void Init(ExtensionPrefs* extension_prefs,
-            PrefService* prefs,
-            int frequency_seconds,
-            ExtensionCache* cache,
-            const ExtensionDownloader::Factory& downloader_factory);
+  void InitAndEnable(ExtensionPrefs* extension_prefs,
+                     PrefService* prefs,
+                     base::TimeDelta frequency,
+                     ExtensionCache* cache,
+                     const ExtensionDownloader::Factory& downloader_factory);
 
   // KeyedService:
   void Shutdown() override;

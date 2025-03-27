@@ -3234,9 +3234,8 @@ TEST_F(ExtensionServiceTest, UpdateExtensionDuringShutdown) {
 
   // Simulate shutdown.
   ExtensionUpdater updater(profile());
-  updater.Init(prefs(), prefs()->pref_service(),
-               /*frequency_seconds=*/600, /*cache=*/nullptr,
-               ExtensionDownloader::Factory());
+  updater.InitAndEnable(prefs(), prefs()->pref_service(), base::Minutes(10),
+                        /*cache=*/nullptr, ExtensionDownloader::Factory());
   updater.set_browser_terminating_for_test(true);
 
   // Update should fail and extension should not be updated.
