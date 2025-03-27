@@ -81,10 +81,11 @@ bool SkiaOutputDevice::ScopedPaint::Draw(
 }
 
 bool SkiaOutputDevice::ScopedPaint::Draw(
+    skgpu::graphite::Context* graphite_context,
     std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
     base::OnceClosure on_finished) {
-  return device_->Draw(sk_surface_, std::move(graphite_recording),
-                       std::move(on_finished));
+  return device_->Draw(graphite_context, sk_surface_,
+                       std::move(graphite_recording), std::move(on_finished));
 }
 
 SkiaOutputDevice::SkiaOutputDevice(
@@ -93,8 +94,7 @@ SkiaOutputDevice::SkiaOutputDevice(
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
     ReleaseOverlaysCallback release_overlays_callback)
-    : graphite_context_(graphite_context),
-      did_swap_buffer_complete_callback_(
+    : did_swap_buffer_complete_callback_(
           std::move(did_swap_buffer_complete_callback)),
       release_overlays_callback_(std::move(release_overlays_callback)),
       memory_type_tracker_(
@@ -352,19 +352,20 @@ bool SkiaOutputDevice::Draw(SkSurface* sk_surface,
 }
 
 bool SkiaOutputDevice::Draw(
+    skgpu::graphite::Context* graphite_context,
     SkSurface* sk_surface,
     std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
     base::OnceClosure on_finished) {
   CHECK(sk_surface);
   CHECK(graphite_recording);
-  CHECK(graphite_context_);
+  CHECK(graphite_context);
   skgpu::graphite::InsertRecordingInfo info;
   info.fRecording = graphite_recording.get();
   info.fTargetSurface = sk_surface;
   if (on_finished) {
     gpu::AddCleanupTaskForGraphiteRecording(std::move(on_finished), &info);
   }
-  return graphite_context_->insertRecording(info);
+  return graphite_context->insertRecording(info);
 }
 
 }  // namespace viz
