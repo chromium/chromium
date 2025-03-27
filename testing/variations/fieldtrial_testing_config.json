@@ -11741,24 +11741,6 @@
             ]
         }
     ],
-    "IOSBestFeaturesScreenInFirstRun": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_GeneralScreenAfterDBP",
-                    "params": {
-                        "BestFeaturesScreenInFirstRunParam": "1"
-                    },
-                    "enable_features": [
-                        "BestFeaturesScreenInFirstRunExperience"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSBrowserEditMenuMetrics": [
         {
             "platforms": [
