@@ -48,7 +48,7 @@ features = ["nightly"]  # For optimized aarch64 implementation.
 [dependencies.icu_capi]
 version = "2.0.0-beta2"
 default-features = false
-features = ["calendar", "compiled_data", "experimental"]
+features = ["calendar", "compiled_data", "experimental", "casemap"]
 
 [dependencies.tinyvec]
 version = "1.6.0"
