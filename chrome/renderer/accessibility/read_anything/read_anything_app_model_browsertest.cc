@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/test/base/chrome_render_view_test.h"
@@ -46,12 +47,21 @@ TEST_F(ReadAnythingAppModelNoInitTest, IsDocs_FalseBeforeTreeInitialization) {
   EXPECT_FALSE(model().IsDocs());
 }
 
+TEST_F(ReadAnythingAppModelNoInitTest, IsReload_FalseBeforeTreeInitialization) {
+  EXPECT_FALSE(model().IsReload());
+}
+
 class ReadAnythingAppModelTest : public ChromeRenderViewTest {
  public:
   ReadAnythingAppModelTest() = default;
   ReadAnythingAppModelTest(const ReadAnythingAppModelTest&) = delete;
   ReadAnythingAppModelTest& operator=(const ReadAnythingAppModelTest&) = delete;
   ~ReadAnythingAppModelTest() override = default;
+
+  const std::string DOCS_URL =
+      "https://docs.google.com/document/d/"
+      "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
+      "edit?ouid=103677288878638916900&usp=docs_home&ths=true";
 
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
@@ -100,6 +110,10 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     model().ComputeDisplayNodeIdsForDistilledTree();
   }
 
+  void SetUrlInformationCallback() { ranSetUrlInformationCallback_ = true; }
+
+  bool RanSetUrlInformationCallback() { return ranSetUrlInformationCallback_; }
+
   std::vector<int> SendSimpleUpdateAndGetChildIds() {
     // Set the name of each node to be its id.
     ui::AXTreeUpdate initial_update;
@@ -120,6 +134,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
  private:
   ReadAnythingAppModel model_;
+  bool ranSetUrlInformationCallback_ = false;
 };
 
 TEST_F(ReadAnythingAppModelTest, FontName) {
@@ -150,6 +165,129 @@ TEST_F(ReadAnythingAppModelTest, OnSettingsRestoredFromPrefs) {
   EXPECT_EQ(links_enabled, model().links_enabled());
   EXPECT_EQ(images_enabled, model().images_enabled());
   EXPECT_EQ(color, model().color_theme());
+}
+
+TEST_F(ReadAnythingAppModelTest, SetTreeInfoUrlInformation_RunsCallback) {
+  ui::AXTreeUpdate update;
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update, tree_id);
+  ui::AXNodeData root = test::LinkNode(/* id= */ 1, DOCS_URL);
+  update.root_id = root.id;
+  update.nodes = {std::move(root)};
+  model().SetUrlInformationCallback(
+      base::BindOnce(&ReadAnythingAppModelTest::SetUrlInformationCallback,
+                     base::Unretained(this)));
+  EXPECT_FALSE(RanSetUrlInformationCallback());
+
+  AccessibilityEventReceived({std::move(update)});
+  model().SetActiveTreeId(tree_id);
+
+  EXPECT_TRUE(RanSetUrlInformationCallback());
+}
+
+TEST_F(ReadAnythingAppModelTest, SetTreeInfoUrlInformation_IsDocs) {
+  ui::AXTreeUpdate update;
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update, tree_id);
+  ui::AXNodeData root = test::LinkNode(/* id= */ 1, DOCS_URL);
+  update.root_id = root.id;
+  update.nodes = {std::move(root)};
+
+  AccessibilityEventReceived({std::move(update)});
+  model().SetActiveTreeId(tree_id);
+
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(tree_id)->is_url_information_set);
+  EXPECT_TRUE(model().IsDocs());
+}
+
+TEST_F(ReadAnythingAppModelTest, SetTreeInfoUrlInformation_IsNotDocs) {
+  ui::AXTreeUpdate update;
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update, tree_id);
+  ui::AXNodeData root = test::LinkNode(/* id= */ 1, "https://www.google.com");
+  update.root_id = root.id;
+  update.nodes = {std::move(root)};
+
+  AccessibilityEventReceived({std::move(update)});
+  model().SetActiveTreeId(tree_id);
+
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(tree_id)->is_url_information_set);
+  EXPECT_FALSE(model().IsDocs());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       SetTreeInfoUrlInformation_FirstTreeIsNotReload) {
+  ui::AXTreeUpdate update;
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update, tree_id);
+  ui::AXNodeData root = test::LinkNode(/* id= */ 1, "https://www.google.com");
+  update.root_id = root.id;
+  update.nodes = {std::move(root)};
+
+  AccessibilityEventReceived({std::move(update)});
+  model().SetActiveTreeId(tree_id);
+
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(tree_id)->is_url_information_set);
+  EXPECT_FALSE(model().IsReload());
+}
+
+TEST_F(ReadAnythingAppModelTest, SetTreeInfoUrlInformation_IsReload) {
+  ui::AXTreeUpdate update1;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update1, id_1);
+  ui::AXNodeData root1 = test::LinkNode(/* id= */ 1, "https://www.google.com");
+  update1.root_id = root1.id;
+  update1.nodes = {std::move(root1)};
+
+  ui::AXTreeUpdate update2;
+  ui::AXTreeID id_2 = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update2, id_2);
+  ui::AXNodeData root2 = test::LinkNode(/* id= */ 5, "https://www.google.com");
+  update2.root_id = root2.id;
+  update2.nodes = {std::move(root2)};
+
+  AccessibilityEventReceived({std::move(update1)});
+  model().SetActiveTreeId(id_1);
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(id_1)->is_url_information_set);
+  EXPECT_FALSE(model().IsReload());
+
+  AccessibilityEventReceived({std::move(update2)});
+  model().SetActiveTreeId(id_2);
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(id_2)->is_url_information_set);
+  EXPECT_TRUE(model().IsReload());
+}
+
+TEST_F(ReadAnythingAppModelTest, SetTreeInfoUrlInformation_IsNotReload) {
+  ui::AXTreeUpdate update1;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update1, id_1);
+  ui::AXNodeData root1 = test::LinkNode(/* id= */ 1, "https://www.google.com");
+  update1.root_id = root1.id;
+  update1.nodes = {std::move(root1)};
+
+  ui::AXTreeUpdate update2;
+  ui::AXTreeID id_2 = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update2, id_2);
+  ui::AXNodeData root2 = test::LinkNode(/* id= */ 5, "https://www.youtube.com");
+  update2.root_id = root2.id;
+  update2.nodes = {std::move(root2)};
+
+  AccessibilityEventReceived({std::move(update1)});
+  model().SetActiveTreeId(id_1);
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(id_1)->is_url_information_set);
+  EXPECT_FALSE(model().IsReload());
+
+  AccessibilityEventReceived({std::move(update2)});
+  model().SetActiveTreeId(id_2);
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(id_2)->is_url_information_set);
+  EXPECT_FALSE(model().IsReload());
 }
 
 TEST_F(ReadAnythingAppModelTest, InsertIdIfNotIgnored) {

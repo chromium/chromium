@@ -595,6 +595,13 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   model_.SetActiveTreeId(tree_id);
   model_.SetUkmSourceId(ukm_source_id);
   model_.set_is_pdf(is_pdf);
+
+  if (IsReadAloudEnabled() && read_aloud_model_.speech_playing()) {
+    model_.SetUrlInformationCallback(
+        base::BindOnce(&ReadAnythingAppController::OnUrlInformationSet,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   // Delete all pending updates on the formerly active AXTree.
   // TODO(crbug.com/40802192): If distillation is in progress, cancel the
   // distillation request.
@@ -1907,6 +1914,12 @@ void ReadAnythingAppController::LogSpeechStop(int source) {
           ToEnum<ReadAloudAppModel::ReadAloudStopSource>(source)) {
     read_aloud_model_.LogSpeechStop(maybe_enum.value());
   }
+}
+
+void ReadAnythingAppController::OnUrlInformationSet() {
+  read_aloud_model_.LogSpeechStop(
+      model_.IsReload() ? ReadAloudAppModel::ReadAloudStopSource::kReloadPage
+                        : ReadAloudAppModel::ReadAloudStopSource::kChangePage);
 }
 
 void ReadAnythingAppController::OnScrolledToBottom() {

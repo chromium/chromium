@@ -385,6 +385,8 @@ class ReadAnythingAppController
 
   void LogSpeechStop(int source);
 
+  void OnUrlInformationSet();
+
   // Stores a screenshot of the page and triggers distillation to record protos.
   // This function is not used in production and is behind the disabled
   // `DataCollectionModeForScreen2x` flag.

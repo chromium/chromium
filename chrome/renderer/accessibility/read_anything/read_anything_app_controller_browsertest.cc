@@ -22,10 +22,12 @@
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
+#include "chrome/renderer/accessibility/read_anything/read_aloud_app_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_test_utils.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
 #include "read_anything_test_utils.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/strings/grit/services_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -365,6 +367,73 @@ TEST_F(ReadAnythingAppControllerTest, OnDeviceLocked_OnlyLogsIfSpeechPlaying) {
       ReadAloudAppModel::ReadAloudStopSource::kLockChromeosDevice, 1);
 }
 #endif
+
+TEST_F(ReadAnythingAppControllerTest, OnUrlInformationSet_LogsReload) {
+  EnableReadAloud();
+  read_aloud_model().set_speech_playing(true);
+  ui::AXTreeUpdate update1;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update1, id_1);
+  ui::AXNodeData root1 = test::LinkNode(/* id= */ 1, "https://www.google.com");
+  update1.root_id = root1.id;
+  update1.nodes = {std::move(root1)};
+
+  ui::AXTreeUpdate update2;
+  ui::AXTreeID id_2 = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update2, id_2);
+  ui::AXNodeData root2 = test::LinkNode(/* id= */ 5, "https://www.google.com");
+  update2.root_id = root2.id;
+  update2.nodes = {std::move(root2)};
+  base::HistogramTester histogram_tester;
+
+  AccessibilityEventReceived({std::move(update1)});
+  controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(id_1)->is_url_information_set);
+  histogram_tester.ExpectBucketCount(
+      ReadAloudAppModel::kSpeechStopSourceHistogramName,
+      ReadAloudAppModel::ReadAloudStopSource::kChangePage, 1);
+
+  AccessibilityEventReceived({std::move(update2)});
+  controller().OnActiveAXTreeIDChanged(id_2, ukm::kInvalidSourceId, false);
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(id_2)->is_url_information_set);
+  histogram_tester.ExpectBucketCount(
+      ReadAloudAppModel::kSpeechStopSourceHistogramName,
+      ReadAloudAppModel::ReadAloudStopSource::kReloadPage, 1);
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnUrlInformationSet_LogsNewPage) {
+  EnableReadAloud();
+  read_aloud_model().set_speech_playing(true);
+  ui::AXTreeUpdate update1;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update1, id_1);
+  ui::AXNodeData root1 = test::LinkNode(/* id= */ 1, "https://www.google.com");
+  update1.root_id = root1.id;
+  update1.nodes = {std::move(root1)};
+
+  ui::AXTreeUpdate update2;
+  ui::AXTreeID id_2 = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update2, id_2);
+  ui::AXNodeData root2 = test::LinkNode(/* id= */ 5, "https://waymo.com");
+  update2.root_id = root2.id;
+  update2.nodes = {std::move(root2)};
+  base::HistogramTester histogram_tester;
+
+  AccessibilityEventReceived({std::move(update1)});
+  controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(id_1)->is_url_information_set);
+
+  AccessibilityEventReceived({std::move(update2)});
+  controller().OnActiveAXTreeIDChanged(id_2, ukm::kInvalidSourceId, false);
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(id_2)->is_url_information_set);
+  histogram_tester.ExpectBucketCount(
+      ReadAloudAppModel::kSpeechStopSourceHistogramName,
+      ReadAloudAppModel::ReadAloudStopSource::kChangePage, 2);
+}
 
 TEST_F(ReadAnythingAppControllerTest, OnLetterSpacingChange_ValidChange) {
   static constexpr auto kLetterSpacing =

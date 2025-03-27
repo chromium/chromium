@@ -20,6 +20,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 
@@ -78,6 +79,10 @@ class ReadAnythingAppModel {
     // content from the annotated canvas elements, not the main tree. Only root
     // AXTrees have this set.
     bool is_docs = false;
+
+    // Whether the latest tree is a reload of the previous tree. If false, the
+    // latest tree is a new page.
+    bool is_reload = false;
 
     // TODO(41496290): Include any information that is associated with a
     // particular AXTree, namely is_pdf. Right now, this is set every time the
@@ -225,8 +230,10 @@ class ReadAnythingAppModel {
 
   int GetNumSelections() const;
   void SetNumSelections(int num_selections);
-
+  void SetTreeInfoUrlInformation(AXTreeInfo& tree_info);
+  void SetUrlInformationCallback(base::OnceCallback<void()> callback);
   bool IsDocs() const;
+  bool IsReload() const;
 
   ui::AXNode* GetAXNode(const ui::AXNodeID& ax_node_id) const;
 
@@ -355,6 +362,10 @@ class ReadAnythingAppModel {
   // always be the AXTreeID of the main web contents (not the PDF iframe or its
   // child).
   ui::AXTreeID active_tree_id_ = ui::AXTreeIDUnknown();
+
+  // For determining whether the latest tree is a reload or new page.
+  std::string previous_tree_url_;
+  base::OnceCallback<void()> set_url_information_callback_;
 
   // PDFs are handled differently than regular webpages. That is because they
   // are stored in a different web contents and the actual PDF text is inside an
