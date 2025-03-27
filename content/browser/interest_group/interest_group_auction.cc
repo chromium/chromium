@@ -27,7 +27,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -3588,8 +3588,8 @@ InterestGroupAuction::CreateReporter(
   if (winner->bid->bid_ad->ad_render_id) {
     ad_metadata.Set("adRenderId", winner->bid->bid_ad->ad_render_id.value());
   }
-  JSONStringValueSerializer serializer(&winning_bid_info.ad_metadata);
-  serializer.Serialize(base::Value(std::move(ad_metadata)));
+  winning_bid_info.ad_metadata =
+      base::WriteJson(ad_metadata).value_or(std::string());
 
   InterestGroupAuctionReporter::SellerWinningBidInfo
       top_level_seller_winning_bid_info;

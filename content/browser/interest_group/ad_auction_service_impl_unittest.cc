@@ -24,7 +24,7 @@
 #include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -166,10 +166,7 @@ std::string JSONSerializedKeys() {
   base::Value::Dict outer;
   outer.Set("keys", std::move(keys));
 
-  std::string json_output;
-  JSONStringValueSerializer serializer(&json_output);
-  serializer.Serialize(outer);
-  return json_output;
+  return base::WriteJson(outer).value_or(std::string());
 }
 
 // Returns a basic bidder script that sends reports to
