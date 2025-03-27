@@ -2570,6 +2570,9 @@ extern const char kAndroidThemeModuleDescription[];
 extern const char kAppSpecificHistoryName[];
 extern const char kAppSpecificHistoryDescription[];
 
+extern const char kBackgroundNotPerceptibleBindingName[];
+extern const char kBackgroundNotPerceptibleBindingDescription[];
+
 extern const char kBoardingPassDetectorName[];
 extern const char kBoardingPassDetectorDescription[];
 

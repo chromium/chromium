@@ -895,6 +895,15 @@
     "expiry_milestone": 135
   },
   {
+    "name": "background-not-perceptible-binding",
+    "owners": [
+      "kawasin@google.com",
+      "davidriley@google.com",
+      "baseos-perf@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "background-resource-fetch",
     "owners": ["horo@chromium.org"],
     "expiry_milestone": 133

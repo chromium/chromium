@@ -16,6 +16,7 @@ namespace {
 // Array of features exposed through the Java BaseFeatureMap API. Entries in
 // this array may either refer to features defined in //base features.
 const base::Feature* const kFeaturesExposedToJava[] = {
+    &features::kBackgroundNotPerceptibleBinding,
     &features::kPostPowerMonitorBroadcastReceiverInitToBackground,
     &features::kPostGetMyMemoryStateToBackground,
 };
