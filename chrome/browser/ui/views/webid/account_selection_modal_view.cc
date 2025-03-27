@@ -379,6 +379,7 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateAccountRows(
 void AccountSelectionModalView::ShowMultiAccountPicker(
     const std::vector<IdentityRequestAccountPtr>& accounts,
     const std::vector<IdentityProviderDataPtr>& idp_list,
+    const gfx::Image& rp_icon,
     bool show_back_button) {
   DCHECK(!show_back_button);
   CHECK_EQ(idp_list.size(), 1u);

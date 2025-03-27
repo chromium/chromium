@@ -51,8 +51,9 @@ class FedCmCUJTest : public InteractiveBrowserTest {
           /*labels=*/std::vector<std::string>())};
       accounts_[0]->identity_provider = idps_[0];
       account_selection_view_->Show(
-          "rp-example.com", idps_, accounts_, Account::SignInMode::kExplicit,
-          mode, /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
+          content::RelyingPartyData("rp-example.com"), idps_, accounts_,
+          Account::SignInMode::kExplicit, mode,
+          /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
     });
   }
 

@@ -150,9 +150,10 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     if (idp_list.empty()) {
       idp_list = {idp_data_};
     }
-    account_selection_view_->Show(kTopFrameEtldPlusOne, idp_list, accounts_,
-                                  Account::SignInMode::kExplicit,
-                                  blink::mojom::RpMode::kPassive, new_accounts);
+    account_selection_view_->Show(
+        content::RelyingPartyData(kTopFrameEtldPlusOne), idp_list, accounts_,
+        Account::SignInMode::kExplicit, blink::mojom::RpMode::kPassive,
+        new_accounts);
     dialog_ = static_cast<AccountSelectionBubbleView*>(
         account_selection_view_->account_selection_view());
   }
@@ -176,6 +177,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
 
     CreateAccountSelectionBubble();
     dialog_->ShowMultiAccountPicker(account_list, {idp_data_},
+                                    /*rp_icon=*/gfx::Image(),
                                     /*show_back_button=*/false);
   }
 
@@ -1262,6 +1264,7 @@ TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccount) {
   // The backend will invoke ShowMultiAccountPicker with a single account since
   // there are filtered out accounts.
   dialog_->ShowMultiAccountPicker({account}, {idp_data_},
+                                  /*rp_icon=*/gfx::Image(),
                                   /*show_back_button=*/false);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
@@ -1296,6 +1299,7 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleDisabledAccounts) {
   }
   CreateAccountSelectionBubble();
   dialog_->ShowMultiAccountPicker(accounts_list, {idp_data_},
+                                  /*rp_icon=*/gfx::Image(),
                                   /*show_back_button=*/false);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
@@ -1335,6 +1339,7 @@ TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccountAndOneEnabledAccount) {
 
   CreateAccountSelectionBubble();
   dialog_->ShowMultiAccountPicker(accounts_list, {idp_data_},
+                                  /*rp_icon=*/gfx::Image(),
                                   /*show_back_button=*/false);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =

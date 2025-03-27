@@ -1702,6 +1702,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     }
   }
   idp_accounts_.clear();
+
   std::stable_sort(
       accounts_.begin(), accounts_.end(),
       [&](const auto& account1, const auto& account2) {
@@ -1905,7 +1906,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // so invocations after this method should assume that the members may have
   // been cleaned up.
   if (!request_dialog_controller_->ShowAccountsDialog(
-          GetTopFrameOriginForDisplay(GetEmbeddingOrigin()),
+          std::move(content::RelyingPartyData(
+              GetTopFrameOriginForDisplay(GetEmbeddingOrigin()))),
           idp_data_for_display_, accounts_,
           identity_selection_type_ == kExplicit ? SignInMode::kExplicit
                                                 : SignInMode::kAuto,

@@ -45,6 +45,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list,
+      const gfx::Image& rp_icon,
       bool show_back_button) override;
   void ShowVerifyingSheet(const IdentityRequestAccountPtr& account,
                           const std::u16string& title) override;

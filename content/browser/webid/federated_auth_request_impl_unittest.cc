@@ -618,7 +618,7 @@ class TestDialogController
   }
 
   bool ShowAccountsDialog(
-      const std::string& rp_for_display,
+      content::RelyingPartyData rp_data,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       IdentityRequestAccount::SignInMode sign_in_mode,
@@ -3554,7 +3554,7 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
       DisableApiWhenDialogShownDialogController&) = delete;
 
   bool ShowAccountsDialog(
-      const std::string& rp_for_display,
+      content::RelyingPartyData rp_data,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       SignInMode sign_in_mode,
@@ -3571,8 +3571,8 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
 
     // Call parent class method in order to store callback parameters.
     return TestDialogController::ShowAccountsDialog(
-        rp_for_display, idp_list, accounts, sign_in_mode, rp_mode, new_accounts,
-        std::move(on_selected), std::move(on_add_account),
+        std::move(rp_data), idp_list, accounts, sign_in_mode, rp_mode,
+        new_accounts, std::move(on_selected), std::move(on_add_account),
         std::move(dismiss_callback), std::move(accounts_displayed_callback));
   }
 
@@ -7729,7 +7729,7 @@ class TestDialogControllerWithImmediateDismiss : public TestDialogController {
       TestDialogControllerWithImmediateDismiss&) = delete;
 
   bool ShowAccountsDialog(
-      const std::string& rp_for_display,
+      content::RelyingPartyData rp_data,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       IdentityRequestAccount::SignInMode sign_in_mode,

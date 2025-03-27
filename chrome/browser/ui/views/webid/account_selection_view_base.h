@@ -160,12 +160,12 @@ class AccountSelectionViewBase {
   virtual ~AccountSelectionViewBase();
 
   // Updates the FedCM dialog to show the "account picker" sheet.
-  // `is_choose_an_account` is true if the dialog must change its title to
-  // 'Choose an account'. This is currently only used on widget mode, when
-  // clicking on the 'Choose an account' button.
+  // `rp_icon` is the RP icon to be displayed on the header of the dialog when
+  // there are multiple IdPs to select from.
   virtual void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list,
+      const gfx::Image& rp_icon,
       bool show_back_button) = 0;
 
   // Updates the FedCM dialog to show the "verifying" sheet.

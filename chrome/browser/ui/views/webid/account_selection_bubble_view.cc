@@ -213,6 +213,7 @@ AccountSelectionBubbleView::~AccountSelectionBubbleView() = default;
 void AccountSelectionBubbleView::ShowMultiAccountPicker(
     const std::vector<IdentityRequestAccountPtr>& accounts,
     const std::vector<IdentityProviderDataPtr>& idp_list,
+    const gfx::Image& rp_icon,
     bool show_back_button) {
   // If there are multiple IDPs, then the content::IdentityProviderMetadata
   // passed will be unused since there will be no `header_icon_view_`.
@@ -225,6 +226,7 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
                    : std::make_optional<std::u16string>(
                          base::UTF8ToUTF16(idp_list[0]->idp_for_display)),
                rp_context_);
+  // TODO(crbug.com/392140317): use the RP icon.
   UpdateHeader(idp_list[0]->idp_metadata.brand_decoded_icon, title,
                show_back_button);
 

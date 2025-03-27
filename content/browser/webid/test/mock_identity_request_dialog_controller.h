@@ -29,7 +29,7 @@ class MockIdentityRequestDialogController
 
   MOCK_METHOD(bool,
               ShowAccountsDialog,
-              (const std::string&,
+              (content::RelyingPartyData,
                const std::vector<IdentityProviderDataPtr>&,
                const std::vector<IdentityRequestAccountPtr>&,
                IdentityRequestAccount::SignInMode,

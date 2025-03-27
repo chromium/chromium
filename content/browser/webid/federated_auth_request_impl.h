@@ -351,6 +351,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::unique_ptr<IdentityProviderInfo> idp_info,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       IdpNetworkRequestManager::ClientMetadata&& client_metadata);
+  // Fetches the given `url` and stores the result in `downloaded_images_`. Runs
+  // the `callback` exactly once regardless of whether the GURL is valid or the
+  // fetch result.
+  void FetchImage(const GURL& url, base::OnceClosure callback);
   void OnImageReceived(base::OnceClosure callback,
                        GURL url,
                        const gfx::Image& image);
@@ -358,10 +362,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::unique_ptr<IdentityProviderInfo> idp_info,
       std::vector<IdentityRequestAccountPtr>&& accounts,
       const IdpNetworkRequestManager::ClientMetadata& client_metadata);
-  // Fetches the given `url` and stores the result in `downloaded_images_`. Runs
-  // the `callback` exactly once regardless of whether the GURL is valid or the
-  // fetch result.
-  void FetchImage(const GURL& url, base::OnceClosure callback);
+
   void OnAccountSelected(const GURL& idp_config_url,
                          const std::string& account_id,
                          bool is_sign_in);
