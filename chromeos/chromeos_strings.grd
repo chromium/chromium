@@ -3613,7 +3613,7 @@
           This language isn't supported at this time
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_ERROR_BLOCKED_OUTPUTS" desc="Error message displayed when the search results were blocked.">
-          Can't create images of this. Try another prompt.
+            Can’t create images of this right now. Try rephrasing your description. Keep in mind you can't create images of people, harmful, or explicit content. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="https://policies.google.com/terms/generative-ai/use-policy"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_PREVIOUS_PROMPTS" desc="Section heading that shows previously-generated wallpapers.">
           Previous prompts
