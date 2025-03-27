@@ -42,15 +42,10 @@ namespace blink {
 namespace {
 
 RTCIceCandidate* ConvertToRtcIceCandidate(const cricket::Candidate& candidate) {
-  std::string url = candidate.url();
-  std::optional<String> optional_url;
-  if (!url.empty()) {
-    optional_url = String(url);
-  }
   // The "" mid and sdpMLineIndex 0 are wrong, see https://crbug.com/1385446
   return RTCIceCandidate::Create(MakeGarbageCollected<RTCIceCandidatePlatform>(
       String::FromUTF8(webrtc::SdpSerializeCandidate(candidate)), "", 0,
-      String(candidate.username()), optional_url));
+      String(candidate.username()), String(candidate.url())));
 }
 
 class DtlsIceTransportAdapterCrossThreadFactory
