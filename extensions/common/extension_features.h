@@ -191,6 +191,10 @@ BASE_DECLARE_FEATURE(kStructuredCloningForMV3Messaging);
 // https://chromium.googlesource.com/chromium/src/+/master/docs/telemetry_extension/README.md.
 BASE_DECLARE_FEATURE(kTelemetryExtensionPendingApprovalApi);
 
+// Used to control whether downloads initiated by `WebstoreInstaller` are marked
+// as having a corresponding user gesture or not.
+BASE_DECLARE_FEATURE(kWebstoreInstallerUserGestureKillSwitch);
+
 #if BUILDFLAG(IS_WIN)
 // TODO(https://crbug.com/400119351): Remove this feature flag in M138.
 BASE_DECLARE_FEATURE(kWinRejectDotSpaceSuffixFilePaths);
