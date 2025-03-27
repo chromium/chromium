@@ -33,7 +33,7 @@ export class AppElement extends AppElementBase {
     };
   }
 
-  private anyButtonClicked_: boolean = false;
+  private accessor anyButtonClicked_: boolean = false;
   private browserProxy_: DefaultBrowserBrowserProxy =
       DefaultBrowserBrowserProxyImpl.getInstance();
 
