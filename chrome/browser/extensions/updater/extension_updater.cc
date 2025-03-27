@@ -179,6 +179,7 @@ void ExtensionUpdater::Init(
     int frequency_seconds,
     ExtensionCache* cache,
     const ExtensionDownloader::Factory& downloader_factory) {
+  enabled_ = true;
   downloader_factory_ = downloader_factory;
   frequency_ = base::Seconds(frequency_seconds);
   extension_prefs_ = extension_prefs;
@@ -214,6 +215,7 @@ void ExtensionUpdater::EnsureDownloaderCreated() {
 }
 
 void ExtensionUpdater::Start() {
+  CHECK(enabled_);
   DCHECK(!alive_);
   // If these are NULL, then that means we've been called after Stop()
   // has been called.
@@ -412,6 +414,7 @@ bool ExtensionUpdater::AddExtensionToDownloader(
 }
 
 void ExtensionUpdater::CheckNow(CheckParams params) {
+  CHECK(enabled_);
   if (params.ids.empty()) {
     // Checking all extensions. Cancel pending DoCheckSoon() call if there's
     // one, as it would be redundant.

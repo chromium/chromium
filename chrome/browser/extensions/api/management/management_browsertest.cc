@@ -54,6 +54,7 @@ using content::BrowserThread;
 using extensions::Extension;
 using extensions::ExtensionRegistry;
 using extensions::ExtensionService;
+using extensions::ExtensionUpdater;
 using extensions::Manifest;
 using extensions::mojom::ManifestLocation;
 using policy::PolicyMap;
@@ -358,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
 
   // Install version 1 of the extension.
   ExtensionTestMessageListener listener1("v1 installed");
-  ExtensionService* service = extension_service();
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
   ExtensionRegistry* registry = extension_registry();
   const size_t size_before = registry->enabled_extensions().size();
   EXPECT_TRUE(registry->disabled_extensions().empty());
@@ -374,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
 
   {
     extensions::TestExtensionRegistryObserver install_observer(registry);
-    extensions::ExtensionUpdater::CheckParams params1;
+    ExtensionUpdater::CheckParams params1;
     bool install_finished = false;
     std::set<std::string> updates;
     params1.update_found_callback = base::BindLambdaForTesting(
@@ -383,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
         });
     params1.callback = base::BindLambdaForTesting(
         [&install_finished]() { install_finished = true; });
-    service->updater()->CheckNow(std::move(params1));
+    updater->CheckNow(std::move(params1));
     install_observer.WaitForExtensionWillBeInstalled();
     EXPECT_TRUE(listener2.WaitUntilSatisfied());
     ASSERT_EQ(size_before + 1, registry->enabled_extensions().size());
@@ -405,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
       temp_dir.GetPath(), "v3.crx", "manifest_v3.xml.template"));
 
   {
-    extensions::ExtensionUpdater::CheckParams params2;
+    ExtensionUpdater::CheckParams params2;
     base::RunLoop run_loop;
     std::set<std::string> updates;
     params2.update_found_callback = base::BindLambdaForTesting(
@@ -413,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
           updates.insert(id);
         });
     params2.callback = run_loop.QuitClosure();
-    service->updater()->CheckNow(std::move(params2));
+    updater->CheckNow(std::move(params2));
     run_loop.Run();
     ASSERT_TRUE(base::Contains(updates, "ogjcoiohnmldgjemafoockdghcjciccf"));
   }
@@ -458,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
 
   // Install version 1 of the extension.
   ExtensionTestMessageListener listener1("v1 installed");
-  ExtensionService* service = extension_service();
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
   ExtensionRegistry* registry = extension_registry();
   const size_t enabled_size_before = registry->enabled_extensions().size();
   const size_t disabled_size_before = registry->disabled_extensions().size();
@@ -477,14 +478,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   // is still disabled.
   bool install_finished = false;
   std::set<std::string> updates;
-  extensions::ExtensionUpdater::CheckParams params;
+  ExtensionUpdater::CheckParams params;
   params.update_found_callback = base::BindLambdaForTesting(
       [&updates](const std::string& id, const base::Version&) {
         updates.insert(id);
       });
   params.callback = base::BindLambdaForTesting(
       [&install_finished]() { install_finished = true; });
-  service->updater()->CheckNow(std::move(params));
+  updater->CheckNow(std::move(params));
   install_observer.WaitForExtensionWillBeInstalled();
   ASSERT_EQ(disabled_size_before + 1, registry->disabled_extensions().size());
   ASSERT_EQ(enabled_size_before, registry->enabled_extensions().size());
@@ -505,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalUrlUpdate) {
-  ExtensionService* service = extension_service();
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
   const char kExtensionId[] = "ogjcoiohnmldgjemafoockdghcjciccf";
 
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -540,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalUrlUpdate) {
 
   extensions::TestExtensionRegistryObserver install_observer(registry);
   // Run autoupdate and make sure version 2 of the extension was installed.
-  service->updater()->CheckNow(extensions::ExtensionUpdater::CheckParams());
+  updater->CheckNow(ExtensionUpdater::CheckParams());
   install_observer.WaitForExtensionWillBeInstalled();
   ASSERT_EQ(size_before + 1, registry->enabled_extensions().size());
   const Extension* extension =

@@ -181,7 +181,7 @@ class PreinstalledWebAppMigrationBrowserTest
   void SetUpExtensionTestExternalProvider() {
     external_provider_manager()->ClearProvidersForTesting();
 
-    extension_service().updater()->SetExtensionCacheForTesting(
+    extensions::ExtensionUpdater::Get(profile())->SetExtensionCacheForTesting(
         test_extension_cache_.get());
 
     std::string external_extension_config = base::ReplaceStringPlaceholders(

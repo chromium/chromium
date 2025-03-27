@@ -208,6 +208,7 @@ ExtensionService::ExtensionService(
       pending_extension_manager_(PendingExtensionManager::Get(profile)),
       external_provider_manager_(ExternalProviderManager::Get(profile)),
       ready_(ready),
+      updater_(ExtensionUpdater::Get(profile)),
       component_loader_(std::make_unique<ComponentLoader>(system_, profile_)),
       error_controller_(error_controller),
       external_install_manager_(ExternalInstallManager::Get(profile)),
@@ -252,9 +253,8 @@ ExtensionService::ExtensionService(
 
   ExtensionManagementFactory::GetForBrowserContext(profile_)->AddObserver(this);
 
-  // Set up the ExtensionUpdater.
   if (autoupdate_enabled) {
-    updater_ = ExtensionUpdater::Get(profile);
+    // Initialize and enable the ExtensionUpdater.
     updater_->Init(
         extension_prefs, profile->GetPrefs(), kDefaultUpdateFrequencySeconds,
         ExtensionsBrowserClient::Get()->GetExtensionCache(),
@@ -766,7 +766,7 @@ void ExtensionService::CheckManagementPolicy() {
     EnableExtension(id);
   }
 
-  if (updater_) {
+  if (updater_ && updater_->enabled()) {
     // Find all extensions disabled due to minimum version requirement from
     // policy (including the ones that got disabled just now), and check
     // for update.
@@ -805,7 +805,7 @@ void ExtensionService::CheckManagementPolicy() {
 
 void ExtensionService::CheckForUpdatesSoon() {
   // This can legitimately happen in unit tests.
-  if (!updater_) {
+  if (!updater_ || !updater_->enabled()) {
     return;
   }
 
@@ -1243,7 +1243,7 @@ void ExtensionService::UnloadAllExtensionsInternal() {
 }
 
 void ExtensionService::OnInstalledExtensionsLoaded() {
-  if (updater_) {
+  if (updater_ && updater_->enabled()) {
     updater_->Start();
   }
 

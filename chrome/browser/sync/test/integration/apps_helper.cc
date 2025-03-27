@@ -14,7 +14,6 @@
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_app_helper.h"
@@ -33,7 +32,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/manifest.h"
 
 using sync_datatype_helper::test;
@@ -262,13 +260,11 @@ AppsStatusChangeChecker::AppsStatusChangeChecker()
     InstallSyncedApps(profile);
 
     // Fake the installation of synced apps from the web store.
-    CHECK(extensions::ExtensionSystem::Get(profile)
-              ->extension_service()
-              ->updater());
-    extensions::ExtensionSystem::Get(profile)
-        ->extension_service()
-        ->updater()
-        ->SetUpdatingStartedCallbackForTesting(base::BindLambdaForTesting(
+    auto* updater = extensions::ExtensionUpdater::Get(profile);
+    CHECK(updater);
+    CHECK(updater->enabled());
+    updater->SetUpdatingStartedCallbackForTesting(
+        base::BindLambdaForTesting(
             [self = weak_ptr_factory_.GetWeakPtr(), profile]() {
               base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE,

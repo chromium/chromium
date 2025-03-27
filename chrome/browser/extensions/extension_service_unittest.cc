@@ -8544,10 +8544,10 @@ TEST_P(ExternalExtensionPriorityTest, PolicyForegroundFetch) {
 
   ExtensionDownloaderTestHelper helper;
   NullExtensionCache extension_cache;
-  service()->updater()->SetExtensionDownloaderForTesting(
-      helper.CreateDownloader());
-  service()->updater()->SetExtensionCacheForTesting(&extension_cache);
-  service()->updater()->Start();
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
+  updater->SetExtensionDownloaderForTesting(helper.CreateDownloader());
+  updater->SetExtensionCacheForTesting(&extension_cache);
+  updater->Start();
 
   GURL update_url(extension_urls::kChromeWebstoreUpdateURL);
   external_provider_manager()->OnExternalExtensionUpdateUrlFound(
@@ -8575,7 +8575,7 @@ TEST_P(ExternalExtensionPriorityTest, PolicyForegroundFetch) {
                                  "X-Goog-Update-Interactivity"));
 
   // Destroy updater's downloader as it uses |helper|.
-  service()->updater()->SetExtensionDownloaderForTesting(nullptr);
+  updater->SetExtensionDownloaderForTesting(nullptr);
 }
 
 INSTANTIATE_TEST_SUITE_P(
