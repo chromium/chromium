@@ -850,6 +850,16 @@
         "version": "1.3.0-SNAPSHOT"
     },
     {
+        "name": "savedstate-compose",
+        "group": "androidx.savedstate",
+        "version": "1.3.0-SNAPSHOT"
+    },
+    {
+        "name": "savedstate-compose-android",
+        "group": "androidx.savedstate",
+        "version": "1.3.0-SNAPSHOT"
+    },
+    {
         "name": "savedstate-ktx",
         "group": "androidx.savedstate",
         "version": "1.3.0-SNAPSHOT"
