@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Event Timing: Move pointer within shadow DOM should create event-timing entry with null target.
+  assert_equals: expected null but got Element node <div id="host">\n</div>
+Harness: the test ran to completion.
+
