@@ -407,7 +407,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         assertTrue(!!countrySelect);
         if (params.add) {
           assertEquals('', countrySelect.value);
-          assertTrue(countrySelect.textContent!.includes('No option selected'));
+          assertTrue(countrySelect.textContent!.includes('Select'));
         } else {
           assertEquals(oldCountryCode, countrySelect.value);
           assertTrue(countrySelect.textContent!.includes('Germany'));
@@ -502,9 +502,9 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
           assertEquals('', monthSelect.value);
           assertEquals('', daySelect.value);
           assertEquals('', yearSelect.value);
-          assertTrue(monthSelect.textContent!.includes('No option selected'));
-          assertTrue(daySelect.textContent!.includes('No option selected'));
-          assertTrue(yearSelect.textContent!.includes('No option selected'));
+          assertTrue(monthSelect.textContent!.includes('Select'));
+          assertTrue(daySelect.textContent!.includes('Select'));
+          assertTrue(yearSelect.textContent!.includes('Select'));
         } else {
           assertEquals(oldDate.month, monthSelect.value);
           assertEquals(oldDate.day, daySelect.value);

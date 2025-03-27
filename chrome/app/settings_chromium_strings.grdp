@@ -85,10 +85,10 @@
   </message>
 
   <!-- Autofill with AI Page-->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION" desc="The description of the autofill AI button on chrome://settings/ai.">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION" desc="The description of the autofill AI button on chrome://settings/autofill.">
     Chromium understands forms better and can autofill them faster for you
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using Autofill with AI, this feature can offer to save the user's submitted info. When Chrome saves that info, we save the submitted values and consider the page context.">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using Autofill with AI, this feature can offer to save the user's submitted info. When Chromium saves that info, we save the submitted values and consider the page context.">
     Chromium understands forms better and can autofill them faster for you
   </message>
   <!-- TODO(crbug.com/395807244): Make string translateable. -->
