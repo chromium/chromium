@@ -3011,6 +3011,7 @@ EXPORTS
     ?DefaultCapacity@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@container_internal@absl@@UStringHash@23@UStringEq@23@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@container_internal@absl@@CA_KXZ
     ?DefaultKind@FlagImpl@flags_internal@absl@@AEBA?AW4FlagDefaultKind@23@XZ
     ?DefaultStackUnwinder@absl@@YAHPEAPEAXPEAHHHPEBX1@Z
+    ?DefaultStackUnwinder@internal_stacktrace@absl@@YAHPEAPEAXPEA_KPEAHHHPEBX2@Z
     ?DefaultValue@FlagImpl@flags_internal@absl@@EEBA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@XZ
     ?Delete@CordRepBtree@cord_internal@absl@@SAXPEAV123@@Z
     ?Delete@CordRepExternal@cord_internal@absl@@SAXPEAUCordRep@23@@Z
@@ -3363,8 +3364,8 @@ EXPORTS
     ?GetSizeAndIsAllocated@?$Storage@VFormatArgImpl@str_format_internal@absl@@$03V?$allocator@VFormatArgImpl@str_format_internal@absl@@@__Cr@std@@@inlined_vector_internal@absl@@QEBAAEB_KXZ
     ?GetSkipCount@ExponentialBiased@profiling_internal@absl@@QEAA_J_J@Z
     ?GetStack@CordzInfo@cord_internal@absl@@QEBA?AV?$Span@QEAX@3@XZ
-    ?GetStackFrames@absl@@YAHPEAPEAXPEAHHH@Z
-    ?GetStackFramesWithContext@absl@@YAHPEAPEAXPEAHHHPEBX1@Z
+    ?GetStackFrames@internal_stacktrace@absl@@YAHPEAPEAXPEA_KPEAHHH@Z
+    ?GetStackFramesWithContext@internal_stacktrace@absl@@YAHPEAPEAXPEA_KPEAHHHPEBX2@Z
     ?GetStackTrace@GraphCycles@synchronization_internal@absl@@QEAAHUGraphId@23@PEAPEAPEAX@Z
     ?GetStackTrace@absl@@YAHPEAPEAXHH@Z
     ?GetStackTraceWithContext@absl@@YAHPEAPEAXHHPEBXPEAH@Z
@@ -3856,7 +3857,7 @@ EXPORTS
     ?Restore@FlagState@flags_internal@absl@@EEBAXXZ
     ?RestoreState@FlagImpl@flags_internal@absl@@AEAA_NAEBVFlagState@23@@Z
     ?RestoreToRegistry@FlagSaverImpl@flags_internal@absl@@QEAAXXZ
-    ?Retire@flags_internal@absl@@YAXPEBDPEBXPEAD@Z
+    ?Retire@flags_internal@absl@@YAXPEBDPEBXPEAE@Z
     ?ReverseConsume@cord_internal@absl@@YAXPEAUCordRep@12@V?$FunctionRef@$$A6AXPEAUCordRep@cord_internal@absl@@_K1@Z@2@@Z
     ?RoundUp@cord_internal@absl@@YA_K_K0@Z
     ?RoundUpForTag@cord_internal@absl@@YA_K_K@Z

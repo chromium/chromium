@@ -97,7 +97,7 @@ void CalculateSHA256OfKey(const std::string& key,
   std::unique_ptr<crypto::SecureHash> hash(
       crypto::SecureHash::Create(crypto::SecureHash::SHA256));
   hash->Update(key.data(), key.size());
-  hash->Finish(out_hash_value, sizeof(*out_hash_value));
+  hash->Finish(*out_hash_value);
 }
 
 SimpleFileTracker::SubFile SubFileForFileIndex(int file_index) {
@@ -1102,7 +1102,7 @@ void SimpleSynchronousEntry::Close(
       net::SHA256HashValue hash_value;
       CalculateSHA256OfKey(key, &hash_value);
       if (!file->WriteAndCheck(stream_0_offset + entry_stat.data_size(0),
-                               base::byte_span_from_ref(hash_value))) {
+                               hash_value)) {
         RecordCloseResult(cache_type_, CLOSE_RESULT_WRITE_FAILURE);
         DVLOG(1) << "Could not write stream 0 data.";
         DoomInternal(file_operations.get());

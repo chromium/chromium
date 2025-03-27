@@ -90,8 +90,8 @@ bool ShouldConsiderForNtpMostVisited(
 }
 
 // Returns the page associated with `opener_web_contents`.
-std::optional<history::Opener> GetHistoryOpenerFromOpenerWebContents(
-    base::WeakPtr<content::WebContents> opener_web_contents) {
+std::optional<history::Opener> GetHistoryOpenerFromWebContents(
+    content::WebContents* opener_web_contents) {
   if (!opener_web_contents)
     return std::nullopt;
 
@@ -105,10 +105,18 @@ std::optional<history::Opener> GetHistoryOpenerFromOpenerWebContents(
   if (!last_committed_entry)
     return std::nullopt;
 
-  return history::Opener(
-      history::ContextIDForWebContents(opener_web_contents.get()),
-      last_committed_entry->GetUniqueID(),
-      opener_web_contents->GetLastCommittedURL());
+  return history::Opener(history::ContextIDForWebContents(opener_web_contents),
+                         last_committed_entry->GetUniqueID(),
+                         opener_web_contents->GetLastCommittedURL());
+}
+
+// A helper function for when the `WebContents` is a weak pointer.
+std::optional<history::Opener> GetHistoryOpenerFromWeakWebContents(
+    base::WeakPtr<content::WebContents> weak_web_contents) {
+  if (!weak_web_contents) {
+    return std::nullopt;
+  }
+  return GetHistoryOpenerFromWebContents(weak_web_contents.get());
 }
 
 history::VisitContextAnnotations::BrowserType GetBrowserType(
@@ -312,7 +320,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   // WebContents.
   const std::optional<history::Opener> opener =
       navigation_handle->GetPreviousPrimaryMainFrameURL().is_empty()
-          ? GetHistoryOpenerFromOpenerWebContents(opener_web_contents_)
+          ? GetHistoryOpenerFromWeakWebContents(opener_web_contents_)
           // Or use the opener for same-document navigations to connect these
           // visits.
           : (navigation_handle->IsSameDocument()
@@ -322,6 +330,38 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
                        navigation_handle->GetPreviousPrimaryMainFrameURL()))
                  : std::nullopt);
 
+  // Top-level site is used to calculate the triple-key for partitioned :visited
+  // links. When a navigation occurs, the top-level url is the previous primary
+  // main frame. However, sometimes this information is not available to us; for
+  // example, a navigation may open in a new tab or have a severed opener
+  // relationship. For `LINK` type navigations, this may be a context click to
+  // open a link in a new tab or a link with target="_blank". Since we want to
+  // construct an accurate triple key for all links, we populate their top-level
+  // url with either opener URL or live original opener chain URL, whichever
+  // is available.
+  std::optional<GURL> top_level_url =
+      navigation_handle->GetPreviousPrimaryMainFrameURL();
+  // If there is not a valid previous primary main frame, attempt to replace it.
+  if (top_level_url->is_empty() || !top_level_url->is_valid()) {
+    // We support the use of opener or opener chain URL for `LINK` types only.
+    if (ui::PageTransitionCoreTypeIs(page_transition,
+                                     ui::PAGE_TRANSITION_LINK)) {
+      // If available and valid, use opener URL.
+      if (opener.has_value() && opener->url.is_valid()) {
+        top_level_url = opener->url;
+      } else if (web_contents()->HasLiveOriginalOpenerChain()) {
+        // Otherwise, check for a valid URL at the root of our opener chain.
+        const std::optional<history::Opener> root =
+            GetHistoryOpenerFromWebContents(
+                web_contents()->GetFirstWebContentsInLiveOriginalOpenerChain());
+        // If available and valid, use the root opener URL.
+        if (root.has_value() && root->url.is_valid()) {
+          top_level_url = root->url;
+        }
+      }
+    }
+  }
+
   history::HistoryAddPageArgs add_page_args(
       navigation_handle->GetURL(), timestamp,
       history::ContextIDForWebContents(web_contents()), nav_entry_id,
@@ -329,9 +369,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       navigation_handle->GetRedirectChain(), page_transition, hidden,
       history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
       ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle),
-      is_ephemeral, title,
-      // Our top-level site is the previous primary main frame.
-      navigation_handle->GetPreviousPrimaryMainFrameURL(), opener,
+      is_ephemeral, title, top_level_url, opener,
       chrome_ui_data == nullptr ? std::nullopt : chrome_ui_data->bookmark_id(),
       app_id_, std::move(context_annotations));
 

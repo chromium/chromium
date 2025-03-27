@@ -174,7 +174,7 @@ union TypeErasedState {
   } remote;
 
   // Local-storage for the type-erased object when small and trivial enough
-  alignas(kAlignment) char storage[kStorageSize];
+  alignas(kAlignment) unsigned char storage[kStorageSize];
 };
 
 // A typed accessor for the object in `TypeErasedState` storage

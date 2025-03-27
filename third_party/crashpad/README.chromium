@@ -59,5 +59,3 @@ Local Modifications:
    "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h",
    https://crbug.com/1467773
  - CPEPrefix for third_party/zlib is added to README.chromium
- - logging::LogMessageHandler signature updated to use std::string_view in
-   crashpad/util/thread/thread_log_messages.cc

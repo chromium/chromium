@@ -160,8 +160,9 @@ void UpgradeDetectorImpl::DoCalculateThresholds() {
   base::TimeDelta notification_period = GetRelaunchNotificationPeriod();
   const std::optional<RelaunchWindow> relaunch_window =
       GetRelaunchWindowPolicyValue();
+  bool superseded = IsSupersededRelease();
 
-  if (notification_period.is_zero() && !relaunch_window) {
+  if (notification_period.is_zero() && !relaunch_window && !superseded) {
     // Use the default values when no override is set and we don't expect to
     // adjust the levels according to the relaunch time interval.
     stages_[kStagesIndexHigh] = kDefaultHighThreshold;
@@ -174,8 +175,13 @@ void UpgradeDetectorImpl::DoCalculateThresholds() {
     // fall within the relaunch time interval. The adjusted "high" level is
     // divided evenly to set the 'low' and 'elevated' levels.
     base::TimeDelta effective_notification_period = notification_period;
-    if (notification_period.is_zero())
+    if (notification_period.is_zero()) {
       effective_notification_period = kDefaultHighThreshold;
+    }
+    if (superseded) {
+      effective_notification_period =
+          std::min(effective_notification_period, base::Hours(2));
+    }
 
     const RelaunchWindow effective_relaunch_window =
         relaunch_window.value_or(GetDefaultRelaunchWindow());
@@ -244,18 +250,8 @@ void UpgradeDetectorImpl::StartOutdatedBuildDetector() {
 void UpgradeDetectorImpl::DetectOutdatedInstall() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Time current_time;
-  base::TimeDelta uncertainty;
-  bool is_network_time = true;
-  if (g_browser_process->network_time_tracker()->GetNetworkTime(&current_time,
-                                                                &uncertainty) !=
-      network_time::NetworkTimeTracker::NETWORK_TIME_AVAILABLE) {
-    // When network time has not been initialized yet, simply rely on the
-    // machine's current time.
-    is_network_time = false;
-    current_time = base::Time::Now();
-  }
+  bool is_network_time = GetNetworkTimeWithFallback(current_time);
 
-  CHECK(!current_time.is_null());
   CHECK(!build_date_.is_null());
 
   if (!simulating_outdated_ && is_network_time && build_date_ > current_time) {
@@ -285,6 +281,11 @@ void UpgradeDetectorImpl::UpgradeDetected(UpgradeAvailable upgrade_available) {
   if (upgrade_available != UPGRADE_AVAILABLE_NONE ||
       critical_experiment_updates_available()) {
     StartUpgradeNotificationTimer();
+    if (ShouldFetchLastServedDate()) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&UpgradeDetectorImpl::FetchLastServedDate,
+                                    weak_factory_.GetWeakPtr()));
+    }
   } else {
     // There is no longer anything to notify the user about, so stop the timer
     // and reset state.
@@ -397,7 +398,7 @@ UpgradeDetectorImpl::StageIndexToAnnoyanceLevel(size_t index) {
   return kIndexToLevel[index];
 }
 
-void UpgradeDetectorImpl::OnMonitoredPrefsChanged() {
+void UpgradeDetectorImpl::RecomputeSchedule() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Broadcast the appropriate notification if an upgrade has been detected.

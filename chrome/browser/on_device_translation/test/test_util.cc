@@ -168,7 +168,7 @@ void TestSimpleTranslationWorks(Browser* browser,
                    base::StringPrintf(R"(
         (async () => {
           try {
-            const translator = await ai.translator.create({
+            const translator = await Translator.create({
               sourceLanguage: '%s',
               targetLanguage: '%s',
             });
@@ -199,7 +199,7 @@ void TestCreateTranslator(Browser* browser,
                    base::StringPrintf(R"(
   (async () => {
     try {
-      await ai.translator.create({
+      await Translator.create({
           sourceLanguage: '%s',
           targetLanguage: '%s',
         });
@@ -224,7 +224,7 @@ void TestTranslationAvailable(Browser* browser,
                    base::StringPrintf(R"(
   (async () => {
     try {
-      return await ai.translator.availability({
+      return await Translator.availability({
           sourceLanguage: '%s',
           targetLanguage: '%s',
         });

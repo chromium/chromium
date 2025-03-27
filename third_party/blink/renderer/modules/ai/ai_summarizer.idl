@@ -4,6 +4,26 @@
 
 // https://github.com/WICG/writing-assistance-apis
 
+enum AISummarizerType { "tl;dr", "key-points", "teaser", "headline" };
+enum AISummarizerFormat { "plain-text", "markdown" };
+enum AISummarizerLength { "short", "medium", "long" };
+
+dictionary AISummarizerCreateCoreOptions {
+  AISummarizerType type = "key-points";
+  AISummarizerFormat format = "markdown";
+  AISummarizerLength length = "short";
+
+  sequence<DOMString> expectedInputLanguages;
+  sequence<DOMString> expectedContextLanguages;
+  DOMString outputLanguage;
+};
+
+dictionary AISummarizerCreateOptions : AISummarizerCreateCoreOptions {
+  AbortSignal signal;
+  AICreateMonitorCallback monitor;
+  DOMString sharedContext;
+};
+
 dictionary AISummarizerSummarizeOptions {
   DOMString context;
   AbortSignal signal;
@@ -16,7 +36,23 @@ dictionary AISummarizerSummarizeOptions {
 ]
 interface AISummarizer {
   [
-    Measure,
+    MeasureAs=Summarizer_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<AIAvailability> availability(
+    optional AISummarizerCreateCoreOptions options = {}
+  );
+
+  [
+    MeasureAs=Summarizer_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<AISummarizer> create(optional AISummarizerCreateOptions options = {});
+
+  [
+    MeasureAs=Summarizer_Summarize,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -26,7 +62,7 @@ interface AISummarizer {
   );
 
   [
-    Measure,
+    MeasureAs=Summarizer_SummarizeStreaming,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -36,7 +72,7 @@ interface AISummarizer {
   );
 
   [
-    Measure,
+    MeasureAs=Summarizer_MeasureInputUsage,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -46,26 +82,26 @@ interface AISummarizer {
   );
 
   [
-    Measure,
+    MeasureAs=Summarizer_Destroy,
     CallWith=ScriptState,
     RaisesException
   ]
   void destroy();
 
-  [Measure]
+  [MeasureAs=Summarizer_SharedContext]
   readonly attribute DOMString sharedContext;
-  [Measure]
+  [MeasureAs=Summarizer_Type]
   readonly attribute AISummarizerType type;
-  [Measure]
+  [MeasureAs=Summarizer_Format]
   readonly attribute AISummarizerFormat format;
-  [Measure]
+  [MeasureAs=Summarizer_Length]
   readonly attribute AISummarizerLength length;
-  [Measure]
+  [MeasureAs=Summarizer_ExpectedInputLanguages]
   readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
-  [Measure]
+  [MeasureAs=Summarizer_ExpectedContextLanguages]
   readonly attribute FrozenArray<DOMString>? expectedContextLanguages;
-  [Measure]
+  [MeasureAs=Summarizer_OutputLanguage]
   readonly attribute DOMString? outputLanguage;
-  [Measure]
+  [MeasureAs=Summarizer_InputQuota]
   readonly attribute unrestricted double inputQuota;
 };

@@ -18,6 +18,7 @@
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/account_select_fill_data.h"
+#import "components/password_manager/ios/features.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
@@ -219,6 +220,7 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
 
       FormSuggestionMetadata metadata;
       metadata.is_single_username_form = is_single_username_form;
+      metadata.likely_from_real_password_field = isPasswordField;
       [results
           addObject:
               [FormSuggestion
@@ -304,6 +306,16 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
   [self.delegate suggestionHelperShouldTriggerFormExtraction:self
                                                      inFrame:frame];
   _framesFormExtractionStatus[frame_id] = FormExtractionStatus::kRequested;
+}
+
+- (std::unique_ptr<password_manager::FillData>)
+    passwordFillDataForUsername:(NSString*)username
+        likelyRealPasswordField:(bool)passwordField
+                 formIdentifier:(autofill::FormRendererId)formId
+                fieldIdentifier:(autofill::FieldRendererId)fieldId
+                        frameId:(const std::string&)frameId {
+  return [self fillDataForFrameId:frameId]->GetFillData(
+      SysNSStringToUTF16(username), formId, fieldId, passwordField);
 }
 
 - (std::unique_ptr<password_manager::FillData>)

@@ -2559,9 +2559,9 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
 }
 
 // Verify that any tabs that exist in the restored group but not the saved group
-// are added to the saved group.
+// are not added to the saved group.
 IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
-                       RestoreSavedGroupAddsUniqueTabs) {
+                       RestoreSavedGroupDropsUniqueTabs) {
   if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
     // TODO(crbug.com/366267926): Fix test after migration.
     GTEST_SKIP()
@@ -2625,9 +2625,9 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
   const std::optional<tab_groups::SavedTabGroup> restored_saved_group =
       service->GetGroup(saved_group_id);
 
-  // There are 2 www.youtube.com urls, only 1 should be added.
+  // There should still only be 2 tabs in the saved group.
   EXPECT_TRUE(restored_saved_group);
-  EXPECT_EQ(3u, restored_saved_group->saved_tabs().size());
+  EXPECT_EQ(2u, restored_saved_group->saved_tabs().size());
 }
 
 // Verify that a restored group which is already open does not open a new group
@@ -3188,8 +3188,9 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
   EXPECT_EQ(1u, service->GetAllGroups().size());
   saved_group = *service->GetGroup(saved_id);
   EXPECT_TRUE(saved_group.local_group_id().has_value());
+  EXPECT_EQ(1u, group_model->ListTabGroups().size());
 
-  // Verify the local group id exists in the TabGroupModel.
+  // Verify the local group id exists in the TabGroupModel of the new browser.
   EXPECT_TRUE(
       group_model->ContainsTabGroup(saved_group.local_group_id().value()));
 }

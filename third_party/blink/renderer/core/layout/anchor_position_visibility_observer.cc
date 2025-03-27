@@ -19,7 +19,7 @@ AnchorPositionVisibilityObserver::AnchorPositionVisibilityObserver(
     : anchored_element_(anchored_element) {}
 
 void AnchorPositionVisibilityObserver::MonitorAnchor(const Element* anchor) {
-  if (anchor_element_) {
+  if (observer_) {
     observer_->disconnect();
     observer_ = nullptr;
   }
@@ -28,30 +28,50 @@ void AnchorPositionVisibilityObserver::MonitorAnchor(const Element* anchor) {
 
   // Setup an intersection observer to monitor intersection visibility.
   if (anchor_element_) {
-    Node* root = nullptr;
-    if (LayoutObject* anchored_object = anchored_element_->GetLayoutObject()) {
-      root = anchored_object->Container()->GetNode();
-    }
+    auto* anchored_object = anchored_element_->GetLayoutObject();
+    auto* anchor_object = anchor_element_->GetLayoutObject();
+    if (anchored_object && anchor_object) {
+      auto* anchored_container = anchored_object->Container();
+      // Use the ancestor just below anchored_container as the intersection
+      // observer root. The clip of anchored_container is not included because
+      // it's not an "intervening box".
+      auto* intersection_root = anchor_object;
+      for (auto* anchor_container = anchor_object->Container();
+           anchor_container && anchor_container != anchored_container;
+           anchor_container = anchor_container->Container()) {
+        intersection_root = anchor_container;
+      }
 
-    observer_ = IntersectionObserver::Create(
-        anchor_element_->GetDocument(),
-        WTF::BindRepeating(
-            &AnchorPositionVisibilityObserver::OnIntersectionVisibilityChanged,
-            WrapWeakPersistent(this)),
-        // Do not record metrics for this internal intersection observer.
-        std::nullopt,
-        IntersectionObserver::Params{
-            .root = root,
-            .thresholds = {IntersectionObserver::kMinimumThreshold},
-            .behavior = IntersectionObserver::kDeliverDuringPostLayoutSteps,
-        });
-    // TODO(pdr): Refactor intersection observer to take const objects.
-    observer_->observe(const_cast<Element*>(anchor_element_.Get()));
-  } else {
-    SetLayerInvisible(LayerPositionVisibility::kAnchorsIntersectionVisible,
-                      false);
-    SetLayerInvisible(LayerPositionVisibility::kChainedAnchorsVisible, false);
+      // The anchor is always visible if the anchor and the anchored have the
+      // same container.
+      if (intersection_root == anchor_object) {
+        SetLayerInvisible(LayerPositionVisibility::kAnchorsIntersectionVisible,
+                          false);
+        return;
+      }
+
+      observer_ = IntersectionObserver::Create(
+          anchor_element_->GetDocument(),
+          WTF::BindRepeating(&AnchorPositionVisibilityObserver::
+                                 OnIntersectionVisibilityChanged,
+                             WrapWeakPersistent(this)),
+          // Do not record metrics for this internal intersection observer.
+          std::nullopt,
+          IntersectionObserver::Params{
+              .root = intersection_root->GetNode(),
+              .thresholds = {IntersectionObserver::kMinimumThreshold},
+              .behavior = IntersectionObserver::kDeliverDuringPostLayoutSteps,
+          });
+      // TODO(pdr): Refactor intersection observer to take const objects.
+      observer_->observe(const_cast<Element*>(anchor_element_.Get()));
+      return;
+    }
   }
+
+  // Invalid situations.
+  SetLayerInvisible(LayerPositionVisibility::kAnchorsIntersectionVisible,
+                    false);
+  SetLayerInvisible(LayerPositionVisibility::kChainedAnchorsVisible, false);
 }
 
 void AnchorPositionVisibilityObserver::Trace(Visitor* visitor) const {

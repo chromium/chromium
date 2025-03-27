@@ -384,6 +384,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2539748786028143624">Hidupkan Perlindungan Dipertingkat…</translation>
 <translation id="2540111494300686866">Sekat dialog</translation>
 <translation id="2542268842667970959">Sembunyikan "Pemeriksaan Keselamatan"</translation>
+<translation id="2543870349255816922">Kad ini menunjukan penurunan harga pada produk yang dijejaki, daripada salah satu peranti anda yang disegerakkan</translation>
 <translation id="2547458583188611426">Penyegerakan tidak berfungsi. Masukkan ungkapan laluan anda untuk memulakan penyegerakan.</translation>
 <translation id="2551153019974022505">Ralat akaun</translation>
 <translation id="2559843230610279254">Kumpulan tab, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> tab.</translation>
@@ -560,7 +561,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3380352560400387991">Laman ini sedang mencuba membuka aplikasi. Tindakan ini akan membawa anda keluar daripada Inkognito.</translation>
 <translation id="3392923070107623576">Kekal teratur dengan membuat kumpulan tab</translation>
 <translation id="3404232721752787413">Simpan dalam Google Photos</translation>
-<translation id="3404744938087714423">Tindakan log keluar mematikan penyegerakan.</translation>
 <translation id="3406506285180498376">Kongsi halaman…</translation>
 <translation id="340669334496430859">Terakhir Diubah Suai</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -780,7 +780,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4334428914252001502">1 artikel belum dibaca.</translation>
 <translation id="4338258232580025606">Tidak boleh log masuk</translation>
 <translation id="4338650699862464074">Menghantar URL halaman yang anda lawati kepada Google.</translation>
-<translation id="4342054591427973606">{count,plural, =1{Alamat ini akan dipadamkan daripada peranti ini dan peranti log masuk anda yang lain.}other{Alamat ini akan dipadamkan daripada peranti ini dan peranti log masuk anda yang lain.}}</translation>
 <translation id="4342946437867096381">Anda telah menyimpan kata laluan untuk laman ini pada Google Account anda. Google boleh memilih kata laluan terbaharu untuk anda.</translation>
 <translation id="4365121137632832185">Kumpulan tab. Dikembangkan.</translation>
 <translation id="4367971618859387374">Nama paparan</translation>
@@ -1288,7 +1287,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6447842834002726250">Kuki</translation>
 <translation id="6449554712554071184">Tindakan ini akan memadamkan kumpulan tersebut secara kekal daripada peranti anda.</translation>
 <translation id="6452534462676960500">Aktiviti baharu</translation>
-<translation id="6459307836338400162">Untuk mendapatkan pelbagai lagi tetapan yang berkaitan dengan privasi, keselamatan dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Penyegerakan<ph name="END_LINK" /> dan juga <ph name="BEGIN_LINK" />Perkhidmatan Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Butiran tersembunyi</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6464397691496239022">Tapak boleh menggunakan kuki untuk memperbaik pengalaman penyemakan imbas anda, contohnya, untuk mengekalkan log masuk anda atau untuk mengingati item dalam troli beli-belah anda.
@@ -1638,7 +1636,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7933880123415105005">Cari <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Halaman ditambahkan pada senarai bacaan dalam akaun anda, {email}}other{{count} halaman ditambahkan pada senarai bacaan dalam akaun anda, {email}}}</translation>
-<translation id="7947953824732555851">Terima dan log masuk</translation>
 <translation id="7952670906562503188">Anda akan memadamkan {passkey_count} kunci laluan serta senarai laman &amp; apl yang anda pilih untuk tidak sekali-kali menyimpan log masuk. Mana-mana akaun yang anda buat untuk laman dan apl tidak akan dipadamkan.</translation>
 <translation id="7958575506592576831">Maklumat keselamatan halaman</translation>
 <translation id="7961015016161918242">Tidak sama sekali</translation>
@@ -1927,7 +1924,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="9013605037177245304">Hidupkan Pemberitahuan</translation>
 <translation id="9029650858822697271">Anda telah dilog keluar</translation>
 <translation id="9032405509996909363">Sahkan pemadaman data semakan imbas</translation>
-<translation id="9034759925968272072">Anda tidak akan dilog keluar daripada Google Account anda. Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain di <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>
 <translation id="9039373489628511875">Lebar Jalur</translation>
 <translation id="9042893549633094279">Privasi dan keselamatan</translation>
 <translation id="9055580485132823283">Anda akan memadamkan {password_count} kata laluan, {passkey_count} kunci laluan serta senarai laman &amp; apl yang anda pilih untuk tidak sekali-kali menyimpan log masuk. Mana-mana akaun yang anda buat untuk laman dan apl tidak akan dipadamkan.</translation>

@@ -15,6 +15,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -128,10 +129,12 @@ WebAppInstallDialogDelegate::~WebAppInstallDialogDelegate() {
   }
 }
 
-void WebAppInstallDialogDelegate::StartObservingWidgetForChanges(
+void WebAppInstallDialogDelegate::OnWidgetShownStartTracking(
     views::Widget* install_dialog_widget) {
   occlusion_observation_.Observe(install_dialog_widget);
   widget_observation_.Observe(install_dialog_widget);
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(
+      install_dialog_widget);
 }
 
 void WebAppInstallDialogDelegate::OnAccept() {

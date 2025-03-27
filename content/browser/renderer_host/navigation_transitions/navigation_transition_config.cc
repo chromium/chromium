@@ -50,10 +50,13 @@ bool NavigationTransitionConfig::AreBackForwardTransitionsEnabled() {
 size_t NavigationTransitionConfig::ComputeCacheSizeInBytes() {
   // Assume 4 bytes per pixel. This value estimates the max number of bytes of
   // the physical screen's uncompressed bitmap.
-  const size_t display_size_in_bytes = 4 * display::Screen::GetScreen()
-                                               ->GetPrimaryDisplay()
-                                               .GetSizeInPixel()
-                                               .Area64();
+  size_t display_size_in_bytes = 0;
+  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+    display_size_in_bytes =
+        std::max(display_size_in_bytes,
+                 static_cast<size_t>(4 * display.GetSizeInPixel().Area64()));
+  }
+
   size_t memory_required_for_max_screenshots =
       display_size_in_bytes * kMaxScreenshotCount.Get();
 

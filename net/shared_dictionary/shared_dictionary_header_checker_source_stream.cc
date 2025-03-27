@@ -145,7 +145,7 @@ bool SharedDictionaryHeaderCheckerSourceStream::CheckHeaderBuffer() const {
   if (GetSignatureInBuffer() != GetExpectedSignature(type_)) {
     return false;
   }
-  if (GetHashInBuffer() != base::span(dictionary_hash_.data)) {
+  if (GetHashInBuffer() != dictionary_hash_) {
     return false;
   }
   return true;

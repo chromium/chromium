@@ -90,7 +90,7 @@ void CollaborationServiceImpl::StartJoinFlow(
   // TODO(crbug.com/393194653): Promote the active screen instead of closing and
   // starting a new flow if flow is ongoing.
 
-  ExitConflictingFlows(base::BindOnce(
+  CancelAllFlows(base::BindOnce(
       &CollaborationServiceImpl::StartJoinFlowInternal,
       weak_ptr_factory_.GetWeakPtr(), std::move(delegate), token));
 
@@ -108,12 +108,33 @@ void CollaborationServiceImpl::StartShareOrManageFlow(
     return;
   }
 
-  ExitConflictingFlows(base::BindOnce(
+  CancelAllFlows(base::BindOnce(
       &CollaborationServiceImpl::StartShareOrManageFlowInternal,
       weak_ptr_factory_.GetWeakPtr(), std::move(delegate), either_id));
 
   RecordShareOrManageEvent(data_sharing_service_->GetLogger(),
                            CollaborationServiceShareOrManageEvent::kStarted);
+}
+
+void CollaborationServiceImpl::CancelAllFlows(
+    base::OnceCallback<void()> finish_callback) {
+  if (join_controllers_.empty() && share_controllers_.empty()) {
+    // Don't post task if we can already start the flow.
+    std::move(finish_callback).Run();
+    return;
+  }
+
+  for (const auto& [token, controller] : join_controllers_) {
+    controller->Exit();
+  }
+  for (const auto& [id, controller] : share_controllers_) {
+    controller->Exit();
+  }
+
+  // Post task to start new flow after all flows finishes.
+  // Note: Invalid url parsing will start a new join flow with empty GroupToken.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(finish_callback));
 }
 
 ServiceStatus CollaborationServiceImpl::GetServiceStatus() {
@@ -349,27 +370,6 @@ void CollaborationServiceImpl::RefreshServiceStatus() {
     observers_.Notify(&CollaborationService::Observer::OnServiceStatusChanged,
                       update);
   }
-}
-
-void CollaborationServiceImpl::ExitConflictingFlows(
-    base::OnceCallback<void()> finish_callback) {
-  if (join_controllers_.empty() && share_controllers_.empty()) {
-    // Don't post task if we can already start the flow.
-    std::move(finish_callback).Run();
-    return;
-  }
-
-  for (const auto& [token, controller] : join_controllers_) {
-    controller->Exit();
-  }
-  for (const auto& [id, controller] : share_controllers_) {
-    controller->Exit();
-  }
-
-  // Post task to start new flow after all flows finishes.
-  // Note: Invalid url parsing will start a new join flow with empty GroupToken.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, std::move(finish_callback));
 }
 
 void CollaborationServiceImpl::StartJoinFlowInternal(

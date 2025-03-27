@@ -77,6 +77,7 @@ void TachyonClientImpl::OnResponse(
     std::unique_ptr<RequestDataWrapper> request_data,
     AuthFailureCallback auth_failure_cb,
     std::unique_ptr<std::string> response_body) {
+  MaybeRecordUma(url_loader.get(), request_data.get());
   HandleResponse(std::move(url_loader), std::move(request_data),
                  std::move(auth_failure_cb), std::move(response_body));
 }

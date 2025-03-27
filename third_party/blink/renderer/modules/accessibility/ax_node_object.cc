@@ -6135,7 +6135,7 @@ bool AXNodeObject::CanHaveChildren() const {
   DCHECK(!IsDetached());
 
   // A child tree has been stitched onto this node, hiding its usual subtree.
-  if (child_tree_id()) {
+  if (AXObjectCache().GetAXObjectChildAXTreeID(AXObjectID())) {
     return false;
   }
 

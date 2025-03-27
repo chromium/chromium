@@ -566,7 +566,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20ActivationUiTest,
 
   RunTestSequence(
       // Verify that at first, we can show the promo on the browser.
-      CheckElement(kToolbarAppMenuButtonElementId, can_show_promo, true),
+      CheckElement(kToolbarAppMenuButtonElementId, can_show_promo,
+                   user_education::FeaturePromoResult::Success()),
       // Start observing widget focus, and create the widget.
       ObserveState(views::test::kCurrentWidgetFocus),
       // Create a second widget and give it focus. We can't guarantee that we
@@ -592,7 +593,9 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20ActivationUiTest,
                    [&widget]() { return widget->GetNativeView(); }),
       // Verify that we can no longer show the promo, since the browser is not
       // the active window.
-      CheckElement(kToolbarAppMenuButtonElementId, can_show_promo, false));
+      CheckElement(
+          kToolbarAppMenuButtonElementId, can_show_promo,
+          user_education::FeaturePromoResult::kAnchorSurfaceNotActive));
 }
 
 namespace {
@@ -681,8 +684,9 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
                                                ui::KeyboardCode::VKEY_SPACE,
                                                false, false, false, false);
       }),
-      MaybeShowPromo(kIPHExemptFromOmniboxFeature,
-                     user_education::FeaturePromoResult::kBlockedByUi),
+      MaybeShowPromo(
+          kIPHExemptFromOmniboxFeature,
+          user_education::FeaturePromoResult::kBlockedByUserActivity),
       MaybeShowPromo(kIPHExemptFromUserNotActiveFeature));
 }
 
@@ -727,6 +731,6 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25OverflowUiTest,
           }),
       WaitForShow(kToolbarOverflowButtonElementId),
       MaybeShowPromo(kIPHExemptFromOmniboxFeature,
-                     user_education::FeaturePromoResult::kBlockedByUi),
+                     user_education::FeaturePromoResult::kWindowTooSmall),
       MaybeShowPromo(kIPHExemptFromToolbarNotCollapsedFeature));
 }

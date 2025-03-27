@@ -1434,7 +1434,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
     CRXFileInfo crx_info(path, GetTestVerifierFormat());
     crx_info.extension_id = id;
 
-    auto installer = extension_service->CreateUpdateInstaller(crx_info, true);
+    auto installer =
+        extension_service->updater()->CreateUpdateInstaller(crx_info, true);
     EXPECT_TRUE(installer);
     installer->InstallCrxFile(crx_info);
 

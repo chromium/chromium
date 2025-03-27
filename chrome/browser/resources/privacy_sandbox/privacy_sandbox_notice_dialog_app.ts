@@ -49,6 +49,7 @@ export class PrivacySandboxNoticeDialogAppElement extends
     };
   }
 
+  private expanded_: boolean;
   private hideNoticePage_: boolean;
 
   override connectedCallback() {

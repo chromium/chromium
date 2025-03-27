@@ -491,18 +491,18 @@ webrtc::RtpCodec ToWebrtcRtpCodec(const RTCRtpCodec* codec) {
   std::string mime_type = codec->mimeType().Utf8();
   auto slash_index = codec->mimeType().Find("/");
   if (slash_index == WTF::kNotFound) {
-    webrtc_codec.kind = cricket::MEDIA_TYPE_UNSUPPORTED;
+    webrtc_codec.kind = webrtc::MediaType::UNSUPPORTED;
     return webrtc_codec;
   }
   webrtc_codec.name = codec->mimeType().Substring(slash_index + 1).Utf8();
   WTF::String codec_type = codec->mimeType().Substring(0, slash_index);
 
   if (codec_type == "video") {
-    webrtc_codec.kind = cricket::MEDIA_TYPE_VIDEO;
+    webrtc_codec.kind = webrtc::MediaType::VIDEO;
   } else if (codec_type == "audio") {
-    webrtc_codec.kind = cricket::MEDIA_TYPE_AUDIO;
+    webrtc_codec.kind = webrtc::MediaType::AUDIO;
   } else {
-    webrtc_codec.kind = cricket::MEDIA_TYPE_UNSUPPORTED;
+    webrtc_codec.kind = webrtc::MediaType::UNSUPPORTED;
     return webrtc_codec;
   }
 

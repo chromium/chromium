@@ -710,6 +710,9 @@ class BrowserView : public BrowserWindow,
                          split_tabs::SplitTabId split_id,
                          SplitTabAddReason reason,
                          tabs::SplitTabLayout tab_layout) override;
+  void OnSplitTabRemoved(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+                         split_tabs::SplitTabId split_id,
+                         SplitTabRemoveReason reason) override;
   void TabStripEmpty() override;
   void WillCloseAllTabs(TabStripModel* tab_strip_model) override;
   void CloseAllTabsStopped(TabStripModel* tab_strip_model,
@@ -1100,6 +1103,9 @@ class BrowserView : public BrowserWindow,
 
   // Attempts to show IPH promo for experimental AI.
   void MaybeShowExperimentalAIIPH();
+
+  // Attempts to show IPH promo for the tab search toolbar button.
+  void MaybeShowTabStripToolbarButtonIPH();
 
   void UpdateWindowControlsOverlayEnabled();
 

@@ -560,7 +560,6 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3380352560400387991">Le sayithi izama ukuvula i-application. Lokhu kuzokukhipha ku-Incognito.</translation>
 <translation id="3392923070107623576">Hlala uhlelekile ngokusungula amaqembu ethebhu</translation>
 <translation id="3404232721752787413">Londoloza ku-Google Photos</translation>
-<translation id="3404744938087714423">Ukuphuma ngemvume kuvala ukuvumelanisa.</translation>
 <translation id="3406506285180498376">Yabelana ngekhasi…</translation>
 <translation id="340669334496430859">Kulungiswe okukugcina</translation>
 <translation id="3409785640040772790">Amamephu</translation>
@@ -780,7 +779,6 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="4334428914252001502">1 i-athikili engafundiwe.</translation>
 <translation id="4338258232580025606">Ayikwazi ukungena ngemvume</translation>
 <translation id="4338650699862464074">Ithumela ama-URL amakhasi owavakashelayo ku-Google.</translation>
-<translation id="4342054591427973606">{count,plural, =1{Leli kheli lizosulwa kulokhu nakwamanye amadivayisi wakho angene ngemvume.}one{Lamakheli azosulwa kulokhu nakwamanye amadivayisi wakho angene ngemvume.}other{Lamakheli azosulwa kulokhu nakwamanye amadivayisi wakho angene ngemvume.}}</translation>
 <translation id="4342946437867096381">Usuvele ulondoloze iphasiwedi yaleli sayithi ku-Google Account yakho. I-Google ingakukhethela iphasiwedi yakamuva.</translation>
 <translation id="4365121137632832185">Iqembu lethebhu. Kunwetshiwe.</translation>
 <translation id="4367971618859387374">Bonisa igama</translation>
@@ -1288,7 +1286,6 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6447842834002726250">Amakhukhi</translation>
 <translation id="6449554712554071184">Lokhu kuzosula unomphela iqembu edivayisini yakho.</translation>
 <translation id="6452534462676960500">Umsebenzi omusha</translation>
-<translation id="6459307836338400162">Ukuze uthole amanye amasethingi ahambisana nobumfihlo, ukuvikeleka, nokuqoqwa kwedatha, bona kokubili <ph name="BEGIN_LINK" />Ukuvumelanisa<ph name="END_LINK" /> nokuthi <ph name="BEGIN_LINK" />Amasevisi we-Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Imininingwane ifihliwe</translation>
 <translation id="646394917185284261">Amafayela</translation>
 <translation id="6464397691496239022">Amasayithi angasebenzisa amakhukhi ukuthuthukisa ukuzizwela kwakho kokuphequlula, ngokwesibonelo, ukukugcina ungene ngemvume noma ukukhumbula izinto ezikukalishi yakho yokuthenga.
@@ -1638,7 +1635,6 @@ Lapho uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi wakho ukubona um
 <translation id="7933880123415105005">Sesha i-<ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">I-FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Ikhasi lengezwe ohlwini lwakho lokufunda ku-akhawunti yakho, ye-{email}}one{Amakhasi angu-{count} angezwe ohlwini lwakho lokufunda ku-akhawunti yakho, ye-{email}}other{Amakhasi angu-{count} angezwe ohlwini lwakho lokufunda ku-akhawunti yakho, ye-{email}}}</translation>
-<translation id="7947953824732555851">Yamukela uphinde ungene ngemvume</translation>
 <translation id="7952670906562503188">Usuzosula okhiye bokudlula abangu-{passkey_count}, kanye nohlu lwamasayithi nama-app okhetha ukungalokothi ulondoloze ukungena ngemvume kuwo. Noma iyiphi i-akhawunti oyisungulile yamasayithi nama-app ngeke isulwe.</translation>
 <translation id="7958575506592576831">Ulwazi lekhasi lokuvikela</translation>
 <translation id="7961015016161918242">Ngeke</translation>
@@ -1927,7 +1923,6 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="9013605037177245304">Vula Izaziso</translation>
 <translation id="9029650858822697271">Ukhishwe ngemvume</translation>
 <translation id="9032405509996909363">Qinisekisa ukusula idatha yokubhrawuza</translation>
-<translation id="9034759925968272072">Ngeke uze ukhishwe ngemvume ku-Akhawunti yakho ye-Google. I-Akhawunti yakho ye-Google ingase ibe nezinye izinhlobo zomlando wokuphequlula ku-<ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Umkhawulokudonsa</translation>
 <translation id="9042893549633094279">Ubumfihlo nokuvikeleka</translation>
 <translation id="9055580485132823283">Usuzosula amaphasiwedi angu-{password_count}, okhiye bokudlula abangu-{passkey_count}, kanye nohlu lwamasayithi nama-app okhetha ukungalokothi ulondoloze ukungena ngemvume kuwo. Noma iyiphi i-akhawunti oyisungulile yamasayithi nama-app ngeke isulwe.</translation>

@@ -46,40 +46,40 @@ class BrowserViewWranglerTest : public PlatformTest {
     scene_state_ = [[SceneStateWithFakeScene alloc] initWithScene:fake_scene_
                                                          appState:nil];
 
-    TestProfileIOS::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
         SendTabToSelfSyncServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         IOSChromeFaviconLoaderFactory::GetInstance(),
         IOSChromeFaviconLoaderFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
         ios::FaviconServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         PrerenderServiceFactory::GetInstance(),
         PrerenderServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         ios::BookmarkModelFactory::GetInstance(),
         ios::BookmarkModelFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());
 
-    profile_ = std::move(test_cbs_builder).Build();
+    profile_ = std::move(test_profile_builder).Build();
     profile_->CreateOffTheRecordProfileWithTestingFactories(
         {TestProfileIOS::TestingFactory{
             SessionRestorationServiceFactory::GetInstance(),

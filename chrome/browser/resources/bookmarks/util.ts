@@ -80,8 +80,6 @@ export function normalizeNodes(rootNode: chrome.bookmarks.BookmarkTreeNode):
 
   // If the user has both local and account bookmarks bars, insert heading nodes
   // to distinguish them.
-  // TODO(crbug.com/393105828): prune empty local permanent folders if the user
-  // has account folders.
   const addHeadingNodes =
       hasBothLocalAndAccountBookmarksBar(rootNode.children!);
 
@@ -110,7 +108,7 @@ export function normalizeNodes(rootNode: chrome.bookmarks.BookmarkTreeNode):
         const headingNode = node.syncing ? nodeMap[ACCOUNT_HEADING_NODE_ID]! :
                                            nodeMap[LOCAL_HEADING_NODE_ID]!;
         nodeMap[node.id]!.parentId = headingNode.id;
-        headingNode.children!.push(node.id);
+        headingNode.children!.unshift(node.id);
       }
     }
   }

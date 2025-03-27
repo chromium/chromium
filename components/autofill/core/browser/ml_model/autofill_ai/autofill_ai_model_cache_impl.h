@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/proto/autofill_ai_model_cache.pb.h"
 #include "components/autofill/core/common/signatures.h"
@@ -58,6 +59,8 @@ class AutofillAiModelCacheImpl : public AutofillAiModelCache,
   void Erase(FormSignature form_signature) override;
   std::map<FormSignature, CacheEntryWithMetadata> GetAllEntries()
       const override;
+  base::flat_map<FieldIdentifier, FieldPrediction> GetFieldPredictions(
+      FormSignature form_signature) const override;
 
   // history::HistoryServiceObserver:
   void OnHistoryDeletions(history::HistoryService* history_service,
@@ -66,11 +69,18 @@ class AutofillAiModelCacheImpl : public AutofillAiModelCache,
  private:
   using Database = leveldb_proto::ProtoDatabase<CacheEntryWithMetadata>;
 
+  // Returns the entry corresponding to `form_signature` in the form that it
+  // is saved in the database.
+  base::optional_ref<const CacheEntryWithMetadata> GetRawEntry(
+      FormSignature form_signature) const;
+
   // Removes expired cache entries and limits the cache size to
   // `max_cache_size_` by removing the oldest entries.
   void TrimEntries();
+
   void UpdateInDatabase(FormSignature form_signature,
                         const CacheEntryWithMetadata& entry);
+
   void EraseInDatabase(base::span<const FormSignature> form_signatures);
 
   void OnDatabaseInit(leveldb_proto::Enums::InitStatus status);

@@ -79,8 +79,8 @@ bool RequiresUserActivation(CanCreateTranslatorResult result) {
 
 CreateTranslatorClient::CreateTranslatorClient(
     ScriptState* script_state,
-    AITranslatorCreateOptions* options,
-    ScriptPromiseResolver<AITranslator>* resolver)
+    TranslatorCreateOptions* options,
+    ScriptPromiseResolver<Translator>* resolver)
     : ExecutionContextClient(ExecutionContext::From(script_state)),
       AIContextObserver(script_state,
                         this,
@@ -89,8 +89,7 @@ CreateTranslatorClient::CreateTranslatorClient(
       source_language_(options->sourceLanguage()),
       target_language_(options->targetLanguage()),
       receiver_(this, GetExecutionContext()),
-      task_runner_(
-          GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault)) {
+      task_runner_(AIInterfaceProxy::GetTaskRunner(GetExecutionContext())) {
   if (options->hasMonitor()) {
     monitor_ = MakeGarbageCollected<AICreateMonitor>(GetExecutionContext(),
                                                      task_runner_);
@@ -114,7 +113,7 @@ void CreateTranslatorClient::OnResult(
     return;
   }
   if (result->is_translator()) {
-    GetResolver()->Resolve(MakeGarbageCollected<AITranslator>(
+    GetResolver()->Resolve(MakeGarbageCollected<Translator>(
         std::move(result->get_translator()), task_runner_,
         std::move(source_language_), std::move(target_language_)));
   } else {

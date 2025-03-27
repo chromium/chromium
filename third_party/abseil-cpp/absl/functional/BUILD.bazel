@@ -146,8 +146,9 @@ cc_test(
     ],
 )
 
-cc_test(
+cc_binary(
     name = "function_type_benchmark",
+    testonly = True,
     srcs = [
         "function_type_benchmark.cc",
     ],
@@ -159,6 +160,5 @@ cc_test(
         ":function_ref",
         "//absl/base:core_headers",
         "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
     ],
 )

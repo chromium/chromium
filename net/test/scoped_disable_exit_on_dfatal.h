@@ -30,7 +30,7 @@ class ScopedDisableExitOnDFatal {
  private:
   // Static function which is set as the logging assert handler.
   // Called when there is a check failure.
-  static void LogAssertHandler(std::string_view file,
+  static void LogAssertHandler(const char* file,
                                int line,
                                std::string_view message,
                                std::string_view stack_trace);

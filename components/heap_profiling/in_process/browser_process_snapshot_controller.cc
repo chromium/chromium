@@ -114,6 +114,8 @@ void BrowserProcessSnapshotController::TakeSnapshotsOnSnapshotSequence() {
                               : base::RandDouble();
       if (prob * 100.0 < snapshot_probability_pct) {
         remote->TakeSnapshot(snapshot_probability_pct, process_idx++);
+      } else {
+        remote->LogMetricsWithoutSnapshot();
       }
     }
   }

@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/tab_collections/public/supports_handles.h"
@@ -74,6 +75,9 @@ class TabInterface : public SupportsHandles<TabInterface> {
   // unavoidable, this method may be used. Features that live entirely above the
   // //content layer should not use this method.
   static TabInterface* MaybeGetFromContents(content::WebContents* web_contents);
+
+  // Returns a weak pointer to `this`.
+  virtual base::WeakPtr<TabInterface> GetWeakPtr() = 0;
 
   // When a tab is in the background, the WebContents may be discarded to save
   // memory. When a tab is in the foreground it is guaranteed to have a

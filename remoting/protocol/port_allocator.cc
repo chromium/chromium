@@ -18,10 +18,13 @@
 namespace remoting::protocol {
 
 PortAllocator::PortAllocator(
+    const webrtc::Environment& webrtc_env,
     std::unique_ptr<rtc::NetworkManager> network_manager,
     std::unique_ptr<rtc::PacketSocketFactory> socket_factory,
     scoped_refptr<TransportContext> transport_context)
-    : BasicPortAllocator(network_manager.get(), socket_factory.get()),
+    : BasicPortAllocator(webrtc_env,
+                         network_manager.get(),
+                         socket_factory.get()),
       network_manager_(std::move(network_manager)),
       socket_factory_(std::move(socket_factory)),
       transport_context_(transport_context) {}

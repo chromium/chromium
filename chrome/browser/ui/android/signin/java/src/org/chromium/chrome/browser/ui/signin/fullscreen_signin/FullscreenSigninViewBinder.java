@@ -88,6 +88,7 @@ class FullscreenSigninViewBinder {
             } else {
                 params.height = LayoutParams.WRAP_CONTENT;
             }
+            view.getLogo().setImageResource(logoId);
             view.getLogo().setLayoutParams(params);
         } else if (propertyKey == FullscreenSigninProperties.TITLE_STRING_ID) {
             @StringRes int textId = model.get(FullscreenSigninProperties.TITLE_STRING_ID);

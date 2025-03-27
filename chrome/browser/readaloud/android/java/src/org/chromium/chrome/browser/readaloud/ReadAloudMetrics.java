@@ -243,6 +243,10 @@ public class ReadAloudMetrics {
         RecordHistogram.recordEnumeratedHistogram(EMPTY_URL_PLAYBACK, entrypoint, maxVal);
     }
 
+    public static void recordPlaybackModeChange(int mode) {
+        RecordHistogram.recordEnumeratedHistogram("ReadAloud.PlaybackModeChange", mode, 2);
+    }
+
     public static void recordSpeedChange(float speed) {
         for (int i = 0; i < sPlaybackSpeeds.length; i++) {
             if (speed == sPlaybackSpeeds[i]) {

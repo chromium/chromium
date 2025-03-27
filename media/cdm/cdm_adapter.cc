@@ -17,6 +17,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -199,7 +200,6 @@ void ReportDecoderBypassBlockCountUMA(uint64_t bypass_count,
 }
 
 crash_reporter::CrashKeyString<256> g_origin_crash_key("cdm-origin");
-using crash_reporter::ScopedCrashKeyString;
 
 }  // namespace
 
@@ -212,7 +212,8 @@ void CdmAdapter::Create(
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb,
-    CdmCreatedCB cdm_created_cb) {
+    CdmCreatedCB cdm_created_cb,
+    const bool is_debugger_attached) {
   DCHECK(!cdm_config.key_system.empty());
   DCHECK(session_message_cb);
   DCHECK(session_closed_cb);
@@ -222,7 +223,8 @@ void CdmAdapter::Create(
   auto cdm = base::MakeRefCounted<CdmAdapter>(
       base::PassKey<CdmAdapter>(), cdm_config, create_cdm_func,
       std::move(helper), session_message_cb, session_closed_cb,
-      session_keys_change_cb, session_expiration_update_cb);
+      session_keys_change_cb, session_expiration_update_cb,
+      is_debugger_attached);
 
   // |cdm| ownership passed to the promise.
   cdm->Initialize(
@@ -237,7 +239,8 @@ CdmAdapter::CdmAdapter(
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
-    const SessionExpirationUpdateCB& session_expiration_update_cb)
+    const SessionExpirationUpdateCB& session_expiration_update_cb,
+    const bool is_debugger_attached)
     : cdm_config_(cdm_config),
       create_cdm_func_(create_cdm_func),
       helper_(std::move(helper)),
@@ -258,6 +261,11 @@ CdmAdapter::CdmAdapter(
   DCHECK(session_closed_cb_);
   DCHECK(session_keys_change_cb_);
   DCHECK(session_expiration_update_cb_);
+
+  if (is_debugger_attached) {
+    SCOPED_CRASH_KEY_BOOL("CDMUtilityProcess", "Debugger_attached",
+                          is_debugger_attached);
+  }
 
   cdm_metrics_data_.cdm_origin = cdm_origin_;
 

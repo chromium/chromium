@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -121,9 +122,12 @@ void ArcDlcInstaller::OnDlcInstalled(
   if (install_result.error != dlcservice::kErrorNone) {
     VLOG(1) << "Failed to install ARCVM DLC: " << install_result.error;
     MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadFailed);
+    base::UmaHistogramBoolean("Arc.DlcInstaller.Install", false);
     std::move(callback).Run(false);
     return;
   }
+
+  base::UmaHistogramBoolean("Arc.DlcInstaller.Install", true);
   MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadSucceeded);
   OnPrepareArcDlc(std::move(callback), true);
 }

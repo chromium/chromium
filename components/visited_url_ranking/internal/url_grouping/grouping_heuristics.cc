@@ -28,7 +28,7 @@ using segmentation_platform::processing::ProcessedValue;
 // Min number of tabs for each heuristic type before suggesting.
 constexpr auto kReasonToMinTabCount =
     base::MakeFixedFlatMap<GroupSuggestion::SuggestionReason, unsigned>({
-        {GroupSuggestion::SuggestionReason::kRecentlyOpened, 3},
+        {GroupSuggestion::SuggestionReason::kRecentlyOpened, 4},
         {GroupSuggestion::SuggestionReason::kSwitchedBetween, 2},
         {GroupSuggestion::SuggestionReason::kSimilarSource, 2},
     });
@@ -61,11 +61,11 @@ class RecentlyOpenedHeuristic : public GroupingHeuristics::Heuristic {
       const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
           inputs) override {
     std::vector<float> result(inputs.size(), 0.0f);
-    const char* time_since_creation_input = GetNameForInput(
-        URLVisitAggregateRankingModelInputSignals::kTimeSinceTabCreationSec);
+    const char* time_since_active_input = GetNameForInput(
+        URLVisitAggregateRankingModelInputSignals::kTimeSinceLastActiveSec);
     for (unsigned i = 0; i < inputs.size(); ++i) {
       std::optional<ProcessedValue> duration_sec =
-          inputs[i]->GetMetadataArgument(time_since_creation_input);
+          inputs[i]->GetMetadataArgument(time_since_active_input);
       if (duration_sec &&
           duration_sec->float_val < kRecencyTabTimeLimit.InSecondsF()) {
         result[i] = 1;
@@ -240,11 +240,16 @@ std::optional<GroupSuggestion> GetSuggestionFromHeuristicResult(
 
 std::optional<GroupSuggestions> GetAllGroupSuggestions(
     const std::vector<URLVisitAggregate>& candidates,
+    const std::vector<GroupSuggestion::SuggestionReason>& heuristics_priority,
     const HeuristicResults& results) {
   GroupSuggestions suggestions;
-  for (const auto& result : results) {
-    auto suggestion = GetSuggestionFromHeuristicResult(candidates, result.first,
-                                                       result.second);
+  for (auto reason : heuristics_priority) {
+    const auto& result = results.find(reason);
+    if (result == results.end()) {
+      continue;
+    }
+    auto suggestion = GetSuggestionFromHeuristicResult(
+        candidates, result->first, result->second);
     if (!suggestion) {
       continue;
     }
@@ -281,7 +286,7 @@ void GroupingHeuristics::GetSuggestions(
 
 void GroupingHeuristics::GetSuggestions(
     std::vector<URLVisitAggregate> candidates,
-    const std::vector<GroupSuggestion::SuggestionReason>& heuristics_to_run,
+    const std::vector<GroupSuggestion::SuggestionReason>& heuristics_priority,
     SuggestionsCallback callback) {
   if (candidates.empty()) {
     std::move(callback).Run(std::nullopt);
@@ -294,13 +299,13 @@ void GroupingHeuristics::GetSuggestions(
   for (const auto& candidate : candidates) {
     signals.push_back(AsInputContext(kSuggestionsPredictionSchema, candidate));
   }
-  for (const auto type : heuristics_to_run) {
+  for (const auto type : heuristics_priority) {
     auto& heuristic = heuristics_[type];
     heuristic_results.emplace(heuristic->reason(), heuristic->Run(signals));
   }
 
-  std::move(callback).Run(
-      GetAllGroupSuggestions(candidates, heuristic_results));
+  std::move(callback).Run(GetAllGroupSuggestions(
+      candidates, heuristics_priority, heuristic_results));
 }
 
 }  // namespace visited_url_ranking

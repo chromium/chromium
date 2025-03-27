@@ -75,9 +75,9 @@ class TailoredSecurityTabHelperTest : public PlatformTest {
     RegisterProfilePrefs(registry.get());
     sync_preferences::PrefServiceMockFactory factory;
 
-    TestProfileIOS::Builder test_cbs_builder;
-    test_cbs_builder.SetPrefService(factory.CreateSyncable(registry.get()));
-    profile_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.SetPrefService(factory.CreateSyncable(registry.get()));
+    profile_ = std::move(test_profile_builder).Build();
     web_state_.SetBrowserState(profile_.get());
     // Needed to create InfoBarManager.
     web_state_.SetNavigationManager(

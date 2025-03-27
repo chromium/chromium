@@ -36,6 +36,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network:test_support",
+    "//google_apis",
     "//net",
     "//services/network:test_support",
     "//services/network/public/cpp",

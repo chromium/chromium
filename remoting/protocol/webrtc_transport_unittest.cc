@@ -210,7 +210,7 @@ class WebrtcTransportTest : public testing::Test {
     // If offer_to_receive_video and offer_to_receive_audio are both false,
     // there must be a stream present in order to generate a valid SDP offer.
     host_transport_->peer_connection()->AddTransceiver(
-        cricket::MEDIA_TYPE_VIDEO);
+        webrtc::MediaType::VIDEO);
 
     host_authenticator_ =
         std::make_unique<FakeAuthenticator>(FakeAuthenticator::ACCEPT);

@@ -310,11 +310,24 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForDequantizeLinearConst(
       const mojom::DequantizeLinear& operation,
+      size_t axis,
+      bool is_scalar_scale,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForDequantizeLinearConstBlockwise(
       const mojom::DequantizeLinear& operation,
       CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddOperationForDequantizeLinearEmulate(
+      const mojom::DequantizeLinear& operation,
+      CoreML::Specification::MILSpec::Block& block);
+  // Expand for given `repetition` on `axis` for blockwise (de)quantization.
+  [[nodiscard]] base::expected<uint64_t, mojom::ErrorPtr> ExpandForBlockwise(
+      uint64_t input_operand_id,
+      size_t repetition_axis,
+      int32_t repetitions,
+      CoreML::Specification::MILSpec::Block& block);
+
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForElementwiseBinary(
       std::variant<uint64_t, CoreML::Specification::MILSpec::Value> lhs_operand,
@@ -498,6 +511,11 @@ class GraphBuilderCoreml {
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForSplit(
       const mojom::Split& operation,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForTile(
+      uint64_t input_operand_id,
+      uint64_t output_operand_id,
+      base::span<const int32_t> repetitions,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForTile(
       const mojom::Tile& operation,

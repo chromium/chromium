@@ -245,6 +245,7 @@ cc_library(
         ":reflection",
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/base:nullability",
         "//absl/strings",
     ],
 )

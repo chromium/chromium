@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/typed_macros.h"
@@ -52,6 +53,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -65,8 +68,11 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/location_bar_model.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/template_url_service.h"
@@ -331,6 +337,56 @@ void ChromeOmniboxClient::OnFocusChanged(OmniboxFocusState state,
   if (auto* helper =
           OmniboxTabHelper::FromWebContents(location_bar_->GetWebContents())) {
     helper->OnFocusChanged(state, reason);
+  }
+}
+
+void ChromeOmniboxClient::MaybeShowOnFocusHatsSurvey() {
+  // TODO(crbug.com/404039445): See if we need to check zero-suggest
+  // eligibility criteria
+  // If the content is for an SRP or Web Page
+  auto classification = GetPageClassification(/*is_prefetch=*/false);
+  if (!omnibox::IsSearchResultsPage(classification) &&
+      !omnibox::IsOtherWebPage(classification)) {
+    return;
+  }
+
+  auto focus_count = GetPrefs()->GetInteger(omnibox::kFocusedSrpWebCount);
+  focus_count += 1;
+
+  if (focus_count <
+      static_cast<int>(omnibox_feature_configs::
+                           HappinessTrackingSurveyForOmniboxOnFocusZps::Get()
+                               .focus_threshold)) {
+    GetPrefs()->SetInteger(omnibox::kFocusedSrpWebCount, focus_count);
+    return;
+  }
+
+  const auto survey_delay_time_ms =
+      omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::
+          Get()
+              .survey_delay;
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
+  // Roll the dice as we want to show one of two surveys to the treatment
+  // group but only one survey to the control group.
+  bool show_happiness_survey = base::RandInt(0, 1) == 0;
+  if (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled) {
+    if (show_happiness_survey) {
+      hats_service->LaunchDelayedSurvey(
+          kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness,
+          survey_delay_time_ms, {}, {});
+    } else {
+      hats_service->LaunchDelayedSurvey(
+          kHatsSurveyTriggerOnFocusZpsSuggestionsUtility, survey_delay_time_ms,
+          {}, {});
+    }
+  } else {
+    // Control
+    if (show_happiness_survey) {
+      hats_service->LaunchDelayedSurvey(
+          kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness,
+          survey_delay_time_ms, {}, {});
+    }
   }
 }
 

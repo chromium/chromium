@@ -243,6 +243,7 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                 "Incorrect display identifier",
                 mNicolasAccount.getDisplayIdentifier(),
                 getAccountDescriptionAt(3).getText());
+
         // Even though mNicolasAccount has secondary description, it should not be shown when UI is
         // not in multi IDP mode.
         assertEquals(

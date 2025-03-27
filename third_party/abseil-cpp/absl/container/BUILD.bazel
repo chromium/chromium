@@ -1148,6 +1148,5 @@ cc_binary(
         "//absl/strings:str_format",
         "//absl/time",
         "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
     ],
 )

@@ -9,7 +9,9 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/base32/base32.h"
+#include "components/lens/lens_features.h"
 #include "lens_overlay_request_id_generator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,6 +30,44 @@ TEST_F(LensOverlayRequestIdGeneratorTest, ResetRequestId_resetsSequence) {
                 .GetNextRequestId(RequestIdUpdateMode::kFullImageRequest)
                 ->sequence_id(),
             1);
+}
+
+TEST_F(
+    LensOverlayRequestIdGeneratorTest,
+    GetNextIdForInitialRequest_IncrementsSequenceAndImageSequenceAndLongContext) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  std::unique_ptr<lens::LensOverlayRequestId> first_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kInitialRequest);
+  ASSERT_EQ(first_id->sequence_id(), 1);
+  ASSERT_EQ(first_id->image_sequence_id(), 1);
+  ASSERT_EQ(first_id->long_context_id(), 0);
+
+  // Verify that the initial request id is only generated once.
+  EXPECT_DEATH(request_id_generator.GetNextRequestId(
+                   RequestIdUpdateMode::kInitialRequest),
+               "");
+}
+
+TEST_F(LensOverlayRequestIdGeneratorTest,
+       GetNextIdForInitialRequest_WithRequestIdFixEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      lens::features::kLensOverlayContextualSearchbox,
+      {{"page-content-request-id-fix", "true"}});
+
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  std::unique_ptr<lens::LensOverlayRequestId> first_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kInitialRequest);
+  ASSERT_EQ(first_id->sequence_id(), 1);
+  ASSERT_EQ(first_id->image_sequence_id(), 1);
+  ASSERT_EQ(first_id->long_context_id(), 1);
+
+  // Verify that the initial request id is only generated once.
+  EXPECT_DEATH(request_id_generator.GetNextRequestId(
+                   RequestIdUpdateMode::kInitialRequest),
+               "");
 }
 
 TEST_F(LensOverlayRequestIdGeneratorTest,
@@ -158,4 +198,29 @@ TEST_F(
   ASSERT_EQ(second_id->image_sequence_id(), 0);
   ASSERT_EQ(first_id->analytics_id(), second_id->analytics_id());
 }
+
+TEST_F(LensOverlayRequestIdGeneratorTest,
+       GetNextIdForPageContentUpdate_WithRequestIdFixEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      lens::features::kLensOverlayContextualSearchbox,
+      {{"page-content-request-id-fix", "true"}});
+
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  std::unique_ptr<lens::LensOverlayRequestId> first_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kPageContentRequest);
+  ASSERT_EQ(first_id->image_sequence_id(), 0);
+  ASSERT_EQ(first_id->sequence_id(), 1);
+  ASSERT_EQ(first_id->long_context_id(), 1);
+
+  std::unique_ptr<lens::LensOverlayRequestId> second_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kPageContentRequest);
+  ASSERT_EQ(second_id->image_sequence_id(), 0);
+  ASSERT_EQ(second_id->sequence_id(), 2);
+  ASSERT_EQ(second_id->long_context_id(), 2);
+  ASSERT_NE(first_id->analytics_id(), second_id->analytics_id());
+}
+
 }  // namespace lens

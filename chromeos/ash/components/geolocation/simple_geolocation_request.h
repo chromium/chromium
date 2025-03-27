@@ -85,6 +85,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   static void SetTestMonitor(SimpleGeolocationRequestTestMonitor* monitor);
 
   std::string FormatRequestBodyForTesting() const;
+  GURL GetServiceURLForTesting() const;
 
  private:
   void OnSimpleURLLoaderComplete(std::unique_ptr<std::string> response_body);

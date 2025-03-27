@@ -73,7 +73,6 @@ class PopupSearchBarView : public views::View,
   void RemovedFromWidget() override;
 
   // views::FocusChangeListener:
-  void OnWillChangeFocus(View* focused_before, View* focused_now) override {}
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
   // views::TextfieldController:

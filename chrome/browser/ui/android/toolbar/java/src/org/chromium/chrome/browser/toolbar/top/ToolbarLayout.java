@@ -724,16 +724,8 @@ public abstract class ToolbarLayout extends FrameLayout
     public abstract LocationBar getLocationBar();
 
     /**
-     * Navigates the current Tab back.
-     * @return Whether or not the current Tab did go back.
-     */
-    boolean back() {
-        maybeUnfocusUrlBar();
-        return mToolbarTabController != null && mToolbarTabController.back();
-    }
-
-    /**
      * Navigates the current Tab forward.
+     *
      * @return Whether or not the current Tab did go forward.
      */
     boolean forward() {

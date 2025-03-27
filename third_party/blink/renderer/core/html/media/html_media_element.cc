@@ -310,6 +310,38 @@ bool IsValidPlaybackRate(double rate) {
                          rate <= HTMLMediaElement::kMaxPlaybackRate);
 }
 
+HTMLMediaElement::PlayPromiseError PauseReasonToPlayPromiseError(
+    WebMediaPlayer::PauseReason pause_reason) {
+  switch (pause_reason) {
+    case WebMediaPlayer::PauseReason::kPageHidden:
+      return HTMLMediaElement::PlayPromiseError::kPaused_PageHidden;
+    case WebMediaPlayer::PauseReason::kSuspendedPlayerIdleTimeout:
+      return HTMLMediaElement::PlayPromiseError::
+          kPaused_SuspendedPlayerIdleTimeout;
+    case WebMediaPlayer::PauseReason::kRemotePlayStateChange:
+      return HTMLMediaElement::PlayPromiseError::kPaused_RemotePlayStateChange;
+    case WebMediaPlayer::PauseReason::kFrameHidden:
+      return HTMLMediaElement::PlayPromiseError::kPaused_FrameHidden;
+    case WebMediaPlayer::PauseReason::kEndOfPlayback:
+      return HTMLMediaElement::PlayPromiseError::kPaused_EndOfPlayback;
+    case WebMediaPlayer::PauseReason::kPauseCalled:
+      return HTMLMediaElement::PlayPromiseError::kPaused_PauseCalled;
+    case WebMediaPlayer::PauseReason::kPauseRequestedByUser:
+      return HTMLMediaElement::PlayPromiseError::kPaused_PauseRequestedByUser;
+    case WebMediaPlayer::PauseReason::kPauseRequestedInternally:
+      return HTMLMediaElement::PlayPromiseError::
+          kPaused_PauseRequestedInternally;
+    case WebMediaPlayer::PauseReason::kRemovedFromDocument:
+      return HTMLMediaElement::PlayPromiseError::kPaused_RemovedFromDocument;
+    case WebMediaPlayer::PauseReason::kAutoplayAutoPause:
+      return HTMLMediaElement::PlayPromiseError::kPaused_AutoplayAutoPause;
+    case WebMediaPlayer::PauseReason::kLetAudioDescriptionFinish:
+      return HTMLMediaElement::PlayPromiseError::
+          kPaused_LetAudioDescriptionFinish;
+  }
+  NOTREACHED();
+}
+
 std::ostream& operator<<(std::ostream& stream,
                          HTMLMediaElement const& media_element) {
   return stream << static_cast<void const*>(&media_element);
@@ -2934,7 +2966,7 @@ void HTMLMediaElement::pause() {
 
   // When updating pause, be sure to update PauseToLetDescriptionFinish().
   autoplay_policy_->StopAutoplayMutedWhenVisible();
-  PauseInternal(PlayPromiseError::kPaused_PauseCalled);
+  PauseInternal(WebMediaPlayer::PauseReason::kPauseCalled);
 }
 
 void HTMLMediaElement::PauseToLetDescriptionFinish() {
@@ -2942,12 +2974,11 @@ void HTMLMediaElement::PauseToLetDescriptionFinish() {
 
   autoplay_policy_->StopAutoplayMutedWhenVisible();
 
-  // Passing in pause_speech as false to pause everything except the speech.
-  PauseInternal(PlayPromiseError::kPaused_PauseCalled, false);
+  // Pause everything except the speech.
+  PauseInternal(WebMediaPlayer::PauseReason::kLetAudioDescriptionFinish);
 }
 
-void HTMLMediaElement::PauseInternal(PlayPromiseError code,
-                                     bool pause_speech /* = true */) {
+void HTMLMediaElement::PauseInternal(WebMediaPlayer::PauseReason pause_reason) {
   DVLOG(3) << "pauseInternal(" << *this << ")";
 
   if (network_state_ == kNetworkEmpty)
@@ -2966,10 +2997,10 @@ void HTMLMediaElement::PauseInternal(PlayPromiseError code,
     // time to accurately reflect movie time at the moment we paused.
     SetOfficialPlaybackPosition(CurrentPlaybackPosition());
 
-    ScheduleRejectPlayPromises(code);
+    ScheduleRejectPlayPromises(PauseReasonToPlayPromiseError(pause_reason));
   }
 
-  UpdatePlayState(pause_speech);
+  UpdatePlayState(pause_reason);
 }
 
 bool HTMLMediaElement::preservesPitch() const {
@@ -3188,7 +3219,7 @@ void HTMLMediaElement::PlaybackProgressTimerFired() {
                         WebFeature::kHTMLMediaElementPauseAtFragmentEnd);
       // changes paused to true and fires a simple event named pause at the
       // media element.
-      PauseInternal(PlayPromiseError::kPaused_EndOfPlayback);
+      PauseInternal(WebMediaPlayer::PauseReason::kEndOfPlayback);
     }
   }
 
@@ -3677,6 +3708,7 @@ void HTMLMediaElement::TimeChanged() {
     FinishSeek();
   }
 
+  std::optional<WebMediaPlayer::PauseReason> pause_reason;
   // When the current playback position reaches the end of the media resource
   // when the direction of playback is forwards, then the user agent must follow
   // these steps:
@@ -3702,14 +3734,16 @@ void HTMLMediaElement::TimeChanged() {
         // changes paused to true and fires a simple event named pause at the
         // media element.
         paused_ = true;
+        pause_reason = WebMediaPlayer::PauseReason::kEndOfPlayback;
         ScheduleNamedEvent(event_type_names::kPause);
-        ScheduleRejectPlayPromises(PlayPromiseError::kPaused_EndOfPlayback);
+        ScheduleRejectPlayPromises(
+            PauseReasonToPlayPromiseError(pause_reason.value()));
       }
       // Queue a task to fire a simple event named ended at the media element.
       ScheduleNamedEvent(event_type_names::kEnded);
     }
   }
-  UpdatePlayState();
+  UpdatePlayState(pause_reason);
 }
 
 void HTMLMediaElement::DurationChanged() {
@@ -3880,7 +3914,9 @@ bool HTMLMediaElement::StoppedDueToErrors() const {
   return false;
 }
 
-void HTMLMediaElement::UpdatePlayState(bool pause_speech /* = true */) {
+void HTMLMediaElement::UpdatePlayState(
+    std::optional<WebMediaPlayer::PauseReason>
+        pause_reason /* = std::nullopt */) {
   bool is_playing = web_media_player_ && !web_media_player_->Paused();
   bool should_be_playing = PotentiallyPlaying();
 
@@ -3914,14 +3950,18 @@ void HTMLMediaElement::UpdatePlayState(bool pause_speech /* = true */) {
     StartPlaybackProgressTimer();
     playing_ = true;
   } else {  // Should not be playing right now
-    // Always tell WMP about the pause since it may need to clear a pending
-    // automatic playback resumption.
-    if (web_media_player_ && ready_state_ >= kHaveMetadata) {
-      web_media_player_->Pause();
-    }
-    if (is_playing && pause_speech &&
-        ::features::IsTextBasedAudioDescriptionEnabled()) {
-      SpeechSynthesis()->Pause();
+    if (pause_reason) {
+      // Always tell WMP about the pause since it may need to clear a pending
+      // automatic playback resumption.
+      if (web_media_player_ && ready_state_ >= kHaveMetadata) {
+        web_media_player_->Pause(pause_reason.value());
+      }
+
+      if ((pause_reason ==
+           WebMediaPlayer::PauseReason::kLetAudioDescriptionFinish) &&
+          is_playing && ::features::IsTextBasedAudioDescriptionEnabled()) {
+        SpeechSynthesis()->Pause();
+      }
     }
 
     playback_progress_timer_.Stop();
@@ -4580,9 +4620,6 @@ void HTMLMediaElement::RejectScheduledPlayPromises() {
 
   const char* reason = "";
   switch (play_promise_error_code_) {
-    case PlayPromiseError::kPaused_Unknown:
-      reason = " because the media paused";
-      break;
     case PlayPromiseError::kPaused_PauseCalled:
       reason = " by a call to pause()";
       break;
@@ -4614,6 +4651,9 @@ void HTMLMediaElement::RejectScheduledPlayPromises() {
       reason =
           " because the media playback is not allowed by the "
           "media-playback-while-not-visible permission policy";
+      break;
+    case PlayPromiseError::kPaused_LetAudioDescriptionFinish:
+      reason = " because the audio description has not finished yet";
       break;
     case PlayPromiseError::kNotSupported:
       NOTREACHED();
@@ -4649,7 +4689,7 @@ void HTMLMediaElement::OnRemovedFromDocumentTimerFired(TimerBase*) {
   // Video should not pause when playing in Picture-in-Picture and subsequently
   // removed from the Document.
   if (!PictureInPictureController::IsElementInPictureInPicture(this))
-    PauseInternal(PlayPromiseError::kPaused_RemovedFromDocument);
+    PauseInternal(WebMediaPlayer::PauseReason::kRemovedFromDocument);
 }
 
 void HTMLMediaElement::AudioSourceProviderImpl::Wrap(
@@ -4743,21 +4783,8 @@ void HTMLMediaElement::ResumePlayback() {
   PlayInternal();
 }
 
-void HTMLMediaElement::PausePlayback(PauseReason pause_reason) {
-  switch (pause_reason) {
-    case PauseReason::kUnknown:
-      return PauseInternal(PlayPromiseError::kPaused_Unknown);
-    case PauseReason::kPageHidden:
-      return PauseInternal(PlayPromiseError::kPaused_PageHidden);
-    case PauseReason::kSuspendedPlayerIdleTimeout:
-      return PauseInternal(
-          PlayPromiseError::kPaused_SuspendedPlayerIdleTimeout);
-    case PauseReason::kRemotePlayStateChange:
-      return PauseInternal(PlayPromiseError::kPaused_RemotePlayStateChange);
-    case PauseReason::kFrameHidden:
-      return PauseInternal(PlayPromiseError::kPaused_FrameHidden);
-  }
-  NOTREACHED();
+void HTMLMediaElement::PausePlayback(WebMediaPlayer::PauseReason pause_reason) {
+  return PauseInternal(pause_reason);
 }
 
 void HTMLMediaElement::DidPlayerStartPlaying() {
@@ -4874,8 +4901,8 @@ void HTMLMediaElement::RequestPause(bool triggered_by_user) {
     }
   }
   PauseInternal(triggered_by_user
-                    ? PlayPromiseError::kPaused_PauseRequestedByUser
-                    : PlayPromiseError::kPaused_PauseRequestedInternally);
+                    ? WebMediaPlayer::PauseReason::kPauseRequestedByUser
+                    : WebMediaPlayer::PauseReason::kPauseRequestedInternally);
 }
 
 void HTMLMediaElement::RequestSeekForward(base::TimeDelta seek_time) {

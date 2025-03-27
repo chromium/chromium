@@ -905,6 +905,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.CertVerifier.Qwac.1Qwac" enum="NetCertVerifier1QwacResult"
+    expires_after="2026-03-18">
+  <owner>mattm@chromium.org</owner>
+  <owner>nharper@chromium.org</owner>
+  <summary>
+    Result of attempting to verify if a certificate is a valid 1-QWAC (EU
+    qualified website authentication certificate).
+
+    This will be emitted only when the VerifyQWACs feature flag is enabled,
+    Chrome Root Store is being used and CertVerifyProcBuiltin::VerifyInternal
+    returns OK.
+  </summary>
+</histogram>
+
 <histogram name="Net.CertVerifier.TimeUntilReady" units="ms"
     expires_after="2025-10-01">
   <owner>hchao@chromium.org</owner>
@@ -6234,8 +6248,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySessionErrorDetails2" enum="SpdyProtocolErrorDetails2"
-    expires_after="2025-04-27">
-  <owner>dschinazi@chromium.org</owner>
+    expires_after="2026-03-18">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>The type of SPDY Protocol error encountered.</summary>
 </histogram>

@@ -61,9 +61,12 @@ void DataSharingSDKDelegateIOS::ReadGroupWithToken(
     base::OnceCallback<void(
         const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&)>
         callback) {
-  // TODO(crbug.com/402208925): Implement this.
-  std::move(callback).Run(base::unexpected(absl::Status(
-      absl::StatusCode::kUnimplemented, "Read Groups not implemented")));
+  ShareKitReadGroupWithTokenConfiguration* config =
+      [[ShareKitReadGroupWithTokenConfiguration alloc] init];
+  config.collabID = base::SysUTF8ToNSString(params.group_id());
+  config.tokenSecret = base::SysUTF8ToNSString(params.access_token());
+  config.callback = base::CallbackToBlock(std::move(callback));
+  share_kit_service_->ReadGroupWithToken(config);
 }
 
 void DataSharingSDKDelegateIOS::AddMember(

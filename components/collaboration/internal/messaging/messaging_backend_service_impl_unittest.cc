@@ -324,59 +324,6 @@ void VerifyGenericMessageData(const collaboration_pb::Message& message,
   EXPECT_EQ(message.dirty(), static_cast<int>(dirty_type));
 }
 
-TEST_F(MessagingBackendServiceImplTest, TestStoringCollaborationEvents) {
-  CreateAndInitializeService();
-
-  data_sharing::GroupData group_data;
-  group_data.group_token.group_id = data_sharing::GroupId("my group id");
-  data_sharing::GroupMember member;
-  member.gaia_id = GaiaId("abc");
-  member.display_name = "First Last";
-  member.given_name = "First";
-  group_data.members.emplace_back(member);
-
-  tab_groups::SavedTabGroup tab_group =
-      CreateSharedTabGroup(group_data.group_token.group_id);
-  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
-  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
-      .WillRepeatedly(Return(all_groups));
-
-  EXPECT_CALL(*mock_data_sharing_service_, GetPossiblyRemovedGroupMember(_, _))
-      .WillRepeatedly(Return(std::nullopt));
-
-  base::Time time = base::Time::Now();
-  ds_notifier_observer_->OnGroupAdded(group_data.group_token.group_id,
-                                      group_data, time);
-  VerifyGenericMessageData(GetLastMessageFromDB(), "my group id",
-                           collaboration_pb::COLLABORATION_ADDED,
-                           DirtyType::kNone, time.ToTimeT());
-
-  // Move time forward so it is unique.
-  time += base::Seconds(1);
-  ds_notifier_observer_->OnGroupRemoved(group_data.group_token.group_id,
-                                        group_data, time);
-  VerifyGenericMessageData(GetLastMessageFromDB(), "my group id",
-                           collaboration_pb::COLLABORATION_REMOVED,
-                           DirtyType::kMessageOnly, time.ToTimeT());
-
-  time += base::Seconds(1);
-  GaiaId gaia_id("abc");
-  ds_notifier_observer_->OnGroupMemberAdded(group_data, gaia_id, time);
-  auto message = GetLastMessageFromDB();
-  VerifyGenericMessageData(message, "my group id",
-                           collaboration_pb::COLLABORATION_MEMBER_ADDED,
-                           DirtyType::kMessageOnly, time.ToTimeT());
-  EXPECT_EQ("abc", message.affected_user_gaia_id());
-
-  time += base::Seconds(1);
-  ds_notifier_observer_->OnGroupMemberRemoved(group_data, gaia_id, time);
-  message = GetLastMessageFromDB();
-  VerifyGenericMessageData(message, "my group id",
-                           collaboration_pb::COLLABORATION_MEMBER_REMOVED,
-                           DirtyType::kNone, time.ToTimeT());
-  EXPECT_EQ("abc", message.affected_user_gaia_id());
-}
-
 TEST_F(MessagingBackendServiceImplTest,
        TestLookingUpMemberNameForCollaborationEventsForStorage) {
   CreateAndInitializeService();

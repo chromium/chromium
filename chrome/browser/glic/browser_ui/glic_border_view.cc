@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include "base/debug/dump_without_crashing.h"
+#include "chrome/browser/glic/browser_ui/theme_util.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
@@ -51,15 +52,6 @@ constexpr static base::TimeDelta kEmphasisDuration = base::Milliseconds(1500);
 // Time since creation will roll over after this time to prevent growing
 // indefinitely.
 constexpr static base::TimeDelta kMaxTime = base::Days(1);
-
-bool UseDarkMode(ThemeService* theme_service) {
-  // Taken from lens_overlay_theme_utils.cc
-  ThemeService::BrowserColorScheme color_scheme =
-      theme_service->GetBrowserColorScheme();
-  return color_scheme == ThemeService::BrowserColorScheme::kSystem
-             ? ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
-             : color_scheme == ThemeService::BrowserColorScheme::kDark;
-}
 
 float ClampAndInterpolate(gfx::Tween::Type type,
                           float t,

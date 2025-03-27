@@ -103,6 +103,12 @@ const base::FeatureParam<std::string> kIPHLensOverlayUrlAllowFilters{
     &feature_engagement::kIPHLensOverlayFeature, "x_url_allow_filters", "[]"};
 const base::FeatureParam<std::string> kIPHLensOverlayUrlBlockFilters{
     &feature_engagement::kIPHLensOverlayFeature, "x_url_block_filters", "[]"};
+const base::FeatureParam<std::string> kIPHLensOverlayUrlPathMatchAllowPatterns{
+    &feature_engagement::kIPHLensOverlayFeature,
+    "x_url_path_match_allow_patterns", "[]"};
+const base::FeatureParam<std::string> kIPHLensOverlayUrlPathMatchBlockPatterns{
+    &feature_engagement::kIPHLensOverlayFeature,
+    "x_url_path_match_block_patterns", "[]"};
 const base::FeatureParam<base::TimeDelta> kIPHLensOverlayDelayTime{
     &feature_engagement::kIPHLensOverlayFeature, "x_wait_time",
     base::Seconds(7)};
@@ -201,6 +207,9 @@ BASE_FEATURE(kIPHTabOrganizationSuccessFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTabSearchFeature,
              "IPH_TabSearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHTabSearchToolbarButtonFeature,
+             "IPH_TabSearchToolbarButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHWebUITabStripFeature,
              "IPH_WebUITabStrip",

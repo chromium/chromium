@@ -969,18 +969,12 @@ def main():
     ]
   elif sys.platform == 'darwin':
     lit_excludes += [
-        # Fails on macOS 14, crbug.com/332589870
-        '^.*Sanitizer.*Darwin/malloc_zone.cpp$',
         # Fails with a recent ld, crbug.com/332589870
-        '^.*ContinuousSyncMode/darwin-proof-of-concept.c$',
         '^.*instrprof-darwin-exports.c$',
-        # Fails on our mac builds, crbug.com/346289767
-        '^.*Interpreter/pretty-print.c$',
     ]
     if platform.machine() == 'arm64':
       lit_excludes += [
           # TODO(https://crbug.com/40270881): fix and re-enable
-          '^.*tools/dsymutil.*$',
           '^.*AddressSanitizer-arm64-darwin.*$',
           '^.*SanitizerCommon-lsan-arm64-Darwin.*$',
           '^.*SanitizerCommon-ubsan-arm64-Darwin.*Posix/dedup_token_length_test.cpp$',

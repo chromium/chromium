@@ -8,8 +8,6 @@
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_service_base.h"
@@ -37,10 +35,10 @@ namespace safe_browsing {
 
 namespace {
 
-std::optional<GURL> GetUrlOverride() {
+// Return an override for the Url filtering endpoint set via command line.
+std::optional<GURL> GetUrlOverride(bool is_command_line_switch_supported) {
   // Ignore this flag on Stable and Beta to avoid abuse.
-  if (!g_browser_process || !g_browser_process->browser_policy_connector()
-                                 ->IsCommandLineSwitchSupported()) {
+  if (!is_command_line_switch_supported) {
     return std::nullopt;
   }
 
@@ -76,7 +74,8 @@ ChromeEnterpriseRealTimeUrlLookupService::
         bool is_off_the_record,
         bool is_guest_session,
         base::RepeatingCallback<std::string()> get_profile_email_callback,
-        base::RepeatingCallback<bool()> is_profile_affiliated_callback)
+        base::RepeatingCallback<bool()> is_profile_affiliated_callback,
+        bool is_command_line_switch_supported)
     : RealTimeUrlLookupServiceBase(
           url_loader_factory,
           cache_manager,
@@ -92,7 +91,8 @@ ChromeEnterpriseRealTimeUrlLookupService::
       is_off_the_record_(is_off_the_record),
       is_guest_session_(is_guest_session),
       get_profile_email_callback_(get_profile_email_callback),
-      is_profile_affiliated_callback_(is_profile_affiliated_callback) {}
+      is_profile_affiliated_callback_(is_profile_affiliated_callback),
+      is_command_line_switch_supported_(is_command_line_switch_supported) {}
 
 ChromeEnterpriseRealTimeUrlLookupService::
     ~ChromeEnterpriseRealTimeUrlLookupService() = default;
@@ -190,9 +190,9 @@ ChromeEnterpriseRealTimeUrlLookupService::GetDMTokenString() const {
 }
 
 GURL ChromeEnterpriseRealTimeUrlLookupService::GetRealTimeLookupUrl() const {
-  return GetUrlOverride().value_or(
-      GURL("https://enterprise-safebrowsing.googleapis.com/"
-           "safebrowsing/clientreport/realtime"));
+  return GetUrlOverride(is_command_line_switch_supported_)
+      .value_or(GURL("https://enterprise-safebrowsing.googleapis.com/"
+                     "safebrowsing/clientreport/realtime"));
 }
 
 net::NetworkTrafficAnnotationTag

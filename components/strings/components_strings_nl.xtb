@@ -696,7 +696,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2187317261103489799">Detecteren (standaard)</translation>
 <translation id="2188375229972301266">Meerdere perforaties onder</translation>
 <translation id="2194856509914051091">Overwegingen</translation>
-<translation id="2198071643181968308">Meer informatie over <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Knop Niet leuk, druk op Enter om een formulier te openen waarin je gedetailleerde feedback kunt geven over waarom je deze suggestie niet leuk vindt</translation>
 <translation id="2202627062836089804">achterkant van je kaart</translation>
 <translation id="2204482073374652408">Updaten voltooid</translation>
@@ -901,6 +900,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2539524384386349900">Detecteren</translation>
 <translation id="2541219929084442027">De pagina's die je op incognitotabbladen bekijkt, worden niet bewaard in je browsergeschiedenis, cookie-opslag of zoekgeschiedenis nadat je al je incognitotabbladen hebt gesloten. Alle bestanden die je hebt gedownload of bookmarks die je hebt gemaakt, blijven behouden.</translation>
 <translation id="2542106216580219892">Surfen</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – Houd |<ph name="ACCELERATOR" />| ingedrukt om het volledige scherm te sluiten</translation>
 <translation id="2544546346215446551">Je beheerder heeft je apparaat opnieuw opgestart</translation>
 <translation id="2544644783021658368">Eén document</translation>
 <translation id="254524874071906077">Chrome instellen als standaardbrowser</translation>
@@ -1803,6 +1803,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4150099059797363385">Envelop Chinees #4</translation>
 <translation id="4151403195736952345">Algemene standaard gebruiken (detecteren)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Pagina 1}other{Pagina {COUNT}}}</translation>
+<translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tabblad}other{# tabbladen}}</translation>
 <translation id="4154277373259957087">Chrome verifieert nu of jij het bent voordat een betaalmethode wordt ingevuld. Je kunt dit altijd updaten via <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Tabblad toevoegen aan vergelijkingstabel</translation>
 <translation id="4159784952369912983">Paars</translation>
@@ -2525,7 +2526,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <ph name="LIST_ITEM" />Informatie die je in formulieren hebt ingevoerd
 <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Omgekeerde volgorde met de bedrukte zijde omhoog</translation>
-<translation id="5445340838622821110">Als je gespreid betaalt, wordt een eenmalig virtueel kaartnummer ingevuld. Dit nummer is alleen voor deze aankoop. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Toestaan dat <ph name="SITE" /> informatie gebruikt die over jou is opgeslagen</translation>
 <translation id="5451331376824595378">Als Chrome beveiligingsgebeurtenissen markeert, worden relevante gegevens over de gebeurtenissen naar je beheerder gestuurd. Dit kunnen URL's zijn van pagina's die je bezoekt in Chrome, URL's van pagina's waarvan je gegevens hebt gekopieerd, bestandsnamen of metadata, IP-adressen, browser- of tabbladcrashes en de gebruikersnaam die je gebruikt om in te loggen bij webgebaseerde apps, je apparaat en Chrome.</translation>
 <translation id="5452270690849572955">Deze pagina op <ph name="HOST_NAME" /> kan niet worden gevonden</translation>
@@ -3926,6 +3926,7 @@ Aanvullende informatie:
 <translation id="7887885240995164102">Scherm-in-scherm openen</translation>
 <translation id="7888575728750733395">Weergave-intentie voor afdrukken</translation>
 <translation id="7890748547282909375">Log in bij Microsoft OneDrive om het screenshot op te slaan</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – Druk op |<ph name="ACCELERATOR" />| om de cursor te tonen</translation>
 <translation id="7892865709991296481">betaalinstellingen</translation>
 <translation id="7894280532028510793">Als de spelling klopt, <ph name="BEGIN_LINK" />voer je een netwerkcontrole uit<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelop 7 x 9 inch</translation>
@@ -3992,7 +3993,6 @@ Aanvullende informatie:
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />Verwijder je cookies<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">10 x 11 inch</translation>
 <translation id="8012647001091218357">We kunnen je ouders momenteel niet bereiken. Probeer het opnieuw.</translation>
-<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">Reisbureaus en -services</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om Chrome in te stellen als de standaardbrowser van het systeem</translation>
 <translation id="8027077570865220386">Lade 15</translation>
@@ -4618,6 +4618,7 @@ Aanvullende informatie:
 <translation id="9155646082713385498">Tijdschriften</translation>
 <translation id="9157595877708044936">Bezig met instellen...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> bevat misschien gevoelige content}other{<ph name="FILE_COUNT" /> bestanden bevatten misschien gevoelige content}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – Druk op |<ph name="ACCELERATOR" />| om het volledige scherm te sluiten</translation>
 <translation id="9165305804774426672">Sites die je bezoekt, kunnen ook vaststellen wat je leuk vindt op basis van je activiteit op de site. Als je bijvoorbeeld een site bezoekt die hardloopschoenen voor lange afstanden verkoopt, kan de site besluiten dat je geïnteresseerd bent in marathons.</translation>
 <translation id="9166851138617700776">Meer over door sites voorgestelde advertenties en advertentiemetingen</translation>
 <translation id="9167054383925257837">Informatie over browser en apparaat-OS (zoals de browser- en OS-versies)</translation>

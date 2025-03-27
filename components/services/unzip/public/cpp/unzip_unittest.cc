@@ -164,6 +164,21 @@ class UnzipTest : public testing::Test {
     return bytes;
   }
 
+  bool DoDecodeXz(const base::FilePath& in_file,
+                  const base::FilePath& out_file) {
+    mojo::PendingRemote<mojom::Unzipper> unzipper;
+    receivers_.Add(&unzipper_, unzipper.InitWithNewPipeAndPassReceiver());
+    bool result = false;
+    base::RunLoop run_loop;
+    DecodeXz(std::move(unzipper), in_file, out_file,
+             base::BindLambdaForTesting([&](bool success) {
+               result = success;
+               run_loop.Quit();
+             }));
+    run_loop.Run();
+    return result;
+  }
+
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -328,6 +343,73 @@ TEST_F(UnzipTest, DetectAESArchive) {
   mojom::Info result =
       DoGetExtractedInfo(GetArchivePath("DifferentEncryptions.zip"));
   EXPECT_TRUE(result.uses_aes_encryption);
+}
+
+TEST_F(UnzipTest, DecodeXz_Success) {
+  base::FilePath out = unzip_dir_.AppendASCII("out");
+  ASSERT_TRUE(DoDecodeXz(GetArchivePath("file1.xz"), out));
+  EXPECT_EQ(ReadFileToBytes(out), ReadFileToBytes(GetArchivePath("file1")));
+}
+
+TEST_F(UnzipTest, DecodeXz_DontReplaceExistingOutfile) {
+  base::FilePath out = unzip_dir_.AppendASCII("out");
+  ASSERT_TRUE(base::WriteFile(out, "data"));
+  ASSERT_FALSE(DoDecodeXz(GetArchivePath("file1.xz"), out));
+  std::string out_contents;
+  ASSERT_TRUE(base::ReadFileToString(out, &out_contents));
+  EXPECT_EQ(out_contents, "data");
+}
+
+TEST_F(UnzipTest, DecodeXz_MissingInput) {
+  base::FilePath out = unzip_dir_.AppendASCII("out");
+  EXPECT_FALSE(DoDecodeXz(GetArchivePath("doesnotexist"), out));
+  EXPECT_FALSE(base::PathExists(out));
+}
+
+TEST_F(UnzipTest, DecodeXz_BadFormat) {
+  base::FilePath out = unzip_dir_.AppendASCII("out");
+  EXPECT_FALSE(DoDecodeXz(GetArchivePath("file1"), out));
+  EXPECT_FALSE(base::PathExists(out));
+}
+
+TEST_F(UnzipTest, DecodeXz_Cancel) {
+  base::FilePath out = unzip_dir_.AppendASCII("out");
+  base::FilePath in = GetArchivePath("file1.xz");
+  mojo::PendingRemote<mojom::Unzipper> unzipper;
+  receivers_.Add(&unzipper_, unzipper.InitWithNewPipeAndPassReceiver());
+  base::RunLoop run_loop;
+  DecodeXz(std::move(unzipper), in, out,
+           base::BindLambdaForTesting([&](bool success) {
+             EXPECT_FALSE(success);
+             run_loop.Quit();
+           }))
+      .Run();
+  run_loop.Run();
+  EXPECT_FALSE(base::PathExists(out));
+}
+
+TEST_F(UnzipTest, DecodeXz_CancelAfterReturn) {
+  base::FilePath out = unzip_dir_.AppendASCII("out");
+  base::FilePath in = GetArchivePath("file1.xz");
+  base::OnceClosure cancellation;
+  int call_count = 0;
+  {
+    mojo::PendingRemote<mojom::Unzipper> unzipper;
+    receivers_.Add(&unzipper_, unzipper.InitWithNewPipeAndPassReceiver());
+    base::RunLoop run_loop;
+    cancellation = DecodeXz(std::move(unzipper), in, out,
+                            base::BindLambdaForTesting([&](bool success) {
+                              EXPECT_TRUE(success);
+                              ++call_count;
+                              run_loop.Quit();
+                            }));
+    run_loop.Run();
+    EXPECT_EQ(call_count, 1);
+  }
+  std::move(cancellation).Run();
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(call_count, 1);
 }
 
 }  // namespace

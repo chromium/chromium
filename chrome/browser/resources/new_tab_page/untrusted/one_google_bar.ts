@@ -35,20 +35,18 @@ interface AsyncBar {
   setDarkMode(matches: boolean): void;
 }
 
+type IndexableApi = Record<string, Function>;
+interface Gbar {
+  gbar?: {a: Record<string, () => IndexableApi>, P: () => void};
+}
+
 if (abp) {
   window.addEventListener('gbar_a', () => {
-    postMessage('loaded');
-    overlayUpdater.track();
-    oneGoogleBarApi.trackDarkModeChanges();
+    postOneGoogleBarLoaded();
   });
 }
 
 const oneGoogleBarApi = (() => {
-  type IndexableApi = Record<string, Function>;
-  interface Gbar {
-    gbar?: {a: Record<string, () => IndexableApi>, P: () => void};
-  }
-
   async function callApi(
       apiName: string, fnName: string, ...args: any[]): Promise<unknown> {
     const {gbar} = window as Window & Gbar;
@@ -322,8 +320,15 @@ window.addEventListener('click', () => {
   postMessage('click');
 }, /*useCapture=*/ true);
 
+function postOneGoogleBarLoaded() {
+  postMessage('loaded');
+  overlayUpdater.track();
+  oneGoogleBarApi.trackDarkModeChanges();
+}
+
 if (!abp) {
   document.addEventListener('DOMContentLoaded', () => {
+    document.body.style.margin = '0';
     // TODO(crbug.com/40667075): remove after OneGoogleBar links are updated.
     // Updates <a>'s so they load on the top frame instead of the iframe.
     document.body.querySelectorAll('a').forEach(el => {
@@ -332,10 +337,13 @@ if (!abp) {
       }
     });
 
-    postMessage('loaded');
-    overlayUpdater.track();
-    oneGoogleBarApi.trackDarkModeChanges();
+    postOneGoogleBarLoaded();
   });
+} else {
+  const {gbar} = window as Window & Gbar;
+  if (gbar && gbar.a) {
+    postOneGoogleBarLoaded();
+  }
 }
 
 export {};

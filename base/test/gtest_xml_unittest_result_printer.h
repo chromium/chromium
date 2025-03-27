@@ -51,7 +51,7 @@ class XmlUnitTestResultPrinter : public testing::EmptyTestEventListener {
   [[nodiscard]] bool Initialize(const FilePath& output_file_path);
 
   // CHECK/DCHECK failed. Print file/line and message to the xml.
-  void OnAssert(std::string_view file,
+  void OnAssert(const char* file,
                 int line,
                 const std::string& summary,
                 const std::string& message);
@@ -63,7 +63,7 @@ class XmlUnitTestResultPrinter : public testing::EmptyTestEventListener {
   void OnTestEnd(const testing::TestInfo& test_info) override;
   void OnTestSuiteEnd(const testing::TestSuite& test_suite) override;
 
-  void WriteTestPartResult(std::string_view file,
+  void WriteTestPartResult(const char* file,
                            int line,
                            testing::TestPartResult::Type type,
                            const std::string& summary,

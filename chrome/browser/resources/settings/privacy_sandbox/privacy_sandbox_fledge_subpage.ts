@@ -48,14 +48,6 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       sitesList_: {
         type: Array,
         observer: 'onSitesListChanged_',

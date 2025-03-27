@@ -240,6 +240,13 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Shill error"/>
 </enum>
 
+<enum name="CreateDataPipeMojoResult">
+  <int value="0" label="MOJO_RESULT_OK"/>
+  <int value="3" label="MOJO_RESULT_INVALID_ARGUMENT"/>
+  <int value="8" label="MOJO_RESULT_RESOURCE_EXHAUSTED"/>
+  <int value="12" label="MOJO_RESULT_UNIMPLEMENTED"/>
+</enum>
+
 <enum name="DnsProxy.DnsOverHttpsMode">
   <int value="0" label="Unknown"/>
   <int value="1" label="Off"/>

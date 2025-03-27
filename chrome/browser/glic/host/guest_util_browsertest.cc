@@ -63,7 +63,8 @@ class GuestUtilBrowserTest : public InProcessBrowserTest {
   GuestUtilBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
-        /*disabled_features=*/{features::kGlicWarming});
+        /*disabled_features=*/{features::kGlicWarming,
+                               features::kGlicFreWarming});
   }
   GuestUtilBrowserTest(const GuestUtilBrowserTest&) = delete;
   GuestUtilBrowserTest& operator=(const GuestUtilBrowserTest&) = delete;

@@ -696,7 +696,6 @@
 <translation id="2187317261103489799">偵測 (預設)</translation>
 <translation id="2188375229972301266">多孔 (底部)</translation>
 <translation id="2194856509914051091">考慮因素</translation>
-<translation id="2198071643181968308">進一步瞭解 <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">唔鍾意掣，㩒 Enter 鍵就可以打開意見表格，詳細解釋唔鍾意呢個建議嘅原因</translation>
 <translation id="2202627062836089804">信用卡背面</translation>
 <translation id="2204482073374652408">更新完成！</translation>
@@ -901,6 +900,7 @@
 <translation id="2539524384386349900">偵測</translation>
 <translation id="2541219929084442027">當您關閉所有無痕式分頁後，您在其中瀏覽的網頁都不會保留在瀏覽器記錄、Cookie 儲存庫或搜尋記錄中。不過，您下載的檔案或建立的書籤將會全部保留。</translation>
 <translation id="2542106216580219892">滑浪</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> - 如要離開全螢幕，請按住 |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">管理員已重新啟動您的裝置</translation>
 <translation id="2544644783021658368">單一文件</translation>
 <translation id="254524874071906077">將 Chrome 設為預設瀏覽器</translation>
@@ -1789,7 +1789,7 @@
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">系統不支援這項政策的範圍。</translation>
-<translation id="411918202192379658">自動填入更好用</translation>
+<translation id="411918202192379658">自動填入變得更好用</translation>
 <translation id="4121428309786185360">到期日</translation>
 <translation id="4123572138124678573">三孔 (底部)</translation>
 <translation id="412601465078863288">上載逾時</translation>
@@ -1808,6 +1808,7 @@
 <translation id="4150099059797363385">Chinese #4 信封</translation>
 <translation id="4151403195736952345">使用全域預設值 (偵測)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{第 1 頁}other{第 {COUNT} 頁}}</translation>
+<translation id="4152670763139331043">{NUM_TABS,plural, =1{1 個分頁}other{# 個分頁}}</translation>
 <translation id="4154277373259957087">Chrome 現在將驗證您的身分，然後才填入付款方法。您可隨時在<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />變更此項目。</translation>
 <translation id="415440494507469262">將分頁加入比較表格</translation>
 <translation id="4159784952369912983">紫色</translation>
@@ -2530,7 +2531,6 @@
             <ph name="LIST_ITEM" />在表格中輸入的資料
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">相反順序 (正面朝上)</translation>
-<translation id="5445340838622821110">如選擇分期付款，系統會填入一次性的虛擬卡號。此卡號只適用於這宗交易。<ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">允許 <ph name="SITE" /> 使用與你相關的既有資料</translation>
 <translation id="5451331376824595378">當 Chrome 標示安全事件時，系統會向你的管理員發送該事件的相關資料。內容可能包括你在 Chrome 瀏覽的網址、複製資料的來源網址、檔案名稱或元數據、IP 位址、瀏覽器或分頁當機相關資料，以及用於登入網頁應用程式、裝置和 Chrome 的使用者名稱。</translation>
 <translation id="5452270690849572955">找不到此 <ph name="HOST_NAME" /> 網頁</translation>
@@ -3932,6 +3932,7 @@
 <translation id="7887885240995164102">進入畫中畫</translation>
 <translation id="7888575728750733395">列印輸出意圖</translation>
 <translation id="7890748547282909375">登入 Microsoft OneDrive 即可儲存螢幕截圖</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> - 如要顯示游標，請按下 |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">付款設定</translation>
 <translation id="7894280532028510793">如果拼字正確，<ph name="BEGIN_LINK" />請嘗試執行網絡診斷<ph name="END_LINK" />。</translation>
 <translation id="7901831439558593470">7 x 9 吋信封</translation>
@@ -3998,7 +3999,6 @@
 <translation id="8009460986924589054">請<ph name="BEGIN_LINK" />嘗試刪除 Cookie<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">10 x 11 吋</translation>
 <translation id="8012647001091218357">目前無法聯絡您的家長。請再試一次。</translation>
-<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">旅行社及旅遊服務</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵同 Enter 鍵就可以將 Chrome 設定做系統嘅預設瀏覽器</translation>
 <translation id="8027077570865220386">紙匣 15</translation>
@@ -4624,6 +4624,7 @@
 <translation id="9155646082713385498">雜誌</translation>
 <translation id="9157595877708044936">設定中…</translation>
 <translation id="9161794544616754735">{0,plural, =1{「<ph name="FILE_NAME" />」可能含有敏感內容}other{<ph name="FILE_COUNT" /> 個檔案可能含有敏感內容}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> - 如要離開全螢幕，請按下 |<ph name="ACCELERATOR" />|</translation>
 <translation id="9165305804774426672">你瀏覽的網站亦可根據你的網站活動判斷你喜歡的內容。例如，如果你瀏覽售賣長跑運動鞋的網站，該網站可能會判斷你有興趣參加馬拉松。</translation>
 <translation id="9166851138617700776">進一步瞭解網站建議廣告和廣告評估</translation>
 <translation id="9167054383925257837">瀏覽器和裝置 OS 資料 (例如瀏覽器和 OS 版本)</translation>

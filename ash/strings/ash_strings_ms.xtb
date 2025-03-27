@@ -91,6 +91,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1269405891096105529">Peranti persisian tidak disokong dalam mod Tetamu</translation>
 <translation id="1270290102613614947">Papan kekunci pada skrin dilumpuhkan</translation>
 <translation id="1272079795634619415">Berhenti</translation>
+<translation id="12741168609094094">Pilih apa-apa sahaja pada skrin anda untuk membuat carian, menyalin teks dan pelbagai lagi</translation>
 <translation id="1275285675049378717">Membekalkan kuasa kepada <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Dipilih</translation>
 <translation id="1276975447697633661">Pilih fail, kemudian tekan <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1720230731642245863">Tempat liputan dimatikan</translation>
 <translation id="1731815243805539470">Beralih kepada pengguna sebelumnya</translation>
 <translation id="1733996486177697563">Beralih antara tema gelap dengan cerah. Sentuh dan tahan pada desktop, kemudian pilih Kertas dinding &amp; gaya.</translation>
+<translation id="1735992454301033090">Bahagian yang dipilih, gunakan kekunci anak panah untuk digerakkan</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" kelihatan kepada peranti Bluetooth.</translation>
 <translation id="1737078180382804488">Menolak penyediaan pemaparan pemberitahuan telefon anda</translation>
 <translation id="174102739345480129">Penanda dimatikan.</translation>
@@ -494,6 +496,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> minggu lalu</translation>
 <translation id="2687510499067466116">Pintasan papan kekunci telah diubah</translation>
 <translation id="2689613560355655046">Meja 8</translation>
+<translation id="2692092709110488417">Tekan tab untuk fokus, kemudian gerakkan bahagian yang dipilih</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Tunjukkan tetapan papan kekunci. <ph name="KEYBOARD_NAME" /> dipilih.</translation>
 <translation id="2699913284398121653">Gunakan apl Pemindahan kandungan untuk mengalihkan data akaun sekolah anda kepada akaun peribadi anda</translation>
@@ -551,6 +554,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="2872353916818027657">Tukar monitor utama</translation>
 <translation id="2872961005593481000">Mematikan</translation>
 <translation id="2876338922445400217">Zum masuk pada skrin</translation>
+<translation id="2876760662374103627">Kawalan wajah aktif</translation>
 <translation id="2878884018241093801">Tiada item terbaharu</translation>
 <translation id="2880541185262491188">Terlalu banyak percubaan PIN. Tunggu selama <ph name="TIME_LEFT" /> dan cuba sekali lagi</translation>
 <translation id="2883271196820422439">Sambung semula kekunci tetikus</translation>
@@ -1032,6 +1036,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4412698727486357573">Pusat bantuan</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> dimatikan.</translation>
 <translation id="4417647906073317561">Tetapan fokus. Tetapkan pemasa, tugasan dan muzik untuk meningkatkan tumpuan.</translation>
+<translation id="4418600384772451109">Tutup Panel</translation>
 <translation id="4424159417645388645">Meja 5</translation>
 <translation id="4426817706804363424">Syabas!</translation>
 <translation id="4430019312045809116">Kelantangan</translation>
@@ -2228,6 +2233,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8287009018010202411">Produktiviti</translation>
 <translation id="828708037801473432">Dimatikan</translation>
 <translation id="8297006494302853456">Lemah</translation>
+<translation id="8300451473979404345">Pemegang yang dipilih, gunakan kekunci anak panah untuk digerakkan</translation>
 <translation id="8308637677604853869">Menu sebelumnya</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock dihidupkan</translation>
@@ -2288,6 +2294,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="851458219935658693">Tunjukkan tetingkap daripada meja semasa, butang radio dipilih</translation>
 <translation id="851660987304951246">Gunakan Bantu saya baca untuk meringkaskan kandungan dengan pantas atau bertanya soalan</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> anda mungkin tidak akan dicas semasa dihidupkan.</translation>
+<translation id="8519329096920173967">Buat carian pada skrin saya dengan Google Lens</translation>
 <translation id="8535393432370007982">Buat asal tertib isihan mengikut warna</translation>
 <translation id="8536886494750559755">Paparkan tetapan Quick Share. Boleh dilihat oleh semua orang selama <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Teks disalin kepada Papan Klip</translation>

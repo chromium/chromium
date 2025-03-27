@@ -36,6 +36,7 @@ struct PresentationFeedback;
 namespace gpu {
 class MemoryTracker;
 class MemoryTypeTracker;
+class SharedContextState;
 }  // namespace gpu
 
 namespace skgpu::graphite {
@@ -140,7 +141,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   // implementations will run |callback| in this call stack.
   // If the |sync_cpu| flag is true this function will return once the gpu
   // has finished with all submitted work.
-  virtual void Submit(bool sync_cpu, base::OnceClosure callback);
+  virtual void Submit(scoped_refptr<gpu::SharedContextState> context_state,
+                      bool sync_cpu,
+                      base::OnceClosure callback);
 
   // Presents the back buffer. Optional `update_rect` represents hint of the
   // rect that was updated in the back buffer. If not specified the whole buffer
@@ -245,8 +248,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
       const std::optional<gfx::Rect>& damage_area = std::nullopt,
       std::vector<gpu::Mailbox> released_overlays = {});
 
-  // TODO(crbug.com/40266876): Reset device on context loss to fix dangling ptr.
-  const raw_ptr<GrDirectContext, DanglingUntriaged> gr_context_;
   const raw_ptr<skgpu::graphite::Context> graphite_context_;
 
   OutputSurface::Capabilities capabilities_;

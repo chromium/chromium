@@ -61,6 +61,7 @@ std::unique_ptr<::boca::OnTaskConfig> OnTaskConfigMojomToProto(
   auto on_task_config = std::make_unique<::boca::OnTaskConfig>();
   auto* active_bundle = on_task_config->mutable_active_bundle();
   active_bundle->set_locked(config->is_locked);
+  active_bundle->set_lock_to_app_home(config->is_paused);
 
   for (auto& item : config->tabs) {
     auto* content_config = active_bundle->mutable_content_configs()->Add();
@@ -126,7 +127,9 @@ mojom::ConfigPtr SessionConfigProtoToMojom(::boca::Session* session) {
               tab.locked_navigation_options().navigation_type())));
     }
     on_task_config = mojom::OnTaskConfig::New(
-        session_on_task_config.active_bundle().locked(), std::move(tabs));
+        session_on_task_config.active_bundle().locked(),
+        session_on_task_config.active_bundle().lock_to_app_home(),
+        std::move(tabs));
   }
   mojom::IdentityPtr teacher;
   if (session->has_teacher()) {

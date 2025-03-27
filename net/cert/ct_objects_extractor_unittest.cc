@@ -101,9 +101,8 @@ TEST_F(CTObjectsExtractorTest, ExtractPrecert) {
   // Should have empty leaf cert for this log entry type.
   ASSERT_TRUE(entry.leaf_certificate.empty());
   // Compare hash values of issuer spki.
-  SHA256HashValue expected_issuer_key_hash;
-  memcpy(expected_issuer_key_hash.data, GetDefaultIssuerKeyHash().data(), 32);
-  ASSERT_EQ(expected_issuer_key_hash, entry.issuer_key_hash);
+  ASSERT_EQ(base::as_byte_span(GetDefaultIssuerKeyHash()),
+            entry.issuer_key_hash);
 }
 
 TEST_F(CTObjectsExtractorTest, ExtractOrdinaryX509Cert) {

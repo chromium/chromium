@@ -7,11 +7,12 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 import android.os.Build;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.HashMap;
@@ -36,18 +37,19 @@ import java.util.Map;
  * enabled on API 30+.
  */
 @UiThread
+@NullMarked
 public final class EdgeToEdgeFieldTrial {
     private static final String TAG = "E2E_fieldtrial";
     private static final int DEFAULT_MIN_VERSION = 30; // VERSION_CODES.R;
 
     /** Instance for EdgeToEdgeBottomChin. */
-    private static EdgeToEdgeFieldTrial sBottomChinOverrides;
+    private static @Nullable EdgeToEdgeFieldTrial sBottomChinOverrides;
 
     /** Instance for EdgeToEdgeEverywhere. */
-    private static EdgeToEdgeFieldTrial sEverywhereOverrides;
+    private static @Nullable EdgeToEdgeFieldTrial sEverywhereOverrides;
 
     @UiThread
-    static @NonNull EdgeToEdgeFieldTrial getBottomChinOverrides() {
+    static EdgeToEdgeFieldTrial getBottomChinOverrides() {
         if (sBottomChinOverrides == null) {
             String oemString = ChromeFeatureList.sEdgeToEdgeBottomChinOemList.getValue();
             String minVersionString =
@@ -58,7 +60,7 @@ public final class EdgeToEdgeFieldTrial {
     }
 
     @UiThread
-    static @NonNull EdgeToEdgeFieldTrial getEverywhereOverrides() {
+    static EdgeToEdgeFieldTrial getEverywhereOverrides() {
         if (sEverywhereOverrides == null) {
             String oemString = ChromeFeatureList.sEdgeToEdgeEverywhereOemList.getValue();
             String minVersionString =
@@ -82,7 +84,7 @@ public final class EdgeToEdgeFieldTrial {
     }
 
     private final Map<String, Integer> mOemMinVersionOverrides;
-    private Boolean mIsSupported;
+    private @Nullable Boolean mIsSupported;
 
     private EdgeToEdgeFieldTrial(String oemString, String minVersionString) {
         mOemMinVersionOverrides = new HashMap<>();

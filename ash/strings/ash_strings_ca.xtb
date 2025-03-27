@@ -551,6 +551,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="2872353916818027657">Canvia el monitor principal</translation>
 <translation id="2872961005593481000">Apaga</translation>
 <translation id="2876338922445400217">Amplia la pantalla</translation>
+<translation id="2876760662374103627">El control amb gestos facials està actiu</translation>
 <translation id="2878884018241093801">No hi ha cap element recent</translation>
 <translation id="2880541185262491188">S'ha intentat introduir el PIN massa vegades. Espera <ph name="TIME_LEFT" /> i torna-ho a provar.</translation>
 <translation id="2883271196820422439">Reprèn les tecles del ratolí</translation>
@@ -1014,6 +1015,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4351244548802238354">Tanca el quadre de diàleg</translation>
 <translation id="4356872429719185452">Mostra els detalls del punt d'accés Wi‐Fi. El punt d'accés Wi‐Fi s'està activant.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  S'està gravant</translation>
+<translation id="4368227575116094370">Crea un full de càlcul de Google</translation>
 <translation id="4371348193907997655">Configuració d'emissió</translation>
 <translation id="4371834685492830207">El PIN només pot contenir caràcters vàlids</translation>
 <translation id="4375482231364171368">Cerca a la barra d'adreces</translation>
@@ -1515,6 +1517,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="595202126637698455">Traça del rendiment activada</translation>
 <translation id="5955304353782037793">aplicació</translation>
 <translation id="5958529069007801266">Usuari supervisat</translation>
+<translation id="596035801491797438">Desactiva el control amb gestos facials</translation>
 <translation id="5960410286721553511">Consulta els fitxers multimèdia i les fotos recents del telèfon</translation>
 <translation id="5965524703725988602">Commuta el tema fosc. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Avança per les finestres</translation>

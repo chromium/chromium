@@ -583,7 +583,7 @@ class WebMediaPlayerMSTest
       const WebString& remote_device_friendly_name) override {}
   void MediaRemotingStopped(int error_code) override {}
   void ResumePlayback() override {}
-  void PausePlayback(PauseReason) override {}
+  void PausePlayback(WebMediaPlayer::PauseReason) override {}
   void DidPlayerStartPlaying() override {}
   void DidPlayerPaused(bool) override {}
   void DidPlayerMutedStatusChange(bool muted) override {}
@@ -1093,7 +1093,7 @@ TEST_P(WebMediaPlayerMSTest, PlayThenPause) {
   else
     EXPECT_CALL(*this, DoStopRendering());
 
-  player_->Pause();
+  player_->Pause(WebMediaPlayer::PauseReason::kPauseCalled);
   auto prev_frame = compositor_->GetCurrentFrame();
   message_loop_controller_.RunAndWaitForStatus(media::PIPELINE_OK);
   auto after_frame = compositor_->GetCurrentFrame();
@@ -1141,7 +1141,7 @@ TEST_P(WebMediaPlayerMSTest, PlayThenPauseThenPlay) {
   else
     EXPECT_CALL(*this, DoStopRendering());
 
-  player_->Pause();
+  player_->Pause(WebMediaPlayer::PauseReason::kPauseCalled);
   auto prev_frame = compositor_->GetCurrentFrame();
   message_loop_controller_.RunAndWaitForStatus(media::PIPELINE_OK);
   auto after_frame = compositor_->GetCurrentFrame();
@@ -1504,7 +1504,7 @@ TEST_P(WebMediaPlayerMSTest, HiddenPlayerTests) {
   EXPECT_FALSE(player_->Paused());
 
   // A user generated pause() should clear the automatic resumption.
-  player_->Pause();
+  player_->Pause(WebMediaPlayer::PauseReason::kPauseCalled);
   delegate_.set_page_hidden(false);
   player_->OnPageShown();
   EXPECT_TRUE(player_->Paused());

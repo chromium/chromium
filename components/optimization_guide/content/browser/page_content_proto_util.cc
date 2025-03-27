@@ -18,7 +18,23 @@
 
 namespace optimization_guide {
 
+class SecurityOriginSerializer {
+ public:
+  static void Serialize(
+      const url::Origin& origin,
+      optimization_guide::proto::SecurityOrigin* proto_origin) {
+    proto_origin->set_opaque(origin.opaque());
+
+    if (origin.opaque()) {
+      proto_origin->set_value(origin.GetNonceForSerialization()->ToString());
+    } else {
+      proto_origin->set_value(origin.Serialize());
+    }
+  }
+};
+
 namespace {
+
 optimization_guide::proto::ContentAttributeType ConvertAttributeType(
     blink::mojom::AIPageContentAttributeType type) {
   switch (type) {
@@ -108,18 +124,6 @@ void ConvertGeometry(const blink::mojom::AIPageContentGeometry& mojom_geometry,
               proto_geometry->mutable_visible_bounding_box());
   proto_geometry->set_is_fixed_or_sticky_position(
       mojom_geometry.is_fixed_or_sticky_position);
-}
-
-void ConvertSecurityOrigin(
-    const url::Origin& origin,
-    optimization_guide::proto::SecurityOrigin* proto_origin) {
-  proto_origin->set_opaque(origin.opaque());
-
-  if (origin.opaque()) {
-    // TODO(khushalsagar) Serialize opaque origins.
-  } else {
-    proto_origin->set_value(origin.Serialize());
-  }
 }
 
 void ConvertNodeInteractionInfo(
@@ -227,8 +231,9 @@ void ConvertImageInfo(
     proto_image_info->set_image_caption(*mojom_image_info.image_caption);
   }
   if (mojom_image_info.source_origin) {
-    ConvertSecurityOrigin(*mojom_image_info.source_origin,
-                          proto_image_info->mutable_security_origin());
+    SecurityOriginSerializer::Serialize(
+        *mojom_image_info.source_origin,
+        proto_image_info->mutable_security_origin());
   }
 }
 
@@ -495,8 +500,9 @@ void ConvertFrameData(
     AIPageContentMetadata& metadata,
     FrameTokenSet& frame_token_set) {
   ConvertFrameMetadata(render_frame_info.url, mojom_frame_data, metadata);
-  ConvertSecurityOrigin(render_frame_info.source_origin,
-                        proto_frame_data->mutable_security_origin());
+  SecurityOriginSerializer::Serialize(
+      render_frame_info.source_origin,
+      proto_frame_data->mutable_security_origin());
   ConvertFrameInteractionInfo(
       *mojom_frame_data.frame_interaction_info,
       proto_frame_data->mutable_frame_interaction_info());

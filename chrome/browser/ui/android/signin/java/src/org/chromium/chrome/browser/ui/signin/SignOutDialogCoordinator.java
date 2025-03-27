@@ -21,7 +21,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -171,6 +170,7 @@ final class SignOutDialogCoordinator {
         // SigninManager.
         final boolean allowDeletingData =
                 UserPrefs.get(profile).getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
+        // TODO(crbug.com/40066949): Remove when ConsentLevel.SYNC becomes unreachable on Android.
         final boolean hasSyncConsent =
                 IdentityServicesProvider.get()
                         .getIdentityManager(profile)
@@ -224,10 +224,6 @@ final class SignOutDialogCoordinator {
             @Override
             public void onClick(PropertyModel model, int buttonType) {
                 if (buttonType == ButtonType.POSITIVE) {
-                    if (mCheckBox.getVisibility() == View.VISIBLE) {
-                        RecordHistogram.recordBooleanHistogram(
-                                "Signin.UserRequestedWipeDataOnSignout", mCheckBox.isChecked());
-                    }
                     boolean forceWipeData =
                             mCheckBox.getVisibility() == View.VISIBLE && mCheckBox.isChecked();
                     signOut(forceWipeData);

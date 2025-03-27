@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Оқуға арналған аккаунттағы деректерді кіру рұқсатынан айырылып қалмай тұрып жеке аккаунтқа тасымалдау үшін Google ұсынған контент тасымалы қолданбасын пайдаланыңыз.</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />" үшін пернелер тіркесімі пайдаланылып жатыр. Жаңа тіркесімді басыңыз. Бар пернелер тіркесімін ауыстыру үшін оны қайта басыңыз.</translation>
 <translation id="1030856839388844477">Дерек трафигін бастапқы күйге қайтару</translation>
+<translation id="1047095725494118091">Жүктеп алу мүмкін емес. Қайталаңыз немесе <ph name="DEVICE_TYPE" /> құрылғысын өшіріп қосыңыз.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> тізбек, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">Жаңа функция қолжетімді. Толығырақ ақпарат алу үшін жоғарыға бағыттауыш пернені қолданыңыз.</translation>
 <translation id="1049663189809099096">пастель сары</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Скринсейверді жүктеп алу</translation>
 <translation id="1094693127011229778">IP мекенжайы жоқ.</translation>
 <translation id="1100902271996134409">Суреттер жасалып жатыр...</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> аудиосы</translation>
 <translation id="1116694919640316211">Мәлімет</translation>
 <translation id="1118572504348554005">Қателерді және сіз бізге хабарлаған басқа мәселелерді шешу үшін осы үлгі арқылы жіберілген пікірді серіктестерімізбен бөлісуіміз мүмкін. Құпия сөздер сияқты құпия ақпаратты қоспаңыз.</translation>
 <translation id="1119403468619527527">Қысқарту үшін сөз тым аз.</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Қараңғы режимді қосу</translation>
 <translation id="2164131940279488868">Аудио жазуды бастау үшін микрофон қосыңыз.</translation>
 <translation id="2173302385160625112">Интернет байланысын тексеріңіз</translation>
+<translation id="2176909213844392588"><ph name="LANGUAGE_NAME" /> транскрипция моделі жүктеп алынбады. Қайталаңыз немесе <ph name="DEVICE_TYPE" /> құрылғысын өшіріп қосыңыз.</translation>
 <translation id="2180197493692062006">Бірдеңе дұрыс болмады. Қолданбаны қайта ашып көріңіз.</translation>
 <translation id="2189104374785738357">APN мәліметтерін өзгерту</translation>
 <translation id="2195732836444333448">Толық жүктемемен жұмыс істеп тұр. Біраз уақыттан кейін қайтып оралыңыз.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Құжат беруші (екі жақты)</translation>
 <translation id="3201315366910775591">Ортақ альбомдарды басқа адамдар жаңарта алады</translation>
 <translation id="3211671540163313381">Кілтті түрлендіру D-pad</translation>
+<translation id="3217462202230355157">Микрофон қосылғанына көз жеткізіңіз немесе <ph name="DEVICE_TYPE" /> құрылғысын өшіріп қосып көріңіз.</translation>
 <translation id="3226405216343213872">Сканерлер ізделуде</translation>
 <translation id="3226657629376379887">Форматтың әрекеттер мәзірі</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> мәнін <ph name="CONVERSION_RATE" /> санына бөлу</translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Эксклюзивті</translation>
 <translation id="3404249063913988450">Скринсейверді қосу</translation>
 <translation id="3413935475507503304">Жаңартуды жалғастыру үшін "Келесі" түймесін басыңыз.</translation>
+<translation id="3416709353545797224">Барлық <ph name="DEVICE_TYPE" /> аудиосын жазу</translation>
 <translation id="3428551088151258685">сыртқы</translation>
 <translation id="3428971106895559033">пастель</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Сканеріңіз қосылып тұруы керек және желі немесе тікелей қосылым арқылы қолжетімді болуы тиіс.</translation>
 <translation id="4159238217853743776">Ішінара</translation>
 <translation id="4159784952369912983">Күлгін</translation>
+<translation id="416219735020840807">Транскрипция моделі жүктеп алынбады. Қайталаңыз немесе <ph name="DEVICE_TYPE" /> құрылғысын өшіріп қосыңыз.</translation>
 <translation id="4170180284036919717">Суретке түсіру</translation>
 <translation id="4170700058716978431">СӘТСІЗ АЯҚТАЛДЫ</translation>
 <translation id="4171077696775491955">жарықтық деңгейін төмендету</translation>
@@ -698,6 +704,16 @@
 <translation id="4249717042534905822">жексенбі күні</translation>
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="4251839292699800785">Стильді кеңсе</translation>
+<translation id="4252261480746798874">"Өзіңіздікін жасау" опциясын таңдасаңыз, арнаулы нұсқау жаза аласыз. Сондай-ақ AI тұсқағазын жекелендіру үшін "Тақырыпты таңдау" опциясын, содан кейін асты сызылған сөздерді таңдауға болады.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI суреттерінің бірегей әрі әртүрлі опцияларын алу үшін "Маған шабыт керек" опциясын таңдаңыз.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Жасанды интеллект көмегімен жеке тұсқағазды жасаған кезде, суреттер жасау және өнімді жақсарту үшін нұсқау <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-дың Құпиялық саясатына<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> сәйкес Google серверлеріне жіберіледі. Жеке, шетін не құпия деректерді қоспаңыз.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Жасампаз жасанды интеллект қателесуі (соның ішінде адамдар туралы) мүмкін, сол себепті жақсылап тексеріңіз. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Толық ақпарат<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP кідірісі</translation>
 <translation id="4266143281602681663">иірімжіп</translation>
 <translation id="4269815121975886860">Іске қосу параметрлері</translation>
@@ -942,6 +958,7 @@
 <translation id="5344619683981067131">Таңдалған мәтін ұсыныспен ауыстырылып жатыр.</translation>
 <translation id="5346687412805619883">Жергілікті желі</translation>
 <translation id="5358174242040570474">Бірдеңе дұрыс болмады. Тұсқағазды қайта таңдап көріңіз немесе қолданбаны қайта ашыңыз.</translation>
+<translation id="5368228070728130240">Қорытынды жазу және атау жасау моделін жүктеп алу мүмкін емес. Қайталаңыз немесе <ph name="DEVICE_TYPE" /> құрылғысын өшіріп қосыңыз.</translation>
 <translation id="5372659122375744710">WiFi желісі қауіпсіз емес.</translation>
 <translation id="5376354385557966694">Автоматты жарық режим</translation>
 <translation id="5378184552853359930">IP түрі</translation>
@@ -1247,6 +1264,7 @@
 <translation id="6766275201586212568">DNS ажыратымдылықтары сәтсіз болды.</translation>
 <translation id="6768237774506518020">DNS ажыратымдылығының ақау көрсеткіші жоғары.</translation>
 <translation id="6786747875388722282">Кеңейтімдер</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" /> аудиосы қосулы кезде, диктофон осы құрылғыда ойнап жатқан барлық аудионы жазып алады.</translation>
 <translation id="6791471867139427246">пернетақта жарығының түсі</translation>
 <translation id="6796229976413584781">Пернелер тіркесімі жойылды</translation>
 <translation id="6798678288485555829">Мәтін навигациясы</translation>
@@ -1718,6 +1736,7 @@
 <translation id="8930622219860340959">Сымсыз</translation>
 <translation id="8933650076320258356">Таңдалған перне — <ph name="DIRECTION" /> бағытқа арналған <ph name="KEYS" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Клиенттің IP мекенжайы</translation>
+<translation id="8938606491880817721">Жүктеп алу мүмкін емес. Қайталаңыз немесе <ph name="DEVICE_TYPE" /> құрылғысын өшіріп қосыңыз.</translation>
 <translation id="8944651180182756621">Іске қосу тақтасының түсі</translation>
 <translation id="8945308580158685341">аралар</translation>
 <translation id="894617464444543719">Бұл — телефон.</translation>

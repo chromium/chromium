@@ -282,6 +282,8 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(PrivateNetworkAccessCheckResult) -->
+
 <enum name="PrivateNetworkAccessCheckResult">
   <int value="0" label="AllowedMissingClientSecurityState"/>
   <int value="1" label="AllowedNoLessPublic"/>
@@ -296,9 +298,11 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="AllowedByPolicyPreflightWarn"/>
   <int value="11" label="BlockedByInconsistentIpAddressSpace"/>
   <int value="12" label="AllowedPotentiallyTrustworthySameOrigin"/>
-  <int value="13" label="LNABlockedByMissingPermission"/>
+  <int value="13" label="LNAPermissionRequired"/>
   <int value="14" label="LNAAllowedByPolicyWarn"/>
 </enum>
+
+<!-- LINT.ThenChange(/services/network/public/cpp/private_network_access_check_result.h:PrivateNetworkAccessCheckResult) -->
 
 <enum name="PrivateNetworkDeviceValidity">
   <int value="0" label="Device exists"/>

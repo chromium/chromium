@@ -3,9 +3,9 @@ Short Name: protobuf
 URL: https://github.com/google/protobuf
 License: BSD-3-Clause
 License File: LICENSE
-Version: 29.3
-CPEPrefix: cpe:/a:google:protobuf:29.3
-Revision: b407e8416e3893036aee5af9a12bd9b6a0e2b2e6
+Version: 30.1
+CPEPrefix: cpe:/a:google:protobuf:30.1
+Revision: 0d815c5b74281f081c1ee4b431a4d5bbb1615c97
 Security Critical: yes
 Shipped: yes
 
@@ -203,11 +203,6 @@ Description of the patches:
 
   Replaces usage of absl internal string routines with std::string::resize().
 
-- 0046-absl-log.patch
-
-  Remove unused includes of absl/log.h (usages have already been updated to
-  absl_log.h i.e. ABSL_LOG). Note this is already fixed on trunk protobuf.
-
 - 0047-perfetto-backcompat.patch
 
   Undoes protobuf breaking change to support Perfetto's use of
@@ -246,7 +241,3 @@ Description of the patches:
   Add the compatability dir to .gitignore as it's unnecessary and contains files
   that trip CheckForTooLargeFiles presubmit.
 
-- 0054-remove-usage-if-absl-internal-if_constexpr.patch
-
-  Remove usage of absl internal if_constexpr. This has been upstreamed in
-  02/19/2025, so this patch can be removed on the roll in v31.

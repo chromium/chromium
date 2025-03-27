@@ -5,6 +5,26 @@
 // Writer API
 // https://github.com/explainers-by-googlers/writing-assistance-apis
 
+enum AIWriterTone { "formal", "neutral", "casual" };
+enum AIWriterFormat { "plain-text", "markdown" };
+enum AIWriterLength { "short", "medium", "long" };
+
+dictionary AIWriterCreateCoreOptions {
+  AIWriterTone tone = "neutral";
+  AIWriterFormat format = "plain-text";
+  AIWriterLength length = "medium";
+
+  sequence<DOMString> expectedInputLanguages;
+  sequence<DOMString> expectedContextLanguages;
+  DOMString outputLanguage;
+};
+
+dictionary AIWriterCreateOptions : AIWriterCreateCoreOptions {
+  AbortSignal signal;
+  AICreateMonitorCallback monitor;
+  DOMString sharedContext;
+};
+
 dictionary AIWriterWriteOptions {
   DOMString context;
   AbortSignal signal;
@@ -17,7 +37,23 @@ dictionary AIWriterWriteOptions {
 ]
 interface AIWriter {
   [
-    Measure,
+    MeasureAs=Writer_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<AIAvailability> availability(
+    optional AIWriterCreateCoreOptions options = {}
+  );
+
+  [
+    MeasureAs=Writer_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<AIWriter> create(optional AIWriterCreateOptions options = {});
+
+  [
+    MeasureAs=Writer_Write,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -26,7 +62,7 @@ interface AIWriter {
     optional AIWriterWriteOptions options = {});
 
   [
-    Measure,
+    MeasureAs=Writer_WriteStreaming,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -36,7 +72,7 @@ interface AIWriter {
   );
 
   [
-    Measure,
+    MeasureAs=Writer_MeasureInputUsage,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -46,26 +82,26 @@ interface AIWriter {
   );
 
   [
-    Measure,
+    MeasureAs=Writer_Destroy,
     CallWith=ScriptState,
     RaisesException
   ]
   void destroy();
 
-  [Measure]
+  [MeasureAs=Writer_SharedContext]
   readonly attribute DOMString sharedContext;
-  [Measure]
+  [MeasureAs=Writer_Tone]
   readonly attribute AIWriterTone tone;
-  [Measure]
+  [MeasureAs=Writer_Format]
   readonly attribute AIWriterFormat format;
-  [Measure]
+  [MeasureAs=Writer_Length]
   readonly attribute AIWriterLength length;
-  [Measure]
+  [MeasureAs=Writer_ExpectedInputLanguages]
   readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
-  [Measure]
+  [MeasureAs=Writer_ExpectedContextLanguages]
   readonly attribute FrozenArray<DOMString>? expectedContextLanguages;
-  [Measure]
+  [MeasureAs=Writer_OutputLanguage]
   readonly attribute DOMString? outputLanguage;
-  [Measure]
+  [MeasureAs=Writer_InputQuota]
   readonly attribute unrestricted double inputQuota;
 };

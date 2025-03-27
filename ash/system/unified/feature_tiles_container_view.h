@@ -63,7 +63,6 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
   void RemovedFromWidget() override;
 
   // views::FocusChangeListener:
-  void OnWillChangeFocus(views::View* before, views::View* now) override;
   void OnDidChangeFocus(views::View* before, views::View* now) override;
 
   // Returns the number of children that are visible.

@@ -112,7 +112,8 @@ class DomLabelTest : public content::RenderViewTest,
                   .call_site = CallTimerState::CallSite::kExtractForm,
                   .last_autofill_agent_reset = {},
                   .last_dom_content_loaded = {},
-              })) {
+              },
+              /*button_titles_cache=*/nullptr)) {
         result.push_back(form.value());
       }
     }

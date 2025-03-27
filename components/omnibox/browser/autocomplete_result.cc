@@ -888,9 +888,7 @@ void AutocompleteResult::AttachPedalsToMatches(
 
 void AutocompleteResult::AttachContextualSearchFulfillmentActionToMatches() {
   for (AutocompleteMatch& match : matches_) {
-    if ((match.provider && match.provider->type() ==
-                               AutocompleteProvider::TYPE_CONTEXTUAL_SEARCH) ||
-        match.subtypes.contains(omnibox::SUBTYPE_CONTEXTUAL_SEARCH)) {
+    if (match.subtypes.contains(omnibox::SUBTYPE_CONTEXTUAL_SEARCH)) {
       match.takeover_action =
           base::MakeRefCounted<ContextualSearchFulfillmentAction>(
               match.destination_url, match.type,

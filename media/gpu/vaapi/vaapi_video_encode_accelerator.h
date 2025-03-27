@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "media/base/bitrate.h"
+#include "media/base/encoder_status.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
@@ -47,10 +48,9 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // VideoEncodeAccelerator implementation.
   SupportedProfiles GetSupportedProfiles() override;
-  bool Initialize(const Config& config,
-                  Client* client,
-
-                  std::unique_ptr<MediaLog> media_log) override;
+  EncoderStatus Initialize(const Config& config,
+                           Client* client,
+                           std::unique_ptr<MediaLog> media_log) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(

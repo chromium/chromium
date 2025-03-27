@@ -27,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "crypto/ec_private_key.h"
+#include "crypto/hash.h"
 #include "crypto/rsa_private_key.h"
 #include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"
@@ -1416,9 +1417,8 @@ void CertBuilder::BuildSctListExtension(const std::string& pre_tbs_certificate,
     ASSERT_TRUE(CBB_init(issuer_spki_cbb.get(), 32));
     ASSERT_TRUE(
         EVP_marshal_public_key(issuer_spki_cbb.get(), issuer_->GetKey()));
-    crypto::SHA256HashString(FinishCBB(issuer_spki_cbb.get()),
-                             entry.issuer_key_hash.data,
-                             sizeof(entry.issuer_key_hash.data));
+    entry.issuer_key_hash = crypto::hash::Sha256(
+        base::as_byte_span(FinishCBB(issuer_spki_cbb.get())));
     entry.tbs_certificate = pre_tbs_certificate;
 
     std::string serialized_log_entry;

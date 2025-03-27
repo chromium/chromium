@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_REWRITER_H_
 
 #include "base/task/sequenced_task_runner.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/ai/ai_rewriter.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_rewriter_create_options.h"
@@ -18,9 +17,13 @@ namespace blink {
 
 // The class that represents a rewriter object.
 class AIRewriter final : public ScriptWrappable,
-                         AIWritingAssistanceBase<mojom::blink::AIRewriter,
-                                                 AIRewriterCreateOptions,
-                                                 AIRewriterRewriteOptions> {
+                         public AIWritingAssistanceBase<
+                             AIRewriter,
+                             mojom::blink::AIRewriter,
+                             mojom::blink::AIManagerCreateRewriterClient,
+                             AIRewriterCreateCoreOptions,
+                             AIRewriterCreateOptions,
+                             AIRewriterRewriteOptions> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -56,12 +59,6 @@ class AIRewriter final : public ScriptWrappable,
   V8AIRewriterTone tone() const { return options_->tone(); }
   V8AIRewriterFormat format() const { return options_->format(); }
   V8AIRewriterLength length() const { return options_->length(); }
-
-  using AIWritingAssistanceBase::expectedContextLanguages;
-  using AIWritingAssistanceBase::expectedInputLanguages;
-  using AIWritingAssistanceBase::inputQuota;
-  using AIWritingAssistanceBase::outputLanguage;
-  using AIWritingAssistanceBase::sharedContext;
 };
 
 }  // namespace blink

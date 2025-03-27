@@ -55,28 +55,26 @@ constexpr char kEmail[] = "foo1@gmail.com";
 
 // Matcher for the banner button.
 id<GREYMatcher> BannerButtonMatcher() {
-  return grey_accessibilityLabel(l10n_util::GetNSString(
+  return chrome_test_util::ButtonWithAccessibilityLabel(l10n_util::GetNSString(
       IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_PRIMARY_ACTION));
 }
 
 // Matcher for the update banner button.
 id<GREYMatcher> UpdateBannerButtonMatcher() {
-  return grey_accessibilityLabel(l10n_util::GetNSString(
+  return chrome_test_util::ButtonWithAccessibilityLabel(l10n_util::GetNSString(
       IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_PRIMARY_ACTION));
 }
 
 // Matcher for the "Save Address" modal button.
 id<GREYMatcher> ModalButtonMatcher() {
-  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                        IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL)),
-                    grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+  return chrome_test_util::ButtonWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
 }
 
 // Matcher for the "Update Address" modal button.
 id<GREYMatcher> UpdateModalButtonMatcher() {
-  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                        IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL)),
-                    grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+  return chrome_test_util::ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+      IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
 }
 
 // Matcher for the modal button.
@@ -87,10 +85,8 @@ id<GREYMatcher> ModalEditButtonMatcher() {
 
 // Matcher for the migration button in modal view.
 id<GREYMatcher> ModalMigrationButtonMatcher() {
-  return grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetNSString(
-          IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL)),
-      grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+  return chrome_test_util::ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+      IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL));
 }
 
 // Matcher for a country entry with the given accessibility label.

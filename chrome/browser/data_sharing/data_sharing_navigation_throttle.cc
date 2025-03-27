@@ -51,8 +51,7 @@ bool ShouldHandleShareURLNavigation(
 std::unique_ptr<content::NavigationThrottle>
 DataSharingNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* handle) {
-  if (base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature)) {
+  if (features::IsDataSharingFunctionalityEnabled()) {
     return std::make_unique<DataSharingNavigationThrottle>(handle);
   }
   return nullptr;

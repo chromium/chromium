@@ -346,6 +346,23 @@ void ExtensionPlatformBrowserTest::DisableExtension(
   extension_registrar()->DisableExtension(extension_id, disable_reasons);
 }
 
+void ExtensionPlatformBrowserTest::UnloadExtension(
+    const extensions::ExtensionId& extension_id) {
+  extension_registrar()->RemoveExtension(extension_id,
+                                         UnloadedExtensionReason::DISABLE);
+}
+
+void ExtensionPlatformBrowserTest::UninstallExtension(
+    const extensions::ExtensionId& extension_id) {
+  extension_registrar()->UninstallExtension(
+      extension_id, UNINSTALL_REASON_FOR_TESTING, nullptr);
+}
+
+void ExtensionPlatformBrowserTest::EnableExtension(
+    const extensions::ExtensionId& extension_id) {
+  extension_registrar()->EnableExtension(extension_id);
+}
+
 content::WebContents* ExtensionPlatformBrowserTest::GetActiveWebContents()
     const {
 #if !BUILDFLAG(IS_ANDROID)

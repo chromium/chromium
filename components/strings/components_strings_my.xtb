@@ -697,7 +697,6 @@
 <translation id="2187317261103489799">ရှာကြည့်ရန် (မူရင်း)</translation>
 <translation id="2188375229972301266">အောက်ခြေတွင် အများအပြားဖောက်ရန်</translation>
 <translation id="2194856509914051091">စဉ်းစားရန် အချက်များ</translation>
-<translation id="2198071643181968308"><ph name="BNPL_ISSUER_NAME" /> အကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="2200678913752027654">လက်မအောက်စိုက် ခလုတ်၊ ဤအကြံပြုချက်ကို သင်မကြိုက်သည့် အကြောင်းရင်းအပေါ် အသေးစိတ်တုံ့ပြန်ချက် ပေးပို့ရန်အတွက် ဖောင်ဖွင့်ရန် Enter ခလုတ်နှိပ်ပါ</translation>
 <translation id="2202627062836089804">သင့်ကတ်၏ ကျောဘက်ခြမ်း</translation>
 <translation id="2204482073374652408">အပ်ဒိတ်လုပ်ခြင်း ပြီးသွားပြီ။</translation>
@@ -1570,6 +1569,7 @@
 <translation id="3715016660240337709">{0,plural, =1{ဖိုင်ကို အပ်လုဒ်လုပ်ခွင့် ပိတ်ထားသည်}other{ဖိုင် <ph name="FILE_COUNT" /> ဖိုင်ကို အပ်လုဒ်လုပ်ခွင့် ပိတ်ထားသည်}}</translation>
 <translation id="3715597595485130451">Wi-Fi ချိတ်ဆက်ရန်</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />ပရောက်စီ၊ firewall နှင့် DNS ပြင်ဆင်သတ်မှတ်မှုကို စစ်ဆေးနေသည်<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">အိုင်ဘီအေအန် (IBAN)</translation>
 <translation id="3723663469265383848">အပ်ဒိတ်လုပ်စဉ် ၁၀ မိနစ်အထိ သင့်စက်ကို သုံး၍ရမည်မဟုတ်ပါ။</translation>
 <translation id="372429172604983730">ဤအမှားအယွင်းကို ဖြစ်စေသည့် အပလီကေးရှင်းများတွင် ဗိုင်းရပ်စ်ကာကွယ်ခြင်း၊ firewall နှင့် ဝဘ်စစ်ထုတ်ခြင်း သို့မဟုတ် ပရောက်စီဆော့ဖ်ဝဲတို့ ပါဝင်ပါသည်။</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Slides တွင် Google တင်ပြမှုအသစ် အမြန်ပြုလုပ်ရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
@@ -1809,6 +1809,7 @@
 <translation id="4150099059797363385">Chinese #4 စာအိတ်</translation>
 <translation id="4151403195736952345">အလုံးစုံဆိုင်ရာ မူလပုံစံကို အသုံးပြုပါ (ထောက်လှမ်းပါ)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{စာမျက်နှာ ၁}other{စာမျက်နှာ {COUNT}}}</translation>
+<translation id="4152670763139331043">{NUM_TABS,plural, =1{တဘ် ၁}other{# တဘ်များ}}</translation>
 <translation id="4154277373259957087">ငွေပေးချေနည်းလမ်းများ မဖြည့်သွင်းမီ Chrome က သင်ဖြစ်ကြောင်း ယခု စိစစ်ပါမည်။ ၎င်းကို <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> တွင် အချိန်မရွေး အပ်ဒိတ်လုပ်နိုင်သည်။</translation>
 <translation id="415440494507469262">နှိုင်းယှဉ်ပြဇယားတွင် တဘ်ထည့်ရန်</translation>
 <translation id="4159784952369912983">ခရမ်း</translation>
@@ -2494,6 +2495,7 @@
 <translation id="5379618281582508161">သင့်စက်အားလုံးတွင် ဤစကားဝှက် ရယူနိုင်ရန် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
 <translation id="5380953781541843508">ငယ်စဉ်ကြီးလိုက်</translation>
 <translation id="5381318171304904246">ရှေ့ဆက်လျှင် သင့်ဘဏ်၏ဝဘ်ဆိုက် ပွင့်လာပါမည်။ အတည်ပြုပြီးပါက သင်၏ဝယ်ယူမှုကို အပြီးသတ်ရန်အတွက် အလိုအလျောက် ပြန်ရောက်လာပါမည်။</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> က တဘ် “<ph name="WEBSITE_TITLE" />” ကို အပ်ဒိတ်လုပ်လိုက်သည်</translation>
 <translation id="5383478552402031184">ကြမ်းခင်းခြင်း</translation>
 <translation id="5385857628869214740">ဟာသ</translation>
 <translation id="5385966243497224160">HTTPS မဟုတ်သည့် URL ကို အစမ်းမကြည့်ရှုနိုင်ပါ</translation>
@@ -2532,7 +2534,6 @@
             <ph name="LIST_ITEM" />ဖောင်များတွင်ထည့်ထားသော အချက်အလက်များ
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">ပြောင်းပြန်အစဉ်ဖြင့် အပေါ်လှန်ထားရန်</translation>
-<translation id="5445340838622821110">ငွေခွဲ၍ပေးချေသောအခါ တစ်ကြိမ်သုံး ပကတိအသွင်ကတ် နံပါတ်ကို ဖြည့်သည်။ ဤနံပါတ်သည် ဤဝယ်ယူမှုအတွက်သာဖြစ်သည်။ <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">၎င်းတို့သိမ်းထားသော သင့်အကြောင်း အချက်အလက်များကို <ph name="SITE" /> အား သုံးခွင့်ပြုရန်</translation>
 <translation id="5451331376824595378">လုံခြုံရေးဆိုင်ရာ ဖြစ်ရပ်များကို Chrome က အလံပြသည့်အခါ ဖြစ်ရပ်နှင့်ပတ်သက်သော သက်ဆိုင်ရာဒေတာကို သင့်စီမံခန့်ခွဲသူထံ ပို့သည်။ ၎င်း၌ Chrome တွင် သင်ဝင်ကြည့်သော စာမျက်နှာများ၏ URL၊ ဒေတာမိတ္တူကူးထားသော စာမျက်နှာများ၏ URL၊ ဖိုင်အမည် (သို့) မက်တာဒေတာ၊ IP လိပ်စာ၊ ဘရောင်ဇာ (သို့) ရပ်တန့်သွားသည့် တဘ်အပြင် ဝဘ်အခြေပြု အပလီကေးရှင်းများ၊ သင့်စက်နှင့် Chrome သို့ လက်မှတ်ထိုးဝင်သည့် အသုံးပြုသူအမည်တို့ ပါဝင်နိုင်သည်။</translation>
 <translation id="5452270690849572955">ဤ <ph name="HOST_NAME" /> စာမျက်နှာကို မတွေ့ပါ</translation>
@@ -3927,6 +3928,7 @@
 <translation id="787226752901403048">တဘ်အုပ်စုများ မျှဝေရန်၊ ပါဝင်ရန်နှင့် စိတ်ကူးများ အတူအကောင်အထည်ဖော်ရန် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="7877007680666472091">ကာကွယ်ထားသည့် အကြောင်းအရာ ID များ</translation>
 <translation id="7878562273885520351">သင့်စကားဝှက် အခိုးခံထားရနိုင်သည်</translation>
+<translation id="7881044256965445977">အိမ်တွင်းကွန်ရက်ရှိ မည်သည့်စက်ကိုမဆို ရှာဖွေချိတ်ဆက်ပါ</translation>
 <translation id="7882421473871500483">အညို</translation>
 <translation id="7886897188117641322">ကြော်ငြာများကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် သုံးနိုင်သည့် ကျယ်ပြန့်သော အကြောင်းအရာအမျိုးအစားများကို ရွေးနိုင်သည်</translation>
 <translation id="7887683347370398519">သင့် CVC အားစစ်ဆေးပြီး ထပ်မံကြိုးစားပါ</translation>
@@ -4000,7 +4002,6 @@
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />သင့်ကွတ်ကီးများ စမ်းဖျက်ကြည့်ရန်<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">၁၀ x ၁၁ လက်မ</translation>
 <translation id="8012647001091218357">သင့်မိဘများကို ယခုမဆက်သွယ်နိုင်သေးပါ။ ကျေးဇူးပြု၍ ထပ်မံကြိုးစားပါ။</translation>
-<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">ခရီးသွား အေဂျင်စီနှင့် ဝန်ဆောင်မှု</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ကို စနစ်၏ မူရင်းဘရောင်ဇာအဖြစ် သတ်မှတ်ရန် တဘ်နှိပ်ပြီး Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="8027077570865220386">ဗန်း ၁၅</translation>
@@ -4684,6 +4685,7 @@
 <translation id="94613679163347541"><ph name="CATEGORY" /> ကို နှိုင်းယှဉ်မလား။</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Google Sites တွင် ဝဘ်ဆိုက်အသစ် အမြန်ပြုလုပ်ရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome သည် ကွတ်ကီးများကို ယနေ့ ထပ်မံကန့်သတ်ပါမည်}=1{Chrome သည် ကွတ်ကီးများကို မနက်ဖြန် ထပ်မံကန့်သတ်ပါမည်}other{Chrome သည် ကွတ်ကီးများကို ထပ်မံကန့်သတ်ရန် # ရက်အလို}}</translation>
+<translation id="949026252328034572">“<ph name="GROUP_NAME" />” တဘ်အုပ်စုတွင် အဖွဲ့ဝင် <ph name="MEMBER_COUNT" /> ဦး ပါဝင်ထားသည်</translation>
 <translation id="949314938206378263">ဤဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန် သင်တောင်းဆိုထားသည်။ Family Link တွင် သင့်မိဘက စာပြန်နိုင်သည်။</translation>
 <translation id="950736567201356821">ထိပ်တွင် သုံးချက်ဖောက်ရန်</translation>
 <translation id="950926967802086924">လျှို့ဝှက်ကီး • Google Password Manager</translation>

@@ -551,6 +551,7 @@
 <translation id="2872353916818027657">Размяна на основния монитор</translation>
 <translation id="2872961005593481000">Изключване</translation>
 <translation id="2876338922445400217">Приближаване на екрана</translation>
+<translation id="2876760662374103627">Управлението с лице е активно</translation>
 <translation id="2878884018241093801">Няма скорошни елементи</translation>
 <translation id="2880541185262491188">Твърде много опити за въвеждане на ПИН кода. Изчакайте <ph name="TIME_LEFT" /> и опитайте отново</translation>
 <translation id="2883271196820422439">Възобвяване на функцията за клавиши за мишката</translation>
@@ -1516,6 +1517,7 @@
 <translation id="595202126637698455">Проследяването на ефективността е активирано</translation>
 <translation id="5955304353782037793">приложение</translation>
 <translation id="5958529069007801266">Контролиран потребител</translation>
+<translation id="596035801491797438">Изключване на управлението с лице</translation>
 <translation id="5960410286721553511">Преглед на скорошните снимки и мултимедийни файлове на телефона ви</translation>
 <translation id="5965524703725988602">Превключване на тъмната тема. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Циклично придвижване напред през прозорците</translation>

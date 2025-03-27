@@ -32,6 +32,9 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'AlreadyChecked',
     'DirectInvocationOnMock',
     'MockNotUsedInProduction',
+    'PatternMatchingInstanceof',
+    'AssignmentExpression',
+    'RuleNotRun',
     # High priority to enable in non-tests:
     'JdkObsolete',
     'ReturnValueIgnored',
@@ -109,9 +112,13 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # Nice to have.
     'StringCharset',
     # Nice to have.
+    'StringConcatToTextBlock',
+    # Nice to have.
     'StringCaseLocaleUsage',
     # Low priority.
     'RedundantControlFlow',
+    # Low priority.
+    'StatementSwitchToExpressionSwitch',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns

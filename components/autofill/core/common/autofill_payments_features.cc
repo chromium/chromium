@@ -157,7 +157,7 @@ BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,
 // card scans.
 BASE_FEATURE(kAutofillEnablePaymentSettingsCardPromoAndScanCard,
              "AutofillEnablePaymentSettingsCardPromoAndScanCard",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the payment settings page will save new cards to the payment
 // server instead of locally.
@@ -183,7 +183,7 @@ BASE_FEATURE(kAutofillEnableSaveAndFill,
 // stored in the local db.
 BASE_FEATURE(kAutofillEnableSyncingOfPixBankAccounts,
              "AutofillEnableSyncingOfPixBankAccounts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // When enabled, Chrome will trigger 3DS authentication during a virtual card

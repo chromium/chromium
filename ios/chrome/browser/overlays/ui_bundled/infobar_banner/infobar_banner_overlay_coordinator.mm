@@ -240,9 +240,6 @@
     case InfobarType::kInfobarTypeTranslate:
       mediatorClass = [TranslateInfobarBannerOverlayMediator class];
       break;
-    case InfobarType::kInfobarTypeParcelTracking:
-      // TODO(crbug.com/391002352): Remove kInfobarTypeParcelTracking
-      NOTREACHED();
     case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
       mediatorClass = [EnhancedSafeBrowsingBannerOverlayMediator class];
       break;

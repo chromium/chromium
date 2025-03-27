@@ -18,11 +18,11 @@ class ImageSearchParamGeneratorTest : public PlatformTest {
  protected:
   void SetUp() override {
     // Set up a TestProfileIOS instance.
-    TestProfileIOS::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    profile_ = std::move(test_cbs_builder).Build();
+    profile_ = std::move(test_profile_builder).Build();
   }
 
   base::test::TaskEnvironment task_environment_;

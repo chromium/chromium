@@ -380,6 +380,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
                         /* tabGroupColor= */ 0,
                         tabGroupTitle,
                         /* tabGroupCollapsed= */ false,
+                        /* isGroupShared= */ false,
                         /* isIncognito= */ false);
         return tabGroupMetadata;
     }

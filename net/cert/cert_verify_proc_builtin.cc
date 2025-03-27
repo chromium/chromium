@@ -13,10 +13,12 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/network_time/time_tracker/time_tracker.h"
+#include "crypto/hash.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
@@ -117,7 +119,38 @@ base::Value::Dict NetLogChromeRootStoreVersion(
   results.Set("version_major", NetLogNumberValue(chrome_root_store_version));
   return results;
 }
-#endif
+
+void HistogramVerify1QwacResult(Verify1QwacResult result) {
+  base::UmaHistogramEnumeration("Net.CertVerifier.Qwac.1Qwac", result);
+}
+
+QwacPoliciesStatus GetQwacPoliciesStatus(
+    const bssl::ParsedCertificate* target) {
+  if (!target->has_policy_oids()) {
+    return QwacPoliciesStatus::kNotQwac;
+  }
+  std::set<bssl::der::Input> target_policy_oids(target->policy_oids().begin(),
+                                                target->policy_oids().end());
+  return Has1QwacPolicies(target_policy_oids);
+}
+
+QwacQcStatementsStatus GetQwacQcStatementsStatus(
+    const bssl::ParsedCertificate* target) {
+  bssl::ParsedExtension qc_statements;
+  if (!target->GetExtension(bssl::der::Input(kQcStatementsOid),
+                            &qc_statements)) {
+    return QwacQcStatementsStatus::kNotQwac;
+  }
+
+  std::optional<std::vector<QcStatement>> parsed_qc_statements =
+      ParseQcStatements(qc_statements.value);
+  if (!parsed_qc_statements.has_value()) {
+    return QwacQcStatementsStatus::kNotQwac;
+  }
+
+  return HasQwacQcStatements(parsed_qc_statements.value());
+}
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 base::Value::List PEMCertValueList(const bssl::ParsedCertificateList& certs) {
   base::Value::List value;
@@ -270,6 +303,10 @@ class CertVerifyProcTrustStore {
       const bssl::ParsedCertificate* trust_anchor) const {
     return additional_trust_store_->GetTrust(trust_anchor).IsTrustAnchor() ||
            system_trust_store_->IsLocallyTrustedRoot(trust_anchor);
+  }
+
+  bssl::TrustStore* eutl_trust_store() {
+    return system_trust_store_->eutl_trust_store();
   }
 #endif
 
@@ -689,10 +726,7 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       return false;
     }
 
-    SHA256HashValue root_fingerprint;
-    crypto::SHA256HashString(root->der_cert().AsStringView(),
-                             root_fingerprint.data,
-                             sizeof(root_fingerprint.data));
+    SHA256HashValue root_fingerprint = crypto::hash::Sha256(root->der_cert());
 
     for (const bssl::der::Input& oid : path->user_constrained_policy_set) {
       if (ev_metadata_->HasEVPolicyOID(root_fingerprint, oid)) {
@@ -745,7 +779,8 @@ class QwacPathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       bssl::CertPathBuilderResultPath* path) override {
     net_log_->BeginEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT);
 
-    if (!Has1QwacPolicies(path->user_constrained_policy_set)) {
+    if (Has1QwacPolicies(path->user_constrained_policy_set) !=
+        QwacPoliciesStatus::kHasQwacPolicies) {
       path->errors.GetErrorsForCert(0)->AddError(kPathLacksQwacPolicy);
     }
 
@@ -1155,8 +1190,12 @@ bssl::CertPathBuilder::Result TryBuildPath(
   // Allow the path builder to discover the explicitly provided intermediates in
   // |input_cert|.
   path_builder.AddCertIssuerSource(intermediates);
-  // TODO(crbug.com/392931068): Should the EUTL certs be added as an
-  // intermediates source for the regular path building?
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  if (base::FeatureList::IsEnabled(features::kVerifyQWACs)) {
+    // Certs on the EUTL are also provided as hints for path building.
+    path_builder.AddCertIssuerSource(trust_store->eutl_trust_store());
+  }
+#endif
 
   // Allow the path builder to discover intermediates through AIA fetching.
   // TODO(crbug.com/40479281): hook up netlog to AIA.
@@ -1475,7 +1514,7 @@ void CertVerifyProcBuiltin::MaybeVerify1QWAC(
     const NetLogWithSource& net_log) {
   CHECK(verified_path);
   CHECK(verified_path->IsValid());
-  // TODO(crbug.com/392931068): histograms
+  // TODO(crbug.com/392931068): EUTL anchor usage histograms
 
   const std::shared_ptr<const bssl::ParsedCertificate>& target =
       verified_path->certs[0];
@@ -1486,25 +1525,19 @@ void CertVerifyProcBuiltin::MaybeVerify1QWAC(
   // doing the full verification if the certificate doesn't even have the
   // policies. The verified user_constrained_policy_set will be checked by
   // QwacPathBuilderDelegateImpl.
-  std::set<bssl::der::Input> target_policy_oids(target->policy_oids().begin(),
-                                                target->policy_oids().end());
-  if (!Has1QwacPolicies(target_policy_oids)) {
-    return;
-  }
+  QwacPoliciesStatus policy_status = GetQwacPoliciesStatus(target.get());
 
-  bssl::ParsedExtension qc_statements;
-  if (!target->GetExtension(bssl::der::Input(kQcStatementsOid),
-                            &qc_statements)) {
-    return;
-  }
+  QwacQcStatementsStatus qc_statement_status =
+      GetQwacQcStatementsStatus(target.get());
 
-  std::optional<std::vector<QcStatement>> parsed_qc_statements =
-      ParseQcStatements(qc_statements.value);
-  if (!parsed_qc_statements.has_value()) {
-    return;
-  }
-
-  if (!HasQwacQcStatements(parsed_qc_statements.value())) {
+  if (policy_status != QwacPoliciesStatus::kHasQwacPolicies ||
+      qc_statement_status != QwacQcStatementsStatus::kHasQwacStatements) {
+    if (policy_status == QwacPoliciesStatus::kNotQwac &&
+        qc_statement_status == QwacQcStatementsStatus::kNotQwac) {
+      HistogramVerify1QwacResult(Verify1QwacResult::kNotQwac);
+    } else {
+      HistogramVerify1QwacResult(Verify1QwacResult::kInconsistentBits);
+    }
     return;
   }
 
@@ -1546,9 +1579,11 @@ void CertVerifyProcBuiltin::MaybeVerify1QWAC(
                    [&] { return NetLogPathBuilderResult(qwac_result); });
 
   if (!qwac_result.HasValidPath()) {
+    HistogramVerify1QwacResult(Verify1QwacResult::kFailedVerification);
     return;
   }
 
+  HistogramVerify1QwacResult(Verify1QwacResult::kValid1Qwac);
   verify_result->cert_status |= CERT_STATUS_IS_QWAC;
 }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)

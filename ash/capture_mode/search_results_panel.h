@@ -80,7 +80,6 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView,
                                uint32_t metrics) override;
 
   // views::FocusChangeListener:
-  void OnWillChangeFocus(View* focused_before, View* focused_now) override;
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
  private:

@@ -270,8 +270,9 @@ int32_t PepperVideoEncoderHost::OnHostMsgInitialize(
       media::VideoEncodeAccelerator::kDefaultFramerate,
       media::VideoEncodeAccelerator::Config::StorageType::kShmem,
       media::VideoEncodeAccelerator::Config::ContentType::kDisplay);
-  if (encoder_->Initialize(config, this))
+  if (encoder_->Initialize(config, this).is_ok()) {
     return PP_OK_COMPLETIONPENDING;
+  }
 
   initialize_reply_context_ = ppapi::host::ReplyMessageContext();
   Close();

@@ -230,11 +230,9 @@ void ContextualCueingHelper::OnCueingDecision(
 
   GetGlicNudgeController()->UpdateNudgeLabel(
       web_contents(), cue_label, /*activity=*/std::nullopt,
-      base::BindRepeating(
-          &ContextualCueingService::OnNudgeActivity,
-          contextual_cueing_service_->GetWeakPtr(), url,
-          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
-          document_available_time));
+      base::BindRepeating(&ContextualCueingService::OnNudgeActivity,
+                          contextual_cueing_service_->GetWeakPtr(),
+                          web_contents(), document_available_time));
 }
 
 // static

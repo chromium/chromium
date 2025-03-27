@@ -417,13 +417,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.Cookies.HasFPSInfo" enum="Boolean"
-    expires_after="M119">
+    expires_after="2025-09-10">
   <owner>tommasin@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>olesiamarukhno@google.com</owner>
   <summary>
     Tracks whether the FPS section was shown in the Cookies subpage. Recorded
     every time Cookie subpage from PageInfo is opened.
+
+    Note: This histogram was expired from M119 until M136.
   </summary>
 </histogram>
 

@@ -22,6 +22,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/svc_layers.h"
@@ -418,8 +419,8 @@ void VP9VaapiVideoEncoderDelegateTest::
   InSequence seq;
 
   constexpr VASurfaceID kDummyVASurfaceID = 123;
-  scoped_refptr<VP9Picture> picture(new VaapiVP9Picture(
-      std::make_unique<VASurfaceHandle>(kDummyVASurfaceID, base::DoNothing())));
+  auto picture = base::MakeRefCounted<VaapiVP9Picture>(
+      std::make_unique<VASurfaceHandle>(kDummyVASurfaceID, base::DoNothing()));
 
   auto encode_job =
       CreateEncodeJob(force_key, expected_spatial_layer_id, end_of_picture,

@@ -35,7 +35,8 @@ class ContextualCueingServiceTest : public testing::Test {
   void SetUp() override {
     InitializeFeatureList();
     service_ = std::make_unique<ContextualCueingService>(
-        &page_content_extraction_service_);
+        &page_content_extraction_service_,
+        /*optimization_guide_keyed_service=*/nullptr);
   }
 
   ContextualCueingService* service() { return service_.get(); }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/json/json_reader.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "chrome/browser/ui/views/autofill/payments/bnpl_tos_dialog.h"
@@ -108,6 +109,16 @@ IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest, DialogAccepted) {
       InvokeUiAndWaitForShow(),
       InAnyContext(PressButton(views::DialogClientView::kOkButtonElementId),
                    WaitForShow(BnplTosDialog::kThrobberId)));
+}
+
+IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest, DialogShownLogged) {
+  base::HistogramTester histogram_tester;
+  RunTestSequence(InvokeUiAndWaitForShow(),
+                  InSameContext(Check([&histogram_tester]() {
+                    return histogram_tester.GetBucketCount(
+                               "Autofill.Bnpl.TosDialogShown.Affirm",
+                               /*sample=*/true) == 1;
+                  })));
 }
 
 IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,

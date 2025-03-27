@@ -560,7 +560,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3380352560400387991">Ta witryna próbuje otworzyć aplikację. Spowoduje to wyjście z trybu incognito.</translation>
 <translation id="3392923070107623576">Większy porządek dzięki grupom kart</translation>
 <translation id="3404232721752787413">Zapisz w Zdjęciach Google</translation>
-<translation id="3404744938087714423">Wylogowanie spowoduje wyłączenie synchronizacji.</translation>
 <translation id="3406506285180498376">Udostępnij stronę…</translation>
 <translation id="340669334496430859">Ostatnia modyfikacja</translation>
 <translation id="3409785640040772790">Mapy</translation>
@@ -780,7 +779,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4334428914252001502">Jeden nieprzeczytany artykuł.</translation>
 <translation id="4338258232580025606">Nie mogę się zalogować</translation>
 <translation id="4338650699862464074">Adresy URL odwiedzanych stron będą wysyłane do Google.</translation>
-<translation id="4342054591427973606">{count,plural, =1{Ten adres zostanie usunięty z tego urządzenia i innych urządzeń, na których się logujesz.}few{Ter adresy zostaną usunięte z tego urządzenia i innych urządzeń, na których się logujesz.}many{Ter adresy zostaną usunięte z tego urządzenia i innych urządzeń, na których się logujesz.}other{Ter adresy zostaną usunięte z tego urządzenia i innych urządzeń, na których się logujesz.}}</translation>
 <translation id="4342946437867096381">Na koncie Google masz już zapisane hasło do tej witryny Google może wybrać najnowsze hasło.</translation>
 <translation id="4365121137632832185">Grupa kart. Rozwinięta.</translation>
 <translation id="4367971618859387374">Wyświetlana nazwa</translation>
@@ -1288,7 +1286,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6447842834002726250">Pliki cookie</translation>
 <translation id="6449554712554071184">Spowoduje to trwałe usunięcie grupy z urządzenia.</translation>
 <translation id="6452534462676960500">Nowa aktywność</translation>
-<translation id="6459307836338400162">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcjach <ph name="BEGIN_LINK" />Synchronizacja<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />Usługi Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Szczegóły zostały ukryte</translation>
 <translation id="646394917185284261">Pliki</translation>
 <translation id="6464397691496239022">Witryny mogą używać plików cookie dla Twojej wygody – na przykład, by zapamiętać Twoje logowanie lub zawartość koszyka.
@@ -1638,7 +1635,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7933880123415105005">Szukaj w <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Dodano stronę do listy Do przeczytania na koncie {email}}few{Dodano {count} strony do listy Do przeczytania na koncie {email}}many{Dodano {count} stron do listy Do przeczytania na koncie {email}}other{Dodano {count} strony do listy Do przeczytania na koncie {email}}}</translation>
-<translation id="7947953824732555851">Zaakceptuj i zaloguj się</translation>
 <translation id="7952670906562503188">Nastąpi usunięcie {passkey_count} kluczy dostępu oraz listy witryn i aplikacji, w przypadku których nie chcesz zapisywać danych logowania. Konta utworzone przez Ciebie w witrynach i aplikacjach nie zostaną usunięte.</translation>
 <translation id="7958575506592576831">Informacje o bezpieczeństwie strony</translation>
 <translation id="7961015016161918242">Nigdy</translation>
@@ -1927,7 +1923,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9013605037177245304">Włącz powiadomienia</translation>
 <translation id="9029650858822697271">Nastąpiło wylogowanie</translation>
 <translation id="9032405509996909363">Potwierdź usunięcie danych przeglądania</translation>
-<translation id="9034759925968272072">Nie spowoduje to wylogowania z konta Google. Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Przepustowość</translation>
 <translation id="9042893549633094279">Prywatność i bezpieczeństwo</translation>
 <translation id="9055580485132823283">Nastąpi usunięcie {password_count} haseł, {passkey_count} kluczy dostępu oraz listy witryn i aplikacji, w przypadku których nie chcesz zapisywać danych logowania. Konta utworzone przez Ciebie w witrynach i aplikacjach nie zostaną usunięte.</translation>

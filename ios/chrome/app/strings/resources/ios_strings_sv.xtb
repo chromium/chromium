@@ -384,6 +384,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2539748786028143624">Aktivera utökat skydd …</translation>
 <translation id="2540111494300686866">Visa inte dialogrutor</translation>
 <translation id="2542268842667970959">Dölj Säkerhetskontroll</translation>
+<translation id="2543870349255816922">Det här kortet visar en prissänkt produkt som du bevakar från en av dina synkroniserade enheter</translation>
 <translation id="2547458583188611426">Synkroniseringen fungerar inte. Ange din lösenfras för att starta synkroniseringen.</translation>
 <translation id="2551153019974022505">Kontofel</translation>
 <translation id="2559843230610279254">Flikgrupp <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> flikar.</translation>
@@ -560,7 +561,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3380352560400387991">Den här webbplatsen försöker öppna en app. Du loggas ut från inkognitoläget.</translation>
 <translation id="3392923070107623576">Håll ordning genom att skapa flikgrupper</translation>
 <translation id="3404232721752787413">Spara i Google Foto</translation>
-<translation id="3404744938087714423">Om du loggar ut inaktiveras synkronisering.</translation>
 <translation id="3406506285180498376">Dela sidan …</translation>
 <translation id="340669334496430859">Senast ändrad</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -780,7 +780,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4334428914252001502">1 oläst artikel.</translation>
 <translation id="4338258232580025606">Det går inte att logga in</translation>
 <translation id="4338650699862464074">Skickar webbadresser till sidor du besöker till Google.</translation>
-<translation id="4342054591427973606">{count,plural, =1{Adressen raderas från den här enheten och dina andra inloggade enheter.}other{Adresserna raderas från den här enheten och dina andra inloggade enheter.}}</translation>
 <translation id="4342946437867096381">Du har redan sparat ett lösenord för den här webbplatsen i Google-kontot. Google kan välja det senaste lösenordet åt dig.</translation>
 <translation id="4365121137632832185">Flikgrupp. Utökad.</translation>
 <translation id="4367971618859387374">Visningsnamn</translation>
@@ -1288,7 +1287,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">Detta raderar gruppen permanent från enheten.</translation>
 <translation id="6452534462676960500">Ny aktivitet</translation>
-<translation id="6459307836338400162">Fler inställningar som rör integritet, säkerhet och datainsamling finns under <ph name="BEGIN_LINK" />Synk<ph name="END_LINK" /> och <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Informationen har dolts</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6464397691496239022">Webbplatser får förbättra surfupplevelsen med hjälp av cookies, till exempel genom att låta dig förbli inloggad eller spara vad du har lagt till i kundvagnen.
@@ -1638,7 +1636,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7933880123415105005">Sök i <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Sidan har lagts till i läslistan i ditt konto, {email}}other{{count} sidor har lagts till i läslistan i ditt konto, {email}}}</translation>
-<translation id="7947953824732555851">Godkänn och logga in</translation>
 <translation id="7952670906562503188">Du håller på att radera {passkey_count} nycklar och listan över webbplatser och appar där du valt att aldrig spara inloggningsuppgifter. Konton som du har skapat för webbplatser och appar raderas inte.</translation>
 <translation id="7958575506592576831">Sidans säkerhetsinfo</translation>
 <translation id="7961015016161918242">Aldrig</translation>
@@ -1927,7 +1924,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9013605037177245304">Aktivera aviseringar</translation>
 <translation id="9029650858822697271">Du loggades ut</translation>
 <translation id="9032405509996909363">Bekräfta att du vill radera webbinformation</translation>
-<translation id="9034759925968272072">Du loggas inte ut från Google-kontot. Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Bandbredd</translation>
 <translation id="9042893549633094279">Integritet och säkerhet</translation>
 <translation id="9055580485132823283">Du är på väg att radera {password_count} lösenord, {passkey_count} nycklar och listan över webbplatser och appar där du valt att aldrig spara inloggningsuppgifter. Konton som du har skapat för webbplatser och appar raderas inte.</translation>

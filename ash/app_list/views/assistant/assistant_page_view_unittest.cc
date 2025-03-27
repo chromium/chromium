@@ -106,9 +106,6 @@ class FocusChangeListenerStub : public views::FocusChangeListener {
     focus_manager_->RemoveFocusChangeListener(this);
   }
 
-  void OnWillChangeFocus(views::View* focused_before,
-                         views::View* focused_now) override {}
-
   void OnDidChangeFocus(views::View* focused_before,
                         views::View* focused_now) override {
     focused_views_.push_back(focused_now);

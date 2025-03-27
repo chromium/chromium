@@ -244,6 +244,14 @@
 [submodule "third_party/gemmlowp/src"]
 	path = third_party/gemmlowp/src
 	url = https://chromium.googlesource.com/external/github.com/google/gemmlowp
+[submodule "third_party/glib/src"]
+	path = third_party/glib/src
+	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/glib
+	gclient-condition = checkout_linux and checkout_mutter
+[submodule "third_party/gvdb/src"]
+	path = third_party/gvdb/src
+	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/gvdb
+	gclient-condition = checkout_linux and checkout_mutter
 [submodule "third_party/freetype/src"]
 	path = third_party/freetype/src
 	url = https://chromium.googlesource.com/chromium/src/third_party/freetype2
@@ -352,34 +360,53 @@
 [submodule "third_party/jetstream/main"]
 	path = third_party/jetstream/main
 	url = https://chromium.googlesource.com/external/github.com/WebKit/JetStream
+	gclient-condition = checkout_press_benchmarks
 [submodule "third_party/jetstream/v2.2"]
 	path = third_party/jetstream/v2.2
 	url = https://chromium.googlesource.com/external/github.com/WebKit/JetStream
+	gclient-condition = checkout_press_benchmarks
 [submodule "third_party/speedometer/main"]
 	path = third_party/speedometer/main
 	url = https://chromium.googlesource.com/external/github.com/WebKit/Speedometer
+	gclient-condition = checkout_press_benchmarks
 [submodule "third_party/speedometer/v3.1"]
 	path = third_party/speedometer/v3.1
 	url = https://chromium.googlesource.com/external/github.com/WebKit/Speedometer
+	gclient-condition = checkout_press_benchmarks
 [submodule "third_party/speedometer/v3.0"]
 	path = third_party/speedometer/v3.0
 	url = https://chromium.googlesource.com/external/github.com/WebKit/Speedometer
+	gclient-condition = checkout_press_benchmarks
 [submodule "third_party/speedometer/v2.1"]
 	path = third_party/speedometer/v2.1
 	url = https://chromium.googlesource.com/external/github.com/WebKit/Speedometer
+	gclient-condition = checkout_press_benchmarks
 [submodule "third_party/speedometer/v2.0"]
 	path = third_party/speedometer/v2.0
 	url = https://chromium.googlesource.com/external/github.com/WebKit/Speedometer
+	gclient-condition = checkout_press_benchmarks
 [submodule "third_party/ukey2/src"]
 	path = third_party/ukey2/src
 	url = https://chromium.googlesource.com/external/github.com/google/ukey2
 [submodule "third_party/cros-components/src"]
 	path = third_party/cros-components/src
 	url = https://chromium.googlesource.com/external/google3/cros_components
+[submodule "third_party/libdisplay-info/src"]
+	path = third_party/libdisplay-info/src
+	url = https://chromium.googlesource.com/external/gitlab.freedesktop.org/emersion/libdisplay-info
+	gclient-condition = checkout_linux and checkout_mutter
 [submodule "third_party/libdrm/src"]
 	path = third_party/libdrm/src
 	url = https://chromium.googlesource.com/chromiumos/third_party/libdrm
 	gclient-condition = checkout_linux
+[submodule "third_party/libgudev/src"]
+	path = third_party/libgudev/src
+	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/libgudev
+	gclient-condition = checkout_linux and checkout_mutter
+[submodule "third_party/libinput/src"]
+	path = third_party/libinput/src
+	url = https://chromium.googlesource.com/external/gitlab.freedesktop.org/libinput/libinput
+	gclient-condition = checkout_linux and checkout_mutter
 [submodule "third_party/expat/src"]
 	path = third_party/expat/src
 	url = https://chromium.googlesource.com/external/github.com/libexpat/libexpat
@@ -449,6 +476,10 @@
 	path = third_party/minigbm/src
 	url = https://chromium.googlesource.com/chromiumos/platform/minigbm
 	gclient-condition = checkout_linux
+[submodule "third_party/mutter/src"]
+	path = third_party/mutter/src
+	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/mutter
+	gclient-condition = checkout_linux and checkout_mutter
 [submodule "third_party/nasm"]
 	path = third_party/nasm
 	url = https://chromium.googlesource.com/chromium/deps/nasm
@@ -896,27 +927,6 @@
 	path = webkit/data/test_shell/plugins
 	url = https://chrome-internal.googlesource.com/chrome/data/webkit_plugin_tests
 	gclient-condition = checkout_src_internal
-[submodule "third_party/libdisplay-info/src"]
-	path = third_party/libdisplay-info/src
-	url = https://chromium.googlesource.com/external/gitlab.freedesktop.org/emersion/libdisplay-info
-	gclient-condition = checkout_linux and checkout_mutter
-[submodule "third_party/libinput/src"]
-	path = third_party/libinput/src
-	url = https://chromium.googlesource.com/external/gitlab.freedesktop.org/libinput/libinput
-	gclient-condition = checkout_linux and checkout_mutter
-[submodule "third_party/gvdb/src"]
-	path = third_party/gvdb/src
-	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/gvdb
-	gclient-condition = checkout_linux and checkout_mutter
-[submodule "third_party/glib/src"]
-	path = third_party/glib/src
-	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/glib
-	gclient-condition = checkout_linux and checkout_mutter
-[submodule "third_party/libgudev/src"]
-	path = third_party/libgudev/src
-	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/libgudev
-	gclient-condition = checkout_linux and checkout_mutter
-[submodule "third_party/mutter/src"]
-	path = third_party/mutter/src
-	url = https://chromium.googlesource.com/external/gitlab.gnome.org/GNOME/mutter
-	gclient-condition = checkout_linux and checkout_mutter
+[submodule "third_party/compiler-rt/src"]
+	path = third_party/compiler-rt/src
+	url = https://chromium.googlesource.com/external/github.com/llvm/llvm-project/compiler-rt

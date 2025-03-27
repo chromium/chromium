@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "components/performance_manager/scenario_api/performance_scenarios.h"
+#include "components/performance_manager/scenario_api/performance_scenario_memory.h"
 
 namespace base {
 class SharedMemoryMapper;

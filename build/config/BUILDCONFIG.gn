@@ -184,6 +184,7 @@ declare_args() {
   # Unsafe buffers. Location of file used by plugins to track portions of
   # the codebase which have been made manifestly safe.
   clang_unsafe_buffers_paths = ""
+  clang_warning_suppression_file = ""
 }
 
 # ==============================================================================

@@ -428,6 +428,8 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
     last_received_should_show_contextual_searchbox_ = should_show;
   }
 
+  void NotifyHandshakeComplete() override {}
+
   void NotifyResultsPanelOpened() override {
     did_notify_results_opened_ = true;
   }
@@ -8259,6 +8261,62 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerIPHBrowserTest,
   // Blocks override allows.
   EXPECT_FALSE(controller->IsUrlEligibleForTutorialIPHForTesting(
       GURL("https://www.d.com/path")));
+}
+
+class LensOverlayControllerIPHWithPathMatchBrowserTest
+    : public LensOverlayControllerBrowserTest {
+ protected:
+  void SetupFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay, {}},
+         {feature_engagement::kIPHLensOverlayFeature,
+          {
+              {"x_url_allow_filters", "[\"*\"]"},
+              {"x_url_block_filters", "[\"a.com/login\",\"d.com\"]"},
+              {"x_url_path_match_allow_patterns",
+               "[\"assignment\",\"homework\"]"},
+              {"x_url_path_match_block_patterns", "[\"tutor\"]"},
+          }}},
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerIPHWithPathMatchBrowserTest,
+                       IsUrlEligibleForTutorialIPH) {
+  WaitForPaint();
+
+  auto* controller = GetLensOverlayController();
+  // Path must match.
+  EXPECT_FALSE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.a.com/")));
+  EXPECT_TRUE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.a.com/assignment")));
+  EXPECT_TRUE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.a.com/homework")));
+  // Match can be in any part of path.
+  EXPECT_TRUE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.b.com/1/anassignmentpage/2")));
+  EXPECT_TRUE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.c.com/your-homework-problem")));
+  // Match is on path, not on domain.
+  EXPECT_FALSE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.homework.com/")));
+  // Match is on path, not on query.
+  EXPECT_FALSE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.c.com/path?assignment=1")));
+  EXPECT_FALSE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.c.com/path?query=homework")));
+  // Match is on path, not on fragment.
+  EXPECT_FALSE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.c.com/path#assignment1")));
+  // Block patterns take precedence over allow patterns.
+  EXPECT_FALSE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.a.com/tutor/assignment")));
+  // x_url_block_filters takes precedence over path matches.
+  EXPECT_FALSE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.a.com/login/assignments")));
+  EXPECT_FALSE(controller->IsUrlEligibleForTutorialIPHForTesting(
+      GURL("https://www.d.com/homework")));
 }
 
 class LensOverlayControllerBrowserSimplifiedSelectionTest

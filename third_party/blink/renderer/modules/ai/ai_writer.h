@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_WRITER_H_
 
 #include "base/task/sequenced_task_runner.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/ai/ai_writer.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_writer_create_options.h"
@@ -17,10 +16,14 @@
 namespace blink {
 
 // The class that represents a writer object.
-class AIWriter final : public ScriptWrappable,
-                       AIWritingAssistanceBase<mojom::blink::AIWriter,
-                                               AIWriterCreateOptions,
-                                               AIWriterWriteOptions> {
+class AIWriter final
+    : public ScriptWrappable,
+      public AIWritingAssistanceBase<AIWriter,
+                                     mojom::blink::AIWriter,
+                                     mojom::blink::AIManagerCreateWriterClient,
+                                     AIWriterCreateCoreOptions,
+                                     AIWriterCreateOptions,
+                                     AIWriterWriteOptions> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -56,12 +59,6 @@ class AIWriter final : public ScriptWrappable,
   V8AIWriterTone tone() const { return options_->tone(); }
   V8AIWriterFormat format() const { return options_->format(); }
   V8AIWriterLength length() const { return options_->length(); }
-
-  using AIWritingAssistanceBase::expectedContextLanguages;
-  using AIWritingAssistanceBase::expectedInputLanguages;
-  using AIWritingAssistanceBase::inputQuota;
-  using AIWritingAssistanceBase::outputLanguage;
-  using AIWritingAssistanceBase::sharedContext;
 };
 
 }  // namespace blink

@@ -81,14 +81,6 @@ export class SettingsLanguagesPageElement extends
   static get properties() {
     return {
       /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
        * Read-only reference to the languages model provided by the
        * 'settings-languages' instance.
        */

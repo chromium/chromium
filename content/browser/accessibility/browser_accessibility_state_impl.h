@@ -78,6 +78,7 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Any currently running assistive tech that should prevent accessibility from
   // being auto-disabled.
   ui::AssistiveTech ActiveAssistiveTech() const override;
+  bool IsAccessibleBrowser() override;
   void SetPerformanceFilteringAllowed(bool enabled) override;
   bool IsPerformanceFilteringAllowed() override;
   base::CallbackListSubscription RegisterFocusChangedCallback(

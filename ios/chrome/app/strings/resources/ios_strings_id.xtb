@@ -560,7 +560,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3380352560400387991">Situs ini mencoba membuka aplikasi. Tindakan ini akan membuat Anda keluar dari mode Samaran.</translation>
 <translation id="3392923070107623576">Tetap teratur dengan membuat grup tab</translation>
 <translation id="3404232721752787413">Simpan di Google Foto</translation>
-<translation id="3404744938087714423">Logout akan menonaktifkan sinkronisasi.</translation>
 <translation id="3406506285180498376">Bagikan halaman…</translation>
 <translation id="340669334496430859">Terakhir Diubah</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -780,7 +779,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4334428914252001502">1 artikel belum dibaca.</translation>
 <translation id="4338258232580025606">Tidak dapat login</translation>
 <translation id="4338650699862464074">Mengirimkan URL halaman yang Anda buka ke Google.</translation>
-<translation id="4342054591427973606">{count,plural, =1{Alamat ini akan dihapus dari perangkat ini dan perangkat lain yang Anda gunakan untuk login.}other{Alamat ini akan dihapus dari perangkat ini dan perangkat lain yang Anda gunakan untuk login.}}</translation>
 <translation id="4342946437867096381">Anda sudah menyimpan sandi untuk situs ini di Akun Google Anda. Google dapat memilih sandi terbaru untuk Anda.</translation>
 <translation id="4365121137632832185">Grup tab. Diluaskan.</translation>
 <translation id="4367971618859387374">Nama tampilan</translation>
@@ -1288,7 +1286,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6449554712554071184">Tindakan ini akan menghapus permanen grup dari perangkat Anda.</translation>
 <translation id="6452534462676960500">Aktivitas baru</translation>
-<translation id="6459307836338400162">Untuk setelan lainnya yang berkaitan dengan privasi, keamanan, dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Sinkronisasi<ph name="END_LINK" /> dan <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Detail disembunyikan</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6464397691496239022">Situs dapat menggunakan cookie untuk menyempurnakan pengalaman penjelajahan Anda, misalnya untuk membuat Anda tetap login atau untuk mengingat item di keranjang belanja Anda.
@@ -1638,7 +1635,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7933880123415105005">Telusuri <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Halaman ditambahkan ke daftar bacaan di akun Anda, {email}}other{{count} halaman ditambahkan ke daftar bacaan di akun Anda, {email}}}</translation>
-<translation id="7947953824732555851">Terima dan masuk</translation>
 <translation id="7952670906562503188">Anda akan menghapus {passkey_count} kunci sandi dan daftar situs &amp; aplikasi yang Anda pilih agar tidak pernah menyimpan info login. Akun apa pun yang Anda buat untuk situs dan aplikasi tidak akan dihapus.</translation>
 <translation id="7958575506592576831">Informasi keamanan halaman</translation>
 <translation id="7961015016161918242">Jangan pernah</translation>
@@ -1927,7 +1923,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9013605037177245304">Aktifkan Notifikasi</translation>
 <translation id="9029650858822697271">Anda telah logout</translation>
 <translation id="9032405509996909363">Konfirmasi penghapusan data penjelajahan</translation>
-<translation id="9034759925968272072">Anda tidak akan dikeluarkan dari Akun Google. Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
 <translation id="9042893549633094279">Privasi dan keamanan</translation>
 <translation id="9055580485132823283">Anda akan menghapus {password_count} sandi, {passkey_count} kunci sandi, dan daftar situs &amp; aplikasi yang Anda pilih agar tidak pernah menyimpan info login. Akun apa pun yang Anda buat untuk situs dan aplikasi tidak akan dihapus.</translation>

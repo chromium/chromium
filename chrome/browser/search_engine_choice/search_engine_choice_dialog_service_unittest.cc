@@ -142,8 +142,7 @@ class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
     // EEA region.
     const CountryId kBelgiumCountryId("BE");
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kSearchEngineChoiceCountry,
-        country_codes::CountryIDToCountryString(kBelgiumCountryId));
+        switches::kSearchEngineChoiceCountry, kBelgiumCountryId.CountryCode());
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
   }

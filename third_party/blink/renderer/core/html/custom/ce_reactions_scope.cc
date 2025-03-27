@@ -20,7 +20,8 @@ CEReactionsScope* CEReactionsScope::Current() {
   return top_of_stack_;
 }
 
-CEReactionsScope::CEReactionsScope() : prev_(top_of_stack_) {
+CEReactionsScope::CEReactionsScope(v8::Isolate* isolate)
+    : prev_(top_of_stack_), try_catch_(isolate) {
   // For speed of the bindings we use a global variable to determine if
   // we have a CEReactionScope. We check that this is only on the main thread
   // otherwise this global variable will have collisions.
@@ -30,14 +31,10 @@ CEReactionsScope::CEReactionsScope() : prev_(top_of_stack_) {
 
 CEReactionsScope::~CEReactionsScope() {
   if (stack_) {
-    DCHECK(try_catch_);
-    v8::Local<v8::Value> original_exception = try_catch_->Exception();
     stack_->PopInvokingReactions();
-    if (!original_exception.IsEmpty()) [[unlikely]] {
-      V8ThrowException::ThrowException(stack_->GetSupplementable()->isolate(),
-                                       original_exception);
-      try_catch_->ReThrow();
-    }
+  }
+  if (try_catch_.HasCaught()) [[unlikely]] {
+    try_catch_.ReThrow();
   }
   top_of_stack_ = top_of_stack_->prev_;
 }
@@ -49,9 +46,6 @@ void CEReactionsScope::EnqueueToCurrentQueue(CustomElementReactionStack& stack,
     stack.Push();
   stack_ = &stack;
   stack.EnqueueToCurrentQueue(element, reaction);
-  if (!try_catch_) {
-    try_catch_.emplace(stack.GetSupplementable()->isolate());
-  }
 }
 
 }  // namespace blink

@@ -223,6 +223,7 @@ public class ApiImplementationLoggerTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("UnusedMethod")
     public void testWebViewClientNonApiMethodsNotRecorded() {
         WebViewClient client =
                 new WebViewClient() {
@@ -245,6 +246,7 @@ public class ApiImplementationLoggerTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("UnusedMethod")
     public void testWebChromeClientNonApiMethodsNotRecorded() {
         WebChromeClient client =
                 new WebChromeClient() {

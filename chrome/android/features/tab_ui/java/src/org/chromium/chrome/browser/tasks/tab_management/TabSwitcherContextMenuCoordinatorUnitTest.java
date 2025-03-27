@@ -32,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -41,6 +42,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.components.collaboration.CollaborationService;
@@ -69,7 +71,9 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
 
     @Mock private TabBookmarker mTabBookmarker;
     @Mock private Supplier<TabModel> mTabModelSupplier;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
+    @Mock private TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private CollaborationService mCollaborationService;
@@ -85,13 +89,19 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
     private ModelList mMenuItemList;
     private Activity mActivity;
     private GURL mUrl;
+    private Token mTabGroupId;
 
     @Before
     public void setUp() {
+        mTabGroupId = Token.createRandom();
+
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(1);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
         when(mTabModelSupplier.get()).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
+        when(mTab.getTabGroupId()).thenReturn(mTabGroupId);
         when(mResources.getDimensionPixelSize(R.dimen.tab_strip_group_context_menu_max_width))
                 .thenReturn(MENU_WIDTH);
 
@@ -102,8 +112,9 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
                 new TabSwitcherContextMenuCoordinator(
                         mActivity,
                         mTabBookmarker,
-                        mTabModelSupplier,
+                        mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
+                        mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
                         mTabGroupSyncService,
                         mCollaborationService,
@@ -138,8 +149,9 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
         TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
-                        mTabModelSupplier,
+                        mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
+                        mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
                         mTabListEditorManager);
 
@@ -152,8 +164,9 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
         TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
-                        mTabModelSupplier,
+                        mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
+                        mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
                         mTabListEditorManager);
 
@@ -162,12 +175,28 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    public void testGetMenuItemClickedCallback_addToNewTabGroup() {
+        TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
+                        mTabBookmarker,
+                        mTabGroupModelFilter,
+                        mTabGroupListBottomSheetCoordinator,
+                        mTabGroupCreationDialogManager,
+                        mShareDelegateSupplier,
+                        mTabListEditorManager);
+
+        callback.onClick(R.id.add_to_new_tab_group, TAB_ID, null);
+        verify(mTabGroupCreationDialogManager).showDialog(mTabGroupId, mTabGroupModelFilter);
+    }
+
+    @Test
     public void testGetMenuItemClickedCallback_addToBookmarks() {
         TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
-                        mTabModelSupplier,
+                        mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
+                        mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
                         mTabListEditorManager);
 
@@ -180,8 +209,9 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
         TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
-                        mTabModelSupplier,
+                        mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
+                        mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
                         mTabListEditorManager);
 
@@ -194,8 +224,9 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
         TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
-                        mTabModelSupplier,
+                        mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
+                        mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
                         mTabListEditorManager);
         callback.onClick(R.id.close_tab, TAB_ID, null);
@@ -207,8 +238,9 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
         TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
-                        mTabModelSupplier,
+                        mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
+                        mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
                         mTabListEditorManager);
 
@@ -222,8 +254,9 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
         TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarker,
-                        mTabModelSupplier,
+                        mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
+                        mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
                         mTabListEditorManager);
 
@@ -232,7 +265,7 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    public void testBuildMenuActionItems() {
+    public void testBuildMenuActionItems_withGroups() {
         mUrl = new GURL("localhost://");
         when(mTab.getUrl()).thenReturn(mUrl);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
@@ -240,6 +273,30 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
         assertEquals(5, mMenuItemList.size());
         assertEquals(
                 R.string.add_tab_to_group,
+                mMenuItemList.get(0).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.string.add_to_bookmarks,
+                mMenuItemList.get(1).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.string.share, mMenuItemList.get(2).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.string.menu_select_tabs,
+                mMenuItemList.get(3).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.string.close_tab,
+                mMenuItemList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
+    }
+
+    @Test
+    public void testBuildMenuActionItems_noGroups() {
+        mUrl = new GURL("localhost://");
+        when(mTab.getUrl()).thenReturn(mUrl);
+        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);
+        mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
+
+        assertEquals(5, mMenuItemList.size());
+        assertEquals(
+                R.string.menu_add_to_new_group,
                 mMenuItemList.get(0).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.string.add_to_bookmarks,

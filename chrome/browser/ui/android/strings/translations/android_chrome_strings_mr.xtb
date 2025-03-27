@@ -250,6 +250,7 @@
 <translation id="2172905120685242547">विंडो बंद करायची आहे का?</translation>
 <translation id="2173302385160625112">तुमचे इंटरनेट कनेक्शन तपासा</translation>
 <translation id="2175927920773552910">QR कोड</translation>
+<translation id="2181097965834437145">बुकमार्क बार दाखवा किंवा लपवा</translation>
 <translation id="2184272387334793084">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="218608176142494674">शेअर करत आहे</translation>
 <translation id="219283042927675668">गटामधील टॅब</translation>
@@ -676,6 +677,7 @@
 <translation id="4195643157523330669">नवीन टॅबमध्ये उघडा</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{या डिव्हाइसवर १ टॅब आहे}other{या डिव्हाइसवर # टॅब आहेत}}</translation>
 <translation id="4198423547019359126">कोणतीही डाउनलोड स्थाने उपलब्ध नाहीत</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • तुम्ही या साइटवर वापरले होते</translation>
 <translation id="4214315110991671325">तुम्ही कुकीना अनुमती दिल्यास, Chrome प्रीलोडिंगसाठी त्यांचा वापर करू शकते.</translation>
 <translation id="4216511743389425832">हे पेज ऐका</translation>
 <translation id="4225725533026049334">फॉलो करत आहे</translation>

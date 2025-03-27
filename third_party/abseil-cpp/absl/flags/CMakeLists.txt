@@ -218,6 +218,7 @@ absl_cc_library(
     absl::flags_internal
     absl::flags_reflection
     absl::core_headers
+    absl::nullability
     absl::strings
 )
 

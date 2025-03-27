@@ -1,0 +1,6 @@
+import("//build/config/python.gni")
+
+python_library("performance_test") {
+  testonly = true
+  pydeps_file = "performance_test.pydeps"
+}

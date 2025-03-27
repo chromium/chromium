@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationStatus;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
@@ -24,6 +25,14 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
     // results. This is especially important if the activity shuts down but the tab is reparented.
     private final Map<DistillabilityObserver, TabDistillabilityProvider> mObserverToProviderMap =
             new HashMap<>();
+
+    /** Histogram name for if any distillation signal was in time for the CPA timeout. */
+    public static final String SIGNAL_ACCUMULATOR_WITHIN_TIMEOUT_HISTOGRAM =
+            "DomDistiller.Android.AnyPageSignalWithinTimeout";
+
+    /** Histogram name for if a positive distillation signal was in time for the CPA timeout. */
+    public static final String SIGNAL_ACCUMULATOR_DISTILLABLE_WITHIN_TIMEOUT_HISTOGRAM =
+            "DomDistiller.Android.DistillablePageSignalWithinTimeout";
 
     @Override
     public void getAction(Tab tab, SignalAccumulator signalAccumulator) {
@@ -103,5 +112,14 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
         // TODO(shaktisahu): Can we merge these into a single method call?
         signalAccumulator.setHasReaderMode(isDistillable);
         signalAccumulator.notifySignalAvailable();
+
+        boolean signalAvailable = !signalAccumulator.hasTimedOut();
+        RecordHistogram.recordBooleanHistogram(
+                SIGNAL_ACCUMULATOR_WITHIN_TIMEOUT_HISTOGRAM, signalAvailable);
+        // Record if the signal counted when a page was distillable.
+        if (isDistillable) {
+            RecordHistogram.recordBooleanHistogram(
+                    SIGNAL_ACCUMULATOR_DISTILLABLE_WITHIN_TIMEOUT_HISTOGRAM, signalAvailable);
+        }
     }
 }

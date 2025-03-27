@@ -690,10 +690,10 @@ TEST_F(WebFrameTest, ExecuteScriptWithPromiseWithoutWait) {
   // Since the caller specified the script shouldn't wait for the promise to
   // be resolved, the callback should have completed normally and the result
   // value should be the promise.
-  // As `V8ValueConverterForTest` fails to convert the promise to `base::Value`,
-  // the callback receives `std::nullopt`.
+  // `V8ValueConverterForTest` converts the promise to `base::Value` which the
+  // callback receives.
   EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_FALSE(callback_helper.HasAnyResults());
+  EXPECT_TRUE(callback_helper.HasAnyResults());
 }
 
 TEST_F(WebFrameTest, ExecuteScriptWithPromiseFulfilled) {

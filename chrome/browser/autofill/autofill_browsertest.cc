@@ -260,7 +260,7 @@ class AutofillTest : public InProcessBrowserTest {
     return WaitForMatchingForm(autofill_manager(),
                                base::BindRepeating(
                                    [](size_t n, const FormStructure& form) {
-                                     return form.active_field_count() == n;
+                                     return form.fields().size() == n;
                                    },
                                    n));
   }

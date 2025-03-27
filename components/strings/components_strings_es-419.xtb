@@ -505,6 +505,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1846432862466000825">Plástico (archivo)</translation>
 <translation id="1848640291751752317">descargas</translation>
 <translation id="1848982255014129637">Foto (brillo intenso)</translation>
+<translation id="1849438148665368129">La compra debe ser inferior a <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="1853392626017747777">Se cerró el diálogo de inscripción de tarjeta virtual</translation>
 <translation id="1854180393107901205">Detener transmisión</translation>
 <translation id="1855370856221982654">Boxeo</translation>
@@ -695,7 +696,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2187317261103489799">Detectar (predeterminado)</translation>
 <translation id="2188375229972301266">Perforaciones múltiples en la parte inferior</translation>
 <translation id="2194856509914051091">Aspectos para tener en cuenta</translation>
-<translation id="2198071643181968308">Más información acerca de <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Botón No me gusta, presiona Intro para abrir un formulario y enviar comentarios detallados sobre los motivos por los que no te gusta esta sugerencia</translation>
 <translation id="2202627062836089804">dorso de tu tarjeta</translation>
 <translation id="2204482073374652408">Finalizó la actualización.</translation>
@@ -900,6 +900,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2539524384386349900">Detectar</translation>
 <translation id="2541219929084442027">Una vez que cierres todas las pestañas de incógnito, las páginas que hayas visitado en ese modo no se guardarán en el historial del navegador, en la lista de cookies ni en el historial de búsqueda. Sí se guardarán los archivos que descargues y los favoritos que crees.</translation>
 <translation id="2542106216580219892">Surf</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – Para salir de la pantalla completa, mantén presionado |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Tu administrador reinició el dispositivo</translation>
 <translation id="2544644783021658368">Documento único</translation>
 <translation id="254524874071906077">Establecer Chrome como navegador predeterminado</translation>
@@ -1809,6 +1810,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4150099059797363385">Sobre chino n.º 4</translation>
 <translation id="4151403195736952345">Utilizar opción predeterminada global (detectar)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Página 1}other{Página {COUNT}}}</translation>
+<translation id="4152670763139331043">{NUM_TABS,plural, =1{1 pestaña}other{# pestañas}}</translation>
 <translation id="4154277373259957087">Chrome ahora verificará tu identidad antes de completar las formas de pago. Puedes actualizar esta información en cualquier momento en <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Agregar pestaña a la tabla de comparación</translation>
 <translation id="4159784952369912983">Púrpura</translation>
@@ -2167,6 +2169,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4796594887379589189">ID de cuenta del trabajo</translation>
 <translation id="4798269756263412078">Recibe alertas si baja el precio en algún sitio. Las alertas se enviarán a tu correo electrónico.</translation>
 <translation id="4800132727771399293">Verifica la fecha de vencimiento y el CVC, y vuelve a intentarlo.</translation>
+<translation id="4800546479758254481">Se permite la RA</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Instrucciones del administrador de tu dispositivo:</translation>
 <translation id="4811450222531576619">Más información sobre el tema y la fuente</translation>
@@ -2530,7 +2533,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
             <ph name="LIST_ITEM" />La información que ingreses en formularios
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Orden inverso hacia arriba</translation>
-<translation id="5445340838622821110">Cuando pagas a lo largo del tiempo, se completa un número de tarjeta virtual único. Este número es solo para esta compra. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Permitir que <ph name="SITE" /> use la información que guardó sobre ti</translation>
 <translation id="5451331376824595378">Cuando Chrome marca eventos de seguridad, se envían datos relacionados con los eventos a tu administrador. Esta información puede incluir URLs de las páginas que visitas en Chrome, URLs de páginas de las que copiaste datos, nombres de archivos o metadatos, direcciones IP, fallas en el navegador o las pestañas, y el nombre de usuario con el que accedes a aplicaciones basadas en la Web, a tu dispositivo y a Chrome.</translation>
 <translation id="5452270690849572955">No se encuentra esta página <ph name="HOST_NAME" /></translation>
@@ -3027,6 +3029,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6327065120806001832">acceso a la red local</translation>
 <translation id="6328639280570009161">Intenta inhabilitar la predicción de red.</translation>
 <translation id="6335029926534404762">Calzado deportivo</translation>
+<translation id="6336948221660696475">No se permite la RV</translation>
 <translation id="6337133576188860026">Esta acción libera menos de <ph name="SIZE" />. Es posible que algunos sitios se carguen más lento en tu próxima visita.</translation>
 <translation id="6337534724793800597">Filtrar políticas por nombre</translation>
 <translation id="633770708279464947">El valor <ph name="SECURE_DNS_SALT" /> no es válido y no se usará.</translation>
@@ -3070,6 +3073,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6391700400718590966">Se cerró la hoja inferior que indicaba que las credenciales de pago seguro no coinciden</translation>
 <translation id="6392799395081100092">Papel (pergamino)</translation>
 <translation id="6393156038355142111">Sugerir contraseña segura</translation>
+<translation id="6393310910507376797">No admitido por el comercio</translation>
 <translation id="6393956493820063117">Una política del administrador no permite pegar contenido de <ph name="ORIGIN_NAME" /> en esta ubicación</translation>
 <translation id="6394852772105848029">Este sitio quiere abrir la app de <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">Motonetas y ciclomotores</translation>
@@ -3223,6 +3227,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6668389483194953109">Se encontró el nombre del tamaño de papel "custom", pero la propiedad "custom_size" está vacía o no es válida.</translation>
 <translation id="6671169470640320959">Financiación de automóviles</translation>
 <translation id="6671697161687535275">¿Confirmas que quieres quitar la sugerencia de formulario de Chromium?</translation>
+<translation id="6675846980676550611">No se permite la RA</translation>
 <translation id="6677351035258626477">Comida rápida</translation>
 <translation id="6679354743514146922">El navegador Chrome está intentando completar tu contraseña en <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">Se guardó el CVC</translation>
@@ -3710,6 +3715,7 @@ Detalles adicionales:
 <translation id="7512685745044087310">No se puede establecer esta política como verdadera ni como obligatoria. Por esta razón, se cambió a recomendada.</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">Se permitió la RV esta vez</translation>
 <translation id="7517201160922869406">Vehículos todoterreno</translation>
 <translation id="7517414872996418597">Sobre C10</translation>
 <translation id="7518003948725431193">No se encontró una página web para la siguiente dirección web: <ph name="URL" /></translation>
@@ -3928,6 +3934,7 @@ Detalles adicionales:
 <translation id="7887885240995164102">Ingresar al modo de pantalla en pantalla</translation>
 <translation id="7888575728750733395">Propósito de conversión para impresión</translation>
 <translation id="7890748547282909375">Accede a Microsoft OneDrive para guardar la captura de pantalla</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – Para mostrar el cursor, presiona |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">configuración de pagos</translation>
 <translation id="7894280532028510793">Si no hay errores, <ph name="BEGIN_LINK" />prueba ejecutar el diagnóstico de red<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Sobre de 17.7 × 22.8 cm</translation>
@@ -3994,7 +4001,6 @@ Detalles adicionales:
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />Intenta borrar las cookies<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">25.4 × 27.9 cm (10 × 11 in)</translation>
 <translation id="8012647001091218357">No pudimos comunicarnos con tus padres. Vuelve a intentarlo.</translation>
-<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">Agencias y servicios de viajes</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para establecer Chrome como el navegador predeterminado del sistema</translation>
 <translation id="8027077570865220386">Bandeja 15</translation>
@@ -4608,6 +4614,7 @@ Detalles adicionales:
 <translation id="9139318394846604261">Compras</translation>
 <translation id="9140198744651252040">El navegador Chrome quiere usar la huella dactilar para autocompletar contraseñas</translation>
 <translation id="9141013498910525015">Administrar direcciones</translation>
+<translation id="9141672681283222114">Se permitió la RA esta vez</translation>
 <translation id="9143898823728499852">Puedes autocompletar esta tarjeta porque tu cuenta de <ph name="CARD_ISSUER_NAME" /> está vinculada a Google Pay</translation>
 <translation id="9144951720726881238">Fecha de vencimiento:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Accede<ph name="END_LINK" />
@@ -4621,6 +4628,7 @@ Detalles adicionales:
 <translation id="9155646082713385498">Revistas</translation>
 <translation id="9157595877708044936">Configurando...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> puede incluir contenido sensible}other{<ph name="FILE_COUNT" /> archivos pueden incluir contenido sensible}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – Para salir de la pantalla completa, presiona |<ph name="ACCELERATOR" />|</translation>
 <translation id="9165305804774426672">Los sitios que visitas también pueden determinar lo que te gusta en función de tu actividad en el sitio. Por ejemplo, si visitas un sitio que vende calzado para correr largas distancias, el sitio podría inferir que te interesa correr maratones.</translation>
 <translation id="9166851138617700776">Obtén más información sobre los anuncios sugeridos por sitios y la medición de anuncios</translation>
 <translation id="9167054383925257837">Información del navegador y el SO del dispositivo (como las versiones del navegador y el SO)</translation>
@@ -4665,6 +4673,7 @@ Detalles adicionales:
 <translation id="922152298093051471">Personalizar Chrome</translation>
 <translation id="9222403027701923763">Escuela primaria y secundaria (preescolar a bachillerato)</translation>
 <translation id="93020190163435405">Pasantías</translation>
+<translation id="931598121743515856">La compra debe ser superior a <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">¿Quieres permitir que la app de <ph name="APP_NAME" /> configure redes Wi-Fi?</translation>
 <translation id="936602727769022409">Podrías perder el acceso a tu Cuenta de Google. Chromium te recomienda cambiar la contraseña ahora. Deberás acceder a la cuenta.</translation>
@@ -4680,6 +4689,7 @@ Detalles adicionales:
 <translation id="949314938206378263">Solicitaste visitar este sitio. Tu madre o padre puede responder en Family Link.</translation>
 <translation id="950736567201356821">Perforación triple en la parte superior</translation>
 <translation id="950926967802086924">Llave de acceso • Administrador de contraseñas de Google</translation>
+<translation id="955429569736351433">Se permite la RV</translation>
 <translation id="95721182352849470">Amarillo 2</translation>
 <translation id="961663415146723894">Encuadernado en la parte inferior</translation>
 <translation id="961856697154696964">Borrar datos de navegación</translation>

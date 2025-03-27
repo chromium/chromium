@@ -13,6 +13,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
@@ -384,6 +385,9 @@ void TabStripActionContainer::OnTabDeclutterButtonClicked() {
   base::UmaHistogramEnumeration(kDeclutterTriggerOutcomeName,
                                 TriggerOutcome::kAccepted);
   LogDeclutterTriggerBucket(true);
+  browser_->window()->CreateTabSearchBubble(
+      tab_search::mojom::TabSearchSection::kOrganize,
+      tab_search::mojom::TabOrganizationFeature::kDeclutter);
 
   ExecuteHideTabStripNudge(tab_declutter_button_);
 }

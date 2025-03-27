@@ -969,6 +969,16 @@ std::pair<std::u16string, std::u16string> CreditCard::LabelPieces() const {
     return std::make_pair(name_on_card_, std::u16string());
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableNewFopDisplayDesktop)) {
+    if (CardIdentifierForAutofillDisplay().has_value()) {
+      return std::make_pair(CardIdentifierForAutofillDisplay().value(),
+                            NetworkAndLastFourDigits(/*obfuscation_length=*/2));
+    }
+    return std::make_pair(NetworkAndLastFourDigits(/*obfuscation_length=*/2),
+                          std::u16string());
+  }
+
   return std::make_pair(CardNameAndLastFourDigits(), name_on_card_);
 }
 

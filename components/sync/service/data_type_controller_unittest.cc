@@ -12,7 +12,6 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/task_environment.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
@@ -106,7 +105,6 @@ class DataTypeControllerTest : public testing::Test {
   TestDataTypeController* controller() { return &controller_; }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
   NiceMock<MockDataTypeControllerDelegate> mock_delegate_;
   FakeDataTypeProcessor processor_;
   TestDataTypeController controller_;
@@ -184,9 +182,6 @@ TEST_F(DataTypeControllerTest, ConnectWithError) {
   EXPECT_CALL(*delegate(), OnSyncStopping).Times(0);
   EXPECT_CALL(load_models_done, Run(/*error=*/Ne(std::nullopt)));
   activation_request.error_handler.Run(ModelError(FROM_HERE, "Test error"));
-  // TODO(mastiz): We shouldn't need RunUntilIdle() here, but
-  // DataTypeController currently uses task-posting for errors.
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
   histogram_tester.ExpectBucketCount(kStartFailuresHistogram,
                                      DataTypeHistogramValue(kTestDataType), 1);
@@ -300,9 +295,6 @@ TEST_F(DataTypeControllerTest, StopDuringFailedState) {
   ASSERT_TRUE(activation_request.error_handler);
   // Mimic completion for OnSyncStarting(), with an error.
   activation_request.error_handler.Run(ModelError(FROM_HERE, "Test error"));
-  // TODO(mastiz): We shouldn't need RunUntilIdle() here, but
-  // DataTypeController currently uses task-posting for errors.
-  base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(DataTypeController::FAILED, controller()->state());
 
@@ -369,9 +361,6 @@ TEST_F(DataTypeControllerTest, StopWhileStartingWithError) {
   EXPECT_CALL(*delegate(), OnSyncStopping).Times(0);
   EXPECT_CALL(stop_completion, Run());
   activation_request.error_handler.Run(ModelError(FROM_HERE, "Test error"));
-  // TODO(mastiz): We shouldn't need RunUntilIdle() here, but
-  // DataTypeController currently uses task-posting for errors.
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
   histogram_tester.ExpectBucketCount(kStartFailuresHistogram,
                                      DataTypeHistogramValue(kTestDataType),
@@ -411,9 +400,6 @@ TEST_F(DataTypeControllerTest, StopWhileErrorInFlight) {
   base::HistogramTester histogram_tester;
   // In the next loop iteration, the UI thread receives the error.
   activation_request.error_handler.Run(ModelError(FROM_HERE, "Test error"));
-  // TODO(mastiz): We shouldn't need RunUntilIdle() here, but
-  // DataTypeController currently uses task-posting for errors.
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
   histogram_tester.ExpectTotalCount(kStartFailuresHistogram, 0);
   histogram_tester.ExpectTotalCount(kRunFailuresHistogram, 0);
@@ -482,7 +468,6 @@ TEST_F(DataTypeControllerTest, StopAndReportErrorWhileStarting) {
 // Tests that SyncMode is honored when the controller has been constructed
 // with two delegates.
 TEST(DataTypeControllerWithMultiDelegateTest, ToggleSyncMode) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   NiceMock<MockDataTypeControllerDelegate> delegate_for_full_sync_mode;
   NiceMock<MockDataTypeControllerDelegate> delegate_for_transport_mode;
 
@@ -559,9 +544,6 @@ TEST_F(DataTypeControllerTest, ReportErrorAfterLoaded) {
 
   // Now trigger the run-time error.
   activation_request.error_handler.Run(ModelError(FROM_HERE, "Test error"));
-  // TODO(mastiz): We shouldn't need RunUntilIdle() here, but
-  // DataTypeController currently uses task-posting for errors.
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
   histogram_tester.ExpectTotalCount(kRunFailuresHistogram, 0);
   histogram_tester.ExpectBucketCount(kStartFailuresHistogram,
@@ -597,9 +579,6 @@ TEST_F(DataTypeControllerTest, ReportErrorAfterRegisteredWithBackend) {
 
   // Now trigger the run-time error.
   activation_request.error_handler.Run(ModelError(FROM_HERE, "Test error"));
-  // TODO(mastiz): We shouldn't need RunUntilIdle() here, but
-  // DataTypeController currently uses task-posting for errors.
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
   histogram_tester.ExpectTotalCount(kStartFailuresHistogram, 0);
   histogram_tester.ExpectBucketCount(kRunFailuresHistogram,
@@ -641,7 +620,6 @@ TEST_F(DataTypeControllerTest,
   ASSERT_TRUE(activation_request.error_handler);
   // Mimic completion for OnSyncStarting(), with an error.
   activation_request.error_handler.Run(ModelError(FROM_HERE, "Test error"));
-  base::RunLoop().RunUntilIdle();
 
   // ClearMetadataIfStopped() should not be called on Stop() if the state is
   // FAILED.

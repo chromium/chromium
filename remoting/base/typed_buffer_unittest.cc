@@ -99,11 +99,4 @@ TEST(TypedBufferTest, Swap) {
   EXPECT_EQ(right.length(), sizeof(int));
 }
 
-TEST(TypedBufferTest, GetAtOffset) {
-  TypedBuffer<Data> buffer(sizeof(int) * 10);
-  EXPECT_EQ(buffer.get(), buffer.GetAtOffset(0));
-  EXPECT_EQ(reinterpret_cast<Data*>(&buffer->data[9]),
-            buffer.GetAtOffset(sizeof(int) * 9));
-}
-
 }  // namespace remoting

@@ -279,7 +279,7 @@ net::X509Certificate* FindCertificateFromCertificateList(
     std::string_view sha256_hex_hash,
     const net::CertificateList& certs) {
   net::SHA256HashValue hash;
-  if (!base::HexStringToSpan(sha256_hex_hash, hash.data)) {
+  if (!base::HexStringToSpan(sha256_hex_hash, hash)) {
     return nullptr;
   }
 
@@ -414,7 +414,7 @@ class WritableCertLoader : public CertificateManagerPageHandler::CertSource {
     }
 
     net::SHA256HashValue hash;
-    if (!base::HexStringToSpan(sha256_hex_hash, hash.data)) {
+    if (!base::HexStringToSpan(sha256_hex_hash, hash)) {
       return nullptr;
     }
 

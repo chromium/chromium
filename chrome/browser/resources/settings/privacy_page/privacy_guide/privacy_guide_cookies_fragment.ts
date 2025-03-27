@@ -39,14 +39,6 @@ export class PrivacyGuideCookiesFragmentElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /** Cookie control modes for use in bindings. */
       cookieControlsModeEnum_: {
         type: Object,

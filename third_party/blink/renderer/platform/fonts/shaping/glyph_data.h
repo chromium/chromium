@@ -17,6 +17,12 @@
 
 namespace blink {
 
+enum class SafeToBreak : uint8_t { kSafe = 0, kUnsafe = 1 };
+
+inline bool IsSafeToBreak(SafeToBreak value) {
+  return value == SafeToBreak::kSafe;
+}
+
 // Because glyph offsets are often zero, particularly for Latin runs, we hold it
 // in |ShapeResult::RunInfo::GlyphDataCollection::offsets_| for reducing memory
 // usage.
@@ -35,12 +41,22 @@ struct HarfBuzzRunGlyphData {
   HarfBuzzRunGlyphData() = default;
   HarfBuzzRunGlyphData(unsigned glyph,
                        unsigned character_index,
-                       bool safe_to_break_before,
+                       SafeToBreak safe_to_break_before,
                        TextRunLayoutUnit advance)
       : glyph(glyph),
         character_index(character_index),
-        safe_to_break_before(safe_to_break_before),
+        unsafe_to_break_before(static_cast<bool>(safe_to_break_before)),
         advance(advance) {}
+
+  SafeToBreak SafeToBreakBefore() const {
+    return static_cast<SafeToBreak>(unsafe_to_break_before);
+  }
+  bool IsSafeToBreakBefore() const {
+    return blink::IsSafeToBreak(SafeToBreakBefore());
+  }
+  void SetSafeToBreakBefore(SafeToBreak value) {
+    unsafe_to_break_before = static_cast<bool>(value);
+  }
 
   void SetAdvance(TextRunLayoutUnit value) { advance = value; }
   void AddAdvance(TextRunLayoutUnit value) { advance += value; }
@@ -56,7 +72,7 @@ struct HarfBuzzRunGlyphData {
   // |String|, it is the index of UTF16 code unit, and it is always at the
   // HarfBuzz cluster boundary.
   unsigned character_index : kCharacterIndexBits;
-  unsigned safe_to_break_before : 1;
+  unsigned unsafe_to_break_before : 1;
 
   TextRunLayoutUnit advance;
 };

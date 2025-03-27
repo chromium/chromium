@@ -85,9 +85,6 @@ struct CC_EXPORT EffectNode {
   std::optional<gfx::RRectF> backdrop_filter_bounds;
   float backdrop_filter_quality = 1.f;
 
-  // TODO(crbug.com/406004564): Remove unused filters_origin property
-  gfx::PointF filters_origin;
-
   // The element id corresponding to the mask to apply to the filtered backdrop
   // image.
   ElementId backdrop_mask_element_id;

@@ -173,7 +173,8 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
                              LiveTabContext* context,
                              WindowOpenDisposition disposition,
                              sessions::tab_restore::Type session_restore_type,
-                             LiveTab** live_tab);
+                             LiveTab** live_tab,
+                             bool restored_from_group_or_window_context);
 
   // This is a helper function for RestoreEntryById(). Restores a single entry
   // from the `window`. The entry to restore is denoted by `id` and can either

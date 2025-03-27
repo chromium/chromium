@@ -1334,8 +1334,7 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   registry.ForWebUI<ReadAnythingUntrustedUI>()
       .Add<color_change_listener::mojom::PageHandler>();
 
-  if (base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature)) {
+  if (data_sharing::features::IsDataSharingFunctionalityEnabled()) {
     registry.ForWebUI<DataSharingUI>()
         .Add<data_sharing::mojom::PageHandlerFactory>()
         .Add<color_change_listener::mojom::PageHandler>();

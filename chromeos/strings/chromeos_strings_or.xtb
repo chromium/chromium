@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">ରବିବାର ଦିନ</translation>
 <translation id="4250229828105606438">ସ୍କ୍ରିନସଟ</translation>
 <translation id="4251839292699800785">ଷ୍ଟାଇଲିସ ଅଫିସ</translation>
+<translation id="4252261480746798874">ଆପଣ "ଆପଣ ନିଜେ ତିଆରି କରନ୍ତୁ" ଚୟନ କଲେ, ଆପଣ ଏକ କଷ୍ଟମ ପ୍ରମ୍ପ୍ଟ ଲେଖିପାରିବେ। ଆପଣ "ଏକ ଥିମ ବାଛନ୍ତୁ" ମଧ୍ୟ ଚୟନ କରିପାରିବେ ଏବଂ ତା'ପରେ ଆପଣଙ୍କ AI ୱାଲପେପରକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ ଅଣ୍ଡରଲାଇନ ହୋଇଥିବା ଶବ୍ଦଗୁଡ଼ିକୁ ଚୟନ କରିପାରିବେ।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ଅଧିକ ସ୍ୱତନ୍ତ୍ର ଏବଂ ବିଭିନ୍ନ AI ଇମେଜ ବିକଳ୍ପ ପାଇବା ପାଇଁ "ମୋତେ ପ୍ରେରଣା ଦିଅନ୍ତୁ"କୁ ଚୟନ କରନ୍ତୁ।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ଆପଣ ନିଜର ୱାଲପେପର ତିଆରି କରିବା ବେଳେ ଇମେଜ ଜେନେରେଟ କରିବା ଏବଂ ପ୍ରଡକ୍ଟକୁ ଉନ୍ନତ କରିବା ପାଇଁ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleର ସେବାର ସର୍ତ୍ତାବଳୀ ଏବଂ ଗୋପନୀୟତା ନୀତି<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ଅଧୀନରେ Google ସର୍ଭରଗୁଡ଼ିକୁ ପ୍ରମ୍ପ୍ଟ ପଠାଯାଏ। କୌଣସି ବ୍ୟକ୍ତିଗତ, ସମ୍ବେଦନଶୀଳ କିମ୍ବା ଗୋପନୀୟ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ଜେନେରେଟିଭ AI ଭୁଲ କରିପାରେ, ଯେଉଁଥିରେ ଲୋକମାନଙ୍କ ବିଷୟରେ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ, ତେଣୁ ଏହାକୁ ଦୁଇଥର-ଯାଞ୍ଚ କରନ୍ତୁ। <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP ଲାଟେନ୍ସି</translation>
 <translation id="4266143281602681663">ସୂତା ବଲ</translation>
 <translation id="4269815121975886860">ଷ୍ଟାର୍ଟଅପ ପସନ୍ଦ</translation>

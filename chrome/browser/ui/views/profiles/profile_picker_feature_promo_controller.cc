@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 ProfilePickerFeaturePromoController::ProfilePickerFeaturePromoController(
@@ -36,9 +37,12 @@ ui::ElementContext ProfilePickerFeaturePromoController::GetAnchorContext()
   return views::ElementTrackerViews::GetContextForView(profile_picker_view_);
 }
 
-bool ProfilePickerFeaturePromoController::CanShowPromoForElement(
+user_education::FeaturePromoResult
+ProfilePickerFeaturePromoController::CanShowPromoForElement(
     ui::TrackedElement* anchor_element) const {
-  return ProfilePicker::IsOpen();
+  return ProfilePicker::IsOpen()
+             ? user_education::FeaturePromoResult::Success()
+             : user_education::FeaturePromoResult::kBlockedByUi;
 }
 
 const ui::AcceleratorProvider*

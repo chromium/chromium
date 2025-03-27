@@ -213,7 +213,7 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
     return false;
   }
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
  private:
   // We can use the inline storage in a ScriptWrappable when we're in the main

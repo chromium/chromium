@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// SKIP_ABSL_INLINE_NAMESPACE_CHECK
+
 // The testcases in this file are expected to pass or be skipped with any value
 // of ABSL_MIN_LOG_LEVEL
 
@@ -157,6 +159,37 @@ TEST_P(BasicLogTest, Error) {
 
   const int log_line = __LINE__ + 1;
   auto do_log = [] { ABSL_TEST_LOG(ERROR) << "hello world"; };
+
+  if (LoggingEnabledAt(absl::LogSeverity::kError)) {
+    EXPECT_CALL(
+        test_sink,
+        Send(AllOf(
+            SourceFilename(Eq(__FILE__)),
+            SourceBasename(Eq("log_basic_test_impl.inc")),
+            SourceLine(Eq(log_line)), Prefix(IsTrue()),
+            LogSeverity(Eq(absl::LogSeverity::kError)),
+            Timestamp(InMatchWindow()),
+            ThreadID(Eq(absl::base_internal::GetTID())),
+            TextMessage(Eq("hello world")),
+            Verbosity(Eq(absl::LogEntry::kNoVerbosityLevel)),
+            ENCODED_MESSAGE(MatchesEvent(
+                Eq(__FILE__), Eq(log_line), InMatchWindow(),
+                Eq(logging::proto::ERROR), Eq(absl::base_internal::GetTID()),
+                ElementsAre(ValueWithLiteral(Eq("hello world"))))),
+            Stacktrace(IsEmpty()))));
+  }
+
+  test_sink.StartCapturingLogs();
+  do_log();
+}
+
+TEST_P(BasicLogTest, DoNotSubmit) {
+  absl::log_internal::ScopedMinLogLevel scoped_min_log_level(GetParam());
+
+  absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+
+  const int log_line = __LINE__ + 1;
+  auto do_log = [] { ABSL_TEST_LOG(DO_NOT_SUBMIT) << "hello world"; };
 
   if (LoggingEnabledAt(absl::LogSeverity::kError)) {
     EXPECT_CALL(

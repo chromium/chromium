@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_TOOL_INVOCATION_H_
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/stack_allocated.h"
+#include "base/memory/raw_ref.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 
 namespace content {
@@ -23,8 +23,6 @@ namespace actor {
 // wraps an ActionInformation unpacked proto and provides some convenience
 // methods.
 class ToolInvocation {
-  STACK_ALLOCATED();
-
  public:
   using ResultCallback = base::OnceCallback<void(bool)>;
 
@@ -50,6 +48,8 @@ class ToolInvocation {
   // Whether the tool is a page-level action.
   bool IsTargetingPage() const;
 
+  const optimization_guide::proto::ActionInformation& GetActionInfo() const;
+
  private:
   const optimization_guide::proto::ActionTarget& GetActionTarget() const;
 
@@ -58,7 +58,7 @@ class ToolInvocation {
   // TODO(crbug.com/398849001): It'd be better if ActionInformation provided a
   // FrameInfo for non-page targeting actions but it currently doesn't so we
   // have to include the tab to use for tab-targeting actions.
-  tabs::TabInterface& target_tab_;
+  base::raw_ref<tabs::TabInterface> target_tab_;
 };
 
 }  // namespace actor

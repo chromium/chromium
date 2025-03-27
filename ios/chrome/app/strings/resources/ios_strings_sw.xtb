@@ -560,7 +560,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3380352560400387991">Tovuti hii inajaribu kufungua programu. Hatua hii itakuondoa kwenye hali ya faraghani.</translation>
 <translation id="3392923070107623576">Panga shughuli zako kwa kuanzisha vikundi vya vichupo</translation>
 <translation id="3404232721752787413">Hifadhi katika Picha kwenye Google</translation>
-<translation id="3404744938087714423">Hatua ya kuondoka kwenye akaunti huzima kipengele cha kusawazisha.</translation>
 <translation id="3406506285180498376">Tuma ukurasa…</translation>
 <translation id="340669334496430859">Ilibadilishwa Mara ya Mwisho</translation>
 <translation id="3409785640040772790">Ramani</translation>
@@ -780,7 +779,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4334428914252001502">Hujasoma makala 1.</translation>
 <translation id="4338258232580025606">Imeshindwa kuingia katika akaunti</translation>
 <translation id="4338650699862464074">Hutuma URL za kurasa unazotembelea kwa Google.</translation>
-<translation id="4342054591427973606">{count,plural, =1{Anwani hii itafutwa kwenye kifaa hiki na vifaa vingine ulivyotumia kuingia katika akaunti.}other{Anwani hizi zitafutwa kwenye kifaa hiki na vifaa vingine ulivyotumia kuingia katika akaunti.}}</translation>
 <translation id="4342946437867096381">Tayari umehifadhi nenosiri la tovuti hii katika Akaunti yako ya Google. Google inaweza kukuchagulia nenosiri la hivi karibuni zaidi.</translation>
 <translation id="4365121137632832185">Kikundi cha vichupo. Kimepanuliwa.</translation>
 <translation id="4367971618859387374">Jina litakaloonyeshwa</translation>
@@ -1288,7 +1286,6 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6447842834002726250">Vidakuzi</translation>
 <translation id="6449554712554071184">Hatua hii itafuta kabisa kikundi kwenye kifaa chako.</translation>
 <translation id="6452534462676960500">Shughuli mpya</translation>
-<translation id="6459307836338400162">Ili upate mipangilio zaidi inayohusiana na faragha, usalama na ukusanyaji wa data, angalia <ph name="BEGIN_LINK" />Usawazishaji<ph name="END_LINK" /> na <ph name="BEGIN_LINK" />Huduma za Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Maelezo yamefichwa</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6464397691496239022">Tovuti zinaweza kutumia vidakuzi ili kuboresha hali yako ya kuvinjari, kwa mfano, ili kufanya ubaki ukiwa umeingia katika akaunti au kukumbuka bidhaa zilizo kwenye kikapu chako cha ununuzi.
@@ -1638,7 +1635,6 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7933880123415105005">Tafuta <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Ukurasa umewekwa kwenye orodha yako ya kusoma katika akaunti yako, {email}}other{Kurasa {count} zimewekwa kwenye orodha yako ya kusoma katika akaunti yako, {email}}}</translation>
-<translation id="7947953824732555851">Kubali na uingie</translation>
 <translation id="7952670906562503188">Unakaribia kufuta funguo za siri {passkey_count} pamoja na orodha ya tovuti na programu ulizochagua kutohifadhi kamwe maelezo ya kuingia katika akaunti. Akaunti yoyote uliyofungua kwenye tovuti au programu haitafutwa.</translation>
 <translation id="7958575506592576831">Maelezo ya usalama wa ukurasa</translation>
 <translation id="7961015016161918242">Katu</translation>
@@ -1927,7 +1923,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="9013605037177245304">Washa Arifa</translation>
 <translation id="9029650858822697271">Uliondolewa kwenye akaunti</translation>
 <translation id="9032405509996909363">Thibitisha kufuta data ya kuvinjari</translation>
-<translation id="9034759925968272072">Hutaondolewa katika Akaunti yako ya Google. Huenda Akaunti yako ya Google ina aina nyingine za historia ya kuvinjari katika <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Kipimo data</translation>
 <translation id="9042893549633094279">Faragha na usalama</translation>
 <translation id="9055580485132823283">Unakaribia kufuta manenosiri {password_count}, funguo za siri {passkey_count} pamoja na orodha ya tovuti na programu ulizochagua kutohifadhi kamwe maelezo ya kuingia katika akaunti. Akaunti yoyote uliyofungua kwenye tovuti au programu haitafutwa.</translation>

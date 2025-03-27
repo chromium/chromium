@@ -7,7 +7,6 @@
 #include "base/containers/map_util.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -147,7 +146,7 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
         dict.Set(safety_hub::kRevokedStatusDictKeyStr,
                  safety_hub::kFalsePositiveStr);
         UpdateContentSettingValue(hcsm_, url, info, std::move(dict));
-        UMA_HISTOGRAM_COUNTS_100(
+        base::UmaHistogramCounts100(
             "Settings.SafetyHub.DisruptiveNotificationRevocations."
             "FalsePositive.SiteEngagement",
             new_score);
@@ -181,7 +180,7 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
     default_constraint.set_lifetime(safety_hub_util::GetCleanUpThreshold());
     StoreRevokedDisruptiveNotificationPermission(url, default_constraint,
                                                  notification_count);
-    UMA_HISTOGRAM_COUNTS_100(
+    base::UmaHistogramCounts100(
         "Settings.SafetyHub.DisruptiveNotificationRevocations.Proposed."
         "NotificationCount",
         notification_count);
@@ -189,7 +188,7 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
                                   RevocationResult::kRevoke);
     revoked_sites_count++;
   }
-  UMA_HISTOGRAM_COUNTS_100(
+  base::UmaHistogramCounts100(
       "Settings.SafetyHub.DisruptiveNotificationRevocations."
       "RevokedWebsitesCount",
       revoked_sites_count);

@@ -112,12 +112,14 @@ source_set("metrics_pref_names") {
 }
 
 if (!is_cronet_build || is_ios) {
-  # histogram_controller.cc contains a singleton. If this would be part of a static library
+  # These files contain singletons. If they were be part of a static library
   # linked into multiple components (such as //content and //chrome), each component would get
-  # their own copy of this singleton, causing issues. For that reason make sure it is part of
+  # their own copy of these singletons, causing issues. For that reason make sure they are part of
   # a component that can be linked to by multiple other components.
   component("metrics_component") {
     sources = [
+      "android_metrics_helper.cc",
+      "android_metrics_helper.h",
       "histogram_child_process.h",
       "histogram_controller.cc",
       "histogram_controller.h",
@@ -131,6 +133,7 @@ if (!is_cronet_build || is_ios) {
     deps = [
       "//base",
       "//components/metrics/public/mojom:histogram_fetcher_mojo_bindings",
+      "//components/prefs",
     ]
 
     defines = [ "IS_METRICS_IMPL" ]
@@ -147,8 +150,6 @@ if (!is_cronet_build || is_ios) {
 
   static_library("metrics") {
     sources = [
-      "android_metrics_helper.cc",
-      "android_metrics_helper.h",
       "call_stacks/call_stack_profile_metrics_provider.cc",
       "call_stacks/call_stack_profile_metrics_provider.h",
       "child_histogram_fetcher_impl.cc",

@@ -384,6 +384,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2539748786028143624">Ativar Proteção melhorada…</translation>
 <translation id="2540111494300686866">Suprimir caixas diálogo</translation>
 <translation id="2542268842667970959">Oculte a opção "Verificação de segurança"</translation>
+<translation id="2543870349255816922">Este cartão mostra uma queda de preço do seu produto monitorizado num dos seus dispositivos sincronizados</translation>
 <translation id="2547458583188611426">A sincronização não está a funcionar. Para iniciar a sincronização, introduza a sua frase de acesso.</translation>
 <translation id="2551153019974022505">Erro de conta</translation>
 <translation id="2559843230610279254">Grupo de separadores, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> separadores.</translation>
@@ -560,7 +561,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3380352560400387991">Este site está a tentar abrir uma aplicação. Esta ação faz com que saia da Navegação anónima.</translation>
 <translation id="3392923070107623576">Mantenha a organização criando grupos de separadores</translation>
 <translation id="3404232721752787413">Guardar no Google Fotos</translation>
-<translation id="3404744938087714423">Terminar sessão desativa a sincronização.</translation>
 <translation id="3406506285180498376">Partilhar página…</translation>
 <translation id="340669334496430859">Última modificação</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -780,7 +780,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4334428914252001502">1 artigo não lido.</translation>
 <translation id="4338258232580025606">Não é possível iniciar sessão</translation>
 <translation id="4338650699862464074">Envia para a Google os URLs das páginas que visita.</translation>
-<translation id="4342054591427973606">{count,plural, =1{Esta morada vai ser eliminada deste e de outros dispositivos com sessão iniciada}other{Estas moradas vão ser eliminadas deste e de outros dispositivos com sessão iniciada}}</translation>
 <translation id="4342946437867096381">Já guardou uma palavra-passe para este site na sua Conta Google. A Google pode escolher a palavra-passe mais recente para si.</translation>
 <translation id="4365121137632832185">Grupo de separadores Expandido.</translation>
 <translation id="4367971618859387374">Nome a apresentar</translation>
@@ -1288,7 +1287,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">Esta ação elimina permanentemente o grupo do seu dispositivo.</translation>
 <translation id="6452534462676960500">Nova atividade</translation>
-<translation id="6459307836338400162">Para obter mais definições relacionadas com privacidade, segurança e recolha de dados, consulte <ph name="BEGIN_LINK" />Sincronização<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />serviços Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Detalhes ocultados</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6464397691496239022">Os sites podem utilizar cookies para melhorar a experiência de navegação, por exemplo, para manter a sua sessão iniciada ou memorizar os artigos no seu carrinho de compras.
@@ -1638,7 +1636,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7933880123415105005">Pesquise no <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Página adicionada à Lista de leitura na sua conta, {email}}other{{count} páginas adicionadas à Lista de leitura na sua conta {email}}}</translation>
-<translation id="7947953824732555851">Aceitar e in. sessão</translation>
 <translation id="7952670906562503188">Está prestes a eliminar {passkey_count} chaves de acesso e a lista de sites e apps para os quais optou por nunca guardar as informações de início de sessão. As contas que criou para sites e apps não são eliminadas.</translation>
 <translation id="7958575506592576831">Informações de segurança da página</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -1927,7 +1924,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="9013605037177245304">Ativar notificações</translation>
 <translation id="9029650858822697271">A sua sessão foi terminada</translation>
 <translation id="9032405509996909363">Confirmar eliminação de dados de navegação</translation>
-<translation id="9034759925968272072">A sessão na sua Conta Google não é terminada. A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Largura de banda</translation>
 <translation id="9042893549633094279">Privacidade e segurança</translation>
 <translation id="9055580485132823283">Está prestes a eliminar {password_count} palavras-passe, {passkey_count} chaves de acesso e a lista de sites e apps para os quais optou por nunca guardar as informações de início de sessão. As contas que criou para sites e apps não são eliminadas.</translation>

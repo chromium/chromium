@@ -30,6 +30,7 @@ public class TabGroupMetadata {
     private static final String KEY_TAB_GROUP_COLOR = "tabGroupColor";
     private static final String KEY_TAB_GROUP_TITLE = "tabGroupTitle";
     private static final String KEY_TAB_GROUP_COLLAPSED = "tabGroupCollapsed";
+    private static final String KEY_IS_GROUP_SHARED = "isGroupShared";
     private static final String KEY_IS_INCOGNITO = "isIncognito";
 
     public final int rootId;
@@ -40,6 +41,7 @@ public class TabGroupMetadata {
     public final @ColorInt int tabGroupColor;
     @Nullable public final String tabGroupTitle;
     public final boolean tabGroupCollapsed;
+    public final boolean isGroupShared;
     public final boolean isIncognito;
 
     /**
@@ -53,6 +55,7 @@ public class TabGroupMetadata {
      * @param tabGroupColor The color of the tab group.
      * @param tabGroupTitle The title of the tab group.
      * @param tabGroupCollapsed Whether the tab group is currently collapsed.
+     * @param isGroupShared Whether the tab group is shared with other collaborators.
      * @param isIncognito Whether the tab group is in incognito mode.
      */
     public TabGroupMetadata(
@@ -64,6 +67,7 @@ public class TabGroupMetadata {
             @ColorInt int tabGroupColor,
             @Nullable String tabGroupTitle,
             boolean tabGroupCollapsed,
+            boolean isGroupShared,
             boolean isIncognito) {
         this.rootId = rootId;
         this.selectedTabId = selectedTabId;
@@ -73,6 +77,7 @@ public class TabGroupMetadata {
         this.tabGroupColor = tabGroupColor;
         this.tabGroupTitle = tabGroupTitle;
         this.tabGroupCollapsed = tabGroupCollapsed;
+        this.isGroupShared = isGroupShared;
         this.isIncognito = isIncognito;
     }
 
@@ -91,6 +96,7 @@ public class TabGroupMetadata {
         bundle.putInt(KEY_TAB_GROUP_COLOR, tabGroupColor);
         bundle.putString(KEY_TAB_GROUP_TITLE, tabGroupTitle);
         bundle.putBoolean(KEY_TAB_GROUP_COLLAPSED, tabGroupCollapsed);
+        bundle.putBoolean(KEY_IS_GROUP_SHARED, isGroupShared);
         bundle.putBoolean(KEY_IS_INCOGNITO, isIncognito);
         return bundle;
     }
@@ -117,6 +123,7 @@ public class TabGroupMetadata {
                 || !bundle.containsKey(KEY_SOURCE_WINDOW_ID)
                 || !bundle.containsKey(KEY_TAB_GROUP_COLOR)
                 || !bundle.containsKey(KEY_TAB_GROUP_COLLAPSED)
+                || !bundle.containsKey(KEY_IS_GROUP_SHARED)
                 || !bundle.containsKey(KEY_IS_INCOGNITO)) return null;
 
         TabGroupMetadata tabGroupMetadata =
@@ -129,6 +136,7 @@ public class TabGroupMetadata {
                         bundle.getInt(KEY_TAB_GROUP_COLOR),
                         bundle.getString(KEY_TAB_GROUP_TITLE),
                         bundle.getBoolean(KEY_TAB_GROUP_COLLAPSED),
+                        bundle.getBoolean(KEY_IS_GROUP_SHARED),
                         bundle.getBoolean(KEY_IS_INCOGNITO));
         return tabGroupMetadata;
     }
@@ -143,6 +151,7 @@ public class TabGroupMetadata {
                 && sourceWindowId == that.sourceWindowId
                 && tabGroupColor == that.tabGroupColor
                 && tabGroupCollapsed == that.tabGroupCollapsed
+                && isGroupShared == that.isGroupShared
                 && isIncognito == that.isIncognito
                 && Objects.equals(tabGroupId, that.tabGroupId)
                 && Objects.equals(tabIdsToUrls, that.tabIdsToUrls)
@@ -160,6 +169,7 @@ public class TabGroupMetadata {
                 this.tabGroupColor,
                 this.tabGroupTitle,
                 this.tabGroupCollapsed,
+                this.isGroupShared,
                 this.isIncognito);
     }
 
@@ -182,6 +192,8 @@ public class TabGroupMetadata {
                 + '\''
                 + ", isCollapsed="
                 + tabGroupCollapsed
+                + ", isGroupShared="
+                + isGroupShared
                 + ", isIncognito="
                 + isIncognito
                 + '}';

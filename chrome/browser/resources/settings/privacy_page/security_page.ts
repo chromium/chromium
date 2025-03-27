@@ -90,14 +90,6 @@ export class SettingsSecurityPageElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       // <if expr="chrome_root_store_cert_management_ui">
       /**
        * Whether we should show the new cert management UI.

@@ -12,6 +12,7 @@
 #include "base/memory/shared_memory_mapper.h"
 #include "base/memory/structured_shared_memory.h"
 #include "base/types/pass_key.h"
+#include "components/performance_manager/scenario_api/performance_scenario_memory.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "components/performance_manager/scenarios/browser_performance_scenarios.h"
 #include "components/performance_manager/scenarios/performance_scenario_data.h"

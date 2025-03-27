@@ -65,6 +65,7 @@
 #include "ui/accessibility/ax_error_types.h"
 #include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 
 namespace blink {
@@ -340,6 +341,11 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // canvas owner of this object.
   std::optional<std::pair<PhysicalRect, AXID>> GetCanvasElementBounds(
       AXID ax_id);
+
+  std::optional<ui::AXTreeID> GetAXObjectChildAXTreeID(AXID ax_id);
+  void SetAXObjectChildTreeID(AXID ax_id, const ui::AXTreeID& tree_id) {
+    ax_id_to_child_tree_id_.Set(ax_id, tree_id);
+  }
 
   void InlineTextBoxesUpdated(LayoutObject*) override;
 
@@ -1345,6 +1351,16 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Holds the bounds as well as the canvas owner id of objects which had values
   // explicitly set.
   HashMap<AXID, std::pair<PhysicalRect, AXID>> ax_id_to_explicit_bounds_;
+
+  // Map that holds per AXID the ID of another tree that should be attached to
+  // the object as a child tree. This should not be used for iframes since the
+  // child tree for an iframe can be retrieved from the child frame's embedding
+  // token. It should only be used whenever the
+  // `ax::mojom::Action::kStitchChildTree` is sent to the renderer requesting
+  // that another tree is joined with the existing tree. This might be needed
+  // when another tree with some generated content should be stitched into the
+  // current tree.
+  HashMap<AXID, ui::AXTreeID> ax_id_to_child_tree_id_;
 };
 
 // This is the only subclass of AXObjectCache.

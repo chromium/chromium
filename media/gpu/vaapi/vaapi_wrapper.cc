@@ -38,6 +38,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -49,6 +50,7 @@
 #include "base/synchronization/lock.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/pass_key.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "media/base/limits.h"
@@ -1756,8 +1758,8 @@ base::expected<scoped_refptr<VaapiWrapper>, DecoderStatus> VaapiWrapper::Create(
     }
   }
 
-  scoped_refptr<VaapiWrapper> vaapi_wrapper(
-      new VaapiWrapper(std::move(va_display_state_handle), mode));
+  auto vaapi_wrapper = base::MakeRefCounted<VaapiWrapper>(
+      base::PassKey<VaapiWrapper>(), std::move(va_display_state_handle), mode);
   vaapi_wrapper->VaInitialize(report_error_to_uma_cb);
   if (vaapi_wrapper->Initialize(va_profile, encryption_scheme))
     return vaapi_wrapper;
@@ -3233,6 +3235,11 @@ void VaapiWrapper::PreSandboxInitialization(bool allow_disabling_global_lock) {
   // libcmrt.so (platforms that support it)
   VASupportedProfiles::Get();
 }
+
+VaapiWrapper::VaapiWrapper(base::PassKey<VaapiWrapper>,
+                           VADisplayStateHandle va_display_state_handle,
+                           CodecMode mode)
+    : VaapiWrapper(std::move(va_display_state_handle), mode) {}
 
 VaapiWrapper::VaapiWrapper(VADisplayStateHandle va_display_state_handle,
                            CodecMode mode)

@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "base/debug/debugger.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/cdm/cdm_module.h"
@@ -106,6 +108,13 @@ bool CdmServiceBroker::InitializeAndEnsureSandboxed(
 #else
   bool success = instance->Initialize(cdm_path);
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
+
+  // Need to call `BeingDebugged()` before sealing sandbox for Mac, otherwise
+  // behavior does not work.
+  if (base::debug::BeingDebugged()) {
+    instance->SetDebuggerAttached(true);
+    base::UmaHistogramBoolean("Media.EME.CdmProcessDebuggerAttached", true);
+  }
 
   // This may trigger the sandbox to be sealed. After this call, the process is
   // sandboxed.

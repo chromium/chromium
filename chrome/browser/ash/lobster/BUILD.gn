@@ -66,6 +66,7 @@ static_library("lobster") {
     "//net/traffic_annotation:traffic_annotation",
     "//services/data_decoder/public/cpp:cpp",
     "//ui/base/ime/ash",
+    "//ui/chromeos/strings:strings_grit",
     "//ui/display",
   ]
 }

@@ -250,6 +250,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2172905120685242547">Të mbyllet dritarja?</translation>
 <translation id="2173302385160625112">Kontrollo lidhjen e internetit</translation>
 <translation id="2175927920773552910">Kodi QR</translation>
+<translation id="2181097965834437145">Shfaq ose fshih shiritin e faqeshënuesve</translation>
 <translation id="2184272387334793084">Identifikohu për të marrë fjalëkalimet etj. në të gjitha pajisjet e tua</translation>
 <translation id="218608176142494674">Ndarja</translation>
 <translation id="219283042927675668">Skedat te grupi</translation>
@@ -820,6 +821,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restauro grupin e skedave me <ph name="TAB_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />, si një grup të ri skedash në sfond.}other{Restauro grupin e skedave me <ph name="TAB_COUNT_MANY" /> skedë, ngjyrë <ph name="COLOR_NAME" />, si një grup të ri skedash në sfond.}}</translation>
 <translation id="4837753911714442426">Hap opsionet për të printuar faqen</translation>
 <translation id="4844633725025837809">Për më shumë siguri, enkripto fjalëkalimet në pajisjen tënde para se të ruhen në "Menaxherin e fjalëkalimeve të Google"</translation>
+<translation id="4849731766219625109">Përdor llogarinë tënde të <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4850886885716139402">Pamja</translation>
 <translation id="4852014461738377247">Po identifikohesh\u2026</translation>
 <translation id="4860895144060829044">Telefono</translation>
@@ -1557,6 +1559,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8073388330009372546">Hape imazhin në një skedë të re</translation>
 <translation id="8076492880354921740">Skedat</translation>
 <translation id="8078096376109663956">Ndaj vetëm tekstin</translation>
+<translation id="8078348702936632821">Gozhdo këtë shkurtore</translation>
 <translation id="8084114998886531721">Fjalëkalimi i ruajtur</translation>
 <translation id="8084285576995584326">Kontrollo të dhënat e "Llogarisë së Google"</translation>
 <translation id="8084864785646838999">Një pjesë e historikut tënd mund të mos shfaqet këtu. Për të parë të gjithë historikun e Chrome, hap historikun e plotë të Chrome. "Llogaria jote e Google" mund të ketë gjithashtu forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>

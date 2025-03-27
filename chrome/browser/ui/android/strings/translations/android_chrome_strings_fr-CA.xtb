@@ -250,6 +250,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2172905120685242547">Fermer la fenêtre?</translation>
 <translation id="2173302385160625112">Vérifiez votre connexion Internet</translation>
 <translation id="2175927920773552910">Code QR</translation>
+<translation id="2181097965834437145">Afficher ou masquer la barre de favoris</translation>
 <translation id="2184272387334793084">Connectez-vous pour accéder à vos mots de passe et plus encore sur tous vos appareils</translation>
 <translation id="218608176142494674">Partage</translation>
 <translation id="219283042927675668">Onglets dans le groupe</translation>
@@ -820,6 +821,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_ONE" /> onglet, de couleur <ph name="COLOR_NAME" />, en tant que nouveau groupe d'onglets en arrière-plan.}one{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_MANY" /> onglet, de couleur <ph name="COLOR_NAME" />, en tant que nouveau groupe d'onglets en arrière-plan.}other{Restaurer le groupe d'onglets de <ph name="TAB_COUNT_MANY" /> onglets, de couleur <ph name="COLOR_NAME" />, en tant que nouveau groupe d'onglets en arrière-plan.}}</translation>
 <translation id="4837753911714442426">Ouvrir les options d'impression de la page</translation>
 <translation id="4844633725025837809">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le gestionnaire de mots de passe Google</translation>
+<translation id="4849731766219625109">Utiliser votre compte <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4850886885716139402">Affichage</translation>
 <translation id="4852014461738377247">Connexion en cours…</translation>
 <translation id="4860895144060829044">Appeler</translation>
@@ -1557,6 +1559,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8073388330009372546">Ouvrir dans un nouvel onglet</translation>
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8078096376109663956">Partager le texte seulement</translation>
+<translation id="8078348702936632821">Épingler ce raccourci</translation>
 <translation id="8084114998886531721">Mot de passe enregistré</translation>
 <translation id="8084285576995584326">Gérez les données de votre compte Google</translation>
 <translation id="8084864785646838999">Une partie de votre historique peut ne pas s'afficher ici. Pour consulter tout votre historique de Chrome, ouvrez l'historique complet. Par ailleurs, votre compte Google peut contenir d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>

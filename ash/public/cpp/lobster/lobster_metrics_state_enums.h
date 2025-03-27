@@ -115,7 +115,10 @@ enum class LobsterMetricState {
   // recorded when the feature is blocked when in unsupported form factors, i.e.
   // tablet mode.
   kBlockedByFormFactor = 42,
-  kMaxValue = kBlockedByFormFactor,
+  // recorded when the feature is blocked when in unsupported form factors, i.e.
+  // tablet mode.
+  kBlockedByPolicy = 43,
+  kMaxValue = kBlockedByPolicy,
 };
 
 }  // namespace ash

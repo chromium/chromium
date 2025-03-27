@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.access_loss;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.logDialogShownMetric;
 import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsProperties.DETAILS;
 import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsProperties.HELP_BUTTON_CALLBACK;
@@ -15,10 +16,10 @@ import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -32,14 +33,16 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * migration to GMS Core failed. The user is then proposed to either update GMS Core (if it's a
  * valid option) or to run the passwords export flow.
  */
+@NullMarked
 public class PasswordAccessLossDialogSettingsCoordinator {
     private Context mContext;
     private ModalDialogManager mModalDialogManager;
     private PasswordAccessLossDialogSettingsMediator mMediator;
 
+    @Initializer
     public void showPasswordAccessLossDialog(
             Context context,
-            @NonNull ModalDialogManager modalDialogManager,
+            ModalDialogManager modalDialogManager,
             @PasswordAccessLossWarningType int warningType,
             Callback<Context> launchGmsUpdate,
             Runnable launchExportFlow,
@@ -50,7 +53,7 @@ public class PasswordAccessLossDialogSettingsCoordinator {
         mModalDialogManager = modalDialogManager;
         mMediator =
                 new PasswordAccessLossDialogSettingsMediator(
-                        ContextUtils.activityFromContext(context),
+                        assertNonNull(ContextUtils.activityFromContext(context)),
                         modalDialogManager,
                         warningType,
                         launchGmsUpdate,

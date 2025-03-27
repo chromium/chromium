@@ -689,27 +689,11 @@ void HistoryService::AddPartitionedVisitedLinks(
     return;
   }
 
-  // We require each element of the triple-partition key <link url, top-level
-  // site, frame origin> to have a valid value.
-  GURL top_level_or_opener;
-  if (args.top_level_url.has_value() && args.top_level_url->is_valid()) {
-    top_level_or_opener = args.top_level_url.value();
-  } else {
-    // Context clicks may replace their empty or invalid top-level site with a
-    // valid opener value. Check if the navigation transition type matches
-    // context click.
-    if (ui::PageTransitionCoreTypeIs(args.transition,
-                                     ui::PAGE_TRANSITION_LINK)) {
-      if (args.opener.has_value() && args.opener->url.is_valid()) {
-        top_level_or_opener = args.opener->url;
-      }
-    }
-  }
-
   // If we were unable to obtain valid URLs for either of our top-level or
   // frame origin parameters, we cannot successfully construct our
   // triple-partition key and should not add this navigation to the hashtable.
-  if (!top_level_or_opener.is_valid() || !args.referrer.is_valid()) {
+  if (!args.top_level_url.has_value() || !args.top_level_url->is_valid() ||
+      !args.referrer.is_valid()) {
     return;
   }
 
@@ -722,12 +706,12 @@ void HistoryService::AddPartitionedVisitedLinks(
     DCHECK_EQ(args.url, args.redirects.back());
     for (const GURL& redirect : args.redirects) {
       // All redirects originate from the same top-level site and frame origin.
-      VisitedLink link = {redirect, net::SchemefulSite(top_level_or_opener),
+      VisitedLink link = {redirect, net::SchemefulSite(*args.top_level_url),
                           url::Origin::Create(args.referrer)};
       visit_delegate_->AddVisitedLink(link);
     }
   } else {
-    VisitedLink link = {args.url, net::SchemefulSite(top_level_or_opener),
+    VisitedLink link = {args.url, net::SchemefulSite(*args.top_level_url),
                         url::Origin::Create(args.referrer)};
     visit_delegate_->AddVisitedLink(link);
   }

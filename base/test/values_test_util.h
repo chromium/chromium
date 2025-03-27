@@ -17,33 +17,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-
-// All the functions below expect that the value for the given path in
-// the given dictionary equals the given expected value.
-
-void ExpectDictBooleanValue(bool expected_value,
-                            const Value::Dict& dict,
-                            std::string_view path);
-
-void ExpectDictIntegerValue(int expected_value,
-                            const Value::Dict& dict,
-                            std::string_view path);
-
-void ExpectDictStringValue(std::string_view expected_value,
-                           const Value::Dict& dict,
-                           std::string_view path);
-
-void ExpectDictValue(const Value::Dict& expected_value,
-                     const Value::Dict& dict,
-                     std::string_view path);
-
-void ExpectDictValue(const Value& expected_value,
-                     const Value::Dict& dict,
-                     std::string_view path);
-
-namespace test {
-
+namespace base::test {
 namespace internal {
 
 // Default parsing options for the json util functions. By default, the content
@@ -244,7 +218,6 @@ enum class WriteJsonError {
 expected<void, WriteJsonError> WriteJsonFile(const FilePath& json_file_path,
                                              ValueView root);
 
-}  // namespace test
-}  // namespace base
+}  // namespace base::test
 
 #endif  // BASE_TEST_VALUES_TEST_UTIL_H_

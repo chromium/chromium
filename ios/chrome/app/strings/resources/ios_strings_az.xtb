@@ -560,7 +560,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3380352560400387991">Bu sayt tətbiqi açmağa çalışır. Anonim rejimdən çıxacaqsınız.</translation>
 <translation id="3392923070107623576">Tab qrupları yaradaraq nizamlı qalın</translation>
 <translation id="3404232721752787413">Google Fotoda yadda saxlayın</translation>
-<translation id="3404744938087714423">Çıxış etdikdə sinxronlaşdırma deaktiv olacaq.</translation>
 <translation id="3406506285180498376">Səhifəni paylaşın…</translation>
 <translation id="340669334496430859">Son dəyişiklik:</translation>
 <translation id="3409785640040772790">Xəritə</translation>
@@ -780,7 +779,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4334428914252001502">1 oxunmamış məqalə.</translation>
 <translation id="4338258232580025606">Daxil ola bilmir</translation>
 <translation id="4338650699862464074">Daxil olduğunuz səhifələrin linklərini Google'a göndərir.</translation>
-<translation id="4342054591427973606">{count,plural, =1{Bu ünvan bu və digər giriş edilən cihazlardan silinəcək.}other{Bu ünvanlar bu və digər giriş edilən cihazlardan silinəcək.}}</translation>
 <translation id="4342946437867096381">Artıq Google Hesabında bu sayt üçün parol saxlamısınız. Google sizin üçün ən son parolu seçə bilər.</translation>
 <translation id="4365121137632832185">Tab qrupu. Genişləndirildi.</translation>
 <translation id="4367971618859387374">Displey adı</translation>
@@ -1288,7 +1286,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6447842834002726250">Kukilər</translation>
 <translation id="6449554712554071184">Bununla qrup cihazdan həmişəlik silinəcək.</translation>
 <translation id="6452534462676960500">Yeni fəaliyyət</translation>
-<translation id="6459307836338400162">Məxfilik, təhlükəsizlik və datanın toplanması ilə bağlı daha çox ayarlar üçün <ph name="BEGIN_LINK" />Sinxronizasiya<ph name="END_LINK" /> və <ph name="BEGIN_LINK" />Google Xidmətləri<ph name="END_LINK" /> səhifəsinə daxil olun.</translation>
 <translation id="6459411599807878608">Detallar gizlədildi</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6464397691496239022">Saytlar baxış təcrübənizi yaxşılaşdırmaq üçün, məsələn, sizi daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətinizdəki elementləri yadda saxlamaq üçün kukilərdən istifadə edə bilər.
@@ -1638,7 +1635,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7933880123415105005"><ph name="SEARCH_PROVIDER" /> axtarın</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Səhifə hesabdakı ({email}) oxu siyahısına əlavə edildi}other{{count} səhifə hesabdakı ({email}) oxu siyahısına əlavə edildi}}</translation>
-<translation id="7947953824732555851">Qəbul edin və daxil olun</translation>
 <translation id="7952670906562503188">{passkey_count} giriş açarını və girişi yadda saxlamamağı seçdiyiniz sayt və tətbiqlərin siyahısını silmək üzrəsiniz. Sayt və tətbiqlər üçün yaratdığınız hər hansı hesab silinməyəcək.</translation>
 <translation id="7958575506592576831">Səhifə güvənliyi məlumatı</translation>
 <translation id="7961015016161918242">Heç vaxt</translation>
@@ -1927,7 +1923,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9013605037177245304">Bildirişləri aktiv edin</translation>
 <translation id="9029650858822697271">Çıxış edildi</translation>
 <translation id="9032405509996909363">Baxış datasının silinməsini təsdiq edin</translation>
-<translation id="9034759925968272072">Google Hesabından çıxmayacaqsınız. Google Hesabınızın <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> linkində başqa formada axtarış tarixçəsi ola bilər.</translation>
 <translation id="9039373489628511875">Ötürmə qabiliyyəti</translation>
 <translation id="9042893549633094279">Məxfilik və təhlükəsizlik</translation>
 <translation id="9055580485132823283">{password_count} parolu, {passkey_count} giriş açarını və girişi yadda saxlamamağı seçdiyiniz sayt və tətbiqlərin siyahısını silmək üzrəsiniz. Sayt və tətbiqlər üçün yaratdığınız hər hansı hesab silinməyəcək.</translation>

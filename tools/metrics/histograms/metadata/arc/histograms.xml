@@ -473,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AppInstall.CacheHit" enum="BooleanCacheHit"
-    expires_after="2025-05-04">
+    expires_after="2026-03-24">
   <owner>jhorwich@google.com</owner>
   <owner>arc-commercial@google.com</owner>
   <summary>
@@ -1068,6 +1068,21 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="DeferArcActivationType" variants="DeferArcActivationType"/>
   <token key="SuccessFailure" variants="SuccessFailure"/>
+</histogram>
+
+<histogram name="Arc.DlcInstaller.Install" enum="BooleanSuccess"
+    expires_after="2026-03-24">
+  <owner>tinghaolin@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    Result of checking if the ARC DLC installer successfully installed the ARCVM
+    image from DLC.
+
+    When a user uses a managed device that enables the preload device policy and
+    meets the hardware requirements, the DLC service will install the ARCVM
+    image from DLC. This downloading mechanism is enabled on boards with the
+    arcvm-dlc USE flag (currently, only the reven board).
+  </summary>
 </histogram>
 
 <histogram name="Arc.EngagementTime.ArcTotal" units="ms"
@@ -2804,16 +2819,6 @@ chromium-metrics-reviews@google.com.
     up.
   </summary>
   <token key="DeviceType" variants="DeviceType"/>
-</histogram>
-
-<histogram name="Arc.WallpaperApiUsage" enum="ArcWallpaperApi"
-    expires_after="2025-05-04">
-  <owner>hirokisato@google.com</owner>
-  <owner>arc-framework@google.com</owner>
-  <summary>
-    Records the number of times an API for getting / setting wallpaper from
-    Android is called.
-  </summary>
 </histogram>
 
 <histogram name="Arc.Wayland.LateTiming.Duration{WaylandEventType}" units="ms"

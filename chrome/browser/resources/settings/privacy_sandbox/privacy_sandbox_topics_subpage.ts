@@ -52,14 +52,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       topicsList_: {
         type: Array,
         value() {

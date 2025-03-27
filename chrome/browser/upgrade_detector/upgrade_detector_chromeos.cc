@@ -143,6 +143,12 @@ void UpgradeDetectorChromeos::OnUpdate(const BuildState* build_state) {
     // Only start the timer if the build state is valid.
     set_upgrade_detected_time(clock()->Now());
     CalculateDeadlines();
+    if (ShouldFetchLastServedDate()) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&UpgradeDetectorChromeos::FetchLastServedDate,
+                         weak_factory_.GetWeakPtr()));
+    }
   }
 
   update_in_progress_ = false;
@@ -171,8 +177,12 @@ base::TimeDelta UpgradeDetectorChromeos::GetRelaunchHeadsUpPeriod() {
 
 void UpgradeDetectorChromeos::CalculateDeadlines() {
   base::TimeDelta notification_period = GetRelaunchNotificationPeriod();
-  if (notification_period.is_zero())
+  if (notification_period.is_zero()) {
     notification_period = kDefaultHighThreshold;
+  }
+  if (IsSupersededRelease()) {
+    notification_period = std::min(notification_period, base::Hours(2));
+  }
 
   const RelaunchWindow relaunch_window =
       GetRelaunchWindowPolicyValue().value_or(GetDefaultRelaunchWindow());
@@ -228,11 +238,12 @@ void UpgradeDetectorChromeos::OnUpdateOverCellularOneTimePermissionGranted() {
   NotifyUpdateOverCellularOneTimePermissionGranted();
 }
 
-void UpgradeDetectorChromeos::OnMonitoredPrefsChanged() {
+void UpgradeDetectorChromeos::RecomputeSchedule() {
   // Check the current stage and potentially notify observers now if a change to
   // the observed policies results in changes to the thresholds.
-  if (upgrade_detected_time().is_null())
+  if (upgrade_detected_time().is_null()) {
     return;
+  }
   const base::Time old_elevated_deadline = elevated_deadline_;
   const base::Time old_high_deadline = high_deadline_;
   CalculateDeadlines();

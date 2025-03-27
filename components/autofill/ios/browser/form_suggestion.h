@@ -20,6 +20,9 @@
 struct FormSuggestionMetadata {
   // True if the suggestion is for a single username form.
   bool is_single_username_form = false;
+  // True if the field that triggered the suggestion was (1) obfuscated and (2)
+  // determined to be likely a real password field based on a best guess.
+  bool likely_from_real_password_field = false;
 };
 
 // Enum class used to determine the feature for in-product help for the

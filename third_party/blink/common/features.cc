@@ -46,14 +46,6 @@ BASE_FEATURE(kAdjustCanCreateCanvas2dResourceProvider,
              "AdjustCanCreateCanvas2dResourceProvider",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Serves as killswitch for changing GetOrCreateCanvasResourceProvider() away
-// from using GetOrCreateCanvas2DLayerBridge() for 2D contexts.
-// TODO(crbug.com/401192130): Resolve crash and re-enable.
-// TODO(crbug.com/40280152): Eliminate post safe-rollout.
-BASE_FEATURE(kAdjustGetOrCreate2DCanvasProvider,
-             "AdjustGetOrCreate2DCanvasProvider",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Avoids copying ResourceRequest::TrustedParams when possible.
 BASE_FEATURE(kAvoidTrustedParamsCopies,
              "AvoidTrustedParamsCopies",
@@ -1217,14 +1209,14 @@ BASE_FEATURE_ENUM_PARAM(IsolateSandboxedIframesGrouping,
 
 // Serves as killswitch for migrating CanvasRenderingContext2D::IsPaintable()
 // from checking the existence of the canvas' Canvas2DLayerBridge to checking
-// for the existence of its resource provider.
+// for the existence of its resource provider as well as the associated
+// necessary change of changing GetOrCreateCanvasResourceProvider() away
+// from using GetOrCreateCanvas2DLayerBridge() for 2D contexts.
 // NOTE: Do not check this feature directly: Check
 // CheckProviderInCanvas2DRenderingContextIsPaintable() instead.
-// TODO(crbug.com/40280152): Fix issues between interaction of this code and
-// CanvasRenderingContext2D::Restore() and re-enable.
 BASE_FEATURE(kIsPaintableChecksResourceProviderInsteadOfBridge,
              "IsPaintableChecksResourceProviderInsteadOfBridge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kKalmanDirectionCutOff,
              "KalmanDirectionCutOff",
@@ -1318,9 +1310,9 @@ BASE_FEATURE_PARAM(int,
                    100);
 
 BASE_FEATURE_PARAM(int,
-                   kLCPCriticalPathPredictorHistogramSlidingWindowSize,
+                   kLCPCriticalPathPredictorSlidingWindowSize,
                    &kLCPCriticalPathPredictor,
-                   "lcpp_histogram_sliding_window_size",
+                   "lcpp_sliding_window_size",
                    1000);
 
 BASE_FEATURE_PARAM(int,
@@ -1365,6 +1357,18 @@ BASE_FEATURE_PARAM(bool,
                    "lcpscriptobserver_adjust_image_load_priority",
                    false);
 
+BASE_FEATURE_PARAM(int,
+                   kLCPScriptObserverSlidingWindowSize,
+                   &kLCPScriptObserver,
+                   "lcpscriptobserver_sliding_window_size",
+                   1000);
+
+BASE_FEATURE_PARAM(int,
+                   kLCPScriptObserverMaxHistogramBuckets,
+                   &kLCPScriptObserver,
+                   "lcpscriptobserver_max_histogram_buckets",
+                   10);
+
 BASE_FEATURE(kLCPTimingPredictorPrerender2,
              "LCPTimingPredictorPrerender2",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1384,6 +1388,18 @@ BASE_FEATURE_PARAM(int,
                    &kLCPPAutoPreconnectLcpOrigin,
                    "lcpp_preconnect_max_origins",
                    2);
+
+BASE_FEATURE_PARAM(int,
+                   kLCPPAutoPreconnectSlidingWindowSize,
+                   &kLCPPAutoPreconnectLcpOrigin,
+                   "lcpp_preconnect_sliding_window_size",
+                   1000);
+
+BASE_FEATURE_PARAM(int,
+                   kLCPPAutoPreconnectMaxHistogramBuckets,
+                   &kLCPPAutoPreconnectLcpOrigin,
+                   "lcpp_preconnect_max_histogram_buckets",
+                   10);
 
 BASE_FEATURE(kLCPPDeferUnusedPreload,
              "LCPPDeferUnusedPreload",
@@ -1442,6 +1458,18 @@ BASE_FEATURE_ENUM_PARAM(LcppDeferUnusedPreloadTiming,
                         LcppDeferUnusedPreloadTiming::kPostTask,
                         &lcpp_defer_unused_preload_timing);
 
+BASE_FEATURE_PARAM(int,
+                   kLCPPDeferUnusedPreloadSlidingWindowSize,
+                   &kLCPPDeferUnusedPreload,
+                   "lcpp_unused_preload_sliding_window_size",
+                   1000);
+
+BASE_FEATURE_PARAM(int,
+                   kLCPPDeferUnusedPreloadMaxHistogramBuckets,
+                   &kLCPPDeferUnusedPreload,
+                   "lcpp_unused_preload_max_histogram_buckets",
+                   10);
+
 BASE_FEATURE(kLCPPFontURLPredictor,
              "LCPPFontURLPredictor",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1491,6 +1519,18 @@ BASE_FEATURE_PARAM(bool,
                    &kLCPPFontURLPredictor,
                    "lcpp_cross_site_font_prediction_allowed",
                    false);
+
+BASE_FEATURE_PARAM(int,
+                   kLCPPFontURLPredictorSlidingWindowSize,
+                   &kLCPPFontURLPredictor,
+                   "lcpp_font_sliding_window_size",
+                   1000);
+
+BASE_FEATURE_PARAM(int,
+                   kLCPPFontURLPredictorMaxHistogramBuckets,
+                   &kLCPPFontURLPredictor,
+                   "lcpp_font_max_histogram_buckets",
+                   10);
 
 BASE_FEATURE(kLCPPInitiatorOrigin,
              "LCPPInitiatorOrigin",
@@ -1632,6 +1672,18 @@ BASE_FEATURE_PARAM(bool,
                    &kHttpDiskCachePrewarming,
                    "http_disk_cache_prewarming_skip_during_browser_startup",
                    true);
+
+BASE_FEATURE_PARAM(int,
+                   kHttpDiskCachePrewarmingSlidingWindowSize,
+                   &kHttpDiskCachePrewarming,
+                   "http_disk_cache_prewarming_sliding_window_size",
+                   1000);
+
+BASE_FEATURE_PARAM(int,
+                   kHttpDiskCachePrewarmingMaxHistogramBuckets,
+                   &kHttpDiskCachePrewarming,
+                   "http_disk_cache_prewarming_max_histogram_buckets",
+                   10);
 
 BASE_FEATURE(kLegacyParsingOfXContentTypeOptions,
              "LegacyParsingOfXContentTypeOptions",

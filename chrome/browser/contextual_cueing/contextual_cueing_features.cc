@@ -12,6 +12,10 @@ BASE_FEATURE(kContextualCueing,
              "ContextualCueing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicZeroStateSuggestions,
+             "GlicZeroStateSuggestions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<base::TimeDelta> kBackoffTime(&kContextualCueing,
                                                        "BackoffTime",
                                                        base::Hours(24));

@@ -59,6 +59,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "content/test/mock_reduce_accept_language_controller_delegate.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/features.h"
@@ -243,6 +244,16 @@ class SignedExchangeRequestHandlerBrowserTestBase
     partition->GetSubresourceProxyingURLLoaderService()
         ->prefetch_url_loader_service_context_for_testing()
         .SetAcceptLanguages(langs);
+    // Set the Accept-Language for delegate in order to get correct
+    // Accept-Language in navigation requests instead of always using the
+    // default shell Accept-Language.
+    MockReduceAcceptLanguageControllerDelegate* delegate =
+        static_cast<MockReduceAcceptLanguageControllerDelegate*>(
+            shell()
+                ->web_contents()
+                ->GetBrowserContext()
+                ->GetReduceAcceptLanguageControllerDelegate());
+    delegate->SetUserAcceptLanguages(langs);
   }
 
   std::unique_ptr<InactiveRenderFrameHostDeletionObserver>
@@ -261,14 +272,7 @@ class SignedExchangeRequestHandlerBrowserTest
     : public testing::WithParamInterface<bool>,
       public SignedExchangeRequestHandlerBrowserTestBase {
  public:
-  SignedExchangeRequestHandlerBrowserTest() {
-    // TODO(crbug.com/334954143) Fix the AcceptLanguage tests when turning on
-    // the ReduceAcceptLanguage feature.
-    scoped_feature_list_.InitWithFeatures(
-        {}, {network::features::kReduceAcceptLanguage,
-             network::features::kReduceAcceptLanguageHTTP});
-    use_prefetch_ = GetParam();
-  }
+  SignedExchangeRequestHandlerBrowserTest() { use_prefetch_ = GetParam(); }
 
   SignedExchangeRequestHandlerBrowserTest(
       const SignedExchangeRequestHandlerBrowserTest&) = delete;
@@ -405,7 +409,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Simple) {
 }
 
 IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, VariantMatch) {
-  SetAcceptLangs("en-US,fr");
+  SetAcceptLangs("fr,en-US");
   InstallUrlInterceptor(
       GURL("https://cert.example.org/cert.msg"),
       "content/test/data/sxg/test.example.org.public.pem.cbor");

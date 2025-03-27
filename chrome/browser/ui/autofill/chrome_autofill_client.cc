@@ -81,6 +81,7 @@
 #include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/integrators/identity_credential_delegate.h"
+#include "components/autofill/core/browser/integrators/valuables/valuable_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
@@ -611,6 +612,10 @@ FormDataImporter* ChromeAutofillClient::GetFormDataImporter() {
 payments::ChromePaymentsAutofillClient*
 ChromeAutofillClient::GetPaymentsAutofillClient() {
   return &payments_autofill_client_;
+}
+
+ValuableManager* ChromeAutofillClient::GetValuableManager() {
+  return &valuable_manager_;
 }
 
 StrikeDatabase* ChromeAutofillClient::GetStrikeDatabase() {

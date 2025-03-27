@@ -8,9 +8,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Bridge providing access to native-side HTTPS-First Mode data. */
+@NullMarked
 public final class HttpsFirstModeBridge {
     private final Profile mProfile;
 

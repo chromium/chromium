@@ -143,6 +143,9 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
   private status_: chrome.passwordsPrivate.PasswordCheckStatus;
   private compromisedPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
   private weakPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
+  private isCheckRunning_: boolean;
+  private isCheckSuccessful_: boolean;
+  private bannerImage_: string;
   private reusedPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
   private didCheckAutomatically_: boolean = false;
   private groupCount_: number;

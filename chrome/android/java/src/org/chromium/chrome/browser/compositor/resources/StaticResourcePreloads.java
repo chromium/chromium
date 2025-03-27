@@ -8,7 +8,6 @@ import android.content.Context;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
-import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Arrays;
@@ -49,10 +48,8 @@ public class StaticResourcePreloads {
                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                         ? sAsynchronousResources
                         : sEmptyList;
-        if (ToolbarFeatures.shouldSuppressCaptures()) {
-            resources = Arrays.copyOf(resources, resources.length + 1);
-            resources[resources.length - 1] = sUrlBarResourceId;
-        }
+        resources = Arrays.copyOf(resources, resources.length + 1);
+        resources[resources.length - 1] = sUrlBarResourceId;
 
         return resources;
     }

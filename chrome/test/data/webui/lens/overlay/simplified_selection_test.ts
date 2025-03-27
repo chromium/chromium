@@ -138,7 +138,7 @@ suite('SimplifiedSelection', function() {
     translateTextTimeoutFunction();
   }
 
-  async function dispatchDetextTextInRegionEvent() {
+  async function dispatchDetectTextInRegionEvent() {
     const centerRotatedBox = {
       box: {x: 0.2, y: 0.2, width: 0.4, height: 0.4},
       rotation: 0,
@@ -158,7 +158,7 @@ suite('SimplifiedSelection', function() {
 
     const hideSelectedRegionContextMenuEventPromise =
         eventToPromise('hide-selected-region-context-menu', document.body);
-    await dispatchDetextTextInRegionEvent();
+    await dispatchDetectTextInRegionEvent();
     await hideSelectedRegionContextMenuEventPromise;
   });
 
@@ -178,7 +178,7 @@ suite('SimplifiedSelection', function() {
     const showSelectedRegionContextMenuEventPromise =
         eventToPromise('show-selected-region-context-menu', document.body);
 
-    await dispatchDetextTextInRegionEvent();
+    await dispatchDetectTextInRegionEvent();
 
     const showSelectedRegionContextMenuEvent =
         await showSelectedRegionContextMenuEventPromise;
@@ -223,7 +223,7 @@ suite('SimplifiedSelection', function() {
   test('HideContextMenuTimeoutOngoingNoText', async () => {
     const hideSelectedRegionContextMenuEventPromise =
         eventToPromise('hide-selected-region-context-menu', document.body);
-    await dispatchDetextTextInRegionEvent();
+    await dispatchDetectTextInRegionEvent();
     // If the timeout has not elapsed, the selected region context menu will be
     // called to be hidden instead.
     await hideSelectedRegionContextMenuEventPromise;
@@ -243,7 +243,7 @@ suite('SimplifiedSelection', function() {
         // should be shown without any detected text.
         const showSelectedRegionContextMenuEventPromise =
             eventToPromise('show-selected-region-context-menu', document.body);
-        await dispatchDetextTextInRegionEvent();
+        await dispatchDetectTextInRegionEvent();
         const showSelectedRegionContextMenuEvent =
             await showSelectedRegionContextMenuEventPromise;
         assertEquals(
@@ -280,7 +280,7 @@ suite('SimplifiedSelection', function() {
     // be shown without any detected text.
     const showSelectedRegionContextMenuEventPromise =
         eventToPromise('show-selected-region-context-menu', document.body);
-    await dispatchDetextTextInRegionEvent();
+    await dispatchDetectTextInRegionEvent();
     const showSelectedRegionContextMenuEvent =
         await showSelectedRegionContextMenuEventPromise;
     assertEquals(
@@ -296,7 +296,7 @@ suite('SimplifiedSelection', function() {
     // be shown without any detected text.
     const showSelectedRegionContextMenuEventPromise =
         eventToPromise('show-selected-region-context-menu', document.body);
-    await dispatchDetextTextInRegionEvent();
+    await dispatchDetectTextInRegionEvent();
     const showSelectedRegionContextMenuEvent =
         await showSelectedRegionContextMenuEventPromise;
     assertEquals(
@@ -321,7 +321,7 @@ suite('SimplifiedSelection', function() {
     // be shown without any detected text.
     const showSelectedRegionContextMenuEventPromise =
         eventToPromise('show-selected-region-context-menu', document.body);
-    await dispatchDetextTextInRegionEvent();
+    await dispatchDetectTextInRegionEvent();
     const showSelectedRegionContextMenuEvent =
         await showSelectedRegionContextMenuEventPromise;
     assertEquals(
@@ -594,5 +594,35 @@ suite('SimplifiedSelection', function() {
         2,
         textLayerElement.shadowRoot.querySelectorAll('.highlighted-line')
             .length);
+  });
+
+  test('UpdateContextMenuIfAlreadyShown', async () => {
+    await addEmptyTextToPage(callbackRouterRemote);
+    // Simulate a new selection being created.
+    textLayerElement.onSelectionStart();
+    textLayerElement.onSelectionFinish();
+
+    // Add 3 words to the region text response.
+    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await waitAfterNextRender(textLayerElement);
+
+    const showSelectedRegionContextMenuEvent =
+        eventToPromise('show-selected-region-context-menu', document.body);
+    await dispatchDetectTextInRegionEvent();
+    await showSelectedRegionContextMenuEvent;
+
+    const updateSelectedRegionContextMenuEventPromise =
+        eventToPromise('update-selected-region-context-menu', document.body);
+    await dispatchDetectTextInRegionEvent();
+    await updateSelectedRegionContextMenuEventPromise;
+
+    // Simulate another selection being created.
+    textLayerElement.onSelectionStart();
+    textLayerElement.onSelectionFinish();
+
+    const showSelectedRegionContextMenuEvent2 =
+        eventToPromise('show-selected-region-context-menu', document.body);
+    await dispatchDetectTextInRegionEvent();
+    await showSelectedRegionContextMenuEvent2;
   });
 });

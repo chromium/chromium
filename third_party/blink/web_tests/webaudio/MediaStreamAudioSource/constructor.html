@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Test MediaStreamAudioSourceNode constructor</title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <script src="../resources/audionodeoptions.js"></script>
+  </head>
+  <body>
+    <script>
+      'use strict';
+
+      let context;
+
+      test(() => {
+        context = new AudioContext();
+        assert_true(
+            context instanceof AudioContext,
+            'The context is an instance of AudioContext'
+        );
+      }, 'The AudioContext constructor should NOT throw');
+
+      testInvalidConstructor_TH('MediaStreamAudioSourceNode', context);
+
+      test(() => {
+        assert_throws_js(
+            TypeError,
+            () => new MediaStreamAudioSourceNode(context),
+            'The constructor with insufficient arguments should fail'
+        );
+
+        const options = { mediaStream: new MediaStream() };
+        assert_throws_dom(
+            'InvalidStateError',
+            () => new MediaStreamAudioSourceNode(context,options),
+            'The constructor with an empty MediaStream instance'
+        );
+      },  'Exceptions from invalid constructor usage');
+    </script>
+  </body>
+</html>

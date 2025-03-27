@@ -828,12 +828,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsRsaKeys) {
       CertProvisioningEvent::kSuccessfullySubscribedToInvalidationTopic, 1);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.CertProvisioning.Event.Dynamic.User", 10);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.KeypairGenerationTime.Dynamic.User", 1);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.VaTime.Dynamic.User", 1);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.CsrSignTime.Dynamic.User", 1);
 }
 
 // Checks that the worker makes all necessary requests to other modules during
@@ -1061,12 +1055,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsEcKeys) {
       CertProvisioningEvent::kSuccessfullySubscribedToInvalidationTopic, 1);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.CertProvisioning.Event.Dynamic.User", 10);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.KeypairGenerationTime.Dynamic.User", 1);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.VaTime.Dynamic.User", 1);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.CsrSignTime.Dynamic.User", 1);
 }
 
 // Checks that the worker makes all necessary requests to other modules during
@@ -1235,12 +1223,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsNoWaitingRsaKeys) {
   histogram_tester.ExpectBucketCount(
       "ChromeOS.CertProvisioning.Event.Dynamic.User",
       CertProvisioningEvent::kInvalidationReceived, 2);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.KeypairGenerationTime.Dynamic.User", 1);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.VaTime.Dynamic.User", 1);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.CsrSignTime.Dynamic.User", 1);
   histogram_tester.ExpectUniqueSample(kDmStatusHistogramName,
                                       policy::DM_STATUS_SUCCESS, 6);
 }
@@ -1412,12 +1394,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsNoWaitingEcKeys) {
   histogram_tester.ExpectBucketCount(
       "ChromeOS.CertProvisioning.Event.Dynamic.User",
       CertProvisioningEvent::kInvalidationReceived, 2);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.KeypairGenerationTime.Dynamic.User", 1);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.VaTime.Dynamic.User", 1);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.CsrSignTime.Dynamic.User", 1);
 }
 
 // Checks that the worker doesn't allow skipping a VA challenge if VA was

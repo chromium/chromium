@@ -126,7 +126,8 @@ constexpr char kFullSessionResponse[] = R"(
               "url": "https://youtube.com"
             }
           ],
-          "locked": true
+          "locked": true,
+          "lockToAppHome": true
         }
       }
     }
@@ -304,6 +305,12 @@ TEST_F(SessionParserTest, TestParseSessionConfigProtoFromJson) {
                   .on_task_config()
                   .active_bundle()
                   .locked());
+
+  EXPECT_TRUE(session_full->student_group_configs()
+                  .at(kMainStudentGroupName)
+                  .on_task_config()
+                  .active_bundle()
+                  .lock_to_app_home());
 
   auto content_config = std::move(session_full->student_group_configs()
                                       .at(kMainStudentGroupName)

@@ -312,6 +312,15 @@ def GPUParallelJobs(test_config, tester_name, tester_config):
       if gpu.startswith('10de'):
         return ['--jobs=1']
 
+  # trace_test flakily hangs Win NVIDIA GTX 1660 machines crbug.com/406454932.
+  # Speculatively disable parallelism to check if it is related.
+  is_trace_test = (test_name == 'trace_test'
+                   or test_config.get('telemetry_test_name') == 'trace_test')
+  if os_type == 'win' and is_trace_test:
+    for gpu in _GetGpusFromTestConfig(test_config):
+      if gpu.startswith('10de:2184'):
+        return ['--jobs=1']
+
   if os_type in ['lacros', 'linux', 'mac', 'win']:
     return ['--jobs=4']
   return ['--jobs=1']

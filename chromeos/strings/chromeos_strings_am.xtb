@@ -11,6 +11,7 @@
 <translation id="102432830749687801">መዳረሻ ከማጣትዎ በፊት የትምህርት ቤት መለያዎን ውሂብ ወደ እርስዎ የግል መለያ ለማንቀሳቀስ የይዘት ማስተላለፍ መተግበሪያን በGoogle መጠቀምዎን ያረጋግጡ።</translation>
 <translation id="1026212596705997935">የ«<ph name="CONFLICT_ACCEL_NAME" />» አቋራጭ ጥቅም ላይ እየዋለ ነው። አዲስ አቋራጭ ይጫኑ። የነበረውን አቋራጭ ለመተካት ይህን አቋራጭ እንደገና ይጫኑ።</translation>
 <translation id="1030856839388844477">የውሂብ አጠቃቀምን ዳግም አስጀምር</translation>
+<translation id="1047095725494118091">ማውረድ አልተቻለም። እንደገና ይሞክሩ ወይም የእርስዎን <ph name="DEVICE_TYPE" /> እንደገና ያስጀምሩ።</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ተከታታይ፣ <ph name="CPU_MAX_CLOCK_SPEED" />ጊኸ)</translation>
 <translation id="1047773237499189053">አዲስ ባህሪ ይገኛል፣ የበለጠ ለመረዳት የላይ ቀስት ቁልፍን ይጠቀሙ።</translation>
 <translation id="1049663189809099096">ፓስቴል ቢጫ</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">ማያ ገፅ ቆጣቢውን በማውረድ ላይ</translation>
 <translation id="1094693127011229778">የአይፒ አድራሻ አይገኝም</translation>
 <translation id="1100902271996134409">ምስሎች በመፍጠር ላይ...</translation>
+<translation id="1107856713690040084">የ<ph name="DEVICE_TYPE" /> ኦዲዮ</translation>
 <translation id="1116694919640316211">ስለ</translation>
 <translation id="1118572504348554005">ለሳንካዎች እና ለእኛ ሪፖርት ለሚያደርጓቸው ሌሎች ችግሮች መላ ለመፈለግ በዚህ ቅጽ በኩል የቀረበውን ግብረመልስ ከአጋሮቻችን ጋር ልናጋራ እንችላለን። እንደ የይለፍ ቃላት የመሳሰሉ ልዩ ጥንቃቄ የሚያስፈልጋቸው መረጃዎችን አያካትቱ።</translation>
 <translation id="1119403468619527527">ለማቃለል በጣም ጥቂት ቃላት</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">የጨለማ ሁነታን አብራ</translation>
 <translation id="2164131940279488868">ኦዲዮ መቅዳት ለመጀመር ማይክሮፎን እንደተገናኘ ያረጋግጡ</translation>
 <translation id="2173302385160625112">የበይነመረብ ግኑኝነትዎን ይፈትሹ</translation>
+<translation id="2176909213844392588"><ph name="LANGUAGE_NAME" /> ወደ ጽሑፍ ግልባጭ ሞዴልን ማውረድ አልተቻለም። እንደገና ይሞክሩ ወይም የእርስዎን <ph name="DEVICE_TYPE" /> እንደገና ያስጀምሩ።</translation>
 <translation id="2180197493692062006">የሆነ ችግር ተፈጥሯል። መተግበሪያውን ዳግም ለመክፈት ይሞክሩ።</translation>
 <translation id="2189104374785738357">የኤፒኤን ዝርዝሮችን ያርትዑ</translation>
 <translation id="2195732836444333448">ሙሉ አቅም ላይ ነው። በቅርቡ ተመልሰው ይምጡ።</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">ሰነድ መጋቢ (ባለሁለት ጎን)</translation>
 <translation id="3201315366910775591">የተጋሩ አልበሞች በሌሎች ሰዎች ሊዘምኑ ይችላሉ</translation>
 <translation id="3211671540163313381">የKeymapping D-ሰሌዳ</translation>
+<translation id="3217462202230355157">ማይክሮፎንዎ እንደተገናኘ ያረጋግጡ ወይም የእርስዎን <ph name="DEVICE_TYPE" /> እንደገና ማስጀመር ይሞክሩ</translation>
 <translation id="3226405216343213872">ቃኚዎችን በመፈለግ ላይ</translation>
 <translation id="3226657629376379887">የአቀማመጥ እርምጃዎች ምናሌ</translation>
 <translation id="3227186760713762082">የ<ph name="CATEGORY_TEXT" /> እሴቱን በ<ph name="CONVERSION_RATE" /> ያካፍሉት</translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">ለሚመለከተው የተወሰነ</translation>
 <translation id="3404249063913988450">የማያ ገፅ ማቆያን አንቃ</translation>
 <translation id="3413935475507503304">በዝማኔው ለመቀጠል ቀጣይ የሚለውን ጠቅ ያድርጉ።</translation>
+<translation id="3416709353545797224">ሁሉንም <ph name="DEVICE_TYPE" /> በመቅዳት ላይ</translation>
 <translation id="3428551088151258685">ከቤት ውጭ</translation>
 <translation id="3428971106895559033">ገርጣ ያለ</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">ቃኚው መብራቱን እና በእርስዎ አውታረ መረብ ወይም በቀጥታ ግንኙነት በኩል የሚገኝ መሆኑን ያረጋግጡ</translation>
 <translation id="4159238217853743776">ከፊል</translation>
 <translation id="4159784952369912983">ሐምራዊ</translation>
+<translation id="416219735020840807">ወደ ጽሑፍ ግልባጭ ሞዴልን ማውረድ አልተቻለም። እንደገና ይሞክሩ ወይም የእርስዎን <ph name="DEVICE_TYPE" /> እንደገና ያስጀምሩ።</translation>
 <translation id="4170180284036919717">ፎቶ አንሳ</translation>
 <translation id="4170700058716978431">አልተሳካም</translation>
 <translation id="4171077696775491955">ብሩህነት መቀነሻ</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">የተመረጠ ጽሁፍን በአስተያየት ጥቆማ በመተካት ላይ</translation>
 <translation id="5346687412805619883">አካባቢያዊ አውታረ መረብ</translation>
 <translation id="5358174242040570474">የሆነ ችግር ተፈጥሯል። ልጣፍ እንደገና ለመምረጥ ይሞክሩ ወይም መተግበሪያውን ዳግም ይክፈቱ።</translation>
+<translation id="5368228070728130240">ለማጠቃለያ እና ርዕስ ፈጠራ ሞዴል ማውረድ አልተቻለም። እንደገና ይሞክሩ ወይም የእርስዎን <ph name="DEVICE_TYPE" /> እንደገና ያስጀምሩ።</translation>
 <translation id="5372659122375744710">የWiFi አውታረ መረብ ደህንነት የተጠበቀ አይደለም</translation>
 <translation id="5376354385557966694">ራስሰር የብርሃን ሁነታ</translation>
 <translation id="5378184552853359930">የአይፒ ዓይነት</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">ያልተሳኩ የዲኤንኤስ ጥራቶች</translation>
 <translation id="6768237774506518020">ከፍተኛ የዲኤንኤስ ጥራት አለመሳካት ብዛት</translation>
 <translation id="6786747875388722282">ቅጥያዎች</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" /> ኦዲዮ በሚበራበት ጊዜ መቅጃ በዚህ መሣሪያ ላይ እየተጫወተ ያለን ሁሉም ኦዲዮ ይቀዳል</translation>
 <translation id="6791471867139427246">የቁልፍ ሰሌዳ ብርሃን ቀለም</translation>
 <translation id="6796229976413584781">አቋራጭ ተሰርዟል</translation>
 <translation id="6798678288485555829">የጽሁፍ አሰሳ</translation>
@@ -1728,6 +1736,7 @@
 <translation id="8930622219860340959">ገመድአልባ</translation>
 <translation id="8933650076320258356">የተመረጠው ቁልፍ ለ<ph name="DIRECTION" /> <ph name="KEYS" /> ነው። <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">የደንበኛ አይፒ አድራሻ</translation>
+<translation id="8938606491880817721">ማውረድ አልተቻለም። እንደገና ይሞክሩ ወይም የእርስዎን <ph name="DEVICE_TYPE" /> እንደገና ያስጀምሩ።</translation>
 <translation id="8944651180182756621">የማስጀመሪያ ቀለም</translation>
 <translation id="8945308580158685341">ንቦች</translation>
 <translation id="894617464444543719">መሣሪያ ስልክ ነው።</translation>

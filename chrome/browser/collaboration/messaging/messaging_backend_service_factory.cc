@@ -67,8 +67,7 @@ MessagingBackendServiceFactory::BuildServiceInstanceForBrowserContext(
 
   // This service requires the data sharing and tab group sync service features
   // to be enabled.
-  if (!base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature) ||
+  if (!data_sharing::features::IsDataSharingFunctionalityEnabled() ||
       !tab_groups::IsTabGroupSyncEnabled(profile->GetPrefs()) ||
       !base::FeatureList::IsEnabled(
           collaboration::features::kCollaborationMessaging)) {

@@ -17,6 +17,8 @@ This is a testharness.js-based test.
   assert_false: Computed Role: "image" does not match any of the acceptable role strings in ["generic", "", "none"]: <img data-testname="el-img-empty-alt-aria-labelledby-empty" class="ex-generic" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="" aria-labelledby="empty"> expected false got true
 [FAIL] el-img-empty-alt-aria-labelledby-whitespace
   assert_false: Computed Role: "image" does not match any of the acceptable role strings in ["generic", "", "none"]: <img data-testname="el-img-empty-alt-aria-labelledby-whitespace" class="ex-generic" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="" aria-labelledby="space"> expected false got true
+[FAIL] el-img-empty-alt-title
+  assert_false: Computed Role: "image" does not match any of the acceptable role strings in ["generic", "", "none"]: <img data-testname="el-img-empty-alt-title" class="ex-generic" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="" title="x"> expected false got true
 [FAIL] el-img-empty-alt-title-whitespace
   assert_false: Computed Role: "image" does not match any of the acceptable role strings in ["generic", "", "none"]: <img data-testname="el-img-empty-alt-title-whitespace" class="ex-generic" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="" title=" "> expected false got true
 [FAIL] el-section-aria-labelledby-empty

@@ -53,6 +53,7 @@ class AgentProcessBroker final : public mojom::AgentProcessBroker {
 
     void ResumeProcess();
     void SuspendProcess();
+    void TerminateProcess();
 
     std::string GetAgentProcessLogString(std::string_view state) const;
 

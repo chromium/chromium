@@ -14,15 +14,13 @@
 // static
 OmniboxView::State TestOmniboxView::CreateState(std::string text,
                                                 size_t sel_start,
-                                                size_t sel_end,
-                                                size_t all_sel_length) {
+                                                size_t sel_end) {
   OmniboxView::State state;
   state.text = base::UTF8ToUTF16(text);
   state.keyword = std::u16string();
   state.is_keyword_selected = false;
   state.sel_start = sel_start;
   state.sel_end = sel_end;
-  state.all_sel_length = all_sel_length;
   return state;
 }
 
@@ -47,10 +45,6 @@ void TestOmniboxView::GetSelectionBounds(size_t* start, size_t* end) const {
   *end = selection_.end();
 }
 
-size_t TestOmniboxView::GetAllSelectionsLength() const {
-  return 0;
-}
-
 void TestOmniboxView::SelectAll(bool reversed) {
   if (reversed)
     selection_ = gfx::Range(text_.size(), 0);
@@ -70,10 +64,9 @@ void TestOmniboxView::OnTemporaryTextMaybeChanged(
 }
 
 void TestOmniboxView::OnInlineAutocompleteTextMaybeChanged(
-    const std::u16string& display_text,
-    std::vector<gfx::Range> selections,
-    const std::u16string& prefix_autocompletion,
+    const std::u16string& user_text,
     const std::u16string& inline_autocompletion) {
+  std::u16string display_text = user_text + inline_autocompletion;
   const bool text_changed = text_ != display_text;
   text_ = display_text;
   inline_autocompletion_ = inline_autocompletion;

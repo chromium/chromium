@@ -806,10 +806,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             // Update the browser-level AXMode based on running applications.
             WebContentsAccessibilityImplJni.get()
                     .setBrowserAXMode(
-                            mNativeObj,
+                            WebContentsAccessibilityImpl.this,
                             AccessibilityState.isScreenReaderEnabled(),
                             AccessibilityState.isOnlyPasswordManagersEnabled(),
-                            AccessibilityState.isScreenReaderRunning());
+                            AccessibilityState.isScreenReaderRunning(),
+                            /* isAccessibilityEnabled= */ true);
 
             // Update the state of enabling/disabling the image descriptions feature. To enable the
             // feature, this instance must be a candidate and a screen reader must be enabled.
@@ -1915,11 +1916,48 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
+    private void handleDescriptionChangedPaneTitle(int id) {
+        // If the node is dialog, fire CONTENT_CHANGE_TYPE_PANE_TITLE event when receive
+        // DESCRIPTION_CHANGE event from Chrome. e.g. paneTitle is only relevant for dialogs
+        if (isAccessibilityEnabled()) {
+            AccessibilityEvent event =
+                    AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+            // Check for null AccessibilityEvent, as it might be null if accessibility services are
+            // disabled.
+            if (event == null) {
+                return;
+            }
+
+            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE);
+            event.setSource(mView, id);
+            requestSendAccessibilityEvent(event);
+        }
+    }
+
+    @CalledByNative
+    private void handleDescriptionChangedSubtree(int id) {
+        if (isAccessibilityEnabled()) {
+            AccessibilityEvent event =
+                    AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+            // Accessibility event can be null if accessibility services are disabled or if
+            // the object pool fails to provide an event.
+            if (event == null) {
+                return;
+            }
+
+            event.setSource(mView, id);
+            requestSendAccessibilityEvent(event);
+        }
+    }
+
+    @CalledByNative
     private void handleStateDescriptionChanged(int id) {
         if (isAccessibilityEnabled()) {
             AccessibilityEvent event =
                     AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-            if (event == null) return;
+            if (event == null) {
+                return;
+            }
 
             event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_STATE_DESCRIPTION);
             event.setSource(mView, id);
@@ -2027,7 +2065,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (isAccessibilityEnabled()) {
             AccessibilityEvent event =
                     AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
-            if (event == null) return;
+            if (event == null) {
+                return;
+            }
 
             event.setContentChangeTypes(CONTENT_CHANGE_TYPE_PANE_APPEARED);
             event.setSource(mView, virtualViewId);
@@ -2043,7 +2083,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (isAccessibilityEnabled()) {
             AccessibilityEvent event =
                     AccessibilityEvent.obtain(AccessibilityEvent.TYPE_ANNOUNCEMENT);
-            if (event == null) return;
+            if (event == null) {
+                return;
+            }
 
             event.getText().add(text);
             event.setContentDescription(null);
@@ -2260,10 +2302,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         void connectInstanceToRootManager(long nativeWebContentsAccessibilityAndroid);
 
         void setBrowserAXMode(
-                long nativeWebContentsAccessibilityAndroid,
+                WebContentsAccessibilityImpl caller,
                 boolean screenReaderMode,
                 boolean formControlsMode,
-                boolean isScreenReaderRunning);
+                boolean isScreenReaderRunning,
+                boolean isAccessibilityEnabled);
 
         void disableRendererAccessibility(long nativeWebContentsAccessibilityAndroid);
 

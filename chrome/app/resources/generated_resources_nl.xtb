@@ -403,6 +403,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1264956950255940376">Je linkeroog dichtknijpen</translation>
 <translation id="1265094893042958831">Suggesties voor deze pagina genereren…</translation>
 <translation id="1265279736024499987">Je apps en instellingen worden gesynchroniseerd voor alle Chrome OS Flex-apparaten waarop je bent ingelogd met je Google-account. Ga naar de <ph name="LINK_BEGIN" />Chrome-instellingen<ph name="LINK_END" /> voor opties voor browsersynchronisatie.</translation>
+<translation id="1267081565119405990">Toon meer acties, zoals toevoegen aan Agenda en Google-documenten maken, nadat je een screenshot hebt gemaakt of op je scherm hebt gezocht.</translation>
 <translation id="126710816202626562">Doeltaal:</translation>
 <translation id="1267649802567297774">Afbeelding <ph name="INDEX" /> van <ph name="SUBJECT" /> gegenereerd, in de stijl <ph name="STYLE" />, met de stemming <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1567,6 +1568,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="208547068587548667">Inloggen op <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Probeer het opnieuw</translation>
 <translation id="208634871997892083">Always-on VPN</translation>
+<translation id="208654914566977272">Voorgestelde acties bij het zoeken op je scherm</translation>
 <translation id="2087822576218954668">Afdrukken: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Inschrijving wordt alleen ondersteund nadat je <ph name="DEVICE_OS" /> hebt geïnstalleerd.</translation>
 <translation id="2088564884469682888">Geïntegreerde TrackPoint</translation>
@@ -2559,6 +2561,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2751454300227269244">Beweeg je mond naar rechts</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> wil het ID-nummer van je beveiligingssleutel weten. De site weet dan precies welke beveiligingssleutel je gebruikt.</translation>
 <translation id="275213133112113418">Je kaart is opgeslagen</translation>
+<translation id="2752805177271551234">Invoergeschiedenis gebruiken</translation>
 <translation id="2754226775788136540">Zoeken naar apparaten met Snel koppelen die zijn opgeslagen in <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Vind de apps die je nodig hebt, van productiviteit tot entertainment, in de Google Play Store. Je kunt apps op elk moment installeren.</translation>
 <translation id="2755349111255270002">Deze <ph name="DEVICE_TYPE" /> resetten</translation>
@@ -2591,7 +2594,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2771816809568414714">Kaas</translation>
 <translation id="2772936498786524345">Sluiper</translation>
 <translation id="2773288106548584039">Ondersteuning voor oudere browsers</translation>
-<translation id="2773621783913034737">Tabbladen inactief maken</translation>
 <translation id="2774876860084746535">Intellectueel</translation>
 <translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> is alleen op dit apparaat opgeslagen. Als je deze map naar <ph name="LOCAL_FOLDER" /> verplaatst, krijg je deze niet meer op je andere apparaten.</translation>
 <translation id="2775104091073479743">Vingerafdrukken bewerken</translation>
@@ -4024,6 +4026,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3798632811625902122">Bluetooth-apparaat <ph name="DEVICE" /> wil rechten om te koppelen.</translation>
 <translation id="3798670284305777884">Luidspreker (intern)</translation>
 <translation id="3799128412641261490">Instellingen voor 'Toegang via schakelaar'</translation>
+<translation id="3800764353337460026">Stijl van symbolen</translation>
 <translation id="3800828618615365228">Aanvullende voorwaarden van Google Chrome en Chrome OS</translation>
 <translation id="3800898876950197674">Voer je wachtwoord in om deze extensie toe te staan.</translation>
 <translation id="3801449494961771207">Systeemstem voor tekst-naar-spraak</translation>
@@ -5330,6 +5333,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4735506354605317060">Aanwijzer omcirkelen</translation>
 <translation id="4735793370946506039">Meer informatie over de uitgebreide versie van Safe Browsing</translation>
 <translation id="4735803855089279419">Het systeem kan de apparaat-ID's voor dit apparaat niet bepalen.</translation>
+<translation id="4735819417216076266">Stijl van spatie-invoer</translation>
 <translation id="4735846817388402006">Klik om <ph name="EXTENSIONS_REQUESTING_ACCESS" /> toe te staan op <ph name="ORIGIN" /></translation>
 <translation id="473775607612524610">Updaten</translation>
 <translation id="473936925429402449">Geselecteerd, extra content <ph name="CURRENT_ELEMENT" /> van <ph name="TOTAL_ELEMENTS" /></translation>
@@ -6591,7 +6595,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5642508497713047">CRL-ondertekenaar</translation>
 <translation id="5643191124441701136">De beveiligingscode staat op de voorkant van je kaart</translation>
 <translation id="5643321261065707929">Netwerk met datalimiet</translation>
-<translation id="5643717184207603910">Zorgen dat de prestaties snel blijven</translation>
 <translation id="5646376287012673985">Locatie</translation>
 <translation id="5646558797914161501">Zakenman</translation>
 <translation id="5648021990716966815">Microfoonaansluiting</translation>
@@ -6696,7 +6699,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5734362860645681824">Communicatie</translation>
 <translation id="5734697361979786483">Fileshare toevoegen</translation>
 <translation id="573520097779121706">Gebruik de toetsen 7, 8, 9, u, o, j, k, l om de cursor te verplaatsen</translation>
-<translation id="5735513236153491131">Nu boosten</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Deze gegevens of je apparaat voldoen niet aan het beveiligingsbeleid van je organisatie. Neem contact op met je beheerder over wat moet worden opgelost.}=1{Dit bestand of je apparaat voldoet niet aan het beveiligingsbeleid van je organisatie. Neem contact op met je beheerder over wat moet worden opgelost.}other{Deze bestanden voldoen niet aan het beveiligingsbeleid van je organisatie. Neem contact op met je beheerder over wat moet worden opgelost.}}</translation>
 <translation id="5738093759615225354">Je hebt deze toegangscode nodig om in te loggen op je computer</translation>
 <translation id="5739017626473506901">Log in om <ph name="USER_NAME" /> te helpen een schoolaccount toe te voegen</translation>
@@ -7901,7 +7903,6 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6611972847767394631">Hier vind je je tabbladen</translation>
 <translation id="661266467055912436">Verbetert de beveiliging voor jou en alle andere internetgebruikers.</translation>
 <translation id="6613267708691765962">Scannen op malware...</translation>
-<translation id="6614172284067813496">Pagina toegevoegd aan leeslijst</translation>
 <translation id="6615455863669487791">Tonen</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Site kan je locatie bijhouden</translation>
@@ -7921,6 +7922,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6628328486509726751">Geüploade <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Betere beveiliging</translation>
+<translation id="6630452975878488444">Sneltoets voor selectie</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> wil permanente toegang tot een certificaat om zichzelf names jou te verifiëren.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{Groep verlaten}other{Groepen verlaten}}</translation>
 <translation id="6635362468090274700">Mensen kunnen pas met je delen als je jezelf zichtbaar maakt.<ph name="BR" /><ph name="BR" />Als je jezelf tijdelijk zichtbaar wilt maken, open je het statusgedeelte en zet je 'Dichtbij aan' aan.</translation>
@@ -8611,7 +8613,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7114054701490058191">Wachtwoorden komen niet overeen</translation>
 <translation id="7114648273807173152">Als je Smart Lock wilt gebruiken om in te loggen op je Google-account, ga je naar Instellingen &gt; Verbonden apparaten &gt; Je telefoon &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Geen bereikbare contacten</translation>
-<translation id="7115731767122970828">Nu boosten</translation>
 <translation id="7116554090938189816">SSL-certificaat voor printer is verlopen. Start de printer opnieuw op en probeer het nog een keer.</translation>
 <translation id="7117228822971127758">Probeer het later opnieuw</translation>
 <translation id="7118268675952955085">screenshot</translation>
@@ -8780,7 +8781,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7243092385765551741">Toegangssleutel verwijderen?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (beste)</translation>
 <translation id="7246230585855757313">Plaats de beveiligingssleutel opnieuw en probeer het opnieuw.</translation>
-<translation id="7248802599439396696">Tabbladen inactief maken</translation>
 <translation id="7249197363678284330">Wijzig deze instelling in de adresbalk.</translation>
 <translation id="7249764475759804559">Deze app vermelden als optie bij het openen van bestanden</translation>
 <translation id="7250616558727237648">Het apparaat waarmee je deelt, reageert niet. Probeer het opnieuw.</translation>
@@ -9092,6 +9092,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7465777686629334728">Beheerde ontwikkelomgeving verwijderen (<ph name="SPECIFIC_NAME" />)</translation>
 <translation id="7465778193084373987">URL voor intrekken van Netscape-certificaat</translation>
 <translation id="7466431077154602932">Compacte weergave</translation>
+<translation id="7466861475611330213">Stijl van interpunctie</translation>
 <translation id="746861123368584540">Extensie geladen</translation>
 <translation id="7469612367552312334">Aan • Gebruik alledaagse taal om in je browsegeschiedenis te zoeken en sites te vinden die je hebt bezocht.</translation>
 <translation id="7470131554696493512">Voorkomen dat Thunderbolt- of USB4-accessoires toegang krijgen tot het geheugen (RAM) en het delen</translation>
@@ -9333,6 +9334,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7646772052135772216">Wachtwoordsynchronisatie werkt niet</translation>
 <translation id="7647403192093989392">Geen recente activiteiten</translation>
 <translation id="7648023614017258011">Chrome verifieert de installatiebundel</translation>
+<translation id="7648048654005891115">Stijl van toetsenindeling</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7650141368285545431">Toegangssleutel van een ander apparaat gebruiken</translation>
 <translation id="7650178491875594325">Lokale gegevens herstellen</translation>
@@ -10545,7 +10547,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8466052016039127321">Kan de vorige sessie niet hervatten</translation>
 <translation id="8467326454809944210">Een andere taal kiezen</translation>
 <translation id="8468087214092422866">Geen toestemming om naar bluetooth-apparaten te zoeken</translation>
-<translation id="8469863130477774813">Prestatieboost beschikbaar</translation>
 <translation id="8470513973197838199">Opgeslagen wachtwoorden voor <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Sites maken meestal verbinding met USB-apparaten voor functies zoals het afdrukken van een document of opslaan naar een opslagapparaat</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{Je wachtwoorden zijn uniek}=1{{COUNT} hergebruikt wachtwoord}other{{COUNT} hergebruikte wachtwoorden}}</translation>
@@ -11083,6 +11084,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8846163936679269230">E-simkaartprofielen resetten</translation>
 <translation id="8846239054091760429">Monogeluid, opstarten, Live ondertiteling en meer</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8848709220963126773">Moduswijziging via Shift-toets</translation>
 <translation id="8849001918648564819">Verborgen</translation>
 <translation id="8849219423513870962">Verwijdering van e-simkaartprofiel <ph name="PROFILE_NAME" /> annuleren</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> van <ph name="CHECKING" /></translation>

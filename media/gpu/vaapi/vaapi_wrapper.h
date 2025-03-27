@@ -29,6 +29,7 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/media_gpu_export.h"
@@ -158,6 +159,8 @@ class VADisplayStateHandle {
 class MEDIA_GPU_EXPORT VaapiWrapper
     : public base::RefCountedThreadSafe<VaapiWrapper> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // Whether it's okay or not to try to disable the VA-API global lock on the
   // current process. This is intended to be set only once during process
   // start-up.
@@ -225,6 +228,9 @@ class MEDIA_GPU_EXPORT VaapiWrapper
                       EncryptionScheme encryption_scheme,
                       const ReportErrorToUMACB& report_error_to_uma_cb);
 
+  VaapiWrapper(base::PassKey<VaapiWrapper>,
+               VADisplayStateHandle va_display_state_handle,
+               CodecMode mode);
   VaapiWrapper(const VaapiWrapper&) = delete;
   VaapiWrapper& operator=(const VaapiWrapper&) = delete;
 
@@ -590,11 +596,12 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   virtual void DestroySurface(VASurfaceID va_surface_id);
 
  protected:
-  VaapiWrapper(VADisplayStateHandle va_display_state_handle, CodecMode mode);
+  friend class base::RefCountedThreadSafe<VaapiWrapper>;
   virtual ~VaapiWrapper();
 
+  VaapiWrapper(VADisplayStateHandle va_display_state_handle, CodecMode mode);
+
  private:
-  friend class base::RefCountedThreadSafe<VaapiWrapper>;
   friend class VaapiWrapperTest;
   friend class VaapiVideoDecoderTest;
   friend class VaapiVideoEncodeAcceleratorTest;

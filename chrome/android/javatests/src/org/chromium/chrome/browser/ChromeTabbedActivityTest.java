@@ -625,6 +625,7 @@ public class ChromeTabbedActivityTest {
                 /* tabGroupColor= */ 0,
                 TAB_GROUP_TITLE,
                 /* tabGroupCollapsed= */ false,
+                /* isGroupShared= */ false,
                 /* isIncognito= */ false);
     }
 }

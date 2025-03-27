@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.pwm_disabled;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Util class to be used when recording metrics for one of the password manager dialogs shown as
  * part of the login database deprecation process.
  */
+@NullMarked
 class PwmDeprecationDialogsMetricsRecorder {
     static final String NO_GMS_NO_PASSWORDS_DIALOG_SHOWN_HISTOGRAM =
             "PasswordManager.UPM.NoGmsNoPasswordsDialogShown";

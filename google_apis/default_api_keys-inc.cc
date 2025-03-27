@@ -92,6 +92,19 @@
 #if !defined(GOOGLE_API_KEY_BOCA)
 #define GOOGLE_API_KEY_BOCA google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
+
+// API key for ChromeOS system services to resolve location.
+#if !defined(GOOGLE_API_KEY_CROS_SYSTEM_GEO)
+#define GOOGLE_API_KEY_CROS_SYSTEM_GEO \
+  google_apis::DefaultApiKeys::kUnsetApiToken
+#endif
+
+// API key for ChromeOS Chrome to resolve location.
+#if !defined(GOOGLE_API_KEY_CROS_CHROME_GEO)
+#define GOOGLE_API_KEY_CROS_CHROME_GEO \
+  google_apis::DefaultApiKeys::kUnsetApiToken
+#endif
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // These are used as shortcuts for developers and users providing
@@ -127,6 +140,8 @@ constexpr ::google_apis::DefaultApiKeys GetDefaultApiKeysFromDefinedValues() {
       .google_api_key_read_aloud = GOOGLE_API_KEY_READ_ALOUD,
       .google_api_key_fresnel = GOOGLE_API_KEY_FRESNEL,
       .google_api_key_boca = GOOGLE_API_KEY_BOCA,
+      .google_api_key_cros_system_geo_ = GOOGLE_API_KEY_CROS_SYSTEM_GEO,
+      .google_api_key_cros_chrome_geo_ = GOOGLE_API_KEY_CROS_CHROME_GEO,
 #endif
       .google_client_id_main = GOOGLE_CLIENT_ID_MAIN,
       .google_client_secret_main = GOOGLE_CLIENT_SECRET_MAIN,

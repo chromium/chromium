@@ -165,7 +165,7 @@ void ShowDiyAppInstallDialog(
     delegate_weak_ptr->CloseDialogAsIgnored();
     return;
   }
-  delegate_weak_ptr->StartObservingWidgetForChanges(diy_dialog_widget);
+  delegate_weak_ptr->OnWidgetShownStartTracking(diy_dialog_widget);
 
   base::RecordAction(base::UserMetricsAction("WebAppDiyInstallShown"));
   if (g_auto_accept_diy_dialog_for_testing) {

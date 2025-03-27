@@ -27,9 +27,9 @@ class Domain(Enum):
 # the Protobuf release process. Do not edit them manually.
 # These OSS versions are not stripped to avoid merging conflicts.
 OSS_DOMAIN = Domain.PUBLIC
-OSS_MAJOR = 5
-OSS_MINOR = 29
-OSS_PATCH = 3
+OSS_MAJOR = 6
+OSS_MINOR = 30
+OSS_PATCH = 1
 OSS_SUFFIX = ''
 
 DOMAIN = OSS_DOMAIN

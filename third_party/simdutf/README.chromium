@@ -1,7 +1,7 @@
 Name: simdutf unicode transcoder
 Short Name: simdutf
 URL: https://github.com/simdutf/simdutf
-Version: 6.0.2
+Version: 6.4.0
 License: MIT
 License File: LICENSE
 Shipped: yes
@@ -22,4 +22,6 @@ used for trustworthy data or in sandboxed processes, like the renderer process.
 For new uses of base64 involving untrustworthy data in unsandboxed processes,
 a memory-safe alternative should be used.
 
-Note: This is using the single header version of the library.
+Note: This is using the single header version of the library. To update it,
+download the single-header file from their released page, and replace the
+files in this directory.

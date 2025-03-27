@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Make sure that you use the Content Transfer app by Google to move your school account data to your personal account before you lose access.</translation>
 <translation id="1026212596705997935">Shortcut is being used for '<ph name="CONFLICT_ACCEL_NAME" />'. Press a new shortcut. To replace the existing shortcut, press this shortcut again.</translation>
 <translation id="1030856839388844477">Reset data usage</translation>
+<translation id="1047095725494118091">Can't download. Try again or restart your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">New feature available; use the up arrow key to learn more.</translation>
 <translation id="1049663189809099096">pastel yellow</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Downloading the screen saver</translation>
 <translation id="1094693127011229778">IP address is unavailable</translation>
 <translation id="1100902271996134409">Creating images…</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> audio</translation>
 <translation id="1116694919640316211">About</translation>
 <translation id="1118572504348554005">We may share feedback submitted via this form with our partners to troubleshoot bugs and other issues that you report to us. Don’t include sensitive information such as passwords.</translation>
 <translation id="1119403468619527527">Too few words to simplify</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Turn dark mode on</translation>
 <translation id="2164131940279488868">Make sure that a mic is connected to start recording audio</translation>
 <translation id="2173302385160625112">Check your Internet connection</translation>
+<translation id="2176909213844392588">Can't download <ph name="LANGUAGE_NAME" /> transcription model. Try again or restart your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">Something went wrong. Try reopening the app.</translation>
 <translation id="2189104374785738357">Edit APN details</translation>
 <translation id="2195732836444333448">At capacity right now. Come back soon.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Document feeder (two-sided)</translation>
 <translation id="3201315366910775591">Shared albums can be updated by other people</translation>
 <translation id="3211671540163313381">Keymapping D-pad</translation>
+<translation id="3217462202230355157">Make sure that your mic is connected or try restarting your <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Looking for scanners</translation>
 <translation id="3226657629376379887">Layout actions menu</translation>
 <translation id="3227186760713762082">Divide the <ph name="CATEGORY_TEXT" /> value by <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Exclusive</translation>
 <translation id="3404249063913988450">Enable screensaver</translation>
 <translation id="3413935475507503304">To proceed with the update, click Next.</translation>
+<translation id="3416709353545797224">Recording all <ph name="DEVICE_TYPE" /> audio</translation>
 <translation id="3428551088151258685">outdoor</translation>
 <translation id="3428971106895559033">pastel</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Make sure that the scanner is turned on and available via your network or a direct connection</translation>
 <translation id="4159238217853743776">Partial</translation>
 <translation id="4159784952369912983">Purple</translation>
+<translation id="416219735020840807">Can't download transcription model. Try again or restart your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4170180284036919717">Take a photo</translation>
 <translation id="4170700058716978431">FAILED</translation>
 <translation id="4171077696775491955">brightness down</translation>
@@ -698,6 +704,16 @@
 <translation id="4249717042534905822">on Sunday</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4251839292699800785">Stylish office</translation>
+<translation id="4252261480746798874">When you select 'Create your own', you can write a custom prompt. You can also select 'Choose a theme' and then select the underlined words to personalise your AI wallpaper.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Select 'Inspire me' to get more unique and varied AI images options.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          When you create your own wallpaper, the prompt is sent to Google servers to generate images and improve the product, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google's Terms of Service and Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Don't include anything personal, sensitive or confidential.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative AI can make mistakes, including about people, so double-check it. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Learn more<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP latency</translation>
 <translation id="4266143281602681663">yarn</translation>
 <translation id="4269815121975886860">Startup preferences</translation>
@@ -942,6 +958,7 @@
 <translation id="5344619683981067131">Replacing selected text with suggestion</translation>
 <translation id="5346687412805619883">Local network</translation>
 <translation id="5358174242040570474">Something went wrong. Try choosing a wallpaper again or reopen the app.</translation>
+<translation id="5368228070728130240">Can't download model for summary and title creation. Try again or restart your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">Wi-Fi network is not secure</translation>
 <translation id="5376354385557966694">Automatic light mode</translation>
 <translation id="5378184552853359930">IP type</translation>
@@ -1247,6 +1264,7 @@
 <translation id="6766275201586212568">Failed DNS resolutions</translation>
 <translation id="6768237774506518020">High DNS resolution failure rate</translation>
 <translation id="6786747875388722282">Extensions</translation>
+<translation id="6789891265243243337">When <ph name="DEVICE_TYPE" /> audio is on, Recorder captures all audio playing on this device</translation>
 <translation id="6791471867139427246">keyboard light colour</translation>
 <translation id="6796229976413584781">Shortcut deleted</translation>
 <translation id="6798678288485555829">Text navigation</translation>
@@ -1718,6 +1736,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8933650076320258356">Selected key is <ph name="KEYS" /> for <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Client IP address</translation>
+<translation id="8938606491880817721">Can't download. Try again or restart your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8944651180182756621">Launcher colour</translation>
 <translation id="8945308580158685341">bees</translation>
 <translation id="894617464444543719">Device is a phone.</translation>

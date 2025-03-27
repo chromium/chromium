@@ -466,7 +466,7 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalInputFromSettings) {
     EXPECT_TRUE(result->is_dict());
     base::Value::Dict* data_to_remove =
         result->GetDict().FindDict("dataToRemove");
-    EXPECT_TRUE(data_to_remove);
+    ASSERT_TRUE(data_to_remove);
 
     JSONStringValueSerializer serializer(&json);
     EXPECT_TRUE(serializer.Serialize(*data_to_remove));

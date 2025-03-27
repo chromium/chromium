@@ -250,8 +250,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenShowBookmarkBar) {
   // Move to the center of the window so that the toolbar becomes hidden in
   // immersive mode.
   ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(
-      browser_view->GetBoundsInScreen().CenterPoint(),
-      browser_view->GetWidget()->GetNativeWindow()));
+      browser_view->GetBoundsInScreen().CenterPoint()));
   views::test::PropertyWaiter(
       base::BindRepeating(&BrowserView::IsBookmarkBarVisible,
                           base::Unretained(browser_view)),

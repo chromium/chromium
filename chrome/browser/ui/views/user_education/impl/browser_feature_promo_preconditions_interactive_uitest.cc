@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest,
                     anchor_element_data_.data() = anchor;
                   }),
       CheckWindowActiveResult(
-          user_education::FeaturePromoResult::kBlockedByUi));
+          user_education::FeaturePromoResult::kAnchorSurfaceNotActive));
 }
 
 IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest, PageInActiveTab) {
@@ -137,7 +137,8 @@ IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest, PageInInactiveTab) {
 
       // Switch away from the tab. It is no longer "active".
       SelectTab(kTabStripElementId, 0),
-      CheckWindowActiveResult(user_education::FeaturePromoResult::kBlockedByUi),
+      CheckWindowActiveResult(
+          user_education::FeaturePromoResult::kAnchorSurfaceNotActive),
 
       // Switch back to the tab and verify that it is "active" again.
       SelectTab(kTabStripElementId, 1),
@@ -240,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarNotCollapsedPreconditionUiTest,
             user_education::FeaturePromoPrecondition::ComputedData data;
             return precond.CheckPrecondition(data);
           },
-          user_education::FeaturePromoResult::kBlockedByUi));
+          user_education::FeaturePromoResult::kWindowTooSmall));
 }
 
 using BrowserNotClosingPreconditionUiTest =
@@ -266,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNotClosingPreconditionUiTest,
             browser_view->GetWidget()->Close();
             return precond.CheckPrecondition(data);
           },
-          user_education::FeaturePromoResult::kBlockedByUi)
+          user_education::FeaturePromoResult::kBlockedByContext)
           .SetMustRemainVisible(false));
 }
 
@@ -349,8 +350,9 @@ IN_PROC_BROWSER_TEST_P(UserNotActivePreconditionUiTest, ReturnsSuccess) {
 IN_PROC_BROWSER_TEST_P(UserNotActivePreconditionUiTest,
                        ReturnsBlockedAfterKeyPress) {
   const auto expected_result =
-      GetParam().is_zero() ? user_education::FeaturePromoResult::Success()
-                           : user_education::FeaturePromoResult::kBlockedByUi;
+      GetParam().is_zero()
+          ? user_education::FeaturePromoResult::Success()
+          : user_education::FeaturePromoResult::kBlockedByUserActivity;
 
   RunTestSequence(
       WaitForShow(kBrowserViewElementId), Check([this]() {

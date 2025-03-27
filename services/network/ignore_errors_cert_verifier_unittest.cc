@@ -59,7 +59,7 @@ static std::vector<std::string> MakeAllowlist() {
       &cert_spki);
 
   crypto::SHA256HashString(cert_spki, &hash, sizeof(SHA256HashValue));
-  std::string hash_base64 = base::Base64Encode(hash.data);
+  std::string hash_base64 = base::Base64Encode(hash);
   return {"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", "foobar", hash_base64,
           "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB="};
 }

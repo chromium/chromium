@@ -36,10 +36,11 @@ using ::private_join_and_compute::elgamal::PrivateKey;
 using ::private_join_and_compute::elgamal::PublicKey;
 
 // Return serialized g^private_key where g is group generator for curve
-// secp224r1.
+// NID_X9_62_prime256v1.
 absl::StatusOr<std::string> GetSerializedPublicKey(uint64_t private_key) {
   Context context;
-  ASSIGN_OR_RETURN(ECGroup group, ECGroup::Create(NID_secp224r1, &context));
+  ASSIGN_OR_RETURN(ECGroup group,
+                   ECGroup::Create(NID_X9_62_prime256v1, &context));
   ASSIGN_OR_RETURN(ECPoint g, group.GetFixedGenerator());
   ASSIGN_OR_RETURN(ECPoint y, g.Mul(context.CreateBigNum(private_key)));
   return y.ToBytesCompressed();
@@ -49,7 +50,8 @@ absl::StatusOr<ProbabilisticRevealToken> CreateTokenFromPlaintext(
     uint64_t private_key,
     const std::string& plaintext) {
   Context context;
-  ASSIGN_OR_RETURN(ECGroup group, ECGroup::Create(NID_secp224r1, &context));
+  ASSIGN_OR_RETURN(ECGroup group,
+                   ECGroup::Create(NID_X9_62_prime256v1, &context));
   ASSIGN_OR_RETURN(ECPoint plaintext_point,
                    group.GetPointByHashingToCurveSha256(plaintext));
 
@@ -79,7 +81,8 @@ absl::StatusOr<std::vector<ProbabilisticRevealToken>> CreateTokens(
 absl::StatusOr<ECPoint> DecryptToken(uint64_t private_key,
                                      const ProbabilisticRevealToken& token) {
   Context context;
-  ASSIGN_OR_RETURN(ECGroup group, ECGroup::Create(NID_secp224r1, &context));
+  ASSIGN_OR_RETURN(ECGroup group,
+                   ECGroup::Create(NID_X9_62_prime256v1, &context));
   ASSIGN_OR_RETURN(ECPoint u, group.CreateECPoint(token.u));
   ASSIGN_OR_RETURN(ECPoint e, group.CreateECPoint(token.e));
   Ciphertext ciphertext{std::move(u), std::move(e)};

@@ -6,8 +6,6 @@
 
 #include <stddef.h>
 
-#include <string_view>
-
 #include "base/lazy_instance.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -28,7 +26,7 @@ const char kLog4[] = "Unremarkable maple";
 base::LazyInstance<std::vector<std::string>>::DestructorAtExit g_standard_logs =
     LAZY_INSTANCE_INITIALIZER;
 bool HandleStandardLogMessage(int severity,
-                              std::string_view file,
+                              const char* file,
                               int line,
                               size_t message_start,
                               const std::string& str) {

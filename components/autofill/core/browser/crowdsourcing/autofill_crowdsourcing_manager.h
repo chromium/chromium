@@ -45,8 +45,6 @@ struct ScopedActiveAutofillExperiments {
 class AutofillCrowdsourcingManager {
  public:
   // Names of UMA metrics recorded in this class.
-  static constexpr char kUmaApiUrlIsTooLong[] =
-      "Autofill.Query.ApiUrlIsTooLong";
   static constexpr char kUmaGetUrlLength[] = "Autofill.Query.GetUrlLength";
   static constexpr char kUmaMethod[] = "Autofill.Query.Method";
   static constexpr char kUmaWasInCache[] = "Autofill.Query.WasInCache";

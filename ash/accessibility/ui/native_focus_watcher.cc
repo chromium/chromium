@@ -112,9 +112,6 @@ void NativeFocusWatcher::OnNativeFocusChanged(gfx::NativeView focused_now) {
   SetWidget(widget);
 }
 
-void NativeFocusWatcher::OnWillChangeFocus(views::View* focused_before,
-                                           views::View* focused_now) {}
-
 void NativeFocusWatcher::OnDidChangeFocus(views::View* focused_before,
                                           views::View* focused_now) {
   DCHECK_EQ(focused_now, widget_->GetFocusManager()->GetFocusedView());
