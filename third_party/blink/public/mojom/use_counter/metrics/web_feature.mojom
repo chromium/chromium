@@ -4842,6 +4842,7 @@ enum WebFeature {
   kSummarizer_OutputLanguage = 5456,
   kSummarizer_SharedContext = 5457,
   kSummarizer_Type = 5458,
+  kCrossOriginSameSiteCookieAccessViaStorageAccessAPI = 5459,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -6082,6 +6082,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5456" label="Summarizer_OutputLanguage"/>
   <int value="5457" label="Summarizer_SharedContext"/>
   <int value="5458" label="Summarizer_Type"/>
+  <int value="5459" label="CrossOriginSameSiteCookieAccessViaStorageAccessAPI"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
