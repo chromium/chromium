@@ -5,12 +5,25 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 
 #include "base/feature_list.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/channel_info.h"
 
 bool IsPageActionMigrated(PageActionIconType page_action) {
   if (!base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
     return false;
   }
+
+  // For developer manual testing only, allow all migrations to be enabled
+  // through a single param.
+  if (features::kPageActionsMigrationEnableAll.Get()) {
+    const auto channel = chrome::GetChannel();
+    if (channel == version_info::Channel::CANARY ||
+        channel == version_info::Channel::UNKNOWN) {
+      return true;
+    }
+  }
+
   switch (page_action) {
     case PageActionIconType::kLensOverlay:
       return features::kPageActionsMigrationLensOverlay.Get();
