@@ -80,6 +80,7 @@ export class SecurityKeysSubpageElement extends PolymerElement {
   }
 
   private enableBioEnrollment_: boolean;
+  private enableManagePhones_: boolean;
   private showSetPINDialog_: boolean;
   private showCredentialManagementDialog_: boolean;
   private showResetDialog_: boolean;

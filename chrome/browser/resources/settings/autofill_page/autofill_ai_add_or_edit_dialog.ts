@@ -170,6 +170,9 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   private allFieldsAreEmpty_: boolean;
   private canSave_: boolean;
   private userClickedSaveButton_: boolean;
+  private months_: string[];
+  private days_: string[];
+  private years_: string[];
 
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();

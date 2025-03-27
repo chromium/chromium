@@ -360,7 +360,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       isNotificationAllowed_: Boolean,
       isLocationAllowed_: Boolean,
       notificationPermissionsReviewHeader_: String,
-      notificationPermissionsReviewSubeader_: String,
+      notificationPermissionsReviewSubheader_: String,
       allSitesPageTitle_: String,
     };
   }
@@ -371,6 +371,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private showPrivacyGuideDialog_: boolean;
   private enableSafeBrowsingSubresourceFilter_: boolean;
   private enableBlockAutoplayContentSetting_: boolean;
+  private enableManagePhones_: boolean;
   private blockAutoplayStatus_: BlockAutoplayStatus;
   private enableDeleteBrowsingDataRevamp_: boolean;
   private enableFederatedIdentityApiContentSetting_: boolean;

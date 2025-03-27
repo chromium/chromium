@@ -153,20 +153,6 @@ export class SiteListElement extends SiteListElementBase {
        */
       showSessionOnlyAction_: Boolean,
 
-      /**
-       * All possible actions in the action menu.
-       */
-      actions_: {
-        readOnly: true,
-        type: Object,
-        values: {
-          ALLOW: 'Allow',
-          BLOCK: 'Block',
-          RESET: 'Reset',
-          SESSION_ONLY: 'SessionOnly',
-        },
-      },
-
       lastFocused_: Object,
       listBlurred_: Boolean,
       tooltipText_: String,

@@ -260,6 +260,7 @@ export class SettingsSecurityPageElement extends
   focusConfig: FocusConfig;
   private showDisableSafebrowsingDialog_: boolean;
   private enableHashPrefixRealTimeLookups_: boolean;
+  private httpsFirstModeUncheckedValues_: HttpsFirstModeSetting[];
   private enableHttpsFirstModeNewSettings_: boolean;
   private lastFocusTime_: number|undefined;
   private totalTimeInFocus_: number;
