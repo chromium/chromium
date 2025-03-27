@@ -519,7 +519,9 @@ public class TabDragSource implements View.OnDragListener {
             int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
             mMultiInstanceManager.moveTabToWindow(getActivity(), tabBeingDragged, tabIndex);
             helper.maybeMergeToGroupOnDrop(
-                    Collections.singletonList(tabBeingDragged.getId()), tabIndex);
+                    Collections.singletonList(tabBeingDragged.getId()),
+                    tabIndex,
+                    /* isCollapsed= */ false);
         }
         DragDropMetricUtils.recordTabDragDropType(
                 DragDropType.TAB_STRIP_TO_TAB_STRIP,
@@ -558,7 +560,8 @@ public class TabDragSource implements View.OnDragListener {
             if (!tabGroupMetadata.isGroupShared) {
                 maybeMergeToGroupOnDrop =
                         () -> {
-                            helper.maybeMergeToGroupOnDrop(tabIds, tabIndex);
+                            helper.maybeMergeToGroupOnDrop(
+                                    tabIds, tabIndex, tabGroupMetadata.tabGroupCollapsed);
                         };
             }
             mMultiInstanceManager.moveTabGroupToWindow(
