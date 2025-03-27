@@ -26,6 +26,8 @@ import org.chromium.chrome.browser.password_manager.settings.ExportErrorDialogFr
 import org.chromium.chrome.browser.password_manager.settings.NonCancelableProgressBar;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.pwm_disabled.PwmDeprecationDialogsMetricsRecorder.DownloadCsvDialogType;
+import org.chromium.chrome.browser.pwm_disabled.PwmDeprecationDialogsMetricsRecorder.DownloadCsvFlowStep;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.widget.Toast;
@@ -45,6 +47,10 @@ public class PasswordCsvDownloadFlowController {
     private @Nullable ReauthenticatorBridge mReauthenticatorBridge;
     private @Nullable DialogManager mProgressBarManager;
 
+    private @DownloadCsvDialogType int mDialogType;
+
+    private @DownloadCsvFlowStep int mLastFlowStep;
+
     public PasswordCsvDownloadFlowController(Runnable endOfFlowCallback) {
         mEndOfFlowCallback = endOfFlowCallback;
     }
@@ -55,6 +61,7 @@ public class PasswordCsvDownloadFlowController {
             FragmentActivity activity,
             Profile profile,
             boolean isGooglePlayServicesAvailable,
+            boolean isPasswordManagerAvailable,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
         mProfile = profile;
         mFragmentActivity = activity;
@@ -69,6 +76,9 @@ public class PasswordCsvDownloadFlowController {
                         },
                         settingsCustomTabLauncher);
         mCsvDownloadDialogController.showDialog();
+        mLastFlowStep = DownloadCsvFlowStep.DISMISSED_DIALOG;
+        mDialogType =
+                getCurrentDialogType(isGooglePlayServicesAvailable, isPasswordManagerAvailable);
     }
 
     private void reauthenticateUser() {
@@ -77,6 +87,7 @@ public class PasswordCsvDownloadFlowController {
                         mFragmentActivity, mProfile, DeviceAuthSource.PASSWORDS_CSV_DOWNLOAD);
         if (mReauthenticatorBridge.getBiometricAvailabilityStatus()
                 == BiometricStatus.UNAVAILABLE) {
+            mLastFlowStep = DownloadCsvFlowStep.NO_SCREEN_LOCK;
             Toast.makeText(
                             mFragmentActivity.getApplicationContext(),
                             R.string.password_export_set_lock_screen,
@@ -94,6 +105,7 @@ public class PasswordCsvDownloadFlowController {
             mCsvDownloadDialogController.askForDownloadLocation(this::onDownloadLocationSet);
             return;
         }
+        mLastFlowStep = DownloadCsvFlowStep.REAUTH_FAILED;
         dismissDownloadDialog();
         endFlow();
     }
@@ -101,12 +113,14 @@ public class PasswordCsvDownloadFlowController {
     private void onDownloadLocationSet(Uri destinationFileUri) {
         dismissDownloadDialog();
         if (destinationFileUri == null) {
+            mLastFlowStep = DownloadCsvFlowStep.CANCELLED_FILE_SELECTION;
             endFlow();
             return;
         }
 
         Uri sourceFileUri = getSourceFileUri();
         if (sourceFileUri == null) {
+            mLastFlowStep = DownloadCsvFlowStep.CANT_FIND_SOURCE_CSV;
             showErrorDialog();
             return;
         }
@@ -129,8 +143,10 @@ public class PasswordCsvDownloadFlowController {
             @Override
             protected void onPostExecute(@Nullable Exception exception) {
                 if (exception == null) {
+                    mLastFlowStep = DownloadCsvFlowStep.SUCCESS;
                     deleteOriginalFile(sourceFileUri);
                 }
+                mLastFlowStep = DownloadCsvFlowStep.CSV_WRITE_FAILED;
                 assumeNonNull(mProgressBarManager);
                 mProgressBarManager.hide(exception == null ? null : () -> showErrorDialog());
             }
@@ -189,6 +205,22 @@ public class PasswordCsvDownloadFlowController {
     }
 
     private void endFlow() {
+        PwmDeprecationDialogsMetricsRecorder.recordLastStepOfDownloadCsvFlow(
+                mDialogType, mLastFlowStep);
         mEndOfFlowCallback.run();
+    }
+
+    private @DownloadCsvDialogType int getCurrentDialogType(
+            boolean isGooglePlayServicesAvailable, boolean isPasswordManagerAvailable) {
+        if (!isGooglePlayServicesAvailable) {
+            return DownloadCsvDialogType.NO_GMS;
+        }
+        if (isPasswordManagerAvailable) {
+            return DownloadCsvDialogType.FULL_UPM_SUPPORT_GMS;
+        }
+        // If the download CSV dialog is shown and Google Play Services is available, but the PWM
+        // isn't, the only possible reason is that the Google Play Services version on the device
+        // is too old and doesn't have full UPM support.
+        return DownloadCsvDialogType.OLD_GMS;
     }
 }
