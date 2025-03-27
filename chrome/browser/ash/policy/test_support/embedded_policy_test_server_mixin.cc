@@ -209,6 +209,13 @@ void EmbeddedPolicyTestServerMixin::SetMetricsLogSegment(
   policy_test_server_->policy_storage()->set_metrics_log_segment(segment);
 }
 
+void EmbeddedPolicyTestServerMixin::SetK12AgeClassificationMetricsLogSegment(
+    enterprise_management::PolicyData::K12AgeClassificationMetricsLogSegment
+        segment) {
+  policy_test_server_->policy_storage()
+      ->set_k12_age_classification_metrics_log_segment(segment);
+}
+
 void EmbeddedPolicyTestServerMixin::SetExpectedPsmParamsInDeviceRegisterRequest(
     const std::string& device_brand_code,
     const std::string& device_serial_number,
