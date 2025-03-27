@@ -1,7 +1,6 @@
 [INTERFACES]
 interface AI
     attribute @@toStringTag
-    getter languageDetector
     getter languageModel
     method constructor
 interface AICreateMonitor : EventTarget
@@ -9,11 +8,6 @@ interface AICreateMonitor : EventTarget
     getter ondownloadprogress
     method constructor
     setter ondownloadprogress
-interface AILanguageDetectorFactory
-    attribute @@toStringTag
-    method availability
-    method constructor
-    method create
 interface AILanguageModel : EventTarget
     attribute @@toStringTag
     getter inputQuota
@@ -1239,6 +1233,8 @@ interface InstallEvent : ExtendableEvent
     method addRoutes
     method constructor
 interface LanguageDetector
+    static method availability
+    static method create
     attribute @@toStringTag
     getter inputQuota
     method constructor

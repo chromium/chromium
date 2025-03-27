@@ -10,7 +10,6 @@
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector_factory.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -30,7 +29,6 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
 
   // model_manager.idl implementation.
   AILanguageModelFactory* languageModel();
-  AILanguageDetectorFactory* languageDetector();
 
   HeapMojoRemote<mojom::blink::AIManager>& GetAIRemote();
 
@@ -40,7 +38,6 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AIManager> ai_remote_;
   Member<AILanguageModelFactory> ai_language_model_factory_;
-  Member<AILanguageDetectorFactory> ai_language_detector_factory_;
 };
 
 }  // namespace blink

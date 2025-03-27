@@ -24,7 +24,6 @@ void AI::Trace(Visitor* visitor) const {
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(ai_remote_);
   visitor->Trace(ai_language_model_factory_);
-  visitor->Trace(ai_language_detector_factory_);
 }
 
 HeapMojoRemote<mojom::blink::AIManager>& AI::GetAIRemote() {
@@ -49,12 +48,5 @@ AILanguageModelFactory* AI::languageModel() {
   return ai_language_model_factory_.Get();
 }
 
-AILanguageDetectorFactory* AI::languageDetector() {
-  if (!ai_language_detector_factory_) {
-    ai_language_detector_factory_ =
-        MakeGarbageCollected<AILanguageDetectorFactory>(GetExecutionContext());
-  }
-  return ai_language_detector_factory_.Get();
-}
 
 }  // namespace blink

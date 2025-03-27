@@ -10,6 +10,21 @@ dictionary LanguageDetectionResult {
 ]
 interface LanguageDetector {
   [
+    MeasureAs=LanguageDetector_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<LanguageDetector> create(
+    optional LanguageDetectorCreateOptions options = {}
+  );
+  [
+    MeasureAs=LanguageDetector_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<AIAvailability> availability();
+
+  [
     MeasureAs=LanguageDetector_Detect,
     CallWith=ScriptState,
     RaisesException
@@ -34,6 +49,11 @@ interface LanguageDetector {
   );
   [MeasureAs=LanguageDetector_InputQuota]
   readonly attribute unrestricted double inputQuota;
+};
+
+dictionary LanguageDetectorCreateOptions {
+  AbortSignal signal;
+  AICreateMonitorCallback monitor;
 };
 
 dictionary LanguageDetectorDetectOptions {
