@@ -142,6 +142,8 @@ inline GlyphDataRange GlyphDataRange::FindGlyphDataRange(
 // A array of glyph offsets. If all offsets are zero, we don't allocate
 // storage for reducing memory usage.
 class GlyphOffsetArray final {
+  DISALLOW_NEW();
+
  public:
   explicit GlyphOffsetArray(unsigned size) : size_(size) {}
 
