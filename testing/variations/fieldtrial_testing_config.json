@@ -17505,6 +17505,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MahiPanelResizable",
+                        "MahiSummarizeSelected",
                         "Pompano"
                     ]
                 }
