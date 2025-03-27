@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
@@ -488,6 +489,51 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForBrowserWindowModal) {
   EXPECT_FALSE(browser_view()->window_scrim_view_for_testing()->GetVisible());
 }
 #endif  // !BUILDFLAG(IS_MAC)
+
+class SideBySideBrowserViewTest : public InProcessBrowserTest {
+ public:
+  SideBySideBrowserViewTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kSideBySide);
+  }
+
+  SideBySideBrowserViewTest(const SideBySideBrowserViewTest&) = delete;
+  SideBySideBrowserViewTest& operator=(const SideBySideBrowserViewTest&) =
+      delete;
+
+ protected:
+  BrowserView* browser_view() {
+    return BrowserView::GetBrowserViewForBrowser(browser());
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that GetInactiveSplitTabIndex returns correctly with two adjacent
+// splits.
+IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
+                       SplitViewInactiveIndexReturnsCorrectly) {
+  // Add enough tabs to create two split views.
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  // Add tabs to splits.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, tabs::SplitTabLayout::kHorizontal);
+  browser()->tab_strip_model()->ActivateTabAt(2);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {3}, tabs::SplitTabLayout::kHorizontal);
+  // Verify GetInactiveSplitTabIndex() correctly returns the inactive tab if
+  // each index is activated.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_EQ(browser_view()->GetInactiveSplitTabIndex(), 1);
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_EQ(browser_view()->GetInactiveSplitTabIndex(), 0);
+  browser()->tab_strip_model()->ActivateTabAt(2);
+  EXPECT_EQ(browser_view()->GetInactiveSplitTabIndex(), 3);
+  browser()->tab_strip_model()->ActivateTabAt(3);
+  EXPECT_EQ(browser_view()->GetInactiveSplitTabIndex(), 2);
+}
 
 namespace {
 
