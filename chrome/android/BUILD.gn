@@ -759,6 +759,7 @@ if (current_toolchain == default_toolchain) {
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       "//third_party/metrics_proto:metrics_proto_java",
       "//ui/accessibility:ax_base_java",
+      "//ui/accessibility:keyboard_focus_java",
       "//ui/android:ui_java",
       "//ui/android:ui_no_recycler_view_java",
       "//ui/base/ime/mojom:mojom_java",
