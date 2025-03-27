@@ -10,7 +10,8 @@ If [destination] is omitted, uses source with last character replaced with _.
 
 options:
 -h, --help: print this message
-/D arg: silently ignored (for compat with makecab.exe)
+/D InputMtime=timestamp: use timestamp as input file mtime
+/D other-arg: silently ignored for compat with makecab.exe
 /L outdir: put output file in outdir
 /Vn: silently ignored (for compat with makecab.exe)
 """
@@ -37,6 +38,7 @@ def ParseFlags(flags):
     """Parses |flags| and returns the parsed flags; returns None for --help."""
     # Can't use optparse / argparse because of /-style flags :-/
     input = None
+    input_mtimestamp = None
     output = None
     output_dir = '.'
     # Parse.
@@ -52,7 +54,11 @@ def ParseFlags(flags):
                 raise FlagParseError('argument needed after ' + flag)
             if flag == '/L':
                 output_dir = flags[i + 1]
-            # Ignore all /D flags silently.
+            if flag == '/D':
+                defs = flags[i + 1]
+                if defs.startswith('InputMtime='):
+                    input_mtimestamp = int(defs.removeprefix('InputMtime='))
+            # Ignore all other /D flags silently.
             i += 2
         elif (flag.startswith('-')
               or (flag.startswith('/') and not os.path.exists(flag))):
@@ -69,10 +75,16 @@ def ParseFlags(flags):
     # Validate and set default values.
     if not input:
         raise FlagParseError('no input file')
+    if not input_mtimestamp:
+        input_mtimestamp = os.path.getmtime(input)
     if not output:
         output = os.path.basename(input)[:-1] + '_'
-    Flags = namedtuple('Flags', ['input', 'output', 'output_dir'])
-    return Flags(input=input, output=output, output_dir=output_dir)
+    Flags = namedtuple('Flags',
+                       ['input', 'input_mtimestamp', 'output', 'output_dir'])
+    return Flags(input=input,
+                 input_mtimestamp=input_mtimestamp,
+                 output=output,
+                 output_dir=output_dir)
 
 
 def WriteCab(output_file, input_file, cab_stored_filename, input_size,
@@ -212,7 +224,7 @@ def main():
     with open(os.path.join(flags.output_dir, flags.output),
               'wb') as output_file:
         cab_stored_filename = os.path.basename(flags.input)
-        input_mtimestamp = os.path.getmtime(flags.input)
+        input_mtimestamp = flags.input_mtimestamp
         input_size = os.path.getsize(flags.input)
         with open(flags.input, 'rb') as input_file:
             WriteCab(output_file, input_file, cab_stored_filename, input_size,
