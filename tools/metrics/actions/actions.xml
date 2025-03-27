@@ -24970,8 +24970,8 @@ should be able to be added at any place in this file.
   <owner>clank-large-form-factors@google.com</owner>
   <description>
     Reported when a web page is loaded with a connected hardware accessory
-    including one or more of keyboard, mouse, touchpad, trackball, and stylus
-    devices. Android only.
+    including one or more of keyboard, mouse, touchpad and trackball devices
+    (excludes stylus). Android only.
   </description>
 </action>
 
