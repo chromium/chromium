@@ -85,7 +85,7 @@ BASE_FEATURE(kUsbDeviceLinuxOpenCrashKey,
 // receiver to the background thread.
 BASE_FEATURE(kBatteryStatusManagerBroadcastReceiverInBackground,
              "BatteryStatusManagerBroadcastReceiverInBackground",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
