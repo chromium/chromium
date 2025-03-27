@@ -55,7 +55,6 @@
 //ios/chrome/test/data/policy/pref_mapping/NewTabPageLocation.json
 //ios/chrome/test/data/policy/pref_mapping/OnSecurityEventEnterpriseConnector.json
 //ios/chrome/test/data/policy/pref_mapping/OptimizationGuideFetchingEnabled.json
-//ios/chrome/test/data/policy/pref_mapping/ParcelTrackingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/PasswordManagerEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/PasswordManagerPasskeysEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/PasswordSharingEnabled.json
