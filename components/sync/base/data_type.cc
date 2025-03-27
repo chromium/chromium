@@ -106,7 +106,7 @@ constexpr kSpecificsFieldNumberToDataTypeMap specifics_field_number2data_type =
         {sync_pb::EntitySpecifics::kCookieFieldNumber, COOKIES},
         {sync_pb::EntitySpecifics::kPlusAddressSettingFieldNumber,
          PLUS_ADDRESS_SETTING},
-        {sync_pb::EntitySpecifics::kAutofillLoyaltyCardFieldNumber,
+        {sync_pb::EntitySpecifics::kAutofillValuableFieldNumber,
          AUTOFILL_LOYALTY_CARD},
         {sync_pb::EntitySpecifics::kSharedTabGroupAccountDataFieldNumber,
          SHARED_TAB_GROUP_ACCOUNT_DATA},
@@ -278,7 +278,7 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
       specifics->mutable_plus_address_setting();
       break;
     case AUTOFILL_LOYALTY_CARD:
-      specifics->mutable_autofill_loyalty_card();
+      specifics->mutable_autofill_valuable();
       break;
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
       specifics->mutable_shared_tab_group_account_data();
@@ -404,7 +404,7 @@ int GetSpecificsFieldNumberFromDataType(DataType data_type) {
     case PLUS_ADDRESS_SETTING:
       return sync_pb::EntitySpecifics::kPlusAddressSettingFieldNumber;
     case AUTOFILL_LOYALTY_CARD:
-      return sync_pb::EntitySpecifics::kAutofillLoyaltyCardFieldNumber;
+      return sync_pb::EntitySpecifics::kAutofillValuableFieldNumber;
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
       return sync_pb::EntitySpecifics::kSharedTabGroupAccountDataFieldNumber;
     case NIGORI:
@@ -584,7 +584,7 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   if (specifics.has_plus_address_setting()) {
     return PLUS_ADDRESS_SETTING;
   }
-  if (specifics.has_autofill_loyalty_card()) {
+  if (specifics.has_autofill_valuable()) {
     return AUTOFILL_LOYALTY_CARD;
   }
   if (specifics.has_shared_tab_group_account_data()) {

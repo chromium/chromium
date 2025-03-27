@@ -126,7 +126,7 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(web_app)
 DEFINE_SPECIFICS_TO_VALUE_TEST(webauthn_credential)
 DEFINE_SPECIFICS_TO_VALUE_TEST(wifi_configuration)
 DEFINE_SPECIFICS_TO_VALUE_TEST(workspace_desk)
-DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_loyalty_card)
+DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_valuable)
 DEFINE_SPECIFICS_TO_VALUE_TEST(shared_tab_group_account_data)
 
 TEST(ProtoValueConversionsTest, AutofillWalletSpecificsToValue) {
