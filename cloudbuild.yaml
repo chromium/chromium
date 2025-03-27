@@ -73,7 +73,7 @@ steps:
         - |
             set -e
             cd /workspace/hopium
-            /workspace/depot_tools/gclient sync -r $TAG_NAME
+            /workspace/depot_tools/gclient sync -v -r $TAG_NAME
     volumes:
       - name: ssh
         path: "/root/.ssh"
@@ -103,7 +103,7 @@ steps:
         - |
             set -e
             cd /workspace/hopium/src
-            gn args out/Debug <<EOF
+            /workspace/depot_tools/gn args out/Debug <<EOF
             is_component_build = false
             is_debug = false
             is_official_build = true
