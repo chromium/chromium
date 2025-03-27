@@ -88,6 +88,14 @@ BASE_FEATURE(kPasswordChangeSubmissionMqlsLogging,
 
 namespace {
 
+// Helper function that creates a `UserFeedbackCallback` for unspecified
+// feedback.
+UserFeedbackCallback FeedbackUnspecified() {
+  return base::BindRepeating([](proto::LogAiDataRequest&) {
+    return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+  });
+}
+
 void RegisterCompose() {
   const char* kComposeName = "Compose";
   EnterprisePolicyPref enterprise_policy =
@@ -179,16 +187,10 @@ void RegisterHistorySearch() {
       logging_callback_query);
   MqlsFeatureRegistry::GetInstance().Register(std::move(mqls_metadata_query));
 
-  UserFeedbackCallback logging_callback_answer =
-      base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
-        // There is no user feedback on history answer. It's recorded on history
-        // query.
-        return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
-      });
   auto mqls_metadata_answer = std::make_unique<MqlsFeatureMetadata>(
       "HistoryAnswer", proto::LogAiDataRequest::FeatureCase::kHistoryAnswer,
       enterprise_policy, &features::kHistorySearchMqlsLogging,
-      logging_callback_answer);
+      FeedbackUnspecified());
   MqlsFeatureRegistry::GetInstance().Register(std::move(mqls_metadata_answer));
 
   auto ui_metadata = std::make_unique<SettingsUiMetadata>(
@@ -209,16 +211,11 @@ void RegisterPasswordChangeSubmission() {
       std::move(enterprise_policy));
   SettingsUiRegistry::GetInstance().Register(std::move(ui_metadata));
 
-  UserFeedbackCallback logging_callback_answer =
-      base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
-        // There is no user feedback on password change submission yet.
-        return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
-      });
   auto mqls_metadata = std::make_unique<MqlsFeatureMetadata>(
       kPasswordChangeSubmissionName,
       proto::LogAiDataRequest::FeatureCase::kPasswordChangeSubmission,
       enterprise_policy, &features::kPasswordChangeSubmissionMqlsLogging,
-      logging_callback_answer);
+      FeedbackUnspecified());
   MqlsFeatureRegistry::GetInstance().Register(std::move(mqls_metadata));
 }
 
@@ -272,10 +269,7 @@ void RegisterAutofillPredictions() {
           "FormsClassifications",
           proto::LogAiDataRequest::FeatureCase::kFormsClassifications,
           enterprise_policy, &features::kFormsClassificationsMqlsLogging,
-          base::BindRepeating([](proto::LogAiDataRequest&) {
-            // There is no user feedback for forms classifications.
-            return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
-          })));
+          FeedbackUnspecified()));
 }
 
 }  // anonymous namespace
