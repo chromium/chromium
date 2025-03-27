@@ -34,6 +34,11 @@ import type {BidiCommandParameterParser} from './BidiParser.js';
 export class BidiNoOpParser implements BidiCommandParameterParser {
   // Bluetooth module
   // keep-sorted start block=yes
+  parseDisableSimulationParameters(
+    params: unknown,
+  ): Bluetooth.DisableSimulationParameters {
+    return params as Bluetooth.DisableSimulationParameters;
+  }
   parseHandleRequestDevicePromptParams(
     params: unknown,
   ): Bluetooth.HandleRequestDevicePromptParameters {

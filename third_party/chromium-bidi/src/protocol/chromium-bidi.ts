@@ -121,6 +121,7 @@ export type Command = (
   | ExternalSpecCommand<WebDriverBidiPermissions.PermissionsCommand>
   | ExternalSpecCommand<WebDriverBidiBluetooth.Bluetooth.HandleRequestDevicePrompt>
   | ExternalSpecCommand<WebDriverBidiBluetooth.Bluetooth.SimulateAdapter>
+  | ExternalSpecCommand<WebDriverBidiBluetooth.Bluetooth.DisableSimulation>
   | ExternalSpecCommand<WebDriverBidiBluetooth.Bluetooth.SimulatePreconnectedPeripheral>
   | ExternalSpecCommand<WebDriverBidiBluetooth.Bluetooth.SimulateAdvertisement>
 ) & {channel: BidiPlusChannel};

@@ -33,6 +33,11 @@ import * as Parser from '../protocol-parser/protocol-parser.js';
 export class BidiParser implements BidiCommandParameterParser {
   // Bluetooth module
   // keep-sorted start block=yes
+  parseDisableSimulationParameters(
+    params: unknown,
+  ): Bluetooth.DisableSimulationParameters {
+    return Parser.Bluetooth.parseDisableSimulationParameters(params);
+  }
   parseHandleRequestDevicePromptParams(
     params: unknown,
   ): Bluetooth.HandleRequestDevicePromptParameters {

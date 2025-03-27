@@ -32,6 +32,9 @@ import type {
 export interface BidiCommandParameterParser {
   // Bluetooth module
   // keep-sorted start block=yes
+  parseDisableSimulationParameters(
+    params: unknown,
+  ): Bluetooth.DisableSimulationParameters;
   parseHandleRequestDevicePromptParams(
     params: unknown,
   ): Bluetooth.HandleRequestDevicePromptParameters;

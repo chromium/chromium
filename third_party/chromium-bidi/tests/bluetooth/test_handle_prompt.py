@@ -14,6 +14,7 @@
 #  limitations under the License.
 
 import pytest
+import pytest_asyncio
 from test_helpers import (AnyExtending, execute_command, goto_url,
                           send_JSON_command, subscribe, wait_for_event)
 
@@ -63,6 +64,18 @@ async def setup_device(websocket):
         })
 
 
+@pytest_asyncio.fixture(autouse=True)
+async def disable_simulation(websocket, context_id):
+    yield
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.disableSimulation',
+            'params': {
+                'context': context_id,
+            }
+        })
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize('capabilities', [{
     'goog:chromeOptions': {
@@ -71,10 +84,7 @@ async def setup_device(websocket):
 }],
                          indirect=True)
 async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
-                                                    html, test_headless_mode):
-    if test_headless_mode == "old":
-        pytest.xfail("Old headless mode does not support Bluetooth")
-
+                                                    html):
     await subscribe(websocket, ['bluetooth.requestDevicePromptUpdated'])
 
     url = html(HTML_SINGLE_PERIPHERAL)
@@ -118,10 +128,7 @@ async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
                          indirect=True)
 @pytest.mark.parametrize('accept', [True, False])
 async def test_bluetooth_handleRequestDevicePrompt(websocket, context_id, html,
-                                                   test_headless_mode, accept):
-    if test_headless_mode == "old":
-        pytest.xfail("Old headless mode does not support Bluetooth")
-
+                                                   accept):
     await subscribe(websocket, ['bluetooth'])
 
     url = html(HTML_SINGLE_PERIPHERAL)

@@ -150,6 +150,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     switch (command.method) {
       // Bluetooth module
       // keep-sorted start block=yes
+      case 'bluetooth.disableSimulation':
+        return await this.#bluetoothProcessor.disableSimulation(
+          this.#parser.parseDisableSimulationParameters(command.params),
+        );
       case 'bluetooth.handleRequestDevicePrompt':
         return await this.#bluetoothProcessor.handleRequestDevicePrompt(
           this.#parser.parseHandleRequestDevicePromptParams(command.params),

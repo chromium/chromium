@@ -14,6 +14,7 @@
 #  limitations under the License.
 
 import pytest
+import pytest_asyncio
 from test_helpers import (AnyExtending, execute_command, goto_url,
                           send_JSON_command, subscribe, wait_for_event)
 
@@ -63,6 +64,18 @@ async def setup_device(websocket, context_id):
         })
 
 
+@pytest_asyncio.fixture(autouse=True)
+async def disable_simulation(websocket, context_id):
+    yield
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.disableSimulation',
+            'params': {
+                'context': context_id,
+            }
+        })
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize("state_1", ["absent", "powered-off", "powered-on"])
 @pytest.mark.parametrize("state_2", ["absent", "powered-off", "powered-on"])
@@ -73,10 +86,7 @@ async def setup_device(websocket, context_id):
 }],
                          indirect=True)
 async def test_simulate_create_adapter_twice(websocket, context_id, state_1,
-                                             state_2, test_headless_mode):
-    if test_headless_mode == "old":
-        pytest.xfail("Old headless mode does not support Bluetooth")
-
+                                             state_2):
     await execute_command(
         websocket, {
             'method': 'bluetooth.simulateAdapter',
@@ -104,10 +114,7 @@ async def test_simulate_create_adapter_twice(websocket, context_id, state_1,
 }],
                          indirect=True)
 async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
-                                                    html, test_headless_mode):
-    if test_headless_mode == "old":
-        pytest.xfail("Old headless mode does not support Bluetooth")
-
+                                                    html):
     await subscribe(websocket, ['bluetooth'])
 
     url = html(HTML_SINGLE_PERIPHERAL)
@@ -151,10 +158,7 @@ async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
                          indirect=True)
 @pytest.mark.parametrize('accept', [True, False])
 async def test_bluetooth_handleRequestDevicePrompt(websocket, context_id, html,
-                                                   test_headless_mode, accept):
-    if test_headless_mode == "old":
-        pytest.xfail("Old headless mode does not support Bluetooth")
-
+                                                   accept):
     await subscribe(websocket, ['bluetooth'])
 
     url = html(HTML_SINGLE_PERIPHERAL)
@@ -186,5 +190,90 @@ async def test_bluetooth_handleRequestDevicePrompt(websocket, context_id, html,
                 'accept': accept,
                 'prompt': event['params']['prompt'],
                 'device': event['params']['devices'][0]['id']
+            }
+        })
+
+
+@pytest.mark.asyncio
+async def test_bluetooth_disable_simulation_twice(websocket, context_id):
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.disableSimulation',
+            'params': {
+                'context': context_id,
+            }
+        })
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.disableSimulation',
+            'params': {
+                'context': context_id,
+            }
+        })
+
+
+@pytest.mark.asyncio
+async def test_bluetooth_disable_simulation(websocket, context_id):
+    await setup_device(websocket, context_id)
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.disableSimulation',
+            'params': {
+                'context': context_id,
+            }
+        })
+    # Creating a fake BT device while simulation disabled would fail.
+    with pytest.raises(Exception,
+                       match=str({
+                           'error': 'unknown error',
+                           'message': 'BluetoothEmulation not enabled'
+                       })):
+        await execute_command(
+            websocket, {
+                'method': 'bluetooth.simulatePreconnectedPeripheral',
+                'params': {
+                    'context': context_id,
+                    'address': fake_device_address,
+                    'name': 'SomeDevice',
+                    'manufacturerData': [{
+                        'key': 17,
+                        'data': 'AP8BAX8=',
+                    }],
+                    'knownServiceUuids':
+                        ['12345678-1234-5678-9abc-def123456789', ],
+                }
+            })
+
+
+@pytest.mark.asyncio
+async def test_bluetooth_disable_simulation_in_another_context(
+        websocket, context_id, another_context_id):
+    pytest.xfail(
+        "Bluetooth simulation doesn not support multiple contexts yet")
+
+    await setup_device(websocket, context_id)
+    await setup_device(websocket, another_context_id)
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.disableSimulation',
+            'params': {
+                'context': another_context_id,
+            }
+        })
+    # Simulation commands should still work after simulation is disabled in another
+    # context.
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.simulatePreconnectedPeripheral',
+            'params': {
+                'context': context_id,
+                'address': fake_device_address,
+                'name': 'SomeDevice',
+                'manufacturerData': [{
+                    'key': 17,
+                    'data': 'AP8BAX8=',
+                }],
+                'knownServiceUuids':
+                    ['12345678-1234-5678-9abc-def123456789', ],
             }
         })

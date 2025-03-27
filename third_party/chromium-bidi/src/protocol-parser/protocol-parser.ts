@@ -430,6 +430,14 @@ export namespace Bluetooth {
       WebDriverBidiBluetooth.Bluetooth.SimulateAdapterParametersSchema,
     ) as Protocol.Bluetooth.SimulateAdapterParameters;
   }
+  export function parseDisableSimulationParameters(
+    params: unknown,
+  ): Protocol.Bluetooth.DisableSimulationParameters {
+    return parseObject(
+      params,
+      WebDriverBidiBluetooth.Bluetooth.DisableSimulationParametersSchema,
+    ) as Protocol.Bluetooth.DisableSimulationParameters;
+  }
   export function parseSimulateAdvertisementParams(
     params: unknown,
   ): Protocol.Bluetooth.SimulateAdvertisementParameters {

@@ -64,6 +64,16 @@ export class BluetoothProcessor {
     return {};
   }
 
+  async disableSimulation(
+    params: Bluetooth.DisableSimulationParameters,
+  ): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    await context.cdpTarget.browserCdpClient.sendCommand(
+      'BluetoothEmulation.disable',
+    );
+    return {};
+  }
+
   async simulatePreconnectedPeripheral(
     params: Bluetooth.SimulatePreconnectedPeripheralParameters,
   ): Promise<EmptyResult> {
