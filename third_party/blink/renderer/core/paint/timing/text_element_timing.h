@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/paint/timing/container_timing.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
@@ -39,10 +40,11 @@ class CORE_EXPORT TextElementTiming final
 
   static TextElementTiming& From(LocalDOMWindow&);
 
-  static inline bool NeededForElementTiming(Node& node) {
+  static inline bool NeededForTiming(Node& node) {
     auto* element = DynamicTo<Element>(node);
     return !node.IsInShadowTree() && element &&
-           element->FastHasAttribute(html_names::kElementtimingAttr);
+           (element->FastHasAttribute(html_names::kElementtimingAttr) ||
+            element->SelfOrAncestorHasContainerTiming());
   }
 
   static gfx::RectF ComputeIntersectionRect(
@@ -51,7 +53,9 @@ class CORE_EXPORT TextElementTiming final
       const PropertyTreeStateOrAlias&,
       const LocalFrameView*);
 
-  bool CanReportElements() const;
+  bool CanReportToElementTiming() const;
+  bool CanReportToContainerTiming();
+  bool CanReportElements();
 
   // Called when the swap promise queued by TextPaintTimingDetector has been
   // resolved. Dispatches PerformanceElementTiming entries to WindowPerformance.
@@ -59,7 +63,11 @@ class CORE_EXPORT TextElementTiming final
 
   void Trace(Visitor* visitor) const override;
 
+ private:
+  void EnsureContainerTiming();
+
   Member<WindowPerformance> performance_;
+  Member<ContainerTiming> container_timing_;
 };
 
 }  // namespace blink
