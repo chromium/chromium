@@ -1162,7 +1162,8 @@
                   'content/browser/media/.*(cdm|key_system|media_license|encrypted)|' \
                   'media/base/android/.*drm|' \
                   'media/cdm/|' \
-                  'third_party/widevine/cdm/'
+                  'third_party/widevine/cdm/' \
+                  'third_party/blink/web_tests/external/wpt/encrypted-media/'
     },
     'enterprise_data_protection': {
       'filepath': 'chrome/browser/enterprise/connectors/|' \
