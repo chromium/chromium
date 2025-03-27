@@ -778,7 +778,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosColorCorrection.FilterAmount" units="%"
-    expires_after="2025-06-29">
+    expires_after="2026-03-30">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -790,7 +790,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosColorCorrection.FilterType"
-    enum="ColorCorrectionFilterTypes" expires_after="2025-06-29">
+    enum="ColorCorrectionFilterTypes" expires_after="2026-03-30">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -930,7 +930,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.BackgroundShading"
-    enum="BooleanEnabled" expires_after="2025-06-22">
+    enum="BooleanEnabled" expires_after="2026-03-30">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -939,7 +939,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.BubbleButtonPress"
-    enum="CrosSelectToSpeakAction" expires_after="2025-05-04">
+    enum="CrosSelectToSpeakAction" expires_after="2026-03-30">
   <owner>anastasi@google.com</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -949,7 +949,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.BubbleDismissMethod"
-    enum="CrosSelectToSpeakActivationMethod" expires_after="2025-05-04">
+    enum="CrosSelectToSpeakActivationMethod" expires_after="2026-03-30">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -971,7 +971,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.NavigationControls"
-    enum="BooleanEnabled" expires_after="2025-05-04">
+    enum="BooleanEnabled" expires_after="2026-03-30">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -997,7 +997,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.ParagraphNavigationMethod"
-    enum="CrosSelectToSpeakActivationMethod" expires_after="2025-05-04">
+    enum="CrosSelectToSpeakActivationMethod" expires_after="2026-03-30">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1009,7 +1009,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.SentenceNavigationMethod"
-    enum="CrosSelectToSpeakActivationMethod" expires_after="2025-06-22">
+    enum="CrosSelectToSpeakActivationMethod" expires_after="2026-03-30">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1033,7 +1033,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.CrosSelectToSpeak.SpeedSetFromBubble"
     enum="CrosSelectToSpeakOverrideSpeechRateMultiplier"
-    expires_after="2025-05-04">
+    expires_after="2026-03-30">
   <owner>anastasi@google.com</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1043,7 +1043,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.StartSpeechMethod"
-    enum="CrosSelectToSpeakStartSpeechMethod" expires_after="2025-05-04">
+    enum="CrosSelectToSpeakStartSpeechMethod" expires_after="2026-03-30">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1197,7 +1197,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess.AutoScan.KeyboardSpeedMs"
-    units="ms" expires_after="2025-05-04">
+    units="ms" expires_after="2026-03-30">
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1254,7 +1254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSwitchAccess.SelectKeyCode" enum="KeyCode"
-    expires_after="2025-05-04">
+    expires_after="2026-03-30">
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1408,7 +1408,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.DlcInstallerFaceGazeAssetsInstallationDuration"
-    units="ms" expires_after="2025-05-04">
+    units="ms" expires_after="2026-03-30">
   <owner>akihiroota@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1732,7 +1732,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LanguageDetection.LangsPerPage" units="count"
-    expires_after="2025-05-04">
+    expires_after="2026-03-30">
   <owner>chrishall@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1758,7 +1758,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LanguageDetection.PercentageLanguageDetected"
-    units="%" expires_after="2025-05-04">
+    units="%" expires_after="2026-03-30">
   <owner>chrishall@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -2071,7 +2071,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.OOBEStartupSoundEnabled" enum="BooleanEnabled"
-    expires_after="2025-07-28">
+    expires_after="2026-03-30">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2134,7 +2134,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.PdfOcr.CrosSelectToSpeak.PagesOcred"
-    units="count" expires_after="2025-07-31">
+    units="count" expires_after="2026-03-30">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3759,7 +3759,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="TextToSpeech.Event" enum="TextToSpeechEvent"
-    expires_after="2025-07-28">
+    expires_after="2026-03-30">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -3771,7 +3771,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="TextToSpeech.ExtensionNetworkSpeechSynthesis.Playback"
-    enum="AudioPlayback" expires_after="2025-07-28">
+    enum="AudioPlayback" expires_after="2026-03-30">
   <owner>dtseng@chromium.org</owner>
   <owner>akihiroota@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -3782,7 +3782,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="TextToSpeech.Settings.GetVoiceBytes"
-    enum="TextToSpeechGetVoiceBytes" expires_after="2025-07-28">
+    enum="TextToSpeechGetVoiceBytes" expires_after="2026-03-30">
   <owner>akihiroota@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3793,7 +3793,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.FromExtensionAPI"
-    enum="TextToSpeechFromExtensionAPI" expires_after="2025-07-28">
+    enum="TextToSpeechFromExtensionAPI" expires_after="2026-03-30">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -3805,7 +3805,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.HasVoiceName"
-    enum="TextToSpeechHasVoiceName" expires_after="2025-07-28">
+    enum="TextToSpeechHasVoiceName" expires_after="2026-03-30">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3816,7 +3816,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.Native" enum="TextToSpeechNative"
-    expires_after="2025-07-28">
+    expires_after="2026-03-30">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3828,7 +3828,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.Rate" units="count"
-    expires_after="2025-07-28">
+    expires_after="2026-03-30">
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3839,7 +3839,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.Source" enum="TextToSpeechSource"
-    expires_after="2025-07-28">
+    expires_after="2026-03-30">
   <owner>joelriley@google.com</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -3852,7 +3852,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.TextLength" units="bytes"
-    expires_after="2025-07-28">
+    expires_after="2026-03-30">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
