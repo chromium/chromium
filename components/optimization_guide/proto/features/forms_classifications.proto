@@ -32,6 +32,125 @@ message FormsClassificationsLoggingData {
   ModelExecutionInfo model_execution_info = 4;
 }
 
+enum AutofillAiFieldEventType {
+  AUTOFILL_AI_FIELD_EVENT_TYPE_SUGGESTION_SHOWN = 0;
+  AUTOFILL_AI_FIELD_EVENT_TYPE_SUGGESTION_FILLED = 1;
+  AUTOFILL_AI_FIELD_EVENT_TYPE_EDITED_AUTOFILLED_FIELD = 2;
+}
+
+enum FormatStringSource {
+  FORMAT_STRING_SOURCE_UNSET = 0;
+  FORMAT_STRING_SOURCE_HEURISTICS = 1;
+  FORMAT_STRING_SOURCE_ML_MODEL = 2;
+  FORMAT_STRING_SOURCE_SERVER = 3;
+}
+
+// See `AutofillAiUkmLogger::FieldEvent`.
+message AutofillAiFieldEvent {
+  // The server AI type of the field as classified by autofill's ML model.
+  int32 ai_field_type = 1;
+
+  // Type of the event being recorded.
+  AutofillAiFieldEventType event_type = 2;
+
+  // A random variable assigned to a specific instance of a form control (e.g.
+  // a HTML input element). This should be globally unique and suitable for
+  // distinguishing fields. Two different users would have different values.
+  // For the same user, the same field in the same form in two different tabs
+  // would have two different values.
+  uint64 field_session_identifier = 3;
+
+  // The signature of the field (mod 1021). This is the hash identifier used to
+  // denote this field for query and voting purposes. See
+  // components/autofill/core/common/signatures.cc for more details.
+  uint64 field_signature = 4;
+
+  // The type of the field as classified by autofill.
+  int32 field_type = 5;
+
+  // The source of the format string of the field, see `FormatStringSource` in
+  // components/autofill/core/browser/autofill_field.h for more info.
+  FormatStringSource format_string_source = 6;
+
+  // The order of the event in the sequence of events sharing the same
+  // FormSessionIdentifier.
+  int32 form_session_event_order = 7;
+
+  // A random variable assigned to a specific instance of a HTML form in a
+  // specific renderer. This should be globally unique and suitable for
+  // counting distinct forms. Two different users would have different values.
+  // A single user loading the same form in two different tabs would have two
+  // different values. This is used to link the fields to a form in
+  // AutofillAi.KeyMetrics.
+  uint64 form_session_identifier = 8;
+
+  // The signature of the form (mod 1021). This is the hash identifier used to
+  // denote this form for query and voting purposes. See
+  // components/autofill/core/common/signatures.cc for more details.
+  uint64 form_signature = 9;
+
+  // The index of the field in the list of fields of the form built by Autofill.
+  uint32 field_rank = 10;
+
+  // The index of the field in the list of fields of the form having the same
+  // FieldSignature.
+  uint32 field_rank_in_signature_group = 11;
+
+  // The type of the underlying HTML element representing the field (e.g.,
+  // input text, select one, etc.)
+  FormControlType form_control_type = 12;
+
+  // The registered domain of the page that the form is on.
+  string domain = 13;
+}
+
+message AutofillAiKeyMetrics {
+  // True if user accepted the suggestion to fill values on a submitted form,
+  // and false otherwise. This is counted as true if the user accepted such a
+  // suggestion at any time, regardless whether other suggestions were ignored
+  // or whether the accepted suggestion was reverted afterwards.
+  // Only recorded if suggestions were shown to the user.
+  bool filling_acceptance = 1;
+
+  // True if the user filled any fields via Autofill on a submitted form, and
+  // false otherwise. If the user reverts the filling, the form is still
+  // counted as filled.
+  //
+  // This metric is different from FillingAcceptance in the sense that the
+  // latter is only recorded if the user has actually seen a prompt to fill
+  // data.
+  bool filling_assistance = 2;
+
+  // False for submitted and autofilled forms if user edited at least one
+  // filled value before submitting the form, true otherwise.
+  // Only recorded if any suggestion was filled.
+  bool filling_correctness = 3;
+
+  // True for submitted forms when Autofill had any Autofill AI data to fill,
+  // and false otherwise.
+  //
+  // It does not matter whether the user actually requested to fill the data.
+  // It does not matter either whether the data available for filling
+  // corresponded to the submitted data.
+  bool filling_readiness = 4;
+
+  // A random variable assigned to a specific instance of a HTML form in a
+  // specific renderer. This should be globally unique and suitable for
+  // counting distinct forms. Two different users would have different values.
+  // A single user loading the same form in two different tabs would have two
+  // different values. This is used to link the fields to a form in
+  // AutofillAi.FieldInfo.
+  uint64 form_session_identifier = 5;
+
+  // The signature of the form (mod 1021). This is the hash identifier used to
+  // denote this form for query and voting purposes. See
+  // components/autofill/core/common/signatures.cc for more details.
+  uint64 form_signature = 6;
+
+  // The registered domain of the page that the form is on.
+  string domain = 7;
+}
+
 // Next ID: 6
 message AutofillAiTypeRequest {
   // The context of the page that the form is on.
@@ -85,4 +204,8 @@ message FieldTypeResponse {
 message FormTypeQuality {
   // User-provided feedback on the predictions.
   UserFeedback user_feedback = 1;
+
+  AutofillAiFieldEvent field_event = 2;
+
+  AutofillAiKeyMetrics key_metrics = 3;
 }
