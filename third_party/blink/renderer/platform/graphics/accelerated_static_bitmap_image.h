@@ -11,6 +11,7 @@
 #include "components/viz/common/resources/release_callback.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/platform/graphics/mailbox_ref.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
@@ -136,6 +137,9 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   }
   sk_sp<SkColorSpace> GetSkColorSpace() const override {
     return sk_color_space_;
+  }
+  gfx::ColorSpace GetColorSpace() const override {
+    return SkColorSpaceToGfxColorSpace(GetSkColorSpace());
   }
   viz::SharedImageFormat GetSharedImageFormat() const override {
     return format_;
