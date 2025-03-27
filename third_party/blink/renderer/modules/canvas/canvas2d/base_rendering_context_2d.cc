@@ -1041,9 +1041,10 @@ void BaseRenderingContext2D::DrawTextInternal(
     }
   } else {
     if (run_start == 0 && run_end == text.length()) [[likely]] {
-      font_width = font->Width(text_run, &bounds);
+      font_width = font->DeprecatedWidth(text_run, &bounds);
     } else {
-      font_width = font->SubRunWidth(text_run, run_start, run_end, &bounds);
+      font_width =
+          font->DeprecatedSubRunWidth(text_run, run_start, run_end, &bounds);
     }
   }
 
@@ -1115,9 +1116,9 @@ void BaseRenderingContext2D::DrawTextInternal(
           TextRunPaintInfo text_run_paint_info(text_run);
           text_run_paint_info.from = run_start;
           text_run_paint_info.to = run_end;
-          font->DrawBidiText(c, text_run_paint_info, location,
-                             Font::kUseFallbackIfFontNotReady, *flags,
-                             draw_type);
+          font->DeprecatedDrawBidiText(c, text_run_paint_info, location,
+                                       Font::kUseFallbackIfFontNotReady, *flags,
+                                       draw_type);
         }
       },
       [](const SkIRect& rect)  // overdraw test lambda
