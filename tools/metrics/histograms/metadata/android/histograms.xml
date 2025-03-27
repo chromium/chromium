@@ -6467,6 +6467,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.LoadUrl.Success" enum="BooleanSuccess"
+    expires_after="2026-03-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether a call to loadUrl succeeds or not, with regards to whether
+    NavigationController.loadUrl returns a non-null NavigationHandle. This is
+    logged once per call to loadUrl.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.LoadUrl.UrlScheme" enum="WebViewUrlScheme"
     expires_after="2024-06-13">
   <owner>ntfschr@chromium.org</owner>
