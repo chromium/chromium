@@ -782,26 +782,26 @@
     # Same as regulary codesearch without blink_enable_generated_code_formatting
     'codesearch_cronet_remoteexec': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['remoteexec', 'reclient', 'clang', 'shared', 'debug', 'minimal_symbols'],
+      'mixins': ['remoteexec', 'clang', 'shared', 'debug', 'minimal_symbols'],
     },
 
     # Same as regular codesearch except ios does not allow component builds
     'codesearch_ios_remoteexec': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['remoteexec', 'reclient', 'clang', 'debug', 'minimal_symbols',
+      'mixins': ['remoteexec', 'clang', 'debug', 'minimal_symbols',
                  'blink_enable_generated_code_formatting'],
     },
 
     'codesearch_release_remoteexec': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['release', 'static', 'remoteexec', 'reclient',
+      'mixins': ['release', 'static', 'remoteexec',
                  'blink_enable_generated_code_formatting'],
     },
 
     # Settings used by the codesearch builders to generate cross-references.
     'codesearch_remoteexec': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['remoteexec', 'reclient', 'clang', 'shared', 'debug', 'minimal_symbols',
+      'mixins': ['remoteexec', 'clang', 'shared', 'debug', 'minimal_symbols',
                  'blink_enable_generated_code_formatting'],
     },
 
