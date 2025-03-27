@@ -4,12 +4,14 @@
 
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_coordinator.h"
 
+#import "base/notreached.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -168,6 +170,22 @@
     }
     case InProductHelpType::kSettingsInOverflowMenu: {
       [_presenter presentOverflowMenuSettingsBubble];
+      break;
+    }
+    case InProductHelpType::kFeedSwipe: {
+      using enum FeedSwipeIPHVariation;
+      switch (GetFeedSwipeIPHVariation()) {
+        case kStaticAfterFRE:
+        case kStaticInSecondRun:
+          [_presenter presentFeedSwipeBubble];
+          break;
+        case kAnimated:
+          [_presenter presentFeedSwipeGestureInProductHelp];
+          break;
+        case kDisabled:
+          NOTREACHED();
+      }
+      break;
     }
   }
 }
