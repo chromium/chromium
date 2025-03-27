@@ -76,6 +76,10 @@ BASE_FEATURE(kFormsAnnotationsMqlsLogging,
              "FormsAnnotationsMqlsLogging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFormsClassificationsMqlsLogging,
+             "FormsClassificationsMqlsLogging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPasswordChangeSubmissionMqlsLogging,
              "PasswordChangeSubmissionMqlsLogging",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -262,6 +266,16 @@ void RegisterAutofillPredictions() {
       enterprise_policy, &features::kFormsAnnotationsMqlsLogging,
       fa_logging_callback);
   MqlsFeatureRegistry::GetInstance().Register(std::move(fa_mqls_metadata));
+
+  MqlsFeatureRegistry::GetInstance().Register(
+      std::make_unique<MqlsFeatureMetadata>(
+          "FormsClassifications",
+          proto::LogAiDataRequest::FeatureCase::kFormsClassifications,
+          enterprise_policy, &features::kFormsClassificationsMqlsLogging,
+          base::BindRepeating([](proto::LogAiDataRequest&) {
+            // There is no user feedback for forms classifications.
+            return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+          })));
 }
 
 }  // anonymous namespace
