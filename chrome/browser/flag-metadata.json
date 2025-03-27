@@ -8711,6 +8711,10 @@
     "owners": [ "gambard@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 142
   },
+  { "name": "tab-group-entry-points-android",
+    "owners": [ "mfiaz@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 143
+  },
   {
     "name": "tab-group-indicator",
     "owners": [ "ewannpv@chromium.org", "bling-flags@google.com" ],

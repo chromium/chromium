@@ -3738,6 +3738,10 @@ const char kTabDragDropName[] = "Tab Drag and Drop via Strip";
 const char kTabDragDropDescription[] =
     "Enables Tab drag and drop UI to move tab on tab-strip across windows.";
 
+const char kTabGroupEntryPointsAndroidName[] = "Tab Group Entry Points";
+const char kTabGroupEntryPointsAndroidDescription[] =
+    "Enables additional entry points for creating tab groups";
+
 const char kTabGroupParityBottomSheetAndroidName[] =
     "Tab Group Parity Bottom Sheet";
 const char kTabGroupParityBottomSheetAndroidDescription[] =

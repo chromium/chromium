@@ -9854,6 +9854,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupPaneAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(tab_groups::kTabGroupPaneAndroid)},
 
+    {"tab-group-entry-points-android",
+     flag_descriptions::kTabGroupEntryPointsAndroidName,
+     flag_descriptions::kTabGroupEntryPointsAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabGroupEntryPointsAndroid)},
+
     {"tab-group-parity-bottom-sheet-android",
      flag_descriptions::kTabGroupParityBottomSheetAndroidName,
      flag_descriptions::kTabGroupParityBottomSheetAndroidDescription,
