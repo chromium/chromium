@@ -413,8 +413,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // IsResourceUsable() must be true for `resource`.
   void RegisterUnusedResource(scoped_refptr<CanvasResource>&& resource);
 
-  void MaybePostUnusedResourcesReclaimTask();
-
   // TODO(crbug.com/352263194): Move these fields inside of
   // CanvasResourceProviderSharedImage.
   // When and if |resource_recycling_enabled_| is false, |canvas_resources_|
@@ -423,6 +421,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
   bool resource_recycling_enabled_ = true;
+  base::OneShotTimer unused_resources_reclaim_timer_;
 
  private:
   friend class FlushForImageListener;
@@ -447,8 +446,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // Called after the recording was cleared from any draw ops it might have had.
   void RecordingCleared() override;
-
-  void ClearOldUnusedResources();
 
   // Disables lines drawing as paths if necessary. Drawing lines as paths is
   // only needed for ganesh.
@@ -476,7 +473,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       cc::PaintImage::kInvalidContentId;
   uint32_t snapshot_sk_image_id_ = 0u;
 
-  base::OneShotTimer unused_resources_reclaim_timer_;
   bool oopr_uses_dmsaa_ = false;
   bool always_enable_raster_timers_for_testing_ = false;
 

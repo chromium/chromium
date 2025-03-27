@@ -799,6 +799,35 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     }
   }
 
+  void MaybePostUnusedResourcesReclaimTask() {
+    if (!base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources)) {
+      return;
+    }
+
+    if (resource_recycling_enabled_ && !IsSingleBuffered() &&
+        !unused_resources_reclaim_timer_.IsRunning() &&
+        !canvas_resources_.empty()) {
+      unused_resources_reclaim_timer_.Start(
+          FROM_HERE, kUnusedResourceExpirationTime,
+          base::BindOnce(
+              &CanvasResourceProviderSharedImage::ClearOldUnusedResources,
+              base::Unretained(this)));
+    }
+  }
+
+  void ClearOldUnusedResources() {
+    WTF::EraseIf(canvas_resources_, [](const UnusedResource& resource) {
+      return base::TimeTicks::Now() - resource.last_use >=
+             kUnusedResourceExpirationTime;
+    });
+    // May have destroyed resources above that contains shared images.
+    // ClientSharedImage destructor calls DestroySharedImage which in turn
+    // ensures that the deferred destroy request from above is flushed. Thus,
+    // SharedImageInterface::Flush in not needed here explicitly.
+
+    MaybePostUnusedResourcesReclaimTask();
+  }
+
   scoped_refptr<CanvasResource> NewOrRecycledResource() {
     if (canvas_resources_.empty()) {
       scoped_refptr<CanvasResource> resource = CreateResource();
@@ -1938,34 +1967,6 @@ void CanvasResourceProvider::RegisterUnusedResource(
     scoped_refptr<CanvasResource>&& resource) {
   CHECK(IsResourceUsable(resource.get()));
   canvas_resources_.emplace_back(base::TimeTicks::Now(), std::move(resource));
-}
-
-void CanvasResourceProvider::MaybePostUnusedResourcesReclaimTask() {
-  if (!base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources)) {
-    return;
-  }
-
-  if (resource_recycling_enabled_ && !IsSingleBuffered() &&
-      !unused_resources_reclaim_timer_.IsRunning() &&
-      !canvas_resources_.empty()) {
-    unused_resources_reclaim_timer_.Start(
-        FROM_HERE, kUnusedResourceExpirationTime,
-        base::BindOnce(&CanvasResourceProvider::ClearOldUnusedResources,
-                       base::Unretained(this)));
-  }
-}
-
-void CanvasResourceProvider::ClearOldUnusedResources() {
-  WTF::EraseIf(canvas_resources_, [](const UnusedResource& resource) {
-    return base::TimeTicks::Now() - resource.last_use >=
-           kUnusedResourceExpirationTime;
-  });
-  // May have destroyed resources above that contains shared images.
-  // ClientSharedImage destructor calls DestroySharedImage which in turn ensures
-  // that the deferred destroy request from above is flushed. Thus,
-  // SharedImageInterface::Flush in not needed here explicitly.
-
-  MaybePostUnusedResourcesReclaimTask();
 }
 
 void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
