@@ -6365,6 +6365,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "ntp-background-customization",
+    "owners": [
+      "pabouchard@google.com",
+      "bling-mony-pod@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "ntp-background-image-error-detection",
     "owners": [ "pauladedeji@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 140
