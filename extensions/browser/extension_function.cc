@@ -701,8 +701,7 @@ void ExtensionFunction::SetTransferredBlobs(
 
 void ExtensionFunction::SendResponseImpl(bool success) {
   DCHECK(!response_callback_.is_null());
-  DCHECK(!did_respond_) << name_;
-  did_respond_ = true;
+  DCHECK(!did_respond()) << name_;
 
   ResponseType response = success ? SUCCEEDED : FAILED;
   if (bad_message_) {
