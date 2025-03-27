@@ -233,6 +233,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
   tester.AdvanceTimeAndTickAnimation(base::TimeDelta());
   EXPECT_NEAR(border->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->progress_for_testing(), 0.f, kFloatComparisonTolerance);
 
   // T=0.333s.
   tester.AdvanceTimeAndTickAnimation(base::Seconds(0.333));
@@ -240,6 +241,9 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
   EXPECT_NEAR(border->opacity_for_testing(), 0.666, kFloatComparisonTolerance);
   // 0.333/0.5=0.666, 1-(1-0.666)**2~=0.888
   EXPECT_NEAR(border->emphasis_for_testing(), 0.888, kFloatComparisonTolerance);
+  // 0.333/3
+  EXPECT_NEAR(border->progress_for_testing(), 0.111f,
+              kFloatComparisonTolerance);
 
   // T=1.333s
   tester.AdvanceTimeAndTickAnimation(base::Seconds(1));
@@ -247,6 +251,9 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
   // clamped 1.333/0.5 -> 1.0, 1-(1-1.0.667)**2=1.0
   EXPECT_NEAR(border->emphasis_for_testing(), 1.f, kFloatComparisonTolerance);
+  // 1.333/3
+  EXPECT_NEAR(border->progress_for_testing(), 0.444f,
+              kFloatComparisonTolerance);
 
   // T=2.433s
   tester.AdvanceTimeAndTickAnimation(base::Seconds(1.1));
@@ -256,6 +263,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
       border->emphasis_for_testing(),
       1.f - gfx::Tween::CalculateValue(gfx::Tween::Type::EASE_IN_OUT_2, 0.433),
       kFloatComparisonTolerance);
+  // 2.433/3
+  EXPECT_NEAR(border->progress_for_testing(), 0.811, kFloatComparisonTolerance);
 
   CloseGlicWindow();
   tester.WaitForRampDownStarted();
@@ -677,17 +686,20 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
   // Opacity ramp up is 0.2; 0.123/0.2=0.615
   EXPECT_NEAR(border->opacity_for_testing(), 0.615, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->progress_for_testing(), 0.f, kFloatComparisonTolerance);
 
   // T=0.146s.
   tester.AdvanceTimeAndTickAnimation(base::Seconds(0.023));
   // 0.146/0.2=0.73
   EXPECT_NEAR(border->opacity_for_testing(), 0.73, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->progress_for_testing(), 0.f, kFloatComparisonTolerance);
 
   // T=1s.
   tester.AdvanceTimeAndTickAnimation(base::Seconds(0.854));
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->progress_for_testing(), 0.f, kFloatComparisonTolerance);
 
   CloseGlicWindow();
   tester.WaitForRampDownStarted();
@@ -697,23 +709,27 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
   tester.AdvanceTimeAndTickAnimation(base::TimeDelta());
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->progress_for_testing(), 0.f, kFloatComparisonTolerance);
 
   // For opacity, T=0.123s.
   tester.AdvanceTimeAndTickAnimation(base::Seconds(0.123));
   // 1-(0.123/0.2)=0.385
   EXPECT_NEAR(border->opacity_for_testing(), 0.385, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->progress_for_testing(), 0.f, kFloatComparisonTolerance);
 
   // T=1.134s. For opacity, T=0.134s.
   tester.AdvanceTimeAndTickAnimation(base::Seconds(0.011));
   // 1-(0.134/0.2)=0.33
   EXPECT_NEAR(border->opacity_for_testing(), 0.33, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->progress_for_testing(), 0.f, kFloatComparisonTolerance);
 
   // T=2s. For opacity, T=1s.
   tester.AdvanceTimeAndTickAnimation(base::Seconds(0.866));
   EXPECT_NEAR(border->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->progress_for_testing(), 0.f, kFloatComparisonTolerance);
   EXPECT_FALSE(border->IsShowing());
 }
 

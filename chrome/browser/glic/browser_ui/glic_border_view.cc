@@ -357,7 +357,8 @@ void GlicBorderView::OnPaint(gfx::Canvas* canvas) {
       {.name = SkString("u_emphasis"), .value = emphasis_},
       {.name = SkString("u_corner_radius"), .value = corner_radius},
       {.name = SkString("u_insets"),
-       .value = static_cast<float>(uniform_insets.left())}};
+       .value = static_cast<float>(uniform_insets.left())},
+      {.name = SkString("u_progress"), .value = progress_}};
   std::vector<cc::PaintShader::Float2Uniform> float2_uniforms = {
       // TODO(https://crbug.com/406026829): Ideally `u_resolution` should be a
       // vec4(x, y, w, h) and does not assume the origin is (0, 0). This way we
@@ -447,6 +448,7 @@ void GlicBorderView::OnAnimationStep(base::TimeTicks timestamp) {
   emphasis_ = GetEmphasis(emphasis_since_first_frame);
   base::TimeDelta opacity_since_first_frame = timestamp - first_frame_time_;
   opacity_ = GetOpacity(timestamp);
+  progress_ = GetEffectProgress(timestamp);
 
   // TODO(liuwilliam): Ideally this should be done in paint-related methods.
   // Consider moving it to LayerDelegate::OnPaintLayer().
@@ -679,6 +681,19 @@ float GlicBorderView::GetEffectTime() const {
       ((last_animation_step_time_ - GetCreationTime()) - total_steady_time_) %
       kMaxTime;
   return time_since_creation.InSecondsF();
+}
+
+float GlicBorderView::GetEffectProgress(base::TimeTicks timestamp) const {
+  if (skip_emphasis_animation_) {
+    return 0.0;
+  }
+  base::TimeDelta time_since_first_frame = timestamp - first_emphasis_frame_;
+  base::TimeDelta total_duration =
+      kEmphasisRampUpDuration + kEmphasisRampDownDuration + kEmphasisDuration;
+  return std::clamp(
+      static_cast<float>(time_since_first_frame.InMillisecondsF() /
+                         total_duration.InMillisecondsF()),
+      0.0f, 1.0f);
 }
 
 base::TimeTicks GlicBorderView::GetCreationTime() const {

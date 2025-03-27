@@ -57,6 +57,8 @@ class GlicBorderView : public views::View,
   // once we set up the Skia Gold tests.
   float opacity_for_testing() const { return opacity_; }
   float emphasis_for_testing() const { return emphasis_; }
+  float progress_for_testing() const { return progress_; }
+  float GetEffectTimeForTesting() const;
 
   // Allows tests to alternate some animation APIs, for the deterministic
   // testing.
@@ -70,8 +72,6 @@ class GlicBorderView : public views::View,
     virtual void RampDownStarted() = 0;
   };
   void set_tester(Tester* tester) { tester_ = tester; }
-
-  float GetEffectTimeForTesting() const;
 
  private:
   void Show();
@@ -92,6 +92,9 @@ class GlicBorderView : public views::View,
   // Returns the effect evolution time; wraps after a day.
   float GetEffectTime() const;
 
+  // Returns a value from 0 to 1 indicating progress through the effect.
+  float GetEffectProgress(base::TimeTicks timestamp) const;
+
   // Returns the timestamp when the instance was created (but permits being
   // adjusted by the Tester).
   base::TimeTicks GetCreationTime() const;
@@ -111,6 +114,7 @@ class GlicBorderView : public views::View,
 
   float opacity_ = 0.f;
   float emphasis_ = 0.f;
+  float progress_ = 0.f;
 
   const base::TimeTicks creation_time_;
   base::TimeTicks first_frame_time_;
