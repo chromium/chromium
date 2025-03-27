@@ -455,6 +455,26 @@ TEST_F(ShapeResultTest, DISABLED_ComputeInkBoundsWithNonZeroOffset) {
   EXPECT_FALSE(result->ComputeInkBounds().IsEmpty());
 }
 
+TEST_F(ShapeResultTest, LetterSpacingNotAppliedForCursiveScripts) {
+  // خطية النصية
+  String string(
+      u"\u062E\u0637\u0651\u064E\u064A\u0651\u064E\u0020"
+      u"\u0627\u0644\u0646\u0651\u064E\u0635\u0651\u064E");
+
+  HarfBuzzShaper shaper(string);
+  auto* result = shaper.Shape(GetFont(kArabicFont), TextDirection::kRtl);
+
+  // Letter spacing should not be applied.
+  ShapeResultSpacing<String> spacing(string);
+  FontDescription font_description;
+  font_description.SetLetterSpacing(5);
+  font_description.SetWordSpacing(20);
+  spacing.SetSpacing(font_description);
+  result->ApplySpacing(spacing);
+  EXPECT_FALSE(spacing.IsLetterSpacingAppliedForTesting());
+  EXPECT_TRUE(spacing.IsWordSpacingAppliedForTesting());
+}
+
 // Tests for CaretPositionForOffset
 struct CaretPositionForOffsetTestData {
   // The string that should be processed.
