@@ -542,6 +542,13 @@ BASE_FEATURE_PARAM(bool,
                    "ExposeDebugMessageForSettingsStatus",
                    false);
 
+// Enables transactional behavior for sharedStorage.batchUpdate(). This also
+// disallows the 'withLock' option for methods within batchUpdate().
+// https://wicg.github.io/shared-storage/#batch-update
+BASE_FEATURE(kSharedStorageTransactionalBatchUpdate,
+             "SharedStorageTransactionalBatchUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch for the Interest Group API, i.e. if disabled, the
 // API exposure will be disabled regardless of the OT config.
 BASE_FEATURE(kInterestGroupStorage,

@@ -277,6 +277,9 @@ COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(bool,
                            kSharedStorageExposeDebugMessageForSettingsStatus);
 
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kSharedStorageTransactionalBatchUpdate);
+
 // Backend storage + kill switch for Interest Group API origin trials.
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kInterestGroupStorage);
