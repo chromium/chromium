@@ -60,6 +60,9 @@ public class TabGroupMetadataExtractor {
         @Nullable String tabGroupTitle = TabGroupTitleUtils.getTabGroupTitle(rootId);
         boolean tabGroupCollapsed = TabGroupCollapsedUtils.getTabGroupCollapsed(rootId);
 
+        // If the tab group is collapsed, do not select any tab within the group.
+        if (tabGroupCollapsed) selectedTabId = Tab.INVALID_TAB_ID;
+
         // 4. Create and populate TabGroupMetadata with data gathered above.
         TabGroupMetadata tabGroupMetadata =
                 new TabGroupMetadata(
