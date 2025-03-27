@@ -648,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(
               /*warnings=*/{net::CookieInclusionStatus::WarningReason::
                                 WARN_PORT_MISMATCH}),
           net::CookieAccessSemantics::NONLEGACY,
-          net::CookieScopeSemantics::UNKNOWN, true)};
+          net::CookieScopeSemantics::NONLEGACY, true)};
   EXPECT_THAT(cookie_tracker.cookie_accesses(),
               testing::ElementsAre(
                   // a.test/title1.html
@@ -677,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(
       net::CookieAccessResult(net::CookieEffectiveSameSite::NO_RESTRICTION,
                               expected_third_party_inclusion_status,
                               net::CookieAccessSemantics::NONLEGACY,
-                              net::CookieScopeSemantics::UNKNOWN, true)};
+                              net::CookieScopeSemantics::NONLEGACY, true)};
   EXPECT_THAT(cookie_tracker.cookie_accesses(),
               testing::ElementsAre(
                   // a.test iframe under b.test
