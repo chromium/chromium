@@ -2480,7 +2480,6 @@ data/accessibility/event/caret-browsing-enabled.html
 data/accessibility/event/caret-hide-expected-android.txt
 data/accessibility/event/caret-hide.html
 data/accessibility/event/caret-move-expected-android.txt
-data/accessibility/event/caret-move-expected-win.txt
 data/accessibility/event/caret-move-hidden-input-expected-android.txt
 data/accessibility/event/caret-move-hidden-input-expected-auralinux.txt
 data/accessibility/event/caret-move-hidden-input-expected-uia-win.txt
