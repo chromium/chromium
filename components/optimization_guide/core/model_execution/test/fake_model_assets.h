@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
@@ -64,11 +65,13 @@ class FakeAdaptationAsset {
   explicit FakeAdaptationAsset(Content&& content);
   ~FakeAdaptationAsset();
 
-  int64_t version() { return 12345; }
-  ModelBasedCapabilityKey feature() { return feature_; }
-  std::unique_ptr<OnDeviceModelAdaptationMetadata> metadata() {
+  int64_t version() const { return 12345; }
+  ModelBasedCapabilityKey feature() const { return feature_; }
+  std::unique_ptr<OnDeviceModelAdaptationMetadata> metadata() const {
     return std::make_unique<OnDeviceModelAdaptationMetadata>(*metadata_);
   }
+
+  void SendTo(OnDeviceModelServiceController& controller) const;
 
  private:
   base::ScopedTempDir temp_dir_;
