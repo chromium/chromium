@@ -199,6 +199,13 @@ void AesDecryptor::SetServerCertificate(
                   "SetServerCertificate() is not supported.");
 }
 
+void AesDecryptor::GetStatusForPolicy(
+    HdcpVersion min_hdcp_version,
+    std::unique_ptr<KeyStatusCdmPromise> promise) {
+  // For ClearKey, return Usable for all HDCP levels.
+  promise->resolve(CdmKeyInformation::KeyStatus::USABLE);
+}
+
 void AesDecryptor::CreateSessionAndGenerateRequest(
     CdmSessionType session_type,
     EmeInitDataType init_data_type,
