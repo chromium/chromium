@@ -10492,6 +10492,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TUTORIAL_LENS_OVERLAY_CLICK_LENS" desc="The description of the 'select the Google Lens button' step in Lens overlay tutorial">
         Select the Google Lens button
       </message>
+      <message name="IDS_TUTORIAL_LENS_OVERLAY_HOMEWORK_INTRO_HEADER" desc="Header for the intro of the Lens overlay homework tutorial">
+        Get homework help with Google Lens
+      </message>
+      <message name="IDS_TUTORIAL_LENS_OVERLAY_HOMEWORK_INTRO_BODY" desc="Description for the intro of the Lens overlay homework tutorial">
+        See a step-by-step explanation of any problem
+      </message>
+      <message name="IDS_TUTORIAL_LENS_OVERLAY_HOMEWORK_CLICK_LENS" desc="The description of the 'select Search with Google Lens' step in Lens overlay tutorial">
+        Select the Google Lens button, then click and drag over a problem
+      </message>
       <message name="IDS_TUTORIAL_LENS_OVERLAY_SELECT" desc="The description of the 'click and drag to search' step in Lens overlay tutorial">
         Click and drag over images or highlight text to search
       </message>
