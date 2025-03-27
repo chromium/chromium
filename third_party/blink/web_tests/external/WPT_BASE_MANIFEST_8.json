@@ -5748,6 +5748,13 @@
     },
     "css-viewport": {
      "zoom": {
+      "iframe-very-small-zoom-001-crash.html": [
+       "05369040456e06a0ab9769edefbe19aec6b77a93",
+       [
+        null,
+        {}
+       ]
+      ],
       "perspective-small-effective-zoom-crash.html": [
        "ab6f563d19ee8a826cf2ff9d0f04d105c7ba8d96",
        [
@@ -7825,6 +7832,13 @@
       "the-form-element": {
        "form-action-in-inactive-document-crash.html": [
         "8a3543fcbcf4a51b1a3e95a549c5b345fa39dcf3",
+        [
+         null,
+         {}
+        ]
+       ],
+       "form-controls-id-removal-crash.html": [
+        "2b1ef87774fc1c5393129fca8e65147c379ea7a9",
         [
          null,
          {}
@@ -74781,8 +74795,8 @@
        {}
       ]
      ],
-     "position-visibility-anchors-visible-both-position-fixed.tentative.html": [
-      "c603288f0a70a1f43e7384b9dd26c474ce96bac5",
+     "position-visibility-anchors-visible-both-position-fixed.html": [
+      "c5e8e839ded4e81258aebf723af93b1119077596",
       [
        null,
        [
@@ -74898,13 +74912,13 @@
        {}
       ]
      ],
-     "position-visibility-anchors-visible-position-fixed.tentative.html": [
-      "9c3495a635d2eaeb77de9586f031dedec5d7af97",
+     "position-visibility-anchors-visible-position-fixed.html": [
+      "5107823efd9ef0fa9c3a4fc66cda8e016954eb33",
       [
        null,
        [
         [
-         "/css/css-anchor-position/position-visibility-anchors-visible-position-fixed-ref.html",
+         "/css/css-anchor-position/position-visibility-anchors-visible-ref.html",
          "=="
         ]
        ],
@@ -74938,12 +74952,12 @@
       ]
      ],
      "position-visibility-anchors-visible-with-position.html": [
-      "8ad3eb7e31053a6978a638e88003eadd150138ff",
+      "32eede4f08819a54e2f6b4c5bdad8a488805e972",
       [
        null,
        [
         [
-         "/css/css-anchor-position/position-visibility-anchors-visible-ref.html",
+         "/css/css-anchor-position/position-visibility-anchors-visible-with-position-ref.html",
          "=="
         ]
        ],
@@ -250230,7 +250244,7 @@
       ]
      ],
      "auto-name-from-id.html": [
-      "9a04d431dfdc2225670e6bb2f87e6ac7a4fcd486",
+      "d3430c93a1d2043146e7205c2734a2b8b19af2e0",
       [
        null,
        [
@@ -328825,7 +328839,7 @@
       []
      ],
      "position-visibility-anchors-visible-both-position-fixed-ref.html": [
-      "7a9d69a9e3b3206fbc8a5865fb951ecec67b1bea",
+      "3af597aee65d3d679ae21e55d2f5859a3459e297",
       []
      ],
      "position-visibility-anchors-visible-chained-004-ref.html": [
@@ -328848,12 +328862,12 @@
       "3b6532e27b02a21037926adda9c4204c3ac6c017",
       []
      ],
-     "position-visibility-anchors-visible-position-fixed-ref.html": [
-      "e24992fd5ea44d66f01c275049436d15349f7a2b",
-      []
-     ],
      "position-visibility-anchors-visible-ref.html": [
       "17798173804b41258690ed22f1169a529bca42fe",
+      []
+     ],
+     "position-visibility-anchors-visible-with-position-ref.html": [
+      "5a364aa7847a13e5c786708f5f97dd0dd718649d",
       []
      ],
      "position-visibility-no-overflow-ref.html": [
@@ -369561,7 +369575,7 @@
         []
        ],
        "auto-name-from-id.html": [
-        "f1fd1e48a68e6d7d63184f092bb1b607b6d6967d",
+        "71ea52a273e3fca98440cdefc50c77c722663a21",
         []
        ],
        "chromium-paint-holding-timeout.html": [
@@ -406066,6 +406080,12 @@
          []
         ]
        }
+      },
+      "window": {
+       "minimize-1.html.ini": [
+        "2e3ac5190f397acff96227d8b80042b62e1869ae",
+        []
+       ]
       }
      },
      "update_properties.json": [
@@ -417144,7 +417164,7 @@
      ],
      "tentative": {
       "Selection-getComposedRanges-range-update-expected.txt": [
-       "14ce3b1271d3b2f234117632579ddd274539ba89",
+       "3433dfa5373dd44e669f534b7e2514b904ad0ad6",
        []
       ]
      }
@@ -424259,7 +424279,7 @@
       []
      ],
      "trusted-types-reporting-for-importScripts.js": [
-      "c8de9f8d5fdab4d4d2d82ec37eedd7785c1ceee1",
+      "c03c29a4e9ed19c14c2962aad60b70cc8bc08267",
       []
      ],
      "trusted-types-reporting-for-importScripts.js.headers": [
@@ -424335,8 +424355,8 @@
      "8af05a71b6b4c111db6e535ff314d701f2709d5f",
      []
     ],
-    "trusted-types-reporting-for-ServiceWorker-function-constructor-expected.txt": [
-     "3ba59b0acf9c186de23d1185f78b8de4397f6373",
+    "trusted-types-reporting-for-ServiceWorker-function-constructor.https-expected.txt": [
+     "f5eb1a976276fc9494026c0748e33c6c61126d12",
      []
     ],
     "trusted-types-reporting-for-SharedWorker-DedicatedWorker-constructor-expected.txt": [
@@ -461747,7 +461767,7 @@
    "ai": {
     "language_detection": {
      "detector.https.tentative.any.js": [
-      "9fa734b6bd79c0016c0df0d3e5410d3a15763823",
+      "f28b3ebf2b48b8a129eef4ee293ca229126a9e60",
       [
        "ai/language_detection/detector.https.tentative.any.html",
        {
@@ -461827,10 +461847,10 @@
      ]
     },
     "translator": {
-     "ai_translator_bad_input.tentative.https.any.js": [
-      "980d3c0f6976d5710d42ec55a37abe8d2a5248fb",
+     "translator_bad_input.tentative.https.any.js": [
+      "2879543f29a1239e912b52ed4833db9de4ff5021",
       [
-       "ai/translator/ai_translator_bad_input.tentative.https.any.html",
+       "ai/translator/translator_bad_input.tentative.https.any.html",
        {
         "script_metadata": [
          [
@@ -461850,7 +461870,7 @@
        }
       ],
       [
-       "ai/translator/ai_translator_bad_input.tentative.https.any.serviceworker.html",
+       "ai/translator/translator_bad_input.tentative.https.any.serviceworker.html",
        {
         "script_metadata": [
          [
@@ -461870,7 +461890,7 @@
        }
       ],
       [
-       "ai/translator/ai_translator_bad_input.tentative.https.any.sharedworker.html",
+       "ai/translator/translator_bad_input.tentative.https.any.sharedworker.html",
        {
         "script_metadata": [
          [
@@ -461890,7 +461910,7 @@
        }
       ],
       [
-       "ai/translator/ai_translator_bad_input.tentative.https.any.worker.html",
+       "ai/translator/translator_bad_input.tentative.https.any.worker.html",
        {
         "script_metadata": [
          [
@@ -461910,10 +461930,10 @@
        }
       ]
      ],
-     "ai_translator_translate.tentative.https.any.js": [
-      "992215d921025079dfee122672fcde827c249e6a",
+     "translator_translate.tentative.https.any.js": [
+      "5a800c00c696ca3565b3de3bf60f407b1f4ca05c",
       [
-       "ai/translator/ai_translator_translate.tentative.https.any.html",
+       "ai/translator/translator_translate.tentative.https.any.html",
        {
         "script_metadata": [
          [
@@ -523123,21 +523143,21 @@
        {}
       ]
      ],
-     "progress-computed.tentative.html": [
+     "progress-computed.html": [
       "8eb4e2b6757e2559b76c6a641dca40f1df32e0b7",
       [
        null,
        {}
       ]
      ],
-     "progress-invalid.tentative.html": [
+     "progress-invalid.html": [
       "f135487e1c4dd0cef9d99652c7c10a8ebe44070a",
       [
        null,
        {}
       ]
      ],
-     "progress-serialize.tentative.html": [
+     "progress-serialize.html": [
       "49c3a3c3d56596d529ee40df71373dca1290b16b",
       [
        null,
@@ -524529,7 +524549,7 @@
        ]
       ],
       "zoom-iframe-dynamic.html": [
-       "cea38d8254039d08fb78bf55f8d8d9d3cc77e747",
+       "1836408fb33f4111be2e1f8e389defa7741cd5ca",
        [
         null,
         {}
@@ -657282,6 +657302,26 @@
        ]
       ]
      }
+    },
+    "window": {
+     "minimize-1.html": [
+      "3b6d46874b3e51f0391d7de0728b42c795c91cad",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "minimize-2.html": [
+      "279f01b7b73abc434c2daa640c1aa292f419ea53",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ]
     }
    },
    "input-device-capabilities": {
@@ -667850,7 +667890,7 @@
       ]
      ],
      "defaultPrevented-window-stop-after-dispatch.html": [
-      "da5de10ddd8ba5753265f7a2b2448915e31cd257",
+      "889179603b8dfc3088fbf58a38c379cba0026ecb",
       [
        null,
        {}
@@ -668338,13 +668378,6 @@
        {}
       ]
      ],
-     "replaceState-in-unload-then-remove-iframe.html": [
-      "e97b72b15717325b49594382931635574c76f65c",
-      [
-       null,
-       {}
-      ]
-     ],
      "replaceState-inside-back-handler.html": [
       "29409b5e2bc3e680cf99f54abea90bcdd5bfd1b2",
       [
@@ -668402,7 +668435,7 @@
       ]
      ],
      "signal-abort-window-stop.html": [
-      "43e005e8b41180b058055ef30714e7dd49954861",
+      "cd3bb7431a381c5cc64902d00959f71193cd1b89",
       [
        null,
        {}
@@ -725828,10 +725861,12 @@
      ]
     ],
     "ServiceWorkerContainer-register-from-ServiceWorker.https.html": [
-     "7bc1ee7469db2660699f265bac57ce15c7a6778a",
+     "23020096383ff1bdce32f7880d0ff2baf0e72435",
      [
       null,
-      {}
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "ServiceWorkerContainer-register-from-SharedWorker.https.html": [
@@ -726764,7 +726799,7 @@
       {}
      ]
     ],
-    "trusted-types-reporting-for-ServiceWorker-function-constructor.html": [
+    "trusted-types-reporting-for-ServiceWorker-function-constructor.https.html": [
      "791663dfc792179e9c145bc33442fa0b81966f7a",
      [
       null,
@@ -759836,7 +759871,7 @@
       ]
      ],
      "dequantizeLinear.https.any.js": [
-      "8642a9647528c3ba3268d076fb2c92b9751d56d7",
+      "310dd03fcb5e46c9209951f6243e988f85c8e810",
       [
        "webnn/conformance_tests/dequantizeLinear.https.any.html?cpu",
        {

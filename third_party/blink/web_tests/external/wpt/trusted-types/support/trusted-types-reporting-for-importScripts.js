@@ -5,7 +5,7 @@ importScripts(testSetupPolicy.createScriptURL("helper.sub.js"));
 importScripts(testSetupPolicy.createScriptURL("csp-violations.js"));
 
 const policy = trustedTypes.createPolicy("dummy", { createScriptURL: x => x });
-const input = `data:text/javascript,${`;`.repeat(100)}`;
+const input = `./namespaces.js?${'A'.repeat(100)}`;
 
 promise_test(async t => {
   await no_trusted_type_violation_for(_ =>
