@@ -352,4 +352,11 @@ PathBuilder& PathBuilder::Translate(const gfx::Vector2dF& offset) {
   return *this;
 }
 
+PathBuilder& PathBuilder::Transform(const AffineTransform& xform) {
+  builder_.transform(xform.ToSkMatrix());
+
+  current_path_.reset();
+  return *this;
+}
+
 }  // namespace blink
