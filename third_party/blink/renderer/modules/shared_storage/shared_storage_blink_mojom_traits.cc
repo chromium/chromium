@@ -38,4 +38,21 @@ bool StructTraits<network::mojom::LockNameDataView, WTF::String>::Read(
   NOTREACHED();
 }
 
+// static
+bool StructTraits<
+    network::mojom::SharedStorageBatchUpdateMethodsArgumentDataView,
+    WTF::Vector<
+        network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>>::
+    Read(network::mojom::SharedStorageBatchUpdateMethodsArgumentDataView data,
+         WTF::Vector<
+             network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>*
+             out_value) {
+  // There is no need to convert
+  // `SharedStorageBatchUpdateMethodsArgumentDataView` back to
+  // `WTF::Vector<network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>`.
+  // If we do need to implement deserialization later, we need to validate its
+  // content.
+  NOTREACHED();
+}
+
 }  // namespace mojo

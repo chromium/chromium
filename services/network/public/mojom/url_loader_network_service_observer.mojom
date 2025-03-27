@@ -203,7 +203,7 @@ interface URLLoaderNetworkServiceObserver {
   // triggered by response headers and Shared Storage calls from the same
   // renderer process where this request originated.
   OnSharedStorageHeaderReceived(url.mojom.Origin request_origin,
-      array<SharedStorageModifierMethodWithOptions> methods_with_options,
+      network.mojom.SharedStorageBatchUpdateMethodsArgument methods_with_options,
       network.mojom.LockName? with_lock) => ();
 
   // Notifies the browser of the results of successful parsing of

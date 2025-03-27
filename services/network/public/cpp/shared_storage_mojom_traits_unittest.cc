@@ -77,5 +77,30 @@ TEST(SharedStorageMojomTraitsTest, SerializeAndDeserializeLockName) {
   }
 }
 
+TEST(SharedStorageMojomTraitsTest,
+     SerializeAndDeserializeBatchUpdateMethodsArgument) {
+  auto method1 = mojom::SharedStorageModifierMethodWithOptions::New(
+      mojom::SharedStorageModifierMethod::NewSetMethod(
+          mojom::SharedStorageSetMethod::New(/*key=*/u"a", /*key=*/u"b",
+                                             /*ignore_if_present=*/true)),
+      /*with_lock=*/std::nullopt);
+
+  auto method2 = mojom::SharedStorageModifierMethodWithOptions::New(
+      mojom::SharedStorageModifierMethod::NewAppendMethod(
+          mojom::SharedStorageAppendMethod::New(/*key=*/u"c", /*key=*/u"d")),
+      /*with_lock=*/std::nullopt);
+
+  std::vector<mojom::SharedStorageModifierMethodWithOptionsPtr>
+      original_methods;
+  original_methods.push_back(std::move(method1));
+  original_methods.push_back(std::move(method2));
+
+  std::vector<mojom::SharedStorageModifierMethodWithOptionsPtr> copied_methods;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::SharedStorageBatchUpdateMethodsArgument>(original_methods,
+                                                              copied_methods));
+  EXPECT_EQ(original_methods, copied_methods);
+}
+
 }  // namespace
 }  // namespace network

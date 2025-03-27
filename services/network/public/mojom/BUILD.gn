@@ -297,6 +297,11 @@ mojom("mojom_shared_storage") {
           mojom = "network.mojom.LockName"
           cpp = "::std::string"
         },
+        {
+          mojom = "network.mojom.SharedStorageBatchUpdateMethodsArgument"
+          cpp = "::std::vector<::network::mojom::SharedStorageModifierMethodWithOptionsPtr>"
+          move_only = true
+        },
       ]
       traits_headers =
           [ "//services/network/public/cpp/shared_storage_mojom_traits.h" ]
@@ -317,6 +322,11 @@ mojom("mojom_shared_storage") {
         {
           mojom = "network.mojom.LockName"
           cpp = "::WTF::String"
+        },
+        {
+          mojom = "network.mojom.SharedStorageBatchUpdateMethodsArgument"
+          cpp = "::WTF::Vector<::network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>"
+          move_only = true
         },
       ]
       traits_headers = [ "//third_party/blink/renderer/modules/shared_storage/shared_storage_blink_mojom_traits.h" ]

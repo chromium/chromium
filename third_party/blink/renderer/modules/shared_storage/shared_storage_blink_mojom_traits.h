@@ -41,6 +41,26 @@ struct PLATFORM_EXPORT
   static const WTF::String& data(const WTF::String& input) { return input; }
 };
 
+template <>
+struct PLATFORM_EXPORT StructTraits<
+    network::mojom::SharedStorageBatchUpdateMethodsArgumentDataView,
+    WTF::Vector<
+        network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>> {
+  static bool Read(
+      network::mojom::SharedStorageBatchUpdateMethodsArgumentDataView data,
+      WTF::Vector<
+          network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>*
+          out_value);
+
+  static const WTF::Vector<
+      network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>&
+  data(const WTF::Vector<
+       network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>&
+           input) {
+    return input;
+  }
+};
+
 }  // namespace mojo
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SHARED_STORAGE_BLINK_MOJOM_TRAITS_H_
