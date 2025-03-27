@@ -389,9 +389,10 @@ export class AppElement extends AppElementBase {
     setTimeout(() => chrome.readingMode.shouldShowUi(), 0);
 
     this.showLoading();
-    VoiceNotificationManager.getInstance().addListener(this.$.languageToast);
 
     if (this.isReadAloudEnabled_) {
+      VoiceNotificationManager.getInstance().addListener(this.$.languageToast);
+
       // Clear state. We don't do this in disconnectedCallback because that's
       // not always reliabled called.
       this.speech_.cancel();
