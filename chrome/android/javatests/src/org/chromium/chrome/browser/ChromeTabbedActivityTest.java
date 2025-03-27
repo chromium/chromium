@@ -60,7 +60,8 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -93,8 +94,8 @@ public class ChromeTabbedActivityTest {
     private static final String FILE_PATH = "/chrome/test/data/android/test.html";
 
     @Rule
-    public final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -103,8 +104,8 @@ public class ChromeTabbedActivityTest {
 
     @Before
     public void setUp() {
-        sActivityTestRule.startMainActivityOnBlankPage();
-        mActivity = sActivityTestRule.getActivity();
+        mActivityTestRule.startOnBlankPage();
+        mActivity = mActivityTestRule.getActivity();
         assertNotNull(mActivity);
     }
 
@@ -119,7 +120,7 @@ public class ChromeTabbedActivityTest {
     public void testTabVisibility() {
         // Create two tabs - tab[0] in the foreground and tab[1] in the background.
         final Tab[] tabs = new Tab[2];
-        sActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
+        mActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Foreground tab.
@@ -127,14 +128,14 @@ public class ChromeTabbedActivityTest {
                     tabs[0] =
                             tabCreator.createNewTab(
                                     new LoadUrlParams(
-                                            sActivityTestRule.getTestServer().getURL(FILE_PATH)),
+                                            mActivityTestRule.getTestServer().getURL(FILE_PATH)),
                                     TabLaunchType.FROM_CHROME_UI,
                                     null);
                     // Background tab.
                     tabs[1] =
                             tabCreator.createNewTab(
                                     new LoadUrlParams(
-                                            sActivityTestRule.getTestServer().getURL(FILE_PATH)),
+                                            mActivityTestRule.getTestServer().getURL(FILE_PATH)),
                                     TabLaunchType.FROM_LONGPRESS_BACKGROUND,
                                     null);
                 });
@@ -166,14 +167,14 @@ public class ChromeTabbedActivityTest {
     @EnableFeatures(ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY)
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testTabImportance() {
-        sActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
+        mActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
         final Tab tab =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             ChromeTabCreator tabCreator = mActivity.getCurrentTabCreator();
                             return tabCreator.createNewTab(
                                     new LoadUrlParams(
-                                            sActivityTestRule.getTestServer().getURL(FILE_PATH)),
+                                            mActivityTestRule.getTestServer().getURL(FILE_PATH)),
                                     TabLaunchType.FROM_CHROME_UI,
                                     null);
                         });
@@ -255,7 +256,7 @@ public class ChromeTabbedActivityTest {
         Intent viewIntent =
                 new Intent(
                         Intent.ACTION_VIEW,
-                        Uri.parse(sActivityTestRule.getTestServer().getURL("/first")));
+                        Uri.parse(mActivityTestRule.getTestServer().getURL("/first")));
         viewIntent.putExtra(
                 Browser.EXTRA_APPLICATION_ID, mActivity.getApplicationContext().getPackageName());
         viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -264,8 +265,8 @@ public class ChromeTabbedActivityTest {
         viewIntent.setClass(mActivity, ChromeLauncherActivity.class);
         ArrayList<String> extraUrls =
                 Lists.newArrayList(
-                        sActivityTestRule.getTestServer().getURL("/second"),
-                        sActivityTestRule.getTestServer().getURL("/third"));
+                        mActivityTestRule.getTestServer().getURL("/second"),
+                        mActivityTestRule.getTestServer().getURL("/third"));
         viewIntent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, extraUrls);
         IntentUtils.addTrustedIntentExtras(viewIntent);
 
@@ -533,13 +534,13 @@ public class ChromeTabbedActivityTest {
     @DisabledTest(message = "crbug.com/1187320 This doesn't work with FeedV2 and crbug.com/1096295")
     public void testActivityCanBeGarbageCollectedAfterFinished() {
         WeakReference<ChromeTabbedActivity> activityRef =
-                new WeakReference<>(sActivityTestRule.getActivity());
+                new WeakReference<>(mActivityTestRule.getActivity());
 
         ChromeTabbedActivity activity =
-                ApplicationTestUtils.recreateActivity(sActivityTestRule.getActivity());
+                ApplicationTestUtils.recreateActivity(mActivityTestRule.getActivity());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        sActivityTestRule.setActivity(activity);
+        mActivityTestRule.getActivityTestRule().setActivity(activity);
 
         CriteriaHelper.pollUiThread(
                 () -> GarbageCollectionTestUtils.canBeGarbageCollected(activityRef));
@@ -548,14 +549,14 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     public void testBackShouldCloseTab() {
-        sActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
+        mActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
         Tab tab =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             ChromeTabCreator tabCreator = mActivity.getCurrentTabCreator();
                             return tabCreator.createNewTab(
                                     new LoadUrlParams(
-                                            sActivityTestRule.getTestServer().getURL(FILE_PATH)),
+                                            mActivityTestRule.getTestServer().getURL(FILE_PATH)),
                                     TabLaunchType.FROM_LINK,
                                     null);
                         });
@@ -570,7 +571,7 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     public void testBackShouldCloseTab_Collaboration() {
-        sActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
+        mActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
         Tab tab =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -578,7 +579,7 @@ public class ChromeTabbedActivityTest {
                             Tab newTab =
                                     tabCreator.createNewTab(
                                             new LoadUrlParams(
-                                                    sActivityTestRule
+                                                    mActivityTestRule
                                                             .getTestServer()
                                                             .getURL(FILE_PATH)),
                                             TabLaunchType.FROM_LINK,
