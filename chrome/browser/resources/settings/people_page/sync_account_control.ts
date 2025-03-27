@@ -485,7 +485,7 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private shouldShowTurnOffButton_(): boolean {
-    if (this.hideButtons) {
+    if (this.hideButtons || this.showSetupButtons_) {
       return false;
     }
 
@@ -494,7 +494,7 @@ export class SettingsSyncAccountControlElement extends
       return true;
     }
 
-    return !this.showSetupButtons_ && this.isSyncing_();
+    return this.isSyncing_();
   }
 
   private getTurnOffSyncLabel_(turnOffSync: string): string {
@@ -521,7 +521,7 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private shouldShowErrorActionButton_(): boolean {
-    if (this.hideButtons) {
+    if (this.hideButtons || this.showSetupButtons_) {
       return false;
     }
 
@@ -536,8 +536,7 @@ export class SettingsSyncAccountControlElement extends
       return true;
     }
 
-    return !this.showSetupButtons_ && this.isSyncing_() &&
-        !!this.syncStatus.hasError &&
+    return this.isSyncing_() && !!this.syncStatus.hasError &&
         this.syncStatus.statusAction !== StatusAction.NO_ACTION;
   }
 
