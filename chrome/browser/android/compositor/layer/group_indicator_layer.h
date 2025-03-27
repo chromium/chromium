@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
+#include "components/tab_groups/tab_group_id.h"
 
 namespace cc::slim {
 class Layer;
@@ -30,7 +31,7 @@ class GroupIndicatorLayer : public Layer {
   GroupIndicatorLayer(const GroupIndicatorLayer&) = delete;
   GroupIndicatorLayer& operator=(const GroupIndicatorLayer&) = delete;
 
-  void SetProperties(int id,
+  void SetProperties(const tab_groups::TabGroupId& jgroup_token,
                      int tint,
                      int reorder_background_tint,
                      int bubble_tint,
