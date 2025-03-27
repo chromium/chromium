@@ -2899,6 +2899,9 @@ def turn_off_allocator_shim_for_musl(module):
 def create_cc_defaults_module():
   defaults = Module('cc_defaults', cc_defaults_module, '//gn:default_deps')
   defaults.cflags = [
+      # TODO: this list is brittle and painful to maintain. We are too easily
+      # broken by changes to Chromium cflags, e.g. https://crbug.com/406704769.
+      # Ideally this list should be deduced from GN cflags.
       '-DGOOGLE_PROTOBUF_NO_RTTI',
       '-DBORINGSSL_SHARED_LIBRARY',
       '-Wno-error=return-type',
@@ -2918,6 +2921,9 @@ def create_cc_defaults_module():
       '-Wno-invalid-constexpr',
       # b/330508686 disable coverage profiling for files or function in this list.
       '-fprofile-list=external/cronet/exclude_coverage.list',
+      # https://crrev.com/c/6396655/7/build/config/compiler/BUILD.gn
+      # https://crbug.com/406704769
+      '-Wno-nullability-completeness',
   ]
   defaults.build_file_path = ""
   defaults.include_build_directory = False
