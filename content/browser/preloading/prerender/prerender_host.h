@@ -436,6 +436,9 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // fetch, we need to abort the prerender. This method judges a condition.
   bool ShouldAbortNavigationBecausePrefetchUnavailable() const;
 
+  void AddAdditionalRequestHeaders(net::HttpRequestHeaders& headers,
+                                   FrameTreeNode& navigating_frame_tree_node);
+
  private:
   void RecordFailedFinalStatusImpl(const PrerenderCancellationReason& reason);
 

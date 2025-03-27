@@ -69,6 +69,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
 
   std::optional<blink::mojom::SpeculationTargetHint> GetTargetHint() const;
   std::optional<blink::mojom::SpeculationEagerness> GetEagerness() const;
+  std::optional<SpeculationRulesTags> GetTags() const;
 
   GURL prerendering_url;
 
