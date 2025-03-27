@@ -9,6 +9,7 @@
 #include "components/collaboration/internal/collaboration_controller.h"
 #include "components/collaboration/internal/metrics.h"
 #include "components/collaboration/public/collaboration_flow_type.h"
+#include "components/collaboration/public/collaboration_utils.h"
 #include "components/collaboration/public/service_status.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
@@ -150,22 +151,8 @@ MemberRole CollaborationServiceImpl::GetCurrentUserRoleForGroup(
     return MemberRole::kUnknown;
   }
 
-  CoreAccountInfo account =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-
-  if (account.IsEmpty()) {
-    // No current logged in user.
-    return MemberRole::kUnknown;
-  }
-
-  for (const GroupMember& member : group_data.value().members) {
-    if (member.gaia_id == account.gaia) {
-      return member.role;
-    }
-  }
-
-  // Current user is not found in group.
-  return MemberRole::kUnknown;
+  return ::collaboration::GetCurrentUserRoleForGroup(identity_manager_.get(),
+                                                     group_data.value());
 }
 
 std::optional<data_sharing::GroupData> CollaborationServiceImpl::GetGroupData(
@@ -376,12 +363,13 @@ void CollaborationServiceImpl::StartJoinFlowInternal(
     std::unique_ptr<CollaborationControllerDelegate> delegate,
     const GroupToken& token) {
   join_controllers_.insert(
-      {token, std::make_unique<CollaborationController>(
-                  Flow(FlowType::kJoin, token), this,
-                  data_sharing_service_.get(), tab_group_sync_service_.get(),
-                  sync_service_.get(), std::move(delegate),
-                  base::BindOnce(&CollaborationServiceImpl::FinishJoinFlow,
-                                 weak_ptr_factory_.GetWeakPtr(), token))});
+      {token,
+       std::make_unique<CollaborationController>(
+           Flow(FlowType::kJoin, token), this, data_sharing_service_.get(),
+           tab_group_sync_service_.get(), sync_service_.get(),
+           identity_manager_.get(), std::move(delegate),
+           base::BindOnce(&CollaborationServiceImpl::FinishJoinFlow,
+                          weak_ptr_factory_.GetWeakPtr(), token))});
 }
 
 void CollaborationServiceImpl::StartShareOrManageFlowInternal(
@@ -392,7 +380,7 @@ void CollaborationServiceImpl::StartShareOrManageFlowInternal(
        std::make_unique<CollaborationController>(
            Flow(FlowType::kShareOrManage, group_id), this,
            data_sharing_service_.get(), tab_group_sync_service_.get(),
-           sync_service_.get(), std::move(delegate),
+           sync_service_.get(), identity_manager_.get(), std::move(delegate),
            base::BindOnce(&CollaborationServiceImpl::FinishShareFlow,
                           weak_ptr_factory_.GetWeakPtr(), group_id))});
 }

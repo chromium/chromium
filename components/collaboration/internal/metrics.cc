@@ -83,6 +83,8 @@ std::string_view CollaborationServiceJoinEventToString(
       return "ManagedAccountSignin";
     case CollaborationServiceJoinEvent::kAccountInfoNotReadyOnSignin:
       return "AccountInfoNotReadyOnSignin";
+    case CollaborationServiceJoinEvent::kReadNewGroupUserIsAlreadyMember:
+      return "ReadNewGroupUserIsAlreadyMember";
   }
 }
 
