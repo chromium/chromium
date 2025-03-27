@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "base/test/ios/wait_util.h"
+#import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
@@ -184,6 +185,13 @@ void ResetSyncAccountSettingsPrefs() {
   SyncServiceFactory::GetForProfile(profile)
       ->GetUserSettings()
       ->KeepAccountSettingsPrefsOnlyForUsers({});
+}
+
+void SetPolicyResponseForNextProfileSeparationPolicyRequest(
+    policy::ProfileSeparationDataMigrationSettings
+        profileSeparationDataMigrationSettings) {
+  [AuthenticationFlow forcePolicyResponseForNextRequestForTesting:
+                          profileSeparationDataMigrationSettings];
 }
 
 }  // namespace chrome_test_util
