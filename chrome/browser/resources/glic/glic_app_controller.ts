@@ -100,6 +100,16 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
       this.setState(WebUiState.kOffline);
     }
 
+    document.addEventListener('keydown', ev => {
+      if (this.state !== WebUiState.kReady) {
+        if (ev.code === 'Escape') {
+          ev.stopPropagation();
+          ev.preventDefault();
+          this.browserProxy.handler.closePanel();
+        }
+      }
+    });
+
     if (kEnableDebug) {
       window.addEventListener('load', () => {
         this.installDebugButton();
