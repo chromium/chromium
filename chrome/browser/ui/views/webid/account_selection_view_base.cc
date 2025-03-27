@@ -406,12 +406,15 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   auto row = std::make_unique<views::View>();
   row->SetProperty(views::kElementIdentifierKey,
                    kFedCmAccountChooserDialogAccountElementId);
-  row->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets::VH(
-          /*vertical=*/kVerticalSpacing + additional_vertical_padding,
-          /*horizontal=*/is_modal_dialog ? kModalHorizontalSpacing : 0),
-      kLeftRightPadding));
+  std::unique_ptr<views::BoxLayout> box_layout(
+      std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          gfx::Insets::VH(
+              /*vertical=*/kVerticalSpacing + additional_vertical_padding,
+              /*horizontal=*/is_modal_dialog ? kModalHorizontalSpacing : 0),
+          kLeftRightPadding));
+  box_layout->set_cross_axis_alignment(views::LayoutAlignment::kCenter);
+  row->SetLayoutManager(std::move(box_layout));
   row->AddChildView(std::move(account_image_view));
   views::View* const text_column =
       row->AddChildView(std::make_unique<views::View>());
@@ -426,12 +429,14 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   account_name->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   // Add account identifier.
-  views::Label* const account_identifier =
-      text_column->AddChildView(std::make_unique<views::Label>(
-          base::UTF8ToUTF16(account->display_identifier),
-          views::style::CONTEXT_DIALOG_BODY_TEXT, account_identifier_style));
-  account_identifier->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_LEFT);
+  if (!account->display_identifier.empty()) {
+    views::Label* const account_identifier =
+        text_column->AddChildView(std::make_unique<views::Label>(
+            base::UTF8ToUTF16(account->display_identifier),
+            views::style::CONTEXT_DIALOG_BODY_TEXT, account_identifier_style));
+    account_identifier->SetHorizontalAlignment(
+        gfx::HorizontalAlignment::ALIGN_LEFT);
+  }
 
   return row;
 }
