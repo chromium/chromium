@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
@@ -316,6 +317,10 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     controller().InitAXPositionWithNode(nodes[0].id);
   }
 
+  void EnableReadAloud() {
+    scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
+  }
+
   ui::AXTreeID tree_id_;
   raw_ptr<MockAXTreeDistiller, DanglingUntriaged> distiller_ = nullptr;
   testing::StrictMock<MockReadAnythingUntrustedPageHandler> page_handler_;
@@ -334,10 +339,32 @@ TEST_F(ReadAnythingAppControllerTest, IsReadAloudEnabled) {
 #else
   EXPECT_FALSE(controller().IsReadAloudEnabled());
 
-  scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
+  EnableReadAloud();
   EXPECT_TRUE(controller().IsReadAloudEnabled());
 #endif  // IS_CHROMEOS
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(ReadAnythingAppControllerTest, OnDeviceLocked_OnlyLogsIfSpeechPlaying) {
+  read_aloud_model().set_speech_playing(false);
+  base::HistogramTester histogram_tester;
+
+  controller().OnDeviceLocked();
+  EXPECT_EQ(0, histogram_tester.GetTotalSum(
+                   ReadAloudAppModel::kSpeechStopSourceHistogramName));
+
+  EnableReadAloud();
+  controller().OnDeviceLocked();
+  EXPECT_EQ(0, histogram_tester.GetTotalSum(
+                   ReadAloudAppModel::kSpeechStopSourceHistogramName));
+
+  read_aloud_model().set_speech_playing(true);
+  controller().OnDeviceLocked();
+  histogram_tester.ExpectUniqueSample(
+      ReadAloudAppModel::kSpeechStopSourceHistogramName,
+      ReadAloudAppModel::ReadAloudStopSource::kLockChromeosDevice, 1);
+}
+#endif
 
 TEST_F(ReadAnythingAppControllerTest, OnLetterSpacingChange_ValidChange) {
   static constexpr auto kLetterSpacing =

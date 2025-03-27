@@ -721,6 +721,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   protected onPlayPauseClick_() {
     this.logger_.logSpeechControlClick(
         this.isSpeechActive ? SpeechControls.PAUSE : SpeechControls.PLAY);
+    if (this.isSpeechActive) {
+      this.logger_.logSpeechStopSource(
+          chrome.readingMode.pauseButtonStopSource);
+    }
     this.fire(ToolbarEvent.PLAY_PAUSE);
   }
 

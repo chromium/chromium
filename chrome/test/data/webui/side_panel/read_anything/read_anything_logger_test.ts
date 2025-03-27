@@ -113,6 +113,12 @@ suite('Logger', () => {
     assertEquals(0, metrics.getCallCount('recordTextSettingsChange'));
   });
 
+  test('speech stop source', async () => {
+    const source = 123;
+    logger.logSpeechStopSource(source);
+    assertEquals(source, await metrics.whenCalled('recordSpeechStopSource'));
+  });
+
   test('logVoiceSpeed', () => {
     logger.logVoiceSpeed(1);
     logger.logVoiceSpeed(2);
