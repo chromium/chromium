@@ -1027,6 +1027,7 @@ _CONFIG = [
             'third_party/blink/common/messaging/accelerated_static_bitmap_image_mojom_traits.cc'
         ],
         'allowed': [
+            'gfx::ColorSpace',
             'gfx::Size',
             'gfx::SizeToSkISize',
             'gpu::ExportedSharedImage',
