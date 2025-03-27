@@ -94,8 +94,8 @@ FrameTreeNodeId PrerenderNewTabHandle::StartPrerendering(
       *PreloadingDataImpl::GetOrCreateForWebContents(
           attributes_.initiator_web_contents.get()),
       {creating_predictor, enacting_predictor});
-  CHECK(attributes_.eagerness.has_value());
-  preloading_attempt->SetSpeculationEagerness(attributes_.eagerness.value());
+  CHECK(eagerness().has_value());
+  preloading_attempt->SetSpeculationEagerness(eagerness().value());
 
   prerender_host_id_ = GetPrerenderHostRegistry().CreateAndStartHost(
       attributes_, preloading_attempt);

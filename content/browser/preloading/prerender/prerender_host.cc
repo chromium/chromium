@@ -1416,8 +1416,8 @@ bool PrerenderHost::IsInitialNavigation(
 base::TimeDelta PrerenderHost::WaitUntilHeadTimeout() {
   int timeout_in_milliseconds = 0;
   if (IsSpeculationRuleType(attributes_.trigger_type)) {
-    CHECK(attributes_.eagerness.has_value());
-    switch (attributes_.eagerness.value()) {
+    CHECK(eagerness().has_value());
+    switch (eagerness().value()) {
       case blink::mojom::SpeculationEagerness::kEager:
         timeout_in_milliseconds =
             features::kPrerender2NoVarySearchWaitForHeadersTimeoutEagerPrerender

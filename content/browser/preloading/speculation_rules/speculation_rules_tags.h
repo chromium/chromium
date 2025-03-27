@@ -20,10 +20,13 @@ class CONTENT_EXPORT SpeculationRulesTags {
  public:
   SpeculationRulesTags();
   explicit SpeculationRulesTags(std::vector<std::optional<std::string>> tags);
-  SpeculationRulesTags(SpeculationRulesTags&& tags);
-  SpeculationRulesTags(const SpeculationRulesTags& tags);
-
   ~SpeculationRulesTags();
+
+  // Copyable and movable.
+  SpeculationRulesTags(const SpeculationRulesTags&);
+  SpeculationRulesTags& operator=(const SpeculationRulesTags&);
+  SpeculationRulesTags(SpeculationRulesTags&& tags) noexcept;
+  SpeculationRulesTags& operator=(SpeculationRulesTags&&) noexcept;
 
   std::optional<std::string> ConvertStringToHeaderString();
 

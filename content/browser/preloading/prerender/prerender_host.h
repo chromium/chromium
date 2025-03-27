@@ -15,6 +15,7 @@
 #include "base/types/pass_key.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_controller_delegate.h"
 #include "content/common/content_export.h"
@@ -386,7 +387,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   }
 
   std::optional<blink::mojom::SpeculationEagerness> eagerness() const {
-    return attributes_.eagerness;
+    return attributes_.GetEagerness();
   }
 
   base::WeakPtr<PreloadingAttempt> preloading_attempt() { return attempt_; }
