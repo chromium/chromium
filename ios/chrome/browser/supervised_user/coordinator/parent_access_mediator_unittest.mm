@@ -4,23 +4,43 @@
 
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator.h"
 
+#import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator_delegate.h"
 #import "ios/chrome/browser/supervised_user/model/ios_web_content_handler_impl.h"
 #import "ios/chrome/browser/supervised_user/model/parent_access_tab_helper.h"
 #import "ios/chrome/browser/supervised_user/ui/parent_access_consumer.h"
-#import "ios/web/public/test/fakes/fake_navigation_manager.h"
-#import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/chrome/browser/web/model/font_size/font_size_java_script_feature.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/web_state.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+
+namespace {
+
+std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+    const net::test_server::HttpRequest& request) {
+  if (request.GetURL().path() == "/parentaccess") {
+    auto result = std::make_unique<net::test_server::BasicHttpResponse>();
+    result->set_content_type("text/html");
+    result->set_content("<html><head></head><body>Content</body></html>");
+    return std::move(result);
+  }
+  return nullptr;
+}
+
+}  // namespace
 
 // A test object that conforms to the ParentAccessMediatorDelegate protocol.
 @interface TestParentAccessMediatorDelegate
@@ -85,19 +105,30 @@
 // Test fixture for ParentAccessMediator.
 class ParentAccessMediatorTest : public PlatformTest {
  protected:
-  ParentAccessMediatorTest() {}
+  ParentAccessMediatorTest()
+      : web_client_(std::make_unique<web::FakeWebClient>()) {
+    server_.RegisterDefaultHandler(base::BindRepeating(&HandleRequest));
+  }
 
   ~ParentAccessMediatorTest() override { [mediator_ disconnect]; }
 
-  // Initializes the ParentAccessMediator with a fake WebState and its
-  // dependencies. Returns a pointer to the WebState owned by the mediator.
-  web::FakeWebState* SetUpWebStateAndMediator() {
+  // Initializes the ParentAccessMediator with a WebState and its dependencies.
+  // Returns a pointer to the WebState owned by the mediator.
+  void SetUpWebStateAndMediator() {
     CHECK(server_.Start());
 
-    auto web_state = std::make_unique<web::FakeWebState>();
-    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
-    web_state->SetNavigationManager(std::move(navigation_manager));
-    web::FakeWebState* web_state_ptr = web_state.get();
+    profile_ = TestProfileIOS::Builder().Build();
+    web::WebState::CreateParams params(profile_.get());
+    auto web_state = web::WebState::Create(params);
+    web_state->GetView();
+    web_state->SetKeepRenderProcessAlive(true);
+
+    web::FakeWebClient* web_client =
+        static_cast<web::FakeWebClient*>(web_client_.Get());
+    web_client->SetJavaScriptFeatures(
+        {FontSizeJavaScriptFeature::GetInstance()});
+
+    web::WebState* web_state_ptr = web_state.get();
 
     const GURL parent_access_url = server_.GetURL("/parentaccess");
     mediator_ =
@@ -129,13 +160,13 @@ class ParentAccessMediatorTest : public PlatformTest {
     CHECK(consumer_.isWebViewSet);
     CHECK(consumer_.isWebViewHidden);
     CHECK(!delegate_.isBottomSheetDismissed);
-
-    return web_state_ptr;
   }
 
   base::HistogramTester histogram_tester_;
+  web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<TestProfileIOS> profile_;
   net::EmbeddedTestServer server_;
   TestParentAccessMediatorDelegate* delegate_;
   TestParentAccessConsumer* consumer_;
@@ -168,16 +199,17 @@ TEST_F(ParentAccessMediatorTest, TestBottomSheetDismissedOnTimeout) {
 // Verifies that the bottom sheet is displayed and the WebView is visible when
 // the WebState loads successfully before the timeout.
 TEST_F(ParentAccessMediatorTest, TestBottomSheetDisplayedOnSuccessfulLoad) {
-  web::FakeWebState* inserted_web_state = SetUpWebStateAndMediator();
+  SetUpWebStateAndMediator();
 
-  // Simulate a successful page load, invoking didLoadPageWithSuccess.
-  inserted_web_state->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  // Wait for the WebState loaded, which unhides the WebView.
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^{
+        return !consumer_.isWebViewHidden;
+      }));
 
   task_environment_.FastForwardBy(base::Milliseconds(
       supervised_user::kLocalWebApprovalBottomSheetLoadTimeoutMs.Get()));
-
   EXPECT_FALSE(delegate_.isBottomSheetDismissed);
-  EXPECT_FALSE(consumer_.isWebViewHidden);
 
   histogram_tester_.ExpectTotalCount(
       supervised_user::kLocalWebApprovalResultHistogramName, 0);

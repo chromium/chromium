@@ -10,6 +10,8 @@
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator_delegate.h"
 #import "ios/chrome/browser/supervised_user/ui/parent_access_consumer.h"
+#import "ios/components/ui_util/dynamic_type_util.h"
+#import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "url/gurl.h"
@@ -80,6 +82,14 @@
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
   // Stop the timer that would dismiss the unresponsive bottom sheet.
   _initialLoadTimer.Stop();
+
+  // Adjust text zoom for the PACP web state to respect the system font size
+  // preference. The multiplier is converted to a percentage (e.g., 1.5x becomes
+  // 150%).
+  CHECK(webState->ContentIsHTML());
+  ios::provider::SetTextZoomForWebState(
+      webState, 100. * ui_util::SystemSuggestedFontSizeMultiplier());
+
   // Unhide the WebView as it should be loaded with correct styling.
   [_consumer setWebViewHidden:NO];
 }
