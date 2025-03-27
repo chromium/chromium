@@ -56,11 +56,6 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /**
        * The subtitle to display under the Live Caption heading. Generally, this
        * is a generic subtitle describing the feature. While the SODA model is
