@@ -64,11 +64,6 @@ BASE_FEATURE(kRestrictDownloadOnSyncedTabs,
              "RestrictDownloadOnSyncedTabs",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature flag to defer media load on background tab.
-BASE_FEATURE(kDeferMediaLoadInBackgroundTab,
-             "DeferMediaLoadInBackgroundTab",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature flag to determine whether an alternate illustration should be used on
 // the history sync consent screen. This feature should be used independent of
 // any other features in this file.
@@ -119,7 +114,7 @@ bool RestrictDownloadOnSyncedTabs() {
 }
 
 bool DeferMediaLoadInBackgroundTab() {
-  return base::FeatureList::IsEnabled(kDeferMediaLoadInBackgroundTab);
+  return data_sharing::features::IsDataSharingFunctionalityEnabled();
 }
 
 bool ShouldForceRemoveClosedTabGroupsOnStartup() {
