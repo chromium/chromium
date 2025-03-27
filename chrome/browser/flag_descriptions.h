@@ -2204,9 +2204,6 @@ extern const char kAutofillThirdPartyModeContentProviderName[];
 extern const char kAutofillThirdPartyModeContentProviderDescription[];
 #endif
 
-extern const char kThreadedScrollPreventRenderingStarvationName[];
-extern const char kThreadedScrollPreventRenderingStarvationDescription[];
-
 extern const char kThrottleMainTo60HzName[];
 extern const char kThrottleMainTo60HzDescription[];
 

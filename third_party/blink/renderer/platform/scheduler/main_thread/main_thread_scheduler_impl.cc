@@ -452,8 +452,6 @@ MainThreadSchedulerImpl::AnyThread::AnyThread(
 MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings()
     : mbi_override_task_runner_handle(
           base::FeatureList::IsEnabled(kMbiOverrideTaskRunnerHandle)),
-      compositor_gesture_rendering_starvation_threshold(
-          GetThreadedScrollRenderingStarvationThreshold()),
       discrete_input_task_deferral_policy(
           base::FeatureList::IsEnabled(features::kDeferRendererTasksAfterInput)
               ? std::optional<features::TaskDeferralPolicy>(
@@ -2483,30 +2481,14 @@ TaskPriority MainThreadSchedulerImpl::ComputeCompositorPriority() const {
     return TaskPriority::kHighestPriority;
   }
   // Otherwise, this must be a combination of UseCase::kCompositorGesture and
-  // rendering starvation since all other states set the priority to highest.
+  // rendering starvation since all other use cases set the priority to highest.
   CHECK(current_use_case() == UseCase::kCompositorGesture &&
         (main_thread_only().main_frame_prioritization_state ==
              RenderingPrioritizationState::kRenderingStarved ||
          main_thread_only().main_frame_prioritization_state ==
              RenderingPrioritizationState::kRenderingStarvedByRenderBlocking));
-
-  // The default behavior for compositor gestures like compositor-driven
-  // scrolling is to deprioritize compositor TQ tasks (low priority) and not
-  // apply delay-based anti-starvation. This can lead to degraded user
-  // experience due to increased checkerboarding or scrolling blank content.
-  // When `features::kThreadedScrollPreventRenderingStarvation` is enabled, we
-  // use a configurable value to control the delay-based anti-starvation to
-  // mitigate these issues.
-  //
-  // Note: for other use cases, the computed priority is higher, so they are
-  // not prone to rendering starvation in the same way.
-  if (!base::FeatureList::IsEnabled(
-          features::kThreadedScrollPreventRenderingStarvation)) {
-    return *use_case_priority;
-  } else {
-    CHECK_LE(*targeted_main_frame_priority, *use_case_priority);
-    return *targeted_main_frame_priority;
-  }
+  CHECK_LE(*targeted_main_frame_priority, *use_case_priority);
+  return *targeted_main_frame_priority;
 }
 
 void MainThreadSchedulerImpl::UpdateCompositorTaskQueuePriority() {
@@ -2585,20 +2567,6 @@ void MainThreadSchedulerImpl::UpdateRenderingPrioritizationStateOnTaskCompleted(
         task_timing.wall_duration();
   }
 
-  // With `features::kThreadedScrollPreventRenderingStarvation` enabled, no
-  // rendering anti-starvation policy should kick in until the configurable
-  // threshold is reached when in `UseCase::kCompositorGesture`.
-  base::TimeDelta render_blocking_starvation_threshold =
-      base::FeatureList::IsEnabled(
-          features::kThreadedScrollPreventRenderingStarvation) &&
-              current_use_case() == UseCase::kCompositorGesture &&
-              kRenderBlockingStarvationThreshold <
-                  scheduling_settings_
-                      .compositor_gesture_rendering_starvation_threshold
-          ? scheduling_settings_
-                .compositor_gesture_rendering_starvation_threshold
-          : kRenderBlockingStarvationThreshold;
-
   // A main frame task resets the rendering prioritization state. Otherwise if
   // the scheduler is waiting for a frame because of discrete input, the state
   // will only change once a main frame happens. Otherwise, compute the state in
@@ -2621,17 +2589,12 @@ void MainThreadSchedulerImpl::UpdateRenderingPrioritizationStateOnTaskCompleted(
           RenderingPrioritizationState::kWaitingForInputResponse;
     } else if (main_thread_only()
                    .rendering_blocking_duration_since_last_frame >=
-               render_blocking_starvation_threshold) {
+               kRenderBlockingStarvationThreshold) {
       main_thread_only().main_frame_prioritization_state =
           RenderingPrioritizationState::kRenderingStarvedByRenderBlocking;
     } else {
-      base::TimeDelta threshold =
-          current_use_case() == UseCase::kCompositorGesture
-              ? scheduling_settings_
-                    .compositor_gesture_rendering_starvation_threshold
-              : kDefaultRenderingStarvationThreshold;
       if (task_timing.end_time() - main_thread_only().last_frame_time >=
-          threshold) {
+          kDefaultRenderingStarvationThreshold) {
         main_thread_only().main_frame_prioritization_state =
             RenderingPrioritizationState::kRenderingStarved;
       }
@@ -2645,18 +2608,10 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
     case UseCase::kCompositorGesture:
       if (main_thread_only().blocking_input_expected_soon)
         return TaskPriority::kHighestPriority;
-      // What we really want to do is priorize loading tasks, but that doesn't
-      // seem to be safe. Instead we do that by proxy by deprioritizing
-      // compositor tasks. This should be safe since we've already gone to the
-      // pain of fixing ordering issues with them.
-      //
-      // During periods of main-thread contention, e.g. scrolling while loading
-      // new content, rendering can be indefinitely starved, leading user
-      // experience issues like scrolling blank/stale content and
-      // checkerboarding. We adjust the compositor TQ priority and enable
-      // delay-based rendering anti-starvation when the
-      // `kThreadedScrollPreventRenderingStarvation` experiment is enabled to
-      // mitigate these issues.
+      // Deprioritizing compositor tasks can improve smoothness, but this can
+      // also can increase checkerboarding. This tradeoff is balanced by
+      // increasing priority if rendering is being starved, which is controlled
+      // with `kDefaultRenderingStarvationThreshold`.
       return TaskPriority::kLowPriority;
 
     case UseCase::kSynchronizedGesture:

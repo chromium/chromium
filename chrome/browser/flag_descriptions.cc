@@ -3798,12 +3798,6 @@ const char kAutofillThirdPartyModeContentProviderDescription[] =
     "Enables querying the third party autofill mode state from the Chrome app.";
 #endif
 
-const char kThreadedScrollPreventRenderingStarvationName[] =
-    "threaded-scroll-prevent-rendering-starvation";
-const char kThreadedScrollPreventRenderingStarvationDescription[] =
-    "Prevents main thread rendering starvation during threaded scrolling based "
-    "on a given threshold.";
-
 const char kThrottleMainTo60HzName[] = "throttle-main-thread-to-60hz";
 const char kThrottleMainTo60HzDescription[] =
     "Throttle main thread updates to 60fps, even when VSync rate is higher.";

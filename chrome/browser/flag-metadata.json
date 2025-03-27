@@ -8899,11 +8899,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "threaded-scroll-prevent-rendering-starvation",
-    "owners": [ "shaseley@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "throttle-main-thread-to-60hz",
     "owners": [ "lizeb@google.com", "clank-performance-team@google.com" ],
     "expiry_milestone": 137
