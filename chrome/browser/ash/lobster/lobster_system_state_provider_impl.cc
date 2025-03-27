@@ -182,6 +182,12 @@ ash::LobsterSystemState LobsterSystemStateProviderImpl::GetSystemState(
     system_state.failed_checks.Put(ash::LobsterSystemCheck::kInvalidInputField);
   }
 
+  if (!ash::features::IsLobsterEnabledForManagedUsers() &&
+      pref_->IsManagedPreference(
+          ash::prefs::kLobsterEnterprisePolicySettings)) {
+    system_state.status = ash::LobsterStatus::kBlocked;
+  }
+
   if (pref_->GetInteger(ash::prefs::kLobsterEnterprisePolicySettings) ==
       base::to_underlying(ash::LobsterEnterprisePolicyValue::kDisabled)) {
     system_state.status = ash::LobsterStatus::kBlocked;
