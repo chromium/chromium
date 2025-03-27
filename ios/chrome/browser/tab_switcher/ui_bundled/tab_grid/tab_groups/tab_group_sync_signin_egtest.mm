@@ -7,6 +7,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/threading/platform_thread.h"
 #import "base/time/time.h"
+#import "components/data_sharing/public/features.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/data_type.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
@@ -92,6 +93,8 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
   config.features_enabled.push_back(kTabGroupSync);
   config.additional_args.push_back(std::string("--") +
                                    syncer::kSyncShortNudgeDelayForTest);
+  config.features_enabled.push_back(
+      data_sharing::features::kDataSharingFeature);
   return config;
 }
 

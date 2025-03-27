@@ -112,13 +112,16 @@
           profile);
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(profile);
 
   self.mediator =
       [[TabStripMediator alloc] initWithConsumer:self.tabStripViewController
                              tabGroupSyncService:tabGroupSyncService
                                      browserList:browserList
                                 messagingService:messagingService
-                            collaborationService:collaborationService];
+                            collaborationService:collaborationService
+                                 shareKitService:shareKitService];
   self.mediator.webStateList = self.browser->GetWebStateList();
   self.mediator.profile = profile;
   self.mediator.browser = self.browser;
