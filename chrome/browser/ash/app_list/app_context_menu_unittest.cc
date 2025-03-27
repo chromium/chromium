@@ -44,6 +44,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/manifest_constants.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -297,7 +298,7 @@ class AppContextMenuTest : public AppListTestBase {
     app_service_test_.SetUp(profile());
 
     scoped_refptr<extensions::Extension> store = MakeApp(app_id, platform_app);
-    service_->AddExtension(store.get());
+    registrar()->AddExtension(store.get());
     service_->EnableExtension(app_id);
 
     controller_ = std::make_unique<FakeAppListControllerDelegate>();
@@ -346,7 +347,7 @@ class AppContextMenuTest : public AppListTestBase {
     app_service_test_.SetUp(profile());
 
     scoped_refptr<extensions::Extension> store = MakeChromeApp();
-    service_->AddExtension(store.get());
+    registrar()->AddExtension(store.get());
 
     controller_ = std::make_unique<FakeAppListControllerDelegate>();
     AppServiceContextMenu menu(menu_delegate(), profile(),
@@ -405,7 +406,7 @@ TEST_F(AppContextMenuTest, ChromeAppInRecentAppsList) {
   app_service_test().SetUp(profile());
 
   scoped_refptr<extensions::Extension> app = MakeChromeApp();
-  service_->AddExtension(app.get());
+  registrar()->AddExtension(app.get());
 
   // Simulate a context menu in the recent apps row.
   AppServiceContextMenu menu(menu_delegate(), profile(),
