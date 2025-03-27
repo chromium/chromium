@@ -544,6 +544,12 @@ std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
 
   OnChange(change, selection);
 
+  if (empty()) {
+    for (auto& observer : observers_) {
+      observer.TabStripEmpty();
+    }
+  }
+
   std::optional<int> active_index_in_group =
       active_tab_removed
           ? group_collection->GetIndexOfTabRecursive(active_tab_model)
