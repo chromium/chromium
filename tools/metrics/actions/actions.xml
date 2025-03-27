@@ -12514,6 +12514,32 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="GlicSessionSettingsOpened.Default">
+  <owner>pauladedeji@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged when glic web client requests the main settings page (no section
+    specified).
+  </description>
+</action>
+
+<action name="GlicSessionSettingsOpened.OsEntrypointToggle">
+  <owner>pauladedeji@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged when glic web client requests os entrypoint toggle section of the
+    settings page.
+  </description>
+</action>
+
+<action name="GlicSessionSettingsOpened.OsHotkey">
+  <owner>pauladedeji@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged when glic web client requests os hotkey section of the settings page.
+  </description>
+</action>
+
 <action name="GlicSessionWebClientCrash">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
