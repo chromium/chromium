@@ -8,9 +8,11 @@
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/renderer/core/canvas_interventions/noise_hash.h"
 #include "third_party/blink/renderer/core/canvas_interventions/noise_helper.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
@@ -129,6 +131,15 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
   auto noised_image = bm.asImage();
   snapshot = blink::UnacceleratedStaticBitmapImage::Create(
       std::move(noised_image), snapshot->CurrentFrameOrientation());
+
+  execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kIntervention,
+      mojom::blink::ConsoleMessageLevel::kInfo,
+      "Noise was added to a canvas readback. If this has caused breakage, "
+      "please file a bug at https://issues.chromium.org/issues/"
+      "new?component=1456351&title=Canvas%20noise%20breakage. This "
+      "feature can be disabled through chrome://flags/#enable-canvas-noise"));
+
   return true;
 }
 }  // namespace blink
