@@ -5,7 +5,10 @@
 #include "chrome/renderer/accessibility/read_anything/read_aloud_app_model.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_test.h"
+#include "ui/accessibility/accessibility_features.h"
 
 class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
  public:
@@ -61,11 +64,42 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
     model_->set_default_language_code(lang);
   }
 
+  void LogSpeechStop(ReadAloudAppModel::ReadAloudStopSource source) {
+    model_->LogSpeechStop(source);
+  }
+
+  void EnableReadAloud() {
+    scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
+  }
+
  private:
   // ReadAloudAppModel constructor and destructor are private so it's
   // not accessible by std::make_unique.
   raw_ptr<ReadAloudAppModel> model_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Read Aloud is currently only enabled by default on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ReadAnythingReadAloudAppModelTest, LogSpeechStop_WithoutReadAloud) {
+  auto source = ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode;
+  base::HistogramTester histogram_tester;
+
+  LogSpeechStop(source);
+  EXPECT_EQ(0, histogram_tester.GetTotalSum(
+                   ReadAloudAppModel::kSpeechStopSourceHistogramName));
+}
+#endif
+
+TEST_F(ReadAnythingReadAloudAppModelTest, LogSpeechStop_WithReadAloud) {
+  EnableReadAloud();
+  auto source = ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode;
+  base::HistogramTester histogram_tester;
+
+  LogSpeechStop(source);
+  histogram_tester.ExpectUniqueSample(
+      ReadAloudAppModel::kSpeechStopSourceHistogramName, source, 1);
+}
 
 TEST_F(ReadAnythingReadAloudAppModelTest, SpeechPlaying) {
   EXPECT_FALSE(SpeechPlaying());

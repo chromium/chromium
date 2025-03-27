@@ -2165,6 +2165,24 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingSpeechError) -->
 
+<!-- LINT.IfChange(ReadAnythingSpeechStopSource) -->
+
+<enum name="ReadAnythingSpeechStopSource">
+  <int value="0" label="Used pause button via mouse or keyboard"/>
+  <int value="1" label="Used keyboard shortcut k"/>
+  <int value="2" label="Closed Reading mode"/>
+  <int value="3" label="Closed tab or window"/>
+  <int value="4" label="Reloaded the page"/>
+  <int value="5" label="Changed page content"/>
+  <int value="6" label="Speech engine interrupted"/>
+  <int value="7" label="Speech engine error"/>
+  <int value="8" label="Finished reading content"/>
+  <int value="9" label="ChromeOS device locked"/>
+  <int value="10" label="Unexpectedly updated content while speaking"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/renderer/accessibility/read_anything/read_aloud_app_model.h:ReadAloudStopSource) -->
+
 <!-- LINT.IfChange(ReaderModeEntryPoint) -->
 
 <enum name="ReaderModeEntryPoint">
