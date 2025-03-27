@@ -57,15 +57,30 @@ Element* ColumnPseudoElement::FirstChildInDOMOrder() const {
   TreeOrderedList<Element> sorted_elements;
   ForAllBoxFragmentDescendants(
       *column,
-      [&](const PhysicalBoxFragment& descendant) -> FragmentTraversalNextStep {
+      [&](const PhysicalBoxFragment* descendant,
+          const LayoutInline* culled_inline,
+          bool is_first_for_node) -> FragmentTraversalNextStep {
+        // One, and only one, should be set.
+        DCHECK(!descendant != !culled_inline);
+
         // We're only interested in nodes that start in this column. Any node
         // that's resumed from a previous column will seen in its start column.
-        if (descendant.IsFirstForNode()) {
-          if (auto* element = DynamicTo<Element>(descendant.GetNode())) {
+        if (is_first_for_node) {
+          if (descendant) {
+            if (auto* element = DynamicTo<Element>(descendant->GetNode())) {
+              sorted_elements.Add(element);
+              // No need to descend into this fragment. Children cannot precede
+              // this element.
+              return FragmentTraversalNextStep::kSkipChildren;
+            }
+          } else if (auto* element =
+                         DynamicTo<Element>(culled_inline->GetNode())) {
+            // TODO(crbug.com/406288653): Note that we wouldn't have to look for
+            // culled inlines, if we instead got all focusable inlines to create
+            // fragments. That would cause some problems for LinkHighlightImpl,
+            // though, with the root cause being either there, or somewhere
+            // inside the outline code.
             sorted_elements.Add(element);
-            // No need to descend into this fragment. Children cannot precede
-            // this element.
-            return FragmentTraversalNextStep::kSkipChildren;
           }
         }
         return FragmentTraversalNextStep::kContinue;
