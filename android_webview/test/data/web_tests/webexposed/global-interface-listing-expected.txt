@@ -36,57 +36,6 @@ interface AILanguageModelParams
     getter maxTemperature
     getter maxTopK
     method constructor
-interface AIRewriter
-    static method availability
-    static method create
-    attribute @@toStringTag
-    getter expectedContextLanguages
-    getter expectedInputLanguages
-    getter format
-    getter inputQuota
-    getter length
-    getter outputLanguage
-    getter sharedContext
-    getter tone
-    method constructor
-    method destroy
-    method measureInputUsage
-    method rewrite
-    method rewriteStreaming
-interface AISummarizer
-    static method availability
-    static method create
-    attribute @@toStringTag
-    getter expectedContextLanguages
-    getter expectedInputLanguages
-    getter format
-    getter inputQuota
-    getter length
-    getter outputLanguage
-    getter sharedContext
-    getter type
-    method constructor
-    method destroy
-    method measureInputUsage
-    method summarize
-    method summarizeStreaming
-interface AIWriter
-    static method availability
-    static method create
-    attribute @@toStringTag
-    getter expectedContextLanguages
-    getter expectedInputLanguages
-    getter format
-    getter inputQuota
-    getter length
-    getter outputLanguage
-    getter sharedContext
-    getter tone
-    method constructor
-    method destroy
-    method measureInputUsage
-    method write
-    method writeStreaming
 interface AbortController
     attribute @@toStringTag
     getter signal
@@ -7724,6 +7673,23 @@ interface Response
     method formData
     method json
     method text
+interface Rewriter
+    static method availability
+    static method create
+    attribute @@toStringTag
+    getter expectedContextLanguages
+    getter expectedInputLanguages
+    getter format
+    getter inputQuota
+    getter length
+    getter outputLanguage
+    getter sharedContext
+    getter tone
+    method constructor
+    method destroy
+    method measureInputUsage
+    method rewrite
+    method rewriteStreaming
 interface SVGAElement : SVGGraphicsElement
     attribute @@toStringTag
     getter href
@@ -9322,6 +9288,23 @@ interface SubtleCrypto
     method unwrapKey
     method verify
     method wrapKey
+interface Summarizer
+    static method availability
+    static method create
+    attribute @@toStringTag
+    getter expectedContextLanguages
+    getter expectedInputLanguages
+    getter format
+    getter inputQuota
+    getter length
+    getter outputLanguage
+    getter sharedContext
+    getter type
+    method constructor
+    method destroy
+    method measureInputUsage
+    method summarize
+    method summarizeStreaming
 interface SuppressedError : Error
     attribute message
     attribute name
@@ -11447,6 +11430,23 @@ interface WritableStreamDefaultWriter
     method constructor
     method releaseLock
     method write
+interface Writer
+    static method availability
+    static method create
+    attribute @@toStringTag
+    getter expectedContextLanguages
+    getter expectedInputLanguages
+    getter format
+    getter inputQuota
+    getter length
+    getter outputLanguage
+    getter sharedContext
+    getter tone
+    method constructor
+    method destroy
+    method measureInputUsage
+    method write
+    method writeStreaming
 interface XMLDocument : Document
     attribute @@toStringTag
     method constructor

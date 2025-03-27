@@ -4,27 +4,27 @@
 
 // https://github.com/WICG/writing-assistance-apis
 
-enum AISummarizerType { "tl;dr", "key-points", "teaser", "headline" };
-enum AISummarizerFormat { "plain-text", "markdown" };
-enum AISummarizerLength { "short", "medium", "long" };
+enum SummarizerType { "tl;dr", "key-points", "teaser", "headline" };
+enum SummarizerFormat { "plain-text", "markdown" };
+enum SummarizerLength { "short", "medium", "long" };
 
-dictionary AISummarizerCreateCoreOptions {
-  AISummarizerType type = "key-points";
-  AISummarizerFormat format = "markdown";
-  AISummarizerLength length = "short";
+dictionary SummarizerCreateCoreOptions {
+  SummarizerType type = "key-points";
+  SummarizerFormat format = "markdown";
+  SummarizerLength length = "short";
 
   sequence<DOMString> expectedInputLanguages;
   sequence<DOMString> expectedContextLanguages;
   DOMString outputLanguage;
 };
 
-dictionary AISummarizerCreateOptions : AISummarizerCreateCoreOptions {
+dictionary SummarizerCreateOptions : SummarizerCreateCoreOptions {
   AbortSignal signal;
   AICreateMonitorCallback monitor;
   DOMString sharedContext;
 };
 
-dictionary AISummarizerSummarizeOptions {
+dictionary SummarizerSummarizeOptions {
   DOMString context;
   AbortSignal signal;
 };
@@ -34,14 +34,14 @@ dictionary AISummarizerSummarizeOptions {
   RuntimeEnabled=AISummarizationAPI,
   SecureContext
 ]
-interface AISummarizer {
+interface Summarizer {
   [
     MeasureAs=Summarizer_Availability,
     CallWith=ScriptState,
     RaisesException
   ]
   static Promise<AIAvailability> availability(
-    optional AISummarizerCreateCoreOptions options = {}
+    optional SummarizerCreateCoreOptions options = {}
   );
 
   [
@@ -49,7 +49,7 @@ interface AISummarizer {
     CallWith=ScriptState,
     RaisesException
   ]
-  static Promise<AISummarizer> create(optional AISummarizerCreateOptions options = {});
+  static Promise<Summarizer> create(optional SummarizerCreateOptions options = {});
 
   [
     MeasureAs=Summarizer_Summarize,
@@ -58,7 +58,7 @@ interface AISummarizer {
   ]
   Promise<DOMString> summarize(
     DOMString input,
-    optional AISummarizerSummarizeOptions options = {}
+    optional SummarizerSummarizeOptions options = {}
   );
 
   [
@@ -68,7 +68,7 @@ interface AISummarizer {
   ]
   ReadableStream summarizeStreaming(
     DOMString input,
-    optional AISummarizerSummarizeOptions options = {}
+    optional SummarizerSummarizeOptions options = {}
   );
 
   [
@@ -78,7 +78,7 @@ interface AISummarizer {
   ]
   Promise<double> measureInputUsage(
     DOMString input,
-    optional AISummarizerSummarizeOptions options = {}
+    optional SummarizerSummarizeOptions options = {}
   );
 
   [
@@ -91,11 +91,11 @@ interface AISummarizer {
   [MeasureAs=Summarizer_SharedContext]
   readonly attribute DOMString sharedContext;
   [MeasureAs=Summarizer_Type]
-  readonly attribute AISummarizerType type;
+  readonly attribute SummarizerType type;
   [MeasureAs=Summarizer_Format]
-  readonly attribute AISummarizerFormat format;
+  readonly attribute SummarizerFormat format;
   [MeasureAs=Summarizer_Length]
-  readonly attribute AISummarizerLength length;
+  readonly attribute SummarizerLength length;
   [MeasureAs=Summarizer_ExpectedInputLanguages]
   readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
   [MeasureAs=Summarizer_ExpectedContextLanguages]

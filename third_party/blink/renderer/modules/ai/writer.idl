@@ -5,27 +5,27 @@
 // Writer API
 // https://github.com/explainers-by-googlers/writing-assistance-apis
 
-enum AIWriterTone { "formal", "neutral", "casual" };
-enum AIWriterFormat { "plain-text", "markdown" };
-enum AIWriterLength { "short", "medium", "long" };
+enum WriterTone { "formal", "neutral", "casual" };
+enum WriterFormat { "plain-text", "markdown" };
+enum WriterLength { "short", "medium", "long" };
 
-dictionary AIWriterCreateCoreOptions {
-  AIWriterTone tone = "neutral";
-  AIWriterFormat format = "plain-text";
-  AIWriterLength length = "medium";
+dictionary WriterCreateCoreOptions {
+  WriterTone tone = "neutral";
+  WriterFormat format = "plain-text";
+  WriterLength length = "medium";
 
   sequence<DOMString> expectedInputLanguages;
   sequence<DOMString> expectedContextLanguages;
   DOMString outputLanguage;
 };
 
-dictionary AIWriterCreateOptions : AIWriterCreateCoreOptions {
+dictionary WriterCreateOptions : WriterCreateCoreOptions {
   AbortSignal signal;
   AICreateMonitorCallback monitor;
   DOMString sharedContext;
 };
 
-dictionary AIWriterWriteOptions {
+dictionary WriterWriteOptions {
   DOMString context;
   AbortSignal signal;
 };
@@ -35,14 +35,14 @@ dictionary AIWriterWriteOptions {
   RuntimeEnabled=AIWriterAPI,
   SecureContext
 ]
-interface AIWriter {
+interface Writer {
   [
     MeasureAs=Writer_Availability,
     CallWith=ScriptState,
     RaisesException
   ]
   static Promise<AIAvailability> availability(
-    optional AIWriterCreateCoreOptions options = {}
+    optional WriterCreateCoreOptions options = {}
   );
 
   [
@@ -50,7 +50,7 @@ interface AIWriter {
     CallWith=ScriptState,
     RaisesException
   ]
-  static Promise<AIWriter> create(optional AIWriterCreateOptions options = {});
+  static Promise<Writer> create(optional WriterCreateOptions options = {});
 
   [
     MeasureAs=Writer_Write,
@@ -59,7 +59,7 @@ interface AIWriter {
   ]
   Promise<DOMString> write(
     DOMString writingTask,
-    optional AIWriterWriteOptions options = {});
+    optional WriterWriteOptions options = {});
 
   [
     MeasureAs=Writer_WriteStreaming,
@@ -68,7 +68,7 @@ interface AIWriter {
   ]
   ReadableStream writeStreaming(
     DOMString writingTask,
-    optional AIWriterWriteOptions options = {}
+    optional WriterWriteOptions options = {}
   );
 
   [
@@ -78,7 +78,7 @@ interface AIWriter {
   ]
   Promise<double> measureInputUsage(
     DOMString writingTask,
-    optional AIWriterWriteOptions options = {}
+    optional WriterWriteOptions options = {}
   );
 
   [
@@ -91,11 +91,11 @@ interface AIWriter {
   [MeasureAs=Writer_SharedContext]
   readonly attribute DOMString sharedContext;
   [MeasureAs=Writer_Tone]
-  readonly attribute AIWriterTone tone;
+  readonly attribute WriterTone tone;
   [MeasureAs=Writer_Format]
-  readonly attribute AIWriterFormat format;
+  readonly attribute WriterFormat format;
   [MeasureAs=Writer_Length]
-  readonly attribute AIWriterLength length;
+  readonly attribute WriterLength length;
   [MeasureAs=Writer_ExpectedInputLanguages]
   readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
   [MeasureAs=Writer_ExpectedContextLanguages]

@@ -23,6 +23,7 @@
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_rewriter.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_summarizer.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_writer.mojom.h"
 
 using optimization_guide::MockSession;

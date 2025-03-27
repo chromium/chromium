@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/ai/ai_summarizer.h"
+#include "third_party/blink/renderer/modules/ai/summarizer.h"
 
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
@@ -14,8 +14,8 @@ template <>
 void AIWritingAssistanceCreateClient<
     mojom::blink::AISummarizer,
     mojom::blink::AIManagerCreateSummarizerClient,
-    AISummarizerCreateOptions,
-    AISummarizer>::
+    SummarizerCreateOptions,
+    Summarizer>::
     RemoteCreate(
         mojo::PendingRemote<mojom::blink::AIManagerCreateSummarizerClient>
             client_remote) {
@@ -28,53 +28,53 @@ void AIWritingAssistanceCreateClient<
 // static
 template <>
 AIMetrics::AISessionType
-AIWritingAssistanceBase<AISummarizer,
+AIWritingAssistanceBase<Summarizer,
                         mojom::blink::AISummarizer,
                         mojom::blink::AIManagerCreateSummarizerClient,
-                        AISummarizerCreateCoreOptions,
-                        AISummarizerCreateOptions,
-                        AISummarizerSummarizeOptions>::GetSessionType() {
+                        SummarizerCreateCoreOptions,
+                        SummarizerCreateOptions,
+                        SummarizerSummarizeOptions>::GetSessionType() {
   return AIMetrics::AISessionType::kSummarizer;
 }
 
 // static
 template <>
-void AIWritingAssistanceBase<AISummarizer,
+void AIWritingAssistanceBase<Summarizer,
                              mojom::blink::AISummarizer,
                              mojom::blink::AIManagerCreateSummarizerClient,
-                             AISummarizerCreateCoreOptions,
-                             AISummarizerCreateOptions,
-                             AISummarizerSummarizeOptions>::
+                             SummarizerCreateCoreOptions,
+                             SummarizerCreateOptions,
+                             SummarizerSummarizeOptions>::
     RemoteCanCreate(HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote,
-                    AISummarizerCreateCoreOptions* options,
+                    SummarizerCreateCoreOptions* options,
                     CanCreateCallback callback) {
   ai_manager_remote->CanCreateSummarizer(ToMojoSummarizerCreateOptions(options),
                                          std::move(callback));
 }
 
-AISummarizer::AISummarizer(
+Summarizer::Summarizer(
     ExecutionContext* execution_context,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojo::PendingRemote<mojom::blink::AISummarizer> pending_remote,
-    AISummarizerCreateOptions* options)
-    : AIWritingAssistanceBase<AISummarizer,
+    SummarizerCreateOptions* options)
+    : AIWritingAssistanceBase<Summarizer,
                               mojom::blink::AISummarizer,
                               mojom::blink::AIManagerCreateSummarizerClient,
-                              AISummarizerCreateCoreOptions,
-                              AISummarizerCreateOptions,
-                              AISummarizerSummarizeOptions>(
+                              SummarizerCreateCoreOptions,
+                              SummarizerCreateOptions,
+                              SummarizerSummarizeOptions>(
           execution_context,
           task_runner,
           std::move(pending_remote),
           std::move(options),
           /*echo_whitespace_input=*/false) {}
 
-void AISummarizer::Trace(Visitor* visitor) const {
+void Summarizer::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   AIWritingAssistanceBase::Trace(visitor);
 }
 
-void AISummarizer::remoteExecute(
+void Summarizer::remoteExecute(
     const String& input,
     const String& context,
     mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
@@ -82,37 +82,37 @@ void AISummarizer::remoteExecute(
   remote_->Summarize(input, context, std::move(responder));
 }
 
-ScriptPromise<IDLString> AISummarizer::summarize(
+ScriptPromise<IDLString> Summarizer::summarize(
     ScriptState* script_state,
     const String& writing_task,
-    const AISummarizerSummarizeOptions* options,
+    const SummarizerSummarizeOptions* options,
     ExceptionState& exception_state) {
   return AIWritingAssistanceBase::execute(
       script_state, writing_task, options, exception_state,
       AIMetrics::AIAPI::kSummarizerSummarize);
 }
 
-ReadableStream* AISummarizer::summarizeStreaming(
+ReadableStream* Summarizer::summarizeStreaming(
     ScriptState* script_state,
     const String& writing_task,
-    const AISummarizerSummarizeOptions* options,
+    const SummarizerSummarizeOptions* options,
     ExceptionState& exception_state) {
   return AIWritingAssistanceBase::executeStreaming(
       script_state, writing_task, options, exception_state,
       AIMetrics::AIAPI::kSummarizerSummarizeStreaming);
 }
 
-ScriptPromise<IDLDouble> AISummarizer::measureInputUsage(
+ScriptPromise<IDLDouble> Summarizer::measureInputUsage(
     ScriptState* script_state,
     const String& writing_task,
-    const AISummarizerSummarizeOptions* options,
+    const SummarizerSummarizeOptions* options,
     ExceptionState& exception_state) {
   return AIWritingAssistanceBase::measureInputUsage(script_state, writing_task,
                                                     options, exception_state);
 }
 
-void AISummarizer::destroy(ScriptState* script_state,
-                           ExceptionState& exception_state) {
+void Summarizer::destroy(ScriptState* script_state,
+                         ExceptionState& exception_state) {
   AIWritingAssistanceBase::destroy(script_state, exception_state);
 }
 

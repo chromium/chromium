@@ -90,7 +90,7 @@ const testPromptAPI = async () => {
 // the download progress monitor on the first download. Test cases should always
 // call this function to create a summarizer session.
 const createSummarizerMaybeDownload = async (options) => {
-  const availability = await AISummarizer.availability();
+  const availability = await Summarizer.availability();
   if (availability === "downloadable" || availability === "downloading") {
     isDownloadProgressEventTriggered = false;
     options.monitor = (m) => {
@@ -98,11 +98,11 @@ const createSummarizerMaybeDownload = async (options) => {
         isDownloadProgressEventTriggered = true;
       });
     }
-    const summarizer = await AISummarizer.create(options);
+    const summarizer = await Summarizer.create(options);
     assert_true(isDownloadProgressEventTriggered);
     return summarizer;
   }
-  return await AISummarizer.create(options);
+  return await Summarizer.create(options);
 };
 
 // The method should take the AbortSignal as an option and return a promise.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/ai/ai_writer.h"
+#include "third_party/blink/renderer/modules/ai/writer.h"
 
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
@@ -13,8 +13,8 @@ namespace blink {
 template <>
 void AIWritingAssistanceCreateClient<mojom::blink::AIWriter,
                                      mojom::blink::AIManagerCreateWriterClient,
-                                     AIWriterCreateOptions,
-                                     AIWriter>::
+                                     WriterCreateOptions,
+                                     Writer>::
     RemoteCreate(mojo::PendingRemote<mojom::blink::AIManagerCreateWriterClient>
                      client_remote) {
   HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
@@ -26,52 +26,52 @@ void AIWritingAssistanceCreateClient<mojom::blink::AIWriter,
 // static
 template <>
 AIMetrics::AISessionType
-AIWritingAssistanceBase<AIWriter,
+AIWritingAssistanceBase<Writer,
                         mojom::blink::AIWriter,
                         mojom::blink::AIManagerCreateWriterClient,
-                        AIWriterCreateCoreOptions,
-                        AIWriterCreateOptions,
-                        AIWriterWriteOptions>::GetSessionType() {
+                        WriterCreateCoreOptions,
+                        WriterCreateOptions,
+                        WriterWriteOptions>::GetSessionType() {
   return AIMetrics::AISessionType::kWriter;
 }
 
 // static
 template <>
-void AIWritingAssistanceBase<AIWriter,
+void AIWritingAssistanceBase<Writer,
                              mojom::blink::AIWriter,
                              mojom::blink::AIManagerCreateWriterClient,
-                             AIWriterCreateCoreOptions,
-                             AIWriterCreateOptions,
-                             AIWriterWriteOptions>::
+                             WriterCreateCoreOptions,
+                             WriterCreateOptions,
+                             WriterWriteOptions>::
     RemoteCanCreate(HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote,
-                    AIWriterCreateCoreOptions* options,
+                    WriterCreateCoreOptions* options,
                     CanCreateCallback callback) {
   ai_manager_remote->CanCreateWriter(ToMojoWriterCreateOptions(options),
                                      std::move(callback));
 }
 
-AIWriter::AIWriter(ExecutionContext* execution_context,
-                   scoped_refptr<base::SequencedTaskRunner> task_runner,
-                   mojo::PendingRemote<mojom::blink::AIWriter> pending_remote,
-                   AIWriterCreateOptions* options)
-    : AIWritingAssistanceBase<AIWriter,
+Writer::Writer(ExecutionContext* execution_context,
+               scoped_refptr<base::SequencedTaskRunner> task_runner,
+               mojo::PendingRemote<mojom::blink::AIWriter> pending_remote,
+               WriterCreateOptions* options)
+    : AIWritingAssistanceBase<Writer,
                               mojom::blink::AIWriter,
                               mojom::blink::AIManagerCreateWriterClient,
-                              AIWriterCreateCoreOptions,
-                              AIWriterCreateOptions,
-                              AIWriterWriteOptions>(
+                              WriterCreateCoreOptions,
+                              WriterCreateOptions,
+                              WriterWriteOptions>(
           execution_context,
           task_runner,
           std::move(pending_remote),
           std::move(options),
           /*echo_whitespace_input=*/false) {}
 
-void AIWriter::Trace(Visitor* visitor) const {
+void Writer::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   AIWritingAssistanceBase::Trace(visitor);
 }
 
-void AIWriter::remoteExecute(
+void Writer::remoteExecute(
     const String& input,
     const String& context,
     mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
@@ -79,35 +79,35 @@ void AIWriter::remoteExecute(
   remote_->Write(input, context, std::move(responder));
 }
 
-ScriptPromise<IDLString> AIWriter::write(ScriptState* script_state,
-                                         const String& writing_task,
-                                         const AIWriterWriteOptions* options,
-                                         ExceptionState& exception_state) {
+ScriptPromise<IDLString> Writer::write(ScriptState* script_state,
+                                       const String& writing_task,
+                                       const WriterWriteOptions* options,
+                                       ExceptionState& exception_state) {
   return AIWritingAssistanceBase::execute(script_state, writing_task, options,
                                           exception_state,
                                           AIMetrics::AIAPI::kWriterWrite);
 }
 
-ReadableStream* AIWriter::writeStreaming(ScriptState* script_state,
-                                         const String& writing_task,
-                                         const AIWriterWriteOptions* options,
-                                         ExceptionState& exception_state) {
+ReadableStream* Writer::writeStreaming(ScriptState* script_state,
+                                       const String& writing_task,
+                                       const WriterWriteOptions* options,
+                                       ExceptionState& exception_state) {
   return AIWritingAssistanceBase::executeStreaming(
       script_state, writing_task, options, exception_state,
       AIMetrics::AIAPI::kWriterWriteStreaming);
 }
 
-ScriptPromise<IDLDouble> AIWriter::measureInputUsage(
+ScriptPromise<IDLDouble> Writer::measureInputUsage(
     ScriptState* script_state,
     const String& writing_task,
-    const AIWriterWriteOptions* options,
+    const WriterWriteOptions* options,
     ExceptionState& exception_state) {
   return AIWritingAssistanceBase::measureInputUsage(script_state, writing_task,
                                                     options, exception_state);
 }
 
-void AIWriter::destroy(ScriptState* script_state,
-                       ExceptionState& exception_state) {
+void Writer::destroy(ScriptState* script_state,
+                     ExceptionState& exception_state) {
   AIWritingAssistanceBase::destroy(script_state, exception_state);
 }
 

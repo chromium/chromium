@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/ai/ai_rewriter.h"
+#include "third_party/blink/renderer/modules/ai/rewriter.h"
 
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
@@ -14,8 +14,8 @@ template <>
 void AIWritingAssistanceCreateClient<
     mojom::blink::AIRewriter,
     mojom::blink::AIManagerCreateRewriterClient,
-    AIRewriterCreateOptions,
-    AIRewriter>::
+    RewriterCreateOptions,
+    Rewriter>::
     RemoteCreate(
         mojo::PendingRemote<mojom::blink::AIManagerCreateRewriterClient>
             client_remote) {
@@ -28,53 +28,52 @@ void AIWritingAssistanceCreateClient<
 // static
 template <>
 AIMetrics::AISessionType
-AIWritingAssistanceBase<AIRewriter,
+AIWritingAssistanceBase<Rewriter,
                         mojom::blink::AIRewriter,
                         mojom::blink::AIManagerCreateRewriterClient,
-                        AIRewriterCreateCoreOptions,
-                        AIRewriterCreateOptions,
-                        AIRewriterRewriteOptions>::GetSessionType() {
+                        RewriterCreateCoreOptions,
+                        RewriterCreateOptions,
+                        RewriterRewriteOptions>::GetSessionType() {
   return AIMetrics::AISessionType::kRewriter;
 }
 
 // static
 template <>
-void AIWritingAssistanceBase<AIRewriter,
+void AIWritingAssistanceBase<Rewriter,
                              mojom::blink::AIRewriter,
                              mojom::blink::AIManagerCreateRewriterClient,
-                             AIRewriterCreateCoreOptions,
-                             AIRewriterCreateOptions,
-                             AIRewriterRewriteOptions>::
+                             RewriterCreateCoreOptions,
+                             RewriterCreateOptions,
+                             RewriterRewriteOptions>::
     RemoteCanCreate(HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote,
-                    AIRewriterCreateCoreOptions* options,
+                    RewriterCreateCoreOptions* options,
                     CanCreateCallback callback) {
   ai_manager_remote->CanCreateRewriter(ToMojoRewriterCreateOptions(options),
                                        std::move(callback));
 }
 
-AIRewriter::AIRewriter(
-    ExecutionContext* execution_context,
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    mojo::PendingRemote<mojom::blink::AIRewriter> pending_remote,
-    AIRewriterCreateOptions* options)
-    : AIWritingAssistanceBase<AIRewriter,
+Rewriter::Rewriter(ExecutionContext* execution_context,
+                   scoped_refptr<base::SequencedTaskRunner> task_runner,
+                   mojo::PendingRemote<mojom::blink::AIRewriter> pending_remote,
+                   RewriterCreateOptions* options)
+    : AIWritingAssistanceBase<Rewriter,
                               mojom::blink::AIRewriter,
                               mojom::blink::AIManagerCreateRewriterClient,
-                              AIRewriterCreateCoreOptions,
-                              AIRewriterCreateOptions,
-                              AIRewriterRewriteOptions>(
+                              RewriterCreateCoreOptions,
+                              RewriterCreateOptions,
+                              RewriterRewriteOptions>(
           execution_context,
           task_runner,
           std::move(pending_remote),
           std::move(options),
           /*echo_whitespace_input=*/true) {}
 
-void AIRewriter::Trace(Visitor* visitor) const {
+void Rewriter::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   AIWritingAssistanceBase::Trace(visitor);
 }
 
-void AIRewriter::remoteExecute(
+void Rewriter::remoteExecute(
     const String& input,
     const String& context,
     mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
@@ -82,37 +81,37 @@ void AIRewriter::remoteExecute(
   remote_->Rewrite(input, context, std::move(responder));
 }
 
-ScriptPromise<IDLString> AIRewriter::rewrite(
+ScriptPromise<IDLString> Rewriter::rewrite(
     ScriptState* script_state,
     const String& writing_task,
-    const AIRewriterRewriteOptions* options,
+    const RewriterRewriteOptions* options,
     ExceptionState& exception_state) {
   return AIWritingAssistanceBase::execute(script_state, writing_task, options,
                                           exception_state,
                                           AIMetrics::AIAPI::kRewriterRewrite);
 }
 
-ReadableStream* AIRewriter::rewriteStreaming(
+ReadableStream* Rewriter::rewriteStreaming(
     ScriptState* script_state,
     const String& writing_task,
-    const AIRewriterRewriteOptions* options,
+    const RewriterRewriteOptions* options,
     ExceptionState& exception_state) {
   return AIWritingAssistanceBase::executeStreaming(
       script_state, writing_task, options, exception_state,
       AIMetrics::AIAPI::kRewriterRewriteStreaming);
 }
 
-ScriptPromise<IDLDouble> AIRewriter::measureInputUsage(
+ScriptPromise<IDLDouble> Rewriter::measureInputUsage(
     ScriptState* script_state,
     const String& writing_task,
-    const AIRewriterRewriteOptions* options,
+    const RewriterRewriteOptions* options,
     ExceptionState& exception_state) {
   return AIWritingAssistanceBase::measureInputUsage(script_state, writing_task,
                                                     options, exception_state);
 }
 
-void AIRewriter::destroy(ScriptState* script_state,
-                         ExceptionState& exception_state) {
+void Rewriter::destroy(ScriptState* script_state,
+                       ExceptionState& exception_state) {
   AIWritingAssistanceBase::destroy(script_state, exception_state);
 }
 

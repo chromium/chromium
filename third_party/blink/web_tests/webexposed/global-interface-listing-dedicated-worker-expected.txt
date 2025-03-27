@@ -40,57 +40,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter maxTemperature
 [Worker]     getter maxTopK
 [Worker]     method constructor
-[Worker] interface AIRewriter
-[Worker]     static method availability
-[Worker]     static method create
-[Worker]     attribute @@toStringTag
-[Worker]     getter expectedContextLanguages
-[Worker]     getter expectedInputLanguages
-[Worker]     getter format
-[Worker]     getter inputQuota
-[Worker]     getter length
-[Worker]     getter outputLanguage
-[Worker]     getter sharedContext
-[Worker]     getter tone
-[Worker]     method constructor
-[Worker]     method destroy
-[Worker]     method measureInputUsage
-[Worker]     method rewrite
-[Worker]     method rewriteStreaming
-[Worker] interface AISummarizer
-[Worker]     static method availability
-[Worker]     static method create
-[Worker]     attribute @@toStringTag
-[Worker]     getter expectedContextLanguages
-[Worker]     getter expectedInputLanguages
-[Worker]     getter format
-[Worker]     getter inputQuota
-[Worker]     getter length
-[Worker]     getter outputLanguage
-[Worker]     getter sharedContext
-[Worker]     getter type
-[Worker]     method constructor
-[Worker]     method destroy
-[Worker]     method measureInputUsage
-[Worker]     method summarize
-[Worker]     method summarizeStreaming
-[Worker] interface AIWriter
-[Worker]     static method availability
-[Worker]     static method create
-[Worker]     attribute @@toStringTag
-[Worker]     getter expectedContextLanguages
-[Worker]     getter expectedInputLanguages
-[Worker]     getter format
-[Worker]     getter inputQuota
-[Worker]     getter length
-[Worker]     getter outputLanguage
-[Worker]     getter sharedContext
-[Worker]     getter tone
-[Worker]     method constructor
-[Worker]     method destroy
-[Worker]     method measureInputUsage
-[Worker]     method write
-[Worker]     method writeStreaming
 [Worker] interface AbortController
 [Worker]     attribute @@toStringTag
 [Worker]     getter signal
@@ -2022,6 +1971,23 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface RestrictionTarget
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
+[Worker] interface Rewriter
+[Worker]     static method availability
+[Worker]     static method create
+[Worker]     attribute @@toStringTag
+[Worker]     getter expectedContextLanguages
+[Worker]     getter expectedInputLanguages
+[Worker]     getter format
+[Worker]     getter inputQuota
+[Worker]     getter length
+[Worker]     getter outputLanguage
+[Worker]     getter sharedContext
+[Worker]     getter tone
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method measureInputUsage
+[Worker]     method rewrite
+[Worker]     method rewriteStreaming
 [Worker] interface Scheduler
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
@@ -2177,6 +2143,23 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method unwrapKey
 [Worker]     method verify
 [Worker]     method wrapKey
+[Worker] interface Summarizer
+[Worker]     static method availability
+[Worker]     static method create
+[Worker]     attribute @@toStringTag
+[Worker]     getter expectedContextLanguages
+[Worker]     getter expectedInputLanguages
+[Worker]     getter format
+[Worker]     getter inputQuota
+[Worker]     getter length
+[Worker]     getter outputLanguage
+[Worker]     getter sharedContext
+[Worker]     getter type
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method measureInputUsage
+[Worker]     method summarize
+[Worker]     method summarizeStreaming
 [Worker] interface SuppressedError : Error
 [Worker]     attribute message
 [Worker]     attribute name
@@ -4067,6 +4050,23 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method releaseLock
 [Worker]     method write
+[Worker] interface Writer
+[Worker]     static method availability
+[Worker]     static method create
+[Worker]     attribute @@toStringTag
+[Worker]     getter expectedContextLanguages
+[Worker]     getter expectedInputLanguages
+[Worker]     getter format
+[Worker]     getter inputQuota
+[Worker]     getter length
+[Worker]     getter outputLanguage
+[Worker]     getter sharedContext
+[Worker]     getter tone
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method measureInputUsage
+[Worker]     method write
+[Worker]     method writeStreaming
 [Worker] interface XMLHttpRequest : XMLHttpRequestEventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     attribute DONE

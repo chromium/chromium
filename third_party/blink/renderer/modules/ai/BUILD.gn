@@ -23,14 +23,8 @@ blink_modules_sources("ai") {
     "ai_language_model_params.h",
     "ai_metrics.cc",
     "ai_metrics.h",
-    "ai_rewriter.cc",
-    "ai_rewriter.h",
-    "ai_summarizer.cc",
-    "ai_summarizer.h",
     "ai_utils.cc",
     "ai_utils.h",
-    "ai_writer.cc",
-    "ai_writer.h",
     "ai_writing_assistance_base.h",
     "ai_writing_assistance_create_client.h",
     "dom_ai.cc",
@@ -46,6 +40,12 @@ blink_modules_sources("ai") {
     "on_device_translation/resolver_with_abort_signal.h",
     "on_device_translation/translator.cc",
     "on_device_translation/translator.h",
+    "rewriter.cc",
+    "rewriter.h",
+    "summarizer.cc",
+    "summarizer.h",
+    "writer.cc",
+    "writer.h",
   ]
 
   public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]

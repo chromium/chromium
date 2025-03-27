@@ -5,27 +5,27 @@
 // Rewriter API
 // https://github.com/explainers-by-googlers/writing-assistance-apis
 
-enum AIRewriterTone { "as-is", "more-formal", "more-casual" };
-enum AIRewriterFormat { "as-is", "plain-text", "markdown" };
-enum AIRewriterLength { "as-is", "shorter", "longer" };
+enum RewriterTone { "as-is", "more-formal", "more-casual" };
+enum RewriterFormat { "as-is", "plain-text", "markdown" };
+enum RewriterLength { "as-is", "shorter", "longer" };
 
-dictionary AIRewriterCreateCoreOptions {
-  AIRewriterTone tone = "as-is";
-  AIRewriterFormat format = "as-is";
-  AIRewriterLength length = "as-is";
+dictionary RewriterCreateCoreOptions {
+  RewriterTone tone = "as-is";
+  RewriterFormat format = "as-is";
+  RewriterLength length = "as-is";
 
   sequence<DOMString> expectedInputLanguages;
   sequence<DOMString> expectedContextLanguages;
   DOMString outputLanguage;
 };
 
-dictionary AIRewriterCreateOptions : AIRewriterCreateCoreOptions {
+dictionary RewriterCreateOptions : RewriterCreateCoreOptions {
   AbortSignal signal;
   AICreateMonitorCallback monitor;
   DOMString sharedContext;
 };
 
-dictionary AIRewriterRewriteOptions {
+dictionary RewriterRewriteOptions {
   DOMString context;
   AbortSignal signal;
 };
@@ -35,14 +35,14 @@ dictionary AIRewriterRewriteOptions {
   RuntimeEnabled=AIRewriterAPI,
   SecureContext
 ]
-interface AIRewriter {
+interface Rewriter {
   [
     MeasureAs=Rewriter_Availability,
     CallWith=ScriptState,
     RaisesException
   ]
   static Promise<AIAvailability> availability(
-    optional AIRewriterCreateCoreOptions options = {}
+    optional RewriterCreateCoreOptions options = {}
   );
 
   [
@@ -50,7 +50,7 @@ interface AIRewriter {
     CallWith=ScriptState,
     RaisesException
   ]
-  static Promise<AIRewriter> create(optional AIRewriterCreateOptions options = {});
+  static Promise<Rewriter> create(optional RewriterCreateOptions options = {});
 
   [
     MeasureAs=Rewriter_Rewrite,
@@ -59,7 +59,7 @@ interface AIRewriter {
   ]
   Promise<DOMString> rewrite(
     DOMString input,
-    optional AIRewriterRewriteOptions options = {}
+    optional RewriterRewriteOptions options = {}
   );
 
   [
@@ -69,7 +69,7 @@ interface AIRewriter {
   ]
   ReadableStream rewriteStreaming(
     DOMString input,
-    optional AIRewriterRewriteOptions options = {}
+    optional RewriterRewriteOptions options = {}
   );
 
   [
@@ -79,7 +79,7 @@ interface AIRewriter {
   ]
   Promise<double> measureInputUsage(
     DOMString input,
-    optional AIRewriterRewriteOptions options = {}
+    optional RewriterRewriteOptions options = {}
   );
 
   [
@@ -92,11 +92,11 @@ interface AIRewriter {
   [MeasureAs=Rewriter_SharedContext]
   readonly attribute DOMString sharedContext;
   [MeasureAs=Rewriter_Tone]
-  readonly attribute AIRewriterTone tone;
+  readonly attribute RewriterTone tone;
   [MeasureAs=Rewriter_Format]
-  readonly attribute AIRewriterFormat format;
+  readonly attribute RewriterFormat format;
   [MeasureAs=Rewriter_Length]
-  readonly attribute AIRewriterLength length;
+  readonly attribute RewriterLength length;
   [MeasureAs=Rewriter_ExpectedInputLanguages]
   readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
   [MeasureAs=Rewriter_ExpectedContextLanguages]
