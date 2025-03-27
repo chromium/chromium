@@ -1772,6 +1772,11 @@ BASE_FEATURE(kLobsterFileNamingImprovement,
              "LobsterFileNamingImprovement",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables lobster restriction based on the current active IME.
+BASE_FEATURE(kLobsterDisabledByInvalidIME,
+             "LobsterDisabledByInvalidIME",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables lobster entry point in quick insert zero state.
 BASE_FEATURE(kLobsterQuickInsertZeroState,
              "LobsterQuickInsertZeroState",
@@ -3998,6 +4003,10 @@ bool IsLobsterEnabled() {
   return base::FeatureList::IsEnabled(kLobsterDogfood) ||
          (base::FeatureList::IsEnabled(kLobster) &&
           base::FeatureList::IsEnabled(kFeatureManagementLobster));
+}
+
+bool IsLobsterDisabledByInvalidIME() {
+  return base::FeatureList::IsEnabled(kLobsterDisabledByInvalidIME);
 }
 
 bool IsLobsterUseRewrittenQuery() {
