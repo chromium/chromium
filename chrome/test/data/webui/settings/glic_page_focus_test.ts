@@ -190,5 +190,40 @@ suite('GlicPageFocusTest', function() {
       assertEquals(1, userActions.length);
       verifyUserAction('GlicOsEntrypoint.Settings.ShortcutEnabled');
     });
+
+    test('edit shortcut', async () => {
+      // Flush task for focusing on the back button.
+      await flushTasks();
+
+      // Assert.
+      booleanHistograms =
+          await metricsBrowserProxy.getArgs('recordBooleanHistogram');
+      assertEquals(0, booleanHistograms.length);
+
+      // Arrange.
+      const shortcutInput = $<CrShortcutInputElement>('shortcutInput');
+      assertTrue(!!shortcutInput);
+      const field = shortcutInput.$.input;
+      assertEquals('⌃A', field.value);
+
+      // Act.
+      shortcutInput.$.edit.click();
+      await metricsBrowserProxy.whenCalled('recordBooleanHistogram');
+      await flushTasks();
+      glicBrowserProxy.setGlicShortcutResponse('Ctrl + B');
+      keyDownOn(field, 66, ['ctrl']);
+      await flushTasks();
+
+      // Assert.
+      booleanHistograms =
+          await metricsBrowserProxy.getArgs('recordBooleanHistogram');
+      assertEquals(2, booleanHistograms.length);
+      const hasValue = 'Glic.OsEntrypoint.Settings.Shortcut';
+      verifyBooleanMetric(hasValue, true);
+      verifyBooleanMetric(hasValue, true);
+      userActions = await metricsBrowserProxy.getArgs('recordAction');
+      assertEquals(1, userActions.length);
+      verifyUserAction('GlicOsEntrypoint.Settings.ShortcutEdited');
+    });
   });
 });

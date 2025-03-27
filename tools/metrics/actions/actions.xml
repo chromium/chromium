@@ -12437,7 +12437,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="GlicOsEntrypoint.Settings.ShortcutDisabled">
-  <owner>agale@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
   <owner>erikchen@chromium.org</owner>
   <description>
     Logged anytime glic shortcut (aka hotkey) is disabled from
@@ -12445,8 +12445,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="GlicOsEntrypoint.Settings.ShortcutEdited">
+  <owner>pauladedeji@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged anytime glic shortcut (aka hotkey) is edited from chrome://settings.
+  </description>
+</action>
+
 <action name="GlicOsEntrypoint.Settings.ShortcutEnabled">
-  <owner>agale@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
   <owner>erikchen@chromium.org</owner>
   <description>
     Logged anytime glic shortcut (aka hotkey) is enabled from chrome://settings.
