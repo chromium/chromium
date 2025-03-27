@@ -12,13 +12,9 @@
 namespace blink {
 class GpuMemoryBufferTestPlatform : public blink::TestingPlatformSupport {
  public:
-  GpuMemoryBufferTestPlatform() {
-    SharedGpuContext::SetGpuMemoryBufferManagerForTesting(
-        &test_gpu_memory_buffer_manager_);
-  }
-  ~GpuMemoryBufferTestPlatform() override {
-    SharedGpuContext::SetGpuMemoryBufferManagerForTesting(nullptr);
-  }
+  GpuMemoryBufferTestPlatform() {}
+
+  ~GpuMemoryBufferTestPlatform() override {}
 
   bool IsGpuCompositingDisabled() const override {
     return is_gpu_compositing_disabled_;
@@ -36,6 +32,7 @@ class GpuMemoryBufferTestPlatform : public blink::TestingPlatformSupport {
   gpu::TestGpuMemoryBufferManager test_gpu_memory_buffer_manager_;
   bool is_gpu_compositing_disabled_ = false;
 };
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_TEST_GPU_MEMORY_BUFFER_TEST_PLATFORM_H_
