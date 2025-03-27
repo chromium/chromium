@@ -16,6 +16,7 @@
 #include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "ash/public/cpp/auth/active_session_fingerprint_client.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
@@ -41,6 +42,7 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
     : public ActiveSessionAuthController,
       public ActiveSessionAuthView::Observer,
       public UserDataAuthClient::AuthFactorStatusUpdateObserver,
+      public SessionObserver,
       public views::ViewObserver {
  public:
   class TestApi {
@@ -84,6 +86,9 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   bool ShowAuthDialog(std::unique_ptr<AuthRequest> auth_request) override;
   bool IsShown() const override;
   void SetFingerprintClient(ActiveSessionFingerprintClient* fp_client) override;
+
+  // SessionObserver:
+  void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // views::ViewObserver:
   void OnViewPreferredSizeChanged(views::View* observed_view) override;
