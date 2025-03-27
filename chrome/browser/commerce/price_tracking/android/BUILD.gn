@@ -44,11 +44,6 @@ android_library("java") {
   ]
 }
 
-android_library("price_tracking_state_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/price_tracking/PriceTrackingState.java" ]
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
-}
-
 android_library("price_tracking_bottom_sheet_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/price_tracking/PriceTrackingBottomSheetContentCoordinator.java",
@@ -60,7 +55,6 @@ android_library("price_tracking_bottom_sheet_java") {
 
   deps = [
     ":java_resources",
-    ":price_tracking_state_java",
     "//base:base_java",
     "//chrome/browser/commerce/android:java",
     "//chrome/browser/commerce/price_insights/android:java",
@@ -86,7 +80,6 @@ robolectric_library("junit") {
   deps = [
     ":java_resources",
     ":price_tracking_bottom_sheet_java",
-    ":price_tracking_state_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
@@ -126,7 +119,6 @@ android_library("javatests") {
   deps = [
     ":java_resources",
     ":price_tracking_bottom_sheet_java",
-    ":price_tracking_state_java",
     "//base:base_java_test_support",
     "//base:callback_java",
     "//base:supplier_java",
