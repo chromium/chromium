@@ -39,6 +39,9 @@ steps:
         IdentitiesOnly yes' >> /root/.ssh/config
         
         ssh-keyscan -H github.com > /root/.ssh/known_hosts
+    volumes:
+      - name: ssh
+        path: "/root/.ssh"
 
   # 2. Install Depot Tools
   - name: 'gcr.io/cloud-builders/git'
