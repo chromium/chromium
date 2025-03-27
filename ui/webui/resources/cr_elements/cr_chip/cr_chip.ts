@@ -35,7 +35,7 @@ export class CrChipElement extends CrChipElementBase {
       disabled: {type: Boolean},
       chipAriaLabel: {type: String},
       chipRole: {type: String},
-      selected: {type: Boolean},
+      selected: {type: Boolean, reflect: true},
     };
   }
 

@@ -729,6 +729,12 @@ IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
           "runMochaSuite('DeleteBrowsingDataDialog')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
+                       DeleteBrowsingDataTimePicker) {
+  RunTest("settings/clear_browsing_data_time_picker_test.js",
+          "runMochaSuite('DeleteBrowsingDataTimePicker')");
+}
+
 using SettingsCookiesPageTest = SettingsBrowserTest;
 
 // TODO(crbug.com/40889245): fix flakiness on almost all platforms and
