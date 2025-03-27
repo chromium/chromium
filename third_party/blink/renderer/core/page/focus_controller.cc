@@ -148,7 +148,12 @@ Element* GetNextInCarouselOrDomOrder(const Element& current,
   }
 
   if (auto* column_pseudo = DynamicTo<ColumnPseudoElement>(current)) {
-    return column_pseudo->FirstChildInDOMOrder();
+    if (Element* first_in_column = column_pseudo->FirstChildInDOMOrder()) {
+      return first_in_column;
+    }
+    // No elements in this column, nor in any of the columns that follow.
+    const Element& multicol = column_pseudo->UltimateOriginatingElement();
+    return ElementTraversal::NextSkippingChildren(multicol, stay_within);
   }
 
   // If `current` has a ::scroll-marker-group(before) or a ::scroll-button(), we
