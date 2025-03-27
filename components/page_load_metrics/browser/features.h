@@ -5,10 +5,19 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_FEATURES_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_FEATURES_H_
 
+#include <string>
+
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace page_load_metrics::features {
 BASE_DECLARE_FEATURE(kSendContinuousInputEventsToObservers);
+
+// The feature flag to enable beacon leakage-related logging logic.
+BASE_DECLARE_FEATURE(kBeaconLeakageLogging);
+
+// The prefix of the URL category for beacon-leakage-related logging logic.
+BASE_DECLARE_FEATURE_PARAM(std::string, kBeaconLeakageLoggingCategoryPrefix);
 }  // namespace page_load_metrics::features
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_FEATURES_H_
