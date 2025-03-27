@@ -609,7 +609,7 @@ enum class PasskeyCreationEligibility {
 #pragma mark - PasskeyWelcomeScreenViewControllerDelegate
 
 - (void)passkeyWelcomeScreenViewControllerShouldBeDismissed:
-    (id)passkeyWelcomeScreenViewController {
+    (PasskeyWelcomeScreenViewController*)passkeyWelcomeScreenViewController {
   if (self.passkeyNavigationController.topViewController ==
       passkeyWelcomeScreenViewController) {
     [self.passkeyNavigationController popViewControllerAnimated:YES];
