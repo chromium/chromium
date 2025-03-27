@@ -367,7 +367,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-08-24">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Logs the number of tabs selected for removal using Tab Declutter on Desktop.
     This is logged from the controller before closing the stale tabs.
@@ -378,7 +378,7 @@ chromium-metrics-reviews@google.com.
     enum="TabDeclutterEntryPoint" expires_after="2025-08-24">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Logs the entry point that caused the Tab Declutter feature to be shown on
     Desktop. This is logged each time the feature is invoked.
@@ -389,7 +389,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-08-24">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Logs the number of tabs excluded from removal during Tab Declutter on
     Desktop. This is logged from the controller before closing the stale tabs.
@@ -400,7 +400,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-08-24">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Logs the total number of tabs in the tab strip when the user initiates Tab
     Declutter on Desktop. This is logged from the controller before closing the
@@ -412,7 +412,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-08-24">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     On Desktop, logs the total number of times a user has ever decluttered the
     tabstrip. This is logged from the controller on each declutter.
@@ -423,7 +423,7 @@ chromium-metrics-reviews@google.com.
     enum="TabOrganizationDeclutterTriggerCTRBucket" expires_after="2025-08-24">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     On each show and each click of the proactive declutter nudge UI, logs the
     bucket the user falls into based on total tab count and stale tab count. CTR
@@ -436,7 +436,7 @@ chromium-metrics-reviews@google.com.
     enum="TabOrganizationTriggerOutcome" expires_after="2025-08-24">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records user actions (or lack thereof) taken on the proactive declutter
     nudge UI each time it is triggered to suggest the user declutter their tabs.
@@ -447,7 +447,7 @@ chromium-metrics-reviews@google.com.
     enum="TabOrganizationDeclutterCTREvent" expires_after="2025-08-24">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     On Desktop, logs once each time the declutter UI in the tab search bubble is
     shown, and once each time the close tabs button is clicked. CTR can be
@@ -459,7 +459,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-06-22">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Logs the number of duplicate tabs selected for removal using Tab Declutter
     on Desktop. Duplicate tabs are tabs that have the same url excluding
@@ -472,7 +472,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-06-22">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Logs the number of duplicate tabs excluded from removal during Tab Declutter
     on Desktop. Duplicate tabs are tabs that have the same url excluding
@@ -552,7 +552,7 @@ chromium-metrics-reviews@google.com.
     enum="TabOrganizationSelectorCTREvent" expires_after="2025-06-22">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     On Desktop, logs once each time the tab organization feature selector is
     shown, and once each time the feature buttons are pressed. CTR for each
@@ -565,7 +565,7 @@ chromium-metrics-reviews@google.com.
     enum="TabOrganizationTriggerOutcome" expires_after="2025-08-10">
   <owner>tbergquist@chromium.org</owner>
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records user actions (or lack thereof) taken on the proactive nudge UI each
     time it is triggered to suggest the user organize their tabs.
@@ -576,7 +576,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-11-20">
   <owner>tbergquist@chromium.org</owner>
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records whether or not the Tab Organization nudge UI was triggered when each
     trigger period ends. The nudge UI is limited to trigger at most once per
@@ -784,7 +784,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.CollapsedGroupCountPerLoad" units="groups"
     expires_after="2025-07-13">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The number of tabs groups that are collapsed in all browsers (counting
     app-mode windows) when a load completes.
@@ -799,7 +799,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.CollapsedTabCount" units="tabs"
     expires_after="2021-09-12">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The number of tabs in a collapsed tab group in all browsers, reported every
     5 minutes. Desktop only.
@@ -816,7 +816,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.NonZeroUserGroupCountPerLoad" units="groups"
     expires_after="2021-09-12">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The number of (non-zero) tabs groups open in all browsers (counting app-mode
     windows) when a load completes.
@@ -850,7 +850,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.SavedTabGroupActiveCount" units="groups"
     expires_after="2025-08-24">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records per hour once the SavedTabGroupKeyedService is instantiated upon
     profile open. Tracks the total number of active groups (groups that have
@@ -862,7 +862,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.SavedTabGroupAge" units="minutes"
     expires_after="2025-07-27">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records once per group per hour once the SavedTabGroupKeyedService is
     instantiated upon profile open. Tracks the age of a SavedTabGroup (since
@@ -873,7 +873,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.SavedTabGroupCount" units="groups"
     expires_after="2025-07-27">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records per hour once the SavedTabGroupKeyedService is instantiated upon
     profile open. Tracks the total number of groups saved in the profile.
@@ -884,7 +884,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.SavedTabGroupLifespan" units="minutes"
     expires_after="2025-09-14">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records when a SavedTabGroup is deleted. Tracks the total age / lifespan of
     a SavedTabGroup (since creation) once deleted. Nothing is recorded for
@@ -895,7 +895,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.SavedTabGroupPinnedCount" units="groups"
     expires_after="2025-08-10">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records per hour once the SavedTabGroupKeyedService is instantiated upon
     profile open. Tracks the total number of pinned groups saved in the profile.
@@ -906,7 +906,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.SavedTabGroups.TabCountDifference.Negative"
     units="tabs" expires_after="2025-04-20">
   <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records the difference in the number of tabs between local tab group and its
     synced counterpart when the synced version has more tabs compared to the
@@ -918,7 +918,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.SavedTabGroups.TabCountDifference.Positive"
     units="tabs" expires_after="2025-04-20">
   <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records the difference in the number of tabs between local tab group and its
     synced counterpart when the local version has more tabs compared to the
@@ -942,7 +942,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.SavedTabGroupTabCount" units="tabs"
     expires_after="2025-09-14">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records once per group per hour once the SavedTabGroupKeyedService is
     instantiated. Tracks the number of tabs in a SavedTabGroup. Nothing is
@@ -953,7 +953,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.SavedTabGroupTabTimeSinceModification"
     units="minutes" expires_after="2025-05-11">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records once per saved tab per saved group per hour once the
     SavedTabGroupKeyedService is instantiated upon profile open. Tracks the
@@ -965,7 +965,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.SavedTabGroupTimeSinceModification" units="minutes"
     expires_after="2025-05-25">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records once per group per hour once the SavedTabGroupKeyedService is
     instantiated upon profile open. Tracks the duration since a saved group's
@@ -976,7 +976,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.SavedTabGroupUnpinnedCount" units="groups"
     expires_after="2025-08-24">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records per hour once the SavedTabGroupKeyedService is instantiated upon
     profile open. Tracks the total number of unpinned groups saved in the
@@ -997,7 +997,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.Shared.GroupDeleted" enum="Boolean"
     expires_after="2025-05-25">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     [ All platforms ] Tracks the number of times a shared tab group was deleted.
 
@@ -1008,7 +1008,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.Shared.LastTabClosed" enum="Boolean"
     expires_after="2025-07-27">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     [ All platforms ] Tracks the number of times the last tab was closed in a
     shared tab group.
@@ -1030,7 +1030,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.Shared.Manage.Desktop"
     enum="SharedTabGroupManageTypeDesktop" expires_after="2025-10-10">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     [ Desktop ] Tracks the type of manage action a user explicitly performs on a
     shared tab group such as clicking the share / manage group button, or
@@ -1041,7 +1041,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.Shared.Recall.Desktop"
     enum="SharedTabGroupRecallTypeDesktop" expires_after="2025-10-10">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     [ Desktop ] Tracks the type of recall action a user explicitly performs on a
     shared tab group such as closing a group but not deleting it, or opening a
@@ -1052,7 +1052,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.Shared.TabGroupAge" units="minutes"
     expires_after="2025-05-25">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     [ All platforms ] Tracks the age of a SavedTabGroup (since creation).
     Recorded once per group on startup 10 seconds after TabGroupSyncService
@@ -1063,7 +1063,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.Shared.TotalTabGroupCount" units="groups"
     expires_after="2025-05-25">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     [ All platforms ] Tracks the number of total shared tab groups on startup
     which includes both open and closed tab groups.
@@ -1075,7 +1075,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.Shared.TotalTabGroupTabCount" units="tabs"
     expires_after="2025-05-25">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     [ All platforms ] Tracks the number of tabs in a shared tab group.
 
@@ -1139,7 +1139,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.Sync.AddedGroupIsEmptyFromSync" enum="Boolean"
     expires_after="2025-10-10">
   <owner>tbergquist@google.com</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records whether a newly saved tab group was empty or not. Recorded on all
     platforms (Android, iOS, Desktop) whenever a tab group is added to the
@@ -1153,7 +1153,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.Sync.AddedGroupIsEmptyLocally" enum="Boolean"
     expires_after="2025-10-10">
   <owner>tbergquist@google.com</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records whether a newly saved tab group was empty or not. Recorded on all
     platforms (Android, iOS, Desktop) whenever a tab group is added to the
@@ -1291,7 +1291,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.Sync.TabAddedToEmptyGroupFromSync" enum="Boolean"
     expires_after="2025-10-10">
   <owner>tbergquist@google.com</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records whether a tab added to a saved group was the first tab or not.
     Recorded on all platforms (Android, iOS, Desktop) whenever a tab is added to
@@ -1302,7 +1302,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.Sync.TabAddedToEmptyGroupLocally" enum="Boolean"
     expires_after="2025-10-10">
   <owner>tbergquist@google.com</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records whether a tab added to a saved group was the first tab or not.
     Recorded on all platforms (Android, iOS, Desktop) whenever a tab is added to
@@ -1471,7 +1471,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.Sync.TabGroupLoadedEmptiness"
     enum="TabGroupLoadedEmptiness" expires_after="2025-10-10">
   <owner>tbergquist@google.com</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records whether a tab group loaded from disk was empty, not empty, or if it
     became empty after removing tabs already in a shared group. Recorded on all
@@ -1495,7 +1495,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.Sync.TabRemovedFromGroupWasLastTab" enum="Boolean"
     expires_after="2025-10-10">
   <owner>tbergquist@google.com</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records whether a tab removed from a saved group was the last tab or not.
     Recorded on all platforms (Android, iOS, Desktop) whenever a tab is removed
@@ -1531,7 +1531,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.TabGroupBubble.TabCount" units="tabs"
     expires_after="2025-05-11">
   <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records the number of tabs in a group whenever a tab group editor bubble
     closes.
@@ -1548,7 +1548,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.TimeSpentCollapsed2" units="seconds"
     expires_after="2021-09-12">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The time a tab group spends in the collapsed state before the group is
     either expanded or closed.
@@ -1558,7 +1558,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.TimeSpentExpanded2" units="seconds"
     expires_after="2021-09-12">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The time a tab group spends in the expanded state before the group is either
     collapsed or closed.
@@ -1568,7 +1568,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.UnsavedTabGroupCount" units="groups"
     expires_after="2026-01-01">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records once an hour once the SavedTabGroupKeyedService is instantiated upon
     profile open. Tracks the number of unsaved TabGroups. Nothing is recorded
@@ -1579,7 +1579,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.UnsavedTabGroupTabCount" units="tabs"
     expires_after="2026-01-01">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records once per group per hour once the SavedTabGroupKeyedService is
     instantiated. Tracks the number of tabs in an unsaved TabGroup. Nothing is
@@ -1590,7 +1590,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.UserCustomizedGroupCountPerLoad" units="groups"
     expires_after="2026-01-01">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The number of tabs groups with a user-set name or color open in all browsers
     (counting app-mode windows) when a load completes.
@@ -1615,7 +1615,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.UserGroupCountPerLoad" units="groups"
     expires_after="2026-01-01">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The number of tabs groups open in all browsers (counting app-mode windows)
     when a load completes.
@@ -1630,7 +1630,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabGroups.UserPinnedTabCountPerLoad" units="tabs"
     expires_after="2026-01-01">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The number of pinned tabs in the tabstrip in all browser windows, when a
     page load completes.
@@ -1767,7 +1767,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Tabs.Active.AbsolutePosition" units="index"
     expires_after="2025-06-01">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     When a tab is activated, records the index of that tab in the tab strip,
     starting at 1 (1-indexed).
@@ -1777,7 +1777,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Tabs.Active.RelativePosition" units="%"
     expires_after="2025-06-01">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     When a tab is activated, records the index of that tab in the tab strip as a
     percentage of the total number of tabs.
@@ -2121,7 +2121,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-08-10">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records the total number of new tab button clicks, and the number of
     accidental clicks as measured by less than a second passing between clicking
@@ -2173,7 +2173,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Tabs.PageLoad.TimeSinceActive2" units="ms"
     expires_after="2025-09-07">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     On page load, records the time since last active for each tab in the tab
     strip.
@@ -2183,7 +2183,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Tabs.PageLoad.TimeSinceCreated2" units="ms"
     expires_after="2025-08-10">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     On page load, records the time since creation for each tab in the tab strip.
   </summary>
@@ -2521,7 +2521,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Tabs.ScrubbedInInterval.KeyPress" units="tabs"
     expires_after="2023-05-07">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     This histogram records the number of tabs that are 'scrubbed' by key press
     during a given interval of time (i.e. ctrl+tab navigation). For this metric,
@@ -2533,7 +2533,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Tabs.ScrubbedInInterval.MousePress" units="tabs"
     expires_after="2023-07-09">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     This histogram records the number of tabs that are 'scrubbed' by mouse press
     during a given interval of time. For this metric, a tab is considered
@@ -2718,7 +2718,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Tabs.TabCountInGroupPerLoad" units="tabs"
     expires_after="2025-09-07">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The number of tabs in the current active group when a load completes.
     Records 0 if the active tab is not in a group.
@@ -2732,7 +2732,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.TabCountPerLoad" units="tabs" expires_after="2025-08-24">
   <owner>mpearson@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <owner>sbirch@google.com</owner>
   <summary>
     The number of tabs open in all browsers (counting app-mode windows) when a
@@ -2750,7 +2750,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Tabs.TabCountPerWindow" units="tabs"
     expires_after="2025-08-24">
   <owner>mpearson@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The number of tabs open per window (counting app-mode windows) when a load
     completes.
@@ -2834,7 +2834,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-08-10">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records the total number of tab search clicks, and the number of accidental
     clicks as measured by less than a second passing between clicking tab search
@@ -3022,7 +3022,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Tabs.TabSearch.PositionInTabstrip" enum="TabSearchPosition"
     expires_after="2025-09-07">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     [Desktop] Logs the position of the tab search button in the tabstrip region
     view. Trailing implies right side in LTR, leading implies left in LTR.
@@ -3067,7 +3067,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-09-07">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Tab Search is a feature that allows users to better search for and switch to
     their desired tabs. The Tab Search UI is shown in a bubble anchored to an
@@ -3449,7 +3449,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.WindowWidth" units="DIPs" expires_after="2025-08-24">
   <owner>collinbaker@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The width of each open browser window, in DIPs, reported every 5 minutes.
     Desktop only.
@@ -3459,7 +3459,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Tabs.{DuplicateType}.{MetricType}.{WindowType}" units="tabs"
     expires_after="2025-08-10">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Every 5 minutes, records the {MetricType} of duplicate tabs in {WindowType}.
     If there are 3 tabs with matching URLs, 2 count as duplicates. URL match is
@@ -3573,7 +3573,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="TabStrip.TimeToCreateNewTabFromPress" units="ms"
     expires_after="2025-08-24">
   <owner>robliao@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The amount of time from receiving a new tab button pressed to creating the
     elements necessary to represent a new tab.
@@ -3582,7 +3582,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabStrip.TimeToSwitch" units="ms" expires_after="2025-09-14">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The amount of time from cursor entering the tabstrip to first click on a tab
     to switch.

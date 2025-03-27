@@ -8116,17 +8116,17 @@
   },
   {
     "name": "scrollable-tabstrip",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "tbergquist@chromium.org" ],
+    "owners": [ "top-chrome-desktop-ui@google.com", "tbergquist@chromium.org" ],
     "expiry_milestone": 145
   },
   {
     "name": "scrollable-tabstrip-overflow",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning@chromium.org" ],
+    "owners": [ "top-chrome-desktop-ui@google.com", "dpenning@chromium.org" ],
     "expiry_milestone": 145
   },
   {
     "name": "scrollable-tabstrip-with-dragging",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "shibalik@chromium.org" ],
+    "owners": [ "top-chrome-desktop-ui@google.com", "shibalik@chromium.org" ],
     "expiry_milestone": 145
   },
   {
@@ -8475,7 +8475,7 @@
   {
     "name": "split-tabstrip",
     "owners": [
-      "chrome-desktop-ui-sea@google.com",
+      "top-chrome-desktop-ui@google.com",
       "tbergquist@chromium.org"
     ],
     "expiry_milestone": 115
@@ -8775,12 +8775,12 @@
   },
   {
     "name": "tab-group-sync-service-desktop-migration",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "dljames@chromium.org", "dpenning@chromium.org" ],
+    "owners": [ "top-chrome-desktop-ui@google.com", "dljames@chromium.org", "dpenning@chromium.org" ],
     "expiry_milestone": 140
   },
   {
     "name": "tab-groups-defer-remote-navigations",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning@chromium.org", "dljames@chromium.org" ],
+    "owners": [ "top-chrome-desktop-ui@google.com", "dpenning@chromium.org", "dljames@chromium.org" ],
     "expiry_milestone": 150
   },
   {
@@ -8790,7 +8790,7 @@
   },
   {
     "name": "tab-groups-save-v2",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning@chromium.org", "dljames@chromium.org" ],
+    "owners": [ "top-chrome-desktop-ui@google.com", "dpenning@chromium.org", "dljames@chromium.org" ],
     "expiry_milestone": 150
   },
   {
@@ -8810,12 +8810,12 @@
   },
   {
     "name": "tab-scrolling-button-position",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning@chromium.org" ],
+    "owners": [ "top-chrome-desktop-ui@google.com", "dpenning@chromium.org" ],
     "expiry_milestone": 130
   },
   {
     "name": "tab-search-position-setting",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning@chromium.org" ],
+    "owners": [ "top-chrome-desktop-ui@google.com", "dpenning@chromium.org" ],
     "expiry_milestone": 137
   },
   {
@@ -8860,7 +8860,7 @@
   },
   {
     "name": "tabstrip-combo-button",
-    "owners": [ "emshack@chromium.org", "chrome-desktop-ui-sea@google.com" ],
+    "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
     "expiry_milestone": 150
   },
   {
@@ -8940,7 +8940,7 @@
   },
   {
     "name" : "toolbar-pinning",
-    "owners": [ "corising@chromium.org", "tbergquist@chromium.org", "chrome-desktop-ui-sea@chromium.org" ],
+    "owners": [ "corising@chromium.org", "tbergquist@chromium.org", "top-chrome-desktop-ui@chromium.org" ],
     "expiry_milestone" : 135
   },
   {
@@ -8953,7 +8953,7 @@
   },
   {
     "name": "top-chrome-touch-ui",
-    "owners": [ "pbos@chromium.org", "chrome-desktop-ui-sea@google.com" ],
+    "owners": [ "pbos@chromium.org", "top-chrome-desktop-ui@google.com" ],
     // This flag is used to easily swap into touch-mode for UI development where
     // the UI differs significantly between touch/non-touch modes. This is
     // exposed in chrome://flags to allow QA and UXers to verify touch-related

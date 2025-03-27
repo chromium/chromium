@@ -923,7 +923,7 @@ should be able to be added at any place in this file.
 
 <action name="Accel_NewTabInGroup">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User added a new tab to the existing group by keyboard shortcut Ctrl-T.
   </description>
@@ -2464,7 +2464,7 @@ should be able to be added at any place in this file.
 <action name="Actions.CustomizeToolbarSidePanel.OpenedFromCustomizeChrome">
   <owner>tbergquist@chromium.org</owner>
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the customize toolbar page in the customize chrome side panel
     is opened by clicking on the link in the customize chrome side panel.
@@ -2475,7 +2475,7 @@ should be able to be added at any place in this file.
     name="Actions.CustomizeToolbarSidePanel.OpenedFromOutsideCustomizeChrome">
   <owner>tbergquist@chromium.org</owner>
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the customize toolbar page in the customize chrome side panel
     is opened from outside the side panel, for example from the settings page or
@@ -2485,7 +2485,7 @@ should be able to be added at any place in this file.
 
 <action name="Actions.PinnedToolbarButton.Pinned">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the suffixed action is pinned to the toolbar.
   </description>
@@ -2493,7 +2493,7 @@ should be able to be added at any place in this file.
 
 <action name="Actions.PinnedToolbarButton.Pinned.ByContextMenu">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the suffixed action is pinned to the toolbar through the
     context menu.
@@ -2502,7 +2502,7 @@ should be able to be added at any place in this file.
 
 <action name="Actions.PinnedToolbarButton.Pinned.ByCustomizeChromeSidePanel">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the suffixed action is pinned to the toolbar through the
     customize chrome side panel.
@@ -2511,7 +2511,7 @@ should be able to be added at any place in this file.
 
 <action name="Actions.PinnedToolbarButton.Unpinned">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the suffixed action is unpinned from the toolbar.
   </description>
@@ -2519,7 +2519,7 @@ should be able to be added at any place in this file.
 
 <action name="Actions.PinnedToolbarButton.Unpinned.ByContextMenu">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the suffixed action unpinned from the toolbar through the
     context menu.
@@ -2528,7 +2528,7 @@ should be able to be added at any place in this file.
 
 <action name="Actions.PinnedToolbarButton.Unpinned.ByCustomizeChromeSidePanel">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the suffixed action (or any action if there is no suffixed
     action) is unpinned from the toolbar through the customize chrome side
@@ -2538,7 +2538,7 @@ should be able to be added at any place in this file.
 
 <action name="Actions.PinnedToolbarButtonActivation">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the suffixed action (or any action if there is no suffixed
     action) is activated.
@@ -5689,7 +5689,7 @@ should be able to be added at any place in this file.
 
 <action name="BookmarkBar_ContextMenu_ToggleShowSavedTabGroups">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user toggled show saved tab groups bar from the bookmark bar context
     menu.
@@ -6028,7 +6028,7 @@ should be able to be added at any place in this file.
 
 <action name="Bookmarks.AddedFromSidePanel">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the user adds a bookmark from the side panel.
   </description>
@@ -6036,13 +6036,13 @@ should be able to be added at any place in this file.
 
 <action name="Bookmarks.FolderAdded">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>Recorded when the user adds a bookmark folder.</description>
 </action>
 
 <action name="Bookmarks.FolderAddedFromSidePanel">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the user adds a bookmark folder from the side panel.
   </description>
@@ -6952,7 +6952,7 @@ should be able to be added at any place in this file.
 
 <action name="CloseGroupedTab">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>User closed a tab that belongs to a group.</description>
 </action>
 
@@ -8053,19 +8053,19 @@ should be able to be added at any place in this file.
 
 <action name="ContentSettings.Geolocation.BlockedIconShown">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>The geolocation blocked icon is shown.</description>
 </action>
 
 <action name="ContentSettings.GeolocationDialog.Closed">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>The content settings geolocation bubble is closed.</description>
 </action>
 
 <action name="ContentSettings.GeolocationDialog.OpenPreferencesClicked">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user clicked 'open preferences' from the content settings geolocation
     bubble .
@@ -9665,7 +9665,7 @@ should be able to be added at any place in this file.
 
 <action name="DesktopReadingList.AddItem.FromBookmarkIcon">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user added to the reading list from the Bookmark icon entry point
     (Desktop only).
@@ -9674,7 +9674,7 @@ should be able to be added at any place in this file.
 
 <action name="DesktopReadingList.AddItem.FromTabContextMenu">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user added to the reading list from the tab context menu entry point
     (Desktop only).
@@ -9683,7 +9683,7 @@ should be able to be added at any place in this file.
 
 <action name="DesktopReadingList.MarkAsRead">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user marked an item as read from the reading list (Desktop only).
   </description>
@@ -9691,7 +9691,7 @@ should be able to be added at any place in this file.
 
 <action name="DesktopReadingList.MarkAsUnread">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user marked an item as unread from the reading list (Desktop only).
   </description>
@@ -9699,7 +9699,7 @@ should be able to be added at any place in this file.
 
 <action name="DesktopReadingList.Navigation.FromReadList">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user opened an item from the read section of the reading list (Desktop
     only).
@@ -9708,7 +9708,7 @@ should be able to be added at any place in this file.
 
 <action name="DesktopReadingList.Navigation.FromUnreadList">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user opened an item from the unread section of the reading list (Desktop
     only).
@@ -9717,7 +9717,7 @@ should be able to be added at any place in this file.
 
 <action name="DesktopReadingList.OpenReadingList">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user clicked the Desktop reading list button to open the reading list.
   </description>
@@ -9725,7 +9725,7 @@ should be able to be added at any place in this file.
 
 <action name="DesktopReadingList.RemoveItem">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user removed an item from the reading list (Desktop only)
   </description>
@@ -33688,7 +33688,7 @@ should be able to be added at any place in this file.
 
 <action name="ReadingList.Dialog.AddCurrentPage">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user added a page to the reading list from the dialog bubble.
   </description>
@@ -33696,7 +33696,7 @@ should be able to be added at any place in this file.
 
 <action name="ReadingList.Dialog.Navigation">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user navigated to a page from the reading list dialog bubble.
   </description>
@@ -37753,7 +37753,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.AboutThisSite.NewTabButtonClicked">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the new tab button is clicked with the about this site side
     panel entry showing.
@@ -37762,7 +37762,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.Assistant.Shown">
   <owner>brunobraga@google.com</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the assistant side panel entry is shown.
   </description>
@@ -37770,7 +37770,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.Bookmarks.FolderClose">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user collapsed a bookmarks folder within the side panel.
   </description>
@@ -37778,7 +37778,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.Bookmarks.FolderOpen">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user expanded a bookmarks folder within the side panel.
   </description>
@@ -37786,7 +37786,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.Bookmarks.Navigation">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user navigated to a page from bookmarks in the side panel.
   </description>
@@ -37794,7 +37794,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.Bookmarks.Pinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the bookmarks side panel entry is pinned via the pin button in
     the side panel header.
@@ -37803,7 +37803,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.Bookmarks.Shown">
   <owner>johntlee@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the bookmarks side panel entry is shown.
   </description>
@@ -37811,7 +37811,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.Bookmarks.Unpinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the bookmarks side panel entry is unpinned via the pin button
     in the side panel header.
@@ -37821,7 +37821,7 @@ should be able to be added at any place in this file.
 <action name="SidePanel.Companion.Pinned.BySidePanelHeaderButton">
   <obsolete>Deprecated 11/2024. Companion was deprecated and removed.</obsolete>
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the companion side panel entry is pinned via the pin button in
     the side panel header.
@@ -37831,7 +37831,7 @@ should be able to be added at any place in this file.
 <action name="SidePanel.Companion.Shown">
   <obsolete>Deprecated 11/2024. Companion was deprecated and removed.</obsolete>
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the companion side panel entry is shown.
   </description>
@@ -37840,7 +37840,7 @@ should be able to be added at any place in this file.
 <action name="SidePanel.Companion.Unpinned.ByPinnedButtonContextMenu">
   <obsolete>Deprecated 11/2024. Companion was deprecated and removed.</obsolete>
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the companion side panel entry is unpinned via the context
     menu from the pinned companion button.
@@ -37850,7 +37850,7 @@ should be able to be added at any place in this file.
 <action name="SidePanel.Companion.Unpinned.BySidePanelHeaderButton">
   <obsolete>Deprecated 11/2024. Companion was deprecated and removed.</obsolete>
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the companion side panel entry is unpinned via the pin button
     in the side panel header.
@@ -37860,7 +37860,7 @@ should be able to be added at any place in this file.
 <action name="SidePanel.Feed.Pinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
   <owner>jianli@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the feed side panel entry is pinned via the pin button in the
     side panel header.
@@ -37869,14 +37869,14 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.Feed.Shown">
   <owner>jianli@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>Recorded when the feed side panel entry is shown.</description>
 </action>
 
 <action name="SidePanel.Feed.Unpinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
   <owner>jianli@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the feed side panel entry is unpinned via the pin button in
     the side panel header.
@@ -37885,13 +37885,13 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.Hide">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>The user closed the side panel.</description>
 </action>
 
 <action name="SidePanel.History.Shown">
   <owner>mfacey@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the history side panel entry is shown.
   </description>
@@ -37899,7 +37899,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.HistoryClusters.NewTabButtonClicked">
   <owner>mfacey@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the new tab button is clicked with the history clusters side
     panel entry showing.
@@ -37909,7 +37909,7 @@ should be able to be added at any place in this file.
 <action name="SidePanel.HistoryClusters.Pinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
   <owner>mfacey@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the history clusters side panel entry is pinned via the pin
     button in the side panel header.
@@ -37918,7 +37918,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.HistoryClusters.Shown">
   <owner>mfacey@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the history clusters side panel entry is shown.
   </description>
@@ -37927,7 +37927,7 @@ should be able to be added at any place in this file.
 <action name="SidePanel.HistoryClusters.Unpinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
   <owner>mfacey@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the history clusters side panel entry is unpinned via the pin
     button in the side panel header.
@@ -37978,7 +37978,7 @@ should be able to be added at any place in this file.
 <action name="SidePanel.Performance.Pinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
   <owner>agale@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the performance side panel entry is pinned via the pin button
     in the side panel header.
@@ -37997,7 +37997,7 @@ should be able to be added at any place in this file.
 <action name="SidePanel.Performance.Unpinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
   <owner>agale@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the performance side panel entry is unpinned via the pin
     button in the side panel header.
@@ -38007,7 +38007,7 @@ should be able to be added at any place in this file.
 <action name="SidePanel.ReadAnything.Pinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
   <owner>abigailbklein@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the read anything side panel entry is pinned via the pin
     button in the side panel header.
@@ -38016,7 +38016,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.ReadAnything.Shown">
   <owner>abigailbklein@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the read anything side panel entry is shown.
   </description>
@@ -38025,7 +38025,7 @@ should be able to be added at any place in this file.
 <action name="SidePanel.ReadAnything.Unpinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
   <owner>abigailbklein@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the read anything side panel entry is unpinned via the pin
     button in the side panel header.
@@ -38034,7 +38034,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.ReadingList.AddCurrentPage">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user added a page to the reading list from the side panel.
   </description>
@@ -38042,7 +38042,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.ReadingList.Navigation">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user navigated to a page from the reading list in the side panel.
   </description>
@@ -38050,7 +38050,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.ReadingList.Pinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the reading list side panel entry is pinned via the pin button
     in the side panel header.
@@ -38059,7 +38059,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.ReadingList.Shown">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the reading list side panel entry is shown.
   </description>
@@ -38067,7 +38067,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.ReadingList.Unpinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the reading list side panel entry is unpinned via the pin
     button in the side panel header.
@@ -38084,7 +38084,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.Show">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>The user opened the side panel.</description>
 </action>
 
@@ -38099,7 +38099,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.SideSearch.Shown">
   <owner>tluk@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the side search side panel entry is shown.
   </description>
@@ -38107,7 +38107,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.UserNotes.Pinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the user notes side panel entry is pinned via the pin button
     in the side panel header.
@@ -38116,7 +38116,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.UserNotes.Shown">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the user notes side panel entry is shown.
   </description>
@@ -38124,7 +38124,7 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.UserNotes.Unpinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the user notes side panel entry is unpinned via the pin button
     in the side panel header.
@@ -39842,7 +39842,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_Signin_FromTabOrganization">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::kTabOrganization.
@@ -42914,7 +42914,7 @@ should be able to be added at any place in this file.
 <action name="TabContextMenu_AddToExistingGroup">
   <owner>bsep@google.com</owner>
   <owner>tbergquist@google.com</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User selected an entry in the Add to existing group submenu from the tab
     context menu.
@@ -42923,7 +42923,7 @@ should be able to be added at any place in this file.
 
 <action name="TabContextMenu_AddToExistingWindow">
   <owner>lgrey@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User selected an entry in the Move Tab to Existing Window submenu from the
     tab context menu.
@@ -42933,7 +42933,7 @@ should be able to be added at any place in this file.
 <action name="TabContextMenu_AddToNewGroup">
   <owner>bsep@google.com</owner>
   <owner>tbergquist@google.com</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User selected Add to new group from the tab context menu.
   </description>
@@ -42961,7 +42961,7 @@ should be able to be added at any place in this file.
 
 <action name="TabContextMenu_CloseOtherTabs">
   <owner>tbergquist@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User selected Close Other Tabs from the tab context menu. Temporarily
     removed in M78.
@@ -42970,7 +42970,7 @@ should be able to be added at any place in this file.
 
 <action name="TabContextMenu_CloseTab">
   <owner>tbergquist@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>User selected Close Tabs from tab context menu.</description>
 </action>
 
@@ -42982,7 +42982,7 @@ should be able to be added at any place in this file.
 
 <action name="TabContextMenu_CloseTabsToRight">
   <owner>tbergquist@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User selected Close Tabs to the Right from tab context menu.
   </description>
@@ -43002,14 +43002,14 @@ should be able to be added at any place in this file.
 
 <action name="TabContextMenu_Duplicate">
   <owner>tbergquist@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>User selected Duplicate from tab context menu.</description>
 </action>
 
 <action name="TabContextMenu_FocusMode">
   <owner>dfried@chromium.org</owner>
   <owner>yiningwang@google.com</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User selected Focus This Tab from the tab context menu.
   </description>
@@ -43017,7 +43017,7 @@ should be able to be added at any place in this file.
 
 <action name="TabContextMenu_MoveTabToNewWindow">
   <owner>lgrey@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User selected Move Tab to New Window from the tab context menu.
   </description>
@@ -43032,7 +43032,7 @@ should be able to be added at any place in this file.
 
 <action name="TabContextMenu_NewTab">
   <owner>tbergquist@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User selected New Tab to the Right from the tabstrip context menu.
   </description>
@@ -43040,7 +43040,7 @@ should be able to be added at any place in this file.
 
 <action name="TabContextMenu_NewTabInGroup">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User added a tab to an existing group by choosing 'Add to existing group'
     from the tabstrip context menu.
@@ -43061,20 +43061,20 @@ should be able to be added at any place in this file.
 
 <action name="TabContextMenu_OrganizeTabs">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>User selected Organize Tabs from tab context menu.</description>
 </action>
 
 <action name="TabContextMenu_Reload">
   <owner>tbergquist@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>User selected Reload from tab context menu.</description>
 </action>
 
 <action name="TabContextMenu_RemoveFromGroup">
   <owner>bsep@google.com</owner>
   <owner>tbergquist@google.com</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User selected Remove from group from the tab context menu.
   </description>
@@ -43128,7 +43128,7 @@ should be able to be added at any place in this file.
 
 <action name="TabContextMenu_TogglePinned">
   <owner>tbergquist@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>User selected Pin/Unpin from tab context menu.</description>
 </action>
 
@@ -43678,7 +43678,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups.Shared.SwitchGroupedTab">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User switched to a tab that belongs to a shared group.
   </description>
@@ -43728,7 +43728,7 @@ should be able to be added at any place in this file.
     This action no longer occurs as of 11/2022. Tab groups can always collapse.
   </obsolete>
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User clicked on the tab group header of the last expanded tab group. This
     user action means there are no more available tabs so the user saw a no-op.
@@ -43737,7 +43737,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_SavedTabGroups_Closed">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User right-clicked the tab group header on a SavedTabGroup, and pressed the
     close group button.
@@ -43746,7 +43746,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_SavedTabGroups_ContextMenuTriggeredFromEverythingMenu">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User triggered the context menu of a saved tab group item from the
     Everything menu.
@@ -43760,7 +43760,7 @@ should be able to be added at any place in this file.
     &quot;TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromEverythingMenu_2&quot;.
   </obsolete>
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User pressed &quot;Create New Tab Group&quot; from the Everything menu.
   </description>
@@ -43769,7 +43769,7 @@ should be able to be added at any place in this file.
 <action
     name="TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromEverythingMenu_2">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User pressed &quot;Create New Tab Group&quot; from the Everything menu in
     the bookmarks bar.
@@ -43779,7 +43779,7 @@ should be able to be added at any place in this file.
 <action
     name="TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromTabGroupsAppMenu">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User pressed &quot;Create New Tab Group&quot; from the TabGroups app menu.
   </description>
@@ -43787,7 +43787,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_SavedTabGroups_Deleted">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User performed an action that would delete a SavedTabGroup (Ex: Right-click
     a button in the bookmarks bar and press delete group, close the last tab in
@@ -43798,13 +43798,13 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_SavedTabGroups_EverythingButtonPressed">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>User pressed the Everything button.</description>
 </action>
 
 <action name="TabGroups_SavedTabGroups_Focused">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User attempted to open a SavedTabGroup that was already open by clicking a
     SavedTabGroup button in the bookmarks bar, but focused the group instead.
@@ -43813,7 +43813,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_SavedTabGroups_Opened">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User opened a SavedTabGroup by clicking a SavedTabGroup button in the
     bookmarks bar.
@@ -43822,7 +43822,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_SavedTabGroups_OpenedFromAppMenu">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User opened a SavedTabGroup by clicking a menu item from the &quot;Tab
     groups&quot; submenu in 3-dot menu.
@@ -43835,7 +43835,7 @@ should be able to be added at any place in this file.
     &quot;TabGroups_SavedTabGroups_OpenedFromEverythingMenu_2&quot;.
   </obsolete>
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User opened a SavedTabGroup by clicking a menu item from the Everything
     menu.
@@ -43844,7 +43844,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_SavedTabGroups_OpenedFromEverythingMenu_2">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User opened a SavedTabGroup by clicking a menu item from the Everything menu
     in the bookmarks bar.
@@ -43853,7 +43853,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_SavedTabGroups_OpenedFromTabGroupsAppMenu">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User opened a SavedTabGroup by clicking the open group submenu item from the
     tab groups app menu.
@@ -43862,7 +43862,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_SavedTabGroups_Pinned">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User pinned a saved tab group that is previously unpinned.
   </description>
@@ -43870,7 +43870,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_SavedTabGroups_TabAdded">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User added a tab into a SavedTabGroup, for example by clicking on a link
     that opens a new tab or by manually adding a new tab into the group.
@@ -43879,7 +43879,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_SavedTabGroups_TabNavigated">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User navigated within a tab to a new url in a SavedTabGroup, for example by
     clicking on a link, by using the omnibox.
@@ -43888,7 +43888,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_SavedTabGroups_TabRemoved">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User removed a tab from a SavedTabGroup. This is emitted whenever a user
     performs an action that would remove a tab from the group (for example,
@@ -43898,7 +43898,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_SavedTabGroups_Unpinned">
   <owner>dljames@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User unpinned a saved tab group that is previously pinned.
   </description>
@@ -43906,13 +43906,13 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_SwitchGroupedTab">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>User switched to a tab that belongs in a group.</description>
 </action>
 
 <action name="TabGroups_TabGroupBubble_CloseGroup">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User closed a group by choosing 'Close group' from the tab group editor
     bubble.
@@ -43921,7 +43921,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_TabGroupBubble_ColorChanged">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User changed the color of a group through the color picker in the tab group
     editor bubble.
@@ -43930,7 +43930,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_TabGroupBubble_DeleteGroup">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>
     User deleted an existing tab group by clicking the delete button.
@@ -43939,7 +43939,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_TabGroupBubble_GroupSaved">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User saved an existing tab group by switching the toggle to the right next
     to 'Save group' from the tab group editor bubble.
@@ -43948,7 +43948,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_TabGroupBubble_GroupUnsaved">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User unsaved an existing tab group by switching the toggle to the left next
     to 'Save group' from the tab group editor bubble.
@@ -43957,7 +43957,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_TabGroupBubble_NameChanged">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User changed the name of a group through the editor bubble.
   </description>
@@ -43965,7 +43965,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_TabGroupBubble_NewTabInGroup">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User added a new tab to an existing group by choosing 'New tab in group'
     from the tab group editor bubble.
@@ -43974,7 +43974,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_TabGroupBubble_SendFeedback">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User opened the feedback app by choosing 'Send feedback' from the tab group
     editor bubble.
@@ -43983,7 +43983,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_TabGroupBubble_Ungroup">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User removed all tabs in a group from that group by choosing 'Ungroup' from
     the tab group editor bubble.
@@ -43992,7 +43992,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_TabGroupHeader_Collapsed">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User clicked on the tab group header of an expanded tab group to collapse
     the group.
@@ -44001,7 +44001,7 @@ should be able to be added at any place in this file.
 
 <action name="TabGroups_TabGroupHeader_Expanded">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     User clicked on the tab group header of a collapsed tab group to expand the
     group.

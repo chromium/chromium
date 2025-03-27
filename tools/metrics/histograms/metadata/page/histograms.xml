@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageActionController.ActionTypeShown2"
     enum="PageActionIconType" expires_after="2025-08-10">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The type of Page Action currently shown. Logged once per ephemeral page
     action the first time it becomes visible on a given page. Tab switches will
@@ -280,7 +280,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageActionController.Icon.CTR2" enum="PageActionCTREvent"
     expires_after="2025-08-10">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records events related to overall ephemeral page action icon click through
     rate (CTR) calculation.
@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageActionController.Icon.NumberActionsShownWhenClicked"
     units="actions" expires_after="2025-08-10">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The number of ephemeral Page Actions currently shown. Measured each time a
     page action icon is clicked.
@@ -306,7 +306,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageActionController.NumberActionsShown2" units="actions"
     expires_after="2025-08-10">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The number of ephemeral Page Actions currently shown. Measured each time a
     new page is loaded, and then again when each new page action appears on the
@@ -317,7 +317,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageActionController.PagesWithActionsShown2"
     enum="PageActionPageEvent" expires_after="2025-08-10">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records events related to percentage of pages with actions calculation.
 
@@ -336,7 +336,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageActionController.{PageActionType}.Icon.CTR2"
     enum="PageActionCTREvent" expires_after="2025-08-10">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records events related to {PageActionType} page action icon click through
     rate (CTR) calculation.
