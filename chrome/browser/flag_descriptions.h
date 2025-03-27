@@ -957,6 +957,9 @@ extern const char kEnableFingerprintingProtectionBlocklistInIncognitoName[];
 extern const char
     kEnableFingerprintingProtectionBlocklistInIncognitoDescription[];
 
+extern const char kEnableCanvasNoiseName[];
+extern const char kEnableCanvasNoiseDescription[];
+
 extern const char kEnableLensStandaloneFlagId[];
 extern const char kEnableLensStandaloneName[];
 extern const char kEnableLensStandaloneDescription[];

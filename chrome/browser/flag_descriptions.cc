@@ -1578,6 +1578,12 @@ const char kEnableFingerprintingProtectionBlocklistInIncognitoDescription[] =
     "resources from loading in a 3p context. This flag applies only in "
     "Incognito mode.";
 
+const char kEnableCanvasNoiseName[] =
+    "Enable noise for canvas readbacks in Incognito";
+const char kEnableCanvasNoiseDescription[] =
+    "Enable noising pixels when the contents of a canvas are read back by a "
+    "script.";
+
 const char kEnableSearchCustomizableShortcutsInLauncherName[] =
     "Enable search for customizable shortcuts in launcher";
 const char kEnableSearchCustomizableShortcutsInLauncherDescription[] =

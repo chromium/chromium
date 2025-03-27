@@ -2586,6 +2586,14 @@
     "expiry_milestone": 136
   },
   {
+    "name": "enable-canvas-noise",
+    "owners": [
+      "tov@chromium.org",
+      "//third_party/blink/renderer/core/canvas_interventions/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-cast-streaming-av1",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
     "expiry_milestone": 151
