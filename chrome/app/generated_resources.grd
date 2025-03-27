@@ -18413,11 +18413,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </if>
     <!-- Performance Intervention Strings-->
     <if expr="not is_android">
-        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V1" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
-        Performance issue alert
-        </message>
         <message name="IDS_PERFORMANCE_INTERVENTION_CLOSE_BUTTON_ACCNAME" desc="The accessibility text for the performance intervention close button that removes an item from the list of tabs to deactivate when clicked.">
-        Remove <ph name="SITE_NAME">$1<ex>Google</ex></ph> from list of tabs to make inactive
+          Remove <ph name="SITE_NAME">$1<ex>Google</ex></ph> from list of tabs to make inactive
         </message>
         <message name="IDS_PERFORMANCE_INTERVENTION_SINGLE_SUGGESTED_ROW_ACCNAME" desc="The accessibility text for a suggested tab in the performance intervention dialog when the user have removed all but one suggested tab.">
           You can make this tab inactive or refresh to see the full list again
@@ -18428,13 +18425,59 @@ Please help our engineers fix this problem. Tell us what happened right before y
           other {List box with {NUM_TABS} items}}
         </message>
       <if expr="use_titlecase">
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V1" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
+          Performance Issue Alert
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V1" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
+          {NUM_TABS, plural,
+          =1 {Fix the Tab Slowing Your Browser}
+          other {Fix the Tabs Slowing Your Browser}}
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V2" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
+          {NUM_TABS, plural,
+          =1 {Pause the Tab Slowing Your Browser}
+          other {Pause the Tabs Slowing Your Browser}}
+        </message>
         <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V1" desc="In Title Case: Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
-        Fix Now
+          Fix Now
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_UPDATED_V1" desc="In Title Case: Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
+          {NUM_TABS, plural,
+          =1 {Fix This Tab}
+          other {Fix These Tabs}}
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_UPDATED_V2" desc="In Title Case: Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
+          {NUM_TABS, plural,
+          =1 {Pause This Tab}
+          other {Pause These Tabs}}
         </message>
       </if>
       <if expr="not use_titlecase">
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V1" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
+          Performance issue alert
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V1" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
+          {NUM_TABS, plural,
+          =1 {Fix the tab slowing your browser}
+          other {Fix the tabs slowing your browser}}
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V2" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
+          {NUM_TABS, plural,
+          =1 {Pause the tab slowing your browser}
+          other {Pause the tabs slowing your browser}}
+        </message>
         <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V1" desc="Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
-        Fix now
+          Fix now
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_UPDATED_V1" desc="Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
+          {NUM_TABS, plural,
+          =1 {Fix this tab}
+          other {Fix these tabs}}
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_UPDATED_V2" desc="Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
+          {NUM_TABS, plural,
+          =1 {Pause this tab}
+          other {Pause these tabs}}
         </message>
       </if>
       <message name="IDS_PERFORMANCE_INTERVENTION_DISMISS_BUTTON" desc="Label on a dialog button that dismisses the dialog when clicked.">

@@ -2476,6 +2476,20 @@ Chromium is unable to recover your settings.
         <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V1" desc="Body text for a dialog suggesting users to deactivate certain tabs to improve performance.">
           This tab is using extra resources. To improve your performance, let Chromium make it inactive.
         </message>
+        <if expr="use_titlecase">
+          <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V3" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
+            {NUM_TABS, plural,
+            =1 {Chromium Recommends Pausing the Tab Slowing Your Browser}
+            other {Chromium Recommends Pausing the Tabs Slowing Your Browser}}
+          </message>
+        </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V3" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
+            {NUM_TABS, plural,
+            =1 {Chromium recommends pausing the tab slowing your browser}
+            other {Chromium recommends pausing the tabs slowing your browser}}
+          </message>
+        </if>
       </if>
 
       <!-- Delete Browsing Data -->

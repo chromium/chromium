@@ -110,6 +110,14 @@ BASE_DECLARE_FEATURE_PARAM(int, kScaleMaxTimesPerWeek);
 // The amount of time a user needs to wait before being shown performance
 // intervention with a 0% acceptance rate
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kNoAcceptanceBackOff);
+
+// This enables performance intervention to use the updated notification
+// strings.
+BASE_DECLARE_FEATURE(kPerformanceInterventionNotificationStringImprovements);
+
+// The version string that is used on the performance detection dialog.
+BASE_DECLARE_FEATURE_PARAM(int, kNotificationStringVersion);
+
 #endif
 
 BASE_DECLARE_FEATURE(kPMProcessPriorityPolicy);

@@ -165,6 +165,16 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "no_acceptance_back_off",
                    base::Days(30));
 
+BASE_FEATURE(kPerformanceInterventionNotificationStringImprovements,
+             "PerformanceInterventionNotificationStringImprovements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int,
+                   kNotificationStringVersion,
+                   &kPerformanceInterventionNotificationStringImprovements,
+                   "string_version",
+                   1);
+
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kUnthrottledTabProcessReporting,
              "UnthrottledTabProcessReporting",
