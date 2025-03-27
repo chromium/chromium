@@ -17,9 +17,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
@@ -49,7 +49,7 @@ import java.util.concurrent.TimeoutException;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ContentSwitches.SITE_PER_PROCESS
 })
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "TODO(crbug.com/401528684) Determine why batching is needed.")
 public class JavascriptOptimizerFeatureTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/test.html";
 
