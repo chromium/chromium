@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -45,7 +46,7 @@ void InitCdmHostVerification(
     base::NativeLibrary cdm_library,
     const base::FilePath& cdm_path,
     const std::vector<CdmHostFilePath>& cdm_host_file_paths) {
-  DCHECK(cdm_library);
+  CHECK(cdm_library, base::NotFatalUntil::M140);
 
   CdmHostFiles cdm_host_files;
   cdm_host_files.Initialize(cdm_path, cdm_host_file_paths);
@@ -182,8 +183,8 @@ bool CdmModule::Initialize(const base::FilePath& cdm_path) {
 }
 
 void CdmModule::InitializeCdmModule() {
-  DCHECK(initialized_);
-  DCHECK(initialize_cdm_module_func_);
+  CHECK(initialized_, base::NotFatalUntil::M140);
+  CHECK(initialize_cdm_module_func_, base::NotFatalUntil::M140);
   TRACE_EVENT0("media", "CdmModule::InitializeCdmModule");
   initialize_cdm_module_func_();
 }
