@@ -94,7 +94,7 @@
       itemTypes = {kLensSearch, kEnhancedSafeBrowsing,
                    kSaveAndAutofillPasswords};
       break;
-    case kShoppingUsersWithFallbackBeforeDBPromo:
+    case kShoppingUsersWithFallbackAfterDBPromo:
       if (_shoppingUser && _shoppingService->IsShoppingListEligible()) {
         itemTypes = {kTabGroups, kLockedIncognitoTabs,
                      kPriceTrackingAndInsights};
