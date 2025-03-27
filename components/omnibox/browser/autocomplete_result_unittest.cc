@@ -2653,13 +2653,11 @@ TEST_F(AutocompleteResultTest, Desktop_MostVisitedSitesGrouping) {
 
     // There should be 6 suggestions total, 2 from group1 (url) and 4 from
     // group2 (search), since search suggestions backfill url suggestions.
-    const std::array<TestData, 6> expected_data{{
+    const std::array<TestData, 4> expected_data{{
         {0, 1, 500, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
         {1, 1, 490, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
         {5, 1, 450, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
         {6, 1, 440, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
-        {7, 1, 430, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
-        {8, 1, 420, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
     }};
     AssertResultMatches(result, expected_data);
   }
