@@ -2744,6 +2744,7 @@ Called by update_net_error_codes.py.-->
   <int value="40" label="Open in new window"/>
   <int value="41" label="Save page"/>
   <int value="42" label="Share page"/>
+  <int value="43" label="Print page"/>
 </enum>
 
 <!-- LINT.IfChange(ConversionCreateAggregatableReportStatus) -->
