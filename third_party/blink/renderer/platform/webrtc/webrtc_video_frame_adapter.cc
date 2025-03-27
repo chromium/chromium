@@ -225,13 +225,12 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
 
     if (dst_frame) {
       CHECK(dst_frame->HasSharedImage());
-      const bool copy_succeeded =
+      std::optional<gpu::SyncToken> blit_done_sync_token =
           media::CopyRGBATextureToVideoFrame(
               raster_context_provider.get(), source_frame->coded_size(),
               source_frame->shared_image(), source_frame->acquire_sync_token(),
-              dst_frame.get())
-              .has_value();
-      if (copy_succeeded) {
+              dst_frame.get());
+      if (blit_done_sync_token) {
         // CopyRGBATextureToVideoFrame() operates on mailboxes and not frames,
         // so we must manually copy over properties relevant to the encoder.
         // TODO(https://crbug.com/1272852): Consider bailing out of this path if
@@ -256,13 +255,11 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
         // copy from the shared image GPU texture to the GMB.
         CHECK(dst_frame->HasMappableGpuBuffer());
         CHECK(!dst_frame->HasNativeGpuMemoryBuffer());
-        gpu::SyncToken blit_done_sync_token;
-        ri->GenUnverifiedSyncTokenCHROMIUM(blit_done_sync_token.GetData());
 
         auto* sii = raster_context_provider->SharedImageInterface();
 
         const auto& mailbox = dst_frame->shared_image()->mailbox();
-        sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
+        sii->CopyToGpuMemoryBuffer(*blit_done_sync_token, mailbox);
 
         // Synchronize RasterInterface with SharedImageInterface.
         auto copy_to_gmb_done_sync_token = sii->GenUnverifiedSyncToken();
