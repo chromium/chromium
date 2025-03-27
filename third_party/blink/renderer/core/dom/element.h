@@ -297,7 +297,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Set an attribute with Trusted Type validation. Passing g_null_atom
   // is the same as removing the attribute.
-  void SetAttributeWithValidation(const QualifiedName&,
+  void SetAttributeWithValidation(Attr*,
                                   const AtomicString& value,
                                   ExceptionState&);
 
