@@ -119,11 +119,7 @@ export type Command = (
   | WebDriverBidi.Command
   | Cdp.Command
   | ExternalSpecCommand<WebDriverBidiPermissions.PermissionsCommand>
-  | ExternalSpecCommand<WebDriverBidiBluetooth.Bluetooth.HandleRequestDevicePrompt>
-  | ExternalSpecCommand<WebDriverBidiBluetooth.Bluetooth.SimulateAdapter>
-  | ExternalSpecCommand<WebDriverBidiBluetooth.Bluetooth.DisableSimulation>
-  | ExternalSpecCommand<WebDriverBidiBluetooth.Bluetooth.SimulatePreconnectedPeripheral>
-  | ExternalSpecCommand<WebDriverBidiBluetooth.Bluetooth.SimulateAdvertisement>
+  | ExternalSpecCommand<WebDriverBidiBluetooth.BluetoothCommand>
 ) & {channel: BidiPlusChannel};
 
 export type CommandResponse =
