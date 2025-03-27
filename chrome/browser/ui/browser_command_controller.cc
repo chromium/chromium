@@ -142,6 +142,8 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #endif
 
@@ -1166,6 +1168,17 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
           !profile_prefs->GetBoolean(glic::prefs::kGlicPinnedToTabstrip));
       break;
     }
+    case IDC_OPEN_GLIC: {
+      auto* service =
+          glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile());
+      if (service) {
+        glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile())->ToggleUI(
+            browser_,
+            /*prevent_close=*/true,
+            glic::mojom::InvocationSource::kThreeDotsMenu);
+      }
+      break;
+    }
 #endif
     default:
       LOG(WARNING) << "Received Unimplemented Command: " << id;
@@ -1503,6 +1516,8 @@ void BrowserCommandController::InitCommandState() {
   // Glic commands.
   command_updater_.UpdateCommandEnabled(
       IDC_GLIC_TOGGLE_PIN, glic::GlicEnabling::IsProfileEligible(profile()));
+  command_updater_.UpdateCommandEnabled(
+      IDC_OPEN_GLIC, glic::GlicEnabling::IsProfileEligible(profile()));
 #endif
 
   // Initialize other commands whose state changes based on various conditions.

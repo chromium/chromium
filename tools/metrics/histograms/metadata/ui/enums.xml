@@ -1023,6 +1023,7 @@ chromium-metrics-reviews@google.com.
   <int value="91" label="Open extension settings (Safety Hub)"/>
   <int value="92" label="Show customize chrome side panel"/>
   <int value="93" label="Show tab search declutter page"/>
+  <int value="94" label="Open glic"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->
