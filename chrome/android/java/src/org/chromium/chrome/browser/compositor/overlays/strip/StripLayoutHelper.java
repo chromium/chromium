@@ -2666,6 +2666,7 @@ public class StripLayoutHelper
             mTabCreator.launchNtp();
         }
         mIsStripScrollInProgress = false;
+        resetDelayedReorderState();
     }
 
     /** Handle view click * */
