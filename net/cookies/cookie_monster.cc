@@ -165,11 +165,8 @@ bool IncludeUnpartitionedCookies(
   if (list.IsEmpty() || list.ContainsAllKeys())
     return true;
 
-  for (const net::CookiePartitionKey& key : list.PartitionKeys()) {
-    if (!key.nonce())
-      return true;
-  }
-  return false;
+  return std::ranges::any_of(list.PartitionKeys(),
+                             [](const auto& key) { return !key.nonce(); });
 }
 
 size_t NameValueSizeBytes(const net::CanonicalCookie& cc) {
@@ -773,12 +770,8 @@ void CookieMonster::GetCookieListWithOptions(
     // time it is entering legacy mode, if it is delete all aliasing cookies
     // within this domain.
     CheckAndActivateLegacyScopeBehavior(url.host_piece());
-    std::vector<CanonicalCookie*> cookie_ptrs;
-    if (IncludeUnpartitionedCookies(cookie_partition_key_collection)) {
-      cookie_ptrs = FindCookiesForRegistryControlledHost(url);
-    } else {
-      DCHECK(!cookie_partition_key_collection.IsEmpty());
-    }
+    std::vector<CanonicalCookie*> cookie_ptrs =
+        FindCookiesForRegistryControlledHost(url);
 
     if (!cookie_partition_key_collection.IsEmpty()) {
       if (cookie_partition_key_collection.ContainsAllKeys()) {
@@ -809,7 +802,8 @@ void CookieMonster::GetCookieListWithOptions(
     std::sort(cookie_ptrs.begin(), cookie_ptrs.end(), CookieSorter);
 
     included_cookies.reserve(cookie_ptrs.size());
-    FilterCookiesWithOptions(url, options, &cookie_ptrs, &included_cookies,
+    FilterCookiesWithOptions(url, options, cookie_partition_key_collection,
+                             &cookie_ptrs, &included_cookies,
                              &excluded_cookies);
   }
 
@@ -1331,7 +1325,8 @@ CookieMonster::FindPartitionedCookiesForRegistryControlledHost(
 
 void CookieMonster::FilterCookiesWithOptions(
     const GURL& url,
-    const CookieOptions options,
+    const CookieOptions& options,
+    const CookiePartitionKeyCollection& cookie_partition_key_collection,
     std::vector<CanonicalCookie*>* cookie_ptrs,
     CookieAccessResultList* included_cookies,
     CookieAccessResultList* excluded_cookies) {
@@ -1352,6 +1347,9 @@ void CookieMonster::FilterCookiesWithOptions(
   cookies_and_access_results.reserve(cookie_ptrs->size());
   std::set<std::string> origin_cookie_names;
 
+  const bool include_unpartitioned_cookies =
+      IncludeUnpartitionedCookies(cookie_partition_key_collection);
+
   for (CanonicalCookie* cookie_ptr : *cookie_ptrs) {
     // Filter out cookies that should not be included for a request to the
     // given |url|. HTTP only cookies are filtered depending on the passed
@@ -1362,6 +1360,12 @@ void CookieMonster::FilterCookiesWithOptions(
             GetAccessSemanticsForCookie(*cookie_ptr),
             GetScopeSemanticsForCookieDomain(cookie_ptr->Domain()),
             delegate_treats_url_as_trustworthy});
+
+    if (!include_unpartitioned_cookies && !cookie_ptr->IsPartitioned()) {
+      access_result.status.AddExclusionReason(
+          CookieInclusionStatus::ExclusionReason::EXCLUDE_ANONYMOUS_CONTEXT);
+    }
+
     cookies_and_access_results.emplace_back(cookie_ptr, access_result);
 
     // Record the names of all origin cookies that would be included if both

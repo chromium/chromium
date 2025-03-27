@@ -17,6 +17,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -53,6 +54,7 @@
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/resource_load_observer.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_monitor.h"
@@ -3352,6 +3354,113 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   EXPECT_TRUE(CheckAndClearCookieHeader(image_url, "B=2; C=2"));
 }
 
+// This test is very similar to the one above except that this one adds a
+// devtools client so that we can verify that unpartitioned cookies were
+// assigned the correct blocked reason and cookies set within the frame are
+// still included in network requests.
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
+                       CheckExclusionReasonForFencedFrameCookiesNavigation) {
+  // Create an a.test main page and set cookies. Then create a same-origin
+  // fenced frame. Its request should not carry the cookies that were set.
+  GURL main_url = https_server()->GetURL("a.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  RenderFrameHostImpl* root_rfh =
+      static_cast<WebContentsImpl*>(shell()->web_contents())
+          ->GetPrimaryFrameTree()
+          .root()
+          ->current_frame_host();
+
+  // Set cookie and verify.
+  EXPECT_TRUE(ExecJs(root_rfh, "document.cookie = 'name=root;';"));
+  EXPECT_EQ("name=root", EvalJs(root_rfh, "document.cookie;"));
+
+  // Set up the fenced frame
+  EXPECT_TRUE(ExecJs(root_rfh,
+                     "var f = document.createElement('fencedframe');"
+                     "document.body.appendChild(f);"));
+  EXPECT_EQ(1U, root_rfh->child_count());
+
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root_rfh->child_at(0));
+
+  EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
+
+  GURL https_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+  FencedFrameURLMapping& url_mapping =
+      root_rfh->GetPage().fenced_frame_urls_map();
+  GURL urn_uuid = test::AddAndVerifyFencedFrameURL(&url_mapping, https_url);
+
+  std::string navigate_urn_script =
+      JsReplace("f.config = new FencedFrameConfig($1);", urn_uuid);
+
+  NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame_root_node, navigate_urn_script);
+  EXPECT_EQ(
+      https_url,
+      fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(
+      url::Origin::Create(https_url),
+      fenced_frame_root_node->current_frame_host()->GetLastCommittedOrigin());
+
+  EXPECT_FALSE(CheckAndClearCookieHeader(https_url));
+
+  // Set up devtools client so we can check which cookies were sent and blocked
+  // with frame navigation
+  TestDevToolsProtocolClient fenced_frame_devtools_client;
+  fenced_frame_devtools_client.AttachToFrameTreeHost(
+      fenced_frame_root_node->current_frame_host());
+  fenced_frame_devtools_client.SendCommandAsync("Network.enable");
+  fenced_frame_devtools_client.ClearNotifications();
+
+  // Set a cookie on the frame and reload so we can see which cookies are
+  // included in the network request
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node->current_frame_host(),
+                     "document.cookie = 'name=fencedFrame;';"));
+  EXPECT_EQ(
+      "name=fencedFrame",
+      EvalJs(fenced_frame_root_node->current_frame_host(), "document.cookie;"));
+
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node->current_frame_host(),
+                     "location.reload();"));
+
+  // Check associated cookies according to devtools
+  base::Value::Dict params = fenced_frame_devtools_client.WaitForNotification(
+      "Network.requestWillBeSentExtraInfo", /*allow_existing=*/true);
+
+  const base::Value::List* associated_cookies =
+      params.FindList("associatedCookies");
+
+  EXPECT_THAT(
+      associated_cookies,
+      testing::Pointee(testing::UnorderedElementsAre(
+          base::test::IsSupersetOfValue(base::test::ParseJsonDict(R"({
+                              "blockedReasons": [ "AnonymousContext" ],
+                              "cookie" : {
+                                "name": "name",
+                                "value": "root"
+                              }
+                          })")),
+          testing::AllOf(
+              base::test::IsSupersetOfValue(base::test::ParseJsonDict(R"({
+                          "blockedReasons": [ ],
+                          "cookie" : {
+                            "name": "name",
+                            "value": "fencedFrame"
+                          }
+                        })")),
+              testing::ResultOf(
+                  [](const base::Value& dict) {
+                    return dict.GetDict().FindList("blockedReasons");
+                  },
+                  testing::Pointee(testing::IsEmpty()))))));
+
+  fenced_frame_devtools_client.DetachProtocolClient();
+}
+
 IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        CheckPartitionedCookiesWithNonce) {
   // Create an a.test main page and set cookies. Then create a same-origin
@@ -3420,6 +3529,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   std::vector<net::CanonicalCookie> cookies =
       GetCanonicalCookies(shell()->web_contents()->GetBrowserContext(),
                           https_url, cookie_partition_key_collection);
+
   EXPECT_EQ(2u, cookies.size());
   for (auto cookie : cookies) {
     EXPECT_TRUE(cookie.IsPartitioned());

@@ -537,11 +537,13 @@ class NET_EXPORT CookieMonster : public CookieStore {
       const CookiePartitionKey& cookie_partition_key,
       const GURL& url);
 
-  void FilterCookiesWithOptions(const GURL& url,
-                                const CookieOptions options,
-                                std::vector<CanonicalCookie*>* cookie_ptrs,
-                                CookieAccessResultList* included_cookies,
-                                CookieAccessResultList* excluded_cookies);
+  void FilterCookiesWithOptions(
+      const GURL& url,
+      const CookieOptions& options,
+      const CookiePartitionKeyCollection& cookie_partition_key_collection,
+      std::vector<CanonicalCookie*>* cookie_ptrs,
+      CookieAccessResultList* included_cookies,
+      CookieAccessResultList* excluded_cookies);
 
   // Possibly delete an existing cookie equivalent to |cookie_being_set| (same
   // path, domain, and name).

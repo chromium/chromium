@@ -108,8 +108,10 @@ class NET_EXPORT CookieInclusionStatus {
     EXCLUDE_THIRD_PARTY_PHASEOUT = 25,
     // Cookie contains no content or only whitespace.
     EXCLUDE_NO_COOKIE_CONTENT = 26,
+    // Cookie is unpartitioned and being accessed from an anonymous context
+    EXCLUDE_ANONYMOUS_CONTEXT = 27,
     // This should be kept last.
-    MAX_EXCLUSION_REASON = EXCLUDE_NO_COOKIE_CONTENT
+    MAX_EXCLUSION_REASON = EXCLUDE_ANONYMOUS_CONTEXT
   };
 
   // Reason to warn about a cookie. Any information contained in
