@@ -16,7 +16,7 @@ class DocumentLayoutDefinition final
     : public GarbageCollected<DocumentLayoutDefinition> {
  public:
   explicit DocumentLayoutDefinition(CSSLayoutDefinition*);
-  virtual ~DocumentLayoutDefinition();
+  ~DocumentLayoutDefinition();
 
   const Vector<CSSPropertyID>& NativeInvalidationProperties() const {
     return layout_definition_->NativeInvalidationProperties();
@@ -37,7 +37,7 @@ class DocumentLayoutDefinition final
     return registered_definitions_count_;
   }
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
  private:
   bool IsEqual(const CSSLayoutDefinition&);

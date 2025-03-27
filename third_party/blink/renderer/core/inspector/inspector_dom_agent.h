@@ -87,7 +87,7 @@ class CORE_EXPORT InspectorDOMAgent final
         : source_location_(std::move(source_location)) {}
 
     SourceLocation& GetSourceLocation() { return *source_location_; }
-    virtual void Trace(Visitor* visitor) const {}
+    void Trace(Visitor* visitor) const {}
 
    private:
     std::unique_ptr<SourceLocation> source_location_;
