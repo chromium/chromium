@@ -3775,6 +3775,14 @@ be describing additional metrics about the same event.
       user's sign-in state, record the state stored in the browser.
     </summary>
   </metric>
+  <metric name="IdentityProvidersCount">
+    <summary>
+      Records the count of identity providers right before fetching endpoints
+      with multi IDP flag enabled. It counts distinct providers including the
+      ones a user is not signed in to. Recorded at most once per API call before
+      the browser starts fetching from the IdPs.
+    </summary>
+  </metric>
   <metric name="LoginHint.NumMatchingAccounts" enum="FedCmNumAccounts">
     <summary>
       Records the number of accounts that match a login hint. Records at the

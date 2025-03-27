@@ -1072,7 +1072,7 @@ void FederatedAuthRequestImpl::RequestToken(
   }
 
   if (IsFedCmMultipleIdentityProvidersEnabled()) {
-    RecordIdentityProvidersCount(idp_order_.size());
+    fedcm_metrics_->RecordIdentityProvidersCount(idp_order_.size());
   }
 
   CHECK(!unique_idps.empty());
