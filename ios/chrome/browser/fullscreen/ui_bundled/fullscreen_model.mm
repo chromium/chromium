@@ -162,7 +162,7 @@ void FullscreenModel::SetYContentOffset(CGFloat y_content_offset) {
   if (y_content_offset_ == from_offset) {
     // The scroll did not change `y_content_offset_` (e.g., reached the bottom
     // of the page).
-    fullscreen_scroll_direction_ = FullscreenModelScrollDirection::kNone;
+    SetLastScrollDirection(FullscreenModelScrollDirection::kNone);
   }
   switch (ActionForScrollFromOffset(from_offset)) {
     case ScrollAction::kUpdateBaseOffset:
@@ -171,9 +171,9 @@ void FullscreenModel::SetYContentOffset(CGFloat y_content_offset) {
     case ScrollAction::kUpdateProgress:
       // Updates `scroll_direction_` according to the offset.
       if (y_content_offset_ > from_offset) {
-        fullscreen_scroll_direction_ = FullscreenModelScrollDirection::kDown;
+        SetLastScrollDirection(FullscreenModelScrollDirection::kDown);
       } else if (y_content_offset_ < from_offset) {
-        fullscreen_scroll_direction_ = FullscreenModelScrollDirection::kUp;
+        SetLastScrollDirection(FullscreenModelScrollDirection::kUp);
       }
       UpdateProgress();
       break;
@@ -248,6 +248,7 @@ void FullscreenModel::SetScrollViewIsDragging(bool dragging) {
   }
   dragging_ = dragging;
   if (dragging_) {
+    SetLastScrollDirection(FullscreenModelScrollDirection::kNone);
     // Update the base offset for each new scroll event.
     UpdateBaseOffset();
     // Re-rendering events are ignored during scrolls since disabling the model
@@ -347,6 +348,17 @@ FullscreenModel::ScrollAction FullscreenModel::ActionForScrollFromOffset(
   }
 }
 
+void FullscreenModel::SetLastScrollDirection(
+    FullscreenModelScrollDirection direction) {
+  if (direction == fullscreen_scroll_direction_) {
+    return;
+  }
+  if (fullscreen_scroll_direction_ != FullscreenModelScrollDirection::kNone) {
+    UpdateBaseOffset();
+  }
+  fullscreen_scroll_direction_ = direction;
+}
+
 void FullscreenModel::UpdateBaseOffset() {
   base_offset_ = y_content_offset_ -
                  (1.0 - progress_) * get_toolbar_height_delta() / speed_;
@@ -411,7 +423,7 @@ void FullscreenModel::UpdateProgress() {
   // set at the constructor level because the toolbar is not initialized and
   // thus `get_toolbar_height_delta()` does not return the expected value.
   distance_offset_ = toolbar_height_delta;
-  if (fullscreen_scroll_direction_ == FullscreenModelScrollDirection::kDown) {
+  if (GetLastScrollDirection() == FullscreenModelScrollDirection::kDown) {
     if (delta < -distance_offset_) {
       if (progress_ == 1.0) {
         scrolling_delay_progress_shift_up_to_down_ = 1.0;
@@ -436,7 +448,7 @@ void FullscreenModel::UpdateProgress() {
   // `distance_offset_` is only relevant to delay the fullscreen transition on
   // initial downward scroll.
   if (progress_ != 1.0 &&
-      fullscreen_scroll_direction_ == FullscreenModelScrollDirection::kUp) {
+      GetLastScrollDirection() == FullscreenModelScrollDirection::kUp) {
     if (progress_ == 0.0) {
       scrolling_delay_progress_shift_down_to_up_ = 0.0;
       scrolling_delay_delta_shift_down_to_up_ =
