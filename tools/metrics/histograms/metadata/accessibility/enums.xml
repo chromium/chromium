@@ -1219,6 +1219,20 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//ash/public/cpp/accessibility_controller_enums.h:AutoclickEventType) -->
 
+<!-- LINT.IfChange(AXTreeFixingClientScreenAIRequestType) -->
+
+<enum name="AXTreeFixingClientScreenAIRequestType">
+  <summary>
+    The various types of requests that an AXTreeFixing client can make to
+    ScreenAI.
+  </summary>
+  <int value="0" label="Invalid tree (contains kMain)"/>
+  <int value="1" label="Request before service initialized"/>
+  <int value="2" label="Valid"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/accessibility/tree_fixing/internal/ax_tree_fixing_screen_ai_service.cc:AXTreeFixingClientScreenAIRequestType) -->
+
 <!-- LINT.IfChange(AXTreeSnapshotErrorReason) -->
 
 <enum name="AXTreeSnapshotErrorReason">

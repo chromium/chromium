@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
@@ -20,6 +20,22 @@ static constexpr uint32_t kMaxInitializationAttempts = 3u;
 static constexpr uint32_t kSecondsDelayOffsetBeforeReAttempt = 2u;
 
 namespace tree_fixing {
+
+static constexpr char kAXTreeFixingClientRequestTypeHistogramName[] =
+    "Accessibility.AXTreeFixing.ScreenAI.MainNodeIdentification."
+    "ClientRequestType";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(AXTreeFixingClientScreenAIRequestType)
+enum class AXTreeFixingClientScreenAIRequestType {
+  kMainLandmarkAlreadyPresent = 0,
+  kServiceNotInitialized = 1,
+  kValid = 2,
+  kMaxValue = kValid,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:AXTreeFixingClientScreenAIRequestType)
 
 AXTreeFixingScreenAIService::AXTreeFixingScreenAIService(
     MainNodeIdentificationDelegate& delegate,
@@ -37,14 +53,22 @@ void AXTreeFixingScreenAIService::IdentifyMainNode(
   // Client should not be sending requests for trees that have a kMain node.
   for (const ui::AXNodeData& node : ax_tree_update.nodes) {
     if (node.role == ax::mojom::Role::kMain) {
+      base::UmaHistogramEnumeration(
+          kAXTreeFixingClientRequestTypeHistogramName,
+          AXTreeFixingClientScreenAIRequestType::kMainLandmarkAlreadyPresent);
       NOTREACHED() << "A node with the main landmark is already present in the "
                       "accessibility tree.";
     }
   }
 
   // The ScreenAI service needs to be downloaded and loaded.
-  CHECK_EQ(initialization_state_, InitializationState::kInitialized)
-      << "Client sent request to identify main node before service was ready";
+  if (initialization_state_ != InitializationState::kInitialized) {
+    base::UmaHistogramEnumeration(
+        kAXTreeFixingClientRequestTypeHistogramName,
+        AXTreeFixingClientScreenAIRequestType::kServiceNotInitialized);
+    NOTREACHED() << "Client sent request to identify main node before service "
+                    "was ready.";
+  }
 
   // If the remote to ScreenAI has not yet been bound, do so now.
   if (!screen_ai_service_.is_bound() || !screen_ai_service_.is_connected()) {
@@ -60,11 +84,17 @@ void AXTreeFixingScreenAIService::IdentifyMainNode(
   }
 
   // Identify the main node using ScreenAI.
+  base::UmaHistogramEnumeration(kAXTreeFixingClientRequestTypeHistogramName,
+                                AXTreeFixingClientScreenAIRequestType::kValid);
+  base::UmaHistogramBoolean(
+      "Accessibility.AXTreeFixing.ScreenAI.MainNodeIdentification.Request",
+      true);
   screen_ai_service_->IdentifyMainNode(
       ax_tree_update,
       base::BindOnce(&AXTreeFixingScreenAIService::
                          ProcessScreenAIMainNodeIdentificationResult,
-                     weak_ptr_factory_.GetWeakPtr(), request_id));
+                     weak_ptr_factory_.GetWeakPtr(), request_id,
+                     base::ElapsedTimer(), ax_tree_update));
 }
 
 void AXTreeFixingScreenAIService::Initialize() {
@@ -73,6 +103,8 @@ void AXTreeFixingScreenAIService::Initialize() {
   initialization_state_ = InitializationState::kInitializing;
   ++initialization_attempt_count_;
   main_node_identification_delegate_->OnServiceStateChanged(false);
+  base::UmaHistogramBoolean(
+      "Accessibility.AXTreeFixing.ScreenAI.InitializationAttempt", true);
   screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
       ->GetServiceStateAsync(
           screen_ai::ScreenAIServiceRouter::Service::kMainContentExtraction,
@@ -84,6 +116,9 @@ void AXTreeFixingScreenAIService::Initialize() {
 void AXTreeFixingScreenAIService::ServiceInitializationCallback(
     bool successful) {
   if (successful) {
+    base::UmaHistogramExactLinear(
+        "Accessibility.AXTreeFixing.ScreenAI.InitializedOnAttempt",
+        initialization_attempt_count_, kMaxInitializationAttempts);
     initialization_attempt_count_ = 0;
     initialization_state_ = InitializationState::kInitialized;
     main_node_identification_delegate_->OnServiceStateChanged(true);
@@ -92,9 +127,10 @@ void AXTreeFixingScreenAIService::ServiceInitializationCallback(
     // the ScreenAI service, stop and send a signal to client that it failed.
     // Otherwise, re-attempt initialization.
     if (initialization_attempt_count_ >= kMaxInitializationAttempts) {
+      base::UmaHistogramBoolean(
+          "Accessibility.AXTreeFixing.ScreenAI.InitializedFailed", true);
       initialization_state_ = InitializationState::kInitializationFailed;
       main_node_identification_delegate_->OnServiceStateChanged(false);
-      // TODO(crbug.com/399383663): Record metric for repeated failures?
     } else {
       initialization_state_ = InitializationState::kUninitialized;
       // The ScreenAI service is suspended internally after each crash. We will
@@ -119,19 +155,47 @@ void AXTreeFixingScreenAIService::HandleServiceDisconnect() {
   initialization_state_ = InitializationState::kDisconnected;
   main_node_identification_delegate_->OnServiceStateChanged(false);
 
-  // TODO(crbug.com/399383663): Record metric for disconnects?
   if (!previously_attempted_reconnect_) {
+    base::UmaHistogramBoolean(
+        "Accessibility.AXTreeFixing.ScreenAI.Disconnect.First", true);
     initialization_attempt_count_ = 0;
     previously_attempted_reconnect_ = true;
     Initialize();
+  } else {
+    base::UmaHistogramBoolean(
+        "Accessibility.AXTreeFixing.ScreenAI.Disconnect.Multiple", true);
   }
 }
 
 void AXTreeFixingScreenAIService::ProcessScreenAIMainNodeIdentificationResult(
     int request_id,
+    base::ElapsedTimer timer,
+    const ui::AXTreeUpdate& ax_tree_update,
     const ui::AXTreeID& tree_id,
     int node_id) {
-  // TODO(crbug.com/399383663): Add metrics, internal logic, etc.
+  base::UmaHistogramTimes(
+      "Accessibility.AXTreeFixing.ScreenAI.MainNodeIdentification."
+      "RoundTripTime",
+      timer.Elapsed());
+  base::UmaHistogramBoolean(
+      "Accessibility.AXTreeFixing.ScreenAI.MainNodeIdentification.Response",
+      true);
+
+  bool found_main_node = node_id != ui::kInvalidAXNodeID;
+  base::UmaHistogramBoolean("Accessibility.AXTreeFixing.ScreenAI.FoundMainNode",
+                            found_main_node);
+
+  if (found_main_node) {
+    for (const ui::AXNodeData& node : ax_tree_update.nodes) {
+      if (node.id == node_id) {
+        base::UmaHistogramEnumeration(
+            "Accessibility.AXTreeFixing.ScreenAI.MainNodeInitialRole",
+            node.role);
+        break;
+      }
+    }
+  }
+
   main_node_identification_delegate_->OnMainNodeIdentified(tree_id, node_id,
                                                            request_id);
 }
