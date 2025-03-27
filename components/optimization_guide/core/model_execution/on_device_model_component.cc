@@ -52,8 +52,9 @@ bool WasAnyOnDeviceEligibleFeatureRecentlyUsed(const PrefService& local_state) {
 
 bool IsDeviceCapable(const PrefService& local_state) {
   return IsPerformanceClassCompatible(
-      features::kPerformanceClassListForOnDeviceModel.Get(),
-      PerformanceClassFromPref(local_state));
+             features::kPerformanceClassListForOnDeviceModel.Get(),
+             PerformanceClassFromPref(local_state)) ||
+         features::ForceCpuBackendForOnDeviceModel();
 }
 
 void LogInstallCriteria(std::string_view event_name,
