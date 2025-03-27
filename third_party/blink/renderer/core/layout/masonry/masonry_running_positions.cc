@@ -8,8 +8,9 @@
 
 namespace blink {
 
-MasonryRunningPositions::MaxPositionSpan
-MasonryRunningPositions::GetFirstEligibleLine(wtf_size_t span_size) {
+GridSpan MasonryRunningPositions::GetFirstEligibleLine(
+    wtf_size_t span_size,
+    LayoutUnit& max_position) const {
   DCHECK_LE(span_size, running_positions_.size());
   DCHECK_LE(auto_placement_cursor_, running_positions_.size());
 
@@ -42,8 +43,9 @@ MasonryRunningPositions::GetFirstEligibleLine(wtf_size_t span_size) {
   }
 
   DCHECK_NE(first_eligible_line, kNotFound);
-  return {/*start_line=*/first_eligible_line,
-          max_positions[first_eligible_line]};
+  max_position = max_positions[first_eligible_line];
+  return GridSpan::TranslatedDefiniteGridSpan(first_eligible_line,
+                                              first_eligible_line + span_size);
 }
 
 void MasonryRunningPositions::UpdateRunningPositionsForSpan(
@@ -59,6 +61,17 @@ void MasonryRunningPositions::UpdateRunningPositionsForSpan(
   }
 }
 
+LayoutUnit MasonryRunningPositions::GetMaxPositionForSpan(
+    const GridSpan& span) const {
+  DCHECK_LE(span.EndLine(), running_positions_.size());
+
+  const auto running_positions_for_span =
+      base::span(running_positions_)
+          .subspan(span.StartLine(), span.IntegerSpan());
+  return *(std::max_element(running_positions_for_span.begin(),
+                            running_positions_for_span.end()));
+}
+
 Vector<LayoutUnit> MasonryRunningPositions::GetMaxPositionsForAllTracks(
     wtf_size_t span_size) const {
   if (span_size == 1) {
@@ -69,13 +82,12 @@ Vector<LayoutUnit> MasonryRunningPositions::GetMaxPositionsForAllTracks(
   // track, calculate and store the max-position for that track span.
   const wtf_size_t first_non_fit_start_line =
       (running_positions_.size() - span_size) + 1;
-  Vector<LayoutUnit> max_positions(first_non_fit_start_line);
+  Vector<LayoutUnit> max_positions;
+  max_positions.ReserveInitialCapacity(first_non_fit_start_line);
 
-  for (wtf_size_t start_line = 0; start_line < first_non_fit_start_line;
-       ++start_line) {
-    auto span = base::span(running_positions_).subspan(start_line, span_size);
-    auto current_max_position = *(std::max_element(span.begin(), span.end()));
-    max_positions[start_line] = current_max_position;
+  for (auto span = GridSpan::TranslatedDefiniteGridSpan(0, span_size);
+       span.StartLine() < first_non_fit_start_line; span.Translate(1)) {
+    max_positions.emplace_back(GetMaxPositionForSpan(span));
   }
 
   return max_positions;

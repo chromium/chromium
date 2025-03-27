@@ -26,21 +26,21 @@ class CORE_EXPORT MasonryLayoutAlgorithm
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
   const LayoutResult* Layout();
 
+  LayoutUnit CalculateTieThreshold(const ComputedStyle& style) const;
+
  private:
   friend class MasonryLayoutAlgorithmTest;
 
-  void PlaceMasonryItems(const GridItems& masonry_items,
-                         const GridLayoutTrackCollection& track_collection,
-                         LayoutUnit* intrinsic_block_size);
+  // This places all the items stored in `masonry_items` and adjusts
+  // `intrinsic_block_size_` based on the placement of the items. Placement of
+  // the items is finalized within this method.
+  void PlaceMasonryItems(const GridLayoutTrackCollection& track_collection,
+                         GridItems& masonry_items);
 
   GridSizingTrackCollection BuildGridAxisTracks(
       const GridLineResolver& line_resolver,
       SizingConstraint sizing_constraint,
       wtf_size_t& start_offset) const;
-
-  GridItems BuildMasonryItems(const GridLineResolver& line_resolver,
-                              const GridLayoutTrackCollection& track_collection,
-                              wtf_size_t start_offset) const;
 
   wtf_size_t ComputeAutomaticRepetitions() const;
 
@@ -67,6 +67,8 @@ class CORE_EXPORT MasonryLayoutAlgorithm
 
   ConstraintSpace CreateConstraintSpaceForMeasure(
       const GridItemData& masonry_item) const;
+
+  LayoutUnit intrinsic_block_size_;
 };
 
 }  // namespace blink
