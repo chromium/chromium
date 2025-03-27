@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // See "SSPI Sample Application" at
 // http://msdn.microsoft.com/en-us/library/aa918273.aspx
 
 #include "net/http/http_auth_sspi_win.h"
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -486,11 +482,12 @@ int HttpAuthSSPI::GetNextSecurityToken(const std::string& spn,
   CtxtHandle* ctxt_ptr = nullptr;
   SecBufferDesc in_buffer_desc, out_buffer_desc;
   SecBufferDesc* in_buffer_desc_ptr = nullptr;
-  SecBuffer in_buffers[2], out_buffer;
+  std::array<SecBuffer, 2> in_buffers;
+  SecBuffer out_buffer;
 
   in_buffer_desc.ulVersion = SECBUFFER_VERSION;
   in_buffer_desc.cBuffers = 0;
-  in_buffer_desc.pBuffers = in_buffers;
+  in_buffer_desc.pBuffers = in_buffers.data();
   if (in_token_len > 0) {
     // Prepare input buffer.
     SecBuffer& sec_buffer = in_buffers[in_buffer_desc.cBuffers++];
@@ -512,9 +509,11 @@ int HttpAuthSSPI::GetNextSecurityToken(const std::string& spn,
     sec_channel_bindings_buffer.reserve(sizeof(SEC_CHANNEL_BINDINGS) +
                                         channel_bindings.size());
     sec_channel_bindings_buffer.resize(sizeof(SEC_CHANNEL_BINDINGS));
+    // SAFETY: `sec_channel_bindings_buffer` was allocated to be long enough to
+    // hold a SEC_CHANNEL_BINDINGS object above.
     SEC_CHANNEL_BINDINGS* bindings_desc =
-        reinterpret_cast<SEC_CHANNEL_BINDINGS*>(
-            sec_channel_bindings_buffer.data());
+        UNSAFE_BUFFERS(reinterpret_cast<SEC_CHANNEL_BINDINGS*>(
+            sec_channel_bindings_buffer.data()));
     bindings_desc->cbApplicationDataLength = channel_bindings.size();
     bindings_desc->dwApplicationDataOffset = sizeof(SEC_CHANNEL_BINDINGS);
     sec_channel_bindings_buffer.insert(sec_channel_bindings_buffer.end(),

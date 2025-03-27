@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <optional>
 
-#include "base/containers/util.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/printing/print_preview/print_preview_ui_wrapper.h"

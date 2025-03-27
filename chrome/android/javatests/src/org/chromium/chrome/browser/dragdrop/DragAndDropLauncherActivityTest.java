@@ -393,7 +393,8 @@ public class DragAndDropLauncherActivityTest {
                             TabGroupMetadataExtractor.extractTabGroupMetadata(
                                     draggedTabGroup,
                                     sourceWindowId,
-                                    draggedTabGroup.get(0).getId());
+                                    draggedTabGroup.get(0).getId(),
+                                    /* isGroupShared= */ false);
                     return DragAndDropLauncherActivity.buildTabOrGroupIntent(
                             createTabGroupDropData(
                                     tabGroupMetadata, /* allowDragToCreateNewInstance= */ true),

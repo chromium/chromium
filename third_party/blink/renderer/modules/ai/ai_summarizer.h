@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_SUMMARIZER_H_
 
 #include "base/task/sequenced_task_runner.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/ai/ai_summarizer.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer_create_options.h"
@@ -17,11 +16,14 @@
 namespace blink {
 
 // The class that represents a summarizer object.
-class AISummarizer final
-    : public ScriptWrappable,
-      AIWritingAssistanceBase<mojom::blink::AISummarizer,
-                              AISummarizerCreateOptions,
-                              AISummarizerSummarizeOptions> {
+class AISummarizer final : public ScriptWrappable,
+                           public AIWritingAssistanceBase<
+                               AISummarizer,
+                               mojom::blink::AISummarizer,
+                               mojom::blink::AIManagerCreateSummarizerClient,
+                               AISummarizerCreateCoreOptions,
+                               AISummarizerCreateOptions,
+                               AISummarizerSummarizeOptions> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -59,12 +61,6 @@ class AISummarizer final
   V8AISummarizerType type() const { return options_->type(); }
   V8AISummarizerFormat format() const { return options_->format(); }
   V8AISummarizerLength length() const { return options_->length(); }
-
-  using AIWritingAssistanceBase::expectedContextLanguages;
-  using AIWritingAssistanceBase::expectedInputLanguages;
-  using AIWritingAssistanceBase::inputQuota;
-  using AIWritingAssistanceBase::outputLanguage;
-  using AIWritingAssistanceBase::sharedContext;
 };
 
 }  // namespace blink

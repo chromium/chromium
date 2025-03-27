@@ -54,7 +54,10 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDel
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuSwitches;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
+import org.chromium.content.browser.webcontents.WebContentsImpl;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -83,6 +86,7 @@ public class ContextMenuCoordinatorTest {
     @Implements(ContextMenuDialog.class)
     public static class ShadowContextMenuDialog extends ShadowDialog {
         boolean mShouldRemoveScrim;
+        boolean mDismissInvoked;
         @Nullable View mTouchEventDelegateView;
         Rect mRect;
 
@@ -113,7 +117,9 @@ public class ContextMenuCoordinatorTest {
 
         @Override
         @Implementation
-        public void dismiss() {}
+        public void dismiss() {
+            mDismissInvoked = true;
+        }
     }
 
     /** No-op constructor for test cases that does not care of creation of real object. */
@@ -147,7 +153,7 @@ public class ContextMenuCoordinatorTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock ContextMenuNativeDelegate mNativeDelegate;
-    @Mock WebContents mWebContentsMock;
+    @Mock WebContentsImpl mWebContentsMock;
 
     private ContextMenuCoordinator mCoordinator;
     private Activity mActivity;
@@ -378,6 +384,44 @@ public class ContextMenuCoordinatorTest {
     }
 
     @Test
+    @Config(
+            shadows = {ShadowContextMenuDialog.class, ShadowProfile.class},
+            qualifiers = "mdpi")
+    public void testDismissDialogCalledOnVisibilityChanged_Hidden() {
+        final int triggeringTouchXDp = 100;
+        final int triggeringTouchYDp = 200;
+        ContextMenuDialog dialog =
+                displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
+        ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
+        shadowDialog.show();
+
+        WebContentsObserver mWebContentsObserver = mCoordinator.getWebContentsObserverForTesting();
+
+        mWebContentsObserver.onVisibilityChanged(Visibility.HIDDEN);
+
+        Assert.assertTrue(shadowDialog.mDismissInvoked);
+    }
+
+    @Test
+    @Config(
+            shadows = {ShadowContextMenuDialog.class, ShadowProfile.class},
+            qualifiers = "mdpi")
+    public void testDismissDialogCalledOnVisibilityChanged_Visible() {
+        final int triggeringTouchXDp = 100;
+        final int triggeringTouchYDp = 200;
+        ContextMenuDialog dialog =
+                displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
+        ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
+        shadowDialog.show();
+
+        WebContentsObserver mWebContentsObserver = mCoordinator.getWebContentsObserverForTesting();
+
+        mWebContentsObserver.onVisibilityChanged(Visibility.VISIBLE);
+
+        Assert.assertFalse(shadowDialog.mDismissInvoked);
+    }
+
+    @Test
     public void testGetContextMenuTriggerRectFromWeb() {
         final int shadowImgWidth = 50;
         final int shadowImgHeight = 40;
@@ -451,8 +495,8 @@ public class ContextMenuCoordinatorTest {
         Assert.assertEquals(
                 "rect.top for ContextMenuDialog does not match.", /*200 + 17 =*/ 217, rect.top);
         Assert.assertEquals(
-                "rect.bottom for ContextMenuDialog does not match.",
-                /*200 + 17 =*/ 217,
+                "rect.bottom for ContextMenuDialog does not match.", /*200 + 17 =*/
+                217,
                 rect.bottom);
     }
 
@@ -495,12 +539,12 @@ public class ContextMenuCoordinatorTest {
                 75,
                 rect.left);
         Assert.assertEquals(
-                "rect.right for ContextMenuDialog does not match.",
-                /*100 + 50 / 2 =*/ 125,
+                "rect.right for ContextMenuDialog does not match.", /*100 + 50 / 2 =*/
+                125,
                 rect.right);
         Assert.assertEquals(
-                "rect.top for ContextMenuDialog does not match.",
-                /*200 + 17 - 40 / 2 =*/ 197,
+                "rect.top for ContextMenuDialog does not match.", /*200 + 17 - 40 / 2 =*/
+                197,
                 rect.top);
         Assert.assertEquals(
                 "rect.bottom for ContextMenuDialog does not match.",

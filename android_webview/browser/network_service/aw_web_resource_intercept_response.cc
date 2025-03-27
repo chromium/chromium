@@ -22,6 +22,14 @@ AwWebResourceInterceptResponse::AwWebResourceInterceptResponse(
     : java_object_(obj) {}
 
 AwWebResourceInterceptResponse::~AwWebResourceInterceptResponse() = default;
+AwWebResourceInterceptResponse::AwWebResourceInterceptResponse(
+    AwWebResourceInterceptResponse&) = default;
+AwWebResourceInterceptResponse& AwWebResourceInterceptResponse::operator=(
+    AwWebResourceInterceptResponse&) = default;
+AwWebResourceInterceptResponse::AwWebResourceInterceptResponse(
+    AwWebResourceInterceptResponse&&) = default;
+AwWebResourceInterceptResponse& AwWebResourceInterceptResponse::operator=(
+    AwWebResourceInterceptResponse&&) = default;
 
 bool AwWebResourceInterceptResponse::RaisedException(JNIEnv* env) const {
   return Java_AwWebResourceInterceptResponse_getRaisedException(env,

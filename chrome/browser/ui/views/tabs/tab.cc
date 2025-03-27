@@ -655,8 +655,6 @@ void Tab::MaybeUpdateHoverStatus(const ui::MouseEvent& event) {
 
   mouse_hovered_ = true;
   controller_->ShowHover(this, TabStyle::ShowHoverStyle::kSubtle);
-  UpdateForegroundColors();
-  DeprecatedLayoutImmediately();
   if (g_show_hover_card_on_mouse_hover) {
     controller_->UpdateHoverCard(
         this, TabSlotController::HoverCardUpdateType::kHover);
@@ -669,8 +667,6 @@ void Tab::OnMouseExited(const ui::MouseEvent& event) {
   }
   mouse_hovered_ = false;
   controller_->HideHover(this, TabStyle::HideHoverStyle::kGradual);
-  UpdateForegroundColors();
-  DeprecatedLayoutImmediately();
 }
 
 void Tab::OnGestureEvent(ui::GestureEvent* event) {
@@ -716,6 +712,18 @@ void Tab::OnGestureEvent(ui::GestureEvent* event) {
       break;
   }
   event->SetHandled();
+}
+
+void Tab::ShowHover(TabStyle::ShowHoverStyle style) {
+  tab_style_views()->ShowHover(style);
+  UpdateForegroundColors();
+  DeprecatedLayoutImmediately();
+}
+
+void Tab::HideHover(TabStyle::HideHoverStyle style) {
+  tab_style_views()->HideHover(style);
+  UpdateForegroundColors();
+  DeprecatedLayoutImmediately();
 }
 
 // This function updates the accessible name for the tab whenever any of the

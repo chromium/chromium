@@ -4240,15 +4240,21 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="5" label="Error"/>
 </enum>
 
+<!-- LINT.IfChange(ElementAnchoredBubbleAction) -->
+
 <enum name="ElementAnchoredBubbleAction">
-  <int value="0" label="GRANTED"/>
-  <int value="1" label="GRANTED_ONCE"/>
-  <int value="2" label="DENIED"/>
-  <int value="3" label="OK"/>
-  <int value="4" label="DISMISSED_X_BUTTON"/>
-  <int value="5" label="DISMISSED_SCRIM"/>
-  <int value="6" label="SYSTEM_SETTINGS"/>
+  <int value="0" label="Grant"/>
+  <int value="1" label="One-time grant"/>
+  <int value="2" label="Deny"/>
+  <int value="3" label="Acknowledge/Ok"/>
+  <int value="4" label="Dismiss via X button"/>
+  <int value="5" label="Dismiss via scrim click"/>
+  <int value="6" label="Go to system settings"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:ElementAnchoredBubbleAction) -->
+
+<!-- LINT.IfChange(ElementAnchoredBubbleVariant) -->
 
 <enum name="ElementAnchoredBubbleVariant">
   <int value="0" label="UNINITIALIZED"/>
@@ -4260,6 +4266,8 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="6" label="PREVIOUSLY_DENIED"/>
   <int value="7" label="ADMINISTRATOR_DENIED"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:ElementAnchoredBubbleVariant) -->
 
 <enum name="EmeApiType">
   <int value="0" label="Not expected"/>
@@ -9353,6 +9361,7 @@ from previous Chrome versions.
   <int value="-1882649050" label="ProfilesReordering:enabled"/>
   <int value="-1882427024" label="IwaControlledFrame:disabled"/>
   <int value="-1882330924" label="NTPArticleSuggestions:enabled"/>
+  <int value="-1881210399" label="AccessibilityManifestV3ChromeVox:disabled"/>
   <int value="-1880683127" label="UnrestrictedUsb:disabled"/>
   <int value="-1880633355" label="CaptureModeAudioMixing:disabled"/>
   <int value="-1880355454" label="disable-topchrome-md"/>
@@ -9376,6 +9385,8 @@ from previous Chrome versions.
   <int value="-1874842483" label="FeedLoadingPlaceholder:disabled"/>
   <int value="-1874349308" label="PwaUniversalInstallUi:enabled"/>
   <int value="-1874141108" label="NewOmniboxAnswerTypes:enabled"/>
+  <int value="-1874109755"
+      label="AccessibilityManifestV3SelectToSpeak:disabled"/>
   <int value="-1872989945" label="enable-webview-based-signin"/>
   <int value="-1872867546" label="EnumerateAudioDevices:disabled"/>
   <int value="-1872205507" label="ShelfNewUi:enabled"/>
@@ -10343,6 +10354,7 @@ from previous Chrome versions.
   <int value="-1491417046" label="enable-fullscreen-toolbar-reveal"/>
   <int value="-1491304576" label="ProgressBarThrottle:disabled"/>
   <int value="-1490827023" label="EnableCbdSignOut:disabled"/>
+  <int value="-1490669772" label="EnableHistorySyncOptin:disabled"/>
   <int value="-1490298774" label="enable-captive-portal-bypass-proxy-option"/>
   <int value="-1490048536"
       label="PageVisibilityPageContentAnnotations:disabled"/>
@@ -12017,6 +12029,7 @@ from previous Chrome versions.
   <int value="-844537521" label="HttpFormWarning:disabled"/>
   <int value="-844381918" label="ArcNativeBridgeExperiment:disabled"/>
   <int value="-843496368" label="AutofillRejectCompanyBirthyear:disabled"/>
+  <int value="-843440212" label="SegmentationPlatformFedCmUser:enabled"/>
   <int value="-843339105" label="NtpSharepointModule:disabled"/>
   <int value="-842798026" label="LinkCrossDeviceInternals:disabled"/>
   <int value="-842597982" label="ShelfPalmRejectionTouchArea:disabled"/>
@@ -13307,6 +13320,7 @@ from previous Chrome versions.
   <int value="-338606027" label="TrimOnMemoryPressure:disabled"/>
   <int value="-338572425" label="AccessibilityMouseKeys:disabled"/>
   <int value="-338277966" label="DecoupleSyncFromAndroidMasterSync:enabled"/>
+  <int value="-338233111" label="EnableHistorySyncOptin:enabled"/>
   <int value="-337722581" label="AssistantConsentV2:enabled"/>
   <int value="-337655793" label="OmniboxRedoCurrentMatch:enabled"/>
   <int value="-337308250" label="AutofillMoreProminentPopup:enabled"/>
@@ -14064,6 +14078,7 @@ from previous Chrome versions.
   <int value="-41460305" label="InfobarScrollOptimization:disabled"/>
   <int value="-41254374" label="WebRtcMetronomeTaskQueue:enabled"/>
   <int value="-40935502" label="ContextualSuggestionsSlimPeekUI:enabled"/>
+  <int value="-38525285" label="AccessibilityManifestV3SelectToSpeak:enabled"/>
   <int value="-38147034"
       label="AutofillEnableCvcStorageAndFillingEnhancement:enabled"/>
   <int value="-38104294" label="AudioSelectionImprovement:disabled"/>
@@ -15512,6 +15527,7 @@ from previous Chrome versions.
   <int value="518908322" label="UseAndroidStagingSmds:enabled"/>
   <int value="519140642" label="SendWebUIJavaScriptErrorReports:enabled"/>
   <int value="519623921" label="SafeModeForCachedFlags:enabled"/>
+  <int value="520482092" label="AccessibilityManifestV3ChromeVox:enabled"/>
   <int value="520738365" label="OmniboxPedalsBatch2NonEnglish:enabled"/>
   <int value="520982116" label="BuiltInModuleAll:enabled"/>
   <int value="521992655" label="LauncherPlayStoreSearch:disabled"/>
@@ -15844,6 +15860,7 @@ from previous Chrome versions.
   <int value="656779919" label="OsFeedbackJelly:enabled"/>
   <int value="656864700" label="FillOnAccountSelectHttp:disabled"/>
   <int value="657832926" label="SwipeToMoveCursor:enabled"/>
+  <int value="658047641" label="NavigationCaptureRefactorAndroid:enabled"/>
   <int value="658127191" label="ReadAnything:enabled"/>
   <int value="658725396" label="PowerBookmarkBackend:disabled"/>
   <int value="658983252" label="enable-features"/>
@@ -17969,6 +17986,7 @@ from previous Chrome versions.
   <int value="1466380480" label="enable-device-discovery-notifications"/>
   <int value="1466502102" label="DelayNavigation:disabled"/>
   <int value="1466687702" label="BookmarkIndexPaths:enabled"/>
+  <int value="1467117605" label="SegmentationPlatformFedCmUser:disabled"/>
   <int value="1467322206" label="AssistAutoCorrect:enabled"/>
   <int value="1467494310" label="JavaScriptExperimentalSharedMemory:enabled"/>
   <int value="1467583815" label="AVIF:disabled"/>
@@ -18597,6 +18615,7 @@ from previous Chrome versions.
   <int value="1708118086" label="TextFragmentAnchor:disabled"/>
   <int value="1708689134" label="PWAsDefaultOfflinePage:disabled"/>
   <int value="1709255374" label="DragAndDropAndroid:enabled"/>
+  <int value="1710590340" label="NavigationCaptureRefactorAndroid:disabled"/>
   <int value="1710663404" label="CastForceEnableRemotingQuery:disabled"/>
   <int value="1711037950"
       label="AutofillVisualImprovementsForSuggestionUi:disabled"/>
@@ -22988,6 +23007,8 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="All profiles in sync error (not used)"/>
 </enum>
 
+<!-- LINT.IfChange(promo_failure_enum) -->
+
 <enum name="PromoFailure">
   <int value="0" label="Canceled"/>
   <int value="1" label="Error"/>
@@ -23006,7 +23027,13 @@ Called by update_net_error_codes.py.-->
   <int value="14" label="BlockedByReshowDelay"/>
   <int value="15" label="TimedOut"/>
   <int value="16" label="AlreadyQueued"/>
+  <int value="17" label="AnchorNotVisible"/>
+  <int value="18" label="AnchorSurfaceNotActive"/>
+  <int value="19" label="WindowTooSmall"/>
+  <int value="20" label="BlockedByUserActivity"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/user_education/common/feature_promo/feature_promo_result.h:failure_enum) -->
 
 <enum name="PromoSubtype">
   <int value="0" label="Normal"/>

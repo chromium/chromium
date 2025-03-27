@@ -54,6 +54,8 @@ export class HeaderElement extends CrLitElement {
         reflect: true,
       },
 
+      maxNameLength_: {type: Number},
+
       showingMenu_: {
         type: Boolean,
         reflect: true,
@@ -63,14 +65,14 @@ export class HeaderElement extends CrLitElement {
     };
   }
 
-  disabled: boolean = false;
-  isPageTitleClickable: boolean = false;
-  subtitle: string|null = null;
+  accessor disabled: boolean = false;
+  accessor isPageTitleClickable: boolean = false;
+  accessor subtitle: string|null = null;
 
-  protected showingMenu_: boolean = false;
-  protected showingInput_: boolean = false;
-  protected pageName_: string = '';
-  protected maxNameLength_: number = loadTimeData.getInteger('maxNameLength');
+  protected accessor showingMenu_: boolean = false;
+  protected accessor showingInput_: boolean = false;
+  protected accessor maxNameLength_: number =
+      loadTimeData.getInteger('maxNameLength');
 
   override render() {
     return getHtml.bind(this)();

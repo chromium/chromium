@@ -19,47 +19,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-
-void ExpectDictBooleanValue(bool expected_value,
-                            const Value::Dict& dict,
-                            std::string_view path) {
-  EXPECT_EQ(dict.FindBoolByDottedPath(path), std::make_optional(expected_value))
-      << path;
-}
-
-void ExpectDictIntegerValue(int expected_value,
-                            const Value::Dict& dict,
-                            std::string_view path) {
-  EXPECT_EQ(dict.FindIntByDottedPath(path), std::make_optional(expected_value))
-      << path;
-}
-
-void ExpectDictStringValue(std::string_view expected_value,
-                           const Value::Dict& dict,
-                           std::string_view path) {
-  EXPECT_EQ(OptionalFromPtr(dict.FindStringByDottedPath(path)),
-            std::make_optional(expected_value))
-      << path;
-}
-
-void ExpectDictValue(const Value::Dict& expected_value,
-                     const Value::Dict& dict,
-                     std::string_view path) {
-  const Value* found_value = dict.FindByDottedPath(path);
-  ASSERT_TRUE(found_value) << path;
-  EXPECT_EQ(*found_value, expected_value) << path;
-}
-
-void ExpectDictValue(const Value& expected_value,
-                     const Value::Dict& dict,
-                     std::string_view path) {
-  const Value* found_value = dict.FindByDottedPath(path);
-  ASSERT_TRUE(found_value) << path;
-  EXPECT_EQ(*found_value, expected_value) << path;
-}
-
-namespace test {
+namespace base::test {
 
 namespace {
 
@@ -453,5 +413,4 @@ expected<void, WriteJsonError> WriteJsonFile(const FilePath& json_file_path,
   return {};
 }
 
-}  // namespace test
-}  // namespace base
+}  // namespace base::test

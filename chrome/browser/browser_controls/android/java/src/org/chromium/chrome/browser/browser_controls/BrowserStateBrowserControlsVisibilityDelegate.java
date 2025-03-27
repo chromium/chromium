@@ -107,19 +107,6 @@ public class BrowserStateBrowserControlsVisibilityDelegate
      * @param token The fullscreen token returned from {@link #showControlsPersistent()}.
      */
     public void releasePersistentShowingToken(int token) {
-        if (mTokenHolder.containsOnly(token)) {
-            // Toolbar capture suppression logic sometimes locks the controls right as a scroll
-            // starts. This is a significantly different usage than locking controls for 3 seconds
-            // upon navigation. It feels wrong for the controls to stay locked for the min duration,
-            // there wasn't any significant change to the screen. They should unlock as soon as the
-            // capture logic thinks it's safe to do so. Long term this can probably be removed for
-            // all.
-            boolean useSuppression = ChromeFeatureList.sSuppressionToolbarCaptures.isEnabled();
-
-            if (!useSuppression) {
-                ensureControlsVisibleForMinDuration();
-            }
-        }
         mTokenHolder.releaseToken(token);
     }
 

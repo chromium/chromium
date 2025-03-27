@@ -123,6 +123,7 @@ public class GroupSuggestionsPromotionMediator implements GroupSuggestionsServic
         if (groupSuggestions == null
                 || groupSuggestions.groupSuggestions == null
                 || groupSuggestions.groupSuggestions.isEmpty()) {
+            callback.onResult(new UserResponseMetadata(0, UserResponse.NOT_SHOWN));
             return;
         }
         GroupSuggestion suggestion = groupSuggestions.groupSuggestions.get(0);
@@ -161,7 +162,13 @@ public class GroupSuggestionsPromotionMediator implements GroupSuggestionsServic
 
         mCurrentSheetContent =
                 new GroupSuggestionsBottomSheetContent(mContainerView, suggestion, callback);
-        mBottomSheetController.requestShowContent(mCurrentSheetContent, true);
+        boolean result = mBottomSheetController.requestShowContent(mCurrentSheetContent, true);
+
+        if (!result) {
+            mCurrentSheetContent = null;
+            callback.onResult(
+                    new UserResponseMetadata(suggestion.suggestionId, UserResponse.NOT_SHOWN));
+        }
     }
 
     /** Destroy any members that needs clean up. */

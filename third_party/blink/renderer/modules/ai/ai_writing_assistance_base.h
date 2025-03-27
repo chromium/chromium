@@ -15,7 +15,10 @@
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/modules/ai/ai_availability.h"
+#include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
+#include "third_party/blink/renderer/modules/ai/ai_writing_assistance_create_client.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -29,9 +32,15 @@ namespace blink {
 
 class ReadableStream;
 
+using CanCreateCallback =
+    base::OnceCallback<void(mojom::blink::ModelAvailabilityCheckResult)>;
+
 // TODO(crbug.com/402442890): Consider consolidating into one remote client
 // and replace it with template class.
-template <typename AIMojoClient,
+template <typename V8SessionObjectType,
+          typename AIMojoClient,
+          typename AIMojoCreateClient,
+          typename CreateCoreOptions,
           typename CreateOptions,
           typename ExecuteOptions>
 class AIWritingAssistanceBase : public ExecutionContextClient {
@@ -40,13 +49,12 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
                           scoped_refptr<base::SequencedTaskRunner> task_runner,
                           mojo::PendingRemote<AIMojoClient> pending_remote,
                           CreateOptions* options,
-                          AIMetrics::AISessionType metric_session_type,
                           bool echo_whitespace_input)
       : ExecutionContextClient(execution_context),
         remote_(execution_context),
         options_(options),
         task_runner_(std::move(task_runner)),
-        metric_session_type_(metric_session_type),
+        metric_session_type_(GetSessionType()),
         echo_whitespace_input_(echo_whitespace_input) {
     remote_.Bind(std::move(pending_remote), task_runner_);
   }
@@ -55,6 +63,78 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
     ExecutionContextClient::Trace(visitor);
     visitor->Trace(remote_);
     visitor->Trace(options_);
+  }
+
+  static ScriptPromise<V8AIAvailability> availability(
+      ScriptState* script_state,
+      CreateCoreOptions* options,
+      ExceptionState& exception_state) {
+    if (!script_state->ContextIsValid()) {
+      ThrowInvalidContextException(exception_state);
+      return ScriptPromise<V8AIAvailability>();
+    }
+
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolver<V8AIAvailability>>(
+            script_state);
+    auto promise = resolver->Promise();
+
+    ExecutionContext* execution_context = ExecutionContext::From(script_state);
+    HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
+        AIInterfaceProxy::GetAIManagerRemote(execution_context);
+
+    if (!ai_manager_remote.is_connected()) {
+      RejectPromiseWithInternalError(resolver);
+      return promise;
+    }
+
+    RemoteCanCreate(
+        ai_manager_remote, options,
+        WTF::BindOnce(
+            [](ScriptPromiseResolver<V8AIAvailability>* resolver,
+               ExecutionContext* execution_context,
+               mojom::blink::ModelAvailabilityCheckResult result) {
+              AIAvailability availability = HandleModelAvailabilityCheckResult(
+                  execution_context, GetSessionType(), result);
+              resolver->Resolve(AIAvailabilityToV8(availability));
+            },
+            WrapPersistent(resolver), WrapPersistent(execution_context)));
+    return promise;
+  }
+
+  static ScriptPromise<V8SessionObjectType> create(
+      ScriptState* script_state,
+      CreateOptions* options,
+      ExceptionState& exception_state) {
+    if (!script_state->ContextIsValid()) {
+      ThrowInvalidContextException(exception_state);
+      return ScriptPromise<V8SessionObjectType>();
+    }
+    CHECK(options);
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolver<V8SessionObjectType>>(
+            script_state);
+    auto promise = resolver->Promise();
+    AbortSignal* signal = options->getSignalOr(nullptr);
+    if (signal && signal->aborted()) {
+      resolver->Reject(signal->reason(script_state));
+      return promise;
+    }
+
+    ExecutionContext* execution_context = ExecutionContext::From(script_state);
+    HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
+        AIInterfaceProxy::GetAIManagerRemote(execution_context);
+
+    if (!ai_manager_remote.is_connected()) {
+      RejectPromiseWithInternalError(resolver);
+      return promise;
+    }
+
+    MakeGarbageCollected<AIWritingAssistanceCreateClient<
+        AIMojoClient, AIMojoCreateClient, CreateOptions, V8SessionObjectType>>(
+        script_state, resolver, options)
+        ->Create();
+    return promise;
   }
 
   ScriptPromise<IDLString> execute(ScriptState* script_state,
@@ -251,6 +331,15 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       const String& context,
       mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
           responder) = 0;
+
+  // Returns the session type; defined in template specializations.
+  static AIMetrics::AISessionType GetSessionType();
+
+  // Runs CanCreate* for the session type; defined in template specializations.
+  static void RemoteCanCreate(
+      HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote,
+      CreateCoreOptions* options,
+      CanCreateCallback callback);
 
   HeapMojoRemote<AIMojoClient> remote_;
   Member<CreateOptions> options_;

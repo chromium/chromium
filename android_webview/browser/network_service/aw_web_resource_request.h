@@ -67,4 +67,11 @@ struct AwWebResourceRequest final {
 
 }  // namespace android_webview
 
+namespace jni_zero {
+template <>
+ScopedJavaLocalRef<jobject> ToJniType(
+    JNIEnv* env,
+    const android_webview::AwWebResourceRequest& request);
+}
+
 #endif  // ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_WEB_RESOURCE_REQUEST_H_

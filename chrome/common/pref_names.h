@@ -448,14 +448,6 @@ inline constexpr char kNetworkPredictionOptions[] =
 inline constexpr char kPreinstalledAppsInstallState[] =
     "default_apps_install_state";
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_LINUX)
-// A list of extensions ids that have to be allowed to run in Incognito by the
-// user in order to use Incognito mode.
-inline constexpr char kMandatoryExtensionsForIncognitoNavigation[] =
-    "mandatory_extensions_for_incognito_navigation";
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 // The list of extensions allowed to use the platformKeys API for remote
 // attestation.
@@ -1296,6 +1288,11 @@ inline constexpr char kFloatingSsoEnabled[] = "floating_sso_enabled";
 inline constexpr char kForceMaximizeOnFirstRun[] =
     "ui.force_maximize_on_first_run";
 
+// A list of extensions ids that have to be allowed to run in Incognito by the
+// user in order to use Incognito mode.
+inline constexpr char kMandatoryExtensionsForIncognitoNavigation[] =
+    "mandatory_extensions_for_incognito_navigation";
+
 // Counter for reporting daily OOM kills count.
 inline constexpr char kOOMKillsDailyCount[] = "oom_kills.daily_count";
 
@@ -1465,10 +1462,6 @@ inline constexpr char kAccessibilityFocusHighlightEnabled[] =
 inline constexpr char kOverscrollHistoryNavigationEnabled[] =
     "settings.a11y.overscroll_history_navigation";
 #endif
-
-// Whether AX tree fixing is enabled.
-inline constexpr char kAccessibilityAXTreeFixingEnabled[] =
-    "settings.a11y.enable_ax_tree_fixing";
 
 // Whether main node annotations are enabled.
 inline constexpr char kAccessibilityMainNodeAnnotationsEnabled[] =
@@ -4120,6 +4113,9 @@ inline constexpr char kReadAloudVoiceSettings[] = "readaloud.voices";
 // Double indicating Read Aloud playback speed. Default is 1.0, double speed
 // is 2.0, etc.
 inline constexpr char kReadAloudSpeed[] = "readaloud.speed";
+
+// Integer indicating Read Aloud playback mode (enum). Default is 0 (UNSPECIFIED).
+inline constexpr char kReadAloudPlaybackMode[] = "readaloud.playback_mode";
 
 // Boolean that specifies whether Read Aloud highlights words on the page during
 // playback and scrolls the page to match the playback position.

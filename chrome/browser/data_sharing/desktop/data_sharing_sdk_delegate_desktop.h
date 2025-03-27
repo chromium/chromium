@@ -22,6 +22,8 @@ class DataSharingSDKDelegateDesktop : public DataSharingSDKDelegate,
   using LoadFinishedCallback = base::OnceCallback<void(content::WebContents*)>;
   using ReadGroupsCallback = base::OnceCallback<void(
       const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&)>;
+  using ReadGroupWithTokenCallback = base::OnceCallback<void(
+      const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&)>;
 
   explicit DataSharingSDKDelegateDesktop(content::BrowserContext* context);
 
@@ -48,9 +50,7 @@ class DataSharingSDKDelegateDesktop : public DataSharingSDKDelegate,
 
   void ReadGroupWithToken(
       const data_sharing_pb::ReadGroupWithTokenParams& params,
-      base::OnceCallback<
-          void(const base::expected<data_sharing_pb::ReadGroupsResult,
-                                    absl::Status>&)> callback) override;
+      ReadGroupWithTokenCallback callback) override;
 
   void AddMember(
       const data_sharing_pb::AddMemberParams& params,
@@ -97,6 +97,10 @@ class DataSharingSDKDelegateDesktop : public DataSharingSDKDelegate,
 
   void OnReadGroups(ReadGroupsCallback callback,
                     data_sharing::mojom::ReadGroupsResultPtr mojom_result);
+
+  void OnReadGroupWithToken(
+      ReadGroupWithTokenCallback callback,
+      data_sharing::mojom::ReadGroupWithTokenResultPtr mojom_result);
 
   void OnLeaveGroup(base::OnceCallback<void(const absl::Status&)> callback,
                     int status_code);

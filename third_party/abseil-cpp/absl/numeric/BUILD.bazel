@@ -56,7 +56,6 @@ cc_binary(
         "//absl/base:core_headers",
         "//absl/random",
         "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
     ],
 )
 
@@ -115,8 +114,9 @@ cc_test(
     ],
 )
 
-cc_test(
+cc_binary(
     name = "int128_benchmark",
+    testonly = True,
     srcs = ["int128_benchmark.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
@@ -125,7 +125,6 @@ cc_test(
         ":int128",
         "//absl/base:config",
         "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
     ],
 )
 

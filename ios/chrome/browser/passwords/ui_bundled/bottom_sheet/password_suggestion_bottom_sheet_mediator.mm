@@ -618,6 +618,10 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
 - (void)selectSuggestion:(FormSuggestion*)suggestion atIndex:(NSInteger)index {
   default_browser::NotifyPasswordAutofillSuggestionUsed(_engagementTracker);
 
+  if (!_webStateList) {
+    return;
+  }
+
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
   if (!activeWebState) {
     return;

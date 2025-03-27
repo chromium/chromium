@@ -70,7 +70,7 @@ std::unique_ptr<SrvRecordRdata> SrvRecordRdata::Create(
 
   auto rdata = SrvRecordRdata::CreateInstance();
 
-  auto reader = base::SpanReader(base::as_byte_span(data));
+  auto reader = base::SpanReader(data);
   // 2 bytes for priority, 2 bytes for weight, 2 bytes for port.
   reader.ReadU16BigEndian(rdata->priority_);
   reader.ReadU16BigEndian(rdata->weight_);
@@ -111,7 +111,7 @@ std::unique_ptr<ARecordRdata> ARecordRdata::Create(
     return nullptr;
 
   auto rdata = ARecordRdata::CreateInstance();
-  rdata->address_ = IPAddress(base::as_byte_span(data));
+  rdata->address_ = IPAddress(data);
   return rdata;
 }
 

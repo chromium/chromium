@@ -32,6 +32,10 @@ AXPlatformForTest::~AXPlatformForTest() {
   g_instance = nullptr;
 }
 
+void AXPlatformForTest::DetachFromThread() {
+  ax_platform_.DetachFromThreadForTesting();
+}
+
 AXMode AXPlatformForTest::GetProcessMode() {
   return mode_;
 }

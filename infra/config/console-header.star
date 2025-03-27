@@ -231,6 +231,18 @@ HEADER = headers.header(
                     alt = "Chromium Infra console",
                 ),
                 headers.link(
+                    text = "linux",
+                    branch_selector = branches.selector.LINUX_BRANCHES,
+                    url = "/p/{}/g/chromium.linux".format(settings.project),
+                    alt = "Chromium Linux console",
+                ),
+                headers.link(
+                    text = "mac",
+                    branch_selector = branches.selector.MAC_BRANCHES,
+                    url = "/p/{}/g/chromium.mac".format(settings.project),
+                    alt = "Chromium Mac console",
+                ),
+                headers.link(
                     text = "memory.fyi",
                     url = "/p/{}/g/chromium.memory.fyi".format(settings.project),
                     alt = "Chromium Memory FYI console",
@@ -259,6 +271,12 @@ HEADER = headers.header(
                     text = "webrtc",
                     url = "/p/{}/g/chromium.webrtc".format(settings.project),
                     alt = "Chromium WebRTC console",
+                ),
+                headers.link(
+                    text = "win",
+                    branch_selector = branches.selector.WINDOWS_BRANCHES,
+                    url = "/p/{}/g/chromium.win".format(settings.project),
+                    alt = "Chromium Windows console",
                 ),
             ],
         ),

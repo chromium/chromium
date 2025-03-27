@@ -84,42 +84,16 @@ TEST_F(ChromeFacilitatedPaymentsClientTest,
   base_client().ShowPixPaymentPrompt({}, base::DoNothing());
 }
 
-// Test that the `PIX_PAYMENT_MERCHANT_ALLOWLIST` optimization type is
-// registered when the `ChromeFacilitatedPaymentClient` is created.
-TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterPixAllowlist) {
+// Test that the `EWALLET_MERCHANT_ALLOWLIST` and
+// `PIX_PAYMENT_MERCHANT_ALLOWLIST` optimization type is registered when the
+// `ChromeFacilitatedPaymentClient` is created.
+TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterAllowlists) {
   base::test::ScopedFeatureList feature_list(
-      payments::facilitated::kEnablePixPayments);
+      payments::facilitated::kEwalletPayments);
   EXPECT_CALL(optimization_guide_decider_,
               RegisterOptimizationTypes(testing::ElementsAre(
                   optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST)))
       .Times(1);
-
-  // Re-create the client; it should register the allowlist.
-  client_ = std::make_unique<ChromeFacilitatedPaymentsClient>(
-      web_contents(), &optimization_guide_decider_);
-}
-
-// Test that the `PIX_PAYMENT_MERCHANT_ALLOWLIST` optimization type is
-// not registered when the `ChromeFacilitatedPaymentClient` is created and the
-// Pix experiment is disabled.
-TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterPixAllowlist_ExpOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(payments::facilitated::kEnablePixPayments);
-  EXPECT_CALL(optimization_guide_decider_,
-              RegisterOptimizationTypes(testing::ElementsAre(
-                  optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST)))
-      .Times(0);
-
-  // Re-create the client; it should not register the allowlist.
-  client_ = std::make_unique<ChromeFacilitatedPaymentsClient>(
-      web_contents(), &optimization_guide_decider_);
-}
-
-// Test that the `EWALLET_MERCHANT_ALLOWLIST` optimization type is
-// registered when the `ChromeFacilitatedPaymentClient` is created.
-TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterEwalletAllowlist) {
-  base::test::ScopedFeatureList feature_list(
-      payments::facilitated::kEwalletPayments);
   EXPECT_CALL(optimization_guide_decider_,
               RegisterOptimizationTypes(testing::ElementsAre(
                   optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST)))
@@ -130,13 +104,17 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterEwalletAllowlist) {
       web_contents(), &optimization_guide_decider_);
 }
 
-// Test that the `EWALLET_MERCHANT_ALLOWLIST` optimization type is
+// Test that the `EWALLET_MERCHANT_ALLOWLIST` optimization type is not
 // registered when when the `ChromeFacilitatedPaymentClient` is created and the
 // eWallet experiment is disabled.
-TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterEwalletAllowlist_ExpOff) {
+TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterAllowlists_EWalletExpOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(payments::facilitated::kEwalletPayments);
 
+  EXPECT_CALL(optimization_guide_decider_,
+              RegisterOptimizationTypes(testing::ElementsAre(
+                  optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST)))
+      .Times(1);
   EXPECT_CALL(optimization_guide_decider_,
               RegisterOptimizationTypes(testing::ElementsAre(
                   optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST)))

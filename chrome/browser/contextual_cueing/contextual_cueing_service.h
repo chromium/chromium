@@ -13,12 +13,18 @@
 #include "base/time/time.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/nudge_cap_tracker.h"
+#include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 
 class GURL;
+class OptimizationGuideKeyedService;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace tabs {
 enum class GlicNudgeActivity;
@@ -32,7 +38,8 @@ class ContextualCueingService
  public:
   explicit ContextualCueingService(
       page_content_annotations::PageContentExtractionService*
-          page_content_extraction_service);
+          page_content_extraction_service,
+      OptimizationGuideKeyedService* optimization_guide_keyed_service);
   ~ContextualCueingService() override;
 
   // Reports a page load happened to `url`, and is used to keep track of quiet
@@ -40,8 +47,7 @@ class ContextualCueingService
   void ReportPageLoad();
 
   // Called when cueing nudge activity happens.
-  void OnNudgeActivity(const GURL& url,
-                       ukm::SourceId source_id,
+  void OnNudgeActivity(content::WebContents* web_contents,
                        base::TimeTicks document_available_time,
                        tabs::GlicNudgeActivity activity);
 
@@ -62,12 +68,24 @@ class ContextualCueingService
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  // Returns zero state suggestions for GLIC.
+  void GetContextualGlicZeroStateSuggestions(content::WebContents* web_contents,
+                                             bool is_fre,
+                                             GlicSuggestionsCallback callback);
+
  private:
   // page_content_annotations::PageContentExtractionService::Observer:
   void OnPageContentExtracted(
       content::Page& page,
       const optimization_guide::proto::AnnotatedPageContent& page_content)
       override;
+
+  // Called when suggestions are received. Cleans up after suggestions
+  // generation.
+  void OnSuggestionsReceived(
+      content::WebContents* web_contents,
+      GlicSuggestionsCallback callback,
+      std::optional<std::vector<std::string>> suggestions);
 
   // Returns true if nudge should not be shown due to the backoff rule.
   bool IsNudgeBlockedByBackoffRule() const;
@@ -92,6 +110,9 @@ class ContextualCueingService
 
   raw_ptr<page_content_annotations::PageContentExtractionService>
       page_content_extraction_service_ = nullptr;
+
+  raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =
+      nullptr;
 
   base::WeakPtrFactory<ContextualCueingService> weak_ptr_factory_{this};
 };

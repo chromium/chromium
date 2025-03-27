@@ -6605,4 +6605,98 @@ TEST_F(ManifestParserTest, VersionParseRules) {
   }
 }
 
+TEST_F(ManifestParserTest, UpdateTokenParseRules) {
+  // update_token is not parsed when manifest id is not specified
+  {
+    auto& manifest = ParseManifest(R"({"update_token": "foo" })");
+    EXPECT_TRUE(manifest->update_token.IsNull());
+    EXPECT_NE(manifest->update_token, "foo");
+    EXPECT_FALSE(GetDocument().IsWebDXFeatureCounted(
+        WebDXFeature::kWebAppManifestUpdateToken));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // update_token is not parsed when manifest id is not specified by the
+  // developer and uses the default value.
+  {
+    auto& manifest = ParseManifest(R"({ "id": "", "update_token": "foo" })");
+    EXPECT_TRUE(manifest->update_token.IsNull());
+    EXPECT_NE(manifest->update_token, "foo");
+    EXPECT_FALSE(GetDocument().IsWebDXFeatureCounted(
+        WebDXFeature::kWebAppManifestUpdateToken));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // update_token is valid but not parsed since the manifest id is invalid.
+  {
+    auto& manifest = ParseManifest(R"({ "id": 42, "update_token": "foo" })");
+    EXPECT_TRUE(manifest->update_token.IsNull());
+    EXPECT_NE(manifest->update_token, "foo");
+    EXPECT_FALSE(GetDocument().IsWebDXFeatureCounted(
+        WebDXFeature::kWebAppManifestUpdateToken));
+    // 1 error since `id` will be ignored as this is not a string.
+    EXPECT_EQ(1u, GetErrorCount());
+  }
+
+  // update_token is valid but not parsed since the manifest id is a json
+  // (malformed input).
+  {
+    auto& manifest = ParseManifest(R"({ "id": {}, "update_token": "foo" })");
+    EXPECT_TRUE(manifest->update_token.IsNull());
+    EXPECT_NE(manifest->update_token, "foo");
+    EXPECT_FALSE(GetDocument().IsWebDXFeatureCounted(
+        WebDXFeature::kWebAppManifestUpdateToken));
+    // 1 error since `id` will be ignored as this is not a string.
+    EXPECT_EQ(1u, GetErrorCount());
+  }
+
+  // update_token not specified in the manifest so it is not parsed.
+  {
+    auto& manifest = ParseManifest(R"({"id": "foo", "version": "1.2.3" })");
+    EXPECT_TRUE(manifest->update_token.IsNull());
+    EXPECT_FALSE(GetDocument().IsWebDXFeatureCounted(
+        WebDXFeature::kWebAppManifestUpdateToken));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // update_token as an empty string is parsed and counted since it is not null.
+  {
+    auto& manifest = ParseManifest(R"({"id": "foo", "update_token": "" })");
+    EXPECT_FALSE(manifest->update_token.IsNull());
+    EXPECT_TRUE(manifest->update_token.empty());
+    EXPECT_EQ(0u, GetErrorCount());
+    EXPECT_TRUE(GetDocument().IsWebDXFeatureCounted(
+        WebDXFeature::kWebAppManifestUpdateToken));
+  }
+
+  // update_token specified in the manifest are parsed and increments use
+  // counter
+  {
+    auto& manifest = ParseManifest(R"({ "id": "foo", "update_token": "foo" })");
+    EXPECT_FALSE(manifest->update_token.IsNull());
+    EXPECT_EQ(manifest->update_token, "foo");
+    EXPECT_TRUE(GetDocument().IsWebDXFeatureCounted(
+        WebDXFeature::kWebAppManifestUpdateToken));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Don't parse if update_token is not a string (invalid data type).
+  {
+    auto& manifest = ParseManifest(R"({"id": "foo", "update_token": 42 })");
+    EXPECT_TRUE(manifest->update_token.IsNull());
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("property 'update_token' ignored, type string expected.",
+              errors()[0]);
+  }
+
+  // Don't parse if update_token is a json (malformed input).
+  {
+    auto& manifest = ParseManifest(R"({"id": "foo", "update_token": {} })");
+    EXPECT_TRUE(manifest->update_token.IsNull());
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("property 'update_token' ignored, type string expected.",
+              errors()[0]);
+  }
+}
+
 }  // namespace blink

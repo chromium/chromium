@@ -91,6 +91,8 @@ extern const char kHatsSurveyTriggerPrivacySandboxSentimentSurvey[];
 extern const char kHatsSurveyTriggerMerchantTrustEvaluationControlSurvey[];
 extern const char kHatsSurveyTriggerMerchantTrustEvaluationExperimentSurvey[];
 extern const char kHatsSurveyTriggerMerchantTrustLearnSurvey[];
+extern const char kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness[];
+extern const char kHatsSurveyTriggerOnFocusZpsSuggestionsUtility[];
 
 extern const char kHatsSurveyTriggerTesting[];
 // The Trigger ID for a test HaTS Next survey which is available for testing

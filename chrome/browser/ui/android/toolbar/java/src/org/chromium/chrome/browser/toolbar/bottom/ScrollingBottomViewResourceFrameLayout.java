@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.ConstraintsChecker;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarCaptureType;
-import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
@@ -61,24 +60,20 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
         return new ViewResourceAdapter(this) {
             @Override
             public boolean isDirty() {
-                if (ToolbarFeatures.shouldSuppressCaptures()) {
-                    // Dirty rect tracking will claim changes more often than token differences due
-                    // to model changes. It is also cheaper to simply check a boolean, so do it
-                    // first.
-                    if (!super.isDirty()) {
-                        return false;
-                    }
-
-                    if (mConstraintsChecker != null && mConstraintsChecker.areControlsLocked()) {
-                        mConstraintsChecker.scheduleRequestResourceOnUnlock();
-                        return false;
-                    }
-
-                    return mCurrentSnapshotToken != null
-                            && !mCurrentSnapshotToken.equals(mLastCaptureSnapshotToken);
-                } else {
-                    return super.isDirty();
+                // Dirty rect tracking will claim changes more often than token differences due
+                // to model changes. It is also cheaper to simply check a boolean, so do it
+                // first.
+                if (!super.isDirty()) {
+                    return false;
                 }
+
+                if (mConstraintsChecker != null && mConstraintsChecker.areControlsLocked()) {
+                    mConstraintsChecker.scheduleRequestResourceOnUnlock();
+                    return false;
+                }
+
+                return mCurrentSnapshotToken != null
+                        && !mCurrentSnapshotToken.equals(mLastCaptureSnapshotToken);
             }
 
             @Override

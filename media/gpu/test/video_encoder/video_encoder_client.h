@@ -148,6 +148,8 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
   // event is always sent after all associated kFrameEncoded events.
   void Flush();
 
+  bool IsFlushSupported() { return encoder_->IsFlushSupported(); }
+
   // Updates bitrate based on the specified |bitrate| and |framerate|.
   void UpdateBitrate(const VideoBitrateAllocation& bitrate, uint32_t framerate);
 

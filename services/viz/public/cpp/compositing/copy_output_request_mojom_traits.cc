@@ -147,15 +147,10 @@ StructTraits<viz::mojom::CopyOutputRequestDataView,
     result_sender(const std::unique_ptr<viz::CopyOutputRequest>& request) {
   mojo::PendingRemote<viz::mojom::CopyOutputResultSender> result_sender;
   auto pending_receiver = result_sender.InitWithNewPipeAndPassReceiver();
-  // Receiving the result requires an expensive deserialize operation, so by
-  // default we want the pipe to operate on the ThreadPool, and then it will
-  // PostTask back to the result task runner, or the current sequence.
+  CHECK(request->has_result_task_runner());
   auto impl = std::make_unique<CopyOutputResultSenderImpl>(
       request->result_format(), request->result_destination(),
-      std::move(request->result_callback_),
-      request->has_result_task_runner()
-          ? request->result_task_runner_
-          : base::SequencedTaskRunner::GetCurrentDefault());
+      std::move(request->result_callback_), request->result_task_runner_);
   auto runner = base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
   runner->PostTask(
       FROM_HERE,
@@ -201,6 +196,10 @@ bool StructTraits<viz::mojom::CopyOutputRequestDataView,
       base::BindOnce(callback, std::move(result_sender)));
 
   request->set_ipc_priority(ipc_priority);
+  // Serializing the result requires an expensive copy, so to not block the
+  // any important thread we PostTask onto the threadpool.
+  request->set_result_task_runner(
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
 
   gfx::Vector2d scale_from;
   if (!data.ReadScaleFrom(&scale_from))

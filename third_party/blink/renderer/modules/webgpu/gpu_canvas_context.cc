@@ -202,19 +202,52 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
     return false;
   }
 
-  // TODO(crbug.com/1367056): Handle source_buffer == kFrontBuffer.
-  // By returning false here the canvas will show up as black in the scenarios
-  // that copy the front buffer, such as printing.
-  if (source_buffer != kBackBuffer) {
+  wgpu::Texture texture;
+
+  scoped_refptr<WebGPUMailboxTexture> front_buffer_texture;
+  if (source_buffer == kFrontBuffer) {
+#if BUILDFLAG(IS_LINUX)
+    // By returning false here the canvas will show up as black in the scenarios
+    // that copy the front buffer, such as printing.
+    // TODO(crbug.com/40902474): Support concurrent SharedImage reads via Dawn
+    // on Linux backings and enable the below codepath.
     return false;
+#else
+    auto front_buffer_si = swap_buffers_->GetFrontBufferSharedImage();
+    if (!front_buffer_si) {
+      return false;
+    }
+    wgpu::TextureUsage front_buffer_usage =
+        wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
+    wgpu::DawnTextureInternalUsageDescriptor front_buffer_usage_desc = {{
+        .internalUsage = front_buffer_usage,
+    }};
+    wgpu::TextureDescriptor desc = {
+        .size = {base::checked_cast<uint32_t>(front_buffer_si->size().width()),
+                 base::checked_cast<uint32_t>(
+                     front_buffer_si->size().height())},
+        .format = swap_buffers_->TextureFormat(),
+    };
+    desc.nextInChain = &front_buffer_usage_desc;
+
+    // Create a WebGPU texture backed by the front buffer's SharedImage.
+    front_buffer_texture = WebGPUMailboxTexture::FromExistingSharedImage(
+        device_->GetDawnControlClient(), device_->GetHandle(), desc,
+        front_buffer_si, swap_buffers_->GetFrontBufferSyncToken());
+
+    texture = front_buffer_texture->GetTexture();
+#endif
+  } else {
+    texture = texture_->GetHandle();
   }
 
-  if (!texture_) {
+  if (!texture) {
     return false;
   }
 
   return CopyTextureToResourceProvider(
-      texture_->GetHandle(), swap_buffers_->Size(), resource_provider);
+      texture, gfx::Size(texture.GetWidth(), texture.GetHeight()),
+      resource_provider);
 }
 
 bool GPUCanvasContext::CopyRenderingResultsToVideoFrame(

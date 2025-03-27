@@ -98,6 +98,14 @@ CdmModule::CreateCdmFunc CdmModule::GetCreateCdmFunc() {
   return create_cdm_func_;
 }
 
+void CdmModule::SetDebuggerAttached(bool is_debugger_attached) {
+  is_debugger_attached_ = is_debugger_attached;
+}
+
+bool CdmModule::GetDebuggerAttached() const {
+  return is_debugger_attached_;
+}
+
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 bool CdmModule::Initialize(const base::FilePath& cdm_path,
                            std::vector<CdmHostFilePath> cdm_host_file_paths) {

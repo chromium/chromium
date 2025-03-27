@@ -420,25 +420,27 @@ VideoEncoderShim::GetSupportedProfiles() {
   return profiles;
 }
 
-bool VideoEncoderShim::Initialize(
+media::EncoderStatus VideoEncoderShim::Initialize(
     const media::VideoEncodeAccelerator::Config& config,
     media::VideoEncodeAccelerator::Client* client,
     std::unique_ptr<media::MediaLog> media_log) {
   DCHECK(RenderThreadImpl::current());
   DCHECK_EQ(client, host_);
 
-  if (config.input_format != media::PIXEL_FORMAT_I420)
-    return false;
+  if (config.input_format != media::PIXEL_FORMAT_I420) {
+    return {media::EncoderStatus::Codes::kEncoderInitializationError};
+  }
 
   if (config.output_profile != media::VP8PROFILE_ANY &&
-      config.output_profile != media::VP9PROFILE_PROFILE0)
-    return false;
+      config.output_profile != media::VP9PROFILE_PROFILE0) {
+    return {media::EncoderStatus::Codes::kEncoderInitializationError};
+  }
 
   media_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VideoEncoderShim::EncoderImpl::Initialize,
                                 base::Unretained(encoder_impl_.get()), config));
 
-  return true;
+  return {media::EncoderStatus::Codes::kOk};
 }
 
 void VideoEncoderShim::Encode(scoped_refptr<media::VideoFrame> frame,

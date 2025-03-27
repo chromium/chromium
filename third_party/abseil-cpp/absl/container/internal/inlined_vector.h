@@ -543,7 +543,7 @@ class Storage {
       (std::max)(N, sizeof(Allocated) / sizeof(ValueType<A>));
 
   struct Inlined {
-    alignas(ValueType<A>) char inlined_data[sizeof(
+    alignas(ValueType<A>) unsigned char inlined_data[sizeof(
         ValueType<A>[kOptimalInlinedSize])];
   };
 

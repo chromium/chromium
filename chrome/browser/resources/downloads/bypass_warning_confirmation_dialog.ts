@@ -47,7 +47,7 @@ export class DownloadsBypassWarningConfirmationDialogElement extends
     };
   }
 
-  fileName: string = '';
+  accessor fileName: string = '';
 
   wasConfirmed(): boolean {
     return this.$.dialog.getNative().returnValue === 'success';

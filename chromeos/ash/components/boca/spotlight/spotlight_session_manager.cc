@@ -92,12 +92,13 @@ void SpotlightSessionManager::OnConsumerActivityUpdated(
 
 void SpotlightSessionManager::OnConnectionCodeReceived(
     const std::string& connection_code) {
-  // TODO: dorianbrandon - Send access code immediately to teacher. This will
-  // be an optimization to decrease the waiting time on the teacher's end.
-  // Pending change handling behavior on UI.
-  notification_handler_->StartSpotlightCountdownNotification(
-      base::BindOnce(&SpotlightSessionManager::RegisterStudentScreen,
-                     weak_ptr_factory_.GetWeakPtr(), connection_code));
+  CHECK(spotlight_service_);
+  notification_handler_->StartSpotlightCountdownNotification();
+
+  spotlight_service_->RegisterScreen(
+      connection_code, BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(),
+      base::BindOnce(&SpotlightSessionManager::OnRegisterScreenRequestSent,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SpotlightSessionManager::RegisterStudentScreen(

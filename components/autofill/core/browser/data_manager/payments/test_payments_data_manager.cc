@@ -278,11 +278,11 @@ void TestPaymentsDataManager::AddServerCreditCard(
 
 void TestPaymentsDataManager::AddBnplIssuer(const BnplIssuer& bnpl_issuer) {
   // No duplicated issuer should be inserted into the BNPL issuer list.
-  CHECK(!std::ranges::any_of(
+  CHECK(std::ranges::none_of(
       linked_bnpl_issuers_, [&](const BnplIssuer& saved_bnpl_issuer) {
         return saved_bnpl_issuer.issuer_id() == bnpl_issuer.issuer_id();
       }));
-  CHECK(!std::ranges::any_of(
+  CHECK(std::ranges::none_of(
       unlinked_bnpl_issuers_, [&](const BnplIssuer& saved_bnpl_issuer) {
         return saved_bnpl_issuer.issuer_id() == bnpl_issuer.issuer_id();
       }));

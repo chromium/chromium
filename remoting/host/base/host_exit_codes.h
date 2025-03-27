@@ -18,6 +18,7 @@ enum HostExitCodes {
   kInitializationFailed = 2,
   kInvalidCommandLineExitCode = 3,
   kNoPermissionExitCode = 4,
+  kAgentProcessBrokerDisconnected = 5,
 
   // Error codes that do indicate a permanent error condition.
   kInvalidHostConfigurationExitCode = 100,

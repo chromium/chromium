@@ -16,7 +16,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     `);
 
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', step1);
-  TestRunner.addSniffer(Workspace.UISourceCode.UISourceCode.prototype, 'addRevision', onRevisionAdded);
+  TestRunner.addSniffer(Workspace.UISourceCode.UISourceCode.prototype, 'setWorkingCopy', onSetWorkingCopy);
 
   var treeElement;
   var hasResourceChanged;
@@ -72,7 +72,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     TestRunner.completeTest();
   }
 
-  function onRevisionAdded(revision) {
+  function onSetWorkingCopy(revision) {
     revisionAdded = true;
     displayName = this.displayName();
     maybeCompleteTest();

@@ -7,11 +7,14 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -101,7 +104,10 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   // Search |unused_providers_| and acquire the canvas resource provider with
   // the same cache key for re-use.
   std::unique_ptr<CanvasResourceProvider> AcquireCachedProvider(
-      const SkImageInfo& image_info);
+      const gfx::Size& size,
+      const viz::SharedImageFormat& format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space);
 
   // Release the stale resources which are recycled before the last clean-up.
   void ReleaseStaleResources();

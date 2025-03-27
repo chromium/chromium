@@ -10554,30 +10554,32 @@ experimental domain Storage
       bidderTrustedSignals
       sellerTrustedSignals
 
-  # Enum of shared storage access types.
-  type SharedStorageAccessType extends string
+  # Enum of shared storage access scopes.
+  type SharedStorageAccessScope extends string
     enum
-      documentAddModule
-      documentSelectURL
-      documentRun
-      documentSet
-      documentAppend
-      documentDelete
-      documentClear
-      documentGet
-      workletSet
-      workletAppend
-      workletDelete
-      workletClear
-      workletGet
-      workletKeys
-      workletEntries
-      workletLength
-      workletRemainingBudget
-      headerSet
-      headerAppend
-      headerDelete
-      headerClear
+      window
+      sharedStorageWorklet
+      protectedAudienceWorklet
+      header
+
+  # Enum of shared storage access methods.
+  type SharedStorageAccessMethod extends string
+    enum
+      addModule
+      createWorklet
+      selectURL
+      run
+      batchUpdate
+      set
+      append
+      delete
+      clear
+      get
+      keys
+      values
+      entries
+      length
+      remainingBudget
 
   # Struct for a single key-value pair in an origin's shared storage.
   type SharedStorageEntry extends object
@@ -10993,12 +10995,16 @@ experimental domain Storage
     parameters
       # Time of the access.
       Network.TimeSinceEpoch accessTime
+      # Enum value indicating the access scope.
+      SharedStorageAccessScope scope
       # Enum value indicating the Shared Storage API method invoked.
-      SharedStorageAccessType type
+      SharedStorageAccessMethod method
       # DevTools Frame Token for the primary frame tree's root.
       Page.FrameId mainFrameId
-      # Serialized origin for the context that invoked the Shared Storage API.
+      # Serialization of the origin owning the Shared Storage data.
       string ownerOrigin
+      # Serialization of the site owning the Shared Storage data.
+      string ownerSite
       # The sub-parameters wrapped by `params` are all optional and their
       # presence/absence depends on `type`.
       SharedStorageAccessParams params

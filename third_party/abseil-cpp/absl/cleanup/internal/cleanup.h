@@ -88,7 +88,7 @@ class Storage {
 
  private:
   bool is_callback_engaged_;
-  alignas(Callback) char callback_buffer_[sizeof(Callback)];
+  alignas(Callback) unsigned char callback_buffer_[sizeof(Callback)];
 };
 
 }  // namespace cleanup_internal

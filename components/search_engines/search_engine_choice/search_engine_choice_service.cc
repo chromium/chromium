@@ -526,7 +526,7 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
   const std::string wildcard_string("*");
   // Explicit country key takes precedence over the wildcard.
   for (const std::string& key :
-       {country_codes::CountryIDToCountryString(country_id), wildcard_string}) {
+       {std::string(country_id.CountryCode()), wildcard_string}) {
     bool is_wildcard = key == wildcard_string;
     const std::string* reprompt_version_string =
         reprompt_params_json->FindString(key);

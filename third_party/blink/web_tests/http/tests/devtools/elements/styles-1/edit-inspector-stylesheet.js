@@ -19,12 +19,12 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', onStylesSelected);
 
   function onStylesSelected(node) {
-    Workspace.Workspace.WorkspaceImpl.instance().addEventListener(Workspace.Workspace.Events.WorkingCopyCommitted, onWorkingCopyCommitted);
+    Workspace.Workspace.WorkspaceImpl.instance().addEventListener(Workspace.Workspace.Events.WorkingCopyChanged, onWorkingCopyChanged);
     ElementsTestRunner.addNewRule('#inspected', new Function());
   }
 
-  function onWorkingCopyCommitted(event) {
-    Workspace.Workspace.WorkspaceImpl.instance().removeEventListener(Workspace.Workspace.Events.WorkingCopyCommitted, onWorkingCopyCommitted);
+  function onWorkingCopyChanged(event) {
+    Workspace.Workspace.WorkspaceImpl.instance().removeEventListener(Workspace.Workspace.Events.WorkingCopyChanged, onWorkingCopyChanged);
     var uiSourceCode = event.data.uiSourceCode;
     TestRunner.addResult('Inspector stylesheet URL: ' + uiSourceCode.displayName());
     uiSourceCode.requestContent().then(printContent(onContent));

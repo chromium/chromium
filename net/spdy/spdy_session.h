@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -1038,7 +1039,8 @@ class NET_EXPORT SpdySession
 
   // Queue, for each priority, of pending stream requests that have
   // not yet been satisfied.
-  PendingStreamRequestQueue pending_create_stream_queues_[NUM_PRIORITIES];
+  std::array<PendingStreamRequestQueue, NUM_PRIORITIES>
+      pending_create_stream_queues_;
 
   // Map from stream id to all active streams.  Streams are active in the sense
   // that they have a consumer (typically HttpNetworkTransaction and regardless
@@ -1223,8 +1225,8 @@ class NET_EXPORT SpdySession
 
   // A queue of stream IDs that have been send-stalled at some point
   // in the past.
-  base::circular_deque<spdy::SpdyStreamId>
-      stream_send_unstall_queue_[NUM_PRIORITIES];
+  std::array<base::circular_deque<spdy::SpdyStreamId>, NUM_PRIORITIES>
+      stream_send_unstall_queue_;
 
   NetLogWithSource net_log_;
 

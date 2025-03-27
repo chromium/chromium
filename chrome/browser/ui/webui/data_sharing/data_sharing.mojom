@@ -32,6 +32,19 @@ struct ReadGroupsResult {
   int32 status_code;
 };
 
+struct ReadGroupWithTokenParam {
+  string group_id;
+  string access_token;
+};
+
+struct ReadGroupWithTokenResult {
+  // Return GroupData if successful.
+  GroupData? group;
+
+  // Status code equivalent to absl::StatusCode. Returns 0 if successful.
+  int32 status_code;
+};
+
 struct SharedTab {
   // Url of the tab, trimmed to domain e.g. google.com. This is for
   // display only and will not be consumed as a URL. Use bare string here
@@ -116,6 +129,10 @@ interface Page {
 
   // Read groups given a list of ReadGroupParams.
   ReadGroups(ReadGroupsParams read_groups_params) => (ReadGroupsResult result);
+
+  // Read a single group given group_id and access_token.
+  ReadGroupWithToken(ReadGroupWithTokenParam param)
+      => (ReadGroupWithTokenResult result);
 
   // Delete the group given group_id.
   // Return status code equivalent to absl::StatusCode.

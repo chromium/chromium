@@ -70,7 +70,7 @@ export class SupportToolElement extends SupportToolElementBase {
         value: SupportToolPageIndex.ISSUE_DETAILS,
         observer: 'onSelectedPageChange_',
       },
-      supportToolPageIndex_: {
+      supportToolPageIndexEnum_: {
         readonly: true,
         type: Object,
         value: SupportToolPageIndex,

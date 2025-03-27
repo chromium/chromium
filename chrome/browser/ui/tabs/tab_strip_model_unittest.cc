@@ -1819,6 +1819,36 @@ TEST_F(TabStripModelTest, CommandAddToSplit) {
   EXPECT_TRUE(tabstrip.empty());
 }
 
+TEST_F(TabStripModelTest, CommandRemoveSplit) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create four tabs, select the second.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 4, 0, "1"));
+  tabstrip.ActivateTabAt(1,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
+      3, TabStripModel::CommandAddToSplit));
+  tabstrip.ExecuteContextMenuCommand(3, TabStripModel::CommandAddToSplit);
+
+  EXPECT_EQ("0 1s 3s 2", GetTabStripStateString(tabstrip));
+  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
+      1, TabStripModel::CommandRemoveSplit));
+  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
+      3, TabStripModel::CommandRemoveSplit));
+  tabstrip.ExecuteContextMenuCommand(1, TabStripModel::CommandRemoveSplit);
+
+  // The two tabs in the split will now be unsplit retaining their indexes.
+  EXPECT_EQ("0 1 3 2", GetTabStripStateString(tabstrip));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
 TEST_F(TabStripModelTest, AddToSplitInGroup) {
   scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
   TestTabStripModelDelegate delegate;

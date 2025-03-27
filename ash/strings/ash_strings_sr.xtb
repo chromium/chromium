@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">Периферни уређај није подржан у режиму госта</translation>
 <translation id="1270290102613614947">Тастатура на екрану је онемогућена</translation>
 <translation id="1272079795634619415">Заустави</translation>
+<translation id="12741168609094094">Изаберите било шта на екрану да бисте претраживали, копирали текст и друго</translation>
 <translation id="1275285675049378717">Напаја се <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Изабрано је</translation>
 <translation id="1276975447697633661">Изаберите фајл, па притисните <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">Хотспот је искључен</translation>
 <translation id="1731815243805539470">Пређи на претходног корисника</translation>
 <translation id="1733996486177697563">Прелазите са тамне на светлу тему и обратно. Додирните и задржите радну површину, па изаберите Позадина и стил.</translation>
+<translation id="1735992454301033090">Изабрали сте област, користите тастере са стрелицама за померање</translation>
 <translation id="1736898441010944794">Ставка „<ph name="NAME" />“ је видљива за Bluetooth уређаје.</translation>
 <translation id="1737078180382804488">Одбаците подешавање прегледа обавештења на телефону</translation>
 <translation id="174102739345480129">Маркер је искључен.</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" />, претходне недеље</translation>
 <translation id="2687510499067466116">Тастерска пречица је промењена</translation>
 <translation id="2689613560355655046">Радна површина 8</translation>
+<translation id="2692092709110488417">Притисните Tab да бисте фокусирали и померили изабрану област</translation>
 <translation id="2695305337569143674">веб</translation>
 <translation id="2697697418792422688">Прегледајте подешавања тастатуре. Изабрали сте <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Користите апликацију Пренос садржаја да бисте преместили податке школског налога на лични налог</translation>
@@ -551,6 +554,7 @@
 <translation id="2872353916818027657">Замена примарног монитора</translation>
 <translation id="2872961005593481000">Искључи</translation>
 <translation id="2876338922445400217">Увећај приказ на екрану</translation>
+<translation id="2876760662374103627">Управљање лицем је активно</translation>
 <translation id="2878884018241093801">Нема недавних ставки</translation>
 <translation id="2880541185262491188">Превише покушаја уноса PIN-а. Сачекајте <ph name="TIME_LEFT" />, па пробајте поново</translation>
 <translation id="2883271196820422439">Наставите коришћење тастера миша</translation>
@@ -1033,6 +1037,7 @@
 <translation id="4412698727486357573">Центар за помоћ</translation>
 <translation id="4412944820643904175">Функција <ph name="FEATURE_NAME" /> је искључена.</translation>
 <translation id="4417647906073317561">Подешавања фокуса. Подесите тајмер, задатак и музику да бисте се фокусирали.</translation>
+<translation id="4418600384772451109">Затворите окно</translation>
 <translation id="4424159417645388645">Радна површина 5</translation>
 <translation id="4426817706804363424">Свака част!</translation>
 <translation id="4430019312045809116">Јачина звука</translation>
@@ -2230,6 +2235,7 @@
 <translation id="8287009018010202411">Продуктивност</translation>
 <translation id="828708037801473432">Искључено</translation>
 <translation id="8297006494302853456">Слаб</translation>
+<translation id="8300451473979404345">Изабрали сте маркер, користите тастере са стрелицама за померање</translation>
 <translation id="8308637677604853869">Претходни мени</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock је укључен</translation>
@@ -2290,6 +2296,7 @@
 <translation id="851458219935658693">Приказујте прозоре са актуелне радне површине, дугме за избор је изабрано</translation>
 <translation id="851660987304951246">Користите Помози ми да читам да бисте брзо резимирали садржај или постављали питања</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> се можда неће пунити док је укључен.</translation>
+<translation id="8519329096920173967">Претражите екран помоћу Google објектива</translation>
 <translation id="8535393432370007982">Опозовите редослед сортирања према боји</translation>
 <translation id="8536886494750559755">Прегледајте Quick Share подешавања. Видљиво је свима у периоду од <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Текст је копиран у привремену меморију</translation>

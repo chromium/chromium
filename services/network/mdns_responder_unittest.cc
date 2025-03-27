@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -121,7 +122,7 @@ std::string CreateResponseToMdnsNameGeneratorServiceQueryWithCacheFlush(
   txt_record.klass |= net::dns_protocol::kFlagCacheFlush;
   // Parsed record does not own the RDATA. Copy the owned RDATA before
   // constructing a new response.
-  const std::string owned_rdata(txt_record.rdata);
+  const std::vector<uint8_t> owned_rdata = base::ToVector(txt_record.rdata);
   txt_record.SetOwnedRdata(owned_rdata);
   std::vector<net::DnsResourceRecord> answers(1, txt_record);
   net::DnsResponse response_cache_flush(

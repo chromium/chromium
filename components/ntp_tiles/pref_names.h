@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_NTP_TILES_PREF_NAMES_H_
 #define COMPONENTS_NTP_TILES_PREF_NAMES_H_
 
+#include "build/branding_buildflags.h"
+
 namespace ntp_tiles::prefs {
 
 // The number of personal tiles we had previously. Used to figure out
@@ -35,8 +37,14 @@ inline constexpr char kPopularSitesJsonPref[] = "suggested_sites_json";
 inline constexpr char kPopularSitesVersionPref[] = "suggested_sites_version";
 
 // Prefs used to cache custom links.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+inline constexpr char kCustomLinksList[] = "custom_links_mobile.list";
+inline constexpr char kCustomLinksInitialized[] =
+    "custom_links_mobile.initialized";
+#else
 inline constexpr char kCustomLinksList[] = "custom_links.list";
 inline constexpr char kCustomLinksInitialized[] = "custom_links.initialized";
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // Pref used to verify whether custom links have been removed
 // for preinstalled default chrome apps

@@ -551,6 +551,7 @@
 <translation id="2872353916818027657">切換主要顯示器</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2876338922445400217">放大螢幕</translation>
+<translation id="2876760662374103627">已啟用「人臉操控」</translation>
 <translation id="2878884018241093801">最近沒有任何項目</translation>
 <translation id="2880541185262491188">嘗試輸入 PIN 的次數過多。請等候 <ph name="TIME_LEFT" />，然後再試一次</translation>
 <translation id="2883271196820422439">重新啟用滑鼠鍵</translation>
@@ -1515,6 +1516,7 @@
 <translation id="595202126637698455">效能追蹤已啟用</translation>
 <translation id="5955304353782037793">應用程式</translation>
 <translation id="5958529069007801266">受管使用者</translation>
+<translation id="596035801491797438">關閉「人臉操控」</translation>
 <translation id="5960410286721553511">查看手機最近的相片和媒體</translation>
 <translation id="5965524703725988602">切換深色主題背景。<ph name="STATE_TEXT" />。</translation>
 <translation id="5975235751479998104">向前循環切換視窗</translation>

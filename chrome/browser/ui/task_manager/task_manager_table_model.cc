@@ -846,7 +846,7 @@ void TaskManagerTableModel::FilterTaskList(std::vector<TaskId>& tasks) {
 
 void TaskManagerTableModel::OnTaskAdded(TaskId id) {
   if (!search_terms_.empty()) {
-    // Update matched process id if task manager is in search mode.
+    // Update matched process id.
     UpdateMatchedProcessSetById(id);
   }
 
@@ -854,8 +854,8 @@ void TaskManagerTableModel::OnTaskAdded(TaskId id) {
   // a new task has been added.
 
   // We will get a newly sorted list from the task manager as opposed to just
-  // adding |id| to |tasks_| because we want to keep |tasks_| sorted by proc IDs
-  // and then by Task IDs.
+  // adding |id| to |tasks_| because we want to keep |tasks_| sorted by proc
+  // IDs and then by Task IDs.
   tasks_ = observed_task_manager()->GetTaskIdsList();
   FilterTaskList(tasks_);
 
@@ -1119,17 +1119,6 @@ std::optional<size_t> TaskManagerTableModel::GetRowForWebContents(
   return static_cast<size_t>(index - tasks_.begin());
 }
 
-std::optional<size_t> TaskManagerTableModel::GetRowForActiveTask() {
-  if (!active_task_id_.has_value()) {
-    return std::nullopt;
-  }
-  auto index = std::ranges::find(tasks_, active_task_id_.value());
-  if (index == tasks_.end()) {
-    return std::nullopt;
-  }
-  return static_cast<size_t>(index - tasks_.begin());
-}
-
 void TaskManagerTableModel::StartUpdating() {
   TaskManagerInterface::GetTaskManager()->AddObserver(this);
   OnRefresh(observed_task_manager()->GetTaskIdsList());
@@ -1202,18 +1191,19 @@ bool TaskManagerTableModel::ShouldKeepTaskForSupportedType(
 }
 
 bool TaskManagerTableModel::ShouldKeepTask(TaskId task_id) const {
-  if (!search_terms_.empty()) {
-    // In search mode, keep the task if it falls in a supported category as well
-    // as if it is in the same task group with tasks matching the current search
-    // term.
-    return matched_process_set_.contains(
-        observed_task_manager()->GetProcessId(task_id));
-  }
-
   // TODO(crbug.com/364926055): Remove when the refreshed Task Manager launches.
   // Used for backward compatibility with the prod. task manager.
   if (!base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
     return true;
+  }
+
+  if (!search_terms_.empty() &&
+      !matched_process_set_.contains(
+          observed_task_manager()->GetProcessId(task_id))) {
+    // In refreshed task manager, task should not be kept if the task title does
+    // not match the search term or not in the same task group with the matched
+    // tasks.
+    return false;
   }
 
   Task::Type type;
@@ -1273,8 +1263,9 @@ void TaskManagerTableModel::UpdateMatchedProcessSet() {
 
 void TaskManagerTableModel::UpdateMatchedProcessSetById(TaskId task_id) {
   // Excludes the task from search term match if it does not fall in any
-  // category.
-  if (ShouldKeepTaskForSupportedType(task_id) &&
+  // supported category.
+  if ((display_category_ == DisplayCategory::kAll ||
+       ShouldKeepTaskForSupportedType(task_id)) &&
       base::i18n::StringSearchIgnoringCaseAndAccents(
           search_terms_, observed_task_manager()->GetTitle(task_id),
           /*match_index=*/nullptr, /*match_length=*/nullptr)) {

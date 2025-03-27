@@ -114,8 +114,8 @@ class TestAutofillManager : public autofill::BrowserAutofillManager {
   const FormStructure* WaitForFormWithNFields(int n) {
     return WaitForMatchingForm(this, base::BindRepeating(
                                          [](int n, const FormStructure& form) {
-                                           return form.active_field_count() ==
-                                                  (size_t)n;
+                                           return form.fields().size() ==
+                                                  static_cast<size_t>(n);
                                          },
                                          n));
   }

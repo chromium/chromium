@@ -8,6 +8,7 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/first_run/ui_bundled/best_features/coordinator/best_features_screen_detail_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/coordinator/best_features_screen_mediator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_delegate.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_view_controller.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
 @interface BestFeaturesScreenCoordinator () <BestFeaturesDelegate>
+
 @end
 
 @implementation BestFeaturesScreenCoordinator {
@@ -32,6 +34,8 @@
   UIView* _transparentView;
   // Best Features Screen view controller.
   BestFeaturesViewController* _viewController;
+  // The BestFeaturesScreenDetail coordinator.
+  BestFeaturesScreenDetailCoordinator* _detailScreenCoordinator;
 }
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -103,6 +107,9 @@
   _mediator = nil;
   _transparentView = nil;
   _viewController = nil;
+  [_detailScreenCoordinator stop];
+  _detailScreenCoordinator = nil;
+
   [super stop];
 }
 
@@ -115,7 +122,13 @@
 #pragma mark - BestFeaturesDelegate
 
 - (void)didTapBestFeaturesItem:(BestFeaturesItem*)item {
-  // TODO(crbug.com/396481431): Present detail view controller for item.
+  _detailScreenCoordinator = [[BestFeaturesScreenDetailCoordinator alloc]
+      initWithBaseNavigationViewController:_baseNavigationController
+                                   browser:self.browser
+                          bestFeaturesItem:item];
+
+  _detailScreenCoordinator.delegate = _delegate;
+  [_detailScreenCoordinator start];
 }
 
 #pragma mark - Private

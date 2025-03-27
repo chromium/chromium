@@ -180,6 +180,21 @@ ApiKeyCache::ApiKeyCache(const DefaultApiKeys& default_api_keys) {
       environment.get(), command_line, gaia_config,
       default_api_keys.allow_override_via_environment,
       default_api_keys.allow_unset_values);
+
+  api_key_cros_system_geo_ = CalculateKeyValue(
+      default_api_keys.google_api_key_cros_system_geo_,
+      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_CROS_SYSTEM_GEO), nullptr,
+      std::string(), environment.get(), command_line, gaia_config,
+      default_api_keys.allow_override_via_environment,
+      default_api_keys.allow_unset_values);
+
+  api_key_cros_chrome_geo_ = CalculateKeyValue(
+      default_api_keys.google_api_key_cros_chrome_geo_,
+      STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_CROS_CHROME_GEO), nullptr,
+      std::string(), environment.get(), command_line, gaia_config,
+      default_api_keys.allow_override_via_environment,
+      default_api_keys.allow_unset_values);
+
 #endif
 
   metrics_key_ = CalculateKeyValue(

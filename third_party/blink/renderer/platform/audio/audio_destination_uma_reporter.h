@@ -22,7 +22,7 @@ class PLATFORM_EXPORT AudioDestinationUmaReporter final {
   explicit AudioDestinationUmaReporter(const WebAudioLatencyHint&,
                                        int callback_buffer_size,
                                        float sample_rate);
-  virtual ~AudioDestinationUmaReporter();
+  ~AudioDestinationUmaReporter();
 
   // These methods are not thread-safe and must be called within
   // `AudioDestination::RequestRender()` method for correct instrumentation.

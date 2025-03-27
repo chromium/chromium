@@ -217,7 +217,6 @@ class ASH_EXPORT LockContentsView
   void HideMediaView();
   bool AreMediaControlsEnabled() const;
 
-  void OnWillChangeFocus(View* focused_before, View* focused_now) override;
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
  private:

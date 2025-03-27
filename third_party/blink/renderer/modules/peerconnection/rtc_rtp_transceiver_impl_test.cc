@@ -119,8 +119,8 @@ class RTCRtpTransceiverImplTest : public ::testing::Test {
         new rtc::RefCountedObject<blink::FakeRtpTransceiver>(
             receiver->track()->kind() ==
                     webrtc::MediaStreamTrackInterface::kAudioKind
-                ? cricket::MEDIA_TYPE_AUDIO
-                : cricket::MEDIA_TYPE_VIDEO,
+                ? webrtc::MediaType::AUDIO
+                : webrtc::MediaType::VIDEO,
             std::move(sender), std::move(receiver), std::move(mid), false,
             direction, std::move(current_direction)));
   }

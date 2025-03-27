@@ -51,6 +51,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_collections/public/tab_interface.h"
+#include "components/url_matcher/regex_set_matcher.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -1397,6 +1398,12 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Matcher for URLs that are eligible to have the tutorial IPH shown.
   std::unique_ptr<url_matcher::URLMatcher> tutorial_iph_url_matcher_;
+
+  // Matcher for URL paths that are eligible to have the tutorial IPH shown.
+  std::unique_ptr<url_matcher::RegexSetMatcher> page_path_allow_matcher_;
+
+  // Matcher for URL paths that are not eligible to have the tutorial IPH shown.
+  std::unique_ptr<url_matcher::RegexSetMatcher> page_path_block_matcher_;
 
   // Filters used by the URL matcher. Used to look up if a matching filter is an
   // allow filter or a block filter.

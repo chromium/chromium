@@ -6342,6 +6342,15 @@ AXObjectCacheImpl::GetCanvasElementBounds(AXID ax_id) {
   return it->value;
 }
 
+std::optional<ui::AXTreeID> AXObjectCacheImpl::GetAXObjectChildAXTreeID(
+    AXID ax_id) {
+  auto it = ax_id_to_child_tree_id_.find(ax_id);
+  if (it == ax_id_to_child_tree_id_.end()) {
+    return std::nullopt;
+  }
+  return it->value;
+}
+
 void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(agents_);
   visitor->Trace(document_);

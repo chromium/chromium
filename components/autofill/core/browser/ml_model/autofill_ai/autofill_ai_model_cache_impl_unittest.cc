@@ -10,15 +10,22 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/proto/autofill_ai_model_cache.pb.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
 namespace {
+
+using ::testing::IsEmpty;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 class AutofillAiModelCacheImplTest : public ::testing::Test {
  public:
@@ -183,6 +190,78 @@ TEST_F(AutofillAiModelCacheImplTest, InitSuccessMetric) {
   RecreateCache();
   histogram_tester.ExpectUniqueSample(
       "Autofill.AutofillAi.ModelCache.InitSuccess", true, 1);
+}
+
+// Tests that the cache returns the properly parsed field predictions for a
+// given cache entry.
+TEST_F(AutofillAiModelCacheImplTest, GetFieldPredictions) {
+  constexpr auto form_signature = FormSignature(123);
+  constexpr auto field_signature1 = FieldSignature(345);
+  constexpr auto field_signature2 = FieldSignature(765);
+
+  AutofillAiModelCache::ModelResponse model_response;
+  {
+    auto* field_response = model_response.add_field_responses();
+    field_response->set_field_type(PASSPORT_NUMBER);
+  }
+  {
+    auto* field_response = model_response.add_field_responses();
+    field_response->set_field_type(PASSPORT_ISSUING_COUNTRY);
+  }
+  {
+    auto* field_response = model_response.add_field_responses();
+    field_response->set_field_type(PASSPORT_EXPIRATION_DATE);
+    field_response->set_formatting_meta("DD.MM.YYYY");
+  }
+
+  using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;
+  using FieldPrediction = AutofillAiModelCache::FieldPrediction;
+  const auto identifier1 = FieldIdentifier{.signature = field_signature1};
+  const auto identifier2 = FieldIdentifier{.signature = field_signature1,
+                                           .rank_in_signature_group = 1};
+  const auto identifier3 = FieldIdentifier{.signature = field_signature2};
+  cache().Update(form_signature, model_response,
+                 {identifier1, identifier2, identifier3});
+
+  EXPECT_THAT(
+      cache().GetFieldPredictions(form_signature),
+      UnorderedElementsAre(
+          Pair(identifier1, FieldPrediction{.field_type = PASSPORT_NUMBER}),
+          Pair(identifier2,
+               FieldPrediction{.field_type = PASSPORT_ISSUING_COUNTRY}),
+          Pair(identifier3,
+               FieldPrediction{.field_type = PASSPORT_EXPIRATION_DATE,
+                               .format_string = u"DD.MM.YYYY"})));
+}
+
+// Tests that the cache handles invalid field types gracefully.
+TEST_F(AutofillAiModelCacheImplTest, GetFieldPredictionsInvalidType) {
+  constexpr auto form_signature = FormSignature(123);
+  constexpr auto field_signature = FieldSignature(345);
+
+  AutofillAiModelCache::ModelResponse model_response;
+  {
+    auto* field_response = model_response.add_field_responses();
+    constexpr int invalid_field_type = 789;
+    static_assert(ToSafeFieldType(invalid_field_type, NO_SERVER_DATA) ==
+                  NO_SERVER_DATA);
+    field_response->set_field_type(invalid_field_type);
+  }
+
+  using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;
+  using FieldPrediction = AutofillAiModelCache::FieldPrediction;
+  const auto identifier = FieldIdentifier{.signature = field_signature};
+  cache().Update(form_signature, model_response, {identifier});
+
+  EXPECT_THAT(cache().GetFieldPredictions(form_signature),
+              UnorderedElementsAre(Pair(
+                  identifier, FieldPrediction{.field_type = NO_SERVER_DATA})));
+}
+
+// Tests that the cache returns an empty map if there is no cache entry for
+// the form signature.
+TEST_F(AutofillAiModelCacheImplTest, GetNonExistantFieldPrediction) {
+  EXPECT_THAT(cache().GetFieldPredictions(FormSignature(4565)), IsEmpty());
 }
 
 }  // namespace

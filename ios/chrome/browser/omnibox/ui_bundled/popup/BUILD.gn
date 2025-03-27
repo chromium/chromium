@@ -26,8 +26,6 @@ swift_source_set("popup_swift") {
 
 source_set("popup") {
   sources = [
-    "autocomplete_controller_observer_bridge.h",
-    "autocomplete_controller_observer_bridge.mm",
     "omnibox_pedal_annotator.h",
     "omnibox_pedal_annotator.mm",
     "omnibox_popup_coordinator.h",
@@ -44,11 +42,6 @@ source_set("popup") {
     "pedal_section_extractor.mm",
     "pedal_suggestion_wrapper.h",
     "pedal_suggestion_wrapper.mm",
-    "popup_debug_info_consumer.h",
-    "popup_debug_info_view_controller.h",
-    "popup_debug_info_view_controller.mm",
-    "remote_suggestions_service_observer_bridge.h",
-    "remote_suggestions_service_observer_bridge.mm",
   ]
   deps = [
     ":popup_icon",
@@ -88,6 +81,7 @@ source_set("popup") {
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
     "//ios/chrome/browser/omnibox/ui_bundled/popup/carousel",
     "//ios/chrome/browser/omnibox/ui_bundled/popup/debugger",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup/debugger:ui",
     "//ios/chrome/browser/omnibox/ui_bundled/popup/row/actions",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/search_engines/model",
@@ -142,6 +136,7 @@ source_set("popup_ui") {
     "//base",
     "//components/favicon/core",
     "//components/omnibox/common",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:constants",
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/favicon/ui_bundled",
     "//ios/chrome/browser/net/model:crurl",
@@ -156,7 +151,6 @@ source_set("popup_ui") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/toolbar/ui_bundled/buttons",
-    "//ios/chrome/browser/ui/content_suggestions/cells:constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//net",

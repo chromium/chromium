@@ -471,6 +471,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     const mojoParams = {
       highlight: params.highlight === undefined ? true : params.highlight,
       selector: getMojoSelector(),
+      documentId: params.documentId ?? null,
     };
     const {errorReason} = (await this.handler.scrollTo(mojoParams));
     if (errorReason !== null) {

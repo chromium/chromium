@@ -111,6 +111,32 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Unknown"/>
 </enum>
 
+<enum name="TaskbarPinResult">
+<!--
+This is used when recording if Chrome should offer to pin to the taskbar,
+and the result of attempting to pin to taskbar when user requests it.
+-->
+
+  <int value="0" label="Success">Success pinning</int>
+  <int value="1" label="Feature unavailable">
+    Limited Access Feature not available
+  </int>
+  <int value="2" label="COM Error">
+    Error setting up the required COM objects
+  </int>
+  <int value="3" label="TaskbarManager error">
+    Error calling a TaskbarManager method
+  </int>
+  <int value="4" label="Post Async Results failed">
+    PostAsyncResults returned a failure code.
+  </int>
+  <int value="5" label="Pinning not allowed">
+    TaskbarManager returned pinning not allowed
+  </int>
+  <int value="6" label="Already pinned">Shortcut already pinned to taskbar</int>
+  <int value="7" label="Pin failed">Pin failed, e.g., user didn't confirm</int>
+</enum>
+
 <enum name="UsedDisplayIdFallback">
   <int value="0" label="Did not use fallback">
     Not missing DISPLAYCONFIG_PATH_INFO

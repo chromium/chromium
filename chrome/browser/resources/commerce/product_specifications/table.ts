@@ -69,9 +69,9 @@ export class TableElement extends CrLitElement {
     };
   }
 
-  columns: TableColumn[] = [];
-  draggingColumn: HTMLElement|null = null;
-  private hoveredColumnIndex_: number|null = null;
+  accessor columns: TableColumn[] = [];
+  accessor draggingColumn: HTMLElement|null = null;
+  private accessor hoveredColumnIndex_: number|null = null;
 
   private dragAndDropManager_: DragAndDropManager;
   private shoppingApi_: ShoppingServiceBrowserProxy =

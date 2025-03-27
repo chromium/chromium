@@ -342,7 +342,6 @@ pyproto_sources = [
   "$_python_dir/proto_json.py",
   "$_python_dir/reflection.py",
   "$_python_dir/runtime_version.py",
-  "$_python_dir/service.py",
   "$_python_dir/service_reflection.py",
   "$_python_dir/symbol_database.py",
   "$_python_dir/text_encoding.py",
@@ -353,7 +352,6 @@ pyproto_sources = [
 
 pyproto_internal_sources = [
   "$_python_dir/internal/__init__.py",
-  "$_python_dir/internal/_parameterized.py",
   "$_python_dir/internal/api_implementation.py",
   "$_python_dir/internal/builder.py",
   "$_python_dir/internal/containers.py",

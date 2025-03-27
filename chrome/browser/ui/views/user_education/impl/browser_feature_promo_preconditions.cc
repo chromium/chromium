@@ -72,7 +72,7 @@ user_education::FeaturePromoResult WindowActivePrecondition::CheckPrecondition(
   }
   return widget && widget->ShouldPaintAsActive()
              ? user_education::FeaturePromoResult::Success()
-             : user_education::FeaturePromoResult::kBlockedByUi;
+             : user_education::FeaturePromoResult::kAnchorSurfaceNotActive;
 }
 
 OmniboxNotOpenPrecondition::OmniboxNotOpenPrecondition(
@@ -105,7 +105,7 @@ ToolbarNotCollapsedPrecondition::CheckPrecondition(ComputedData&) const {
   if (const auto* const controller =
           browser_view_->toolbar()->toolbar_controller()) {
     if (controller->InOverflowMode()) {
-      return user_education::FeaturePromoResult::kBlockedByUi;
+      return user_education::FeaturePromoResult::kWindowTooSmall;
     }
   }
   return user_education::FeaturePromoResult::Success();
@@ -122,7 +122,7 @@ user_education::FeaturePromoResult
 BrowserNotClosingPrecondition::CheckPrecondition(ComputedData&) const {
   if (browser_view_->browser()->IsBrowserClosing() ||
       browser_view_->GetWidget()->IsClosed()) {
-    return user_education::FeaturePromoResult::kBlockedByUi;
+    return user_education::FeaturePromoResult::kBlockedByContext;
   }
   return user_education::FeaturePromoResult::Success();
 }
@@ -201,7 +201,7 @@ user_education::FeaturePromoResult UserNotActivePrecondition::CheckPrecondition(
   if (min_idle_time.is_positive()) {
     const auto elapsed = time_provider_->GetCurrentTime() - last_active_time_;
     return elapsed < min_idle_time
-               ? user_education::FeaturePromoResult::kBlockedByUi
+               ? user_education::FeaturePromoResult::kBlockedByUserActivity
                : user_education::FeaturePromoResult::Success();
   } else {
     return user_education::FeaturePromoResult::Success();

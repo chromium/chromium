@@ -166,12 +166,12 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // `main_frame_origin`'s host is also sent as part of the encrypted request.
   //
   // `ip_address_space` is the IPAddressSpace of the frame that's running the
-  // auction. It's used to create a ClientSecurityState that, depending on
-  // global settings, can have a PrivateNetworkRequestPolicy that sends CORS
-  // preflight requests if the signals URL maps to an IP on a less public
-  // address space. The other members of ClientSecurityState use default values.
-  // Default values are safe since these are credentialless requests. Any data
-  // taken from the frame would also potentially be a leak.
+  // auction. It's used to create a ClientSecurityState that has a
+  // PrivateNetworkRequestPolicy that will block the signals fetch if the
+  // signals URL maps to an IP on a less public address space. The other members
+  // of ClientSecurityState use default values.  Default values are safe since
+  // these are credentialless requests. Any data taken from the frame would also
+  // potentially be a leak.
   //
   // `script_origin` is the owner of the interest group the request is for. Used
   // as the initiator for CORS.
@@ -199,9 +199,12 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // `main_frame_origin`'s host is also sent as part of the encrypted request.
   //
   // `ip_address_space` is the IPAddressSpace of the frame that's running the
-  // auction. The other members of ClientSecurityState are either based on its
-  // value or use defaults. Defaults are safe since these are credentialless
-  // requests. Any data taken from the frame would also potentially be a leak.
+  // auction. It's used to create a ClientSecurityState that has a
+  // PrivateNetworkRequestPolicy that will block the signals fetch if the
+  // signals URL maps to an IP on a less public address space. The other members
+  // of ClientSecurityState use default values.  Default values are safe since
+  // these are credentialless requests. Any data taken from the frame would also
+  // potentially be a leak.
   //
   // `script_origin` is the seller for the auction. Used as the initiator for
   // CORS.

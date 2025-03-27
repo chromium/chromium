@@ -1229,6 +1229,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Boca.Babelorca.{Request}.HttpResponseCodeOrNetError"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-03-21">
+  <owner>anasr@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the net error or HTTP response code of the {Request} request needed
+    to send/receive captions in a Class Tools session.
+  </summary>
+  <token key="Request">
+    <variant name="JoinGroup"/>
+    <variant name="ReceiveMessages"/>
+    <variant name="SendMessage"/>
+    <variant name="SigninGaia"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Boca.NumberOfActiveStudentsWhenSessionEnded"
     units="students" expires_after="2025-08-10">
   <owner>caott@google.com</owner>

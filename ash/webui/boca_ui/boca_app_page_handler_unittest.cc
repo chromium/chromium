@@ -89,12 +89,13 @@ mojom::OnTaskConfigPtr GetCommonTestLockOnTaskConfig() {
   tabs.push_back(mojom::ControlledTab::New(
       mojom::TabInfo::New(1, "google", GURL("http://google.com/"),
                           GURL("http://data/image")),
-      /*=navigation_type*/ mojom::NavigationType::kOpen));
+      /*navigation_type=*/mojom::NavigationType::kOpen));
   tabs.push_back(mojom::ControlledTab::New(
       mojom::TabInfo::New(2, "youtube", GURL("http://youtube.com/"),
                           GURL("http://data/image")),
-      /*=navigation_type*/ mojom::NavigationType::kBlock));
-  return mojom::OnTaskConfig::New(/*=is_locked*/ true, std::move(tabs));
+      /*navigation_type=*/mojom::NavigationType::kBlock));
+  return mojom::OnTaskConfig::New(/*is_locked=*/true, /*is_paused=*/true,
+                                  std::move(tabs));
 }
 
 mojom::OnTaskConfigPtr GetCommonTestUnLockedOnTaskConfig() {
@@ -102,14 +103,16 @@ mojom::OnTaskConfigPtr GetCommonTestUnLockedOnTaskConfig() {
   tabs.push_back(mojom::ControlledTab::New(
       mojom::TabInfo::New(1, "google", GURL("http://google.com/"),
                           GURL("http://data/image")),
-      /*=navigation_type*/ mojom::NavigationType::kOpen));
-  return mojom::OnTaskConfig::New(/*=is_locked*/ false, std::move(tabs));
+      /*navigation_type=*/mojom::NavigationType::kOpen));
+  return mojom::OnTaskConfig::New(/*is_locked=*/false, /*is_paused=*/false,
+                                  std::move(tabs));
 }
 
 ::boca::OnTaskConfig GetCommonTestLockOnTaskConfigProto() {
   ::boca::OnTaskConfig on_task_config;
   auto* active_bundle = on_task_config.mutable_active_bundle();
   active_bundle->set_locked(true);
+  active_bundle->set_lock_to_app_home(true);
   auto* content = active_bundle->mutable_content_configs()->Add();
   content->set_url("http://google.com/");
   content->set_favicon_url("http://data/image");
@@ -129,6 +132,7 @@ mojom::OnTaskConfigPtr GetCommonTestUnLockedOnTaskConfig() {
   ::boca::OnTaskConfig on_task_config;
   auto* active_bundle = on_task_config.mutable_active_bundle();
   active_bundle->set_locked(false);
+  active_bundle->set_lock_to_app_home(false);
   auto* content = active_bundle->mutable_content_configs()->Add();
   content->set_url("http://google.com/");
   content->set_favicon_url("http://data/image");
@@ -165,6 +169,7 @@ mojom::CaptionConfigPtr GetCommonCaptionConfig() {
   auto* active_bundle =
       session_config.mutable_on_task_config()->mutable_active_bundle();
   active_bundle->set_locked(false);
+  active_bundle->set_lock_to_app_home(false);
   auto* content = active_bundle->mutable_content_configs()->Add();
   content->set_url("http://default.com/");
   content->set_favicon_url("http://data/image");
@@ -542,6 +547,8 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
                                       .photo_url());
             ASSERT_TRUE(request->on_task_config());
             EXPECT_TRUE(request->on_task_config()->active_bundle().locked());
+            EXPECT_TRUE(
+                request->on_task_config()->active_bundle().lock_to_app_home());
             ASSERT_EQ(2, request->on_task_config()
                              ->active_bundle()
                              .content_configs()
@@ -712,6 +719,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
         auto* active_bundle =
             session_config.mutable_on_task_config()->mutable_active_bundle();
         active_bundle->set_locked(true);
+        active_bundle->set_lock_to_app_home(true);
         auto* content = active_bundle->mutable_content_configs()->Add();
         content->set_url("http://google.com/");
         content->set_favicon_url("http://data/image");
@@ -774,6 +782,7 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
 
   ASSERT_EQ(1u, result->on_task_config->tabs.size());
   ASSERT_TRUE(result->on_task_config->is_locked);
+  ASSERT_TRUE(result->on_task_config->is_paused);
   EXPECT_EQ(mojom::NavigationType::kOpen,
             result->on_task_config->tabs[0]->navigation_type);
   EXPECT_EQ("http://google.com/",

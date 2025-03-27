@@ -65,8 +65,10 @@ class ContextualSearchProvider : public BaseSearchProvider {
   // way into the '@page' scope.
   void AddPageSearchActionMatches();
 
-  // Adds a placeholder match that can keep the omnibox in '@page' keyword mode.
-  void AddPlaceholderMatch(std::u16string_view contents);
+  // Adds a default match for verbatim input, or keyword instructions if there
+  // is no input yet. This is the match that holds the omnibox in keyword mode
+  // when no other matches are available yet.
+  void AddDefaultMatch(std::u16string_view input_text);
 
   // Keyword taken from most recently started autocomplete input.
   std::u16string input_keyword_;

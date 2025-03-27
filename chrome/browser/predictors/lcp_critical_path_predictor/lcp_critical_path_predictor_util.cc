@@ -1000,27 +1000,29 @@ LcppDataInputs::~LcppDataInputs() = default;
 bool UpdateLcppStatWithLcppDataInputs(const LcppDataInputs& inputs,
                                       LcppStat& stat) {
   bool data_updated = false;
-  int sliding_window_size =
-      blink::features::kLCPCriticalPathPredictorHistogramSlidingWindowSize
-          .Get();
-  int max_histogram_buckets =
-      blink::features::kLCPCriticalPathPredictorMaxHistogramBuckets.Get();
   data_updated |= RecordLcpElementLocatorHistogram(
-      sliding_window_size, max_histogram_buckets, inputs.lcp_element_locator,
-      stat);
+      blink::features::kLCPCriticalPathPredictorSlidingWindowSize.Get(),
+      blink::features::kLCPCriticalPathPredictorMaxHistogramBuckets.Get(),
+      inputs.lcp_element_locator, stat);
   data_updated |= RecordLcpInfluencerScriptUrlsHistogram(
-      sliding_window_size, max_histogram_buckets, inputs.lcp_influencer_scripts,
-      stat);
+      blink::features::kLCPScriptObserverSlidingWindowSize.Get(),
+      blink::features::kLCPScriptObserverMaxHistogramBuckets.Get(),
+      inputs.lcp_influencer_scripts, stat);
   data_updated |= RecordFetchedFontUrlsHistogram(
-      sliding_window_size, max_histogram_buckets, inputs.font_urls, stat);
+      blink::features::kLCPPFontURLPredictorSlidingWindowSize.Get(),
+      blink::features::kLCPPFontURLPredictorMaxHistogramBuckets.Get(),
+      inputs.font_urls, stat);
   data_updated |= RecordFetchedSubresourceUrlsHistogram(
-      sliding_window_size, max_histogram_buckets, inputs.subresource_urls,
-      stat);
+      blink::features::kHttpDiskCachePrewarmingSlidingWindowSize.Get(),
+      blink::features::kHttpDiskCachePrewarmingMaxHistogramBuckets.Get(),
+      inputs.subresource_urls, stat);
   data_updated |= RecordPreconnectOriginsHistogram(
-      sliding_window_size, max_histogram_buckets, inputs.preconnect_origins,
-      stat);
+      blink::features::kLCPPAutoPreconnectSlidingWindowSize.Get(),
+      blink::features::kLCPPAutoPreconnectMaxHistogramBuckets.Get(),
+      inputs.preconnect_origins, stat);
   data_updated |= RecordUnusedPreloadUrlsHistogram(
-      sliding_window_size, max_histogram_buckets,
+      blink::features::kLCPPDeferUnusedPreloadSlidingWindowSize.Get(),
+      blink::features::kLCPPDeferUnusedPreloadMaxHistogramBuckets.Get(),
       inputs.unused_preload_resources, stat);
   base::UmaHistogramCounts10000("Blink.LCPP.ReportedFontCount",
                                 base::checked_cast<int>(inputs.font_url_count));

@@ -103,6 +103,15 @@ class AccountSelectFillData {
   // field the user clicked.
   std::unique_ptr<FillData> GetFillData(const std::u16string& username) const;
 
+  // Returns data for password form filling based on the |username| chosen by
+  // the user and contextual information. This interface is meant to be used
+  // when in stateless mode.
+  std::unique_ptr<FillData> GetFillData(
+      const std::u16string& username,
+      autofill::FormRendererId form_renderer_id,
+      autofill::FieldRendererId field_renderer_id,
+      bool is_password_field) const;
+
   // Returns form information from |forms_| that has id |form_identifier|.
   // If |is_password_field| == false and |field_identifier| is not equal to
   // form username_element null is returned. If |is_password_field| == true then
@@ -116,6 +125,13 @@ class AccountSelectFillData {
   void ResetCache();
 
  private:
+  // Returns data for password form filling based on the |username| chosen by
+  // the user and contextual information provided through |requested_form|.
+  std::unique_ptr<FillData> GetFillData(
+      const std::u16string& username,
+      const FormInfo* requested_form,
+      autofill::FieldRendererId password_field_id) const;
+
   // Keeps data about all known forms. The key is the pair (form_id, username
   // field_name).
   std::map<autofill::FormRendererId, FormInfo> forms_;

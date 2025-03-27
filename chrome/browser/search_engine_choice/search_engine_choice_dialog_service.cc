@@ -152,10 +152,11 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(
           ->GetCountryId();
   SCOPED_CRASH_KEY_STRING32(
       "ChoiceService", "choice_country",
-      country_codes::CountryIDToCountryString(country_id_holder.GetRestricted(
-          regional_capabilities::CountryAccessKey(
+      country_id_holder
+          .GetRestricted(regional_capabilities::CountryAccessKey(
               regional_capabilities::CountryAccessReason::
-                  kSearchEngineChoiceNotifyChoiceMadeDebug))));
+                  kSearchEngineChoiceNotifyChoiceMadeDebug))
+          .CountryCode());
   SCOPED_CRASH_KEY_NUMBER("ChoiceService", "prepopulate_id", prepopulate_id);
   SCOPED_CRASH_KEY_NUMBER("ChoiceService", "entry_point",
                           static_cast<int>(entry_point));

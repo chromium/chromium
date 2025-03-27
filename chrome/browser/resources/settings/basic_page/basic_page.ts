@@ -87,12 +87,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   static get properties() {
     return {
-      /** Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       // <if expr="not chromeos_ash">
       /**
        * Read-only reference to the languages model provided by the

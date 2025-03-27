@@ -121,7 +121,10 @@ CountersAttachmentContext CountersAttachmentContext::DeepClone() const {
   for (auto& [counter_name, stack] : *clone.counter_inheritance_table_) {
     stack = MakeGarbageCollected<CounterStack>(*stack);
     for (Member<CounterEntry>& entry : *stack) {
-      entry = MakeGarbageCollected<CounterEntry>(*entry);
+      // Containment boundaries are nullptr.
+      if (entry) {
+        entry = MakeGarbageCollected<CounterEntry>(*entry);
+      }
     }
   }
   return clone;

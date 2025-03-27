@@ -87,16 +87,20 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
   render_frame_->GetWebView()
       ->GetSettings()
       ->SetAccessibilityPasswordValuesEnabled(true);
-#elif BUILDFLAG(IS_MAC)
-  // aria-modal currently prunes the accessibility tree on Mac only.
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+  // aria-modal currently prunes the accessibility tree on Mac and Android only.
   render_frame_->GetWebView()->GetSettings()->SetAriaModalPrunesAXTree(true);
-#elif BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
   // Do not ignore SVG grouping (<g>) elements on ChromeOS, which is needed so
   // Select-to-Speak can read SVG text nodes in natural reading order.
   render_frame_->GetWebView()
       ->GetSettings()
       ->SetAccessibilityIncludeSvgGElement(true);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   ax_annotators_manager_ = std::make_unique<AXAnnotatorsManager>(this);
 }

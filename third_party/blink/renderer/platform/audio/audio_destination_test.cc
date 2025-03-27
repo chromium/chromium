@@ -242,10 +242,16 @@ TEST_P(AudioDestinationTest, GlitchAndDelay) {
       base::Milliseconds(80),
   });
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+  // Desktop platforms bypass the priming delay in the output buffer.
+  const int priming_frames = 0;
+#else
   // When creating the AudioDestination, some silence is added to the fifo to
   // prevent an underrun on the first callback. This contributes a constant
   // delay.
   const int priming_frames = RoundUpToRenderQuantum(requested_frames);
+#endif
   base::TimeDelta priming_delay = audio_utilities::FramesToTime(
       priming_frames, Platform::Current()->AudioHardwareSampleRate());
 

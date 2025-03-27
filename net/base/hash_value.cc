@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/base/hash_value.h"
 
 #include <stdlib.h>
@@ -35,12 +30,12 @@ constexpr std::string_view kSha256Slash = "sha256/";
 struct SHA256ToHashValueComparator {
   bool operator()(const SHA256HashValue& lhs, const HashValue& rhs) const {
     DCHECK_EQ(HASH_VALUE_SHA256, rhs.tag());
-    return memcmp(lhs.data, rhs.data(), rhs.size()) < 0;
+    return lhs < rhs.span();
   }
 
   bool operator()(const HashValue& lhs, const SHA256HashValue& rhs) const {
     DCHECK_EQ(HASH_VALUE_SHA256, lhs.tag());
-    return memcmp(lhs.data(), rhs.data, lhs.size()) < 0;
+    return lhs.span() < rhs;
   }
 };
 
@@ -64,7 +59,7 @@ bool HashValue::FromString(std::string_view value) {
     return false;
   }
   tag_ = HASH_VALUE_SHA256;
-  memcpy(data(), decoded->data(), size());
+  UNSAFE_TODO(memcpy(data(), decoded->data(), size()));
   return true;
 }
 
@@ -81,20 +76,33 @@ std::string HashValue::ToString() const {
 size_t HashValue::size() const {
   switch (tag_) {
     case HASH_VALUE_SHA256:
-      return sizeof(fingerprint.sha256.data);
+      return sizeof(fingerprint.sha256);
   }
 
   NOTREACHED();
 }
 
 unsigned char* HashValue::data() {
-  return const_cast<unsigned char*>(const_cast<const HashValue*>(this)->data());
+  return span().data();
 }
 
 const unsigned char* HashValue::data() const {
+  return span().data();
+}
+
+base::span<uint8_t> HashValue::span() {
   switch (tag_) {
     case HASH_VALUE_SHA256:
-      return fingerprint.sha256.data;
+      return fingerprint.sha256;
+  }
+
+  NOTREACHED();
+}
+
+base::span<const uint8_t> HashValue::span() const {
+  switch (tag_) {
+    case HASH_VALUE_SHA256:
+      return fingerprint.sha256;
   }
 
   NOTREACHED();

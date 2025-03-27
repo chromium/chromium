@@ -250,6 +250,7 @@
 <translation id="2172905120685242547">ဝင်ဒိုး ပိတ်မလား။</translation>
 <translation id="2173302385160625112">သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
 <translation id="2175927920773552910">QR ကုဒ်</translation>
+<translation id="2181097965834437145">ဝဘ်လိပ်စာဘားကို ပြရန် သို့မဟုတ် ဝှက်ရန်</translation>
 <translation id="2184272387334793084">သင့်စက်အားလုံးတွင် စကားဝှက်နှင့် အခြားအရာများ ရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="218608176142494674">မျှဝေခြင်း</translation>
 <translation id="219283042927675668">အုပ်စုလိုက် တဘ်များ</translation>
@@ -676,6 +677,7 @@
 <translation id="4195643157523330669">တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{ဤစက်ပေါ်ရှိ တဘ် ၁ ခု}other{ဤစက်ပေါ်ရှိ တဘ် # ခု}}</translation>
 <translation id="4198423547019359126">ဒေါင်းလုဒ်တည်နေရာ မရှိပါ</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • ဤဝဘ်ဆိုက်တွင် သင်သုံးထားသည်</translation>
 <translation id="4214315110991671325">သင်သည် ကွတ်ကီးများကို ခွင့်ပြုပါက Chrome က ကြိုဖွင့်ခြင်းအတွက် ၎င်းတို့ကို သုံးနိုင်ပါသည်။</translation>
 <translation id="4216511743389425832">ဤစာမျက်နှာကို နားထောင်ရန်</translation>
 <translation id="4225725533026049334">လိုက်ကြည့်နေသည်များ</translation>

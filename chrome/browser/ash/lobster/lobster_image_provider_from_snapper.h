@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
 #include "chrome/browser/ash/lobster/lobster_image_fetcher.h"
+#include "components/manta/proto/manta.pb.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -47,6 +48,8 @@ class LobsterImageProviderFromSnapper : public LobsterImageFetcher::Provider {
                              std::unique_ptr<manta::proto::Response> response,
                              manta::MantaStatus status);
   void OnImagesSanitized(
+      const ::google::protobuf::RepeatedPtrField<::manta::proto::FilteredData>&
+          filtered_data,
       ash::RequestCandidatesCallback callback,
       const std::vector<std::optional<ash::LobsterImageCandidate>>&
           sanitized_image_candidates);

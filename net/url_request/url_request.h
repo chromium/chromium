@@ -894,6 +894,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     storage_access_status_ = status;
   }
 
+  void reset_storage_access_status() { storage_access_status_.Reset(); }
+
   // Returns the StorageAccessStatus for this request.
   // TODO(https://crbug.com/366284840): move this state out of //net (into
   // network::URLLoader) to respect layering rules.

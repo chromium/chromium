@@ -115,7 +115,7 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
         AnimatorSet animatorSet =
                 mHostView.getAnimatorSet(
                         /* originX= */ -1, /* originY= */ -1, /* statusBarHeight= */ 0);
-        assertEquals(2, animatorSet.getChildAnimations().size());
+        assertEquals(3, animatorSet.getChildAnimations().size());
     }
 
     @Test

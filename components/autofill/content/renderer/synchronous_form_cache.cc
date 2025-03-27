@@ -37,6 +37,7 @@ std::optional<FormData> SynchronousFormCache::GetOrExtractForm(
     const blink::WebFormElement& form_element,
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state,
+    form_util::ButtonTitlesCache* button_titles_cache,
     DenseSet<form_util::ExtractOption> extract_options) const {
   if (!cache_.empty()) {
     CHECK(base::FeatureList::IsEnabled(
@@ -61,7 +62,8 @@ std::optional<FormData> SynchronousFormCache::GetOrExtractForm(
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
   return form_util::ExtractFormData(document, form_element, field_data_manager,
-                                    timer_state, extract_options);
+                                    timer_state, button_titles_cache,
+                                    extract_options);
 }
 
 void SynchronousFormCache::insert(FormRendererId form_id,

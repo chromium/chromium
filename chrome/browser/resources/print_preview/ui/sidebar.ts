@@ -144,6 +144,7 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   private firstLoad_: boolean;
   private isInAppKioskMode_: boolean;
   private settingsExpandedByUser_: boolean;
+  maxSheets: number;
   private sheetCount_: number;
   private shouldShowMoreSettings_: boolean;
 

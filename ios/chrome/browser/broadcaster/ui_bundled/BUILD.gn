@@ -12,7 +12,7 @@ source_set("ui_bundled") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:content_suggestions_constant",
     "//ios/web/common:features",
   ]
 }

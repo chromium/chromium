@@ -7,7 +7,7 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
-#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router.h"
+#include "components/enterprise/connectors/core/reporting_event_router.h"
 #include "content/public/browser/browser_context.h"
 
 namespace enterprise_connectors {

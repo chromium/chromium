@@ -197,7 +197,6 @@ class FormData {
   void set_name(std::u16string name) { name_ = std::move(name); }
 
   // Titles of form's buttons.
-  // Only populated in Password Manager.
   const ButtonTitleList& button_titles() const { return button_titles_; }
   void set_button_titles(ButtonTitleList button_titles) {
     button_titles_ = std::move(button_titles);

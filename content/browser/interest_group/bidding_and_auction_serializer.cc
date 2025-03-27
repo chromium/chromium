@@ -19,7 +19,7 @@
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
@@ -340,11 +340,8 @@ ValueAndSizeAndPrevWinsSize SerializeInterestGroup(
     // Currently it's probably not worth it to deserialize this at the same time
     // we load the interest group from the database. We will want to revisit
     // this in the future.
-    JSONStringValueDeserializer deserializer(prev_win->ad_json);
-    std::string error_msg;
-    std::unique_ptr<base::Value> ad = deserializer.Deserialize(
-        /*error_code=*/nullptr,
-        /*error_message=*/&error_msg);
+    std::optional<base::Value::Dict> ad =
+        base::JSONReader::ReadDict(prev_win->ad_json);
     if (!ad) {
       // This should not happen unless the DB is corrupted.
       // Just do our best regardless.
@@ -354,7 +351,7 @@ ValueAndSizeAndPrevWinsSize SerializeInterestGroup(
             blink::AuctionServerRequestFlagsEnum::kIncludeFullAds)) {
       cbor::Value::MapValue obj;
       base::CheckedNumeric<size_t> obj_elements_size = 0;
-      for (const auto kv : ad->GetDict()) {
+      for (const auto kv : *ad) {
         switch (kv.second.type()) {
           case base::Value::Type::BOOLEAN:
             obj[cbor::Value(kv.first)] = cbor::Value(kv.second.GetBool());
@@ -379,7 +376,7 @@ ValueAndSizeAndPrevWinsSize SerializeInterestGroup(
       tuple_elements_size += TaggedMapLength(obj, obj_elements_size);
       tuple.emplace_back(std::move(obj));
     } else {
-      std::string* ad_render_id = ad->GetDict().FindString("adRenderId");
+      std::string* ad_render_id = ad->FindString("adRenderId");
       if (ad_render_id) {
         tuple.emplace_back(*ad_render_id);
         tuple_elements_size += TaggedStringLength(ad_render_id->size());

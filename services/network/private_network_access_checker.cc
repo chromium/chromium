@@ -260,7 +260,7 @@ Result PrivateNetworkAccessChecker::CheckInternal(
     case Policy::kPreflightBlock:
       return Result::kBlockedByPolicyPreflightBlock;
     case Policy::kPermissionBlock:
-      return Result::kLNABlockedByMissingPermission;
+      return Result::kLNAPermissionRequired;
     case Policy::kPermissionWarn:
       return Result::kLNAAllowedByPolicyWarn;
   }

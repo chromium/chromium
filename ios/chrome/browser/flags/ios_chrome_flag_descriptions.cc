@@ -802,6 +802,12 @@ extern const char kLensOverlayForceShowOnboardingScreenDescription[] =
     "When enabled, it forces showing the onboarding screen everytime lens "
     "overlay is open";
 
+extern const char kLensOverlayNavigationHistoryName[] =
+    "Enable Lens overlay navigation history";
+extern const char kLensOverlayNavigationHistoryDescription[] =
+    "When enabled, web navigation in the Lens overlay are recorded in browser "
+    "history.";
+
 extern const char kLensPrewarmHardStickinessInInputSelectionName[] =
     "Lens prewarm hard stickiness in input selection";
 extern const char kLensPrewarmHardStickinessInInputSelectionDescription[] =
@@ -1108,6 +1114,24 @@ const char kNotificationSettingsMenuItemName[] =
 const char kNotificationSettingsMenuItemDescription[] =
     "Displays the menu item for the notification controls inside the chrome "
     "settings UI.";
+
+const char kReaderModeDistillerHeuristicName[] =
+    "Reader Mode distillation trigger heuristic";
+const char kReaderModeDistillerHeuristicDescription[] =
+    "Enables Reader Mode distillation heuristic that triggers Reader Mode UI "
+    "entry point if available";
+
+const char kReaderModeDistillerHeuristicSamplingName[] =
+    "Reader Mode distiller heuristic sampling";
+const char kReaderModeDistillerHeuristicSamplingDescription[] =
+    "The probability that the Reader Mode heuristic will run on a given page "
+    "load, used for sampling the heuristic on user page loads.";
+
+const char kReaderModeDistillerHeuristicPageLoadDelayName[] =
+    "Reader Mode distiller heuristic page load delay";
+const char kReaderModeDistillerHeuristicPageLoadDelayDescription[] =
+    "The delay (in duration string format) between the page load and the "
+    "heuristic to determine the eligibility of the page for Reader Mode.";
 
 const char kRefactorToolbarsSizeName[] = "Refactor toolbars size";
 const char kRefactorToolbarsSizeDescription[] =

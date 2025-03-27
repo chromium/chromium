@@ -114,6 +114,19 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
   EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
 }
 
+// Tests that a deletion completed notification is shown, and closed when
+// CloseNotifications() is called.
+IN_PROC_BROWSER_TEST_F(MigrationNotificationManagerTest,
+                       ShowDeletionCompletedNotification) {
+  EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
+
+  manager()->ShowDeletionCompletedNotification();
+  EXPECT_TRUE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
+
+  manager()->CloseNotifications();
+  EXPECT_FALSE(tester_->GetNotification(kSkyVaultMigrationNotificationId));
+}
+
 // Tests that an error notification is shown, and closed when
 // CloseNotifications() is called.
 IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,

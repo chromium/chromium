@@ -11,6 +11,7 @@
 namespace contextual_cueing {
 
 BASE_DECLARE_FEATURE(kContextualCueing);
+BASE_DECLARE_FEATURE(kGlicZeroStateSuggestions);
 
 // The amount of time to wait when a nudge is dismissed following the
 // exponential back off rule. The amount of the time to back off each time can

@@ -11,6 +11,7 @@
 <translation id="102432830749687801">स्कूल वाले अपने खाते का ऐक्सेस हटने से पहले, उस पर मौजूद डेटा को निजी खाते में ट्रांसफ़र करें. इसके लिए, Google का कॉन्टेंट ट्रांसफ़र ऐप्लिकेशन इस्तेमाल करें.</translation>
 <translation id="1026212596705997935">यह शॉर्टकट "<ph name="CONFLICT_ACCEL_NAME" />" के लिए इस्तेमाल किया जा रहा है. कोई नया शॉर्टकट दबाएं. मौजूदा शॉर्टकट को बदलने के लिए, इस शॉर्टकट को फिर से दबाएं.</translation>
 <translation id="1030856839388844477">मोबाइल डेटा खर्च से जुड़ी जानकारी को रीसेट करें</translation>
+<translation id="1047095725494118091">डाउनलोड नहीं किया जा सकता. फिर से कोशिश करें या <ph name="DEVICE_TYPE" /> रीस्टार्ट करें.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />गीगाहर्ट्ज़)</translation>
 <translation id="1047773237499189053">नई सुविधा उपलब्ध है, ज़्यादा जानने के लिए अप ऐरो बटन इस्तेमाल करें.</translation>
 <translation id="1049663189809099096">हल्के पीले</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">स्क्रीन सेवर डाउनलोड हो रहा है</translation>
 <translation id="1094693127011229778">आईपी पता मौजूद नहीं है</translation>
 <translation id="1100902271996134409">इमेज बनाई जा रही हैं...</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> ऑडियो</translation>
 <translation id="1116694919640316211">इसके बारे में</translation>
 <translation id="1118572504348554005">इस फ़ॉर्म की मदद से सबमिट किए गए किसी भी सुझाव, शिकायत या राय को हम अपने पार्टनर के साथ शेयर कर सकते हैं. इससे हम उन गड़बड़ियों और अन्य समस्याओं को हल कर पाते हैं जिनकी शिकायत हमसे की जाती है. इस फ़ॉर्म में, पासवर्ड जैसी संवेदनशील जानकारी न दें.</translation>
 <translation id="1119403468619527527">आसान शब्दों में समझने के लिए चुने गए शब्द बहुत कम हैं</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">गहरे रंग वाला मोड चालू करें</translation>
 <translation id="2164131940279488868">ऑडियो रिकॉर्ड करने के लिए, पक्का करें कि माइक कनेक्ट किया गया हो</translation>
 <translation id="2173302385160625112">अपना इंटरनेट कनेक्शन जाँचें</translation>
+<translation id="2176909213844392588"><ph name="LANGUAGE_NAME" /> में बोले गए शब्दों को टेक्स्ट में बदलने का मॉडल डाउनलोड नहीं किया जा सका. फिर से कोशिश करें या अपना <ph name="DEVICE_TYPE" /> रीस्टार्ट करें.</translation>
 <translation id="2180197493692062006">कोई गड़बड़ी हुई. ऐप्लिकेशन को फिर से खोलने की कोशिश करें.</translation>
 <translation id="2189104374785738357">एपीएन की जानकारी में बदलाव करना</translation>
 <translation id="2195732836444333448">अब और अनुरोध नहीं किए जा सकते. कुछ समय बाद दोबारा कोशिश करें.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">डॉक्यूमेंट फ़ीडर (दो तरफ़ वाला)</translation>
 <translation id="3201315366910775591">शेयर किए गए एल्बम को अन्य लोग अपडेट कर सकते हैं</translation>
 <translation id="3211671540163313381">कीमैपिंग डी-पैड</translation>
+<translation id="3217462202230355157">पक्का करें आपका माइक कनेक्ट हो या <ph name="DEVICE_TYPE" /> को रीस्टार्ट करें</translation>
 <translation id="3226405216343213872">स्कैनर खोजे जा रहे हैं</translation>
 <translation id="3226657629376379887">लेआउट ऐक्शन मेन्यू</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> वैल्यू को <ph name="CONVERSION_RATE" /> से विभाजित करें</translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">खास वॉलपेपर</translation>
 <translation id="3404249063913988450">स्क्रीन सेवर चालू करें</translation>
 <translation id="3413935475507503304">अपडेट करने के लिए 'आगे बढ़ें' पर क्लिक करें.</translation>
+<translation id="3416709353545797224"><ph name="DEVICE_TYPE" /> का पूरा ऑडियो रिकॉर्ड किया जा रहा है</translation>
 <translation id="3428551088151258685">आउटडोर</translation>
 <translation id="3428971106895559033">पेस्टल</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">पक्का करें कि स्कैनर चालू हो और आपके नेटवर्क या डायरेक्ट कनेक्शन के ज़रिए उपलब्ध हो</translation>
 <translation id="4159238217853743776">कुछ हद तक</translation>
 <translation id="4159784952369912983">बैंगनी</translation>
+<translation id="416219735020840807">बोले जा रहे शब्दों को टेक्स्ट में बदलने का मॉडल डाउनलोड नहीं किया जा सका. फिर से कोशिश करें या अपना <ph name="DEVICE_TYPE" /> रीस्टार्ट करें.</translation>
 <translation id="4170180284036919717">फ़ोटो लें</translation>
 <translation id="4170700058716978431">असफल</translation>
 <translation id="4171077696775491955">स्क्रीन की रोशनी कम करें</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">चुने गए टेक्स्ट को सुझाव से बदला जा रहा है</translation>
 <translation id="5346687412805619883">लोकल नेटवर्क</translation>
 <translation id="5358174242040570474">कोई गड़बड़ी हुई. कोई वॉलपेपर चुनकर कोशिश करें या ऐप्लिकेशन को फिर से खोलें.</translation>
+<translation id="5368228070728130240">खास जानकारी और टाइटल जनरेट करने का मॉडल डाउनलोड नहीं किया जा सका. फिर से कोशिश करें या अपना <ph name="DEVICE_TYPE" /> फिर से चालू करें.</translation>
 <translation id="5372659122375744710">यह वाई-फ़ाई नेटवर्क सुरक्षित नहीं है</translation>
 <translation id="5376354385557966694">अपने-आप हल्के रंग वाला मोड</translation>
 <translation id="5378184552853359930">आईपी टाइप</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">वे डीएनएस रिज़ॉल्यूशन जो नहीं हो पाए</translation>
 <translation id="6768237774506518020">डीएनएस रिज़ॉल्यूशन नहीं हो पाने की बढ़ी हुई दर</translation>
 <translation id="6786747875388722282">एक्‍सटेंशन</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" /> का ऑडियो चालू होने पर, रिकॉर्डर इस डिवाइस पर चल रहे सभी ऑडियो को रिकॉर्ड करता है</translation>
 <translation id="6791471867139427246">कीबोर्ड की लाइट का रंग</translation>
 <translation id="6796229976413584781">शॉर्टकट मिटाया गया</translation>
 <translation id="6798678288485555829">टेक्स्ट नेविगेशन</translation>
@@ -1727,6 +1735,7 @@
 <translation id="8930622219860340959">वायरलेस</translation>
 <translation id="8933650076320258356"><ph name="DIRECTION" /> के लिए <ph name="KEYS" /> को बटन चुना गया है. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">क्लाइंट का आईपी पता</translation>
+<translation id="8938606491880817721">डाउनलोड नहीं किया जा सका. फिर से कोशिश करें या <ph name="DEVICE_TYPE" /> रीस्टार्ट करें.</translation>
 <translation id="8944651180182756621">लॉन्चर का रंग</translation>
 <translation id="8945308580158685341">मधुमक्खियां</translation>
 <translation id="894617464444543719">डिवाइस एक फ़ोन है.</translation>

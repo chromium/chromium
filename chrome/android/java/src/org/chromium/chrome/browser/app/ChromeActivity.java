@@ -443,6 +443,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     protected void onPostCreate() {
         incrementCounter(ChromePreferenceKeys.UMA_ON_POSTCREATE_COUNTER);
         super.onPostCreate();
+
+        // WindowAndroid is created in #onCreateInternal, happened before onPostCreate.
+        if (getWindowAndroid() != null) {
+            getEdgeToEdgeStateProvider().attach(getWindowAndroid());
+        }
     }
 
     @Override
@@ -1649,6 +1654,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (mBottomContainer != null) {
             mBottomContainer.destroy();
             mBottomContainer = null;
+        }
+
+        if (getEdgeToEdgeStateProvider() != null) {
+            getEdgeToEdgeStateProvider().detach();
         }
 
         WindowAndroid windowAndroid = getWindowAndroid();

@@ -100,7 +100,8 @@ int PrefetchCanaryCheckRetries();
 // The maximum amount of time to block until the head of a prefetch is received.
 // If the value is zero or less, then a navigation can be blocked indefinitely.
 CONTENT_EXPORT base::TimeDelta PrefetchBlockUntilHeadTimeout(
-    const PrefetchType& prefetch_type);
+    const PrefetchType& prefetch_type,
+    bool is_nav_prerender);
 
 // Gets the histogram suffix to use for the given eagerness parameter.
 CONTENT_EXPORT std::string GetPrefetchEagernessHistogramSuffix(

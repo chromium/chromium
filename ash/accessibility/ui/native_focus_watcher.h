@@ -57,8 +57,6 @@ class NativeFocusWatcher : public views::WidgetFocusChangeListener,
   void OnNativeFocusChanged(gfx::NativeView focused_now) override;
 
   // views::FocusChangeListener:
-  void OnWillChangeFocus(views::View* focused_before,
-                         views::View* focused_now) override;
   void OnDidChangeFocus(views::View* focused_before,
                         views::View* focused_now) override;
 

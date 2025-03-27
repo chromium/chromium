@@ -551,6 +551,7 @@
 <translation id="2872353916818027657">Замени примарен монитор</translation>
 <translation id="2872961005593481000">Исклучи</translation>
 <translation id="2876338922445400217">Зумирање на екранот</translation>
+<translation id="2876760662374103627">„Контрола со лик“ е активна</translation>
 <translation id="2878884018241093801">Нема неодамнешни ставки</translation>
 <translation id="2880541185262491188">Премногу обиди за автентикација со PIN. Почекајте <ph name="TIME_LEFT" /> и обидете се повторно</translation>
 <translation id="2883271196820422439">Продолжи ја „Копчиња за глувче“</translation>
@@ -1015,6 +1016,7 @@
 <translation id="4351244548802238354">Затвори дијалог</translation>
 <translation id="4356872429719185452">Прикажи детали за точката на пристап. Точката на пристап се вклучува.</translation>
 <translation id="4364101114148522660">Се снима: <ph name="DURATION" /></translation>
+<translation id="4368227575116094370">Создај табела на Sheets</translation>
 <translation id="4371348193907997655">Поставки за Cast</translation>
 <translation id="4371834685492830207">PIN-кодот мора да содржи само важечки знаци</translation>
 <translation id="4375482231364171368">Пребарува во лентата за адреси</translation>
@@ -1516,6 +1518,7 @@
 <translation id="595202126637698455">Овозможено е следење на изведбата</translation>
 <translation id="5955304353782037793">апликација</translation>
 <translation id="5958529069007801266">Надгледуван корисник</translation>
+<translation id="596035801491797438">Исклучи „Контрола со лик“</translation>
 <translation id="5960410286721553511">Прегледувајте ги неодамнешните фотографии и аудиовизуелните содржини од телефонот</translation>
 <translation id="5965524703725988602">Вклучете/исклучете ја темната тема. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Движете се нанапред низ прозорците</translation>

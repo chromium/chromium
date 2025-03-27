@@ -5,17 +5,19 @@
 #ifndef THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_FAKE_CONNECTION_H_
 #define THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_FAKE_CONNECTION_H_
 
+#include <cstdint>
 #include <memory>
 #include <string_view>
 #include <vector>
 
 #include "base/synchronization/waitable_event.h"
 #include "third_party/webrtc/api/candidate.h"
+#include "third_party/webrtc/api/task_queue/task_queue_base.h"
 #include "third_party/webrtc/p2p/base/connection.h"
 #include "third_party/webrtc/p2p/base/port_allocator.h"
 #include "third_party/webrtc/p2p/base/port_interface.h"
 #include "third_party/webrtc/rtc_base/socket_factory.h"
-#include "third_party/webrtc/rtc_base/thread.h"
+#include "third_party/webrtc/rtc_base/third_party/sigslot/sigslot.h"
 
 namespace blink {
 
@@ -24,7 +26,7 @@ class FakeConnectionFactory : public sigslot::has_slots<> {
  public:
   // The factory must be initialized by calling Prepare(). readyEvent will be
   // signaled when the factory is ready to start creating connections.
-  explicit FakeConnectionFactory(rtc::Thread* thread,
+  explicit FakeConnectionFactory(webrtc::TaskQueueBase* thread,
                                  base::WaitableEvent* readyEvent);
 
   // Start a port allocation session to generate port(s) from which connections
@@ -54,7 +56,6 @@ class FakeConnectionFactory : public sigslot::has_slots<> {
   base::WaitableEvent* readyEvent_;
 
   std::unique_ptr<rtc::SocketFactory> sf_;
-  std::unique_ptr<rtc::PacketSocketFactory> socket_factory_;
   std::unique_ptr<cricket::PortAllocator> allocator_;
   std::vector<std::unique_ptr<cricket::PortAllocatorSession>> sessions_;
   std::vector<cricket::PortInterface*> ports_;

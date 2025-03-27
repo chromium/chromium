@@ -322,6 +322,13 @@ BASE_FEATURE(kReduceTransferSizeUpdatedIPC,
 BASE_FEATURE(kRendererSideContentDecoding,
              "RendererSideContentDecoding",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// When non-zero, a Mojo data pipe of this size will be used between the
+// decoding thread and the data receiving thread.
+BASE_FEATURE_PARAM(int,
+                   kRendererSideContentDecodingPipeSize,
+                   &kRendererSideContentDecoding,
+                   /*name=*/"RendererSideContentDecodingPipeSize",
+                   /*default_value=*/0);
 
 // This feature allows skipping TPCD mitigation checks when the cookie access
 // is tagged as being used for advertising purposes. This means that cookies

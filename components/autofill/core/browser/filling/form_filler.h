@@ -158,6 +158,7 @@ class FormFiller {
 
  private:
   friend class FormFillerTestApi;
+  friend class TestFormFiller;
 
   // Keeps track of the filling context for a form, used to make refill
   // attempts.
@@ -203,25 +204,13 @@ class FormFiller {
 
   RefillContext* GetRefillContext(FormGlobalId form_id);
 
-  // Returns whether there should be an attempts to refill the form. Returns
-  // true if all the following are satisfied:
-  // - There have been no refills on this page yet.
-  // - A non-empty form name was recorded in a previous fill
-  // - That form name matched the currently parsed form name
-  // - It's been less than kLimitBeforeRefill since the original fill.
-  // - `refill_trigger_reason != kFormChanged`, or `form_structure` and the
-  //   previously filled form have different structures.
-  bool ShouldTriggerRefill(const FormStructure& form_structure,
-                           RefillTriggerReason refill_trigger_reason);
-
   // Schedules a call of TriggerRefill. Virtual for testing.
   virtual void ScheduleRefill(const FormData& form,
-                              const FormStructure& form_structure,
+                              RefillContext& refill_context,
                               AutofillTriggerSource trigger_source,
                               RefillTriggerReason refill_trigger_reason);
 
-  // Attempts to refill the form that was changed dynamically. Should only be
-  // called if `FormFiller::ShouldTriggerRefill()` returns true.
+  // Attempts to refill `form`.
   void TriggerRefill(const FormData& form,
                      AutofillTriggerSource trigger_source,
                      RefillTriggerReason refill_trigger_reason);

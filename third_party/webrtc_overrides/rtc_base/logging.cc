@@ -14,7 +14,6 @@
 #include <algorithm>
 #include <atomic>
 #include <iomanip>
-#include <string_view>
 
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -227,7 +226,7 @@ bool CheckVlogIsOnHelper(LoggingSeverity severity,
                          const char* file,
                          size_t N) {
   return WebRtcVerbosityLevel(severity) <=
-         ::logging::GetVlogLevelHelper(std::string_view(file, N - 1));
+         ::logging::GetVlogLevelHelper(file, N);
 }
 
 }  // namespace webrtc

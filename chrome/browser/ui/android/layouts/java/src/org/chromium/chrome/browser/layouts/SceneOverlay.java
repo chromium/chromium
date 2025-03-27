@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.layouts;
 import android.graphics.RectF;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -44,7 +45,7 @@ public interface SceneOverlay extends BackPressHandler {
     /**
      * @return The {@link EventFilter} that processes events for this {@link SceneOverlay}.
      */
-    EventFilter getEventFilter();
+    @Nullable EventFilter getEventFilter();
 
     /**
      * Called when the viewport size of the screen changes.

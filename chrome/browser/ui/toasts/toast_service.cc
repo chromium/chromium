@@ -192,8 +192,7 @@ void ToastService::RegisterToasts(
             .Build());
   }
 
-  if (base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature)) {
+  if (data_sharing::features::IsDataSharingFunctionalityEnabled()) {
     // Current tab has been removed from the group.
     toast_registry_->RegisterToast(
         ToastId::kTabGroupSyncTabRemoved,

@@ -49,7 +49,7 @@ void MockLog::StopCapturingLogs() {
 
 // static
 bool MockLog::LogMessageHandler(int severity,
-                                std::string_view file,
+                                const char* file,
                                 int line,
                                 size_t message_start,
                                 const std::string& str) {

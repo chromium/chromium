@@ -49,7 +49,8 @@ std::unique_ptr<KeyedService> CreateContextualCueingService(
     content::BrowserContext* context) {
   return std::make_unique<ContextualCueingService>(
       page_content_annotations::PageContentExtractionServiceFactory::
-          GetForProfile(Profile::FromBrowserContext(context)));
+          GetForProfile(Profile::FromBrowserContext(context)),
+      /*optimization_guide_keyed_service=*/nullptr);
 }
 
 class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {

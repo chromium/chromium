@@ -607,7 +607,16 @@ extern bool IsLensOverlayTranslateLanguagesFetchEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayTranslateEndpointURL();
 
-// Returns whether to show the ghost loader in the contextual searchbox.
+// Returns whether to show the ghost loader component for the contextual
+// searchbox. This includes the loading indicator, the error state, and the hint
+// text if the loading state is disabled via the feature flag below.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool EnableContextualSearchboxGhostLoader();
+
+// Returns whether to show the ghost loader loading state in the contextual
+// searchbox. If this is false, but the ghost loader is enabled, the ghost
+// loader will still be shown on searchbox focuswith hint text instead of the
+// loading indicator.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShowContextualSearchboxGhostLoaderLoadingState();
 
@@ -723,6 +732,10 @@ extern bool PageContentUploadRequestIdFixEnabled();
 // Whether to update the viewport on each contextual query.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UpdateViewportEachQueryEnabled();
+
+// Whether to show zero prefix suggestions in the contextual searchbox.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool ShowContextualSearchboxZeroPrefixSuggest();
 
 // Whether to use the updated client context.
 COMPONENT_EXPORT(LENS_FEATURES)

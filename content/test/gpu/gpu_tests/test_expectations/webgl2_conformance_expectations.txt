@@ -277,10 +277,6 @@ crbug.com/1421437 [ mac passthrough angle-opengl ] WebglExtension_WEBGL_shader_p
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
-# Skipped while WEBGL_shader_pixel_local_storage is being updated with new enum values.
-# Note: uncomment expectation for Issue 332745399 below when this is removed.
-crbug.com/angleproject/40096838 conformance2/extensions/webgl-shader-pixel-local-storage.html [ Skip ]
-
 # Skipped because EXT_disjoint_timer_query was disabled due to security concerns.
 crbug.com/808744 [ android ] WebglExtension_EXT_disjoint_timer_query_webgl2 [ Skip ]
 
@@ -494,6 +490,8 @@ crbug.com/891953 [ android ] WebglExtension_OVR_multiview2 [ Failure ]
 # ========================
 
 # Failing new updated tests
+crbug.com/406187744 conformance/offscreencanvas/offscreencanvas-transfer-image-bitmap.html [ Failure ]
+crbug.com/406187744 conformance2/offscreencanvas/offscreencanvas-transfer-image-bitmap.html [ Failure ]
 crbug.com/1131224 [ angle-d3d11 desktop no-asan passthrough release win ] conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
 crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/angleproject/4807 [ win angle-d3d11 passthrough ] conformance2/glsl3/switch-case.html [ Failure ]
@@ -532,7 +530,6 @@ crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuff
 crbug.com/angleproject/1465 [ win angle-d3d11 ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
 crbug.com/angleproject/389733590 [ amd-0x7340 angle-d3d11 release-x64 target-cpu-64 win10 ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 crbug.com/angleproject/389733590 [ angle-d3d11 nvidia-0x2184 nvidia_lt_535.183.01 win10 ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
-crbug.com/angleproject/389733590 [ angle-d3d11 target-cpu-64 win11 ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 
 ## Win / NVIDIA ##
 
@@ -586,7 +583,7 @@ crbug.com/329211596 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gl
 crbug.com/373852610 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 
 # Graphite
-# crbug.com/332745399 [ win graphite-enabled ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
+crbug.com/332745399 [ win graphite-enabled ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
 
 ######################
 # Mac Metal failures #
@@ -594,10 +591,6 @@ crbug.com/373852610 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/render
 
 ## Metal Common ##
 # Common to all GPU types (both AMD and Intel, at least)
-
-
-## SkiaGraphite on AMD/Intel ##
-
 
 ## Metal AMD ##
 
@@ -633,25 +626,11 @@ crbug.com/angleproject/6430 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/f
 crbug.com/angleproject/7425 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/texturespecification/texstorage3d_format_depth_stencil.html [ Failure ]
 crbug.com/angleproject/7425 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/texturespecification/texstorage3d_format_depth_stencil.html [ Failure ]
 
-
 crbug.com/328100306 [ amd angle-metal graphite-enabled sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
-
-## SkiaGraphite on Metal AMD ##
-
 
 ## Metal Intel ##
 
 crbug.com/angleproject/6430 [ angle-metal intel mac passthrough ] deqp/functional/gles3/readpixel.html [ Failure ]
-
-
-## Metal Apple Silicon ##
-
-
-
-
-## Metal Graphite ##
-
-
 
 ######################################################################
 # Mac failures (mainly OpenGL; some need to be reevaluated on Metal) #
@@ -743,6 +722,7 @@ crbug.com/328102507 [ mac amd angle-opengl graphite-disabled asan ] conformance/
 
 crbug.com/372295133 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/textureshadow/2d_array_linear_mipmap_linear_equal.html [ Failure ]
 crbug.com/374696517 [ mac amd-0x7340 angle-metal ] deqp/functional/gles3/uniformbuffers/random.html [ RetryOnFailure ]
+crbug.com/406424259 [ mac amd-0x7340 graphite-disabled ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
 
 ## Mac Intel ##
 

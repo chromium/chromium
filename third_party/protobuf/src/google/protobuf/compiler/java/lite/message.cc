@@ -149,7 +149,7 @@ void ImmutableMessageLiteGenerator::Generate(io::Printer* printer) {
   absl::flat_hash_map<absl::string_view, std::string> variables = {{"{", ""},
                                                                    {"}", ""}};
   variables["static"] = is_own_file ? " " : " static ";
-  variables["classname"] = descriptor_->name();
+  variables["classname"] = std::string(descriptor_->name());
   variables["extra_interfaces"] = ExtraMessageInterfaces(descriptor_);
   variables["deprecation"] =
       descriptor_->options().deprecated() ? "@java.lang.Deprecated " : "";
@@ -328,7 +328,7 @@ void ImmutableMessageLiteGenerator::Generate(io::Printer* printer) {
 
   printer->Print(
       "@java.lang.Override\n"
-      "@java.lang.SuppressWarnings({\"unchecked\", \"fallthrough\"})\n"
+      "@java.lang.SuppressWarnings({\"ThrowNull\"})\n"
       "protected final java.lang.Object dynamicMethod(\n"
       "    com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,\n"
       "    java.lang.Object arg0, java.lang.Object arg1) {\n"
@@ -357,7 +357,6 @@ void ImmutableMessageLiteGenerator::Generate(io::Printer* printer) {
 
   printer->Print(
       "}\n"
-      "// fall through\n"
       "case GET_DEFAULT_INSTANCE: {\n"
       "  return DEFAULT_INSTANCE;\n"
       "}\n"
@@ -384,8 +383,6 @@ void ImmutableMessageLiteGenerator::Generate(io::Printer* printer) {
       "  return parser;\n",
       "classname", name_resolver_->GetImmutableClassName(descriptor_));
 
-  printer->Outdent();
-
   if (HasRequiredFields(descriptor_)) {
     printer->Print(
         "}\n"
@@ -402,18 +399,21 @@ void ImmutableMessageLiteGenerator::Generate(io::Printer* printer) {
         "case GET_MEMOIZED_IS_INITIALIZED: {\n"
         "  return (byte) 1;\n"
         "}\n"
-        "case SET_MEMOIZED_IS_INITIALIZED: {\n"
-        "  return null;\n"
-        "}\n");
+        "// SET_MEMOIZED_IS_INITIALIZED is never called for this message.\n"
+        "// So it can do anything. Combine with default case for smaller "
+        "codegen.\n"
+        "case SET_MEMOIZED_IS_INITIALIZED:\n");
   }
 
   printer->Outdent();
   printer->Print(
-      "  }\n"
-      "  throw new UnsupportedOperationException();\n"
       "}\n"
-      "\n",
-      "classname", name_resolver_->GetImmutableClassName(descriptor_));
+      "// Should never happen. Generates tight code to throw an exception.\n"
+      "throw null;\n");
+  printer->Outdent();
+  printer->Print(
+      "}\n"
+      "\n");
 
   printer->Print(
       "\n"
@@ -499,7 +499,7 @@ void ImmutableMessageLiteGenerator::GenerateDynamicMethodNewBuildMessageInfo(
   WriteIntToUtf16CharSequence(descriptor_->field_count(), &chars);
 
   if (descriptor_->field_count() == 0) {
-    printer->Print("java.lang.Object[] objects = null;");
+    printer->Print("java.lang.Object[] objects = null;\n");
   } else {
     // A single array of all fields (including oneof, oneofCase, hasBits).
     printer->Print("java.lang.Object[] objects = new java.lang.Object[] {\n");

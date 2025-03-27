@@ -29,6 +29,9 @@ class TachyonClient {
       AuthFailureCallback auth_failure_cb,
       std::unique_ptr<std::string> response_body);
 
+  static void MaybeRecordUma(const network::SimpleURLLoader* url_loader,
+                             const RequestDataWrapper* request_data);
+
   TachyonClient(const TachyonClient&) = delete;
   TachyonClient& operator=(const TachyonClient&) = delete;
 

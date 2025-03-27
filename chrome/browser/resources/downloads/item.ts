@@ -104,25 +104,25 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     };
   }
 
-  data?: MojomData;
+  accessor data: MojomData|undefined;
   // <if expr="_google_chrome">
-  showEsbPromotion: boolean = false;
+  accessor showEsbPromotion: boolean = false;
   // </if>
   private mojoHandler_: PageHandlerInterface|null = null;
-  protected isDangerous_: boolean = false;
-  protected isReviewable_: boolean = false;
-  protected pauseOrResumeText_: string = '';
-  protected showCancel_: boolean = false;
-  protected showProgress_: boolean = false;
-  protected showDeepScan_: boolean = false;
-  protected showOpenAnyway_: boolean = false;
-  protected useFileIcon_: boolean = false;
-  protected showReferrerUrl_: boolean =
+  protected accessor isDangerous_: boolean = false;
+  protected accessor isReviewable_: boolean = false;
+  protected accessor pauseOrResumeText_: string = '';
+  protected accessor showCancel_: boolean = false;
+  protected accessor showProgress_: boolean = false;
+  protected accessor showDeepScan_: boolean = false;
+  protected accessor showOpenAnyway_: boolean = false;
+  protected accessor useFileIcon_: boolean = false;
+  protected accessor showReferrerUrl_: boolean =
       loadTimeData.getBoolean('showReferrerUrl');
   private restoreFocusAfterCancel_: boolean = false;
-  private displayType_: DisplayType = DisplayType.NORMAL;
-  private completelyOnDisk_: boolean = true;
-  protected shouldLinkFilename_: boolean = true;
+  private accessor displayType_: DisplayType = DisplayType.NORMAL;
+  private accessor completelyOnDisk_: boolean = true;
+  protected accessor shouldLinkFilename_: boolean = true;
   override overrideCustomEquivalent: boolean = true;
 
   override firstUpdated() {

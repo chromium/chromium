@@ -12,7 +12,6 @@ import android.view.MotionEvent;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,9 +48,6 @@ public class AreaMotionEventFilterUnitTest {
         mHoverMoveEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_MOVE, 10.f, 10.f, 0);
         mHoverExitEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 101.f, 101.f, 0);
     }
-
-    @After
-    public void tearDown() {}
 
     @Test
     public void testHoverEnterExitInterceptionInFilterArea() {

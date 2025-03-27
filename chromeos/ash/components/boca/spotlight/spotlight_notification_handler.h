@@ -44,8 +44,7 @@ class SpotlightNotificationHandler {
 
   // Handle notification presented to students when a Spotlight session
   // begins.
-  void StartSpotlightCountdownNotification(
-      base::OnceClosure completion_callback);
+  void StartSpotlightCountdownNotification();
 
   // Stops the Spotlight countdown when an in-progress request was cancelled.
   void StopSpotlightCountdown();

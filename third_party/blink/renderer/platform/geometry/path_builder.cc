@@ -56,7 +56,15 @@ std::array<gfx::Vector2dF, 3> ApproximateSuperellipseHalfCornerAsBezierCurve(
   return {P1, P2, P3};
 }
 
-void AddConvexCurvedCorner(SkPath& path, const Corner& corner) {
+// Adds a curved corner to a path. The vertex argument is the 4 points
+// of the corner rectangle, starting from the beginning of the corner
+// and continuing clockwise.
+void AddCurvedCorner(SkPath& path, const Corner& corner) {
+  if (corner.IsConcave()) {
+    AddCurvedCorner(path, corner.Inverse());
+    return;
+  }
+
   CHECK_GE(corner.Curvature(), 1);
   // Start the path from the beginning of the curve.
   path.lineTo(gfx::PointFToSkPoint(corner.Start()));
@@ -87,13 +95,6 @@ void AddConvexCurvedCorner(SkPath& path, const Corner& corner) {
                      corner.MapPoint(TransposeVector2d(control_points.at(0)))),
                  gfx::PointFToSkPoint(corner.End()));
   }
-}
-
-// Adds a curved corner to a path. The vertex argument is the 4 points
-// of the corner rectangle, starting from the beginning of the corner
-// and continuing clockwise.
-void AddCurvedCorner(SkPath& path, const Corner& corner) {
-  AddConvexCurvedCorner(path, corner.ToConvex());
 }
 
 }  // anonymous namespace

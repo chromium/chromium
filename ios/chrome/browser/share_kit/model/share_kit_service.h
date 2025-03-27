@@ -18,7 +18,6 @@
 @class ShareKitLeaveConfiguration;
 @class ShareKitLookupGaiaIDConfiguration;
 @class ShareKitManageConfiguration;
-@class ShareKitReadConfiguration;
 @class ShareKitReadGroupWithTokenConfiguration;
 @class ShareKitReadGroupsConfiguration;
 @class ShareKitShareGroupConfiguration;

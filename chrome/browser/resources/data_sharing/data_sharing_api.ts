@@ -15,7 +15,7 @@ import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 
 import type {BrowserProxy} from './browser_proxy.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
-import type {ReadGroupsParams as MojomReadGroupsParams} from './data_sharing.mojom-webui.js';
+import type {ReadGroupsParams as MojomReadGroupsParams, ReadGroupWithTokenParam} from './data_sharing.mojom-webui.js';
 import type {DataSharingSdk, ReadGroupParams} from './data_sharing_sdk_types.js';
 import type {GroupData} from './group_data.mojom-webui.js';
 import {toMojomGroupData} from './mojom_conversion_utils.js';
@@ -37,6 +37,20 @@ browserProxy.callbackRouter.onAccessTokenFetched.addListener(
       }
     },
 );
+
+browserProxy.callbackRouter.readGroupWithToken.addListener(
+    (mojomParam: ReadGroupWithTokenParam) => {
+      const groupId = mojomParam.groupId;
+      const accessToken = mojomParam.accessToken;
+      return new Promise((resolve) => {
+        dataSharingSdk.readGroup({groupId}, {accessToken})
+            .then(({result, status}) => {
+              const group =
+                  status ? undefined : toMojomGroupData(result!.groupData);
+              resolve({result: {group, statusCode: status}});
+            });
+      });
+    });
 
 browserProxy.callbackRouter.readGroups.addListener(
     (mojomParams: MojomReadGroupsParams) => {

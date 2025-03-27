@@ -117,6 +117,7 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
     'android-go-wembley_webview-perf',
     'android-pixel-fold-perf',
     'android-pixel-tangor-perf',
+    'android-pixel4-perf',
     'android-pixel4_webview-perf',  # One of the mobile testers.
     'android-pixel4_webview-perf-pgo',
     'android-pixel6-perf',

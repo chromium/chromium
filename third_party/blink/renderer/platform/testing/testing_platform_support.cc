@@ -168,6 +168,54 @@ class V8ValueConverterForTest final : public WebV8ValueConverter {
           base::Value(std::string(*utf8, utf8.length())));
     }
 
+    // The following logic is forked from V8ValueConverterImpl::FromV8Object()
+    // to support converting ScriptObject in tests.
+    if (val->IsObject()) {
+      v8::Local<v8::Object> val_obj = val.As<v8::Object>();
+      base::Value::Dict result;
+      v8::Local<v8::Array> property_names;
+      if (!val_obj->GetOwnPropertyNames(isolate->GetCurrentContext())
+               .ToLocal(&property_names)) {
+        return std::make_unique<base::Value>(std::move(result));
+      }
+
+      for (uint32_t i = 0; i < property_names->Length(); ++i) {
+        v8::Local<v8::Value> key =
+            property_names->Get(isolate->GetCurrentContext(), i)
+                .ToLocalChecked();
+
+        // Extend this test to cover more types as necessary and if sensible.
+        if (!key->IsString() && !key->IsNumber()) {
+          NOTREACHED() << "Key \"" << *v8::String::Utf8Value(isolate, key)
+                       << "\" "
+                          "is neither a string nor a number";
+        }
+
+        v8::String::Utf8Value name_utf8(isolate, key);
+
+        v8::TryCatch try_catch(isolate);
+        v8::Local<v8::Value> child_v8;
+        v8::MaybeLocal<v8::Value> maybe_child =
+            val_obj->Get(isolate->GetCurrentContext(), key);
+        if (try_catch.HasCaught() || !maybe_child.ToLocal(&child_v8)) {
+          LOG(WARNING) << "Getter for property " << *name_utf8
+                       << " threw an exception.";
+          child_v8 = v8::Null(isolate);
+        }
+
+        std::unique_ptr<base::Value> child = FromV8Value(child_v8, context);
+        if (!child) {
+          // JSON.stringify skips properties whose values don't serialize, for
+          // example undefined and functions. Emulate that behavior.
+          continue;
+        }
+
+        result.Set(std::string(*name_utf8, name_utf8.length()),
+                   base::Value::FromUniquePtrValue(std::move(child)));
+      }
+      return std::make_unique<base::Value>(std::move(result));
+    }
+
     // Returns `nullptr` for a broader range of values than actual
     // `V8ValueConverter`.
     return nullptr;

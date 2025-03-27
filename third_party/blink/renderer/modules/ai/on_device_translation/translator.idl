@@ -1,0 +1,70 @@
+[
+    RuntimeEnabled=TranslationAPI,
+    Exposed=(Window,Worker),
+    SecureContext
+]
+interface Translator {
+  [
+    MeasureAs=Translator_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Translator> create(TranslatorCreateOptions options);
+  [
+    MeasureAs=Translator_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<AIAvailability> availability(TranslatorCreateCoreOptions options);
+
+  [
+    MeasureAs=Translator_Translate,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<DOMString> translate(DOMString input, optional TranslatorTranslateOptions options = {});
+
+  [
+    MeasureAs=Translator_TranslateStreaming,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  ReadableStream translateStreaming(DOMString input, optional TranslatorTranslateOptions options = {});
+
+  [MeasureAs=Translator_SourceLanguage]
+  readonly attribute DOMString sourceLanguage;
+  [MeasureAs=Translator_TargetLanguage]
+  readonly attribute DOMString targetLanguage;
+
+  [
+    MeasureAs=Translator_Destroy,
+    CallWith=ScriptState
+  ]
+  undefined destroy();
+
+  [
+    MeasureAs=Translator_MeasureInputUsage,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<double> measureInputUsage(
+    DOMString input,
+    optional TranslatorTranslateOptions options = {}
+  );
+  [MeasureAs=Translator_InputQuota]
+  readonly attribute unrestricted double inputQuota;
+};
+
+dictionary TranslatorCreateCoreOptions {
+  required DOMString sourceLanguage;
+  required DOMString targetLanguage;
+};
+
+dictionary TranslatorCreateOptions : TranslatorCreateCoreOptions {
+  AbortSignal signal;
+  AICreateMonitorCallback monitor;
+};
+
+dictionary TranslatorTranslateOptions {
+  AbortSignal signal;
+};

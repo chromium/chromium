@@ -220,6 +220,9 @@ interface LensPage {
   ScreenshotDataReceived(
       skia.mojom.BitmapMappedFromTrustedProcess screenshot_data);
 
+  // Notifies the WebUI that the handshake to the Lens backend is complete.
+  NotifyHandshakeComplete();
+
   // Notifies the WebUI that our results panel is currently opening.
   NotifyResultsPanelOpened();
 

@@ -94,7 +94,7 @@ class DummySyncDictionary : public SharedDictionary {
     std::unique_ptr<crypto::SecureHash> secure_hash =
         crypto::SecureHash::Create(crypto::SecureHash::SHA256);
     secure_hash->Update(data_->data(), size_);
-    secure_hash->Finish(hash_.data, sizeof(hash_.data));
+    secure_hash->Finish(hash_);
   }
 
   // SharedDictionary

@@ -23,6 +23,7 @@
 #endif
 
 #if defined(USE_V4L2_MJPEG_DECODE_ACCELERATOR)
+#include "base/memory/scoped_refptr.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_mjpeg_decode_accelerator.h"
 #endif
@@ -35,7 +36,7 @@ namespace {
 std::unique_ptr<MjpegDecodeAccelerator> CreateV4L2MjpegDecodeAccelerator(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
   return std::make_unique<media::V4L2MjpegDecodeAccelerator>(
-      new media::V4L2Device(), std::move(io_task_runner));
+      base::MakeRefCounted<media::V4L2Device>(), std::move(io_task_runner));
 }
 #endif
 

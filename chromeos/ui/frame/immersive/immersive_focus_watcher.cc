@@ -260,9 +260,6 @@ void ImmersiveFocusWatcher::RecreateBubbleObserver() {
   }
 }
 
-void ImmersiveFocusWatcher::OnWillChangeFocus(views::View* focused_before,
-                                              views::View* focused_now) {}
-
 void ImmersiveFocusWatcher::OnDidChangeFocus(views::View* focused_before,
                                              views::View* focused_now) {
   UpdateFocusRevealedLock();

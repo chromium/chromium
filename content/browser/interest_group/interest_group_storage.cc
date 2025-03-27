@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -4701,6 +4702,27 @@ void DoIncrementViewClickCounts(base::Time now,
   return true;
 }
 
+// Returns true if the rate limit (10 events in the last 20 seconds) has been
+// exceeded.
+bool IsClickinessRateLimited(base::Time now,
+                             const ListOfTimestamps& uncompacted_events) {
+  constexpr int kMaxEvents = 10;
+  constexpr base::TimeDelta kRateLimitWindow = base::Seconds(20);
+  int event_count = 0;
+  // Iterate backwards -- the newest events are at the end.
+  for (int64_t timestamp : base::Reversed(uncompacted_events.timestamps())) {
+    base::TimeDelta event_age = now - base::Time::FromDeltaSinceWindowsEpoch(
+                                          base::Microseconds(timestamp));
+    if (event_age > kRateLimitWindow) {
+      return false;
+    }
+    if (++event_count >= kMaxEvents) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void DoRecordViewClick(sql::Database& db,
                        const network::AdAuctionEventRecord& record,
                        base::Time now) {
@@ -4757,16 +4779,20 @@ void DoRecordViewClick(sql::Database& db,
       return;
     }
 
-    // TODO(crbug.com/394108643): enforce rate limit.
-
     const int64_t int_now = now.ToDeltaSinceWindowsEpoch().InMicroseconds();
     switch (record.type) {
       case AdAuctionEventRecord::Type::kUninitialized:
         NOTREACHED();
       case AdAuctionEventRecord::Type::kView:
+        if (IsClickinessRateLimited(now, uncompacted_view_events)) {
+          return;
+        }
         uncompacted_view_events.add_timestamps(int_now);
         break;
       case AdAuctionEventRecord::Type::kClick:
+        if (IsClickinessRateLimited(now, uncompacted_click_events)) {
+          return;
+        }
         uncompacted_click_events.add_timestamps(int_now);
         break;
     }

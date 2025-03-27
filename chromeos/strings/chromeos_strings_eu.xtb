@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">igandean</translation>
 <translation id="4250229828105606438">Pantaila-argazkia</translation>
 <translation id="4251839292699800785">Bulego dotorea</translation>
+<translation id="4252261480746798874">"Sortu zeurea" hautatzen duzunean, eskaera-mezu pertsonalizatu bat idatz dezakezu. Gainera, "Aukeratu gai bat" hauta dezakezu, eta hitz azpimarratuak hautatu, AA bidezko horma-papera pertsonalizatzeko.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Hautatu "Inspira nazazu" AA bidez egindako askotariko irudi esklusiboak eskuratzeko.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Zeure horma-paperak sortzean, eskaera-mezua Google-ren zerbitzarietara bidaltzen da irudiak sortzeko eta zerbitzua hobetzeko, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ren Zerbitzu-baldintzak eta Pribatutasun-gidalerroak<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> gordeta. Ez sartu pertsonala, kontuzkoa edo isilpekoa den informaziorik.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Baliteke AA generatiboak akatsak egitea (jendeari buruzkoak barne); beraz, egiaztatu informazioa. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Lortu informazio gehiago<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP eskaeren latentzia</translation>
 <translation id="4266143281602681663">harila</translation>
 <translation id="4269815121975886860">Abiaraztearen hobespenak</translation>

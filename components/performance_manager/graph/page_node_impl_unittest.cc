@@ -477,11 +477,8 @@ TEST_F(PageNodeImplTest, EmbedderFrameNode) {
   auto embedded_page_node = CreateNode<PageNodeImpl>();
   const PageNode* public_embedded_page_node = embedded_page_node.get();
 
-  embedded_page_node->SetEmbedderFrameNodeAndEmbeddingType(
-      embedder_frame_node.get(), PageNode::EmbeddingType::kGuestView);
+  embedded_page_node->SetEmbedderFrameNode(embedder_frame_node.get());
 
-  EXPECT_EQ(embedded_page_node->GetEmbeddingType(),
-            PageNode::EmbeddingType::kGuestView);
   EXPECT_EQ(embedded_page_node->embedder_frame_node(),
             embedder_frame_node.get());
   EXPECT_EQ(public_embedded_page_node->GetEmbedderFrameNode(),

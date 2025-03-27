@@ -102,10 +102,6 @@ bool BuildAutocompleteMatches(AutocompleteProvider* provider,
   if (urls.empty()) {
     return false;
   }
-  scoped_refptr<history::TopSites> top_sites = client->GetTopSites();
-  if (!top_sites) {
-    return false;
-  }
 
   const TabMatcher& tab_matcher = client->GetTabMatcher();
 
@@ -114,10 +110,8 @@ bool BuildAutocompleteMatches(AutocompleteProvider* provider,
   for (const auto& url : urls) {
     // Skip the match if the following is true:
     // - It is an SRP result from DSP
-    // - It is a blocked site
     // - A tab already exists with the match url
     if (url_service->IsSearchResultsPageFromDefaultSearchProvider(url.url) ||
-        top_sites->IsBlocked(url.url) ||
         tab_matcher.IsTabOpenWithURL(url.url, &input,
                                      /*exclude_active_tab =*/false)) {
       continue;
@@ -274,8 +268,7 @@ void MostVisitedSitesProvider::Start(const AutocompleteInput& input,
     // sites and open tabs. Add 1 to `GetOpenTabs` since it doesn't consider
     // the currently active tab.
     client_->GetHistoryService()->QueryMostVisitedURLs(
-        top_sites->NumBlockedSites() +
-            (tab_matcher.GetOpenTabs(&input).size() + 1) +
+        (tab_matcher.GetOpenTabs(&input).size() + 1) +
             url_suggestions_on_focus_config.max_suggestions,
         base::BindOnce(
             &MostVisitedSitesProvider::OnMostVisitedUrlsFromHistoryAvailable,
@@ -397,9 +390,23 @@ void MostVisitedSitesProvider::BlockURL(const GURL& site_url) {
 void MostVisitedSitesProvider::DeleteMatch(const AutocompleteMatch& match) {
   DCHECK(match.type == AutocompleteMatchType::NAVSUGGEST ||
          match.type == AutocompleteMatchType::TILE_MOST_VISITED_SITE ||
-         match.type == AutocompleteMatchType::TILE_REPEATABLE_QUERY);
+         match.type == AutocompleteMatchType::TILE_REPEATABLE_QUERY ||
+         match.type == AutocompleteMatchType::HISTORY_URL);
 
-  BlockURL(match.destination_url);
+  if (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled) {
+    history::HistoryService* const history_service =
+        client_->GetHistoryService();
+    // Delete the underlying URL along with all its visits from the history DB.
+    // The resulting HISTORY_URLS_DELETED notification will also cause all
+    // caches and indices to drop any data they might have stored pertaining to
+    // the URL.
+    DCHECK(history_service);
+    DCHECK(match.destination_url.is_valid());
+    history_service->DeleteURLs({match.destination_url});
+  } else {
+    BlockURL(match.destination_url);
+  }
+
   for (auto i = matches_.begin(); i != matches_.end(); ++i) {
     if (i->contents == match.contents) {
       matches_.erase(i);

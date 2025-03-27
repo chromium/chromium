@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
 
 #include "base/time/time.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/tab_collections/public/tab_interface.h"
@@ -69,6 +70,12 @@ void GlicIphController::OnShowPromoResult(
   // trying to check.
   if (result.is_blocked_this_instance()) {
     show_timer_.Stop();
+  }
+
+  if (result == user_education::FeaturePromoResult::Success()) {
+    auto* profile = window_->GetProfile();
+    auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+    glic_service->TryPreloadFre();
   }
 }
 

@@ -7,8 +7,8 @@
 
 #import "base/time/time.h"
 
-// Recorded for IOS.ReaderMode.Heuristic. Entries should not be
-// renumbered and numeric values should never be reused.
+// Recorded for IOS.ReaderMode.Heuristic.Result. Entries should not
+// be renumbered and numeric values should never be reused.
 // LINT.IfChange(ReaderModeHeuristicResult)
 enum class ReaderModeHeuristicResult {
   kMalformedResponse = 0,
@@ -19,6 +19,20 @@ enum class ReaderModeHeuristicResult {
   kMaxValue = kReaderModeNotEligibleContentAndLength,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeHeuristicResult)
+
+// Recorded for IOS.ReaderMode.Heuristic.Classification.
+// Compares the state between the Reader Mode heuristic classification
+// and the result of the distiller. Entries should not
+// be renumbered and numeric values should never be reused.
+// LINT.IfChange(ReaderModeHeuristicClassification)
+enum class ReaderModeHeuristicClassification {
+  kPageNotEligibleWithEmptyDistill = 0,
+  kPageNotEligibleWithPopulatedDistill = 1,
+  kPageEligibleWithEmptyDistill = 2,
+  kPageEligibleWithPopulatedDistill = 3,
+  kMaxValue = kPageEligibleWithPopulatedDistill,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeHeuristicClassification)
 
 // Default delay in seconds for triggering Reader Mode distiller heuristic.
 // This allows the page to react to the DOM loading and ensures minimal
@@ -31,5 +45,12 @@ extern const char kReaderModeHeuristicResultHistogram[];
 
 // Histogram name for Reader Mode heuristic latency.
 extern const char kReaderModeHeuristicLatencyHistogram[];
+
+// Histogram name for the classification comparing the Reader Mode
+// heuristic result and the distillation output.
+extern const char kReaderModeHeuristicClassificationHistogram[];
+
+// Histogram name for Reader Mode distillation latency.
+extern const char kReaderModeDistillerLatencyHistogram[];
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_CONSTANTS_H_

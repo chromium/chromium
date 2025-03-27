@@ -2850,7 +2850,7 @@ ci.builder(
             # If you change this, make similar changes in android-x86-code-coverage
             "gl_tests_validating": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p_10.gl_tests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter",
                 ],
             ),
             "leveldb_unittests": targets.remove(
@@ -3317,7 +3317,7 @@ ci.builder(
             ),
             "gl_tests_validating": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p_10.gl_tests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter",
                 ],
             ),
             "net_unittests": targets.mixin(
@@ -3492,7 +3492,7 @@ ci.builder(
             ),
             "gl_tests_validating": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p_10.gl_tests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.gl_tests.filter",
                 ],
             ),
             "perfetto_unittests": targets.mixin(
@@ -3503,8 +3503,7 @@ ci.builder(
             ),
             "media_unittests": targets.mixin(
                 args = [
-                    # TODO(crbug.com/391490503): Disable the failing tests
-                    "--gtest_filter=-AAC/AACAudioEncoderTest.*",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.media_unittests.filter",
                 ],
             ),
             "services_unittests": targets.mixin(
@@ -3524,6 +3523,7 @@ ci.builder(
                 args = [
                     "--browser=android-chromium",
                 ],
+                ci_only = True,
             ),
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
                 args = [

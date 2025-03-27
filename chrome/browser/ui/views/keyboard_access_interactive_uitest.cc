@@ -64,9 +64,6 @@ class ViewFocusChangeWaiter : public views::FocusChangeListener {
 
  private:
   // views::FocusChangeListener:
-  void OnWillChangeFocus(views::View* focused_before,
-                         views::View* focused_now) override {}
-
   void OnDidChangeFocus(views::View* focused_before,
                         views::View* focused_now) override {
     if (focused_now && focused_now->GetID() != previous_view_id_) {

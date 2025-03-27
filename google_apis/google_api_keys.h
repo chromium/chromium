@@ -113,6 +113,14 @@ COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetFresnelAPIKey();
 
 // Retrieves the Boca API Key.
 COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetBocaAPIKey();
+
+// Retrieves the ChromeOS-specific Geolocation API Key used by the System
+// Services.
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetCrosSystemGeoAPIKey();
+// Retrieves the ChromeOS-specific Geolocation API Key used by the Chrome
+// browser.
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetCrosChromeGeoAPIKey();
+
 #endif
 
 // Retrieves the key used to sign metrics (UMA/UKM) uploads.

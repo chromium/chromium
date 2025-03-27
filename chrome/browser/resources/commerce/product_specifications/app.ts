@@ -246,17 +246,18 @@ export class ProductSpecificationsElement extends CrLitElement {
     };
   }
 
-  protected appState_: AppState = AppState.NO_CONTENT;
-  protected id_: Uuid|null = null;
-  protected loadingState_: LoadingState = {loading: false, urlCount: 0};
-  protected productSpecificationsFeatureState_:
+  protected accessor appState_: AppState = AppState.NO_CONTENT;
+  protected accessor id_: Uuid|null = null;
+  protected accessor loadingState_:
+      LoadingState = {loading: false, urlCount: 0};
+  protected accessor productSpecificationsFeatureState_:
       ProductSpecificationsFeatureState|null = null;
-  protected setName_: string|null = null;
-  protected sets_: ProductSpecificationsSet[] = [];
-  protected showComparisonTableList_: boolean = false;
-  private showEmptyState_: boolean = false;
-  protected showTableDataUnavailableContainer_: boolean = false;
-  protected tableColumns_: TableColumn[] = [];
+  protected accessor setName_: string|null = null;
+  protected accessor sets_: ProductSpecificationsSet[] = [];
+  protected accessor showComparisonTableList_: boolean = false;
+  private accessor showEmptyState_: boolean = false;
+  protected accessor showTableDataUnavailableContainer_: boolean = false;
+  protected accessor tableColumns_: TableColumn[] = [];
 
   private callbackRouter_: PageCallbackRouter;
   private eventTracker_: EventTracker = new EventTracker();

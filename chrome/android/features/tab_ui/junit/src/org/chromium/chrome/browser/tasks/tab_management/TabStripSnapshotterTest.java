@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,9 +54,6 @@ public class TabStripSnapshotterTest {
     @Mock private TabFaviconFetcher mTabFaviconFetcherC;
 
     private final List<Object> mTokenList = new ArrayList<>();
-
-    @Before
-    public void setUp() {}
 
     private void onModelTokenChange(Object token) {
         mTokenList.add(token);

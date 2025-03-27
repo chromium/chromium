@@ -74,6 +74,7 @@ default_args = {
   devtools_visibility = [ "*" ]
 
   clang_unsafe_buffers_paths = "//build/config/unsafe_buffers_paths.txt"
+  clang_warning_suppression_file = "//build/config/warning_suppression.txt"
 }
 
 # These are the targets to skip header checking by default. The files in targets

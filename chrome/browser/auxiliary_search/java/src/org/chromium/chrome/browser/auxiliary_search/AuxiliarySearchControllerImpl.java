@@ -33,7 +33,8 @@ import java.util.Map;
 /** The Controller to handle the communication between Chrome and {@link AuxiliarySearchDonor}. */
 public class AuxiliarySearchControllerImpl
         implements AuxiliarySearchController,
-                AuxiliarySearchConfigManager.ShareTabsWithOsStateListener {
+                AuxiliarySearchConfigManager.ShareTabsWithOsStateListener,
+                AuxiliarySearchProvider.Observer {
     private static final String TAG = "AuxiliarySearch";
     private final @NonNull Context mContext;
     private final @NonNull Profile mProfile;
@@ -48,6 +49,7 @@ public class AuxiliarySearchControllerImpl
     private @NonNull ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private boolean mHasDeletingTask;
     private int mTaskFinishedCount;
+    private boolean mIsObserving;
     private CallbackController mCallbackController = new CallbackController();
 
     @VisibleForTesting
@@ -116,6 +118,10 @@ public class AuxiliarySearchControllerImpl
         mCallbackController.destroy();
         mCallbackController = null;
         AuxiliarySearchConfigManager.getInstance().removeListener(this);
+        if (mIsObserving) {
+            mAuxiliarySearchProvider.setObserver(null);
+            mIsObserving = false;
+        }
 
         if (mActivityLifecycleDispatcher != null) {
             mActivityLifecycleDispatcher.unregister(this);
@@ -142,6 +148,14 @@ public class AuxiliarySearchControllerImpl
                     AuxiliarySearchMetrics.recordScheduledDonateTime(
                             TimeUtils.uptimeMillis() - startTimeMillis);
                 });
+    }
+
+    @Override
+    public void onDeferredStartup() {
+        if (mSupportMultiDataSource && !mIsObserving) {
+            mIsObserving = true;
+            mAuxiliarySearchProvider.setObserver(this);
+        }
     }
 
     // AuxiliarySearchConfigManager.ShareTabsWithOsStateListener implementations.
@@ -304,4 +318,15 @@ public class AuxiliarySearchControllerImpl
     public boolean getHasDeletingTaskForTesting() {
         return mHasDeletingTask;
     }
+
+    // AuxiliarySearchProvider.Observer implementations.
+    @Override
+    public void onSiteSuggestionsAvailable(@Nullable List<AuxiliarySearchDataEntry> entries) {
+        if (entries == null) return;
+
+        // TODO(crbug.com/397457989): Caches the suggestion entries.
+    }
+
+    @Override
+    public void onIconMadeAvailable(GURL siteUrl) {}
 }

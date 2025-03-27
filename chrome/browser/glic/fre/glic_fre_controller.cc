@@ -108,7 +108,9 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
   }
 
   // Close any existing FRE dialog before showing.
-  DismissFre();
+  if (IsShowingDialog()) {
+    DismissFre();
+  }
 
   CreateView();
 
@@ -118,9 +120,10 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
   // `GlicFreController::CanShowFreDialog`.
   // TODO(crbug.com/393400004): This returned widget should be configured to
   // use a synchronous close.
-  fre_widget_ = tab_interface->GetTabFeatures()
-                    ->tab_dialog_manager()
-                    ->CreateShowDialogAndBlockTabInteraction(fre_view_);
+  fre_widget_ =
+      tab_interface->GetTabFeatures()
+          ->tab_dialog_manager()
+          ->CreateShowDialogAndBlockTabInteraction(fre_view_.release());
   tab_showing_modal_ = tab_interface;
   will_detach_subscription_ = tab_showing_modal_->RegisterWillDetach(
       base::BindRepeating(&GlicFreController::OnTabShowingModalWillDetach,
@@ -174,13 +177,19 @@ void GlicFreController::AcceptFre() {
 }
 
 void GlicFreController::DismissFre() {
+  web_contents_ = nullptr;
+  if (fre_view_ || fre_widget_) {
+    auto* service = GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
+    glic::GlicProfileManager::GetInstance()->OnUnloadingClientForService(
+        service);
+  }
   if (fre_widget_) {
-    fre_view_ = nullptr;
     fre_widget_.reset();
     tab_showing_modal_ = nullptr;
     will_detach_subscription_ = {};
     show_start_time_ = base::TimeTicks();
   }
+  fre_view_.reset();
 }
 
 void GlicFreController::PrepareForClient(
@@ -217,11 +226,33 @@ void GlicFreController::OnNoThanksClicked() {
   DismissFre();
 }
 
-content::WebContents* GlicFreController::GetWebContents() {
-  if (!fre_view_) {
-    return nullptr;
+void GlicFreController::TryPreload() {
+  // Callers should not attempt to preload if the widget is showing.
+  CHECK(!fre_widget_);
+
+  if (fre_view_) {
+    return;
   }
-  return fre_view_->web_contents();
+  auth_controller_.CheckAuthBeforeShow(
+      AuthController::FallbackBehavior::kNone,
+      base::BindOnce(&GlicFreController::TryPreloadAfterAuthCheck,
+                     GetWeakPtr()));
+}
+
+bool GlicFreController::IsWarmed() const {
+  return !!fre_view_;
+}
+
+void GlicFreController::TryPreloadAfterAuthCheck(
+    AuthController::BeforeShowResult result) {
+  if (result != AuthController::BeforeShowResult::kReady) {
+    return;
+  }
+  CreateView();
+}
+
+content::WebContents* GlicFreController::GetWebContents() {
+  return web_contents_;
 }
 
 namespace {
@@ -345,9 +376,14 @@ void GlicFreController::OnTabShowingModalWillDetach(
 }
 
 void GlicFreController::CreateView() {
-  fre_view_ = new GlicFreDialogView(
+  if (fre_view_) {
+    return;
+  }
+
+  fre_view_ = std::make_unique<GlicFreDialogView>(
       profile_, gfx::Size(features::kGlicFreInitialWidth.Get(),
                           features::kGlicFreInitialHeight.Get()));
+  web_contents_ = fre_view_->web_contents();
   auto* service = GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
   GlicProfileManager::GetInstance()->OnLoadingClientForService(service);
 }

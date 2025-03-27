@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
+#include "media/base/encoder_status.h"
 #include "media/base/media_log.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
@@ -124,14 +125,15 @@ MojoVideoEncodeAccelerator::GetSupportedProfiles() {
                   "provider or GPU factories";
 }
 
-bool MojoVideoEncodeAccelerator::Initialize(
+EncoderStatus MojoVideoEncodeAccelerator::Initialize(
     const Config& config,
     Client* client,
     std::unique_ptr<MediaLog> media_log) {
   DVLOG(2) << __func__ << " " << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!client)
-    return false;
+  if (!client) {
+    return {EncoderStatus::Codes::kEncoderInitializationError};
+  }
 
   // Get a mojom::VideoEncodeAcceleratorClient bound to a local implementation
   // (VideoEncodeAcceleratorClient) and send the remote.
@@ -149,7 +151,10 @@ bool MojoVideoEncodeAccelerator::Initialize(
       std::make_unique<MojoMediaLogService>(media_log->Clone()),
       std::move(media_log_pending_receiver));
 
-  bool result = false;
+  // Initialize result to a failure state. This ensures that if the remote
+  // Initialize call fails (e.g., due to Mojo disconnection), we consistently
+  // return an error status.
+  EncoderStatus result{EncoderStatus::Codes::kEncoderInitializationError};
   base::ScopedAllowBaseSyncPrimitives allow;
   vea_->Initialize(config, std::move(vea_client_remote),
                    std::move(media_log_pending_remote), &result);

@@ -64,6 +64,8 @@ class GlicNudgeController {
 
   void OnNudgeActivity(GlicNudgeActivity activity);
 
+  void SetNudgeActivityCallbackForTesting();
+
  private:
   // Called when the active tab changes, to update the nudge UI appropriate for
   // the tab.

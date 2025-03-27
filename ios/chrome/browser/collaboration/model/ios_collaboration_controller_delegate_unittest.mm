@@ -100,28 +100,28 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
         /*disable_features=*/{});
 
     // Init the delegate parameters.
-    TestProfileIOS::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
         base::BindRepeating(&BuildTestSyncService));
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         CollaborationServiceFactory::GetInstance(),
         base::BindRepeating(&BuildMockCollaborationService));
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         base::BindRepeating(&BuildFakeTabGroupSyncService));
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         ShareKitServiceFactory::GetInstance(),
         base::BindRepeating(&BuildTestShareKitService));
-    test_cbs_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         IOSChromeFaviconLoaderFactory::GetInstance(),
         base::BindRepeating(&BuildTestFaviconLoader));
 
-    profile_ = std::move(test_cbs_builder).Build();
+    profile_ = std::move(test_profile_builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     web_state_list_ = browser_->GetWebStateList();

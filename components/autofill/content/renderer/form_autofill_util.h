@@ -84,6 +84,7 @@ std::optional<FormData> ExtractFormData(
     const blink::WebFormElement& form_element,
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state,
+    ButtonTitlesCache* button_titles_cache,
     DenseSet<ExtractOption> extract_options = {});
 
 // Helper function to assist in getting the canonical form of the action and
@@ -144,6 +145,7 @@ FindFormAndFieldForFormControlElement(
     const blink::WebFormControlElement& element,
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state,
+    form_util::ButtonTitlesCache* button_titles_cache,
     DenseSet<ExtractOption> extract_options,
     const SynchronousFormCache& form_cache);
 

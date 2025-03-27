@@ -1506,16 +1506,6 @@ void DownloadManagerImpl::BeginDownloadInternal(
   auto* rfh = RenderFrameHost::FromID(params->render_process_host_id(),
                                       params->render_frame_host_routing_id());
 
-  // Untrusted network access is revoked, download request is interrupted.
-  if (rfh && rfh->IsUntrustedNetworkDisabled()) {
-    // TODO(crbug.com/365033308): Create a new download interrupt reason for
-    // fenced frame network revocation.
-    CreateInterruptedDownload(
-        std::move(params), download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED,
-        weak_factory_.GetWeakPtr());
-    return;
-  }
-
   StoragePartitionConfig storage_partition_config;
   if (rfh && serialized_embedder_download_data.empty()) {
     storage_partition_config =

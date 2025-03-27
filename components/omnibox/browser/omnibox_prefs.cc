@@ -67,6 +67,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kShownCountHistoryEmbeddingsSettingsPromo, 0);
   registry->RegisterIntegerPref(kShownCountHistoryScopePromo, 0);
   registry->RegisterIntegerPref(kShownCountHistoryEmbeddingsScopePromo, 0);
+  registry->RegisterIntegerPref(kFocusedSrpWebCount, 0);
 }
 
 SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(

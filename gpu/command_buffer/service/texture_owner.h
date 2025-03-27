@@ -147,6 +147,8 @@ class GPU_GLES2_EXPORT TextureOwner
 
   int tracing_id() const { return tracing_id_; }
 
+  static constexpr char kMemoryDumpPrefix[] = "gpu/media_texture_owner_0x%x";
+
  private:
   friend class MockTextureOwner;
 

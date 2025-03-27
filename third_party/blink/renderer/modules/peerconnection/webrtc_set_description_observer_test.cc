@@ -255,7 +255,7 @@ class WebRtcSetDescriptionObserverHandlerTest
                 {remote_stream})));
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver(
         new rtc::RefCountedObject<blink::FakeRtpTransceiver>(
-            cricket::MEDIA_TYPE_AUDIO, sender, receiver, std::nullopt, false,
+            webrtc::MediaType::AUDIO, sender, receiver, std::nullopt, false,
             webrtc::RtpTransceiverDirection::kSendRecv, std::nullopt));
     transceivers_.push_back(transceiver);
     EXPECT_CALL(*pc_, GetTransceivers()).WillRepeatedly(Return(transceivers_));

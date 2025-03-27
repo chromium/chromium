@@ -51,6 +51,7 @@ enum class OnTransferSizeUpdatedFrom {
   kMaxValue = kServiceWorkerRaceNetworkRequest,
 };
 
+COMPONENT_EXPORT(NETWORK_CPP)
 inline void RecordOnTransferSizeUpdatedUMA(
     OnTransferSizeUpdatedFrom class_name) {
   UMA_HISTOGRAM_ENUMERATION(

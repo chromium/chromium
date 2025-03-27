@@ -554,21 +554,21 @@ void RecordPermissionActionUkm(
 
     for (ElementAnchoredBubbleVariant variant : variant_array) {
       switch (variant) {
-        case ElementAnchoredBubbleVariant::ADMINISTRATOR_GRANTED:
-        case ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED:
-        case ElementAnchoredBubbleVariant::ASK:
-        case ElementAnchoredBubbleVariant::PREVIOUSLY_DENIED:
-        case ElementAnchoredBubbleVariant::ADMINISTRATOR_DENIED:
+        case ElementAnchoredBubbleVariant::kAdministratorGranted:
+        case ElementAnchoredBubbleVariant::kPreviouslyGranted:
+        case ElementAnchoredBubbleVariant::kAsk:
+        case ElementAnchoredBubbleVariant::kPreviouslyDenied:
+        case ElementAnchoredBubbleVariant::kAdministratorDenied:
           builder.SetSiteLevelScreen(static_cast<int64_t>(variant));
           break;
-        case ElementAnchoredBubbleVariant::OS_PROMPT:
+        case ElementAnchoredBubbleVariant::kOsPrompt:
           builder.SetOsPromptScreen(static_cast<int64_t>(variant));
           break;
 
-        case ElementAnchoredBubbleVariant::OS_SYSTEM_SETTINGS:
+        case ElementAnchoredBubbleVariant::kOsSystemSettings:
           builder.SetOsSystemSettingsScreen(static_cast<int64_t>(variant));
           break;
-        case ElementAnchoredBubbleVariant::UNINITIALIZED:
+        case ElementAnchoredBubbleVariant::kUninitialized:
           break;
       }
     }
@@ -1948,11 +1948,11 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleOsMetrics(
 
   std::string screen_type;
   switch (screen) {
-    case OsScreen::OS_PROMPT:
-      screen_type = "OS_PROMPT";
+    case OsScreen::kOsPrompt:
+      screen_type = "OsPrompt";
       break;
-    case OsScreen::OS_SYSTEM_SETTINGS:
-      screen_type = "OS_SYSTEM_SETTINGS";
+    case OsScreen::kOsSystemSettings:
+      screen_type = "OsSystemSettings";
       break;
     default:
       NOTREACHED();
@@ -1966,19 +1966,19 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleOsMetrics(
   std::string screen_action;
   if (!time_to_action.is_zero()) {
     switch (action) {
-      case OsScreenAction::SYSTEM_SETTINGS:
+      case OsScreenAction::kSystemSettings:
         screen_action = "SystemSettings";
         break;
-      case OsScreenAction::DISMISSED_X_BUTTON:
-        screen_action = "DismissXButton";
+      case OsScreenAction::kDismissedXButton:
+        screen_action = "DismissedXButton";
         break;
-      case OsScreenAction::DISMISSED_SCRIM:
-        screen_action = "DismissScrim";
+      case OsScreenAction::kDismissedScrim:
+        screen_action = "DismissedScrim";
         break;
-      case OsScreenAction::OS_PROMPT_DENIED:
+      case OsScreenAction::kOsPromptDenied:
         screen_action = "OsPromptDenied";
         break;
-      case OsScreenAction::OS_PROMPT_ALLOWED:
+      case OsScreenAction::kOsPromptAllowed:
         screen_action = "OsPromptAllowed";
         break;
       default:

@@ -135,6 +135,11 @@ struct BLINK_COMMON_EXPORT
     return r.subframe_snapshot_id;
   }
 
+  static const base::flat_map<std::string, std::string>& id_to_auto_name_map(
+      const blink::ViewTransitionState& r) {
+    return r.id_to_auto_name_map;
+  }
+
   static bool Read(blink::mojom::ViewTransitionStateDataView r,
                    blink::ViewTransitionState* out);
 };

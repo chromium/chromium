@@ -149,7 +149,7 @@ std::string_view TrimString(std::string_view input,
   return internal::TrimStringPieceT(input, trim_chars, positions);
 }
 
-void TruncateUTF8ToByteSize(const std::string& input,
+void TruncateUTF8ToByteSize(std::string_view input,
                             const size_t byte_size,
                             std::string* output) {
   DCHECK(output);

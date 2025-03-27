@@ -19,10 +19,6 @@ public final class ToolbarFeatures {
     /** Private constructor to avoid instantiation. */
     private ToolbarFeatures() {}
 
-    public static boolean shouldSuppressCaptures() {
-        return ChromeFeatureList.sSuppressionToolbarCaptures.isEnabled();
-    }
-
     /**
      * Returns whether to record metrics from suppression experiment. This allows an arm of
      * suppression to run without the overhead from reporting any extra metrics in Java. Using a

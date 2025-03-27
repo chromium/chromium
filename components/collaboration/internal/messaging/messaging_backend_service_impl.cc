@@ -1058,26 +1058,6 @@ void MessagingBackendServiceImpl::OnTabGroupClosed(
   // TODO(crbug.com/389948628): Handle hide persistence messages if needed.
 }
 
-void MessagingBackendServiceImpl::OnGroupAdded(
-    const data_sharing::GroupId& group_id,
-    const std::optional<data_sharing::GroupData>& group_data,
-    const base::Time& event_time) {
-  collaboration_pb::Message message =
-      CreateMessage(group_id, collaboration_pb::COLLABORATION_ADDED,
-                    DirtyType::kNone, event_time);
-  store_->AddMessage(message);
-}
-
-void MessagingBackendServiceImpl::OnGroupRemoved(
-    const data_sharing::GroupId& group_id,
-    const std::optional<data_sharing::GroupData>& group_data,
-    const base::Time& event_time) {
-  collaboration_pb::Message message =
-      CreateMessage(group_id, collaboration_pb::COLLABORATION_REMOVED,
-                    DirtyType::kMessageOnly, event_time);
-  store_->AddMessage(message);
-}
-
 void MessagingBackendServiceImpl::OnGroupMemberAdded(
     const data_sharing::GroupData& group_data,
     const GaiaId& member_gaia_id,

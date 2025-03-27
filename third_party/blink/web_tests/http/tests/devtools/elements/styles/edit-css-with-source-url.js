@@ -44,7 +44,8 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     treeElement.valueElement.textContent = 'green';
     TestRunner.selectTextInTextNode(treeElement.valueElement.firstChild);
     treeElement.valueElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
-    uiSourceCode.addEventListener(Workspace.UISourceCode.Events.WorkingCopyCommitted, stylesEdited, this);
+    uiSourceCode.addEventListener(
+        Workspace.UISourceCode.Events.WorkingCopyChanged, stylesEdited, this);
   }
 
   async function stylesEdited() {

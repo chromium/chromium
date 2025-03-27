@@ -462,11 +462,12 @@ cc_library(
         "//absl/log:__subpackages__",
     ],
     deps = [
+        ":fnmatch",
         "//absl/base",
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:no_destructor",
-        "//absl/log/internal:fnmatch",
+        "//absl/base:nullability",
         "//absl/memory",
         "//absl/strings",
         "//absl/synchronization",

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/ai/ai_availability.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "components/language_detection/content/common/language_detection.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-blink.h"

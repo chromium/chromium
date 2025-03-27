@@ -7,34 +7,38 @@
 #include <algorithm>
 #include <cstddef>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/webauthn/combined_selector_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/layout/table_layout_view.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
 namespace {
@@ -171,7 +175,13 @@ void CombinedSelectorRowView::MaybeAddRadioButton(
   radio_button->SetChecked(radio_status_ == RadioStatus::kSelected);
   radio_button->SetEnabled(enabled_);
   radio_button->GetViewAccessibility().SetName(*this);
-  AddChildView(std::move(radio_button));
+  radio_button_ = AddChildView(std::move(radio_button));
+}
+
+void CombinedSelectorRowView::RequestFocus() {
+  if (radio_button_) {
+    radio_button_->RequestFocus();
+  }
 }
 
 BEGIN_METADATA(CombinedSelectorRowView)
@@ -180,22 +190,41 @@ END_METADATA
 CombinedSelectorListView::CombinedSelectorListView(
     CombinedSelectorSheetModel* model,
     CombinedSelectorRadioButton::Delegate* delegate) {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  auto* scroll_view = AddChildView(std::make_unique<views::ScrollView>());
+
+  auto wrapper = std::make_unique<views::View>();
+  wrapper->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      /* betweeen_child_spacing= */ CombinedSelectorSheetView::kRowGap));
+      /*between_child_spacing=*/kRowGap));
 
   for (size_t i = 0; i < model->dialog_model()->mechanisms.size(); i++) {
     const auto& mechanism = model->dialog_model()->mechanisms[i];
     auto image_model =
         ui::ImageModel::FromVectorIcon(*mechanism.icon, ui::kColorIcon, 20);
-    AddChildView(std::make_unique<views::Separator>());
-    AddChildView(std::make_unique<CombinedSelectorRowView>(
+    wrapper->AddChildView(std::make_unique<views::Separator>());
+    auto* row = wrapper->AddChildView(std::make_unique<CombinedSelectorRowView>(
         image_model,
         std::vector<std::u16string_view>{mechanism.name, mechanism.description},
         model->GetSelectionStatus(i), !model->dialog_model()->ui_disabled_,
         delegate, i));
+    if (model->GetSelectionStatus(i) ==
+        CombinedSelectorSheetModel::SelectionStatus::kSelected) {
+      selected_view_ = row;
+    }
   }
-  AddChildView(std::make_unique<views::Separator>());
+  wrapper->AddChildView(std::make_unique<views::Separator>());
+
+  scroll_view->SetContents(std::move(wrapper));
+  scroll_view->ClipHeightTo(kMaxRowHeight, 3 * kMaxRowHeight + 2 * kRowGap);
+}
+
+CombinedSelectorListView::~CombinedSelectorListView() = default;
+
+void CombinedSelectorListView::RequestFocus() {
+  if (selected_view_) {
+    selected_view_->RequestFocus();
+  }
 }
 
 BEGIN_METADATA(CombinedSelectorListView)

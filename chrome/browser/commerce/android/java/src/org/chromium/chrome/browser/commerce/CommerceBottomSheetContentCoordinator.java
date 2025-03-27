@@ -11,13 +11,15 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -31,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Coordinator for building a commerce bottom sheet content. */
+@NullMarked
 public class CommerceBottomSheetContentCoordinator implements CommerceBottomSheetContentController {
     private static final long CONTENT_PROVIDER_TIMEOUT_MS = 200;
 
@@ -40,13 +43,13 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
     private View mCommerceBottomSheetContentContainer;
     private ModelList mModelList;
 
-    private CallbackController mCallbackController;
+    @MonotonicNonNull private CallbackController mCallbackController;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final Supplier<ScrimManager> mScrimManagerSupplier;
 
     public CommerceBottomSheetContentCoordinator(
             Context context,
-            @NonNull BottomSheetController bottomSheetController,
+            BottomSheetController bottomSheetController,
             final Supplier<ScrimManager> scrimSupplier,
             List<Supplier<CommerceBottomSheetContentProvider>> contentProviderSuppliers) {
         mModelList = new ModelList();
@@ -70,10 +73,7 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
                 new ItemDecoration() {
                     @Override
                     public void getItemOffsets(
-                            @NonNull Rect outRect,
-                            @NonNull View view,
-                            @NonNull RecyclerView parent,
-                            @NonNull State state) {
+                            Rect outRect, View view, RecyclerView parent, State state) {
                         if (parent.getChildAdapterPosition(view) != 0) {
                             outRect.top =
                                     context.getResources()
@@ -85,7 +85,7 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
 
         bottomSheetController.addObserver(
                 new EmptyBottomSheetObserver() {
-                    PropertyModel mScrimModel;
+                    @Nullable PropertyModel mScrimModel;
 
                     @Override
                     public void onSheetStateChanged(int newState, int reason) {

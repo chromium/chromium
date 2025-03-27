@@ -398,6 +398,8 @@ void ToolbarView::Init() {
     tab_search_button_ =
         pinned_toolbar_actions_container()->CreatePermanentButtonFor(
             kActionTabSearch);
+    tab_search_button_->SetProperty(views::kElementIdentifierKey,
+                                    kTabSearchButtonElementId);
   }
 
   if (IsChromeLabsEnabled()) {

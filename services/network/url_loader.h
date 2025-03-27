@@ -387,6 +387,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
                    int error_code,
                    const std::vector<base::File> opened_files);
 
+  // A continuation of `OnConnected` to process the result of the asynchronous
+  // Local Network Access permission check.
+  void ProcessLocalNetworkAccessPermissionResultOnConnected(
+      const net::TransportInfo& info,
+      net::URLRequest* url_request,
+      net::CompletionOnceCallback callback,
+      bool permission_granted);
+
+  // A continuation of `OnConnected` to handle an ACCEPT_CH frame, if present.
+  int ProcessAcceptCHFrameOnConnected(const net::TransportInfo& info,
+                                      net::URLRequest* url_request,
+                                      net::CompletionOnceCallback callback);
+
   // A `ResourceRequest` where `shared_storage_writable_eligible` is true, is
   // eligible for shared storage operations via response headers.
   //

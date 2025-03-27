@@ -154,21 +154,16 @@ void OmniboxViewIOS::OnTemporaryTextMaybeChanged(
 }
 
 void OmniboxViewIOS::OnInlineAutocompleteTextMaybeChanged(
-    const std::u16string& display_text,
-    std::vector<gfx::Range> selections,
-    const std::u16string& prefix_autocompletion,
+    const std::u16string& user_text,
     const std::u16string& inline_autocompletion) {
+  std::u16string display_text = user_text + inline_autocompletion;
   if (display_text == GetText()) {
     return;
   }
 
   NSAttributedString* as = [[NSMutableAttributedString alloc]
       initWithString:base::SysUTF16ToNSString(display_text)];
-  // TODO(crbug.com/40122891): This `user_text_length` calculation  isn't
-  //  accurate when there's prefix autocompletion. This should be addressed
-  //  before we experiment with prefix autocompletion on iOS.
-  size_t user_text_length = display_text.size() - inline_autocompletion.size();
-  [field_ setText:as userTextLength:user_text_length];
+  [field_ setText:as userTextLength:user_text.size()];
 }
 
 void OmniboxViewIOS::SetAdditionalText(const std::u16string& text) {
@@ -226,10 +221,6 @@ void OmniboxViewIOS::GetSelectionBounds(std::u16string::size_type* start,
   } else {
     *start = *end = 0;
   }
-}
-
-size_t OmniboxViewIOS::GetAllSelectionsLength() const {
-  return 0;
 }
 
 gfx::NativeView OmniboxViewIOS::GetNativeView() const {

@@ -72,8 +72,7 @@ class SearchEnginesHandlerTest : public testing::Test {
     // EEA region.
     const CountryId kBelgiumCountryId("BE");
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kSearchEngineChoiceCountry,
-        country_codes::CountryIDToCountryString(kBelgiumCountryId));
+        switches::kSearchEngineChoiceCountry, kBelgiumCountryId.CountryCode());
 
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("Profile 1");
@@ -171,8 +170,7 @@ TEST_F(SearchEnginesHandlerTest,
   // region.
   const CountryId kBelgiumCountryId("BE");
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kSearchEngineChoiceCountry,
-      country_codes::CountryIDToCountryString(kBelgiumCountryId));
+      switches::kSearchEngineChoiceCountry, kBelgiumCountryId.CountryCode());
 
   EXPECT_FALSE(pref_service->HasPrefPath(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
@@ -204,8 +202,7 @@ TEST_F(SearchEnginesHandlerTest,
   // region.
   const CountryId kBelgiumCountryId("BE");
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kSearchEngineChoiceCountry,
-      country_codes::CountryIDToCountryString(kBelgiumCountryId));
+      switches::kSearchEngineChoiceCountry, kBelgiumCountryId.CountryCode());
 
   const TemplateURL* default_search_engine =
       template_url_service->GetDefaultSearchProvider();

@@ -75,13 +75,20 @@ void AuthController::CheckAuthBeforeShow(
 
   if (identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
           account_id)) {
-    // TODO(crbug.com/394115674): There should be some kind of transition to
-    // make it clear the sign-in is for Glic.
-    signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-        profile_, signin_metrics::AccessPoint::kGlicLaunchButton);
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  BeforeShowResult::kShowingReauthSigninPage));
+    if (fallback_behavior == FallbackBehavior::kShowReauthPage) {
+      // TODO(crbug.com/394115674): There should be some kind of transition to
+      // make it clear the sign-in is for Glic.
+      signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
+          profile_, signin_metrics::AccessPoint::kGlicLaunchButton);
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback),
+                         BeforeShowResult::kShowingReauthSigninPage));
+    } else {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback), BeforeShowResult::kSyncFailed));
+    }
   } else {
     SyncCookiesIfRequired(base::BindOnce(&AuthController::DoFallback,
                                          GetWeakPtr(), fallback_behavior,

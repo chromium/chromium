@@ -12,6 +12,8 @@ source_set("lib") {
     "//base",
     "//mojo/public/cpp/bindings",
     "//third_party/ced",
+    "//third_party/lzma_sdk",
+    "//third_party/lzma_sdk:lzma_sdk_xz",
     "//third_party/zlib",
     "//third_party/zlib/google:zip",
   ]
@@ -68,6 +70,8 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/unzip_service/bad_archive.zip",
     "//components/test/data/unzip_service/bug953599.zip",
     "//components/test/data/unzip_service/encrypted_archive.zip",
+    "//components/test/data/unzip_service/file1",
+    "//components/test/data/unzip_service/file1.xz",
     "//components/test/data/unzip_service/good_archive.zip",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +

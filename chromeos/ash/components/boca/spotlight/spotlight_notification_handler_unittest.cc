@@ -67,9 +67,7 @@ class SpotlightNotificationHandlerTest : public testing::Test {
 };
 
 TEST_F(SpotlightNotificationHandlerTest, StartSpotlightCountdownNotification) {
-  bool callback_triggered = false;
-  handler_->StartSpotlightCountdownNotification(
-      base::BindLambdaForTesting([&]() { callback_triggered = true; }));
+  handler_->StartSpotlightCountdownNotification();
   task_environment_.FastForwardBy(kSpotlightNotificationCountdownInterval);
 
   int notification_called_count = 1;
@@ -79,42 +77,14 @@ TEST_F(SpotlightNotificationHandlerTest, StartSpotlightCountdownNotification) {
         l10n_util::GetStringFUTF16(IDS_BOCA_SPOTLIGHT_NOTIFICATION_MESSAGE,
                                    base::NumberToString16(i.InSeconds()));
 
-    ASSERT_EQ(delegate_ptr_->called_show_count(), notification_called_count);
-    ASSERT_FALSE(callback_triggered);
+    EXPECT_EQ(delegate_ptr_->called_show_count(), notification_called_count);
     notification_called_count++;
     task_environment_.FastForwardBy(kSpotlightNotificationCountdownInterval);
   }
-
-  EXPECT_TRUE(callback_triggered);
-}
-
-TEST_F(SpotlightNotificationHandlerTest,
-       StartSpotlightCountdownNotificationOverridesExistingRequest) {
-  bool callback_1_triggered = false;
-  bool callback_2_triggered = false;
-  handler_->StartSpotlightCountdownNotification(
-      base::BindLambdaForTesting([&]() { callback_1_triggered = true; }));
-
-  task_environment_.FastForwardBy(kSpotlightNotificationCountdownInterval);
-
-  // Send second request while first is in progress.
-  handler_->StartSpotlightCountdownNotification(
-      base::BindLambdaForTesting([&]() { callback_2_triggered = true; }));
-
-  task_environment_.FastForwardBy(kSpotlightNotificationCountdownInterval);
-
-  for (base::TimeDelta i = kSpotlightNotificationDuration; i.is_positive();
-       i = i - kSpotlightNotificationCountdownInterval) {
-    task_environment_.FastForwardBy(kSpotlightNotificationCountdownInterval);
-  }
-  EXPECT_FALSE(callback_1_triggered);
-  EXPECT_TRUE(callback_2_triggered);
 }
 
 TEST_F(SpotlightNotificationHandlerTest, StopSpotlightNotification) {
-  bool callback_triggered = false;
-  handler_->StartSpotlightCountdownNotification(
-      base::BindLambdaForTesting([&]() { callback_triggered = true; }));
+  handler_->StartSpotlightCountdownNotification();
   task_environment_.FastForwardBy(kSpotlightNotificationCountdownInterval);
   ASSERT_EQ(delegate_ptr_->called_show_count(), 1);
 
@@ -123,8 +93,6 @@ TEST_F(SpotlightNotificationHandlerTest, StopSpotlightNotification) {
        i = i - kSpotlightNotificationCountdownInterval) {
     task_environment_.FastForwardBy(kSpotlightNotificationCountdownInterval);
   }
-
-  EXPECT_FALSE(callback_triggered);
   EXPECT_EQ(delegate_ptr_->called_show_count(), 1);
   EXPECT_EQ(delegate_ptr_->cancel_called_count(), 1);
 }

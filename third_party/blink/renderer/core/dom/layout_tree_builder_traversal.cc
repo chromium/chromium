@@ -91,10 +91,19 @@ ContainerNode* LayoutTreeBuilderTraversal::LayoutParent(const Node& node) {
 
 LayoutObject* LayoutTreeBuilderTraversal::ParentLayoutObject(const Node& node) {
   if (node.GetPseudoId() == kPseudoIdViewTransition) {
-    // The view-transition pseudo is wrapped by the anonymous
-    // LayoutViewTransitionRoot but that's created by adding the
-    // view-transition to the LayoutView.
-    return node.GetDocument().GetLayoutView();
+    Element* scope = node.parentElement();
+    if (scope->IsDocumentElement()) {
+      // For a document transition, the LayoutObject for the ::view-transition
+      // pseudo-element is wrapped by the anonymous LayoutViewTransitionRoot,
+      // which represents the snapshot containing block.
+      //
+      // The LayoutViewTransitionRoot is a child of the LayoutView, and will be
+      // injected by LayoutView::AddChild.
+      return node.GetDocument().GetLayoutView();
+    }
+    // For a scoped transition, the LayoutObject for the ::view-transition
+    // pseudo-element is a child of the LayoutObject for the scope element.
+    return scope->GetLayoutObject();
   }
   const Node* search_start_node = &node;
   // Parent of ::scroll-marker-group and ::scroll-button() should be layout

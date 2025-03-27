@@ -13,7 +13,7 @@ import {SemanticEvent, UserAction} from 'chrome-untrusted://lens-overlay/lens.mo
 import {ContextMenuOption} from 'chrome-untrusted://lens-overlay/metrics_utils.js';
 import type {OverlayObject} from 'chrome-untrusted://lens-overlay/overlay_object.mojom-webui.js';
 import {ScreenshotBitmapBrowserProxyImpl} from 'chrome-untrusted://lens-overlay/screenshot_bitmap_browser_proxy.js';
-import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
+import type {SelectedRegionContextMenuData, SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
 import type {TextLayerBase} from 'chrome-untrusted://lens-overlay/text_layer_base.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -157,6 +157,27 @@ suite('SelectionOverlay', function() {
     // requestAnimationFrame callback queued by the ResizeObserver.
     await waitAfterNextRender(selectionOverlayElement);
     await waitAfterNextRender(selectionOverlayElement);
+  }
+
+  async function dispatchUpdateSelectedRegionContextMenuEvent() {
+    const centerRotatedBox: CenterRotatedBox = {
+      box: {x: 0.2, y: 0.2, width: 0.4, height: 0.4},
+      rotation: 0,
+      coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+    };
+    selectionOverlayElement.dispatchEvent(
+        new CustomEvent<SelectedRegionContextMenuData>(
+            'update-selected-region-context-menu', {
+              bubbles: true,
+              composed: true,
+              detail: {
+                box: centerRotatedBox,
+                selectionStartIndex: 0,
+                selectionEndIndex: 1,
+                text: 'text',
+              },
+            }));
+    await flushTasks();
   }
 
   suite('WithoutWordsOrObjects', function() {
@@ -1635,6 +1656,23 @@ suite('SelectionOverlay', function() {
       selectionOverlayElement.$.selectionOverlay.style.height = '100%';
       await waitAfterNextRender(selectionOverlayElement);
       return waitAfterNextRender(selectionOverlayElement);
+    });
+
+    test('UpdateRegionContextMenuEventDoesNotShow', async () => {
+      // Default state of selection overlay.
+      assertFalse(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+      assertEquals(
+          undefined,
+          selectionOverlayElement
+              .getShowDetectedTextContextMenuOptionsForTesting());
+
+      await dispatchUpdateSelectedRegionContextMenuEvent();
+
+      assertFalse(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+      assertTrue(selectionOverlayElement
+                     .getShowDetectedTextContextMenuOptionsForTesting());
     });
 
     test('SelectedRegionContextMenuAppearsWithNoText', async () => {

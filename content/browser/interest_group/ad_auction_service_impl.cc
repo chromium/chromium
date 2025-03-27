@@ -743,7 +743,13 @@ scoped_refptr<SiteInstance> AdAuctionServiceImpl::GetFrameSiteInstance() {
 
 network::mojom::ClientSecurityStatePtr
 AdAuctionServiceImpl::GetClientSecurityState() {
-  return GetFrame()->BuildClientSecurityState();
+  network::mojom::ClientSecurityStatePtr frame_state =
+      GetFrame()->BuildClientSecurityState();
+  // Ensure all Local Network Access requests are blocked as this could lead to
+  // information leakage.
+  frame_state->private_network_request_policy =
+      network::mojom::PrivateNetworkRequestPolicy::kBlock;
+  return frame_state;
 }
 
 std::optional<std::string> AdAuctionServiceImpl::GetCookieDeprecationLabel() {

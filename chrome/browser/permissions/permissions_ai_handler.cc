@@ -22,6 +22,7 @@ using ::optimization_guide::SessionConfigParams;
 using ::optimization_guide::proto::PermissionsAiRequest;
 using ::optimization_guide::proto::PermissionsAiResponse;
 using ::optimization_guide::proto::PermissionType;
+using EligibilityReason = ::optimization_guide::OnDeviceModelEligibilityReason;
 
 constexpr ModelBasedCapabilityKey kFeatureKey =
     ModelBasedCapabilityKey::kPermissionsAi;
@@ -34,44 +35,14 @@ constexpr SessionConfigParams kSessionConfigParams = SessionConfigParams{
 // get cancelled.
 constexpr base::TimeDelta kMaxModelExecutionDuration = base::Seconds(5);
 
-// Currently, the following errors, which are used when a model may have been
-// installed but not yet loaded, are treated as waitable.
-static constexpr auto kWaitableReasons =
-    base::MakeFixedFlatSet<optimization_guide::OnDeviceModelEligibilityReason>({
-        optimization_guide::OnDeviceModelEligibilityReason::
-            kConfigNotAvailableForFeature,
-        optimization_guide::OnDeviceModelEligibilityReason::kModelToBeInstalled,
-        optimization_guide::OnDeviceModelEligibilityReason::
-            kSafetyModelNotAvailable,
-        optimization_guide::OnDeviceModelEligibilityReason::
-            kLanguageDetectionModelNotAvailable,
-    });
-
-void LogOnDeviceModelDownloadSuccessAndTime(
-    bool success,
-    base::TimeTicks model_download_start_time) {
-  base::UmaHistogramBoolean("Permissions.AIv1.DownloadSuccess", success);
-  if (success) {
-    base::UmaHistogramMediumTimes(
-        "Permissions.AIv1.DownloadTime",
-        base::TimeTicks::Now() - model_download_start_time);
-  }
-}
-
 void LogOnDeviceModelPreviousSessionFinishedInTime(bool success) {
   base::UmaHistogramBoolean("Permissions.AIv1.PreviousSessionFinishedInTime",
                             success);
 }
 
-void LogOnDeviceModelSessionCreationSuccessAndTime(
-    bool success,
-    base::TimeTicks session_creation_start_time) {
-  base::UmaHistogramBoolean("Permissions.AIv1.SessionCreationSuccess", success);
-  if (success) {
-    base::UmaHistogramMediumTimes(
-        "Permissions.AIv1.SessionCreationTime",
-        base::TimeTicks::Now() - session_creation_start_time);
-  }
+void LogOnDeviceModelSessionCreationSuccess(bool session_created) {
+  base::UmaHistogramBoolean("Permissions.AIv1.SessionCreationSuccess",
+                            session_created);
 }
 
 void LogOnDeviceModelExecutionSuccessAndTime(
@@ -89,8 +60,9 @@ void LogOnDeviceModelExecutionParse(bool success) {
   base::UmaHistogramBoolean("Permissions.AIv1.ResponseParseSuccess", success);
 }
 
-void LogOnDeviceModelAvailabilityAtInquiryTime(bool success) {
-  base::UmaHistogramBoolean("Permissions.AIv1.AvailableAtInquiryTime", success);
+void LogOnDeviceModelAvailabilityAtInquiryTime(bool model_available) {
+  base::UmaHistogramBoolean("Permissions.AIv1.AvailableAtInquiryTime",
+                            model_available);
 }
 
 void LogOnDeviceModelExecutionTimedOut(bool timed_out) {
@@ -108,6 +80,9 @@ PermissionType GetPermissionType(permissions::RequestType request_type) {
   }
 }
 
+bool IsOnDeviceModelAvailable(EligibilityReason reason) {
+  return reason == EligibilityReason::kSuccess;
+}
 }  // namespace
 
 // Manages sessions and related data. This will gift us more flexibility, i.e.
@@ -115,16 +90,15 @@ PermissionType GetPermissionType(permissions::RequestType request_type) {
 // same time and also to easily cancel session without fearing asynchronous
 // calls to OnModelExecutionComplete meddling with a potentially new permission
 // request.
-class PermissionsAiHandler::PermissionsAiSession {
+class PermissionsAiHandler::EvaluationTask {
  public:
-  explicit PermissionsAiSession(
-      OptimizationGuideKeyedService* optimization_guide) {
+  explicit EvaluationTask(OptimizationGuideKeyedService* optimization_guide) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
     session_ =
         optimization_guide->StartSession(kFeatureKey, kSessionConfigParams);
   }
 
-  ~PermissionsAiSession() {
+  ~EvaluationTask() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Explicitly invalidate weak pointers to prevent callbacks that may be
     // triggered by the destructor logic.
@@ -156,9 +130,9 @@ class PermissionsAiHandler::PermissionsAiSession {
     session_execution_start_time_ = base::TimeTicks::Now();
     session_->ExecuteModel(
         request,
-        base::BindRepeating(&PermissionsAiHandler::PermissionsAiSession::
-                                OnModelExecutionComplete,
-                            weak_ptr_factory_.GetWeakPtr(), execution_timer));
+        base::BindRepeating(
+            &PermissionsAiHandler::EvaluationTask::OnModelExecutionComplete,
+            weak_ptr_factory_.GetWeakPtr(), execution_timer));
   }
 
  private:
@@ -220,12 +194,11 @@ class PermissionsAiHandler::PermissionsAiSession {
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
       session_;
   base::TimeTicks session_execution_start_time_;
-  base::TimeTicks session_creation_start_time_;
   base::OnceCallback<void(
       std::optional<optimization_guide::proto::PermissionsAiResponse>)>
       inquire_on_device_model_callback_;
-  base::WeakPtrFactory<PermissionsAiHandler::PermissionsAiSession>
-      weak_ptr_factory_{this};
+  base::WeakPtrFactory<PermissionsAiHandler::EvaluationTask> weak_ptr_factory_{
+      this};
 };
 
 PermissionsAiHandler::PermissionsAiHandler(
@@ -235,131 +208,74 @@ PermissionsAiHandler::PermissionsAiHandler(
 
 PermissionsAiHandler::~PermissionsAiHandler() {
   execution_timer_->Stop();
-  StopListeningToOnDeviceModelUpdate();
-}
-
-void PermissionsAiHandler::StartListeningToOnDeviceModelUpdate() {
-  if (observing_on_device_model_availability_) {
-    return;
-  }
-
-  if (!optimization_guide_) {
-    LogOnDeviceModelDownloadSuccessAndTime(/*success=*/false,
-                                           on_device_download_start_time_);
-    return;
-  }
-
-  observing_on_device_model_availability_ = true;
-  optimization_guide_->AddOnDeviceModelAvailabilityChangeObserver(kFeatureKey,
-                                                                  this);
-
-  permissions_ai_session_ =
-      std::make_unique<PermissionsAiSession>(optimization_guide_);
-  if (permissions_ai_session_->IsActive()) {
-    SetOnDeviceModelAvailable();
-  } else {
-    on_device_download_start_time_ = base::TimeTicks::Now();
-  }
-}
-
-void PermissionsAiHandler::StopListeningToOnDeviceModelUpdate() {
-  if (!observing_on_device_model_availability_ || !optimization_guide_) {
-    return;
-  }
-
-  observing_on_device_model_availability_ = false;
-  optimization_guide_->RemoveOnDeviceModelAvailabilityChangeObserver(
-      kFeatureKey, this);
-}
-
-void PermissionsAiHandler::SetOnDeviceModelAvailable() {
-  LogOnDeviceModelDownloadSuccessAndTime(/*success=*/true,
-                                         on_device_download_start_time_);
-  is_on_device_model_available_ = true;
-}
-
-void PermissionsAiHandler::OnDeviceModelAvailabilityChanged(
-    ModelBasedCapabilityKey feature,
-    optimization_guide::OnDeviceModelEligibilityReason reason) {
-  if (!observing_on_device_model_availability_ || feature != kFeatureKey) {
-    return;
-  }
-
-  VLOG(1) << "[PermissionsAIv1] OnDeviceModelAvailability changed to state: "
-          << reason;
-
-  if (kWaitableReasons.contains(reason)) {
-    return;
-  }
-
-  if (reason == optimization_guide::OnDeviceModelEligibilityReason::kSuccess) {
-    SetOnDeviceModelAvailable();
-  } else {
-    LogOnDeviceModelDownloadSuccessAndTime(/*success=*/false,
-                                           on_device_download_start_time_);
-  }
-}
-
-bool PermissionsAiHandler::IsOnDeviceModelAvailable() {
-  return is_on_device_model_available_;
 }
 
 bool PermissionsAiHandler::IsModelExecutionInProgress() {
-  return permissions_ai_session_ && permissions_ai_session_->IsActive();
+  return evaluation_task_ && evaluation_task_->IsActive();
 }
 
 void PermissionsAiHandler::InquireAiOnDeviceModel(
     std::string rendered_text,
     permissions::RequestType request_type,
     base::OnceCallback<void(std::optional<PermissionsAiResponse>)> callback) {
-  if (IsModelExecutionInProgress()) {
-    LogOnDeviceModelPreviousSessionFinishedInTime(/*success=*/false);
-    // TODO(crbug.com/382447738): It can happen that a new inquiry comes
-    // before the previous finishes its execution. To avoid unexpected
-    // behavior return `std::nullopt` which means another type of CPSS logic
-    // will be executed.
+  if (!optimization_guide_) {
+    // If optimization_guide_ is a nullptr then we cannot do anything here at
+    // all.
     std::move(callback).Run(std::nullopt);
     return;
   }
-  if (is_on_device_model_available_) {
+
+  EligibilityReason model_state =
+      optimization_guide_->GetOnDeviceModelEligibility(kFeatureKey);
+  bool model_available_at_inquiry_time = IsOnDeviceModelAvailable(model_state);
+  LogOnDeviceModelAvailabilityAtInquiryTime(model_available_at_inquiry_time);
+
+  if (model_available_at_inquiry_time) {
+    if (IsModelExecutionInProgress()) {
+      LogOnDeviceModelPreviousSessionFinishedInTime(/*success=*/false);
+      // TODO(crbug.com/382447738): It can happen that a new inquiry comes
+      // before the previous finishes its execution. To avoid unexpected
+      // behavior return `std::nullopt` which means another type of CPSS logic
+      // will be executed.
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
     LogOnDeviceModelPreviousSessionFinishedInTime(/*success=*/true);
   }
 
-  base::TimeTicks session_creation_start_time = base::TimeTicks::Now();
-  if (!is_on_device_model_available_) {
-    StartListeningToOnDeviceModelUpdate();
-  } else if (optimization_guide_) {
-    execution_timer_->Stop();
-    // We make sure by recreating the session on every inquire call, that no
-    // callback executions or timing data linked to the previous request gets
-    // accidentally mixed up with the new request when we cancel lengthy model
-    // executions.
-    permissions_ai_session_ =
-        std::make_unique<PermissionsAiSession>(optimization_guide_);
-  }
+  // We make sure by recreating the session on every inquiry that no
+  // callback executions or timing data linked to the previous request gets
+  // accidentally mixed up with the new request when we cancel lengthy model
+  // executions.
+  evaluation_task_ = std::make_unique<EvaluationTask>(optimization_guide_);
 
-  LogOnDeviceModelSessionCreationSuccessAndTime(
-      /*success=*/IsModelExecutionInProgress(), session_creation_start_time);
-  LogOnDeviceModelAvailabilityAtInquiryTime(is_on_device_model_available_);
+  LogOnDeviceModelSessionCreationSuccess(
+      /*session_created=*/evaluation_task_->IsActive());
 
-  if (permissions_ai_session_) {
-    permissions_ai_session_->ExecuteModel(std::move(rendered_text),
-                                          request_type, std::move(callback),
-                                          execution_timer_.get());
+  if (evaluation_task_->IsActive()) {
+    evaluation_task_->ExecuteModel(std::move(rendered_text), request_type,
+                                   std::move(callback), execution_timer_.get());
 
-    if (IsModelExecutionInProgress()) {
+    // We check again to make sure the callback did not immediately return.
+    if (evaluation_task_->IsActive()) {
       execution_timer_->Start(
           FROM_HERE, kMaxModelExecutionDuration,
           base::BindOnce(&PermissionsAiHandler::CancelModelExecution,
                          weak_ptr_factory_.GetWeakPtr()));
     }
-  } else {
-    std::move(callback).Run(std::nullopt);
+    return;
   }
+
+  // We end up here if the model download has not started/ended yet or
+  // there is a transient error. If we did not download the model yet, trying
+  // to create the session will have started the download already so we do
+  // nothing here and just return. We also return for the other two cases,
+  // hoping the next inquiry will have better luck.
+  std::move(callback).Run(std::nullopt);
 }
 
 void PermissionsAiHandler::CancelModelExecution() {
-  permissions_ai_session_.reset();
+  evaluation_task_.reset();
   execution_timer_->Stop();
   LogOnDeviceModelExecutionTimedOut(/*timed_out=*/true);
 }

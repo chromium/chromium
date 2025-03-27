@@ -1409,4 +1409,37 @@ Additional details:
   <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_IN_MINUTES_BUTTON" desc="Label for the dialog button to ackowledge that the file upload to cloud storage will start at the scheduled time, in some number of minutes.">
     Upload in <ph name="MINUTES">$1<ex>36</ex></ph> min
   </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_TITLE_HOURS" desc="The title for the dialog informing the user that their local files will be deleted in some number of hours.">
+    Your local files will be deleted in <ph name="HOURS">$1<ex>24</ex></ph> hours
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_TITLE_HOUR" desc="The title for the dialog informing the user that their local files will be deleted in 1 hour.">
+    Your local files will be deleted in 1 hour
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_TITLE_MINUTES" desc="The title for the dialog informing the user that their local files will be deleted in some number of minutes.">
+    Your local files will be deleted in <ph name="MINUTES">$1<ex>24</ex></ph> minutes
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_TITLE_MINUTE" desc="The title for the dialog informing the user that their local files will be deleted in 1 minute.">
+    Your local files will be deleted in 1 minute
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_START_MESSAGE" desc="The message for the dialog body informing the user that their local files will be deleted at a specified time.">
+    Your administrator will delete your local files, including any files in the Trash, on <ph name="DATE_TIME">$1<ex>8/25/24 2:44:30 PM PST</ex></ph>.
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_STORE_MESSAGE" desc="The message for the dialog body informing the user to ensure their critical data is stored before deletion starts.">
+    Make sure any critical business or personal data is stored externally.
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_DELETE_NOW_BUTTON" desc="Label for the dialog button that starts the deletion of local files.">
+    Delete files now
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_DELETE_IN_HOURS_BUTTON" desc="Label for the dialog button to ackowledge that the deletion of local files will start at the scheduled time, in some number of hours.">
+    Delete files in <ph name="HOURS">$1<ex>24</ex></ph> hr
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_DELETE_IN_MINUTES_BUTTON" desc="Label for the dialog button to ackowledge that the deletion of local files will start at the scheduled time, in some number of minutes.">
+    Delete files in <ph name="MINUTES">$1<ex>36</ex></ph> min
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_COMPLETED_TITLE" desc="The title for the notification informing the user that their local files were removed due to SkyVault policy.">
+    Files were successfully deleted
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_COMPLETED_MESSAGE" desc="The message for the notification informing the user that their local files were removed due to SkyVault policy.">
+    From now on, save your files to cloud storage
+  </message>
 </grit-part>

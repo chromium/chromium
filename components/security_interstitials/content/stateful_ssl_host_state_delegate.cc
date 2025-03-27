@@ -167,7 +167,7 @@ std::string GetKey(const net::X509Certificate& cert, int error) {
   // Since a security decision will be made based on the fingerprint, Chrome
   // should use the SHA-256 fingerprint for the certificate.
   net::SHA256HashValue fingerprint = cert.CalculateChainFingerprint256();
-  std::string base64_fingerprint = base::Base64Encode(fingerprint.data);
+  std::string base64_fingerprint = base::Base64Encode(fingerprint);
   return base::NumberToString(error) + base64_fingerprint;
 }
 

@@ -205,8 +205,9 @@ TEST_F(D3D12VideoEncodeAcceleratorTest, SupportedProfilesCanBeInitialized) {
   for (const auto& profile :
        d3d12_video_encode_accelerator->GetSupportedProfiles()) {
     auto config = SupportedProfileToConfig(profile);
-    EXPECT_TRUE(d3d12_video_encode_accelerator->Initialize(
-        config, client_.get(), media_log_->Clone()));
+    EXPECT_TRUE(d3d12_video_encode_accelerator
+                    ->Initialize(config, client_.get(), media_log_->Clone())
+                    .is_ok());
     EXPECT_CALL(*client_, NotifyEncoderInfoChange(_)).Times(1);
     EXPECT_CALL(*client_, NotifyErrorStatus(_)).Times(0);
     WaitForEncoderTasksToComplete();
@@ -235,8 +236,9 @@ TEST_F(D3D12VideoEncodeAcceleratorTest, RejectsUnsupportedConfig) {
     auto bad_config = supported_config;
     bad_config.output_profile = video_codec_profile;
     bad_config.input_visible_size = size;
-    EXPECT_TRUE(d3d12_video_encode_accelerator->Initialize(
-        bad_config, client_.get(), media_log_->Clone()));
+    EXPECT_TRUE(d3d12_video_encode_accelerator
+                    ->Initialize(bad_config, client_.get(), media_log_->Clone())
+                    .is_ok());
     EXPECT_CALL(*client_, NotifyEncoderInfoChange(_)).Times(0);
     EXPECT_CALL(*client_, NotifyErrorStatus(_)).Times(1);
     WaitForEncoderTasksToComplete();
@@ -263,8 +265,10 @@ TEST_F(D3D12VideoEncodeAcceleratorTest,
             bitstream_buffer_count = count;
             bitstream_buffer_size = size_in_bytes;
           }));
-  EXPECT_TRUE(d3d12_video_encode_accelerator->Initialize(
-      supported_config, client_.get(), media_log_->Clone()));
+  EXPECT_TRUE(
+      d3d12_video_encode_accelerator
+          ->Initialize(supported_config, client_.get(), media_log_->Clone())
+          .is_ok());
   WaitForEncoderTasksToComplete();
   Mock::VerifyAndClearExpectations(&client_);
 

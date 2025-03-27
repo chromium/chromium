@@ -39,33 +39,31 @@ void ActorCoordinator::Act(TabInterface& tab,
 
   content::WebContents& web_contents = *tab.GetContents();
 
-  MayActOnTab(
-      tab,
-      base::BindOnce(
-          &ActorCoordinator::OnMayActOnTabResponse,
-          weak_ptr_factory_.GetWeakPtr(), web_contents.GetWeakPtr(), action,
-          web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-          std::move(callback)));
+  MayActOnTab(tab,
+              base::BindOnce(
+                  &ActorCoordinator::OnMayActOnTabResponse,
+                  weak_ptr_factory_.GetWeakPtr(), tab.GetWeakPtr(), action,
+                  web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+                  std::move(callback)));
 }
 
 void ActorCoordinator::OnMayActOnTabResponse(
-    base::WeakPtr<WebContents> web_contents,
+    base::WeakPtr<tabs::TabInterface> tab,
     const BrowserAction& action,
     const url::Origin& evaluated_origin,
     ActionResultCallback callback,
     bool may_act) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!web_contents) {
+  if (!tab) {
     std::move(callback).Run(/*succeeded=*/false);
     return;
   }
 
-  TabInterface* tab = TabInterface::GetFromContents(web_contents.get());
-  CHECK(tab);
+  content::WebContents& web_contents = *tab->GetContents();
 
   if (!evaluated_origin.IsSameOriginWith(
-          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
+          web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
     // A cross-origin navigation occurred before we got permission. The result
     // is no longer applicable. For now just fail.
     // TODO(mcnee): Handle this gracefully.

@@ -894,6 +894,14 @@ export declare interface ScrollToParams {
 
   /** Used to specify content to scroll to and highlight. */
   selector: ScrollToSelector;
+
+  /**
+   * Identifies the document we want to perform the scrollTo operation on. When
+   * specified, we verify that the currently focused tab's document matches the
+   * ID, and throw an error if doesn't. If not specified, the implementation
+   * will use the main frame of the currently focused tab without verification.
+   */
+  documentId?: string;
 }
 
 /**
@@ -948,6 +956,13 @@ export enum ScrollToErrorReason {
    * scrollTo() call.
    */
   FOCUSED_TAB_CHANGED_OR_NAVIGATED = 4,
+  /**
+   * The documentId provided doesn't match the currently focused tab's primary
+   * document. The document may have been navigated away, may not currently be
+   * in focus, or may not be in a primary main frame (we don't currently support
+   * iframes).
+   */
+  NO_MATCHING_DOCUMENT = 5,
 }
 
 /**

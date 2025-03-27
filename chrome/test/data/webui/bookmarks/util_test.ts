@@ -169,6 +169,10 @@ suite('util', function() {
               syncing: true,
             }),
             createFolder('2', [], {
+              folderType: chrome.bookmarks.FolderType.OTHER,
+              syncing: true,
+            }),
+            createFolder('3', [], {
               folderType: chrome.bookmarks.FolderType.BOOKMARKS_BAR,
               syncing: false,
             }));
@@ -179,6 +183,7 @@ suite('util', function() {
               ROOT_NODE_ID,
               '1',
               '2',
+              '3',
               ACCOUNT_HEADING_NODE_ID,
               LOCAL_HEADING_NODE_ID,
             ],
@@ -186,8 +191,8 @@ suite('util', function() {
         assertDeepEquals(
             nodes[ROOT_NODE_ID]!.children!,
             [ACCOUNT_HEADING_NODE_ID, LOCAL_HEADING_NODE_ID]);
-        assertDeepEquals(nodes[ACCOUNT_HEADING_NODE_ID]!.children!, ['1']);
-        assertDeepEquals(nodes[LOCAL_HEADING_NODE_ID]!.children!, ['2']);
+        assertDeepEquals(nodes[ACCOUNT_HEADING_NODE_ID]!.children!, ['1', '2']);
+        assertDeepEquals(nodes[LOCAL_HEADING_NODE_ID]!.children!, ['3']);
       });
 
   test('isRootNode and isRootOrChildOfRoot when no heading nodes', function() {

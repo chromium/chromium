@@ -4,6 +4,8 @@
 
 #include "services/network/public/cpp/content_decoding_interceptor.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/pass_key.h"
@@ -12,6 +14,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/filter/filter_source_stream.h"
 #include "services/network/public/cpp/data_pipe_to_source_stream.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/loading_params.h"
 #include "services/network/public/cpp/source_stream_to_data_pipe.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -20,6 +23,16 @@
 namespace network {
 
 namespace {
+
+uint32_t GetRendererSideContentDecodingPipeSize() {
+  const int feature_param_value =
+      features::kRendererSideContentDecodingPipeSize.Get();
+  if (feature_param_value != 0) {
+    return base::checked_cast<uint32_t>(feature_param_value);
+  }
+  return network::GetDataPipeDefaultAllocationSize(
+      network::DataPipeAllocationSize::kLargerSizeIfPossible);
+}
 
 // Implements the URLLoaderClient and URLLoader interfaces to intercept a
 // request after receiving a response and perform content decoding. This class
@@ -250,11 +263,12 @@ void ContentDecodingInterceptor::Intercept(
       .struct_size = sizeof(MojoCreateDataPipeOptions),
       .flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE,
       .element_num_bytes = 1,
-      .capacity_num_bytes = network::GetDataPipeDefaultAllocationSize(
-          network::DataPipeAllocationSize::kLargerSizeIfPossible)};
-  CHECK_EQ(mojo::CreateDataPipe(&options, pipe_producer_handle,
-                                pipe_consumer_handle),
-           MOJO_RESULT_OK);
+      .capacity_num_bytes = GetRendererSideContentDecodingPipeSize()};
+  const auto mojo_result = mojo::CreateDataPipe(&options, pipe_producer_handle,
+                                                pipe_consumer_handle);
+  base::UmaHistogramExactLinear(
+      "Network.RendererSideContentDecoding.CreateDataPipe", mojo_result,
+      MOJO_RESULT_SHOULD_WAIT + 1);
 
   // Create new endpoints for the intercepted URLLoader and URLLoaderClient.
   mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver;
@@ -265,6 +279,14 @@ void ContentDecodingInterceptor::Intercept(
   // Calls `swap_callback` to connect the new created endpoints to the caller
   // side.
   std::move(swap_callback).Run(endpoints, pipe_consumer_handle);
+
+  if (mojo_result != MOJO_RESULT_OK) {
+    mojo::Remote<network::mojom::URLLoaderClient> client(
+        std::move(url_loader_client));
+    client->OnComplete(
+        network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
+    return;
+  }
 
   // Post a task to create and start the `Interceptor` on the worker thread.
   worker_task_runner->PostTask(

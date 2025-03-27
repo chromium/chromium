@@ -7,10 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-
-namespace net {
-struct SHA256HashValue;
-}  // namespace net
+#include "net/base/hash_value.h"
 
 namespace network {
 

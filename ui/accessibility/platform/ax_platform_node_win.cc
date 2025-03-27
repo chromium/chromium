@@ -771,22 +771,25 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
     }
   }
 
-  if (std::optional<PROPERTYID> uia_property =
-          MojoEventToUIAProperty(event_type);
-      uia_property.has_value() && HasEventListenerForProperty(*uia_property)) {
-    // For this event, we're not concerned with the old value.
-    base::win::ScopedVariant old_value;
-    ::VariantInit(old_value.Receive());
-    base::win::ScopedVariant new_value;
-    ::VariantInit(new_value.Receive());
-    GetPropertyValueImpl(*uia_property, new_value.Receive());
-    ::UiaRaiseAutomationPropertyChangedEvent(this, *uia_property, old_value,
-                                             new_value);
-  }
+  if (AXPlatform::GetInstance().IsUiaProviderEnabled()) {
+    if (std::optional<PROPERTYID> uia_property =
+            MojoEventToUIAProperty(event_type);
+        uia_property.has_value() &&
+        HasEventListenerForProperty(*uia_property)) {
+      // For this event, we're not concerned with the old value.
+      base::win::ScopedVariant old_value;
+      ::VariantInit(old_value.Receive());
+      base::win::ScopedVariant new_value;
+      ::VariantInit(new_value.Receive());
+      GetPropertyValueImpl(*uia_property, new_value.Receive());
+      ::UiaRaiseAutomationPropertyChangedEvent(this, *uia_property, old_value,
+                                               new_value);
+    }
 
-  if (std::optional<EVENTID> uia_event = MojoEventToUIAEvent(event_type);
-      uia_event.has_value() && HasEventListenerForEvent(*uia_event)) {
-    ::UiaRaiseAutomationEvent(this, *uia_event);
+    if (std::optional<EVENTID> uia_event = MojoEventToUIAEvent(event_type);
+        uia_event.has_value() && HasEventListenerForEvent(*uia_event)) {
+      ::UiaRaiseAutomationEvent(this, *uia_event);
+    }
   }
 
   // Keep track of objects that are a target of an alert event.
@@ -8066,10 +8069,6 @@ std::optional<DWORD> AXPlatformNodeWin::MojoEventToMSAAEvent(
 // static
 std::optional<EVENTID> AXPlatformNodeWin::MojoEventToUIAEvent(
     ax::mojom::Event event) {
-  if (!AXPlatform::GetInstance().IsUiaProviderEnabled()) {
-    return std::nullopt;
-  }
-
   switch (event) {
     case ax::mojom::Event::kAlert:
       return UIA_SystemAlertEventId;
@@ -8107,10 +8106,6 @@ std::optional<EVENTID> AXPlatformNodeWin::MojoEventToUIAEvent(
 // static
 std::optional<PROPERTYID> AXPlatformNodeWin::MojoEventToUIAProperty(
     ax::mojom::Event event) {
-  if (!AXPlatform::GetInstance().IsUiaProviderEnabled()) {
-    return std::nullopt;
-  }
-
   switch (event) {
     case ax::mojom::Event::kControlsChanged:
       return UIA_ControllerForPropertyId;

@@ -29,6 +29,7 @@ export class InsightsCommentRow extends PolymerElement {
     };
   }
 
+  private shouldShowFeedback_: boolean;
   private priceInsightsProxy_: PriceInsightsBrowserProxy =
       PriceInsightsBrowserProxyImpl.getInstance();
 

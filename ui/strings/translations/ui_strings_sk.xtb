@@ -38,6 +38,7 @@
 <translation id="19085484004813472">Toto je nová funkcia</translation>
 <translation id="2006524834898217237">Skontrolujte, či je toto zariadenie pripojené k internetu.</translation>
 <translation id="208586643495776849">Skúste to znova</translation>
+<translation id="2111134541987263231">Zapnite <ph name="BEGIN_BOLD" />Povoliť v režime inkognito<ph name="END_BOLD" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d.}few{# d.}many{# d.}other{# d.}}</translation>
 <translation id="2148716181193084225">Dnes</translation>
 <translation id="2168039046890040389">Page Up</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">Klepnite na dotykové ciele na obrazovke.</translation>
 <translation id="2295140143284145483">Prieskum</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Rozšírenie s identifikátorom <ph name="BEGIN_LIST" /><ph name="END_LIST" /> sa nedá nájsť. Kontaktujte svojho správcu.}few{Rozšírenia s identifikátormi <ph name="BEGIN_LIST" /><ph name="END_LIST" /> sa nedajú nájsť. Kontaktujte svojho správcu.}many{Extensions with the IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" /> can’t be located. Contact your administrator.}other{Rozšírenia s identifikátormi <ph name="BEGIN_LIST" /><ph name="END_LIST" /> sa nedajú nájsť. Kontaktujte svojho správcu.}}</translation>
 <translation id="2353636109065292463">Kontroluje sa internetové pripojenie</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2388990488038464401">Chcete zavolať na toto číslo z telefónu?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">Odstrániť všetko</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{o 1 d.}few{o # d.}many{o # d.}other{o # d.}}</translation>
 <translation id="2922712708897119705">Stĺpec <ph name="COLUMN_NAME" /> je zoradený v zostupnom poradí.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Rozšírenie sa nedá nájsť}few{Rozšírenia sa nedajú nájsť}many{Rozšírenia sa nedajú nájsť}other{Rozšírenia sa nedajú nájsť}}</translation>
 <translation id="3036649622769666520">Otvoriť súbory</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Spodok</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">Zavolajte pomocou zariadenia</translation>
 <translation id="3306688585798492231">Vstavaná obrazovka</translation>
 <translation id="335581015389089642">Reč</translation>
+<translation id="3372635229069101468">Kliknite na <ph name="BEGIN_BOLD" />Podrobnosti<ph name="END_BOLD" />.</translation>
 <translation id="3389286852084373014">Text je príliš veľký</translation>
 <translation id="3406306243914553062">Obsah HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Zostáva 1 deň}few{Zostávajú # dni}many{Zostáva # dňa}other{Zostáva # dní}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">Stĺpec <ph name="COLUMN_NAME" /> je zoradený vo vzostupnom poradí.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 neprečítané upozornenie}few{# neprečítané upozornenia}many{# Unread Notifications}other{# neprečítaných upozornení}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{V režime inkognito zapnite nasledujúce rozšírenie:}few{V režime inkognito zapnite nasledujúce rozšírenia:}many{V režime inkognito zapnite nasledujúce rozšírenia:}other{V režime inkognito zapnite nasledujúce rozšírenia:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{pred mesiacom}few{pred # mesiacmi}many{pred # mesiacom}other{pred # mesiacmi}}</translation>
 <translation id="4289300219472526559">Začať hovoriť</translation>
 <translation id="4289540628985791613">Prehľad</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">číslo</translation>
 <translation id="4746179598275229723">Rozšírenie bolo odopnuté</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{zostáva 1 mesiac}few{zostávajú # mesiace}many{zostáva # mesiaca}other{zostáva # mesiacov}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Ak chcete používať režim inkognito, vaša organizácia vyžaduje rozšírenie}few{Ak chcete používať režim inkognito, vaša organizácia vyžaduje niektoré rozšírenia}many{Ak chcete používať režim inkognito, vaša organizácia vyžaduje niektoré rozšírenia}other{Ak chcete používať režim inkognito, vaša organizácia vyžaduje niektoré rozšírenia}}</translation>
+<translation id="482932175346970750">Zadajte v prehliadači <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />.</translation>
 <translation id="4888938634149558681">Volať</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekunda}few{# sekundy}many{# sekundy}other{# sekúnd}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;Prilepiť</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Nepodarilo sa odoslať</translation>
+<translation id="5283101102242354279">Ak chcete zapnúť rozšírenie v režime inkognito:</translation>
 <translation id="528468243742722775">Koniec</translation>
 <translation id="5329858601952122676">&amp;Odstrániť</translation>
 <translation id="5361107212971249203">text</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">Nastavenia zobrazovania vašej aplikácie sa uplatnia po jej ďalšom reštartovaní.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Zostáva 1 min}few{Zostávajú # min}many{Zostáva # min}other{Zostáva # min}}</translation>
+<translation id="7252604552361840748">Vyhľadajte rozšírenie vyššie.</translation>
 <translation id="7363164521834647158">Poslať odpoveď</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Pred 1 min}few{Pred # min}many{Pred # min}other{Pred # min}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>

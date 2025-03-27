@@ -406,6 +406,7 @@
 <translation id="1264956950255940376">Прищурить левый глаз</translation>
 <translation id="1265094893042958831">Создание подсказок…</translation>
 <translation id="1265279736024499987">Ваши приложения и настройки будут синхронизироваться на всех устройствах с Chrome OS Flex, на которых вы вошли в аккаунт Google. Изменить параметры синхронизации браузера можно в <ph name="LINK_BEGIN" />настройках Chrome<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Если вы сделаете скриншот или выполните поиск на экране, вам будут предложены дополнительные действия: добавить в Календарь, создать документ Google и т. д.</translation>
 <translation id="126710816202626562">Перевести на:</translation>
 <translation id="1267649802567297774">Сгенерированное изображение: <ph name="INDEX" />. Объект: <ph name="SUBJECT" />. Стиль: <ph name="STYLE" />. Настроение: <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1569,6 +1570,7 @@
 <translation id="208547068587548667">Вход в <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Повторите попытку.</translation>
 <translation id="208634871997892083">Постоянная сеть VPN</translation>
+<translation id="208654914566977272">Предлагать действия во время поиска на экране</translation>
 <translation id="2087822576218954668">Печать: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Зарегистрироваться можно только после установки <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Встроенный джойстик TrackPoint</translation>
@@ -2561,6 +2563,7 @@
 <translation id="2751454300227269244">Сдвиньте губы вправо</translation>
 <translation id="2751883373055093745">Сайт <ph name="WEBSITE" /> запрашивает доступ к сведениям об идентификаторе ключа безопасности, чтобы знать, какой именно ключ вы используете.</translation>
 <translation id="275213133112113418">Карта сохранена</translation>
+<translation id="2752805177271551234">Использовать историю ввода</translation>
 <translation id="2754226775788136540">Выполняется поиск устройств с Быстрым подключением, сохраненных в аккаунте <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="2754825024506485820">В Google Play вы найдете любые интересующие вас приложения. Их можно установить в любое время.</translation>
 <translation id="2755349111255270002">Сбросьте настройки устройства <ph name="DEVICE_TYPE" /></translation>
@@ -2593,7 +2596,6 @@
 <translation id="2771816809568414714">Сыр</translation>
 <translation id="2772936498786524345">Ниндзя</translation>
 <translation id="2773288106548584039">Поддержка альтернативного браузера</translation>
-<translation id="2773621783913034737">Сделать вкладки неактивными</translation>
 <translation id="2774876860084746535">Философское</translation>
 <translation id="2775047284666165174">Папка "<ph name="LOCAL_FOLDER" />" сохранена только на этом устройстве. Она станет недоступна на других устройствах, если вы переместите ее в папку "<ph name="LOCAL_FOLDER" />".</translation>
 <translation id="2775104091073479743">Настроить отпечатки</translation>
@@ -4028,6 +4030,7 @@
 <translation id="3798632811625902122">Устройству <ph name="DEVICE" /> требуется разрешение на подключение через Bluetooth.</translation>
 <translation id="3798670284305777884">Динамик (встроенный)</translation>
 <translation id="3799128412641261490">Настройки функции Switch Access</translation>
+<translation id="3800764353337460026">Стиль символов</translation>
 <translation id="3800828618615365228">Дополнительные условия использования Google Chrome и Chrome OS</translation>
 <translation id="3800898876950197674">Чтобы разрешить установку расширения, введите пароль.</translation>
 <translation id="3801449494961771207">Стандартный голос для озвучивания текста</translation>
@@ -5335,6 +5338,7 @@
 <translation id="4735506354605317060">Обводка указателя мыши</translation>
 <translation id="4735793370946506039">Подробнее об улучшенном Безопасном просмотре.</translation>
 <translation id="4735803855089279419">Не удалось определить идентификаторы устройства.</translation>
+<translation id="4735819417216076266">Стиль ввода пробелов</translation>
 <translation id="4735846817388402006">Нажмите, чтобы разрешить расширению "<ph name="EXTENSIONS_REQUESTING_ACCESS" />" доступ к сайту <ph name="ORIGIN" /></translation>
 <translation id="473775607612524610">Обновить</translation>
 <translation id="473936925429402449">Выбрано, показан дополнительный контент на карточке <ph name="CURRENT_ELEMENT" /> из <ph name="TOTAL_ELEMENTS" /></translation>
@@ -6599,7 +6603,6 @@
 <translation id="5642508497713047">Сторона, подписавшая список отзыва сертификатов</translation>
 <translation id="5643191124441701136">Защитный код можно найти на лицевой стороне карты</translation>
 <translation id="5643321261065707929">Сеть с тарификацией</translation>
-<translation id="5643717184207603910">Поддерживайте высокую производительность</translation>
 <translation id="5646376287012673985">Местоположение</translation>
 <translation id="5646558797914161501">Бизнесмен</translation>
 <translation id="5648021990716966815">Микрофонный разъем</translation>
@@ -6704,7 +6707,6 @@
 <translation id="5734362860645681824">Оборудование</translation>
 <translation id="5734697361979786483">Добавить общую папку</translation>
 <translation id="573520097779121706">Чтобы перемещать курсор, используйте клавиши 7, 8, 9, U, O, J, K, L.</translation>
-<translation id="5735513236153491131">Повысить</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Эти данные или ваше устройство не соответствуют некоторым правилам безопасности организации. Обратитесь к администратору.}=1{Этот файл или ваше устройство не соответствует некоторым правилам безопасности организации. Обратитесь к администратору.}one{Эти файлы не соответствуют некоторым правилам безопасности вашей организации. Обратитесь к администратору.}few{Эти файлы не соответствуют некоторым правилам безопасности вашей организации. Обратитесь к администратору.}many{Эти файлы не соответствуют некоторым правилам безопасности вашей организации. Обратитесь к администратору.}other{Эти файлы не соответствуют некоторым правилам безопасности вашей организации. Обратитесь к администратору.}}</translation>
 <translation id="5738093759615225354">Этот ключ доступа нужен, чтобы входить в систему на компьютере.</translation>
 <translation id="5739017626473506901">Войдите в систему, чтобы помочь пользователю <ph name="USER_NAME" /> добавить учебный аккаунт.</translation>
@@ -7916,7 +7918,6 @@
 <translation id="6611972847767394631">Здесь находятся ваши вкладки</translation>
 <translation id="661266467055912436">Делает интернет безопаснее для вас и других пользователей.</translation>
 <translation id="6613267708691765962">Поиск вредоносного ПО…</translation>
-<translation id="6614172284067813496">Страница добавлена в список для чтения.</translation>
 <translation id="6615455863669487791">Показать</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Сайт может отслеживать ваше местоположение</translation>
@@ -7936,6 +7937,7 @@
 <translation id="6628328486509726751">Время загрузки: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Более надежная защита</translation>
+<translation id="6630452975878488444">Ярлык выбора</translation>
 <translation id="6630752851777525409">Расширение "<ph name="EXTENSION_NAME" />" запрашивает постоянный доступ к сертификату для прохождения аутентификации от вашего имени.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{Выйти из группы}one{Выйти из групп}few{Выйти из групп}many{Выйти из групп}other{Выйти из групп}}</translation>
 <translation id="6635362468090274700">Никто не сможет обмениваться с вами данными, пока вы не откроете доступ к своему устройству.<ph name="BR" /><ph name="BR" />Чтобы предоставить временный доступ, откройте панель состояния и включите параметр "Широкий доступ".</translation>
@@ -8626,7 +8628,6 @@
 <translation id="7114054701490058191">Пароли не совпадают</translation>
 <translation id="7114648273807173152">Чтобы использовать Smart Lock для входа в аккаунт Google, нажмите "Настройки &gt; Подключенные устройства &gt; Телефон &gt; Smart Lock".</translation>
 <translation id="7115361495406486998">Нет доступных контактов</translation>
-<translation id="7115731767122970828">Повысить</translation>
 <translation id="7116554090938189816">Срок действия SSL-сертификата принтера истек. Перезапустите принтер и повторите попытку.</translation>
 <translation id="7117228822971127758">Повторите попытку позже.</translation>
 <translation id="7118268675952955085">скриншот</translation>
@@ -8795,7 +8796,6 @@
 <translation id="7243092385765551741">Удалить ключ доступа?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (оптимальное)</translation>
 <translation id="7246230585855757313">Вставьте электронный ключ ещё раз и повторите попытку.</translation>
-<translation id="7248802599439396696">Сделать вкладки неактивными</translation>
 <translation id="7249197363678284330">Измените эту настройку в адресной строке.</translation>
 <translation id="7249764475759804559">Добавить в список приложений, с помощью которых можно открывать файлы</translation>
 <translation id="7250616558727237648">Устройство, на которое вы отправляете файлы, не отвечает. Повторите попытку.</translation>
@@ -9107,6 +9107,7 @@
 <translation id="7465777686629334728">Удалить управляемую среду разработки (<ph name="SPECIFIC_NAME" />)</translation>
 <translation id="7465778193084373987">URL отзыва сертификатов Netscape</translation>
 <translation id="7466431077154602932">Компактный вид</translation>
+<translation id="7466861475611330213">Стиль пунктуации</translation>
 <translation id="746861123368584540">Расширение загружено.</translation>
 <translation id="7469612367552312334">Включено • Находите посещенные сайты в истории браузера, формулируя запросы простыми словами</translation>
 <translation id="7470131554696493512">Запрещать аксессуарам Thunderbolt и USB4 доступ к оперативной памяти и ее совместное использование</translation>
@@ -9348,6 +9349,7 @@
 <translation id="7646772052135772216">Синхронизация паролей не работает</translation>
 <translation id="7647403192093989392">Нет недавних действий</translation>
 <translation id="7648023614017258011">Chrome проверяет набор для установки</translation>
+<translation id="7648048654005891115">Стиль раскладки</translation>
 <translation id="7649070708921625228">Справка</translation>
 <translation id="7650141368285545431">Использовать ключ доступа с другого устройства</translation>
 <translation id="7650178491875594325">Восстановление данных на устройстве</translation>
@@ -10561,7 +10563,6 @@
 <translation id="8466052016039127321">Невозможно возобновить предыдущий сеанс</translation>
 <translation id="8467326454809944210">Выбрать другой язык</translation>
 <translation id="8468087214092422866">Запрещено искать устройства Bluetooth</translation>
-<translation id="8469863130477774813">Повысьте производительность</translation>
 <translation id="8470513973197838199">Сохраненные пароли для <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Обычно сайты подключаются к USB-устройствам, чтобы использовать некоторые функции, например печатать документы или сохранять данные на внешних накопителях.</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{Нет повторяющихся паролей}=1{{COUNT} повторяющийся пароль}one{{COUNT} повторяющийся пароль}few{{COUNT} повторяющихся пароля}many{{COUNT} повторяющихся паролей}other{{COUNT} повторяющегося пароля}}</translation>
@@ -11101,6 +11102,7 @@
 <translation id="8846163936679269230">Сбросить профили eSIM</translation>
 <translation id="8846239054091760429">Монофонический звук, автоматические субтитры, звуки при включении и не только</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8848709220963126773">Переключение режима с помощью клавиши Shift</translation>
 <translation id="8849001918648564819">Скрытые</translation>
 <translation id="8849219423513870962">Отменить удаление профиля eSIM с именем "<ph name="PROFILE_NAME" />"</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> из <ph name="CHECKING" /></translation>

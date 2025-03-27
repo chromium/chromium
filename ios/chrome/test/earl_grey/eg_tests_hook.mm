@@ -9,6 +9,7 @@
 #import "base/files/file_util.h"
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/allow_check_is_test_for_testing.h"
 #import "base/time/time.h"
 #import "components/data_sharing/public/data_sharing_service.h"
 #import "components/data_sharing/test_support/mock_preview_server_proxy.h"
@@ -266,7 +267,7 @@ GetOverriddenRecipientsFetcher() {
 }
 
 void SetUpTestsIfPresent() {
-  // No-op for Earl Grey.
+  base::test::AllowCheckIsTestForTesting();
 }
 
 void RunTestsIfPresent() {

@@ -32,8 +32,14 @@ struct ASH_EXPORT InformedRestoreContentsData {
 
   struct TabInfo {
     TabInfo();
-    TabInfo(const GURL& url, const std::string& title = std::string());
+    explicit TabInfo(const GURL& url, const std::string& title = std::string());
+    TabInfo(const GURL& url,
+            const GURL& virtual_url,
+            const std::string& title = std::string());
+    // The url used to create the tab navigation.
     GURL url;
+    // The final url shown to the user.
+    GURL virtual_url;
     std::string title;
   };
 

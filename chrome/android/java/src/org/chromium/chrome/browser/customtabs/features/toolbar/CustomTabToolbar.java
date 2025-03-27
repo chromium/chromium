@@ -98,7 +98,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
-import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
@@ -1338,17 +1337,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     @Override
     public CaptureReadinessResult isReadyForTextureCapture() {
-        if (ToolbarFeatures.shouldSuppressCaptures()) {
-            CustomTabCaptureStateToken currentToken = generateCaptureStateToken();
-            final @ToolbarSnapshotDifference int difference =
-                    currentToken.getAnyDifference(mLastCustomTabCaptureStateToken);
-            if (difference == ToolbarSnapshotDifference.NONE) {
-                return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.SNAPSHOT_SAME);
-            } else {
-                return CaptureReadinessResult.readyWithSnapshotDifference(difference);
-            }
+        CustomTabCaptureStateToken currentToken = generateCaptureStateToken();
+        final @ToolbarSnapshotDifference int difference =
+                currentToken.getAnyDifference(mLastCustomTabCaptureStateToken);
+        if (difference == ToolbarSnapshotDifference.NONE) {
+            return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.SNAPSHOT_SAME);
         } else {
-            return CaptureReadinessResult.unknown(/* isReady= */ true);
+            return CaptureReadinessResult.readyWithSnapshotDifference(difference);
         }
     }
 
@@ -1477,6 +1472,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             if (optionalButtonStub == null) return;
             optionalButtonStub.setLayoutResource(R.layout.optional_button_layout);
             View optionalButton = optionalButtonStub.inflate();
+            if (mCustomActionButtons.getChildCount() >= 2) {
+                // Place the optional button at the leftmost position.
+                mCustomActionButtons.removeView(optionalButton);
+                mCustomActionButtons.addView(optionalButton, 0);
+            }
             mOptionalButtonCoordinator =
                     new OptionalButtonCoordinator(
                             optionalButton,

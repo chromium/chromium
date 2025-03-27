@@ -201,3 +201,10 @@ void DataSharingPageHandler::LeaveGroup(
   CHECK(api_initialized_);
   page_->LeaveGroup(group_id, std::move(callback));
 }
+
+void DataSharingPageHandler::ReadGroupWithToken(
+    data_sharing::mojom::ReadGroupWithTokenParamPtr param,
+    data_sharing::mojom::Page::ReadGroupWithTokenCallback callback) {
+  CHECK(api_initialized_);
+  page_->ReadGroupWithToken(std::move(param), std::move(callback));
+}

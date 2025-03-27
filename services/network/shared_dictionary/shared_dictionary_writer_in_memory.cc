@@ -58,7 +58,7 @@ void SharedDictionaryWriterInMemory::Finish() {
   }
 
   net::SHA256HashValue sha256;
-  secure_hash_->Finish(sha256.data, sizeof(sha256.data));
+  secure_hash_->Finish(sha256);
 
   if (total_size_ == 0) {
     std::move(finish_callback_)

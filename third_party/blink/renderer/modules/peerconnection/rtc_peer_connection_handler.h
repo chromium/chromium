@@ -309,7 +309,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>*
           error_or_transceiver);
   void AddTransceiverWithMediaTypeOnSignalingThread(
-      cricket::MediaType media_type,
+      webrtc::MediaType media_type,
       webrtc::RtpTransceiverInit init,
       blink::TransceiverStateSurfacer* transceiver_state_surfacer,
       webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>*

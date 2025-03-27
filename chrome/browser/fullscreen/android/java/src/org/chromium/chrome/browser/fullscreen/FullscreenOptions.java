@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.fullscreen;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Options to control a fullscreen request. */
+@NullMarked
 public class FullscreenOptions {
     /** Whether the navigation bar should be shown. */
     public final boolean showNavigationBar;

@@ -4,9 +4,18 @@
 
 import {ESLintUtils} from '../../../../third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 
-const POLYMER_IMPORT =
-    '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-const LIT_IMPORT = '//resources/lit/v3_0/lit.rollup.js';
+// NOTE: Using `\u002F` instead of a forward slash, to workaround for
+// https://github.com/eslint/eslint/issues/16555 where forward slashes are not
+// properly escaped in regular expressions appearing in AST selectors.
+const POLYMER_IMPORT_REGEX = [
+  'resources',
+  'polymer',
+  'v3_0',
+  'polymer',
+  'polymer_bundled.min.js$',
+].join('\\u002F');
+const LIT_IMPORT_REGEX =
+    ['resources', 'lit', 'v3_0', 'lit.rollup.js$'].join('\\u002F');
 
 const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
   name: 'lit-property-accessor',
@@ -39,7 +48,7 @@ const litPropertyAccessorRule = ESLintUtils.RuleCreator.withoutDocs({
     let litProperties = null;  // Set<string>|null
 
     return {
-      [`ImportDeclaration[source.value='${LIT_IMPORT}']`](node) {
+      [`ImportDeclaration[source.value=/${LIT_IMPORT_REGEX}/]`](node) {
         isLitElement = true;
       },
       'ClassDeclaration'(node) {
@@ -114,7 +123,7 @@ const polymerPropertyDeclareRule = ESLintUtils.RuleCreator.withoutDocs({
     let polymerProperties = null;  // Set<string>|null
 
     return {
-      [`ImportDeclaration[source.value='${POLYMER_IMPORT}']`](node) {
+      [`ImportDeclaration[source.value=/${POLYMER_IMPORT_REGEX}/]`](node) {
         isPolymerElement = true;
       },
       'ClassDeclaration'(node) {

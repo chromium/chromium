@@ -710,15 +710,23 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
 }
 
 class StorageAccessGrantPermissionContextAPIWithFedCMConnectionTest
-    : public StorageAccessGrantPermissionContextTest {
+    : public StorageAccessGrantPermissionContextTest,
+      public testing::WithParamInterface<bool> {
  public:
   StorageAccessGrantPermissionContextAPIWithFedCMConnectionTest() = default;
 
   void SetUp() override {
     StorageAccessGrantPermissionContextTest::SetUp();
 
-    feature_list_.InitAndEnableFeature(
-        blink::features::kFedCmWithStorageAccessAPI);
+    // This feature is already enabled by default, but the SUT behavior does
+    // different things if it's overridden or not. So we also try initializing
+    // as-is, without overriding.
+    if (override_feature_state()) {
+      feature_list_.InitAndEnableFeature(
+          blink::features::kFedCmWithStorageAccessAPI);
+    } else {
+      feature_list_.Init();
+    }
 
     FederatedIdentityPermissionContextFactory::GetForProfile(profile())
         ->GrantSharingPermission(
@@ -730,11 +738,13 @@ class StorageAccessGrantPermissionContextAPIWithFedCMConnectionTest
             "my_account");
   }
 
+  bool override_feature_state() const { return GetParam(); }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(StorageAccessGrantPermissionContextAPIWithFedCMConnectionTest,
+TEST_P(StorageAccessGrantPermissionContextAPIWithFedCMConnectionTest,
        AutoResolveWithConnection) {
   prompt_factory().set_response_type(
       permissions::PermissionRequestManager::AutoResponseType::NONE);
@@ -762,3 +772,8 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithFedCMConnectionTest,
                   ContentSettingsType::STORAGE_ACCESS),
               IsEmpty());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    StorageAccessGrantPermissionContextAPIWithFedCMConnectionTest,
+    testing::Bool());

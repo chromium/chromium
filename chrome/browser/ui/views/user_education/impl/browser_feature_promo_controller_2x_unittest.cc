@@ -362,54 +362,9 @@ class BrowserFeaturePromoController2xTestBase
     if (!failure.has_value()) {
       return;
     }
-    std::string failure_action_name = "UserEducation.MessageNotShown.";
-    switch (failure.value()) {
-      case FeaturePromoResult::kCanceled:
-        failure_action_name.append("Canceled");
-        break;
-      case FeaturePromoResult::kError:
-        failure_action_name.append("Error");
-        break;
-      case FeaturePromoResult::kBlockedByUi:
-        failure_action_name.append("BlockedByUi");
-        break;
-      case FeaturePromoResult::kBlockedByPromo:
-        failure_action_name.append("BlockedByPromo");
-        break;
-      case FeaturePromoResult::kBlockedByConfig:
-        failure_action_name.append("BlockedByConfig");
-        break;
-      case FeaturePromoResult::kSnoozed:
-        failure_action_name.append("Snoozed");
-        break;
-      case FeaturePromoResult::kBlockedByContext:
-        failure_action_name.append("BlockedByContext");
-        break;
-      case FeaturePromoResult::kFeatureDisabled:
-        failure_action_name.append("FeatureDisabled");
-        break;
-      case FeaturePromoResult::kPermanentlyDismissed:
-        failure_action_name.append("PermanentlyDismissed");
-        break;
-      case FeaturePromoResult::kBlockedByGracePeriod:
-        failure_action_name.append("BlockedByGracePeriod");
-        break;
-      case FeaturePromoResult::kBlockedByCooldown:
-        failure_action_name.append("BlockedByCooldown");
-        break;
-      case FeaturePromoResult::kRecentlyAborted:
-        failure_action_name.append("RecentlyAborted");
-        break;
-      case FeaturePromoResult::kExceededMaxShowCount:
-        failure_action_name.append("ExceededMaxShowCount");
-        break;
-      case FeaturePromoResult::kBlockedByNewProfile:
-        failure_action_name.append("BlockedByNewProfile");
-        break;
-      default:
-        NOTREACHED();
-    }
-
+    const std::string failure_action_name =
+        "UserEducation.MessageNotShown." +
+        user_education::FeaturePromoResult::GetFailureName(failure.value());
     EXPECT_EQ(not_shown_count,
               user_action_tester_.GetActionCount(failure_action_name))
         << "Re: " << failure_action_name;

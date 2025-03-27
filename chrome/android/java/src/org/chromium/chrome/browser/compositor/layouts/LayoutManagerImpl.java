@@ -433,8 +433,6 @@ public class LayoutManagerImpl
         mIsNewEventFilter = layoutFilter != mActiveEventFilter;
         mActiveEventFilter = layoutFilter;
 
-        if (mActiveEventFilter != null) mActiveLayout.unstallImmediately();
-
         return mActiveEventFilter != null;
     }
 
@@ -981,7 +979,6 @@ public class LayoutManagerImpl
         TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
         layoutTab.initFromHost(
                 topUiTheme.getBackgroundColor(tab),
-                shouldStall(tab),
                 canUseLiveTexture,
                 topUiTheme.getSceneLayerBackground(tab),
                 ThemeUtils.getTextBoxColorForToolbarBackground(
@@ -1002,11 +999,6 @@ public class LayoutManagerImpl
 
         layoutTab.set(
                 LayoutTab.BACKGROUND_COLOR, mTopUiThemeColorProvider.get().getBackgroundColor(tab));
-    }
-
-    // Whether the tab is ready to display or it should be faded in as it loads.
-    private static boolean shouldStall(Tab tab) {
-        return (tab.isFrozen() || tab.needsReload()) && !tab.isNativePage();
     }
 
     @Override

@@ -40,6 +40,7 @@ bool IsAllowedActionableAlert(const base::Feature& promo_feature) {
           "IPH_DownloadEsbPromo",
           "IPH_HighEfficiencyMode",
           "IPH_SupervisedUserProfileSignin",
+          "IPH_TabSearchToolbarButton",
       });
   return kAllowedPromoNames.contains(promo_feature.name);
 }

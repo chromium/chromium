@@ -90,8 +90,8 @@ TEST_F(TabEventsVisitTransformerTest, Transform) {
       FetchOptions::CreateDefaultFetchOptionsForTabResumption());
   ASSERT_EQ(result.first, URLVisitAggregatesTransformer::Status::kSuccess);
   ASSERT_EQ(result.second.size(), 2u);
-  EXPECT_EQ(GetRecentFgCount(result.second[0]), 3);
-  EXPECT_EQ(GetRecentFgCount(result.second[1]), 2);
+  EXPECT_EQ(GetRecentFgCount(result.second[0]), 2);
+  EXPECT_EQ(GetRecentFgCount(result.second[1]), 1);
 }
 
 }  // namespace

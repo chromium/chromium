@@ -15,29 +15,33 @@ namespace lens {
 
 // The update modes for the request id generator.
 enum class RequestIdUpdateMode {
+  // Indicates that the request should be modified for the initial set of
+  // requests, e.e. incrementing the sequence id, image sequence id, and long
+  // context id.
+  kInitialRequest = 0,
   // Indicates that the request id should be modified for a full image request,
   // i.e. incrementing the image sequence, sequence id, and creating a new
   // analytics id.
-  kFullImageRequest = 0,
+  kFullImageRequest = 1,
   // Indicates that the request id should be modified for a page content
   // request, i.e. incrementing the sequence id and creating a new analytics
   // id.
-  kPageContentRequest = 1,
+  kPageContentRequest = 2,
   // Indicates that the request id should be modified for a partial page content
   // request, i.e. incrementing the sequence id and creating a new analytics
   // id.
-  kPartialPageContentRequest = 2,
+  kPartialPageContentRequest = 3,
   // Indicates that the request id should be modified for an interaction
   // request, i.e. incrementing the sequence id and creating a new analytics
   // id.
-  kInteractionRequest = 3,
+  kInteractionRequest = 4,
   // Indicates that the request id should be modified for a search url.
   // i.e. just incrementing the sequence id.
-  kSearchUrl = 4,
+  kSearchUrl = 5,
   // Indicates that the request id should be modified for opening in a new tab.
   // i.e. just creating a new analytics id, but not storing it for future
   // updates.
-  kOpenInNewTab = 5,
+  kOpenInNewTab = 6,
 };
 
 // Manages creating lens overlay request IDs. Owned by a single Lens overlay
@@ -77,6 +81,9 @@ class LensOverlayRequestIdGenerator {
 
   // The current image sequence id.
   int image_sequence_id_;
+
+  // The current long context id.
+  int long_context_id_;
 
   // The current routing info. Not guaranteed to exist if not returned from the
   // server.

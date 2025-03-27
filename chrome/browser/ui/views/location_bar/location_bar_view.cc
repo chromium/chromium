@@ -177,13 +177,6 @@ int IncrementalMinimumWidth(const views::View* view) {
   return (view && view->GetVisible()) ? view->GetMinimumSize().width() : 0;
 }
 
-// Whether the omnibox enables either of 2 prefix autocompletion features.
-bool OmniboxPrefixRichAutocompletionEnabled() {
-  return OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixAll.Get() ||
-         OmniboxFieldTrial::
-             kRichAutocompletionAutocompleteNonPrefixShortcutProvider.Get();
-}
-
 // The padding between the intent chip and the other trailing decorations.
 constexpr int kIntentChipIntraItemPadding = 12;
 
@@ -326,23 +319,17 @@ void LocationBarView::Init() {
         return label;
       };
 
-  if (OmniboxPrefixRichAutocompletionEnabled()) {
-    ime_prefix_autocomplete_view_ =
-        AddChildView(CreateImeAutocompletionLabel(gfx::ALIGN_RIGHT));
-  }
   ime_inline_autocomplete_view_ =
       AddChildView(CreateImeAutocompletionLabel(gfx::ALIGN_LEFT));
 
   // Initiate the Omnibox additional-text label.
-  if (OmniboxFieldTrial::RichAutocompletionShowAdditionalText()) {
-    auto omnibox_additional_text_view = std::make_unique<views::Label>(
-        std::u16string(), CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
-    omnibox_additional_text_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    omnibox_additional_text_view->SetVisible(false);
-    omnibox_additional_text_view_ =
-        AddChildView(std::move(omnibox_additional_text_view));
-    omnibox_additional_text_view_->SetEnabledColor(kColorOmniboxResultsUrl);
-  }
+  auto omnibox_additional_text_view = std::make_unique<views::Label>(
+      std::u16string(), CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
+  omnibox_additional_text_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  omnibox_additional_text_view->SetVisible(false);
+  omnibox_additional_text_view_ =
+      AddChildView(std::move(omnibox_additional_text_view));
+  omnibox_additional_text_view_->SetEnabledColor(kColorOmniboxResultsUrl);
 
   selected_keyword_view_ = AddChildView(
       std::make_unique<SelectedKeywordView>(this, profile_, font_list));
@@ -520,19 +507,6 @@ gfx::Point LocationBarView::GetOmniboxViewOrigin() const {
   return origin;
 }
 
-void LocationBarView::SetImePrefixAutocompletion(std::u16string_view text) {
-  DCHECK(OmniboxPrefixRichAutocompletionEnabled() || text.empty());
-  if (OmniboxPrefixRichAutocompletionEnabled()) {
-    SetOmniboxAdjacentText(ime_prefix_autocomplete_view_, text);
-  }
-}
-
-std::u16string_view LocationBarView::GetImePrefixAutocompletion() const {
-  return OmniboxPrefixRichAutocompletionEnabled()
-             ? ime_prefix_autocomplete_view_->GetText()
-             : std::u16string_view();
-}
-
 void LocationBarView::SetImeInlineAutocompletion(std::u16string_view text) {
   SetOmniboxAdjacentText(ime_inline_autocomplete_view_, text);
 }
@@ -543,29 +517,19 @@ std::u16string_view LocationBarView::GetImeInlineAutocompletion() const {
 
 void LocationBarView::SetOmniboxAdditionalText(std::u16string_view text) {
   DCHECK(OmniboxFieldTrial::IsRichAutocompletionEnabled() || text.empty());
-  if (!OmniboxFieldTrial::RichAutocompletionShowAdditionalText()) {
-    return;
-  }
-
   std::u16string adjusted_text;
   if (!text.empty()) {
-    const int message_id =
-        OmniboxFieldTrial::kRichAutocompletionAdditionalTextWithParenthesis
-                .Get()
-            ? IDS_OMNIBOX_ADDITIONAL_TEXT_PARENTHESIS_TEMPLATE
-            : IDS_OMNIBOX_ADDITIONAL_TEXT_DASH_TEMPLATE;
     adjusted_text = std::u16string(text);
     base::i18n::AdjustStringForLocaleDirection(&adjusted_text);
     adjusted_text =
-        l10n_util::GetStringFUTF16(message_id, std::u16string(), adjusted_text);
+        l10n_util::GetStringFUTF16(IDS_OMNIBOX_ADDITIONAL_TEXT_DASH_TEMPLATE,
+                                   std::u16string(), adjusted_text);
   }
   SetOmniboxAdjacentText(omnibox_additional_text_view_, adjusted_text);
 }
 
 std::u16string_view LocationBarView::GetOmniboxAdditionalText() const {
-  return OmniboxFieldTrial::RichAutocompletionShowAdditionalText()
-             ? omnibox_additional_text_view_->GetText()
-             : std::u16string_view();
+  return omnibox_additional_text_view_->GetText();
 }
 
 void LocationBarView::SetOmniboxAdjacentText(views::Label* label,
@@ -609,9 +573,6 @@ void LocationBarView::RemovedFromWidget() {
     focus_manager_->RemoveFocusChangeListener(this);
     focus_manager_ = nullptr;
   }
-}
-
-void LocationBarView::OnWillChangeFocus(views::View* before, views::View* now) {
 }
 
 void LocationBarView::OnDidChangeFocus(views::View* before, views::View* now) {
@@ -941,11 +902,8 @@ void LocationBarView::Layout(PassKey) {
   // the rounded ends.
   location_bounds.Intersect(GetLocalBoundsWithoutEndcaps());
 
-  if ((!OmniboxPrefixRichAutocompletionEnabled() ||
-       !ime_prefix_autocomplete_view_->GetVisible()) &&
-      !ime_inline_autocomplete_view_->GetVisible() &&
-      (!OmniboxFieldTrial::RichAutocompletionShowAdditionalText() ||
-       !omnibox_additional_text_view_->GetVisible())) {
+  if (!ime_inline_autocomplete_view_->GetVisible() &&
+      !omnibox_additional_text_view_->GetVisible()) {
     // Short circuit the below logic when the additional views aren't visible.
     // This is necessary as resizing the omnibox can throw off it's scroll,
     // i.e., which chars are visible when its text overflows its width.
@@ -984,8 +942,6 @@ void LocationBarView::Layout(PassKey) {
     int omnibox_width = reserve_width(location_needed_width);
     int ime_inline_autocomplete_width =
         reserve_label_width(ime_inline_autocomplete_view_);
-    int ime_prefix_autocomplete_width =
-        reserve_label_width(ime_prefix_autocomplete_view_);
     int omnibox_additional_text_width =
         reserve_label_width(omnibox_additional_text_view_);
 
@@ -1001,8 +957,7 @@ void LocationBarView::Layout(PassKey) {
       current_x = view->bounds().right();
     };
 
-    // Position the 4 views
-    position_view(ime_prefix_autocomplete_view_, ime_prefix_autocomplete_width);
+    // Position the 3 views.
     position_view(omnibox_view_, omnibox_width);
     position_view(ime_inline_autocomplete_view_, ime_inline_autocomplete_width);
     position_view(omnibox_additional_text_view_, omnibox_additional_text_width);
@@ -1643,13 +1598,8 @@ void LocationBarView::OnTouchUiChanged() {
       CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
   location_icon_view_->SetFontList(font_list);
   omnibox_view_->SetFontList(font_list);
-  if (OmniboxPrefixRichAutocompletionEnabled()) {
-    ime_prefix_autocomplete_view_->SetFontList(font_list);
-  }
   ime_inline_autocomplete_view_->SetFontList(font_list);
-  if (OmniboxFieldTrial::RichAutocompletionShowAdditionalText()) {
-    omnibox_additional_text_view_->SetFontList(font_list);
-  }
+  omnibox_additional_text_view_->SetFontList(font_list);
   selected_keyword_view_->SetFontList(font_list);
   for (ContentSettingImageView* view : content_setting_views_) {
     view->SetFontList(font_list);
@@ -1865,7 +1815,6 @@ void LocationBarView::OnAppShimChanged(const webapps::AppId& app_id) {
 BEGIN_METADATA(LocationBarView)
 ADD_READONLY_PROPERTY_METADATA(int, BorderRadius)
 ADD_READONLY_PROPERTY_METADATA(gfx::Point, OmniboxViewOrigin)
-ADD_PROPERTY_METADATA(std::u16string_view, ImePrefixAutocompletion)
 ADD_PROPERTY_METADATA(std::u16string_view, ImeInlineAutocompletion)
 ADD_PROPERTY_METADATA(std::u16string_view, OmniboxAdditionalText)
 ADD_READONLY_PROPERTY_METADATA(int, MinimumLeadingWidth)

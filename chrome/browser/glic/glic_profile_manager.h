@@ -44,12 +44,19 @@ class GlicProfileManager {
   // Called by GlicKeyedService.
   void OnServiceShutdown(GlicKeyedService* glic);
 
-  // Called by GlicWindowController and the GlicFreController when their
-  // respective web clients will be created.
+  // Called when the web client for the GlicWindowController or the FRE
+  // controller will be torn down.
   void OnLoadingClientForService(GlicKeyedService* glic);
+
+  // Called by GlicWindowController and the GlicFreController when their
+  // respective web clients are being torn down.
+  void OnUnloadingClientForService(GlicKeyedService* glic);
 
   // True if the given profile should be considered for preloading.
   bool ShouldPreloadForProfile(Profile* profile) const;
+
+  // True if the given profile should be considered for preloading the FRE.
+  bool ShouldPreloadFreForProfile(Profile* profile) const;
 
   // Returns the active Glic service, nullptr if there is none.
   GlicKeyedService* GetLastActiveGlic() const;
@@ -73,8 +80,15 @@ class GlicProfileManager {
   // Callback from ProfilePicker::Show().
   void DidSelectProfile(Profile* profile);
 
-  base::MemoryPressureMonitor::MemoryPressureLevel GetCurrentPressureLevel()
-      const;
+  bool IsUnderMemoryPressure() const;
+
+  // Checks whether preloading is possible for the profile for either the fre
+  // or the glic panel (i.e., this excludes specific checks for those two
+  // surfaces).
+  bool CanPreloadForProfile(Profile* profile) const;
+
+  bool IsLastActiveGlicProfile(Profile* profile) const;
+  bool IsLastLoadedGlicProfile(Profile* profile) const;
 
   base::ObserverList<Observer> observers_;
   base::WeakPtr<GlicKeyedService> last_active_glic_;

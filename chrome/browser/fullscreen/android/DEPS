@@ -1,6 +1,7 @@
 noparent = True
 include_rules = [
   "+base",
+  "+build/android",
   "+chrome/browser/tab",
   "+components/browser_ui/widget"
 ]

@@ -17,6 +17,7 @@
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#import "components/collaboration/public/collaboration_service.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/feature_utils.h"
 #import "components/commerce/core/shopping_service.h"
@@ -69,6 +70,7 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_coordinator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
@@ -733,10 +735,9 @@ enum class ToolbarKind {
     _activityOverlayCallback = [self showActivityOverlay];
   }
 
-  ProfileIOS* profile = self.browser->GetProfile();
-  if (profile) {
+  if (self.profile) {
     TextToSpeechPlaybackControllerFactory::GetInstance()
-        ->GetForProfile(profile)
+        ->GetForProfile(self.profile)
         ->SetEnabled(active);
   }
   self.webUsageEnabled = active;
@@ -843,6 +844,8 @@ enum class ToolbarKind {
   [self dismissAccountMenu];
   [self dismissAutoDeletionActionSheet];
 
+  [self cancelCollaborationFlows];
+
   [self.viewController clearPresentedStateWithCompletion:completion
                                           dismissOmnibox:dismissOmnibox];
 }
@@ -921,7 +924,7 @@ enum class ToolbarKind {
 }
 
 - (void)setWebUsageEnabled:(BOOL)webUsageEnabled {
-  if (!self.browser->GetProfile() || !self.started) {
+  if (!self.profile || !self.started) {
     return;
   }
   _webUsageEnabled = webUsageEnabled;
@@ -1046,7 +1049,7 @@ enum class ToolbarKind {
     [_dispatcher startDispatchingToTarget:self forProtocol:protocol];
   }
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
 
   _keyCommandsProvider =
       [[KeyCommandsProvider alloc] initWithBrowser:self.browser];
@@ -1205,7 +1208,7 @@ enum class ToolbarKind {
   // The Lens coordinator needs to be started before the primary toolbar
   // coordinator so that the LensCommands dispatcher is correctly registered in
   // time.
-  if (IsLVFUnifiedExperienceEnabled(self.browser->GetProfile()->GetPrefs())) {
+  if (IsLVFUnifiedExperienceEnabled(self.profile->GetPrefs())) {
     _lensViewFinderCoordinator.baseViewController = viewController;
     [_lensViewFinderCoordinator start];
   } else {
@@ -1295,7 +1298,7 @@ enum class ToolbarKind {
   [_lensCoordinator stop];
   _lensCoordinator = nil;
 
-  if (IsLVFUnifiedExperienceEnabled(self.browser->GetProfile()->GetPrefs())) {
+  if (IsLVFUnifiedExperienceEnabled(self.profile->GetPrefs())) {
     [_lensViewFinderCoordinator stop];
     _lensViewFinderCoordinator = nil;
   } else {
@@ -1451,7 +1454,7 @@ enum class ToolbarKind {
   _dockingPromoCoordinator.promosUIHandler = _promosManagerCoordinator;
   [_dockingPromoCoordinator start];
 
-  if (IsLensOverlayAvailable(self.browser->GetProfile()->GetPrefs())) {
+  if (IsLensOverlayAvailable(self.profile->GetPrefs())) {
     _lensOverlayCoordinator = [[LensOverlayCoordinator alloc]
         initWithBaseViewController:self.viewController
                            browser:self.browser];
@@ -1613,14 +1616,13 @@ enum class ToolbarKind {
 - (void)startIndependentMediators {
   // Cache frequently repeated property values to curb generated code bloat.
 
-  ProfileIOS* profile = self.browser->GetProfile();
   BrowserViewController* browserViewController = self.viewController;
 
   DCHECK(self.browserContainerCoordinator.viewController);
   self.tabEventsMediator = [[TabEventsMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
             ntpCoordinator:_NTPCoordinator
-                   profile:profile
+                   profile:self.profile
            loadingNotifier:_urlLoadingNotifierBrowserAgent];
   self.tabEventsMediator.toolbarSnapshotProvider = _toolbarCoordinator;
   self.tabEventsMediator.consumer = browserViewController;
@@ -1633,7 +1635,7 @@ enum class ToolbarKind {
 
   browserViewController.nonModalPromoPresentationDelegate = self;
 
-  if (profile->IsOffTheRecord()) {
+  if (self.profile->IsOffTheRecord()) {
     IncognitoReauthSceneAgent* reauthAgent =
         [IncognitoReauthSceneAgent agentFromScene:self.sceneState];
 
@@ -1682,7 +1684,7 @@ enum class ToolbarKind {
   [HandlerForProtocol(self.dispatcher, ContextualPanelEntrypointCommands)
       notifyContextualPanelEntrypointIPHDismissed];
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   feature_engagement::Tracker* engagementTracker =
       feature_engagement::TrackerFactory::GetForProfile(profile);
 
@@ -1724,6 +1726,15 @@ enum class ToolbarKind {
     (ContextualPanelIPHDismissedReason)dismissalReason {
   base::UmaHistogramEnumeration("IOS.ContextualPanel.IPH.DismissedReason",
                                 dismissalReason);
+}
+
+// Cancels all the currently active collaboration flows.
+- (void)cancelCollaborationFlows {
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(self.profile);
+  if (collaborationService) {
+    collaborationService->CancelAllFlows(base::DoNothing());
+  }
 }
 
 #pragma mark - ActivityServiceCommands
@@ -2078,7 +2089,7 @@ enum class ToolbarKind {
 
   base::UmaHistogramEnumeration(
       "Download.OpenDownloads.PerProfileType",
-      profile_metrics::GetBrowserProfileType(self.browser->GetProfile()));
+      profile_metrics::GetBrowserProfileType(self.profile));
 }
 
 - (void)showRecentTabs {
@@ -2105,7 +2116,7 @@ enum class ToolbarKind {
 }
 
 - (void)showTranslate {
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
 
   feature_engagement::Tracker* engagementTracker =
       feature_engagement::TrackerFactory::GetForProfile(profile);
@@ -2320,8 +2331,7 @@ enum class ToolbarKind {
   ContextualPanelItemConfiguration& config_ref = CHECK_DEREF(config);
 
   feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForProfile(
-          self.browser->GetProfile());
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
 
   if (!engagementTracker) {
     return NO;
@@ -2981,9 +2991,9 @@ enum class ToolbarKind {
   }
 }
 
-// Installs delegates for self.browser->GetProfile()
+// Installs delegates for self.profile
 - (void)installDelegatesForBrowserState {
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   if (profile) {
     TextToSpeechPlaybackControllerFactory::GetInstance()
         ->GetForProfile(profile)
@@ -2991,9 +3001,9 @@ enum class ToolbarKind {
   }
 }
 
-// Uninstalls delegates for self.browser->GetProfile()
+// Uninstalls delegates for self.profile
 - (void)uninstallDelegatesForBrowserState {
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   if (profile) {
     TextToSpeechPlaybackControllerFactory::GetInstance()
         ->GetForProfile(profile)
@@ -3437,8 +3447,7 @@ enum class ToolbarKind {
   LensOverlayTabHelper* lensOverlayTabHelper =
       LensOverlayTabHelper::FromWebState(webState);
   bool isLensOverlayAvailable =
-      IsLensOverlayAvailable(self.browser->GetProfile()->GetPrefs()) &&
-      lensOverlayTabHelper;
+      IsLensOverlayAvailable(self.profile->GetPrefs()) && lensOverlayTabHelper;
 
   bool isBuildingLensOverlay =
       isLensOverlayAvailable &&
@@ -3746,8 +3755,7 @@ enum class ToolbarKind {
       HandlerForProtocol(_dispatcher, ApplicationCommands);
   [applicationCommandsHandler
       openURLInNewTab:[OpenNewTabCommand
-                          commandWithIncognito:self.browser->GetProfile()
-                                                   ->IsOffTheRecord()]];
+                          commandWithIncognito:self.profile->IsOffTheRecord()]];
 }
 
 - (void)overscrollActionCloseTab:(OverscrollActionsController*)controller {
@@ -3760,7 +3768,7 @@ enum class ToolbarKind {
   // occurring will cut the animation short.
   web::WebState* activeWebState = self.activeWebState;
   DCHECK(activeWebState);
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   feature_engagement::Tracker* engagementTracker =
       feature_engagement::TrackerFactory::GetForProfile(profile);
   if (engagementTracker) {

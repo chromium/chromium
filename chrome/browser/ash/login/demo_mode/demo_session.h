@@ -43,7 +43,8 @@ class DemoComponents;
 // started and the state of demo mode resources.
 class DemoSession : public session_manager::SessionManagerObserver,
                     public user_manager::UserManager::UserSessionStateObserver,
-                    public chromeos::PowerManagerClient::Observer {
+                    public chromeos::PowerManagerClient::Observer,
+                    public DemoModeIdleHandler::Observer {
  public:
   // Type of demo mode configuration.
   // Warning: DemoModeConfig is stored in local state. Existing entries should
@@ -183,9 +184,17 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // if the splash screen is already removed or never shown.
   void RemoveSplashScreen();
 
+  DemoModeIdleHandler* GetIdleHandlerForTest() const;
+
+  // Gets blocking task runner for test to ensure blocking tasks get flushed.
+  scoped_refptr<base::SequencedTaskRunner> GetBlockingTaskRunnerForTest();
+
  private:
   DemoSession();
   ~DemoSession() override;
+
+  // DemoModeIdleHandler::Observer:
+  void OnLocalFilesCleanupCompleted() override;
 
   void OnDemoAppComponentLoaded();
 
@@ -195,7 +204,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   GetSortedCountryCodeAndNamePairList();
 
   // Installs resources for Demo Mode from the offline demo mode resources, such
-  // as apps and media.
+  // as photos and other media.
   void InstallDemoResources();
 
   // Find image path then show the splash screen.
@@ -229,6 +238,9 @@ class DemoSession : public session_manager::SessionManagerObserver,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
 
+  base::ScopedObservation<DemoModeIdleHandler, DemoModeIdleHandler::Observer>
+      idle_handler_observation_{this};
+
   // The fallback timer that ensures the splash screen is removed in case the
   // screensaver app takes an extra long time to be shown.
   std::unique_ptr<base::OneShotTimer> remove_splash_screen_fallback_timer_;
@@ -244,6 +256,10 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // Handle device idle action for demo mode. Affect both MGS and demo account
   // sessions. Constructed while demo app is available.
   std::unique_ptr<DemoModeIdleHandler> idle_handler_;
+
+  // Task runner for file cleanup and re-install demo mode resource at the end
+  // of shopper sessions.
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   base::WeakPtrFactory<DemoSession> weak_ptr_factory_{this};
 };

@@ -22,17 +22,17 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
-import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.fragment.app.FragmentActivity;
-import androidx.test.core.app.ApplicationProvider;
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.content.pm.PackageInfoBuilder;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -146,10 +146,6 @@ public class PasswordManagerHelperTest {
     private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
     private PasswordManagerHelper mPasswordManagerHelper;
-
-    private final Context mContext =
-            new ContextThemeWrapper(
-                    ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
     @Before
     public void setUp() throws CredentialManagerBackendException {
@@ -1181,13 +1177,19 @@ public class PasswordManagerHelperTest {
         when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(mPrefService))
                 .thenReturn(PasswordAccessLossWarningType.NO_UPM);
 
-        mPasswordManagerHelper.showPasswordSettings(
-                mContext,
-                ManagePasswordsReferrer.CHROME_SETTINGS,
-                mModalDialogManagerSupplier,
-                /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS,
-                mSettingsCustomTabLauncher);
+        // PasswordAccessLossDialog requires an Activity Context.
+        try (ActivityScenario<Activity> scenario = ActivityScenario.launch(Activity.class)) {
+            scenario.onActivity(
+                    activity -> {
+                        mPasswordManagerHelper.showPasswordSettings(
+                                activity,
+                                ManagePasswordsReferrer.CHROME_SETTINGS,
+                                mModalDialogManagerSupplier,
+                                /* managePasskeys= */ false,
+                                TEST_NO_EMAIL_ADDRESS,
+                                mSettingsCustomTabLauncher);
+                    });
+        }
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
         View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
@@ -1207,13 +1209,19 @@ public class PasswordManagerHelperTest {
         chooseToSyncPasswords();
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
 
-        mPasswordManagerHelper.showPasswordSettings(
-                mContext,
-                ManagePasswordsReferrer.CHROME_SETTINGS,
-                mModalDialogManagerSupplier,
-                /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS,
-                mSettingsCustomTabLauncher);
+        // PasswordAccessLossDialog requires an Activity Context.
+        try (ActivityScenario<Activity> scenario = ActivityScenario.launch(Activity.class)) {
+            scenario.onActivity(
+                    activity -> {
+                        mPasswordManagerHelper.showPasswordSettings(
+                                activity,
+                                ManagePasswordsReferrer.CHROME_SETTINGS,
+                                mModalDialogManagerSupplier,
+                                /* managePasskeys= */ false,
+                                TEST_NO_EMAIL_ADDRESS,
+                                mSettingsCustomTabLauncher);
+                    });
+        }
 
         assertNull(mModalDialogManager.getCurrentDialogForTest());
     }

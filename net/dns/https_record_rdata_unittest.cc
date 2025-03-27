@@ -104,7 +104,7 @@ TEST(HttpsRecordRdataTest, ParsesService) {
       "\x88\x88"
       // Unknown key7=foo
       "\000\007\000\003foo";
-
+  const std::vector<uint8_t> ech_config_testdata = {'h', 'e', 'l', 'l', 'o'};
   std::unique_ptr<HttpsRecordRdata> rdata =
       HttpsRecordRdata::Parse(base::byte_span_from_cstring(kRdata));
   ASSERT_TRUE(rdata);
@@ -116,7 +116,7 @@ TEST(HttpsRecordRdataTest, ParsesService) {
       std::vector<std::string>({"foo", "bar"}) /* alpn_ids */,
       false /* default_alpn */, std::optional<uint16_t>(46) /* port */,
       std::vector<IPAddress>({IPAddress(8, 8, 8, 8)}) /* ipv4_hint */,
-      "hello" /* ech_config */,
+      ech_config_testdata /* ech_config */,
       std::vector<IPAddress>({expected_ipv6}) /* ipv6_hint */,
       std::map<uint16_t, std::string>({{7, "foo"}}) /* unparsed_params */);
   EXPECT_TRUE(rdata->IsEqual(&expected));
@@ -133,7 +133,8 @@ TEST(HttpsRecordRdataTest, ParsesService) {
   EXPECT_THAT(service_rdata->port(), testing::Optional(46));
   EXPECT_THAT(service_rdata->ipv4_hint(),
               testing::ElementsAre(IPAddress(8, 8, 8, 8)));
-  EXPECT_EQ(service_rdata->ech_config(), "hello");
+  EXPECT_THAT(service_rdata->ech_config(),
+              testing::ElementsAreArray(ech_config_testdata));
   EXPECT_THAT(service_rdata->ipv6_hint(), testing::ElementsAre(expected_ipv6));
   EXPECT_THAT(service_rdata->unparsed_params(),
               testing::ElementsAre(testing::Pair(7, "foo")));
@@ -159,7 +160,7 @@ TEST(HttpsRecordRdataTest, AliasIsEqualRejectsWrongType) {
   ServiceFormHttpsRecordRdata service(
       1u /* priority */, "service.name.test", {} /* mandatory_keys */,
       {} /* alpn_ids */, true /* default_alpn */, std::nullopt /* port */,
-      {} /* ipv4_hint */, "" /* ech_config */, {} /* ipv6_hint */,
+      {} /* ipv4_hint */, {} /* ech_config */, {} /* ipv6_hint */,
       {} /* unparsed_params */);
 
   EXPECT_TRUE(alias.IsEqual(&alias));
@@ -171,7 +172,7 @@ TEST(HttpsRecordRdataTest, ServiceIsEqualRejectsWrongType) {
   ServiceFormHttpsRecordRdata service(
       1u /* priority */, "service.name.test", {} /* mandatory_keys */,
       {} /* alpn_ids */, true /* default_alpn */, std::nullopt /* port */,
-      {} /* ipv4_hint */, "" /* ech_config */, {} /* ipv6_hint */,
+      {} /* ipv4_hint */, {} /* ech_config */, {} /* ipv6_hint */,
       {} /* unparsed_params */);
 
   EXPECT_FALSE(service.IsEqual(&alias));

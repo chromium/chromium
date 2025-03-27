@@ -11,7 +11,7 @@
 #include "base/memory/structured_shared_memory.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/tracing_support.h"
-#include "components/performance_manager/scenario_api/performance_scenarios.h"
+#include "components/performance_manager/scenario_api/performance_scenario_memory.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace performance_manager {

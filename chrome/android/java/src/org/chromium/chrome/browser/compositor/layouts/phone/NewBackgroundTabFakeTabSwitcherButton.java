@@ -41,14 +41,16 @@ import java.lang.annotation.RetentionPolicy;
  * a visible toolbar so this fake representation would need to exist regardless.
  */
 public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implements RunOnNextLayout {
-    @VisibleForTesting protected static final long ANIMATION_DURATION_MS = 300L;
+    @VisibleForTesting /* package */ static final long ROTATE_FADE_IN_DURATION_MS = 250L;
+    @VisibleForTesting /* package */ static final long ROTATE_FADE_OUT_DURATION_MS = 400L;
+    @VisibleForTesting /* package */ static final long TRANSLATE_DURATION_MS = 300L;
 
     @IntDef({
         TranslateDirection.UP,
         TranslateDirection.DOWN,
     })
     @Retention(RetentionPolicy.SOURCE)
-    /*package*/ @interface TranslateDirection {
+    /* package */ @interface TranslateDirection {
         int UP = 0;
         int DOWN = 1;
     }
@@ -66,8 +68,8 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
     private boolean mHasOutstandingAnimator;
 
     /** Default constructor for inflation. */
-    public NewBackgroundTabFakeTabSwitcherButton(Context context, AttributeSet atts) {
-        super(context, atts);
+    public NewBackgroundTabFakeTabSwitcherButton(Context context, AttributeSet attrs) {
+        super(context, attrs);
         mRunOnNextLayoutDelegate = new RunOnNextLayoutDelegate(this);
     }
 
@@ -119,25 +121,32 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
         mInnerContainer.setBackgroundColor(color);
     }
 
-    /* package */ AnimatorSet getRotateAnimator(boolean incrementCount) {
+    /**
+     * Returns the {@link AnimatorSet} for the rotate and fade in of {@link #mBackgroundView} "very
+     * sunny" asset.
+     *
+     * @param incrementCount Whether the tab switcher drawable should increment the count.
+     */
+    /* package */ AnimatorSet getRotateFadeInAnimator(boolean incrementCount) {
         assert !mHasOutstandingAnimator;
 
-        // TODO(crbug.com/40282469): Add spin out + fade animation (it currently has the spin and
-        // the fade out running at the same time rather than one initial spin + spin out with fade
-        // out). Also, use proper duration and interpolators.
         mHasOutstandingAnimator = true;
         setBackgroundVisibility(true);
         mBackgroundView.setAlpha(0f);
         ObjectAnimator rotateAnimator =
-                ObjectAnimator.ofFloat(mBackgroundView, View.ROTATION, 0f, 30f);
+                ObjectAnimator.ofFloat(mBackgroundView, View.ROTATION, -20f, 0f);
+        ObjectAnimator scaleXAnimator =
+                ObjectAnimator.ofFloat(mBackgroundView, View.SCALE_X, 0.2f, 1f);
+        ObjectAnimator scaleYAnimator =
+                ObjectAnimator.ofFloat(mBackgroundView, View.SCALE_Y, 0.2f, 1f);
         // TODO(crbug.com/40282469): This might need to do a color blend to the toolbar color
         // instead of an alpha fade.
-        ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(mBackgroundView, View.ALPHA, 1f, 0f);
+        ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(mBackgroundView, View.ALPHA, 0f, 1f);
 
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(rotateAnimator, alphaAnimator);
-        animatorSet.setDuration(ANIMATION_DURATION_MS);
-        animatorSet.setInterpolator(Interpolators.EMPHASIZED);
+        animatorSet.playTogether(rotateAnimator, alphaAnimator, scaleXAnimator, scaleYAnimator);
+        animatorSet.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
+        animatorSet.setDuration(ROTATE_FADE_IN_DURATION_MS);
         animatorSet.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
@@ -148,6 +157,33 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
                         }
                     }
 
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+                        resetState();
+                    }
+                });
+        return animatorSet;
+    }
+
+    /**
+     * Returns the {@link AnimatorSet} for the rotate and fade out of {@link #mBackgroundView} "very
+     * sunny" asset. In order to work, {@link #getRotateFadeInAnimator} should be run first.
+     */
+    /* package */ AnimatorSet getRotateFadeOutAnimator() {
+        assert mHasOutstandingAnimator : "You should run #getRotateFadeInAnimator first";
+
+        // TODO(crbug.com/40282469): This might need to do a color blend to the toolbar color
+        // instead of an alpha fade.
+        ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(mBackgroundView, View.ALPHA, 1f, 0f);
+        ObjectAnimator rotateAnimator =
+                ObjectAnimator.ofFloat(mBackgroundView, View.ROTATION, 0f, 80f);
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(rotateAnimator, alphaAnimator);
+        animatorSet.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
+        animatorSet.setDuration(ROTATE_FADE_OUT_DURATION_MS);
+        animatorSet.addListener(
+                new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationCancel(Animator animator) {
                         resetState();
@@ -175,8 +211,9 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(translateAnimator);
-        animatorSet.setDuration(ANIMATION_DURATION_MS);
-        animatorSet.setInterpolator(Interpolators.EMPHASIZED);
+        animatorSet.setDuration(TRANSLATE_DURATION_MS);
+        animatorSet.setInterpolator(
+                Interpolators.NEW_BACKGROUND_TAB_ANIMATION_TRANSLATE_INTERPOLATOR);
         animatorSet.addListener(
                 new AnimatorListenerAdapter() {
                     @Override

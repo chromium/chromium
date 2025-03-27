@@ -29,6 +29,7 @@
 #include "build/build_config.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
+#include "media/base/encoder_status.h"
 #include "media/base/mac/color_space_util_mac.h"
 #include "media/base/mac/video_frame_mac.h"
 #include "media/base/media_log.h"
@@ -559,9 +560,10 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
   return supported_profiles;
 }
 
-bool VTVideoEncodeAccelerator::Initialize(const Config& config,
-                                          Client* client,
-                                          std::unique_ptr<MediaLog> media_log) {
+EncoderStatus VTVideoEncodeAccelerator::Initialize(
+    const Config& config,
+    Client* client,
+    std::unique_ptr<MediaLog> media_log) {
   DVLOG(3) << __func__ << ": " << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(client);
@@ -574,13 +576,13 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
     MEDIA_LOG(ERROR, media_log)
         << "Input format not supported= "
         << VideoPixelFormatToString(config.input_format);
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
   if (!base::Contains(GetSupportedVideoCodecProfiles(),
                       config.output_profile)) {
     MEDIA_LOG(ERROR, media_log) << "Output profile not supported= "
                                 << GetProfileName(config.output_profile);
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
   profile_ = config.output_profile;
   codec_ = VideoCodecProfileToVideoCodec(config.output_profile);
@@ -598,13 +600,13 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
 
   if (num_temporal_layers_ > 2) {
     MEDIA_LOG(ERROR, media_log) << "Unsupported number of SVC temporal layers.";
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   if (config.bitrate.mode() == Bitrate::Mode::kExternal) {
     if (!IsManualQpSupported(codec_)) {
       MEDIA_LOG(ERROR, media_log) << "External bitrate mode is not supported.";
-      return false;
+      return {EncoderStatus::Codes::kEncoderInitializationError};
     }
     if (!require_low_delay_) {
       MEDIA_LOG(INFO, media_log)
@@ -615,7 +617,7 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
 
   if (!ResetCompressionSession()) {
     MEDIA_LOG(ERROR, media_log) << "Failed creating compression session.";
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   auto encoder_info = GetVideoEncoderInfo(compression_session_.get(), config);
@@ -630,7 +632,7 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
   client_->NotifyEncoderInfoChange(encoder_info);
   client_->RequireBitstreamBuffers(kNumInputBuffers, input_visible_size_,
                                    bitstream_buffer_size_);
-  return true;
+  return {EncoderStatus::Codes::kOk};
 }
 
 void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
