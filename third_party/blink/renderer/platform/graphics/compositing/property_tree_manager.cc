@@ -127,11 +127,6 @@ bool PropertyTreeManager::DirectlyUpdateCompositedOpacityValue(
   if (!cc_effect)
     return false;
 
-  // We directly update opacity only when it's not animating in compositor. If
-  // the compositor has not cleared is_currently_animating_opacity, we should
-  // clear it now to let the compositor respect the new value.
-  cc_effect->is_currently_animating_opacity = false;
-
   cc_effect->opacity = effect.Opacity();
   cc_effect->effect_changed = true;
   property_trees->effect_tree_mutable().set_needs_update(true);
