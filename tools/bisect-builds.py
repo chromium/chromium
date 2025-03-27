@@ -10,6 +10,9 @@ a bad revision (it will try to guess HEAD) and asks for a last known-good
 revision. It will then binary search across this revision range by downloading,
 unzipping, and opening Chromium for you. After testing the specific revision,
 it will ask you whether it is good or bad before continuing the search.
+
+Docs: https://www.chromium.org/developers/bisect-builds-py/
+Googlers: go/chrome-bisect
 """
 
 import abc
