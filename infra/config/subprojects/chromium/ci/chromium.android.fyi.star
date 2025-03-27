@@ -50,6 +50,7 @@ ci.builder(
             config = "x86_builder",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 32,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -110,6 +111,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "x64_builder_mb",
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -163,6 +165,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "x64_builder_mb",
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -218,6 +221,7 @@ ci.builder(
             config = "x86_builder",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 32,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -288,6 +292,7 @@ ci.builder(
             config = "x86_builder",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 32,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -471,6 +476,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "x86_builder_mb",
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 32,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -553,6 +559,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "x86_builder_mb",
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 32,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -582,6 +589,7 @@ ci.builder(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -631,6 +639,7 @@ ci.builder(
                 "download_xr_test_apks",
             ],
             build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -756,6 +765,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "x64_builder_mb",
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -907,6 +917,7 @@ ci.builder(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -1082,6 +1093,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "main_builder_mb",
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -1135,6 +1147,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "x64_builder_mb",
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -1200,6 +1213,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "x64_builder_mb",
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -1309,6 +1323,7 @@ ci.builder(
             config = "main_builder",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -1356,6 +1371,7 @@ ci.thin_tester(
         chromium_config = builder_config.chromium_config(
             config = "x64_builder_mb",
             build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -1399,6 +1415,7 @@ ci.thin_tester(
         chromium_config = builder_config.chromium_config(
             config = "x64_builder_mb",
             build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -1445,6 +1462,7 @@ ci.thin_tester(
         chromium_config = builder_config.chromium_config(
             config = "x64_builder_mb",
             build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),
@@ -1489,6 +1507,7 @@ ci.builder(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 32,
             target_platform = builder_config.target_platform.ANDROID,
         ),
