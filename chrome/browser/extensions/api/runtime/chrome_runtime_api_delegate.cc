@@ -94,7 +94,7 @@ BackoffPolicy::BackoffPolicy() {
 
       // initial_delay_ms (note that we set 'always_use_initial_delay' to false
       // below)
-      1000 * extensions::kDefaultUpdateFrequencySeconds,
+      extensions::kDefaultUpdateFrequency.InMilliseconds(),
 
       // multiply_factor
       1,
