@@ -24,6 +24,7 @@ import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
+import("//services/video_effects/args.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/metrics/generate_allowlist_from_histograms_file.gni")
 import("//ui/base/ui_features.gni")
@@ -3045,8 +3046,6 @@ static_library("ui") {
       "startup/web_app_info_recorder_utils.h",
       "views/media_preview/active_devices_media_coordinator.cc",
       "views/media_preview/active_devices_media_coordinator.h",
-      "views/media_preview/camera_preview/blur_switch_view_controller.cc",
-      "views/media_preview/camera_preview/blur_switch_view_controller.h",
       "views/media_preview/camera_preview/camera_coordinator.cc",
       "views/media_preview/camera_preview/camera_coordinator.h",
       "views/media_preview/camera_preview/camera_mediator.cc",
@@ -3111,6 +3110,13 @@ static_library("ui") {
       "webui/on_device_translation_internals/on_device_translation_internals_ui.h",
     ]
 
+    if (enable_video_effects) {
+      sources += [
+        "views/media_preview/camera_preview/blur_switch_view_controller.cc",
+        "views/media_preview/camera_preview/blur_switch_view_controller.h",
+      ]
+    }
+
     deps += [
       "//chrome/app:generated_resources",
       "//chrome/browser/on_device_translation",
@@ -3119,6 +3125,7 @@ static_library("ui") {
       "//components/capture_mode",
       "//services/audio/public/mojom",
       "//services/video_capture/public/mojom",
+      "//services/video_effects/buildflags",
     ]
   }
 
