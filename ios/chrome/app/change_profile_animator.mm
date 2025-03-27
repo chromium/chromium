@@ -15,25 +15,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 
-namespace {
-
-// Invokes `continuation` if `weak_scene_state` is not nil and the UI is
-// enabled (to avoid crashing if the `SceneState` is disconnected while
-// the callback was pending).
-void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
-                                     __weak SceneState* weak_scene_state) {
-  if (SceneState* strong_scene_state = weak_scene_state) {
-    if (strong_scene_state.UIEnabled) {
-      std::move(continuation).Run(strong_scene_state, base::DoNothing());
-    }
-  }
-}
-
-// Duration for the fade-in and fade-out of the change profile animation.
-constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
-
-}  // namespace
-
 @interface ChangeProfileAnimation : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -50,6 +31,34 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
 - (void)unblurWithDuration:(base::TimeDelta)duration;
 
 @end
+
+namespace {
+
+// Duration for the fade-in and fade-out of the change profile animation.
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
+
+// Returns a callback that starts the unblur animation on `animator` with
+// a `duration`, or does nothing if `animator` is nil.
+void UnblurWithDuration(ChangeProfileAnimation* animator,
+                        base::TimeDelta duration) {
+  [animator unblurWithDuration:kAnimationDuration];
+}
+
+// Invokes `continuation` if `weak_scene_state` is not nil and the UI is
+// enabled (to avoid crashing if the `SceneState` is disconnected while
+// the callback was pending). Then stops the animation using `animator`
+// once the continuation completes.
+void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
+                                     __weak SceneState* weak_scene_state,
+                                     base::OnceClosure closure) {
+  if (SceneState* strong_scene_state = weak_scene_state) {
+    if (strong_scene_state.UIEnabled) {
+      std::move(continuation).Run(strong_scene_state, std::move(closure));
+    }
+  }
+}
+
+}  // namespace
 
 @implementation ChangeProfileAnimation {
   // The window on which the animations should be played.
@@ -231,12 +240,6 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
 
 #pragma mark Private methods
 
-// Stops the animation (if it has been started). No-op if the animation
-// has not been started or already stopped.
-- (void)stopAnimation {
-  [_animation unblurWithDuration:kAnimationDuration];
-}
-
 // Called when the initialisation progressed (i.e. the state of any of the
 // observed object changed).
 - (void)initialisationProgressed {
@@ -249,14 +252,18 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
     return;
   }
 
-  [self stopAnimation];
-
   // Ensure that the completion is always invoked asynchronously, even if
-  // the profile was already in the expected stage. This does not strongly
-  // captures SceneState since _sceneDelete is a weak pointer.
+  // the profile was already in the expected stage and that the animation
+  // to unblur the view starts when the continuation is complete.
+  //
+  // The callback does not strongly retain the SceneState since the ivar
+  // is declared as __weak SceneState* and base::BindOnce(...) correctly
+  // use a weak pointer for its storage.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&InvokeChangeProfileContinuation,
-                                std::move(_continuation), _sceneState));
+                                std::move(_continuation), _sceneState,
+                                base::BindOnce(&UnblurWithDuration, _animation,
+                                               kAnimationDuration)));
 
   // Stop observing the ProfileState and the SceneState.
   [profileState removeObserver:self];
