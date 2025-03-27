@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar;
+package org.chromium.components.browser_ui.util;
 
 import android.view.KeyEvent;
 import android.view.View;
@@ -33,6 +33,7 @@ public abstract class KeyboardNavigationListener implements OnKeyListener {
     /**
      * Get the view to be focused on a TAB click. If you return null, the default key event
      * processing will occur instead of attempting to focus.
+     *
      * @return The view to gain focus.
      */
     public View getNextFocusForward() {
@@ -42,6 +43,7 @@ public abstract class KeyboardNavigationListener implements OnKeyListener {
     /**
      * Get the view to be focused on a Shift + TAB click. If you return null, the default key event
      * processing will occur instead of attempting to focus.
+     *
      * @return The view to gain focus.
      */
     public View getNextFocusBackward() {
@@ -50,6 +52,7 @@ public abstract class KeyboardNavigationListener implements OnKeyListener {
 
     /**
      * Allows the extending class to special case the enter key press handling.
+     *
      * @return Whether the enter key was handled
      */
     protected boolean handleEnterKeyPress() {
