@@ -10,6 +10,7 @@ source_set("ui_bundled") {
     "fullscreen_controller.mm",
     "fullscreen_controller_observer.h",
     "fullscreen_controller_observer.mm",
+    "fullscreen_reason.h",
     "fullscreen_ui_updater.h",
     "scoped_fullscreen_disabler.h",
     "scoped_fullscreen_disabler.mm",
@@ -71,6 +72,7 @@ source_set("internal") {
   ]
 
   deps = [
+    ":metrics",
     ":ui",
     "//base",
     "//ios/chrome/browser/broadcaster/ui_bundled",
@@ -165,4 +167,12 @@ source_set("eg2_tests") {
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("metrics") {
+  sources = [
+    "fullscreen_metrics.h",
+    "fullscreen_metrics.mm",
+  ]
+  deps = [ "//base" ]
 }

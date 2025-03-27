@@ -7,11 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
+#import "base/memory/weak_ptr.h"
+#import "base/observer_list.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model_observer.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_reason.h"
 
 class FullscreenController;
 class FullscreenControllerObserver;
@@ -56,7 +60,7 @@ class FullscreenMediator : public FullscreenModelObserver {
 
   // Enters or exits fullscreen, animating the changes.
   void EnterFullscreen();
-  void ExitFullscreen();
+  void ExitFullscreen(FullscreenExitReason fullscreen_exit_reason);
 
   // Force enters fullscreen without animation. This enters fullscreen even when
   // the model is disabled.
@@ -93,10 +97,16 @@ class FullscreenMediator : public FullscreenModelObserver {
   FullscreenAnimatorStyle AnimatorStyleFromScrollDirection(
       FullscreenModelScrollDirection direction);
 
+  // Records fullscreen exit entrypoints in a histogram.
+  void RecordFullscreenExitMode();
+
+  // Converts `FullscreenExitReason` enum to `FullscreenModeTransitionReason`
+  // enum.
+  FullscreenModeTransitionReason ConvertFullscreenExitReasonToTransitionReason(
+      FullscreenExitReason exit_reason);
+
   // Progress value when scroll event started.
   float start_progress_;
-  // True if metrics as not been recorded and should be.
-  bool should_record_metrics_;
   // The controller.
   raw_ptr<FullscreenController> controller_ = nullptr;
   // The model.
@@ -114,7 +124,8 @@ class FullscreenMediator : public FullscreenModelObserver {
   // The FullscreenControllerObservers that need to get notified of model
   // changes.
   base::ObserverList<FullscreenControllerObserver, true> observers_;
-
+  // Type of entrypoint that triggers the exit of fullscreen mode.
+  std::optional<FullscreenExitReason> fullscreen_exit_reason_;
   base::WeakPtrFactory<FullscreenMediator> weak_factory_{this};
 };
 

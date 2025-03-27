@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model_observer.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_reason.h"
 
 TestFullscreenController::TestFullscreenController()
     : FullscreenController(),
@@ -89,6 +90,13 @@ void TestFullscreenController::EnterFullscreen() {
 }
 
 void TestFullscreenController::ExitFullscreen() {
+  if (model_) {
+    model_->ResetForNavigation();
+  }
+}
+
+void TestFullscreenController::ExitFullscreen(
+    FullscreenExitReason fullscreen_exit_reason) {
   if (model_) {
     model_->ResetForNavigation();
   }

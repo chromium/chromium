@@ -9,7 +9,10 @@
 #import "base/check_op.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_constants.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model_observer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
@@ -76,6 +79,8 @@ void FullscreenModel::ResetForNavigation() {
   if (IsForceFullscreenMode()) {
     return;
   }
+  base::UmaHistogramEnumeration(kExitFullscreenModeTransitionReasonHistogram,
+                                FullscreenModeTransitionReason::kForcedByCode);
   progress_ = 1.0;
   scrolling_ = false;
   start_scrolling_time_ = std::nullopt;
@@ -510,6 +515,17 @@ void FullscreenModel::SetProgress(CGFloat progress) {
   if (AreCGFloatsEqual(progress_, progress)) {
     return;
   }
+
+  if (progress == 0.0 && progress_ > 0.0) {
+    base::UmaHistogramEnumeration(
+        kEnterFullscreenModeTransitionReasonHistogram,
+        FullscreenModeTransitionReason::kUserControlled);
+  } else if (progress == 1.0 && progress_ < 1.0) {
+    base::UmaHistogramEnumeration(
+        kExitFullscreenModeTransitionReasonHistogram,
+        FullscreenModeTransitionReason::kUserControlled);
+  }
+
   progress_ = progress;
 
   // Prevent observer callbacks from recursively setting progress.
