@@ -4874,6 +4874,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         You can request the mobile site for <ph name="HOST_NAME">%1$s<ex>www.example.com</ex></ph>
       </message>
 
+      <!-- Pdf Page -->
+      <message name="IDS_PDF_PAGE_DOWNLOAD_IPH_TEXT" desc="Text shown in the text bubble to inform users about the option to download a PDF when the PDF document is opened in Chrome.">
+        You can download PDFs here
+      </message>
+
       <!-- Accessibility -->
 
       <!-- Accessibility strings for toolbar -->
