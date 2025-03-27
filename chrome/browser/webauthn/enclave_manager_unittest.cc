@@ -1288,9 +1288,9 @@ TEST_F(EnclaveManagerTest, PINChanged) {
       DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
   state.key_version = kSecretVersion;
   state.gpm_pin_metadata = trusted_vault::GpmPinMetadata(
-      user.pin_public_key(), trusted_vault::UsableRecoveryPinMetadata(
-                                 wrapped_pin.SerializeAsString(),
-                                 /*expiry=*/base::Time::FromTimeT(1)));
+      "new public key", trusted_vault::UsableRecoveryPinMetadata(
+                            wrapped_pin.SerializeAsString(),
+                            /*expiry=*/base::Time::FromTimeT(1)));
 
   BoolFuture update_future;
   EXPECT_TRUE(
