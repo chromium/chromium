@@ -207,7 +207,6 @@ Du bør tenke på følgende:
   • Hvis du synkroniserer loggen din med Google-kontoen din, kan verdiene også inneholde informasjon om nettadressene du besøker.<ph name="END_INDENT" /></translation>
 <translation id="5932787118589620366">Slett nettlesingsdata i Chromium.</translation>
 <translation id="593808800391107017">Motta varsler om eventuelle personvern- eller sikkerhetsproblemer som Chromium automatisk oppdager for deg.</translation>
-<translation id="5945387852661427312">Du logger på med en konto som administreres av <ph name="DOMAIN" />, og du gir dermed administratoren for dette domenet kontroll over Chromium-dataene dine. Dataene dine blir knyttet til denne kontoen permanent. Når du logger av Chromium, slettes dataene dine fra denne enheten, men de er fortsatt lagret i Google-kontoen din.</translation>
 <translation id="5951593919357934226">Få mest mulig ut av Chromium.</translation>
 <translation id="5985254578475526217">For å motta varsler fra Chromium, slå på varsler i iOS-innstillingene.</translation>
 <translation id="6104024151682120539">Åpne i Chromium</translation>

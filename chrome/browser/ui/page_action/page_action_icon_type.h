@@ -10,6 +10,8 @@
 // tools/metrics/histograms/metadata/page/enums.xml and
 // tools/metrics/histograms/metadata/page/histograms.xml and add a static assert
 // below.
+//
+// LINT.IfChange(PageActionIconType)
 enum class PageActionIconType {
   kBookmarkStar = 0,
   kClickToCall = 1,
@@ -47,6 +49,7 @@ enum class PageActionIconType {
   kChangePassword = 33,
   kMaxValue = kChangePassword,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:PageActionIconType)
 
 static_assert(static_cast<int>(PageActionIconType::kBookmarkStar) == 0);
 static_assert(static_cast<int>(PageActionIconType::kClickToCall) == 1);

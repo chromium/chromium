@@ -140,6 +140,7 @@ cc_library(
         "//absl/base:core_headers",
         "//absl/base:dynamic_annotations",
         "//absl/base:malloc_internal",
+        "//absl/base:nullability",
         "//absl/base:raw_logging_internal",
         "//absl/base:tracing_internal",
         "//absl/debugging:stacktrace",
@@ -230,7 +231,6 @@ cc_test(
         ":graphcycles_internal",
         "//absl/base:raw_logging_internal",
         "@google_benchmark//:benchmark_main",
-        "@googletest//:gtest",
     ],
 )
 

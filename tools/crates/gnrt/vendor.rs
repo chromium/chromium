@@ -5,10 +5,7 @@
 use crate::config;
 use crate::crates::Epoch;
 use crate::deps;
-use crate::inherit::{
-    find_inherited_privilege_group, find_inherited_security_critical_flag,
-    find_inherited_shipped_flag,
-};
+use crate::inherit::{find_inherited_security_critical_flag, find_inherited_shipped_flag};
 use crate::metadata_util::{metadata_nodes, metadata_packages};
 use crate::paths;
 use crate::readme;
@@ -51,11 +48,11 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
     let nodes: HashMap<_, _> = metadata_nodes(&metadata);
     let root = metadata.resolve.as_ref().unwrap().root.as_ref().unwrap();
 
-    let guppy_resolved_package_ids = get_guppy_resolved_package_ids(&config, paths)?;
+    let guppy_resolved_packages = get_guppy_resolved_packages(&config, paths)?;
     let is_removed = |cargo_package_id: &cargo_metadata::PackageId| -> bool {
         let p = packages[cargo_package_id];
         config.resolve.remove_crates.contains(&p.name)
-            || !guppy_resolved_package_ids.contains(&p.into())
+            || !guppy_resolved_packages.contains_key(&p.into())
     };
 
     // Running cargo commands against actual crates.io will put checksum into
@@ -118,7 +115,7 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
             .with_context(|| format!("removing {}", d))?
     }
 
-    let find_group = |id| find_inherited_privilege_group(id, root, &packages, &nodes, &config);
+    let find_group = |p: &cargo_metadata::Package| guppy_resolved_packages[&p.into()].group;
     let find_security_critical =
         |id| find_inherited_security_critical_flag(id, root, &packages, &nodes, &config);
     let find_shipped = |id| find_inherited_shipped_flag(id, root, &packages, &nodes, &config);
@@ -218,10 +215,10 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
     Ok(())
 }
 
-fn get_guppy_resolved_package_ids(
+fn get_guppy_resolved_packages(
     config: &config::BuildConfig,
     paths: &paths::ChromiumPaths,
-) -> Result<HashSet<deps::PackageId>> {
+) -> Result<HashMap<deps::PackageId, deps::Package>> {
     // `gnrt vendor` (unlike `gnrt gen`) doesn't need to pass `--offline` nor
     // `--locked` to `cargo`.
     let cargo_extra_options = vec![];
@@ -234,7 +231,7 @@ fn get_guppy_resolved_package_ids(
         &config.resolve.root,
         config,
     )?;
-    Ok(dependencies.iter().map(|p| p.into()).collect())
+    Ok(dependencies.into_iter().map(|p| ((&p).into(), p)).collect())
 }
 
 fn download_crate(

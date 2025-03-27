@@ -46,7 +46,7 @@ interface UnzipListener {
 // archive, often for the purpose of unpacking software updates.
 [ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface Unzipper {
-  // Unzip |zip_file| into |output_dir|.
+  // Unzips |zip_file| into |output_dir|.
   // Returns true on success, false otherwise.
   // |options| contains unpacking information such as filename encoding.
   // If provided, |filter| is called for each entry of the archive (which incurs
@@ -67,4 +67,9 @@ interface Unzipper {
 
   // Returns the size in bytes and metadata for the extracted archive.
   GetExtractedInfo(mojo_base.mojom.ReadOnlyFile zip_file) => (Info info);
+
+  // Decompresses |in_file| into |out_file|. Returns true on success, else
+  // false.
+  DecodeXz(mojo_base.mojom.ReadOnlyFile in_file,
+           mojo_base.mojom.File out_file) => (bool result);
 };

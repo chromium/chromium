@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.fullscreen;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** An interface for observing fullscreen mode and exiting fullscreen mode. */
+@NullMarked
 public interface FullscreenManager {
     /** A listener that gets notified of changes to the fullscreen state. */
     interface Observer {

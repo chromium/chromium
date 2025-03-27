@@ -191,7 +191,7 @@ TEST_F(RegionalCapabilitiesServiceClientTest,
   histogram_tester().ExpectUniqueSample(
       kCrOSMissingVariationData, ChromeOSFallbackCountry::kValidCountryCode, 0);
   std::string country_code = "DE";
-  if (country_code == country_codes::GetCurrentCountryCode()) {
+  if (country_code == country_codes::GetCurrentCountryID().CountryCode()) {
     country_code = "BE";
   }
   SetRegion(country_code);

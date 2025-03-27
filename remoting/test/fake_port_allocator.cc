@@ -13,6 +13,7 @@
 #include "remoting/test/fake_network_manager.h"
 #include "remoting/test/fake_socket_factory.h"
 #include "third_party/webrtc/p2p/client/basic_port_allocator.h"
+#include "third_party/webrtc_overrides/environment.h"
 
 namespace remoting {
 
@@ -52,7 +53,7 @@ FakePortAllocator::FakePortAllocator(
     rtc::NetworkManager* network_manager,
     rtc::PacketSocketFactory* socket_factory,
     scoped_refptr<protocol::TransportContext> transport_context)
-    : BasicPortAllocator(network_manager, socket_factory),
+    : BasicPortAllocator(WebRtcEnvironment(), network_manager, socket_factory),
       transport_context_(transport_context) {
   set_flags(cricket::PORTALLOCATOR_DISABLE_TCP |
             cricket::PORTALLOCATOR_ENABLE_IPV6 |

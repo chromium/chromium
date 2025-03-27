@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.AnyRes;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ResettersForTesting;
 
 /**
  * Layout that sizes itself with constraints similar to DialogWhenLarge: on large screens and
@@ -28,6 +29,8 @@ public class DialogWhenLargeContentLayout extends FrameLayout {
     private TypedValue mFixedWidthMinor = new TypedValue();
     private TypedValue mFixedHeightMajor = new TypedValue();
     private TypedValue mFixedHeightMinor = new TypedValue();
+
+    private static boolean sShouldShowAsDialogForTesting;
 
     /**
      * Wraps contentView into layout that resembles DialogWhenLarge. The layout centers the content
@@ -61,7 +64,15 @@ public class DialogWhenLargeContentLayout extends FrameLayout {
      */
     public static boolean shouldShowAsDialog(Context context) {
         Configuration configuration = context.getResources().getConfiguration();
+        if (sShouldShowAsDialogForTesting) {
+            return true;
+        }
         return configuration.isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE);
+    }
+
+    public static void enableShouldShowAsDialogForTesting(boolean shouldShowAsDialog) {
+        sShouldShowAsDialogForTesting = shouldShowAsDialog;
+        ResettersForTesting.register(() -> sShouldShowAsDialogForTesting = false);
     }
 
     private DialogWhenLargeContentLayout(Context context) {

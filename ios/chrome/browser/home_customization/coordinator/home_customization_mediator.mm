@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_navigation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_discover_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_magic_stack_consumer.h"
@@ -18,7 +19,6 @@
 #import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "url/gurl.h"
 
 @implementation HomeCustomizationMediator {

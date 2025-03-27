@@ -574,7 +574,7 @@ public class TestAwContentsClient extends NullContentsClient {
         private boolean mIsRedirect;
         private boolean mHasUserGesture;
         private boolean mIsOutermostMainFrame;
-        private HashMap<String, String> mRequestHeaders;
+        private Map<String, String> mRequestHeaders;
 
         void setShouldOverrideUrlLoadingUrl(String url) {
             mShouldOverrideUrlLoadingUrl = url;
@@ -614,7 +614,7 @@ public class TestAwContentsClient extends NullContentsClient {
             return mIsOutermostMainFrame;
         }
 
-        public HashMap<String, String> requestHeaders() {
+        public Map<String, String> requestHeaders() {
             return mRequestHeaders;
         }
 
@@ -623,7 +623,7 @@ public class TestAwContentsClient extends NullContentsClient {
                 boolean isRedirect,
                 boolean hasUserGesture,
                 boolean isOutermostMainFrame,
-                HashMap<String, String> requestHeaders) {
+                Map<String, String> requestHeaders) {
             mShouldOverrideUrlLoadingUrl = url;
             mIsRedirect = isRedirect;
             mHasUserGesture = hasUserGesture;

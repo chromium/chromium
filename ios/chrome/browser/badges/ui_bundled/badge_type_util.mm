@@ -25,9 +25,6 @@ BadgeType BadgeTypeForInfobarType(InfobarType infobar_type) {
       // GetStatesForAllPermissions() of the currently active WebState, and be
       // overridden when used.
       return kBadgeTypePermissionsCamera;
-    case InfobarType::kInfobarTypeParcelTracking:
-      // TODO(crbug.com/391002352): Remove kInfobarTypeParcelTracking entirely.
-      NOTREACHED();
     default:
       return kBadgeTypeNone;
   }

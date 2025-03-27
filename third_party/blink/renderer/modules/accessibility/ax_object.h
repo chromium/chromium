@@ -1585,10 +1585,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void SerializeTextInsertionDeletionOffsetAttributes(
       ui::AXNodeData* node_data) const;
 
-  const std::optional<ui::AXTreeID>& child_tree_id() const {
-    return child_tree_id_;
-  }
-
   void SetCachedValuesNeedUpdate(
       bool cached_values_need_update,
       std::optional<TreeUpdateReason> reason = std::nullopt);
@@ -1681,18 +1677,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void SetChildTree(const ui::AXTreeID& child_tree_id);
 
   static unsigned number_of_live_ax_objects_;
-
-  // The ID of another tree that should be attached to this object as a child
-  // tree. This should not be used for iframes since the child tree for an
-  // iframe can be retrieved from the child frame's embedding token. It should
-  // only be used whenever the `ax::mojom::Action::kStitchChildTree` is sent to
-  // the renderer requesting that another tree is joined with the existing tree.
-  // This might be needed when another tree with some generated content should
-  // be stitched into the current tree.
-  //
-  // TODO(accessibility): Store in AXObjectCacheImpl since it is not needed by
-  // most objects taking up valuable space.
-  std::optional<ui::AXTreeID> child_tree_id_;
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, GetParentNodeForComputeParent);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, NodesRequiringCacheUpdate);

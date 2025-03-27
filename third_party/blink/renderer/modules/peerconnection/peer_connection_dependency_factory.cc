@@ -1153,10 +1153,10 @@ std::unique_ptr<webrtc::RtpCapabilities>
 PeerConnectionDependencyFactory::GetSenderCapabilities(const String& kind) {
   if (kind == "audio") {
     return std::make_unique<webrtc::RtpCapabilities>(
-        GetPcFactory()->GetRtpSenderCapabilities(cricket::MEDIA_TYPE_AUDIO));
+        GetPcFactory()->GetRtpSenderCapabilities(webrtc::MediaType::AUDIO));
   } else if (kind == "video") {
     return std::make_unique<webrtc::RtpCapabilities>(
-        GetPcFactory()->GetRtpSenderCapabilities(cricket::MEDIA_TYPE_VIDEO));
+        GetPcFactory()->GetRtpSenderCapabilities(webrtc::MediaType::VIDEO));
   }
   return nullptr;
 }
@@ -1165,10 +1165,10 @@ std::unique_ptr<webrtc::RtpCapabilities>
 PeerConnectionDependencyFactory::GetReceiverCapabilities(const String& kind) {
   if (kind == "audio") {
     return std::make_unique<webrtc::RtpCapabilities>(
-        GetPcFactory()->GetRtpReceiverCapabilities(cricket::MEDIA_TYPE_AUDIO));
+        GetPcFactory()->GetRtpReceiverCapabilities(webrtc::MediaType::AUDIO));
   } else if (kind == "video") {
     return std::make_unique<webrtc::RtpCapabilities>(
-        GetPcFactory()->GetRtpReceiverCapabilities(cricket::MEDIA_TYPE_VIDEO));
+        GetPcFactory()->GetRtpReceiverCapabilities(webrtc::MediaType::VIDEO));
   }
   return nullptr;
 }

@@ -576,7 +576,7 @@ bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
   return false;
 }
 
-void ChromeAutocompleteProviderClient::OpenLensOverlay() {
+void ChromeAutocompleteProviderClient::OpenLensOverlay(bool show) {
 #if !BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/401583049): Prepare lens overlay controller directly.
   if (Browser* browser = BrowserList::GetInstance()->GetLastActive()) {
@@ -584,11 +584,18 @@ void ChromeAutocompleteProviderClient::OpenLensOverlay() {
     // TODO(crbug.com/402497756): For prototyping, reusing the existing
     // omnibox entry point. However, for production, create a new invocation
     // source for this new entry point.
-    browser->GetActiveTabInterface()
-        ->GetTabFeatures()
-        ->lens_overlay_controller()
-        ->StartContextualizationWithoutOverlay(
-            lens::LensOverlayInvocationSource::kOmnibox);
+    if (show) {
+      browser->GetActiveTabInterface()
+          ->GetTabFeatures()
+          ->lens_overlay_controller()
+          ->ShowUI(lens::LensOverlayInvocationSource::kOmnibox);
+    } else {
+      browser->GetActiveTabInterface()
+          ->GetTabFeatures()
+          ->lens_overlay_controller()
+          ->StartContextualizationWithoutOverlay(
+              lens::LensOverlayInvocationSource::kOmnibox);
+    }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }

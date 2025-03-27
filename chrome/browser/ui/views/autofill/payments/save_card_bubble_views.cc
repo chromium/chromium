@@ -41,6 +41,15 @@
 
 namespace autofill {
 
+constexpr char16_t kEllipsisDotSeparator[] = u"\u2022";
+
+int GetObfuscationLength() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillEnableNewFopDisplayDesktop)
+             ? 2
+             : 4;
+}
+
 SaveCardBubbleViews::SaveCardBubbleViews(views::View* anchor_view,
                                          content::WebContents* web_contents,
                                          SaveCardBubbleController* controller)
@@ -120,7 +129,8 @@ views::View* SaveCardBubbleViews::GetFootnoteViewForTesting() {
 }
 
 const std::u16string SaveCardBubbleViews::GetCardIdentifierString() const {
-  return controller_->GetCard().CardNameAndLastFourDigits();
+  return controller_->GetCard().CardNameAndLastFourDigits(
+      /*customized_nickname=*/u"", GetObfuscationLength());
 }
 
 SaveCardBubbleViews::~SaveCardBubbleViews() = default;
@@ -187,7 +197,8 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
   auto card_identifier_view = std::make_unique<views::View>();
   auto* layout = card_identifier_view->SetLayoutManager(
       std::make_unique<views::FlexLayout>());
-  if (is_cvc_only_save) {
+  if (is_cvc_only_save || base::FeatureList::IsEnabled(
+                              features::kAutofillEnableNewFopDisplayDesktop)) {
     layout->SetCollapseMargins(true);
     layout->SetDefault(
         views::kMarginsKey,
@@ -239,6 +250,12 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
                                  views::MaximumFlexSizeRule::kUnbounded)
             .WithOrder(2));
   } else if (!card.IsExpired(base::Time::Now())) {
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableNewFopDisplayDesktop)) {
+      card_identifier_view->AddChildView(std::make_unique<views::Label>(
+          kEllipsisDotSeparator, views::style::CONTEXT_DIALOG_BODY_TEXT,
+          views::style::STYLE_SECONDARY));
+    }
     // Add card expiration date for card saves.
     auto* expiration_date_label =
         card_identifier_view->AddChildView(std::make_unique<views::Label>(

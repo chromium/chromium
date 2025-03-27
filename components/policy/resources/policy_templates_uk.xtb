@@ -4709,27 +4709,6 @@ WebSQL було вилучено у версії M112.</translation>
       Докладніше про дійсні шаблони <ph name="URL_LABEL" />-адрес можна дізнатися на сторінці https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> – недопустиме значення для цього правила.</translation>
 <translation id="4480694116501920047">Примусово застосовувати Безпечний пошук</translation>
 <translation id="4481202456143946404">Дійсна версія Умов використання на основі нових Умов, запроваджених у списку змін Google3.</translation>
-<translation id="4481804933320714808">Це бета-функція. Оскільки ця функція перебуває на стадії розробки, до неї мають доступ лише наші довірені тестувальники. Зверніть увагу, що вона може змінюватися й оновлюватися.
-
-За допомогою цього правила адміністратори можуть налаштувати корпоративний агрегатор пошуку, який надаватиме рекомендації і результати пошуку в адресному рядку, коли користувач вводитиме певне ключове слово. Щоб ініціювати пошук, користувачі можуть ввести в адресному рядку ключове слово з поля <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, наприклад <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" /> (символ @ додавати необов’язково), а потім натиснути пробіл або клавішу Tab.
-
-Укажіть значення для таких полів: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-У полі <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> указується назва пошукової системи, що відображатиметься в адресному рядку.
-
-У полі <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> указується ключове слово, за допомогою якого користувач запускає пошук. Воно може складатися зі звичайних слів і символів, однак не має містити пробілів або починатися із символу @. Ключові слова мають бути унікальними.
-
-У полі <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> указується URL-адреса, за якою потрібно виконати пошук. Введіть вебадресу сторінки результатів пошукової системи й замість запиту вставте <ph name="SEARCH_TERM_MARKER" />.
-
-У полі <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> указується URL-адреса, з якої надаються підказки в пошуку. Якщо поле <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> містить значення <ph name="SEARCH_TERM_MARKER" />, Chrome отримуватиме підказки в пошуку за допомогою запиту GET до URL-адреси, замінюючи <ph name="SEARCH_TERM_MARKER" /> на пошуковий запит користувача. В іншому разі буде надіслано запит POST, а запит користувача буде передано в параметрах POST під ключем <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
-
-У полі <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> указується URL-адреса зображення, яке використовуватиметься для підказок у пошуку. Якщо це поле не налаштувати, використовуватиметься значок за умовчанням. Рекомендуємо використовувати значок вебсторінки (наприклад, <ph name="ICON_URL_EXAMPLE" />).
-
-У полі <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> указується, чи обов’язково використовувати адресний рядок <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, щоб переглядати підказки в пошуку. Якщо не налаштувати це поле, використовувати адресний рядок <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> необов’язково.
-
-У <ph name="MS_WIN_NAME" /> це правило застосовується лише для екземплярів, які зареєстровано в доменах <ph name="MS_AD_NAME" /> чи <ph name="MS_AAD_NAME" /> або в <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-У <ph name="MAC_OS_NAME" /> це правило доступне лише для екземплярів, які контролюються через Керування мобільними пристроями або зареєстровані в домені через MCX чи в <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4481952213163895432">Вимкнути використання слів для швидкого запуску Google Асистента</translation>
 <translation id="4482784169143060077">Увімкнути автоматичний перехід на HTTPS</translation>
 <translation id="4483120730995943109">Функція JavaScript setTimeout(), для якої час очікування становить 0 мс, не округлюватиме значення до 1 мс.</translation>

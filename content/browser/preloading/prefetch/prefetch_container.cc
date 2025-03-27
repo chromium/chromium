@@ -171,9 +171,9 @@ std::optional<PreloadingTriggeringOutcome> TriggeringOutcomeFromStatus(
 }
 
 // Returns true if SetPrefetchStatus(|status|) can be called after a prefetch
-// has already been marked as failed. We ignore such status updates as they
-// may end up overwriting the initial failure reason.
-bool StatusUpdateIsPossibleAfterFailure(PrefetchStatus status) {
+// has already been marked as failed or heldback. We ignore such status updates
+// as they may end up overwriting the initial failure reason.
+bool StatusUpdateIsPossibleAfterFailureOrHeldback(PrefetchStatus status) {
   switch (status) {
     case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
     case PrefetchStatus::kPrefetchIsStale:
@@ -679,15 +679,19 @@ void PrefetchContainer::SetTriggeringOutcomeAndFailureReasonFromStatus(
   }
 
   if (old_prefetch_status &&
-      TriggeringOutcomeFromStatus(old_prefetch_status.value()) ==
-          PreloadingTriggeringOutcome::kFailure) {
-    if (StatusUpdateIsPossibleAfterFailure(new_prefetch_status)) {
-      // Note that `StatusUpdateIsPossibleAfterFailure()` implies that the
-      // new status is a failure.
+      (TriggeringOutcomeFromStatus(old_prefetch_status.value()) ==
+           PreloadingTriggeringOutcome::kFailure ||
+       old_prefetch_status.value() == PrefetchStatus::kPrefetchHeldback)) {
+    if (StatusUpdateIsPossibleAfterFailureOrHeldback(new_prefetch_status)) {
+      // Note that `StatusUpdateIsPossibleAfterFailureOrHeldback()` implies that
+      // the new status is a failure.
       CHECK(TriggeringOutcomeFromStatus(new_prefetch_status) ==
             PreloadingTriggeringOutcome::kFailure);
-      // Skip this update if the triggering outcome has already been updated to
-      // kFailure.
+
+      // Skip this update since 1) if the triggering outcome has already been
+      // updated to kFailure, we don't need to overwrite it 2) if the status is
+      // marked as holdback, we don't need to update the triggering outcome or
+      // the failure reason anymore as it is not meaningful.
       return;
     } else {
       SCOPED_CRASH_KEY_NUMBER("PrefetchContainer", "prefetch_status_from",

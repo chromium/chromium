@@ -102,11 +102,6 @@ export class SettingsAppearancePageElement extends
        */
       pageVisibility: Object,
 
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       defaultZoom_: Number,
 
       isWallpaperPolicyControlled_: {type: Boolean, value: true},

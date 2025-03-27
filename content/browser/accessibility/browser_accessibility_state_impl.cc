@@ -274,6 +274,10 @@ void BrowserAccessibilityStateImpl::DisableProcessAccessibility() {
   SetProcessMode(ui::AXMode());
 }
 
+bool BrowserAccessibilityStateImpl::IsAccessibleBrowser() {
+  return GetAccessibilityMode() == ui::kAXModeComplete;
+}
+
 void BrowserAccessibilityStateImpl::SetPerformanceFilteringAllowed(
     bool allowed) {
   performance_filtering_allowed_ = allowed;

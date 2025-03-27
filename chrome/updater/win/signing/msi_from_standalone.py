@@ -154,14 +154,14 @@ def BuildInstaller(wix_path, product_name, msi_product_version, appid,
     # major upgrades.
     msi_product_id = generate_name_based_guid(
         updater_installer_namespace, 'Product %s %s %s %s' %
-        (product_name, msi_base_name, product_version, architecture))
+        (product_name, msi_base_name, msi_product_version, architecture))
     msi_upgradecode_guid = generate_name_based_guid(
         updater_installer_namespace, 'Upgrade ' + product_name)
 
     # To allow for multiple versions of the same product to be generated,
     # stick output in a subdirectory.
     output_directory_name = os.path.join(output_dir,
-                                         appid + '.' + product_version)
+                                         appid + '.' + msi_product_version)
     os.makedirs(output_directory_name, exist_ok=True)
 
     subprocess.run([
@@ -171,7 +171,7 @@ def BuildInstaller(wix_path, product_name, msi_product_version, appid,
                      'enterprise_standalone_installer.wxs.xml')
     ] + get_wix_flags(
         product_name, product_name_legal_identifier, msi_product_version,
-        product_version, appid, company_name, company_full_name,
+        msi_product_version, appid, company_name, company_full_name,
         custom_action_dll_path, product_uninstaller_additional_args,
         msi_product_id, msi_upgradecode_guid, product_installer_data,
         product_icon_path, product_custom_params, standalone_installer_path,

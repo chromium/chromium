@@ -91,6 +91,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1269405891096105529">Periferni uređaj nije podržan u načinu rada za goste</translation>
 <translation id="1270290102613614947">Zaslonska tipkovnica onemogućena je</translation>
 <translation id="1272079795634619415">Zaustavi</translation>
+<translation id="12741168609094094">Odaberite bilo što na zaslonu da biste pretraživali, kopirali tekst i drugo</translation>
 <translation id="1275285675049378717">Napaja <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Odabrano</translation>
 <translation id="1276975447697633661">Odaberite datoteku i pritisnite <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1720230731642245863">Žarišna je točka isključena</translation>
 <translation id="1731815243805539470">Prelazak na prethodnog korisnika</translation>
 <translation id="1733996486177697563">Prebacite se na tamnu ili svijetlu temu. Dodirnite radnu površinu i zadržite pritisak, a zatim odaberite stavku Pozadine i stilovi.</translation>
+<translation id="1735992454301033090">Odabrano područje, upotrijebite tipke sa strelicama za pomicanje</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" je vidljiv Bluetooth uređajima.</translation>
 <translation id="1737078180382804488">Odbacite postavljanje prikaza obavijesti telefona</translation>
 <translation id="174102739345480129">Marker je isključen.</translation>
@@ -494,6 +496,7 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" />, prošli tjedan</translation>
 <translation id="2687510499067466116">Promijenjen je tipkovni prečac</translation>
 <translation id="2689613560355655046">Radna površina 8</translation>
+<translation id="2692092709110488417">Pritisnite Tab da biste fokusirali i premjestili odabrano područje</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Prikažite postavke tipkovnice. Odabrana je <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Pomoću aplikacije za prijenos sadržaja premjestite podatke sa školskog računa na osobni račun</translation>
@@ -551,6 +554,7 @@ U suprotnom će se ugrađena dodirna podloga ponovno omogućiti za <ph name="TIM
 <translation id="2872353916818027657">Zamjena primarnog monitora</translation>
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="2876338922445400217">Povećavanje zaslona</translation>
+<translation id="2876760662374103627">Upravljanje licem je aktivno</translation>
 <translation id="2878884018241093801">Nema nedavnih stavki</translation>
 <translation id="2880541185262491188">Previše pokušaja unosa PIN-a. Pričekajte <ph name="TIME_LEFT" /> i pokušajte ponovno.</translation>
 <translation id="2883271196820422439">Nastavi upotrebu tipki za pokrete mišem</translation>
@@ -1032,6 +1036,7 @@ Neke su značajke ograničene radi produljenja trajanja baterije.</translation>
 <translation id="4412698727486357573">Centar za pomoć</translation>
 <translation id="4412944820643904175">Značajka <ph name="FEATURE_NAME" /> je isključena.</translation>
 <translation id="4417647906073317561">Postavke načina rada za koncentraciju. Postavite mjerač vremena, zadatak i glazbu za bolju koncentraciju.</translation>
+<translation id="4418600384772451109">Zatvori ploču</translation>
 <translation id="4424159417645388645">Radna površina 5</translation>
 <translation id="4426817706804363424">Bravo!</translation>
 <translation id="4430019312045809116">Glasnoća</translation>
@@ -2228,6 +2233,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8287009018010202411">Produktivnost</translation>
 <translation id="828708037801473432">Isključeno</translation>
 <translation id="8297006494302853456">Slab</translation>
+<translation id="8300451473979404345">Odabran je marker za preoblikovanje, upotrijebite tipke sa strelicama za pomicanje</translation>
 <translation id="8308637677604853869">Prethodni izbornik</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Uključena je opcija Caps Lock</translation>
@@ -2288,6 +2294,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="851458219935658693">Prikaži prozore s trenutačne radne površine, odabran je izborni gumb</translation>
 <translation id="851660987304951246">Upotrijebite značajku Pomozi mi čitati da biste brzo saželi sadržaj ili postavili pitanja</translation>
 <translation id="8517041960877371778">Uređaj <ph name="DEVICE_TYPE" /> možda se neće puniti dok je uključen.</translation>
+<translation id="8519329096920173967">Pretraži zaslon pomoću Google objektiva</translation>
 <translation id="8535393432370007982">Poništavanje poretka po boji</translation>
 <translation id="8536886494750559755">Prikažite postavke brzog dijeljenja. Vidljivo svima <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Tekst je kopiran u međuspremnik</translation>

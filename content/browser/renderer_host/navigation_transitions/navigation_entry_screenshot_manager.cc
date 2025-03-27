@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_utils.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/browser_metrics.h"
+#include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
 
 namespace content {
@@ -35,12 +36,38 @@ NavigationEntryScreenshotManager::NavigationEntryScreenshotManager()
       FROM_HERE,
       base::BindRepeating(&NavigationEntryScreenshotManager::OnMemoryPressure,
                           base::Unretained(this)));
+  if (auto* screen = display::Screen::GetScreen()) {
+    screen->AddObserver(this);
+  }
 
   // Start recording memory usage.
   RecordScreenshotCacheSizeAfterDelay();
 }
 
-NavigationEntryScreenshotManager::~NavigationEntryScreenshotManager() = default;
+NavigationEntryScreenshotManager::~NavigationEntryScreenshotManager() {
+  if (auto* screen = display::Screen::GetScreen()) {
+    screen->RemoveObserver(this);
+  }
+}
+
+void NavigationEntryScreenshotManager::OnDisplayAdded(const display::Display&) {
+  RecalculateCacheSize();
+}
+
+void NavigationEntryScreenshotManager::OnDisplaysRemoved(
+    const display::Displays&) {
+  RecalculateCacheSize();
+}
+
+void NavigationEntryScreenshotManager::OnDisplayMetricsChanged(
+    const display::Display&,
+    uint32_t metrics_changed) {
+  if (metrics_changed &
+      (display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
+       display::DisplayObserver::DISPLAY_METRIC_DEVICE_SCALE_FACTOR)) {
+    RecalculateCacheSize();
+  }
+}
 
 void NavigationEntryScreenshotManager::OnScreenshotCached(
     NavigationEntryScreenshotCacheEvictor* cache,
@@ -103,6 +130,15 @@ void NavigationEntryScreenshotManager::OnVisibilityChanged(
 bool NavigationEntryScreenshotManager::IsEmpty() const {
   CHECK(managed_caches_.empty() == (current_cache_size_in_bytes_ == 0U));
   return managed_caches_.empty();
+}
+
+void NavigationEntryScreenshotManager::RecalculateCacheSize() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // Recalculate the max cache size based on the size of the new primary screen.
+  // Keep the maximum size calculated from all screens that were ever added.
+  max_cache_size_in_bytes_ =
+      std::max(max_cache_size_in_bytes_,
+               NavigationTransitionConfig::ComputeCacheSizeInBytes());
 }
 
 void NavigationEntryScreenshotManager::Register(

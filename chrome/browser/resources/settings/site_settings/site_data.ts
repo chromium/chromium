@@ -46,11 +46,6 @@ export class SettingsSiteDataElement extends SettingsSiteDataElementBase {
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /** Current search term. */
       searchTerm: {
         type: String,

@@ -114,10 +114,7 @@ bool EncodeAsn1CertSignedEntry(const SignedEntryData& input, CBB* output) {
 // does not exceed kMaxTbsCertificateLength and so can be written to |output|.
 bool EncodePrecertSignedEntry(const SignedEntryData& input, CBB* output) {
   CBB child;
-  return CBB_add_bytes(
-             output,
-             reinterpret_cast<const uint8_t*>(input.issuer_key_hash.data),
-             kLogIdLength) &&
+  return CBB_add_bytes(output, input.issuer_key_hash.data(), kLogIdLength) &&
          CBB_add_u24_length_prefixed(output, &child) &&
          CBB_add_bytes(
              &child,

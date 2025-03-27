@@ -482,7 +482,7 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithUpdatedRootStore) {
   net::SHA256HashValue root_hash =
       net::X509Certificate::CalculateFingerprint256(root->GetCertBuffer());
   EXPECT_EQ(info_ptr->root_cert_info[0]->sha256hash_hex,
-            base::HexEncode(root_hash.data));
+            base::HexEncode(root_hash));
   EXPECT_TRUE(net::x509_util::CryptoBufferEqual(
       net::x509_util::CreateCryptoBuffer(info_ptr->root_cert_info[0]->cert)
           .get(),

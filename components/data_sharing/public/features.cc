@@ -24,6 +24,13 @@ BASE_FEATURE(kDataSharingJoinOnly,
              "DataSharingJoinOnly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsDataSharingFunctionalityEnabled() {
+  return base::FeatureList::IsEnabled(
+             data_sharing::features::kDataSharingFeature) ||
+         base::FeatureList::IsEnabled(
+             data_sharing::features::kDataSharingJoinOnly);
+}
+
 BASE_FEATURE(kDataSharingNonProductionEnvironment,
              "DataSharingNonProductionEnvironment",
              base::FEATURE_DISABLED_BY_DEFAULT);

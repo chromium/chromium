@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Use o app Transferência de conteúdo do Google para transferir os dados da conta escolar para a pessoal antes de perder o acesso.</translation>
 <translation id="1026212596705997935">O atalho está sendo usado para "<ph name="CONFLICT_ACCEL_NAME" />". Pressione um novo atalho. Para substituir o atalho, pressione-o de novo.</translation>
 <translation id="1030856839388844477">Redefinir o uso de dados</translation>
+<translation id="1047095725494118091">Não foi possível fazer o download. Tente outra vez ou reinicie o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Novo recurso disponível, use a tecla de seta para cima para saber mais.</translation>
 <translation id="1049663189809099096">amarelo-pastel</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Fazendo o download do protetor de tela</translation>
 <translation id="1094693127011229778">O endereço IP está indisponível</translation>
 <translation id="1100902271996134409">Criando imagens…</translation>
+<translation id="1107856713690040084">Áudio do <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Sobre</translation>
 <translation id="1118572504348554005">Podemos compartilhar o feedback enviado pelo formulário com nossos parceiros a fim de solucionar bugs e outros problemas informados por você. Não inclua informações sensíveis, como senhas.</translation>
 <translation id="1119403468619527527">Há poucas palavras para simplificar</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Ativar o modo escuro</translation>
 <translation id="2164131940279488868">Conecte um microfone para começar a gravar áudio</translation>
 <translation id="2173302385160625112">Verifique sua conexão com a Internet</translation>
+<translation id="2176909213844392588">Não foi possível baixar o modelo de transcrição em <ph name="LANGUAGE_NAME" />. Tente outra vez ou reinicie o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">Algo deu errado. Tente abrir o app novamente.</translation>
 <translation id="2189104374785738357">Editar detalhes do APN</translation>
 <translation id="2195732836444333448">No momento, o limite foi atingido. Tente de novo mais tarde.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Alimentador de documentos (frente e verso)</translation>
 <translation id="3201315366910775591">Álbuns compartilhados podem ser atualizados por outras pessoas</translation>
 <translation id="3211671540163313381">Botão direcional: mapeamento de atalhos</translation>
+<translation id="3217462202230355157">Verifique se o microfone está conectado ou reinicie o <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Procurando scanners</translation>
 <translation id="3226657629376379887">Menu de ações de layout</translation>
 <translation id="3227186760713762082">Divida o valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Exclusivos</translation>
 <translation id="3404249063913988450">Ativar o protetor de tela</translation>
 <translation id="3413935475507503304">Para continuar com a atualização, clique em "Próxima".</translation>
+<translation id="3416709353545797224">Gravando todo o áudio do <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">ao ar livre</translation>
 <translation id="3428971106895559033">pastel</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Confira se o scanner está ligado e disponível pela rede ou por uma conexão direta</translation>
 <translation id="4159238217853743776">Parcial</translation>
 <translation id="4159784952369912983">Roxo</translation>
+<translation id="416219735020840807">Não foi possível baixar o modelo de transcrição. Tente outra vez ou reinicie o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4170180284036919717">Tirar uma foto</translation>
 <translation id="4170700058716978431">FALHA</translation>
 <translation id="4171077696775491955">diminuir brilho</translation>
@@ -698,6 +704,16 @@
 <translation id="4249717042534905822">no domingo</translation>
 <translation id="4250229828105606438">Captura de tela</translation>
 <translation id="4251839292699800785">Escritório elegante</translation>
+<translation id="4252261480746798874">Ao selecionar "Crie o seu", você pode escrever um comando personalizado. Também é possível selecionar "Escolha um tema" e, em seguida, selecionar as palavras sublinhadas para personalizar o plano de fundo de IA.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Selecione "Buscar inspiração" para receber opções de imagens de IA mais exclusivas e variadas.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Quando você cria seu próprio plano de fundo, o comando é enviado aos servidores do Google para gerar imagens e melhorar o produto, sujeito aos <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Termos de Serviço e à Política de Privacidade do Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Não inclua informações pessoais, sensíveis ou confidenciais.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A IA generativa pode cometer erros, inclusive sobre pessoas. Por isso, é importante checar as respostas. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Saiba mais<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">Latência do HTTP</translation>
 <translation id="4266143281602681663">lã</translation>
 <translation id="4269815121975886860">Preferências de inicialização</translation>
@@ -942,6 +958,7 @@
 <translation id="5344619683981067131">Substituindo o texto selecionado pela sugestão</translation>
 <translation id="5346687412805619883">Rede local</translation>
 <translation id="5358174242040570474">Algo deu errado. Escolha um plano de fundo ou abra o app novamente.</translation>
+<translation id="5368228070728130240">Não foi possível baixar o modelo para criação de resumos e títulos. Tente outra vez ou reinicie o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">A rede Wi-Fi não é segura</translation>
 <translation id="5376354385557966694">Modo claro automático</translation>
 <translation id="5378184552853359930">Tipo de IP</translation>
@@ -1247,6 +1264,7 @@
 <translation id="6766275201586212568">Falha em resoluções de DNS</translation>
 <translation id="6768237774506518020">Taxa elevada de erro de resolução de DNS</translation>
 <translation id="6786747875388722282">Extensões</translation>
+<translation id="6789891265243243337">Quando o áudio do <ph name="DEVICE_TYPE" /> está ativado, o Gravador captura todo o áudio tocado no dispositivo</translation>
 <translation id="6791471867139427246">cor da luz do teclado</translation>
 <translation id="6796229976413584781">Atalho excluído</translation>
 <translation id="6798678288485555829">Navegação de texto</translation>
@@ -1718,6 +1736,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8930622219860340959">Rede sem fio</translation>
 <translation id="8933650076320258356">A tecla selecionada é <ph name="KEYS" /> para <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Endereço IP do cliente</translation>
+<translation id="8938606491880817721">Não foi possível fazer o download. Tente outra vez ou reinicie o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8944651180182756621">Cor do acesso rápido</translation>
 <translation id="8945308580158685341">abelhas</translation>
 <translation id="894617464444543719">Este dispositivo é um smartphone.</translation>

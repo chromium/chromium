@@ -6,11 +6,12 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 import android.graphics.RectF;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
@@ -27,6 +28,7 @@ import java.util.List;
  * color of a particular height extending across the width of the screen viewport.
  */
 @JNINamespace("android")
+@NullMarked
 public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements SceneOverlay {
 
     /** Handle to the native side of this class. */
@@ -48,7 +50,7 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
     private int mDividerColor;
 
     /** The tag indicating that this layer should be moved by viz. */
-    private OffsetTag mOffsetTag;
+    private @Nullable OffsetTag mOffsetTag;
 
     /** Whether the bottom chin has constraint applied that changes its scrollability. */
     private boolean mHasConstraint;
@@ -58,7 +60,7 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
     private final Runnable mRequestRenderRunnable;
 
     /** Build a bottom chin scene layer. */
-    public EdgeToEdgeBottomChinSceneLayer(@NonNull Runnable requestRenderRunnable) {
+    public EdgeToEdgeBottomChinSceneLayer(Runnable requestRenderRunnable) {
         mRequestRenderRunnable = requestRenderRunnable;
     }
 
@@ -160,7 +162,7 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
     }
 
     @Override
-    public EventFilter getEventFilter() {
+    public @Nullable EventFilter getEventFilter() {
         return null;
     }
 
@@ -208,6 +210,6 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
                 int dividerColor,
                 float yOffset,
                 boolean hasConstraint,
-                OffsetTag offsetTag);
+                @Nullable OffsetTag offsetTag);
     }
 }

@@ -177,6 +177,10 @@ void VideoEncoder::ForceKeyFrame() {
   encoder_client_->ForceKeyFrame();
 }
 
+bool VideoEncoder::IsFlushSupported() {
+  return encoder_client_->IsFlushSupported();
+}
+
 VideoEncoder::EncoderState VideoEncoder::GetState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

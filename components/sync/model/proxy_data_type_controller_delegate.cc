@@ -102,9 +102,12 @@ ProxyDataTypeControllerDelegate::~ProxyDataTypeControllerDelegate() = default;
 void ProxyDataTypeControllerDelegate::OnSyncStarting(
     const DataTypeActivationRequest& request,
     StartCallback callback) {
+  DataTypeActivationRequest proxy_request = request;
+  proxy_request.error_handler =
+      base::BindPostTaskToCurrentDefault(request.error_handler);
   PostTask(
       FROM_HERE,
-      base::BindOnce(&OnSyncStartingHelperOnModelThread, request,
+      base::BindOnce(&OnSyncStartingHelperOnModelThread, proxy_request,
                      base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 

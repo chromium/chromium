@@ -456,7 +456,7 @@ class TrustDomainCacheFullCerts {
 
 SHA256HashValue CalculateFingerprint256(const bssl::der::Input& buffer) {
   SHA256HashValue sha256;
-  SHA256(buffer.data(), buffer.size(), sha256.data);
+  SHA256(buffer.data(), buffer.size(), sha256.data());
   return sha256;
 }
 

@@ -1186,7 +1186,7 @@ def create_proto_modules(blueprint, gn, target):
         target: gn_utils.Target object.
 
     Returns:
-        The source_genrule module.
+        The .h and .cc genrule modules.
     """
   assert (target.type == 'proto_library')
 
@@ -1297,7 +1297,7 @@ def create_proto_modules(blueprint, gn, target):
   header_module.allow_rebasing = True
   header_module.build_file_path = target.build_file_path
   source_module.build_file_path = target.build_file_path
-  return source_module
+  return (header_module, source_module)
 
 
 def create_gcc_preprocess_modules(blueprint, target):
@@ -2434,11 +2434,9 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
   elif target.type == 'shared_library':
     modules = (Module('cc_library_shared', bp_module_name, gn_target_name), )
   elif target.type == 'proto_library':
-    # TODO: change create_proto_modules() to return both modules.
-    module = create_proto_modules(blueprint, gn, target)
-    if module is None:
+    modules = create_proto_modules(blueprint, gn, target)
+    if modules is None:
       return ()
-    modules = (module, )
   elif target.type == "rust_bindgen":
     modules = (create_bindgen_module(blueprint, target, bp_module_name), )
   elif target.type == 'action':
@@ -2694,9 +2692,15 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
           module_target.proc_macros.add(dep_module.name)
         elif dep_module.type == 'cc_genrule':
           if dep_module.genrule_headers:
-            if module.type != "rust_bindgen":
-              module_target.generated_headers.update(dep_module.genrule_headers)
-            else:
+            if module.type == "rust_ffi_static":
+              # Don't bubble up generated_headers on Rust modules, as that doesn't make sense
+              # (Rust cannot use C++ headers directly) and is not supported anyway. See also
+              # https://crbug.com/405987939.
+              # TODO: https://crbug.com/406267472 - how we end up in this situation in the
+              # first place is not entirely clear. We may have to revisit how generated
+              # headers interact with cxx/bindgen targets.
+              pass
+            elif module.type == "rust_bindgen":
               # rust_bindgen modules don't support the `generated_headers` attribute;
               # see http://crbug.com/394615281. We work around this limitation by
               # inserting a module whose sole purpose is to export the generated
@@ -2704,6 +2708,8 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
               # http://crbug.com/394069879.
               module_target.header_libs.add(
                 create_generated_headers_export_module(blueprint, dep_module).name)
+            else:
+              module_target.generated_headers.update(dep_module.genrule_headers)
           module_target.srcs.update(dep_module.genrule_srcs)
           module_target.shared_libs.update(dep_module.genrule_shared_libs)
           module_target.header_libs.update(dep_module.genrule_header_libs)

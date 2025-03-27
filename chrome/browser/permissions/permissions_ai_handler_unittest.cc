@@ -30,21 +30,24 @@
 namespace {
 
 using ::base::BindOnce;
-using ::base::OwnedRef;
 using ::base::test::EqualsProto;
 using ::content::BrowserThread;
 using ::optimization_guide::AnyWrapProto;
 using ::optimization_guide::MockSession;
 using ::optimization_guide::OptimizationGuideModelExecutionError;
 using ::optimization_guide::OptimizationGuideModelStreamingExecutionResult;
+using ::optimization_guide::StreamingResponse;
+using ::optimization_guide::proto::DefaultResponse;
 using ::optimization_guide::proto::PermissionsAiRequest;
 using ::optimization_guide::proto::PermissionsAiResponse;
 using ::optimization_guide::proto::PermissionType;
 using ::permissions::RequestType;
 using ::testing::_;
+using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
+using ::testing::NotNull;
 using ::testing::Optional;
 using ::testing::StrictMock;
 using ::testing::WithArg;
@@ -52,6 +55,7 @@ using ModelExecutionResultStreamingCallback = ::optimization_guide::
     OptimizationGuideModelExecutionResultStreamingCallback;
 using ModelCallbackFuture =
     ::base::test::TestFuture<std::optional<PermissionsAiResponse>>;
+using EligibilityReason = ::optimization_guide::OnDeviceModelEligibilityReason;
 
 constexpr optimization_guide::ModelBasedCapabilityKey kFeatureKey =
     optimization_guide::ModelBasedCapabilityKey::kPermissionsAi;
@@ -61,11 +65,6 @@ constexpr char kSessionCreationSuccessHistogram[] =
     "Permissions.AIv1.SessionCreationSuccess";
 constexpr char kModelAvailableAtInquiryTimeHistogram[] =
     "Permissions.AIv1.AvailableAtInquiryTime";
-constexpr char kModelDownloadSuccessHistogram[] =
-    "Permissions.AIv1.DownloadSuccess";
-constexpr char kModelDownloadTimeHistogram[] = "Permissions.AIv1.DownloadTime";
-constexpr char kSessionCreationTimeHistogram[] =
-    "Permissions.AIv1.SessionCreationTime";
 constexpr char kExecutionDurationHistogram[] =
     "Permissions.AIv1.ExecutionDuration";
 constexpr char kExecutionSuccessHistogram[] =
@@ -77,6 +76,33 @@ constexpr char kPreviousSessionFinishedInTimeHistogram[] =
 constexpr char kExecutionTimedOutHistogram[] =
     "Permissions.AIv1.ExecutionTimedOut";
 }  // namespace
+
+void CheckHistogramsAreEmptyExcept(
+    const base::HistogramTester& histogram_tester,
+    base::span<const std::string> allowed_histograms) {
+  // Static list of all histogram names to check
+  static const std::vector<std::string> kAllHistogramNames = {
+      kExecutionDurationHistogram,
+      kExecutionSuccessHistogram,
+      kExecutionTimedOutHistogram,
+      kModelAvailableAtInquiryTimeHistogram,
+      kPreviousSessionFinishedInTimeHistogram,
+      kResponseParseSuccessHistogram,
+      kSessionCreationSuccessHistogram,
+  };
+
+  // Convert the allowed_histograms span to an unordered_set for fast lookup
+  std::unordered_set<std::string> allowed_set(allowed_histograms.begin(),
+                                              allowed_histograms.end());
+
+  // Iterate through all histogram names in the static list
+  for (const auto& histogram_name : kAllHistogramNames) {
+    if (allowed_set.find(histogram_name) == allowed_set.end()) {
+      // If the histogram is not in the allowed set, ensure its count is 0
+      histogram_tester.ExpectTotalCount(histogram_name, 0);
+    }
+  }
+}
 
 namespace permissions {
 
@@ -122,8 +148,6 @@ class PermissionsAiHandlerTestBase : public testing::Test {
         std::move(mock_execution_timer));
   }
 
-  void TearDown() override { mock_execution_timer_ = nullptr; }
-
   void SetupMockOptimizationGuideKeyedService() {
     mock_optimization_guide_keyed_service_ =
         static_cast<MockOptimizationGuideKeyedService*>(
@@ -150,20 +174,50 @@ class PermissionsAiHandlerTestBase : public testing::Test {
             }));
   }
 
-  void ExpectSkipModelDownloadAndInstantlyReturnSession() {
+  void ExpectGetOnDeviceModelEligibilityAndReturn(EligibilityReason reason) {
     EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-                AddOnDeviceModelAvailabilityChangeObserver(_, _));
-    ExpectStartSessionAndReturn(&session_);
+                GetOnDeviceModelEligibility(Eq(kFeatureKey)))
+        .WillOnce(Invoke(
+            [reason](optimization_guide::ModelBasedCapabilityKey feature) {
+              return reason;
+            }));
+  }
+
+  inline ModelExecutionResultStreamingCallback ExecuteModelAndReturnCallback(
+      const PermissionsAiRequest& request) {
+    ModelExecutionResultStreamingCallback response_callback;
+    EXPECT_CALL(session_, ExecuteModel(EqualsProto(request), _))
+        .WillOnce(WithArg<1>(
+            Invoke([&](ModelExecutionResultStreamingCallback callback) {
+              response_callback = std::move(callback);
+            })));
+    return response_callback;
+  }
+
+  PermissionsAiRequest BuildRequest(PermissionType type) {
+    PermissionsAiRequest request;
+    request.set_rendered_text(kRenderedText);
+    request.set_permission_type(type);
+    return request;
+  }
+
+  void ReceiveResponseSuccessfully(
+      ModelExecutionResultStreamingCallback& response_callback,
+      ModelCallbackFuture& future) {
+    // We can finish the first inquiry normally.
+    PermissionsAiResponse response;
+    response.set_is_permission_relevant(true);
+    auto streaming_response = StreamingResponse{
+        .response = AnyWrapProto(response), .is_complete = true};
+    EXPECT_FALSE(response_callback.is_null());
+    response_callback.Run(OptimizationGuideModelStreamingExecutionResult(
+        base::ok(streaming_response),
+        /*provided_by_on_device=*/true));
+    EXPECT_THAT(future.Take(), Optional(EqualsProto(response)));
   }
 
   void ResetHistograms() {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
-  }
-
-  void DeletePermissionsAiHandler() {
-    // Avoid dangling pointer warning
-    mock_execution_timer_ = nullptr;
-    permissions_ai_handler_.reset();
   }
 
   const base::HistogramTester& histogram_tester() { return *histogram_tester_; }
@@ -174,8 +228,8 @@ class PermissionsAiHandlerTestBase : public testing::Test {
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
 
-  raw_ptr<MockTimer> mock_execution_timer_ = nullptr;
   std::unique_ptr<PermissionsAiHandler> permissions_ai_handler_;
+  raw_ptr<MockTimer> mock_execution_timer_ = nullptr;
   raw_ptr<MockOptimizationGuideKeyedService>
       mock_optimization_guide_keyed_service_;
   NiceMock<MockSession> session_;
@@ -204,7 +258,7 @@ INSTANTIATE_TEST_SUITE_P(
     }));
 
 TEST_P(ParametrizedPermissionsAiHandlerTest,
-       CanDealWithInvalidOptimizationGuide) {
+       CanDealWithNullptrOptimizationGuide) {
   PermissionsAiHandler permissions_ai_handler(nullptr);
 
   ModelCallbackFuture future;
@@ -212,218 +266,138 @@ TEST_P(ParametrizedPermissionsAiHandlerTest,
       kRenderedText, GetParam().request_type, future.GetCallback());
   EXPECT_EQ(future.Take(), std::nullopt);
 
-  histogram_tester().ExpectUniqueSample(kSessionCreationSuccessHistogram, false,
-                                        1);
-  histogram_tester().ExpectUniqueSample(kModelAvailableAtInquiryTimeHistogram,
-                                        false, 1);
+  // Timer should not get started at all.
+  ASSERT_FALSE(mock_execution_timer_->IsRunning());
+  ASSERT_EQ(mock_execution_timer_->started_cnt, 0);
+
+  CheckHistogramsAreEmptyExcept(histogram_tester(), {});
 }
 
-TEST_F(PermissionsAiHandlerTest, ModelNeedsDownloadForFirstInquiry) {
-  EXPECT_FALSE(permissions_ai_handler_->IsOnDeviceModelAvailable());
+TEST_F(PermissionsAiHandlerTest, DealsWithModelInavailability) {
+  // We assume here, that model download was already start but did not finish
+  // yet or a transient error is happening.
+  ExpectGetOnDeviceModelEligibilityAndReturn(
+      EligibilityReason::kTooManyRecentCrashes);
 
-  // Installs model on first call.
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              AddOnDeviceModelAvailabilityChangeObserver(
-                  kFeatureKey, permissions_ai_handler_.get()));
+  // We do not deal witherrors at the moment; we just try to create the session
+  // and hope for the best.
   ExpectStartSessionAndReturn(nullptr);
 
   ModelCallbackFuture future;
   permissions_ai_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications, future.GetCallback());
   EXPECT_EQ(future.Take(), std::nullopt);
-  EXPECT_FALSE(permissions_ai_handler_->IsOnDeviceModelAvailable());
 
   // Timer should not get started if no valid session is returned.
   ASSERT_FALSE(mock_execution_timer_->IsRunning());
+  ASSERT_EQ(mock_execution_timer_->started_cnt, 0);
 
-  // Fails for first created session (because model is not downloaded yet).
-  histogram_tester().ExpectUniqueSample(kSessionCreationSuccessHistogram, false,
-                                        1);
   histogram_tester().ExpectUniqueSample(kModelAvailableAtInquiryTimeHistogram,
                                         false, 1);
+  histogram_tester().ExpectUniqueSample(kSessionCreationSuccessHistogram, false,
+                                        1);
+  CheckHistogramsAreEmptyExcept(histogram_tester(),
+                                {kModelAvailableAtInquiryTimeHistogram,
+                                 kSessionCreationSuccessHistogram});
 }
 
-TEST_F(PermissionsAiHandlerTest, ModelDownloadFailureIsHandled) {
+TEST_F(PermissionsAiHandlerTest, StartsModelDownload) {
+  ExpectGetOnDeviceModelEligibilityAndReturn(
+      EligibilityReason::kNoOnDeviceFeatureUsed);
+  // First StartSession call triggers model download;
   ExpectStartSessionAndReturn(nullptr);
-
-  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
-      nullptr;
-  base::RunLoop run_loop_for_add_observer;
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              AddOnDeviceModelAvailabilityChangeObserver(_, _))
-      .WillOnce(Invoke(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
-            availability_observer = observer;
-            run_loop_for_add_observer.Quit();
-          }));
-
   ModelCallbackFuture future;
   permissions_ai_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications, future.GetCallback());
   EXPECT_EQ(future.Take(), std::nullopt);
-  // Timer should not get started if no model is available.
-  ASSERT_FALSE(mock_execution_timer_->IsRunning());
 
-  // Fails for first created session (because model is not downloaded yet).
-  histogram_tester().ExpectUniqueSample(kSessionCreationSuccessHistogram, false,
-                                        1);
-  histogram_tester().ExpectUniqueSample(kModelAvailableAtInquiryTimeHistogram,
-                                        false, 1);
-  histogram_tester().ExpectTotalCount(kModelDownloadSuccessHistogram, 0);
-
-  run_loop_for_add_observer.Run();
-  ASSERT_TRUE(availability_observer);
-
-  // Now that the handler is observing, send `kTooManyRecentCrashes`
-  // to the observer, which is not a waitable reason.
-  availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kPermissionsAi,
-      optimization_guide::OnDeviceModelEligibilityReason::
-          kTooManyRecentCrashes);
-
-  histogram_tester().ExpectUniqueSample(kModelDownloadSuccessHistogram, false,
-                                        1);
-}
-
-TEST_F(PermissionsAiHandlerTest, ModelDownloadsSuccessfully) {
-  ExpectStartSessionAndReturn(nullptr);
-
-  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
-      nullptr;
-  base::RunLoop run_loop_for_add_observer;
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              AddOnDeviceModelAvailabilityChangeObserver(_, _))
-      .WillOnce(Invoke(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
-            availability_observer = observer;
-            run_loop_for_add_observer.Quit();
-          }));
-
-  ModelCallbackFuture future;
-  permissions_ai_handler_->InquireAiOnDeviceModel(
-      kRenderedText, RequestType::kNotifications, future.GetCallback());
-  EXPECT_EQ(future.Take(), std::nullopt);
   // Timer should not get started if no valid session is returned.
   ASSERT_FALSE(mock_execution_timer_->IsRunning());
+  ASSERT_EQ(mock_execution_timer_->started_cnt, 0);
 
-  // Fails for first created session (because model is not downloaded yet):
-  histogram_tester().ExpectUniqueSample(kSessionCreationSuccessHistogram, false,
-                                        1);
   histogram_tester().ExpectUniqueSample(kModelAvailableAtInquiryTimeHistogram,
                                         false, 1);
-
-  run_loop_for_add_observer.Run();
-  ASSERT_TRUE(availability_observer);
-
-  // Waitable reason, should not do anything.
-  availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kPermissionsAi,
-      optimization_guide::OnDeviceModelEligibilityReason::kModelToBeInstalled);
-
-  histogram_tester().ExpectTotalCount(kModelDownloadSuccessHistogram, 0);
-
-  availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kPermissionsAi,
-      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
-
-  histogram_tester().ExpectUniqueSample(kModelDownloadSuccessHistogram, true,
+  histogram_tester().ExpectUniqueSample(kSessionCreationSuccessHistogram, false,
                                         1);
-  histogram_tester().ExpectTotalCount(kModelDownloadTimeHistogram, 1);
-
-  EXPECT_TRUE(permissions_ai_handler_->IsOnDeviceModelAvailable());
+  CheckHistogramsAreEmptyExcept(histogram_tester(),
+                                {kModelAvailableAtInquiryTimeHistogram,
+                                 kSessionCreationSuccessHistogram});
 }
 
-TEST_P(ParametrizedPermissionsAiHandlerTest, RequestIsBuildProperly) {
-  ExpectSkipModelDownloadAndInstantlyReturnSession();
+TEST_P(ParametrizedPermissionsAiHandlerTest,
+       SendsValidRequestAndReceivesValidResponse) {
+  ExpectGetOnDeviceModelEligibilityAndReturn(EligibilityReason::kSuccess);
+  ExpectStartSessionAndReturn(&session_);
 
-  PermissionsAiRequest request;
-  request.set_rendered_text(kRenderedText);
-  request.set_permission_type(GetParam().permission_type);
-
-  optimization_guide::proto::DefaultResponse default_response;
-  optimization_guide::StreamingResponse default_streaming_response{
-      .response = AnyWrapProto(default_response), .is_complete = true};
+  PermissionsAiRequest request = BuildRequest(GetParam().permission_type);
+  ModelExecutionResultStreamingCallback response_callback;
   EXPECT_CALL(session_, ExecuteModel(EqualsProto(request), _))
       .WillOnce(WithArg<1>(
-          Invoke([&](optimization_guide::
-                         OptimizationGuideModelExecutionResultStreamingCallback
-                             callback) {
-            callback.Run(OptimizationGuideModelStreamingExecutionResult(
-                base::ok(default_streaming_response),
-                /*provided_by_on_device=*/true));
+          Invoke([&](ModelExecutionResultStreamingCallback callback) {
+            response_callback = std::move(callback);
           })));
 
   ModelCallbackFuture future;
   permissions_ai_handler_->InquireAiOnDeviceModel(
       kRenderedText, GetParam().request_type, future.GetCallback());
-  EXPECT_EQ(future.Take(), std::nullopt);
-  // Timer should not get started since the callback gets called immediately
-  // when we started the model execution.
+
+  ASSERT_TRUE(mock_execution_timer_->IsRunning());
+
+  ReceiveResponseSuccessfully(response_callback, future);
+
   ASSERT_FALSE(mock_execution_timer_->IsRunning());
-}
-
-TEST_F(PermissionsAiHandlerTest, EmptyModelResponseIsHandled) {
-  ExpectSkipModelDownloadAndInstantlyReturnSession();
-
-  optimization_guide::proto::DefaultResponse default_response;
-  optimization_guide::StreamingResponse default_streaming_response{
-      .response = AnyWrapProto(default_response), .is_complete = true};
-  EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(WithArg<1>(
-          Invoke([&](optimization_guide::
-                         OptimizationGuideModelExecutionResultStreamingCallback
-                             callback) {
-            callback.Run(OptimizationGuideModelStreamingExecutionResult(
-                base::ok(default_streaming_response),
-                /*provided_by_on_device=*/true));
-          })));
-
-  ModelCallbackFuture future;
-  permissions_ai_handler_->InquireAiOnDeviceModel(
-      kRenderedText, RequestType::kNotifications, future.GetCallback());
-  EXPECT_EQ(future.Take(), std::nullopt);
-  EXPECT_TRUE(permissions_ai_handler_->IsOnDeviceModelAvailable());
-  // Timer should not get started since the callback gets called immediately
-  // we started the model execution.
-  ASSERT_FALSE(mock_execution_timer_->IsRunning());
+  ASSERT_EQ(mock_execution_timer_->started_cnt, 1);
 
   histogram_tester().ExpectUniqueSample(kModelAvailableAtInquiryTimeHistogram,
                                         true, 1);
   histogram_tester().ExpectUniqueSample(kSessionCreationSuccessHistogram, true,
                                         1);
-  histogram_tester().ExpectTotalCount(kSessionCreationTimeHistogram, 1);
-  histogram_tester().ExpectTotalCount(kExecutionDurationHistogram, 1);
-  histogram_tester().ExpectUniqueSample(kExecutionSuccessHistogram, true, 1);
-  histogram_tester().ExpectUniqueSample(kResponseParseSuccessHistogram, false,
+  histogram_tester().ExpectUniqueSample(kResponseParseSuccessHistogram, true,
                                         1);
+  histogram_tester().ExpectUniqueSample(kPreviousSessionFinishedInTimeHistogram,
+                                        true, 1);
+  histogram_tester().ExpectUniqueSample(kExecutionSuccessHistogram, true, 1);
   histogram_tester().ExpectUniqueSample(kExecutionTimedOutHistogram, false, 1);
+  histogram_tester().ExpectTotalCount(kExecutionDurationHistogram, 1);
+  CheckHistogramsAreEmptyExcept(
+      histogram_tester(),
+      {kModelAvailableAtInquiryTimeHistogram, kSessionCreationSuccessHistogram,
+       kResponseParseSuccessHistogram, kPreviousSessionFinishedInTimeHistogram,
+       kExecutionSuccessHistogram, kExecutionDurationHistogram,
+       kExecutionTimedOutHistogram});
 }
 
 TEST_F(PermissionsAiHandlerTest, IncompleResponseIsIgnored) {
-  ExpectSkipModelDownloadAndInstantlyReturnSession();
+  ExpectGetOnDeviceModelEligibilityAndReturn(EligibilityReason::kSuccess);
+  ExpectStartSessionAndReturn(&session_);
 
-  optimization_guide::proto::DefaultResponse default_response;
-  optimization_guide::StreamingResponse default_streaming_response{
-      .response = AnyWrapProto(default_response), .is_complete = false};
+  PermissionsAiResponse response;
+  response.set_is_permission_relevant(true);
+  StreamingResponse streaming_response{.response = AnyWrapProto(response),
+                                       .is_complete = false};
 
-  EXPECT_CALL(session_, ExecuteModel(_, _))
+  PermissionsAiRequest request =
+      BuildRequest(PermissionType::PERMISSION_TYPE_NOTIFICATIONS);
+  ModelExecutionResultStreamingCallback response_callback;
+  EXPECT_CALL(session_, ExecuteModel(EqualsProto(request), _))
       .WillOnce(WithArg<1>(
-          Invoke([&](optimization_guide::
-                         OptimizationGuideModelExecutionResultStreamingCallback
-                             callback) {
-            callback.Run(OptimizationGuideModelStreamingExecutionResult(
-                base::ok(default_streaming_response),
-                /*provided_by_on_device=*/true));
+          Invoke([&](ModelExecutionResultStreamingCallback callback) {
+            response_callback = std::move(callback);
           })));
 
   int call_count = 0;
   permissions_ai_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications,
-      BindOnce(&CallCounter, OwnedRef(call_count)));
+      BindOnce(&CallCounter, std::ref(call_count)));
 
+  EXPECT_FALSE(response_callback.is_null());
+  response_callback.Run(OptimizationGuideModelStreamingExecutionResult(
+      base::ok(streaming_response),
+      /*provided_by_on_device=*/true));
+  // For incomplete results we do not want to answer the callback but rather
+  // wait some more.
   EXPECT_EQ(call_count, 0);
+
   // Timer should still run since we still wait for a completed result.
   ASSERT_TRUE(mock_execution_timer_->IsRunning());
 
@@ -431,161 +405,99 @@ TEST_F(PermissionsAiHandlerTest, IncompleResponseIsIgnored) {
                                         true, 1);
   histogram_tester().ExpectUniqueSample(kSessionCreationSuccessHistogram, true,
                                         1);
-  histogram_tester().ExpectTotalCount(kSessionCreationTimeHistogram, 1);
-  histogram_tester().ExpectTotalCount(kExecutionDurationHistogram, 0);
-  histogram_tester().ExpectTotalCount(kExecutionSuccessHistogram, 0);
-  histogram_tester().ExpectTotalCount(kResponseParseSuccessHistogram, 0);
-}
-
-TEST_P(ParametrizedPermissionsAiHandlerTest,
-       ResponseIsParsedCorrectlyAndCallbackCalledWithResult) {
-  ExpectSkipModelDownloadAndInstantlyReturnSession();
-
-  PermissionsAiResponse response;
-  response.set_is_permission_relevant(GetParam().is_permission_relevant);
-  auto streaming_response = optimization_guide::StreamingResponse{
-      .response = AnyWrapProto(response), .is_complete = true};
-
-  EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(WithArg<1>(
-          Invoke([&](optimization_guide::
-                         OptimizationGuideModelExecutionResultStreamingCallback
-                             callback) {
-            callback.Run(OptimizationGuideModelStreamingExecutionResult(
-                base::ok(streaming_response),
-                /*provided_by_on_device=*/true));
-          })));
-
-  ModelCallbackFuture future;
-  permissions_ai_handler_->InquireAiOnDeviceModel(
-      kRenderedText, RequestType::kNotifications, future.GetCallback());
-  EXPECT_THAT(future.Take(), Optional(EqualsProto(response)));
-  // Timer should not run since we immediately returned a result when
-  // ExecuteModel is called.
-  ASSERT_FALSE(mock_execution_timer_->IsRunning());
-
-  histogram_tester().ExpectUniqueSample(kModelAvailableAtInquiryTimeHistogram,
+  histogram_tester().ExpectUniqueSample(kPreviousSessionFinishedInTimeHistogram,
                                         true, 1);
-  histogram_tester().ExpectUniqueSample(kSessionCreationSuccessHistogram, true,
-                                        1);
-  histogram_tester().ExpectTotalCount(kSessionCreationTimeHistogram, 1);
-  histogram_tester().ExpectTotalCount(kExecutionDurationHistogram, 1);
-  histogram_tester().ExpectTotalCount(kExecutionSuccessHistogram, 1);
-  histogram_tester().ExpectTotalCount(kResponseParseSuccessHistogram, 1);
-}
 
-TEST_F(PermissionsAiHandlerTest, FailForNewSessionIfOldIsStillRunning) {
-  ExpectSkipModelDownloadAndInstantlyReturnSession();
+  CheckHistogramsAreEmptyExcept(
+      histogram_tester(),
+      {kModelAvailableAtInquiryTimeHistogram, kSessionCreationSuccessHistogram,
+       kPreviousSessionFinishedInTimeHistogram});
+  ResetHistograms();
 
-  EXPECT_CALL(session_, ExecuteModel(_, _));
-
-  int call_count = 0;
-  permissions_ai_handler_->InquireAiOnDeviceModel(
-      kRenderedText, RequestType::kNotifications,
-      BindOnce(&CallCounter, OwnedRef(call_count)));
-  EXPECT_EQ(call_count, 0);
-
-  ASSERT_TRUE(mock_execution_timer_->IsRunning());
-
-  ModelCallbackFuture future;
-  permissions_ai_handler_->InquireAiOnDeviceModel(
-      kRenderedText, RequestType::kNotifications, future.GetCallback());
-  EXPECT_EQ(future.Take(), std::nullopt);
-
-  // Rejecting an inquiry if the old one is still running should not affect the
-  // execution timer.
-  ASSERT_TRUE(mock_execution_timer_->IsRunning());
+  // We can follow up with a complete response afterwards.
+  streaming_response.is_complete = true;
+  response_callback.Run(OptimizationGuideModelStreamingExecutionResult(
+      base::ok(streaming_response),
+      /*provided_by_on_device=*/true));
+  EXPECT_EQ(call_count, 1);
+  ASSERT_FALSE(mock_execution_timer_->IsRunning());
   ASSERT_EQ(mock_execution_timer_->started_cnt, 1);
 
-  histogram_tester().ExpectUniqueSample(kModelAvailableAtInquiryTimeHistogram,
-                                        true, 1);
-  histogram_tester().ExpectUniqueSample(kSessionCreationSuccessHistogram, true,
+  histogram_tester().ExpectTotalCount(kExecutionDurationHistogram, 1);
+  histogram_tester().ExpectUniqueSample(kExecutionTimedOutHistogram, false, 1);
+  histogram_tester().ExpectUniqueSample(kResponseParseSuccessHistogram, true,
                                         1);
-  histogram_tester().ExpectUniqueSample(kPreviousSessionFinishedInTimeHistogram,
-                                        false, 1);
-  histogram_tester().ExpectTotalCount(kSessionCreationTimeHistogram, 1);
-  histogram_tester().ExpectTotalCount(kExecutionDurationHistogram, 0);
-  histogram_tester().ExpectTotalCount(kExecutionSuccessHistogram, 0);
-  histogram_tester().ExpectTotalCount(kResponseParseSuccessHistogram, 0);
+  histogram_tester().ExpectUniqueSample(kExecutionSuccessHistogram, true, 1);
+  CheckHistogramsAreEmptyExcept(
+      histogram_tester(),
+      {kExecutionDurationHistogram, kExecutionTimedOutHistogram,
+       kResponseParseSuccessHistogram, kExecutionSuccessHistogram});
 }
 
 TEST_F(PermissionsAiHandlerTest,
        OldSessionGetsNotInterruptedByNewInquiryRequest) {
-  ExpectSkipModelDownloadAndInstantlyReturnSession();
+  ExpectGetOnDeviceModelEligibilityAndReturn(EligibilityReason::kSuccess);
+  ExpectStartSessionAndReturn(&session_);
 
-  ModelExecutionResultStreamingCallback internal_callback;
-  EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(WithArg<1>(Invoke(
-          [&](optimization_guide::
-                  OptimizationGuideModelExecutionResultStreamingCallback
-                      callback) { internal_callback = std::move(callback); })));
+  PermissionsAiRequest request =
+      BuildRequest(PermissionType::PERMISSION_TYPE_NOTIFICATIONS);
+  ModelExecutionResultStreamingCallback response_callback;
+  EXPECT_CALL(session_, ExecuteModel(EqualsProto(request), _))
+      .WillOnce(WithArg<1>(
+          Invoke([&](ModelExecutionResultStreamingCallback callback) {
+            response_callback = std::move(callback);
+          })));
 
   ModelCallbackFuture future_first_request;
   permissions_ai_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications,
       future_first_request.GetCallback());
+  ASSERT_TRUE(mock_execution_timer_->IsRunning());
 
-  // First model inquiry still running, so the second request should return
-  // immediately with no result.
+  // We already test the histograms up to this point above.
+  ResetHistograms();
+  ExpectGetOnDeviceModelEligibilityAndReturn(EligibilityReason::kSuccess);
+
   ModelCallbackFuture future_second_request;
   permissions_ai_handler_->InquireAiOnDeviceModel(
       kRenderedText, RequestType::kNotifications,
       future_second_request.GetCallback());
   EXPECT_EQ(future_second_request.Take(), std::nullopt);
 
+  histogram_tester().ExpectUniqueSample(kModelAvailableAtInquiryTimeHistogram,
+                                        true, 1);
+  histogram_tester().ExpectUniqueSample(kPreviousSessionFinishedInTimeHistogram,
+                                        false, 1);
+  CheckHistogramsAreEmptyExcept(histogram_tester(),
+                                {kModelAvailableAtInquiryTimeHistogram,
+                                 kPreviousSessionFinishedInTimeHistogram});
   ResetHistograms();
-  PermissionsAiResponse response;
-  response.set_is_permission_relevant(true);
-  auto streaming_response = optimization_guide::StreamingResponse{
-      .response = AnyWrapProto(response), .is_complete = true};
-  internal_callback.Run(OptimizationGuideModelStreamingExecutionResult(
-      base::ok(streaming_response),
-      /*provided_by_on_device=*/true));
-  EXPECT_THAT(future_first_request.Take(), Optional(EqualsProto(response)));
+
+  // Rejecting an inquiry if the old one is still running should not
+  // affect the execution timer.
+  ASSERT_TRUE(mock_execution_timer_->IsRunning());
+  ASSERT_EQ(mock_execution_timer_->started_cnt, 1);
+
+  // We can finish the first inquiry normally.
+  ReceiveResponseSuccessfully(response_callback, future_first_request);
 
   histogram_tester().ExpectTotalCount(kExecutionDurationHistogram, 1);
+  histogram_tester().ExpectUniqueSample(kExecutionTimedOutHistogram, false, 1);
   histogram_tester().ExpectUniqueSample(kExecutionSuccessHistogram, true, 1);
   histogram_tester().ExpectUniqueSample(kResponseParseSuccessHistogram, true,
                                         1);
-}
-
-TEST_F(PermissionsAiHandlerTest, ModelHandlerUnsubscribesSuccessfully) {
-  // Prevent regressions to behavior as the one fixed in crbug.com/399860232.
-  ExpectStartSessionAndReturn(nullptr);
-
-  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
-      nullptr;
-  base::RunLoop run_loop_for_add_observer;
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              AddOnDeviceModelAvailabilityChangeObserver(_, _))
-      .WillOnce(Invoke(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
-            availability_observer = observer;
-            run_loop_for_add_observer.Quit();
-          }));
-
-  ModelCallbackFuture future;
-  permissions_ai_handler_->InquireAiOnDeviceModel(
-      kRenderedText, RequestType::kNotifications, future.GetCallback());
-  EXPECT_EQ(future.Take(), std::nullopt);
-
-  run_loop_for_add_observer.Run();
-  ASSERT_TRUE(availability_observer);
-
-  availability_observer->OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey::kPermissionsAi,
-      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
-
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              RemoveOnDeviceModelAvailabilityChangeObserver(_, _));
-
-  // Destructor shall trigger unsubscription.
-  DeletePermissionsAiHandler();
+  CheckHistogramsAreEmptyExcept(histogram_tester(),
+                                {
+                                    kExecutionDurationHistogram,
+                                    kExecutionTimedOutHistogram,
+                                    kExecutionSuccessHistogram,
+                                    kResponseParseSuccessHistogram,
+                                });
 }
 
 TEST_F(PermissionsAiHandlerTest, OldSessionGetsCancelledByTimer) {
-  ExpectSkipModelDownloadAndInstantlyReturnSession();
+  ExpectGetOnDeviceModelEligibilityAndReturn(EligibilityReason::kSuccess);
+  ExpectStartSessionAndReturn(&session_);
   EXPECT_CALL(session_, ExecuteModel(_, _));
 
   ModelCallbackFuture future_first_request;
@@ -593,6 +505,7 @@ TEST_F(PermissionsAiHandlerTest, OldSessionGetsCancelledByTimer) {
       kRenderedText, RequestType::kNotifications,
       future_first_request.GetCallback());
   ASSERT_TRUE(mock_execution_timer_->IsRunning());
+  ResetHistograms();
 
   // Firing the timer should result in the current model execution being
   // cancelled.
@@ -601,18 +514,20 @@ TEST_F(PermissionsAiHandlerTest, OldSessionGetsCancelledByTimer) {
   ASSERT_FALSE(mock_execution_timer_->IsRunning());
 
   histogram_tester().ExpectUniqueSample(kExecutionTimedOutHistogram, true, 1);
-  histogram_tester().ExpectTotalCount(kExecutionDurationHistogram, 0);
-  histogram_tester().ExpectTotalCount(kExecutionSuccessHistogram, 0);
-  histogram_tester().ExpectTotalCount(kResponseParseSuccessHistogram, 0);
-
+  CheckHistogramsAreEmptyExcept(histogram_tester(),
+                                {
+                                    kExecutionTimedOutHistogram,
+                                });
   ResetHistograms();
+
+  ExpectGetOnDeviceModelEligibilityAndReturn(EligibilityReason::kSuccess);
   ExpectStartSessionAndReturn(&session_);
-  ModelExecutionResultStreamingCallback internal_callback;
+  ModelExecutionResultStreamingCallback response_callback;
   EXPECT_CALL(session_, ExecuteModel(_, _))
       .WillOnce(WithArg<1>(Invoke(
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
-                      callback) { internal_callback = std::move(callback); })));
+                      callback) { response_callback = std::move(callback); })));
 
   // Second request will not get rejected and starts a new timer interval.
   ModelCallbackFuture future_second_request;
@@ -621,16 +536,8 @@ TEST_F(PermissionsAiHandlerTest, OldSessionGetsCancelledByTimer) {
       future_second_request.GetCallback());
   ASSERT_TRUE(mock_execution_timer_->IsRunning());
 
-  PermissionsAiResponse response;
-  response.set_is_permission_relevant(true);
-  auto streaming_response = optimization_guide::StreamingResponse{
-      .response = AnyWrapProto(response), .is_complete = true};
-
-  // Finishing the request also cancels the timer.
-  internal_callback.Run(OptimizationGuideModelStreamingExecutionResult(
-      base::ok(streaming_response),
-      /*provided_by_on_device=*/true));
-  EXPECT_THAT(future_second_request.Take(), Optional(EqualsProto(response)));
+  ResetHistograms();
+  ReceiveResponseSuccessfully(response_callback, future_second_request);
   ASSERT_FALSE(mock_execution_timer_->IsRunning());
 
   histogram_tester().ExpectUniqueSample(kExecutionTimedOutHistogram, false, 1);
@@ -638,17 +545,22 @@ TEST_F(PermissionsAiHandlerTest, OldSessionGetsCancelledByTimer) {
   histogram_tester().ExpectUniqueSample(kExecutionSuccessHistogram, true, 1);
   histogram_tester().ExpectUniqueSample(kResponseParseSuccessHistogram, true,
                                         1);
+  CheckHistogramsAreEmptyExcept(
+      histogram_tester(),
+      {kExecutionTimedOutHistogram, kExecutionDurationHistogram,
+       kExecutionSuccessHistogram, kResponseParseSuccessHistogram});
 }
 
 TEST_F(PermissionsAiHandlerTest, IncompleteResultsDoNotCancelTimer) {
-  ExpectSkipModelDownloadAndInstantlyReturnSession();
+  ExpectGetOnDeviceModelEligibilityAndReturn(EligibilityReason::kSuccess);
+  ExpectStartSessionAndReturn(&session_);
 
-  ModelExecutionResultStreamingCallback internal_callback;
+  ModelExecutionResultStreamingCallback response_callback;
   EXPECT_CALL(session_, ExecuteModel(_, _))
       .WillOnce(WithArg<1>(Invoke(
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
-                      callback) { internal_callback = std::move(callback); })));
+                      callback) { response_callback = std::move(callback); })));
 
   // Timer gets started for inquiry request.
   ModelCallbackFuture future;
@@ -658,12 +570,12 @@ TEST_F(PermissionsAiHandlerTest, IncompleteResultsDoNotCancelTimer) {
 
   PermissionsAiResponse response;
   response.set_is_permission_relevant(true);
-  auto streaming_response = optimization_guide::StreamingResponse{
+  auto streaming_response = StreamingResponse{
       .response = AnyWrapProto(response), .is_complete = false};
 
   // Returning an incomplete response should not affect the timer nor the
   // timeout histogram.
-  internal_callback.Run(OptimizationGuideModelStreamingExecutionResult(
+  response_callback.Run(OptimizationGuideModelStreamingExecutionResult(
       base::ok(streaming_response),
       /*provided_by_on_device=*/true));
   ASSERT_TRUE(mock_execution_timer_->IsRunning());
@@ -672,7 +584,7 @@ TEST_F(PermissionsAiHandlerTest, IncompleteResultsDoNotCancelTimer) {
   // A completed streaming response will get accepted and finally cancels the
   // timer.
   streaming_response.is_complete = true;
-  internal_callback.Run(OptimizationGuideModelStreamingExecutionResult(
+  response_callback.Run(OptimizationGuideModelStreamingExecutionResult(
       base::ok(streaming_response),
       /*provided_by_on_device=*/true));
   EXPECT_THAT(future.Take(), Optional(EqualsProto(response)));

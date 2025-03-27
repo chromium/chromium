@@ -15,7 +15,8 @@
 // -----------------------------------------------------------------------------
 // File: log/internal/strip.h
 // -----------------------------------------------------------------------------
-//
+
+// SKIP_ABSL_INLINE_NAMESPACE_CHECK
 
 #ifndef ABSL_LOG_INTERNAL_STRIP_H_
 #define ABSL_LOG_INTERNAL_STRIP_H_
@@ -93,5 +94,7 @@
 #define ABSL_LOGGING_INTERNAL_DLOG_ERROR ABSL_LOGGING_INTERNAL_LOG_ERROR
 #define ABSL_LOGGING_INTERNAL_DLOG_DFATAL ABSL_LOGGING_INTERNAL_LOG_DFATAL
 #define ABSL_LOGGING_INTERNAL_DLOG_LEVEL ABSL_LOGGING_INTERNAL_LOG_LEVEL
+
+#define ABSL_LOGGING_INTERNAL_LOG_DO_NOT_SUBMIT ABSL_LOGGING_INTERNAL_LOG_ERROR
 
 #endif  // ABSL_LOG_INTERNAL_STRIP_H_

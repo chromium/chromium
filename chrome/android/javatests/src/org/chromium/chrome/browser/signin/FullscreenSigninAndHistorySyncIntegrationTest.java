@@ -26,8 +26,12 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -50,6 +54,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -615,6 +620,16 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
                 .check(matches(isDisplayed()));
         onView(withId(R.id.fre_logo)).check(matches(isDisplayed()));
 
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ImageView logoView =
+                            mActivityTestRule.getActivity().findViewById(R.id.fre_logo);
+
+                    Drawable expectedIcon =
+                            mActivityTestRule.getActivity().getDrawable(R.drawable.ic_globe_24dp);
+                    return getBitmap(expectedIcon).sameAs(getBitmap(logoView.getDrawable()));
+                });
+
         onView(withId(R.id.signin_fre_continue_button)).perform(click());
 
         // Verify that the history opt-in dialog is shown with custom strings.
@@ -674,5 +689,17 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
             ViewUtils.waitForVisibleView(allOf(withId(R.id.fre_logo), isDisplayed()));
         }
+    }
+
+    private static Bitmap getBitmap(Drawable drawable) {
+        Bitmap bitmap =
+                Bitmap.createBitmap(
+                        drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight(),
+                        Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
 }

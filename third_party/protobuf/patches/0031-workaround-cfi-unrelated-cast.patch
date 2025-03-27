@@ -46,3 +46,23 @@ index cae9ebe01ec2c..b84b55e4d8762 100644
  // ThreadSafeArenaz is turned off completely in opensource builds.
  
  // Windows declares several inconvenient macro names.  We #undef them and then
+diff --git a/third_party/protobuf/src/google/protobuf/map.h b/third_party/protobuf/src/google/protobuf/map.h
+index 769435b9996b1..2d22dd031c53e 100644
+--- a/third_party/protobuf/src/google/protobuf/map.h
++++ b/third_party/protobuf/src/google/protobuf/map.h
+@@ -320,6 +320,7 @@ class PROTOBUF_EXPORT UntypedMapBase {
+   UntypedMapBase& operator=(const UntypedMapBase&) = delete;
+ 
+   template <typename T>
++  PROTOBUF_NO_SANITIZE("cfi-unrelated-cast", "vptr")
+   T* GetKey(NodeBase* node) const {
+     // Debug check that `T` matches what we expect from the type info.
+     ABSL_DCHECK_EQ(static_cast<int>(StaticTypeKind<T>()),
+@@ -332,6 +333,7 @@ class PROTOBUF_EXPORT UntypedMapBase {
+   }
+ 
+   template <typename T>
++  PROTOBUF_NO_SANITIZE("cfi-unrelated-cast", "vptr")
+   T* GetValue(NodeBase* node) const {
+     // Debug check that `T` matches what we expect from the type info.
+     ABSL_DCHECK_EQ(static_cast<int>(StaticTypeKind<T>()),

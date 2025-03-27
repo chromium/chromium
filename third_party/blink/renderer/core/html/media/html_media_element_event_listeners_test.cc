@@ -69,7 +69,7 @@ class FakeWebMediaPlayer final : public EmptyWebMediaPlayer {
     playing_ = true;
     ScheduleTimeIncrement();
   }
-  void Pause() override { playing_ = false; }
+  void Pause(PauseReason pause_reason) override { playing_ = false; }
   bool Paused() const override { return !playing_; }
   bool IsEnded() const override { return current_time_ == duration_; }
 

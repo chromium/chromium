@@ -109,7 +109,8 @@ SignedExchangeSignatureHeaderField::ParseSignature(
       return std::nullopt;
     }
     net::SHA256HashValue cert_sha256;
-    memcpy(&cert_sha256.data, cert_sha256_string.data(), crypto::kSHA256Length);
+    memcpy(cert_sha256.data(), cert_sha256_string.data(),
+           crypto::kSHA256Length);
     sig.cert_sha256 = std::move(cert_sha256);
 
     // TODO(crbug.com/40565993): Support ed25519key.

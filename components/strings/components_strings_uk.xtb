@@ -505,6 +505,7 @@
 <translation id="1846432862466000825">Пластик (архівний)</translation>
 <translation id="1848640291751752317">завантажені файли</translation>
 <translation id="1848982255014129637">Фотопапір (високоглянцевий)</translation>
+<translation id="1849438148665368129">Сума покупки має бути меншою ніж <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="1853392626017747777">Вікно реєстрації віртуальної картки закрито</translation>
 <translation id="1854180393107901205">Зупинити трансляцію</translation>
 <translation id="1855370856221982654">Бокс</translation>
@@ -695,7 +696,6 @@
 <translation id="2187317261103489799">Визначати (за умовчанням)</translation>
 <translation id="2188375229972301266">Пробити кілька отворів унизу</translation>
 <translation id="2194856509914051091">Що варто врахувати</translation>
-<translation id="2198071643181968308">Докладніше про <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Кнопка "Не подобається": натисніть клавішу Enter, щоб відкрити форму й залишити докладний відгук про те, чому вам не подобається ця пропозиція</translation>
 <translation id="2202627062836089804">зворотній стороні картки</translation>
 <translation id="2204482073374652408">Оновлення завершено.</translation>
@@ -1808,6 +1808,7 @@
 <translation id="4150099059797363385">Конверт Chinese № 4</translation>
 <translation id="4151403195736952345">Використовувати загальне значення за умовчанням (визначати)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Сторінка 1}one{Сторінка {COUNT}}few{Сторінка {COUNT}}many{Сторінка {COUNT}}other{Сторінка {COUNT}}}</translation>
+<translation id="4152670763139331043">{NUM_TABS,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
 <translation id="4154277373259957087">Тепер Chrome підтверджуватиме вашу особу, перш ніж заповнювати способи оплати. Ви будь-коли можете змінити це налаштування на сторінці <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Додати вкладку в порівняльну таблицю</translation>
 <translation id="4159784952369912983">Пурпуровий</translation>
@@ -2166,6 +2167,7 @@
 <translation id="4796594887379589189">Ідентифікатор робочого облікового запису</translation>
 <translation id="4798269756263412078">Отримуйте сповіщення, коли на якомусь сайті знизиться ціна. Сповіщення надсилатимуться на вашу електронну пошту.</translation>
 <translation id="4800132727771399293">Перевірте дату закінчення терміну дії та код CVC та повторіть спробу</translation>
+<translation id="4800546479758254481">Надано доступ до доповненої реальності</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Вказівки адміністратора вашого пристрою:</translation>
 <translation id="4811450222531576619">Докладніше про джерело й тему</translation>
@@ -2529,7 +2531,6 @@
             <ph name="LIST_ITEM" />інформацію, введену у формах.
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Зворотний порядок лицевою стороною вгору</translation>
-<translation id="5445340838622821110">Якщо ви розраховуєтеся частинами, заповнюється одноразовий номер віртуальної картки. Цей номер використовується лише для цієї покупки. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Дозволити сайту <ph name="SITE" /> використовувати збережену про вас інформацію</translation>
 <translation id="5451331376824595378">Коли Chrome повідомляє про події системи безпеки, ваш адміністратор отримує відповідні дані про них, зокрема URL-адреси відвіданих у Chrome сторінок, URL-адреси сторінок, з яких ви скопіювали дані, назви або метадані файлів, ІР-адреси, інформацію про збої в роботі вебпереглядача чи вкладок, а також ім’я користувача, під яким ви входите у вебдодатки, систему пристрою або обліковий запис у Chrome.</translation>
 <translation id="5452270690849572955">Сторінку хосту <ph name="HOST_NAME" /> не знайдено</translation>
@@ -3026,6 +3027,7 @@
 <translation id="6327065120806001832">доступ до локальної мережі</translation>
 <translation id="6328639280570009161">Спробуйте вимкнути прогнозування мережі.</translation>
 <translation id="6335029926534404762">Спортивне взуття</translation>
+<translation id="6336948221660696475">Заборонено використовувати віртуальну реальність</translation>
 <translation id="6337133576188860026">Звільняє менше <ph name="SIZE" />. Деякі сайти можуть завантажуватися повільніше під час наступного відвідування.</translation>
 <translation id="6337534724793800597">Фільтрувати правила за назвою</translation>
 <translation id="633770708279464947">Значення <ph name="SECURE_DNS_SALT" /> недійсне й не використовуватиметься.</translation>
@@ -3069,6 +3071,7 @@
 <translation id="6391700400718590966">Закрито нижній екран невідповідності облікових даних для безпечних платежів</translation>
 <translation id="6392799395081100092">Папір (веленовий)</translation>
 <translation id="6393156038355142111">Запропонувати надійний пароль</translation>
+<translation id="6393310910507376797">Не підтримується продавцем</translation>
 <translation id="6393956493820063117">Адміністратор заблокував можливість вставляти сюди контент зі сторінки <ph name="ORIGIN_NAME" /></translation>
 <translation id="6394852772105848029">Сайт хоче відкрити додаток <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">Скутери й мопеди</translation>
@@ -3222,6 +3225,7 @@
 <translation id="6668389483194953109">Знайдено назву розміру паперу "custom", але властивість "custom_size" порожня або недійсна.</translation>
 <translation id="6671169470640320959">Автокредитування</translation>
 <translation id="6671697161687535275">Видалити пропозицію автозаповнення форм із Chromium?</translation>
+<translation id="6675846980676550611">Заборонено використовувати доповнену реальність</translation>
 <translation id="6677351035258626477">Фастфуд</translation>
 <translation id="6679354743514146922">Вебпереглядач Chrome намагається автоматично заповнити пароль на сайті <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">Код CVC збережено</translation>
@@ -3709,6 +3713,7 @@
 <translation id="7512685745044087310">Для цього правила не можна вибрати значення True та встановити його як обов'язкове, тому його змінено на рекомендацію.</translation>
 <translation id="7514365320538308">Завантажити</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">Надано разовий доступ до віртуальної реальності</translation>
 <translation id="7517201160922869406">Позашляховики</translation>
 <translation id="7517414872996418597">Конверт C10</translation>
 <translation id="7518003948725431193">Не знайдено веб-сторінок для веб-адреси <ph name="URL" /></translation>
@@ -3993,7 +3998,6 @@
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />Спробуйте видалити файли cookie<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">10 x 11 дюйм.</translation>
 <translation id="8012647001091218357">Не вдалося зв’язатися з вашими батьками. Повторіть спробу.</translation>
-<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">Туристичні агентства й послуги</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб зробити Chrome веб-переглядачем системи за умовчанням</translation>
 <translation id="8027077570865220386">Лоток 15</translation>
@@ -4607,6 +4611,7 @@
 <translation id="9139318394846604261">Покупки</translation>
 <translation id="9140198744651252040">Використовувати відбиток пальця для автозаповнення паролів у вебпереглядачі Chrome</translation>
 <translation id="9141013498910525015">Керувати адресами</translation>
+<translation id="9141672681283222114">Надано разовий доступ до доповненої реальності</translation>
 <translation id="9143898823728499852">Ви можете автоматично заповнювати дані цієї картки, оскільки ваш обліковий запис <ph name="CARD_ISSUER_NAME" /> зв’язано з Google Pay</translation>
 <translation id="9144951720726881238">Діє до:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Увійдіть<ph name="END_LINK" /> 
@@ -4664,6 +4669,7 @@
 <translation id="922152298093051471">Налаштувати Chrome</translation>
 <translation id="9222403027701923763">Початкова й середня освіта (K-12)</translation>
 <translation id="93020190163435405">Стажування</translation>
+<translation id="931598121743515856">Сума покупки має бути більшою ніж <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">Дозволити додатку <ph name="APP_NAME" /> налаштовувати мережі Wi-Fi?</translation>
 <translation id="936602727769022409">Ви можете втратити доступ до облікового запису Google. Chromium радить змінити пароль. Вам буде запропоновано ввійти в обліковий запис.</translation>
@@ -4679,6 +4685,7 @@
 <translation id="949314938206378263">Запит на дозвіл для перегляду сайту надіслано. Твої батько чи мати можуть відповісти на нього у Family Link.</translation>
 <translation id="950736567201356821">Пробити три отвори вгорі</translation>
 <translation id="950926967802086924">Ключ доступу • Google Менеджер паролів</translation>
+<translation id="955429569736351433">Надано доступ до віртуальної реальності</translation>
 <translation id="95721182352849470">Жовтий 2</translation>
 <translation id="961663415146723894">Зшити внизу</translation>
 <translation id="961856697154696964">Видалити дані вебперегляду</translation>

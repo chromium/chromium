@@ -198,6 +198,9 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       "enableOverlayContextualSearchbox",
       lens::features::IsLensOverlayContextualSearchboxEnabled());
   html_source->AddBoolean(
+      "enableGhostLoader",
+      lens::features::EnableContextualSearchboxGhostLoader());
+  html_source->AddBoolean(
       "showContextualSearchboxLoadingState",
       lens::features::ShowContextualSearchboxGhostLoaderLoadingState());
   html_source->AddBoolean(

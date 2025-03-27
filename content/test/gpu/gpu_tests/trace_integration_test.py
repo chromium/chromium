@@ -662,7 +662,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @staticmethod
   def _DisabledByDefaultTraceCategory(category: str) -> str:
-    return 'disabled-by-default-%s' % category
+    return f'disabled-by-default-{category}'
 
   def _MaybeSavePerfettoTraceAsArtifact(self, trace: bytes) -> None:
     if self.artifacts:
@@ -699,7 +699,7 @@ WHERE
 """
     for row in trace_processor.query(query):
       if row.cnt <= 0:
-        self.fail('Trace markers for GPU category %s were not found' % category)
+        self.fail(f'Trace markers for GPU category {category} were not found')
 
   def _GetVideoExpectations(self, other_args: dict) -> '_VideoExpectations':
     """Helper for creating expectations for CheckVideoPath and CheckOverlayMode.
@@ -878,15 +878,15 @@ WHERE
         continue
       if (overlay_support.PresentationModeEventToStr(mode)
           != expected.presentation_mode):
-        self.fail('SwapChain presentation mode mismatch, expected %s got %s' %
-                  (expected.presentation_mode,
-                   TraceIntegrationTest._SwapChainPresentationModeListToStr(
-                       presentation_mode_history)))
+        history_str = TraceIntegrationTest._SwapChainPresentationModeListToStr(
+            presentation_mode_history)
+        self.fail(f'SwapChain presentation mode mismatch, expected '
+                  f'{expected.presentation_mode} got {history_str}')
       valid_entry_found = True
     if not valid_entry_found:
-      self.fail(
-          'No valid frame statistics being collected: %s' % TraceIntegrationTest
-          ._SwapChainPresentationModeListToStr(presentation_mode_history))
+      history_str = TraceIntegrationTest._SwapChainPresentationModeListToStr(
+          presentation_mode_history)
+      self.fail(f'No valid frame statistics being collected: {history_str}')
 
   def _EvaluateSuccess_CheckSwapChainPath(self, category: str,
                                           trace_processor: tp.TraceProcessor,
@@ -923,13 +923,11 @@ WHERE
       break
 
     if expect_overlay and not found_overlay:
-      self.fail(
-          'Overlay expected but not found: matching %s events were not found' %
-          _BEGIN_OVERLAY_ACCESS_EVENT_NAME)
+      self.fail(f'Overlay expected but not found: matching '
+                f'{_BEGIN_OVERLAY_ACCESS_EVENT_NAME} events were not found')
     elif expect_no_overlay and found_overlay:
-      self.fail(
-          'Overlay not expected but found: matching %s events were found' %
-          _BEGIN_OVERLAY_ACCESS_EVENT_NAME)
+      self.fail(f'Overlay not expected but found: matching '
+                f'{_BEGIN_OVERLAY_ACCESS_EVENT_NAME} events were found')
 
   def _EvaluateSuccess_CheckSwapChainHasAlpha(
       self, category: str, trace_processor: tp.TraceProcessor,

@@ -10,9 +10,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_create_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai_language_model_factory.h"
-#include "third_party/blink/renderer/modules/ai/ai_rewriter_factory.h"
-#include "third_party/blink/renderer/modules/ai/ai_summarizer_factory.h"
-#include "third_party/blink/renderer/modules/ai/ai_writer_factory.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -27,11 +24,7 @@ void AI::Trace(Visitor* visitor) const {
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(ai_remote_);
   visitor->Trace(ai_language_model_factory_);
-  visitor->Trace(ai_summarizer_factory_);
-  visitor->Trace(ai_writer_factory_);
-  visitor->Trace(ai_rewriter_factory_);
   visitor->Trace(ai_language_detector_factory_);
-  visitor->Trace(ai_translator_factory_);
 }
 
 HeapMojoRemote<mojom::blink::AIManager>& AI::GetAIRemote() {
@@ -56,43 +49,12 @@ AILanguageModelFactory* AI::languageModel() {
   return ai_language_model_factory_.Get();
 }
 
-AISummarizerFactory* AI::summarizer() {
-  if (!ai_summarizer_factory_) {
-    ai_summarizer_factory_ = MakeGarbageCollected<AISummarizerFactory>(
-        this, GetExecutionContext(), task_runner_);
-  }
-  return ai_summarizer_factory_.Get();
-}
-
-AIWriterFactory* AI::writer() {
-  if (!ai_writer_factory_) {
-    ai_writer_factory_ = MakeGarbageCollected<AIWriterFactory>(this);
-  }
-  return ai_writer_factory_.Get();
-}
-
-AIRewriterFactory* AI::rewriter() {
-  if (!ai_rewriter_factory_) {
-    ai_rewriter_factory_ = MakeGarbageCollected<AIRewriterFactory>(this);
-  }
-  return ai_rewriter_factory_.Get();
-}
-
 AILanguageDetectorFactory* AI::languageDetector() {
   if (!ai_language_detector_factory_) {
     ai_language_detector_factory_ =
-        MakeGarbageCollected<AILanguageDetectorFactory>(GetExecutionContext(),
-                                                        task_runner_);
+        MakeGarbageCollected<AILanguageDetectorFactory>(GetExecutionContext());
   }
   return ai_language_detector_factory_.Get();
-}
-
-AITranslatorFactory* AI::translator() {
-  if (!ai_translator_factory_) {
-    ai_translator_factory_ =
-        MakeGarbageCollected<AITranslatorFactory>(GetExecutionContext());
-  }
-  return ai_translator_factory_.Get();
 }
 
 }  // namespace blink

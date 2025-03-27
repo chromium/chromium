@@ -11,13 +11,13 @@ import android.app.Activity;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareUtils;
@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -44,13 +45,14 @@ import java.util.List;
 public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinator<@TabId Integer> {
     private static final String MENU_USER_ACTION_PREFIX = "TabSwitcher.ContextMenu";
     private final Activity mActivity;
-    private final Supplier<TabModel> mTabModelSupplier;
+    private final TabGroupModelFilter mTabGroupModelFilter;
 
     TabSwitcherContextMenuCoordinator(
             Activity activity,
             TabBookmarker tabBookmarker,
-            Supplier<TabModel> tabModelSupplier,
+            TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
+            TabGroupCreationDialogManager tabGroupCreationDialogManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
             CollaborationService collaborationService,
@@ -59,24 +61,26 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
                 R.layout.tab_switcher_action_menu_layout,
                 getMenuItemClickedCallback(
                         tabBookmarker,
-                        tabModelSupplier,
+                        tabGroupModelFilter,
                         tabGroupListBottomSheetCoordinator,
+                        tabGroupCreationDialogManager,
                         shareDelegateSupplier,
                         tabListEditorManager),
-                tabModelSupplier,
+                tabGroupModelFilter::getTabModel,
                 tabGroupSyncService,
                 collaborationService,
                 activity);
         mActivity = activity;
-        mTabModelSupplier = tabModelSupplier;
+        mTabGroupModelFilter = tabGroupModelFilter;
     }
 
     /**
      * @param activity The activity where this context menu will be shown.
      * @param tabBookmarker Used to bookmark tabs.
-     * @param tabModelSupplier Supplies the {@link TabModel}.
+     * @param tabGroupModelFilter Supplies the {@link TabModel}.
      * @param tabGroupListBottomSheetCoordinator The {@link TabGroupListBottomSheetCoordinator} that
      *     will be used to show a bottom sheet when the user selects the "Add to group" option.
+     * @param tabGroupCreationDialogManager The manager for the dialog showed on tab group creation.
      * @param shareDelegateSupplier Supplies the {@link ShareDelegate} that will be used to share
      *     the tab's URL when the user selects the "Share" option.
      * @param tabListEditorManager Manages the Tab List Editor.
@@ -84,11 +88,12 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
     public static TabSwitcherContextMenuCoordinator createContextMenuCoordinator(
             Activity activity,
             TabBookmarker tabBookmarker,
-            Supplier<TabModel> tabModelSupplier,
+            TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
+            TabGroupCreationDialogManager tabGroupCreationDialogManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             TabListEditorManager tabListEditorManager) {
-        Profile profile = tabModelSupplier.get().getProfile();
+        Profile profile = tabGroupModelFilter.getTabModel().getProfile();
         @Nullable TabGroupSyncService tabGroupSyncService =
                 profile.isOffTheRecord() ? null : TabGroupSyncServiceFactory.getForProfile(profile);
         CollaborationService collaborationService =
@@ -97,8 +102,9 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
         return new TabSwitcherContextMenuCoordinator(
                 activity,
                 tabBookmarker,
-                tabModelSupplier,
+                tabGroupModelFilter,
                 tabGroupListBottomSheetCoordinator,
+                tabGroupCreationDialogManager,
                 shareDelegateSupplier,
                 tabGroupSyncService,
                 collaborationService,
@@ -127,13 +133,15 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
     @VisibleForTesting
     static OnItemClickedCallback<Integer> getMenuItemClickedCallback(
             TabBookmarker tabBookmarker,
-            Supplier<TabModel> tabModelSupplier,
+            TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator coordinator,
+            TabGroupCreationDialogManager dialogManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             TabListEditorManager tabListEditorManager) {
         return (menuId, tabId, collaborationId) -> {
             if (tabId == Tab.INVALID_TAB_ID) return;
-            @Nullable Tab tab = getTabById(tabModelSupplier, tabId);
+            TabModel tabModel = tabGroupModelFilter.getTabModel();
+            @Nullable Tab tab = getTabById(() -> tabModel, tabId);
             if (tab == null) return;
 
             if (menuId == R.id.share_tab) {
@@ -141,9 +149,14 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
                         .get()
                         .share(tab, /* shareDirectly= */ false, TAB_STRIP_CONTEXT_MENU);
                 recordUserActionWithPrefix("ShareTab");
+            } else if (menuId == R.id.add_to_new_tab_group) {
+                tabGroupModelFilter.createSingleTabGroup(tab);
+                Token groupId = tab.getTabGroupId();
+                dialogManager.showDialog(groupId, tabGroupModelFilter);
+                recordUserActionWithPrefix("AddToNewGroup");
             } else if (menuId == R.id.add_to_tab_group) {
                 coordinator.showBottomSheet(List.of(tab));
-                recordUserActionWithPrefix("AddToTabGroup");
+                recordUserActionWithPrefix("AddToGroup");
             } else if (menuId == R.id.add_to_bookmarks) {
                 tabBookmarker.addOrEditBookmark(tab);
                 recordUserActionWithPrefix("Bookmark");
@@ -151,9 +164,7 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
                 tabListEditorManager.showTabListEditor();
                 recordUserActionWithPrefix("SelectTabs");
             } else if (menuId == R.id.close_tab) {
-                tabModelSupplier
-                        .get()
-                        .getTabRemover()
+                tabModel.getTabRemover()
                         .closeTabs(TabClosureParams.closeTab(tab).build(), /* allowDialog= */ true);
                 recordUserActionWithPrefix("CloseTab");
             }
@@ -162,10 +173,16 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
 
     @Override
     protected void buildMenuActionItems(ModelList itemList, Integer id) {
-        @Nullable Tab tab = getTabById(mTabModelSupplier, id);
+        @Nullable Tab tab = getTabById(mTabGroupModelFilter::getTabModel, id);
         if (tab == null) return;
 
-        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
+        if (mTabGroupModelFilter.getTabGroupCount() == 0) {
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItem(
+                            R.string.menu_add_to_new_group,
+                            R.id.add_to_new_tab_group,
+                            R.drawable.ic_widgets));
+        } else {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItem(
                             R.string.add_tab_to_group,
@@ -202,7 +219,7 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
     @Nullable
     @Override
     protected String getCollaborationIdOrNull(Integer id) {
-        @Nullable Tab tab = getTabById(mTabModelSupplier, id);
+        @Nullable Tab tab = getTabById(mTabGroupModelFilter::getTabModel, id);
         if (tab == null) return null;
         return TabShareUtils.getCollaborationIdOrNull(tab.getTabGroupId(), mTabGroupSyncService);
     }

@@ -8,6 +8,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/timer/timer.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -21,6 +22,14 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
   ~ReaderModeTabHelper() override;
 
+  // Processes the result of the Reader Mode heuristic trigger that was run on
+  // the `url` content.
+  void HandleReaderModeHeuristicResult(const GURL& url,
+                                       ReaderModeHeuristicResult result);
+  // Records the Reader Mode heuristic latency from when the JavaScript is
+  // executed to when all scores are computed for the heuristic result.
+  void RecordReaderModeHeuristicLatency(const base::TimeDelta& latency);
+
   // web::WebStateObserver overrides:
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
@@ -32,12 +41,13 @@ class ReaderModeTabHelper : public web::WebStateObserver,
  private:
   friend class web::WebStateUserData<ReaderModeTabHelper>;
 
-  // Determine if the web state is eligible for triggering the reader mode
-  // heuristic.
-  bool CanTriggerReaderModeHeuristic();
-
   // Trigger the heuristic to determine reader mode eligibility.
   void TriggerReaderModeHeuristic();
+
+  // Callback for handling completion of the page distillation.
+  void PageDistillationCompleted(ReaderModeHeuristicResult heuristic_result,
+                                 base::TimeTicks start_time,
+                                 const base::Value* value);
 
   raw_ptr<web::WebState> web_state_ = nullptr;
   base::OneShotTimer trigger_reader_mode_timer_;

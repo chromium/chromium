@@ -59,10 +59,6 @@ public class AwScrollOffsetManagerTest {
             return mNativeScrollY;
         }
 
-        public int getInvalidateCount() {
-            return mInvalidateCount;
-        }
-
         @Override
         public void overScrollContainerViewBy(
                 int deltaX,

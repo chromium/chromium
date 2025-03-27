@@ -59,12 +59,6 @@ struct RepeatedFieldBase;
 class ExtensionSet;
 }  // namespace internal
 
-namespace arena_metrics {
-
-void EnableArenaMetrics(ArenaOptions* options);
-
-}  // namespace arena_metrics
-
 namespace TestUtil {
 class ReflectionTester;  // defined in test_util.h
 }  // namespace TestUtil
@@ -196,19 +190,6 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
 
   inline ~Arena() = default;
 
-#ifndef PROTOBUF_FUTURE_REMOVE_CREATEMESSAGE
-  // Deprecated. Use Create<T> instead.
-  template <typename T, typename... Args>
-  ABSL_DEPRECATED("Use Create")
-  static T* CreateMessage(Arena* arena, Args&&... args) {
-    using Type = std::remove_const_t<T>;
-    static_assert(
-        is_arena_constructable<Type>::value,
-        "CreateMessage can only construct types that are ArenaConstructable");
-    return Create<Type>(arena, std::forward<Args>(args)...);
-  }
-#endif  // !PROTOBUF_FUTURE_REMOVE_CREATEMESSAGE
-
   // Allocates an object type T if the arena passed in is not nullptr;
   // otherwise, returns a heap-allocated object.
   template <typename T, typename... Args>
@@ -279,7 +260,7 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
                   "CreateArray requires a trivially destructible type");
     ABSL_CHECK_LE(num_elements, std::numeric_limits<size_t>::max() / sizeof(T))
         << "Requested size is too large to fit into size_t.";
-    if (PROTOBUF_PREDICT_FALSE(arena == nullptr)) {
+    if (ABSL_PREDICT_FALSE(arena == nullptr)) {
       return new T[num_elements];
     } else {
       // We count on compiler to realize that if sizeof(T) is a multiple of
@@ -347,18 +328,6 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
     impl_.AddCleanup(object, destruct);
   }
 
-  // Retrieves the arena associated with |value| if |value| is an arena-capable
-  // message, or nullptr otherwise. If possible, the call resolves at compile
-  // time. Note that we can often devirtualize calls to `value->GetArena()` so
-  // usually calling this method is unnecessary.
-  // TODO: remove this function.
-  template <typename T>
-  ABSL_DEPRECATED(
-      "This will be removed in a future release. Call value->GetArena() "
-      "instead.")
-  PROTOBUF_ALWAYS_INLINE static Arena* GetArena(T* value) {
-    return GetArenaInternal(value);
-  }
 
   template <typename T>
   class InternalHelper {
@@ -447,9 +416,7 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
       return new (ptr) T(static_cast<Args&&>(args)...);
     }
 
-    static inline PROTOBUF_ALWAYS_INLINE T* New() {
-      return new T(nullptr);
-    }
+    static PROTOBUF_ALWAYS_INLINE T* New() { return new T(nullptr); }
 
     friend class Arena;
     friend class TestUtil::ReflectionTester;
@@ -522,7 +489,7 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
                                                          Args&&... args) {
     static_assert(is_arena_constructable<T>::value,
                   "Can only construct types that are ArenaConstructable");
-    if (PROTOBUF_PREDICT_FALSE(arena == nullptr)) {
+    if (ABSL_PREDICT_FALSE(arena == nullptr)) {
       return new T(nullptr, static_cast<Args&&>(args)...);
     } else {
       return arena->DoCreateMessage<T>(static_cast<Args&&>(args)...);
@@ -536,7 +503,7 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
   PROTOBUF_NDEBUG_INLINE static T* CreateArenaCompatible(Arena* arena) {
     static_assert(is_arena_constructable<T>::value,
                   "Can only construct types that are ArenaConstructable");
-    if (PROTOBUF_PREDICT_FALSE(arena == nullptr)) {
+    if (ABSL_PREDICT_FALSE(arena == nullptr)) {
       // Generated arena constructor T(Arena*) is protected. Call via
       // InternalHelper.
       return InternalHelper<T>::New();
@@ -585,31 +552,17 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
   // which needs to declare Map as friend of generated message.
   template <typename T, typename... Args>
   static void CreateInArenaStorage(T* ptr, Arena* arena, Args&&... args) {
-    CreateInArenaStorageInternal(ptr, arena, is_arena_constructable<T>(),
-                                 std::forward<Args>(args)...);
-    if (PROTOBUF_PREDICT_TRUE(arena != nullptr)) {
-      RegisterDestructorInternal(ptr, arena, is_destructor_skippable<T>());
+    if constexpr (is_arena_constructable<T>::value) {
+      InternalHelper<T>::Construct(ptr, arena, std::forward<Args>(args)...);
+    } else {
+      new (ptr) T(std::forward<Args>(args)...);
     }
-  }
 
-  template <typename T, typename... Args>
-  static void CreateInArenaStorageInternal(T* ptr, Arena* arena,
-                                           std::true_type, Args&&... args) {
-    InternalHelper<T>::Construct(ptr, arena, std::forward<Args>(args)...);
-  }
-  template <typename T, typename... Args>
-  static void CreateInArenaStorageInternal(T* ptr, Arena* /* arena */,
-                                           std::false_type, Args&&... args) {
-    new (ptr) T(std::forward<Args>(args)...);
-  }
-
-  template <typename T>
-  static void RegisterDestructorInternal(T* /* ptr */, Arena* /* arena */,
-                                         std::true_type) {}
-  template <typename T>
-  static void RegisterDestructorInternal(T* ptr, Arena* arena,
-                                         std::false_type) {
-    arena->OwnDestructor(ptr);
+    if constexpr (!is_destructor_skippable<T>::value) {
+      if (ABSL_PREDICT_TRUE(arena != nullptr)) {
+        arena->OwnDestructor(ptr);
+      }
+    }
   }
 
   // Implementation for GetArena(). Only message objects with

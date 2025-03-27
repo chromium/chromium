@@ -438,13 +438,12 @@ bool GetValidityTimes(CERTCertificate* cert,
 }
 
 SHA256HashValue CalculateFingerprint256(CERTCertificate* cert) {
-  SHA256HashValue sha256;
-  memset(sha256.data, 0, sizeof(sha256.data));
+  SHA256HashValue sha256 = {0};
 
   DCHECK(cert->derCert.data);
   DCHECK_NE(0U, cert->derCert.len);
 
-  SECStatus rv = HASH_HashBuf(HASH_AlgSHA256, sha256.data, cert->derCert.data,
+  SECStatus rv = HASH_HashBuf(HASH_AlgSHA256, sha256.data(), cert->derCert.data,
                               cert->derCert.len);
   DCHECK_EQ(SECSuccess, rv);
 

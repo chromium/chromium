@@ -118,6 +118,8 @@
   ABSL_LOG_INTERNAL_##type##_CONDITION(                    \
       (condition) && ::absl::LogSeverity::kError >=        \
                          static_cast<::absl::LogSeverity>(ABSL_MIN_LOG_LEVEL))
+#define ABSL_LOG_INTERNAL_CONDITION_DO_NOT_SUBMIT(type, condition) \
+  ABSL_LOG_INTERNAL_CONDITION_ERROR(type, condition)
 // NOTE: Use ternary operators instead of short-circuiting to mitigate
 // https://bugs.llvm.org/show_bug.cgi?id=51928.
 #define ABSL_LOG_INTERNAL_CONDITION_FATAL(type, condition)                 \
@@ -169,6 +171,8 @@
   ABSL_LOG_INTERNAL_##type##_CONDITION(condition)
 #define ABSL_LOG_INTERNAL_CONDITION_ERROR(type, condition) \
   ABSL_LOG_INTERNAL_##type##_CONDITION(condition)
+#define ABSL_LOG_INTERNAL_CONDITION_DO_NOT_SUBMIT(type, condition) \
+  ABSL_LOG_INTERNAL_CONDITION_ERROR(type, condition)
 #define ABSL_LOG_INTERNAL_CONDITION_FATAL(type, condition) \
   ABSL_LOG_INTERNAL_##type##_CONDITION(condition)
 #define ABSL_LOG_INTERNAL_CONDITION_QFATAL(type, condition) \

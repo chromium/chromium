@@ -253,6 +253,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
              const std::string& app_locale, bool observed_submission,
              std::unique_ptr<FormStructure> form,
              std::unique_ptr<RandomizedEncoder> randomized_encoder) {
+            LOG(ERROR) << form->fields().size();
             DeterminePossibleFieldTypesForUpload(profiles, credit_cards,
                                                  last_unlocked_credit_card_cvc,
                                                  app_locale, *form);

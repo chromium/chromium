@@ -871,9 +871,11 @@ BoolInt CPU_IsSupported_AES (void) { return APPLE_CRYPTO_SUPPORT_VAL; }
 
 #ifdef Z7_GETAUXV_AVAILABLE
 // #pragma message("=== Z7_GETAUXV_AVAILABLE === ")
+#if defined(__FreeBSD__) || (defined(__has_include) && __has_include(<asm/hwcap.h>))
 #include <sys/auxv.h>
 #define USE_HWCAP
 #endif
+#endif  // Z7_GETAUXV_AVAILABLE
 
 #ifdef USE_HWCAP
 

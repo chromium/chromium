@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -109,7 +110,10 @@ bool SkiaOutputDeviceVulkan::Reshape(const ReshapeParams& params) {
                            params.transform);
 }
 
-void SkiaOutputDeviceVulkan::Submit(bool sync_cpu, base::OnceClosure callback) {
+void SkiaOutputDeviceVulkan::Submit(
+    scoped_refptr<gpu::SharedContextState> context_state,
+    bool sync_cpu,
+    base::OnceClosure callback) {
   if (scoped_write_) [[likely]] {
     auto& sk_surface =
         sk_surface_size_pairs_[scoped_write_->image_index()].sk_surface;
@@ -118,13 +122,12 @@ void SkiaOutputDeviceVulkan::Submit(bool sync_cpu, base::OnceClosure callback) {
         context_provider_->GetDeviceQueue()->GetVulkanQueueIndex();
     skgpu::MutableTextureState state = skgpu::MutableTextureStates::MakeVulkan(
         VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, queue_index);
-    if (GrDirectContext* direct_context =
-            GrAsDirectContext(sk_surface->recordingContext())) {
-      direct_context->flush(sk_surface.get(), {}, &state);
+    if (GrDirectContext* gr_context = context_state->gr_context()) {
+      gr_context->flush(sk_surface.get(), {}, &state);
     }
   }
 
-  SkiaOutputDevice::Submit(sync_cpu, std::move(callback));
+  SkiaOutputDevice::Submit(context_state, sync_cpu, std::move(callback));
 }
 
 void SkiaOutputDeviceVulkan::Present(

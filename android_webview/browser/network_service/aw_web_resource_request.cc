@@ -13,6 +13,9 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "ui/base/page_transition_types.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwWebResourceRequest_jni.h"
+
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ConvertUTF16ToJavaString;
@@ -70,3 +73,15 @@ void AwWebResourceRequest::ConvertToJava(JNIEnv* env,
 }
 
 }  // namespace android_webview
+//
+namespace jni_zero {
+template <>
+ScopedJavaLocalRef<jobject> ToJniType(
+    JNIEnv* env,
+    const android_webview::AwWebResourceRequest& request) {
+  return android_webview::Java_AwWebResourceRequest_create(
+      env, request.url, request.is_outermost_main_frame,
+      request.has_user_gesture, request.method, request.header_names,
+      request.header_values);
+}
+}  // namespace jni_zero

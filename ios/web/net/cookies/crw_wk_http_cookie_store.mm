@@ -37,10 +37,6 @@ void PrioritizeWKHTTPCookieStoreCallbacks(WKWebsiteDataStore* data_store) {
   SEQUENCE_CHECKER(_sequenceChecker);
 }
 
-- (void)dealloc {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-}
-
 - (void)getAllCookies:(void (^)(NSArray<NSHTTPCookie*>*))completionHandler {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (_cachedCookies) {

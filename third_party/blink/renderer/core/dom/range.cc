@@ -282,18 +282,19 @@ void Range::collapse(bool to_start) {
 }
 
 void Range::CollapseIfNeeded(bool did_move_document, bool collapse_to_start) {
-  bool different_tree_scopes =
-      HasDifferentRootContainer(&start_.Container(), &end_.Container());
-  // If document moved, we are in different tree scopes, or start boundary point
-  // is after end boundary point, we should collapse the range.
-  if (different_tree_scopes) {
-    collapse(collapse_to_start);
-  } else if (did_move_document ||
-             compareBoundaryPoints(start_, end_, ASSERT_NO_EXCEPTION) > 0) {
-    // Further, if collapse is not due to being in different tree scopes, the
-    // range should update both selection's start and end positions.
-    collapse(collapse_to_start);
+  // If the boundary points have different shadow-including roots or start is
+  // after end, collapse the range and the selection.
+  if (did_move_document ||
+      &start_.Container().ShadowIncludingRoot() !=
+          &end_.Container().ShadowIncludingRoot() ||
+      StartPosition() > EndPosition()) {
     ResetUpdateSelectionBehavior();
+    collapse(collapse_to_start);
+  } else if (HasDifferentRootContainer(&start_.Container(),
+                                       &end_.Container())) {
+    // If the boundary points have the same shadow-including root, but different
+    // roots, collapse the range only.
+    collapse(collapse_to_start);
   }
 }
 

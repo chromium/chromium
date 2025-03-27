@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 6
+// Next MinVersion: 7
 
 module lobster.mojom;
 
@@ -26,6 +26,7 @@ enum StatusCode {
     kBackendFailure,
     kUnsupportedLanguage,
     kRestrictedRegion,
+    [MinVersion=6] kContainsPeople,
 };
 
 // Errors after sending request to server.

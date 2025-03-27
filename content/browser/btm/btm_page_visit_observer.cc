@@ -70,8 +70,10 @@ class NavigationState
     filter_.AddAccess(url, op);
   }
 
+  // Idempotent for multiple calls with the same value of
+  // `redirect_chain_index`.
   void RecordServerRedirectAtChainIndex(size_t redirect_chain_index) {
-    server_redirect_chain_indices_.push_back(redirect_chain_index);
+    server_redirect_chain_indices_.insert(redirect_chain_index);
   }
 
   // Returns the navigation info paired with the cookie access of the final
@@ -94,12 +96,13 @@ class NavigationState
     // recorded an access type for.
     urls.push_back(navigation_handle.GetURL());
     CHECK(filter_.Filter(urls, accesses));
-    for (size_t i = 0; i < server_redirect_chain_indices_.size(); ++i) {
+    int i = 0;
+    for (const size_t redirect_chain_index : server_redirect_chain_indices_) {
       navigation.server_redirects.emplace_back(
           urls[i],
-          btm::GetRedirectSourceId(&navigation_handle,
-                                   server_redirect_chain_indices_[i]),
+          btm::GetRedirectSourceId(&navigation_handle, redirect_chain_index),
           IsWrite(accesses[i]));
+      i += 1;
     }
 
     BtmDataAccessType committed_url_access_type = accesses.back();
@@ -111,7 +114,11 @@ class NavigationState
 
  private:
   CookieAccessFilter filter_;
-  std::vector<size_t> server_redirect_chain_indices_;
+  // This is a set instead of a vector because there can be multiple callers
+  // recording server redirects per instance of `NavigationState`, and we
+  // therefore need repeated recordings of the same server redirect to be
+  // idempotent.
+  std::set<size_t> server_redirect_chain_indices_;
 };
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationState);

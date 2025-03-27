@@ -113,6 +113,7 @@ class MockRemoteHandler extends PageHandlerRemote {
           sessionStartTime: null,
           onTaskConfig: {
             isLocked: true,
+            isPaused: true,
             tabs: [
               {
                 tab: {
@@ -182,6 +183,7 @@ class MockRemoteHandler extends PageHandlerRemote {
             }],
             onTaskConfig: {
               isLocked: true,
+              isPaused: true,
               tabs: [
                 {
                   tab: {
@@ -220,6 +222,7 @@ class MockRemoteHandler extends PageHandlerRemote {
     assertDeepEquals(
         {
           isLocked: true,
+          isPaused: true,
           tabs: [
             {
               tab: {
@@ -456,6 +459,7 @@ suite('ClientDelegateTest', function() {
           sessionStartTime: undefined,
           onTaskConfig: {
             isLocked: true,
+            isPaused: true,
             tabs: [
               {
                 tab: {
@@ -512,6 +516,7 @@ suite('ClientDelegateTest', function() {
             accessCode: 'testCode',
             onTaskConfig: {
               isLocked: true,
+              isPaused: true,
               tabs: [
                 {
                   tab: {
@@ -554,7 +559,7 @@ suite('ClientDelegateTest', function() {
           sessionStartTime: new Date(1000000),
           students: [],
           studentsJoinViaCode: [],
-          onTaskConfig: {isLocked: false, tabs: []},
+          onTaskConfig: {isLocked: false, isPaused: false, tabs: []},
           teacher: {
             id: '0',
             name: 'teacher',
@@ -583,6 +588,7 @@ suite('ClientDelegateTest', function() {
               studentsJoinViaCode: [],
               onTaskConfig: {
                 isLocked: false,
+                isPaused: false,
                 tabs: [],
               },
               accessCode: '',
@@ -602,6 +608,7 @@ suite('ClientDelegateTest', function() {
         const result =
             await clientDelegateImpl.getInstance().updateOnTaskConfig({
               isLocked: true,
+              isPaused: true,
               tabs: [
                 {
                   tab: {

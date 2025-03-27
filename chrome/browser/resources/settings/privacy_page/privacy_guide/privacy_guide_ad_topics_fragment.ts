@@ -34,18 +34,6 @@ export class PrivacyGuideAdTopicsFragmentElement extends
     return getTemplate();
   }
 
-  static get properties() {
-    return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-    };
-  }
-
   private startStateAdTopicsOn_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();

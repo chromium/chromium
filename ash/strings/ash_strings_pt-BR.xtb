@@ -551,6 +551,7 @@ Caso contrário, o touchpad integrado será reativado em <ph name="TIMEOUT_SECON
 <translation id="2872353916818027657">Trocar monitor primário</translation>
 <translation id="2872961005593481000">Desligar</translation>
 <translation id="2876338922445400217">Aumentar o zoom na tela</translation>
+<translation id="2876760662374103627">Controle facial ativado</translation>
 <translation id="2878884018241093801">Nenhum item recente</translation>
 <translation id="2880541185262491188">Excesso de tentativas de PIN. Espere <ph name="TIME_LEFT" /> e tente de novo</translation>
 <translation id="2883271196820422439">Retomar teclas do mouse</translation>
@@ -1014,6 +1015,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4351244548802238354">Fechar caixa de diálogo</translation>
 <translation id="4356872429719185452">Consulte detalhes do ponto de acesso. Ele está sendo ativado.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> (gravando)</translation>
+<translation id="4368227575116094370">Criar planilha Google</translation>
 <translation id="4371348193907997655">Configurações de transmissão</translation>
 <translation id="4371834685492830207">O PIN só pode conter caracteres válidos</translation>
 <translation id="4375482231364171368">Pesquisar na barra de endereço</translation>
@@ -1515,6 +1517,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="595202126637698455">Rastreamento de desempenho ativado</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Usuário supervisionado</translation>
+<translation id="596035801491797438">Desativar o controle facial</translation>
 <translation id="5960410286721553511">Ver as fotos e mídias recentes do smartphone</translation>
 <translation id="5965524703725988602">Alternar tema escuro. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Navegar pelas janelas</translation>

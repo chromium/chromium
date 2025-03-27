@@ -1019,6 +1019,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/suggestions/tile/TileInteractionDelegateTest.java",
       "src/org/chromium/chrome/browser/suggestions/tile/TileRendererTest.java",
       "src/org/chromium/chrome/browser/suggestions/tile/tile_edit_dialog/CustomTileEditMediatorUnitTest.java",
+      "src/org/chromium/chrome/browser/suggestions/tile/tile_edit_dialog/CustomTileEditViewUnitTest.java",
     ]
 
     deps = chrome_junit_tests_deps

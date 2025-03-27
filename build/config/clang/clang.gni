@@ -51,18 +51,26 @@ lld_emit_indexes_and_imports =
     lld_emit_indexes_and_imports && is_a_target_toolchain
 
 # TODO(crbug.com/326584510): Reclient does not upload `inputs` from C/C++
-# targets. This file is added to `inputs` for all C targets in
-# //build/config/BUILDCONFIG.gn via //build/config/clang:unsafe_buffers.
-# We work around the bug in Reclient by specifying the file here.
-#
-# This is a comma-delimited list of paths relative to the source tree root. The
-# leading space is important, if the string is non-empty. :)
-rbe_bug_326584510_missing_inputs = ""
+# targets. We work around the bug in Reclient by
+# specifying the files here.
+rbe_bug_326584510_missing_input_list = []
 if (clang_use_chrome_plugins && defined(clang_unsafe_buffers_paths) &&
     "$clang_unsafe_buffers_paths" != "") {
   if (rbe_exec_root != rebase_path("//")) {
     assert(!use_siso, "Can't use non-default rbe_exec_root with siso.")
   }
-  from_exec_root = rebase_path(clang_unsafe_buffers_paths, rbe_exec_root)
-  rbe_bug_326584510_missing_inputs = " -inputs=$from_exec_root"
+  rbe_bug_326584510_missing_input_list +=
+      [ rebase_path(clang_unsafe_buffers_paths, rbe_exec_root) ]
 }
+if (defined(clang_warning_suppression_file) &&
+    "$clang_warning_suppression_file" != "") {
+  if (rbe_exec_root != rebase_path("//")) {
+    assert(!use_siso, "Can't use non-default rbe_exec_root with siso.")
+  }
+  rbe_bug_326584510_missing_input_list +=
+      [ rebase_path(clang_warning_suppression_file, rbe_exec_root) ]
+}
+
+# The leading space is important, if the string is non-empty.
+rbe_bug_326584510_missing_inputs =
+    " -inputs=" + string_join(",", rbe_bug_326584510_missing_input_list)

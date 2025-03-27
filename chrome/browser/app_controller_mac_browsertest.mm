@@ -30,7 +30,10 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/bookmark_test_helpers.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
@@ -73,7 +76,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -1191,8 +1193,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
 
   // Use the existing profile as profile 1.
   Profile* profile1 = browser()->profile();
-  bookmarks::test::WaitForBookmarkModelToLoad(
-      BookmarkModelFactory::GetForBrowserContext(profile1));
+  WaitForBookmarkMergedSurfaceServiceToLoad(
+      BookmarkMergedSurfaceServiceFactory::GetForProfile(profile1));
 
   // Create profile 2.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -1201,14 +1203,14 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
       Profile::CreateProfile(path2, nullptr, Profile::CreateMode::kSynchronous);
   Profile* profile2_ptr = profile2.get();
   profile_manager->RegisterTestingProfile(std::move(profile2), false);
-  bookmarks::test::WaitForBookmarkModelToLoad(
-      BookmarkModelFactory::GetForBrowserContext(profile2_ptr));
+  WaitForBookmarkMergedSurfaceServiceToLoad(
+      BookmarkMergedSurfaceServiceFactory::GetForProfile(profile2_ptr));
 
   // Switch to profile 1, create bookmark 1 and force the menu to build.
   [app_controller setLastProfile:profile1];
-  [app_controller bookmarkMenuBridge]->GetBookmarkModel()
-      -> AddURL([app_controller bookmarkMenuBridge]->GetBookmarkModel()
-                    -> bookmark_bar_node(),
+  [app_controller bookmarkMenuBridge]->GetBookmarkModelForTesting()
+      -> AddURL([app_controller bookmarkMenuBridge]
+                    ->GetBookmarkModelForTesting() -> bookmark_bar_node(),
                 0, title1, url1);
   NSMenu* profile1_submenu =
       [app_controller bookmarkMenuBridge]->BookmarkMenu();
@@ -1216,9 +1218,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
 
   // Switch to profile 2, create bookmark 2 and force the menu to build.
   [app_controller setLastProfile:profile2_ptr];
-  [app_controller bookmarkMenuBridge]->GetBookmarkModel()
-      -> AddURL([app_controller bookmarkMenuBridge]->GetBookmarkModel()
-                    -> bookmark_bar_node(),
+  [app_controller bookmarkMenuBridge]->GetBookmarkModelForTesting()
+      -> AddURL([app_controller bookmarkMenuBridge]
+                    ->GetBookmarkModelForTesting() -> bookmark_bar_node(),
                 0, title2, url2);
   NSMenu* profile2_submenu =
       [app_controller bookmarkMenuBridge]->BookmarkMenu();

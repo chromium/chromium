@@ -14,11 +14,6 @@
 namespace syncer {
 namespace {
 
-using base::ExpectDictBooleanValue;
-using base::ExpectDictIntegerValue;
-using base::ExpectDictStringValue;
-using base::ExpectDictValue;
-
 class SyncCycleSnapshotTest : public testing::Test {};
 
 TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
@@ -51,24 +46,29 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
       /*has_remaining_local_changes=*/false);
   base::Value::Dict dict(snapshot.ToValue());
   EXPECT_EQ(14u, dict.size());
-  ExpectDictStringValue(kBirthday, dict, "birthday");
-  // Base64-encoded version of `kBagOfChips`.
-  ExpectDictStringValue("YmFnb2ZjaGlwcwE=", dict, "bagOfChips");
-  ExpectDictIntegerValue(model_neutral.num_successful_commits, dict,
-                         "numSuccessfulCommits");
-  ExpectDictIntegerValue(model_neutral.num_successful_bookmark_commits, dict,
-                         "numSuccessfulBookmarkCommits");
-  ExpectDictIntegerValue(model_neutral.num_updates_downloaded_total, dict,
-                         "numUpdatesDownloadedTotal");
-  ExpectDictIntegerValue(model_neutral.num_tombstone_updates_downloaded_total,
-                         dict, "numTombstoneUpdatesDownloadedTotal");
-  ExpectDictValue(expected_download_progress_markers_value, dict,
-                  "downloadProgressMarkers");
-  ExpectDictBooleanValue(kIsSilenced, dict, "isSilenced");
-  ExpectDictIntegerValue(kNumServerConflicts, dict, "numServerConflicts");
-  ExpectDictBooleanValue(false, dict, "notificationsEnabled");
-  ExpectDictBooleanValue(false, dict, "hasRemainingLocalChanges");
-  ExpectDictStringValue("0h 30m", dict, "poll_interval");
+
+  EXPECT_THAT(
+      dict,
+      base::test::DictionaryHasValues(
+          base::Value::Dict()
+              .Set("birthday", kBirthday)
+              // Base64-encoded version of `kBagOfChips`.
+              .Set("bagOfChips", "YmFnb2ZjaGlwcwE=")
+              .Set("numSuccessfulCommits", model_neutral.num_successful_commits)
+              .Set("numSuccessfulBookmarkCommits",
+                   model_neutral.num_successful_bookmark_commits)
+              .Set("numUpdatesDownloadedTotal",
+                   model_neutral.num_updates_downloaded_total)
+              .Set("numTombstoneUpdatesDownloadedTotal",
+                   model_neutral.num_tombstone_updates_downloaded_total)
+              .Set("downloadProgressMarkers",
+                   expected_download_progress_markers_value.Clone())
+              .Set("isSilenced", kIsSilenced)
+              .Set("numServerConflicts", kNumServerConflicts)
+              .Set("notificationsEnabled", false)
+              .Set("hasRemainingLocalChanges", false)
+              .Set("poll_interval", "0h 30m")));
+
   // poll_finish_time includes the local time zone, so simply verify its
   // existence.
   EXPECT_TRUE(dict.FindString("poll_finish_time"));

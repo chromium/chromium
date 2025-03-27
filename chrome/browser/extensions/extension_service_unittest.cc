@@ -3233,14 +3233,18 @@ TEST_F(ExtensionServiceTest, UpdateExtensionDuringShutdown) {
   ASSERT_EQ(good_crx, good->id());
 
   // Simulate shutdown.
-  service()->set_browser_terminating_for_test(true);
+  ExtensionUpdater updater(profile());
+  updater.Init(prefs(), prefs()->pref_service(),
+               /*frequency_seconds=*/600, /*cache=*/nullptr,
+               ExtensionDownloader::Factory());
+  updater.set_browser_terminating_for_test(true);
 
   // Update should fail and extension should not be updated.
   path = data_dir().AppendASCII("good2.crx");
   CRXFileInfo crx_info(path, GetTestVerifierFormat());
   crx_info.extension_id = good_crx;
   scoped_refptr<extensions::CrxInstaller> installer =
-      service()->CreateUpdateInstaller(crx_info, true);
+      updater.CreateUpdateInstaller(crx_info, true);
   ASSERT_FALSE(installer);
   ASSERT_EQ("1.0.0.0", registry()
                            ->enabled_extensions()

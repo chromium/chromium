@@ -79,7 +79,7 @@ class PLATFORM_EXPORT XRFrameTransport final
 
   void RegisterFrameRenderedCallback(base::RepeatingClosure callback);
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
  private:
   void WaitForPreviousTransfer();

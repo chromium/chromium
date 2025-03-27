@@ -1,4 +1,4 @@
-diff -r /Users/waffles/Downloads/lzma2409/Asm/x86/LzmaDecOpt.asm ./Asm/x86/LzmaDecOpt.asm
+diff '--color=auto' -r --strip-trailing-cr /usr/local/google/home/waffles/Downloads/lzma2409/Asm/x86/LzmaDecOpt.asm ./Asm/x86/LzmaDecOpt.asm
 42c42,44
 < _TEXT$LZMADECOPT SEGMENT ALIGN(64) 'CODE'
 ---
@@ -9,7 +9,12 @@ diff -r /Users/waffles/Downloads/lzma2409/Asm/x86/LzmaDecOpt.asm ./Asm/x86/LzmaD
 < _TEXT$LZMADECOPT ENDS
 ---
 > LZMADEC ENDS
-diff -r /Users/waffles/Downloads/lzma2409/C/CpuArch.h ./C/CpuArch.h
+diff '--color=auto' -r --strip-trailing-cr /usr/local/google/home/waffles/Downloads/lzma2409/C/CpuArch.c ./C/CpuArch.c
+873a874
+> #if defined(__FreeBSD__) || (defined(__has_include) && __has_include(<asm/hwcap.h>))
+876a878
+> #endif  // Z7_GETAUXV_AVAILABLE
+diff '--color=auto' -r --strip-trailing-cr /usr/local/google/home/waffles/Downloads/lzma2409/C/CpuArch.h ./C/CpuArch.h
 413c413,417
 < 
 ---
@@ -24,7 +29,7 @@ diff -r /Users/waffles/Downloads/lzma2409/C/CpuArch.h ./C/CpuArch.h
 ---
 >     // #define MY_CPU_LE_UNALIGN
 >     // #define MY_CPU_LE_UNALIGN_64
-diff -r /Users/waffles/Downloads/lzma2409/C/LzFind.c ./C/LzFind.c
+diff '--color=auto' -r --strip-trailing-cr /usr/local/google/home/waffles/Downloads/lzma2409/C/LzFind.c ./C/LzFind.c
 598c598
 < 
 ---
@@ -33,7 +38,7 @@ diff -r /Users/waffles/Downloads/lzma2409/C/LzFind.c ./C/LzFind.c
 < 
 ---
 > #endif // #if 0
-diff -r /Users/waffles/Downloads/lzma2409/C/Util/SfxSetup/SfxSetup.c ./C/Util/SfxSetup/SfxSetup.c
+diff '--color=auto' -r --strip-trailing-cr /usr/local/google/home/waffles/Downloads/lzma2409/C/Util/SfxSetup/SfxSetup.c ./C/Util/SfxSetup/SfxSetup.c
 13a14,17
 > // SHELLEXECUTEINFO
 > #include <windows.h>

@@ -19,7 +19,7 @@ dictionary AILanguageModelPromptOptions {
 ]
 interface AILanguageModel : EventTarget {
   [
-    Measure,
+    MeasureAs=LanguageModel_Prompt,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -28,7 +28,7 @@ interface AILanguageModel : EventTarget {
     optional AILanguageModelPromptOptions options = {}
   );
   [
-    Measure,
+    MeasureAs=LanguageModel_PromptStreaming,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -38,7 +38,7 @@ interface AILanguageModel : EventTarget {
   );
 
   [
-    Measure,
+    MeasureAs=LanguageModel_MeasureInputUsage,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -47,26 +47,26 @@ interface AILanguageModel : EventTarget {
     optional AILanguageModelPromptOptions options = {}
   );
 
-  [Measure]
+  [MeasureAs=LanguageModel_InputUsage]
   readonly attribute double inputUsage;
-  [Measure]
+  [MeasureAs=LanguageModel_InputQuota]
   readonly attribute unrestricted double inputQuota;
 
-  [Measure]
+  [MeasureAs=LanguageModel_TopK]
   readonly attribute unsigned long topK;
-  [Measure]
+  [MeasureAs=LanguageModel_Temperature]
   readonly attribute float temperature;
 
   attribute EventHandler onquotaoverflow;
 
   [
-    Measure,
+    MeasureAs=LanguageModel_Clone,
     CallWith=ScriptState,
     RaisesException
   ]
   Promise<AILanguageModel> clone(optional AILanguageModelCloneOptions options = {});
   [
-    Measure,
+    MeasureAs=LanguageModel_Destroy,
     CallWith=ScriptState,
     RaisesException
   ]

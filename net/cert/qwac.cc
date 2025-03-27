@@ -73,7 +73,8 @@ std::optional<std::vector<bssl::der::Input>> ParseQcTypeInfo(
   return results;
 }
 
-bool HasQwacQcStatements(const std::vector<QcStatement>& qc_statements) {
+QwacQcStatementsStatus HasQwacQcStatements(
+    const std::vector<QcStatement>& qc_statements) {
   // ETSI TS 119 411-5 - V2.1.1 - section 6.1.2:
   //   the QWAC includes QCStatements as specified in clause 4.2 of ETSI EN 319
   //   412-4 [4]
@@ -110,7 +111,7 @@ bool HasQwacQcStatements(const std::vector<QcStatement>& qc_statements) {
       std::optional<std::vector<bssl::der::Input>> qc_types =
           ParseQcTypeInfo(statement.info);
       if (!qc_types.has_value()) {
-        return false;
+        return QwacQcStatementsStatus::kNotQwac;
       }
       for (const auto& qc_type_id : qc_types.value()) {
         if (qc_type_id == bssl::der::Input(kEtsiQctWebOid)) {
@@ -120,10 +121,16 @@ bool HasQwacQcStatements(const std::vector<QcStatement>& qc_statements) {
     }
   }
 
-  return has_qc_compliance && has_qctype_web;
+  if (has_qc_compliance && has_qctype_web) {
+    return QwacQcStatementsStatus::kHasQwacStatements;
+  } else if (has_qc_compliance || has_qctype_web) {
+    return QwacQcStatementsStatus::kInconsistent;
+  }
+  return QwacQcStatementsStatus::kNotQwac;
 }
 
-bool Has1QwacPolicies(const std::set<bssl::der::Input>& policy_set) {
+QwacPoliciesStatus Has1QwacPolicies(
+    const std::set<bssl::der::Input>& policy_set) {
   // ETSI TS 119 411-5 - V2.1.1 - section 4.1.1:
   //   The 1-QWAC certificate shall be issued in accordance with one of the
   //   following certificate policies as specified in ETSI EN 319 411-2 [3]:
@@ -153,11 +160,13 @@ bool Has1QwacPolicies(const std::set<bssl::der::Input>& policy_set) {
   const bool has_qncpw = policy_set.contains(bssl::der::Input(kQncpwOid));
 
   if (has_ev && has_qevcpw) {
-    return true;
+    return QwacPoliciesStatus::kHasQwacPolicies;
   } else if ((has_ov || has_iv) && has_qncpw) {
-    return true;
+    return QwacPoliciesStatus::kHasQwacPolicies;
+  } else if (has_qevcpw || has_qncpw) {
+    return QwacPoliciesStatus::kInconsistent;
   }
-  return false;
+  return QwacPoliciesStatus::kNotQwac;
 }
 
 }  // namespace net

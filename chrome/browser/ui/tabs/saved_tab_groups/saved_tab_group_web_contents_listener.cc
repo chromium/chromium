@@ -91,25 +91,30 @@ DeferredTabState::DeferredTabState(tabs::TabInterface* local_tab,
                                    const std::u16string& title,
                                    favicon::FaviconService* favicon_service)
     : local_tab_(local_tab), url_(url), title_(title) {
-  favicon_tracker_ = std::make_unique<base::CancelableTaskTracker>();
-
-  favicon_service->GetFaviconImageForPageURL(
-      url_,
-      base::BindOnce(&DeferredTabState::OnGetFaviconImageResult,
-                     base::Unretained(this)),
-      favicon_tracker_.get());
+  if (favicon_service) {
+    favicon_tracker_ = std::make_unique<base::CancelableTaskTracker>();
+    favicon_service->GetFaviconImageForPageURL(
+        url_,
+        base::BindOnce(&DeferredTabState::OnGetFaviconImageResult,
+                       base::Unretained(this)),
+        favicon_tracker_.get());
+  }
 }
 DeferredTabState::~DeferredTabState() = default;
 
 void DeferredTabState::OnGetFaviconImageResult(
     const favicon_base::FaviconImageResult& result) {
-  BrowserWindowInterface* browser_window =
-      local_tab_->GetBrowserWindowInterface();
-  if (!browser_window) {
+  if (result.image.IsEmpty()) {
     return;
   }
 
-  if (result.image.IsEmpty()) {
+  if (!local_tab_) {
+    return;
+  }
+
+  BrowserWindowInterface* browser_window =
+      local_tab_->GetBrowserWindowInterface();
+  if (!browser_window) {
     return;
   }
 
@@ -180,11 +185,10 @@ void SavedTabGroupWebContentsListener::NavigateToUrlInternal(const GURL& url) {
     return;
   }
 
-  // If deferring remote navigations is enabled and the tab is in the
+  // If deferring remote navigations is enabled (sharing) and the tab is in the
   // background, then dont actually perform the navigation, instead cache the
   // URL for performing the navigation later.
-  if (!base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature) ||
+  if (!data_sharing::features::IsDataSharingFunctionalityEnabled() ||
       local_tab_->IsActivated()) {
     PerformNavigation(url);
   } else {

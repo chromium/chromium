@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -19,7 +20,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
-#include "base/synchronization/atomic_flag.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -207,6 +207,75 @@ class GetExtractedInfoParams : public base::RefCounted<GetExtractedInfoParams> {
   GetExtractedInfoCallback callback_;
 };
 
+// A DecodeOperation is a cancellable invocation of DecodeXz.
+class DecodeOperation : public base::RefCountedThreadSafe<DecodeOperation> {
+ public:
+  DecodeOperation(const base::FilePath& out_path,
+                  base::OnceCallback<void(bool)> callback)
+      : out_path_(out_path), callback_(std::move(callback)) {
+    // DecodeOperation is created on one sequence but forever used on another.
+    DETACH_FROM_SEQUENCE(sequence_checker_);
+  }
+
+  // Start must be called only once. May block.
+  void Start(mojo::PendingRemote<mojom::Unzipper> unzipper,
+             const base::FilePath& in_path) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    base::File in(in_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                               base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                               base::File::FLAG_WIN_SEQUENTIAL_SCAN |
+                               base::File::FLAG_WIN_SHARE_DELETE);
+    if (!in.IsValid()) {
+      Done(false);
+      return;
+    }
+    base::File out(out_path_, base::File::FLAG_CREATE | base::File::FLAG_READ |
+                                  base::File::FLAG_WRITE |
+                                  base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                                  base::File::FLAG_WIN_SEQUENTIAL_SCAN |
+                                  base::File::FLAG_WIN_SHARE_DELETE);
+    if (!out.IsValid()) {
+      Done(false);
+      return;
+    }
+    unzipper_.Bind(std::move(unzipper));
+    unzipper_.set_disconnect_handler(
+        base::BindOnce(&DecodeOperation::Done, this, false));
+    unzipper_->DecodeXz(std::move(in), std::move(out),
+                        base::BindOnce(&DecodeOperation::Done, this));
+  }
+
+  // Resets the unzipper remote and triggers the completion callback.
+  void Cancel() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    Done(false);
+  }
+
+ private:
+  // `Done` may be called multiple times, for example if cancellation is posted
+  // to a task runner, but concurrently, the job completes or the remote
+  // disconnects.
+  void Done(bool result) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!result && unzipper_.is_bound()) {
+      base::GetDeleteFileCallback(out_path_).Run();
+    }
+    std::move(callback_).Run(result);
+    callback_ = base::DoNothing();
+    unzipper_.reset();
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<DecodeOperation>;
+
+  ~DecodeOperation() = default;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  mojo::Remote<mojom::Unzipper> unzipper_;
+  const base::FilePath out_path_;
+  base::OnceCallback<void(bool)> callback_;
+};
+
 void DoDetectEncoding(mojo::PendingRemote<mojom::Unzipper> unzipper,
                       const base::FilePath& zip_path,
                       DetectEncodingCallback result_callback) {
@@ -314,6 +383,22 @@ void GetExtractedInfo(mojo::PendingRemote<mojom::Unzipper> unzipper,
 
 UnzipFilterCallback AllContents() {
   return base::BindRepeating([](const base::FilePath&) { return true; });
+}
+
+base::OnceClosure DecodeXz(mojo::PendingRemote<mojom::Unzipper> unzipper,
+                           const base::FilePath& in_file,
+                           const base::FilePath& out_file,
+                           base::OnceCallback<void(bool)> callback) {
+  auto op =
+      base::MakeRefCounted<DecodeOperation>(out_file, std::move(callback));
+  const scoped_refptr<base::SequencedTaskRunner> runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  runner->PostTask(FROM_HERE, base::BindOnce(&DecodeOperation::Start, op,
+                                             std::move(unzipper), in_file));
+  return base::BindPostTask(runner,
+                            base::BindOnce(&DecodeOperation::Cancel, op));
 }
 
 }  // namespace unzip

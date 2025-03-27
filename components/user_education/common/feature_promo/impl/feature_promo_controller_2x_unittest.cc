@@ -186,8 +186,10 @@ TEST_P(FeaturePromoControllerQueueTest,
     case PromoControllerVersion::kV20: {
       // In 2.0, promos will fail immediately.
       EXPECT_ASYNC_CALLS_IN_SCOPE_2(
-          result, Run(FeaturePromoResult(FeaturePromoResult::kBlockedByUi)),
-          result2, Run(FeaturePromoResult(FeaturePromoResult::kBlockedByUi)), {
+          result,
+          Run(FeaturePromoResult(FeaturePromoResult::kAnchorNotVisible)),
+          result2,
+          Run(FeaturePromoResult(FeaturePromoResult::kAnchorNotVisible)), {
             promo_controller().MaybeShowStartupPromo(std::move(params));
             promo_controller().MaybeShowStartupPromo(std::move(params2));
           });
@@ -227,7 +229,7 @@ TEST_P(FeaturePromoControllerQueueTest,
       // In 2.0, second fails immediately.
       EXPECT_ASYNC_CALLS_IN_SCOPE_2(
           closed, Run, result2,
-          Run(FeaturePromoResult(FeaturePromoResult::kBlockedByUi)),
+          Run(FeaturePromoResult(FeaturePromoResult::kAnchorNotVisible)),
           anchor_element().Hide());
     }
   }

@@ -164,8 +164,8 @@ class IncompleteResultsReason(NamedTuple):
         return 'results are incomplete for an unknown reason'
 
 
-# FIXME: This should be unified with ResultsSummary or other NRWT web tests code
-# in the web_tests package.
+# TODO(crbug.com/406299273): This should be unified with ResultsSummary or other
+# NRWT web tests code in the web_tests package.
 # This doesn't belong in common.net, but we don't have a better place for it yet.
 class WebTestResults:
     @classmethod

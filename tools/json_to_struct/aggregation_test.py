@@ -14,16 +14,6 @@ class AggregationTest(unittest.TestCase):
         GetAggregationDetails({}),
         AggregationDetails(AggregationKind.NONE, None, True, {}, None))
 
-  def testGenerateOldStyleArray(self):
-    self.assertEqual(
-        GetAggregationDetails({
-            "elements": {},
-            "generate_array": {
-                "array_name": "TestArray"
-            }
-        }),
-        AggregationDetails(AggregationKind.ARRAY, "TestArray", True, {}, None))
-
   def testGenerateArray(self):
     self.assertEqual(
         GetAggregationDetails({

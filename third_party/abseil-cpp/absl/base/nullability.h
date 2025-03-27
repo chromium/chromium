@@ -220,7 +220,8 @@
 // No-op except for being a human readable signal.
 #define ABSL_POINTERS_DEFAULT_NONNULL
 
-#if defined(__clang__) && !defined(__OBJC__)
+#if defined(__clang__) && !defined(__OBJC__) && \
+    ABSL_HAVE_FEATURE(nullability_on_classes)
 // absl_nonnull (default with `ABSL_POINTERS_DEFAULT_NONNULL`)
 //
 // The indicated pointer is never null. It is the responsibility of the provider

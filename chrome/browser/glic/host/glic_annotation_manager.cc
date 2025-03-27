@@ -8,6 +8,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/common/chrome_features.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/shared_highlighting/core/common/text_fragment.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -28,7 +29,7 @@ void GlicAnnotationManager::ScrollTo(
 
   mojom::ScrollToSelector* selector = params->selector.get();
   std::optional<shared_highlighting::TextFragment> text_fragment;
-  // TODO(crbug.com/395872487): We need to verify text is from the main frame.
+
   if (selector->is_exact_text_selector()) {
     const std::string& exact_text = selector->get_exact_text_selector()->text;
     if (exact_text.empty()) {
@@ -81,6 +82,25 @@ void GlicAnnotationManager::ScrollTo(
         .GetRemoteInterfaces()
         ->GetInterface(
             annotation_agent_container_.BindNewPipeAndPassReceiver());
+  }
+
+  // Verifies that the document_id parameter (if set) refers to the primary
+  // document in the currently focused tab.
+  // TODO(crbug.com/404564333): We should eventually enforce that this is
+  // always set.
+  if (params->document_id) {
+    // We only support scrolling the currently focused tab's main frame.
+    content::RenderFrameHost& rfh = focused_primary_page_->GetMainDocument();
+    auto* document_identifier_user_data =
+        optimization_guide::DocumentIdentifierUserData::GetForCurrentDocument(
+            &rfh);
+    if (!document_identifier_user_data ||
+        document_identifier_user_data->serialized_token() !=
+            params->document_id) {
+      std::move(callback).Run(
+          glic::mojom::ScrollToErrorReason::kNoMatchingDocument);
+      return;
+    }
   }
 
   mojo::PendingReceiver<blink::mojom::AnnotationAgentHost> agent_host_receiver;

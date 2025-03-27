@@ -58,9 +58,6 @@ extern const char kAcceleratedVideoEncodeDescription[];
 extern const char kAdjustCanCreateCanvas2DResourceProviderName[];
 extern const char kAdjustCanCreateCanvas2DResourceProviderDescription[];
 
-extern const char kAdjustGetOrCreate2DCanvasProviderName[];
-extern const char kAdjustGetOrCreate2DCanvasProviderDescription[];
-
 extern const char kAiSettingsPageRefreshName[];
 extern const char kAiSettingsPageRefreshDescription[];
 
@@ -1157,6 +1154,9 @@ extern const char kFedCmUseOtherAccountDescription[];
 extern const char kFedCmWithoutWellKnownEnforcementName[];
 extern const char kFedCmWithoutWellKnownEnforcementDescription[];
 
+extern const char kFedCmSegmentationPlatformName[];
+extern const char kFedCmSegmentationPlatformDescription[];
+
 extern const char kWebIdentityDigitalCredentialsName[];
 extern const char kWebIdentityDigitalCredentialsDescription[];
 
@@ -2129,9 +2129,6 @@ extern const char kStrictOriginIsolationDescription[];
 extern const char kSupportToolScreenshot[];
 extern const char kSupportToolScreenshotDescription[];
 
-extern const char kSuppressToolbarCapturesName[];
-extern const char kSuppressToolbarCapturesDescription[];
-
 extern const char kSystemKeyboardLockName[];
 extern const char kSystemKeyboardLockDescription[];
 
@@ -2236,6 +2233,9 @@ extern const char kTranslateForceTriggerOnEnglishName[];
 extern const char kTranslateForceTriggerOnEnglishDescription[];
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+extern const char kEnableHistorySyncOptinName[];
+extern const char kEnableHistorySyncOptinDescription[];
+
 extern const char kTranslationAPIName[];
 extern const char kTranslationAPIDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -2776,6 +2776,9 @@ extern const char kNavBarColorAnimationDescription[];
 
 extern const char kNavBarColorMatchesTabBackgroundName[];
 extern const char kNavBarColorMatchesTabBackgroundDescription[];
+
+extern const char kNavigationCaptureRefactorAndroidName[];
+extern const char kNavigationCaptureRefactorAndroidDescription[];
 
 extern const char kNotificationOneTapUnsubscribeName[];
 extern const char kNotificationOneTapUnsubscribeDescription[];
@@ -3887,8 +3890,14 @@ extern const char kExperimentalAccessibilityManifestV3Description[];
 extern const char kAccessibilityManifestV3BrailleImeName[];
 extern const char kAccessibilityManifestV3BrailleImeDescription[];
 
+extern const char kAccessibilityManifestV3ChromeVoxName[];
+extern const char kAccessibilityManifestV3ChromeVoxDescription[];
+
 extern const char kAccessibilityManifestV3EnhancedNetworkTtsName[];
 extern const char kAccessibilityManifestV3EnhancedNetworkTtsDescription[];
+
+extern const char kAccessibilityManifestV3SelectToSpeakName[];
+extern const char kAccessibilityManifestV3SelectToSpeakDescription[];
 
 extern const char kAccessibilityManifestV3SwitchAccessName[];
 extern const char kAccessibilityManifestV3SwitchAccessDescription[];

@@ -34,12 +34,16 @@
 namespace {
 template <typename T>
 T QueryParentsForProperty(io_object_t io_object, const char* key) {
-  return static_cast<T>(IORegistryEntrySearchCFProperty(
-      io_object, kIOServicePlane,
-      CFStringCreateWithCString(kCFAllocatorDefault, key,
-                                kCFStringEncodingUTF8),
-      kCFAllocatorDefault,
+  CFStringRef search_key = CFStringCreateWithCString(kCFAllocatorDefault, key,
+                                                     kCFStringEncodingUTF8);
+  if (search_key == nullptr) {
+    return nullptr;
+  }
+  T result = static_cast<T>(IORegistryEntrySearchCFProperty(
+      io_object, kIOServicePlane, search_key, kCFAllocatorDefault,
       kIORegistryIterateRecursively | kIORegistryIterateParents));
+  CFRelease(search_key);
+  return result;
 }
 }  // namespace
 #endif

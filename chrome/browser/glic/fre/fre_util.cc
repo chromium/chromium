@@ -8,6 +8,7 @@
 #include <cstddef>
 
 #include "base/command_line.h"
+#include "chrome/browser/glic/browser_ui/theme_util.h"
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -44,14 +45,6 @@ GURL GetFreURL(Profile* profile) {
   ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile);
   std::string theme_value = UseDarkMode(theme_service) ? "dark" : "light";
   return net::AppendOrReplaceQueryParameter(base_url, "theme", theme_value);
-}
-
-bool UseDarkMode(ThemeService* theme_service) {
-  ThemeService::BrowserColorScheme color_scheme =
-      theme_service->GetBrowserColorScheme();
-  return color_scheme == ThemeService::BrowserColorScheme::kSystem
-             ? ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
-             : color_scheme == ThemeService::BrowserColorScheme::kDark;
 }
 
 content::StoragePartitionConfig GetFreStoragePartitionConfig(

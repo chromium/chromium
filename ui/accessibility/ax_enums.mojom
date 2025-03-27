@@ -362,7 +362,7 @@ enum Role {
   kWebView = 183,
   kWindow = 184,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilitySetValueRole)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityRole)
 
 // Bitfield value. Each state can either be true or false.
 //

@@ -97,6 +97,13 @@ class HeapProfilerController {
                                   uint32_t process_probability_pct,
                                   size_t process_index);
 
+  // Triggers a snapshot in the child process, in order to log metrics about it,
+  // but doesn't upload it. This should be called instead of
+  // TakeSnapshotInChildProcess() for processes that are randomly excluded from
+  // a scheduled snapshot, to make sure they're included in metrics.
+  void LogMetricsWithoutSnapshotInChildProcess(
+      base::PassKey<ChildProcessSnapshotController>);
+
   // Allows unit tests to call AppendCommandLineSwitchForChildProcess without
   // creating a HeapProfilerController. `snapshot_controller` should be null if
   // profiling is disabled in the browser process.

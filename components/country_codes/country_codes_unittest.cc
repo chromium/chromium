@@ -26,7 +26,7 @@ TEST(CountryCodesTest, ConvertToAndFromCountryCode) {
 
     // Uppercase values are valid and properly reflected.
     ASSERT_TRUE(CountryId(code).IsValid());
-    ASSERT_EQ(code, CountryIDToCountryString(CountryId(code)));
+    ASSERT_EQ(code, CountryId(code).CountryCode());
   }
 }
 

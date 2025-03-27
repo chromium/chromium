@@ -1284,6 +1284,10 @@ void FloatingWorkspaceService::OnLockStateChanged(bool locked) {
   }
 }
 
+void FloatingWorkspaceService::OnLogoutConfirmationStarted() {
+  CaptureAndUploadActiveDesk();
+}
+
 void FloatingWorkspaceService::OnFocusLeavingSystemTray(bool reverse) {}
 
 void FloatingWorkspaceService::OnSystemTrayBubbleShown() {
@@ -1327,8 +1331,15 @@ void FloatingWorkspaceService::ShutDownServicesAndObservers() {
     app_cache_wrapper_obs_.Reset();
   }
   StopCaptureAndUploadActiveDesk();
-  if (Shell::HasInstance() && Shell::Get()->system_tray_notifier()) {
-    Shell::Get()->system_tray_notifier()->RemoveSystemTrayObserver(this);
+  if (Shell::HasInstance()) {
+    if (SystemTrayNotifier* system_tray_notifier =
+            Shell::Get()->system_tray_notifier()) {
+      system_tray_notifier->RemoveSystemTrayObserver(this);
+    }
+    if (LogoutConfirmationController* logout_confirmation_controller =
+            Shell::Get()->logout_confirmation_controller()) {
+      logout_confirmation_controller->RemoveObserver(this);
+    }
   }
   if (chromeos::PowerManagerClient::Get()) {
     chromeos::PowerManagerClient::Get()->RemoveObserver(this);
@@ -1348,8 +1359,15 @@ void FloatingWorkspaceService::SetUpServiceAndObservers(
       network_handler->network_state_handler()->AddObserver(this);
     }
   }
-  if (Shell::HasInstance() && Shell::Get()->system_tray_notifier()) {
-    Shell::Get()->system_tray_notifier()->AddSystemTrayObserver(this);
+  if (Shell::HasInstance()) {
+    if (SystemTrayNotifier* system_tray_notifier =
+            Shell::Get()->system_tray_notifier()) {
+      system_tray_notifier->AddSystemTrayObserver(this);
+    }
+    if (LogoutConfirmationController* logout_confirmation_controller =
+            Shell::Get()->logout_confirmation_controller()) {
+      logout_confirmation_controller->AddObserver(this);
+    }
   }
   if (sync_service_ && !sync_service_->HasObserver(this)) {
     sync_service_->AddObserver(this);

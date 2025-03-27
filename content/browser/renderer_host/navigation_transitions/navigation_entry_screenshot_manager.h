@@ -12,6 +12,11 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
+#include "ui/display/display_observer.h"
+
+namespace display {
+class Display;
+}
 
 namespace content {
 
@@ -24,14 +29,20 @@ class NavigationEntryScreenshotCacheEvictor;
 // `BrowserContext`. All primary `FrameTree`s sharing the same `BrowserContext`
 // share the same manager. The manager should only be accessed by the
 // `NavigationEntryScreenshotCache` and tests.
-class CONTENT_EXPORT NavigationEntryScreenshotManager {
+class CONTENT_EXPORT NavigationEntryScreenshotManager
+    : public display::DisplayObserver {
  public:
   NavigationEntryScreenshotManager();
   NavigationEntryScreenshotManager(const NavigationEntryScreenshotManager&) =
       delete;
   NavigationEntryScreenshotManager& operator=(
       const NavigationEntryScreenshotManager&) = delete;
-  ~NavigationEntryScreenshotManager();
+  ~NavigationEntryScreenshotManager() override;
+
+  void OnDisplayAdded(const display::Display&) override;
+  void OnDisplaysRemoved(const display::Displays&) override;
+  void OnDisplayMetricsChanged(const display::Display&,
+                               uint32_t metrics_changed) override;
 
   // Called when a screenshot is stashed into a `NavigationEntry`, or when a
   // screenshot is removed from the entry (for preview, or during the
@@ -70,6 +81,8 @@ class CONTENT_EXPORT NavigationEntryScreenshotManager {
   }
 
  private:
+  void RecalculateCacheSize();
+
   // Called when the first screenshot is cached into `cache`, and when the last
   // screenshot is removed from `cache`.
   void Register(NavigationEntryScreenshotCacheEvictor* cache);

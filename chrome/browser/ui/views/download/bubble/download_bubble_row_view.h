@@ -77,7 +77,6 @@ class DownloadBubbleRowView : public views::View,
 
   // Overrides views::FocusChangeListener
   void OnWillChangeFocus(views::View* before, views::View* now) override;
-  void OnDidChangeFocus(views::View* before, views::View* now) override {}
 
   // Update the row and its elements for hover and focus events.
   void UpdateRowForHover(bool hovered);

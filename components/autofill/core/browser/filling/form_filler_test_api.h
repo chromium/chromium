@@ -29,12 +29,6 @@ class FormFillerTestApi {
         filled_fields, filled_autofill_fields, filling_product, is_refill);
   }
 
-  void TriggerRefill(const FormData& form,
-                     AutofillTriggerSource trigger_source,
-                     RefillTriggerReason refill_trigger_reason) {
-    form_filler_->TriggerRefill(form, trigger_source, refill_trigger_reason);
-  }
-
  private:
   raw_ref<FormFiller> form_filler_;
 };

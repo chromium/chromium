@@ -90,11 +90,9 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
         value: false,
       },
 
-      usernameCopyInteraction_: {
-        type: PasswordViewPageInteractions,
-        value() {
-          return PasswordViewPageInteractions.USERNAME_COPY_BUTTON_CLICKED;
-        },
+      interactionsEnum_: {
+        type: Object,
+        value: PasswordViewPageInteractions,
       },
 
       showEditPasswordDialog_: Boolean,

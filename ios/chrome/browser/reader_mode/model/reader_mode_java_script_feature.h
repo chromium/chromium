@@ -18,7 +18,7 @@ class ReaderModeJavaScriptFeature : public web::JavaScriptFeature {
   // needed.
   static ReaderModeJavaScriptFeature* GetInstance();
 
-  // Triggers the heuristic to determine whether a web page is eligible for
+  // Triggers the heuristic to determine whether a web frame is eligible for
   // distillation.
   void TriggerReaderModeHeuristic(web::WebFrame* web_frame);
 

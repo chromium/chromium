@@ -430,6 +430,7 @@ class HostProcess : public ConfigWatcher::Delegate,
 
 #if BUILDFLAG(IS_MAC)
   void ConnectAgentProcessBroker();
+  void OnAgentProcessTerminationRequested();
   void OnAgentProcessBrokerDisconnected();
 #endif
 
@@ -1277,6 +1278,8 @@ void HostProcess::BindChromotingHostServices(
 void HostProcess::ConnectAgentProcessBroker() {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
   agent_process_broker_client_ = std::make_unique<AgentProcessBrokerClient>(
+      base::BindOnce(&HostProcess::OnAgentProcessTerminationRequested,
+                     base::Unretained(this)),
       base::BindOnce(&HostProcess::OnAgentProcessBrokerDisconnected,
                      base::Unretained(this)));
   if (!agent_process_broker_client_->ConnectToServer()) {
@@ -1287,10 +1290,16 @@ void HostProcess::ConnectAgentProcessBroker() {
   agent_process_broker_client_->OnAgentProcessLaunched(this);
 }
 
-void HostProcess::OnAgentProcessBrokerDisconnected() {
+void HostProcess::OnAgentProcessTerminationRequested() {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
   HOST_LOG << "Host terminated by agent process broker.";
   ShutdownHost(kTerminatedByAgentProcessBroker);
+}
+
+void HostProcess::OnAgentProcessBrokerDisconnected() {
+  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
+  HOST_LOG << "Agent process broker disconnected.";
+  ShutdownHost(kAgentProcessBrokerDisconnected);
 }
 
 #endif  // BUILDFLAG(IS_MAC)

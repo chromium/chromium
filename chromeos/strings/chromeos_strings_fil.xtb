@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Tiyaking gagamitin ang Content transfer app ng Google para ilipat ang data ng pampaaralang account mo sa iyong personal na account bago ka mawalan ng access.</translation>
 <translation id="1026212596705997935">Ginagamit ang shortcut para sa "<ph name="CONFLICT_ACCEL_NAME" />." Pumindot ng bagong shortcut. Para palitan ang kasalukuyang shortcut, pindutin ulit ang shortcut na ito.</translation>
 <translation id="1030856839388844477">I-reset ang paggamit ng data</translation>
+<translation id="1047095725494118091">Hindi ma-download. Subukan ulit o i-restart ang iyong <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> (na) thread, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">May available na bagong feature, gamitin ang Pataas na arrow key para matuto pa.</translation>
 <translation id="1049663189809099096">pastel yellow</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Dina-download ang screen saver</translation>
 <translation id="1094693127011229778">Hindi available ang IP address</translation>
 <translation id="1100902271996134409">Gumagawa ng mga larawan...</translation>
+<translation id="1107856713690040084">Audio ng <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Tungkol sa</translation>
 <translation id="1118572504348554005">Posibleng mag-share kami ng feedback na isinumite sa pamamagitan ng form na ito sa aming mga partner para mag-troubleshoot ng mga bug at iba pang isyu na iuulat mo sa amin. Huwag magsama ng sensitibong impormasyon tulad ng mga password.</translation>
 <translation id="1119403468619527527">Masyadong kaunti ang mga salita para pasimplehin</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">I-on ang dark mode</translation>
 <translation id="2164131940279488868">Tiyaking may nakakonektang mikropono para masimulan ang pag-record ng audio</translation>
 <translation id="2173302385160625112">Suriin ang iyong koneksyon sa internet</translation>
+<translation id="2176909213844392588">Hindi ma-download ang modelo ng transcription sa <ph name="LANGUAGE_NAME" />. Subukan ulit o i-restart ang iyong <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">Nagkaproblema. Subukang buksan ulit ang app.</translation>
 <translation id="2189104374785738357">I-edit ang mga detalye ng APN</translation>
 <translation id="2195732836444333448">Masyadong abala sa ngayon. Bumalik sa ibang pagkakataon.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Document Feeder (Dalawang bahagi)</translation>
 <translation id="3201315366910775591">Puwedeng i-update ng ibang tao ang mga naka-share na album</translation>
 <translation id="3211671540163313381">D-pad para sa keymapping</translation>
+<translation id="3217462202230355157">Tiyaking nakakonekta ang iyong mikropono o subukang i-restart ang <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="3226405216343213872">Naghahanap ng mga scanner</translation>
 <translation id="3226657629376379887">Menu ng mga pagkilos sa layout</translation>
 <translation id="3227186760713762082">I-divide ang value ng <ph name="CATEGORY_TEXT" /> sa <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Eksklusibo</translation>
 <translation id="3404249063913988450">I-enable ang screen saver</translation>
 <translation id="3413935475507503304">Para magpatuloy sa update, i-click ang Susunod.</translation>
+<translation id="3416709353545797224">Nire-record ang lahat ng audio ng <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">outdoor</translation>
 <translation id="3428971106895559033">pastel</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Tiyaking naka-on ang scanner at available ito sa pamamagitan ng iyong network o ng isang direktang koneksyon</translation>
 <translation id="4159238217853743776">Hindi Buo</translation>
 <translation id="4159784952369912983">Lila</translation>
+<translation id="416219735020840807">Hindi ma-download ang modelo ng transcription. Subukan ulit o i-restart ang iyong <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4170180284036919717">Kumuha ng larawan</translation>
 <translation id="4170700058716978431">NABIGO</translation>
 <translation id="4171077696775491955">babaan ang liwanag</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Papalitan ang napiling text ng suhestyon</translation>
 <translation id="5346687412805619883">Lokal na Network</translation>
 <translation id="5358174242040570474">Nagkaproblema. Subukang pumili ulit ng wallpaper o buksan ulit ang app.</translation>
+<translation id="5368228070728130240">Hindi ma-download ang modelo para sa paggawa ng buod at pamagat. Subukan ulit o i-restart ang iyong <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">Hindi secure ang WiFi network</translation>
 <translation id="5376354385557966694">Awtomatikong light mode</translation>
 <translation id="5378184552853359930">Uri ng IP</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">May mga hindi naisagawang pagresolba sa DNS</translation>
 <translation id="6768237774506518020">Mataas na rate ng hindi naisagawang pagresolba sa DNS</translation>
 <translation id="6786747875388722282">Mga Extension</translation>
+<translation id="6789891265243243337">Kapag naka-on ang audio ng <ph name="DEVICE_TYPE" />, kina-capture ng Recorder ang lahat ng audio na nagpe-play sa device na ito</translation>
 <translation id="6791471867139427246">kulay ng liwanag ng keyboard</translation>
 <translation id="6796229976413584781">Na-delete ang shortcut</translation>
 <translation id="6798678288485555829">Pag-navigate sa text</translation>
@@ -1532,6 +1540,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8010765388850538088">Matuto pa tungkol sa Generative AI</translation>
 <translation id="8017679124341497925">Na-edit ang shortcut</translation>
 <translation id="802154636333426148">Hindi na-download</translation>
+<translation id="8027467664787098346">Matuto pa tungkol sa napiling wallpaper</translation>
 <translation id="8028993641010258682">Laki</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">I-enable ang auto color mode</translation>
@@ -1728,6 +1737,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8933650076320258356"><ph name="KEYS" /> ang piniling key para sa <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">IP address ng client</translation>
+<translation id="8938606491880817721">Hindi ma-download. Subukan ulit o i-restart ang iyong <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8944651180182756621">Kulay ng Launcher</translation>
 <translation id="8945308580158685341">mga bubuyog</translation>
 <translation id="894617464444543719">Telepono ang device.</translation>

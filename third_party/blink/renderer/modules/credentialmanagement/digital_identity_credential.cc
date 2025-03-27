@@ -13,6 +13,8 @@
 #include "base/notreached.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-shared.h"
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_v8_value_converter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -28,6 +30,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/scoped_abort_state.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
@@ -48,6 +51,7 @@ namespace blink {
 
 namespace {
 
+using mojom::blink::RequestData;
 using mojom::blink::RequestDigitalIdentityStatus;
 
 // Abort an ongoing WebIdentityDigitalCredential request. This will only be
@@ -182,28 +186,39 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
         "credential API capabilities to cross-origin child frames."));
     return;
   }
+  std::unique_ptr<WebV8ValueConverter> converter =
+      Platform::Current()->CreateWebV8ValueConverter();
 
   auto process_request =
-      [resolver](
+      [resolver, &converter](
           V8UnionObjectOrString* request_object_or_string,
-          const String& protocol,
+          const String& protocol, mojom::blink::GetRequestFormat format,
           Vector<blink::mojom::blink::DigitalCredentialRequestPtr>& requests) {
-        String stringified_request;
-        if (request_object_or_string->IsString()) {
-          stringified_request = request_object_or_string->GetAsString();
-        } else {
-          stringified_request = ValidateAndStringifyObject(
-              resolver, request_object_or_string->GetAsObject());
-          if (stringified_request.IsNull()) {
-            return;
-          }
-        }
-
         blink::mojom::blink::DigitalCredentialRequestPtr
             digital_credential_request =
                 blink::mojom::blink::DigitalCredentialRequest::New();
         digital_credential_request->protocol = protocol;
-        digital_credential_request->data = stringified_request;
+        if (request_object_or_string->IsString() &&
+            format == mojom::blink::GetRequestFormat::kLegacy) {
+          digital_credential_request->data =
+              RequestData::NewStr(request_object_or_string->GetAsString());
+        } else if (request_object_or_string->IsObject() &&
+                   format == mojom::blink::GetRequestFormat::kModern) {
+          std::unique_ptr<base::Value> digital_credential_request_data =
+              converter->FromV8Value(
+                  request_object_or_string->GetAsObject().V8Object(),
+                  resolver->GetScriptState()->GetContext());
+          if (!digital_credential_request_data) {
+            return;
+          }
+          digital_credential_request->data = RequestData::NewValue(
+              std::move(*digital_credential_request_data));
+        } else {
+          // The request is malformed, mixiing legacy and modern format.
+          // TODO(crbug.com/357100947): Add integration test for this flow.
+          return;
+        }
+
         requests.push_back(std::move(digital_credential_request));
       };
 
@@ -215,21 +230,24 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
   if (options.digital()->hasRequests()) {
     format = mojom::blink::GetRequestFormat::kModern;
     for (const auto& request : options.digital()->requests()) {
-      process_request(request->data(), request->protocol(), requests);
+      process_request(request->data(), request->protocol(), format, requests);
     }
   } else if (
       options.digital()->hasProviders() &&
       !RuntimeEnabledFeatures::
           WebIdentityDigitalCredentialsStopSupportingLegacyRequestFormatEnabled()) {
     format = mojom::blink::GetRequestFormat::kLegacy;
+    Deprecation::CountDeprecation(resolver->GetExecutionContext(),
+                                  WebFeature::kIdentityDigitalCredentials);
     for (const auto& provider : options.digital()->providers()) {
-      process_request(provider->request(), provider->protocol(), requests);
+      process_request(provider->request(), provider->protocol(), format,
+                      requests);
     }
   }
 
   if (requests.empty()) {
     resolver->RejectWithTypeError(
-        "Digital identity API needs at least one request.");
+        "Digital identity API needs at least one well-formed request.");
     return;
   }
 
@@ -273,7 +291,8 @@ void CreateDigitalIdentityCredentialInExternalSource(
   if (stringified_request_data.IsNull()) {
     return;
   }
-  digital_credential_request->data = stringified_request_data;
+  digital_credential_request->data =
+      RequestData::NewStr(stringified_request_data);
 
   UseCounter::Count(resolver->GetExecutionContext(),
                     WebFeature::kIdentityDigitalCredentials);

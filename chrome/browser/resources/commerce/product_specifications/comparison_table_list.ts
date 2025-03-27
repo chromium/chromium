@@ -73,12 +73,12 @@ export class ComparisonTableListElement extends CrLitElement {
     };
   }
 
-  tables: ComparisonTableDetails[] = [];
-  protected deletionToastDurationMs_: number = 5000;
-  protected deletionToastMessage_: string = '';
-  protected isEditing_: boolean = false;
-  protected numSelected_: number = 0;
-  protected tablesPendingDeletion_: Set<Uuid> = new Set();
+  accessor tables: ComparisonTableDetails[] = [];
+  protected accessor deletionToastDurationMs_: number = 5000;
+  protected accessor deletionToastMessage_: string = '';
+  protected accessor isEditing_: boolean = false;
+  protected accessor numSelected_: number = 0;
+  protected accessor tablesPendingDeletion_: Set<Uuid> = new Set();
 
   private deletionTimeoutId_: number|null = null;
   private pluralStringProxy_: PluralStringProxy =

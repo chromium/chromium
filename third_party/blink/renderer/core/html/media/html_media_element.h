@@ -122,7 +122,6 @@ class CORE_EXPORT HTMLMediaElement
 
   enum class PlayPromiseError {
     kNotSupported,
-    kPaused_Unknown,
     kPaused_PauseCalled,
     kPaused_EndOfPlayback,
     kPaused_RemovedFromDocument,
@@ -133,6 +132,7 @@ class CORE_EXPORT HTMLMediaElement
     kPaused_PauseRequestedByUser,
     kPaused_PauseRequestedInternally,
     kPaused_FrameHidden,
+    kPaused_LetAudioDescriptionFinish
   };
 
   bool IsMediaElement() const override { return true; }
@@ -581,7 +581,7 @@ class CORE_EXPORT HTMLMediaElement
   bool WasAutoplayInitiated() override;
   bool IsInAutoPIP() const override { return false; }
   void ResumePlayback() final;
-  void PausePlayback(PauseReason) final;
+  void PausePlayback(WebMediaPlayer::PauseReason) final;
   void DidPlayerStartPlaying() override;
   void DidPlayerPaused(bool stream_ended) override;
   void DidPlayerMutedStatusChange(bool muted) override;
@@ -676,10 +676,11 @@ class CORE_EXPORT HTMLMediaElement
 
   // This does not stop autoplay visibility observation.
   // By default, will pause the video and speech.
-  void PauseInternal(PlayPromiseError code, bool pause_speech = true);
+  void PauseInternal(WebMediaPlayer::PauseReason pause_reason);
 
   // By default, will pause the video and speech.
-  void UpdatePlayState(bool pause_speech = true);
+  void UpdatePlayState(
+      std::optional<WebMediaPlayer::PauseReason> pause_reason = std::nullopt);
 
   bool PotentiallyPlaying() const;
   bool StoppedDueToErrors() const;

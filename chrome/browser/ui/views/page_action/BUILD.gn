@@ -37,6 +37,7 @@ source_set("page_action") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/page_action:icon_type",
     "//components/metrics/structured:structured_events",
     "//ui/actions:actions_headers",
     "//ui/base/metadata",

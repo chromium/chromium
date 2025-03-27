@@ -23,21 +23,23 @@ class FeaturePromoResult {
   // numeric values should never be reused.
   //
   // Describes why a promo cannot currently show.
+  //
+  // LINT.IfChange(failure_enum)
   enum Failure {
-    kCanceled = 0,     // The promo was canceled before it could show.
-    kError = 1,        // A step unexpectedly failed while showing the promo.
-    kBlockedByUi = 2,  // The promo could not be shown due to the state of the
-                       // application: a conflict with other UI; the current
-                       // window isn't active; the anchor isn't visible; etc.
+    kCanceled = 0,        // The promo was canceled before it could show.
+    kError = 1,           // A step unexpectedly failed while showing the promo.
+    kBlockedByUi = 2,     // The promo could not be shown due to a conflict with
+                          // other UI not specified by a more specific result.
     kBlockedByPromo = 3,  // The promo could not be shown due to a conflict with
                           // another promotion.
     kBlockedByConfig =
         4,  // The promo could not show because it failed to meet the
             // requirements set out in the Feature Engagement configuration.
     kSnoozed = 5,  // The promo could not show because it is currently snoozed.
-    kBlockedByContext = 6,  // Promos are never allowed in this context (e.g. in
-                            // an app that is in "off the record" or guest
-                            // mode), but may be allowed in other contexts.
+    kBlockedByContext = 6,  // Promos are prohibited in this context (e.g. in
+                            // an app that is in "off the record" or in guest
+                            // mode, or a window that is closing), but may be
+                            // allowed in other contexts.
     kFeatureDisabled = 7,   // The promo could not show because the
                             // `base::Feature` for the IPH is not enabled.
     kPermanentlyDismissed =
@@ -65,11 +67,21 @@ class FeaturePromoResult {
                      // as the system will attempt to identify a specific
                      // blocking condition and return that failure instead.
                      // (User Education 2.5 only.)
-    kAlreadyQueued = 16,  // It is not valid to re-queue an already-queued
-                          // promo; this is the error code for when this
-                          // happens.
-    kMaxValue = kAlreadyQueued
+    kAlreadyQueued = 16,     // It is not valid to re-queue an already-queued
+                             // promo; this is the error code for when this
+                             // happens.
+    kAnchorNotVisible = 17,  // The anchor is not currently visible.
+    kAnchorSurfaceNotActive = 18,  // The target surface is not active.
+    kWindowTooSmall =
+        19,  // The target window is not large enough to accommodate the promo,
+             // or is collapsed in some way that makes success unlikely due to
+             // significant portions of the UI being hidden.
+    kBlockedByUserActivity = 20,  // The promo could not be shown because it
+                                  // takes focus and the user is doing something
+                                  // that would be interrupted (such as typing).
+    kMaxValue = kBlockedByUserActivity
   };
+  // LINT.ThenChange(//components/user_education/common/feature_promo/feature_promo_result.cc:failure_names,//tools/metrics/actions/actions.xml,//tools/metrics/histograms/enums.xml:promo_failure_enum)
 
   constexpr FeaturePromoResult() = default;
   // NOLINTNEXTLINE(google-explicit-constructor)
@@ -87,6 +99,10 @@ class FeaturePromoResult {
   //     ? FeaturePromoResult::kBlockedByUser
   //     : FeaturePromoResult::Success();
   static FeaturePromoResult Success();
+
+  // Returns the name for `failure` when outputting histograms; also used for
+  // pretty-printing.
+  static std::string GetFailureName(Failure failure);
 
   // Returns true if the promo can never show again.
   constexpr bool is_permanently_blocked() const {

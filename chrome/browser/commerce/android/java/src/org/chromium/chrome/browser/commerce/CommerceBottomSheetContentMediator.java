@@ -6,9 +6,8 @@ package org.chromium.chrome.browser.commerce;
 
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -17,18 +16,19 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
 
+@NullMarked
 public class CommerceBottomSheetContentMediator {
     private final ModelList mModelList;
     private int mContentReadyCount;
     private final int mExpectedContentCount;
-    @NonNull private final BottomSheetController mBottomSheetController;
+    private final BottomSheetController mBottomSheetController;
     private final View mCommerceBottomSheetContentContainer;
-    private CommerceBottomSheetContent mContent;
+    private @Nullable CommerceBottomSheetContent mContent;
 
     public CommerceBottomSheetContentMediator(
             ModelList modelList,
             int expectedContentCount,
-            @NonNull BottomSheetController bottomSheetController,
+            BottomSheetController bottomSheetController,
             View commerceBottomSheetContentContainer) {
         mModelList = modelList;
         mExpectedContentCount = expectedContentCount;

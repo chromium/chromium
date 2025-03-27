@@ -469,6 +469,7 @@ public class VisualStateTest extends AwParameterizedTest {
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
+    @SuppressWarnings("UnusedMethod")
     public void testVisualStateCallbackWhenContainerViewDetached() throws Throwable {
         final CountDownLatch testFinishedSignal = new CountDownLatch(1);
 

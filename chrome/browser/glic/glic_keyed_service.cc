@@ -336,16 +336,25 @@ base::CallbackListSubscription GlicKeyedService::AddWebClientCreatedCallback(
 }
 
 void GlicKeyedService::TryPreload() {
-  CHECK(GlicEnabling::IsEnabledForProfile(profile_));
-  if (!glic_profile_manager_) {
-    return;
-  }
+  CHECK(glic_profile_manager_);
+
   Profile* profile = profile_;
   if (!glic_profile_manager_->ShouldPreloadForProfile(profile)) {
     return;
   }
 
   window_controller_->Preload();
+}
+
+void GlicKeyedService::TryPreloadFre() {
+  CHECK(glic_profile_manager_);
+
+  Profile* profile = profile_;
+  if (!glic_profile_manager_->ShouldPreloadFreForProfile(profile)) {
+    return;
+  }
+
+  window_controller_->PreloadFre();
 }
 
 void GlicKeyedService::Reload() {

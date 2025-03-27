@@ -203,9 +203,13 @@ class HashTrieNode : public GarbageCollected<HashTrieNode<Data>> {
     if (memcmp(children_.data(), other.children_.data(), sizeof(children_)) !=
         0) {
       for (unsigned i = 0; i < kNumSlots; ++i) {
-        if (children_[i] != other.children_[i] &&
-            *children_[i] != *other.children_[i]) {
-          return false;
+        if (children_[i] != other.children_[i]) {
+          if (!children_[i] || !other.children_[i]) {
+            return false;
+          }
+          if (*children_[i] != *other.children_[i]) {
+            return false;
+          }
         }
       }
     }

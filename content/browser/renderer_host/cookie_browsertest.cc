@@ -31,6 +31,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -57,6 +58,17 @@
 namespace content {
 
 namespace {
+
+void EnableDevtoolsThirdPartyCookieRestriction(
+    TestDevToolsProtocolClient& frame_devtools_client) {
+  base::Value::Dict command_params;
+  frame_devtools_client.SendCommandSync("Network.enable");
+  command_params.Set("enableThirdPartyCookieRestriction", true);
+  command_params.Set("disableThirdPartyCookieMetadata", false);
+  command_params.Set("disableThirdPartyCookieHeuristics", false);
+  frame_devtools_client.SendCommandAsync("Network.setCookieControls",
+                                         std::move(command_params));
+}
 
 void SetCookieFromJS(RenderFrameHost* frame, std::string cookie) {
   EvalJsResult result = EvalJs(frame, "document.cookie = '" + cookie + "'");
@@ -319,6 +331,67 @@ IN_PROC_BROWSER_TEST_P(CookieBrowserTest, SameSiteCookies) {
   // isn't same-site with its ancestors. The SameSite=None but insecure cookie
   // is rejected.
   EXPECT_EQ("none=1", GetCookieFromJS(b_iframe));
+}
+
+IN_PROC_BROWSER_TEST_P(CookieBrowserTest,
+                       CookieJarInvalidatesCacheWithNewDevtoolsControls) {
+  // Must use HTTPS because SameSite=None cookies must be Secure.
+  net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
+  server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  server.AddDefaultHandlers(GetTestDataFilePath());
+  SetupCrossSiteRedirector(&server);
+  ASSERT_TRUE(server.Start());
+
+  // Set a single cookie that we'll access from a third-party context
+  std::string cookies_to_set =
+      "/set-cookie?none=1;SameSite=None;Secure";  // SameSite=None must be
+                                                  // Secure
+
+  GURL url = server.GetURL("b.test", cookies_to_set);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  // Turn on third-party cookie restriction from devtools. This needs to happen
+  // from a top level client
+  TestDevToolsProtocolClient devtools_client;
+  devtools_client.AttachToWebContents(web_contents);
+  EnableDevtoolsThirdPartyCookieRestriction(devtools_client);
+
+  url = server.GetURL("a.test",
+                      "/cross_site_iframe_factory.html?a.test(b.test())");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHost* oop_iframe = web_contents->GetPrimaryFrameTree()
+                                    .root()
+                                    ->child_at(0)
+                                    ->current_frame_host();
+
+  // Attach devtools client to the sub frame, but disable the controls at first
+  devtools_client.DetachProtocolClient();
+  devtools_client.AttachToFrameTreeHost(oop_iframe);
+  devtools_client.SendCommandSync("Network.disable");
+
+  // Check Get->Get
+  // Overrides should not apply after disabling the controls
+  EXPECT_EQ("none=1", GetCookieFromJS(oop_iframe));
+
+  // Confirm cache is invalidated by observing new value from document.cookie
+  // when re-enabling devtools
+  devtools_client.SendCommandSync("Network.enable");
+  EXPECT_EQ("", GetCookieFromJS(oop_iframe));
+
+  // Check Set->Get
+  // Set a cookie with devtools disabled
+  devtools_client.SendCommandSync("Network.disable");
+  SetCookieFromJS(oop_iframe, "none=2; SameSite=None; Secure");
+
+  // Confirm cache is invalidated by observing no cookie from document.cookie
+  // when re-enabling devtools
+  devtools_client.SendCommandSync("Network.enable");
+  EXPECT_EQ("", GetCookieFromJS(oop_iframe));
+
+  devtools_client.DetachProtocolClient();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieBrowserTest, CookieTruncatingCharFromJavascript) {

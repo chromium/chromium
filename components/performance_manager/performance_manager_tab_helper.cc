@@ -524,10 +524,8 @@ void PerformanceManagerTabHelper::InnerWebContentsAttached(
 
   // For a guest view, the RFH should already have been seen.
   // Note that guest views can simultaneously have openers *and* be embedded.
-  auto embedding_type = PageNode::EmbeddingType::kGuestView;
   DCHECK(frame);
-
-  page->SetEmbedderFrameNodeAndEmbeddingType(frame, embedding_type);
+  page->SetEmbedderFrameNode(frame);
 }
 
 void PerformanceManagerTabHelper::WebContentsDestroyed() {

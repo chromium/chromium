@@ -400,8 +400,8 @@ class WPTManifest:
 
         if not port.should_update_manifest(path):
             return
-        _log.debug('%s MANIFEST.json for %s ...',
-                   'Partially updating' if test_paths else 'Generating', path)
+        _log.info('%s MANIFEST.json for %s ...',
+                  'Partially updating' if test_paths else 'Generating', path)
 
         wpt_path = fs.join(port.web_tests_dir(), path)
         manifest_path = fs.join(wpt_path, MANIFEST_NAME)

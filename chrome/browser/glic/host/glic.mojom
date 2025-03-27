@@ -192,6 +192,11 @@ struct ScrollToParams {
 
   // Whether to highlight the selected content.
   bool highlight;
+
+  // The document targeted by this operation. When specified, it verifies
+  // that the document in the primary main frame of the currently focused tab
+  // matches the ID (and fails the operation if it doesn't).
+  string? document_id;
 };
 
 // Used to select content in a page to scroll to and highlight.
@@ -236,6 +241,12 @@ enum ScrollToErrorReason {
   // The currently focused tab changed or navigated while processing the
   // ScrollTo() call.
   [MinVersion=1] kFocusedTabChangedOrNavigated,
+
+  // The document_id provided doesn't match the active document in the primary
+  // main frame of the currently focused tab. The document may have been
+  // navigated away, may not currently be in focus, or may not be in a primary
+  // main frame (we don't currently support iframes).
+  [MinVersion=2] kNoMatchingDocument,
 };
 
 // Access to the browser from the web client by proxy through the WebUI.
@@ -705,29 +716,4 @@ struct OpenSettingsOptions {
   // Optionally select a field to be highlighted while opening the Glic settings
   // page.
   SettingsPageField highlightField;
-};
-
-//
-// TODO(harringtond): Delete these unused enums.
-//
-
-[Stable, Extensible]
-enum InvalidCandidateError {
-  [Default] kUnknown = 0,
-  kUnsupportedUrl = 1,
-};
-
-[Stable, Extensible]
-enum NoCandidateTabError {
-  [Default] kUnknown = 0,
-  kNoFocusableTabs = 1,
-};
-
-[Stable, Extensible]
-enum GetTabContextErrorReason {
-  [ Default] kUnknown = 0 ,
-  [ MinVersion=1 ] kWebContentsChanged = 1,
-  [ MinVersion=1 ] kPermissionDenied = 2,
-  [ MinVersion=1 ] kUnsupportedUrl = 3,
-  [ MinVersion=1 ] kNoFocusableTabs = 4,
 };

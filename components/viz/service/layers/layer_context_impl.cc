@@ -1181,6 +1181,20 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   layers.set_trace_id(
       cc::BeginMainFrameTraceId::FromUnsafeValue(update->trace_id));
   layers.SetDeviceViewportRect(update->device_viewport);
+
+  if (update->page_scale_factor <= 0 || update->min_page_scale_factor <= 0 ||
+      update->max_page_scale_factor <= 0) {
+    return base::unexpected("Invalid page scale factors");
+  }
+  layers.SetPageScaleFactorAndLimitsForDisplayTree(
+      update->page_scale_factor, update->min_page_scale_factor,
+      update->max_page_scale_factor);
+
+  if (update->external_page_scale_factor <= 0) {
+    return base::unexpected("Invalid external page scale factor");
+  }
+  layers.SetExternalPageScaleFactor(update->external_page_scale_factor);
+
   if (update->device_scale_factor <= 0) {
     return base::unexpected("Invalid device scale factor");
   }

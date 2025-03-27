@@ -390,7 +390,10 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
   }
 }
 
-Value BuildGetRequest(
+// Builds the request to be forwarded to the platform. If nullopt if the request
+// is malformed, specifically if the request is using a mix between the legacy
+// and modern request formats.
+std::optional<Value> BuildGetRequest(
     const std::vector<blink::mojom::DigitalCredentialRequestPtr>&
         digital_credential_requests,
     GetRequestFormat format) {
@@ -400,7 +403,14 @@ Value BuildGetRequest(
   for (const auto& request : digital_credential_requests) {
     auto result = Value::Dict();
     result.Set("protocol", request->protocol);
-    result.Set(request_key, request->data);
+    if (request->data->is_str() && format == GetRequestFormat::kLegacy) {
+      result.Set(request_key, request->data->get_str());
+    } else if (request->data->is_value() &&
+               format == GetRequestFormat::kModern) {
+      result.Set(request_key, request->data->get_value().Clone());
+    } else {
+      return std::nullopt;
+    }
     requests.Append(std::move(result));
   }
   Value::Dict out = Value::Dict().Set(
@@ -412,7 +422,7 @@ Value BuildGetRequest(
 Value BuildCreateRequest(blink::mojom::DigitalCredentialRequestPtr request) {
   auto result = Value::Dict();
   result.Set("protocol", request->protocol);
-  result.Set("data", request->data);
+  result.Set("data", request->data->get_str());
   return Value(std::move(result));
 }
 
@@ -469,25 +479,36 @@ void DigitalIdentityRequestImpl::Get(
           ? std::make_optional(digital_credential_requests[0]->protocol)
           : std::nullopt;
 
-  Value request_to_send = BuildGetRequest(digital_credential_requests, format);
-  auto all_requests_parsed_callback =
+  std::optional<Value> request_to_send =
+      BuildGetRequest(digital_credential_requests, format);
+  if (!request_to_send.has_value()) {
+    CompleteRequestWithError(RequestStatusForMetrics::kErrorInvalidJson);
+    return;
+  }
+  auto request_parsed_barrier_callback =
       base::BarrierCallback<ProtocolAndParsedRequest>(
           digital_credential_requests.size(),
           base::BindOnce(&DigitalIdentityRequestImpl::OnGetRequestJsonParsed,
                          weak_ptr_factory_.GetWeakPtr(), std::move(protocol),
-                         std::move(request_to_send)));
+                         std::move(request_to_send.value())));
 
   for (const auto& request : digital_credential_requests) {
-    data_decoder::DataDecoder::ParseJsonIsolated(
-        request->data,
-        base::BindOnce(
-            [](base::RepeatingCallback<void(ProtocolAndParsedRequest)> barrier,
-               std::string protocol,
-               data_decoder::DataDecoder::ValueOrError parsed_request) {
-              barrier.Run(
-                  std::pair(std::move(protocol), std::move(parsed_request)));
-            },
-            all_requests_parsed_callback, request->protocol));
+    if (request->data->is_str()) {
+      data_decoder::DataDecoder::ParseJsonIsolated(
+          request->data->get_str(),
+          base::BindOnce(
+              [](base::RepeatingCallback<void(ProtocolAndParsedRequest)>
+                     barrier,
+                 std::string protocol,
+                 data_decoder::DataDecoder::ValueOrError parsed_request) {
+                barrier.Run(
+                    std::pair(std::move(protocol), std::move(parsed_request)));
+              },
+              request_parsed_barrier_callback, request->protocol));
+    } else {
+      request_parsed_barrier_callback.Run(
+          std::pair(request->protocol, request->data->get_value().Clone()));
+    }
   }
 }
 
@@ -535,7 +556,10 @@ void DigitalIdentityRequestImpl::Create(
   }
 
   std::string protocol = digital_credential_request->protocol;
-  std::string request_json_string = digital_credential_request->data;
+  std::string request_json_string =
+      digital_credential_request->data->is_str()
+          ? digital_credential_request->data->get_str()
+          : "";
 
   Value request_to_send =
       BuildCreateRequest(std::move(digital_credential_request));

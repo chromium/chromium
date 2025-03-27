@@ -30,6 +30,7 @@ class MockCollaborationService : public CollaborationService {
                const tab_groups::EitherGroupID& either_id,
                CollaborationServiceShareOrManageEntryPoint entry),
               (override));
+  MOCK_METHOD(void, CancelAllFlows, (base::OnceCallback<void()>), (override));
   MOCK_METHOD(ServiceStatus, GetServiceStatus, (), (override));
   MOCK_METHOD(data_sharing::MemberRole,
               GetCurrentUserRoleForGroup,

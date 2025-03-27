@@ -39,7 +39,8 @@ MATCHER_P(ExpectEncoderStatusCode, expected_code, "encoder status code") {
   return arg.code() == expected_code;
 }
 
-extern std::unique_ptr<VideoEncodeAccelerator> CreateAndInitializeFakeVEA(
+extern EncoderStatus::Or<std::unique_ptr<VideoEncodeAccelerator>>
+CreateAndInitializeFakeVEA(
     const VideoEncodeAccelerator::Config& config,
     VideoEncodeAccelerator::Client* client,
     const gpu::GpuPreferences& gpu_preferences,
@@ -52,11 +53,15 @@ extern std::unique_ptr<VideoEncodeAccelerator> CreateAndInitializeFakeVEA(
   // Use FakeVEA as scoped_ptr to guarantee proper destruction via Destroy().
   auto vea = std::make_unique<FakeVideoEncodeAccelerator>(
       base::SingleThreadTaskRunner::GetCurrentDefault());
-  const bool result = vea->Initialize(config, client, media_log->Clone());
+  const EncoderStatus result =
+      vea->Initialize(config, client, media_log->Clone());
 
   // Mimic the behaviour of GpuVideoEncodeAcceleratorFactory::CreateVEA().
-  return result ? base::WrapUnique<VideoEncodeAccelerator>(vea.release())
-                : nullptr;
+  if (result.is_ok()) {
+    return base::WrapUnique<VideoEncodeAccelerator>(vea.release());
+  } else {
+    return std::move(result);
+  }
 }
 
 // Mock implementation of the client of MojoVideoEncodeAccelerator.
@@ -132,8 +137,10 @@ class MojoVideoEncodeAcceleratorIntegrationTest : public ::testing::Test {
         kInitialBitrate, VideoEncodeAccelerator::kDefaultFramerate,
         VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
         VideoEncodeAccelerator::Config::ContentType::kCamera);
-    EXPECT_TRUE(mojo_vea()->Initialize(
-        config, mock_vea_client, std::make_unique<media::NullMediaLog>()));
+    EXPECT_TRUE(mojo_vea()
+                    ->Initialize(config, mock_vea_client,
+                                 std::make_unique<media::NullMediaLog>())
+                    .is_ok());
     base::RunLoop().RunUntilIdle();
   }
 
@@ -168,8 +175,10 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
       kInitialBitrate, VideoEncodeAccelerator::kDefaultFramerate,
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
       VideoEncodeAccelerator::Config::ContentType::kCamera);
-  EXPECT_FALSE(mojo_vea()->Initialize(config, invalid_client,
-                                      std::make_unique<media::NullMediaLog>()));
+  EXPECT_FALSE(mojo_vea()
+                   ->Initialize(config, invalid_client,
+                                std::make_unique<media::NullMediaLog>())
+                   .is_ok());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -186,8 +195,10 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
       kInitialBitrate, VideoEncodeAccelerator::kDefaultFramerate,
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
       VideoEncodeAccelerator::Config::ContentType::kCamera);
-  EXPECT_FALSE(mojo_vea()->Initialize(config, mock_vea_client.get(),
-                                      std::make_unique<media::NullMediaLog>()));
+  EXPECT_FALSE(mojo_vea()
+                   ->Initialize(config, mock_vea_client.get(),
+                                std::make_unique<media::NullMediaLog>())
+                   .is_ok());
   base::RunLoop().RunUntilIdle();
 }
 // This test verifies that Initialize() fails when called with an invalid codec
@@ -204,8 +215,10 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
       kInitialBitrate, VideoEncodeAccelerator::kDefaultFramerate,
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
       VideoEncodeAccelerator::Config::ContentType::kCamera);
-  EXPECT_FALSE(mojo_vea()->Initialize(config, mock_vea_client.get(),
-                                      std::make_unique<media::NullMediaLog>()));
+  EXPECT_FALSE(mojo_vea()
+                   ->Initialize(config, mock_vea_client.get(),
+                                std::make_unique<media::NullMediaLog>())
+                   .is_ok());
   base::RunLoop().RunUntilIdle();
 }
 

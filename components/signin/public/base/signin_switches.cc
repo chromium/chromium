@@ -55,6 +55,13 @@ BASE_FEATURE(kUseHostedDomainForManagementCheckOnSignin,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Enables the History Sync Opt-in on Desktop.
+BASE_FEATURE(kEnableHistorySyncOptin,
+             "EnableHistorySyncOptin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Force enable the default browser step in the first run experience on Desktop.
 const char kForceFreDefaultBrowserStep[] = "force-fre-default-browser-step";

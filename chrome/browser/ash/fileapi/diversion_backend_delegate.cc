@@ -4,12 +4,7 @@
 
 #include "chrome/browser/ash/fileapi/diversion_backend_delegate.h"
 
-#include <unistd.h>
-
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/fileapi/copy_from_fd.h"
-#include "chrome/browser/ash/fusebox/fusebox_errno.h"
-#include "chrome/browser/ash/fusebox/fusebox_histograms.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -49,25 +44,6 @@ DuplicateFileSystemOperationContext(
     const storage::FileSystemOperationContext& original) {
   return std::make_unique<storage::FileSystemOperationContext>(
       original.file_system_context(), original.task_runner());
-}
-
-storage::AsyncFileUtil::StatusCallback HistogramWrap(
-    const char* histogram_name,
-    storage::AsyncFileUtil::StatusCallback callback) {
-  static constexpr auto func =
-      [](const char* histogram_name,
-         storage::AsyncFileUtil::StatusCallback wrappee,
-         base::File::Error error) {
-        base::UmaHistogramEnumeration(histogram_name,
-                                      fusebox::GetHistogramEnumPosixErrorCode(
-                                          fusebox::FileErrorToErrno(error)));
-
-        if (wrappee) {
-          std::move(wrappee).Run(error);
-        }
-      };
-
-  return base::BindOnce(func, histogram_name, std::move(callback));
 }
 
 }  // namespace
@@ -150,9 +126,6 @@ void DiversionBackendDelegate::EnsureFileExists(
     return;
   }
   const Policy policy = ShouldDivert(url);
-  base::UmaHistogramBoolean(
-      "FileBrowser.Diversion.EnsureFileExists.ShouldDivert",
-      policy != Policy::kDoNotDivert);
   if (policy == Policy::kDoNotDivert) {
     af_util->EnsureFileExists(std::move(context), url, std::move(callback));
     return;
@@ -472,27 +445,6 @@ void DiversionBackendDelegate::OnDiversionFinished(
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   CHECK(dest_url.is_valid());
   CHECK(src_url.is_valid());
-
-  switch (stopped_reason) {
-    case DiversionFileManager::StoppedReason::kExplicitFinish:
-      base::UmaHistogramEnumeration(
-          "FileBrowser.Diversion.Commit.ExplicitFinish.PartOne",
-          fusebox::GetHistogramEnumPosixErrorCode(
-              fusebox::FileErrorToErrno(error)));
-      callback =
-          HistogramWrap("FileBrowser.Diversion.Commit.ExplicitFinish.PartTwo",
-                        std::move(callback));
-      break;
-    case DiversionFileManager::StoppedReason::kImplicitIdle:
-      base::UmaHistogramEnumeration(
-          "FileBrowser.Diversion.Commit.ImplicitIdle.PartOne",
-          fusebox::GetHistogramEnumPosixErrorCode(
-              fusebox::FileErrorToErrno(error)));
-      callback =
-          HistogramWrap("FileBrowser.Diversion.Commit.ImplicitIdle.PartTwo",
-                        std::move(callback));
-      break;
-  }
 
   if (error != base::File::FILE_OK) {
     if (callback) {

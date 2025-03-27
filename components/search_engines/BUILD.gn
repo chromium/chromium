@@ -60,7 +60,6 @@ static_library("search_engines") {
   ]
 
   public_deps = [
-    ":regional_settings",
     ":search_engine_type",
     ":search_engine_utils",
     ":search_engines_switches",
@@ -73,6 +72,7 @@ static_library("search_engines") {
     "//third_party/metrics_proto",
     "//third_party/omnibox_proto",
     "//third_party/search_engines_data:prepopulated_engines",
+    "//third_party/search_engines_data:regional_settings",
   ]
 
   deps = [
@@ -316,16 +316,4 @@ if (!is_android) {
           root_build_dir),
     ]
   }
-}
-
-json_to_struct("regional_settings") {
-  visibility = [ "//components/search_engines:*" ]
-
-  source = "regional_settings.json"
-  schema_file = "regional_settings_schema.json"
-  namespace = "TemplateURLPrepopulateData"
-  deps = [
-    "//base",
-    "//third_party/search_engines_data:prepopulated_engines",
-  ]
 }

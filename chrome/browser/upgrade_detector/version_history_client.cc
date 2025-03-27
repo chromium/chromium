@@ -20,7 +20,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "base/system/sys_info.h"
@@ -54,52 +53,6 @@ std::string GetChannelString() {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return "stable";
-}
-
-// Returns the URL to get version info of `version` on the current platform
-// and channel. The response contains the single release with the most recent
-// `serving.endTime`.
-GURL GetVersionReleasesUrl(base::Version version) {
-// CURRENT_PLATFORM is the platform name, as ingested by the VersionHistory API.
-// Use #define instead of a constant, so it concatenates at compile-time.
-#if BUILDFLAG(IS_WIN)
-
-#if defined(ARCH_CPU_ARM64)
-#define CURRENT_PLATFORM "win_arm64"
-#elif defined(ARCH_CPU_X86_64)
-#define CURRENT_PLATFORM "win64"
-#else
-#define CURRENT_PLATFORM "win"
-#endif
-
-#elif BUILDFLAG(IS_LINUX)
-
-#define CURRENT_PLATFORM "linux"
-
-#elif BUILDFLAG(IS_MAC)
-
-#if defined(ARCH_CPU_ARM64)
-#define CURRENT_PLATFORM "mac_arm64"
-#else
-#define CURRENT_PLATFORM "mac"
-#endif
-
-#elif BUILDFLAG(IS_CHROMEOS)
-
-#define CURRENT_PLATFORM "chromeos"
-
-#else
-
-#error Unsupported platform
-
-#endif  // BUILDFLAG(IS_WIN)
-
-  return GURL(base::StringPrintf(
-      "https://versionhistory.googleapis.com/v1/chrome/"
-      "platforms/" CURRENT_PLATFORM
-      "/channels/%s/versions/%s/releases/?order_by=endtime%%20desc&page_size=1",
-      GetChannelString(), version.GetString()));
-#undef CURRENT_PLATFORM
 }
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -205,6 +158,52 @@ std::optional<base::Time> OnVersionReleasesFetched(
 }
 
 }  // namespace
+
+// Returns the URL to get version info of `version` on the current platform
+// and channel. The response contains the single release with the most recent
+// `serving.endTime`.
+GURL GetVersionReleasesUrl(base::Version version) {
+// CURRENT_PLATFORM is the platform name, as ingested by the VersionHistory API.
+// Use #define instead of a constant, so it concatenates at compile-time.
+#if BUILDFLAG(IS_WIN)
+
+#if defined(ARCH_CPU_ARM64)
+#define CURRENT_PLATFORM "win_arm64"
+#elif defined(ARCH_CPU_X86_64)
+#define CURRENT_PLATFORM "win64"
+#else
+#define CURRENT_PLATFORM "win"
+#endif
+
+#elif BUILDFLAG(IS_LINUX)
+
+#define CURRENT_PLATFORM "linux"
+
+#elif BUILDFLAG(IS_MAC)
+
+#if defined(ARCH_CPU_ARM64)
+#define CURRENT_PLATFORM "mac_arm64"
+#else
+#define CURRENT_PLATFORM "mac"
+#endif
+
+#elif BUILDFLAG(IS_CHROMEOS)
+
+#define CURRENT_PLATFORM "chromeos"
+
+#else
+
+#error Unsupported platform
+
+#endif  // BUILDFLAG(IS_WIN)
+
+  return GURL(base::StringPrintf(
+      "https://versionhistory.googleapis.com/v1/chrome/"
+      "platforms/" CURRENT_PLATFORM
+      "/channels/%s/versions/%s/releases/?order_by=endtime%%20desc&page_size=1",
+      GetChannelString(), version.GetString()));
+#undef CURRENT_PLATFORM
+}
 
 void GetLastServedDate(base::Version version, LastServedDateCallback callback) {
   FetchUrl(GetVersionReleasesUrl(std::move(version)),

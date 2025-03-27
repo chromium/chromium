@@ -6,7 +6,7 @@ element.style { ()
     font-size: 12px;
 
 [expanded] [no-affect] 
-inspected { (inspector-stylesheet:1 -> inspector-stylesheet:1:12)
+inspected { (*inspector-stylesheet:1 -> inspector-stylesheet:1:12)
     color: maroon;
     : ;
 

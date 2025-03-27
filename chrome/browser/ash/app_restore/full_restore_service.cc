@@ -897,12 +897,13 @@ void FullRestoreService::OnSessionInformationReceived(
         // Otherwise we will use the formatted url as tab title.
         std::string tab_title = base::UTF16ToUTF8(entry.title());
         const GURL& url = entry.original_request_url();
+        const GURL& virtual_url = entry.virtual_url();
         if (tab_title.empty()) {
           if (url.SchemeIs(content::kChromeUIScheme)) {
             tab_title = url.host_piece();
           } else {
             tab_title = base::UTF16ToUTF8(url_formatter::FormatUrl(
-                entry.virtual_url().is_empty() ? url : entry.virtual_url(),
+                virtual_url.is_empty() ? url : virtual_url,
                 url_formatter::kFormatUrlOmitDefaults |
                     url_formatter::kFormatUrlOmitTrivialSubdomains |
                     url_formatter::kFormatUrlOmitHTTPS,
@@ -914,7 +915,7 @@ void FullRestoreService::OnSessionInformationReceived(
           active_tab_title = tab_title;
         }
 
-        tab_infos.emplace_back(url, tab_title);
+        tab_infos.emplace_back(url, virtual_url, tab_title);
       }
     };
 

@@ -42,8 +42,8 @@ std::string_view PrivateNetworkAccessCheckResultToStringPiece(Result result) {
       return "blocked-by-inconsistent-ip-address-space";
     case Result::kAllowedPotentiallyTrustworthySameOrigin:
       return "allowed-potentially-trustworthy-same-origin";
-    case Result::kLNABlockedByMissingPermission:
-      return "lna-blocked-by-missing-permission";
+    case Result::kLNAPermissionRequired:
+      return "lna-permission-required";
     case Result::kLNAAllowedByPolicyWarn:
       return "lna-allowed-by-policy-warn";
   }
@@ -77,7 +77,7 @@ std::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
     case Result::kBlockedByPolicyPreflightWarn:
     case Result::kBlockedByPolicyPreflightBlock:
       return CorsError::kUnexpectedPrivateNetworkAccess;
-    case Result::kLNABlockedByMissingPermission:
+    case Result::kLNAPermissionRequired:
       return CorsError::kLocalNetworkAccessPermissionDenied;
   }
 }

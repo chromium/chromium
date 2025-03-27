@@ -152,11 +152,19 @@ void OnTaskNotificationsManager::CreateNotification(
   }
   auto notification_timer = std::make_unique<base::RepeatingTimer>();
 
+  // Determine the effective countdown period, using 1 second if the provided
+  // period is zero since we still need to show the notification before callback
+  // is triggered, otherwise using the provided period.
+  const base::TimeDelta effective_countdown_period =
+      params.countdown_period.is_zero() ? base::Seconds(1)
+                                        : params.countdown_period;
+
   // Add an extra kOnTaskNotificationCountdownInterval to end_time for the timer
   // to start calling the callback.
-  const base::TimeTicks end_time = params.countdown_period +
+  const base::TimeTicks end_time = effective_countdown_period +
                                    kOnTaskNotificationCountdownInterval +
                                    base::TimeTicks::Now();
+
   notification_timer->Start(
       FROM_HERE, kOnTaskNotificationCountdownInterval,
       base::BindRepeating(
@@ -209,7 +217,9 @@ void OnTaskNotificationsManager::CreateNotificationInternal(
     return;
   }
 
-  // Check if we've reached the end time and trigger callback if needed.
+  // Check if we've reached the end time and trigger callback if needed. We
+  // assume the code path execution above will be less than 1s, otherwise
+  // notification will not be shown.
   base::TimeDelta time_left = end_time - base::TimeTicks::Now();
   if (time_left.is_negative()) {
     params.completion_callback.Run();

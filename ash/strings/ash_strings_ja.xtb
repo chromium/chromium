@@ -551,6 +551,7 @@
 <translation id="2872353916818027657">メイン モニターを入れ替える</translation>
 <translation id="2872961005593481000">終了</translation>
 <translation id="2876338922445400217">画面を拡大する</translation>
+<translation id="2876760662374103627">フェイスナビが有効になっています</translation>
 <translation id="2878884018241093801">最近使用されたアイテムはありません</translation>
 <translation id="2880541185262491188">PIN の試行回数が上限を超えました。<ph name="TIME_LEFT" /> ほど待ってから、もう一度お試しください</translation>
 <translation id="2883271196820422439">マウスキーを再開</translation>
@@ -1516,6 +1517,7 @@
 <translation id="595202126637698455">パフォーマンス追跡機能が有効です</translation>
 <translation id="5955304353782037793">アプリ</translation>
 <translation id="5958529069007801266">監視対象ユーザー</translation>
+<translation id="596035801491797438">フェイスナビをオフにする</translation>
 <translation id="5960410286721553511">スマートフォンの最近の写真やメディアを表示します</translation>
 <translation id="5965524703725988602">ダークモードのオンとオフを切り替えます。<ph name="STATE_TEXT" />。</translation>
 <translation id="5975235751479998104">ウィンドウ間を順方向に移動する</translation>

@@ -96,7 +96,7 @@ found in the LICENSE file.
           android:layout_height="wrap_content"
           android:minHeight="@dimen/min_touch_target_size"
           android:paddingTop="10dp"
-          app:iconSrc="@drawable/ic_open_in_browser"
+          app:iconSrc="@drawable/ic_open_in_new_white_24dp"
           app:primaryText="@string/menu_open_in_product_default" />
 
     </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>

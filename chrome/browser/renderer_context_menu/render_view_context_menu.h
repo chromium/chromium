@@ -587,11 +587,6 @@ class RenderViewContextMenu
            // Link preview feature.
            IDC_CONTENT_CONTEXT_OPENLINKPREVIEW,
 
-           // Download commands.
-           IDC_CONTENT_CONTEXT_SAVELINKAS, IDC_CONTENT_CONTEXT_SAVEIMAGEAS,
-           IDC_CONTENT_CONTEXT_SAVEAVAS, IDC_CONTENT_CONTEXT_SAVEPLUGINAS,
-           IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS,
-
            // Image loading commands.
            IDC_CONTENT_CONTEXT_LOAD_IMAGE,
            IDC_CONTENT_CONTEXT_OPEN_ORIGINAL_IMAGE_NEW_TAB});

@@ -151,6 +151,9 @@ void TabStripNudgeButton::SetCloseButton(PressedCallback pressed_callback) {
   close_button_ = AddChildView(std::move(close_button));
 }
 
+// TODO(crbug.com/405832481): Update focus behavior of nudge button itself
+// when it isn't showing. Also make this method virtual to allow GlicButton
+// class to override the implementation.
 void TabStripNudgeButton::SetIsShowingNudge(bool is_showing) {
   is_showing_nudge_ = is_showing;
   if (is_showing) {

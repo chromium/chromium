@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Než stratíte prístup, nezabudnite pomocou aplikácie Prenos obsahu od Googlu preniesť údaje svojho školského účtu do osobného.</translation>
 <translation id="1026212596705997935">Skratka sa používa na tento účel: <ph name="CONFLICT_ACCEL_NAME" />. Stlačte novú skratku. Ak chcete existujúcu skratku nahradiť, znova ju stlačte.</translation>
 <translation id="1030856839388844477">Resetovať spotrebu dát</translation>
+<translation id="1047095725494118091">Nedá sa stiahnuť. Skúste to znova alebo reštartujte <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (počet vlákien: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">K dispozícii je nová funkcia. Viac sa dozviete pomocou šípky nahor.</translation>
 <translation id="1049663189809099096">pastelovožltý/-á</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Sťahuje sa šetrič obrazovky</translation>
 <translation id="1094693127011229778">Adresa IP nie je k dispozícii</translation>
 <translation id="1100902271996134409">Vytvárajú sa obrázky…</translation>
+<translation id="1107856713690040084">Zvuk zo zariadenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Informácie</translation>
 <translation id="1118572504348554005">Spätnú väzbu odoslanú prostredníctvom tohto formulára môžeme zdieľať s našimi partnermi na účely opravy chýb a riešenia ďalších problémov, ktoré nám hlásite. Neuvádzajte citlivé údaje, ako sú heslá.</translation>
 <translation id="1119403468619527527">Príliš málo slov na zjednodušenie</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Zapnúť tmavý režim</translation>
 <translation id="2164131940279488868">Ak chcete začať nahrávať zvuk, skontrolujte, či je pripojený mikrofón</translation>
 <translation id="2173302385160625112">Skontrolujte svoje internetové pripojenie</translation>
+<translation id="2176909213844392588">Model prepisov v jazyku <ph name="LANGUAGE_NAME" /> sa nedá stiahnuť. Skúste to znova alebo reštartujte <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">Vyskytol sa problém. Skúste aplikáciu znova otvoriť.</translation>
 <translation id="2189104374785738357">Úprava podrobností názvu prístupového bodu (APN)</translation>
 <translation id="2195732836444333448">Služba je momentálne vyťažená. Vráťte sa o chvíľu.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Podávač dokumentov (obojstranný)</translation>
 <translation id="3201315366910775591">Zdieľané albumy môžu aktualizovať iní ľudia</translation>
 <translation id="3211671540163313381">Priradený krížový ovládač</translation>
+<translation id="3217462202230355157">Uistite sa, že mikrofón pripojený, alebo skúste reštartovať <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3226405216343213872">Hľadajú sa skenery</translation>
 <translation id="3226657629376379887">Ponuka akcií rozloženia</translation>
 <translation id="3227186760713762082">Hodnotu <ph name="CATEGORY_TEXT" /> vydeľte číslom <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Exkluzívne</translation>
 <translation id="3404249063913988450">Aktivovať šetrič obrazovky</translation>
 <translation id="3413935475507503304">Ak chcete pokračovať v aktualizácii, kliknite na Ďalej.</translation>
+<translation id="3416709353545797224">Nahráva sa všetok zvuk zo zariadenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">nezastrešená</translation>
 <translation id="3428971106895559033">pastelová</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Skontrolujte, či je skener zapnutý a dostupný prostredníctvom vašej siete alebo priameho pripojenia</translation>
 <translation id="4159238217853743776">Čiastočný</translation>
 <translation id="4159784952369912983">Purpurová</translation>
+<translation id="416219735020840807">Model prepisov sa nedá stiahnuť. Skúste to znova alebo reštartujte <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4170180284036919717">Nasnímať fotku</translation>
 <translation id="4170700058716978431">NEPODARILO SA</translation>
 <translation id="4171077696775491955">zníženie jasu</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Vybraný text sa nahrádza návrhom</translation>
 <translation id="5346687412805619883">Miestna sieť</translation>
 <translation id="5358174242040570474">Vyskytol sa problém. Skúste znova vybrať tapetu alebo opäť otvorte aplikáciu.</translation>
+<translation id="5368228070728130240">Model na vytvorenie zhrnutia a názvu sa nedá stiahnuť. Skúste to znova alebo reštartujte <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">Sieť Wi‑Fi nie je zabezpečená</translation>
 <translation id="5376354385557966694">Automatický svetlý režim</translation>
 <translation id="5378184552853359930">Typ adresy IP</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">Neúspešné preklady DNS</translation>
 <translation id="6768237774506518020">Vysoká miera neúspešných prekladov DNS</translation>
 <translation id="6786747875388722282">Rozšírenia</translation>
+<translation id="6789891265243243337">Keď je zvuk zariadenia <ph name="DEVICE_TYPE" /> zapnutý, Diktafón zaznamenáva všetky zvuky prehrávané v tomto zariadení</translation>
 <translation id="6791471867139427246">farba osvetlenia klávesnice</translation>
 <translation id="6796229976413584781">Odkaz bol odstránený</translation>
 <translation id="6798678288485555829">Navigácia v texte</translation>
@@ -1728,6 +1736,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8930622219860340959">Bezdrôtové pripojenie</translation>
 <translation id="8933650076320258356">Pre smer <ph name="DIRECTION" /> je vybraný kláves <ph name="KEYS" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Adresa IP klienta</translation>
+<translation id="8938606491880817721">Nedá sa stiahnuť. Skúste to znova alebo reštartujte <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8944651180182756621">Farba Spúšťača</translation>
 <translation id="8945308580158685341">včely</translation>
 <translation id="894617464444543719">Zariadenie je telefón.</translation>

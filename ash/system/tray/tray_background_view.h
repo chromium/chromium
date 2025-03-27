@@ -76,6 +76,14 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
     kAllRounded
   };
 
+  enum class CloseReason {
+    // No reason given for closing the bubble.
+    kUnspecified,
+
+    // Bubble is closed due to window activation change.
+    kWindowActivation,
+  };
+
   TrayBackgroundView(Shelf* shelf,
                      const TrayBackgroundViewCatalogName catalog_name,
                      RoundedCornerBehavior corner_behavior = kAllRounded);
@@ -169,8 +177,9 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   virtual void UpdateTrayItemColor(bool is_active) = 0;
 
   // Calls `CloseBubbleInternal` which is implemented by each child tray view.
-  // The focusing behavior is handled in this method.
-  void CloseBubble();
+  // The focusing behavior is handled in this method. `close_reason` is set by
+  // caller to indicate why bubble needs to be closed.
+  void CloseBubble(CloseReason close_reason = CloseReason::kUnspecified);
 
   // Gets the anchor for bubbles, which is tray_container().
   views::View* GetBubbleAnchor() const;

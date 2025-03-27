@@ -98,7 +98,6 @@ class TaskManagerMac : public ui::TableModelObserver, public TableViewDelegate {
   bool IsTableSorted() const override;
   TableSortDescriptor GetSortDescriptor() const override;
   void SetSortDescriptor(const TableSortDescriptor& descriptor) override;
-  void MaybeHighlightActiveTask() override;
 
   void OnAppTerminating();
 

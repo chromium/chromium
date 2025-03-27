@@ -26,8 +26,6 @@ BASE_DECLARE_FEATURE(kTabGroupSyncAutoOpenKillSwitch);
 
 BASE_DECLARE_FEATURE(kRestrictDownloadOnSyncedTabs);
 
-BASE_DECLARE_FEATURE(kDeferMediaLoadInBackgroundTab);
-
 BASE_DECLARE_FEATURE(kUseAlternateHistorySyncIllustration);
 
 BASE_DECLARE_FEATURE(kForceRemoveClosedTabGroupsOnStartup);

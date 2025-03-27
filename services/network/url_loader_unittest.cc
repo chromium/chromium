@@ -879,11 +879,6 @@ class URLLoaderTest : public testing::Test {
           ignore_last_upload_file_);
     }
     context().set_network_context_client(network_context_client.get());
-    if (ignore_certificate_errors_) {
-      url_loader_network_observer =
-          std::make_unique<TestURLLoaderNetworkObserver>();
-      url_loader_network_observer->set_ignore_certificate_errors(true);
-    }
 
     base::RunLoop delete_run_loop;
     mojo::Remote<mojom::URLLoader> loader;
@@ -894,8 +889,7 @@ class URLLoaderTest : public testing::Test {
     URLLoaderOptions url_loader_options;
     url_loader_options.options = options;
     url_loader_options.url_loader_network_observer =
-        url_loader_network_observer ? url_loader_network_observer->Bind()
-                                    : mojo::NullRemote();
+        network_observer_ ? network_observer_->Bind() : mojo::NullRemote();
     url_loader_options.devtools_observer =
         devtools_observer_ ? devtools_observer_->Bind() : mojo::NullRemote();
     url_loader_options.accept_ch_frame_observer =
@@ -913,6 +907,7 @@ class URLLoaderTest : public testing::Test {
     ran_ = true;
     devtools_observer_ = nullptr;
     accept_ch_frame_observer_ = nullptr;
+    network_observer_ = nullptr;
 
     if (expect_redirect_) {
       client_.RunUntilRedirectReceived();
@@ -1103,6 +1098,10 @@ class URLLoaderTest : public testing::Test {
   void set_request_client_security_state(mojom::ClientSecurityStatePtr state) {
     request_client_security_state_ = std::move(state);
   }
+  void set_network_observer_for_next_request(
+      TestURLLoaderNetworkObserver* observer) {
+    network_observer_ = observer;
+  }
   void set_devtools_observer_for_next_request(MockDevToolsObserver* observer) {
     devtools_observer_ = observer;
   }
@@ -1260,6 +1259,7 @@ class URLLoaderTest : public testing::Test {
   bool client_side_content_decoding_enabled_ = false;
   mojom::ClientSecurityStatePtr factory_client_security_state_;
   mojom::ClientSecurityStatePtr request_client_security_state_;
+  raw_ptr<TestURLLoaderNetworkObserver> network_observer_ = nullptr;
   raw_ptr<MockDevToolsObserver> devtools_observer_ = nullptr;
   scoped_refptr<ResourceRequestBody> request_body_;
   net::HttpRequestHeaders additional_headers_;
@@ -2229,12 +2229,39 @@ TEST_P(ParameterizedURLLoaderTest,
               Pointee(Eq("allowed-potentially-trustworthy-same-origin")));
 }
 
-TEST_P(ParameterizedURLLoaderTest, SecurePublicToLocalPermission) {
+class TestLNAPermissionURLLoaderNetworkObserver
+    : public TestURLLoaderNetworkObserver {
+ public:
+  explicit TestLNAPermissionURLLoaderNetworkObserver(bool permission_granted)
+      : granted_(permission_granted) {}
+  void OnLocalNetworkAccessPermissionRequired(
+      OnLocalNetworkAccessPermissionRequiredCallback callback) override {
+    // A TestURLLoaderNetworkObserver is configured for a single request, and
+    // within a single request this event should only be called once.
+    EXPECT_FALSE(called_);
+    called_ = true;
+    std::move(callback).Run(granted_);
+  }
+
+ private:
+  const bool granted_;
+  // Track whether OnLocalNetworkAccessPermissionRequired() has been called.
+  bool called_ = false;
+};
+
+TEST_P(ParameterizedURLLoaderTest, SecurePublicToLocalPermissionDenied) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLocalNetworkAccessChecks);
   auto client_security_state = NewSecurityState();
   client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
   client_security_state->private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
   set_factory_client_security_state(std::move(client_security_state));
+
+  // Simulate that the permission request was denied.
+  TestLNAPermissionURLLoaderNetworkObserver observer(
+      /*permission_granted=*/false);
+  set_network_observer_for_next_request(&observer);
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
@@ -2247,17 +2274,72 @@ TEST_P(ParameterizedURLLoaderTest, SecurePublicToLocalPermission) {
           mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
 }
 
-TEST_P(ParameterizedURLLoaderTest, SecurePrivateToLocalPermission) {
+TEST_P(ParameterizedURLLoaderTest, SecurePublicToLocalPermissionGranted) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLocalNetworkAccessChecks);
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  // Simulate that the permission request was granted.
+  TestLNAPermissionURLLoaderNetworkObserver observer(
+      /*permission_granted=*/true);
+  set_network_observer_for_next_request(&observer);
+
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
+  EXPECT_THAT(
+      client()->completion_status().cors_error_status,
+      Optional(CorsErrorStatus(
+          mojom::CorsError::kLocalNetworkAccessPermissionDenied,
+          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
+}
+
+TEST_P(ParameterizedURLLoaderTest, SecurePrivateToLocalPermissionDenied) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLocalNetworkAccessChecks);
   auto client_security_state = NewSecurityState();
   client_security_state->ip_address_space = mojom::IPAddressSpace::kPrivate;
   client_security_state->private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
   set_factory_client_security_state(std::move(client_security_state));
 
+  // Simulate that the permission request was denied.
+  TestLNAPermissionURLLoaderNetworkObserver observer(
+      /*permission_granted=*/false);
+  set_network_observer_for_next_request(&observer);
+
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
   EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
             LoadRequest(request));
+  EXPECT_THAT(
+      client()->completion_status().cors_error_status,
+      Optional(CorsErrorStatus(
+          mojom::CorsError::kLocalNetworkAccessPermissionDenied,
+          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
+}
+
+TEST_P(ParameterizedURLLoaderTest, SecurePrivateToLocalPermissionGranted) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLocalNetworkAccessChecks);
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPrivate;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  // Simulate that the permission request was granted.
+  TestLNAPermissionURLLoaderNetworkObserver observer(
+      /*permission_granted=*/true);
+  set_network_observer_for_next_request(&observer);
+
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
   EXPECT_THAT(
       client()->completion_status().cors_error_status,
       Optional(CorsErrorStatus(
@@ -2266,6 +2348,8 @@ TEST_P(ParameterizedURLLoaderTest, SecurePrivateToLocalPermission) {
 }
 
 TEST_P(ParameterizedURLLoaderTest, SecureLocalToLocalPermission) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLocalNetworkAccessChecks);
   auto client_security_state = NewSecurityState();
   client_security_state->ip_address_space = mojom::IPAddressSpace::kLocal;
   client_security_state->private_network_request_policy =
@@ -3467,7 +3551,11 @@ TEST_P(ParameterizedURLLoaderTest, SSLInfoOnResponseWithCertificateError) {
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
   ASSERT_TRUE(https_server.Start());
   set_send_ssl_for_cert_error();
-  set_ignore_certificate_errors();
+
+  TestURLLoaderNetworkObserver observer;
+  observer.set_ignore_certificate_errors(true);
+  set_network_observer_for_next_request(&observer);
+
   EXPECT_EQ(net::OK, Load(https_server.GetURL("/")));
   ASSERT_TRUE(client()->completion_status().ssl_info.has_value());
   EXPECT_TRUE(client()->completion_status().ssl_info.value().cert);
@@ -5020,12 +5108,15 @@ class StorageAccessHeaderURLLoaderTest : public URLLoaderTest {
                           kStorageAccessRedirectLoadPath)) {
       return nullptr;
     }
+    std::string destination =
+        base::UnescapeBinaryURLComponent(request.GetURL().query_piece());
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_content_type("text/plain");
     http_response->AddCustomHeader("Activate-Storage-Access", "load");
     http_response->set_code(net::HTTP_PERMANENT_REDIRECT);
-    http_response->AddCustomHeader("Location", "/empty.html");
+    http_response->AddCustomHeader(
+        "Location", destination.empty() ? "/empty.html" : destination);
     return http_response;
   }
 };
@@ -5233,6 +5324,96 @@ TEST_F(StorageAccessHeaderURLLoaderTest, RedirectWithLoad) {
   // The redirect response included the `load` header, but the final response
   // did not, so the URLLoader should not propagate it.
   EXPECT_FALSE(client()->response_head()->load_with_storage_access);
+}
+
+// `URLLoader::ConfigureRequest` only calls
+// `net::URLRequest::set_storage_access_status` if the request's credentials
+// mode is `kInclude` but `URLLoader::ShouldSetLoadWithStorageAccess` calculates
+// it anyway if the `Activate-Storage-Access: load` header is present. Once with
+// the initial URL during `OnReceivedRedirect` and once more with the final URL
+// during `FollowRedirect`. This test makes sure that the final response's
+// `load_with_storage_access` is set properly when the request's credentials
+// mode is NOT `kInclude` and a redirect is involved with `load` on both, but
+// with different storage access status calculated for each request.
+TEST_F(StorageAccessHeaderURLLoaderTest,
+       OmitCredentials_RedirectWithLoadActive_DestinationLoadNone) {
+  base::RunLoop delete_run_loop;
+
+  GURL destination_url =
+      test_server_.GetURL("/set-header?Activate-Storage-Access: load");
+  ResourceRequest request = CreateResourceRequest(
+      "GET", test_server_.GetURL(base::StrCat(
+                 {kStorageAccessRedirectLoadPath, "?",
+                  base::EscapeQueryParamValue(destination_url.spec(), true)})));
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+
+  test_network_delegate()->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kActive);
+  test_network_delegate()->set_is_storage_access_header_enabled(true);
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilRedirectReceived();
+  EXPECT_TRUE(client()->response_head()->load_with_storage_access);
+  test_network_delegate()->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kNone);
+  url_loader->FollowRedirect({}, {}, {}, std::nullopt);
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  EXPECT_FALSE(client()->response_head()->load_with_storage_access);
+}
+
+// `URLLoader::ConfigureRequest` only calls
+// `net::URLRequest::set_storage_access_status` if the request's credentials
+// mode is `kInclude` but `URLLoader::ShouldSetLoadWithStorageAccess` calculates
+// it anyway if the `Activate-Storage-Access: load` header is present. Once with
+// the initial URL during `OnReceivedRedirect` and once more with the final URL
+// during `FollowRedirect`. This test makes sure that the final response's
+// `load_with_storage_access` is set properly when the request's credentials
+// mode is NOT `kInclude` and a redirect is involved with `load` on both, but
+// with different storage access status calculated for each request.
+TEST_F(StorageAccessHeaderURLLoaderTest,
+       OmitCredentials_RedirectWithLoadNone_DestinationLoadActive) {
+  base::RunLoop delete_run_loop;
+
+  GURL destination_url =
+      test_server_.GetURL("/set-header?Activate-Storage-Access: load");
+  ResourceRequest request = CreateResourceRequest(
+      "GET", test_server_.GetURL(base::StrCat(
+                 {kStorageAccessRedirectLoadPath, "?",
+                  base::EscapeQueryParamValue(destination_url.spec(), true)})));
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+
+  test_network_delegate()->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kNone);
+  test_network_delegate()->set_is_storage_access_header_enabled(true);
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilRedirectReceived();
+  EXPECT_FALSE(client()->response_head()->load_with_storage_access);
+  test_network_delegate()->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kActive);
+  url_loader->FollowRedirect({}, {}, {}, std::nullopt);
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  EXPECT_TRUE(client()->response_head()->load_with_storage_access);
 }
 
 TEST_F(StorageAccessHeaderURLLoaderTest, NoLoadWhenHeaderNotEnabled) {
@@ -8068,6 +8249,42 @@ TEST_F(URLLoaderFakeTransportInfoTest, AcceptCHFrameIgnoreMalformed) {
   // Despite its name, IsError(OK) asserts that the matched value is OK.
   EXPECT_THAT(Load(url), IsError(net::OK));
   EXPECT_FALSE(accept_ch_frame_observer.called());
+}
+
+// Test that a request that triggers both Local Network Access checks and
+// ACCEPT_CH frame processing is handled correctly.
+TEST_F(URLLoaderFakeTransportInfoTest, LocalNetworkAccessAndAcceptCHFrame) {
+  // Set up enforcement of Local Network Access checks.
+  base::test::ScopedFeatureList feature_list(
+      features::kLocalNetworkAccessChecks);
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
+  set_factory_client_security_state(std::move(client_security_state));
+
+  // Simulate that the permission request was granted.
+  TestLNAPermissionURLLoaderNetworkObserver observer(
+      /*permission_granted=*/true);
+  set_network_observer_for_next_request(&observer);
+
+  // Set up ACCEPT_CH frame.
+  net::TransportInfo info = net::DefaultTransportInfo();
+  info.accept_ch_frame = "Sec-CH-UA-Platform";
+
+  // Trigger a cross-origin resource request that goes to a target URL that will
+  // have an ACCEPT_CH frame.
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      request.url, std::make_unique<FakeTransportInfoInterceptor>(info));
+  MockAcceptCHFrameObserver accept_ch_frame_observer;
+  set_accept_ch_frame_observer_for_next_request(&accept_ch_frame_observer);
+
+  // Despite its name, IsError(OK) asserts that the matched value is OK.
+  EXPECT_EQ(net::OK, LoadRequest(request));
+  EXPECT_THAT(
+      accept_ch_frame_observer.accept_ch_frame(),
+      testing::ElementsAreArray({mojom::WebClientHintsType::kUAPlatform}));
 }
 
 TEST_P(ParameterizedURLLoaderTest, CookieSettingOverridesCopiedToURLRequest) {

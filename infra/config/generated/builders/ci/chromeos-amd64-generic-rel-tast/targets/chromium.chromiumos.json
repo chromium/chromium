@@ -127,6 +127,9 @@
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "disk_usage_tast_test",

@@ -165,8 +165,6 @@ class LocationBarView
   // Shows |text| as an inline autocompletion.  This is useful for IMEs, where
   // we can't show the autocompletion inside the actual OmniboxView.  See
   // comments on |ime_inline_autocomplete_view_|.
-  void SetImePrefixAutocompletion(std::u16string_view text);
-  std::u16string_view GetImePrefixAutocompletion() const;
   void SetImeInlineAutocompletion(std::u16string_view text);
   std::u16string_view GetImeInlineAutocompletion() const;
 
@@ -232,7 +230,6 @@ class LocationBarView
   void ChildPreferredSizeChanged(views::View* child) override;
 
   // views::FocusChangeListener:
-  void OnWillChangeFocus(views::View* before, views::View* now) override;
   void OnDidChangeFocus(views::View* before, views::View* now) override;
 
   // IconLabelBubbleView::Delegate:
@@ -358,8 +355,7 @@ class LocationBarView
                               bool reload_prompt);
 
   // Helper to set the texts of labels adjacent to the omnibox:
-  // `ime_prefix_autocomplete_view_`, `ime_inline_autocomplete_view_`, and
-  // `omnibox_additional_text_view_`.
+  // `ime_inline_autocomplete_view_`, and `omnibox_additional_text_view_`.
   void SetOmniboxAdjacentText(views::Label* label, std::u16string_view text);
 
   // LocationBar:
@@ -496,7 +492,6 @@ class LocationBarView
   // we shouldn't change the text or selection inside the OmniboxView itself,
   // since this will conflict with the IME's control over the text.  So instead
   // we show any autocompletion in a separate field after the OmniboxView.
-  raw_ptr<views::Label> ime_prefix_autocomplete_view_ = nullptr;
   raw_ptr<views::Label> ime_inline_autocomplete_view_ = nullptr;
 
   // The complementary omnibox label displaying the selected suggestion's title

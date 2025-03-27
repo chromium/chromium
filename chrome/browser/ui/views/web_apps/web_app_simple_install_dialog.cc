@@ -140,7 +140,7 @@ void ShowSimpleInstallDialogForWebApps(
     delegate_weak_ptr->CloseDialogAsIgnored();
     return;
   }
-  delegate_weak_ptr->StartObservingWidgetForChanges(simple_dialog_widget);
+  delegate_weak_ptr->OnWidgetShownStartTracking(simple_dialog_widget);
 
   base::RecordAction(base::UserMetricsAction("WebAppInstallShown"));
   if (g_auto_accept_pwa_for_testing) {

@@ -450,7 +450,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 mActivity,
                 mActivityTabProvider,
                 mIntentDataProvider.get().getCustomButtonsOnToolbar(),
-                AppCompatResources.getDrawable(mActivity, R.drawable.ic_open_in_browser),
+                AppCompatResources.getDrawable(mActivity, R.drawable.ic_open_in_new_white_24dp),
                 mOpenInBrowserRunnable,
                 () -> addVoiceSearchAdaptiveButton(trackerSupplier));
     }

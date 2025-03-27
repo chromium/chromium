@@ -376,19 +376,14 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       this.textSelectionEndIndex = -1;
     });
     this.eventTracker_.add(
+        document, 'update-selected-region-context-menu',
+        (e: CustomEvent<SelectedRegionContextMenuData>) => {
+          this.updateSelectedRegionContextMenu(e.detail);
+        });
+    this.eventTracker_.add(
         document, 'show-selected-region-context-menu',
         (e: CustomEvent<SelectedRegionContextMenuData>) => {
-          this.selectedRegionContextMenuX =
-              e.detail.box.box.x - e.detail.box.box.width / 2;
-          this.selectedRegionContextMenuY =
-              e.detail.box.box.y + e.detail.box.box.height / 2;
-          this.selectedRegionContextMenuBox = e.detail.box;
-          this.detectedTextStartIndex = e.detail.selectionStartIndex;
-          this.detectedTextEndIndex = e.detail.selectionEndIndex;
-          this.showDetectedTextContextMenuOptions =
-              this.detectedTextStartIndex !== -1 &&
-              this.detectedTextEndIndex !== -1;
-          this.highlightedText = e.detail.text ?? this.highlightedText;
+          this.updateSelectedRegionContextMenu(e.detail);
           this.setShowSelectedRegionContextMenu(
               (!this.suppressCopyAndSaveAsImage &&
                (this.enableCopyAsImage || this.enableSaveAsImage)) ||
@@ -1228,6 +1223,17 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.getTextSelectionLayer().onCopyDetectedText(
         this.detectedTextStartIndex, this.detectedTextEndIndex,
         this.copyText.bind(this));
+  }
+
+  private updateSelectedRegionContextMenu(data: SelectedRegionContextMenuData) {
+    this.selectedRegionContextMenuX = data.box.box.x - data.box.box.width / 2;
+    this.selectedRegionContextMenuY = data.box.box.y + data.box.box.height / 2;
+    this.selectedRegionContextMenuBox = data.box;
+    this.detectedTextStartIndex = data.selectionStartIndex;
+    this.detectedTextEndIndex = data.selectionEndIndex;
+    this.showDetectedTextContextMenuOptions =
+        this.detectedTextStartIndex !== -1 && this.detectedTextEndIndex !== -1;
+    this.highlightedText = data.text ?? this.highlightedText;
   }
 
   /**

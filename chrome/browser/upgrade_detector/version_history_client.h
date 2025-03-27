@@ -10,6 +10,12 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "url/gurl.h"
+
+// Returns the URL to get version info of `version` on the current platform
+// and channel. The response contains the single release with the most recent
+// `serving.endTime`.
+GURL GetVersionReleasesUrl(base::Version version);
 
 using LastServedDateCallback =
     base::OnceCallback<void(std::optional<base::Time>)>;

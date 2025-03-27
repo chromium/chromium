@@ -177,6 +177,7 @@ void LogoutConfirmationController::ConfirmLogout(base::TimeTicks logout_time,
   logout_time_ = logout_time;
 
   if (!dialog_) {
+    observers_.Notify(&Observer::OnLogoutConfirmationStarted);
     // Show confirmation dialog unless this is a unit test without a Shell.
     if (Shell::HasInstance())
       dialog_ = new LogoutConfirmationDialog(this, logout_time_);
@@ -221,6 +222,14 @@ void LogoutConfirmationController::OnDialogClosed() {
   logout_time_ = base::TimeTicks();
   dialog_ = nullptr;
   logout_timer_.Stop();
+}
+
+void LogoutConfirmationController::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void LogoutConfirmationController::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void LogoutConfirmationController::SetClockForTesting(

@@ -337,7 +337,7 @@ TEST(DnsRecordParserTest, ReadRecord) {
   EXPECT_EQ(dns_protocol::kTypeCNAME, record.type);
   EXPECT_EQ(dns_protocol::kClassIN, record.klass);
   EXPECT_EQ(0x00012474u, record.ttl);
-  EXPECT_EQ(6u, record.rdata.length());
+  EXPECT_EQ(6u, record.rdata.size());
   EXPECT_EQ(6u, parser.ReadName(record.rdata.data(), &out));
   EXPECT_EQ("foo.example.com", out);
   EXPECT_FALSE(parser.AtEnd());
@@ -347,8 +347,8 @@ TEST(DnsRecordParserTest, ReadRecord) {
   EXPECT_EQ(dns_protocol::kTypeA, record.type);
   EXPECT_EQ(dns_protocol::kClassIN, record.klass);
   EXPECT_EQ(0x00201355u, record.ttl);
-  EXPECT_EQ(4u, record.rdata.length());
-  EXPECT_EQ(std::string_view("\x7f\x02\x04\x01"), record.rdata);
+  EXPECT_EQ(4u, record.rdata.size());
+  EXPECT_EQ(record.rdata, base::span<const uint8_t>({0x7f, 0x02, 0x04, 0x01}));
   EXPECT_TRUE(parser.AtEnd());
 
   // Test truncated record.
@@ -1252,7 +1252,8 @@ TEST(DnsResponseWriteTest, SingleARecordAnswer) {
   answer.type = dns_protocol::kTypeA;
   answer.klass = dns_protocol::kClassIN;
   answer.ttl = 120;  // 120 seconds.
-  answer.SetOwnedRdata(std::string("\xc0\xa8\x00\x01", 4));
+  const uint8_t record[] = {0xc0, 0xa8, 0x00, 0x01};
+  answer.SetOwnedRdata(record);
   std::vector<DnsResourceRecord> answers(1, answer);
   DnsResponse response(0x1234 /* response_id */, true /* is_authoritative*/,
                        answers, {} /* authority_records */,
@@ -1288,7 +1289,8 @@ TEST(DnsResponseWriteTest, SingleARecordAnswerWithFinalDotInName) {
   answer.type = dns_protocol::kTypeA;
   answer.klass = dns_protocol::kClassIN;
   answer.ttl = 120;  // 120 seconds.
-  answer.SetOwnedRdata(std::string("\xc0\xa8\x00\x01", 4));
+  const uint8_t record[] = {0xc0, 0xa8, 0x00, 0x01};
+  answer.SetOwnedRdata(record);
   std::vector<DnsResourceRecord> answers(1, answer);
   DnsResponse response(0x1234 /* response_id */, true /* is_authoritative*/,
                        answers, {} /* authority_records */,
@@ -1342,7 +1344,8 @@ TEST(DnsResponseWriteTest, SingleARecordAnswerWithQuestion) {
   answer.type = dns_protocol::kTypeA;
   answer.klass = dns_protocol::kClassIN;
   answer.ttl = 120;  // 120 seconds.
-  answer.SetOwnedRdata(std::string("\xc0\xa8\x00\x01", 4));
+  const uint8_t record[] = {0xc0, 0xa8, 0x00, 0x01};
+  answer.SetOwnedRdata(record);
   std::vector<DnsResourceRecord> answers(1, answer);
   DnsResponse response(0x1234 /* id */, true /* is_authoritative*/, answers,
                        {} /* authority_records */, {} /* additional records */,
@@ -1408,7 +1411,8 @@ TEST(DnsResponseWriteTest,
   answer.type = dns_protocol::kTypeA;
   answer.klass = dns_protocol::kClassIN;
   answer.ttl = 120;  // 120 seconds.
-  answer.SetOwnedRdata(std::string("\xc0\xa8\x00\x01", 4));
+  const uint8_t record[] = {0xc0, 0xa8, 0x00, 0x01};
+  answer.SetOwnedRdata(record);
   std::vector<DnsResourceRecord> answers(1, answer);
   DnsResponse response(0x1234 /* id */, true /* is_authoritative*/, answers,
                        {} /* authority_records */, {} /* additional records */,
@@ -1445,8 +1449,9 @@ TEST(DnsResponseWriteTest, SingleQuadARecordAnswer) {
   answer.type = dns_protocol::kTypeAAAA;
   answer.klass = dns_protocol::kClassIN;
   answer.ttl = 120;  // 120 seconds.
-  answer.SetOwnedRdata(std::string(
-      "\xfd\x12\x34\x56\x78\x9a\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01", 16));
+  const uint8_t record[] = {0xfd, 0x12, 0x34, 0x56, 0x78, 0x9a, 0x00, 0x01,
+                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
+  answer.SetOwnedRdata(record);
   std::vector<DnsResourceRecord> answers(1, answer);
   DnsResponse response(0x1234 /* id */, true /* is_authoritative*/, answers,
                        {} /* authority_records */, {} /* additional records */,
@@ -1504,7 +1509,8 @@ TEST(DnsResponseWriteTest,
   answer.type = dns_protocol::kTypeA;
   answer.klass = dns_protocol::kClassIN;
   answer.ttl = 120;  // 120 seconds.
-  answer.SetOwnedRdata(std::string("\xc0\xa8\x00\x01", 4));
+  const uint8_t record[] = {0xc0, 0xa8, 0x00, 0x01};
+  answer.SetOwnedRdata(record);
   std::vector<DnsResourceRecord> answers(1, answer);
   net::DnsResourceRecord additional_record;
   additional_record.name = dotted_name;
@@ -1512,7 +1518,8 @@ TEST(DnsResponseWriteTest,
   additional_record.klass = dns_protocol::kClassIN;
   additional_record.ttl = 120;  // 120 seconds.
   // Bitmap for "www.example.com" with type A set.
-  additional_record.SetOwnedRdata(std::string("\xc0\x0c\x00\x01\x40", 5));
+  const uint8_t record2[] = {0xc0, 0x0c, 0x00, 0x01, 0x40};
+  additional_record.SetOwnedRdata(record2);
   std::vector<DnsResourceRecord> additional_records(1, additional_record);
   DnsResponse response(0x1234 /* id */, true /* is_authoritative*/, answers,
                        {} /* authority_records */, additional_records, query);
@@ -1555,14 +1562,16 @@ TEST(DnsResponseWriteTest, TwoAnswersWithAAndQuadARecords) {
   answer1.type = dns_protocol::kTypeA;
   answer1.klass = dns_protocol::kClassIN;
   answer1.ttl = 120;  // 120 seconds.
-  answer1.SetOwnedRdata(std::string("\xc0\xa8\x00\x01", 4));
+  const uint8_t record[] = {0xc0, 0xa8, 0x00, 0x01};
+  answer1.SetOwnedRdata(record);
   net::DnsResourceRecord answer2;
   answer2.name = "example.org";
   answer2.type = dns_protocol::kTypeAAAA;
   answer2.klass = dns_protocol::kClassIN;
   answer2.ttl = 60;
-  answer2.SetOwnedRdata(std::string(
-      "\xfd\x12\x34\x56\x78\x9a\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01", 16));
+  const uint8_t record2[] = {0xfd, 0x12, 0x34, 0x56, 0x78, 0x9a, 0x00, 0x01,
+                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
+  answer2.SetOwnedRdata(record2);
   std::vector<DnsResourceRecord> answers(2);
   answers[0] = answer1;
   answers[1] = answer2;
@@ -1600,7 +1609,8 @@ TEST(DnsResponseWriteTest, AnswerWithAuthorityRecord) {
   record.type = dns_protocol::kTypeA;
   record.klass = dns_protocol::kClassIN;
   record.ttl = 120;  // 120 seconds.
-  record.SetOwnedRdata(std::string("\xc0\xa8\x00\x01", 4));
+  const uint8_t testdata[] = {0xc0, 0xa8, 0x00, 0x01};
+  record.SetOwnedRdata(testdata);
   std::vector<DnsResourceRecord> authority_records(1, record);
   DnsResponse response(0x1235 /* response_id */, true /* is_authoritative*/,
                        {} /* answers */, authority_records,
@@ -1649,9 +1659,8 @@ TEST(DnsResponseWriteTest, AAAAQuestionAndCnameAnswer) {
   answer.type = dns_protocol::kTypeCNAME;
   answer.klass = dns_protocol::kClassIN;
   answer.ttl = 120;  // 120 seconds.
-  answer.SetOwnedRdata(
-      std::string(reinterpret_cast<char*>(dns_name.value().data()),
-                  dns_name.value().size()));
+  answer.SetOwnedRdata(base::span<const uint8_t>(dns_name.value().data(),
+                                                 dns_name.value().size()));
   std::vector<DnsResourceRecord> answers(1, answer);
 
   std::optional<DnsQuery> query(std::in_place, 114 /* id */, dns_name.value(),
@@ -1671,14 +1680,16 @@ TEST(DnsResponseWriteTest, WrittenResponseCanBeParsed) {
   answer.type = dns_protocol::kTypeA;
   answer.klass = dns_protocol::kClassIN;
   answer.ttl = 120;  // 120 seconds.
-  answer.SetOwnedRdata(std::string("\xc0\xa8\x00\x01", 4));
+  const uint8_t record[] = {0xc0, 0xa8, 0x00, 0x01};
+  answer.SetOwnedRdata(record);
   std::vector<DnsResourceRecord> answers(1, answer);
   net::DnsResourceRecord additional_record;
   additional_record.name = dotted_name;
   additional_record.type = dns_protocol::kTypeNSEC;
   additional_record.klass = dns_protocol::kClassIN;
   additional_record.ttl = 120;  // 120 seconds.
-  additional_record.SetOwnedRdata(std::string("\xc0\x0c\x00\x01\x04", 5));
+  const uint8_t record2[] = {0xc0, 0x0c, 0x00, 0x01, 0x04};
+  additional_record.SetOwnedRdata(record2);
   std::vector<DnsResourceRecord> additional_records(1, additional_record);
   DnsResponse response(0x1234 /* response_id */, true /* is_authoritative*/,
                        answers, {} /* authority_records */, additional_records,

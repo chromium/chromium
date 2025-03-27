@@ -467,6 +467,7 @@ UIImage* GetManualFillSymbol() {
                                        kKeyboardDownSymbol,
                                        kSymbolActionPointSize)
                 isTabletFormFactor:isTabletFormFactor];
+    [formInputAccessoryView setIsCompact:[self isCompact]];
   } else {
     if (isTabletFormFactor) {
       [formInputAccessoryView
@@ -511,6 +512,7 @@ UIImage* GetManualFillSymbol() {
     self.formSuggestionView.formSuggestionViewDelegate = self;
     self.formSuggestionView.layoutGuideCenter = self.layoutGuideCenter;
     self.formSuggestionView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.formSuggestionView setIsCompact:[self isCompact]];
 
     self.formSuggestionContainerView = [[UIStackView alloc] init];
     self.formSuggestionContainerView.axis = UILayoutConstraintAxisHorizontal;
@@ -620,6 +622,13 @@ UIImage* GetManualFillSymbol() {
       CGAffineTransformMakeTranslation(0, offset);
 }
 
+- (BOOL)isCompact {
+  return self.traitCollection.horizontalSizeClass ==
+             UIUserInterfaceSizeClassCompact ||
+         self.traitCollection.verticalSizeClass ==
+             UIUserInterfaceSizeClassCompact;
+}
+
 // Updates the UI when any UITrait changes on the device.
 - (void)updateUIOnTraitChange {
   if (IsBottomOmniboxAvailable()) {
@@ -628,10 +637,7 @@ UIImage* GetManualFillSymbol() {
 
   if (IsKeyboardAccessoryUpgradeEnabled() &&
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    BOOL isCompact = self.traitCollection.horizontalSizeClass ==
-                         UIUserInterfaceSizeClassCompact ||
-                     self.traitCollection.verticalSizeClass ==
-                         UIUserInterfaceSizeClassCompact;
+    BOOL isCompact = [self isCompact];
     [self.formInputAccessoryView setIsCompact:isCompact];
     [self.formSuggestionView setIsCompact:isCompact];
   }

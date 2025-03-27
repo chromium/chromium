@@ -40,21 +40,21 @@ permissions::ElementAnchoredBubbleVariant GetElementAnchoredBubbleVariant(
     Variant variant) {
   switch (variant) {
     case Variant::kUninitialized:
-      return permissions::ElementAnchoredBubbleVariant::UNINITIALIZED;
+      return permissions::ElementAnchoredBubbleVariant::kUninitialized;
     case Variant::kAdministratorGranted:
-      return permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_GRANTED;
+      return permissions::ElementAnchoredBubbleVariant::kAdministratorGranted;
     case Variant::kPreviouslyGranted:
-      return permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED;
+      return permissions::ElementAnchoredBubbleVariant::kPreviouslyGranted;
     case Variant::kOsSystemSettings:
-      return permissions::ElementAnchoredBubbleVariant::OS_SYSTEM_SETTINGS;
+      return permissions::ElementAnchoredBubbleVariant::kOsSystemSettings;
     case Variant::kOsPrompt:
-      return permissions::ElementAnchoredBubbleVariant::OS_PROMPT;
+      return permissions::ElementAnchoredBubbleVariant::kOsPrompt;
     case Variant::kAsk:
-      return permissions::ElementAnchoredBubbleVariant::ASK;
+      return permissions::ElementAnchoredBubbleVariant::kAsk;
     case Variant::kPreviouslyDenied:
-      return permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_DENIED;
+      return permissions::ElementAnchoredBubbleVariant::kPreviouslyDenied;
     case Variant::kAdministratorDenied:
-      return permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_DENIED;
+      return permissions::ElementAnchoredBubbleVariant::kAdministratorDenied;
   }
 
   NOTREACHED();
@@ -219,10 +219,10 @@ void EmbeddedPermissionPromptFlowModel::RecordOsMetrics(
 
   switch (prompt_variant()) {
     case Variant::kOsPrompt:
-      screen = permissions::OsScreen::OS_PROMPT;
+      screen = permissions::OsScreen::kOsPrompt;
       break;
     case Variant::kOsSystemSettings:
-      screen = permissions::OsScreen::OS_SYSTEM_SETTINGS;
+      screen = permissions::OsScreen::kOsSystemSettings;
       break;
     default:
       return;

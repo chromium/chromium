@@ -27,6 +27,10 @@ class MockAutofillAiModelCache : public AutofillAiModelCache {
               GetAllEntries,
               (),
               (const override));
+  MOCK_METHOD((base::flat_map<FieldIdentifier, FieldPrediction>),
+              GetFieldPredictions,
+              (FormSignature),
+              (const override));
 };
 
 }  // namespace autofill

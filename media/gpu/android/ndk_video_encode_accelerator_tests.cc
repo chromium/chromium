@@ -317,7 +317,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, InitializeAndDestroy) {
   accelerator_ = MakeNdkAccelerator();
   EXPECT_CALL(*this, OnRequireBuffer()).WillOnce(Return(false));
 
-  bool result = accelerator_->Initialize(config, this, NullLog());
+  bool result = accelerator_->Initialize(config, this, NullLog()).is_ok();
   ASSERT_TRUE(result);
   Run();
   EXPECT_GE(id_to_buffer_.size(), 1u);
@@ -331,7 +331,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, HandleEncodingError) {
   EXPECT_CALL(*this, OnRequireBuffer()).WillOnce(Return(true));
   EXPECT_CALL(*this, OnError()).WillOnce(Return(false));
 
-  bool result = accelerator_->Initialize(config, this, NullLog());
+  bool result = accelerator_->Initialize(config, this, NullLog()).is_ok();
   ASSERT_TRUE(result);
 
   auto size = config.input_visible_size;
@@ -357,7 +357,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
     return false;
   });
 
-  bool result = accelerator_->Initialize(config, this, NullLog());
+  bool result = accelerator_->Initialize(config, this, NullLog()).is_ok();
   ASSERT_TRUE(result);
 
   uint32_t color = 0x964050;

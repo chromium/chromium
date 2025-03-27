@@ -58,6 +58,7 @@
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/verbatim_match.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_type.h"
@@ -816,8 +817,7 @@ void OmniboxEditModel::StartAutocomplete(bool has_selected_text,
   input_.set_current_title(controller_->client()->GetTitle());
   input_.set_prevent_inline_autocomplete(
       prevent_inline_autocomplete || just_deleted_text_ ||
-      (has_selected_text && inline_autocompletion_.empty() &&
-       prefix_autocompletion_.empty()) ||
+      (has_selected_text && inline_autocompletion_.empty()) ||
       paste_state_ != NONE);
   input_.set_prefer_keyword(is_keyword_selected());
   input_.set_allow_exact_keyword_match(is_keyword_selected() ||
@@ -874,12 +874,13 @@ void OmniboxEditModel::PasteAndGo(const std::u16string& text,
 
 void OmniboxEditModel::EnterKeywordMode(
     OmniboxEventProto::KeywordModeEntryMethod entry_method,
-    const TemplateURL* template_url) {
+    const TemplateURL* template_url,
+    const std::u16string& placeholder_text) {
   DCHECK(template_url);
   controller_->StopAutocomplete(/*clear_result=*/false);
 
   SetKeyword(template_url->keyword());
-  SetKeywordPlaceholder(u"");
+  SetKeywordPlaceholder(placeholder_text);
   is_keyword_hint_ = false;
   keyword_mode_entry_method_ = entry_method;
   if (view_) {
@@ -910,9 +911,11 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
   if (!controller_->client()->IsDefaultSearchProviderEnabled()) {
     return;
   }
-  EnterKeywordMode(entry_method, controller_->client()
-                                     ->GetTemplateURLService()
-                                     ->GetDefaultSearchProvider());
+  EnterKeywordMode(entry_method,
+                   controller_->client()
+                       ->GetTemplateURLService()
+                       ->GetDefaultSearchProvider(),
+                   u"");
 }
 
 void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
@@ -1167,6 +1170,12 @@ void OmniboxEditModel::OnSetFocus(bool control_down) {
 
   if (user_input_in_progress_ || !in_revert_)
     controller_->client()->OnInputStateChanged();
+
+  if (omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::
+          Get()
+              .enabled) {
+    controller_->client()->MaybeShowOnFocusHatsSurvey();
+  }
 }
 
 void OmniboxEditModel::StartZeroSuggestRequest(
@@ -1423,7 +1432,6 @@ void OmniboxEditModel::OnPopupDataChanged(
     const std::u16string& temporary_text,
     bool is_temporary_text,
     const std::u16string& inline_autocompletion,
-    const std::u16string& prefix_autocompletion,
     const std::u16string& keyword,
     const std::u16string& keyword_placeholder,
     bool is_keyword_hint,
@@ -1469,7 +1477,6 @@ void OmniboxEditModel::OnPopupDataChanged(
       // Save the original selection and URL so it can be reverted later.
       has_temporary_text_ = true;
       inline_autocompletion_.clear();
-      prefix_autocompletion_.clear();
       if (view_) {
         view_->OnInlineAutocompleteTextCleared();
       }
@@ -1493,17 +1500,14 @@ void OmniboxEditModel::OnPopupDataChanged(
   }
 
   inline_autocompletion_ = inline_autocompletion;
-  prefix_autocompletion_ = prefix_autocompletion;
-  if (inline_autocompletion_.empty() && prefix_autocompletion_.empty()) {
-    if (view_) {
-      view_->OnInlineAutocompleteTextCleared();
-    }
+  if (inline_autocompletion_.empty() && view_) {
+    view_->OnInlineAutocompleteTextCleared();
   }
 
   const std::u16string& user_text =
       user_input_in_progress_ ? user_text_ : input_.text();
   if (keyword_state_changed && is_keyword_selected() &&
-      inline_autocompletion_.empty() && prefix_autocompletion_.empty()) {
+      inline_autocompletion_.empty()) {
     // If we reach here, the user most likely entered keyword mode by inserting
     // a space between a keyword name and a search string (as pressing space or
     // tab after the keyword name alone would have been be handled in
@@ -1524,19 +1528,9 @@ void OmniboxEditModel::OnPopupDataChanged(
       view_->SetWindowTextAndCaretPos(user_text, 0, false, true);
     }
   } else {
-    std::u16string display_text;
-    std::vector<gfx::Range> selections = {};
-    display_text = prefix_autocompletion_ + user_text + inline_autocompletion_;
-    selections.emplace_back(
-        display_text.size(),
-        user_text.length() + prefix_autocompletion_.length());
-    if (prefix_autocompletion_.length()) {
-      selections.emplace_back(0, prefix_autocompletion_.length());
-    }
     if (view_) {
-      view_->OnInlineAutocompleteTextMaybeChanged(
-          display_text, std::move(selections), prefix_autocompletion_,
-          inline_autocompletion_);
+      view_->OnInlineAutocompleteTextMaybeChanged(user_text,
+                                                  inline_autocompletion_);
       view_->SetAdditionalText(additional_text);
     }
   }
@@ -1577,8 +1571,7 @@ bool OmniboxEditModel::OnAfterPossibleChange(
   // reset |just_deleted_text_|.  Note that modifying the selection accepts any
   // inline autocompletion, which results in a user text change.
   if (!state_changes.text_differs &&
-      (!state_changes.selection_differs ||
-       (inline_autocompletion_.empty() && prefix_autocompletion_.empty()))) {
+      (!state_changes.selection_differs || inline_autocompletion_.empty())) {
     if (state_changes.keyword_differs && view_) {
       // We won't need the below logic for creating a keyword by a space at the
       // end or in the middle, or by typing a '?', but we do need to update the
@@ -1684,8 +1677,8 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
   // its value across the entire call.
   OnPopupDataChanged(std::u16string(),
                      /*is_temporary_text=*/false, match.inline_autocompletion,
-                     match.prefix_autocompletion, keyword, keyword_placeholder,
-                     is_keyword_hint, match.additional_text, match);
+                     keyword, keyword_placeholder, is_keyword_hint,
+                     match.additional_text, match);
 }
 
 // static
@@ -1703,7 +1696,6 @@ void OmniboxEditModel::InternalSetUserText(const std::u16string& text) {
   original_user_text_with_keyword_.clear();
   just_deleted_text_ = false;
   inline_autocompletion_.clear();
-  prefix_autocompletion_.clear();
   if (view_) {
     view_->OnInlineAutocompleteTextCleared();
   }
@@ -1976,9 +1968,9 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
   if (popup_selection_.state == OmniboxPopupSelection::FOCUSED_BUTTON_HEADER) {
     // If the new selection is a Header, the temporary text is an empty string.
     OnPopupDataChanged(std::u16string(),
-                       /*is_temporary_text=*/true, std::u16string(),
-                       std::u16string(), keyword, keyword_placeholder,
-                       is_keyword_hint, std::u16string(), AutocompleteMatch());
+                       /*is_temporary_text=*/true, std::u16string(), keyword,
+                       keyword_placeholder, is_keyword_hint, std::u16string(),
+                       AutocompleteMatch());
   } else if (old_selection.line != popup_selection_.line ||
              (old_selection.state != OmniboxPopupSelection::KEYWORD_MODE &&
               new_selection.state != OmniboxPopupSelection::KEYWORD_MODE)) {
@@ -1990,14 +1982,13 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
     if (reset_to_default) {
       OnPopupDataChanged(
           std::u16string(),
-          /*is_temporary_text=*/false, match.inline_autocompletion,
-          match.prefix_autocompletion, keyword, keyword_placeholder,
-          is_keyword_hint, match.additional_text, match);
+          /*is_temporary_text=*/false, match.inline_autocompletion, keyword,
+          keyword_placeholder, is_keyword_hint, match.additional_text, match);
     } else {
       OnPopupDataChanged(match.fill_into_edit,
-                         /*is_temporary_text=*/true, std::u16string(),
-                         std::u16string(), keyword, keyword_placeholder,
-                         is_keyword_hint, std::u16string(), match);
+                         /*is_temporary_text=*/true, std::u16string(), keyword,
+                         keyword_placeholder, is_keyword_hint, std::u16string(),
+                         match);
     }
   }
   // Without this, focus indicators may appear stale (see crbug.com/1369229).
@@ -2311,9 +2302,9 @@ const SkBitmap* OmniboxEditModel::GetPopupRichSuggestionBitmap(
       std::ranges::find_if(autocomplete_controller()->result(),
                            [&image_url](const AutocompleteMatch& result_match) {
                              return (!result_match.ImageUrl().is_empty() &&
-                                    result_match.ImageUrl() == image_url)
-                             || (!result_match.icon_url.is_empty() &&
-                                    result_match.icon_url == image_url);
+                                     result_match.ImageUrl() == image_url) ||
+                                    (!result_match.icon_url.is_empty() &&
+                                     result_match.icon_url == image_url);
                            });
   return iter == autocomplete_controller()->result().end()
              ? nullptr
@@ -2824,7 +2815,9 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
                   ->GetTemplateURLService()
                   ->FindStarterPackTemplateURL(
                       TemplateURLStarterPackData::kPage)) {
-        EnterKeywordMode(OmniboxEventProto::SELECT_SUGGESTION, page_turl);
+        EnterKeywordMode(
+            OmniboxEventProto::SELECT_SUGGESTION, page_turl,
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_PAGE_SCOPE_PLACEHOLDER_TEXT));
         if (action->ActionId() ==
                 OmniboxActionId::CONTEXTUAL_SEARCH_SELECT_REGION &&
             view_) {

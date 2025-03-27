@@ -186,7 +186,7 @@ JapaneseSettingsPtr MakeDefaultJapaneseSettings() {
   response->selection_shortcut =
       JapaneseSettings::SelectionShortcut::kDigits123456789;
   response->keymap_style = JapaneseSettings::KeymapStyle::kCustom;
-  response->disable_personalized_suggestions = true;
+  response->disable_personalized_suggestions = false;
   // The below setting is unused. It was originally in the legacy Japanese
   // config, but since all data is collected using UMA, this was ignored and the
   // UMA setting was the main toggle for sending statistics.

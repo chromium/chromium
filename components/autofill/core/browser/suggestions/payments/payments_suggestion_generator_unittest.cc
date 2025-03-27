@@ -252,17 +252,6 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
 
   gfx::Image CustomIconForTest() { return gfx::test::CreateImage(32, 32); }
 
-  void SetUpIbanImageResources() {
-    original_resource_bundle_ =
-        ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
-    ui::ResourceBundle::InitSharedInstanceWithLocale(
-        "en-US", &mock_resource_delegate_,
-        ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
-    ON_CALL(mock_resource_delegate_, GetImageNamed(IDR_AUTOFILL_IBAN))
-        .WillByDefault(testing::Return(CustomIconForTest()));
-    did_set_up_image_resource_for_test_ = true;
-  }
-
   void CleanUpIbanImageResources() {
     ui::ResourceBundle::CleanupSharedInstance();
     ui::ResourceBundle::SwapSharedInstanceForTesting(
@@ -301,13 +290,13 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
   TestAutofillClient autofill_client_;
   TestAutofillDriver autofill_driver_{&autofill_client_};
   TestBrowserAutofillManager autofill_manager_{&autofill_driver_};
+
+ protected:
   testing::NiceMock<ui::MockResourceBundleDelegate> mock_resource_delegate_;
   raw_ptr<ui::ResourceBundle> original_resource_bundle_;
   // Tracks whether SetUpIbanImageResources() has been called, so that the
   // created images can be cleaned up when the test has finished.
   bool did_set_up_image_resource_for_test_ = false;
-
- protected:
   std::unique_ptr<MockCreditCardFormEventLogger> credit_card_form_event_logger_;
 };
 
@@ -1700,141 +1689,6 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       ShouldShowVirtualCardOptionForTest(&local_card, *autofill_client()));
 }
 
-TEST_F(PaymentsSuggestionGeneratorTest, GetLocalIbanSuggestions) {
-  SetUpIbanImageResources();
-
-  auto MakeLocalIban = [](const std::u16string& value,
-                          const std::u16string& nickname) {
-    Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
-    iban.set_value(value);
-    if (!nickname.empty()) {
-      iban.set_nickname(nickname);
-    }
-    return iban;
-  };
-  Iban iban0 =
-      MakeLocalIban(u"CH56 0483 5012 3456 7800 9", u"My doctor's IBAN");
-  Iban iban1 =
-      MakeLocalIban(u"DE91 1000 0000 0123 4567 89", u"My brother's IBAN");
-  Iban iban2 =
-      MakeLocalIban(u"GR96 0810 0010 0000 0123 4567 890", u"My teacher's IBAN");
-  Iban iban3 = MakeLocalIban(u"PK70 BANK 0000 1234 5678 9000", u"");
-
-  std::vector<Suggestion> iban_suggestions =
-      GetSuggestionsForIbans({iban0, iban1, iban2, iban3});
-
-  // There are 6 suggestions, 4 for IBAN suggestions, followed by a separator,
-  // and followed by "Manage payment methods..." which redirects to the Chrome
-  // payment methods settings page.
-  ASSERT_EQ(iban_suggestions.size(), 6u);
-
-  EXPECT_THAT(
-      iban_suggestions[0],
-      EqualsIbanSuggestion(iban0.GetIdentifierStringForAutofillDisplay(),
-                           Suggestion::Guid(iban0.guid()), iban0.nickname()));
-
-  EXPECT_THAT(
-      iban_suggestions[1],
-      EqualsIbanSuggestion(iban1.GetIdentifierStringForAutofillDisplay(),
-                           Suggestion::Guid(iban1.guid()), iban1.nickname()));
-
-  EXPECT_THAT(
-      iban_suggestions[2],
-      EqualsIbanSuggestion(iban2.GetIdentifierStringForAutofillDisplay(),
-                           Suggestion::Guid(iban2.guid()), iban2.nickname()));
-
-  EXPECT_THAT(
-      iban_suggestions[3],
-      EqualsIbanSuggestion(iban3.GetIdentifierStringForAutofillDisplay(),
-                           Suggestion::Guid(iban3.guid()), iban3.nickname()));
-
-  EXPECT_EQ(iban_suggestions[4].type, SuggestionType::kSeparator);
-
-  EXPECT_EQ(iban_suggestions[5].main_text.value,
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
-  EXPECT_EQ(iban_suggestions[5].type, SuggestionType::kManageIban);
-}
-
-TEST_F(PaymentsSuggestionGeneratorTest, GetServerIbanSuggestions) {
-  SetUpIbanImageResources();
-
-  Iban server_iban1 = test::GetServerIban();
-  Iban server_iban2 = test::GetServerIban2();
-  Iban server_iban3 = test::GetServerIban3();
-
-  std::vector<Suggestion> iban_suggestions =
-      GetSuggestionsForIbans({server_iban1, server_iban2, server_iban3});
-
-  // There are 5 suggestions, 3 for IBAN suggestions, followed by a separator,
-  // and followed by "Manage payment methods..." which redirects to the Chrome
-  // payment methods settings page.
-  ASSERT_EQ(iban_suggestions.size(), 5u);
-
-  EXPECT_THAT(iban_suggestions[0],
-              EqualsIbanSuggestion(
-                  server_iban1.GetIdentifierStringForAutofillDisplay(),
-                  Suggestion::InstrumentId(server_iban1.instrument_id()),
-                  server_iban1.nickname()));
-
-  EXPECT_THAT(iban_suggestions[1],
-              EqualsIbanSuggestion(
-                  server_iban2.GetIdentifierStringForAutofillDisplay(),
-                  Suggestion::InstrumentId(server_iban2.instrument_id()),
-                  server_iban2.nickname()));
-
-  EXPECT_THAT(iban_suggestions[2],
-              EqualsIbanSuggestion(
-                  server_iban3.GetIdentifierStringForAutofillDisplay(),
-                  Suggestion::InstrumentId(server_iban3.instrument_id()),
-                  server_iban3.nickname()));
-
-  EXPECT_EQ(iban_suggestions[3].type, SuggestionType::kSeparator);
-
-  EXPECT_EQ(iban_suggestions[4].main_text.value,
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
-  EXPECT_EQ(iban_suggestions[4].type, SuggestionType::kManageIban);
-}
-
-TEST_F(PaymentsSuggestionGeneratorTest, GetLocalAndServerIbanSuggestions) {
-  SetUpIbanImageResources();
-
-  Iban server_iban1 = test::GetServerIban();
-  Iban server_iban2 = test::GetServerIban2();
-  Iban local_iban1 = test::GetLocalIban();
-
-  std::vector<Suggestion> iban_suggestions =
-      GetSuggestionsForIbans({server_iban1, server_iban2, local_iban1});
-
-  // There are 5 suggestions, 3 for IBAN suggestions, followed by a separator,
-  // and followed by "Manage payment methods..." which redirects to the Chrome
-  // payment methods settings page.
-  ASSERT_EQ(iban_suggestions.size(), 5u);
-
-  EXPECT_THAT(iban_suggestions[0],
-              EqualsIbanSuggestion(
-                  server_iban1.GetIdentifierStringForAutofillDisplay(),
-                  Suggestion::InstrumentId(server_iban1.instrument_id()),
-                  server_iban1.nickname()));
-
-  EXPECT_THAT(iban_suggestions[1],
-              EqualsIbanSuggestion(
-                  server_iban2.GetIdentifierStringForAutofillDisplay(),
-                  Suggestion::InstrumentId(server_iban2.instrument_id()),
-                  server_iban2.nickname()));
-
-  EXPECT_THAT(
-      iban_suggestions[2],
-      EqualsIbanSuggestion(local_iban1.GetIdentifierStringForAutofillDisplay(),
-                           Suggestion::Guid(local_iban1.guid()),
-                           local_iban1.nickname()));
-
-  EXPECT_EQ(iban_suggestions[3].type, SuggestionType::kSeparator);
-
-  EXPECT_EQ(iban_suggestions[4].main_text.value,
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
-  EXPECT_EQ(iban_suggestions[4].type, SuggestionType::kManageIban);
-}
-
 TEST_F(PaymentsSuggestionGeneratorTest,
        GetPromoCodeSuggestionsFromPromoCodeOffers_ValidPromoCodes) {
   std::vector<const AutofillOfferData*> promo_code_offers;
@@ -2099,6 +1953,181 @@ TEST_F(PaymentsSuggestionGeneratorTest,
           EqualsSuggestion(SuggestionType::kSaveAndFillCreditCardEntry),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManagePaymentsMethodsSuggestion(/*with_gpay_logo=*/true)));
+}
+
+// This class helps test the IBAN suggestion contents that are displayed in
+// Autofill suggestions.
+class AutofillIbanSuggestionContentTest
+    : public PaymentsSuggestionGeneratorTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  AutofillIbanSuggestionContentTest() {
+    feature_list_metadata_.InitWithFeatureStates(
+        {{features::kAutofillEnableNewFopDisplayDesktop,
+          IsNewFopDisplayEnabled()}});
+  }
+
+  ~AutofillIbanSuggestionContentTest() override = default;
+
+  void SetUpIbanImageResources() {
+    original_resource_bundle_ =
+        ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
+    ui::ResourceBundle::InitSharedInstanceWithLocale(
+        "en-US", &mock_resource_delegate_,
+        ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
+    if (IsNewFopDisplayEnabled()) {
+      ON_CALL(mock_resource_delegate_, GetImageNamed(IDR_AUTOFILL_IBAN))
+          .WillByDefault(testing::Return(CustomIconForTest()));
+    } else {
+      ON_CALL(mock_resource_delegate_, GetImageNamed(IDR_AUTOFILL_IBAN_OLD))
+          .WillByDefault(testing::Return(CustomIconForTest()));
+    }
+    did_set_up_image_resource_for_test_ = true;
+  }
+
+  bool IsNewFopDisplayEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_metadata_;
+};
+
+INSTANTIATE_TEST_SUITE_P(PaymentsSuggestionGeneratorTest,
+                         AutofillIbanSuggestionContentTest,
+                         ::testing::Bool());
+
+TEST_P(AutofillIbanSuggestionContentTest, GetLocalIbanSuggestions) {
+  SetUpIbanImageResources();
+
+  auto MakeLocalIban = [](const std::u16string& value,
+                          const std::u16string& nickname) {
+    Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
+    iban.set_value(value);
+    if (!nickname.empty()) {
+      iban.set_nickname(nickname);
+    }
+    return iban;
+  };
+  Iban iban0 =
+      MakeLocalIban(u"CH56 0483 5012 3456 7800 9", u"My doctor's IBAN");
+  Iban iban1 =
+      MakeLocalIban(u"DE91 1000 0000 0123 4567 89", u"My brother's IBAN");
+  Iban iban2 =
+      MakeLocalIban(u"GR96 0810 0010 0000 0123 4567 890", u"My teacher's IBAN");
+  Iban iban3 = MakeLocalIban(u"PK70 BANK 0000 1234 5678 9000", u"");
+
+  std::vector<Suggestion> iban_suggestions =
+      GetSuggestionsForIbans({iban0, iban1, iban2, iban3});
+
+  // There are 6 suggestions, 4 for IBAN suggestions, followed by a separator,
+  // and followed by "Manage payment methods..." which redirects to the Chrome
+  // payment methods settings page.
+  ASSERT_EQ(iban_suggestions.size(), 6u);
+
+  EXPECT_THAT(
+      iban_suggestions[0],
+      EqualsIbanSuggestion(iban0.GetIdentifierStringForAutofillDisplay(),
+                           Suggestion::Guid(iban0.guid()), iban0.nickname()));
+
+  EXPECT_THAT(
+      iban_suggestions[1],
+      EqualsIbanSuggestion(iban1.GetIdentifierStringForAutofillDisplay(),
+                           Suggestion::Guid(iban1.guid()), iban1.nickname()));
+
+  EXPECT_THAT(
+      iban_suggestions[2],
+      EqualsIbanSuggestion(iban2.GetIdentifierStringForAutofillDisplay(),
+                           Suggestion::Guid(iban2.guid()), iban2.nickname()));
+
+  EXPECT_THAT(
+      iban_suggestions[3],
+      EqualsIbanSuggestion(iban3.GetIdentifierStringForAutofillDisplay(),
+                           Suggestion::Guid(iban3.guid()), iban3.nickname()));
+
+  EXPECT_EQ(iban_suggestions[4].type, SuggestionType::kSeparator);
+
+  EXPECT_EQ(iban_suggestions[5].main_text.value,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
+  EXPECT_EQ(iban_suggestions[5].type, SuggestionType::kManageIban);
+}
+
+TEST_P(AutofillIbanSuggestionContentTest, GetServerIbanSuggestions) {
+  SetUpIbanImageResources();
+
+  Iban server_iban1 = test::GetServerIban();
+  Iban server_iban2 = test::GetServerIban2();
+  Iban server_iban3 = test::GetServerIban3();
+
+  std::vector<Suggestion> iban_suggestions =
+      GetSuggestionsForIbans({server_iban1, server_iban2, server_iban3});
+
+  // There are 5 suggestions, 3 for IBAN suggestions, followed by a separator,
+  // and followed by "Manage payment methods..." which redirects to the Chrome
+  // payment methods settings page.
+  ASSERT_EQ(iban_suggestions.size(), 5u);
+
+  EXPECT_THAT(iban_suggestions[0],
+              EqualsIbanSuggestion(
+                  server_iban1.GetIdentifierStringForAutofillDisplay(),
+                  Suggestion::InstrumentId(server_iban1.instrument_id()),
+                  server_iban1.nickname()));
+
+  EXPECT_THAT(iban_suggestions[1],
+              EqualsIbanSuggestion(
+                  server_iban2.GetIdentifierStringForAutofillDisplay(),
+                  Suggestion::InstrumentId(server_iban2.instrument_id()),
+                  server_iban2.nickname()));
+
+  EXPECT_THAT(iban_suggestions[2],
+              EqualsIbanSuggestion(
+                  server_iban3.GetIdentifierStringForAutofillDisplay(),
+                  Suggestion::InstrumentId(server_iban3.instrument_id()),
+                  server_iban3.nickname()));
+
+  EXPECT_EQ(iban_suggestions[3].type, SuggestionType::kSeparator);
+
+  EXPECT_EQ(iban_suggestions[4].main_text.value,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
+  EXPECT_EQ(iban_suggestions[4].type, SuggestionType::kManageIban);
+}
+
+TEST_P(AutofillIbanSuggestionContentTest, GetLocalAndServerIbanSuggestions) {
+  SetUpIbanImageResources();
+
+  Iban server_iban1 = test::GetServerIban();
+  Iban server_iban2 = test::GetServerIban2();
+  Iban local_iban1 = test::GetLocalIban();
+
+  std::vector<Suggestion> iban_suggestions =
+      GetSuggestionsForIbans({server_iban1, server_iban2, local_iban1});
+
+  // There are 5 suggestions, 3 for IBAN suggestions, followed by a separator,
+  // and followed by "Manage payment methods..." which redirects to the Chrome
+  // payment methods settings page.
+  ASSERT_EQ(iban_suggestions.size(), 5u);
+
+  EXPECT_THAT(iban_suggestions[0],
+              EqualsIbanSuggestion(
+                  server_iban1.GetIdentifierStringForAutofillDisplay(),
+                  Suggestion::InstrumentId(server_iban1.instrument_id()),
+                  server_iban1.nickname()));
+
+  EXPECT_THAT(iban_suggestions[1],
+              EqualsIbanSuggestion(
+                  server_iban2.GetIdentifierStringForAutofillDisplay(),
+                  Suggestion::InstrumentId(server_iban2.instrument_id()),
+                  server_iban2.nickname()));
+
+  EXPECT_THAT(
+      iban_suggestions[2],
+      EqualsIbanSuggestion(local_iban1.GetIdentifierStringForAutofillDisplay(),
+                           Suggestion::Guid(local_iban1.guid()),
+                           local_iban1.nickname()));
+
+  EXPECT_EQ(iban_suggestions[3].type, SuggestionType::kSeparator);
+
+  EXPECT_EQ(iban_suggestions[4].main_text.value,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
+  EXPECT_EQ(iban_suggestions[4].type, SuggestionType::kManageIban);
 }
 
 // This class helps test the credit card contents that are displayed in

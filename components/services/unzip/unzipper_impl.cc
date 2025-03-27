@@ -4,10 +4,12 @@
 
 #include "components/services/unzip/unzipper_impl.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/functional/bind.h"
@@ -15,7 +17,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/ced/src/compact_enc_det/compact_enc_det.h"
+#include "third_party/lzma_sdk/C/7zCrc.h"
+#include "third_party/lzma_sdk/C/7zTypes.h"
+#include "third_party/lzma_sdk/C/Alloc.h"
+#include "third_party/lzma_sdk/C/Xz.h"
+#include "third_party/lzma_sdk/C/XzCrc64.h"
 #include "third_party/zlib/google/redact.h"
 #include "third_party/zlib/google/zip.h"
 #include "third_party/zlib/google/zip_reader.h"
@@ -130,6 +138,67 @@ std::string GetRawFileNamesFromZip(const base::File& zip_file) {
 
   LOG_IF(ERROR, result.empty()) << "Cannot extract filenames from ZIP archive";
   return result;
+}
+
+bool RunDecodeXz(base::File in_file, base::File out_file) {
+  // CRC tables must be initialized at least once per process.
+  [[maybe_unused]] static bool crc_tables_generated = [] {
+    CrcGenerateTable();
+    Crc64GenerateTable();
+    return true;
+  }();
+
+  CXzUnpacker state;
+  ECoderStatus status = CODER_STATUS_NOT_FINISHED;
+  auto src_buff = base::HeapArray<Byte>::Uninit(1024 * 64);   // 64 KiB
+  auto dst_buff = base::HeapArray<Byte>::Uninit(1024 * 256);  // 256 KiB
+
+  XzUnpacker_Construct(&state, &g_Alloc);
+  absl::Cleanup free = [&] { XzUnpacker_Free(&state); };
+
+  // src_buff contains useful data from [0 .. src_fill).
+  SizeT src_fill = 0;
+
+  XzUnpacker_Init(&state);
+  // CODER_STATUS_NOT_FINISHED happens when we run out of space in dst_buff.
+  // CODER_STATUS_NEEDS_MORE_INPUT happens when we need more in src_buff.
+  while (status == CODER_STATUS_NOT_FINISHED ||
+         status == CODER_STATUS_NEEDS_MORE_INPUT) {
+    // Fill src_buff with bytes from the file.
+    std::optional<size_t> size_read =
+        in_file.ReadAtCurrentPos(src_buff.subspan(src_fill));
+    if (!size_read.has_value()) {
+      return false;  // Read error.
+    }
+    if (*size_read == 0) {
+      break;  // EOF.
+    }
+
+    src_fill += *size_read;
+    SizeT src_len = src_fill;
+    SizeT dest_pos = dst_buff.size();
+    // Decode `src_buff[0 .. src_fill)` into `dst_buff[0 .. dest_pos)`.
+    // Before the call, `dest_pos` is the output buffer size and `src_len` is
+    // the number of bytes in `src_buff`.  After the call, `dest_pos` is the
+    // extent of the decoded content, and `src_len` is the number of encoded
+    // bytes actually processed.
+    SRes code_result = XzUnpacker_Code(
+        &state, dst_buff.data(), &dest_pos, src_buff.data(), &src_len,
+        src_fill < src_buff.size(), CODER_FINISH_ANY, &status);
+    if (code_result != SZ_OK) {
+      return false;  // XZ coder error.
+    }
+
+    // Write dst_buff[0 .. dest_pos) to out_file.
+    if (!out_file.WriteAtCurrentPosAndCheck(dst_buff.first(dest_pos))) {
+      return false;  // Write error.
+    }
+
+    // Shift unconsumed bytes in src_buff to the start of the buffer.
+    src_fill -= src_len;
+    src_buff.copy_prefix_from(src_buff.subspan(src_len));
+  }
+  return XzUnpacker_IsStreamWasFinished(&state);
 }
 
 }  // namespace
@@ -287,6 +356,15 @@ void UnzipperImpl::GetExtractedInfo(base::File zip_file,
   unzip::mojom::InfoPtr info = unzip::mojom::Info::New(
       valid, size, has_encrypted_content, uses_aes_encryption);
   std::move(callback).Run(std::move(info));
+}
+
+void UnzipperImpl::DecodeXz(base::File in_file,
+                            base::File out_file,
+                            base::OnceCallback<void(bool)> callback) {
+  runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&RunDecodeXz, std::move(in_file), std::move(out_file)),
+      std::move(callback));
 }
 
 void UnzipperImpl::OnReceiverDisconnect() {

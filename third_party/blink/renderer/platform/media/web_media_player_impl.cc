@@ -1051,7 +1051,7 @@ void WebMediaPlayerImpl::Play() {
   will_play_helper_.CompleteObservationIfNeeded(learning::TargetValue(true));
 }
 
-void WebMediaPlayerImpl::Pause() {
+void WebMediaPlayerImpl::Pause(PauseReason pause_reason) {
   DVLOG(1) << __func__;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
@@ -1060,8 +1060,10 @@ void WebMediaPlayerImpl::Pause() {
   // paused state.
   paused_ = true;
 
-  // No longer paused because it was hidden.
-  visibility_pause_reason_.reset();
+  if (ShouldResetVisibilityPauseReason(pause_reason)) {
+    // No longer paused because it was hidden.
+    visibility_pause_reason_.reset();
+  }
 
   UpdateSmoothnessHelper();
 
@@ -2825,8 +2827,7 @@ void WebMediaPlayerImpl::OnRemotePlayStateChange(
     client_->ResumePlayback();
   } else if (state == media::MediaStatus::State::kPaused && !Paused()) {
     DVLOG(1) << __func__ << " requesting PAUSE.";
-    client_->PausePlayback(
-        MediaPlayerClient::PauseReason::kRemotePlayStateChange);
+    client_->PausePlayback(PauseReason::kRemotePlayStateChange);
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -3548,9 +3549,8 @@ void WebMediaPlayerImpl::ScheduleIdlePauseTimer() {
   // Idle timeout chosen arbitrarily.
   background_pause_timer_.Start(
       FROM_HERE, base::Seconds(5),
-      WTF::BindOnce(
-          &MediaPlayerClient::PausePlayback, WTF::Unretained(client_),
-          MediaPlayerClient::PauseReason::kSuspendedPlayerIdleTimeout));
+      WTF::BindOnce(&MediaPlayerClient::PausePlayback, WTF::Unretained(client_),
+                    PauseReason::kSuspendedPlayerIdleTimeout));
 }
 
 void WebMediaPlayerImpl::CreateWatchTimeReporter() {
@@ -3642,15 +3642,17 @@ bool WebMediaPlayerImpl::IsFrameHidden() const {
 }
 
 bool WebMediaPlayerImpl::IsPausedBecausePageHidden() const {
-  return visibility_pause_reason_ &&
-         visibility_pause_reason_ ==
-             MediaPlayerClient::PauseReason::kPageHidden;
+  return visibility_pause_reason_ == PauseReason::kPageHidden;
 }
 
 bool WebMediaPlayerImpl::IsPausedBecauseFrameHidden() const {
-  return visibility_pause_reason_ &&
-         visibility_pause_reason_ ==
-             MediaPlayerClient::PauseReason::kFrameHidden;
+  return visibility_pause_reason_ == PauseReason::kFrameHidden;
+}
+
+bool WebMediaPlayerImpl::ShouldResetVisibilityPauseReason(
+    PauseReason pause_reason) const {
+  return pause_reason != PauseReason::kPageHidden &&
+         pause_reason != PauseReason::kFrameHidden;
 }
 
 bool WebMediaPlayerImpl::IsStreaming() const {
@@ -3822,12 +3824,15 @@ bool WebMediaPlayerImpl::ShouldDisableVideoWhenHidden() const {
 }
 
 void WebMediaPlayerImpl::UpdateBackgroundVideoOptimizationState() {
-  if (IsPageHidden() ||
-      (IsFrameHidden() && should_pause_when_frame_is_hidden_)) {
+  bool should_pause_because_frame_hidden =
+      IsFrameHidden() && should_pause_when_frame_is_hidden_;
+  if (IsPageHidden() || should_pause_because_frame_hidden) {
     if (ShouldPausePlaybackWhenHidden()) {
       update_background_status_cb_.Cancel();
       is_background_status_change_cancelled_ = true;
-      PauseVideoIfNeeded();
+      PauseVideoIfNeeded(should_pause_because_frame_hidden
+                             ? PauseReason::kFrameHidden
+                             : PauseReason::kPageHidden);
     } else if (is_background_status_change_cancelled_) {
       // Only trigger updates when we don't have one already scheduled.
       update_background_status_cb_.Reset(
@@ -3853,7 +3858,7 @@ void WebMediaPlayerImpl::UpdateBackgroundVideoOptimizationState() {
   }
 }
 
-void WebMediaPlayerImpl::PauseVideoIfNeeded() {
+void WebMediaPlayerImpl::PauseVideoIfNeeded(PauseReason pause_reason) {
   DCHECK(IsPageHidden() || IsFrameHidden());
 
   // Don't pause video while the pipeline is stopped, resuming or seeking.
@@ -3862,22 +3867,8 @@ void WebMediaPlayerImpl::PauseVideoIfNeeded() {
       seeking_ || paused_)
     return;
 
-  auto pause_reason = MediaPlayerClient::PauseReason::kPageHidden;
-  if (IsFrameHidden() && should_pause_when_frame_is_hidden_) {
-    pause_reason = MediaPlayerClient::PauseReason::kFrameHidden;
-  }
-
-  // client_->PausePlayback() will get `visibility_pause_reason_` set to
-  // std::nullopt and UpdatePlayState() called, so set
-  // `visibility_pause_reason_` to the correct value after and then return.
-  // TODO(crbug.com/351354996): To avoid resetting `visibility_pause_reason_`,
-  // we should plumb the pause reason from here all the way through to
-  // `WebMediaPlayerImpl::Pause`, where the reset is done.
-  client_->PausePlayback(pause_reason);
-
-  // NOTE: The reason MUST be set AFTER `PausePlayback()` is called, since it
-  // will call `Pause()` which clears the `visibility_pause_reason_`.
   visibility_pause_reason_ = pause_reason;
+  client_->PausePlayback(pause_reason);
 }
 
 void WebMediaPlayerImpl::EnableVideoTrackIfNeeded() {

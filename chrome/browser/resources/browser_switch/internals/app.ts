@@ -58,15 +58,15 @@ export class AppElement extends AppElementBase {
     };
   }
 
-  protected isBrowserSwitcherEnabled_: boolean = true;
-  protected showSearch_: boolean = false;
-  protected greyListRules_: RuleItem[] = [];
-  protected siteListRules_: RuleItem[] = [];
-  protected xmlSiteLists_: XmlSiteListItem[] = [];
-  protected urlCheckerInput_: string = '';
-  protected urlCheckerOutput_: string[] = [];
-  protected lastFetch_: string = '';
-  protected nextFetch_: string = '';
+  protected accessor isBrowserSwitcherEnabled_: boolean = true;
+  protected accessor showSearch_: boolean = false;
+  protected accessor greyListRules_: RuleItem[] = [];
+  protected accessor siteListRules_: RuleItem[] = [];
+  protected accessor xmlSiteLists_: XmlSiteListItem[] = [];
+  protected accessor urlCheckerInput_: string = '';
+  protected accessor urlCheckerOutput_: string[] = [];
+  protected accessor lastFetch_: string = '';
+  protected accessor nextFetch_: string = '';
 
   override firstUpdated() {
     this.updateEverything();

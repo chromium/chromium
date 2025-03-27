@@ -17,19 +17,19 @@
 namespace data_sharing {
 
 // The query params of the urls to internally load webui.
-inline std::string_view kQueryParamFlow = "flow";
-inline std::string_view kQueryParamGroupId = "group_id";
-inline std::string_view kQueryParamTokenSecret = "token_secret";
-inline std::string_view kQueryParamTabGroupId = "tab_group_id";
-inline std::string_view kQueryParamTabGroupTitle = "tab_group_title";
+inline const std::string_view kQueryParamFlow = "flow";
+inline const std::string_view kQueryParamGroupId = "group_id";
+inline const std::string_view kQueryParamTokenSecret = "token_secret";
+inline const std::string_view kQueryParamTabGroupId = "tab_group_id";
+inline const std::string_view kQueryParamTabGroupTitle = "tab_group_title";
 
 // Possible values of kQueryParamFlow in url.
-inline std::string_view kFlowShare = "share";
-inline std::string_view kFlowJoin = "join";
-inline std::string_view kFlowManage = "manage";
-inline std::string_view kFlowDelete = "delete";
-inline std::string_view kFlowLeave = "leave";
-inline std::string_view kFlowClose = "close";
+inline const std::string_view kFlowShare = "share";
+inline const std::string_view kFlowJoin = "join";
+inline const std::string_view kFlowManage = "manage";
+inline const std::string_view kFlowDelete = "delete";
+inline const std::string_view kFlowLeave = "leave";
+inline const std::string_view kFlowClose = "close";
 
 enum FlowType {
   kShare,

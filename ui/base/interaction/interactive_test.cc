@@ -426,6 +426,22 @@ bool InteractiveTestApi::RunTestSequenceImpl(
                     InteractionSequence::AbortedReason::kSequenceTimedOut);
                 oss << internal::kInteractiveTestFailedMessagePrefix << data;
                 context = data.context;
+                if (data.step_type != InteractionSequence::StepType::kHidden &&
+                    context && !data.element && data.element_id) {
+                  const size_t elements_in_context =
+                      ui::ElementTracker::GetElementTracker()
+                          ->GetAllMatchingElements(data.element_id, context)
+                          .size();
+                  const size_t total_elements =
+                      ui::ElementTracker::GetElementTracker()
+                          ->GetAllMatchingElementsInAnyContext(data.element_id)
+                          .size();
+                  if (elements_in_context == 0U && total_elements > 0U) {
+                    oss << "\nNote that there were matching elements in other "
+                           "contexts; did you forget InSameContext() or "
+                           "InAnyContext()?";
+                  }
+                }
               } else {
                 oss << "Interactive test: timeout after test sequence "
                        "destroyed; a failure message may already have been "

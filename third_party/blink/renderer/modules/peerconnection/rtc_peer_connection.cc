@@ -1869,7 +1869,7 @@ RTCRtpTransceiver* RTCPeerConnection::addTransceiver(
     }
     case V8UnionMediaStreamTrackOrString::ContentType::kString: {
       const String& kind_string = track_or_kind->GetAsString();
-      // TODO(hbos): Make cricket::MediaType an allowed identifier in
+      // TODO(hbos): Make webrtc::MediaType an allowed identifier in
       // rtc_peer_connection.cc and use that instead of a boolean.
       String kind;
       if (kind_string == "audio") {

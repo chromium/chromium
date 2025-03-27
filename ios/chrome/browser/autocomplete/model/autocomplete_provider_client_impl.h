@@ -104,7 +104,7 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   void OpenIncognitoClearBrowsingDataDialog() override {}
   void CloseIncognitoWindows() override {}
   void PromptPageTranslation() override {}
-  void OpenLensOverlay() override {}
+  void OpenLensOverlay(bool show) override {}
   void IssueContextualSearchRequest(
       const GURL& destination_url,
       AutocompleteMatchType::Type match_type,

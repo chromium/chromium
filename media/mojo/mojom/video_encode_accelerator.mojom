@@ -218,7 +218,7 @@ interface VideoEncodeAccelerator {
   [Sync]
   Initialize(VideoEncodeAcceleratorConfig config,
              pending_associated_remote<VideoEncodeAcceleratorClient> client,
-             pending_remote<MediaLog> media_log) => (bool result);
+             pending_remote<MediaLog> media_log) => (EncoderStatus result);
 
   // Encodes a |frame|, being completely done with it after its callback.
   Encode(VideoFrame frame, VideoEncodeOptions options) => ();

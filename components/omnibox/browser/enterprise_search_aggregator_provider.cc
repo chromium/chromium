@@ -21,6 +21,8 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/json/json_reader.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -39,8 +41,11 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/re2/src/re2/re2.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -150,10 +155,10 @@ std::string ptr_to_string(const std::string* ptr) {
 
 struct MimeInfo {
   const std::string_view mime_type;
-  const std::string_view mime_description;
+  const std::string_view file_type_description;
 };
 
-// A mapping from `mime_type` to the human readable `mime_description`.
+// A mapping from `mime_type` to the human readable `file_type_description`.
 // Mappings documentation:
 // https://developers.google.com/drive/api/guides/mime-types
 // https://developers.google.com/drive/api/guides/ref-export-formats
@@ -209,7 +214,7 @@ const auto kMimeTypeMapping = base::MakeFixedFlatMap<std::string_view,
 // Helper for converting a `mime_type` into an abbreviated string.
 std::string_view MimeToDescription(const std::string_view& mime_type) {
   const auto it = kMimeTypeMapping.find(mime_type);
-  return it != kMimeTypeMapping.end() ? it->second : mime_type;
+  return it != kMimeTypeMapping.end() ? it->second : "";
 }
 
 // Helper for converting unix timestamp `time` into an abbreviated date.
@@ -654,9 +659,12 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
           "document.derivedStructData.displayPhoto.url"));
       // Ensure that image URLs from lh3.googleusercontent.com include an image
       // size parameter.
-      if (base::StartsWith(image_url, "https://lh3.googleusercontent.com") &&
-          !base::Contains(image_url, "=s")) {
-        image_url += "=s64";
+      if (base::StartsWith(image_url, "https://lh3.googleusercontent.com")) {
+        // Check for existing size parameters (e.g., -s128, =w256, -h64).
+        RE2 size_regex("[-=][s|w|h]\\d+");
+        if (!RE2::PartialMatch(image_url, size_regex)) {
+          image_url += base::Contains(image_url, "=") ? "-s64" : "=s64";
+        }
       }
     } else if (suggestion_type == SuggestionType::CONTENT) {
       icon_url = ptr_to_string(result.FindStringByDottedPath("iconUri"));
@@ -761,24 +769,47 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchContents(
   } else if (suggestion_type == SuggestionType::CONTENT) {
     std::optional<int> response_time =
         result.FindIntByDottedPath("document.derivedStructData.updated_time");
-    // TODO (crbug.com/402436108): Localize the `last_updated` time below
-    //   similar to how it is done in `DocumentProvider::GetMatchDescription()`.
-    const std::string last_updated =
-        base::UTF16ToUTF8(UpdateTimeToString(response_time));
-    const std::string owner = ptr_to_string(
-        result.FindStringByDottedPath("document.derivedStructData.owner"));
-    const std::string mime_description = std::string(
+    const std::u16string last_updated = UpdateTimeToString(response_time);
+    const std::u16string owner = base::UTF8ToUTF16(ptr_to_string(
+        result.FindStringByDottedPath("document.derivedStructData.owner")));
+    const std::u16string file_type_description = base::UTF8ToUTF16(
         MimeToDescription(ptr_to_string(result.FindStringByDottedPath(
             "document.derivedStructData.mime_type"))));
-    // Only place a dash after metadata text if it exists.
-    auto metadata_dash = [](const std::string& previous_text) {
-      return previous_text.empty() ? "" : " - ";
-    };
-    return last_updated + metadata_dash(last_updated) + owner +
-           metadata_dash(owner) + mime_description;
+    return base::UTF16ToUTF8(GetLocalizedContentMetadata(
+        last_updated, owner, file_type_description));
   }
 
   return "";
+}
+
+std::u16string EnterpriseSearchAggregatorProvider::GetLocalizedContentMetadata(
+    const std::u16string& update_time,
+    const std::u16string& owner,
+    const std::u16string& file_type_description) const {
+  if (!update_time.empty()) {
+    if (!owner.empty()) {
+      return !file_type_description.empty()
+                 ? l10n_util::GetStringFUTF16(
+                       IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE, update_time,
+                       owner, file_type_description)
+                 : l10n_util::GetStringFUTF16(
+                       IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_FILE_TYPE_DESCRIPTION,
+                       update_time, owner);
+    }
+    return !file_type_description.empty()
+               ? l10n_util::GetStringFUTF16(
+                     IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_OWNER,
+                     update_time, file_type_description)
+               : update_time;
+  }
+  if (!owner.empty()) {
+    return !file_type_description.empty()
+               ? l10n_util::GetStringFUTF16(
+                     IDS_CONTENT_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_DATE,
+                     owner, file_type_description)
+               : owner;
+  }
+  return !file_type_description.empty() ? file_type_description : u"";
 }
 
 std::vector<std::string>

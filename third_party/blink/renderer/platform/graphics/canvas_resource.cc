@@ -159,11 +159,10 @@ static void ReleaseFrameResources(
   // TODO(khushalsagar): If multiple readers had access to this resource, losing
   // it once should make sure subsequent releases don't try to recycle this
   // resource.
-  if (lost_resource)
+  if (lost_resource) {
     resource->NotifyResourceLost();
-  if (resource_provider && !lost_resource && resource->IsRecycleable() &&
-      resource->HasOneRef()) {
-    resource_provider->RecycleResource(std::move(resource));
+  } else if (resource_provider) {
+    resource_provider->OnResourceReturnedFromCompositor(std::move(resource));
   }
 }
 

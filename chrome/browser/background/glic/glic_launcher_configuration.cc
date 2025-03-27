@@ -10,7 +10,6 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/command.h"
@@ -43,16 +42,6 @@ GlicLauncherConfiguration::GlicLauncherConfiguration(Observer* manager)
 }
 
 GlicLauncherConfiguration::~GlicLauncherConfiguration() = default;
-
-// static
-void GlicLauncherConfiguration::RegisterLocalStatePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kGlicLauncherEnabled, false);
-
-  registry->RegisterStringPref(
-      prefs::kGlicLauncherHotkey,
-      ui::Command::AcceleratorToString(GetDefaultHotkey()));
-}
 
 // static
 bool GlicLauncherConfiguration::IsEnabled(bool* is_default_value) {

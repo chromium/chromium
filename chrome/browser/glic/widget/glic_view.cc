@@ -36,14 +36,14 @@ GlicView::GlicView(Profile* profile,
     : accelerator_delegate_(accelerator_delegate) {
   SetProperty(views::kElementIdentifierKey, kGlicViewElementId);
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  SetBackground(
-      views::CreateRoundedRectBackground(kColorGlicBackground, kCornerRadius));
   auto web_view = std::make_unique<views::WebView>(profile);
   web_view->SetProperty(views::kElementIdentifierKey,
                         kWebViewElementIdForTesting);
   web_view_ = web_view.get();
   web_view->SetSize(initial_size);
   AddChildView(std::move(web_view));
+  // As there is no WebContents yet, this will apply the default background.
+  UpdateBackgroundColor();
 }
 
 GlicView::~GlicView() = default;
@@ -62,12 +62,43 @@ bool GlicView::IsPointWithinDraggableArea(const gfx::Point& point) {
   return false;
 }
 
+void GlicView::SetWebContents(content::WebContents* web_contents) {
+  web_view_->SetWebContents(web_contents);
+  UpdateBackgroundColor();
+}
+
+void GlicView::UpdateBackgroundColor() {
+  std::optional<SkColor> client_background = GetClientBackgroundColor();
+  if (client_background) {
+    SetBackground(
+        views::CreateRoundedRectBackground(*client_background, kCornerRadius));
+  } else {
+    SetBackground(views::CreateRoundedRectBackground(kColorGlicBackground,
+                                                     kCornerRadius));
+  }
+}
+
 bool GlicView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   if (accelerator_delegate_) {
     return accelerator_delegate_->AcceleratorPressed(accelerator);
   }
 
   return false;
+}
+
+std::optional<SkColor> GlicView::GetClientBackgroundColor() {
+  content::WebContents* host = web_view_->GetWebContents();
+  if (!host) {
+    return std::nullopt;
+  }
+
+  std::vector<content::WebContents*> inner_contents =
+      host->GetInnerWebContents();
+  if (inner_contents.size() != 1ul) {
+    return std::nullopt;
+  }
+
+  return inner_contents[0]->GetBackgroundColor();
 }
 
 BEGIN_METADATA(GlicView)

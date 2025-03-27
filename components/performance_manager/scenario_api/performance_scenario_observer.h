@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/types/pass_key.h"
+#include "components/performance_manager/scenario_api/performance_scenario_memory_forward.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 
 namespace performance_scenarios {

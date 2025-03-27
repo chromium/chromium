@@ -71,7 +71,7 @@ bool SlotContainsCertWithHash(PK11SlotInfo* slot, std::string_view hash_hex) {
     return false;
   }
   net::SHA256HashValue hash;
-  if (!base::HexStringToSpan(hash_hex, hash.data)) {
+  if (!base::HexStringToSpan(hash_hex, hash)) {
     return false;
   }
   for (CERTCertListNode* node = CERT_LIST_HEAD(cert_list);

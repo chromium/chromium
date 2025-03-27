@@ -118,10 +118,6 @@ class OmniboxPopupMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    // Setup for AutocompleteController.
-    autocomplete_controller_ = std::make_unique<AutocompleteController>(
-        std::make_unique<FakeAutocompleteProviderClient>(), 0);
-
     std::unique_ptr<image_fetcher::ImageDataFetcher> mock_image_data_fetcher =
         std::make_unique<MockImageDataFetcher>();
 
@@ -133,21 +129,15 @@ class OmniboxPopupMediatorTest : public PlatformTest {
     mediator_ = [[OmniboxPopupMediator alloc]
                  initWithFetcher:std::move(mock_image_data_fetcher)
                    faviconLoader:nil
-          autocompleteController:autocomplete_controller_.get()
-        remoteSuggestionsService:nil
                          tracker:&tracker];
     mediator_.consumer = mockResultConsumer_;
   }
-
-  void TearDown() override { [mediator_ disconnect]; }
-
 
   // Message loop for the main test thread.
   base::test::TaskEnvironment environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   OmniboxPopupMediator* mediator_;
-  std::unique_ptr<AutocompleteController> autocomplete_controller_;
   id mockResultConsumer_;
 };
 

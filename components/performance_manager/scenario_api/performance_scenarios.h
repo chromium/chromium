@@ -11,11 +11,8 @@
 #include "base/component_export.h"
 #include "base/containers/enum_set.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/shared_memory_safety_checker.h"
-#include "base/memory/structured_shared_memory.h"
+#include "components/performance_manager/scenario_api/performance_scenario_memory_forward.h"
 
 namespace performance_scenarios {
 
@@ -97,24 +94,6 @@ inline constexpr ScenarioPattern kDefaultIdleScenarios{
     .input = {InputScenario::kNoInput},
 };
 
-// The full scenario state to copy over shared memory.
-// TODO(crbug.com/365586676): Move this to a separate header since it's part of
-// the plumbing, not the general API.
-#pragma clang diagnostic push
-#pragma clang diagnostic error "-Wpadded"
-struct COMPONENT_EXPORT(SCENARIO_API) ScenarioState {
-  base::subtle::SharedAtomic<LoadingScenario> loading;
-  base::subtle::SharedAtomic<InputScenario> input;
-};
-#pragma clang diagnostic pop
-
-// Pointers to the mapped shared memory are held in thread-safe scoped_refptr's.
-// The memory will be unmapped when the final reference is dropped. Functions
-// that copy values out of the shared memory must hold a reference to it so that
-// it's not unmapped while reading.
-using RefCountedScenarioMapping = base::RefCountedData<
-    base::StructuredSharedMemory<ScenarioState>::ReadOnlyMapping>;
-
 // A wrapper around a std::atomic<T> that's stored in shared memory. The wrapper
 // prevents the shared memory from being unmapped while a caller has a reference
 // to the atomic. Dereference the SharedAtomicRef to read from it as a
@@ -150,30 +129,6 @@ class SharedAtomicRef {
 
   // A reference into `mapping_`, not PartitionAlloc memory.
   RAW_PTR_EXCLUSION const std::atomic<T>& wrapped_atomic_;
-};
-
-// A scoped object that maps shared memory for the scenario state into the
-// current process as long as it exists.
-// TODO(crbug.com/365586676): Move this to a separate header since it's part of
-// the plumbing, not the general API.
-class COMPONENT_EXPORT(SCENARIO_API) ScopedReadOnlyScenarioMemory {
- public:
-  // Maps `region` into the current process, as a read-only view of the memory
-  // holding the scenario state for `scope`.
-  ScopedReadOnlyScenarioMemory(ScenarioScope scope,
-                               base::ReadOnlySharedMemoryRegion region);
-  ~ScopedReadOnlyScenarioMemory();
-
-  ScopedReadOnlyScenarioMemory(const ScopedReadOnlyScenarioMemory&) = delete;
-  ScopedReadOnlyScenarioMemory& operator=(const ScopedReadOnlyScenarioMemory&) =
-      delete;
-
-  // Returns a pointer to the mapping registered for `scope`, if any.
-  static scoped_refptr<RefCountedScenarioMapping> GetMappingForTesting(
-      ScenarioScope scope);
-
- private:
-  ScenarioScope scope_;
 };
 
 // Functions to query performance scenarios.

@@ -3052,18 +3052,6 @@ should be kept for as long as we store refresh tokens in an SQLite DB. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.UserRequestedWipeDataOnSignout" enum="BooleanRequested"
-    expires_after="2024-09-01">
-  <owner>triploblastic@google.com</owner>
-  <owner>bsazonov@chromium.org</owner>
-  <summary>
-    User requested to wipe local device data on signout. This histogram is only
-    recorded when the user is given a choice of whether or not to wipe data (not
-    in cases where the data is either automatically wiped or automatically not
-    wiped).
-  </summary>
-</histogram>
-
 <histogram name="Signin.WebSignin.SourceToChromeSignin"
     enum="SigninAccessPoint" expires_after="2025-08-16">
   <owner>rsult@google.com</owner>

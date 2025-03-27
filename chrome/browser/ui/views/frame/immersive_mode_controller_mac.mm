@@ -331,9 +331,6 @@ void ImmersiveModeControllerMac::OnContentFullscreenChanged(
   }
 }
 
-void ImmersiveModeControllerMac::OnWillChangeFocus(views::View* focused_before,
-                                                   views::View* focused_now) {}
-
 void ImmersiveModeControllerMac::OnDidChangeFocus(views::View* focused_before,
                                                   views::View* focused_now) {
   if (browser_view_->top_container()->Contains(focused_now) ||

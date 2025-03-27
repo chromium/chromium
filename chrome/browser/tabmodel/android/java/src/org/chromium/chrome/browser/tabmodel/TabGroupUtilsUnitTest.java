@@ -147,6 +147,7 @@ public class TabGroupUtilsUnitTest {
                         /* tabGroupColor= */ 0,
                         TAB_GROUP_TITLE,
                         /* tabGroupCollapsed= */ true,
+                        /* isGroupShared= */ false,
                         /* isIncognito= */ false);
         TabGroupUtils.regroupTabs(mTabGroupModelFilter, tabs, tabGroupMetadata);
 

@@ -38,6 +38,12 @@ std::string GetProfileEmail(Profile* profile) {
   return enterprise_connectors::GetProfileEmail(profile);
 }
 
+// Returns true if the policy command line switch can be used.
+bool IsCommandLineSwitchSupported() {
+  return g_browser_process && g_browser_process->browser_policy_connector()
+                                  ->IsCommandLineSwitchSupported();
+}
+
 }  // namespace
 
 namespace safe_browsing {
@@ -101,7 +107,8 @@ std::unique_ptr<KeyedService> ChromeEnterpriseRealTimeUrlLookupServiceFactory::
       policy::ManagementServiceFactory::GetForProfile(profile),
       profile->IsOffTheRecord(), profile->IsGuestSession(),
       base::BindRepeating(&GetProfileEmail, profile),
-      base::BindRepeating(&enterprise_util::IsProfileAffiliated, profile));
+      base::BindRepeating(&enterprise_util::IsProfileAffiliated, profile),
+      /*is_command_line_switch_supported=*/IsCommandLineSwitchSupported());
 }
 
 }  // namespace safe_browsing

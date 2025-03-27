@@ -12,14 +12,17 @@
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user_type.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
@@ -27,6 +30,12 @@
 namespace ash {
 
 constexpr char kUserEmail[] = "user1@test.com";
+
+class MockLogoutConfirmationControllerObserver
+    : public LogoutConfirmationController::Observer {
+ public:
+  MOCK_METHOD(void, OnLogoutConfirmationStarted, (), (override));
+};
 
 class LogoutConfirmationControllerTest : public testing::Test {
  public:
@@ -48,6 +57,10 @@ class LogoutConfirmationControllerTest : public testing::Test {
       runner_current_default_handle_;
 
   LogoutConfirmationController controller_;
+  testing::NiceMock<MockLogoutConfirmationControllerObserver> mock_observer_;
+  base::ScopedObservation<LogoutConfirmationController,
+                          LogoutConfirmationController::Observer>
+      scoped_observation_{&mock_observer_};
 };
 
 LogoutConfirmationControllerTest::LogoutConfirmationControllerTest()
@@ -57,6 +70,7 @@ LogoutConfirmationControllerTest::LogoutConfirmationControllerTest()
   controller_.SetClockForTesting(runner_->GetMockTickClock());
   controller_.SetLogoutCallbackForTesting(base::BindRepeating(
       &LogoutConfirmationControllerTest::LogOut, base::Unretained(this)));
+  scoped_observation_.Observe(&controller_);
 }
 
 LogoutConfirmationControllerTest::~LogoutConfirmationControllerTest() = default;
@@ -69,6 +83,7 @@ void LogoutConfirmationControllerTest::LogOut(
 // Verifies that the user is logged out immediately if logout confirmation with
 // a zero-length countdown is requested.
 TEST_F(LogoutConfirmationControllerTest, ZeroDuration) {
+  EXPECT_CALL(mock_observer_, OnLogoutConfirmationStarted()).Times(1);
   controller_.ConfirmLogout(
       runner_->NowTicks(),
       LogoutConfirmationController::Source::kShelfExitButton);
@@ -79,6 +94,7 @@ TEST_F(LogoutConfirmationControllerTest, ZeroDuration) {
 
 // Verifies that the user is logged out when the countdown expires.
 TEST_F(LogoutConfirmationControllerTest, DurationExpired) {
+  EXPECT_CALL(mock_observer_, OnLogoutConfirmationStarted()).Times(1);
   controller_.ConfirmLogout(
       runner_->NowTicks() + base::Seconds(10),
       LogoutConfirmationController::Source::kShelfExitButton);
@@ -93,6 +109,7 @@ TEST_F(LogoutConfirmationControllerTest, DurationExpired) {
 // request's countdown ends before the original request's, the user is logged
 // out when the new countdown expires.
 TEST_F(LogoutConfirmationControllerTest, DurationShortened) {
+  EXPECT_CALL(mock_observer_, OnLogoutConfirmationStarted()).Times(2);
   controller_.ConfirmLogout(
       runner_->NowTicks() + base::Seconds(30),
       LogoutConfirmationController::Source::kShelfExitButton);
@@ -112,6 +129,7 @@ TEST_F(LogoutConfirmationControllerTest, DurationShortened) {
 // request's countdown ends after the original request's, the user is logged
 // out when the original countdown expires.
 TEST_F(LogoutConfirmationControllerTest, DurationExtended) {
+  EXPECT_CALL(mock_observer_, OnLogoutConfirmationStarted()).Times(1);
   controller_.ConfirmLogout(
       runner_->NowTicks() + base::Seconds(10),
       LogoutConfirmationController::Source::kShelfExitButton);
@@ -128,6 +146,7 @@ TEST_F(LogoutConfirmationControllerTest, DurationExtended) {
 // Verifies that when the screen is locked while the countdown is running, the
 // user is not logged out, even when the original countdown expires.
 TEST_F(LogoutConfirmationControllerTest, Lock) {
+  EXPECT_CALL(mock_observer_, OnLogoutConfirmationStarted()).Times(1);
   controller_.ConfirmLogout(
       runner_->NowTicks() + base::Seconds(10),
       LogoutConfirmationController::Source::kShelfExitButton);
@@ -140,6 +159,7 @@ TEST_F(LogoutConfirmationControllerTest, Lock) {
 // Verifies that when the user confirms the logout request, the user is logged
 // out immediately.
 TEST_F(LogoutConfirmationControllerTest, UserAccepted) {
+  EXPECT_CALL(mock_observer_, OnLogoutConfirmationStarted()).Times(1);
   controller_.ConfirmLogout(
       runner_->NowTicks() + base::Seconds(10),
       LogoutConfirmationController::Source::kShelfExitButton);
@@ -151,6 +171,7 @@ TEST_F(LogoutConfirmationControllerTest, UserAccepted) {
 // Verifies that when the user denies the logout request, the user is not logged
 // out, even when the original countdown expires.
 TEST_F(LogoutConfirmationControllerTest, UserDenied) {
+  EXPECT_CALL(mock_observer_, OnLogoutConfirmationStarted()).Times(1);
   controller_.ConfirmLogout(
       runner_->NowTicks() + base::Seconds(10),
       LogoutConfirmationController::Source::kShelfExitButton);
@@ -164,6 +185,7 @@ TEST_F(LogoutConfirmationControllerTest, UserDenied) {
 // request is handled correctly and the user is logged out when the countdown
 // expires.
 TEST_F(LogoutConfirmationControllerTest, DurationExpiredAfterDeniedRequest) {
+  EXPECT_CALL(mock_observer_, OnLogoutConfirmationStarted()).Times(2);
   controller_.ConfirmLogout(
       runner_->NowTicks() + base::Seconds(10),
       LogoutConfirmationController::Source::kShelfExitButton);

@@ -707,7 +707,7 @@ void LocalFilesMigrationManager::OnCleanupDone(
   if (migration_destination_ == MigrationDestination::kDelete) {
     // Notify to remove folders after deletion.
     NotifySuccess();
-    // TODO(402074193): Show deletion completed notification.
+    notification_manager_->ShowDeletionCompletedNotification();
   }
   SetState(State::kCompleted);
 }

@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/integrators/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
+#include "components/autofill/core/browser/integrators/valuables/valuable_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
@@ -140,6 +141,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   const GoogleGroupsManager* GetGoogleGroupsManager() const final;
   FormDataImporter* GetFormDataImporter() final;
   payments::ChromePaymentsAutofillClient* GetPaymentsAutofillClient() final;
+  ValuableManager* GetValuableManager() final;
   StrikeDatabase* GetStrikeDatabase() final;
   ukm::UkmRecorder* GetUkmRecorder() final;
   AddressNormalizer* GetAddressNormalizer() final;
@@ -267,6 +269,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   VotesUploader votes_uploader_{this};
   std::unique_ptr<FormDataImporter> form_data_importer_;
 
+  ValuableManager valuable_manager_;
   payments::ChromePaymentsAutofillClient payments_autofill_client_{this};
   SingleFieldFillRouter single_field_fill_router_{
       // This call is during construction, so GetAutocompleteHistoryManager()

@@ -816,6 +816,10 @@ class CC_EXPORT LayerTreeImpl {
 
   void AddLayerNeedingUpdateDiscardableImageMap(PictureLayerImpl* layer);
 
+  void SetPageScaleFactorAndLimitsForDisplayTree(float page_scale_factor,
+                                                 float min_page_scale_factor,
+                                                 float max_page_scale_factor);
+
   class CC_EXPORT DiscardableImageMapUpdater {
     STACK_ALLOCATED();
 

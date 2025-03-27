@@ -458,11 +458,11 @@ public class ReorderDelegate {
         mInReorderModeSupplier.removeObserver(observer);
     }
 
-    /** Update and animate views for external view drop on strip. */
-    public void handleTabDropForExternalView(
-            StripLayoutGroupTitle[] groupTitles, int draggedTabId, int dropIndex) {
+    /** Update and animate views for external tabs to drop on strip. */
+    public void handleDropForExternalView(
+            StripLayoutGroupTitle[] groupTitles, List<Integer> tabIds, int dropIndex) {
         assert mInitialized && mExternalViewDragDropReorderStrategy != null;
-        mExternalViewDragDropReorderStrategy.handleDrop(groupTitles, draggedTabId, dropIndex);
+        mExternalViewDragDropReorderStrategy.handleDrop(groupTitles, tabIds, dropIndex);
     }
 
     // ============================================================================================

@@ -189,7 +189,7 @@ class SignedExchangeSignatureVerifierTest
     SignedExchangeEnvelope badsigsha256_envelope(envelope);
     SignedExchangeSignatureHeaderField::Signature badsigsha256 =
         envelope.signature();
-    badsigsha256.cert_sha256->data[0]++;
+    (*badsigsha256.cert_sha256)[0]++;
     badsigsha256_envelope.SetSignatureForTesting(badsigsha256);
     EXPECT_EQ(
         SignedExchangeSignatureVerifier::Result::kErrCertificateSHA256Mismatch,

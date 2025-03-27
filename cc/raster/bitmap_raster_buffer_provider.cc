@@ -28,10 +28,19 @@ namespace {
 
 class BitmapRasterBufferImpl : public RasterBuffer {
  public:
-  BitmapRasterBufferImpl(ResourcePool::Backing* backing,
+  BitmapRasterBufferImpl(const ResourcePool::InUsePoolResource& in_use_resource,
+                         scoped_refptr<gpu::SharedImageInterface> sii,
                          bool resource_has_previous_content)
-      : resource_has_previous_content_(resource_has_previous_content),
-        backing_(backing) {}
+      : resource_has_previous_content_(resource_has_previous_content) {
+    if (!in_use_resource.backing()) {
+      in_use_resource.InstallSoftwareBacking(sii, "BitmapRasterBufferProvider");
+
+      in_use_resource.backing()->mailbox_sync_token =
+          sii->GenVerifiedSyncToken();
+    }
+    backing_ = in_use_resource.backing();
+  }
+
   BitmapRasterBufferImpl(const BitmapRasterBufferImpl&) = delete;
   BitmapRasterBufferImpl& operator=(const BitmapRasterBufferImpl&) = delete;
 
@@ -90,19 +99,10 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
-  if (!resource.backing()) {
-    resource.InstallSoftwareBacking(shared_image_interface_,
-                                    "BitmapRasterBufferProvider");
-
-    resource.backing()->mailbox_sync_token =
-        shared_image_interface_->GenVerifiedSyncToken();
-  }
-  ResourcePool::Backing* backing = resource.backing();
-
   bool resource_has_previous_content =
       resource_content_id && resource_content_id == previous_content_id;
   return std::make_unique<BitmapRasterBufferImpl>(
-      backing, resource_has_previous_content);
+      resource, shared_image_interface_, resource_has_previous_content);
 }
 
 void BitmapRasterBufferProvider::Flush() {}

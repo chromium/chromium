@@ -11,8 +11,12 @@ import android.view.Window;
 import androidx.core.view.WindowCompat;
 
 import org.chromium.base.UnownedUserData;
+import org.chromium.base.UnownedUserDataKey;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.TokenHolder;
 
 /**
@@ -23,9 +27,34 @@ import org.chromium.ui.util.TokenHolder;
 @NullMarked
 public class EdgeToEdgeStateProvider extends ObservableSupplierImpl<Boolean>
         implements UnownedUserData {
+    private static final UnownedUserDataKey<EdgeToEdgeStateProvider> KEY =
+            new UnownedUserDataKey<>(EdgeToEdgeStateProvider.class);
     private final TokenHolder mTokenHolder = new TokenHolder(this::onTokenUpdate);
     private final Window mWindow;
 
+    /** Attach the current instance to a WindowAndroid object. */
+    public void attach(WindowAndroid windowAndroid) {
+        KEY.attachToHost(windowAndroid.getUnownedUserDataHost(), this);
+    }
+
+    /**
+     * Retrieve the EdgeToEdgeStateProvider associated with the given WindowAndroid as boolean
+     * supplier.
+     */
+    public static @Nullable ObservableSupplier<Boolean> from(WindowAndroid windowAndroid) {
+        return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
+    }
+
+    /** Detach this instance from all windows. */
+    public void detach() {
+        KEY.detachFromAllHosts(this);
+    }
+
+    /**
+     * Create the state provider with the window it should associate with.
+     *
+     * @param window The activity window this provider is associated with.
+     */
     public EdgeToEdgeStateProvider(Window window) {
         super(/* initialValue= */ false);
         mWindow = window;

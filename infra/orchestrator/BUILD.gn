@@ -103,5 +103,6 @@ python_library("process_perf_results_py") {
 
     # This file is read at script run-time.
     "//tools/perf/core/perf_dashboard_machine_group_mapping.json",
+    "//tools/perf/public_builders.json",
   ]
 }

@@ -128,11 +128,6 @@ class OmniboxView {
   // to the current cursor position.
   virtual void GetSelectionBounds(size_t* start, size_t* end) const = 0;
 
-  // Returns the sum of all selections' lengths. This is used to detect when
-  // the user has deleted text, and therefore, their input should not be
-  // autocompleted.
-  virtual size_t GetAllSelectionsLength() const = 0;
-
   // Selects all the text in the edit.  Use this in place of SetSelAll() to
   // avoid selecting the "phantom newline" at the end of the edit.
   virtual void SelectAll(bool reversed) = 0;
@@ -176,17 +171,10 @@ class OmniboxView {
                                            bool notify_text_changed) = 0;
 
   // Called when the inline autocomplete text in the model may have changed.
-  // `display_text` is the new text to show. `selection` indicates the
-  // autocompleted portions which should be selected. `*_autocompletion`
-  // represents the appropriate autocompletion.
-  // TODO(manukh) The last 3 parameters are redundant except when split
-  //  autocompletion is enabled. Once we've cleaned up split autocompletion
-  //  (it's unlikely to launch but still useful for experimenting), `selections`
-  //  should be removed.
+  // `user_text` is the portion of omnibox text the user typed.
+  // `inline`_autocompletion` is the autocompleted part.
   virtual void OnInlineAutocompleteTextMaybeChanged(
-      const std::u16string& display_text,
-      std::vector<gfx::Range> selections,
-      const std::u16string& prefix_autocompletion,
+      const std::u16string& user_text,
       const std::u16string& inline_autocompletion) = 0;
 
   // Called when the inline autocomplete text in the model has been cleared.
@@ -271,10 +259,6 @@ class OmniboxView {
     bool is_keyword_selected;
     size_t sel_start;
     size_t sel_end;
-    size_t all_sel_length;
-
-    State();
-    State(const State& state);
   };
 
   explicit OmniboxView(std::unique_ptr<OmniboxClient> client);

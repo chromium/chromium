@@ -82,7 +82,7 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   WTF::TextEncoding GetScriptEncoding() { return script_encoding_; }
   CachedMetadataHandler* CreateCachedMetadataHandler();
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
  private:
   void StartLoadingBody();

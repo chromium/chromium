@@ -6,6 +6,7 @@
 
 import argparse
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -145,6 +146,14 @@ def main():
   )
   args = parser.parse_args()
   gn_args = _get_current_gn_args()
+  # remove remoteexec related gn args.
+  gn_args = [
+      arg for arg in gn_args
+      if not re.search(r'use_(remoteexec|reclient|siso)\s*=.*', arg)
+  ]
+  # make sure it doesn't use remoteexec
+  gn_args.append('use_remoteexec = false')
+
   # Generate a new GN output directory in order
   # not to mess with the current one.
   with tempfile.TemporaryDirectory() as tmp_dir_name:

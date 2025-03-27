@@ -38,6 +38,7 @@
 <translation id="19085484004813472">นี่เป็นฟีเจอร์ใหม่</translation>
 <translation id="2006524834898217237">ตรวจสอบว่าอุปกรณ์นี้เชื่อมต่ออินเทอร์เน็ตแล้ว</translation>
 <translation id="208586643495776849">โปรดลองอีกครั้ง</translation>
+<translation id="2111134541987263231">เปิด<ph name="BEGIN_BOLD" />อนุญาตในโหมดไม่ระบุตัวตน<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 วัน}other{# วัน}}</translation>
 <translation id="2148716181193084225">วันนี้</translation>
 <translation id="2168039046890040389">เลื่อนหน้าขึ้น</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">แตะเป้าหมายการสัมผัสในหน้าจอ</translation>
 <translation id="2295140143284145483">แบบสำรวจ</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/วินาที</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{ไม่พบส่วนขยายที่มีรหัส <ph name="BEGIN_LIST" /><ph name="END_LIST" /> โปรดติดต่อผู้ดูแลระบบ}other{ไม่พบส่วนขยายที่มีรหัส <ph name="BEGIN_LIST" /><ph name="END_LIST" /> โปรดติดต่อผู้ดูแลระบบ}}</translation>
 <translation id="2353636109065292463">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2388990488038464401">โทรหาหมายเลขนี้จากโทรศัพท์ของคุณใช่ไหม</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">ลบทั้งหมด</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{ใน 1 วัน}other{ใน # วัน}}</translation>
 <translation id="2922712708897119705">คอลัมน์ <ph name="COLUMN_NAME" /> จัดเรียงจากมากไปน้อย</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{ไม่พบส่วนขยาย}other{ไม่พบส่วนขยาย}}</translation>
 <translation id="3036649622769666520">เปิดไฟล์</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">ด้านล่าง</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">โทรจาก</translation>
 <translation id="3306688585798492231">จอแสดงผลในตัว</translation>
 <translation id="335581015389089642">คำพูด</translation>
+<translation id="3372635229069101468">คลิก<ph name="BEGIN_BOLD" />รายละเอียด<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">ข้อความมีขนาดใหญ่เกินไป</translation>
 <translation id="3406306243914553062">เนื้อหา HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{เหลือ 1 วัน}other{เหลือ # วัน}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">คอลัมน์ <ph name="COLUMN_NAME" /> จัดเรียงจากน้อยไปมาก</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{การแจ้งเตือนที่ยังไม่อ่าน 1 รายการ}other{การแจ้งเตือนที่ยังไม่อ่าน # รายการ}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{เปิดส่วนขยายต่อไปนี้ในโหมดไม่ระบุตัวตน}other{เปิดส่วนขยายต่อไปนี้ในโหมดไม่ระบุตัวตน}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 เดือนที่ผ่านมา}other{# เดือนที่ผ่านมา}}</translation>
 <translation id="4289300219472526559">เริ่มพูด</translation>
 <translation id="4289540628985791613">ภาพรวม</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">หมายเลขโทรศัพท์</translation>
 <translation id="4746179598275229723">เลิกปักหมุดส่วนขยายแล้ว</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{เหลือ 1 เดือน}other{เหลือ # เดือน}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{องค์กรต้องมีส่วนขยายรายการหนึ่งจึงจะใช้โหมดไม่ระบุตัวตนได้}other{องค์กรต้องมีส่วนขยายบางรายการจึงจะใช้โหมดไม่ระบุตัวตนได้}}</translation>
+<translation id="482932175346970750">พิมพ์ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ลงในเบราว์เซอร์</translation>
 <translation id="4888938634149558681">โทรออก</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> และ <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 วินาที}other{# วินาที}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;วาง</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">ส่งไม่สำเร็จ</translation>
+<translation id="5283101102242354279">วิธีเปิดส่วนขยายในโหมดไม่ระบุตัวตน</translation>
 <translation id="528468243742722775">สิ้นสุด</translation>
 <translation id="5329858601952122676">&amp;ลบ</translation>
 <translation id="5361107212971249203">ข้อความ</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">การตั้งค่าการแสดงผลของแอปพลิเคชันจะมีผลหลังการรีสตาร์ทครั้งถัดไป</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{เหลือ 1 นาที}other{เหลือ # นาที}}</translation>
+<translation id="7252604552361840748">ค้นหาส่วนขยายด้านบน</translation>
 <translation id="7363164521834647158">ส่งการตอบกลับ</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 นาทีที่ผ่านมา}other{# นาทีที่ผ่านมา}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

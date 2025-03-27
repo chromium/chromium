@@ -50,17 +50,18 @@ export class DescriptionSectionElement extends CrLitElement {
 
   static override get properties() {
     return {
+      citationCount: {type: Number},
       description: {type: Object},
       productName: {type: String},
     };
   }
 
-  description: ProductDescription = {
+  accessor description: ProductDescription = {
     attributes: [],
     summary: [],
   };
-  productName: string = '';
-  citationCount: number = 0;
+  accessor productName: string = '';
+  accessor citationCount: number = 0;
 
   protected computeCitationIndex_(summaryIndex: number, urlIndex: number):
       number {

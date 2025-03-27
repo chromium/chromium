@@ -24,9 +24,12 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/collaboration/public/features.h"
 #include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/public/collaboration_finder.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/pref_names.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -56,8 +59,11 @@ const tab_groups::TabGroupColorId kNewColor = tab_groups::TabGroupColorId::kRed;
 class SavedTabGroupBarUnitTest : public TestWithBrowserView {
  public:
   SavedTabGroupBarUnitTest() {
+    // TODO (crbug.com/406068322) the Messaging Service currently interferes
+    // with this test harness, it needs to be cleaned up.
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{data_sharing::features::kDataSharingFeature}, {});
+        /*enabled_features=*/{data_sharing::features::kDataSharingFeature},
+        {collaboration::features::kCollaborationMessaging});
   }
 
   SavedTabGroupBar* saved_tab_group_bar() { return saved_tab_group_bar_.get(); }
@@ -70,11 +76,14 @@ class SavedTabGroupBarUnitTest : public TestWithBrowserView {
 
   void SetUp() override {
     TestWithBrowserView::SetUp();
+    browser()->profile()->GetPrefs()->SetBoolean(
+        tab_groups::prefs::kAutoPinNewTabGroups, true);
 
     TabGroupSyncService* service =
         tab_groups::SavedTabGroupUtils::GetServiceForProfile(
             browser()->profile());
     service->SetIsInitializedForTesting(true);
+    Wait();
 
     saved_tab_group_bar_ = std::make_unique<SavedTabGroupBar>(browser(), false);
     saved_tab_group_bar_->SetPageNavigator(nullptr);
@@ -83,6 +92,18 @@ class SavedTabGroupBarUnitTest : public TestWithBrowserView {
   void TearDown() override {
     saved_tab_group_bar_.reset();
     TestWithBrowserView::TearDown();
+  }
+
+  // The TabGroupSyncService posts all of its observations. This means that
+  // this test must Wait for any command that happens to call an observer as the
+  // result of an action.
+  void Wait() {
+    // Post a dummy task in the current thread and wait for its completion so
+    // that any already posted tasks are completed.
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   void AddTabToBrowser(Browser* browser, int index) {
@@ -103,11 +124,13 @@ class SavedTabGroupBarUnitTest : public TestWithBrowserView {
     AddTabToBrowser(browser(), 0);
     tab_groups::TabGroupId local_id =
         browser()->tab_strip_model()->AddToNewGroup({0});
+    Wait();
     return local_id;
   }
 
   // Returns the sync id of the group that was added.
   base::Uuid EnforceGroupSaved(tab_groups::SavedTabGroup group) {
+    Wait();
     const LocalTabGroupID local_id = group.local_group_id().value();
     return service()->GetGroup(local_id).value().saved_guid();
   }
@@ -115,6 +138,7 @@ class SavedTabGroupBarUnitTest : public TestWithBrowserView {
   base::Uuid AddGroupFromSync() {
     SavedTabGroup group = test::CreateTestSavedTabGroup();
     service()->AddGroup(group);
+    Wait();
     return group.saved_guid();
   }
 
@@ -169,10 +193,12 @@ class SavedTabGroupBarUnitTest : public TestWithBrowserView {
 
   void Pin(const base::Uuid& sync_id) {
     service()->UpdateGroupPosition(sync_id, true, 0);
+    Wait();
   }
 
   void Unpin(const base::Uuid& sync_id) {
     service()->UpdateGroupPosition(sync_id, false, std::nullopt);
+    Wait();
   }
 
   void UpdateTitle(const SavedTabGroup& group, const std::u16string& title) {
@@ -268,36 +294,23 @@ TEST_F(SavedTabGroupBarUnitTest, BarsWithSameModelsHaveSameButtons) {
 }
 
 TEST_F(SavedTabGroupBarUnitTest, RemoveButtonFromModelRemove) {
-  AddTabToBrowser(browser(), TabStripModel::kNoTab);
-  {  // Remove the group and expect no buttons except the overflow menu.
-    tab_groups::LocalTabGroupID local_id = CreateNewGroupInBrowser();
-    const base::Uuid sync_id = EnforceGroupSaved(
-        SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(local_id));
+  const base::Uuid sync_id =
+      EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+          CreateNewGroupInBrowser()));
 
-    EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
+  EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
 
-    service()->RemoveGroup(local_id);
-    EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
-  }
-
-  {  // Remove the group and expect no buttons except the overflow menu.
-    tab_groups::LocalTabGroupID local_id = CreateNewGroupInBrowser();
-    const base::Uuid sync_id = EnforceGroupSaved(
-        SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(local_id));
-
-    EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
-
-    service()->RemoveGroup(local_id);
-    EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
-  }
-
+  service()->RemoveGroup(sync_id);
+  Wait();
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 }
 
 TEST_F(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
   auto pinned_local_id = LocalIDFromSyncID(AddGroupFromLocal());
-
+  Wait();
   auto unpinned_sync_id = AddGroupFromLocal();
+  Wait();
+
   Unpin(unpinned_sync_id);
   auto unpinned_local_id = LocalIDFromSyncID(unpinned_sync_id);
 
@@ -307,7 +320,9 @@ TEST_F(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
   // Update the visual_data and expect the first button to be updated and the
   // second button to stay the same.
   service()->UpdateVisualData(pinned_local_id, &saved_tab_group_visual_data);
+  Wait();
   service()->UpdateVisualData(unpinned_local_id, &saved_tab_group_visual_data);
+  Wait();
 
   SavedTabGroupButton* new_button_1 = views::AsViewClass<SavedTabGroupButton>(
       saved_tab_group_bar()->children()[0]);
@@ -362,6 +377,8 @@ TEST_F(SavedTabGroupBarUnitTest, PinTabGroupAddButton) {
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 
   service()->UpdateGroupPosition(sync_id, true, std::nullopt);
+  Wait();
+
   EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
   EXPECT_TRUE(!!views::AsViewClass<SavedTabGroupButton>(
       saved_tab_group_bar()->children()[0]));
@@ -370,6 +387,8 @@ TEST_F(SavedTabGroupBarUnitTest, PinTabGroupAddButton) {
 TEST_F(SavedTabGroupBarUnitTest, AccessibleName) {
   EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
       CreateNewGroupInBrowser()));
+  Wait();
+
   SavedTabGroupButton* saved_tab_group_button =
       views::AsViewClass<SavedTabGroupButton>(
           saved_tab_group_bar()->children()[0]);
@@ -437,6 +456,8 @@ TEST_F(SavedTabGroupBarUnitTest, UnpinTabGroupRemoveButton) {
   EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
 
   service()->UpdateGroupPosition(sync_id, false, std::nullopt);
+  Wait();
+
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 }
 TEST_F(SavedTabGroupBarUnitTest, PinAndUnpinMultipleTabGroups) {
@@ -454,14 +475,17 @@ TEST_F(SavedTabGroupBarUnitTest, PinAndUnpinMultipleTabGroups) {
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 
   service()->UpdateGroupPosition(sync_id_1, true, std::nullopt);
+  Wait();
   EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
   ASSERT_THAT(GetButtonGUIDs(), testing::ElementsAre(sync_id_1));
 
   service()->UpdateGroupPosition(sync_id_2, true, std::nullopt);
+  Wait();
   EXPECT_EQ(3u, saved_tab_group_bar()->children().size());
   ASSERT_THAT(GetButtonGUIDs(), testing::ElementsAre(sync_id_2, sync_id_1));
 
   service()->UpdateGroupPosition(sync_id_3, true, std::nullopt);
+  Wait();
   EXPECT_EQ(4u, saved_tab_group_bar()->children().size());
   ASSERT_THAT(GetButtonGUIDs(),
               testing::ElementsAre(sync_id_3, sync_id_2, sync_id_1));
@@ -474,14 +498,17 @@ TEST_F(SavedTabGroupBarUnitTest, PinAndUnpinMultipleTabGroups) {
       service()->GetGroup(sync_id_3);
 
   service()->UpdateGroupPosition(sync_id_1, false, std::nullopt);
+  Wait();
   EXPECT_EQ(3u, saved_tab_group_bar()->children().size());
   ASSERT_THAT(GetButtonGUIDs(), testing::ElementsAre(sync_id_3, sync_id_2));
 
   service()->UpdateGroupPosition(sync_id_2, false, std::nullopt);
+  Wait();
   EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
   ASSERT_THAT(GetButtonGUIDs(), testing::ElementsAre(sync_id_3));
 
   service()->UpdateGroupPosition(sync_id_3, false, std::nullopt);
+  Wait();
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 }
 

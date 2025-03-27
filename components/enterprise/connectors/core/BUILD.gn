@@ -27,6 +27,8 @@ source_set("core") {
     "features.h",
     "realtime_reporting_client_base.cc",
     "realtime_reporting_client_base.h",
+    "reporting_event_router.cc",
+    "reporting_event_router.h",
     "reporting_service_settings.cc",
     "reporting_service_settings.h",
     "reporting_utils.cc",

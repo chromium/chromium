@@ -45,45 +45,53 @@ Events: [
     [0] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : set
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             ignoreIfPresent : false
             key : key0-set-from-document
             value : value0
         }
-        type : documentSet
+        scope : window
     }
     [1] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : set
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             ignoreIfPresent : false
             key : key1-set-from-document
             value : value1
         }
-        type : documentSet
+        scope : window
     }
     [2] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : append
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             key : key1-set-from-document
             value : value1
         }
-        type : documentAppend
+        scope : window
     }
     [3] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : set
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             ignoreIfPresent : false
             key : key2-set-from-document
             value : value2
         }
-        type : documentSet
+        scope : window
     }
 ]
 

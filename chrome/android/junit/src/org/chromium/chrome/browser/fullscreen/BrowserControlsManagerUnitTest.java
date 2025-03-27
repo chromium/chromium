@@ -409,7 +409,6 @@ public class BrowserControlsManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
     public void testShowAndroidControlsObserver() {
         remakeWithoutSpy();
 
@@ -445,7 +444,6 @@ public class BrowserControlsManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
     public void testScrollingVisibility() {
         remakeWithoutSpy();
         assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
@@ -492,7 +490,6 @@ public class BrowserControlsManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
     public void testVisibilityOnShownConstraints() {
         remakeWithoutSpy();
 

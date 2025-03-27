@@ -44,6 +44,7 @@
 #include "net/socket/datagram_server_socket.h"
 #include "net/socket/udp_server_socket.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 // TODO(qingsi): Several features to implement:
 //
@@ -102,7 +103,8 @@ const int kMaxKeySizeInTxtRecord = 9;
 // The prefix of the key used in the TXT record to list mDNS names.
 const char kKeyPrefixInTxtRecord[] = "name";
 // Version tag in the TXT record.
-const char kTxtversLine[] = "\x9txtvers=1";
+const uint8_t kTxtversLine[] = {0x09, 't', 'x', 't', 'v',
+                                'e',  'r', 's', '=', '1'};
 
 // RFC 6762, Section 6, a response that may contain an answer as a member of a
 // shared resource record set, should be delayed uniformly and randomly in the
@@ -155,7 +157,7 @@ std::vector<net::DnsResourceRecord> CreateAddressResourceRecords(
         net::dns_protocol::kClassIN | net::dns_protocol::kFlagCacheFlush;
     // TTL in a resource record is 32-bit.
     record.ttl = base::checked_cast<uint32_t>(ttl.InSeconds());
-    record.SetOwnedRdata(net::IPAddressToPackedString(ip));
+    record.SetOwnedRdata(ip.bytes());
     address_records.push_back(std::move(record));
   }
   return address_records;
@@ -169,8 +171,8 @@ std::vector<net::DnsResourceRecord> CreateAddressResourceRecords(
 // record. |containing_nsec_rr_offset| defines the offset in the message of the
 // NSEC resource record that would contain the returned RDATA, and its value is
 // used to generate the correct pointer for Next Domain Name.
-std::string CreateNsecRdata(const net::IPAddress& addr,
-                            uint16_t containing_nsec_rr_offset) {
+std::vector<uint8_t> CreateNsecRdata(const net::IPAddress& addr,
+                                     uint16_t containing_nsec_rr_offset) {
   DCHECK(addr.IsIPv4() || addr.IsIPv6());
   // Each NSEC rdata in our negative response is given by 5 octets and 8
   // octets for type A and type AAAA records, respectively:
@@ -181,13 +183,20 @@ std::string CreateNsecRdata(const net::IPAddress& addr,
   // 1 octet for Bitmap Length with value X, where X=1 for type A and X=4 for
   // type AAAA;
   // X octet(s) for Bitmap, 0x40 for type A and 0x00000008 for type AAAA.
+  std::vector<uint8_t> rdata;
   std::string next_domain_name =
       net::CreateNamePointer(containing_nsec_rr_offset);
   DCHECK_EQ(2u, next_domain_name.size());
-  if (addr.IsIPv4())
-    return next_domain_name + std::string("\x00\x01\x40", 3);
+  rdata.insert(rdata.end(), next_domain_name.begin(), next_domain_name.end());
+  if (addr.IsIPv4()) {
+    // IPv4: Add 3 bytes for Window Block, Bitmap Length, and Bitmap.
+    rdata.insert(rdata.end(), {0x00, 0x01, 0x40});
+  } else {
+    // IPv6: Add 6 bytes for Window Block, Bitmap Length, and Bitmap.
+    rdata.insert(rdata.end(), {0x00, 0x04, 0x00, 0x00, 0x00, 0x08});
+  }
 
-  return next_domain_name + std::string("\x00\x04\x00\x00\x00\x08", 6);
+  return rdata;
 }
 
 // Creates a vector of NSEC records, where the name field of each record is
@@ -211,7 +220,9 @@ std::vector<net::DnsResourceRecord> CreateNsecResourceRecords(
     // RFC 6762, Section 6.1. TTL should be the same as that of what the record
     // would have.
     record.ttl = kDefaultTtlForRecordWithHostname.InSeconds();
-    record.SetOwnedRdata(CreateNsecRdata(name_addr_pair.second, cur_rr_offset));
+    std::vector<uint8_t> test_data =
+        CreateNsecRdata(name_addr_pair.second, cur_rr_offset);
+    record.SetOwnedRdata(base::as_byte_span(test_data));
     cur_rr_offset += record.CalculateRecordSize();
     nsec_records.push_back(std::move(record));
   }
@@ -220,13 +231,13 @@ std::vector<net::DnsResourceRecord> CreateNsecResourceRecords(
 
 // Creates TXT RDATA as a list of key-value pairs subject to a size limit. The
 // key is in the format "name0", "name1" and so on, and the value is the name.
-std::string CreateTxtRdataWithNames(const std::set<std::string>& names,
-                                    uint16_t txt_rdata_size_limit) {
+std::vector<uint8_t> CreateTxtRdataWithNames(const std::set<std::string>& names,
+                                             uint16_t txt_rdata_size_limit) {
   DCHECK(!names.empty());
   DCHECK_GT(txt_rdata_size_limit, sizeof(kTxtversLine));
   int remaining_budget =
       txt_rdata_size_limit - sizeof(kTxtversLine) + 1 /* null terminator */;
-  std::string txt_rdata;
+  std::vector<uint8_t> txt_rdata;
   size_t prev_txt_rdata_size = 0;
   uint16_t idx = 0;
   for (const std::string& name : names) {
@@ -253,8 +264,11 @@ std::string CreateTxtRdataWithNames(const std::set<std::string>& names,
     // Note that c_str() is null terminated.
     //
     // E.g. \x13name0=example.local
-    base::StringAppendF(&txt_rdata, "%c%s%d=%s", line_size - 1,
-                        kKeyPrefixInTxtRecord, idx, name.c_str());
+    constexpr char kFormatString[] = "%c%s%d=%s";
+    std::string formatted = absl::StrFormat(
+        kFormatString, line_size - 1, kKeyPrefixInTxtRecord, idx, name.c_str());
+    txt_rdata.insert(txt_rdata.end(), formatted.begin(), formatted.end());
+
     DCHECK_EQ(txt_rdata.size(), prev_txt_rdata_size + line_size);
     prev_txt_rdata_size = txt_rdata.size();
     ++idx;
@@ -263,7 +277,8 @@ std::string CreateTxtRdataWithNames(const std::set<std::string>& names,
   DCHECK(!txt_rdata.empty());
   // Note that the size of the version tag line has been deducted from the
   // budget before we add lines of names.
-  txt_rdata += kTxtversLine;
+  txt_rdata.insert(txt_rdata.end(), std::begin(kTxtversLine),
+                   std::end(kTxtversLine));
 
   return txt_rdata;
 }
@@ -284,7 +299,9 @@ net::DnsResourceRecord CreateTxtRecordWithNames(
   uint16_t txt_rdata_size_limit =
       kMaxTxtRecordSizeInBytes - service_instance_name.size() -
       net::dns_protocol::kResourceRecordSizeInBytesWithoutNameAndRData;
-  txt.SetOwnedRdata(CreateTxtRdataWithNames(names, txt_rdata_size_limit));
+  std::vector<uint8_t> test_data =
+      CreateTxtRdataWithNames(names, txt_rdata_size_limit);
+  txt.SetOwnedRdata(base::as_byte_span(test_data));
   return txt;
 }
 

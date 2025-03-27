@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<body>
+<dialog id="dialog1" aria-describedby="dialog1-title">
+  <h2 id="dialog1-title">First Dialog</h2>
+  <p>This is dialog one.</p>
+</dialog>
+
+<dialog id="dialog2" aria-describedby="dialog2-title">
+  <h2 id="dialog2-title">Second Dialog</h2>
+  <p>This is dialog two.</p>
+</dialog>
+
+<script>
+  const dialog1 = document.getElementById('dialog1');
+  const dialog2 = document.getElementById('dialog2');
+  dialog1.show();
+  dialog2.show();
+  function go() {
+    isDialog1 = false;
+      dialog2.setAttribute('aria-describedby', 'dialog2-title');
+      dialog1.removeAttribute('aria-describedby');
+  }
+</script>
+</body>
+</html>

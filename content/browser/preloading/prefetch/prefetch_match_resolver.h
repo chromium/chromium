@@ -79,7 +79,8 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   explicit PrefetchMatchResolver(
       PrefetchContainer::Key navigated_key,
       PrefetchServiceWorkerState expected_service_worker_state,
-      base::WeakPtr<PrefetchService>,
+      bool is_nav_prerender,
+      base::WeakPtr<PrefetchService> prefetch_service,
       Callback callback);
 
   // Returns blocked duration. Returns null iff it's not blocked yet.
@@ -97,8 +98,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   // - This implementation has timeout: `CandidateData::timeout_timer`.
   // - This implementation collects candidate prefetches first. So, it doesn't
   //   handle prefetches started after this method started.
-  void FindPrefetchInternal(bool is_nav_prerender,
-                            PrefetchService& prefetch_service,
+  void FindPrefetchInternal(PrefetchService& prefetch_service,
                             base::WeakPtr<PrefetchServingPageMetricsContainer>
                                 serving_page_metrics_container);
   // Each candidate `PrefetchContainer` proceeds to
@@ -148,6 +148,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   const PrefetchServiceWorkerState expected_service_worker_state_;
   base::WeakPtr<PrefetchService> prefetch_service_;
   Callback callback_;
+  const bool is_nav_prerender_;
   std::map<PrefetchContainer::Key, std::unique_ptr<CandidateData>> candidates_;
   std::optional<base::TimeTicks> wait_started_at_ = std::nullopt;
 };

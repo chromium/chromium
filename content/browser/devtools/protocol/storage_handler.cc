@@ -64,6 +64,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_impl.h"
@@ -1515,112 +1516,71 @@ void StorageHandler::NotifySharedStorageAccessed(
   using AccessScope = blink::SharedStorageAccessScope;
   using AccessMethod =
       SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod;
-  std::string type_enum;
+  std::string scope_enum;
+  switch (scope) {
+    case AccessScope::kWindow:
+      scope_enum = Storage::SharedStorageAccessScopeEnum::Window;
+      break;
+    case AccessScope::kSharedStorageWorklet:
+      scope_enum = Storage::SharedStorageAccessScopeEnum::SharedStorageWorklet;
+      break;
+    case AccessScope::kProtectedAudienceWorklet:
+      // TODO(crbug.com/401011862): Implement callsites for this path.
+      scope_enum =
+          Storage::SharedStorageAccessScopeEnum::ProtectedAudienceWorklet;
+      break;
+    case AccessScope::kHeader:
+      scope_enum = Storage::SharedStorageAccessScopeEnum::Header;
+      break;
+  };
+
+  std::string method_enum;
   switch (method) {
     case AccessMethod::kAddModule:
+      method_enum = Storage::SharedStorageAccessMethodEnum::AddModule;
+      break;
     case AccessMethod::kCreateWorklet:
-      // TODO(crbug.com/401011862):  Separate out createWorklet.
-      type_enum = Storage::SharedStorageAccessTypeEnum::DocumentAddModule;
+      method_enum = Storage::SharedStorageAccessMethodEnum::CreateWorklet;
       break;
     case AccessMethod::kSelectURL:
-      type_enum = Storage::SharedStorageAccessTypeEnum::DocumentSelectURL;
+      method_enum = Storage::SharedStorageAccessMethodEnum::SelectURL;
       break;
     case AccessMethod::kRun:
-      type_enum = Storage::SharedStorageAccessTypeEnum::DocumentRun;
+      method_enum = Storage::SharedStorageAccessMethodEnum::Run;
       break;
     case AccessMethod::kBatchUpdate:
-      // TODO(crbug.com/401011862): Implement this path.
-      NOTREACHED();
+      // TODO(crbug.com/401011862): Implement callsite for this path.
+      method_enum = Storage::SharedStorageAccessMethodEnum::BatchUpdate;
+      break;
     case AccessMethod::kSet:
-      switch (scope) {
-        case AccessScope::kWindow:
-          type_enum = Storage::SharedStorageAccessTypeEnum::DocumentSet;
-          break;
-        case AccessScope::kSharedStorageWorklet:
-          type_enum = Storage::SharedStorageAccessTypeEnum::WorkletSet;
-          break;
-        case AccessScope::kProtectedAudienceWorklet:
-          // TODO(crbug.com/401011862): Implement this path.
-          NOTREACHED();
-        case AccessScope::kHeader:
-          type_enum = Storage::SharedStorageAccessTypeEnum::HeaderSet;
-          break;
-      };
+      method_enum = Storage::SharedStorageAccessMethodEnum::Set;
       break;
     case AccessMethod::kAppend:
-      switch (scope) {
-        case AccessScope::kWindow:
-          type_enum = Storage::SharedStorageAccessTypeEnum::DocumentAppend;
-          break;
-        case AccessScope::kSharedStorageWorklet:
-          type_enum = Storage::SharedStorageAccessTypeEnum::WorkletAppend;
-          break;
-        case AccessScope::kProtectedAudienceWorklet:
-          // TODO(crbug.com/401011862): Implement this path.
-          NOTREACHED();
-        case AccessScope::kHeader:
-          type_enum = Storage::SharedStorageAccessTypeEnum::HeaderAppend;
-          break;
-      };
+      method_enum = Storage::SharedStorageAccessMethodEnum::Append;
       break;
     case AccessMethod::kDelete:
-      switch (scope) {
-        case AccessScope::kWindow:
-          type_enum = Storage::SharedStorageAccessTypeEnum::DocumentDelete;
-          break;
-        case AccessScope::kSharedStorageWorklet:
-          type_enum = Storage::SharedStorageAccessTypeEnum::WorkletDelete;
-          break;
-        case AccessScope::kProtectedAudienceWorklet:
-          // TODO(crbug.com/401011862): Implement this path.
-          NOTREACHED();
-        case AccessScope::kHeader:
-          type_enum = Storage::SharedStorageAccessTypeEnum::HeaderDelete;
-          break;
-      };
+      method_enum = Storage::SharedStorageAccessMethodEnum::Delete;
       break;
     case AccessMethod::kClear:
-      switch (scope) {
-        case AccessScope::kWindow:
-          type_enum = Storage::SharedStorageAccessTypeEnum::DocumentClear;
-          break;
-        case AccessScope::kSharedStorageWorklet:
-          type_enum = Storage::SharedStorageAccessTypeEnum::WorkletClear;
-          break;
-        case AccessScope::kProtectedAudienceWorklet:
-          // TODO(crbug.com/401011862): Implement this path.
-          NOTREACHED();
-        case AccessScope::kHeader:
-          type_enum = Storage::SharedStorageAccessTypeEnum::HeaderClear;
-          break;
-      };
+      method_enum = Storage::SharedStorageAccessMethodEnum::Clear;
       break;
     case AccessMethod::kGet:
-      switch (scope) {
-        case AccessScope::kWindow:
-          type_enum = Storage::SharedStorageAccessTypeEnum::DocumentGet;
-          break;
-        case AccessScope::kSharedStorageWorklet:
-          type_enum = Storage::SharedStorageAccessTypeEnum::WorkletGet;
-          break;
-        case AccessScope::kProtectedAudienceWorklet:
-        case AccessScope::kHeader:
-          NOTREACHED();
-      };
+      method_enum = Storage::SharedStorageAccessMethodEnum::Get;
       break;
     case AccessMethod::kKeys:
-      type_enum = Storage::SharedStorageAccessTypeEnum::WorkletKeys;
+      method_enum = Storage::SharedStorageAccessMethodEnum::Keys;
       break;
     case AccessMethod::kValues:
+      method_enum = Storage::SharedStorageAccessMethodEnum::Values;
+      break;
     case AccessMethod::kEntries:
-      // TODO(crbug.com/401011862): Separate values from entries.
-      type_enum = Storage::SharedStorageAccessTypeEnum::WorkletEntries;
+      method_enum = Storage::SharedStorageAccessMethodEnum::Entries;
       break;
     case AccessMethod::kLength:
-      type_enum = Storage::SharedStorageAccessTypeEnum::WorkletLength;
+      method_enum = Storage::SharedStorageAccessMethodEnum::Length;
       break;
     case AccessMethod::kRemainingBudget:
-      type_enum = Storage::SharedStorageAccessTypeEnum::WorkletRemainingBudget;
+      method_enum = Storage::SharedStorageAccessMethodEnum::RemainingBudget;
       break;
   };
 
@@ -1675,8 +1635,9 @@ void StorageHandler::NotifySharedStorageAccessed(
   }
 
   frontend_->SharedStorageAccessed(
-      access_time.InSecondsFSinceUnixEpoch(), type_enum,
+      access_time.InSecondsFSinceUnixEpoch(), scope_enum, method_enum,
       GetFrameTokenFromFrameTreeNodeId(main_frame_id), owner_origin,
+      net::SchemefulSite(GURL(owner_origin)).Serialize(),
       std::move(protocol_params));
 }
 

@@ -68,7 +68,7 @@ OptRecordRdata::EdeOpt::~EdeOpt() = default;
 std::unique_ptr<OptRecordRdata::EdeOpt> OptRecordRdata::EdeOpt::Create(
     base::span<const uint8_t> data) {
   uint16_t info_code;
-  auto edeReader = base::SpanReader(base::as_byte_span(data));
+  auto edeReader = base::SpanReader(data);
 
   // size must be at least 2: info_code + optional extra_text
   base::span<const uint8_t> extra_text;
@@ -210,7 +210,7 @@ std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(
   auto rdata = std::make_unique<OptRecordRdata>();
   rdata->buf_.assign(data.begin(), data.end());
 
-  auto reader = base::SpanReader(base::as_byte_span(data));
+  auto reader = base::SpanReader(data);
   while (reader.remaining() > 0u) {
     uint16_t opt_code, opt_data_size;
     base::span<const uint8_t> opt_data;

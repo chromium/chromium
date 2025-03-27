@@ -77,7 +77,6 @@ class LensOverlayEntryPointController : public FullscreenObserver,
   void OnTemplateURLServiceShuttingDown() override;
 
   // views::FocusChangeListener
-  void OnWillChangeFocus(views::View* before, views::View* now) override;
   void OnDidChangeFocus(views::View* before, views::View* now) override;
 
   // views::ViewObserver

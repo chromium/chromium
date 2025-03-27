@@ -47,6 +47,7 @@ using DigitalIdentityCallback =
     DigitalIdentityProvider::DigitalIdentityCallback;
 using DigitalCredential = DigitalIdentityProvider::DigitalCredential;
 using GetCallback = blink::mojom::DigitalIdentityRequest::GetCallback;
+using RequestData = blink::mojom::RequestData;
 
 // StubDigitalIdentityProvider which enables overriding
 // DigitalIdentityProvider::IsLowRiskOrigin().
@@ -704,11 +705,13 @@ TEST_F(DigitalIdentityRequestImplWithCreationEnabledTest,
   DigitalCredentialRequestPtr digital_credential_request1 =
       DigitalCredentialRequest::New();
   digital_credential_request1->protocol = "protocol1";
-  digital_credential_request1->data = "{\"data\": \"request data 1\"}";
+  digital_credential_request1->data =
+      RequestData::NewStr("{\"data\": \"request data 1\"}");
   DigitalCredentialRequestPtr digital_credential_request2 =
       DigitalCredentialRequest::New();
   digital_credential_request2->protocol = "protocol2";
-  digital_credential_request2->data = "{\"data\": \"request data 2\"}";
+  digital_credential_request2->data =
+      RequestData::NewStr("{\"data\": \"request data 2\"}");
 
   digital_identity_request_impl()->Create(
       std::move(digital_credential_request1), base::DoNothing());
@@ -727,7 +730,8 @@ TEST_F(DigitalIdentityRequestImplWithCreationEnabledTest,
   DigitalCredentialRequestPtr digital_credential_request =
       DigitalCredentialRequest::New();
   digital_credential_request->protocol = kProtocol;
-  digital_credential_request->data = "{\"data\": \"request data\"}";
+  digital_credential_request->data =
+      RequestData::NewStr("{\"data\": \"request data\"}");
 
   base::RunLoop run_loop;
   EXPECT_CALL(callback, Run(RequestDigitalIdentityStatus::kSuccess,
@@ -745,7 +749,7 @@ TEST_F(DigitalIdentityRequestImplWithCreationEnabledTest,
   DigitalCredentialRequestPtr digital_credential_request =
       DigitalCredentialRequest::New();
   digital_credential_request->protocol = kProtocol;
-  digital_credential_request->data = "invalid json";
+  digital_credential_request->data = RequestData::NewStr("invalid json");
 
   base::RunLoop run_loop;
   EXPECT_CALL(callback,
@@ -763,7 +767,8 @@ TEST_F(DigitalIdentityRequestImplWithCreationEnabledTest,
   DigitalCredentialRequestPtr digital_credential_request =
       DigitalCredentialRequest::New();
   digital_credential_request->protocol = kProtocol;
-  digital_credential_request->data = "{\"data\": \"request data\"}";
+  digital_credential_request->data =
+      RequestData::NewStr("{\"data\": \"request data\"}");
 
   EXPECT_CALL(callback,
               Run(RequestDigitalIdentityStatus::kErrorCanceled, _, _));
@@ -851,7 +856,8 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetUsingLegacyFormat) {
   DigitalCredentialRequestPtr digital_credential_request =
       DigitalCredentialRequest::New();
   digital_credential_request->protocol = kProtocol;
-  digital_credential_request->data = "{\"data\": \"request data\"}";
+  digital_credential_request->data =
+      RequestData::NewStr("{\"data\": \"request data\"}");
 
   std::vector<DigitalCredentialRequestPtr> requests;
   requests.push_back(std::move(digital_credential_request));
@@ -866,6 +872,8 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetUsingLegacyFormat) {
                         for (const Value& req : *dict.FindList("providers")) {
                           EXPECT_TRUE(req.GetDict().contains("protocol"));
                           EXPECT_TRUE(req.GetDict().contains("request"));
+                          EXPECT_TRUE(
+                              req.GetDict().Find("request")->is_string());
                         }
                       }),
                       base::test::RunOnceClosure(run_loop.QuitClosure())));
@@ -881,7 +889,10 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetUsingModernFormat) {
   DigitalCredentialRequestPtr digital_credential_request =
       DigitalCredentialRequest::New();
   digital_credential_request->protocol = kProtocol;
-  digital_credential_request->data = "{\"data\": \"request data\"}";
+  base::Value::Dict request_data;
+  request_data.Set("data", "request data");
+  digital_credential_request->data =
+      RequestData::NewValue(base::Value(std::move(request_data)));
 
   std::vector<DigitalCredentialRequestPtr> requests;
   requests.push_back(std::move(digital_credential_request));
@@ -896,6 +907,7 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetUsingModernFormat) {
                         for (const Value& req : *dict.FindList("requests")) {
                           EXPECT_TRUE(req.GetDict().contains("protocol"));
                           EXPECT_TRUE(req.GetDict().contains("data"));
+                          EXPECT_TRUE(req.GetDict().Find("data")->is_dict());
                         }
                       }),
                       base::test::RunOnceClosure(run_loop.QuitClosure())));
@@ -912,7 +924,10 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInRequest) {
   DigitalCredentialRequestPtr digital_credential_request =
       DigitalCredentialRequest::New();
   digital_credential_request->protocol = kProtocol;
-  digital_credential_request->data = R"({"data": "request data"})";
+  base::Value::Dict request_data;
+  request_data.Set("data", "request data");
+  digital_credential_request->data =
+      RequestData::NewValue(base::Value(std::move(request_data)));
 
   std::vector<DigitalCredentialRequestPtr> requests;
   requests.push_back(std::move(digital_credential_request));
@@ -952,7 +967,10 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInResponse) {
   DigitalCredentialRequestPtr digital_credential_request =
       DigitalCredentialRequest::New();
   digital_credential_request->protocol = kProtocolInRequest;
-  digital_credential_request->data = R"({"data": "request data"})";
+  base::Value::Dict request_data;
+  request_data.Set("data", "request data");
+  digital_credential_request->data =
+      RequestData::NewValue(base::Value(std::move(request_data)));
 
   std::vector<DigitalCredentialRequestPtr> requests;
   requests.push_back(std::move(digital_credential_request));
@@ -986,6 +1004,60 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInResponse) {
 }
 
 TEST_F(DigitalIdentityRequestImplTest,
+       ShouldErrorUsingModernFormatWithStringRequest) {
+  DigitalCredentialRequestPtr digital_credential_request =
+      DigitalCredentialRequest::New();
+  digital_credential_request->protocol = "protocol";
+  digital_credential_request->data =
+      RequestData::NewStr(R"({"data": "request data"})");
+
+  std::vector<DigitalCredentialRequestPtr> requests;
+  requests.push_back(std::move(digital_credential_request));
+
+  base::RunLoop run_loop;
+
+  base::MockCallback<GetCallback> mock_callback;
+  // The callback should be invoked with an error because of the malformed
+  // request.
+  EXPECT_CALL(mock_callback,
+              Run(RequestDigitalIdentityStatus::kErrorInvalidJson, _, _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  digital_identity_request_impl()->Get(std::move(requests),
+                                       blink::mojom::GetRequestFormat::kModern,
+                                       mock_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(DigitalIdentityRequestImplTest,
+       ShouldErrorUsingLegacyFormatWithValueRequest) {
+  DigitalCredentialRequestPtr digital_credential_request =
+      DigitalCredentialRequest::New();
+  digital_credential_request->protocol = "protocol";
+  base::Value::Dict request_data;
+  request_data.Set("data", "request data");
+  digital_credential_request->data =
+      RequestData::NewValue(base::Value(std::move(request_data)));
+
+  std::vector<DigitalCredentialRequestPtr> requests;
+  requests.push_back(std::move(digital_credential_request));
+
+  base::RunLoop run_loop;
+
+  base::MockCallback<GetCallback> mock_callback;
+  // The callback should be invoked with an error because of the malformed
+  // request.
+  EXPECT_CALL(mock_callback,
+              Run(RequestDigitalIdentityStatus::kErrorInvalidJson, _, _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  digital_identity_request_impl()->Get(std::move(requests),
+                                       blink::mojom::GetRequestFormat::kLegacy,
+                                       mock_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(DigitalIdentityRequestImplTest,
        ShouldErrorWhenMultipleRequestsAndNoProtocolInResponse) {
   const std::string kResponseData = R"({"token": "token data"})";
 
@@ -993,11 +1065,15 @@ TEST_F(DigitalIdentityRequestImplTest,
 
   DigitalCredentialRequestPtr request1 = DigitalCredentialRequest::New();
   request1->protocol = "protocol1";
-  request1->data = R"({"data": "request1 data"})";
+  base::Value::Dict request1_data;
+  request1_data.Set("data", "request1 data");
+  request1->data = RequestData::NewValue(base::Value(std::move(request1_data)));
 
   DigitalCredentialRequestPtr request2 = DigitalCredentialRequest::New();
-  request1->protocol = "protocol2";
-  request1->data = R"({"data": "request2 data"})";
+  request2->protocol = "protocol2";
+  base::Value::Dict request2_data;
+  request2_data.Set("data", "request2 data");
+  request2->data = RequestData::NewValue(base::Value(std::move(request2_data)));
 
   requests.push_back(std::move(request1));
   requests.push_back(std::move(request2));

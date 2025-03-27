@@ -37,4 +37,11 @@ void ChildProcessSnapshotController::TakeSnapshot(
   }
 }
 
+void ChildProcessSnapshotController::LogMetricsWithoutSnapshot() {
+  if (auto* controller = HeapProfilerController::GetInstance()) {
+    controller->LogMetricsWithoutSnapshotInChildProcess(
+        base::PassKey<ChildProcessSnapshotController>());
+  }
+}
+
 }  // namespace heap_profiling

@@ -62,8 +62,8 @@ export class LoadingStateElement extends CrLitElement {
     };
   }
 
-  columnCount: number = 0;
-  protected showGradient_: boolean = false;
+  accessor columnCount: number = 0;
+  protected accessor showGradient_: boolean = false;
 
   private resizeObserver_: ResizeObserver|null = null;
   private rects_: Rect[] = [

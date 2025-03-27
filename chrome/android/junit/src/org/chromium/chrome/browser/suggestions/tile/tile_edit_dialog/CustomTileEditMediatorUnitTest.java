@@ -23,6 +23,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
+import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditDelegates.DialogMode;
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditDelegates.MediatorToBrowser;
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditDelegates.MediatorToView;
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditDelegates.UrlErrorCode;
@@ -47,19 +48,21 @@ public class CustomTileEditMediatorUnitTest {
         mMediator = new CustomTileEditMediator(mBrowserDelegate, mViewDelegate, null);
         mMediator.show();
 
-        verify(mViewDelegate, never()).setTitle(any());
-        verify(mViewDelegate, never()).setUrlText(any());
+        verify(mViewDelegate).setDialogMode(DialogMode.ADD_SHORTCUT);
+        verify(mViewDelegate).setName("");
+        verify(mViewDelegate).setUrlText("");
         verify(mBrowserDelegate).showEditDialog();
     }
 
     @Test
     public void testShowEditExistingTile() {
-        when(mOriginalTile.getTitle()).thenReturn("Test Title");
+        when(mOriginalTile.getTitle()).thenReturn("Test Name");
         when(mOriginalTile.getUrl()).thenReturn(new GURL("http://test.com"));
         mMediator = new CustomTileEditMediator(mBrowserDelegate, mViewDelegate, mOriginalTile);
         mMediator.show();
 
-        verify(mViewDelegate).setTitle("Test Title");
+        verify(mViewDelegate).setDialogMode(DialogMode.EDIT_SHORTCUT);
+        verify(mViewDelegate).setName("Test Name");
         verify(mViewDelegate).setUrlText("http://test.com/");
         verify(mBrowserDelegate).showEditDialog();
     }

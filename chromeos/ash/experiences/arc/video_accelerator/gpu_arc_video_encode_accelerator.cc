@@ -130,13 +130,16 @@ GpuArcVideoEncodeAccelerator::InitializeTask(
   }
 
   visible_size_ = config.input_visible_size;
-  accelerator_ = media::GpuVideoEncodeAcceleratorFactory::CreateVEA(
-      config, this, gpu_preferences_, gpu_workarounds_,
-      gpu::GPUInfo::GPUDevice());
-  if (accelerator_ == nullptr) {
+  accelerator_.reset();
+  auto accelerator_or_error =
+      media::GpuVideoEncodeAcceleratorFactory::CreateVEA(
+          config, this, gpu_preferences_, gpu_workarounds_,
+          gpu::GPUInfo::GPUDevice());
+  if (!accelerator_or_error.has_value()) {
     DLOG(ERROR) << "Failed to create a VideoEncodeAccelerator.";
     return mojom::VideoEncodeAccelerator::Result::kPlatformFailureError;
   }
+  accelerator_ = std::move(accelerator_or_error).value();
 
   client_.Bind(std::move(client));
 

@@ -18,7 +18,8 @@ namespace remoting {
 
 class AgentProcessBrokerClient final {
  public:
-  explicit AgentProcessBrokerClient(base::OnceClosure on_disconnected);
+  AgentProcessBrokerClient(base::OnceClosure on_termination_requested,
+                           base::OnceClosure on_disconnected);
   AgentProcessBrokerClient(const AgentProcessBrokerClient&) = delete;
   AgentProcessBrokerClient& operator=(const AgentProcessBrokerClient&) = delete;
   ~AgentProcessBrokerClient();
@@ -30,11 +31,13 @@ class AgentProcessBrokerClient final {
 
  private:
   void OnBrokerDisconnected();
-  void OnAgentProcessRemoteDisconnected();
+  void OnAgentProcessRemoteDisconnected(uint32_t custom_reason,
+                                        const std::string& description);
   void RunDisconnectedCallback();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  base::OnceClosure on_termination_requested_;
   base::OnceClosure on_disconnected_;
   mojo::Remote<mojom::AgentProcessBroker> broker_remote_;
   std::unique_ptr<mojo::Receiver<mojom::AgentProcess>> agent_process_receiver_;

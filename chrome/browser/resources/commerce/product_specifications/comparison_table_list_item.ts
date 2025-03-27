@@ -81,15 +81,15 @@ export class ComparisonTableListItemElement extends CrLitElement {
     };
   }
 
-  hasCheckbox: boolean = false;
-  name: string = '';
-  urls: Url[] = [];
-  uuid: Uuid = {value: ''};
-  protected imageUrl_: Url|null = null;
-  protected isMenuOpen_: boolean = false;
-  protected isRenaming_: boolean = false;
-  protected numItemsString_: string = '';
-  protected tableUrl_: Url = {url: ''};
+  accessor hasCheckbox: boolean = false;
+  accessor name: string = '';
+  accessor urls: Url[] = [];
+  accessor uuid: Uuid = {value: ''};
+  protected accessor imageUrl_: Url|null = null;
+  protected accessor isMenuOpen_: boolean = false;
+  protected accessor isRenaming_: boolean = false;
+  protected accessor numItemsString_: string = '';
+  protected accessor tableUrl_: Url = {url: ''};
 
   private pluralStringProxy_: PluralStringProxy =
       PluralStringProxyImpl.getInstance();

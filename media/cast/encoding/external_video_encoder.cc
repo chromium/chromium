@@ -166,8 +166,10 @@ class ExternalVideoEncoder::VEAClientImpl final
         media::VideoEncodeAccelerator::Config::StorageType::kShmem,
         media::VideoEncodeAccelerator::Config::ContentType::kDisplay);
     config.drop_frame_thresh_percentage = GetEncoderDropFrameThreshold();
-    encoder_active_ = video_encode_accelerator_->Initialize(
-        config, this, std::make_unique<media::NullMediaLog>());
+    encoder_active_ =
+        video_encode_accelerator_
+            ->Initialize(config, this, std::make_unique<media::NullMediaLog>())
+            .is_ok();
     next_frame_id_ = first_frame_id;
     codec_profile_ = codec_profile;
 

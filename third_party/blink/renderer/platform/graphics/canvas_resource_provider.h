@@ -215,7 +215,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
     NOTREACHED();
   }
 
-  void RecycleResource(scoped_refptr<CanvasResource>&&);
+  void OnResourceReturnedFromCompositor(scoped_refptr<CanvasResource>&&);
   void SetResourceRecyclingEnabled(bool);
   void ClearRecycledResources();
 
@@ -422,6 +422,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
  private:
   friend class FlushForImageListener;
+
+  void RecycleResource(scoped_refptr<CanvasResource>&&);
   virtual sk_sp<SkSurface> CreateSkSurface() const = 0;
   virtual bool UseOopRasterization() { return false; }
   bool UseHardwareDecodeCache() const {

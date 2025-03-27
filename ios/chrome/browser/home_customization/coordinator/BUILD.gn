@@ -16,6 +16,7 @@ source_set("coordinator") {
     "//base",
     "//components/commerce/core:feature_list",
     "//components/prefs",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:utils",
     "//ios/chrome/browser/home_customization/ui",
     "//ios/chrome/browser/home_customization/utils",
     "//ios/chrome/browser/ntp/shared/metrics:utils",
@@ -25,7 +26,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
     "//ios/chrome/browser/url_loading/model",
     "//url",
   ]

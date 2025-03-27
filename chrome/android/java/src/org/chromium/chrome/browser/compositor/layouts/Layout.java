@@ -452,15 +452,6 @@ public abstract class Layout {
         return false;
     }
 
-    /** Called by the LayoutManager when an animation should be killed. */
-    public void unstallImmediately() {}
-
-    /**
-     * Called by the LayoutManager when an animation should be killed.
-     * @param tabId The tab that the kill signal is associated with
-     */
-    public void unstallImmediately(int tabId) {}
-
     /**
      * Called by the LayoutManager when they system back button is pressed.
      * @return Whether or not the layout consumed the event.

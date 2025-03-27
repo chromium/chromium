@@ -14,6 +14,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/lens/lens_features.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/page_info/core/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_hats_trigger_helper.h"
@@ -169,6 +170,10 @@ constexpr char kHatsSurveyTriggerMerchantTrustEvaluationExperimentSurvey[] =
     "merchant-trust-evaluation-experiment-survey";
 constexpr char kHatsSurveyTriggerMerchantTrustLearnSurvey[] =
     "merchant-trust-learn-survey";
+constexpr char kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness[] =
+    "omnibox-on-focus-happiness";
+constexpr char kHatsSurveyTriggerOnFocusZpsSuggestionsUtility[] =
+    "omnibox-on-focus-utility";
 
 namespace {
 
@@ -789,6 +794,22 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
                          kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
                      plus_addresses::hats::kCooldownOverrideDays, 0)
                      .Get()));
+
+  survey_configs.emplace_back(
+      &omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::
+          kHappinessTrackingSurveyForOmniboxOnFocusZps,
+      kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness,
+      /*presupplied_trigger_id=*/"DzFWc1ACp0ugnJ3q1cK0RPxBRdLT",
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/std::vector<std::string>{});
+
+  survey_configs.emplace_back(
+      &omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::
+          kHappinessTrackingSurveyForOmniboxOnFocusZps,
+      kHatsSurveyTriggerOnFocusZpsSuggestionsUtility,
+      /*presupplied_trigger_id=*/"7USxn1X280ugnJ3q1cK0P67JEQ7Y",
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/std::vector<std::string>{});
 
   return survey_configs;
 }

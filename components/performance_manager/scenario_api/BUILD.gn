@@ -4,6 +4,9 @@
 
 component("scenario_api") {
   sources = [
+    "performance_scenario_memory.cc",
+    "performance_scenario_memory.h",
+    "performance_scenario_memory_forward.h",
     "performance_scenario_observer.cc",
     "performance_scenario_observer.h",
     "performance_scenarios.cc",
