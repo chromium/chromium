@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">訪客模式不支援周邊裝置</translation>
 <translation id="1270290102613614947">屏幕鍵盤已停用</translation>
 <translation id="1272079795634619415">停止</translation>
+<translation id="12741168609094094">選取畫面上的任何內容即可搜尋、複製文字及執行其他操作</translation>
 <translation id="1275285675049378717">正在為 <ph name="POWER_SOURCE" /> 充電</translation>
 <translation id="1275718070701477396">已選取</translation>
 <translation id="1276975447697633661">選取檔案，然後按 <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">「熱點」已關閉</translation>
 <translation id="1731815243805539470">切換至上一位使用者</translation>
 <translation id="1733996486177697563">在深色和淺色主題背景之間切換。請輕觸並按住桌面，然後選取「桌布和樣式」。</translation>
+<translation id="1735992454301033090">揀咗嘅區域，用箭咀制就可以移動</translation>
 <translation id="1736898441010944794">「<ph name="NAME" />」可供藍牙裝置搜尋。</translation>
 <translation id="1737078180382804488">取消設定睇手機最近嘅通知</translation>
 <translation id="174102739345480129">標記已關閉。</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806">上個<ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">鍵盤快速鍵已變更</translation>
 <translation id="2689613560355655046">桌面 8</translation>
+<translation id="2692092709110488417">㩒 Tab 制就可以聚焦同移動揀咗嘅區域</translation>
 <translation id="2695305337569143674">網絡</translation>
 <translation id="2697697418792422688">顯示鍵盤設定。已選取<ph name="KEYBOARD_NAME" />。</translation>
 <translation id="2699913284398121653">使用「內容轉移」應用程式將學校帳戶資料移至個人帳戶</translation>
@@ -1033,6 +1036,7 @@
 <translation id="4412698727486357573">說明中心</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
 <translation id="4417647906073317561">「專注模式」設定。你可設定計時器、工作和音樂來提升效率。</translation>
+<translation id="4418600384772451109">閂面板</translation>
 <translation id="4424159417645388645">桌面 5</translation>
 <translation id="4426817706804363424">做得好！</translation>
 <translation id="4430019312045809116">音量</translation>
@@ -2227,6 +2231,7 @@
 <translation id="8287009018010202411">生產力</translation>
 <translation id="828708037801473432">已關閉</translation>
 <translation id="8297006494302853456">弱</translation>
+<translation id="8300451473979404345">揀咗嘅控點，用箭咀制就可以移動</translation>
 <translation id="8308637677604853869">前一個選單</translation>
 <translation id="830868413617744215">測試版</translation>
 <translation id="8314772463905284467">啟用咗 Caps Lock 鍵</translation>
@@ -2287,6 +2292,7 @@
 <translation id="851458219935658693">顯示目前桌面嘅視窗，揀咗圓形按鈕</translation>
 <translation id="851660987304951246">使用「幫我讀」以迅速總結內容或提問</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在開啟時可能無法充電。</translation>
+<translation id="8519329096920173967">用「Google 智能鏡頭」搵畫面內容</translation>
 <translation id="8535393432370007982">根據顏色復原排列次序</translation>
 <translation id="8536886494750559755">顯示「快速共享」設定。<ph name="TIME_REMAINING" />內供所有人查看</translation>
 <translation id="8539803091108018926">已將文字複製到剪貼簿</translation>

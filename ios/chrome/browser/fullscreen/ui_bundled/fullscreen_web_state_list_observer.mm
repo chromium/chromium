@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_content_adjustment_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_reason.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
 
@@ -109,7 +110,7 @@ void FullscreenWebStateListObserver::WebStateListDidChange(
         if (web_state_list_->IsBatchInProgress()) {
           controller_->ExitFullscreenWithoutAnimation();
         } else {
-          controller_->ExitFullscreen();
+          controller_->ExitFullscreen(FullscreenExitReason::kForcedByCode);
         }
       }
       break;

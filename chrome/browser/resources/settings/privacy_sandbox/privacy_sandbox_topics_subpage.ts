@@ -52,14 +52,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       topicsList_: {
         type: Array,
         value() {
@@ -162,7 +154,9 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
   private shouldShowBlockTopicDialog_: boolean;
   private blockTopicDialogTitle_: string;
   private blockTopicDialogBody_: string;
+  private shouldShowV2_: boolean;
   private shouldShowAdTopicsContentParity_: boolean;
+  private adTopicsToggleSubLabel_: string;
 
   override ready() {
     super.ready();

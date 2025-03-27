@@ -214,7 +214,7 @@ class ChromeRuntimeAPIDelegateTest : public ExtensionServiceTestWithInstall {
     InitializeExtensionServiceWithUpdater();
     runtime_delegate_ =
         std::make_unique<ChromeRuntimeAPIDelegate>(browser_context());
-    service()->updater()->SetExtensionCacheForTesting(nullptr);
+    ExtensionUpdater::Get(profile())->SetExtensionCacheForTesting(nullptr);
     EventRouterFactory::GetInstance()->SetTestingFactory(
         browser_context(),
         base::BindRepeating(&TestEventRouterFactoryFunction));

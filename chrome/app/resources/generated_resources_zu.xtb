@@ -1574,7 +1574,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2081816110395725788">Amandla angenzi lutho ebhethri</translation>
 <translation id="2082187087049518845">Ithebhu Yeqembu</translation>
 <translation id="2082510809738716738">Khetha umbala wetimu</translation>
-<translation id="208547068587548667">Ngena ngemvume kokuthi <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Sicela uzame futhi</translation>
 <translation id="208634871997892083">I-VPN ehlala ikhanya</translation>
 <translation id="208654914566977272">Izinyathelo eziphakanyisiwe lapho usesha esikrinini sakho</translation>
@@ -4011,7 +4010,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3778740492972734840">Amathuluzi wonjiniyela</translation>
 <translation id="3778868487658107119">Ibuze imibuzo. Itshele ukuthi yenze izinto. i-Google yakho siqu, ihlala ilungele ukusiza.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{umlando wakho wokubhrawuza wesayithi elingu-#}one{umlando wakho wokubhrawuza wamasayithi angu-#}other{umlando wakho wokubhrawuza wamasayithi angu-#}}</translation>
-<translation id="3779244863011082655">Sebenzisa i-akhawunti ehlukile ethi <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3780542776224651912">I-<ph name="BRAND" /> ayikwazi ukuhlola amaphasiwedi akho ngokumelene nokuphulwa kwedatha. Zama futhi ngemuva kwesikhathi.</translation>
 <translation id="3781742599892759500">Ukufinyelela kwemakrofoni ye-Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5514,6 +5512,7 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="4848191975108266266">Umsizi we-Google "Ok Google"</translation>
 <translation id="4849286518551984791">I-Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">Ungafaki</translation>
+<translation id="4849731766219625109">Sebenzisa i-akhawunti yakho ye-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="485053257961878904">Ayikwazanga ukusetha ukuvumelanisa izaziso</translation>
 <translation id="4850548109381269495">Kuwo womabili amadivayisi, hlola ukuxhumeka kwakho kwe-inthanethi bese uvula i-Bluetooth. Bese, uyazama futhi.</translation>
 <translation id="4850669014075537160">Ukuskrola</translation>
@@ -5702,6 +5701,7 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="4979510648199782334">Ukusethwa kwe-Microsoft 365 kuphelile</translation>
 <translation id="4980805016576257426">Lesi sandiso siqukethe uhlelo olungayilungele ikhompuyutha.</translation>
 <translation id="4983159853748980742">Iphasiwedi yakho ayizange yabiwe. Hlola ukuxhumeka kwakho kwe-inthanethi futhi wenze isiqiniseko sokuthi ungene ngemvume ku-Chrome. Bese uzame futhi.</translation>
+<translation id="498624032394115435">Noma ngubani onelinki angahlela wonke amathebhu.</translation>
 <translation id="4986706507552097681">Ungahlala ukhetha ukuthi yini okumele ivunyelaniswe kuzilungiselelo. I-Google ingase iqondanise nomuntu siqu i-Search namanye amasevisi ngokususelwe emlandweni wakho.</translation>
 <translation id="4986728572522335985">Lokhu kuzosusa yonke idatha kukhiye wokuqinisekisa ubunikazi, efaka IPHINIKHODI yayo</translation>
 <translation id="4987944280765486504">I-Chromebook yakho izoqala kabusha uma ukudawuniloda sekuqediwe futhi ungaqhubeka nokusetha.</translation>
@@ -8314,7 +8314,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="6873571253135628430">Shintsha izimvume zesayithi</translation>
 <translation id="6876155724392614295">Ibhayisikili</translation>
 <translation id="6876469544038980967">Akusizi</translation>
-<translation id="687838958001010630">Noma ngubani onelinki angahlela wonke amathebhu</translation>
 <translation id="6878422606530379992">Izinzwa zivunyelwe</translation>
 <translation id="6878862640969460273">Ukuvundla</translation>
 <translation id="6880587130513028875">Izithombe ziye zavinjwa kuleli khasi.</translation>

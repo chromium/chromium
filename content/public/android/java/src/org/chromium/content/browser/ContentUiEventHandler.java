@@ -22,9 +22,9 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
-import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ViewEventSink.InternalAccessDelegate;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContents.UserDataFactory;
 import org.chromium.ui.MotionEventUtils;
 import org.chromium.ui.base.EventForwarder;
 
@@ -46,9 +46,8 @@ public class ContentUiEventHandler implements UserData {
 
     public static ContentUiEventHandler fromWebContents(WebContents webContents) {
         ContentUiEventHandler ret =
-                ((WebContentsImpl) webContents)
-                        .getOrSetUserData(
-                                ContentUiEventHandler.class, UserDataFactoryLazyHolder.INSTANCE);
+                webContents.getOrSetUserData(
+                        ContentUiEventHandler.class, UserDataFactoryLazyHolder.INSTANCE);
         assert ret != null;
         return ret;
     }

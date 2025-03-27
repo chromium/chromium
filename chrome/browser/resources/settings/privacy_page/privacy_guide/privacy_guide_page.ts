@@ -95,14 +95,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   static get properties() {
     return {
       /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
        * Valid privacy guide states.
        */
       privacyGuideStepEnum_: {

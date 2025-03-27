@@ -265,7 +265,9 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
     @Override
     public void setStatusBarColor(int statusBarColor) {
         StatusBarColorController.setStatusBarColor(
-                getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper(),
+                (getEdgeToEdgeManager() != null)
+                        ? getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper()
+                        : null,
                 getWindow(),
                 statusBarColor);
     }

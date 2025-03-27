@@ -56,6 +56,7 @@
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/common/api/extension_action/action_info.h"
@@ -224,7 +225,7 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
             .SetID(kId)
             .Build();
 
-    service()->AddExtension(extension.get());
+    registrar()->AddExtension(extension.get());
     PermissionsUpdater updater(profile());
     updater.InitializePermissions(extension.get());
     updater.GrantActivePermissions(extension.get());
@@ -323,7 +324,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
           .SetPath(data_dir())
           .SetID(id)
           .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
   updater.GrantActivePermissions(extension.get());
@@ -420,7 +421,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
                   .SetLocation(ManifestLocation::kExternalPref)
                   .SetID(id)
                   .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   info = GenerateExtensionInfo(extension->id());
   EXPECT_EQ(developer::Location::kThirdParty, info->location);
   EXPECT_FALSE(info->path);
@@ -446,7 +447,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionInfoInstalledByDefault) {
           .SetID(crx_file::id_util::GenerateId("alpha"))
           .AddFlags(Extension::WAS_INSTALLED_BY_DEFAULT)
           .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   std::unique_ptr<api::developer_private::ExtensionInfo> info =
       GenerateExtensionInfo(extension->id());
@@ -474,7 +475,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionInfoInstalledByOem) {
           .AddFlags(Extension::WAS_INSTALLED_BY_DEFAULT |
                     Extension::WAS_INSTALLED_BY_OEM)
           .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   std::unique_ptr<api::developer_private::ExtensionInfo> info =
       GenerateExtensionInfo(extension->id());
@@ -940,7 +941,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
           .SetManifestVersion(3)
           .AddOptionalAPIPermission("notifications")
           .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
   updater.GrantActivePermissions(extension.get());
@@ -1016,7 +1017,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, RevokedOptionalHostPermissionsInfoTest) {
                base::Value::List().Append("http://*.c.com/*"));
   scoped_refptr<const Extension> extension =
       ExtensionBuilder().SetManifest(std::move(manifest)).Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
   updater.GrantActivePermissions(extension.get());
@@ -1157,7 +1158,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionActionCommands) {
                                                     std::move(command_dict)))
             .SetManifestVersion(test_case.manifest_version)
             .Build();
-    service()->AddExtension(extension.get());
+    registrar()->AddExtension(extension.get());
     auto info = GenerateExtensionInfo(extension->id());
     ASSERT_TRUE(info);
     ASSERT_EQ(1u, info->commands.size());
@@ -1394,7 +1395,7 @@ TEST_P(ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
        DidAcknowledgeMv2DeprecationNotice) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("ext").SetManifestVersion(2).Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   ManifestV2ExperimentManager* experiment_manager =
       ManifestV2ExperimentManager::Get(browser_context());
@@ -1651,7 +1652,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(ExtensionInfoGeneratorSettingPendingUnitTest,
        GenerateExtensionInfoWithPendingSettings) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("alpha").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   auto [setting, initial_setting_value] = GetParam();
   bool pending_setting_value = !initial_setting_value;
@@ -1694,7 +1695,7 @@ TEST_P(ExtensionInfoGeneratorSettingPendingUnitTest,
 TEST_P(ExtensionInfoGeneratorSettingPendingUnitTest,
        GenerateExtensionInfoWithNoPendingSettings) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("alpha").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   auto [setting, initial_setting_value] = GetParam();
   auto* prefs = ExtensionPrefs::Get(profile());

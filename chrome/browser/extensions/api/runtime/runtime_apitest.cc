@@ -530,7 +530,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
                         .AppendASCII("sets_uninstall_url"));
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
   ASSERT_TRUE(extension.get());
-  extension_service()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension.get());
   ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension->id()));
   TabStripModel* tabs = browser()->tab_strip_model();
 
@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
                         .AppendASCII("sets_uninstall_url"));
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
   ASSERT_TRUE(extension.get());
-  extension_service()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension.get());
   ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension->id()));
 
   // Uninstall the extension and expect its uninstall url to open.
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
                                 .AppendASCII("uninstall_url")
                                 .AppendASCII("sets_uninstall_url"));
   EXPECT_TRUE(ready_listener_reload.WaitUntilSatisfied());
-  extension_service()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension.get());
   ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension->id()));
 
   // Blocklist extension.

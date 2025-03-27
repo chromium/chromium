@@ -122,8 +122,10 @@ bool ShouldUseUpmWiring(const syncer::SyncService* sync_service,
 
 // Called on startup to update the value of UsesSplitStoresAndUPMForLocal(),
 // based on minimum GmsCore version and other criteria.
-void SetUsesSplitStoresAndUPMForLocal(PrefService* pref_service,
-                                      const base::FilePath& login_db_directory);
+void SetUsesSplitStoresAndUPMForLocal(
+    PrefService* pref_service,
+    const base::FilePath& login_db_directory,
+    std::unique_ptr<PasswordManagerUtilBridgeInterface> util_bridge);
 
 // Returns the GMS version type based on which kind of UPM support is possible
 // in that version.

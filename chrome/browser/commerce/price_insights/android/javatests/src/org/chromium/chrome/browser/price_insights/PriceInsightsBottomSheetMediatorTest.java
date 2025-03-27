@@ -58,7 +58,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
-import org.chromium.chrome.browser.price_tracking.PriceTrackingState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -97,7 +96,7 @@ public class PriceInsightsBottomSheetMediatorTest {
     @Mock private Resources mMockResources;
     @Mock private BookmarkId mMockBookmarkId;
     @Mock private PriceInsightsDelegate mMockPriceInsightsDelegate;
-    @Mock private ObservableSupplier<PriceTrackingState> mMockPriceTrackingStateSupplier;
+    @Mock private ObservableSupplier<Boolean> mMockPriceTrackingStateSupplier;
     @Mock private View mMockPriceHistoryChart;
     @Mock private NotificationManager mMockNotificationManager;
 
@@ -146,7 +145,7 @@ public class PriceInsightsBottomSheetMediatorTest {
 
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
 
-        doReturn(PriceTrackingState.NOT_ELIGIBLE).when(mMockPriceTrackingStateSupplier).get();
+        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
         doReturn(mMockPriceTrackingStateSupplier)
                 .when(mMockPriceInsightsDelegate)
                 .getPriceTrackingStateSupplier(mMockTab);
@@ -190,7 +189,7 @@ public class PriceInsightsBottomSheetMediatorTest {
 
     @Test
     public void testRequestShowContent_PriceTrackingEligibleAndDisabled() {
-        doReturn(PriceTrackingState.UNTRACKED).when(mMockPriceTrackingStateSupplier).get();
+        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
         setShoppingServiceGetProductInfoForUrl();
         mPriceInsightsMediator.requestShowContent();
 
@@ -214,7 +213,7 @@ public class PriceInsightsBottomSheetMediatorTest {
 
     @Test
     public void testRequestShowContent_PriceTrackingEligibleAndEnabled() {
-        doReturn(PriceTrackingState.TRACKED).when(mMockPriceTrackingStateSupplier).get();
+        doReturn(true).when(mMockPriceTrackingStateSupplier).get();
         setShoppingServiceGetProductInfoForUrl();
         mPriceInsightsMediator.requestShowContent();
 
@@ -238,7 +237,7 @@ public class PriceInsightsBottomSheetMediatorTest {
 
     @Test
     public void testRequestShowContent_PriceTrackingButtonOnClick_Failed() {
-        doReturn(PriceTrackingState.UNTRACKED).when(mMockPriceTrackingStateSupplier).get();
+        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
         setShoppingServiceGetProductInfoForUrl();
         mPriceInsightsMediator.requestShowContent();
 
@@ -321,15 +320,8 @@ public class PriceInsightsBottomSheetMediatorTest {
         doAnswer(
                         (InvocationOnMock invocation) -> {
                             if (success) {
-                                PriceTrackingState newState =
-                                        invocation.getArgument(1)
-                                                ? PriceTrackingState.TRACKED
-                                                : PriceTrackingState.UNTRACKED;
+                                boolean newState = invocation.getArgument(1);
                                 doReturn(newState).when(mMockPriceTrackingStateSupplier).get();
-                            } else {
-                                doReturn(PriceTrackingState.NOT_ELIGIBLE)
-                                        .when(mMockPriceTrackingStateSupplier)
-                                        .get();
                             }
                             ((Callback<Boolean>) invocation.getArgument(2)).onResult(success);
                             return null;

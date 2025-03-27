@@ -419,23 +419,6 @@ class BASE_EXPORT ScopedDomainStateForTesting {
   bool initial_state_;
 };
 
-// Allows changing the management registration state for the life time of the
-// object.  The original state is restored upon destruction.
-class BASE_EXPORT ScopedDeviceRegisteredWithManagementForTesting {
- public:
-  explicit ScopedDeviceRegisteredWithManagementForTesting(bool state);
-
-  ScopedDeviceRegisteredWithManagementForTesting(
-      const ScopedDeviceRegisteredWithManagementForTesting&) = delete;
-  ScopedDeviceRegisteredWithManagementForTesting& operator=(
-      const ScopedDeviceRegisteredWithManagementForTesting&) = delete;
-
-  ~ScopedDeviceRegisteredWithManagementForTesting();
-
- private:
-  bool initial_state_;
-};
-
 // Allows changing the Azure Active Directory join state for the lifetime of the
 // object. The original state is restored upon destruction.
 class BASE_EXPORT ScopedAzureADJoinStateForTesting {

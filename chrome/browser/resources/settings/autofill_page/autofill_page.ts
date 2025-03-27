@@ -74,18 +74,6 @@ export class SettingsAutofillPageElement extends
         },
       },
 
-      plusAddressIcon_: {
-        type: String,
-        value() {
-          // <if expr="_google_chrome">
-          return 'settings-internal:plus-address-logo-medium';
-          // </if>
-          // <if expr="not _google_chrome">
-          return 'settings:email';
-          // </if>
-        },
-      },
-
       userEligibleForAutofillAi_: {
         type: Boolean,
         value() {

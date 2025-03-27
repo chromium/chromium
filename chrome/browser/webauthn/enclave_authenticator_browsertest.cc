@@ -1608,6 +1608,83 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
 }
 
+// Tests recovering from an LSKF when there is also a GPM PIN that cannot be
+// used for recovery. Regression test for crbug.com/402427390.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       MakeCredential_RecoverWithLSKFAndUnusablePIN) {
+  // First, register with a PIN.
+  {
+    trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+        registration_state_result;
+    registration_state_result.state = trusted_vault::
+        DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
+    SetMockVaultConnectionOnRequestDelegate(
+        std::move(registration_state_result));
+  }
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kEmpty);
+  dialog_model()->OnGPMCreatePasskey();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+
+  // Then, have the security domain service mark the PIN as unusable and recover
+  // from an LSKF.
+  security_domain_service_->MakePinMemberUnusable();
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
+      ->ClearRegistrationForTesting();
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  registration_state_result.key_version = kSecretVersion;
+  registration_state_result.gpm_pin_metadata = trusted_vault::GpmPinMetadata(
+      security_domain_service_->GetPinMemberPublicKey(),
+      /*pin_metadata=*/std::nullopt);
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kRecoverable);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
+      ->StoreKeys(kGaiaId,
+                  {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
+                                        std::end(kSecurityDomainSecret))},
+                  kSecretVersion);
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
+}
+
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        CreatingDuplicateGivesInvalidStateError) {
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult

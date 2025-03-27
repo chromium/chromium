@@ -1565,7 +1565,6 @@
 <translation id="2081816110395725788">بیٹری کا استعمال کرتے وقت معطلی کا پاور</translation>
 <translation id="2082187087049518845">ٹیب کا گروپ بنائیں</translation>
 <translation id="2082510809738716738">تھیم کا رنگ منتخب کریں</translation>
-<translation id="208547068587548667"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> میں سائن ان کریں</translation>
 <translation id="208586643495776849">براہ کرم دوبارہ کوشش کریں</translation>
 <translation id="208634871997892083">‏ہمیشہ آن VPN</translation>
 <translation id="208654914566977272">آپ کی اسکرین کو تلاش کرتے وقت تجویز کردہ کارروائیاں</translation>
@@ -2008,6 +2007,7 @@
 <translation id="2373666622366160481">کاغذ پر فٹ کریں</translation>
 <translation id="2375406435414127095">اپنے فون سے منسلک کریں</translation>
 <translation id="2376056713414548745">بلند آواز سے پڑھیں</translation>
+<translation id="2376122016044804363">تصدیقات کو کلپ بورڈ میں کاپی کر دیا گیا</translation>
 <translation id="2377667304966270281">بڑی غلطیاں</translation>
 <translation id="237828693408258535">اس صفحہ کا ترجمہ کریں؟</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{ممکن ہے کہ یہ ایکسٹینشن جلد ہی مزید تعاون یافتہ نہ ہو}other{ممکن ہے کہ یہ ایکسٹینشنز جلد ہی مزید تعاون یافتہ نہ ہوں}}</translation>
@@ -3160,6 +3160,7 @@
 <translation id="3192586965067888278">‏مسئلے کو تفصیل سے بیان کریں۔ انسانی جائزے کے لیے تاثرات Google کو بھیجے جائیں گے اور اسے Google کے پروڈکٹس اور سروسز کو بہتر بنانے یا تیار کرنے کے لیے استعمال کیا جا سکتا ہے۔</translation>
 <translation id="3192947282887913208">آڈیو فائلز</translation>
 <translation id="3193695589337931419">سسٹم سگنل کی یوٹیلیٹیز</translation>
+<translation id="3194095220941877499">آپ کے لنکس، تصاویر یا ویڈیوز کاپی کرنے پر ایک تصدیق دکھاتا ہے</translation>
 <translation id="3196912927885212665">‏آپ کے Android فون کے ساتھ سیٹ اپ کرنے کے لیے، آپ کے Chromebook کے بلوٹوتھ کا آن ہونا ضروری ہے</translation>
 <translation id="3197453258332670132">دائیں طرف کلک کرنے یا لانگ پریس سے اپنے ٹیکسٹ کے انتخاب کے لیے متعلقہ معلومات دکھائیں</translation>
 <translation id="3199127022143353223">سرورز</translation>
@@ -3997,7 +3998,6 @@
 <translation id="3778740492972734840">&amp;ڈیولپر ٹولز</translation>
 <translation id="3778868487658107119">‏اس سے سوالات پوچھیں۔ اسے کام کرنے کو کہیں۔ یہ آپ کا ذاتی Google ہے، ہمیشہ مدد کرنے کیلئے تیار۔</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{آپ کی # سائٹ کی براؤزنگ کی سرگزشت}other{آپ کی # سائٹس کی براؤزنگ کی سرگزشت}}</translation>
-<translation id="3779244863011082655">مختلف <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اکاؤنٹ استعمال کریں</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> ڈیٹا کی خلاف ورزیوں کے لیے آپ کے پاس ورڈز کی جانچ نہیں کر سکتا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="3781742599892759500">‏Linux مائیکروفون کی رسائی</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5500,6 +5500,7 @@
 <translation id="4848191975108266266">‏Google اسسٹنٹ "Ok Google"</translation>
 <translation id="4849286518551984791">‏کوآرڈینیٹڈ یونیورسل ٹائم (UTC/GMT)</translation>
 <translation id="4849517651082200438">انسٹال نہ کریں</translation>
+<translation id="4849731766219625109">اپنا <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اکاؤنٹ استعمال کریں</translation>
 <translation id="485053257961878904">اطلاعات کی مطابقت پذیری کو سیٹ اپ نہیں کیا جا سکا</translation>
 <translation id="4850548109381269495">دونوں آلات پر، اپنا انٹرنیٹ کنکشن چیک کریں اور بلوٹوتھ آن کریں۔ پھر، دوبارہ کوشش کریں۔</translation>
 <translation id="4850669014075537160">سکرولنگ</translation>
@@ -5688,6 +5689,7 @@
 <translation id="4979510648199782334">‏Microsoft 365 سیٹ اپ مکمل</translation>
 <translation id="4980805016576257426">اس ایکسٹینشن میں میلویئر شامل ہے۔</translation>
 <translation id="4983159853748980742">‏آپ کے پاس ورڈ کا اشتراک نہیں کیا گیا۔ اپنا انٹرنیٹ کنکشن چیک کریں اور یقینی بنائیں کہ آپ Chrome میں سائن ان ہیں۔ پھر، دوبارہ کوشش کریں۔</translation>
+<translation id="498624032394115435">لنک کا حامل کوئی بھی شخص تمام ٹیبز میں ترمیم کر سکتا ہے۔</translation>
 <translation id="4986706507552097681">‏آپ ترتیبات میں کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ کس چیز کی مطابقت پذیری کرنی ہے۔ Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
 <translation id="4986728572522335985">‏اس سے سیکیورٹی کلید کا PIN سمیت تمام ڈیٹا حذف ہو جائے گا</translation>
 <translation id="4987944280765486504">‏ڈاؤن لوڈ مکمل ہونے کے بعد آپ کا Chromebook ری سٹارٹ ہو جائے گا ساتھ ہی آپ سیٹ اپ بھی جاری رکھ سکتے ہیں۔</translation>
@@ -8295,7 +8297,6 @@
 <translation id="6873571253135628430">سائٹ کی اجازت تبدیل کریں</translation>
 <translation id="6876155724392614295">بائیک</translation>
 <translation id="6876469544038980967">مددگار نہیں ہے</translation>
-<translation id="687838958001010630">لنک کا حامل کوئی بھی شخص تمام ٹیبز میں ترمیم کر سکتا ہے</translation>
 <translation id="6878422606530379992">سینسرز کی اجازت ہے</translation>
 <translation id="6878862640969460273">لینڈ اسکیپ</translation>
 <translation id="6880587130513028875">تصاویر کو اس صفحہ پر مسدود کر دیا گیا۔</translation>

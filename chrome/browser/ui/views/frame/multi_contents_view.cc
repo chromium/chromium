@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
@@ -22,9 +23,13 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-const int kMinWebContentsWidth = 20;
-const int kContentCornerRadius = 8;
-const int kSplitViewContentInset = 10;
+constexpr int kMinWebContentsWidth = 20;
+constexpr int kContentCornerRadius = 6;
+constexpr int kContentOutlineCornerRadius = 8;
+constexpr int kActiveContentOutlineThickness = 2;
+constexpr int kInactiveContentOutlineThickness = 1;
+constexpr int kSplitViewContentInset = 8;
+constexpr int kSplitViewContentPadding = 4;
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
@@ -86,6 +91,9 @@ void MultiContentsView::SetActivePosition(int position) {
   active_position_ = position;
   GetActiveContentsView()->set_is_primary_web_contents_for_window(true);
   GetInactiveContentsView()->set_is_primary_web_contents_for_window(false);
+  // Schedule paint to be sure that the active/inactive outline is correctly
+  // painted after the active contents changes.
+  SchedulePaint();
 }
 
 bool MultiContentsView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
@@ -158,7 +166,36 @@ void MultiContentsView::Layout(PassKey) {
 }
 
 void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
+  if (!IsInSplitView()) {
+    return;
+  }
+
+  // Paint the multi contents area background to match the toolbar.
   TopContainerBackground::PaintBackground(canvas, this, browser_view_);
+
+  // Draw active/inactive outlines around the contents areas.
+  const auto draw_contents_outline = [this, canvas](views::View* content_view) {
+    const bool is_active = content_view == GetActiveContentsView();
+    const int thickness = is_active ? kActiveContentOutlineThickness
+                                    : kInactiveContentOutlineThickness;
+    cc::PaintFlags flags;
+    flags.setStyle(cc::PaintFlags::kStroke_Style);
+    flags.setStrokeWidth(thickness);
+    const SkColor color =
+        is_active ? GetColorProvider()->GetColor(
+                        kColorMulitContentsViewActiveContentOutline)
+                  : GetColorProvider()->GetColor(
+                        kColorMulitContentsViewInactiveContentOutline);
+    flags.setColor(color);
+    flags.setAntiAlias(true);
+    gfx::RectF main_content_border_rect = gfx::RectF(content_view->bounds());
+    const float outset = kSplitViewContentPadding + (thickness / 2.0f);
+    main_content_border_rect.Outset(outset);
+    canvas->DrawRoundRect(main_content_border_rect, kContentOutlineCornerRadius,
+                          flags);
+  };
+  draw_contents_outline(start_contents_view_);
+  draw_contents_outline(end_contents_view_);
 }
 
 MultiContentsView::ViewWidths MultiContentsView::GetViewWidths(

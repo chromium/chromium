@@ -25,6 +25,7 @@
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/free_deleter.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/strings/string_split.h"
@@ -710,6 +711,10 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
   if (DeviceSupportsAmbientNoiseReduction(device)) {
     params.set_effects(AudioParameters::NOISE_SUPPRESSION);
   }
+
+  base::UmaHistogramBoolean(
+      "Media.Audio.Mac.NoiseSuppressionAvailable",
+      params.effects() & AudioParameters::NOISE_SUPPRESSION);
 
   if (AUAudioInputStream::IsEchoCancellationSupported(device, params)) {
     params.set_effects(params.effects() | AudioParameters::ECHO_CANCELLER);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {str} from '../../../../common/js/translations.js';
+import {str, strf} from '../../../../common/js/translations.js';
 import {isNullOrUndefined} from '../../../../common/js/util.js';
 import {VolumeType} from '../../../../common/js/volume_manager_types.js';
 
@@ -39,28 +39,39 @@ export class FilesMigratingToCloudBanner extends WarningBanner {
   }
 
   /**
-   * The context contains the CloudProvider set as SkyVault migration
-   * destination.
+   * The context contains SkyVault migration destination, and in case of Delete
+   * option, the scheduled start time.
    */
   override onFilteredContext(context: {
-    cloudProvider: chrome.fileManagerPrivate.CloudProvider,
+    migrationDestination: chrome.fileManagerPrivate.MigrationDestination,
+    migrationStartTime: string|undefined,
   }) {
     if (isNullOrUndefined(context) ||
-        isNullOrUndefined(context.cloudProvider)) {
+        isNullOrUndefined(context.migrationDestination)) {
       console.warn('Context not supplied or defaultLocation key missing.');
+      return;
+    }
+    if (context.migrationDestination ===
+            chrome.fileManagerPrivate.MigrationDestination.DELETE &&
+        isNullOrUndefined(context.migrationStartTime)) {
+      console.warn('Start time not supplied for the delete banner.');
       return;
     }
     const text =
         this.shadowRoot!.querySelector<HTMLSpanElement>('span[slot="text"]')!;
 
-    switch (context.cloudProvider) {
-      case chrome.fileManagerPrivate.CloudProvider.GOOGLE_DRIVE:
+    switch (context.migrationDestination) {
+      case chrome.fileManagerPrivate.MigrationDestination.GOOGLE_DRIVE:
         text.innerText = str('SKYVAULT_MIGRATION_BANNER_GOOGLE_DRIVE');
         return;
-      case chrome.fileManagerPrivate.CloudProvider.ONEDRIVE:
+      case chrome.fileManagerPrivate.MigrationDestination.ONEDRIVE:
         text.innerText = str('SKYVAULT_MIGRATION_BANNER_ONEDRIVE');
         return;
-      case chrome.fileManagerPrivate.CloudProvider.NOT_SPECIFIED:
+      case chrome.fileManagerPrivate.MigrationDestination.DELETE:
+        text.innerText =
+            strf('SKYVAULT_DELETION_BANNER', context.migrationStartTime);
+        return;
+      case chrome.fileManagerPrivate.MigrationDestination.NOT_SPECIFIED:
         console.warn(`Cloud provider must be specified.`);
     }
   }

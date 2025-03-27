@@ -13,5 +13,6 @@ source_set("icon_type") {
   deps = [
     "//base",
     "//chrome/browser/ui:ui_features",
+    "//chrome/common:channel_info",
   ]
 }

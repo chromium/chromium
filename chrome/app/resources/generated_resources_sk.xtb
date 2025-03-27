@@ -1567,7 +1567,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2081816110395725788">Výkon pri nečinnosti počas napájania z batérie</translation>
 <translation id="2082187087049518845">Zoskupiť karty</translation>
 <translation id="2082510809738716738">Vyberte farbu motívu</translation>
-<translation id="208547068587548667">Prihláste sa do služby poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Skúste to znova</translation>
 <translation id="208634871997892083">Vždy zapnutá VPN</translation>
 <translation id="208654914566977272">Odporúčané akcie pri vyhľadávaní na obrazovke</translation>
@@ -2008,6 +2007,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2373666622366160481">Prispôsobiť papieru</translation>
 <translation id="2375406435414127095">Pripojenie k telefónu</translation>
 <translation id="2376056713414548745">Čítať nahlas</translation>
+<translation id="2376122016044804363">Potvrdenia o skopírovaní do schránky</translation>
 <translation id="2377667304966270281">Závažné chyby</translation>
 <translation id="237828693408258535">Preložiť túto stránku?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Toto rozšírenie už čoskoro nemusí byť podporované}few{Tieto rozšírenia už čoskoro nemusia byť podporované}many{These extensions may soon no longer be supported}other{Tieto rozšírenia už čoskoro nemusia byť podporované}}</translation>
@@ -3162,6 +3162,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3192586965067888278">Podrobne opíšte problém. Spätná väzba bude odoslaná Googlu na kontrolu človekom a môže sa použiť na zlepšenie alebo vývoj výrobkov a služieb Googlu.</translation>
 <translation id="3192947282887913208">Zvukové súbory</translation>
 <translation id="3193695589337931419">Utility na zhromažďovanie signálov systému</translation>
+<translation id="3194095220941877499">Keď skopírujete odkazy, obrázky alebo videá, zobrazí sa potvrdenie</translation>
 <translation id="3196912927885212665">Ak chcete vykonať nastavenie pomocou telefónu s Androidom, v Chromebooku musí byť zapnuté rozhranie Bluetooth</translation>
 <translation id="3197453258332670132">Kliknutím pravým tlačidlom alebo dlhým stlačením zobrazíte súvisiace informácie pre daný výber textu</translation>
 <translation id="3199127022143353223">Servery</translation>
@@ -3999,7 +4000,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3778740492972734840">&amp;Nástroje pre vývojárov</translation>
 <translation id="3778868487658107119">Môžete mu klásť otázky. Môžete mu zadávať príkazy. Je to váš osobný Google, ktorý je vždy pripravený pomôcť.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{vaša história prehliadania # webu}few{vaša história prehliadania # webov}many{your browsing history of # sites}other{vaša história prehliadania # webov}}</translation>
-<translation id="3779244863011082655">Použiť iný účet <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> nedokáže skontrolovať, či boli vaše heslá odhalené pri porušení ochrany údajov. Skúste to neskôr.</translation>
 <translation id="3781742599892759500">Prístup k mikrofónu v systéme Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5502,6 +5502,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4848191975108266266">„Ok Google“ v Asistentovi Google</translation>
 <translation id="4849286518551984791">Univerzálny koordinovaný čas (UTC/GMT)</translation>
 <translation id="4849517651082200438">Neinštalovať</translation>
+<translation id="4849731766219625109">Použite svoj účet <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="485053257961878904">Nepodarilo sa nastaviť synchronizáciu upozornení</translation>
 <translation id="4850548109381269495">V oboch zariadeniach skontrolujte internetové pripojenie a zapnite rozhranie Bluetooth. Potom to skúste znova.</translation>
 <translation id="4850669014075537160">Posúvanie</translation>
@@ -5690,6 +5691,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4979510648199782334">Nastavovanie súpravy Microsoft 365 je dokončené</translation>
 <translation id="4980805016576257426">Toto rozšírenie obsahuje malvér.</translation>
 <translation id="4983159853748980742">Vaše heslo nebolo zdieľané. Skontrolujte internetové pripojenie a uistite sa, že ste sa prihlásili do Chromu. Potom to skúste znova.</translation>
+<translation id="498624032394115435">Ktokoľvek s odkazom môže upravovať všetky karty.</translation>
 <translation id="4986706507552097681">Obsah, ktorý chcete synchronizovať, môžete kedykoľvek vybrať v nastaveniach. Google môže prispôsobiť Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
 <translation id="4986728572522335985">Odstránia sa všetky údaje v bezpečnostnom kľúči vrátane kódu PIN</translation>
 <translation id="4987944280765486504">Po dokončení sťahovania sa Chromebook reštartuje a budete môcť pokračovať v nastavovaní.</translation>
@@ -8302,7 +8304,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6873571253135628430">Zmeniť povolenia webov</translation>
 <translation id="6876155724392614295">Bicykel</translation>
 <translation id="6876469544038980967">Neužitočné</translation>
-<translation id="687838958001010630">Ktokoľvek s odkazom môže upravovať všetky karty</translation>
 <translation id="6878422606530379992">Senzory sú povolené</translation>
 <translation id="6878862640969460273">Na šírku</translation>
 <translation id="6880587130513028875">Obrázky boli na tejto stránke zablokované.</translation>

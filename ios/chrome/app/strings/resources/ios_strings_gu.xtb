@@ -134,6 +134,7 @@
 <translation id="1513858653616922153">પાસવર્ડ ડિલીટ કરો</translation>
 <translation id="1517166097004694782">"આ ટૅબ સાથે ચાલુ રાખો" છુપાવો</translation>
 <translation id="1520027731907768768">તમે ટ્રૅક કરો છો તે પ્રોડક્ટની કિંમતમાં ઘટાડા વિશેના અલર્ટ મેળવો.</translation>
+<translation id="1521366073263497277">તમારી ટૅબ ગ્રિડ પર જાઓ</translation>
 <translation id="1521774566618522728">આજે સક્રિય છે</translation>
 <translation id="1524563461097350801">ના, આભાર</translation>
 <translation id="1531038290222364269">ટૅબ બતાવો</translation>
@@ -536,6 +537,7 @@
 <translation id="3245429137663807393">જો તમે Chromeના વપરાશના રિપોર્ટ પણ શેર કરતા હો, તો તે રિપોર્ટમાં તમે મુલાકાત લો છો તે URLs શામેલ હોય છે</translation>
 <translation id="3245744387817103524">તમારો ફેરફાર સાચવી શકાયો નથી.</translation>
 <translation id="3254806613790954367">તમારા સમગ્ર ડિવાઇસ પર તમારું છેલ્લે ખોલવામાં આવેલું ટૅબ</translation>
+<translation id="325717987950204592">"પ્રાઇવસી અને સુરક્ષા" પર ટૅપ કરો</translation>
 <translation id="3272527697863656322">રદ કરો</translation>
 <translation id="3273510436356991673">તમારી હોમ સ્ક્રીન કસ્ટમાઇઝ કરો</translation>
 <translation id="3277021493514034324">સાઇટનું ઍડ્રેસ કૉપિ કર્યું</translation>
@@ -568,6 +570,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> મિનિટ</translation>
 <translation id="344589138074534176">Google Lens વિશે વધુ જાણો</translation>
 <translation id="3447332786336558089">તમે સાઇન આઉટ કરો પછી, ટૅબ બંધ કરવામાં આવશે અને ન સાચવેલો એકાઉન્ટનો ડેટા આ ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે. આમાં પાસવર્ડ, ઇતિહાસ અને બીજું ઘણું શામેલ હોઈ શકે છે.</translation>
+<translation id="3449029510150690417">ટૅબના ગ્રૂપને નામ અને રંગ આપીને તમારું નવું ટૅબનું ગ્રૂપ બનાવો</translation>
 <translation id="345348365500626747">સરનામું મળ્યું</translation>
 <translation id="3464194322481586217">કિંમત ટ્રૅક કરી શક્યા નથી.</translation>
 <translation id="3469117812148449995">પાસવર્ડ સાચવવા માટેના વિકલ્પો</translation>
@@ -649,6 +652,7 @@
 <translation id="3838691874161539578">તમારી સુરક્ષા મજબૂત કરવા અને ઑનલાઇન વધુ સલામત રહેવા માટે માટે તમારા સાચવેલા પાસવર્ડ ચેક કરો</translation>
 <translation id="3838985624086228724">તમારી ટ્રૅક કરેલી પ્રોડક્ટ પર કિંમતમાં ઘટાડો, <ph name="PREVIOUS_PRICE" />માંથી <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">પાછળ</translation>
+<translation id="3850952228519377137">"તમારા ટૅબમાંથી કિંમતો ટ્રૅક કરો" છુપાવો</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> અને અન્ય <ph name="NUMBER_OF_ACCOUNTS" /> માટેના પાસવર્ડ ડિલીટ કરવામાં આવશે. તમારા એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
 <translation id="3858860766373142691">નામ</translation>
 <translation id="3868495844258915202">સંપૂર્ણ URL બતાવો</translation>
@@ -1133,6 +1137,7 @@
 <translation id="5860491529813859533">ચાલુ કરો</translation>
 <translation id="5868644772996939262">પાસવર્ડ અને પાસકી ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="5869522115854928033">સાચવેલા પાસવર્ડ્સ</translation>
+<translation id="5873179562631407582">કોઈપણ ખુલ્લી ટૅબને ટૅપ કરીને દબાવી રાખો</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે.</translation>
 <translation id="5888889603768021126">આમના વડે સાઇન ઇન કરેલું</translation>
 <translation id="5889333064153755823">બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
@@ -1317,6 +1322,7 @@
 <translation id="6583087784430677195">બંધ કરવા માટે, <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" /> ખોલો અને પાસવર્ડ ઑટોમૅટિક રીતે ભરવાની સુવિધા પર જાઓ.</translation>
 <translation id="6585048665672348661">બ્રાઉઝિંગ ડેટા ડિલીટ કરો…</translation>
 <translation id="6585618849026997638">તમે બુકમાર્ક ઉમેરીને તમારા માટે મહત્ત્વપૂર્ણ હોય એવા પેજ પર પાછા જઈ શકો છો</translation>
+<translation id="659407965921887085">આ કાર્ડ તમે હાલમાં ટ્રૅક કરતા હો તે પ્રોડક્ટ પર સમગ્ર વેબ પર કિંમતમાં ઘટાડો દર્શાવે છે</translation>
 <translation id="6596481460663245319">Google વડે છબી શોધો</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 પાસવર્ડ}one{# પાસવર્ડ}other{# પાસવર્ડ}}</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" /> માટે Google Photosમાં છબી સાચવી</translation>
@@ -1354,6 +1360,7 @@
 <translation id="6680416467695217368">મેનૂ કસ્ટમાઇઝ કરો</translation>
 <translation id="6681586159478273915">વૉઇસ શોધ</translation>
 <translation id="6681791404926413601">{count,plural, =1{તમારા કીબોર્ડ પર ચુકવણી પદ્ધતિ માટે {count} વિકલ્પ ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર ચુકવણી પદ્ધતિ માટે {count} વિકલ્પ ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર ચુકવણી પદ્ધતિ માટે {count} વિકલ્પ ઉપલબ્ધ છે.}}</translation>
+<translation id="6684262542644248484">વેબસાઇટ પર સાઇન ઇન કરો</translation>
 <translation id="6685259053455152195">સેટિંગમાં ઝડપથી ફેરફાર કરવા અને ઍડ્રેસ બારમાંથી સુવિધાઓનો ઉપયોગ કરવા માટે શૉર્ટકટ.</translation>
 <translation id="6689685206615181381">ફક્ત છૂપો મોડ ઉપલબ્ધ છે</translation>
 <translation id="6708501134077648845">પાસવર્ડના વિકલ્પો</translation>
@@ -1372,6 +1379,7 @@
 <translation id="6761393919622941301">ઑડિયો</translation>
 <translation id="6779455296366983087">તમારો બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવશે</translation>
 <translation id="6790502149545262384">ટૂંક સમયમાં, જ્યારે તમે નવું ટૅબ ખોલશો ત્યારે તમને <ph name="CHANNEL_NAME" /> પરથી સ્ટોરી દેખાશે.</translation>
+<translation id="6791425686608802741">"નવા ગ્રૂપમાં ટૅબ ઉમેરો" પર ટૅપ કરો</translation>
 <translation id="6794476726485507147">આ પેજની ફરી મુલાકાત લેવા માટે, રિમાઇન્ડર નોટિફિકેશન મેળવવા માટે તારીખ અને સમય પસંદ કરો</translation>
 <translation id="6807287147325542056">અન્ય ઍપમાંના પાસવર્ડ</translation>
 <translation id="681368974849482173">આઇટમ બનાવી</translation>
@@ -1560,6 +1568,7 @@
 <translation id="7646772052135772216">પાસવર્ડ સિંક કાર્ય કરતું નથી</translation>
 <translation id="764827086632467055">ડિફૉલ્ટ બ્રાઉઝર ઍપ પર ટૅપ કરો</translation>
 <translation id="7649070708921625228">સહાય</translation>
+<translation id="765631330137769217">આગામી વખતે જ્યારે તમે સાઇન ઇન કરો, ત્યારે સરળતાથી આ પાસવર્ડ ઍક્સેસ કરવા માટે "સાચવો" પર ટૅપ કરો</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7662316065255305764">સાઇટની માહિતી</translation>
 <translation id="7665369617277396874">એકાઉન્ટ ઉમેરો</translation>
@@ -1728,6 +1737,7 @@
 <translation id="8307481894409578819">આ ફાઇલ અપલોડ કરી શકતા નથી</translation>
 <translation id="8319076807703933069">નવી શોધ</translation>
 <translation id="8320212361750431956">તાજેતરની ઍક્ટિવિટી</translation>
+<translation id="8325455175867928593">"તમારી રુચિઓ પર આધારિત રિવ્યૂ" છુપાવો</translation>
 <translation id="833647236762414178">સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરવા માટે, તમારા પાસવર્ડ અને પાસકી બનાવો, તેને સાચવો અને મેનેજ કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">તમારી સામગ્રીનું બૅકઅપ લો અને કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરો.</translation>
 <translation id="8348530355586151720">ત્રણ ડૉટ મેનૂ પર ટૅપ કરો</translation>

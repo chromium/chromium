@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -555,7 +556,7 @@ void ToCdmInputBuffer(const DecoderBuffer& encrypted_buffer,
                       std::vector<cdm::SubsampleEntry>* subsamples,
                       cdm::InputBuffer_2* input_buffer) {
   // End of stream buffers are represented as empty resources.
-  DCHECK(!input_buffer->data);
+  CHECK(!input_buffer->data, base::NotFatalUntil::M140);
   if (encrypted_buffer.end_of_stream())
     return;
 
@@ -577,7 +578,7 @@ void ToCdmInputBuffer(const DecoderBuffer& encrypted_buffer,
       reinterpret_cast<const uint8_t*>(decrypt_config->iv().data());
   input_buffer->iv_size = decrypt_config->iv().size();
 
-  DCHECK(subsamples->empty());
+  CHECK(subsamples->empty(), base::NotFatalUntil::M140);
   size_t num_subsamples = decrypt_config->subsamples().size();
   if (num_subsamples > 0) {
     subsamples->reserve(num_subsamples);

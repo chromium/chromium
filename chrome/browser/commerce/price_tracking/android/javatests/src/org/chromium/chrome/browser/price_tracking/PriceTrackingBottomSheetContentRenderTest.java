@@ -71,7 +71,7 @@ public class PriceTrackingBottomSheetContentRenderTest {
     @Mock private Profile mMockProfile;
     @Mock private PriceInsightsDelegate mMockPriceInsightsDelegate;
     @Mock private Callback<PropertyModel> mMockCallback;
-    @Mock private ObservableSupplier<PriceTrackingState> mMockPriceTrackingStateSupplier;
+    @Mock private ObservableSupplier<Boolean> mMockPriceTrackingStateSupplier;
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private ShoppingService mMockShoppingService;
 
@@ -92,7 +92,7 @@ public class PriceTrackingBottomSheetContentRenderTest {
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
         CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
 
-        doReturn(PriceTrackingState.UNTRACKED).when(mMockPriceTrackingStateSupplier).get();
+        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
         doReturn(mMockPriceTrackingStateSupplier)
                 .when(mMockPriceInsightsDelegate)
                 .getPriceTrackingStateSupplier(mMockTab);
@@ -132,7 +132,7 @@ public class PriceTrackingBottomSheetContentRenderTest {
     @Feature({"RenderTest"})
     public void testPriceTrackingEnabled() throws IOException {
         doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
-        doReturn(PriceTrackingState.TRACKED).when(mMockPriceTrackingStateSupplier).get();
+        doReturn(true).when(mMockPriceTrackingStateSupplier).get();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.requestContent(mMockCallback);
@@ -145,7 +145,7 @@ public class PriceTrackingBottomSheetContentRenderTest {
     @Feature({"RenderTest"})
     public void testPriceTrackingDisabled() throws IOException {
         doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
-        doReturn(PriceTrackingState.UNTRACKED).when(mMockPriceTrackingStateSupplier).get();
+        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.requestContent(mMockCallback);

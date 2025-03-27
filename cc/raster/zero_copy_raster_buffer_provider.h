@@ -31,6 +31,13 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
   ZeroCopyRasterBufferImpl(
       const ResourcePool::InUsePoolResource& in_use_resource,
       scoped_refptr<gpu::SharedImageInterface> sii);
+  // Used with the software compositor.
+  // TODO(crbug.com/403372453): Unify with above constructor in followup via
+  // `is_software` param.
+  ZeroCopyRasterBufferImpl(
+      const ResourcePool::InUsePoolResource& in_use_resource,
+      scoped_refptr<gpu::SharedImageInterface> sii,
+      bool resource_has_previous_content);
 
   ZeroCopyRasterBufferImpl(const ZeroCopyRasterBufferImpl&) = delete;
 
@@ -54,6 +61,8 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
   raw_ptr<ResourcePool::Backing> backing_;
   const scoped_refptr<gpu::SharedImageInterface> sii_;
   bool failed_to_map_shared_image_ = false;
+  bool resource_has_previous_content_ = false;
+  bool is_software_ = false;
 };
 
 class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {

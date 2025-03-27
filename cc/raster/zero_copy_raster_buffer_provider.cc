@@ -58,6 +58,20 @@ ZeroCopyRasterBufferImpl::ZeroCopyRasterBufferImpl(
   }
 }
 
+ZeroCopyRasterBufferImpl::ZeroCopyRasterBufferImpl(
+    const ResourcePool::InUsePoolResource& in_use_resource,
+    scoped_refptr<gpu::SharedImageInterface> sii,
+    bool resource_has_previous_content)
+    : resource_has_previous_content_(resource_has_previous_content),
+      is_software_(true) {
+  if (!in_use_resource.backing()) {
+    in_use_resource.InstallSoftwareBacking(sii, "BitmapRasterBufferProvider");
+
+    in_use_resource.backing()->mailbox_sync_token = sii->GenVerifiedSyncToken();
+  }
+  backing_ = in_use_resource.backing();
+}
+
 ZeroCopyRasterBufferImpl::~ZeroCopyRasterBufferImpl() {
   // This raster task is complete, so if the backing's SharedImage was created
   // on a worker thread during the raster work that has now happened.
@@ -67,6 +81,11 @@ ZeroCopyRasterBufferImpl::~ZeroCopyRasterBufferImpl() {
   if (failed_to_map_shared_image_) {
     backing_->shared_image()->UpdateDestructionSyncToken(gpu::SyncToken());
     backing_->clear_shared_image();
+  }
+
+  if (is_software_) {
+    // The below work is specific to GPU compositing.
+    return;
   }
 
   // If it was not possible to allocate the SharedImage
@@ -98,8 +117,19 @@ void ZeroCopyRasterBufferImpl::Playback(
     const GURL& url) {
   TRACE_EVENT0("cc", "ZeroCopyRasterBuffer::Playback");
 
+  gfx::Rect playback_rect = raster_full_rect;
+  if (resource_has_previous_content_) {
+    playback_rect.Intersect(raster_dirty_rect);
+  }
+  DCHECK(!playback_rect.IsEmpty())
+      << "Why are we rastering a tile that's not dirty?";
+
   // Create a MappableSI if necessary.
-  if (!backing_->shared_image()) {
+  if (is_software_) {
+    // WHen used with the software compositor, the SharedImage is created in the
+    // constructor.
+    CHECK(backing_->shared_image());
+  } else if (!backing_->shared_image()) {
     gpu::SharedImageUsageSet usage =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     if (!backing_->CreateSharedImage(sii_.get(), usage, "ZeroCopyRasterTile",
@@ -122,11 +152,14 @@ void ZeroCopyRasterBufferImpl::Playback(
     return;
   }
 
-  // TODO(danakj): Implement partial raster with raster_dirty_rect.
+  size_t stride = is_software_ ? 0u : mapping->Stride(0);
+
+  // TODO(danakj): Implement partial raster with raster_dirty_rect for GPU
+  // compositing.
   RasterBufferProvider::PlaybackToMemory(
       mapping->GetMemoryForPlane(0).data(), backing_->format(),
-      backing_->size(), mapping->Stride(0), raster_source, raster_full_rect,
-      raster_full_rect, transform, backing_->color_space(), playback_settings);
+      backing_->size(), stride, raster_source, raster_full_rect, playback_rect,
+      transform, backing_->color_space(), playback_settings);
 }
 
 bool ZeroCopyRasterBufferImpl::SupportsBackgroundThreadPriority() const {

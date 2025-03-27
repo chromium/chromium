@@ -27,8 +27,8 @@ export const SortedTableMixin = dedupingMixin(
           };
         }
 
-        sortKey: string;
-        sortReverse: boolean;
+        declare sortKey: string;
+        declare sortReverse: boolean;
 
         /** Sets a new sort key for this item. */
         setSortKey(sortKey: string) {

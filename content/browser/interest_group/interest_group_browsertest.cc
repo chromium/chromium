@@ -29,7 +29,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -21639,9 +21638,8 @@ class InterestGroupBiddingAndAuctionServerBrowserTest
               base::Value::Dict outer;
               outer.Set("keys", std::move(keys));
 
-              std::string json_output;
-              JSONStringValueSerializer serializer(&json_output);
-              serializer.Serialize(outer);
+              std::string json_output =
+                  base::WriteJson(outer).value_or(std::string());
               URLLoaderInterceptor::WriteResponse(headers, json_output,
                                                   params->client.get());
               return true;

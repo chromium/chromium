@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_hstring.h"
 #include "media/base/win/hresults.h"
@@ -106,7 +107,7 @@ HRESULT MediaFoundationCdmModule::GetCdmFactory(
 }
 
 HRESULT MediaFoundationCdmModule::ActivateCdmFactory() {
-  DCHECK(initialized_);
+  CHECK(initialized_, base::NotFatalUntil::M140);
 
   if (activated_) {
     DLOG(ERROR) << "CDM failed to activate previously";
@@ -117,7 +118,7 @@ HRESULT MediaFoundationCdmModule::ActivateCdmFactory() {
 
   // For OS or store CDM, the `cdm_path_` is empty. Just use default creation.
   if (cdm_path_.empty()) {
-    DCHECK(!library_.is_valid());
+    CHECK(!library_.is_valid(), base::NotFatalUntil::M140);
     ComPtr<IMFMediaEngineClassFactory4> class_factory;
     RETURN_IF_FAILED(CoCreateInstance(CLSID_MFMediaEngineClassFactory, nullptr,
                                       CLSCTX_INPROC_SERVER,

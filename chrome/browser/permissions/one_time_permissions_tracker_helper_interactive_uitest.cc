@@ -5,6 +5,8 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -53,10 +55,10 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionsTrackerHelperBrowserTest,
 
       // Immediately switch to the second tab and discard the first.
       SelectTab(kTabStripElementId, 1), Do(base::BindLambdaForTesting([&]() {
-        // Note that because the active tab cannot be discarded, this line is
-        // guaranteed to discard the first tab.
-        g_browser_process->GetTabManager()->DiscardTab(
-            mojom::LifecycleUnitDiscardReason::EXTERNAL);
+        auto* lifecycle_unit = resource_coordinator::TabLifecycleUnitSource::
+            GetTabLifecycleUnitExternal(
+                browser()->tab_strip_model()->GetWebContentsAt(0));
+        lifecycle_unit->DiscardTab(mojom::LifecycleUnitDiscardReason::EXTERNAL);
       })));
 
   // There should not be a crash.

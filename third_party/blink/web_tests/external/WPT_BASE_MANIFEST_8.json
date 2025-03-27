@@ -5748,6 +5748,13 @@
     },
     "css-viewport": {
      "zoom": {
+      "iframe-very-small-zoom-001-crash.html": [
+       "05369040456e06a0ab9769edefbe19aec6b77a93",
+       [
+        null,
+        {}
+       ]
+      ],
       "perspective-small-effective-zoom-crash.html": [
        "ab6f563d19ee8a826cf2ff9d0f04d105c7ba8d96",
        [
@@ -7825,6 +7832,13 @@
       "the-form-element": {
        "form-action-in-inactive-document-crash.html": [
         "8a3543fcbcf4a51b1a3e95a549c5b345fa39dcf3",
+        [
+         null,
+         {}
+        ]
+       ],
+       "form-controls-id-removal-crash.html": [
+        "2b1ef87774fc1c5393129fca8e65147c379ea7a9",
         [
          null,
          {}
@@ -74781,8 +74795,8 @@
        {}
       ]
      ],
-     "position-visibility-anchors-visible-both-position-fixed.tentative.html": [
-      "c603288f0a70a1f43e7384b9dd26c474ce96bac5",
+     "position-visibility-anchors-visible-both-position-fixed.html": [
+      "c5e8e839ded4e81258aebf723af93b1119077596",
       [
        null,
        [
@@ -74898,13 +74912,13 @@
        {}
       ]
      ],
-     "position-visibility-anchors-visible-position-fixed.tentative.html": [
-      "9c3495a635d2eaeb77de9586f031dedec5d7af97",
+     "position-visibility-anchors-visible-position-fixed.html": [
+      "5107823efd9ef0fa9c3a4fc66cda8e016954eb33",
       [
        null,
        [
         [
-         "/css/css-anchor-position/position-visibility-anchors-visible-position-fixed-ref.html",
+         "/css/css-anchor-position/position-visibility-anchors-visible-ref.html",
          "=="
         ]
        ],
@@ -74938,12 +74952,12 @@
       ]
      ],
      "position-visibility-anchors-visible-with-position.html": [
-      "8ad3eb7e31053a6978a638e88003eadd150138ff",
+      "32eede4f08819a54e2f6b4c5bdad8a488805e972",
       [
        null,
        [
         [
-         "/css/css-anchor-position/position-visibility-anchors-visible-ref.html",
+         "/css/css-anchor-position/position-visibility-anchors-visible-with-position-ref.html",
          "=="
         ]
        ],
@@ -174030,6 +174044,58 @@
        {}
       ]
      ],
+     "scroll-marker-contain-005.tentative.html": [
+      "3d435bf74cbe204857b62974bcd0f12ee1ec8430",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-marker-contain-001-ref.tentative.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-marker-contain-006.tentative.html": [
+      "234b57e5bbea2b29a1beb2671fb1b6a1ec1de976",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-marker-contain-001-ref.tentative.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-marker-contain-007.tentative.html": [
+      "5f15c85819a3d00ca9d3088425345bbc9be60cb3",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-marker-contain-001-ref.tentative.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-marker-contain-008.tentative.html": [
+      "80801854a0f05abb47243873ae084a1564e5cd30",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-marker-contain-008-ref.tentative.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "scroll-marker-counters.html": [
       "25e4fdfd24f849128c711cdc5a8610abba5e1d8f",
       [
@@ -250230,7 +250296,7 @@
       ]
      ],
      "auto-name-from-id.html": [
-      "9a04d431dfdc2225670e6bb2f87e6ac7a4fcd486",
+      "d3430c93a1d2043146e7205c2734a2b8b19af2e0",
       [
        null,
        [
@@ -328825,7 +328891,7 @@
       []
      ],
      "position-visibility-anchors-visible-both-position-fixed-ref.html": [
-      "7a9d69a9e3b3206fbc8a5865fb951ecec67b1bea",
+      "3af597aee65d3d679ae21e55d2f5859a3459e297",
       []
      ],
      "position-visibility-anchors-visible-chained-004-ref.html": [
@@ -328848,12 +328914,12 @@
       "3b6532e27b02a21037926adda9c4204c3ac6c017",
       []
      ],
-     "position-visibility-anchors-visible-position-fixed-ref.html": [
-      "e24992fd5ea44d66f01c275049436d15349f7a2b",
-      []
-     ],
      "position-visibility-anchors-visible-ref.html": [
       "17798173804b41258690ed22f1169a529bca42fe",
+      []
+     ],
+     "position-visibility-anchors-visible-with-position-ref.html": [
+      "5a364aa7847a13e5c786708f5f97dd0dd718649d",
       []
      ],
      "position-visibility-no-overflow-ref.html": [
@@ -353724,6 +353790,10 @@
       "09bb93d4ebcefa99f22ae932626bf21c0b6ba528",
       []
      ],
+     "scroll-marker-contain-008-ref.tentative.html": [
+      "d74777d3bbf0b230048a17320afa6040a6b8eb62",
+      []
+     ],
      "scroll-marker-counters-ref.html": [
       "7113a5c5d23a97cf83f173a72ef96b57ecf09263",
       []
@@ -369561,7 +369631,7 @@
         []
        ],
        "auto-name-from-id.html": [
-        "f1fd1e48a68e6d7d63184f092bb1b607b6d6967d",
+        "71ea52a273e3fca98440cdefc50c77c722663a21",
         []
        ],
        "chromium-paint-holding-timeout.html": [
@@ -379859,10 +379929,6 @@
      "932c9962d53adc6fdd76a6efcbcefc3acb9fef50",
      []
     ],
-    "clearkey-check-status-for-hdcp.https-expected.txt": [
-     "52e7f34b2dd39f6b000558b9d77639ff31806804",
-     []
-    ],
     "content": {
      "audio_aac-lc_128k_2keys_2sess.mp4": [
       "526998d6ac9d2933c5163c1521b3b88aeff84cd5",
@@ -379930,10 +379996,6 @@
       "8861444591bbd8ec5c5e1e86ccad2d5c45adab39",
       []
      ],
-     "edge-persistent-usage-record.js": [
-      "7f86f0c05895a2f82ec4ac80252cf4eb4a33d5e2",
-      []
-     ],
      "firefox-polyfill.js": [
       "ce241af362a873af0ba490013790a5be365b9fac",
       []
@@ -379958,14 +380020,6 @@
      ],
      "drm-retrieve-persistent-license.html": [
       "bf554248f43e2bfbc82d5de38cbe9b8de9c4f6cb",
-      []
-     ],
-     "drm-retrieve-persistent-usage-record.html": [
-      "d1b3e0c6949091aa208481bc55b85561e74da1a5",
-      []
-     ],
-     "retrieve-persistent-usage-record.html": [
-      "c09134b54695b979ee586105710e025073f3b049",
       []
      ]
     },
@@ -380034,20 +380088,8 @@
       "c7e56e3aeaf30c809ea3563548f6198925e0c2c2",
       []
      ],
-     "playback-persistent-usage-record-events.js": [
-      "e8e1e54790b6c7a90ed48ee12be8d795dcab290c",
-      []
-     ],
-     "playback-persistent-usage-record.js": [
-      "1772b4bd5f361163603598143c4be74ad8883a53",
-      []
-     ],
      "playback-retrieve-persistent-license.js": [
       "83cba34028e92a38b2079bcf78460a4b2fa29e31",
-      []
-     ],
-     "playback-retrieve-persistent-usage-record.js": [
-      "a04f97d2ca9baed1734c49701d237d08842f00a4",
       []
      ],
      "playback-temporary-encrypted-clear-segmented-sources.js": [
@@ -401509,6 +401551,10 @@
          "1ede06b55802e9f9aa6feefff11f2d7d9adb2d9d",
          []
         ],
+        "parse-error-location.tentative-expected.txt": [
+         "a589db1cc5724dcdcb7813c6058a14b93a2ff609",
+         []
+        ],
         "parse-error.json": [
          "98232c64fce9360c79f119cf6de8f670f69f1c44",
          []
@@ -406066,6 +406112,12 @@
          []
         ]
        }
+      },
+      "window": {
+       "minimize-1.html.ini": [
+        "2e3ac5190f397acff96227d8b80042b62e1869ae",
+        []
+       ]
       }
      },
      "update_properties.json": [
@@ -417144,7 +417196,7 @@
      ],
      "tentative": {
       "Selection-getComposedRanges-range-update-expected.txt": [
-       "14ce3b1271d3b2f234117632579ddd274539ba89",
+       "3433dfa5373dd44e669f534b7e2514b904ad0ad6",
        []
       ]
      }
@@ -424259,7 +424311,7 @@
       []
      ],
      "trusted-types-reporting-for-importScripts.js": [
-      "c8de9f8d5fdab4d4d2d82ec37eedd7785c1ceee1",
+      "c03c29a4e9ed19c14c2962aad60b70cc8bc08267",
       []
      ],
      "trusted-types-reporting-for-importScripts.js.headers": [
@@ -424335,8 +424387,8 @@
      "8af05a71b6b4c111db6e535ff314d701f2709d5f",
      []
     ],
-    "trusted-types-reporting-for-ServiceWorker-function-constructor-expected.txt": [
-     "3ba59b0acf9c186de23d1185f78b8de4397f6373",
+    "trusted-types-reporting-for-ServiceWorker-function-constructor.https-expected.txt": [
+     "f5eb1a976276fc9494026c0748e33c6c61126d12",
      []
     ],
     "trusted-types-reporting-for-SharedWorker-DedicatedWorker-constructor-expected.txt": [
@@ -430302,6 +430354,10 @@
     "protocol": {
      "README.txt": [
       "5e17fbf9c354edabaf48f6ee1d017f23d18e2171",
+      []
+     ],
+     "av1-profile-asymmetry.https-expected.txt": [
+      "5fb1c42c3ef06fcf500f3df24a4f014f2999b9fe",
       []
      ],
      "bundle.https-expected.txt": [
@@ -461747,7 +461803,7 @@
    "ai": {
     "language_detection": {
      "detector.https.tentative.any.js": [
-      "9fa734b6bd79c0016c0df0d3e5410d3a15763823",
+      "f28b3ebf2b48b8a129eef4ee293ca229126a9e60",
       [
        "ai/language_detection/detector.https.tentative.any.html",
        {
@@ -461827,10 +461883,10 @@
      ]
     },
     "translator": {
-     "ai_translator_bad_input.tentative.https.any.js": [
-      "980d3c0f6976d5710d42ec55a37abe8d2a5248fb",
+     "translator_bad_input.tentative.https.any.js": [
+      "2879543f29a1239e912b52ed4833db9de4ff5021",
       [
-       "ai/translator/ai_translator_bad_input.tentative.https.any.html",
+       "ai/translator/translator_bad_input.tentative.https.any.html",
        {
         "script_metadata": [
          [
@@ -461850,7 +461906,7 @@
        }
       ],
       [
-       "ai/translator/ai_translator_bad_input.tentative.https.any.serviceworker.html",
+       "ai/translator/translator_bad_input.tentative.https.any.serviceworker.html",
        {
         "script_metadata": [
          [
@@ -461870,7 +461926,7 @@
        }
       ],
       [
-       "ai/translator/ai_translator_bad_input.tentative.https.any.sharedworker.html",
+       "ai/translator/translator_bad_input.tentative.https.any.sharedworker.html",
        {
         "script_metadata": [
          [
@@ -461890,7 +461946,7 @@
        }
       ],
       [
-       "ai/translator/ai_translator_bad_input.tentative.https.any.worker.html",
+       "ai/translator/translator_bad_input.tentative.https.any.worker.html",
        {
         "script_metadata": [
          [
@@ -461910,10 +461966,10 @@
        }
       ]
      ],
-     "ai_translator_translate.tentative.https.any.js": [
-      "992215d921025079dfee122672fcde827c249e6a",
+     "translator_translate.tentative.https.any.js": [
+      "5a800c00c696ca3565b3de3bf60f407b1f4ca05c",
       [
-       "ai/translator/ai_translator_translate.tentative.https.any.html",
+       "ai/translator/translator_translate.tentative.https.any.html",
        {
         "script_metadata": [
          [
@@ -484205,7 +484261,7 @@
      ]
     ],
     "serviceworker_cookiechange_eventhandler_multiple_subscriptions.https.any.js": [
-     "cd0657c0bcdf5fc5a2133fb0598778aa237c384c",
+     "ef7cadf4c9e6553192c84610dd1d1692dd7248f6",
      [
       "cookie-store/serviceworker_cookiechange_eventhandler_multiple_subscriptions.https.any.serviceworker.html",
       {
@@ -484223,7 +484279,7 @@
      ]
     ],
     "serviceworker_cookiechange_eventhandler_overlapping_subscriptions.https.any.js": [
-     "1f433aeb9476983cabccead67032ddb88d3ebc32",
+     "f8b1c1b7aa96f13ec40df6dfdfef2c605c447468",
      [
       "cookie-store/serviceworker_cookiechange_eventhandler_overlapping_subscriptions.https.any.serviceworker.html",
       {
@@ -505977,6 +506033,24 @@
        }
       ]
      ],
+     "column-scroll-marker-focus-003.html": [
+      "bb3868066e3d19a54c8701797b1cb73fba4dfd88",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "column-scroll-marker-focus-004.html": [
+      "fa6adbb15d00b795c5607f52d80924197204fccb",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "column-updates-computed-style.html": [
       "d741b8cf915a189e13a7f7c2738bb2880aa4e852",
       [
@@ -512478,7 +512552,7 @@
      ],
      "parsing": {
       "text-size-adjust-computed.html": [
-       "2d80b86172364343b785129b239e66a7b6b2e53e",
+       "5646f149d80810af473173690dbee590a58c6a53",
        [
         null,
         {}
@@ -512492,7 +512566,7 @@
        ]
       ],
       "text-size-adjust-valid.html": [
-       "bd58ae5f699790fe90cc125fef75cd8fcc52f2bd",
+       "a9835da3ab42d420df5959cd122544e0d5463fe9",
        [
         null,
         {}
@@ -523123,21 +523197,21 @@
        {}
       ]
      ],
-     "progress-computed.tentative.html": [
+     "progress-computed.html": [
       "8eb4e2b6757e2559b76c6a641dca40f1df32e0b7",
       [
        null,
        {}
       ]
      ],
-     "progress-invalid.tentative.html": [
+     "progress-invalid.html": [
       "f135487e1c4dd0cef9d99652c7c10a8ebe44070a",
       [
        null,
        {}
       ]
      ],
-     "progress-serialize.tentative.html": [
+     "progress-serialize.html": [
       "49c3a3c3d56596d529ee40df71373dca1290b16b",
       [
        null,
@@ -524529,7 +524603,7 @@
        ]
       ],
       "zoom-iframe-dynamic.html": [
-       "cea38d8254039d08fb78bf55f8d8d9d3cc77e747",
+       "1836408fb33f4111be2e1f8e389defa7741cd5ca",
        [
         null,
         {}
@@ -555301,20 +555375,6 @@
       {}
      ]
     ],
-    "clearkey-mp4-playback-persistent-usage-record-events.https.html": [
-     "11b3e8f15ce9450bc46a4ca9c4f81fb8a01a16ac",
-     [
-      null,
-      {}
-     ]
-    ],
-    "clearkey-mp4-playback-persistent-usage-record.https.html": [
-     "3f0d55e413861d48cce462d1715b2b6cfca647b3",
-     [
-      null,
-      {}
-     ]
-    ],
     "clearkey-mp4-playback-retrieve-destroy-persistent-license.https.html": [
      "c8838d2b7dc5f09553df38d01368d3db3927f5c3",
      [
@@ -555324,13 +555384,6 @@
     ],
     "clearkey-mp4-playback-retrieve-persistent-license.https.html": [
      "072b885d21eb35975d3bbcc945e78660ed5d26f8",
-     [
-      null,
-      {}
-     ]
-    ],
-    "clearkey-mp4-playback-retrieve-persistent-usage-record.https.html": [
-     "63e792c2987558a83b81e59620f1bff4e8b159d9",
      [
       null,
       {}
@@ -555689,24 +555742,6 @@
       }
      ]
     ],
-    "drm-mp4-playback-persistent-usage-record-events.https.html": [
-     "5cbb8021b0782eba074b8e04591c523f03a7891d",
-     [
-      null,
-      {
-       "timeout": "long"
-      }
-     ]
-    ],
-    "drm-mp4-playback-persistent-usage-record.https.html": [
-     "69876be989278caf422c2db047b66bc1c9f4fdcb",
-     [
-      null,
-      {
-       "timeout": "long"
-      }
-     ]
-    ],
     "drm-mp4-playback-retrieve-destroy-persistent-license.https.html": [
      "9bba71f89aa7047dafcdae9c15d9cd827d355c37",
      [
@@ -555718,15 +555753,6 @@
     ],
     "drm-mp4-playback-retrieve-persistent-license.https.html": [
      "8429d1922d5f3bf849acda76c0ddac3af82b2ae0",
-     [
-      null,
-      {
-       "timeout": "long"
-      }
-     ]
-    ],
-    "drm-mp4-playback-retrieve-persistent-usage-record.https.html": [
-     "4059bff0cfc551b2b1e39c0209121f8d10769f96",
      [
       null,
       {
@@ -646358,6 +646384,13 @@
           }
          ]
         ],
+        "parse-error-location.tentative.html": [
+         "5c8dda80cd5ad692fac1e233864519af769307ce",
+         [
+          null,
+          {}
+         ]
+        ],
         "parse-error.html": [
          "3c079f0654b16c476693afa7e56358afad30d748",
          [
@@ -657282,6 +657315,26 @@
        ]
       ]
      }
+    },
+    "window": {
+     "minimize-1.html": [
+      "3b6d46874b3e51f0391d7de0728b42c795c91cad",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "minimize-2.html": [
+      "279f01b7b73abc434c2daa640c1aa292f419ea53",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ]
     }
    },
    "input-device-capabilities": {
@@ -667850,7 +667903,7 @@
       ]
      ],
      "defaultPrevented-window-stop-after-dispatch.html": [
-      "da5de10ddd8ba5753265f7a2b2448915e31cd257",
+      "889179603b8dfc3088fbf58a38c379cba0026ecb",
       [
        null,
        {}
@@ -668338,13 +668391,6 @@
        {}
       ]
      ],
-     "replaceState-in-unload-then-remove-iframe.html": [
-      "e97b72b15717325b49594382931635574c76f65c",
-      [
-       null,
-       {}
-      ]
-     ],
      "replaceState-inside-back-handler.html": [
       "29409b5e2bc3e680cf99f54abea90bcdd5bfd1b2",
       [
@@ -668402,7 +668448,7 @@
       ]
      ],
      "signal-abort-window-stop.html": [
-      "43e005e8b41180b058055ef30714e7dd49954861",
+      "cd3bb7431a381c5cc64902d00959f71193cd1b89",
       [
        null,
        {}
@@ -725828,10 +725874,12 @@
      ]
     ],
     "ServiceWorkerContainer-register-from-ServiceWorker.https.html": [
-     "7bc1ee7469db2660699f265bac57ce15c7a6778a",
+     "23020096383ff1bdce32f7880d0ff2baf0e72435",
      [
       null,
-      {}
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "ServiceWorkerContainer-register-from-SharedWorker.https.html": [
@@ -726764,7 +726812,7 @@
       {}
      ]
     ],
-    "trusted-types-reporting-for-ServiceWorker-function-constructor.html": [
+    "trusted-types-reporting-for-ServiceWorker-function-constructor.https.html": [
      "791663dfc792179e9c145bc33442fa0b81966f7a",
      [
       null,
@@ -759836,7 +759884,7 @@
       ]
      ],
      "dequantizeLinear.https.any.js": [
-      "8642a9647528c3ba3268d076fb2c92b9751d56d7",
+      "310dd03fcb5e46c9209951f6243e988f85c8e810",
       [
        "webnn/conformance_tests/dequantizeLinear.https.any.html?cpu",
        {
@@ -787787,6 +787835,13 @@
        {
         "timeout": "long"
        }
+      ]
+     ],
+     "av1-profile-asymmetry.https.html": [
+      "f7d14ad6d8613c70c1bbecdda84281ca4d3620df",
+      [
+       null,
+       {}
       ]
      ],
      "bundle.https.html": [

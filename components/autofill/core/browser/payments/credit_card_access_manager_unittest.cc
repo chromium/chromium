@@ -1925,6 +1925,32 @@ TEST_F(CreditCardAccessManagerTest, CardInfoRetrievalEnrolledCardUnmasking) {
                 kCardInfoRetrievalEnrolledUnmaskProgressDialog);
 }
 
+// Ensures the `kCardInfoRetrievalEnrolledUnmaskProgressDialog` is not set if a
+// card is not enrolled for retrieval.
+TEST_F(CreditCardAccessManagerTest,
+       CardInfoRetrievalEnrolledCardUnmaskingDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCardInfoRuntimeRetrieval},
+      /*disabled_features=*/{
+          features::kAutofillEnableFpanRiskBasedAuthentication});
+
+  base::HistogramTester histogram_tester;
+  CreditCard server_card = test::GetMaskedServerCard();
+  server_card.set_guid(kTestGUID);
+  server_card.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified);
+  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
+  const CreditCard* card =
+      personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
+
+  FetchCreditCard(card);
+
+  // Ensures CreditCardRiskBasedAuthenticator::Authenticate is not invoked.
+  ASSERT_FALSE(autofill_client_.GetPaymentsAutofillClient()
+                   ->risk_based_authentication_invoked());
+}
+
 // Ensures the virtual card risk-based unmasking response is handled correctly
 // and authentication is delegated to the correct authenticator when multiple
 // challenge options are returned.

@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/version.h"
+#include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 
 namespace optimization_guide {
 
@@ -107,12 +108,8 @@ void TestOnDeviceModelComponentStateManager::SetFreeDiskSpace(
 }
 
 void TestOnDeviceModelComponentStateManager::SetReady(
-    const base::FilePath& install_dir,
-    const std::string& version) {
-  auto manifest = base::Value::Dict().Set(
-      "BaseModelSpec",
-      base::Value::Dict().Set("version", "0.0.1").Set("name", "Test"));
-  get()->SetReady(base::Version(version), install_dir, manifest);
+    const FakeBaseModelAsset& asset) {
+  asset.SetReadyIn(*get());
 }
 
 }  // namespace optimization_guide

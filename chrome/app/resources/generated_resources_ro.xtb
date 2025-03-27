@@ -1566,7 +1566,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2081816110395725788">Inactivitate în timpul funcționării pe baterie</translation>
 <translation id="2082187087049518845">Adaugă fila la un grup</translation>
 <translation id="2082510809738716738">Alege o culoare pentru temă</translation>
-<translation id="208547068587548667">Conectează-te la <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Încearcă din nou</translation>
 <translation id="208634871997892083">VPN activat permanent</translation>
 <translation id="208654914566977272">Acțiuni sugerate când cauți pe ecran</translation>
@@ -3997,7 +3996,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3778740492972734840">Instrumente pentru &amp;dezvoltatori</translation>
 <translation id="3778868487658107119">Pune-i întrebări. Spune-i să facă diverse lucruri. Este serviciul tău Google personal, gata oricând să te ajute.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{istoricul de navigare pentru # site}few{istoricul de navigare pentru # site-uri}other{istoricul de navigare pentru # de site-uri}}</translation>
-<translation id="3779244863011082655">Folosește alt cont <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> nu îți poate verifica parolele împotriva încălcării securității datelor. Încearcă din nou mai târziu.</translation>
 <translation id="3781742599892759500">Accesul la microfon în Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5500,6 +5498,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4848191975108266266">„Ok Google” pentru Asistentul Google</translation>
 <translation id="4849286518551984791">Timpul universal coordonat (UTC/GMT)</translation>
 <translation id="4849517651082200438">Nu instala</translation>
+<translation id="4849731766219625109">Folosește-ți contul <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="485053257961878904">Sincronizarea notificărilor nu a putut fi configurată</translation>
 <translation id="4850548109381269495">Pe ambele dispozitive, verifică conexiunea la internet și activează Bluetooth. Apoi, încearcă din nou.</translation>
 <translation id="4850669014075537160">Derulare</translation>
@@ -5688,6 +5687,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4979510648199782334">Configurarea Microsoft 365 s-a finalizat</translation>
 <translation id="4980805016576257426">Această extensie conține programe malware.</translation>
 <translation id="4983159853748980742">Parola nu a fost trimisă. Verifică-ți conexiunea la internet și asigură-te că te-ai conectat la Chrome. Apoi încearcă din nou.</translation>
+<translation id="498624032394115435">Oricine are linkul poate să editeze toate filele.</translation>
 <translation id="4986706507552097681">Poți să alegi oricând ce să sincronizezi în setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="4986728572522335985">Vor fi șterse toate datele de pe cheia de securitate, inclusiv codul său PIN</translation>
 <translation id="4987944280765486504">Chromebookul va reporni după finalizarea descărcării și poți continua configurarea.</translation>
@@ -8298,7 +8298,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6873571253135628430">Modifică permisiunile site-urilor</translation>
 <translation id="6876155724392614295">Bicicletă</translation>
 <translation id="6876469544038980967">Inutile</translation>
-<translation id="687838958001010630">Oricine are linkul poate să editeze toate filele</translation>
 <translation id="6878422606530379992">Folosirea senzorilor este permisă</translation>
 <translation id="6878862640969460273">Peisaj</translation>
 <translation id="6880587130513028875">Imaginile au fost blocate pe această pagină.</translation>

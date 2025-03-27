@@ -311,7 +311,10 @@ blink::SRIMessageSignatureComponentParameterPtr ConvertToBlink(
 blink::SRIMessageSignatureIssuePtr ConvertToBlink(
     const SRIMessageSignatureIssuePtr& in) {
   return blink::SRIMessageSignatureIssue::New(
-      ConvertToBlink(in->error), ConvertToBlink(in->signature_base));
+      ConvertToBlink(in->error), ConvertToBlink(in->signature_base),
+      in->integrity_assertions.has_value()
+          ? std::make_optional(ConvertToBlink(in->integrity_assertions.value()))
+          : std::nullopt);
 }
 
 blink::SRIMessageSignatureComponentPtr ConvertToBlink(

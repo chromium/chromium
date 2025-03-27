@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Usa a aplicación Transferencia de contido de Google para pasar os datos da túa conta de centro educativo á túa conta persoal antes de perder o acceso.</translation>
 <translation id="1026212596705997935">Este atallo está usándose para <ph name="CONFLICT_ACCEL_NAME" />. Preme outro novo. Para substituír o atallo orixinal, preme estoutro de novo.</translation>
 <translation id="1030856839388844477">Restablecer uso de datos</translation>
+<translation id="1047095725494118091">Non se puido realizar a descarga. Téntao de novo ou reinicia o teu dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Novas funcións dispoñibles. Utilizar frecha arriba para obter máis información.</translation>
 <translation id="1049663189809099096">amarela pastel</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Descargando o protector de pantalla</translation>
 <translation id="1094693127011229778">O enderezo IP non está dispoñible</translation>
 <translation id="1100902271996134409">Creando imaxes...</translation>
+<translation id="1107856713690040084">Audio <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Acerca de</translation>
 <translation id="1118572504348554005">Podemos compartir os comentarios que se envíen a través deste formulario cos nosos socios para solucionar erros e outros problemas dos que nos informes. Non inclúas información confidencial, como os contrasinais.</translation>
 <translation id="1119403468619527527">Non se pode simplificar o texto porque hai moi poucas palabras</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Poñer modo escuro</translation>
 <translation id="2164131940279488868">Cómpre que haxa un micrófono conectado para comezar a gravar audio</translation>
 <translation id="2173302385160625112">Comproba a túa conexión a Internet</translation>
+<translation id="2176909213844392588">Non se puido descargar o modelo de transcrición de <ph name="LANGUAGE_NAME" />. Téntao de novo ou reinicia o teu dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="2180197493692062006">Produciuse un erro. Tenta volver abrir a aplicación.</translation>
 <translation id="2189104374785738357">Editar os detalles do APN</translation>
 <translation id="2195732836444333448">Está ao límite da súa capacidade. Volve probar dentro dun anaco.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Alimentador de documentos (a dúas caras)</translation>
 <translation id="3201315366910775591">Outros usuarios poden actualizar os álbums compartidos</translation>
 <translation id="3211671540163313381">Cruceta de asignación de teclas</translation>
+<translation id="3217462202230355157">Comproba que o micrófono estea conectado ou proba a reiniciar o teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="3226405216343213872">Buscando escáneres</translation>
 <translation id="3226657629376379887">Menú de accións de deseño</translation>
 <translation id="3227186760713762082">Divide o valor de <ph name="CATEGORY_TEXT" /> entre <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Exclusivos</translation>
 <translation id="3404249063913988450">Activar protector de pantalla</translation>
 <translation id="3413935475507503304">Para continuar coa actualización, fai clic en Seguinte.</translation>
+<translation id="3416709353545797224">Gravando todo o audio do dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="3428551088151258685">exterior</translation>
 <translation id="3428971106895559033">pastel</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Asegúrate de que o escáner estea acendido e dispoñible a través da túa rede ou mediante unha conexión directa</translation>
 <translation id="4159238217853743776">Parcial</translation>
 <translation id="4159784952369912983">Púrpura</translation>
+<translation id="416219735020840807">Non se puido descargar o modelo de transcrición. Téntao de novo ou reinicia o teu dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="4170180284036919717">Tirar unha foto</translation>
 <translation id="4170700058716978431">NON SE SUPEROU</translation>
 <translation id="4171077696775491955">reducir o brillo</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Substituíndo texto seleccionado pola suxestión</translation>
 <translation id="5346687412805619883">Rede local</translation>
 <translation id="5358174242040570474">Produciuse un erro. Proba a escoller un fondo de pantalla de novo ou volve abrir a aplicación.</translation>
+<translation id="5368228070728130240">Non se puido descargar o modelo de creación de títulos e resumos. Téntao de novo ou reinicia o teu dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="5372659122375744710">A rede wifi non é segura</translation>
 <translation id="5376354385557966694">Modo claro automático</translation>
 <translation id="5378184552853359930">Tipo de IP</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">Produciuse un erro coas resolucións de DNS</translation>
 <translation id="6768237774506518020">Hai un alto índice de erros relacionados coas resolucións de DNS</translation>
 <translation id="6786747875388722282">Extensións</translation>
+<translation id="6789891265243243337">Cando o audio do teu dispositivo (<ph name="DEVICE_TYPE" />) está activado, a Gravadora captura todo o audio que se reproduce nel</translation>
 <translation id="6791471867139427246">cor da luz do teclado</translation>
 <translation id="6796229976413584781">Atallo eliminado</translation>
 <translation id="6798678288485555829">Navegación polo texto</translation>
@@ -1728,6 +1736,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8930622219860340959">Sen fíos</translation>
 <translation id="8933650076320258356">A tecla seleccionada é <ph name="KEYS" /> para <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Enderezo IP do cliente</translation>
+<translation id="8938606491880817721">Non se puido realizar a descarga. Téntao de novo ou reinicia o teu dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="8944651180182756621">Cor do menú de aplicacións</translation>
 <translation id="8945308580158685341">abellas</translation>
 <translation id="894617464444543719">O dispositivo é un teléfono.</translation>

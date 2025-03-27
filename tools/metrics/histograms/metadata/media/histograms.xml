@@ -982,6 +982,15 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Media.Audio.Mac.NoiseSuppressionAvailable"
+    enum="BooleanSuccess" expires_after="2026-03-19">
+  <owner>brandstrom@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    If the device reports that system noise supression is available.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.MakeAudioInputStreamStatus"
     enum="MakeAudioStreamStatus" expires_after="2025-10-10">
   <owner>yuhsuan@chromium.org</owner>

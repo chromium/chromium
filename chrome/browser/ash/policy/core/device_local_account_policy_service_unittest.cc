@@ -259,6 +259,7 @@ void DeviceLocalAccountPolicyServiceTestBase::CreatePolicyService() {
       &session_manager_client_, device_settings_service_.get(),
       ash::CrosSettings::Get(), GetInvalidationServiceProviderOrListener(),
       base::SingleThreadTaskRunner::GetCurrentDefault(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       extension_cache_task_runner_,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       /*url_loader_factory=*/nullptr);
@@ -971,8 +972,8 @@ class DeviceLocalAccountPolicyProviderTest
   MockConfigurationPolicyObserver provider_observer_;
 };
 
-DeviceLocalAccountPolicyProviderTest::DeviceLocalAccountPolicyProviderTest()
-    : DeviceLocalAccountPolicyServiceTestBase() {}
+DeviceLocalAccountPolicyProviderTest::DeviceLocalAccountPolicyProviderTest() =
+    default;
 
 void DeviceLocalAccountPolicyProviderTest::SetUp() {
   DeviceLocalAccountPolicyServiceTestBase::SetUp();

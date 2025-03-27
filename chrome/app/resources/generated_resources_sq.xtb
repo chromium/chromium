@@ -403,6 +403,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1264956950255940376">Picërro syrin e majtë</translation>
 <translation id="1265094893042958831">Po gjenerohen sugjerime për këtë faqe…</translation>
 <translation id="1265279736024499987">Aplikacionet dhe cilësimet e tua do të sinkronizohen në të gjitha pajisjet Chrome OS Flex ku je identifikuar me "Llogarinë tënde të Google". Për opsionet e sinkronizimit të shfletuesit, shko te <ph name="LINK_BEGIN" />cilësimet e Chrome<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Pas nxjerrjes së një pamjeje ekrani ose kërkimit në ekranin tënd, shfaq më shumë veprime, si p.sh. "shto te 'Kalendari'", "krijo skedarë të 'Dokumenteve të Google'" etj.</translation>
 <translation id="126710816202626562">Gjuha e përkthimit:</translation>
 <translation id="1267649802567297774">Imazhi i gjeneruar <ph name="INDEX" /> nga "<ph name="SUBJECT" />", në stilin "<ph name="STYLE" />", me atmosferë "<ph name="MOOD" />".</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1561,9 +1562,9 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2081816110395725788">Energjia e gjendjes joaktive është me bateri</translation>
 <translation id="2082187087049518845">Skeda e grupit</translation>
 <translation id="2082510809738716738">Zgjidh një ngjyrë teme</translation>
-<translation id="208547068587548667">Identifikohu në <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Provo sërish</translation>
 <translation id="208634871997892083">Rrjeti VPN gjithmonë aktiv</translation>
+<translation id="208654914566977272">Veprimet e sugjeruara kur kërkon në ekranin tënd</translation>
 <translation id="2087822576218954668">Printo: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Regjistrimi mbështetet vetëm pasi të kesh instaluar <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">TrackPoint i integruar</translation>
@@ -2217,6 +2218,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
         Mund t'i menaxhosh cilësimet nga menyja e kartave ose të shikosh opsione të tjera te "Personalizo Chrome".</translation>
 <translation id="2514326558286966059">Shkyç më shpejt me gjurmën e gishtit</translation>
 <translation id="2514465118223423406">Kur është lidhur një mi</translation>
+<translation id="2514938842036917377">Kjo do të fshijë <ph name="TOTAL_USAGE" /> të dhëna të ruajtura nga <ph name="SITE_NAME" />, sajtet e lidhura dhe aplikacionet e instaluara</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Konfirmo emrin tënd të përdoruesit</translation>
 <translation id="2517472476991765520">Skano</translation>
@@ -3990,7 +3992,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3778740492972734840">&amp;Mjetet e zhvilluesit</translation>
 <translation id="3778868487658107119">Bëji pyetje. Thuaji që të bëjë gjëra. Është Google yt personal, gjithmonë gati për të të ndihmuar.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{historiku yt i shfletimit të # sajti}other{historiku yt i shfletimit të # sajteve}}</translation>
-<translation id="3779244863011082655">Përdor një llogari tjetër të <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3780542776224651912">"<ph name="BRAND" />" nuk mund t'i kontrollojë fjalëkalimet e tua nga nxjerrjet e paautorizuara të të dhënave. Provo përsëri më vonë.</translation>
 <translation id="3781742599892759500">Qasja te mikrofoni i Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5493,6 +5494,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4848191975108266266">"Ok Google" e "Asistentit të Google"</translation>
 <translation id="4849286518551984791">Ora universale e koordinuar (UTC/GMT)</translation>
 <translation id="4849517651082200438">Mos e instalo</translation>
+<translation id="4849731766219625109">Përdor llogarinë tënde të <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="485053257961878904">Sinkronizimi i njoftimeve nuk mund të konfigurohej</translation>
 <translation id="4850548109381269495">Kontrollo lidhjen e internetit dhe aktivizo Bluetooth-in në të dyja pajisjet. Më pas provo përsëri.</translation>
 <translation id="4850669014075537160">Lëvizja</translation>
@@ -5681,6 +5683,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4979510648199782334">Konfigurimi i Microsoft 365 përfundoi</translation>
 <translation id="4980805016576257426">Kjo shtesë përmban një softuer keqdashës.</translation>
 <translation id="4983159853748980742">Fjalëkalimi yt nuk është ndarë. Kontrollo lidhjen e internetit dhe sigurohu që të jesh identifikuar në Chrome. Më pas provo përsëri.</translation>
+<translation id="498624032394115435">Çdo person që ka lidhjen mund të modifikojë të gjitha skedat.</translation>
 <translation id="4986706507552097681">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="4986728572522335985">Kjo do të fshijë të gjitha të dhënat në çelësin e sigurisë, duke përfshirë kodin e tij PIN</translation>
 <translation id="4987944280765486504">Pajisja jote Chromebook do të riniset kur të përfundojë shkarkimi dhe mund të vazhdosh me konfigurimin.</translation>
@@ -8289,7 +8292,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6873571253135628430">Ndrysho lejet e sajtit</translation>
 <translation id="6876155724392614295">Biçikletë</translation>
 <translation id="6876469544038980967">Jo i dobishëm</translation>
-<translation id="687838958001010630">Çdo person që ka lidhjen mund të modifikojë të gjitha skedat</translation>
 <translation id="6878422606530379992">Sensorët lejohen</translation>
 <translation id="6878862640969460273">Horizontal</translation>
 <translation id="6880587130513028875">Imazhet u bllokuan në këtë faqe.</translation>
@@ -9064,6 +9066,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7443806024147773267">Merr qasjen te fjalëkalimet e tua kur je identifikuar në "Llogarinë tënde të Google"</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Kukit do të bllokohen përsëri sot}=1{Kukit do të bllokohen përsëri nesër}other{# ditë derisa kukit të bllokohen përsëri}}</translation>
 <translation id="7444983668544353857">Çaktivizoje <ph name="NETWORKDEVICE" /></translation>
+<translation id="7446716846072322308">Kjo do të fshijë <ph name="TOTAL_USAGE" /> të dhëna të ruajtura nga <ph name="SITE_NAME" /> dhe sajtet e lidhura</translation>
 <translation id="7448430327655618736">Instalo automatikisht aplikacionet</translation>
 <translation id="7448664748118305024">Fshi të dhënat që sajtet kanë ruajtur në pajisjen tënde kur ti i mbyll të gjitha dritaret</translation>
 <translation id="7450761244949417357">Po hapet në <ph name="ALTERNATIVE_BROWSER_NAME" /> tani</translation>

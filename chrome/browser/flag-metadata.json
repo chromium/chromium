@@ -895,6 +895,15 @@
     "expiry_milestone": 135
   },
   {
+    "name": "background-not-perceptible-binding",
+    "owners": [
+      "kawasin@google.com",
+      "davidriley@google.com",
+      "baseos-perf@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "background-resource-fetch",
     "owners": ["horo@chromium.org"],
     "expiry_milestone": 133
@@ -964,7 +973,7 @@
   {
     "name": "block-telephony-device-phone-mute",
     "owners": [ "jingyliang@chromium.org", "chromeos-tango@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "block-tpcs-incognito",
@@ -2575,6 +2584,14 @@
     "name": "enable-builtin-hls",
     "owners": ["tmathmeyer@chromium.org", "videostack-eng@google.com"],
     "expiry_milestone": 136
+  },
+  {
+    "name": "enable-canvas-noise",
+    "owners": [
+      "tov@chromium.org",
+      "//third_party/blink/renderer/core/canvas_interventions/OWNERS"
+    ],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-cast-streaming-av1",
@@ -6348,6 +6365,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "ntp-background-customization",
+    "owners": [
+      "pabouchard@google.com",
+      "bling-mony-pod@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "ntp-background-image-error-detection",
     "owners": [ "pauladedeji@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 140
@@ -8694,6 +8719,10 @@
     "owners": [ "gambard@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 142
   },
+  { "name": "tab-group-entry-points-android",
+    "owners": [ "mfiaz@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 143
+  },
   {
     "name": "tab-group-indicator",
     "owners": [ "ewannpv@chromium.org", "bling-flags@google.com" ],
@@ -8875,11 +8904,6 @@
   {
     "name": "third-party-profile-management",
     "owners": [ "igorruvinov@chromium.org", "ydago@chromium.org", "zmin@chromium.org" ],
-    "expiry_milestone": 135
-  },
-  {
-    "name": "threaded-scroll-prevent-rendering-starvation",
-    "owners": [ "shaseley@google.com" ],
     "expiry_milestone": 135
   },
   {

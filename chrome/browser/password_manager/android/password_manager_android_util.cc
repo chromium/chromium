@@ -366,6 +366,30 @@ std::string_view GetAccessLossWarningTypeName(
   }
 }
 
+void RecordLocalUpmActivated(bool activated) {
+  base::UmaHistogramBoolean("PasswordManager.LocalUpmActivated", activated);
+}
+
+void RecordLocalUpmActivationStatus(
+    password_manager::prefs::UseUpmLocalAndSeparateStoresState upm_state) {
+  base::UmaHistogramEnumeration("PasswordManager.LocalUpmActivationStatus",
+                                upm_state);
+}
+
+void RecordLocalUpmActivationMetrics(PrefService* pref_service,
+                                     bool is_internal_backend_present) {
+  // If the deprecation flag is not enabled these metrics are instead recorded
+  // directly in the activation algorithm.
+  CHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kLoginDbDeprecationAndroid));
+  bool is_pwm_available =
+      IsPasswordManagerAvailable(pref_service, is_internal_backend_present);
+  RecordLocalUpmActivated(is_pwm_available);
+  RecordLocalUpmActivationStatus(is_pwm_available
+                                     ? UseUpmLocalAndSeparateStoresState::kOn
+                                     : UseUpmLocalAndSeparateStoresState::kOff);
+}
+
 }  // namespace
 
 bool IsPasswordManagerAvailable(
@@ -454,12 +478,21 @@ bool ShouldUseUpmWiring(const syncer::SyncService* sync_service,
 
 void SetUsesSplitStoresAndUPMForLocal(
     PrefService* pref_service,
-    const base::FilePath& login_db_directory) {
+    const base::FilePath& login_db_directory,
+    std::unique_ptr<PasswordManagerUtilBridgeInterface> util_bridge) {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kLoginDbDeprecationAndroid)) {
+    // If the login DB is being deprecated, only record metrics and do not
+    // perform the activation algorithm.
+    RecordLocalUpmActivationMetrics(pref_service,
+                                    util_bridge->IsInternalBackendPresent());
+    return;
+  }
+
   UseUpmLocalAndSeparateStoresState split_stores_and_local_upm =
       GetSplitStoresAndLocalUpmPrefValue(pref_service);
   last_migration_attempt_failed =
       split_stores_and_local_upm == kOffAndMigrationPending ? true : false;
-
   if (split_stores_and_local_upm != kOff) {
     MaybeDeactivateSplitStoresAndLocalUpm(pref_service, login_db_directory);
   } else {
@@ -468,11 +501,9 @@ void SetUsesSplitStoresAndUPMForLocal(
 
   // Records false for users who had a migration scheduled but weren't activated
   // yet, which is different from RecordActivationError().
-  base::UmaHistogramBoolean(
-      "PasswordManager.LocalUpmActivated",
+  RecordLocalUpmActivated(
       password_manager::UsesSplitStoresAndUPMForLocal(pref_service));
-  base::UmaHistogramEnumeration(
-      "PasswordManager.LocalUpmActivationStatus",
+  RecordLocalUpmActivationStatus(
       GetSplitStoresAndLocalUpmPrefValue(pref_service));
 }
 

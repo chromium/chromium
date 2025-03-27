@@ -137,12 +137,12 @@ class OneDrivePrefObserverBrowserTest : public policy::PolicyTest {
 
   Profile* profile() { return browser()->profile(); }
 
-  const extensions::ExtensionRegistry* extension_registry() {
-    return extensions::ExtensionRegistry::Get(profile());
+  extensions::ExtensionRegistrar* extension_registrar() {
+    return extensions::ExtensionRegistrar::Get(profile());
   }
 
-  extensions::ExtensionService* extension_service() {
-    return extensions::ExtensionSystem::Get(profile())->extension_service();
+  const extensions::ExtensionRegistry* extension_registry() {
+    return extensions::ExtensionRegistry::Get(profile());
   }
 
   policy::ProfilePolicyConnector* profile_policy_connector() {
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(OneDrivePrefObserverBrowserTest,
       extensions::ExtensionBuilder("Odfs extension")
           .SetID(extension_misc::kODFSExtensionId)
           .Build();
-  extension_service()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension.get());
   ASSERT_TRUE(extension_registry()->enabled_extensions().Contains(
       extension_misc::kODFSExtensionId));
 
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(OneDrivePrefObserverBrowserTest,
       extensions::ExtensionBuilder("Odfs extension")
           .SetID(extension_misc::kODFSExtensionId)
           .Build();
-  extension_service()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension.get());
   ASSERT_TRUE(extension_registry()->enabled_extensions().Contains(
       extension_misc::kODFSExtensionId));
 

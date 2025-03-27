@@ -677,6 +677,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="4195643157523330669">Yangi varaqda ochish</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Bu qurilmada 1 ta varaq}other{Bu qurilmada # ta varaq}}</translation>
 <translation id="4198423547019359126">Yuklab olish uchun bo‘sh joy mavjud emas</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Bu saytda ishlatilgan</translation>
 <translation id="4214315110991671325">Cookie fayllarga ruxsat bersangiz, Chrome oldindan yuklashda ulardan foydalanishi mumkin.</translation>
 <translation id="4216511743389425832">Bu sahifani tinglash</translation>
 <translation id="4225725533026049334">Kuzatyapsiz</translation>

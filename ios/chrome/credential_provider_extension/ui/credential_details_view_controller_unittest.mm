@@ -90,7 +90,7 @@ TEST_F(CredentialDetailsViewControllerTest, TestPasskeyPresentation) {
   id<Credential> credential = TestPasskeyCredential();
   [controller() presentCredential:credential];
 
-  // Check that the table view has the exepected number of sections and rows.
+  // Check that the table view has the expected number of sections and rows.
   UITableView* table_view = controller().tableView;
   EXPECT_EQ([table_view numberOfSections], 1);
   EXPECT_EQ([table_view numberOfRowsInSection:0], 4);

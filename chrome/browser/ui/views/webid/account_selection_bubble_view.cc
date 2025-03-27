@@ -148,10 +148,9 @@ int AddLoginButtonSeparator(views::View* scroller_content,
                             const std::unique_ptr<views::View>& button) {
   auto separator = std::make_unique<views::Separator>();
   separator->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kVerticalSpacing + kTopBottomPadding,
-                        is_multi_idp ? kLoginButtonSeparatorLeftMargin : 0,
-                        kTopBottomPadding + kVerticalSpacing,
-                        is_multi_idp ? kLoginButtonSeparatorRightMargin : 0)));
+      is_multi_idp ? gfx::Insets::TLBR(0, kLoginButtonSeparatorLeftMargin, 0,
+                                       kLoginButtonSeparatorRightMargin)
+                   : gfx::Insets::VH(kVerticalSpacing + kTopBottomPadding, 0)));
   int separator_size = separator->GetPreferredSize().height();
   scroller_content->AddChildView(std::move(separator));
   return separator_size;

@@ -14,6 +14,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/raster/raster_buffer.h"
+#include "cc/raster/zero_copy_raster_buffer_provider.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -24,63 +25,6 @@
 #include "url/gurl.h"
 
 namespace cc {
-namespace {
-
-class BitmapRasterBufferImpl : public RasterBuffer {
- public:
-  BitmapRasterBufferImpl(const ResourcePool::InUsePoolResource& in_use_resource,
-                         scoped_refptr<gpu::SharedImageInterface> sii,
-                         bool resource_has_previous_content)
-      : resource_has_previous_content_(resource_has_previous_content) {
-    if (!in_use_resource.backing()) {
-      in_use_resource.InstallSoftwareBacking(sii, "BitmapRasterBufferProvider");
-
-      in_use_resource.backing()->mailbox_sync_token =
-          sii->GenVerifiedSyncToken();
-    }
-    backing_ = in_use_resource.backing();
-  }
-
-  BitmapRasterBufferImpl(const BitmapRasterBufferImpl&) = delete;
-  BitmapRasterBufferImpl& operator=(const BitmapRasterBufferImpl&) = delete;
-
-  // Overridden from RasterBuffer:
-  void Playback(const RasterSource* raster_source,
-                const gfx::Rect& raster_full_rect,
-                const gfx::Rect& raster_dirty_rect,
-                uint64_t new_content_id,
-                const gfx::AxisTransform2d& transform,
-                const RasterSource::PlaybackSettings& playback_settings,
-                const GURL& url) override {
-    TRACE_EVENT0("cc", "BitmapRasterBuffer::Playback");
-    gfx::Rect playback_rect = raster_full_rect;
-    if (resource_has_previous_content_) {
-      playback_rect.Intersect(raster_dirty_rect);
-    }
-    DCHECK(!playback_rect.IsEmpty())
-        << "Why are we rastering a tile that's not dirty?";
-
-    size_t stride = 0u;
-    auto mapping = backing_->shared_image()->Map();
-    void* memory = mapping->GetMemoryForPlane(0).data();
-    RasterBufferProvider::PlaybackToMemory(
-        memory, backing_->shared_image()->format(),
-        backing_->shared_image()->size(), stride, raster_source,
-        raster_full_rect, playback_rect, transform,
-        backing_->shared_image()->color_space(), playback_settings);
-  }
-
-  bool SupportsBackgroundThreadPriority() const override { return true; }
-
- private:
-  const gfx::Size resource_size_;
-  const gfx::ColorSpace color_space_;
-
-  bool resource_has_previous_content_;
-  raw_ptr<ResourcePool::Backing> backing_;
-};
-
-}  // namespace
 
 BitmapRasterBufferProvider::BitmapRasterBufferProvider(
     LayerTreeFrameSink* frame_sink)
@@ -101,7 +45,7 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_hardware_accelerated_webp_candidates) {
   bool resource_has_previous_content =
       resource_content_id && resource_content_id == previous_content_id;
-  return std::make_unique<BitmapRasterBufferImpl>(
+  return std::make_unique<ZeroCopyRasterBufferImpl>(
       resource, shared_image_interface_, resource_has_previous_content);
 }
 

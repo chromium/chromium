@@ -957,6 +957,9 @@ extern const char kEnableFingerprintingProtectionBlocklistInIncognitoName[];
 extern const char
     kEnableFingerprintingProtectionBlocklistInIncognitoDescription[];
 
+extern const char kEnableCanvasNoiseName[];
+extern const char kEnableCanvasNoiseDescription[];
+
 extern const char kEnableLensStandaloneFlagId[];
 extern const char kEnableLensStandaloneName[];
 extern const char kEnableLensStandaloneDescription[];
@@ -2150,6 +2153,9 @@ extern const char kSystemShortcutBehaviorDescription[];
 extern const char kTabDragDropName[];
 extern const char kTabDragDropDescription[];
 
+extern const char kTabGroupEntryPointsAndroidName[];
+extern const char kTabGroupEntryPointsAndroidDescription[];
+
 extern const char kTabGroupParityBottomSheetAndroidName[];
 extern const char kTabGroupParityBottomSheetAndroidDescription[];
 
@@ -2197,9 +2203,6 @@ extern const char kTextSafetyClassifierDescription[];
 extern const char kAutofillThirdPartyModeContentProviderName[];
 extern const char kAutofillThirdPartyModeContentProviderDescription[];
 #endif
-
-extern const char kThreadedScrollPreventRenderingStarvationName[];
-extern const char kThreadedScrollPreventRenderingStarvationDescription[];
 
 extern const char kThrottleMainTo60HzName[];
 extern const char kThrottleMainTo60HzDescription[];
@@ -2569,6 +2572,9 @@ extern const char kAndroidThemeModuleDescription[];
 
 extern const char kAppSpecificHistoryName[];
 extern const char kAppSpecificHistoryDescription[];
+
+extern const char kBackgroundNotPerceptibleBindingName[];
+extern const char kBackgroundNotPerceptibleBindingDescription[];
 
 extern const char kBoardingPassDetectorName[];
 extern const char kBoardingPassDetectorDescription[];

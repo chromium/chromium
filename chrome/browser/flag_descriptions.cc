@@ -1578,6 +1578,12 @@ const char kEnableFingerprintingProtectionBlocklistInIncognitoDescription[] =
     "resources from loading in a 3p context. This flag applies only in "
     "Incognito mode.";
 
+const char kEnableCanvasNoiseName[] =
+    "Enable noise for canvas readbacks in Incognito";
+const char kEnableCanvasNoiseDescription[] =
+    "Enable noising pixels when the contents of a canvas are read back by a "
+    "script.";
+
 const char kEnableSearchCustomizableShortcutsInLauncherName[] =
     "Enable search for customizable shortcuts in launcher";
 const char kEnableSearchCustomizableShortcutsInLauncherDescription[] =
@@ -3732,6 +3738,10 @@ const char kTabDragDropName[] = "Tab Drag and Drop via Strip";
 const char kTabDragDropDescription[] =
     "Enables Tab drag and drop UI to move tab on tab-strip across windows.";
 
+const char kTabGroupEntryPointsAndroidName[] = "Tab Group Entry Points";
+const char kTabGroupEntryPointsAndroidDescription[] =
+    "Enables additional entry points for creating tab groups";
+
 const char kTabGroupParityBottomSheetAndroidName[] =
     "Tab Group Parity Bottom Sheet";
 const char kTabGroupParityBottomSheetAndroidDescription[] =
@@ -3787,12 +3797,6 @@ const char kAutofillThirdPartyModeContentProviderName[] =
 const char kAutofillThirdPartyModeContentProviderDescription[] =
     "Enables querying the third party autofill mode state from the Chrome app.";
 #endif
-
-const char kThreadedScrollPreventRenderingStarvationName[] =
-    "threaded-scroll-prevent-rendering-starvation";
-const char kThreadedScrollPreventRenderingStarvationDescription[] =
-    "Prevents main thread rendering starvation during threaded scrolling based "
-    "on a given threshold.";
 
 const char kThrottleMainTo60HzName[] = "throttle-main-thread-to-60hz";
 const char kThrottleMainTo60HzDescription[] =
@@ -4379,6 +4383,12 @@ const char kAnimateSuggestionsListAppearanceDescription[] =
 const char kAppSpecificHistoryName[] = "Allow app specific history";
 const char kAppSpecificHistoryDescription[] =
     "If enabled, history results will also be categorized by application.";
+
+const char kBackgroundNotPerceptibleBindingName[] =
+    "Enable not perceptible binding without cpu priority boosting";
+const char kBackgroundNotPerceptibleBindingDescription[] =
+    "If enabled, not perceptible binding put processes to the background cpu "
+    "cgroup";
 
 const char kBoardingPassDetectorName[] = "Boarding Pass Detector";
 const char kBoardingPassDetectorDescription[] = "Enable Boarding Pass Detector";

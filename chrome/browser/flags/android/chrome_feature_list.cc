@@ -323,6 +323,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kReengagementNotification,
     &kRelatedSearchesAllLanguage,
     &kRelatedSearchesSwitch,
+    &kRemoveTabFocusOnShowingAndSelect,
     &kReportParentalControlSitesChild,
     &kRightEdgeGoesForwardGestureNav,
     &kSearchInCCT,
@@ -333,6 +334,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSkipIsolatedSplitPreload,
     &kSmallerTabStripTitleLimit,
     &kSuppressToolbarCapturesAtGestureEnd,
+    &kTabGroupEntryPointsAndroid,
     &kTabGroupParityBottomSheetAndroid,
     &kToolbarPhoneCleanup,
     &kTabResumptionModuleAndroid,
@@ -1071,6 +1073,10 @@ BASE_FEATURE(kRelatedSearchesSwitch,
              "RelatedSearchesSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRemoveTabFocusOnShowingAndSelect,
+             "RemoveTabFocusOnShowingAndSelect",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kReportParentalControlSitesChild,
              "ReportParentalControlSitesChild",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1098,6 +1104,10 @@ BASE_FEATURE(kSmallerTabStripTitleLimit,
 BASE_FEATURE(kSuppressToolbarCapturesAtGestureEnd,
              "SuppressToolbarCapturesAtGestureEnd",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabGroupEntryPointsAndroid,
+             "TabGroupEntryPointsAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGroupParityBottomSheetAndroid,
              "TabGroupParityBottomSheetAndroid",

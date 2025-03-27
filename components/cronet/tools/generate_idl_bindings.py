@@ -10,6 +10,7 @@ import shutil
 import sys
 import tempfile
 
+
 def run(command, extra_options=''):
   command = command + ' ' + extra_options
   print(command)
@@ -38,7 +39,7 @@ def GenerateIdlBindings(output_path, input_files):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--output-path',
-        help='Output path for generated bindings')
+                      help='Output path for generated bindings')
 
   args, input_files = parser.parse_known_args()
   GenerateIdlBindings(args.output_path, input_files)

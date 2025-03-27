@@ -1253,7 +1253,11 @@ public class PasswordManagerHelperTest {
 
         verify(mockController)
                 .showDialogAndStartFlow(
-                        eq(testActivity), eq(mProfile), eq(true), eq(mSettingsCustomTabLauncher));
+                        eq(testActivity),
+                        eq(mProfile),
+                        /* isGooglePlayServicesAvailable= */ eq(true),
+                        /* isPasswordManagerAvailable= */ eq(false),
+                        eq(mSettingsCustomTabLauncher));
     }
 
     @Test
@@ -1282,7 +1286,11 @@ public class PasswordManagerHelperTest {
 
         verify(mockController)
                 .showDialogAndStartFlow(
-                        eq(testActivity), eq(mProfile), eq(true), eq(mSettingsCustomTabLauncher));
+                        eq(testActivity),
+                        eq(mProfile),
+                        /* isGooglePlayServicesAvailable= */ eq(true),
+                        /* isPasswordManagerAvailable= */ eq(true),
+                        eq(mSettingsCustomTabLauncher));
     }
 
     @Test
@@ -1311,7 +1319,11 @@ public class PasswordManagerHelperTest {
 
         verify(mockController)
                 .showDialogAndStartFlow(
-                        eq(testActivity), eq(mProfile), eq(false), eq(mSettingsCustomTabLauncher));
+                        eq(testActivity),
+                        eq(mProfile),
+                        /* isGooglePlayServicesAvailable= */ eq(false),
+                        /* isPasswordManagerAvailable= */ eq(false),
+                        eq(mSettingsCustomTabLauncher));
     }
 
     @Test
@@ -1398,7 +1410,8 @@ public class PasswordManagerHelperTest {
                 mock(PasswordCsvDownloadFlowController.class);
         PasswordCsvDownloadFlowControllerFactory.setControllerForTesting(mockController);
         verify(mockController, never())
-                .showDialogAndStartFlow(any(), any(), anyBoolean(), eq(mSettingsCustomTabLauncher));
+                .showDialogAndStartFlow(
+                        any(), any(), anyBoolean(), anyBoolean(), eq(mSettingsCustomTabLauncher));
 
         // Check that the management UI is not shown (the pwm is unavailable).
         verify(mCredentialManagerLauncherMock, never())

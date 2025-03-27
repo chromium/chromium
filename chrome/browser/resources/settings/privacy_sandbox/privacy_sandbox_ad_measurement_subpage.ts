@@ -39,13 +39,6 @@ export class SettingsPrivacySandboxAdMeasurementSubpageElement extends
   static get properties() {
     return {
       /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-      /**
        * If true, the Ads API UX Enhancement should be shown.
        */
       shouldShowV2_: {
@@ -58,6 +51,7 @@ export class SettingsPrivacySandboxAdMeasurementSubpageElement extends
     };
   }
 
+  private shouldShowV2_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 

@@ -43,14 +43,6 @@ export class SettingsPrivacySandboxPageElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       focusConfig: {
         type: Object,
         observer: 'focusConfigChanged_',
@@ -72,6 +64,7 @@ export class SettingsPrivacySandboxPageElement extends
 
   focusConfig: FocusConfig;
   private isPrivacySandboxRestricted_: boolean;
+  private measurementLinkRowClass_: string;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 

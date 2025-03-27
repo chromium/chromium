@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "media/base/video_types.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
@@ -27,12 +26,6 @@
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
-
-// Cannot be in the anonymous namespace because it is friended by
-// MainThreadTaskRunnerRestricted.
-MainThreadTaskRunnerRestricted AccessMainThreadForGpuMemoryBufferManager() {
-  return {};
-}
 
 namespace {
 // Enables conversion of input frames in RGB format to NV12 GMB-backed format
@@ -63,68 +56,26 @@ BASE_FEATURE(kBreakoutBoxWriteVideoFrameCaptureTimestamp,
 class TransferringOptimizer : public WritableStreamTransferringOptimizer {
  public:
   explicit TransferringOptimizer(
-      scoped_refptr<PushableMediaStreamVideoSource::Broker> source_broker,
-      gpu::GpuMemoryBufferManager* gmb_manager)
-      : source_broker_(std::move(source_broker)), gmb_manager_(gmb_manager) {}
+      scoped_refptr<PushableMediaStreamVideoSource::Broker> source_broker)
+      : source_broker_(std::move(source_broker)) {}
   UnderlyingSinkBase* PerformInProcessOptimization(
       ScriptState* script_state) override {
     RecordBreakoutBoxUsage(BreakoutBoxUsage::kWritableVideoWorker);
     return MakeGarbageCollected<MediaStreamVideoTrackUnderlyingSink>(
-        source_broker_, gmb_manager_);
+        source_broker_);
   }
 
  private:
   const scoped_refptr<PushableMediaStreamVideoSource::Broker> source_broker_;
-  const raw_ptr<gpu::GpuMemoryBufferManager> gmb_manager_ = nullptr;
 };
-
-gpu::GpuMemoryBufferManager* GetGmbManager() {
-  if (!WebGraphicsContext3DVideoFramePool::
-          IsGpuMemoryBufferReadbackFromTextureEnabled()) {
-    return nullptr;
-  }
-  gpu::GpuMemoryBufferManager* gmb_manager = nullptr;
-  if (IsMainThread()) {
-    gmb_manager = Platform::Current()->GetGpuMemoryBufferManager();
-  } else {
-    // Get the GPU Buffer Manager by jumping to the main thread and blocking.
-    // The purpose of blocking is to have the manager available by the time
-    // the first frame arrives. This ensures all frames can be converted to
-    // the appropriate format, which helps prevent a WebRTC sink from falling
-    // back to software encoding due to frames in formats the hardware encoder
-    // cannot handle.
-    base::WaitableEvent waitable_event;
-    PostCrossThreadTask(
-        *Thread::MainThread()->GetTaskRunner(
-            AccessMainThreadForGpuMemoryBufferManager()),
-        FROM_HERE,
-        CrossThreadBindOnce(
-            [](base::WaitableEvent* event,
-               gpu::GpuMemoryBufferManager** gmb_manager_ptr) {
-              *gmb_manager_ptr =
-                  Platform::Current()->GetGpuMemoryBufferManager();
-              event->Signal();
-            },
-            CrossThreadUnretained(&waitable_event),
-            CrossThreadUnretained(&gmb_manager)));
-    waitable_event.Wait();
-  }
-  return gmb_manager;
-}
 
 }  // namespace
 
 MediaStreamVideoTrackUnderlyingSink::MediaStreamVideoTrackUnderlyingSink(
-    scoped_refptr<PushableMediaStreamVideoSource::Broker> source_broker,
-    gpu::GpuMemoryBufferManager* gmb_manager)
-    : source_broker_(std::move(source_broker)), gmb_manager_(gmb_manager) {
+    scoped_refptr<PushableMediaStreamVideoSource::Broker> source_broker)
+    : source_broker_(std::move(source_broker)) {
   RecordBreakoutBoxUsage(BreakoutBoxUsage::kWritableVideo);
 }
-
-MediaStreamVideoTrackUnderlyingSink::MediaStreamVideoTrackUnderlyingSink(
-    scoped_refptr<PushableMediaStreamVideoSource::Broker> source_broker)
-    : MediaStreamVideoTrackUnderlyingSink(std::move(source_broker),
-                                          GetGmbManager()) {}
 
 MediaStreamVideoTrackUnderlyingSink::~MediaStreamVideoTrackUnderlyingSink() =
     default;
@@ -189,12 +140,12 @@ ScriptPromise<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::write(
 
   base::TimeTicks estimated_capture_time = base::TimeTicks::Now();
 
-  // Try to convert to an NV12 GpuMemoryBuffer-backed frame if the encoder
+  // Try to convert to an NV12 MappableSI-backed frame if the encoder
   // prefers that format. Unfortunately, for the first few frames, we may not
   // receive feedback from the sink (CanDiscardAlpha and RequireMappedFrame), so
   // those frames will instead be converted immediately before encoding (by
   // WebRtcVideoFrameAdapter).
-  auto opt_convert_promise = MaybeConvertToNV12GMBVideoFrame(
+  auto opt_convert_promise = MaybeConvertToNV12MappableVideoFrame(
       script_state, media_frame, estimated_capture_time);
   if (opt_convert_promise) {
     return *opt_convert_promise;
@@ -225,7 +176,7 @@ ScriptPromise<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::close(
 std::unique_ptr<WritableStreamTransferringOptimizer>
 MediaStreamVideoTrackUnderlyingSink::GetTransferringOptimizer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::make_unique<TransferringOptimizer>(source_broker_, gmb_manager_);
+  return std::make_unique<TransferringOptimizer>(source_broker_);
 }
 
 void MediaStreamVideoTrackUnderlyingSink::Disconnect() {
@@ -237,24 +188,30 @@ void MediaStreamVideoTrackUnderlyingSink::Disconnect() {
   is_connected_ = false;
 }
 
-void MediaStreamVideoTrackUnderlyingSink::CreateAcceleratedFramePool(
-    gpu::GpuMemoryBufferManager* gmb_manager) {
+void MediaStreamVideoTrackUnderlyingSink::CreateAcceleratedFramePool() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Here we need to use the SharedGpuContext as some of the images may have
   // been originated with other contextProvider, but we internally need a
-  // context_provider that has a RasterInterface available.
-  auto context_provider = SharedGpuContext::ContextProviderWrapper();
-  if (context_provider && gmb_manager) {
+  // context_provider_wrapper that has a RasterInterface and
+  // SharedImageInterface available.
+  // TODO(crbug.com/404887292): Revisit the need for
+  // IsGpuMemoryBufferReadbackFromTextureEnabled() here and remove if not
+  // needed.
+  auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
+  if (context_provider_wrapper &&
+      context_provider_wrapper->ContextProvider().SharedImageInterface() &&
+      WebGraphicsContext3DVideoFramePool::
+          IsGpuMemoryBufferReadbackFromTextureEnabled()) {
     accelerated_frame_pool_ =
-        std::make_unique<WebGraphicsContext3DVideoFramePool>(context_provider,
-                                                             gmb_manager);
+        std::make_unique<WebGraphicsContext3DVideoFramePool>(
+            context_provider_wrapper);
   } else {
     convert_to_nv12_gmb_failure_count_++;
   }
 }
 
 std::optional<ScriptPromise<IDLUndefined>>
-MediaStreamVideoTrackUnderlyingSink::MaybeConvertToNV12GMBVideoFrame(
+MediaStreamVideoTrackUnderlyingSink::MaybeConvertToNV12MappableVideoFrame(
     ScriptState* script_state,
     scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks estimated_capture_time) {
@@ -285,13 +242,7 @@ MediaStreamVideoTrackUnderlyingSink::MaybeConvertToNV12GMBVideoFrame(
   }
 
   if (!accelerated_frame_pool_) {
-    gpu::GpuMemoryBufferManager* gmb_manager = GetGmbManager();
-    if (!gmb_manager) {
-      convert_to_nv12_gmb_failure_count_++;
-      return std::nullopt;
-    }
-
-    CreateAcceleratedFramePool(gmb_manager);
+    CreateAcceleratedFramePool();
     if (!accelerated_frame_pool_) {
       convert_to_nv12_gmb_failure_count_++;
       return std::nullopt;

@@ -223,7 +223,6 @@
 <translation id="1363028406613469049">Композиція</translation>
 <translation id="1364822246244961190">Це правило заблоковано. Його значення ігноруватиметься.</translation>
 <translation id="1368318639262510626">Гра Dino. Піксельний динозавр біжить пустелею й ухиляється від кактусів і птеродактилів. Натискайте пробіл і перестрибуйте перешкоди, коли почуєте звуковий сигнал.</translation>
-<translation id="1369735141991626842">Заповнювати поля за допомогою ШІ</translation>
 <translation id="1374468813861204354">пропозиції</translation>
 <translation id="1375198122581997741">Про версію</translation>
 <translation id="1375293861397106342">Зазвичай від <ph name="LOW_PRICE" /> до <ph name="HIGH_PRICE" /> для всіх варіантів</translation>
@@ -539,7 +538,6 @@
 <translation id="1919526244108283799">400 x 600 мм</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Немає}=1{1 сайт}one{# сайт}few{# сайти}many{# сайтів}other{# сайту}}</translation>
 <translation id="192095259937375524">Кнопка "Поділитися цією вкладкою"; активуйте, щоб поділитися цією вкладкою (надіслати посилання, створити QR-код, транслювати її тощо)</translation>
-<translation id="1921479021518565778">Пропозиції завантажено</translation>
 <translation id="1924727005275031552">Нові дані</translation>
 <translation id="1927439846988093361">Догляд за волоссям</translation>
 <translation id="1935353813610900265">Надішліть відгук про пошук в історії за допомогою ШІ</translation>
@@ -900,6 +898,7 @@
 <translation id="2539524384386349900">Визначити</translation>
 <translation id="2541219929084442027">Сторінки, які ви переглядали в анонімному режимі, не реєструються в історії веб-переглядача чи пошуку та не залишають файлів cookie. Коли ви закриваєте всі анонімні вкладки, зберігаються лише завантажені файли й створені закладки.</translation>
 <translation id="2542106216580219892">Серфінг</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – щоб вийти з повноекранного режиму, утримуйте клавішу |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Адміністратор перезапустив ваш пристрій</translation>
 <translation id="2544644783021658368">Один документ</translation>
 <translation id="254524874071906077">Установити Chrome веб-переглядачем за умовчанням</translation>
@@ -973,6 +972,7 @@
 <translation id="2688186765492306706">500 x 760 мм</translation>
 <translation id="2688969097326701645">Так, продовжити</translation>
 <translation id="2690699652723742414">Останні 30 днів</translation>
+<translation id="2691385045260836588">Модель</translation>
 <translation id="2691924980723297736">Попередження щодо безпеки</translation>
 <translation id="2697248912349197812">Запитати <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Доступне підменю. Щоб переглянути додаткові опції, натисніть <ph name="SHORTCUT" />.</translation>
@@ -1528,6 +1528,7 @@
 <translation id="3664782872746246217">Ключові слова:</translation>
 <translation id="3665100783276035932">Більшість сайтів мають працювати належним чином</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Докладніше<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">Номер</translation>
 <translation id="3670229581627177274">Увімкніть Bluetooth</translation>
 <translation id="3671117652518853176">Якщо вимкнути це налаштування, з міркувань безпеки ми інколи проситимемо вас підтвердити особу</translation>
 <translation id="3671540257457995106">Дозволити змінити розмір?</translation>
@@ -1542,7 +1543,6 @@
 <translation id="3681007416295224113">Інформація про сертифікат</translation>
 <translation id="3681421644246505351">Chrome запам’ятовує цікаві вам теми на основі вашої нещодавньої історії вебперегляду.</translation>
 <translation id="3682094733650754138">Вибрано опцію "Заповнити адресу"</translation>
-<translation id="3687493962714153124">Керувати автозаповненням за допомогою ШІ</translation>
 <translation id="3687920599421452763">Фургони й мінівени</translation>
 <translation id="3693327506115126094">Виберіть спосіб підтвердження особи</translation>
 <translation id="3698353241727597930">Згідно з налаштуваннями адміністратора, <ph name="FILES" /> зберігаються у вашому корпоративному сховищі (<ph name="CLOUD_STORAGE" />). Після видалення ці файли можуть зберігатися, відстежуватися й перевірятися.</translation>
@@ -1695,6 +1695,7 @@
 <translation id="3950820424414687140">Вхід</translation>
 <translation id="3953505489397572035">Це звичайна ціна</translation>
 <translation id="3958057596965527988">4 x 4 дюйм.</translation>
+<translation id="3959969108528118741">Власник</translation>
 <translation id="3961148744525529027">Аркуш обробника платежу відкрито на половину висоти</translation>
 <translation id="3962859241508114581">Попередня композиція</translation>
 <translation id="3963721102035795474">Режим перегляду</translation>
@@ -1920,7 +1921,6 @@
 <translation id="4312866146174492540">Блокувати (за умовчанням)</translation>
 <translation id="4314815835985389558">Керувати синхронізацією</translation>
 <translation id="4316057107946726368">Укажіть підставу (максимальна кількість символів: <ph name="MAX_CHAR_COUNT" />). Використано символів: <ph name="ACTUAL_CHAR_COUNT" /> з <ph name="MAX_CHAR_COUNT" />.</translation>
-<translation id="431740489189220419">Завантаження пропозицій</translation>
 <translation id="4318213823155573975">Головні убори</translation>
 <translation id="4318312030194671742">Сервіс компонування перегляду малюнків</translation>
 <translation id="4318566738941496689">Назва пристрою й адреса мережі</translation>
@@ -2327,6 +2327,7 @@
 <translation id="5087286274860437796">Сертифікат сервера зараз недійсний.</translation>
 <translation id="5087580092889165836">Додати картку</translation>
 <translation id="5088142053160410913">Повідомлення оператору</translation>
+<translation id="5089810972385038852">Штат/провінція</translation>
 <translation id="5090647584136241764">Додайте вкладки зі схожими товарами, щоб легко порівняти важливі для вас деталі</translation>
 <translation id="5093232627742069661">Зігнути гармошкою</translation>
 <translation id="5094747076828555589">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Chromium не вважає його сертифікат безпеки надійним. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
@@ -2465,6 +2466,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Пошукова система за умовчанням дає змогу здійснювати пошук в Інтернеті й підтримує такі функції Chromium,<ph name="END_BOLD" /> як пошук з адресного рядка й за зображеннями на вебсторінках. Функція може бути недоступна, якщо ваша пошукова система її не підтримує.</translation>
 <translation id="5323043727018853753">Вставлений контент дозволено</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> з <ph name="NUM_MATCHES" /></translation>
+<translation id="5327248766486351172">Ім’я</translation>
 <translation id="5329858041417644019">Веб-переглядачем не керує адміністратор</translation>
 <translation id="5331585574693522196">Використовувати за умовчанням</translation>
 <translation id="5332219387342487447">Спосіб доставки</translation>
@@ -2677,7 +2679,6 @@
 <translation id="569000877158168851">Значення DnsOverHttpsTemplates невідповідне й не використовуватиметься, якщо для правила DnsOverHttpsMode не буде вибрано значення <ph name="SECURE_DNS_MODE_AUTOMATIC" /> або <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Зберегти картку у відкритому вигляді на всю висоту.</translation>
 <translation id="5695542892312572833">Підтвердити й завершити покупку за допомогою Windows Hello?</translation>
-<translation id="5697827549745555938">Збережені дані й ця сторінка надсилаються в Google, щоб перевірити, чи можна автоматично заповнити цю форму. Наші спеціалісти можуть переглядати дані, щоб покращувати цю функцію.</translation>
 <translation id="5699628521141772782">Молоко і яйця</translation>
 <translation id="5700761515355162635">Сторонні файли cookie дозволено</translation>
 <translation id="5701381305118179107">По центру</translation>
@@ -3106,6 +3107,7 @@
 <translation id="6440503408713884761">Ігнорується</translation>
 <translation id="6443406338865242315">встановлені розширення та плагіни;</translation>
 <translation id="6444329331928531170">Пенсія</translation>
+<translation id="6445051938772793705">Країна</translation>
 <translation id="6446608382365791566">Додати більше інформації</translation>
 <translation id="6447842834002726250">Файли cookie</translation>
 <translation id="6448371595882710519">Докладніше про елементи керування даними</translation>
@@ -3587,7 +3589,6 @@
 <translation id="7316521168101843192">Зберігання файлу в Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Довідка щодо з’єднання</translation>
-<translation id="7321111802407017850">Зберегти інформацію для автозаповнення</translation>
 <translation id="7323804146520582233">Сховати розділ "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Заміна локального облікового запису на пристрої</translation>
 <translation id="7334320624316649418">&amp;Повторити перевпорядкування</translation>
@@ -3932,6 +3933,7 @@
 <translation id="7887885240995164102">Увімкнути режим "Картинка в картинці"</translation>
 <translation id="7888575728750733395">Команда обробки друку</translation>
 <translation id="7890748547282909375">Щоб зберегти знімок екрана, увійдіть у Microsoft OneDrive</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – щоб показати курсор, натисніть клавішу |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">налаштування платежів</translation>
 <translation id="7894280532028510793">Якщо помилок немає, <ph name="BEGIN_LINK" />проведіть діагностику мережі<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Конверт 7 x 9 дюймів</translation>
@@ -4625,6 +4627,7 @@
 <translation id="9155646082713385498">Журнали</translation>
 <translation id="9157595877708044936">Налаштування...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Файл "<ph name="FILE_NAME" />" може містити конфіденційний контент}one{<ph name="FILE_COUNT" /> файл може містити конфіденційний контент}few{<ph name="FILE_COUNT" /> файли можуть містити конфіденційний контент}many{<ph name="FILE_COUNT" /> файлів можуть містити конфіденційний контент}other{<ph name="FILE_COUNT" /> файлу можуть містити конфіденційний контент}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – щоб вийти з повноекранного режиму, натисніть клавішу |<ph name="ACCELERATOR" />|</translation>
 <translation id="9165305804774426672">На основі того, які дії ви виконуєте на відвіданих сайтах, вони також можуть визначати ваші інтереси. Наприклад, якщо ви перейшли на сайт, де продаються кросівки для бігу на довгі дистанції, він може вирішити, що ви цікавитеся марафонським бігом.</translation>
 <translation id="9166851138617700776">Докладніше про оголошення, пропоновані сайтами, і оцінку ефективності реклами</translation>
 <translation id="9167054383925257837">інформацію про вебпереглядач і ОС пристрою (наприклад, їх версії);</translation>

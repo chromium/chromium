@@ -523,7 +523,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     const annotationMode = e.detail;
     // <if expr="enable_pdf_ink2">
     if (this.pdfInk2Enabled_) {
-      if (this.restoreAnnotationMode_ === AnnotationMode.NONE) {
+      if (this.restoreAnnotationMode_ === AnnotationMode.NONE &&
+          annotationMode !== AnnotationMode.TEXT) {
         let action: UserAction;
         switch (annotationMode) {
           case AnnotationMode.DRAW:

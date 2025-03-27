@@ -394,7 +394,8 @@ TEST_F(NetworkingPrivateApiTest, SetPrivateNetworkPropertiesWebUI) {
   RunFunction(
       set_properties.get(),
       base::StringPrintf(R"(["%s", {"Priority": 0}])", kSharedWifiGuid));
-  EXPECT_EQ(ExtensionFunction::SUCCEEDED, *set_properties->response_type());
+  EXPECT_EQ(ExtensionFunction::ResponseType::kSucceeded,
+            *set_properties->response_type());
 
   const ash::NetworkState* network =
       ash::NetworkHandler::Get()
@@ -411,7 +412,8 @@ TEST_F(NetworkingPrivateApiTest, SetPrivateNetworkProperties) {
   RunFunction(
       set_properties.get(),
       base::StringPrintf(R"(["%s", {"Priority": 0}])", kPrivateWifiGuid));
-  EXPECT_EQ(ExtensionFunction::SUCCEEDED, *set_properties->response_type());
+  EXPECT_EQ(ExtensionFunction::ResponseType::kSucceeded,
+            *set_properties->response_type());
 
   const ash::NetworkState* network =
       ash::NetworkHandler::Get()
@@ -520,7 +522,8 @@ TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedPropertiesFromWebUI) {
   RunFunction(
       set_properties.get(),
       base::StringPrintf(R"(["%s", %s])", kPrivateWifiGuid, kCombinedSettings));
-  EXPECT_EQ(ExtensionFunction::SUCCEEDED, *set_properties->response_type());
+  EXPECT_EQ(ExtensionFunction::ResponseType::kSucceeded,
+            *set_properties->response_type());
 
   EXPECT_TRUE(GetUserSettingStringData(kPrivateWifiGuid, "ProxySettings.Type"));
   EXPECT_TRUE(
@@ -602,7 +605,8 @@ TEST_F(NetworkingPrivateApiTest, CreatePrivateNetwork) {
 
   RunFunction(set_properties.get(),
               base::StringPrintf(R"(["%s", {"Priority": 2}])", guid.c_str()));
-  EXPECT_EQ(ExtensionFunction::SUCCEEDED, *set_properties->response_type());
+  EXPECT_EQ(ExtensionFunction::ResponseType::kSucceeded,
+            *set_properties->response_type());
 
   EXPECT_EQ(2, GetNetworkPriority(network));
 }

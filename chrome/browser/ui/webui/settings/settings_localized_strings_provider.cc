@@ -661,8 +661,8 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
       {"passwordsDeletionDialogOK",
        IDS_CLEAR_BROWSING_DATA_PASSWORDS_NOTICE_OK},
       {"notificationWarning", IDS_SETTINGS_NOTIFICATION_WARNING},
-      {"clearBrowsingDataShowMore",
-       IDS_SETTINGS_CLEAR_BROWSING_DATA_SHOW_MORE}};
+      {"clearBrowsingDataShowMore", IDS_SETTINGS_CLEAR_BROWSING_DATA_SHOW_MORE},
+      {"clearBrowsingDataMore", IDS_SETTINGS_CLEAR_BROWSING_DATA_MORE}};
 
   html_source->AddString(
       "clearGoogleSearchHistoryGoogleDse",
@@ -2645,7 +2645,7 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       {"siteSettingsCameraMidSentence",
        IDS_SITE_SETTINGS_TYPE_CAMERA_MID_SENTENCE},
       {"siteSettingsCapturedSurfaceControl",
-       IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL_SHARED_TABS},
+       IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL},
       {"siteSettingsCapturedSurfaceControlMidSentence",
        IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL_MID_SENTENCE},
       {"siteSettingsClipboard", IDS_SITE_SETTINGS_TYPE_CLIPBOARD},

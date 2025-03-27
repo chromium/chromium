@@ -21,7 +21,6 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
-#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -34,14 +33,9 @@ using optimization_guide::proto::AutofillAiTypeResponse;
 
 AutofillAiModelExecutorImpl::AutofillAiModelExecutorImpl(
     AutofillAiModelCache* model_cache,
-    optimization_guide::OptimizationGuideModelExecutor* model_executor,
-    optimization_guide::ModelQualityLogsUploaderService* logs_uploader)
+    optimization_guide::OptimizationGuideModelExecutor* model_executor)
     : model_cache_(CHECK_DEREF(model_cache)),
-      model_executor_(CHECK_DEREF(model_executor)) {
-  if (logs_uploader) {
-    logs_uploader_ = logs_uploader->GetWeakPtr();
-  }
-}
+      model_executor_(CHECK_DEREF(model_executor)) {}
 
 AutofillAiModelExecutorImpl::~AutofillAiModelExecutorImpl() = default;
 
@@ -96,10 +90,6 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
         logging_data) {
   const FormSignature form_signature = CalculateFormSignature(form_data);
   ongoing_queries_.erase(form_signature);
-
-  // TODO(crbug.com/389631477): Populate the log entry.
-  auto log_entry = std::make_unique<optimization_guide::ModelQualityLogEntry>(
-      logs_uploader_);
 
   if (!execution_result.response.has_value()) {
     // Save the response in the model to avoid that the client keeps querying

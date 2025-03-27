@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -21,6 +22,8 @@
 
 namespace optimization_guide {
 
+FakeBaseModelAsset::FakeBaseModelAsset()
+    : FakeBaseModelAsset(FakeBaseModelAsset::Content{}) {}
 FakeBaseModelAsset::FakeBaseModelAsset(Content&& content)
     : version_(content.version) {
   CHECK(temp_dir_.CreateUniqueTempDir());
@@ -39,6 +42,17 @@ void FakeBaseModelAsset::Write(Content&& content) {
   CHECK(base::WriteFile(
       temp_dir_.GetPath().Append(kOnDeviceModelExecutionConfigFile),
       content.config.SerializeAsString()));
+}
+
+base::Value::Dict FakeBaseModelAsset::Manifest() const {
+  return base::Value::Dict().Set(
+      "BaseModelSpec",
+      base::Value::Dict().Set("version", "0.0.1").Set("name", "Test"));
+}
+
+void FakeBaseModelAsset::SetReadyIn(
+    OnDeviceModelComponentStateManager& manager) const {
+  manager.SetReady(base::Version(version()), path(), Manifest());
 }
 
 FakeAdaptationAsset::FakeAdaptationAsset(FakeAdaptationAsset::Content&& content)

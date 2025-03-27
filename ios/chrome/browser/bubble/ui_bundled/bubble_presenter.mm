@@ -110,6 +110,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   BubbleViewControllerPresenter* _lensKeyboardPresenter;
   BubbleViewControllerPresenter* _lensOverlayEntrypointBubblePresenter;
   BubbleViewControllerPresenter* _settingsInOverflowMenuBubblePresenter;
+  BubbleViewControllerPresenter* _feedSwipeBubblePresenter;
 
   // List of existing gestural IPH views.
   GestureInProductHelpView* _pullToRefreshGestureIPH;
@@ -236,9 +237,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                                   : BubbleAlignmentBottomOrTrailing
                          text:text
         voiceOverAnnouncement:text
-                  anchorPoint:discoverFeedMenuAnchor
-                presentAction:nil
-                dismissAction:nil];
+                  anchorPoint:discoverFeedMenuAnchor];
   if (!presenter) {
     return;
   }
@@ -272,9 +271,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                           alignment:BubbleAlignmentTopOrLeading
                                text:text
               voiceOverAnnouncement:text
-                        anchorPoint:customizationMenuAnchor
-                      presentAction:nil
-                      dismissAction:nil];
+                        anchorPoint:customizationMenuAnchor];
   if (!presenter) {
     return;
   }
@@ -304,6 +301,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHFollowWhileBrowsingFeature
                     direction:arrowDirection
+                    alignment:BubbleAlignmentBottomOrTrailing
                          text:text
         voiceOverAnnouncement:l10n_util::GetNSString(
                                   IDS_IOS_FOLLOW_WHILE_BROWSING_IPH)
@@ -341,6 +339,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHDefaultSiteViewFeature
                     direction:arrowDirection
+                    alignment:BubbleAlignmentBottomOrTrailing
                          text:text
         voiceOverAnnouncement:l10n_util::GetNSString(
                                   IDS_IOS_DEFAULT_PAGE_MODE_TIP_VOICE_OVER)
@@ -370,6 +369,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHWhatsNewFeature
                     direction:arrowDirection
+                    alignment:BubbleAlignmentBottomOrTrailing
                          text:text
         voiceOverAnnouncement:l10n_util::GetNSString(IDS_IOS_WHATS_NEW_IPH_TEXT)
                   anchorPoint:toolsMenuAnchor];
@@ -399,6 +399,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       [self presentBubbleForFeature:
                 feature_engagement::kIPHPriceNotificationsWhileBrowsingFeature
                           direction:arrowDirection
+                          alignment:BubbleAlignmentBottomOrTrailing
                                text:text
               voiceOverAnnouncement:text
                         anchorPoint:toolsMenuAnchor];
@@ -424,9 +425,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                     alignment:BubbleAlignmentTopOrLeading
                          text:text
         voiceOverAnnouncement:text
-                  anchorPoint:lensButtonAnchor
-                presentAction:nil
-                dismissAction:nil];
+                  anchorPoint:lensButtonAnchor];
   if (presenter) {
     _lensKeyboardPresenter = presenter;
   }
@@ -467,9 +466,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
         voiceOverAnnouncement:text
                   anchorPoint:CGPoint(
                                   lensOverlayEntrypointAnchor.x + anchorXOffset,
-                                  lensOverlayEntrypointAnchor.y)
-                presentAction:nil
-                dismissAction:nil];
+                                  lensOverlayEntrypointAnchor.y)];
 
   if (presenter) {
     _lensOverlayEntrypointBubblePresenter = presenter;
@@ -508,6 +505,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       [self presentBubbleForFeature:
                 feature_engagement::kIPHiOSSettingsInOverflowMenuBubbleFeature
                           direction:arrowDirection
+                          alignment:BubbleAlignmentBottomOrTrailing
                                text:text
               voiceOverAnnouncement:text
                         anchorPoint:toolsMenuAnchor];
@@ -666,6 +664,45 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   _toolbarSwipeGestureIPH = toolbarSwipeGestureIPH;
 }
 
+- (void)presentFeedSwipeGestureInProductHelp {
+  // TODO(crbug.com/402803175): Present animated IPH.
+}
+
+- (void)presentFeedSwipeBubble {
+  if (![self canPresentBubble]) {
+    return;
+  }
+
+  web::WebState* currentWebState = _webStateList->GetActiveWebState();
+  if (!IsUrlNtp(currentWebState->GetVisibleURL())) {
+    return;
+  }
+
+  NSString* text = l10n_util::GetNSString(IDS_IOS_FEED_SWIPE_IPH);
+
+  CGPoint toolbarAnchor = [self anchorPointToGuide:kSecondaryToolbarGuide
+                                         direction:BubbleArrowDirectionDown];
+
+  // Tip bubble should present slightly above the toolbar/bottom of screen and
+  // not on the toolbar itself.
+  CGFloat anchorYOffset = -25;
+
+  // If the feature engagement tracker does not consider it valid to display
+  // the IPH, then end early to prevent the potential reassignment of the
+  // existing presenter to nil.
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:feature_engagement::kIPHiOSFeedSwipeStaticFeature
+                    direction:BubbleArrowDirectionDown
+                    alignment:BubbleAlignmentCenter
+                         text:text
+        voiceOverAnnouncement:text
+                  anchorPoint:CGPoint(toolbarAnchor.x,
+                                      toolbarAnchor.y + anchorYOffset)];
+  if (presenter) {
+    _feedSwipeBubblePresenter = presenter;
+  }
+}
+
 #pragma mark - GestureInProductHelpViewDelegate
 
 - (void)gestureInProductHelpView:(GestureInProductHelpView*)view
@@ -741,12 +778,13 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 - (BubbleViewControllerPresenter*)
     presentBubbleForFeature:(const base::Feature&)feature
                   direction:(BubbleArrowDirection)direction
+                  alignment:(BubbleAlignment)alignment
                        text:(NSString*)text
       voiceOverAnnouncement:(NSString*)voiceOverAnnouncement
                 anchorPoint:(CGPoint)anchorPoint {
   return [self presentBubbleForFeature:feature
                              direction:direction
-                             alignment:BubbleAlignmentBottomOrTrailing
+                             alignment:alignment
                                   text:text
                  voiceOverAnnouncement:voiceOverAnnouncement
                            anchorPoint:anchorPoint

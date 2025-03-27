@@ -604,6 +604,8 @@ BASE_DECLARE_FEATURE(kLobsterFileNamingImprovement);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLobsterQuickInsertZeroState);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kLobsterDisabledByInvalidIME);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLobsterFeedback);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLobsterUseRewrittenQuery);
@@ -1243,6 +1245,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherSearchControlEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLinkCrossDeviceDogfoodFeedbackEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLinkCrossDeviceInternalsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterDisabledByInvalidIME();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterUseRewrittenQuery();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterAlwaysShowDisclaimerForTesting();
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1395,6 +1398,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTrilinearFilteringEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsUnmanagedDeviceDeviceTrustConnectorFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUseAuthPanelInSessionEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAuthPanelUsingAuthHub();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowPasswordlessSetupEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowPasswordlessRecoveryEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLocalAuthenticationWithPinEnabled();

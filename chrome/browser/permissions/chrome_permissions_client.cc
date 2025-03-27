@@ -36,6 +36,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
+#include "chrome/browser/serial/serial_chooser_context.h"
+#include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -214,6 +216,9 @@ ChromePermissionsClient::GetChooserContext(
           Profile::FromBrowserContext(browser_context));
     case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
       return BluetoothChooserContextFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context));
+    case ContentSettingsType::SERIAL_CHOOSER_DATA:
+      return SerialChooserContextFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
     default:
       NOTREACHED();

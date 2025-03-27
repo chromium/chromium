@@ -73,6 +73,8 @@ class DemoModeIdleHandler : public ui::UserActivityObserver {
   // Not owned:
   raw_ptr<DemoModeWindowCloser> window_closer_;
 
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
+
   // Cleaner for `MyFiles` directory:
   chromeos::FilesCleanupHandler file_cleaner_;
 

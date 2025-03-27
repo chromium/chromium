@@ -68,7 +68,7 @@ class CORE_EXPORT AnchorElementMetricsSender final
   AnchorElementMetricsSender(const AnchorElementMetricsSender&) = delete;
   AnchorElementMetricsSender& operator=(const AnchorElementMetricsSender&) =
       delete;
-  virtual ~AnchorElementMetricsSender();
+  ~AnchorElementMetricsSender();
 
   // LocalFrameView::LifecycleNotificationObserver
   void WillStartLifecycleUpdate(const LocalFrameView&) override {}

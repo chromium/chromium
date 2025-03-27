@@ -404,6 +404,7 @@
 <translation id="1264956950255940376">বাঁদিকের চোখ একটু বন্ধ করুন</translation>
 <translation id="1265094893042958831">এই পৃষ্ঠার জন্য সাজেশন জেনারেট করা হচ্ছে…</translation>
 <translation id="1265279736024499987">আপনার Google অ্যাকাউন্ট দিয়ে সাইন-ইন করা সব ChromeOS Flex ডিভাইসে আপনার অ্যাপ এবং সেটিংস সিঙ্ক হয়ে যাবে। ব্রাউজারে উপলভ্য সিঙ্ক করার বিকল্পের জন্য, <ph name="LINK_BEGIN" />Chrome সেটিংসে যান<ph name="LINK_END" />।</translation>
+<translation id="1267081565119405990">স্ক্রিনশট নেওয়ার অথবা আপনার স্ক্রিন সার্চ করার পরে আরও অ্যাকশন দেখায়, যেমন Calendar-এ যোগ করা, Google Docs তৈরি করা ও আরও অনেক কিছু।</translation>
 <translation id="126710816202626562">অনুবাদের ভাষা:</translation>
 <translation id="1267649802567297774"><ph name="MOOD" /> মুড সহ <ph name="STYLE" /> স্টাইলে <ph name="SUBJECT" />-এর <ph name="INDEX" />টি জেনারেট করা ছবি।</translation>
 <translation id="126768002343224824">১৬x</translation>
@@ -1575,9 +1576,9 @@
 <translation id="2081816110395725788">ব্যাটারিতে চালানোর সময় ডিভাইসকে 'নিষ্ক্রিয়' বা 'স্লিপ' স্ট্যাটাসে রাখা</translation>
 <translation id="2082187087049518845">ট্যাবকে নতুন কোনও গ্রুপে যুক্ত করুন</translation>
 <translation id="2082510809738716738">একটি থিম রঙ বেছে নিন</translation>
-<translation id="208547068587548667"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-এ সাইন-ইন করুন</translation>
 <translation id="208586643495776849">আবার চেষ্টা করুন</translation>
 <translation id="208634871997892083">সবসময় চালু ভিপিএন</translation>
+<translation id="208654914566977272">আপনার স্ক্রিন সার্চ করার সময় সাজেস্ট করা অ্যাকশন</translation>
 <translation id="2087822576218954668">প্রিন্ট করুন: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">আপনি <ph name="DEVICE_OS" /> ইনস্টল করার পরেই শুধুমাত্র এনরোল করা যাবে।</translation>
 <translation id="2088564884469682888">বিল্ট-ইন ট্র্যাকপয়েন্ট</translation>
@@ -4009,7 +4010,6 @@
 <translation id="3778740492972734840">&amp;ডেভেলপার টুল</translation>
 <translation id="3778868487658107119">প্রশ্ন করুন। কিছু করতে বলুন। এটি আপনার নিজস্ব Google যেটি সবসময় আপনাকে সাহায্য করে।</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{#টি সাইটে আপনার ব্রাউজিং ইতিহাস}one{#টি সাইটে আপনার ব্রাউজিং ইতিহাস}other{#টি সাইটে আপনার ব্রাউজিং ইতিহাস}}</translation>
-<translation id="3779244863011082655">অন্য কোনও <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> অ্যাকাউন্ট ব্যবহার করুন</translation>
 <translation id="3780542776224651912">ডেটার নিরাপত্তা লঙ্ঘনের বিরুদ্ধে <ph name="BRAND" /> আপনার পাসওয়ার্ড চেক করতে পারছে না। পরে আবার চেষ্টা করুন।</translation>
 <translation id="3781742599892759500">Linux-এ মাইক্রোফোনের অ্যাক্সেস</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5513,6 +5513,7 @@
 <translation id="4848191975108266266">Google Assistant "হ্যালো Google"</translation>
 <translation id="4849286518551984791">সমন্বিত সর্বজনীন সময় (UTC / GMT)</translation>
 <translation id="4849517651082200438">ইনস্টল করবেন না</translation>
+<translation id="4849731766219625109">আপনার <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> অ্যাকাউন্ট ব্যবহার করুন</translation>
 <translation id="485053257961878904">বিজ্ঞপ্তি সিঙ্ক করার প্রক্রিয়া সেট আপ করা যায়নি</translation>
 <translation id="4850548109381269495">দুটি ডিভাইসেই আপনার ইন্টারনেট কানেকশন চেক করুন এবং ব্লুটুথ চালু করুন। তারপর, আবার চেষ্টা করুন।</translation>
 <translation id="4850669014075537160">স্ক্রোলিং</translation>
@@ -5701,6 +5702,7 @@
 <translation id="4979510648199782334">Microsoft 365 সেট-আপ সম্পূর্ণ হয়েছে</translation>
 <translation id="4980805016576257426">এই এক্সটেনশনটিতে ম্যালওয়্যার আছে।</translation>
 <translation id="4983159853748980742">আপনার পাসওয়ার্ড শেয়ার করা হয়নি। আপনার ইন্টারনেট কানেকশন ঠিক আছে কিনা দেখে নিয়ে নিশ্চিত করুন যে আপনি Chrome-এ সাইন-ইন করেছেন। তারপর, আবার চেষ্টা করুন।</translation>
+<translation id="498624032394115435">এই লিঙ্ক আছে এমন যেকোনও ব্যক্তি সব ট্যাব এডিট করতে পারবেন।</translation>
 <translation id="4986706507552097681">সেটিংসে কী সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারেন। আপনার ইতিহাসের উপরে ভিত্তি করে, সার্চ ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
 <translation id="4986728572522335985">এটি পিন সহ নিরাপত্তা কীয়ে সেভ করা সব ডেটা মুছে দেবে</translation>
 <translation id="4987944280765486504">ডাউনলোড সম্পূর্ণ হলে আপনার Chromebook রিস্টার্ট করা হবে এবং আপনি সেট-আপ চালিয়ে যেতে পারবেন।</translation>
@@ -8313,7 +8315,6 @@
 <translation id="6873571253135628430">সাইট সংক্রান্ত অনুমতি পরিবর্তন করুন</translation>
 <translation id="6876155724392614295">সাইকেল</translation>
 <translation id="6876469544038980967">উপযোগী নয়</translation>
-<translation id="687838958001010630">যেসব ব্যক্তির কাছে এই লিঙ্ক আছে, তারা প্রত্যেকে সব ট্যাব এডিট করতে পারবেন</translation>
 <translation id="6878422606530379992">সেন্সর ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="6878862640969460273">ল্যান্ডস্কেপ</translation>
 <translation id="6880587130513028875">এই পৃষ্ঠাতে ছবিগুলি ব্লক করা হয়েছে৷</translation>

@@ -677,6 +677,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4195643157523330669">Odpri v novem zavihku</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 zavihek v tej napravi}one{# zavihek v tej napravi}two{# zavihka v tej napravi}few{# zavihki v tej napravi}other{# zavihkov v tej napravi}}</translation>
 <translation id="4198423547019359126">Ni razpoložljivih mest za prenos</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Uporabljeno na tem spletnem mestu</translation>
 <translation id="4214315110991671325">Če omogočite piškotke, jih bo Chrome morda uporabil za vnaprejšnje nalaganje.</translation>
 <translation id="4216511743389425832">Poslušanje te strani</translation>
 <translation id="4225725533026049334">Spremljano</translation>

@@ -23232,6 +23232,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileFullscreenEntered">
+  <obsolete>Obsolete as of 03/2025</obsolete>
   <owner>ajuma@chromium.org</owner>
   <owner>alionadangla@chromium.org</owner>
   <description>
@@ -23240,6 +23241,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileFullscreenExited">
+  <obsolete>Obsolete as of 03/2025</obsolete>
   <owner>ajuma@chromium.org</owner>
   <owner>alionadangla@chromium.org</owner>
   <description>
@@ -23249,6 +23251,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileFullscreenExitedBottomReached">
+  <obsolete>Obsolete as of 03/2025</obsolete>
   <owner>ajuma@chromium.org</owner>
   <owner>alionadangla@chromium.org</owner>
   <description>
@@ -23258,6 +23261,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileFullscreenExitedManually">
+  <obsolete>Obsolete as of 03/2025</obsolete>
   <owner>ajuma@chromium.org</owner>
   <owner>alionadangla@chromium.org</owner>
   <description>

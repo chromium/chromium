@@ -1342,3 +1342,11 @@ BASE_FEATURE(kSignInButtonNoAvatar,
 bool IsSignInButtonNoAvatarEnabled() {
   return base::FeatureList::IsEnabled(kSignInButtonNoAvatar);
 }
+
+BASE_FEATURE(kNTPBackgroundCustomization,
+             "NTPBackgroundCustomization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsNTPBackgroundCustomizationEnabled() {
+  return base::FeatureList::IsEnabled(kNTPBackgroundCustomization);
+}

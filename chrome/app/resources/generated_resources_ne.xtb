@@ -1562,7 +1562,6 @@
 <translation id="2081816110395725788">ब्याट्री प्रयोग भइरहेका बेला स्लिप मोडमा लैजानुहोस्</translation>
 <translation id="2082187087049518845">समूहको ट्याब</translation>
 <translation id="2082510809738716738">थिमको रङ छान्नुहोस्</translation>
-<translation id="208547068587548667"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="208586643495776849">कृपया फेरि प्रयास गर्नुहोस्</translation>
 <translation id="208634871997892083">सधैँ अन रहने VPN</translation>
 <translation id="208654914566977272">तपाईंले आफ्नो स्क्रिनमा भएका कुरा खोज्दा सिफारिस गरिने कारबाहीहरू</translation>
@@ -3993,7 +3992,6 @@
 <translation id="3778740492972734840">&amp;विकासकर्ता उपकरणहरू</translation>
 <translation id="3778868487658107119">यसलाई प्रश्नहरू सोध्नुहोस्। यसलाई कार्यहरू गर्न अह्राउनुहोस्। यो मद्दतका लागि सधैँ तत्पर तपाईंको व्यक्तिगत Google हो।</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# साइटको ब्राउजिङ हिस्ट्री}other{# वटा साइटको ब्राउजिङ हिस्ट्री}}</translation>
-<translation id="3779244863011082655">अर्कै <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> खाता प्रयोग गर्नुहोस्</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> ले तपाईंका पासवर्डहरू डेटा चोरीका घटनामा खुलासा गरिएका छन् कि छैनन् भन्ने कुरा जाँच गर्न सक्दैन। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3781742599892759500">Linux लाई माइक्रोफोन प्रयोग गर्न दिने सेटिङ</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5496,6 +5494,7 @@
 <translation id="4848191975108266266">"Ok Google" भनेर Google सहायक अन गर्नुहोस्</translation>
 <translation id="4849286518551984791">समन्वयित विश्वव्यापी समय (UTC/GMT)</translation>
 <translation id="4849517651082200438">स्थापित नगर्नुहोस्</translation>
+<translation id="4849731766219625109">आफ्नो <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> खाता प्रयोग गर्नुहोस्</translation>
 <translation id="485053257961878904">सूचना सिंक गर्ने सुविधा सेटअप गर्न सकिएन</translation>
 <translation id="4850548109381269495">दुवै डिभाइसमा आफ्नो इन्टरनेट कनेक्सन जाँच्नुहोस् र ब्लुटुथ अन गर्नुहोस्। त्यसपछि, फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4850669014075537160">स्क्रोलिङ</translation>
@@ -5684,6 +5683,7 @@
 <translation id="4979510648199782334">Microsoft 365 सेटअप गर्ने कार्य पूरा भएको छ</translation>
 <translation id="4980805016576257426">यस विस्तारमा मालवेयर छ।</translation>
 <translation id="4983159853748980742">तपाईंको पासवर्ड सेयर गरिएको छैन। आफ्नो इन्टरनेट कनेक्सन जाँच गरी आफू Chrome मा साइन इन भएको कुरा सुनिश्चित गर्नुहोस्। त्यसपछि, फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="498624032394115435">यो लिंक हुने सबै जना सबै ट्याब सम्पादन गर्न सक्छन्।</translation>
 <translation id="4986706507552097681">तपाईं जुनसुकै बेला सेटिङमा गई कुन-कुन डेटा सिंक गर्ने भन्ने कुरा छनौट गर्न सक्नुहुन्छ। Google ले तपाईंले विगतमा हेरेका वेबपेजका आधारमा Search र अन्य सेवाहरू पर्सनलाइज गर्न सक्छ।</translation>
 <translation id="4986728572522335985">यसले सुरक्षा साँचोको PIN सहित यसमा रहेको सबै डेटा मेटाउने छ</translation>
 <translation id="4987944280765486504">डाउनलोड पूरा भएपछि तपाईंको Chromebook रिस्टार्ट हुने छ अनि तपाईं सेटअप गर्ने प्रक्रिया जारी राख्न सक्नुहुन्छ।</translation>
@@ -8292,7 +8292,6 @@
 <translation id="6873571253135628430">साइटसम्बन्धी अनुमतिहरू परिवर्तन गर्नुहोस्</translation>
 <translation id="6876155724392614295">साइकल</translation>
 <translation id="6876469544038980967">उपयोगी लागेन</translation>
-<translation id="687838958001010630">यो लिंक हुने सबै जना सबै ट्याब सम्पादन गर्न सक्छन्</translation>
 <translation id="6878422606530379992">सेन्सरलाई अनुमति दिइएको छ</translation>
 <translation id="6878862640969460273">ल्यान्डस्केप</translation>
 <translation id="6880587130513028875">यस पृष्ठमा फोटो रोकिएका थिए।</translation>

@@ -741,7 +741,6 @@
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
@@ -750,6 +749,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/url_lookup_service_factory.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_throttle.h"
+#include "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -3776,11 +3776,6 @@ ChromeContentBrowserClient::GetSystemNetworkContext() {
 }
 
 std::string ChromeContentBrowserClient::GetGeolocationApiKey() {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (ash::features::IsCrosSeparateGeoApiKeyEnabled()) {
-    return google_apis::GetCrosChromeGeoAPIKey();
-  }
-#endif
   return google_apis::GetAPIKey();
 }
 

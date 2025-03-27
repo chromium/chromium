@@ -1716,6 +1716,58 @@ TEST_F(IntegrationTest, SetTagRoundTrip) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+#if BUILDFLAG(IS_MAC)
+TEST_F(IntegrationTest, XattrTagWriteRead) {
+  base::ScopedTempFile tag_me;
+  ASSERT_TRUE(tag_me.Create());
+  EXPECT_TRUE(tagging::WriteTagStringToApplicationInstanceXattr(
+      tag_me.path(),
+      "brand=TEST&iid=TestInstallId&appguid=org.chromium.test&ap=example"));
+
+  base::expected<tagging::TagArgs, tagging::ErrorCode> read_result =
+      tagging::ReadTagFromApplicationInstanceXattr(tag_me.path());
+  ASSERT_TRUE(read_result.has_value())
+      << "couldn't read tag: " << read_result.error();
+
+  EXPECT_EQ(read_result->brand_code, "TEST");
+  EXPECT_EQ(read_result->installation_id, "TestInstallId");
+
+  ASSERT_EQ(read_result->apps.size(), static_cast<size_t>(1));
+  const tagging::AppArgs& app_args = read_result->apps[0];
+  EXPECT_EQ(app_args.app_id, "org.chromium.test");
+  EXPECT_EQ(app_args.ap, "example");
+}
+
+TEST_F(IntegrationTest, NoTagXattrRead) {
+  base::ScopedTempFile dont_tag_me;
+  ASSERT_TRUE(dont_tag_me.Create());
+  base::expected<tagging::TagArgs, tagging::ErrorCode> read_result =
+      tagging::ReadTagFromApplicationInstanceXattr(dont_tag_me.path());
+  ASSERT_FALSE(read_result.has_value());
+  EXPECT_EQ(read_result.error(), tagging::ErrorCode::kTagNotFound);
+}
+
+TEST_F(IntegrationTest, EmptyTagXattrRead) {
+  base::ScopedTempFile tag_me;
+  ASSERT_TRUE(tag_me.Create());
+  EXPECT_TRUE(
+      tagging::WriteTagStringToApplicationInstanceXattr(tag_me.path(), ""));
+
+  base::expected<tagging::TagArgs, tagging::ErrorCode> read_result =
+      tagging::ReadTagFromApplicationInstanceXattr(tag_me.path());
+
+  ASSERT_FALSE(read_result.has_value());
+  EXPECT_EQ(read_result.error(), tagging::ErrorCode::kTagNotFound);
+}
+
+TEST_F(IntegrationTest, NoXattrReadPath) {
+  base::expected<tagging::TagArgs, tagging::ErrorCode> read_result =
+      tagging::ReadTagFromApplicationInstanceXattr({});
+  ASSERT_FALSE(read_result.has_value());
+  EXPECT_EQ(read_result.error(), tagging::ErrorCode::kTagNotFound);
+}
+#endif
+
 TEST_F(IntegrationTest, InstallId) {
   ScopedServer test_server(test_commands_);
   const std::string kAppId("test");

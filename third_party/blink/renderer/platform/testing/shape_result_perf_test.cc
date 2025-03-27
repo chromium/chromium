@@ -91,7 +91,7 @@ class OffsetForPositionPerfTest : public ShapeResultPerfTest,
     float position = GetParam();
     param_string = base::NumberToString(position);
     do {
-      font.OffsetForPosition(run, position, partial, breakopt);
+      font.DeprecatedOffsetForPosition(run, position, partial, breakopt);
       timer.NextLap();
     } while (!timer.HasTimeLimitExpired());
   }
@@ -111,7 +111,7 @@ class CharacterRangePerfTest : public ShapeResultPerfTest,
     int endpos = GetParam();
     param_string = base::NumberToString(endpos);
     do {
-      font.SelectionRectForText(run, gfx::PointF(), 100, 0, endpos);
+      font.DeprecatedSelectionRectForText(run, gfx::PointF(), 100, 0, endpos);
       timer.NextLap();
     } while (!timer.HasTimeLimitExpired());
   }

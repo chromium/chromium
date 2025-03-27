@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {AnnotationMode, PluginController, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -31,6 +32,47 @@ chrome.test.runTests([
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
 
     annotateButton.click();
+    await microtasksFinished();
+    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.succeed();
+  },
+  // Test that clicking the text annotation button toggles text annotation mode.
+  async function testTextAnnotationButton() {
+    // No button if feature param is not enabled.
+    loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': false});
+    viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
+    await microtasksFinished();
+    chrome.test.assertFalse(
+        !!viewerToolbar.shadowRoot.querySelector('#text-annotate'));
+
+    // Set the feature param in loadTimeData and trigger Lit binding.
+    loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': true});
+    viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
+    await microtasksFinished();
+
+    // Button should now exist. Clicking the text annotation button enables
+    // text annotation mode.
+    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    const textButton = getRequiredElement(viewerToolbar, '#text-annotate');
+    textButton.click();
+    await microtasksFinished();
+    chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
+
+    // Clicking the draw annotation button while text is enabled switches to
+    // draw mode.
+    const annotateButton = getRequiredElement(viewerToolbar, '#annotate');
+    annotateButton.click();
+    await microtasksFinished();
+    chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
+
+    // Clicking text annotation button while drawing is enabled switches to
+    // text mode.
+    textButton.click();
+    await microtasksFinished();
+    chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
+
+    // Clicking the text button while in text mode exits annotation mode.
+    textButton.click();
     await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
     chrome.test.succeed();

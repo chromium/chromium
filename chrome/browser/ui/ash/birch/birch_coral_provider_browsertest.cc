@@ -120,55 +120,6 @@ IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, CollectInSessionData) {
                   AppEq("Files", "fkiggjmkendpmbegkagpmagjepfkpmeb")));
 }
 
-// Tests that the coral provider filters out duplicated tab and app data.
-IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, NoDupInSessionData) {
-  // Close existing browser windows.
-  CloseAllBrowsers();
-
-  // Create two browsers with duplicated urls.
-  test::CreateAndShowBrowser(
-      profile(), {GURL("https://examples1.com"), GURL("https://examples2.com"),
-                  GURL("https://examples2.com")});
-  test::CreateAndShowBrowser(profile(), {GURL("https://examples1.com"),
-                                         GURL("https://examples3.com")});
-
-  // Open some SWA windows with duplicated apps.
-  test::CreateSystemWebApp(profile(), SystemWebAppType::FILE_MANAGER);
-  test::CreateSystemWebApp(profile(), SystemWebAppType::FILE_MANAGER);
-  test::CreateSystemWebApp(profile(), SystemWebAppType::SETTINGS);
-
-  // Open some PWA windows with duplicated apps.
-  test::InstallAndLaunchPWA(profile(), GURL("https://www.youtube.com/"),
-                            /*launch_in_browser=*/false,
-                            /*app_title=*/u"YouTube");
-  test::InstallAndLaunchPWA(profile(), GURL("https://www.youtube.com/"),
-                            /*launch_in_browser=*/false,
-                            /*app_title=*/u"Youtube");
-
-  ash::ToggleOverview();
-  ash::WaitForOverviewEnterAnimation();
-
-  // Check if the collected data as expected.
-  const coral_util::TabsAndApps tabs_and_apps = coral_util::SplitContentData(
-      GetCoralProvider()->GetCoralRequestForTest().content());
-
-  // Comparing the collected tab data with the expected tab data.
-  EXPECT_THAT(tabs_and_apps.tabs,
-              testing::UnorderedElementsAre(
-                  TabEq("examples1.com", GURL("https://examples1.com/")),
-                  TabEq("examples2.com", GURL("https://examples2.com/")),
-                  TabEq("examples3.com", GURL("https://examples3.com/"))));
-
-  // Comparing the collected app data with the expected app data in mru order.
-  EXPECT_THAT(tabs_and_apps.apps,
-              testing::UnorderedElementsAre(
-                  // URL will be used when app tab title is empty, which happens
-                  // in this test setup.
-                  AppEq("www.youtube.com", "adnlfjpnmidfimlkaohpidplnoimahfh"),
-                  AppEq("Settings", "odknhmnlageboeamepcngndbggdpaobj"),
-                  AppEq("Files", "fkiggjmkendpmbegkagpmagjepfkpmeb")));
-}
-
 // Tests that the coral provider collects correct post-login tab and app data.
 IN_PROC_BROWSER_TEST_F(BirchCoralProviderTest, PRE_CollectPostLoginData) {
   // Close existing browser windows.

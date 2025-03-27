@@ -150,12 +150,6 @@ ViewTransition::ViewTransition(PassKey,
           *this,
           update_dom_callback)) {
   InitTypes(types.value_or(Vector<String>()));
-  if (auto* originating_element = document_->documentElement()) {
-    originating_element->ActiveViewTransitionStateChanged();
-    if (types_ && !types_->IsEmpty()) {
-      originating_element->ActiveViewTransitionTypeStateChanged();
-    }
-  }
   if (previously_active && previously_active->PendingDomCallback()) {
     previously_active->blocking_ = this;
     blocked_on_ = previously_active;
@@ -671,6 +665,16 @@ ViewTransitionTypeSet* ViewTransition::Types() {
 
 void ViewTransition::InitTypes(const Vector<String>& types) {
   types_ = MakeGarbageCollected<ViewTransitionTypeSet>(this, types);
+  // Although ViewTransitionTypeSet can invalidate its own style, there are
+  // checks that it is in a current view transition. Because InitTypes is
+  // called during ctor, the supplement does not yet know that this will become
+  // a current view transition, so we need to invalidate explicitly.
+  if (auto* originating_element = document_->documentElement()) {
+    originating_element->ActiveViewTransitionStateChanged();
+    if (!types_->IsEmpty()) {
+      originating_element->ActiveViewTransitionTypeStateChanged();
+    }
+  }
 }
 
 void ViewTransition::Trace(Visitor* visitor) const {

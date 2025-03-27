@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -52,6 +53,9 @@ class CORE_EXPORT ClipPathClipper {
   // Gets the Animation object for an element with a compositable clip-path
   // animation. Returns nullptr if the animation is not compositable.
   static Animation* GetClipPathAnimation(const LayoutObject& layout_object);
+
+  static ContouredRect RoundedReferenceBox(GeometryBox geometry_box,
+                                           const LayoutObject& object);
 
   // Checks the composited paint status for a given Layout Object and checks
   // whether it contains a composited clip path animation. Assumes
@@ -97,6 +101,12 @@ class CORE_EXPORT ClipPathClipper {
   // Like the above, but derives the reference box from the LayoutObject using
   // `LocalReferenceBox()`.
   static bool HitTest(const LayoutObject&, const HitTestLocation& location);
+
+ private:
+  static std::optional<Path> PathBasedClipInternal(
+      const LayoutObject& clip_path_owner,
+      const gfx::RectF& reference_box,
+      const LayoutObject& reference_box_object);
 };
 
 }  // namespace blink

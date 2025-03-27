@@ -405,6 +405,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1264956950255940376">Přimhuřte levé oko</translation>
 <translation id="1265094893042958831">Generování návrhů pro tuto stránku…</translation>
 <translation id="1265279736024499987">Vaše aplikace a nastavení se budou synchronizovat do všech zařízení ChromeOS Flex, na kterých jste přihlášeni pomocí svého účtu Google. Možnosti synchronizace prohlížeče naleznete v <ph name="LINK_BEGIN" />nastavení Chromu<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Po pořízení snímku obrazovky nebo prohledání obrazovky zobrazit další akce, jako jsou přidání do Kalendáře, vytvoření Dokumentů Google a další.</translation>
 <translation id="126710816202626562">Jazyk překladu:</translation>
 <translation id="1267649802567297774">Vygenerovaný obrázek <ph name="INDEX" /> na téma <ph name="SUBJECT" /> ve stylu <ph name="STYLE" /> s náladou <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16×</translation>
@@ -1566,9 +1567,9 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2081816110395725788">Při provozu na baterii přejít do nečinnosti</translation>
 <translation id="2082187087049518845">Přidat kartu do skupiny</translation>
 <translation id="2082510809738716738">Výběr barvy motivu</translation>
-<translation id="208547068587548667">Přihlásit se k účtu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Zkuste to znovu</translation>
 <translation id="208634871997892083">Trvalá síť VPN</translation>
+<translation id="208654914566977272">Návrhy akcí při prohledávání obrazovky</translation>
 <translation id="2087822576218954668">Tisk: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Registrace je podporována pouze po nainstalování systému <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Vestavěný TrackPoint</translation>
@@ -3995,7 +3996,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3778740492972734840">&amp;Nástroje pro vývojáře</translation>
 <translation id="3778868487658107119">Můžete mu zadávat dotazy. Můžete mu udělovat příkazy. Je to váš osobní Google a je vám neustále k službám.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{vaše historie procházení # webu}few{vaše historie procházení # webů}many{vaše historie procházení # webu}other{vaše historie procházení # webů}}</translation>
-<translation id="3779244863011082655">Použít jiný účet <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> nemůže zkontrolovat, zda vaše hesla nebyla prolomena v rámci porušení zabezpečení údajů. Zkuste to později.</translation>
 <translation id="3781742599892759500">Přístup Linuxu k mikrofonu</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5497,6 +5497,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4848191975108266266">Příkaz „Ok Google“ Asistenta Google</translation>
 <translation id="4849286518551984791">Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">Neinstalovat</translation>
+<translation id="4849731766219625109">Použít účet <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="485053257961878904">Nastavení synchronizace oznámení se nezdařilo</translation>
 <translation id="4850548109381269495">Na obou zařízeních zkontrolujte připojení k internetu a zapněte Bluetooth. Poté to zkuste znovu.</translation>
 <translation id="4850669014075537160">Posouvání</translation>
@@ -5685,6 +5686,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4979510648199782334">Nastavení sady Microsoft 365 je dokončeno</translation>
 <translation id="4980805016576257426">Toto rozšíření obsahuje malware.</translation>
 <translation id="4983159853748980742">Vaše heslo nebylo sdíleno. Zkontrolujte připojení k internetu a ujistěte se, že jste do Chromu přihlášeni. Poté to zkuste znovu.</translation>
+<translation id="498624032394115435">Kdokoli s odkazem může upravovat všechny karty.</translation>
 <translation id="4986706507552097681">Synchronizované položky můžete kdykoliv vybrat v nastavení. Google může personalizovat Vyhledávání a další služby na základě vaší historie.</translation>
 <translation id="4986728572522335985">Touto akcí vymažete veškerá data na bezpečnostním klíči, včetně jeho kódu PIN</translation>
 <translation id="4987944280765486504">Po dokončení stahování se Chromebook restartuje a budete moci pokračovat v nastavování.</translation>
@@ -8294,7 +8296,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6873571253135628430">Změnit oprávnění webu</translation>
 <translation id="6876155724392614295">Kolo</translation>
 <translation id="6876469544038980967">Neužitečné</translation>
-<translation id="687838958001010630">Kdokoli s odkazem může upravovat všechny karty</translation>
 <translation id="6878422606530379992">Použití senzorů je povoleno</translation>
 <translation id="6878862640969460273">Na šířku</translation>
 <translation id="6880587130513028875">Na této stránce byly zablokovány obrázky.</translation>

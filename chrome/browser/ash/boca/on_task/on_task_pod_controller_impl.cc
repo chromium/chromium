@@ -141,8 +141,9 @@ void OnTaskPodControllerImpl::OnWindowBoundsChanged(
   if (is_window_pinned_ != is_window_pinned) {
     on_task_pod_view->OnLockedModeUpdate();
 
-    // Resize the widget to fit the contents view.
+    // Resize and reset bounds of the widget to fit the contents view.
     pod_widget_->SetSize(on_task_pod_view->GetPreferredSize());
+    pod_widget_->SetBounds(CalculateWidgetBounds());
   }
   is_window_pinned_ = is_window_pinned;
 }

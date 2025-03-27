@@ -16,8 +16,7 @@
 namespace blink {
 
 // `ExecutionContextClient` gives us access to the browser interface broker.
-class AILanguageDetectorFactory final : public ScriptWrappable,
-                                        public ExecutionContextClient {
+class AILanguageDetectorFactory final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -29,17 +28,10 @@ class AILanguageDetectorFactory final : public ScriptWrappable,
   ScriptPromise<V8AIAvailability> availability(ScriptState* script_state,
                                                ExceptionState& exception_state);
 
-  // Creates an `LanguageDetector`, with a model ready to use.
+  // Creates a `LanguageDetector`, with a model ready to use.
   ScriptPromise<LanguageDetector> create(ScriptState* script_state,
                                          LanguageDetectorCreateOptions* options,
                                          ExceptionState& exception_state);
-
- private:
-  void OnGotStatus(
-      ScriptPromiseResolver<V8AIAvailability>* resolver,
-      language_detection::mojom::blink::LanguageDetectionModelStatus result);
-
-  Member<LanguageDetectionModel> language_detection_model_;
 };
 
 }  // namespace blink

@@ -223,7 +223,6 @@
 <translation id="1363028406613469049">Трэк</translation>
 <translation id="1364822246244961190">Гэта палітыка заблакіравана, яе значэнне будзе ігнаравацца.</translation>
 <translation id="1368318639262510626">Гульня з дыназаўрам. Піксельны дыназаўрык бяжыць па пустыні, пазбягаючы кактусаў і птэрадактыляў. Пачуўшы гукавы сігнал, націсніце на прабел, каб пераскочыць перашкоду.</translation>
-<translation id="1369735141991626842">Запоўніць палі з дапамогай AI</translation>
 <translation id="1374468813861204354">прапановы</translation>
 <translation id="1375198122581997741">Пра версію</translation>
 <translation id="1375293861397106342">Звычайна для ўсіх варыянтаў: <ph name="LOW_PRICE" /> – <ph name="HIGH_PRICE" /></translation>
@@ -539,7 +538,6 @@
 <translation id="1919526244108283799">400 x 600 мм</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Няма}=1{1 сайт}one{# сайт}few{# сайты}many{# сайтаў}other{# сайта}}</translation>
 <translation id="192095259937375524">Кнопка "Абагуліць гэту ўкладку". Каб абагуліць гэту ўкладку (абагуліць спасылку, стварыць QR-код, трансліраваць яе і г. д.), націсніце яе.</translation>
-<translation id="1921479021518565778">Прапановы загружаны</translation>
 <translation id="1924727005275031552">Новая форма</translation>
 <translation id="1927439846988093361">Догляд валасоў</translation>
 <translation id="1935353813610900265">Адпраўце водгук на пошук у гісторыі з дапамогай штучнага інтэлекту</translation>
@@ -975,6 +973,7 @@
 <translation id="2688186765492306706">500 x 760 мм</translation>
 <translation id="2688969097326701645">Так, працягнуць</translation>
 <translation id="2690699652723742414">Апошнія 30 дзён</translation>
+<translation id="2691385045260836588">Мадэль</translation>
 <translation id="2691924980723297736">Папярэджанне сістэмы бяспекі</translation>
 <translation id="2697248912349197812">Спытаць <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Падменю даступнае. Каб адкрыць дадатковыя варыянты, націсніце <ph name="SHORTCUT" />.</translation>
@@ -1529,6 +1528,7 @@
 <translation id="3664782872746246217">Ключавыя словы:</translation>
 <translation id="3665100783276035932">Большасць сайтаў павінны працаваць як належыць</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Даведацца больш<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">Нумар</translation>
 <translation id="3670229581627177274">Уключыць Bluetooth</translation>
 <translation id="3671117652518853176">Калі гэта выключыць, вам час ад часу трэба будзе рабіць спраўджанне ў мэтах бяспекі</translation>
 <translation id="3671540257457995106">Дазволіць змяняць памер?</translation>
@@ -1543,7 +1543,6 @@
 <translation id="3681007416295224113">Інфармацыя аб сертыфікаце</translation>
 <translation id="3681421644246505351">Chrome вызначае цікавыя для вас тэмы на падставе нядаўняй гісторыі прагляду вамі сайтаў.</translation>
 <translation id="3682094733650754138">Выбраны варыянт "Запоўніць адрас"</translation>
-<translation id="3687493962714153124">Кіраваць аўтазапаўненнем з дапамогай AI</translation>
 <translation id="3687920599421452763">Мікрааўтобусы і мінівэны</translation>
 <translation id="3693327506115126094">Выберыце спосаб спраўджання асобы</translation>
 <translation id="3698353241727597930">У адпаведнасці з наладамі адміністратара <ph name="FILES" /> будуць захоўвацца на <ph name="CLOUD_STORAGE" /> пад кіраваннем вашай арганізацыі. Пры выдаленні гэтыя файлы могуць адсочвацца, правярацца і захоўвацца.</translation>
@@ -1697,6 +1696,7 @@
 <translation id="3950820424414687140">Увайсці</translation>
 <translation id="3953505489397572035">Гэта звычайная цана</translation>
 <translation id="3958057596965527988">4 x 4 цалі</translation>
+<translation id="3959969108528118741">Уладальнік</translation>
 <translation id="3961148744525529027">Аркуш апрацоўшчыка плацяжоў адкрыты напалову</translation>
 <translation id="3962859241508114581">Папярэдні трэк</translation>
 <translation id="3963721102035795474">Рэжым чытання</translation>
@@ -1922,7 +1922,6 @@
 <translation id="4312866146174492540">Блакіраваць (стандартна)</translation>
 <translation id="4314815835985389558">Кіраванне сінхранізацыяй</translation>
 <translation id="4316057107946726368">Увядзіце паведамленне з абгрунтаваннем. Максімальная колькасць сімвалаў: <ph name="MAX_CHAR_COUNT" /> (выкарыстана <ph name="ACTUAL_CHAR_COUNT" /> з <ph name="MAX_CHAR_COUNT" />).</translation>
-<translation id="431740489189220419">Загружаюцца прапановы</translation>
 <translation id="4318213823155573975">Галаўныя ўборы</translation>
 <translation id="4318312030194671742">Сэрвіс стварэння перадпраглядаў Paint</translation>
 <translation id="4318566738941496689">Сеткавы адрас і назва прылады</translation>
@@ -2329,6 +2328,7 @@
 <translation id="5087286274860437796">На гэты момант сертыфікат сервера несапраўдны.</translation>
 <translation id="5087580092889165836">Дадаць картку</translation>
 <translation id="5088142053160410913">Паведамленне аператару</translation>
+<translation id="5089810972385038852">Штат</translation>
 <translation id="5090647584136241764">Дадайце ўкладкі з падобнымі прадуктамі для зручнага параўнання характарыстык, якія вас цікавяць</translation>
 <translation id="5093232627742069661">Z-падобны згіб</translation>
 <translation id="5094747076828555589">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />; Chromium не давярае яго сертыфікату бяспекі. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
@@ -2466,6 +2466,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Стандартная пошукавая сістэма дае магчымасць шукаць інфармацыю ў інтэрнэце і карыстацца рознымі функцыямі Chromium<ph name="END_BOLD" /> (напрыклад, выконваць запыты з адраснага радка або з выкарыстаннем відарысаў на вэб-старонках). Некаторыя функцыі могуць быць недаступнымі, калі выбраная пошукавая сістэма іх не падтрымлівае.</translation>
 <translation id="5323043727018853753">Убудаванае змесціва дазволена</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> з <ph name="NUM_MATCHES" /></translation>
+<translation id="5327248766486351172">Імя</translation>
 <translation id="5329858041417644019">Ваш браўзер не знаходзіцца пад кіраваннем</translation>
 <translation id="5331585574693522196">Выкарыстоўваць стандартна</translation>
 <translation id="5332219387342487447">Спосаб дастаўкі</translation>
@@ -2679,7 +2680,6 @@
 <translation id="569000877158168851">Калі для палітыкі DnsOverHttpsMode не зададзены параметр "<ph name="SECURE_DNS_MODE_AUTOMATIC" />" або "<ph name="SECURE_DNS_MODE_SECURE" />", значэнне DnsOverHttpsTemplates будзе лічыцца нерэлевантным і выкарыстоўвацца не будзе.</translation>
 <translation id="5691848789297492617">Захаванне карткі, адкрыта на ўвесь экран.</translation>
 <translation id="5695542892312572833">Пацвердзіць і завяршыць куплю з дапамогай Windows Hello?</translation>
-<translation id="5697827549745555938">Захаваная вамі інфармацыя і гэта старонка адпраўляюцца ў Google, каб праверыць, ці можа функцыя аўтазапаўнення дапамагчы запоўніць гэту форму. Для паляпшэння гэтай функцыі даныя могуць разглядацца спецыялістамі.</translation>
 <translation id="5699628521141772782">Малочныя прадукты і яйкі</translation>
 <translation id="5700761515355162635">Староннія файлы cookie дазволены</translation>
 <translation id="5701381305118179107">У цэнтры</translation>
@@ -3108,6 +3108,7 @@
 <translation id="6440503408713884761">Ігнаруецца</translation>
 <translation id="6443406338865242315">Якія пашырэнні і ўбудовы вы ўсталявалі.</translation>
 <translation id="6444329331928531170">Пенсія</translation>
+<translation id="6445051938772793705">Краіна</translation>
 <translation id="6446608382365791566">Дадаць болей звестак</translation>
 <translation id="6447842834002726250">Файлы cookie</translation>
 <translation id="6448371595882710519">Даведацца больш пра налады даных</translation>
@@ -3588,7 +3589,6 @@
 <translation id="7316521168101843192">Файл захоўваецца ў Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Даведка па падключэнні</translation>
-<translation id="7321111802407017850">Захавайце інфармацыю для аўтазапаўнення</translation>
 <translation id="7323804146520582233">Схаваць раздзел "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Перавызначэнне лакальнага ўліковага запісу прылады</translation>
 <translation id="7334320624316649418">&amp;Паўтарыць змяненне парадку</translation>

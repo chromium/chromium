@@ -36,11 +36,16 @@
 #define SK_HISTOGRAM_MEMORY_KB(name, sample) \
   SK_HISTOGRAM_POINTER_HELPER(skia::HistogramMemoryKB, "Skia." name, sample)
 
-#define SK_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(name, sampleUSec, minUSec, \
-                                               maxUSec, bucketCount)      \
-  SK_HISTOGRAM_POINTER_HELPER(skia::HistogramCustomMicrosecondsTimes,     \
-                              "Skia." name, sampleUSec, minUSec, maxUSec, \
-                              bucketCount);
+#define SK_HISTOGRAM_CUSTOM_COUNTS(name, sample, min_count, max_count,   \
+                                   bucket_count)                         \
+  SK_HISTOGRAM_POINTER_HELPER(skia::HistogramCustomCounts, "Skia." name, \
+                              sample, min_count, max_count, bucket_count);
+
+#define SK_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(name, sample_usec, min_usec,  \
+                                               max_usec, bucket_count)       \
+  SK_HISTOGRAM_POINTER_HELPER(skia::HistogramCustomMicrosecondsTimes,        \
+                              "Skia." name, sample_usec, min_usec, max_usec, \
+                              bucket_count);
 
 namespace skia {
 
@@ -58,13 +63,19 @@ void HistogramExactLinear(std::atomic_uintptr_t* atomic_histogram_pointer,
 void HistogramMemoryKB(std::atomic_uintptr_t* atomic_histogram_pointer,
                        const char* name,
                        int sample);
+void HistogramCustomCounts(std::atomic_uintptr_t* atomic_histogram_pointer,
+                           const char* name,
+                           int sample,
+                           int min_count,
+                           int max_count,
+                           size_t bucket_count);
 void HistogramCustomMicrosecondsTimes(
     std::atomic_uintptr_t* atomic_histogram_pointer,
     const char* name,
-    int64_t sampleUSec,
-    unsigned minUSec,
-    unsigned maxUSec,
-    size_t bucketCount);
+    int64_t sample_usec,
+    unsigned min_usec,
+    unsigned max_usec,
+    size_t bucket_count);
 
 }  // namespace skia
 

@@ -31,6 +31,66 @@ fn get_group(
     config.per_crate_config.get(&packages[id].name)?.group
 }
 
+// TODO(https://crbug.com/395924069): Delete this functiona and use `collect_dependencies` result
+// instead.  This will be possible once `gnrt vendor` is also transitioned to
+// use `guppy` and `collect_dependencies` instead of working directly with
+// `cargo_metadata`.
+pub fn find_inherited_privilege_group(
+    id: &PackageId,
+    root: &PackageId,
+    packages: &HashMap<&PackageId, &Package>,
+    nodes: &HashMap<&PackageId, &Node>,
+    config: &config::BuildConfig,
+) -> Group {
+    // A group is inherited from its ancestors and its dependencies, including
+    // from itself.
+    // - It inherits the highest privilege of any ancestor. If everything only uses
+    //   it in the sandbox, then it only needs to be in the sandbox. Same for tests.
+    // - It inherits the lowest privilege of any dependency. If a dependency that is
+    //   part of it needs a sandbox, then so does it.
+    // - If the group is specified on the crate itself, it replaces all ancestors.
+    let mut ancestor_groups = Vec::<Group>::new();
+    let mut dependency_groups = Vec::<Group>::new();
+
+    for each_id in packages.keys() {
+        let found_group = get_group(each_id, packages, config).or_else(|| {
+            if nodes[root].deps.iter().any(|d| d.pkg == **each_id) {
+                // If the dependency is a top-level dep of Chromium, then it defaults to this
+                // privilege level.
+                // TODO: Default should be sandbox??
+                Some(Group::Safe)
+            } else {
+                None
+            }
+        });
+
+        if let Some(group) = found_group {
+            if id == *each_id || is_ancestor(each_id, id, nodes) {
+                // `each_id` is an ancestor of `id`, or is the same crate.
+                log::debug!("{} ance {} ({:?})", packages[id].name, packages[each_id].name, group);
+                ancestor_groups.push(group);
+            } else if is_ancestor(id, each_id, nodes) {
+                // `each_id` is an descendent of `id`, or is the same crate.
+                log::debug!("{} depe {} ({:?})", packages[id].name, packages[each_id].name, group);
+                dependency_groups.push(group);
+            }
+        };
+    }
+
+    if let Some(self_group) = get_group(id, packages, config) {
+        ancestor_groups.clear();
+        ancestor_groups.push(self_group);
+    }
+
+    // Combine the privileges together. Ancestors work to increase privilege,
+    // and dependencies work to decrease it.
+    let ancestor_privilege = ancestor_groups.into_iter().fold(Group::Test, std::cmp::max);
+    let depedency_privilege = dependency_groups.into_iter().fold(Group::Safe, std::cmp::min);
+    let privilege = std::cmp::min(ancestor_privilege, depedency_privilege);
+    log::debug!("privilege = {:?}", privilege);
+    privilege
+}
+
 /// Finds the value of a config flag for a crate that is inherited from
 /// ancestors. The inherited value will be true if its true for the crate
 /// itself or for any ancestor.

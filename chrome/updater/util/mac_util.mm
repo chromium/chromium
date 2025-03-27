@@ -7,6 +7,7 @@
 #import <CoreFoundation/CoreFoundation.h>
 
 #include <optional>
+#include <string>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"

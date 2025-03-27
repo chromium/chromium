@@ -878,8 +878,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   return !self.disabledBecauseOfSyncError;
 }
 
-// Only requires Sync-the-feature to not be disabled because of a sync error and
-// to not need a trusted vault key.
 - (BOOL)shouldEncryptionItemBeEnabled {
   return !self.disabledBecauseOfSyncError &&
          _syncService->GetUserActionableError() !=

@@ -18,6 +18,7 @@ import './clear_browsing_data_dialog/clear_browsing_data_account_indicator.js';
 // </if>
 import './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 import './clear_browsing_data_dialog/clear_browsing_data_dialog_v2.js';
+import './clear_browsing_data_dialog/clear_browsing_data_time_picker.js';
 import './search_engines_page/search_engines_page.js';
 import './simple_confirmation_dialog.js';
 import './privacy_page/anti_abuse_page.js';
@@ -150,6 +151,7 @@ export {SettingsClearBrowsingDataAccountIndicator} from './clear_browsing_data_d
 export {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, ClearBrowsingDataResult, TimePeriod, UpdateSyncStateEvent} from './clear_browsing_data_dialog/clear_browsing_data_browser_proxy.js';
 export {SettingsClearBrowsingDataDialogElement} from './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 export {SettingsClearBrowsingDataDialogV2Element} from './clear_browsing_data_dialog/clear_browsing_data_dialog_v2.js';
+export {getTimePeriodString, SettingsClearBrowsingDataTimePicker} from './clear_browsing_data_dialog/clear_browsing_data_time_picker.js';
 export {SettingsHistoryDeletionDialogElement} from './clear_browsing_data_dialog/history_deletion_dialog.js';
 export {SettingsPasswordsDeletionDialogElement} from './clear_browsing_data_dialog/passwords_deletion_dialog.js';
 export {ControlledButtonElement} from './controls/controlled_button.js';

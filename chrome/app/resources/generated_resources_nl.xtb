@@ -1565,7 +1565,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2081816110395725788">Inactieve stand bij batterijvoeding</translation>
 <translation id="2082187087049518845">Tabblad toevoegen aan groep</translation>
 <translation id="2082510809738716738">Kies een themakleur</translation>
-<translation id="208547068587548667">Inloggen op <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Probeer het opnieuw</translation>
 <translation id="208634871997892083">Always-on VPN</translation>
 <translation id="208654914566977272">Voorgestelde acties bij het zoeken op je scherm</translation>
@@ -3995,7 +3994,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3778740492972734840">&amp;Hulpprogramma's voor ontwikkelaars</translation>
 <translation id="3778868487658107119">Je kunt de Assistent vragen stellen en opdrachten geven. De Assistent is je eigen persoonlijke Google dat altijd klaarstaat om je te helpen.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{je browsegeschiedenis van # site}other{je browsegeschiedenis van # sites}}</translation>
-<translation id="3779244863011082655">Een ander <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-account gebruiken</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> kan je wachtwoorden niet checken op gegevenslekken. Probeer het later opnieuw.</translation>
 <translation id="3781742599892759500">Microfoontoegang voor Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5497,6 +5495,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4848191975108266266">Google Assistent 'Hey Google'</translation>
 <translation id="4849286518551984791">Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">Niet installeren</translation>
+<translation id="4849731766219625109">Je account voor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> gebruiken</translation>
 <translation id="485053257961878904">Kan synchronisatie van meldingen niet instellen</translation>
 <translation id="4850548109381269495">Check op beide apparaten je internetverbinding en zet bluetooth aan. Probeer het daarna opnieuw.</translation>
 <translation id="4850669014075537160">Scrollen</translation>
@@ -5685,6 +5684,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4979510648199782334">Microsoft 365 is ingesteld</translation>
 <translation id="4980805016576257426">Deze extensie bevat malware.</translation>
 <translation id="4983159853748980742">Je wachtwoord is niet gedeeld. Check je internetverbinding en zorg dat je bent ingelogd bij Chrome. Probeer het daarna opnieuw.</translation>
+<translation id="498624032394115435">Iedereen met de link kan alle tabbladen bewerken.</translation>
 <translation id="4986706507552097681">Je kunt altijd in de instellingen bepalen wat je wilt synchroniseren. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="4986728572522335985">Hierdoor worden alle gegevens op de beveiligingssleutel, waaronder de pincode, verwijderd.</translation>
 <translation id="4987944280765486504">Je Chromebook wordt opnieuw opgestart nadat de download is afgerond. Daarna kun je doorgaan met instellen.</translation>
@@ -8290,7 +8290,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6873571253135628430">Siterechten wijzigen</translation>
 <translation id="6876155724392614295">Fiets</translation>
 <translation id="6876469544038980967">Niet nuttig</translation>
-<translation id="687838958001010630">Iedereen met de link kan alle tabbladen bewerken</translation>
 <translation id="6878422606530379992">Sensoren toegestaan</translation>
 <translation id="6878862640969460273">Liggend</translation>
 <translation id="6880587130513028875">Er zijn afbeeldingen op deze pagina geblokkeerd.</translation>

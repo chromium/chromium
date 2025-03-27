@@ -40,9 +40,9 @@ struct BLINK_COMMON_EXPORT
   }
 
   static SkImageInfo image_info(const blink::AcceleratedImageInfo& input) {
-    return SkImageInfo::Make(gfx::SizeToSkISize(input.size),
-                             viz::ToClosestSkColorType(input.format),
-                             input.alpha_type, input.sk_color_space);
+    return SkImageInfo::Make(
+        gfx::SizeToSkISize(input.size), viz::ToClosestSkColorType(input.format),
+        input.alpha_type, input.color_space.ToSkColorSpace());
   }
 
   static mojo::PendingRemote<blink::mojom::ImageReleaseCallback>

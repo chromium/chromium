@@ -1578,7 +1578,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2081816110395725788">Nedejavnost pri napajanju iz baterije</translation>
 <translation id="2082187087049518845">Uvrsti zavihek v skupino</translation>
 <translation id="2082510809738716738">Izbira barve teme</translation>
-<translation id="208547068587548667">Prijava na <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Poskusite znova</translation>
 <translation id="208634871997892083">Stalno vklopljen VPN</translation>
 <translation id="208654914566977272">Predlagana dejanja pri iskanju po zaslonu</translation>
@@ -2022,6 +2021,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2373666622366160481">Prilagajanje velikosti papirja</translation>
 <translation id="2375406435414127095">Povežite se s telefonom</translation>
 <translation id="2376056713414548745">Branje na glas</translation>
+<translation id="2376122016044804363">Potrditve kopiranja v odložišče</translation>
 <translation id="2377667304966270281">Težke napake</translation>
 <translation id="237828693408258535">Želite prevod te strani?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Ta razširitev kmalu morda ne bo več podprta}one{Te razširitve kmalu morda ne bodo več podprte}two{Te razširitve kmalu morda ne bodo več podprte}few{Te razširitve kmalu morda ne bodo več podprte}other{Te razširitve kmalu morda ne bodo več podprte}}</translation>
@@ -3176,6 +3176,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3192586965067888278">Podrobno opišite težavo. Povratne informacije bodo poslane Googlu v pregled, ki ga izvede človek, in se lahko uporabijo za izboljšanje ali razvoj Googlovih izdelkov in storitev.</translation>
 <translation id="3192947282887913208">Zvočne datoteke</translation>
 <translation id="3193695589337931419">Orodja za sistemske signale</translation>
+<translation id="3194095220941877499">Prikaže potrditev, ko kopirate povezave, slike ali videoposnetke</translation>
 <translation id="3196912927885212665">Če želite nastaviti s telefonom Android, mora biti v Chromebooku vklopljen Bluetooth</translation>
 <translation id="3197453258332670132">Z desnim klikom ali dolgim pritiskom prikažete informacije, povezane z izbranim besedilom.</translation>
 <translation id="3199127022143353223">Strežniki</translation>
@@ -4013,7 +4014,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3778740492972734840">&amp;Orodja za razvijalce</translation>
 <translation id="3778868487658107119">Postavite mu vprašanja ali mu naročite, kaj naj naredi. Je vaš osebni Google, ki vam je vedno pripravljen priskočiti na pomoč.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{zgodovino brskanja za # spletno mesto}one{zgodovino brskanja za # spletno mesto}two{zgodovino brskanja za # spletni mesti}few{zgodovino brskanja za # spletna mesta}other{zgodovino brskanja za # spletnih mest}}</translation>
-<translation id="3779244863011082655">Uporabite drug račun za <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> ne more preveriti vaših gesel glede podatkovnih kršitev. Poskusite znova pozneje.</translation>
 <translation id="3781742599892759500">Dostop do mikrofona v Linuxu</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5517,6 +5517,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4848191975108266266">Pomočnik Google – »Ok Google«</translation>
 <translation id="4849286518551984791">Usklajen univerzalni čas (UTC/GMT)</translation>
 <translation id="4849517651082200438">Ne namesti</translation>
+<translation id="4849731766219625109">Uporabite račun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="485053257961878904">Sinhroniziranja obvestil ni bilo mogoče nastaviti</translation>
 <translation id="4850548109381269495">V obeh napravah preverite internetno povezavo in vklopite Bluetooth. Nato poskusite znova.</translation>
 <translation id="4850669014075537160">Drsenje</translation>
@@ -5705,6 +5706,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4979510648199782334">Nastavitev storitve Microsoft 365 je končana</translation>
 <translation id="4980805016576257426">Ta razširitev vsebuje zlonamerno programsko opremo.</translation>
 <translation id="4983159853748980742">Geslo ni bilo deljeno. Preverite internetno povezavo in se prepričajte, ali ste prijavljeni v Chrome. Nato poskusite znova.</translation>
+<translation id="498624032394115435">Vsi s povezavo lahko urejajo vse zavihke.</translation>
 <translation id="4986706507552097681">V nastavitvah lahko kadar koli izberete, kaj želite sinhronizirati. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="4986728572522335985">S tem bodo izbrisani vsi podatki na varnostnem ključu, vključno z njegovo kodo PIN</translation>
 <translation id="4987944280765486504">Ko bo prenos končan, se bo Chromebook znova zagnal in lahko boste nadaljevali nastavitev.</translation>
@@ -8322,7 +8324,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6873571253135628430">Spreminjanje dovoljenj spletnih mest</translation>
 <translation id="6876155724392614295">Kolo</translation>
 <translation id="6876469544038980967">Ni uporabno</translation>
-<translation id="687838958001010630">Vsi s povezavo lahko urejajo vse zavihke</translation>
 <translation id="6878422606530379992">Tipala so dovoljena</translation>
 <translation id="6878862640969460273">Ležeče</translation>
 <translation id="6880587130513028875">Slike na tej strani so blokirane.</translation>

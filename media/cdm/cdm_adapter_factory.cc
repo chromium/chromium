@@ -5,6 +5,7 @@
 #include "media/cdm/cdm_adapter_factory.h"
 
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/cdm_factory.h"
 #include "media/cdm/cdm_adapter.h"
@@ -15,7 +16,7 @@ namespace media {
 
 CdmAdapterFactory::CdmAdapterFactory(HelperCreationCB helper_creation_cb)
     : helper_creation_cb_(std::move(helper_creation_cb)) {
-  DCHECK(helper_creation_cb_);
+  CHECK(helper_creation_cb_, base::NotFatalUntil::M140);
 }
 
 CdmAdapterFactory::~CdmAdapterFactory() = default;

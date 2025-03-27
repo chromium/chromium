@@ -20,6 +20,10 @@ class PrefService;
 class SearchTermsData;
 struct TemplateURLData;
 
+namespace base {
+class Time;
+}  // namespace base
+
 namespace search_engines {
 
 inline constexpr char
@@ -146,8 +150,9 @@ enum class WipeSearchEngineChoiceReason {
   kInvalidChoiceVersion = 2,
   kReprompt = 3,
   kCommandLineFlag = 4,
+  kDeviceRestored = 5,
 
-  kMaxValue = kCommandLineFlag,
+  kMaxValue = kDeviceRestored,
 };
 
 // Exposed for testing.
@@ -280,6 +285,11 @@ void RecordUnexpectedSearchProvider(const TemplateURLData& data);
 void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,
                                  WipeSearchEngineChoiceReason reason);
 
+// Returns the timestamp of search engine choice screen. No value if no choice
+// has been made.
+std::optional<base::Time> GetChoiceScreenCompletionTimestamp(
+    PrefService& prefs);
+
 #if !BUILDFLAG(IS_ANDROID)
 // Returns the engine marketing snippet string resource id or -1 if the snippet
 // was not found.
@@ -299,7 +309,7 @@ std::u16string GetMarketingSnippetString(
 // `generated_search_engine_resource_ids.cc`.
 int GetIconResourceId(const std::u16string& engine_keyword);
 
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace search_engines
 

@@ -1149,4 +1149,14 @@ void RunTestCase(
   }
 }
 
+// static
+bool PrivacySandboxSettingsTestPeer::IsAllowed(Status status) {
+  return privacy_sandbox::PrivacySandboxSettingsImpl::IsAllowed(status);
+}
+
+bool PrivacySandboxSettingsTestPeer::IsFledgeJoiningAllowed(
+    const url::Origin& top_frame_origin) const {
+  return pss_impl_->IsFledgeJoiningAllowed(top_frame_origin);
+}
+
 }  // namespace privacy_sandbox_test_util

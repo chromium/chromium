@@ -87,12 +87,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   static get properties() {
     return {
-      /** Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       // <if expr="not chromeos_ash">
       /**
        * Read-only reference to the languages model provided by the
@@ -209,6 +203,9 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   private showAdvancedFeaturesMainControl_: boolean;
   private enableAiSettingsPageRefresh_: boolean;
   private aiPageTitle_: string;
+  // <if expr="enable_glic">
+  private showGlicSection_: boolean;
+  // </if>
   private showPrivacyGuidePromo_: boolean;
   private privacyGuidePromoWasShown_: boolean;
   private privacyGuideBrowserProxy_: PrivacyGuideBrowserProxy =

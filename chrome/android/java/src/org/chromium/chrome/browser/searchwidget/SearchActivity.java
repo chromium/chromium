@@ -719,7 +719,9 @@ public class SearchActivity extends AsyncInitializationActivity
         int anchorViewColor =
                 ((GradientDrawable) anchorViewBackground).getColor().getDefaultColor();
         EdgeToEdgeSystemBarColorHelper helper =
-                getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper();
+                getEdgeToEdgeManager() != null
+                        ? getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper()
+                        : null;
         StatusBarColorController.setStatusBarColor(helper, getWindow(), anchorViewColor);
         helper.setNavigationBarColor(anchorViewColor);
     }

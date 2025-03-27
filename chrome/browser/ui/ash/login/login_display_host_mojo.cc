@@ -496,7 +496,9 @@ void LoginDisplayHostMojo::OnStartSignInScreen() {
 
   CreateExistingUserController();
 
-  ScheduleStartAuthHubInLoginMode();
+  if (ash::features::IsAuthPanelUsingAuthHub()) {
+    ScheduleStartAuthHubInLoginMode();
+  }
 
   // Load the UI.
   existing_user_controller_->Init(

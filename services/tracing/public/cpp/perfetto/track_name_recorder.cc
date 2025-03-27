@@ -109,8 +109,7 @@ void TrackNameRecorder::SetProcessTrackDescriptor(
 #if BUILDFLAG(IS_ANDROID)
   // Host app package name is only recorded if the corresponding TraceLog
   // setting is set to true.
-  if (base::trace_event::TraceLog::GetInstance()
-          ->ShouldRecordHostAppPackageName()) {
+  if (record_host_app_package_name_) {
     // Host app package name is used to group information from different
     // processes that "belong" to the same WebView app.
     if (process_type == ChromeProcessDescriptor::PROCESS_RENDERER ||
@@ -198,6 +197,11 @@ void TrackNameRecorder::SetProcessTrackDescriptor() {
   auto process_type = static_cast<ChromeProcessDescriptor::ProcessType>(
       base::CurrentProcess::GetInstance().GetType({}));
   SetProcessTrackDescriptor(process_name, process_type);
+}
+
+void TrackNameRecorder::SetRecordHostAppPackageName(
+    bool record_host_app_package_name) {
+  record_host_app_package_name_ = record_host_app_package_name;
 }
 
 }  // namespace tracing

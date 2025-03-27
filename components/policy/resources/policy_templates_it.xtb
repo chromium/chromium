@@ -277,6 +277,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 <translation id="1214942205301731697">Non consentire l'utilizzo della modalità sviluppatore nella pagina delle estensioni</translation>
 <translation id="1216919699175573511">Attiva il supporto per Signed HTTP Exchange (SXG)</translation>
 <translation id="1219027971768347970">Utilizza la configurazione predefinita per la sandbox audio</translation>
+<translation id="1219036692926668273">Utilizzo dell'algoritmo <ph name="HAPPY_EYEBALLS_V3" />.</translation>
 <translation id="1221359380862872747">Carica gli URL specificati all'accesso demo</translation>
 <translation id="1221955019309484560">Attiva gli aggiornamenti per tutti i componenti</translation>
 <translation id="1222694988453895594">Consente di impostare un elenco di protocolli, e per ogni protocollo un elenco associato di pattern di origini consentite, che possono lanciare un'applicazione esterna senza chiedere conferma all'utente. Il separatore finale non deve essere incluso nell'elenco di protocolli, quindi usa "skype" anziché "skype:" o "skype://".
@@ -4575,6 +4576,27 @@ Se la policy non viene configurata, si applica la policy <ph name="ASK_GEOLOCATI
 <translation id="4311195029067684288">Full</translation>
 <translation id="4311662690937656540">Applica in modo forzato gli accessi online nelle schermate di accesso e di blocco</translation>
 <translation id="4313767483634435271">Indirizzo MAC designato del dock del dispositivo</translation>
+<translation id="4313778862255986189">Questa è una funzionalità beta. Poiché si tratta di una funzionalità in fase di sviluppo, disponibile per i nostri trusted tester, tieni presente che potrebbe subire modifiche e aggiornamenti.
+
+Questa policy consente agli amministratori di impostare un aggregatore di ricerca aziendale designato che fornirà consigli e risultati di ricerca nella barra degli indirizzi quando viene attivato da una parola chiave specifica. Gli utenti possono avviare una ricerca digitando nella barra degli indirizzi la parola chiave specificata nel campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> con o senza il prefisso @ (ad es. <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) e premendo la barra spaziatrice o il tasto Tab.
+
+I seguenti campi sono obbligatori: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
+
+Il campo <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corrisponde al nome del motore di ricerca mostrato all'utente nella barra degli indirizzi.
+
+Il campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corrisponde alla parola chiave inserita dall'utente per attivare la ricerca. La scorciatoia può includere parole e caratteri semplici, ma non può includere spazi o iniziare con il simbolo @. Le scorciatoie devono essere univoche.
+
+Il campo <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL in cui cercare. Inserisci l'indirizzo web della pagina dei risultati del motore di ricerca e usa <ph name="SEARCH_TERM_MARKER" /> al posto della query.
+
+Il campo <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL che fornisce suggerimenti di ricerca. Se <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> contiene <ph name="SEARCH_TERM_MARKER" />, Chrome otterrà i suggerimenti di ricerca tramite una richiesta GET all'URL sostituendo <ph name="SEARCH_TERM_MARKER" /> con la query di ricerca dell'utente. In caso contrario, verrà eseguita una richiesta POST e la query dell'utente verrà inserita nei parametri POST sotto la chiave <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
+
+Il campo <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL di un'immagine che verrà utilizzata nei suggerimenti di ricerca. Se questo campo non viene impostato, verrà utilizzata un'icona predefinita. Consigliamo di utilizzare una favicon (ad esempio <ph name="ICON_URL_EXAMPLE" />). Formati di file immagine supportati: JPEG, PNG e ICO.
+
+Il campo <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica se la barra degli indirizzi <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> è obbligatoria per visualizzare i suggerimenti di ricerca. Se questo campo non viene impostato, la barra degli indirizzi <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> non è obbligatoria.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4314538398999793073">Disattiva ricerca CNAME durante l'autenticazione Kerberos</translation>
 <translation id="4320592646346933548">Wi-Fi</translation>
 <translation id="43213511254881626">Questa policy consente di stabilire se il gestore delle password integrato può eliminare le password non decifrabili dal relativo database. Questa operazione è necessaria per ripristinare la funzionalità completa del gestore delle password integrato, ma potrebbe comportare la perdita definitiva dei dati. I valori delle password non decifrabili non diventeranno decifrabili da soli e, se è possibile correggerli, in genere sono necessarie azioni complesse da parte dell'utente.
@@ -5817,13 +5839,19 @@ Se questa policy non viene configurata o se l'elenco non contiene riferimenti a 
       Durante questo periodo di tempo l'utente verrà informato più volte della necessità di un aggiornamento. Per quanto riguarda i dispositivi <ph name="PRODUCT_OS_NAME" />, nella barra delle applicazioni viene mostrata una notifica relativa al riavvio in base alla policy <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME" />. Per quanto riguarda i browser <ph name="PRODUCT_NAME" />, il menu delle app cambia per indicare che è necessario il riavvio una volta trascorso un terzo del periodo di notifica. Questa notifica cambia colore una volta trascorsi due terzi del periodo di notifica e lo cambia di nuovo al termine dell'intero periodo di notifica. Le notifiche aggiuntive attivate in base alla policy <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> seguono questa stessa pianificazione.
 
       Se la policy non viene impostata, viene usato il periodo predefinito di 604800000 millisecondi (una settimana).</translation>
+<translation id="5212140720192262527">Questa funzionalità consente all'algoritmo <ph name="HAPPY_EYEBALLS_V3" /> di effettuare tentativi di connessione. Per i dettagli, visita la pagina https://datatracker.ietf.org/doc/draft-pauly-happy-happyeyeballs-v3.
+
+Se la policy viene attivata, <ph name="PRODUCT_NAME" /> utilizzerà l'algoritmo <ph name="HAPPY_EYEBALLS_V3" /> per i tentativi di connessione.
+
+Se viene disattivata, l'algoritmo <ph name="HAPPY_EYEBALLS_V3" /> verrà disattivato.
+
+Se non configuri la policy, <ph name="PRODUCT_NAME" /> attiverà o disattiverà l'algoritmo <ph name="HAPPY_EYEBALLS_V3" /> in base all'indirizzo chrome://flags/#happy-eyeballs-v3.
+
+Questa policy supporta l'aggiornamento dinamico.
+
+Si tratta di una misura temporanea e verrà rimossa nelle future versioni di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5212810195096589189">Specifica l'autorizzazione per l'interfaccia a riga di comando delle macchine virtuali</translation>
 <translation id="5213038356678567351">Siti web che non devono mai attivare il cambio di browser.</translation>
-<translation id="5216520638921067085">Specifica l'età minima della release oltre la quale le notifiche di riavvio sono più aggressive. La durata viene calcolata a partire dall'ultima volta che la versione attualmente in esecuzione è stata pubblicata ai client.
-
-Se è in attesa una nuova versione, è necessario riavviare il browser o il dispositivo e la versione corrente è stata sostituita per più del numero di giorni specificato da questa impostazione, il criterio <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> viene forzato su 2 ore. Se il criterio <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> viene impostato su 1 (obbligatorio), gli utenti saranno costretti a riavviare o ricominciare alla fine del periodo.
-
-Se non viene configurato o se l'età della release non può essere determinata, il criterio <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> verrà utilizzato per tutti gli aggiornamenti.</translation>
 <translation id="5216815237712190041">Configura l'immagine di sfondo a livello di dispositivo da mostrare nella schermata di accesso se ancora nessun utente ha effettuato l'accesso al dispositivo. La policy viene impostata specificando l'URL da cui il dispositivo ChromeOS può scaricare l'immagine di sfondo e un hash crittografico utilizzato per verificare l'integrità del download. L'immagine deve essere in formato JPEG e avere dimensioni non superiori a 16 MB. L'URL deve essere accessibile senza autenticazione. L'immagine di sfondo viene scaricata e memorizzata nella cache. Verrà scaricata nuovamente ogni volta che l'URL o l'hash cambiano.
 
       Se la policy dello sfondo del dispositivo viene configurata, il dispositivo ChromeOS scarica e utilizza l'immagine di sfondo nella schermata di accesso se ancora nessun utente ha effettuato l'accesso al dispositivo. Quando un utente esegue l'accesso, si attiva la policy dello sfondo dell'utente.
@@ -7108,6 +7136,7 @@ Questa policy può essere usata qualora la nostra procedura in corso di eliminaz
 
 NOTA: le modifiche apportate a questa policy verranno applicate soltanto ai processi del renderer appena avviati mentre il browser è in esecuzione.</translation>
 <translation id="6083631234867522991">Windows (client Windows):</translation>
+<translation id="6087413944876892918">Utilizza l'algoritmo <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Imposta un valore percentuale per il limite di consumo della batteria per la variazione dei picchi energetici</translation>
 <translation id="6089679180657323464">Consente di stabilire le impostazioni del controller DTC (Diagnostics and Telemetry Controller) wilco.</translation>
 <translation id="6091233616732024397">Forza gli utenti a eseguire l'accesso per usare il browser</translation>
@@ -9665,6 +9694,7 @@ Se la policy viene impostata su Disattivata o se non viene configurata, il Kerbe
 
       Consente di stabilire l'ID dell'estensione da utilizzare come salvaschermo nella schermata di accesso. L'estensione deve far parte dell'AppPack configurato per il dominio tramite la norma DeviceAppPack.</translation>
 <translation id="7882890448959833986">Elimina l'avviso di sistema operativo non supportato</translation>
+<translation id="7884672714405919225">Non utilizzare l'algoritmo <ph name="HAPPY_EYEBALLS_V3" />.</translation>
 <translation id="788480874436328004">Disattiva il salvataggio delle password utilizzando Gestore delle password</translation>
 <translation id="7891884447851425349">Se la policy <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attiva, l'assegnazione di un valore alla policy <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> consente di specificare l'URL del motore di ricerca utilizzato durante una ricerca predefinita. L'URL dovrebbe includere la stringa <ph name="SEARCH_TERM_MARKER" />, sostituita nella query dai termini di ricerca degli utenti.
 

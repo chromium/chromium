@@ -1565,7 +1565,6 @@
 <translation id="2081816110395725788">เข้าสู่โหมดสลีปขณะใช้แบตเตอรี่</translation>
 <translation id="2082187087049518845">จัดกลุ่มแท็บ</translation>
 <translation id="2082510809738716738">เลือกสีธีม</translation>
-<translation id="208547068587548667">ลงชื่อเข้าใช้ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">โปรดลองอีกครั้ง</translation>
 <translation id="208634871997892083">การเชื่อมต่อ VPN ตลอดเวลา</translation>
 <translation id="208654914566977272">การดำเนินการที่แนะนำเมื่อค้นหาในหน้าจอ</translation>
@@ -2981,6 +2980,7 @@
 <translation id="3045447014237878114">เว็บไซต์นี้มีการดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติ</translation>
 <translation id="3046178388369461825">พื้นที่ดิสก์ Linux เกือบเต็มแล้ว</translation>
 <translation id="304644035656848980">ตัวอย่างไมโครโฟน</translation>
+<translation id="3046892784550338476">เวอร์ชัน <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">หน้าเว็บ ทั้งหมด</translation>
 <translation id="304747341537320566">เครื่องมืออ่านออกเสียง</translation>
 <translation id="3047678109605649715">ไม่มีเสียงภาษา<ph name="LANGUAGE" />บนอุปกรณ์ของคุณ ล้างพื้นที่ในอุปกรณ์แล้วลองอีกครั้ง</translation>
@@ -3997,7 +3997,6 @@
 <translation id="3778740492972734840">&amp;เครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="3778868487658107119">ถามคำถามและบอกให้ทำสิ่งต่างๆ ได้เหมือนเป็น Google ส่วนตัวที่พร้อมช่วยเหลือคุณเสมอ</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{ประวัติการท่องเว็บใน # เว็บไซต์}other{ประวัติการท่องเว็บใน # เว็บไซต์}}</translation>
-<translation id="3779244863011082655">ใช้บัญชี <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> อื่น</translation>
 <translation id="3780542776224651912"><ph name="BRAND" />ตรวจสอบรหัสผ่านจากการละเมิดข้อมูลไม่ได้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="3781742599892759500">การเข้าถึงไมโครโฟนใน Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5500,6 +5499,7 @@
 <translation id="4848191975108266266">"Ok Google" ใน Google Assistant</translation>
 <translation id="4849286518551984791">เวลาสากลเชิงพิกัด (UTC/GMT)</translation>
 <translation id="4849517651082200438">ไม่ต้องติดตั้ง</translation>
+<translation id="4849731766219625109">ใช้บัญชี <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ของคุณ</translation>
 <translation id="485053257961878904">ตั้งค่าการซิงค์การแจ้งเตือนไม่สำเร็จ</translation>
 <translation id="4850548109381269495">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตในอุปกรณ์ทั้ง 2 เครื่องแล้วเปิดบลูทูธ จากนั้นลองอีกครั้ง</translation>
 <translation id="4850669014075537160">การเลื่อน</translation>
@@ -5688,6 +5688,7 @@
 <translation id="4979510648199782334">การตั้งค่า Microsoft 365 เสร็จสมบูรณ์</translation>
 <translation id="4980805016576257426">ส่วนขยายนี้มีมัลแวร์</translation>
 <translation id="4983159853748980742">ไม่ได้แชร์รหัสผ่าน ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและดูว่าคุณลงชื่อเข้าใช้ Chrome แล้ว จากนั้นลองอีกครั้ง</translation>
+<translation id="498624032394115435">ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้</translation>
 <translation id="4986706507552097681">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
 <translation id="4986728572522335985">การดำเนินการนี้จะลบข้อมูลทั้งหมดในคีย์ความปลอดภัย รวมถึง PIN ของคีย์ด้วย</translation>
 <translation id="4987944280765486504">Chromebook จะรีสตาร์ทเมื่อดาวน์โหลดเสร็จและคุณตั้งค่าต่อไปได้</translation>
@@ -8293,7 +8294,6 @@
 <translation id="6873571253135628430">เปลี่ยนสิทธิ์ของเว็บไซต์</translation>
 <translation id="6876155724392614295">จักรยาน</translation>
 <translation id="6876469544038980967">ไม่มีประโยชน์</translation>
-<translation id="687838958001010630">ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้</translation>
 <translation id="6878422606530379992">อนุญาตให้ใช้เซ็นเซอร์</translation>
 <translation id="6878862640969460273">แนวนอน</translation>
 <translation id="6880587130513028875">หน้าเว็บนี้บล็อกการแสดงภาพ</translation>

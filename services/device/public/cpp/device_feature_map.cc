@@ -7,6 +7,7 @@
 #include "base/android/feature_map.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "device/base/features.h"
 #include "device/fido/features.h"
 #include "services/device/public/cpp/device_features.h"
 
@@ -26,6 +27,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &device::kWebAuthnRemoteDesktopAllowedOriginsPolicy,
     &kGenericSensorExtraClasses,
     &kBatteryStatusManagerBroadcastReceiverInBackground,
+    &device::features::kBluetoothRfcommAndroid,
 };
 
 // static

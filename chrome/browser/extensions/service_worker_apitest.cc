@@ -1429,13 +1429,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
     ExtensionTestMessageListener ready_listener("ready2");
     ExtensionTestMessageListener on_installed_listener("onInstalled");
     base::FilePath path = test_dir.Pack();
-    ExtensionService* const extension_service =
-        ExtensionSystem::Get(profile())->extension_service();
     CRXFileInfo crx_info(path, GetTestVerifierFormat());
     crx_info.extension_id = id;
 
-    auto installer =
-        extension_service->updater()->CreateUpdateInstaller(crx_info, true);
+    ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
+    auto installer = updater->CreateUpdateInstaller(crx_info, true);
     EXPECT_TRUE(installer);
     installer->InstallCrxFile(crx_info);
 

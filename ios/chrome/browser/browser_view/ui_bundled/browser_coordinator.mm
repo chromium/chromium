@@ -109,6 +109,7 @@
 #import "ios/chrome/browser/follow/model/followed_web_site.h"
 #import "ios/chrome/browser/follow/ui_bundled/first_follow_coordinator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_reason.h"
 #import "ios/chrome/browser/google_one/coordinator/google_one_coordinator.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
@@ -1744,7 +1745,7 @@ enum class ToolbarKind {
       [[SharingParams alloc] initWithScenario:SharingScenario::TabShareButton];
 
   // Exit fullscreen if needed to make sure that share button is visible.
-  _fullscreenController->ExitFullscreen();
+  _fullscreenController->ExitFullscreen(FullscreenExitReason::kForcedByCode);
 
   id<SharingPositioner> positioner = _toolbarCoordinator.sharingPositioner;
   UIBarButtonItem* anchor = nil;
@@ -1789,7 +1790,7 @@ enum class ToolbarKind {
                                 scenario:SharingScenario::ShareChrome];
 
   // Exit fullscreen if needed to make sure that share button is visible.
-  _fullscreenController->ExitFullscreen();
+  _fullscreenController->ExitFullscreen(FullscreenExitReason::kForcedByCode);
 
   UIView* originView =
       [_layoutGuideCenter referencedViewUnderName:kToolsMenuGuide];

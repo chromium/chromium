@@ -33,18 +33,6 @@ export class PrivacyGuideMsbbFragmentElement extends
     return getTemplate();
   }
 
-  static get properties() {
-    return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-    };
-  }
-
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   private startStateMsbbOn_: boolean;

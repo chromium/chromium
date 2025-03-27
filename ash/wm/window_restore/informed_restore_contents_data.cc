@@ -14,7 +14,12 @@ InformedRestoreContentsData::TabInfo::TabInfo() = default;
 
 InformedRestoreContentsData::TabInfo::TabInfo(const GURL& url,
                                               const std::string& title)
-    : url(url), title(title) {}
+    : TabInfo(url, GURL::EmptyGURL(), title) {}
+
+InformedRestoreContentsData::TabInfo::TabInfo(const GURL& url,
+                                              const GURL& virtual_url,
+                                              const std::string& title)
+    : url(url), virtual_url(virtual_url), title(title) {}
 
 InformedRestoreContentsData::AppInfo::AppInfo(const std::string& app_id,
                                               const std::string& title,

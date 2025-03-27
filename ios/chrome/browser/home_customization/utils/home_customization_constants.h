@@ -10,6 +10,9 @@
 // Represents the section identifiers of the customization menu as an NSString.
 typedef NSString CustomizationSection;
 
+// The section identifier for the main menu's background customizations.
+extern CustomizationSection* const kCustomizationSectionBackground;
+
 // The section identifier for the main menu's visibility toggles.
 extern CustomizationSection* const kCustomizationSectionMainToggles;
 

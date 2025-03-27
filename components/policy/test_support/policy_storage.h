@@ -147,6 +147,17 @@ class PolicyStorage {
     metrics_log_segment_ = segment;
   }
 
+  const std::optional<
+      enterprise_management::PolicyData::K12AgeClassificationMetricsLogSegment>
+  k12_age_classification_metrics_log_segment() const {
+    return k12_age_classification_metrics_log_segment_;
+  }
+  void set_k12_age_classification_metrics_log_segment(
+      enterprise_management::PolicyData::K12AgeClassificationMetricsLogSegment
+          segment) {
+    k12_age_classification_metrics_log_segment_ = segment;
+  }
+
   base::Time timestamp() const { return timestamp_; }
   void set_timestamp(const base::Time& timestamp) { timestamp_ = timestamp; }
 
@@ -239,6 +250,9 @@ class PolicyStorage {
       market_segment_;
   std::optional<enterprise_management::PolicyData::MetricsLogSegment>
       metrics_log_segment_;
+  std::optional<
+      enterprise_management::PolicyData::K12AgeClassificationMetricsLogSegment>
+      k12_age_classification_metrics_log_segment_;
 
   base::Time timestamp_;
 

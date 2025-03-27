@@ -42,14 +42,6 @@ export class PrivacyGuideSafeBrowsingFragmentElement extends
   static get properties() {
     return {
       /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
        * Valid safe browsing states.
        */
       safeBrowsingSettingEnum_: {

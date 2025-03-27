@@ -446,6 +446,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         // WindowAndroid is created in #onCreateInternal, happened before onPostCreate.
         if (getWindowAndroid() != null) {
+            // EdgeToEdgeStateProvider is created in #onCreate.
+            assert getEdgeToEdgeStateProvider() != null;
             getEdgeToEdgeStateProvider().attach(getWindowAndroid());
         }
     }

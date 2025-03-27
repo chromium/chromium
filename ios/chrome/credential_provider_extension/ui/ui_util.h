@@ -13,11 +13,11 @@ extern const CGFloat kUITableViewInsetGroupedTopSpace;
 
 // The user friendly host for a service identifier.
 NSString* HostForServiceIdentifier(
-    ASCredentialServiceIdentifier* serviceIdentfier);
+    ASCredentialServiceIdentifier* serviceIdentifier);
 
 // Prompt for the top of the navigation controller telling what the current site
 // is.
 NSString* PromptForServiceIdentifiers(
-    NSArray<ASCredentialServiceIdentifier*>* serviceIdentfiers);
+    NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers);
 
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_UI_UI_UTIL_H_

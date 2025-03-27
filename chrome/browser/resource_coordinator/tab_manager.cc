@@ -140,11 +140,6 @@ LifecycleUnitVector TabManager::GetSortedLifecycleUnits() {
   return sorted_lifecycle_units;
 }
 
-void TabManager::DiscardTab(LifecycleUnitDiscardReason reason,
-                            TabDiscardDoneCB tab_discard_done) {
-  DiscardTabImpl(reason, std::move(tab_discard_done));
-}
-
 WebContents* TabManager::DiscardTabByExtension(content::WebContents* contents) {
   if (contents) {
     TabLifecycleUnitExternal* tab_lifecycle_unit_external =

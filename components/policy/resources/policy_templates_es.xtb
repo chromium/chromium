@@ -5753,11 +5753,6 @@ Si no se define esta política o la lista no contiene ninguna referencia a una i
       Si no se asigna ningún valor, se usa el periodo predeterminado de 604.800.000 milisegundos (una semana).</translation>
 <translation id="5212810195096589189">Especificar el permiso de la interfaz de línea de comandos para máquinas virtuales</translation>
 <translation id="5213038356678567351">Sitios web que nunca deben activar un cambio de navegador.</translation>
-<translation id="5216520638921067085">Especifica la antigüedad mínima de lanzamiento más allá de la cual las notificaciones de reinicio son más frecuentes. La antigüedad se calcula desde la última vez que se entregó la versión en ejecución a los clientes.
-
-Si hay una nueva versión pendiente, se necesita reiniciar el navegador o el dispositivo, y si ha pasado más tiempo que el número de días especificado en este ajuste desde la actualización de la versión actual, la política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> se establece a 2 horas. Si se asigna el valor 1 ("Requerido") a la política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" />, los usuarios tendrán que reiniciar al final del periodo.
-
-Si no se establece o si no se puede determinar la antigüedad de lanzamiento, se usará la política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> para todas las actualizaciones.</translation>
 <translation id="5216815237712190041">Permite configurar en cada dispositivo la imagen de fondo de pantalla que se muestra en la pantalla de inicio de sesión si ningún usuario ha iniciado sesión en el dispositivo. La política se define especificando la URL desde la que el dispositivo ChromeOS puede descargar la imagen de fondo de pantalla y un hash criptográfico que se utiliza para verificar la integridad de la descarga. La imagen debe tener formato JPEG y un tamaño que no supere los 16 MB. Se debe poder acceder a la URL sin autenticación. La imagen de fondo de pantalla se descargará y almacenará en caché. Se volverá a descargar si se cambia la URL o el hash.
 
       Si se establece la política de fondo de pantalla del dispositivo, el dispositivo ChromeOS descargará y utilizará la imagen de fondo en la pantalla de inicio de sesión si ningún usuario ha iniciado sesión en el dispositivo. Una vez que el usuario inicie sesión, se aplicará la política de fondo de pantalla del usuario.

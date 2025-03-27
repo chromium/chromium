@@ -23,7 +23,6 @@ import org.chromium.base.UserData;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionEventProcessor;
@@ -87,9 +86,8 @@ public class SmartSelectionClient implements SelectionClient, UserData {
 
         SmartSelectionClient client =
                 assumeNonNull(
-                        ((WebContentsImpl) webContents)
-                                .getOrSetUserData(
-                                        SmartSelectionClient.class, SmartSelectionClient::new));
+                        webContents.getOrSetUserData(
+                                SmartSelectionClient.class, SmartSelectionClient::new));
         client.setCallback(callback, webContents);
         return client;
     }

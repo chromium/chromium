@@ -99,6 +99,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
     };
   }
 
+  prefs: {[key: string]: any};
   private toolbarSpinnerActive_: boolean;
   private narrow_: boolean;
   private pageVisibility_: PageVisibility;

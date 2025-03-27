@@ -3,24 +3,19 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/saved_tab_groups/public/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/test_data_util.h"
 
 class DeferredMediaBrowserTest : public InProcessBrowserTest {
  public:
-  DeferredMediaBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        tab_groups::kDeferMediaLoadInBackgroundTab);
-  }
+  DeferredMediaBrowserTest() = default;
 
   ~DeferredMediaBrowserTest() override = default;
 
@@ -56,9 +51,6 @@ class DeferredMediaBrowserTest : public InProcessBrowserTest {
     watcher.AlsoWaitForTitle(ended_str);
     EXPECT_EQ(playing_str, watcher.WaitAndGetTitle());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DeferredMediaBrowserTest, BackgroundMediaIsDeferred) {

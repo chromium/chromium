@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_extension_helper.h"
@@ -15,7 +14,6 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "components/crx_file/id_util.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/manifest.h"
 
 namespace {
@@ -100,15 +98,12 @@ void UseSystemTheme(Profile* profile) {
 ThemePendingInstallChecker::ThemePendingInstallChecker(Profile* profile,
                                                        const std::string& theme)
     : profile_(profile), theme_(theme) {
-  CHECK(extensions::ExtensionSystem::Get(profile)
-            ->extension_service()
-            ->updater());
-  extensions::ExtensionSystem::Get(profile)
-      ->extension_service()
-      ->updater()
-      ->SetUpdatingStartedCallbackForTesting(
-          base::BindRepeating(&ThemePendingInstallChecker::CheckExitCondition,
-                              weak_ptr_factory_.GetWeakPtr()));
+  auto* updater = extensions::ExtensionUpdater::Get(profile_);
+  CHECK(updater);
+  CHECK(updater->enabled());
+  updater->SetUpdatingStartedCallbackForTesting(
+      base::BindRepeating(&ThemePendingInstallChecker::CheckExitCondition,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 ThemePendingInstallChecker::~ThemePendingInstallChecker() = default;

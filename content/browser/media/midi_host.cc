@@ -52,13 +52,14 @@ MidiHost::MidiHost(int renderer_process_id, midi::MidiService* midi_service)
       sent_bytes_in_flight_(0),
       bytes_sent_since_last_acknowledgement_(0),
       output_port_count_(0) {
-  DCHECK(midi_service_);
+  CHECK(midi_service_);
 }
 
 MidiHost::~MidiHost() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (midi_client_ && midi_service_)
+  if (midi_client_ && midi_service_) {
     EndSession();
+  }
 }
 
 // static
@@ -74,9 +75,10 @@ void MidiHost::BindReceiver(
 
 void MidiHost::CompleteStartSession(Result result) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(midi_client_);
-  if (result == Result::OK)
+  CHECK(midi_client_);
+  if (result == Result::OK) {
     midi_session_.Bind(std::move(pending_session_receiver_));
+  }
   midi_client_->SessionStarted(result);
 }
 
@@ -110,20 +112,23 @@ void MidiHost::ReceiveMidiData(uint32_t port,
   TRACE_EVENT0("midi", "MidiHost::ReceiveMidiData");
 
   base::AutoLock auto_lock(messages_queues_lock_);
-  if (received_messages_queues_.size() <= port)
+  if (received_messages_queues_.size() <= port) {
     return;
+  }
 
   // Lazy initialization
-  if (received_messages_queues_[port] == nullptr)
+  if (received_messages_queues_[port] == nullptr) {
     received_messages_queues_[port] =
         std::make_unique<midi::MidiMessageQueue>(true);
+  }
 
   received_messages_queues_[port]->Add(data, length);
   std::vector<uint8_t> message;
   while (true) {
     received_messages_queues_[port]->Get(&message);
-    if (message.empty())
+    if (message.empty()) {
       break;
+    }
 
     if (base::FeatureList::IsEnabled(blink::features::kBlockMidiByDefault)) {
       // MIDI devices may send messages even if the renderer doesn't have
@@ -165,13 +170,15 @@ void MidiHost::ReceiveMidiData(uint32_t port,
 void MidiHost::AccumulateMidiBytesSent(size_t n) {
   {
     base::AutoLock auto_lock(in_flight_lock_);
-    if (n <= sent_bytes_in_flight_)
+    if (n <= sent_bytes_in_flight_) {
       sent_bytes_in_flight_ -= n;
+    }
   }
 
   if (bytes_sent_since_last_acknowledgement_ + n >=
-      bytes_sent_since_last_acknowledgement_)
+      bytes_sent_since_last_acknowledgement_) {
     bytes_sent_since_last_acknowledgement_ += n;
+  }
 
   if (bytes_sent_since_last_acknowledgement_ >=
       kAcknowledgementThresholdBytes) {
@@ -189,18 +196,21 @@ void MidiHost::StartSession(
     mojo::PendingReceiver<midi::mojom::MidiSession> session_receiver,
     mojo::PendingRemote<midi::mojom::MidiSessionClient> client) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(!pending_session_receiver_);
-  // Checks to see if |midi_session_| isn't already bound to another
+  // Ensure that this `midi_session_` isn't already bound to another
   // MidiSessionRequest.
+  if (pending_session_receiver_ || midi_client_) {
+    bad_message::ReceivedBadMessage(renderer_process_id_,
+                                    bad_message::MH_MULTIPLE_MIDI_SESSIONS);
+    return;
+  }
   pending_session_receiver_ = std::move(session_receiver);
-
-  DCHECK(!midi_client_);
   midi_client_.Bind(std::move(client));
   midi_client_.set_disconnect_handler(
       base::BindOnce(&MidiHost::EndSession, base::Unretained(this)));
 
-  if (midi_service_)
+  if (midi_service_) {
     midi_service_->StartSession(this);
+  }
 }
 
 void MidiHost::SendData(uint32_t port,
@@ -216,8 +226,9 @@ void MidiHost::SendData(uint32_t port,
     }
   }
 
-  if (data.empty())
+  if (data.empty()) {
     return;
+  }
 
   // Blink running in a renderer checks permission to raise a SecurityError
   // in JavaScript. The actual permission check for security purposes
@@ -248,20 +259,23 @@ void MidiHost::SendData(uint32_t port,
     }
   }
 
-  if (!IsValidWebMIDIData(data))
+  if (!IsValidWebMIDIData(data)) {
     return;
+  }
 
   {
     base::AutoLock auto_lock(in_flight_lock_);
     // Sanity check that we won't send too much data.
     // TODO(yukawa): Consider to send an error event back to the renderer
     // after some future discussion in W3C.
-    if (data.size() + sent_bytes_in_flight_ > kMaxInFlightBytes)
+    if (data.size() + sent_bytes_in_flight_ > kMaxInFlightBytes) {
       return;
+    }
     sent_bytes_in_flight_ += data.size();
   }
-  if (midi_service_)
+  if (midi_service_) {
     midi_service_->DispatchSendMidiData(this, port, data, timestamp);
+  }
 }
 
 template <typename Method, typename... Params>
@@ -277,8 +291,9 @@ void MidiHost::CallClient(Method method, Params... params) {
 }
 
 void MidiHost::EndSession() {
-  if (midi_service_)
+  if (midi_service_) {
     midi_service_->EndSession(this);
+  }
   midi_client_.reset();
   midi_session_.reset();
 }

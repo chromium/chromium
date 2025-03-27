@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/propvarutil.h"
 #include "base/win/scoped_propvariant.h"
@@ -102,7 +103,7 @@ HRESULT BuildCdmAccessConfigurations(const CdmConfig& cdm_config,
                                                  video_capabilities.get()));
 
   // Add persistent state.
-  DCHECK(cdm_config.allow_persistent_state);
+  CHECK(cdm_config.allow_persistent_state, base::NotFatalUntil::M140);
   base::win::ScopedPropVariant persisted_state;
   RETURN_IF_FAILED(InitPropVariantFromUInt32(MF_MEDIAKEYS_REQUIREMENT_REQUIRED,
                                              persisted_state.Receive()));
@@ -110,7 +111,7 @@ HRESULT BuildCdmAccessConfigurations(const CdmConfig& cdm_config,
                                                  persisted_state.get()));
 
   // Add distinctive identifier.
-  DCHECK(cdm_config.allow_distinctive_identifier);
+  CHECK(cdm_config.allow_distinctive_identifier, base::NotFatalUntil::M140);
   base::win::ScopedPropVariant distinctive_identifier;
   RETURN_IF_FAILED(InitPropVariantFromUInt32(MF_MEDIAKEYS_REQUIREMENT_REQUIRED,
                                              distinctive_identifier.Receive()));
@@ -126,7 +127,7 @@ HRESULT BuildCdmProperties(
     const std::optional<std::vector<uint8_t>>& client_token,
     const base::FilePath& store_path,
     ComPtr<IPropertyStore>& properties) {
-  DCHECK(!origin_id.is_empty());
+  CHECK(!origin_id.is_empty(), base::NotFatalUntil::M140);
 
   ComPtr<IPropertyStore> temp_properties;
   RETURN_IF_FAILED(PSCreateMemoryPropertyStore(IID_PPV_ARGS(&temp_properties)));
@@ -174,7 +175,7 @@ HRESULT CreateMediaFoundationCdm(
            << ", cdm_origin_id=" << cdm_origin_id.ToString()
            << ", cdm_store_path_root=" << cdm_store_path_root;
 
-  DCHECK(!cdm_origin_id.is_empty());
+  CHECK(!cdm_origin_id.is_empty(), base::NotFatalUntil::M140);
 
   const auto key_system = cdm_config.key_system;
   auto key_system_str = base::UTF8ToWide(key_system);

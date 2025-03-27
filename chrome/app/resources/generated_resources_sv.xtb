@@ -403,6 +403,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1264956950255940376">Blinka med vänster öga</translation>
 <translation id="1265094893042958831">Genererar förslag för den här sidan …</translation>
 <translation id="1265279736024499987">Appar och inställningar synkroniseras på alla ChromeOS Flex-enheter där du är inloggad på ditt Google-konto. Alternativ för synkronisering av webbläsaren finns i <ph name="LINK_BEGIN" />Chrome-inställningarna<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Visa fler åtgärder, till exempel Lägg till i Kalender och Skapa Google Dokument, när du har tagit en skärmbild eller sökt på skärmen.</translation>
 <translation id="126710816202626562">Översättningsspråk:</translation>
 <translation id="1267649802567297774">Genererad bild <ph name="INDEX" /> på <ph name="SUBJECT" /> i <ph name="STYLE" />-stil, med <ph name="MOOD" />-stämning.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1574,9 +1575,9 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2081816110395725788">Inaktivitet vid batteridrift</translation>
 <translation id="2082187087049518845">Gruppflik</translation>
 <translation id="2082510809738716738">Välj en temafärg</translation>
-<translation id="208547068587548667">Logga in på <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Försök igen</translation>
 <translation id="208634871997892083">Alltid på-VPN</translation>
+<translation id="208654914566977272">Föreslagna åtgärder när du söker på skärmen</translation>
 <translation id="2087822576218954668">Utskrift: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Registrering stöds endast när <ph name="DEVICE_OS" /> har installerats.</translation>
 <translation id="2088564884469682888">Inbyggd TrackPoint</translation>
@@ -4010,7 +4011,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3778740492972734840">&amp;Verktyg för programmerare</translation>
 <translation id="3778868487658107119">Ställ frågor. Be den att göra saker. Det är Google anpassat just för dig, alltid redo att hjälpa dig.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{din webbhistorik för # webbplats}other{din webbhistorik för # webbplatser}}</translation>
-<translation id="3779244863011082655">Använd ett annat <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-konto</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> kan inte kontrollera dina lösenord mot dataintrång. Försök igen senare.</translation>
 <translation id="3781742599892759500">Mikrofonåtkomst i Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5364,7 +5364,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4744268813103118742">Besök webbplatsen</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Sätt på webbplatsens ljud}other{Sätt på webbplatsernas ljud}}</translation>
-<translation id="4745500401920035244">Vissa äldre profiler har inaktiverats på grund av en ändring i systemet som administratören gjort. Du har inte längre åtkomst till profilen men kan fortfarande ta bort den</translation>
+<translation id="4745500401920035244">Vissa äldre profiler har inaktiverats på grund av en ändring i systemet som administratören gjort. Du har inte längre åtkomst till profilen men kan fortfarande ta bort den.</translation>
 <translation id="474609389162964566">Kom åt Google Assistent med ”Hey Google”</translation>
 <translation id="4746757725581505837">Du håller på att radera din data för <ph name="BRAND" /> som har sparats på den här enheten</translation>
 <translation id="4748783296226936791">Åtkomst till HID-enheter brukar kunna behövas för funktioner som använder ovanliga tangentbord, handkontroller och andra enheter</translation>
@@ -5514,6 +5514,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4848191975108266266">Google Assistent ”Ok Google”</translation>
 <translation id="4849286518551984791">Koordinerad universell tid (UTC/GMT)</translation>
 <translation id="4849517651082200438">Installera inte</translation>
+<translation id="4849731766219625109">Använd ditt <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-konto</translation>
 <translation id="485053257961878904">Det gick inte att konfigurera synkronisering av aviseringar</translation>
 <translation id="4850548109381269495">Kontrollera internetanslutningen och aktivera Bluetooth på båda enheterna. Försök sedan igen.</translation>
 <translation id="4850669014075537160">Rullning</translation>
@@ -5702,6 +5703,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4979510648199782334">Konfigureringen av Microsoft 365 är klar</translation>
 <translation id="4980805016576257426">Tillägget innehåller skadlig kod.</translation>
 <translation id="4983159853748980742">Ditt lösenord har inte delats. Kontrollera internetanslutningen och se till att du är inloggad i Chrome. Försök sedan igen.</translation>
+<translation id="498624032394115435">Alla som har länken kan redigera alla flikar.</translation>
 <translation id="4986706507552097681">Du kan alltid välja vad som ska synkroniseras i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="4986728572522335985">All data på säkerhetsnyckeln raderas, inklusive pinkoden</translation>
 <translation id="4987944280765486504">Din Chromebook startas om när nedladdningen har slutförts och du kan fortsätta konfigureringen.</translation>
@@ -8311,7 +8313,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6873571253135628430">Ändra behörigheter för webbplatser</translation>
 <translation id="6876155724392614295">Cykel</translation>
 <translation id="6876469544038980967">Inte användbart</translation>
-<translation id="687838958001010630">Alla som har länken kan redigera alla flikar</translation>
 <translation id="6878422606530379992">Användning av sensorer har tillåtits</translation>
 <translation id="6878862640969460273">Liggande</translation>
 <translation id="6880587130513028875">Bilder är blockerade på den här sidan.</translation>

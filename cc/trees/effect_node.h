@@ -85,9 +85,6 @@ struct CC_EXPORT EffectNode {
   std::optional<gfx::RRectF> backdrop_filter_bounds;
   float backdrop_filter_quality = 1.f;
 
-  // TODO(crbug.com/406004564): Remove unused filters_origin property
-  gfx::PointF filters_origin;
-
   // The element id corresponding to the mask to apply to the filtered backdrop
   // image.
   ElementId backdrop_mask_element_id;
@@ -131,12 +128,6 @@ struct CC_EXPORT EffectNode {
   // Whether this node has a potentially running (i.e., irrespective
   // of exact timeline) opacity animation.
   bool has_potential_opacity_animation : 1 = false;
-  // Whether this node has a currently running filter animation.
-  bool is_currently_animating_filter : 1 = false;
-  // Whether this node has a currently running backdrop-filter animation.
-  bool is_currently_animating_backdrop_filter : 1 = false;
-  // Whether this node has a currently running opacity animation.
-  bool is_currently_animating_opacity : 1 = false;
   // Whether this node has a child node with kDstIn blend mode.
   bool has_masking_child : 1 = false;
   // Whether this node's effect has been changed since the last

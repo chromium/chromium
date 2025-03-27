@@ -856,6 +856,7 @@ Jika kebijakan ini tidak disetel, pengguna akan diizinkan untuk menambahkan peng
       Tidak menyetel kebijakan ini untuk suatu situs akan membuat kebijakan dari <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> berlaku untuk situs tersebut, jika disetel, atau izin akan mengikuti setelan default browser dan memungkinkan pengguna memilih izin ini untuk setiap situs.</translation>
 <translation id="1574258262373444557">Jangan gunakan <ph name="AES_KL_NAME" /> sebagai algoritme enkripsi untuk enkripsi penyimpanan pengguna</translation>
 <translation id="1575015449587326319">Kebijakan konfigurasi untuk Chrome Enterprise Connector OnFileDownloaded</translation>
+<translation id="1576797364335927541">Nonaktifkan <ph name="ALR_FEATURE_NAME" /></translation>
 <translation id="1577162851453388235">Direct Sockets API memungkinkan komunikasi dengan endpoint arbitrer menggunakan TCP dan UDP.
 Lihat https://github.com/WICG/direct-sockets untuk mengetahui detail selengkapnya.
 
@@ -2354,6 +2355,15 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
 <translation id="2608535066974278204">Jangka waktu (menit) yang menentukan lamanya interval peluncuran kembali.</translation>
 <translation id="2608887839902987727">Cegah autentikasi captive portal mengabaikan setelan proxy</translation>
 <translation id="2608985885792348429">Setelan papan klip default</translation>
+<translation id="2613388238625781546">Header permintaan HTTP <ph name="AL_HEADER_NAME" /> dan pengambil <ph name="JS_GETTER_NAME" /> JavaScript direncanakan untuk dikurangi karena alasan privasi.
+Untuk memudahkan pengujian dan memastikan kompatibilitas, kebijakan ini memungkinkan Anda mengaktifkan atau menonaktifkan fitur <ph name="ALR_FEATURE_NAME" />.
+
+Jika kebijakan ini disetel ke aktif atau tidak disetel, <ph name="ALR_FEATURE_NAME" /> akan diterapkan melalui uji coba lapangan.
+Jika kebijakan ini disetel ke nonaktif, uji coba lapangan tidak akan dapat mengaktifkan <ph name="ALR_FEATURE_NAME" />.
+
+Untuk mengetahui informasi selengkapnya tentang fitur ini, buka: https://github.com/explainers-by-googlers/reduce-accept-language.
+
+CATATAN: Hanya proses perender yang baru dimulai yang akan menunjukkan perubahan pada kebijakan ini saat browser berjalan.</translation>
 <translation id="2613493229743687635"><ph name="GET_ALL_SCREENS_MEDIA_NAME" /> API memungkinkan aplikasi web terisolasi (yang diidentifikasi berdasarkan asalnya) untuk merekam beberapa platform sekaligus tanpa izin pengguna tambahan.
       Jika kebijakan ini tidak disetel, <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> tidak tersedia untuk semua aplikasi web.
 Untuk meningkatkan privasi, kebijakan ini tidak akan mendukung pembaruan nilai kebijakan di tengah sesi. Oleh karena itu, perubahan hanya akan berlaku setelah pengguna logout dan login lagi.
@@ -5963,11 +5973,6 @@ Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang 
       Jika tidak ditetapkan, jangka waktu default selama 604800000 milidetik (satu minggu) akan digunakan.</translation>
 <translation id="5212810195096589189">Tentukan izin CLI VM</translation>
 <translation id="5213038356678567351">Situs yang seharusnya tidak pernah memicu pengalihan browser.</translation>
-<translation id="5216520638921067085">Menentukan usia rilis minimum yang melampaui notifikasi peluncuran kembali yang lebih agresif. Usia dihitung sejak saat versi yang sedang berjalan terakhir kali ditampilkan kepada klien.
-
-Jika versi baru tertunda, browser perlu diluncurkan kembali atau perangkat perlu dimulai ulang, dan versi saat ini yang telah digantikan selama lebih dari jumlah hari yang ditentukan oleh setelan ini, kebijakan <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />-nya akan diganti dengan 2 jam. Jika kebijakan <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> disetel ke 1 ('Diperlukan'), pengguna akan dipaksa untuk meluncurkan kembali atau memulai ulang perangkat pada akhir periode.
-
-Jika kebijakan tidak disetel, atau jika usia rilis tidak dapat ditentukan, kebijakan <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> akan digunakan untuk semua update.</translation>
 <translation id="5216815237712190041">Mengonfigurasi gambar wallpaper tingkat perangkat yang akan ditampilkan di layar login jika belum ada pengguna yang login ke perangkat. Kebijakan ini disetel dengan menentukan URL tempat perangkat ChromeOS dapat mendownload gambar wallpaper dan hash kriptografi yang digunakan untuk memverifikasi integritas download. Gambar harus dalam format JPEG dan ukuran filenya tidak boleh lebih dari 16 MB. URL harus dapat diakses tanpa autentikasi apa pun. Gambar wallpaper didownload dan disimpan di cache. File akan didownload ulang setiap kali URL atau hash berubah.
 
       Jika kebijakan wallpaper perangkat disetel, perangkat ChromeOS akan mendownload dan menggunakan gambar wallpaper di layar login jika belum ada pengguna yang login ke perangkat. Setelah pengguna login, kebijakan wallpaper pengguna akan diterapkan.
@@ -9154,6 +9159,7 @@ Dukungan untuk setelan kebijakan ini akan berakhir di <ph name="PRODUCT_NAME" />
 <translation id="7203243973351251622">Perekam suara (didukung sejak versi 130)</translation>
 <translation id="7207095846245296855">Paksa Google SafeSearch</translation>
 <translation id="7211368186050418507">Jangan pernah deteksi otomatis zona waktu</translation>
+<translation id="7214815535735080007">Kontrol <ph name="ALR_FEATURE_NAME" /></translation>
 <translation id="721617466745658461">Izinkan pengguna memilih biner browser <ph name="LACROS_NAME" /></translation>
 <translation id="7216442368414164495">Memungkinkan pengguna ikut serta dalam pelaporan yang diperluas Safe Browsing</translation>
 <translation id="7218238054592349618">Mengizinkan pengoptimalan JavaScript di situs ini</translation>
@@ -11201,6 +11207,7 @@ skema HTTPS.</translation>
 <translation id="8768528324886802059">Menyetel kebijakan akan menentukan host pesan native mana yang tidak termasuk dalam daftar yang ditolak. Nilai <ph name="WILDCARD_VALUE" /> untuk daftar yang ditolak berarti semua host pesan native ditolak, kecuali diizinkan secara eksplisit.
 
       Semua host pesan native diizinkan secara default. Namun, jika semua host pesan native ditolak oleh kebijakan, admin dapat menggunakan daftar yang diizinkan untuk mengubah kebijakan tersebut.</translation>
+<translation id="8769201477622486852">Aktifkan <ph name="ALR_FEATURE_NAME" /></translation>
 <translation id="877101880914876353">Interval tampilan gambar screensaver untuk layar login perangkat.</translation>
 <translation id="877557628527387598">Login sandi</translation>
 <translation id="8777369558049831576">Menampilkan kotak centang "Always open" pada dialog protokol eksternal.</translation>

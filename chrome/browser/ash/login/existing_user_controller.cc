@@ -926,7 +926,9 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
 
   // Initialize `AuthHub` in `kInSession` mode, see documentation in
   // `AuthHub` for more details.
-  AuthHub::Get()->InitializeForMode(AuthHubMode::kInSession);
+  if (ash::features::IsAuthPanelUsingAuthHub()) {
+    AuthHub::Get()->InitializeForMode(AuthHubMode::kInSession);
+  }
 }
 
 base::WeakPtr<UserSessionManagerDelegate> ExistingUserController::AsWeakPtr() {

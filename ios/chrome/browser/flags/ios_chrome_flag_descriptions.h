@@ -744,6 +744,9 @@ extern const char kShowAutofillTypePredictionsDescription[];
 extern const char kSignInButtonNoAvatarName[];
 extern const char kSignInButtonNoAvatarDescription[];
 
+extern const char kNTPBackgroundCustomizationName[];
+extern const char kNTPBackgroundCustomizationDescription[];
+
 extern const char kSpotlightNeverRetainIndexName[];
 extern const char kSpotlightNeverRetainIndexDescription[];
 

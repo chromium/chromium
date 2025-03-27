@@ -368,10 +368,12 @@ CSSValue* ConsumeSteps(CSSParserTokenStream& stream,
       return nullptr;
     }
 
-    // Steps(n, jump-none) requires n >= 2.
-    if (position == StepsTimingFunction::StepPosition::JUMP_NONE &&
-        steps->GetIntValue() < 2) {
-      return nullptr;
+    if (position == StepsTimingFunction::StepPosition::JUMP_NONE) {
+      std::optional<double> steps_number = steps->GetValueIfKnown();
+      if (steps_number.has_value() && steps_number.value() < 2) {
+        // Steps(n, jump-none) requires n >= 2.
+        return nullptr;
+      }
     }
 
     guard.Release();

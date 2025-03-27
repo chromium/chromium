@@ -208,7 +208,8 @@ ash::LobsterSystemState LobsterSystemStateProviderImpl::GetSystemState(
   }
 
   // Performs an IME check
-  if (!IsImeAllowed(GetCurrentImeEngineId())) {
+  if (ash::features::IsLobsterDisabledByInvalidIME() &&
+      !IsImeAllowed(GetCurrentImeEngineId())) {
     system_state.status = ash::LobsterStatus::kBlocked;
     system_state.failed_checks.Put(
         ash::LobsterSystemCheck::kInvalidInputMethod);

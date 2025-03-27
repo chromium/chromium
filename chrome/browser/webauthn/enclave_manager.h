@@ -183,7 +183,12 @@ class EnclaveManager : public EnclaveManagerInterface {
   // Adds the current device, and a GPM PIN, to the security domain. Only valid
   // to call after `StoreKeys` has been called and thus `has_pending_keys`
   // returns true.
-  void AddDeviceAndPINToAccount(std::string pin, Callback callback);
+  // `previous_pin_public_key` must be set if the PIN is replacing an existing
+  // GPM PIN.
+  void AddDeviceAndPINToAccount(
+      std::string pin,
+      std::optional<std::string> previous_pin_public_key,
+      Callback callback);
   // Set a PIN on an account that doesn't currently have one.
   void SetPIN(std::string pin, std::string rapt, Callback callback);
   // Change the GPM PIN on the account. If a RAPT (Reauthentication Proof Token)

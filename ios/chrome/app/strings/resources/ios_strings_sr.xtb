@@ -444,6 +444,7 @@
 <translation id="2783161812871838616">Захтевај сајт за рачунар</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Лозинка је сачувана на Google налогу, {EMAIL}}one{Лозинке су сачуване на Google налогу, {EMAIL}}few{Лозинке су сачуване на Google налогу, {EMAIL}}other{Лозинке су сачуване на Google налогу, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Додај лозинку…</translation>
+<translation id="2793703503584038325">Изаберите лозинку и додирните икону Дели</translation>
 <translation id="2797302972324086597">Позивни број за земљу</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} фајл}one{{COUNT} фајл}few{{COUNT} фајла}other{{COUNT} фајлова}}</translation>
 <translation id="2816489851009559785">Мени → Подешавања → Подразумевани прегледач</translation>
@@ -584,6 +585,7 @@
 <translation id="35083190962747987">Отвори ${url}</translation>
 <translation id="3511519535430890904">Додајте заштиту прегледања</translation>
 <translation id="3517216995152707259">Брисањем података прегледања не одјављујете се са Google налога. Да бисте то урадили, <ph name="BEGIN_LINK" />одјавите се из Chrome-а<ph name="END_LINK" />.</translation>
+<translation id="3519792890877853853">Ова картица приказује рецензије за производе на отвореним картицама</translation>
 <translation id="3519905498307021260">{count,plural, =1{Отвори картицу}one{Отвори {count} картицу}few{Отвори {count} картице}other{Отвори {count} картица}}</translation>
 <translation id="3523513363815970085">Сакриј Најпосећеније сајтове</translation>
 <translation id="3523789730715594198">Увек можете да зауставите синхронизацију у подешавањима. Google може да персонализује Претрагу и друге услуге на основу историје.</translation>
@@ -824,6 +826,7 @@
 <translation id="4565377596337484307">Сакриј лозинку</translation>
 <translation id="4568230126482344545">Сакриј Недавне картице</translation>
 <translation id="4578835633387306383">Укључи…</translation>
+<translation id="4580716718466706433">Идите у Менаџер лозинки</translation>
 <translation id="4587589328781138893">Сајтови</translation>
 <translation id="4592672037257622855">{count,plural, =1{Страница је додата на листу за читање}one{{count} страница је додата на листу за читање}few{{count} странице су додате на листу за читање}other{{count} страница је додато на листу за читање}}</translation>
 <translation id="459644946100970322">Желите да укључите обавештења о ценама?</translation>
@@ -863,6 +866,7 @@
 <translation id="4717844083556844785">Актуелна веб-страница је у режиму без архивирања</translation>
 <translation id="4719927025381752090">Понуди превод</translation>
 <translation id="4720530280568305198">Избор је отворен на новој картици</translation>
+<translation id="472259426228234149">Цена 100–180 USD</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="474209246745757965">Купујте и преводите помоћу камере</translation>
 <translation id="4742407542027196863">Управљај лозинкама...</translation>

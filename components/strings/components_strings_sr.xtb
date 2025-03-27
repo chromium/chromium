@@ -223,7 +223,6 @@
 <translation id="1363028406613469049">Песма</translation>
 <translation id="1364822246244961190">Ове смернице су блокиране. Њихова вредност ће бити занемарена.</translation>
 <translation id="1368318639262510626">Игра са диносаурусом. Пикселизовани диносаурус избегава кактусе и птеродактиле док трчи пустим пејзажем. Када чујете звучни сигнал додирните тастер за размак да бисте прескакали препреке.</translation>
-<translation id="1369735141991626842">Попуните поља помоћу вештачке интелигенције</translation>
 <translation id="1374468813861204354">предлози</translation>
 <translation id="1375198122581997741">О верзији</translation>
 <translation id="1375293861397106342">Све опције су обично <ph name="LOW_PRICE" />–<ph name="HIGH_PRICE" /></translation>
@@ -539,7 +538,6 @@
 <translation id="1919526244108283799">400×600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{None}=1{1 сајт}one{# сајт}few{# сајта}other{# сајтова}}</translation>
 <translation id="192095259937375524">Дугме Дели ову картицу, активирајте га да бисте делили ову картицу дељењем линка, прављењем QR кода, пребацивањем и на друге начине</translation>
-<translation id="1921479021518565778">Предлози су учитани</translation>
 <translation id="1924727005275031552">Ново</translation>
 <translation id="1927439846988093361">Нега косе</translation>
 <translation id="1935353813610900265">Пошаљите повратне информације за претрагу историје коју омогућава AI</translation>
@@ -571,6 +569,7 @@
 <translation id="1975584088563498795">10. поштанско сандуче</translation>
 <translation id="1978555033938440688">Верзија фирмвера</translation>
 <translation id="1979156660928743046">Информације о медијима</translation>
+<translation id="1987486584747170374">Претраге, најбоља подударања и садржај страница са њима шаљу се Google-у. Особе које прегледају неће то користити за побољшање вештачке интелигенције. Организација може да промени ова подешавања у сваком тренутку.</translation>
 <translation id="1988881251331415125">Ако нема грешака, <ph name="BEGIN_LINK" />покрените дијагностику повезивања<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> жели да трајно складишти велику количину података на вашем локалном рачунару</translation>
@@ -766,6 +765,7 @@
 <translation id="2301098101308036335">Који веб-сајтови се посећују и када.</translation>
 <translation id="230286397113210245">Дугме Отвори прозор без архивирања, активирајте га да бисте отворили нов прозор без архивирања и прегледали приватно</translation>
 <translation id="2306124309679506798">Желите да дозволите стапајући доживљај?</translation>
+<translation id="2307711332257985952">Кућна адреса и адреса на послу су сада доступне у Chrome-у</translation>
 <translation id="2312234273148520048">Зачини и преливи</translation>
 <translation id="2316087952091171402">Мање од <ph name="UPPER_ESTIMATE" />. Неки сајтови могу да се учитавају спорије током следеће посете.</translation>
 <translation id="2316159751672436664">Персонализујте алатке за приступачност у подешавањима Chrome ОС-а</translation>
@@ -974,6 +974,7 @@
 <translation id="2688186765492306706">500×760 mm</translation>
 <translation id="2688969097326701645">Да, настави</translation>
 <translation id="2690699652723742414">Последњих 30 дана</translation>
+<translation id="2691385045260836588">Модел</translation>
 <translation id="2691924980723297736">Безбедносно упозорење</translation>
 <translation id="2697248912349197812">Питајте <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Подмени је доступан. Користите <ph name="SHORTCUT" /> да бисте дошли до додатних опција.</translation>
@@ -1180,6 +1181,7 @@
 <translation id="3102312643185441063">Штедни рачун</translation>
 <translation id="3103188521861412364">Акције и обвезнице</translation>
 <translation id="3103535543639438037">Упоредите сличне производе један поред другог</translation>
+<translation id="3103993932858740905">Када плаћате на рате, попуњава се једнократни број виртуелне картице. Овај број је само за ову куповину.</translation>
 <translation id="3105172416063519923">ИД елемента:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />да проверите конфигурацију безбедног DNS-а<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Средња фиока</translation>
@@ -1529,6 +1531,7 @@
 <translation id="3664782872746246217">Кључне речи:</translation>
 <translation id="3665100783276035932">Већина сајтова би требало да ради на очекивани начин</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Сазнајте више<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">Број</translation>
 <translation id="3670229581627177274">Укључи Bluetooth</translation>
 <translation id="3671117652518853176">Када је ова опција искључена, повремено можемо да тражимо верификацију из безбедносних разлога</translation>
 <translation id="3671540257457995106">Желите да дозволите промену величине?</translation>
@@ -1543,7 +1546,6 @@
 <translation id="3681007416295224113">Информације о сертификату</translation>
 <translation id="3681421644246505351">Chrome бележи теме које вас интересују на основу недавне историје прегледања.</translation>
 <translation id="3682094733650754138">Изабрана је опција за попуњавање адресе</translation>
-<translation id="3687493962714153124">Управљајте аутоматским попуњавањем помоћу вештачке интелигенције</translation>
 <translation id="3687920599421452763">Комби и мини-комби</translation>
 <translation id="3693327506115126094">Одаберите начин на који ћете потврдити да сте то ви</translation>
 <translation id="3698353241727597930">Администратор је конфигурисао да чува <ph name="FILES" /> у меморијском простору од <ph name="CLOUD_STORAGE" /> којим се управља на нивоу предузећа. Ове фајлове можемо да надгледамо, проверавамо и задржавамо када их избришете.</translation>
@@ -1697,6 +1699,7 @@
 <translation id="3950820424414687140">Пријави ме</translation>
 <translation id="3953505489397572035">Ова цена је уобичајена</translation>
 <translation id="3958057596965527988">4×4 in</translation>
+<translation id="3959969108528118741">Власник</translation>
 <translation id="3961148744525529027">Страница обрађивача плаћања је полуотворена</translation>
 <translation id="3962859241508114581">Претходна песма</translation>
 <translation id="3963721102035795474">Режим читаоца</translation>
@@ -1922,7 +1925,6 @@
 <translation id="4312866146174492540">Блокирај (подразумевано)</translation>
 <translation id="4314815835985389558">Управљајте синхронизацијом</translation>
 <translation id="4316057107946726368">Унесите поруку са образложењем која има највише <ph name="MAX_CHAR_COUNT" /> знакова. Искористили сте <ph name="ACTUAL_CHAR_COUNT" /> од <ph name="MAX_CHAR_COUNT" /> знакова.</translation>
-<translation id="431740489189220419">Учитавају се предлози</translation>
 <translation id="4318213823155573975">Капе и шешири</translation>
 <translation id="4318312030194671742">Услуга слагања за приказ у Paint-у</translation>
 <translation id="4318566738941496689">Назив и мрежна адреса уређаја</translation>
@@ -2329,6 +2331,7 @@
 <translation id="5087286274860437796">Сертификат сервера тренутно није важећи.</translation>
 <translation id="5087580092889165836">Додај картицу</translation>
 <translation id="5088142053160410913">Порука оператеру</translation>
+<translation id="5089810972385038852">Држава</translation>
 <translation id="5090647584136241764">Додајте картице са сличним производима да бисте лако поредили детаље који су вам важни</translation>
 <translation id="5093232627742069661">Пресавијање у облику слова Z</translation>
 <translation id="5094747076828555589">Овај сервер не може да докаже да је <ph name="DOMAIN" />; Chromium нема поверења у његов безбедносни сертификат. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
@@ -2467,6 +2470,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Подразумевани претраживач вам омогућава да претражујете веб и омогућава Chromium функције<ph name="END_BOLD" /> попут претраживања из траке за адресу и слика на веб-страницама. Функција можда није доступна ако је претраживач не подржава.</translation>
 <translation id="5323043727018853753">Уграђен садржај је дозвољен</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" />. од <ph name="NUM_MATCHES" /></translation>
+<translation id="5327248766486351172">Назив</translation>
 <translation id="5329858041417644019">Прегледачем нико не управља</translation>
 <translation id="5331585574693522196">Подеси као подразумевано</translation>
 <translation id="5332219387342487447">Начин испоруке</translation>
@@ -2680,7 +2684,6 @@
 <translation id="569000877158168851">Вредност DnsOverHttpsTemplates смерница није релевантна и неће се користити ако не подесите DnsOverHttpsMode смернице на<ph name="SECURE_DNS_MODE_AUTOMATIC" /> или <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Упит за чување картице је отворен у пуној висини.</translation>
 <translation id="5695542892312572833">Желите да користите Windows Hello да бисте потврдили и завршили куповину?</translation>
-<translation id="5697827549745555938">Информације које сте сачували и ова страница се шаљу Google-у да би се утврдило да ли аутоматско попуњавање може да помогне у попуњавању овог обрасца. Особе које прегледају могу да виде те податке ради побољшања ове функције.</translation>
 <translation id="5699628521141772782">Млечни производи и јаја</translation>
 <translation id="5700761515355162635">Колачићи трећих страна су дозвољени</translation>
 <translation id="5701381305118179107">Центрирај</translation>
@@ -3108,6 +3111,7 @@
 <translation id="6440503408713884761">Занемарено</translation>
 <translation id="6443406338865242315">додатке и додатне компонента које сте инсталирали</translation>
 <translation id="6444329331928531170">Пензионисање</translation>
+<translation id="6445051938772793705">Земља</translation>
 <translation id="6446608382365791566">Додајте још информација</translation>
 <translation id="6447842834002726250">Колачићи</translation>
 <translation id="6448371595882710519">Сазнајте више о контролама података</translation>
@@ -3589,7 +3593,6 @@
 <translation id="7316521168101843192">Фајл се чува на Microsoft OneDrive-у</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Помоћ при повезивању</translation>
-<translation id="7321111802407017850">Сачувајте информације за аутоматско попуњавање</translation>
 <translation id="7323804146520582233">Сакријте одељак <ph name="SECTION" /></translation>
 <translation id="733354035281974745">Замена локалног налога на уређају</translation>
 <translation id="7334320624316649418">&amp;Понови промену редоследа</translation>

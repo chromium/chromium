@@ -88,13 +88,6 @@ UnexportableKeyServiceFactory::~UnexportableKeyServiceFactory() = default;
 std::unique_ptr<KeyedService>
 UnexportableKeyServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-  // Do not create a service if all consumer features are disabled.
-  if (!switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs()) &&
-      !switches::IsChromeRefreshTokenBindingEnabled(profile->GetPrefs())) {
-    return nullptr;
-  }
-
   unexportable_keys::UnexportableKeyTaskManager* task_manager =
       GetSharedTaskManagerInstance();
   if (!task_manager) {

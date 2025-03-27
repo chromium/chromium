@@ -39,14 +39,6 @@ export class PrivacyGuideCookiesFragmentElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /** Cookie control modes for use in bindings. */
       cookieControlsModeEnum_: {
         type: Object,
@@ -67,6 +59,7 @@ export class PrivacyGuideCookiesFragmentElement extends
     };
   }
 
+  private isAlwaysBlock3pcsIncognitoEnabled_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   private startStateBlock3PIncognito_: boolean;

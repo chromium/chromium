@@ -405,6 +405,7 @@
 <translation id="1264956950255940376">מצמצמים את העין השמאלית</translation>
 <translation id="1265094893042958831">המערכת יוצרת הצעות לגבי הדף הזה…</translation>
 <translation id="1265279736024499987">‏האפליקציות וההגדרות שלך יסתנכרנו בין כל מכשירי ChromeOS Flex שאליהם נכנסת עם חשבון Google שלך. כדי לראות את אפשרויות סנכרון הדפדפן, יש לעבור אל <ph name="LINK_BEGIN" />הגדרות Chrome<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">‏אחרי שמצלמים את המסך או מחפשים בו, מוצגות פעולות נוספות כמו הוספה ליומן Google, יצירת מסמך ב-Google Docs ועוד.</translation>
 <translation id="126710816202626562">שפת תרגום:</translation>
 <translation id="1267649802567297774">תמונה <ph name="INDEX" /> של <ph name="SUBJECT" /> שנוצרה, בסגנון <ph name="STYLE" />, באווירה <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1573,9 +1574,9 @@
 <translation id="2081816110395725788">מעבר למצב שינה בזמן שימוש בסוללה</translation>
 <translation id="2082187087049518845">קיבוץ כרטיסיות</translation>
 <translation id="2082510809738716738">בחירת צבע לעיצוב</translation>
-<translation id="208547068587548667">כניסה אל <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">יש לנסות שוב</translation>
 <translation id="208634871997892083">‏VPN מופעל תמיד</translation>
+<translation id="208654914566977272">הצעות לפעולות כשמחפשים במסך</translation>
 <translation id="2087822576218954668">הדפסה: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">הרישום אפשרי רק לאחר התקנה של <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">‏TrackPoint מובנה</translation>
@@ -2016,6 +2017,7 @@
 <translation id="2373666622366160481">התאמה לגודל הנייר</translation>
 <translation id="2375406435414127095">התחברות לטלפון</translation>
 <translation id="2376056713414548745">קריאה בקול רם</translation>
+<translation id="2376122016044804363">אישורים על העתקות ללוח</translation>
 <translation id="2377667304966270281">שגיאות חמורות</translation>
 <translation id="237828693408258535">לתרגם את הדף הזה?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{יכול להיות שבקרוב תופסק התמיכה בתוסף הזה}one{יכול להיות שבקרוב תופסק התמיכה בתוספים האלה}two{יכול להיות שבקרוב תופסק התמיכה בתוספים האלה}other{יכול להיות שבקרוב תופסק התמיכה בתוספים האלה}}</translation>
@@ -3170,6 +3172,7 @@
 <translation id="3192586965067888278">‏יש לתאר בפירוט את הבעיה. המשוב יישלח אל Google לבדיקה אנושית, ויכול להיות שנשתמש בו כדי לשפר או לפתח מוצרים ושירותים של Google.</translation>
 <translation id="3192947282887913208">קובצי אודיו</translation>
 <translation id="3193695589337931419">כלי איסוף של אותות במערכת</translation>
+<translation id="3194095220941877499">מוצג אישור כשמעתיקים קישורים, תמונות או סרטונים</translation>
 <translation id="3196912927885212665">‏כדי להגדיר באמצעות טלפון Android, צריך להפעיל את ה-Bluetooth של ה-Chromebook</translation>
 <translation id="3197453258332670132">בלחיצה ימנית או בלחיצה ארוכה, יוצג מידע שקשור לטקסט שבחרת</translation>
 <translation id="3199127022143353223">שרתים</translation>
@@ -4007,7 +4010,6 @@
 <translation id="3778740492972734840">&amp;כלים עבור מפתחים</translation>
 <translation id="3778868487658107119">‏אפשר לשאול אותו שאלות ולומר לו לבצע פעולות. העוזר הפרטי של Google מוכן תמיד לסייע לך.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{היסטוריית הגלישה שלך באתר אחד}one{היסטוריית הגלישה שלך ב-# אתרים}two{היסטוריית הגלישה שלך ב-# אתרים}other{היסטוריית הגלישה שלך ב-# אתרים}}</translation>
-<translation id="3779244863011082655">שימוש בחשבון אחר של <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3780542776224651912">ל<ph name="BRAND" /> אין אפשרות לבדוק אם הסיסמאות שלך נחשפו בפרצות באבטחת מידע. כדאי לנסות שוב מאוחר יותר.</translation>
 <translation id="3781742599892759500">‏גישה של Linux למיקרופון</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5512,6 +5514,7 @@
 <translation id="4848191975108266266">‏קריאה ל-Google Assistant במילים "Hey Google"</translation>
 <translation id="4849286518551984791">‏זמן אוניברסלי מתואם (UTC/‏GMT)</translation>
 <translation id="4849517651082200438">לא להתקין</translation>
+<translation id="4849731766219625109">שימוש בחשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="485053257961878904">לא ניתן היה להגדיר סנכרון התראות</translation>
 <translation id="4850548109381269495">‏בשני המכשירים, בודקים את החיבור לאינטרנט ומפעילים את ה-Bluetooth. לאחר מכן מנסים שוב.</translation>
 <translation id="4850669014075537160">גלילה</translation>
@@ -5700,6 +5703,7 @@
 <translation id="4979510648199782334">‏ההגדרה של Microsoft 365 הושלמה</translation>
 <translation id="4980805016576257426">התוסף הזה מכיל תוכנה זדונית.</translation>
 <translation id="4983159853748980742">‏הסיסמה שלך לא שותפה. רצוי לבדוק את החיבור לאינטרנט ולוודא שנכנסת לחשבון ב-Chrome. אחר כך אפשר לנסות שוב.</translation>
+<translation id="498624032394115435">כל מי שיש לו את הקישור יכול לערוך את כל הכרטיסיות.</translation>
 <translation id="4986706507552097681">‏אפשר לבחור מה לסנכרן בכל שלב דרך ההגדרות. Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="4986728572522335985">הפעולה הזו תמחק את כל הנתונים במפתח האבטחה, כולל קוד האימות שלו</translation>
 <translation id="4987944280765486504">‏ה-Chromebook יופעל מחדש כשההורדה תסתיים, וניתן יהיה להמשיך בהגדרה.</translation>
@@ -8313,7 +8317,6 @@
 <translation id="6873571253135628430">שינוי ההרשאות לאתרים</translation>
 <translation id="6876155724392614295">אופניים</translation>
 <translation id="6876469544038980967">לא מועילה</translation>
-<translation id="687838958001010630">כל מי שיש לו את הקישור יכול לערוך את כל הכרטיסיות</translation>
 <translation id="6878422606530379992">השימוש בחיישנים מותר</translation>
 <translation id="6878862640969460273">לרוחב</translation>
 <translation id="6880587130513028875">תמונות נחסמו בדף זה</translation>

@@ -431,7 +431,7 @@ BASE_FEATURE(kConch, "Conch", base::FEATURE_DISABLED_BY_DEFAULT);
 // choose.
 BASE_FEATURE(kConchExpandTranscriptionLanguage,
              "ConchExpandTranscriptionLanguage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, conch will provide available GenAI features.
 BASE_FEATURE(kConchGenAi, "ConchGenAi", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1643,7 +1643,7 @@ BASE_FEATURE(kInternalServerSideSpeechRecognitionByFinch,
 // S3 USM_RNNT model.
 BASE_FEATURE(kInternalServerSideSpeechRecognitionUSMModelFinch,
              "InternalServerSideSpeechRecognitionUSMModelFinch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables sending `client-info` values to IPP printers on ChromeOS.
 BASE_FEATURE(kIppClientInfo, "IppClientInfo", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1770,6 +1770,11 @@ BASE_FEATURE(kLobsterFeedback,
 // Enables lobster feedback form.
 BASE_FEATURE(kLobsterFileNamingImprovement,
              "LobsterFileNamingImprovement",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables lobster restriction based on the current active IME.
+BASE_FEATURE(kLobsterDisabledByInvalidIME,
+             "LobsterDisabledByInvalidIME",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables lobster entry point in quick insert zero state.
@@ -2474,7 +2479,7 @@ BASE_FEATURE(kProjectorV2, "ProjectorV2", base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether to use USM for serverside speech recognition for projector.
 BASE_FEATURE(kProjectorUseUSMForS3,
              "ProjectorUseUSMForS3",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // controls whether projector uses dynamic colors.
 BASE_FEATURE(kProjectorDynamicColors,
@@ -2918,6 +2923,12 @@ BASE_FEATURE(kUseAnnotatedAccountId,
 BASE_FEATURE(kUseAuthPanelInSession,
              "UseAuthPanelInSession",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// This features toggles `AuthHub` is used as authentication backend by
+// `AuthPanel` on ChromeOS.
+BASE_FEATURE(kAuthPanelUsingAuthHub,
+             "AuthPanelUsingAuthHub",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This feature toggles which dhcpcd version is used for IPv4 provisioning.
 // If it is enabled, the legacy dhcpcd7 is used, otherwise the latest dhcpcd is
@@ -4000,6 +4011,10 @@ bool IsLobsterEnabled() {
           base::FeatureList::IsEnabled(kFeatureManagementLobster));
 }
 
+bool IsLobsterDisabledByInvalidIME() {
+  return base::FeatureList::IsEnabled(kLobsterDisabledByInvalidIME);
+}
+
 bool IsLobsterUseRewrittenQuery() {
   return base::FeatureList::IsEnabled(kLobsterUseRewrittenQuery);
 }
@@ -4707,6 +4722,10 @@ bool ShouldUseKcerClientCertStore() {
 
 bool IsUseAuthPanelInSessionEnabled() {
   return base::FeatureList::IsEnabled(kUseAuthPanelInSession);
+}
+
+bool IsAuthPanelUsingAuthHub() {
+  return base::FeatureList::IsEnabled(kAuthPanelUsingAuthHub);
 }
 
 bool IsAllowPasswordlessSetupEnabled() {

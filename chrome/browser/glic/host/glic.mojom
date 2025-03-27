@@ -717,28 +717,3 @@ struct OpenSettingsOptions {
   // page.
   SettingsPageField highlightField;
 };
-
-//
-// TODO(harringtond): Delete these unused enums.
-//
-
-[Stable, Extensible]
-enum InvalidCandidateError {
-  [Default] kUnknown = 0,
-  kUnsupportedUrl = 1,
-};
-
-[Stable, Extensible]
-enum NoCandidateTabError {
-  [Default] kUnknown = 0,
-  kNoFocusableTabs = 1,
-};
-
-[Stable, Extensible]
-enum GetTabContextErrorReason {
-  [ Default] kUnknown = 0 ,
-  [ MinVersion=1 ] kWebContentsChanged = 1,
-  [ MinVersion=1 ] kPermissionDenied = 2,
-  [ MinVersion=1 ] kUnsupportedUrl = 3,
-  [ MinVersion=1 ] kNoFocusableTabs = 4,
-};

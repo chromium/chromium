@@ -232,6 +232,7 @@ export class SettingsPaymentsSectionElement extends
   private cardBenefitsFlagEnabled_: boolean;
   private cardBenefitsSublabel_: string;
   private shouldShowPayOverTimeSettings_: boolean;
+  private payOverTimeSublabel_: string;
 
   override connectedCallback() {
     super.connectedCallback();

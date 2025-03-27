@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -78,7 +79,11 @@ void SVGRectElement::Trace(Visitor* visitor) const {
 }
 
 Path SVGRectElement::AsPath() const {
-  Path path;
+  return AsMutablePath().Finalize();
+}
+
+PathBuilder SVGRectElement::AsMutablePath() const {
+  PathBuilder builder;
 
   const SVGViewportResolver viewport_resolver(*this);
   const ComputedStyle& style = ComputedStyleRef();
@@ -86,7 +91,7 @@ Path SVGRectElement::AsPath() const {
   gfx::Vector2dF size = VectorForLengthPair(style.Width(), style.Height(),
                                             viewport_resolver, style);
   if (size.x() < 0 || size.y() < 0 || size.IsZero())
-    return path;
+    return builder;
 
   gfx::PointF origin =
       PointForLengthPair(style.X(), style.Y(), viewport_resolver, style);
@@ -108,11 +113,11 @@ Path SVGRectElement::AsPath() const {
     // than half of the width of the rectangle then its set to half of the
     // width; radii.y() is handled similarly.
     radii.SetToMin(gfx::ScaleVector2d(size, 0.5));
-    path = Path::MakeRoundedRect(FloatRoundedRect(rect, radii.x(), radii.y()));
+    builder.AddRoundedRect(FloatRoundedRect(rect, radii.x(), radii.y()));
   } else {
-    path = Path::MakeRect(rect);
+    builder.AddRect(rect);
   }
-  return path;
+  return builder;
 }
 
 void SVGRectElement::SvgAttributeChanged(

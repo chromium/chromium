@@ -233,10 +233,9 @@ void ChromeRuntimeAPIDelegate::ReloadExtension(
 bool ChromeRuntimeAPIDelegate::CheckForUpdates(
     const extensions::ExtensionId& extension_id,
     UpdateCheckCallback callback) {
-  ExtensionSystem* system = ExtensionSystem::Get(browser_context_);
-  extensions::ExtensionService* service = system->extension_service();
-  ExtensionUpdater* updater = service->updater();
-  if (!updater) {
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile);
+  if (!updater->enabled()) {
     return false;
   }
 

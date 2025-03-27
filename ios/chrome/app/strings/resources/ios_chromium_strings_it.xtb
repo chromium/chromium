@@ -91,6 +91,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="3054480780637153380">Apri le impostazioni di Chromium in iOS, quindi tocca "App browser predefinita" e seleziona Chromium.</translation>
 <translation id="3102849287235003384">Per uscire dal tuo Account Google su tutti i siti web, <ph name="BEGIN_LINK" />esci da Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Vuoi imposta Chromium come browser predefinito?</translation>
+<translation id="3180939591219927904">Attiva l'opzione "Blocca le schede di navigazione in incognito quando chiudi Chromium"</translation>
 <translation id="3242612358525156339">Dalle impostazioni del dispositivo, apri "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" e seleziona "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{Visualizzazione di 1 finestra di Chromium}other{Visualizzazione di {count} finestre di Chromium}}</translation>
 <translation id="3344973607274501920">Chromium non ha potuto controllare le tue password. Verifica la tua connessione a Internet.</translation>
@@ -260,6 +261,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">I dati selezionati sono stati rimossi da Chromium e dai dispositivi sincronizzati. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, ad esempio ricerche e attività, di altri servizi Google alla pagina history.google.com.</translation>
 <translation id="7395825497086981028">La tua password verrà salvata in Gestore delle password per <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Apri Chromium</translation>
 <translation id="7531461704633548377">Da Chromium</translation>
 <translation id="7554983317097061001">Suggerimento per Chromium: sposta Chromium nel dock</translation>
 <translation id="7576863740961052505">Gestisci le impostazioni di Chromium</translation>

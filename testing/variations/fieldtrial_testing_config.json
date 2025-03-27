@@ -7609,7 +7609,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_135",
                     "params": {
                         "allowlist": "a.com,b.com,c.com,d.com,e.com,f.com,web-platform.test,www1.web-platform.test,127.0.0.1,example.test,www.google.com",
                         "rollout_percent": "0"
@@ -13934,6 +13934,22 @@
             ]
         }
     ],
+    "LocalWebApprovalsIos": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LocalWebApprovals",
+                        "SupervisedUserBlockInterstitialV3"
+                    ]
+                }
+            ]
+        }
+    ],
     "LocalWebApprovalsLinuxMacWindows": [
         {
             "platforms": [
@@ -17113,6 +17129,57 @@
             ]
         }
     ],
+    "PerformanceInterventionAlgorithm": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledLessAggressive_20250326",
+                    "params": {
+                        "minimum_time_reshow": "1h",
+                        "no_acceptance_back_off": "7d",
+                        "scale_max_times_per_day": "3",
+                        "scale_max_times_per_week": "21",
+                        "window_size": "10"
+                    },
+                    "enable_features": [
+                        "PerformanceInterventionNotificationImprovements"
+                    ]
+                },
+                {
+                    "name": "EnabledMediumAggressive_20250326",
+                    "params": {
+                        "minimum_time_reshow": "1h",
+                        "no_acceptance_back_off": "7d",
+                        "scale_max_times_per_day": "10",
+                        "scale_max_times_per_week": "70",
+                        "window_size": "10"
+                    },
+                    "enable_features": [
+                        "PerformanceInterventionNotificationImprovements"
+                    ]
+                },
+                {
+                    "name": "EnabledMoreAggressive_20250326",
+                    "params": {
+                        "minimum_time_reshow": "1h",
+                        "no_acceptance_back_off": "7d",
+                        "scale_max_times_per_day": "24",
+                        "scale_max_times_per_week": "168",
+                        "window_size": "10"
+                    },
+                    "enable_features": [
+                        "PerformanceInterventionNotificationImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
     "PermissionElementPromptPositioning": [
         {
             "platforms": [
@@ -17505,6 +17572,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MahiPanelResizable",
+                        "MahiSummarizeSelected",
                         "Pompano"
                     ]
                 }
@@ -21640,22 +21708,6 @@
             ]
         }
     ],
-    "ScreencastServerBasedUSMRNNTLocales": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InternalServerSideSpeechRecognitionUSMModelFinch",
-                        "ProjectorUseUSMForS3"
-                    ]
-                }
-            ]
-        }
-    ],
     "ScrimForBrowserWindowModal": [
         {
             "platforms": [
@@ -23878,22 +23930,17 @@
             ]
         }
     ],
-    "ThrottleMainFrameTo60Hz": [
+    "ThrottleMainFrameTo60HzV2": [
         {
             "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "ThrottledUrgentInput_20250325",
                     "enable_features": [
-                        "ThrottleMainFrameTo60Hz"
+                        "ThrottleMainFrameTo60Hz",
+                        "UrgentMainFrameForInput"
                     ]
                 }
             ]
@@ -24294,6 +24341,22 @@
             ]
         }
     ],
+    "URLFilteringForAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnterpriseRealTimeUrlCheckOnAndroid",
+                        "EnterpriseUrlFilteringEventReportingOnAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "USSMigrationEnabled": [
         {
             "platforms": [
@@ -24389,27 +24452,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UploadOfficeToCloud"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UrgentMainFrameForInput": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UrgentMainFrameForInput"
                     ]
                 }
             ]

@@ -35,6 +35,7 @@ class SVGRectElement final : public SVGGeometryElement {
   explicit SVGRectElement(Document&);
 
   Path AsPath() const override;
+  PathBuilder AsMutablePath() const override;
 
   SVGAnimatedLength* x() const { return x_.Get(); }
   SVGAnimatedLength* y() const { return y_.Get(); }

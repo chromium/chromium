@@ -10293,6 +10293,7 @@ from previous Chrome versions.
   <int value="-1517929127" label="DelegatedCompositing:enabled"/>
   <int value="-1517518406" label="force-update-menu-type"/>
   <int value="-1516955483" label="AutoDisableAccessibility:enabled"/>
+  <int value="-1516633879" label="BackgroundNotPerceptibleBinding:disabled"/>
   <int value="-1515835427"
       label="NTPRealboxContextualAndTrendingSuggestions:enabled"/>
   <int value="-1515415104" label="top-document-isolation:disabled"/>
@@ -10603,6 +10604,7 @@ from previous Chrome versions.
   <int value="-1404088616" label="TetheringExperimentalFunctionality:enabled"/>
   <int value="-1404072922"
       label="UserDisplayModeSyncBrowserMitigation:enabled"/>
+  <int value="-1403427439" label="TabGroupEntryPointsAndroid:enabled"/>
   <int value="-1401308932" label="CaptureModeEducation:disabled"/>
   <int value="-1400745093" label="SystemEmojiPickerSearchExtension:enabled"/>
   <int value="-1400693146" label="LauncherImageSearchIca:enabled"/>
@@ -14305,6 +14307,7 @@ from previous Chrome versions.
   <int value="48159177" label="reduced-referrer-granularity"/>
   <int value="48666910" label="ClipboardHistoryLongpress:disabled"/>
   <int value="48850808" label="AutocorrectUseReplaceSurroundingText:enabled"/>
+  <int value="49971529" label="TabGroupEntryPointsAndroid:disabled"/>
   <int value="50643563" label="MBIMode:enabled"/>
   <int value="50976151" label="DefaultBrowserPromoAndroid2:enabled"/>
   <int value="51793504" label="protect-sync-credential-on-reauth:disabled"/>
@@ -15645,6 +15648,7 @@ from previous Chrome versions.
   <int value="567862349"
       label="CrOSLateBootCrasProcessorDedicatedThread:disabled"/>
   <int value="569192576" label="UpstreamTrustedReportsFirmware:enabled"/>
+  <int value="569523789" label="BackgroundNotPerceptibleBinding:enabled"/>
   <int value="570445904" label="WGIGamepadTriggerRumble:disabled"/>
   <int value="570469494" label="LoginDetection:disabled"/>
   <int value="570882482" label="CrOSDspBasedAecAllowed:enabled"/>
@@ -16142,6 +16146,7 @@ from previous Chrome versions.
   <int value="752416911" label="FastPair:disabled"/>
   <int value="752939691" label="disable-tab-for-desktop-share"/>
   <int value="753375390" label="ThrottleMainFrameTo60Hz:disabled"/>
+  <int value="753474609" label="CanvasNoise:disabled"/>
   <int value="756018202" label="CCTMinimized:enabled"/>
   <int value="756897997" label="PaintHoldingCrossOrigin:disabled"/>
   <int value="757645375" label="AndroidDarkSearch:disabled"/>
@@ -18255,6 +18260,7 @@ from previous Chrome versions.
   <int value="1573323485" label="ViewportHeightClientHintHeader:enabled"/>
   <int value="1573754862" label="AutofillEnableFIDOProgressDialog:disabled"/>
   <int value="1573860827" label="EnableImeSandbox:enabled"/>
+  <int value="1574392127" label="CanvasNoise:enabled"/>
   <int value="1575011129" label="WelcomeTour:disabled"/>
   <int value="1575978252" label="PasswordLeakDetection:enabled"/>
   <int value="1575982187" label="SendPasswords:disabled"/>

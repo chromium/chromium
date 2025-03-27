@@ -427,10 +427,12 @@ enum DefaultLocation {
   onedrive
 };
 
-enum CloudProvider {
+// The value of the SkyVault LocalFilesMigrationDestination policy.
+enum MigrationDestination {
   not_specified,
   google_drive,
-  onedrive
+  onedrive,
+  delete
 };
 
 // These three fields together uniquely identify a task.
@@ -871,7 +873,8 @@ dictionary Preferences {
   boolean driveFsBulkPinningEnabled;
   boolean localUserFilesAllowed;
   DefaultLocation defaultLocation;
-  CloudProvider skyVaultMigrationDestination;
+  MigrationDestination skyVaultMigrationDestination;
+  DOMString? skyVaultMigrationStartTime;
 };
 
 dictionary PreferencesChange {

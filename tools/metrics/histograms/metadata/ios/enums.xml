@@ -78,6 +78,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Apple Calendar"/>
 </enum>
 
+<!-- LINT.IfChange(FullscreenModeTransitionReason) -->
+
+<enum name="FullscreenModeTransitionReason">
+  <int value="0" label="UserControlled"/>
+  <int value="1" label="ForcedByCode"/>
+  <int value="2" label="UserInitiatedFinishedByCode"/>
+  <int value="3" label="UserTapped"/>
+  <int value="4" label="BottomReached"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h:FullscreenModeTransitionReason) -->
+
 <enum name="GeolocationAPI">
   <int value="0" label="Clear Watch"/>
   <int value="1" label="Get Current Position"/>

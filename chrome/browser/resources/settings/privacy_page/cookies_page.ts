@@ -64,14 +64,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   static get properties() {
     return {
       /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
        * Current search term.
        */
       searchTerm: {
@@ -91,7 +83,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         value: ThirdPartyCookieBlockingSetting,
       },
 
-      contentSetting_: {
+      contentSettingEnum_: {
         type: Object,
         value: ContentSetting,
       },

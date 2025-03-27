@@ -223,7 +223,6 @@
 <translation id="1363028406613469049">ટ્રૅક</translation>
 <translation id="1364822246244961190">આ પૉલિસી બ્લૉક કરેલ છે, તેનું મૂલ્ય અવગણવામાં આવશે.</translation>
 <translation id="1368318639262510626">Dino ગેમ. પિક્સેલવાળો ડાઇનોસોર જે વેરાન પ્રદેશમાં કાંટાવાળા છોડ અને વિશાળકાય પક્ષીઓથી બચવા માટે કૂદકા મારીને આગળ ભાગતો જાય છે. જ્યારે તમને ઑડિયો સંકેત સંભળાય, ત્યારે કૂદકા મારીને અવરોધો પાર કરવા માટે સ્પેસ કી દબાવો.</translation>
-<translation id="1369735141991626842">AI વડે ફીલ્ડ ભરો</translation>
 <translation id="1374468813861204354">સૂચનો</translation>
 <translation id="1375198122581997741">વર્ઝન વિશે</translation>
 <translation id="1375293861397106342">સામાન્ય રીતે તમામ વિકલ્પો <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -539,7 +538,6 @@
 <translation id="1919526244108283799">400 x 600 મિમી</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{કોઈ નહીં}=1{1 સાઇટ}one{# સાઇટ}other{# સાઇટ}}</translation>
 <translation id="192095259937375524">'આ ટૅબ શેર કરો' બટન, લિંક શેર કરીને, કોઈ QR કોડ બનાવીને, કાસ્ટ કરીને અને વધુ વિકલ્પો વડે આ ટૅબ શેર કરવા માટે સક્રિય કરો</translation>
-<translation id="1921479021518565778">સૂચનો લોડ કર્યા</translation>
 <translation id="1924727005275031552">નવું</translation>
 <translation id="1927439846988093361">વાળની સંભાળ</translation>
 <translation id="1935353813610900265">AI દ્વારા સંચાલિત, ઇતિહાસમાં શોધ સુવિધા માટે પ્રતિસાદ મોકલો</translation>
@@ -900,6 +898,7 @@
 <translation id="2539524384386349900">શોધો</translation>
 <translation id="2541219929084442027">તમે છૂપી ટૅબમાં જુઓ છો એ પેજ તમે તમારી બધી છૂપી ટૅબ બંધ કરી દો, એ પછી તમારા બ્રાઉઝરના ઇતિહાસ, કુકી સ્ટોર અથવા શોધ ઇતિહાસમાં રહેશે નહીં. તમે ડાઉનલોડ કરો છો તે કોઈ પણ ફાઇલો અથવા તમે બનાવો છો તે બુકમાર્ક રાખવામાં આવશે.</translation>
 <translation id="2542106216580219892">સર્ફિંગ</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – પૂર્ણ સ્ક્રીનમાંથી બહાર નીકળવા માટે, |<ph name="ACCELERATOR" />| દબાવી રાખો</translation>
 <translation id="2544546346215446551">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા તમારા ડિવાઇસને ફરી શરૂ કરવામાં આવ્યું છે</translation>
 <translation id="2544644783021658368">માત્ર એક દસ્તાવેજ</translation>
 <translation id="254524874071906077">Chrome ને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
@@ -973,6 +972,7 @@
 <translation id="2688186765492306706">500 x 760 મિમી</translation>
 <translation id="2688969097326701645">હા, ચાલુ રાખો</translation>
 <translation id="2690699652723742414">છેલ્લા 30 દિવસ</translation>
+<translation id="2691385045260836588">મોડલ</translation>
 <translation id="2691924980723297736">સલામતીની ચેતવણી</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />ને પૂછો</translation>
 <translation id="2699273987028089219">સબમેનૂ ઉપલબ્ધ છે, વધારાનાં વિકલ્પો પર નૅવિગેટ કરવા માટે <ph name="SHORTCUT" />નો ઉપયોગ કરો.</translation>
@@ -1528,6 +1528,7 @@
 <translation id="3664782872746246217">કીવર્ડ:</translation>
 <translation id="3665100783276035932">મોટા ભાગની સાઇટ અપેક્ષિત રીતે કાર્ય કરતી હોવી જોઈએ</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />વધુ જાણો<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">નંબર</translation>
 <translation id="3670229581627177274">Bluetooth ચાલુ કરો</translation>
 <translation id="3671117652518853176">બંધ કરેલું હોય ત્યારે, સુરક્ષા હેતુઓ માટે તમને અવારનવાર ચકાસણી કરવાનું કહેવામાં આવી શકે છે</translation>
 <translation id="3671540257457995106">કદ બદલવાની મંજૂરી આપીએ?</translation>
@@ -1542,7 +1543,6 @@
 <translation id="3681007416295224113">પ્રમાણપત્ર માહિતી</translation>
 <translation id="3681421644246505351">Chrome તમારા તાજેતરના બ્રાઉઝિંગ ઇતિહાસના આધારે રુચિઓ સંબંધી વિષયો નોંધે છે.</translation>
 <translation id="3682094733650754138">"સરનામું ભરો" વિકલ્પ પસંદ કરવામાં આવ્યો હતો</translation>
-<translation id="3687493962714153124">AI વડે ઑટોમૅટિક રીતે ભરવાની સુવિધા મેનેજ કરો</translation>
 <translation id="3687920599421452763">વૅન અને મિનીવૅન</translation>
 <translation id="3693327506115126094">આ તમે જ છો, તે તમે કેવી રીતે ચકાસશો, તે પસંદ કરો</translation>
 <translation id="3698353241727597930">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા <ph name="FILES" />ને એન્ટરપ્રાઇઝ દ્વારા મેનેજ કરવામાં આવતા તમારા <ph name="CLOUD_STORAGE" /> સ્ટોરેજમાં સાચવવાનું કન્ફિગ્યુર કરવામાં આવ્યું છે. આ ફાઇલોને મૉનિટર કરવામાં, ઑડિટ કરવામાં તેમજ તમે તેને ડિલીટ કરો ત્યારે જાળવી રાખવામાં આવી શકે છે.</translation>
@@ -1695,6 +1695,7 @@
 <translation id="3950820424414687140">સાઇન ઇન</translation>
 <translation id="3953505489397572035">આ કિંમત સામાન્ય છે</translation>
 <translation id="3958057596965527988">4 x 4 ઇંચ</translation>
+<translation id="3959969108528118741">માલિક</translation>
 <translation id="3961148744525529027">ચુકવણી માટેની હૅન્ડલર શીટ અડધી ખુલ્લી છે</translation>
 <translation id="3962859241508114581">પાછલું ટ્રૅક</translation>
 <translation id="3963721102035795474">રીડર મોડ</translation>
@@ -1920,7 +1921,6 @@
 <translation id="4312866146174492540">અવરોધિત કરો (ડિફૉલ્ટ)</translation>
 <translation id="4314815835985389558">સિંક મેનેજ કરો</translation>
 <translation id="4316057107946726368">કૃપા કરીને વધુમાં વધુ <ph name="MAX_CHAR_COUNT" /> અક્ષર ધરાવતો બંધબેસતો મેસેજ દાખલ કરો. <ph name="MAX_CHAR_COUNT" /> અક્ષરમાંથી <ph name="ACTUAL_CHAR_COUNT" />નો ઉપયોગ કર્યો.</translation>
-<translation id="431740489189220419">સૂચનો લોડ કરી રહ્યાં છીએ</translation>
 <translation id="4318213823155573975">હેડવેર</translation>
 <translation id="4318312030194671742">પેઇન્ટ પ્રીવ્યૂ કમ્પોઝિટર સેવા</translation>
 <translation id="4318566738941496689">તમારા ડિવાઇસનું નામ અને નેટવર્ક ઍડ્રેસ</translation>
@@ -2327,6 +2327,7 @@
 <translation id="5087286274860437796">સર્વરનું પ્રમાણપત્ર આ સમયે માન્ય નથી.</translation>
 <translation id="5087580092889165836">કાર્ડ ઉમેરો</translation>
 <translation id="5088142053160410913">ઑપરેટર માટે મેસેજ</translation>
+<translation id="5089810972385038852">રાજ્ય</translation>
 <translation id="5090647584136241764">તમારા માટે મહત્ત્વની હોય તેવી વિગતોની સરળતાથી તુલના કરવા માટે સમાન પ્રોડક્ટ ધરાવતા ટૅબ ઉમેરો</translation>
 <translation id="5093232627742069661">Z-ફોલ્ડ</translation>
 <translation id="5094747076828555589">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર Chromium દ્વારા વિશ્વસનીય નથી. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
@@ -2465,6 +2466,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />તમારા ડિફૉલ્ટ શોધ એન્જિન વડે તમે વેબ પર શોધ કરી શકો છો તેમજ તે Chromiumની સુવિધાઓને સશક્ત કરે છે<ph name="END_BOLD" /> જેમ કે, ઍડ્રેસ બારમાંથી તેમજ વેેબપેજ પરની છબીઓમાંથી શોધ કરવા જેવી સુવિધાઓ. તમારું શોધ એન્જિન સપોર્ટ ન કરતું હોય તેવી સુવિધા ઉપલબ્ધ ન હોય એમ બની શકે છે.</translation>
 <translation id="5323043727018853753">શામેલ કરેલા કન્ટેન્ટની મંજૂરી છે</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" /> માંથી <ph name="MATCH_POSITION" /></translation>
+<translation id="5327248766486351172">નામ</translation>
 <translation id="5329858041417644019">તમારું બ્રાઉઝર મેનેજ કરેલું નથી</translation>
 <translation id="5331585574693522196">ડિફૉલ્ટ તરીકે સેટ કરો</translation>
 <translation id="5332219387342487447">શિપિંગ પદ્ધતિ</translation>
@@ -2677,7 +2679,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplatesનું મૂલ્ય સંબંધિત નથી અને જો DnsOverHttpsMode નીતિને <ph name="SECURE_DNS_MODE_AUTOMATIC" /> અથવા <ph name="SECURE_DNS_MODE_SECURE" /> પર સેટ કરવામાં નહીં આવી હોય, તો તે મૂલ્યનો ઉપયોગ કરવામાં આવશે નહીં.</translation>
 <translation id="5691848789297492617">સંપૂર્ણ ઊંચાઈએ ખોલવામાં આવેલા કાર્ડને સાચવો.</translation>
 <translation id="5695542892312572833">તમારી ખરીદી ચકાસવા અને પૂર્ણ કરવા Windows Helloનો ઉપયોગ કરીએ?</translation>
-<translation id="5697827549745555938">આ ફોર્મ ભરવા માટે ઑટોમૅટિક રીતે ભરવાની સુવિધા સહાય કરી શકે છે કે કેમ તે જોવા માટે તમે સાચવેલી માહિતી અને આ પેજને Googleને મોકલવામાં આવે છે. આ સુવિધાને બહેતર બનાવવા માટે, ડેટા માનવ રિવ્યૂઅર દ્વારા જોવામાં આવે એમ બની શકે છે.</translation>
 <translation id="5699628521141772782">દૂધની વસ્તુઓ અને ઈંડા</translation>
 <translation id="5700761515355162635">ત્રીજા પક્ષની કુકીને મંજૂરી આપી</translation>
 <translation id="5701381305118179107">મધ્યમાં</translation>
@@ -3106,6 +3107,7 @@
 <translation id="6440503408713884761">અવગણી</translation>
 <translation id="6443406338865242315">તમે કયા એક્સ્ટેંશન અને પ્લગ-ઇન ઇન્સ્ટૉલ કર્યા છે</translation>
 <translation id="6444329331928531170">રિટાયર્મેંન્ટ અને પેન્શન</translation>
+<translation id="6445051938772793705">દેશ</translation>
 <translation id="6446608382365791566">વધુ માહિતી ઉમેરો</translation>
 <translation id="6447842834002726250">કૂકીઝ</translation>
 <translation id="6448371595882710519">ડેટા નિયંત્રણો વિશે વધુ જાણો</translation>
@@ -3587,7 +3589,6 @@
 <translation id="7316521168101843192">ફાઇલને Microsoft OneDriveમાં સાચવી રહ્યાં છીએ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">કનેક્શન સહાય</translation>
-<translation id="7321111802407017850">ઑટોમૅટિક રીતે ભરવા માટે તમારી માહિતી સાચવો</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" વિભાગને છુપાવો</translation>
 <translation id="733354035281974745">ડિવાઇસ સ્થાનિક એકાઉન્ટ ઓવરરાઇડ</translation>
 <translation id="7334320624316649418">&amp;પુનઃક્રમાંકિત કરવું ફરી કરો</translation>
@@ -3932,6 +3933,7 @@
 <translation id="7887885240995164102">ચિત્ર-માં-ચિત્ર મોડમાં દાખલ થાઓ</translation>
 <translation id="7888575728750733395">પ્રિન્ટ રેન્ડર કરવાનું ઇન્ટેન્ટ</translation>
 <translation id="7890748547282909375">સ્ક્રીનશૉટ સાચવવા માટે, Microsoft OneDriveમાં સાઇન ઇન કરો</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – તમારું કર્સર બતાવવા માટે, |<ph name="ACCELERATOR" />| દબાવો</translation>
 <translation id="7892865709991296481">ચુકવણી માટેના સેટિંગ</translation>
 <translation id="7894280532028510793">જો જોડણી સાચી હોય, તો <ph name="BEGIN_LINK" />નેટવર્ક નિદાન ચલાવવાનો પ્રયાસ કરી જુઓ<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">એન્વલપ 7 x 9 ઇંચ</translation>
@@ -4624,6 +4626,7 @@
 <translation id="9155646082713385498">સામાયિકો</translation>
 <translation id="9157595877708044936">સેટિંગ અપ...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> સંવેદનશીલ કન્ટેન્ટ ધરાવતી હોઈ શકે છે}one{<ph name="FILE_COUNT" /> ફાઇલ સંવેદનશીલ કન્ટેન્ટ ધરાવતી હોઈ શકે છે}other{<ph name="FILE_COUNT" /> ફાઇલ સંવેદનશીલ કન્ટેન્ટ ધરાવતી હોઈ શકે છે}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – પૂર્ણ સ્ક્રીનમાંથી બહાર નીકળવા માટે, |<ph name="ACCELERATOR" />| દબાવો</translation>
 <translation id="9165305804774426672">તમે મુલાકાત લેશો તે સાઇટ, સાઇટ પરની તમારી ઍક્ટિવિટીના આધારે તમને શું ગમ્યું, તે પણ નક્કી કરી શકશે. ઉદાહરણ તરીકે, જો તમે લાંબા અંતર માટે દોડવાના શૂઝ વેચતી કોઈ સાઇટની મુલાકાત લો, તો સાઇટ કદાચ એવું તારણ કાઢી શકે કે તમે મેરેથોન દોડવામાં રુચિ ધરાવતા હોઈ શકો છો.</translation>
 <translation id="9166851138617700776">સાઇટ દ્વારા સૂચવેલી જાહેરાતો અને જાહેરાતની માપણી વિશે વધુ</translation>
 <translation id="9167054383925257837">બ્રાઉઝર અને ડિવાઇસની OSની માહિતી (જેમ કે બ્રાઉઝર અને OSના વર્ઝન)</translation>

@@ -414,10 +414,8 @@ void AddAdditionalRequestHeaders(
   // compatibility concerns (See
   // https://github.com/WICG/nav-speculation/issues/133).
   if (frame_tree_node->frame_tree().is_prerendering()) {
-    headers->SetHeader(blink::kSecPurposeHeaderName,
-                       blink::kSecPurposePrefetchPrerenderHeaderValue);
-    headers->SetHeader(blink::kPurposeHeaderName,
-                       blink::kSecPurposePrefetchHeaderValue);
+    PrerenderHost::GetFromFrameTreeNode(*frame_tree_node)
+        .AddAdditionalRequestHeaders(*headers, *frame_tree_node);
   } else if (frame_tree_node->frame_tree()
                  .page_delegate()
                  ->IsPageInPreviewMode()) {

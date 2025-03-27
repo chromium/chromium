@@ -405,6 +405,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1264956950255940376">Aizmiedziet kreiso aci</translation>
 <translation id="1265094893042958831">Notiek ieteikumu ģenerēšana šai lapai…</translation>
 <translation id="1265279736024499987">Jūsu lietotnes un iestatījumi tiks sinhronizēti visās Chrome OS Flex ierīcēs, kurās esat pierakstījies, izmantojot savu Google kontu. Lai skatītu pārlūka sinhronizācijas opcijas, pārejiet uz <ph name="LINK_BEGIN" />Chrome iestatījumiem<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Pēc ekrānuzņēmuma izveides vai meklēšanas ekrānā tiek rādītas vairākas darbības, piemēram, pievienošana Kalendāram, Google dokumenta izveide u. c.</translation>
 <translation id="126710816202626562">Tulkojuma valoda:</translation>
 <translation id="1267649802567297774"><ph name="INDEX" />. ģenerētais attēls ar šādu objektu: <ph name="SUBJECT" />; stils: <ph name="STYLE" />, noskaņojums: <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1566,9 +1567,9 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2081816110395725788">Barošanas iestatījumi miega režīmā, kad tiek izmantots akumulators</translation>
 <translation id="2082187087049518845">Pievienot cilni grupai</translation>
 <translation id="2082510809738716738">Izvēlieties motīva krāsu</translation>
-<translation id="208547068587548667">Pierakstīties vietnē <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Lūdzu, mēģiniet vēlreiz</translation>
 <translation id="208634871997892083">Vienmēr ieslēgts VPN</translation>
+<translation id="208654914566977272">Ieteicamās darbības, veicot meklēšanu ekrānā</translation>
 <translation id="2087822576218954668">Drukāšana: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Reģistrēšanās ir atbalstīta tikai pēc <ph name="DEVICE_OS" /> instalēšanas.</translation>
 <translation id="2088564884469682888">Iebūvēta kursorsvira</translation>
@@ -3995,7 +3996,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3778740492972734840">Izstrā&amp;dātāja rīki</translation>
 <translation id="3778868487658107119">Uzdodiet tam jautājumus. Lieciet tam veikt darbības. Pakalpojums Google darbojas jūsu labā — vienmēr gatavs palīdzēt.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{jūsu pārlūkošanas vēsture # vietnē}zero{jūsu pārlūkošanas vēsture # vietnēs}one{jūsu pārlūkošanas vēsture # vietnē}other{jūsu pārlūkošanas vēsture # vietnēs}}</translation>
-<translation id="3779244863011082655">Izmantot citu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kontu</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> nevar pārbaudīt, vai nav datu aizsardzības pārkāpumu saistībā ar jūsu parolēm. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="3781742599892759500">Linux piekļuve mikrofonam</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5499,6 +5499,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4848191975108266266">Google asistents un “Ok Google”</translation>
 <translation id="4849286518551984791">Universālais koordinētais laiks (UTC/GMT)</translation>
 <translation id="4849517651082200438">Neinstalēt</translation>
+<translation id="4849731766219625109">Izmantot jūsu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kontu</translation>
 <translation id="485053257961878904">Nevarēja iestatīt paziņojumu sinhronizēšanu</translation>
 <translation id="4850548109381269495">Abās ierīcēs pārbaudiet interneta savienojumu un ieslēdziet Bluetooth savienojumu. Pēc tam mēģiniet vēlreiz.</translation>
 <translation id="4850669014075537160">Ritināšana</translation>
@@ -5687,6 +5688,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4979510648199782334">Microsoft 365 iestatīšana ir pabeigta</translation>
 <translation id="4980805016576257426">Šis paplašinājums satur ļaunprātīgu programmatūru.</translation>
 <translation id="4983159853748980742">Parole netika kopīgota. Pārbaudiet interneta savienojumu un noteikti pierakstieties pārlūkā Chrome. Pēc tam mēģiniet vēlreiz.</translation>
+<translation id="498624032394115435">Ikviens, kam ir saite, var rediģēt visas cilnes.</translation>
 <translation id="4986706507552097681">Jebkurā laikā iestatījumos varat izvēlēties, ko sinhronizēt. Google var personalizēt pakalpojumu Meklēšana un citus pakalpojumus, ņemot vērā jūsu vēsturi.</translation>
 <translation id="4986728572522335985">Tas izdzēsīs visus drošības atslēgas datus, ieskaitot tās PIN</translation>
 <translation id="4987944280765486504">Kad lejupielāde būs pabeigta, Chromebook dators tiks restartēts, un pēc tam varēsiet turpināt iestatīšanu.</translation>
@@ -8296,7 +8298,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6873571253135628430">Mainīt vietņu atļaujas</translation>
 <translation id="6876155724392614295">Velosipēds</translation>
 <translation id="6876469544038980967">Nav noderīgi</translation>
-<translation id="687838958001010630">Ikviens, kam ir saite, var rediģēt visas cilnes.</translation>
 <translation id="6878422606530379992">Atļauti sensori</translation>
 <translation id="6878862640969460273">Ainava</translation>
 <translation id="6880587130513028875">Attēli šajā lapā tika bloķēti.</translation>

@@ -95,7 +95,7 @@ auto UnsafeTestConfig() {
 
 // A complete set of assets for the most common case.
 struct StandardAssets {
-  FakeBaseModelAsset base_model{FakeBaseModelAsset::Content{}};
+  FakeBaseModelAsset base_model;
   FakeAdaptationAsset compose{{
       .config = SimpleComposeConfig(),
   }};
@@ -265,8 +265,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     if (params.base_model) {
       on_device_component_state_manager_.get()->OnStartup();
       task_environment_.FastForwardBy(base::Seconds(1));
-      on_device_component_state_manager_.SetReady(params.base_model->path(),
-                                                  params.base_model->version());
+      on_device_component_state_manager_.SetReady(*params.base_model);
     }
     RecreateServiceController();
     if (params.safety) {
@@ -725,9 +724,7 @@ TEST_F(OnDeviceModelServiceControllerTest, BaseModelAvailableAfterInit) {
   auto session = CreateSession();
   EXPECT_FALSE(session);
 
-  on_device_component_state_manager_.SetReady(
-      standard_assets_.base_model.path(),
-      standard_assets_.base_model.version());
+  on_device_component_state_manager_.SetReady(standard_assets_.base_model);
   task_environment_.RunUntilIdle();
 
   // Model now available.
@@ -746,8 +743,7 @@ TEST_F(OnDeviceModelServiceControllerTest, MidSessionModelUpdate) {
   FakeBaseModelAsset next_model({
       .weight = 2,
   });
-  on_device_component_state_manager_.SetReady(next_model.path(),
-                                              next_model.version());
+  on_device_component_state_manager_.SetReady(next_model);
   task_environment_.RunUntilIdle();
 
   // Verify the existing session still works.
@@ -770,8 +766,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionBeforeAndAfterModelUpdate) {
   FakeBaseModelAsset next_model({
       .weight = 2,
   });
-  on_device_component_state_manager_.SetReady(next_model.path(),
-                                              next_model.version());
+  on_device_component_state_manager_.SetReady(next_model);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(0ull, fake_launcher_.on_device_model_receiver_count());
 
@@ -2746,9 +2741,7 @@ TEST_F(OnDeviceModelServiceControllerTest, TestAvailabilityObserver) {
 
   on_device_component_state_manager_.get()->OnStartup();
   task_environment_.RunUntilIdle();
-  on_device_component_state_manager_.SetReady(
-      standard_assets_.base_model.path(),
-      standard_assets_.base_model.version());
+  on_device_component_state_manager_.SetReady(standard_assets_.base_model);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
             availability_observer_test.reason_);
@@ -2890,8 +2883,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationBlocksSession) {
   FakeBaseModelAsset next_model(WillPassValidationConfig());
   {
     base::HistogramTester histogram_tester;
-    on_device_component_state_manager_.SetReady(next_model.path(),
-                                                next_model.version());
+    on_device_component_state_manager_.SetReady(next_model);
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectUniqueSample(
@@ -2975,8 +2967,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   });
   {
     base::HistogramTester histogram_tester;
-    on_device_component_state_manager_.SetReady(next_model.path(),
-                                                next_model.version());
+    on_device_component_state_manager_.SetReady(next_model);
     task_environment_.RunUntilIdle();
 
     histogram_tester.ExpectUniqueSample(
@@ -3005,8 +2996,7 @@ TEST_F(OnDeviceModelServiceControllerTest, GetCapabilities) {
           {proto::OnDeviceModelCapability::
                ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT}),
   });
-  on_device_component_state_manager_.SetReady(next_model.path(),
-                                              next_model.version());
+  on_device_component_state_manager_.SetReady(next_model);
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(test_controller_->GetCapabilities(),
@@ -3035,8 +3025,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
       .weight = 2,
       .version = "0.0.2",
   });
-  on_device_component_state_manager_.SetReady(next_model.path(),
-                                              next_model.version());
+  on_device_component_state_manager_.SetReady(next_model);
   task_environment_.RunUntilIdle();
 
   task_environment_.FastForwardBy(base::Seconds(10) + base::Milliseconds(1));

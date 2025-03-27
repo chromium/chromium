@@ -1,6 +1,7 @@
 arichiv@chromium.org
 iclelland@chromium.org
 vogelheim@chromium.org
+sandormajor@chromium.org
 
 
 per-file *.mojom=set noparent

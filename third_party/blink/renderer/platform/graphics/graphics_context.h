@@ -405,11 +405,11 @@ class PLATFORM_EXPORT GraphicsContext {
                 DOMNodeId,
                 const AutoDarkMode& auto_dark_mode);
 
-  void DrawEmphasisMarks(const Font&,
-                         const TextRun&,
-                         const AtomicString& mark,
-                         const gfx::PointF&,
-                         const AutoDarkMode& auto_dark_mode);
+  void DeprecatedDrawEmphasisMarks(const Font&,
+                                   const TextRun&,
+                                   const AtomicString& mark,
+                                   const gfx::PointF&,
+                                   const AutoDarkMode& auto_dark_mode);
   void DrawEmphasisMarks(const Font&,
                          const TextFragmentPaintInfo&,
                          const AtomicString& mark,
@@ -515,13 +515,6 @@ class PLATFORM_EXPORT GraphicsContext {
     RealizePaintSave();
     return paint_state_;
   }
-
-  template <typename TextPaintInfo>
-  void DrawEmphasisMarksInternal(const Font&,
-                                 const TextPaintInfo&,
-                                 const AtomicString& mark,
-                                 const gfx::PointF&,
-                                 const AutoDarkMode& auto_dark_mode);
 
   template <typename DrawTextFunc>
   void DrawTextPasses(const DrawTextFunc&);

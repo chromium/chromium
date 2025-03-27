@@ -916,8 +916,8 @@ message PolicyData {
   // (http://shortn/_POBIUl3EIK) should be updated.
   enum K12AgeClassificationMetricsLogSegment {
     AGE_UNSPECIFIED = 0;
-    AGE_UNDER_18 = 1;
-    AGE_EQUAL_OR_OVER_18 = 2;
+    AGE_UNDER18 = 1;
+    AGE_EQUAL_OR_OVER18 = 2;
   }
 
   // Indicates the segment the user's age classification metrics should be

@@ -32,6 +32,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -57,10 +58,6 @@
 namespace optimization_guide {
 
 namespace {
-
-const base::Value::Dict kTestManifest = base::Value::Dict().Set(
-    "BaseModelSpec",
-    base::Value::Dict().Set("version", "0.0.1").Set("name", "Test"));
 
 enum class ModelExecutionRemoteResponseType {
   kSuccessful = 0,
@@ -693,9 +690,8 @@ class OnDeviceModelExecutionEnabledBrowserTest
   void SetUpBaseModel() {
     model_execution::prefs::RecordFeatureUsage(
         g_browser_process->local_state(), ModelBasedCapabilityKey::kCompose);
-    OnDeviceModelComponentStateManager::GetInstanceForTesting()->SetReady(
-        base::Version("0.1.1"), base::FilePath(FILE_PATH_LITERAL("/some/path")),
-        kTestManifest);
+    base_model_asset_.SetReadyIn(
+        *OnDeviceModelComponentStateManager::GetInstanceForTesting());
   }
 
   void SetUpComposeModelExecutionConfig() {
@@ -719,6 +715,9 @@ class OnDeviceModelExecutionEnabledBrowserTest
           ->model_metadata_.get();
     });
   }
+
+ private:
+  optimization_guide::FakeBaseModelAsset base_model_asset_;
 };
 
 IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionEnabledBrowserTest,
