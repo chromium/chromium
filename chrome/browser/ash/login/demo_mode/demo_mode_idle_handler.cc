@@ -10,15 +10,11 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/metrics/demo_session_metrics_recorder.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
-#include "base/files/file_enumerator.h"
-#include "base/files/file_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/experiences/idle_detector/idle_detector.h"
-#include "components/drive/file_system_core_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -60,44 +56,12 @@ void ResetPrefs() {
   }
 }
 
-void DeleteAllFilesUnderPath(const base::FilePath& directory_path) {
-  base::FileEnumerator e(
-      directory_path, /*recursive=*/false,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
-  for (base::FilePath file_path = e.Next(); !file_path.empty();
-       file_path = e.Next()) {
-    if (!base::DeletePathRecursively(file_path)) {
-      PLOG(ERROR) << "Cannot delete '" << file_path << "'";
-    }
-  }
-}
-
-// Deletes all user created files in DriveFS.
-void CleanUpDriveFs(
-    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner) {
-  drive::DriveIntegrationService* integration_service =
-      drive::DriveIntegrationServiceFactory::FindForProfile(
-          ProfileManager::GetActiveUserProfile());
-
-  // In managed guest session demo mode, there's no DriveFS.
-  if (!integration_service) {
-    return;
-  }
-
-  const base::FilePath root = integration_service->GetMountPointPath().Append(
-      base::FilePath(drive::util::kDriveMyDriveRootDirName));
-  blocking_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&DeleteAllFilesUnderPath, root));
-}
-
 }  // namespace
 
 DemoModeIdleHandler::DemoModeIdleHandler(
     DemoModeWindowCloser* window_closer,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
-    : window_closer_(window_closer),
-      blocking_task_runner_(blocking_task_runner),
-      file_cleaner_(blocking_task_runner) {
+    : window_closer_(window_closer), file_cleaner_(blocking_task_runner) {
   user_activity_observer_.Observe(ui::UserActivityDetector::Get());
 }
 
@@ -150,7 +114,6 @@ void DemoModeIdleHandler::OnIdle() {
   if (features::IsDemoModeSignInFileCleanupEnabled()) {
     // The IO tasks will be executed from non-UI thread by  `file_cleaner_`.
     CleanupLocalFiles();
-    CleanUpDriveFs(blocking_task_runner_);
   }
 
   window_closer_->StartClosingApps();
