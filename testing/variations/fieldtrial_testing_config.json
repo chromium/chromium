@@ -17129,6 +17129,57 @@
             ]
         }
     ],
+    "PerformanceInterventionAlgorithm": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledLessAggressive_20250326",
+                    "params": {
+                        "minimum_time_reshow": "1h",
+                        "no_acceptance_back_off": "7d",
+                        "scale_max_times_per_day": "3",
+                        "scale_max_times_per_week": "21",
+                        "window_size": "10"
+                    },
+                    "enable_features": [
+                        "PerformanceInterventionNotificationImprovements"
+                    ]
+                },
+                {
+                    "name": "EnabledMediumAggressive_20250326",
+                    "params": {
+                        "minimum_time_reshow": "1h",
+                        "no_acceptance_back_off": "7d",
+                        "scale_max_times_per_day": "10",
+                        "scale_max_times_per_week": "70",
+                        "window_size": "10"
+                    },
+                    "enable_features": [
+                        "PerformanceInterventionNotificationImprovements"
+                    ]
+                },
+                {
+                    "name": "EnabledMoreAggressive_20250326",
+                    "params": {
+                        "minimum_time_reshow": "1h",
+                        "no_acceptance_back_off": "7d",
+                        "scale_max_times_per_day": "24",
+                        "scale_max_times_per_week": "168",
+                        "window_size": "10"
+                    },
+                    "enable_features": [
+                        "PerformanceInterventionNotificationImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
     "PermissionElementPromptPositioning": [
         {
             "platforms": [
