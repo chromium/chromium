@@ -131,21 +131,7 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   bool AreRelatedWebsiteSetsEnabled() const override;
 
  private:
-  // TODO(crbug.com/366168654): Browser tests should not reach into the private
-  // method or states of this class. Consider exposing the required functions
-  // via a test helper class or test only functions.
   friend class PrivacySandboxAttestations;
-  friend class PrivacySandboxAttestationsTestBase;
-  FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxAttestationsBrowserTest,
-      CallComponentReadyWhenRegistrationFindsExistingComponent);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxAttestationsBrowserTest,
-                           SentinelFilePreventsSubsequentParsings);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxAttestationsBrowserTest,
-                           DifferentHistogramAfterAttestationsFileCheck);
-  FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxAttestationPreInstallInteractionWithDownloadTest,
-      BothPreinstalledAndDownloadedAttestationsAvailable);
   // NOTE: Do not add any new friend classes for testing; tests that need
   // access to private functions / variables should go through this peer class.
   friend class privacy_sandbox_test_util::PrivacySandboxSettingsTestPeer;
