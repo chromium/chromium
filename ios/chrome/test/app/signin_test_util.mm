@@ -180,19 +180,10 @@ void ResetHistorySyncPreferencesForTesting() {
 
 void ResetSyncAccountSettingsPrefs() {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
-  // Clear the new per-account selected types and per-account passphrase.
+  // Clear the per-account selected types and per-account passphrase.
   SyncServiceFactory::GetForProfile(profile)
       ->GetUserSettings()
       ->KeepAccountSettingsPrefsOnlyForUsers({});
-  // And the old global selected types for syncing users. SyncUserSettings::
-  // SetSelectedTypes() CHECKs the user is signed-in, so go through SyncPrefs
-  // directly.
-  // TODO(crbug.com/40066949): Remove once sync-the-feature is gone on iOS.
-  syncer::SyncPrefs(profile->GetPrefs())
-      .SetSelectedTypesForSyncingUser(
-          /*sync_everything=*/true,
-          /*registered_types=*/syncer::UserSelectableTypeSet::All(),
-          /*selected_types=*/syncer::UserSelectableTypeSet::All());
 }
 
 }  // namespace chrome_test_util
