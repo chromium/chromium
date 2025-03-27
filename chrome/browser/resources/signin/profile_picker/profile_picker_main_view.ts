@@ -80,16 +80,18 @@ export class ProfilePickerMainViewElement extends
     };
   }
 
-  protected profilesList_: ProfileState[] = [];
-  protected profilesListLoaded_: boolean = false;
-  protected hideAskOnStartup_: boolean = false;
-  protected askOnStartup_: boolean = loadTimeData.getBoolean('askOnStartup');
+  protected accessor profilesList_: ProfileState[] = [];
+  protected accessor profilesListLoaded_: boolean = false;
+  protected accessor hideAskOnStartup_: boolean = false;
+  protected accessor askOnStartup_: boolean =
+      loadTimeData.getBoolean('askOnStartup');
   // Initial value when the page is rendered.
   // Potentially updated on profile addition/removal/sign-in.
-  protected guestModeEnabled_: boolean =
+  protected accessor guestModeEnabled_: boolean =
       loadTimeData.getBoolean('isGuestModeEnabled');
-  protected profileCreationAllowed_: boolean = isProfileCreationAllowed();
-  protected isGlic_: boolean = isGlicVersion();
+  protected accessor profileCreationAllowed_: boolean =
+      isProfileCreationAllowed();
+  protected accessor isGlic_: boolean = isGlicVersion();
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
   private resizeObserver_: ResizeObserver|null = null;
@@ -101,10 +103,10 @@ export class ProfilePickerMainViewElement extends
   // TODO(crbug.com/40280498): Move the dialog into it's own element with the
   // below members. This dialog state should be independent of the Profile
   // Picker itself.
-  protected forceSigninErrorDialogTitle_: string = '';
-  protected forceSigninErrorDialogBody_: string = '';
-  private forceSigninErrorProfilePath_: string = '';
-  protected shouldShownSigninButton_: boolean = false;
+  protected accessor forceSigninErrorDialogTitle_: string = '';
+  protected accessor forceSigninErrorDialogBody_: string = '';
+  private accessor forceSigninErrorProfilePath_: string = '';
+  protected accessor shouldShownSigninButton_: boolean = false;
 
   private eventTracker_: EventTracker = new EventTracker();
 

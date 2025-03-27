@@ -82,15 +82,15 @@ export class ProfileCustomizationAppElement extends
     };
   }
 
-  protected isManaged_: boolean = false;
+  protected accessor isManaged_: boolean = false;
   protected hasEnterpriseLabel: boolean = false;
-  protected profileName_: string = '';
-  protected pictureUrl_: string = '';
-  protected welcomeTitle_: string = '';
-  protected availableIcons_: AvatarIcon[] = [];
-  protected selectedAvatar_: AvatarIcon|null = null;
+  protected accessor profileName_: string = '';
+  protected accessor pictureUrl_: string = '';
+  protected accessor welcomeTitle_: string = '';
+  protected accessor availableIcons_: AvatarIcon[] = [];
+  protected accessor selectedAvatar_: AvatarIcon|null = null;
   private confirmedAvatar_: AvatarIcon|null = null;
-  protected isLocalProfileCreation_: boolean =
+  protected accessor isLocalProfileCreation_: boolean =
       loadTimeData.getBoolean('isLocalProfileCreation');
   private profileCustomizationBrowserProxy_: ProfileCustomizationBrowserProxy =
       ProfileCustomizationBrowserProxyImpl.getInstance();

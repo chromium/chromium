@@ -29,8 +29,8 @@ export class ManagedUserProfileNoticeStateElement extends CrLitElement {
     };
   }
 
-  override title: string = '';
-  subtitle: string = '';
+  override accessor title: string = '';
+  accessor subtitle: string = '';
 }
 
 declare global {
