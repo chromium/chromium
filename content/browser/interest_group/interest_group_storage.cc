@@ -493,9 +493,25 @@ DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
             blink::features::kFledgeAuctionDealSupport) &&
         !ad_proto.selectable_buyer_and_seller_reporting_ids().empty()) {
       std::vector<std::string> selectable_buyer_and_seller_reporting_ids;
-      for (const auto& id :
-           ad_proto.selectable_buyer_and_seller_reporting_ids()) {
-        selectable_buyer_and_seller_reporting_ids.emplace_back(id);
+      size_t selectable_reporting_ids_load_limit =
+          ad_proto.selectable_buyer_and_seller_reporting_ids().size();
+      if (base::FeatureList::IsEnabled(
+              features::
+                  kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon) &&
+          features::
+                  kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
+                      .Get() >= 0 &&
+          features::
+              kFledgeSelectableBuyerAndSellerReportingIdsTruncateToKAnonLimit
+                  .Get()) {
+        selectable_reporting_ids_load_limit =
+            features::
+                kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
+                    .Get();
+      }
+      for (size_t i = 0; i < selectable_reporting_ids_load_limit; ++i) {
+        selectable_buyer_and_seller_reporting_ids.emplace_back(
+            ad_proto.selectable_buyer_and_seller_reporting_ids()[i]);
       }
       ad.selectable_buyer_and_seller_reporting_ids =
           std::move(selectable_buyer_and_seller_reporting_ids);
