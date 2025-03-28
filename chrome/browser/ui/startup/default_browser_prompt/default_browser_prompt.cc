@@ -58,7 +58,8 @@ void ShowPrompt() {
 
     DefaultBrowserInfoBarDelegate::Create(
         infobars::ContentInfoBarManager::FromWebContents(web_contents),
-        browser->profile());
+        browser->profile(),
+        /*can_pin_to_taskbar=*/false);
     break;
   }
 }
