@@ -5,6 +5,7 @@
 #import "ios/web/content/js_messaging/content_java_script_feature_manager.h"
 
 #import "base/containers/contains.h"
+#import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -17,6 +18,10 @@
 namespace web {
 
 namespace {
+
+BASE_FEATURE(kContentEnableInjectedFeatureScripts,
+             "ContentEnableInjectedFeatureScripts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 std::u16string MakeInjectableIntoMainFrameOnly(const std::u16string& script) {
   std::u16string format_string = u"if (window == window.top) { $1 }";
@@ -57,6 +62,10 @@ bool ContentJavaScriptFeatureManager::HasFeature(
 
 void ContentJavaScriptFeatureManager::AddFeature(
     const JavaScriptFeature* feature) {
+  if (!base::FeatureList::IsEnabled(kContentEnableInjectedFeatureScripts)) {
+    return;
+  }
+
   if (HasFeature(feature)) {
     return;
   }
