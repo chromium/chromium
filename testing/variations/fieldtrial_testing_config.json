@@ -13083,7 +13083,25 @@
             ]
         }
     ],
-    "InvalidationsWithDirectMessagesPerPlatform": [
+    "InvalidationWithDirectMessagesCbcm": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CbcmPolicyInvalidationWithDirectMessagesEnabled",
+                        "CbcmRemoteCommandsInvalidationWithDirectMessagesEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
+    "InvalidationWithDirectMessagesChromeOs": [
         {
             "platforms": [
                 "chromeos"
@@ -13096,26 +13114,42 @@
                         "DeviceLocalAccountPolicyInvalidationWithDirectMessagesEnabled",
                         "DevicePolicyInvalidationWithDirectMessagesEnabled",
                         "DeviceRemoteCommandsInvalidationWithDirectMessagesEnabled",
-                        "UserCertProvisioningInvalidationWithDirectMessagesEnabled",
-                        "UserPolicyInvalidationWithDirectMessagesEnabled",
-                        "UserRemoteCommandsInvalidationWithDirectMessagesEnabled"
+                        "UserCertProvisioningInvalidationWithDirectMessagesEnabled"
                     ]
                 }
             ]
-        },
+        }
+    ],
+    "InvalidationWithDirectMessagesUserPolicy": [
         {
             "platforms": [
+                "chromeos",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "BrowserPolicyUserRemoteCommands",
+                    "name": "Enabled",
                     "enable_features": [
-                        "CbcmPolicyInvalidationWithDirectMessagesEnabled",
-                        "CbcmRemoteCommandsInvalidationWithDirectMessagesEnabled",
-                        "UserPolicyInvalidationWithDirectMessagesEnabled",
+                        "UserPolicyInvalidationWithDirectMessagesEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
+    "InvalidationWithDirectMessagesUserRemoteCommands": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
                         "UserRemoteCommandsInvalidationWithDirectMessagesEnabled"
                     ]
                 }
