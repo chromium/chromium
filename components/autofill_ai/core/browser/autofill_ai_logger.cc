@@ -73,25 +73,34 @@ void AutofillAiLogger::OnDidCorrectFillingSuggestion(
       AutofillAiUkmLogger::EventType::kEditedAutofilledValue);
 }
 
-void AutofillAiLogger::RecordMetricsForForm(autofill::FormGlobalId form_id,
-                                            bool submission_state) {
-  LogFunnelMetric("Eligibility", submission_state,
-                  form_states_[form_id].is_eligible);
-  if (!form_states_[form_id].is_eligible) {
+void AutofillAiLogger::RecordFormMetrics(const autofill::FormStructure& form,
+                                         ukm::SourceId ukm_source_id,
+                                         bool submission_state,
+                                         bool opt_in_status) {
+  FunnelState state = form_states_[form.global_id()];
+  ukm_logger_.LogKeyMetrics(
+      ukm_source_id, form, /*data_to_fill_available=*/state.has_data_to_fill,
+      /*suggestions_shown=*/state.did_show_filling_suggestions,
+      /*suggestion_filled=*/state.did_fill_suggestions,
+      /*edited_autofilled_field=*/state.did_correct_filling,
+      /*opt_in_status=*/opt_in_status);
+
+  LogFunnelMetric("Eligibility", submission_state, state.is_eligible);
+  if (!state.is_eligible) {
     return;
   }
   LogFunnelMetric("ReadinessAfterEligibility", submission_state,
-                  form_states_[form_id].has_data_to_fill);
-  if (!form_states_[form_id].has_data_to_fill) {
+                  state.has_data_to_fill);
+  if (!state.has_data_to_fill) {
     return;
   }
   LogFunnelMetric("FillAfterSuggestion", submission_state,
-                  form_states_[form_id].did_fill_suggestions);
-  if (!form_states_[form_id].did_fill_suggestions) {
+                  state.did_fill_suggestions);
+  if (!state.did_fill_suggestions) {
     return;
   }
   LogFunnelMetric("CorrectionAfterFill", submission_state,
-                  form_states_[form_id].did_correct_filling);
+                  state.did_correct_filling);
 }
 
 }  // namespace autofill_ai

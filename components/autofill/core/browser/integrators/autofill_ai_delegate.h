@@ -28,10 +28,11 @@ class AutofillAiDelegate {
       autofill::FormGlobalId form_global_id,
       autofill::FieldGlobalId field_global_id) = 0;
 
-  // Displays an import bubble for `form` if Autofill AI is interested in the
-  // form and then calls `autofill_callback`. Returns whether an import bubble
-  // will be shown.
-  virtual bool MaybeImportForm(const FormStructure& form_structure) = 0;
+  // Attempts to display an import bubble for `form` if Autofill AI is
+  // interested in the form. Returns whether an import bubble will be shown.
+  // Also contains metric logging logic.
+  virtual bool OnFormSubmitted(const FormStructure& form,
+                               ukm::SourceId ukm_source_id) = 0;
 
   // Indicates whether to try to display IPH for opting into AutofillAI. It
   // checks that all of the following is true:

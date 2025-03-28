@@ -27,8 +27,8 @@ class AutofillAiUkmLogger {
                      const autofill::FormStructure& form,
                      bool data_to_fill_available,
                      bool suggestions_shown,
-                     bool edited_autofilled_field,
                      bool suggestion_filled,
+                     bool edited_autofilled_field,
                      bool opt_in_status);
 
   // These values are persisted to logs. Entries should not be renumbered and

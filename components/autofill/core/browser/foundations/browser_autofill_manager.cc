@@ -877,7 +877,8 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
   bool autofill_ai_shows_bubble = false;
   if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate()) {
-    autofill_ai_shows_bubble = delegate->MaybeImportForm(*submitted_form);
+    autofill_ai_shows_bubble = delegate->OnFormSubmitted(
+        *submitted_form, driver().GetPageUkmSourceId());
   }
 
   MaybeImportFromSubmittedForm(client(), driver().GetPageUkmSourceId(),

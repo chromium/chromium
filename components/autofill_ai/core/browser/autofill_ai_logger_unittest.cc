@@ -244,8 +244,8 @@ TEST_P(AutofillAiFunnelMetricsTest, Logger) {
   }
 
   base::HistogramTester histogram_tester;
-  test_api(manager()).logger().RecordMetricsForForm(form->global_id(),
-                                                    submitted());
+  test_api(manager()).logger().RecordFormMetrics(
+      *form, /*ukm_source_id=*/{}, submitted(), /*opt_in_status=*/true);
   ExpectCorrectFunnelRecording(histogram_tester);
 }
 
@@ -273,8 +273,8 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
   }
 
   base::HistogramTester histogram_tester;
-  test_api(manager()).logger().RecordMetricsForForm(form->global_id(),
-                                                    submitted());
+  test_api(manager()).logger().RecordFormMetrics(
+      *form, /*ukm_source_id=*/{}, submitted(), /*opt_in_status=*/true);
   ExpectCorrectFunnelRecording(histogram_tester);
 }
 

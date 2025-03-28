@@ -4,6 +4,7 @@
 
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <ranges>
@@ -322,6 +323,19 @@ void AutofillAiManager::OnEditedAutofilledField(
     const autofill::AutofillField& field,
     ukm::SourceId ukm_source_id) {
   logger_.OnDidCorrectFillingSuggestion(form, field, ukm_source_id);
+}
+
+bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,
+                                        ukm::SourceId ukm_source_id) {
+  if (std::ranges::any_of(
+          form.fields(), [](const std::unique_ptr<AutofillField>& field) {
+            return field->GetAutofillAiServerTypePredictions() != std::nullopt;
+          })) {
+    logger_.RecordFormMetrics(
+        form, ukm_source_id, /*submission_state=*/true,
+        autofill::GetAutofillAiOptInStatus(client_->GetAutofillClient()));
+  }
+  return MaybeImportForm(form);
 }
 
 bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {

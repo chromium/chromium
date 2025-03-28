@@ -45,7 +45,8 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   std::vector<autofill::Suggestion> GetSuggestions(
       autofill::FormGlobalId form_global_id,
       autofill::FieldGlobalId field_global_id) override;
-  bool MaybeImportForm(const autofill::FormStructure& form) override;
+  bool OnFormSubmitted(const autofill::FormStructure& form,
+                       ukm::SourceId ukm_source_id) override;
   bool ShouldDisplayIph(autofill::FormGlobalId form,
                         autofill::FieldGlobalId field) const override;
   void OnSuggestionsShown(const autofill::FormStructure& form,
@@ -75,6 +76,10 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
       const GURL& url,
       const autofill::EntityInstance& entity) const;
   bool IsUpdateBlockedByStrikeDatabase(const base::Uuid& entity_uuid) const;
+
+  // Attempts to display an import bubble for `form` if Autofill AI is
+  // interested in the form. Returns whether an import bubble will be shown.
+  bool MaybeImportForm(const autofill::FormStructure& form);
 
   // Updates the `EntityDataManager` and the save strike database depending on
   // the prompt `result`.

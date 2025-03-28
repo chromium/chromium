@@ -38,11 +38,13 @@ class AutofillAiLogger {
                                      const autofill::AutofillField& field,
                                      ukm::SourceId ukm_source_id);
 
-  // Function that records the contents of `form_states` for `form_id` into
+  // Function that records the contents of `form_states` for `form` into
   // appropriate metrics. `submission_state` denotes whether the form was
-  // submitted or abandoned.
-  void RecordMetricsForForm(autofill::FormGlobalId form_id,
-                            bool submission_state);
+  // submitted or abandoned. Also logs form-related UKM metrics.
+  void RecordFormMetrics(const autofill::FormStructure& form,
+                         ukm::SourceId ukm_source_id,
+                         bool submission_state,
+                         bool opt_in_status);
 
  private:
   // Helper struct that contains relevant information about the state of a form
