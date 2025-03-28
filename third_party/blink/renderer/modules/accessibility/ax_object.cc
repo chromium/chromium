@@ -4696,9 +4696,17 @@ bool AXObject::ComputeCanSetFocusAttribute() {
       << "\n* Element: " << elem << "\n* Object: " << this
       << "\n* LayoutObject: " << GetLayoutObject();
 
-  // Focusable: element supports focus.
-  return elem->SupportsFocus(Element::UpdateBehavior::kNoneForAccessibility) !=
-         FocusableState::kNotFocusable;
+  // Focusable: an element is focusable if it is either mouse or keyboard
+  // focusable. An element is only mouse focusable if it has negative tabindex.
+  // An element is only keyboard focusable if it a scroller without tabindex and
+  // no focusable child. In the case of a scroll element without tabindex and
+  // with focusable child, this should return false.
+  // Calling Element::SupportsFocus() is not enough because scroll elements
+  // support focus, but are not always focusable.
+  return elem->IsMouseFocusable(
+             Element::UpdateBehavior::kNoneForAccessibility) ||
+         elem->IsKeyboardFocusableSlow(
+             Element::UpdateBehavior::kNoneForAccessibility);
 }
 
 bool AXObject::CanSetSelectedAttribute() const {
