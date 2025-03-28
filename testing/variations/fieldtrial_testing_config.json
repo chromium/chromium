@@ -17638,17 +17638,17 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_V1",
+                    "name": "EnabledeWithSummarizeSelected",
                     "enable_features": [
                         "MahiPanelResizable",
+                        "MahiSummarizeSelected",
                         "Pompano"
                     ]
                 },
                 {
-                    "name": "Enabled_M136",
+                    "name": "EnabledWithoutSummarizeSelected",
                     "enable_features": [
                         "MahiPanelResizable",
-                        "MahiSummarizeSelected",
                         "Pompano"
                     ]
                 }
