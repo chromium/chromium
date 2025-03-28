@@ -1689,7 +1689,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.Tab.FromStrip.Result.DesktopWindow"
-    enum="DragDropTabResult" expires_after="2025-05-04">
+    enum="DragDropTabResult" expires_after="2025-11-04">
   <owner>aishwaryarj@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1749,7 +1749,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.Tab.Type.DesktopWindow" enum="DragDropType"
-    expires_after="2025-05-04">
+    expires_after="2025-11-04">
   <owner>aishwaryarj@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
