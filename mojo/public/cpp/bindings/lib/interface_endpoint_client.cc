@@ -910,7 +910,7 @@ void InterfaceEndpointClient::OnAssociationEvent(
 }
 
 bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
-  TRACE_EVENT("toplevel",
+  TRACE_EVENT("toplevel,mojom",
               perfetto::StaticString{method_name_callback_(*message)},
               [&](perfetto::EventContext& ctx) {
                 auto* info = ctx.event()->set_chrome_mojo_event_info();
@@ -949,7 +949,8 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
                 info->set_data_num_bytes(message->data_num_bytes());
 
                 static const uint8_t* flow_enabled =
-                    TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("toplevel.flow");
+                    TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
+                        "toplevel.flow,mojom.flow");
                 if (!*flow_enabled)
                   return;
 
