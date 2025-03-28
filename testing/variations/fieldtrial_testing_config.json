@@ -9862,6 +9862,7 @@
         {
             "platforms": [
                 "android",
+                "ios",
                 "linux",
                 "mac",
                 "windows"
