@@ -1212,6 +1212,59 @@ TEST_F(RenderWidgetHostTest, NewSizeIncludesScaleFactor) {
   EXPECT_TRUE(host_->visual_properties_ack_pending_);
 }
 
+// Tests that SynchronizeVisualProperties which occurs while hidden, before an
+// Eviction, becomes unthrottled when becoming visible again. So that we do not
+// wait for an ack that will never arrive.
+//
+// This ensures the Widget can begin frame production on the newly embedded
+// Surface after the initial eviction.
+TEST_F(RenderWidgetHostTest, EvictUnthrottlesSynchronizeVisualProperties) {
+  display::ScreenInfo screen_info;
+  screen_info.rect = gfx::Rect(0, 0, 800, 600);
+  screen_info.available_rect = gfx::Rect(0, 0, 800, 600);
+  screen_info.orientation_type =
+      display::mojom::ScreenOrientation::kPortraitPrimary;
+  screen_info.device_scale_factor = 2.f;
+
+  ClearVisualProperties();
+  // While hidden we will still synchronize to the Renderer. Though we will
+  // throttle future updates on `visual_properties_ack_pending_`.
+  host_->WasHidden();
+  view_->SetScreenInfo(screen_info);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0u, widget_.ReceivedVisualProperties().size());
+  gfx::Rect original_size(0, 0, 101, 100);
+  view_->SetBounds(original_size);
+  EXPECT_TRUE(host_->SynchronizeVisualProperties());
+  EXPECT_TRUE(host_->visual_properties_ack_pending_);
+  // blink::mojom::Widget::UpdateVisualProperties sent to the renderer.
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1u, widget_.ReceivedVisualProperties().size());
+  auto new_size = widget_.ReceivedVisualProperties()[0].new_size_device_px;
+  EXPECT_EQ(202, new_size.width());
+  EXPECT_EQ(200, new_size.height());
+  auto visible_viewport_size =
+      widget_.ReceivedVisualProperties()[0].visible_viewport_size_device_px;
+  EXPECT_EQ(202, visible_viewport_size.width());
+  EXPECT_EQ(200, visible_viewport_size.height());
+  EXPECT_TRUE(host_->visual_properties_ack_pending_);
+
+  widget_.ClearVisualProperties();
+  // `MockRenderWidgetHostOwnerDelegate` doesn't extend `RenderViewHostImpl` so
+  // the legacy `static_cast` in `RenderViewHostImpl::From` crash here. So we
+  // cannot use `host_->CollectSurfaceIdsForEviction` in tests. Mark the view as
+  // evicted directly.
+  view_->set_is_evicted();
+
+  // Set a new size so we have difference in property to synchronize.
+  gfx::Rect restore_size(0, 0, 1337, 42);
+  view_->SetBounds(restore_size);
+  host_->WasShown({} /* record_tab_switch_time_request */);
+  EXPECT_TRUE(host_->visual_properties_ack_pending_);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1u, widget_.ReceivedVisualProperties().size());
+}
+
 // Ensure VisualProperties continues reporting the size of the current screen,
 // not the viewport, when the frame is fullscreen. See crbug.com/1367416.
 TEST_F(RenderWidgetHostTest, ScreenSizeInFullscreen) {
