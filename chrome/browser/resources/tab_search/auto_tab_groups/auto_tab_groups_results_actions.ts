@@ -29,8 +29,8 @@ export class AutoTabGroupsResultsActionsElement extends CrLitElement {
     };
   }
 
-  multipleOrganizations: boolean = false;
-  showClear: boolean = false;
+  accessor multipleOrganizations: boolean = false;
+  accessor showClear: boolean = false;
 
   static override get styles() {
     return getCss();
