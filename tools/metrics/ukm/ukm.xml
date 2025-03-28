@@ -17630,15 +17630,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="PageLoad.PervasivePayloadsEnabled" singular="True">
-  <owner>nidhijaju@chromium.org</owner>
-  <owner>ricea@chromium.org</owner>
-  <summary>
-    Recorded for page loads where the pervasive payloads list is inputted to
-    Chrome.
-  </summary>
-</event>
-
 <event name="PageLoad.ServiceWorkerControlled" singular="True">
   <owner>wanderview@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
