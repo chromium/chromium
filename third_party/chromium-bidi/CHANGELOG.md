@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v3.0.0...chromium-bidi-v3.1.0) (2025-03-27)
+
+
+### Features
+
+* `browsingContext.downloadWillBegin` event ([#3248](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3248)) ([209fac9](https://github.com/GoogleChromeLabs/chromium-bidi/commit/209fac966f5b5089260a8dfd336cefc3c80cf495))
+* provide proper `clientWindow` ([#3253](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3253)) ([8d24bf3](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8d24bf3e7c62955f91ef878928da10f49385063e))
+* support for disable Bluetooth simulation ([#3255](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3255)) ([9db4f0b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/9db4f0bbc40e24456ba6340b6eb075c7ef7869a5))
+
 ## [3.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v2.1.2...chromium-bidi-v3.0.0) (2025-03-12)
 
 
