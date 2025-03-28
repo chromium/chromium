@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/tabs/tab_collection.h"
+#include "components/tab_collections/public/tab_collection.h"
 
 namespace tab_groups {
 class TabGroupId;
