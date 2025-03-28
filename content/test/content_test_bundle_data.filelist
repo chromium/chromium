@@ -7385,6 +7385,7 @@ data/interest_group/autogenSchemaV31.sql
 data/interest_group/autogenSchemaV32.sql
 data/interest_group/autogenSchemaV33.sql
 data/interest_group/autogenSchemaV34.sql
+data/interest_group/autogenSchemaV35.sql
 data/interest_group/bidding_argument_validator.js
 data/interest_group/bidding_argument_validator.js.mock-http-headers
 data/interest_group/bidding_logic.js

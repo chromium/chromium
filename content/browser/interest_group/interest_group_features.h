@@ -22,6 +22,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableBandATriggeredUpdates);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeBiddingAndAuctionNonceSupport);
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeCacheKAnonHashedKeys);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                                          kFledgeCacheKAnonHashedKeysTtl);
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeDoSampleDebugReportForTesting);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeEnableUnNoisedRealTimeReport);

@@ -48,6 +48,29 @@ BASE_FEATURE(kFledgeBiddingAndAuctionNonceSupport,
              "FledgeBiddingAndAuctionNonceSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a cache of k-anon keys and whether or not each is k-anonymous,
+// written when keys are received these from queries to the k-anonymity server,
+// and used in subsequent key fetches to reduce unnecessary load on the
+// k-anonymity server. This is similar to the refresh behavior managed by the
+// KAnonymityServiceQueryInterval parameter, except that refresh loses keys
+// when ads are removed and then added back to an interest group in joins and
+// updates, whereas the k-anon key cache controlled by this feature retains keys
+// until the TTL, provided the `kFledgeCacheKAnonHashedKeysTtl` parameter below.
+BASE_FEATURE(kFledgeCacheKAnonHashedKeys,
+             "FledgeCacheKAnonHashedKeys",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// TTL for entries in the k-anon keys cache. This should typically be kept in
+// sync with the KAnonymityServiceQueryInterval parameter, which behaves in much
+// the same way, limiting the frequency of refresh of k-anon keys. Note that
+// changing this parameter has an immediate effect on the TTL of keys already in
+// the cache, extending or shortening them, impacting which keys are used on
+// subsequent fetches and which are cleared on subsequent database maintenance.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kFledgeCacheKAnonHashedKeysTtl,
+                   &kFledgeCacheKAnonHashedKeys,
+                   "CacheKAnonHashedKeysTtl",
+                   base::Days(1));
+
 // Force sampling of forDebuggingOnly reports, for testing purpose. This flag
 // will always be disabled by default, and will only be enabled in some tests,
 // or manually enabling it in command for manual testing such as B&A's end to
