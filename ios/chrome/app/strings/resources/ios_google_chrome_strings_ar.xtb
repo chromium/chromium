@@ -9,7 +9,7 @@
 <translation id="1171255741903316750">‏يجب تفعيل خيار "قفل علامات التبويب في وضع التصفّح المتخفي عند إغلاق Chrome"</translation>
 <translation id="1179527450541388808">‏يمكنك الوصول إلى Chrome بشكل أسرع من خلال شريط التطبيقات في الشاشة الرئيسية على جهاز iPad.</translation>
 <translation id="1180362651362502943">‏يمكنك مواصلة استخدام بيانات Chrome في حسابك على Google.</translation>
-<translation id="1200396280085622191">‏يؤدي هذا الإعداد إلى فتح Chrome عند النقر على الروابط في الرسائل والتطبيقات الأخرى.</translation>
+<translation id="1200396280085622191">‏سيفتح Chrome تلقائيًا عند النقر على الروابط في الرسائل والتطبيقات الأخرى.</translation>
 <translation id="1229222343402087523">‏البحث عن ${searchPhrase} في متصفِّح Chrome</translation>
 <translation id="1237769345474105984">‏من متصفِّح Chrome</translation>
 <translation id="124228879633599436">‏إصدار Chrome الحالي قديم. يُرجى تحديثه للحفاظ على أمان بياناتك.</translation>
@@ -222,7 +222,7 @@
 <translation id="6820553595690137150">‏عند استخدام عبارة مرور، لا يتم تشفير طُرق الدفع والعناوين.
 
 لتغيير هذه الإعدادات، يُرجى <ph name="BEGIN_LINK" />حذف بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
-<translation id="6838525730752203626">‏استخدام Chrome بشكلٍ تلقائي</translation>
+<translation id="6838525730752203626">‏اجعل Chrome متصفّحك التلقائي</translation>
 <translation id="686691656039982452">‏يمكنك <ph name="BEGIN_LINK" />إدارة بيانات Chrome التي يتم حفظها<ph name="END_LINK" /> في حسابك على Google.
 
 وللوصول إلى الإعدادات الإضافية التي تستخدم البيانات لتحسين تجربة استخدام Chrome، انتقِل إلى <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" />.</translation>
@@ -244,7 +244,7 @@
 <translation id="72119412072970160">‏يمكنك استخدام كلمات المرور التي حفظتها في "مدير كلمات المرور" من Google في التطبيقات الأخرى على جهاز iPad.</translation>
 <translation id="7214019116829172458">‏فتح علامة تبويب في وضع التصفّح المتخفي في Chrome</translation>
 <translation id="722167379782941918">‏يقترح Chrome استخدام مستوى الحماية المحسَّنة</translation>
-<translation id="723787869754590019">‏استخدام Chrome للملء التلقائي</translation>
+<translation id="723787869754590019">‏املأ معلوماتك تلقائيًا مع Chrome</translation>
 <translation id="7261678641327190792">‏يتعذّر على متصفِّح Chrome التحقُّق من كلمات المرور.</translation>
 <translation id="7272930098487145294">‏لحفظ الصور، يُرجى النقر على "الإعدادات" للسماح لمتصفّح Chrome بأن يضيف إلى صورك.</translation>
 <translation id="7275945473750112644">‏سيتم محو بيانات Chrome المخزَّنة على هذا الجهاز لأنّ حسابك تتم إدارته من خلال <ph name="HOSTED_DOMAIN" /></translation>

@@ -581,7 +581,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3469117812148449995">Options d'enregistrement de mot de passe</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{pour {COUNT} site ou appli}one{pour {COUNT} site ou appli}other{pour {COUNT} sites ou applis}}</translation>
 <translation id="3474624961160222204">Continuer en tant que <ph name="NAME" /></translation>
-<translation id="3476450923187944815">Retrouvez vos mots de passe dans d'autres applications.</translation>
+<translation id="3476450923187944815">Retrouvez vos mots de passe dans d'autres applis.</translation>
 <translation id="3488501490964659223">Les onglets ont été fermés et les données de navigation ont été supprimées. Vous avez été déconnecté.</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur le contenu suggéré</translation>
 <translation id="3504377992102007712">Paramètres</translation>
