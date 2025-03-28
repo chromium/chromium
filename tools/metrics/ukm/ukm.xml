@@ -3406,6 +3406,149 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="AutofillAi.FieldEvent">
+  <owner>jihadghanna@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <summary>
+    Records when a user edits a value that was filled by an Autofill AI
+    suggestion.
+  </summary>
+  <metric name="AiFieldType">
+    <summary>
+      The server AI type of the field as classified by autofill's ML model.
+    </summary>
+  </metric>
+  <metric name="EventType">
+    <summary>
+      Type of the event being recorded, see `AutofillAiUkmLogger::EventType` for
+      more details.
+    </summary>
+  </metric>
+  <metric name="FieldSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a form control (e.g.
+      a HTML input element). This should be globally unique and suitable for
+      distinguishing fields. Two different users would have different values.
+      For the same user, the same field in the same form in two different tabs
+      would have two different values.
+    </summary>
+  </metric>
+  <metric name="FieldSignature">
+    <summary>
+      The signature of the field (mod 1021). This is the hash identifier used to
+      denote this field for query and voting purposes. See
+      components/autofill/core/common/signatures.cc for more details.
+    </summary>
+  </metric>
+  <metric name="FieldType">
+    <summary>
+      The type of the field as classified by autofill.
+    </summary>
+  </metric>
+  <metric name="FormatStringSource">
+    <summary>
+      The source of the format string of the field, see `FormatStringSource` in
+      components/autofill/core/browser/autofill_field.h for more info.
+    </summary>
+  </metric>
+  <metric name="FormSessionEventOrder">
+    <summary>
+      The order of the event in the sequence of event sharing the same
+      FormSessionIdentifier.
+    </summary>
+  </metric>
+  <metric name="FormSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a HTML form in a
+      specific renderer. This should be globally unique and suitable for
+      counting distinct forms. Two different users would have different values.
+      A single user loading the same form in two different tabs would have two
+      different values. This is used to link the fields to a form in
+      AutofillAi.KeyMetrics.
+    </summary>
+  </metric>
+  <metric name="FormSignature">
+    <summary>
+      The signature of the form (mod 1021). This is the hash identifier used to
+      denote this form for query and voting purposes. See
+      components/autofill/core/common/signatures.cc for more details.
+    </summary>
+  </metric>
+</event>
+
+<event name="AutofillAi.KeyMetrics">
+  <owner>jihadghanna@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <summary>
+    These metrics are a clone of Autofill's UMA key metrics to measure Autofill
+    quality. They are recorded on navigation if a form was submitted before,
+    only if the submitted form had Autofill AI prediction.
+  </summary>
+  <metric name="FillingAcceptance">
+    <summary>
+      Has value 1 if user accepted the suggestion to fill values on a submitted
+      form, 0 otherwise. This is counted as 1 if the user accepted such a
+      suggestion at any time, regardless whether other suggestions were ignored
+      or whether the accepted suggestion was reverted afterwards. Only recorded
+      if suggestions were shown to the user.
+    </summary>
+  </metric>
+  <metric name="FillingAssistance">
+    <summary>
+      Has value 1 if the user filled any fields via Autofill on a submitted
+      form, 0 otherwise.
+
+      If the user reverts the filling, the form is still counted as filled.
+
+      This metric is different from FillingAcceptance in the sense that the
+      latter is only recorded if the user has actually seen a prompt to fill
+      data.
+    </summary>
+  </metric>
+  <metric name="FillingCorrectness">
+    <summary>
+      Has value 1 for submitted and autofilled forms if user edited at least one
+      filled value before submitting the form, 0 otherwise. Only recorded if any
+      suggestion was filled.
+    </summary>
+  </metric>
+  <metric name="FillingReadiness">
+    <summary>
+      Has value 1 for submitted forms when Chromium had any address or payments
+      data to fill, 0 otherwise.
+
+      It does not matter whether the user actually requested to fill the data.
+      It does not matter either whether the data available for filling
+      corresponded to the submitted data.
+    </summary>
+  </metric>
+  <metric name="FormSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a HTML form in a
+      specific renderer. This should be globally unique and suitable for
+      counting distinct forms. Two different users would have different values.
+      A single user loading the same form in two different tabs would have two
+      different values. This is used to link the fields to a form in
+      AutofillAi.FieldInfo.
+    </summary>
+  </metric>
+  <metric name="FormSignature">
+    <summary>
+      The signature of the form (mod 1021). This is the hash identifier used to
+      denote this form for query and voting purposes. See
+      components/autofill/core/common/signatures.cc for more details.
+    </summary>
+  </metric>
+  <metric name="OptInStatus">
+    <summary>
+      Has value 1 if the user is opted in into Autofill AI suggestions and
+      filling and 0 otherwise.
+    </summary>
+  </metric>
+</event>
+
 <event name="BackForwardCacheDisabledForRenderFrameHostReason">
   <owner>hajimehoshi@chromium.org</owner>
   <summary>
