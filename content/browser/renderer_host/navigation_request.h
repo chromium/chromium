@@ -29,6 +29,7 @@
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/renderer_host/browsing_context_group_swap.h"
 #include "content/browser/renderer_host/commit_deferring_condition_runner.h"
+#include "content/browser/renderer_host/cookie_access_observers.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_policy_container_builder.h"
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
@@ -113,7 +114,6 @@ class CONTENT_EXPORT NavigationRequest
       public FencedFrameURLMapping::MappingResultObserver,
       public mojom::NavigationRendererCancellationListener,
       private RenderProcessHostObserver,
-      private network::mojom::CookieAccessObserver,
       private network::mojom::TrustTokenAccessObserver,
       private network::mojom::SharedDictionaryAccessObserver,
       public network::mojom::DeviceBoundSessionAccessObserver {
@@ -471,6 +471,11 @@ class CONTENT_EXPORT NavigationRequest
 
   void RegisterCommitDeferringConditionForTesting(
       std::unique_ptr<CommitDeferringCondition> condition);
+
+  // Used by tests that want to control the timing of cookie access
+  // notifications.
+  void SetCookieAccessObserversForTesting(
+      std::unique_ptr<CookieAccessObservers> cookie_access_observers);
 
   // Called on the UI thread by the Navigator to start the navigation.
   // The NavigationRequest can be deleted while BeginNavigation() is called.
@@ -899,6 +904,10 @@ class CONTENT_EXPORT NavigationRequest
   [[nodiscard]] std::vector<
       mojo::PendingReceiver<network::mojom::CookieAccessObserver>>
   TakeCookieObservers();
+
+  void NotifyCookiesAccessed(
+      std::vector<network::mojom::CookieAccessDetailsPtr> details_vector,
+      CookieAccessDetails::Source source);
 
   // Take all Trust Token observers associated with this navigation.
   // Typically this is called when navigation commits to move these observers to
@@ -2066,12 +2075,6 @@ class CONTENT_EXPORT NavigationRequest
   mojo::PendingRemote<network::mojom::CookieAccessObserver>
   CreateCookieAccessObserver();
 
-  // network::mojom::CookieAccessObserver:
-  void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>
-                             details_vector) override;
-  void Clone(mojo::PendingReceiver<network::mojom::CookieAccessObserver>
-                 observer) override;
-
   mojo::PendingRemote<network::mojom::TrustTokenAccessObserver>
   CreateTrustTokenAccessObserver();
 
@@ -2808,8 +2811,8 @@ class CONTENT_EXPORT NavigationRequest
   bool did_receive_early_hints_before_cross_origin_redirect_ = false;
 
   // Observers listening to cookie access notifications for the network requests
-  // made by this navigation.
-  mojo::ReceiverSet<network::mojom::CookieAccessObserver> cookie_observers_;
+  // made by this navigation. unique_ptr so it can be replaced in tests.
+  std::unique_ptr<CookieAccessObservers> cookie_observers_;
 
   // Observers listening to Trust Token access notifications for the network
   // requests made by this navigation.

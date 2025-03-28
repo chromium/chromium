@@ -11,6 +11,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "content/browser/btm/btm_service_impl.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/btm_service.h"
 #include "content/public/browser/web_contents.h"
@@ -522,6 +523,55 @@ bool TpcBlockingBrowserClient::MitigationsEnabledFor3pcd() const {
 bool TpcBlockingBrowserClient::IsThirdPartyCookiesAllowedScheme(
     const std::string& scheme) const {
   return false;
+}
+
+PausedCookieAccessObservers::PausedCookieAccessObservers(
+    NotifyCookiesAccessedCallback callback)
+    : CookieAccessObservers(std::move(callback)) {}
+
+PausedCookieAccessObservers::~PausedCookieAccessObservers() = default;
+
+void PausedCookieAccessObservers::Add(
+    mojo::PendingReceiver<network::mojom::CookieAccessObserver> receiver,
+    CookieAccessDetails::Source source) {
+  pending_receivers_.emplace_back(std::move(receiver), source);
+}
+
+std::vector<mojo::PendingReceiver<network::mojom::CookieAccessObserver>>
+PausedCookieAccessObservers::TakeReceivers() {
+  std::vector<mojo::PendingReceiver<network::mojom::CookieAccessObserver>>
+      pending_receivers;
+  for (auto& [pending_receiver, source] :
+       std::exchange(pending_receivers_, {})) {
+    pending_receivers.push_back(std::move(pending_receiver));
+  }
+
+  return pending_receivers;
+}
+
+CookieAccessInterceptor::CookieAccessInterceptor(WebContents& web_contents)
+    : WebContentsObserver(&web_contents) {}
+
+CookieAccessInterceptor::~CookieAccessInterceptor() = default;
+
+void CookieAccessInterceptor::DidStartNavigation(
+    NavigationHandle* navigation_handle) {
+  auto& request = *NavigationRequest::From(navigation_handle);
+
+  auto observers = std::make_unique<PausedCookieAccessObservers>(
+      base::BindRepeating(&NavigationRequest::NotifyCookiesAccessed,
+                          // Unretained is safe here because ownership of the
+                          // observers is passed to the request below.
+                          base::Unretained(&request)));
+  for (auto& receiver : request.TakeCookieObservers()) {
+    // Since we're taking the observers from the NavigationHandle we can assume
+    // the source is kNavigation.
+    // TODO: crbug.com/394059601 - Replace with TakeReceiversWithContext() once
+    // implemented.
+    observers->Add(std::move(receiver),
+                   CookieAccessDetails::Source::kNavigation);
+  }
+  request.SetCookieAccessObserversForTesting(std::move(observers));
 }
 
 }  // namespace content

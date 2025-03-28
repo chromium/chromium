@@ -232,9 +232,6 @@ void BtmPageVisitObserver::OnCookiesAccessed(
 
   // Check to see if this is a late report for a redirect. Only Navigation
   // cookie accesses should be attributed to redirects.
-  //
-  // TODO: crbug.com/394059601 - once we have support for unit-testing cookie
-  // accesses, add a unit test for this case.
   if (details.source == CookieAccessDetails::Source::kNavigation) {
     for (VisitTuple& visit : pending_visits_) {
       for (BtmServerRedirectInfo& redirect :
