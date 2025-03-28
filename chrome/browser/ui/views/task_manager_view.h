@@ -181,6 +181,13 @@ class TaskManagerView : public TableViewDelegate,
   // Restores saved "always on top" state from a previous session.
   void RetrieveSavedAlwaysOnTopState();
 
+  // Restores saved tab.
+  void RestoreSavedCategory();
+
+  // Saves the provided category in the browser's local_state(). This is used to
+  // restore the category on the next boot up of the Task Manager.
+  void SaveCategoryToLocalState(DisplayCategory category);
+
   void EndSelectedProcess();
   bool IsEndProcessButtonEnabled() const;
 
