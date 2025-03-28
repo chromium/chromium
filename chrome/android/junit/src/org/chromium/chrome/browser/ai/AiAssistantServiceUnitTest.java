@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.ai;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -54,7 +56,11 @@ import org.chromium.chrome.browser.content_extraction.InnerTextBridge;
 import org.chromium.chrome.browser.content_extraction.InnerTextBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.pdf.PdfPage;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.JUnitTestGURLs;
@@ -74,6 +80,10 @@ public class AiAssistantServiceUnitTest {
     @Mock private RenderFrameHost mRenderFrameHost;
     @Mock private WebContents mWebContents;
     @Mock private Tab mTab;
+    @Mock private Profile mProfile;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private CoreAccountInfo mAccountInfo;
     @Mock SystemAiProvider mSystemAiProvider;
     @Mock SystemAiProviderFactory mSystemAiProviderFactory;
     @Mock private InnerTextBridge.Natives mInnerTextNatives;
@@ -274,6 +284,32 @@ public class AiAssistantServiceUnitTest {
         verifyNoMoreInteractions(mSystemAiProvider);
     }
 
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY
+                    + ":attach_client_info/true")
+    public void showAi_attachesAccountInfoWithFlag() {
+        ServiceLoaderUtil.setInstanceForTesting(
+                SystemAiProviderFactory.class, mSystemAiProviderFactory);
+        setSystemAiProviderAsAvailable();
+        var pageContents = "Page contents for URL_2";
+        var clientEmail = "foo@bar.com";
+        setInnerTextExtractionResult(pageContents);
+        setClientEmail(clientEmail);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
+
+        var service = AiAssistantService.getInstance();
+        initializeAiAssistantService(service);
+        service.showAi(mContext, mTab);
+
+        ShadowLooper.idleMainLooper();
+
+        verify(mSystemAiProvider).launch(eq(mContext), mLaunchRequestCaptor.capture());
+        assertLaunchRequestIsForSummarizeUrl(
+                mLaunchRequestCaptor.getValue(), JUnitTestGURLs.URL_2.getSpec(), pageContents);
+        assertLaunchRequestHasClientInfo(mLaunchRequestCaptor.getValue(), clientEmail);
+    }
+
     // Sets the result of calling the system provider, the result gets scheduled on
     // mPausedExecutorService, so we need to call mPausedExecutorService.runAll() afterwards to
     // simulate the query response.
@@ -317,21 +353,38 @@ public class AiAssistantServiceUnitTest {
                 .getInnerText(eq(mRenderFrameHost), any());
     }
 
+    private void setClientEmail(String email) {
+        when(mTab.getProfile()).thenReturn(mProfile);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
+        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mAccountInfo);
+        when(mAccountInfo.getEmail()).thenReturn(email);
+    }
+
     private void assertLaunchRequestIsForSummarizeUrl(
             LaunchRequest launchRequest, String expectedUrl, String expectedPageContents) {
         assertTrue(launchRequest.hasSummarizeUrl());
         assertTrue(launchRequest.getSummarizeUrl().hasUrlContext());
-        Assert.assertEquals(expectedUrl, launchRequest.getSummarizeUrl().getUrlContext().getUrl());
-        Assert.assertEquals(
+        assertEquals(expectedUrl, launchRequest.getSummarizeUrl().getUrlContext().getUrl());
+        assertEquals(
                 expectedPageContents,
                 launchRequest.getSummarizeUrl().getUrlContext().getPageContent());
+    }
+
+    private void assertLaunchRequestHasClientInfo(
+            LaunchRequest launchRequest, String expectedUserEmail) {
+        assertTrue(launchRequest.hasClientInfo());
+        var clientInfo = launchRequest.getClientInfo();
+        assertEquals(1, clientInfo.getClientAccountCount());
+        var account = clientInfo.getClientAccount(0);
+        assertEquals(expectedUserEmail, account.getEmail());
     }
 
     private void assertLaunchRequestIsForAnalyzeAttachment(
             LaunchRequest launchRequest, String expectedUri) {
         assertTrue(launchRequest.hasAnalyzeAttachment());
         assertThat(launchRequest.getAnalyzeAttachment().getFilesCount(), greaterThanOrEqualTo(1));
-        Assert.assertEquals(expectedUri, launchRequest.getAnalyzeAttachment().getFiles(0).getUri());
+        assertEquals(expectedUri, launchRequest.getAnalyzeAttachment().getFiles(0).getUri());
     }
 
     private LaunchRequest assertVoiceActivityStartedWithLaunchRequest() {
@@ -340,7 +393,7 @@ public class AiAssistantServiceUnitTest {
         var startedIntent = mIntentCaptor.getValue();
         var launchRequestBytes =
                 startedIntent.getByteArrayExtra(AiAssistantService.EXTRA_LAUNCH_REQUEST);
-        Assert.assertEquals(Intent.ACTION_VOICE_COMMAND, startedIntent.getAction());
+        assertEquals(Intent.ACTION_VOICE_COMMAND, startedIntent.getAction());
 
         try {
             return LaunchRequest.parseFrom(launchRequestBytes);
