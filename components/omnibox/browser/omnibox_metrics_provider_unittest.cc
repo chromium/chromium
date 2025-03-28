@@ -63,7 +63,8 @@ class OmniboxMetricsProviderTest : public testing::Test {
         /*completed_length=*/0,
         /*elapsed_time_since_last_change_to_default_match=*/base::TimeDelta(),
         /*result=*/result, /*destination_url=*/GURL("https://www.example.com/"),
-        /*is_incognito=*/false);
+        /*is_incognito=*/false,
+        /*zero_prefix_suggestions_shown_in_session=*/false);
   }
 
   AutocompleteMatch BuildMatch(AutocompleteMatch::Type type) {

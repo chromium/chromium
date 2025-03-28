@@ -2694,7 +2694,8 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       completed_length, elapsed_time_since_last_change_to_default_match,
       dropdown_ignored ? fake_single_entry_result
                        : autocomplete_controller()->result(),
-      destination_url, is_incognito);
+      destination_url, is_incognito,
+      match.zero_prefix_suggestions_shown_in_session);
 // Check disabled on iOS as the platform shows a default suggestion on focus
 // (crbug.com/40061502).
 #if !BUILDFLAG(IS_IOS)

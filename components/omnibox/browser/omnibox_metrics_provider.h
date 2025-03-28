@@ -66,6 +66,9 @@ class OmniboxMetricsProvider : public metrics::MetricsProvider {
   // ones logged on the server via `metrics::MetricsProvider`.
   void RecordMetrics(const OmniboxLog& log);
 
+  // Records zero-prefix suggestion precision/recall/usage metrics.
+  void RecordZeroPrefixPrecisionRecallUsage(const OmniboxLog& log);
+
   // Subscription for receiving Omnibox event callbacks.
   base::CallbackListSubscription subscription_;
 

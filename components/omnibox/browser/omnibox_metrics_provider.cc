@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -272,6 +273,7 @@ OmniboxMetricsProvider::GetClientSummarizedResultType(
 void OmniboxMetricsProvider::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   RecordOmniboxEvent(*log);
   RecordMetrics(*log);
+  RecordZeroPrefixPrecisionRecallUsage(*log);
 }
 
 void OmniboxMetricsProvider::RecordOmniboxEvent(const OmniboxLog& log) {
@@ -415,4 +417,32 @@ void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
         log.elapsed_time_since_user_focused_omnibox.InMilliseconds()));
   }
   event.Record(ukm::UkmRecorder::Get());
+}
+
+void OmniboxMetricsProvider::RecordZeroPrefixPrecisionRecallUsage(
+    const OmniboxLog& log) {
+  const std::string page_context = OmniboxEventProto::PageClassification_Name(
+      log.current_page_classification);
+
+  bool zero_prefix_shown = log.zero_prefix_suggestions_shown_in_session;
+  bool zero_prefix_selected = log.text.empty();
+
+  if (zero_prefix_shown) {
+    base::UmaHistogramBoolean("Omnibox.ZeroSuggest.Precision",
+                              zero_prefix_selected);
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"Omnibox.ZeroSuggest.Precision.ByPageContext.", page_context}),
+        zero_prefix_selected);
+  }
+
+  base::UmaHistogramBoolean("Omnibox.ZeroSuggest.Recall", zero_prefix_shown);
+  base::UmaHistogramBoolean(
+      base::StrCat({"Omnibox.ZeroSuggest.Recall.ByPageContext.", page_context}),
+      zero_prefix_shown);
+
+  base::UmaHistogramBoolean("Omnibox.ZeroSuggest.Usage", zero_prefix_selected);
+  base::UmaHistogramBoolean(
+      base::StrCat({"Omnibox.ZeroSuggest.Usage.ByPageContext.", page_context}),
+      zero_prefix_selected);
 }
