@@ -64,6 +64,10 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
     RunTypedTest<kFormControls>(file_path, ui::kAXModeFormControls);
   }
 
+  void RunOnScreenTest(const base::FilePath::CharType* file_path) {
+    RunTypedTest<kHtml>(file_path, ui::kAXModeOnScreen);
+  }
+
   void RunAriaTestMinusHtmlMode(const base::FilePath::CharType* file_path) {
     RunTypedTest<kAria>(file_path,
                         ui::kAXModeComplete);  // & ~ui::AXMode::kHTML);

@@ -4802,6 +4802,8 @@ data/accessibility/html/ol-expected-mac.txt
 data/accessibility/html/ol-expected-uia-win.txt
 data/accessibility/html/ol-expected-win.txt
 data/accessibility/html/ol.html
+data/accessibility/html/on-screen-mode-expected-blink.txt
+data/accessibility/html/on-screen-mode.html
 data/accessibility/html/open-modal-expected-blink.txt
 data/accessibility/html/open-modal.html
 data/accessibility/html/optgroup-custom-menulist-expected-android-assist-data.txt
