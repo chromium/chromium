@@ -1679,7 +1679,7 @@ void RTCPeerConnection::restartIce() {
   peer_handler_->RestartIce();
 }
 
-void RTCPeerConnection::addStream(ScriptState* script_state,
+void RTCPeerConnection::addStream(v8::Isolate* isolate,
                                   MediaStream* stream,
                                   ExceptionState& exception_state) {
   if (ThrowExceptionIfSignalingStateClosed(signaling_state_, &exception_state))
@@ -1688,13 +1688,14 @@ void RTCPeerConnection::addStream(ScriptState* script_state,
   MediaStreamVector streams;
   streams.push_back(stream);
   for (const auto& track : stream->getTracks()) {
-    addTrack(track, streams, IGNORE_EXCEPTION);
+    addTrack(track, streams, IgnoreException(isolate));
   }
 
   stream->RegisterObserver(this);
 }
 
-void RTCPeerConnection::removeStream(MediaStream* stream,
+void RTCPeerConnection::removeStream(v8::Isolate* isolate,
+                                     MediaStream* stream,
                                      ExceptionState& exception_state) {
   if (ThrowExceptionIfSignalingStateClosed(signaling_state_, &exception_state))
     return;
@@ -1702,7 +1703,7 @@ void RTCPeerConnection::removeStream(MediaStream* stream,
     auto* sender = FindSenderForTrackAndStream(track, stream);
     if (!sender)
       continue;
-    removeTrack(sender, IGNORE_EXCEPTION);
+    removeTrack(sender, IgnoreException(isolate));
   }
   stream->UnregisterObserver(this);
 }

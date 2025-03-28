@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -1086,10 +1087,13 @@ protocol::Response InspectorDOMAgent::setAttributesAsText(
                               : "<span " + text + "></span>";
     DocumentFragment* fragment =
         element->GetDocument().createDocumentFragment();
-    if (is_html_document && contextElement)
+    if (is_html_document && contextElement) {
       fragment->ParseHTML(markup, contextElement, kAllowScriptingContent);
-    else
-      fragment->ParseXML(markup, contextElement, IGNORE_EXCEPTION);
+    } else {
+      fragment->ParseXML(
+          markup, contextElement,
+          IgnoreException(element->GetDocument().GetAgent().isolate()));
+    }
     return DynamicTo<Element>(fragment->firstChild());
   };
 
