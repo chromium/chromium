@@ -84,7 +84,6 @@ origin_files = glob([
     "third_party/googletest/**",
     "third_party/icu/**",
     "third_party/jni_zero/**",
-    "third_party/libc++/**",
     "third_party/libc++abi/**",
     # Note: Only used for tests.
     "third_party/libxml/**",
@@ -103,6 +102,12 @@ origin_files = glob([
     # "third_party/zlib/**",
     "url/third_party/mozilla/**",
     "third_party/simdutf/**",
+  ]) + glob([
+    "third_party/libc++/**",
+  ]) - glob([
+    # This is not used, and contains a huge number of files (~10k) that slows
+    # down imports and checkouts.
+    "third_party/libc++/src/test/**",
   ]) + glob([
     "third_party/boringssl/**",
   ]) - glob([
