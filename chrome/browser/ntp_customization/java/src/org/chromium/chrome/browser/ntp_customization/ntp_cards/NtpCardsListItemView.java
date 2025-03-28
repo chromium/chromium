@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp_customization;
+package org.chromium.chrome.browser.ntp_customization.ntp_cards;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 
 /**

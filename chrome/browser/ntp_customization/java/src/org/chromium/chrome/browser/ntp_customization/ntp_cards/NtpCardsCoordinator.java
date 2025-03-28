@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp_customization;
+package org.chromium.chrome.browser.ntp_customization.ntp_cards;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 
@@ -10,6 +10,11 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
+import org.chromium.chrome.browser.ntp_customization.BottomSheetListContainerViewBinder;
+import org.chromium.chrome.browser.ntp_customization.BottomSheetViewBinder;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties;
+import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 

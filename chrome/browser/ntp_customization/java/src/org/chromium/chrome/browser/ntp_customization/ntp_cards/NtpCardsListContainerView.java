@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp_customization;
+package org.chromium.chrome.browser.ntp_customization.ntp_cards;
 
 import android.content.Context;
 import android.support.annotation.VisibleForTesting;
@@ -15,6 +15,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
+import org.chromium.chrome.browser.ntp_customization.BottomSheetListContainerView;
+import org.chromium.chrome.browser.ntp_customization.ListContainerViewDelegate;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.R;
 
 import java.util.List;
 
@@ -51,7 +55,7 @@ public class NtpCardsListContainerView extends BottomSheetListContainerView {
     /** Returns a {@link NtpCardsListItemView}. */
     @Override
     @VisibleForTesting
-    View createListItemView() {
+    protected View createListItemView() {
         return LayoutInflater.from(getContext())
                 .inflate(R.layout.ntp_customization_ntp_cards_list_item, this, false);
     }

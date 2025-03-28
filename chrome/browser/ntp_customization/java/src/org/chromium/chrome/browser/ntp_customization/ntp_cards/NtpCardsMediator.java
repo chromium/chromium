@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp_customization;
+package org.chromium.chrome.browser.ntp_customization.ntp_cards;
 
 import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getTitleForModuleType;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
@@ -15,6 +15,8 @@ import android.view.View;
 import org.jni_zero.internal.Nullable;
 
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
+import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
+import org.chromium.chrome.browser.ntp_customization.ListContainerViewDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;

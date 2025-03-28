@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp_customization;
+package org.chromium.chrome.browser.ntp_customization.ntp_cards;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
@@ -17,10 +17,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 
 /** Unit tests for {@link NtpCardsCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -32,7 +34,7 @@ public class NtpCardsCoordinatorUnitTest {
     @Before
     public void setUp() {
         Context context = ApplicationProvider.getApplicationContext();
-        mCoordinator = new NtpCardsCoordinator(context, mock(BottomSheetDelegate.class));
+        mCoordinator = new NtpCardsCoordinator(context, Mockito.mock(BottomSheetDelegate.class));
     }
 
     @Test
