@@ -3289,6 +3289,10 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
   tabs::TabInterface* tab = GetTabAtIndex(index);
   const std::optional<tab_groups::TabGroupId> old_group = tab->GetGroup();
 
+  if (tab->IsSplit()) {
+    RemoveSplitImpl(tab->GetSplit().value());
+  }
+
   std::optional<int> next_selected_index = DetermineNewSelectedIndex(index);
 
   // Remove the tab.
