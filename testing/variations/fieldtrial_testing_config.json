@@ -6003,20 +6003,10 @@
             ],
             "experiments": [
                 {
-                    "name": "LowerThresholds",
-                    "params": {
-                        "CommitAvailableCriticalThresholdMB": "100",
-                        "CommitAvailableModerateThresholdMB": "300"
-                    },
-                    "enable_features": [
-                        "CommitAvailableMemoryPressureThresholds"
-                    ]
-                },
-                {
                     "name": "MediumThresholds",
                     "params": {
-                        "CommitAvailableCriticalThresholdMB": "300",
-                        "CommitAvailableModerateThresholdMB": "750"
+                        "CommitAvailableCriticalThresholdMB": "500",
+                        "CommitAvailableModerateThresholdMB": "1000"
                     },
                     "enable_features": [
                         "CommitAvailableMemoryPressureThresholds"
@@ -6025,8 +6015,8 @@
                 {
                     "name": "HigherThresholds",
                     "params": {
-                        "CommitAvailableCriticalThresholdMB": "400",
-                        "CommitAvailableModerateThresholdMB": "1000"
+                        "CommitAvailableCriticalThresholdMB": "1000",
+                        "CommitAvailableModerateThresholdMB": "2000"
                     },
                     "enable_features": [
                         "CommitAvailableMemoryPressureThresholds"
@@ -24576,21 +24566,6 @@
                     "enable_features": [
                         "MachPortRendezvousValidatePeerRequirements",
                         "UseAdHocSigningForWebAppShims"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UseAvailableMemoryThresholds": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseAvailableMemoryThresholds"
                     ]
                 }
             ]

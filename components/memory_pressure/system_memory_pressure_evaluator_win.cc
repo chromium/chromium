@@ -26,12 +26,6 @@ namespace win {
 
 namespace {
 
-// Whether to use available memory commit instead of available physical
-// memory for Windows memory pressure detection.
-BASE_FEATURE(kCommitAvailableMemoryPressure,
-             "UseAvailableMemoryThresholds",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, allows setting custom thresholds for commit-based
 // memory pressure detection via the |kCommitAvailableCriticalThresholdMB|
 // and |kCommitAvailableModerateThresholdMB| parameters.
@@ -62,6 +56,13 @@ BASE_FEATURE_PARAM(int,
                    kDefaultCommitAvailableModerateThresholdMb);
 
 static const DWORDLONG kMBBytes = 1024 * 1024;
+
+// Constant for early exit commit threshold. Represents 2GB in MB. Used for the
+// initial pressure check to avoid activating the feature study group for users
+// with ample memory. Value based on Memory.CommitAvailableMB UMA, aiming to
+// capture a population similar in size (~13%) to the existing physical memory
+// signal.
+const int kEarlyExitCommitThresholdMb = 2048;
 
 // Implements ObjectWatcher::Delegate by forwarding to a provided callback.
 class MemoryPressureWatcherDelegate
@@ -238,14 +239,14 @@ SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
       static_cast<int>(mem_status.ullAvailPageFile / kMBBytes);
 
   if (phys_free_mb > moderate_threshold_mb_ &&
-      commit_available_mb > kCommitAvailableModerateThresholdMB.Get()) {
+      commit_available_mb > kEarlyExitCommitThresholdMb) {
     // No memory pressure under any of the 2 detection systems. Return
     // early to avoid activating the experiment for clients who don't
     // have memory pressure.
     return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
   }
 
-  if (base::FeatureList::IsEnabled(kCommitAvailableMemoryPressure)) {
+  if (base::FeatureList::IsEnabled(kCommitAvailableMemoryPressureThresholds)) {
     if (commit_available_mb < kCommitAvailableCriticalThresholdMB.Get()) {
       return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
     }
