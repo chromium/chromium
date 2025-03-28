@@ -18,6 +18,16 @@
  * Affilitions must be sorted from most recent to least recent.
  */
 {
+  "benjamin.beaudry@chromium.org": {
+    affiliations: [
+      { start: "2019-04-02", domain: "microsoft.com" },
+    ]
+  },
+  "brandonm@chromium.org": {
+    affiliations: [
+      { start: "2020-06-07", domain: "microsoft.com" },
+    ]
+  },
   "cavalcantii@chromium.org": {
     affiliations: [
       { start: "2022-05-03", domain: "intel.com" },
@@ -30,15 +40,30 @@
       { start: "2019-05-01", domain: "microsoft.com" },
     ]
   },
+  "donna@chromium.org": {
+    affiliations: [
+      { start: "2021-11-29", domain: "microsoft.com" },
+    ]
+  },
   "estade@chromium.org": {
     affiliations: [
       { start: "2025-03-10", domain: "microsoft.com" },
+    ]
+  },
+  "fabiorocha@chromium.org": {
+    affiliations: [
+      { start: "2021-03-05", domain: "microsoft.com" },
     ]
   },
   "joone@chromium.org": {
     affiliations: [
       { start: "2024-04-29", domain: "microsoft.com" },
       { start: "2022-06-01", domain: "joone.net" },
+    ]
+  },
+  "kbabbitt@chromium.org": {
+    affiliations: [
+      { start: "2019-04-02", domain: "microsoft.com" },
     ]
   },
   "kzar@chromium.org": {
@@ -51,9 +76,24 @@
       { start: "2010-03-09", domain: "gmail.com" },
     ]
   },
+  "minggang@chromium.org": {
+    affiliations: [
+      { start: "2021-10-31", domain: "microsoft.com" },
+    ]
+  },
   "pfeldman@chromium.org": {
     affiliations: [
       { start: "2019-05-01", domain: "microsoft.com" },
+    ]
+  },
+  "rafael.cintron@chromium.org": {
+    affiliations: [
+      { start: "2019-04-02", domain: "microsoft.com" },
+    ]
+  },
+  "samfort@chromium.org": {
+    affiliations: [
+      { start: "2020-01-14", domain: "microsoft.com" },
     ]
   },
   "seokho@chromium.org": {
@@ -65,6 +105,11 @@
     affiliations: [
       { start: "2016-09-10", domain: "huawei.com" },
       { start: "2014-01-10", domain: "samsung.com" },
+    ]
+  },
+  "ting.shao@chromium.org": {
+    affiliations: [
+      { start: "2022-03-09", domain: "microsoft.com" },
     ]
   },
   "yoavweiss@chromium.org": {

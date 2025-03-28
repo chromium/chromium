@@ -10,11 +10,13 @@
 #import "components/dom_distiller/core/extraction_utils.h"
 #import "components/dom_distiller/ios/distiller_page_utils.h"
 #import "components/prefs/pref_service.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
 #import "third_party/dom_distiller_js/dom_distiller.pb.h"
 #import "third_party/dom_distiller_js/dom_distiller_json_converter.h"
 
@@ -69,8 +71,26 @@ void RecordReaderModeHeuristicClassification(bool is_distillable_page,
 
 // Records the time elapsed from the execution of the distillation JavaScript to
 // the result callback.
-void RecordReaderModeDistillationLatency(base::TimeDelta elapsed) {
+void RecordReaderModeDistillationLatency(base::TimeDelta elapsed,
+                                         ukm::SourceId source_id) {
   UMA_HISTOGRAM_TIMES(kReaderModeDistillerLatencyHistogram, elapsed);
+  if (source_id != ukm::kInvalidSourceId) {
+    ukm::builders::IOS_ReaderMode_Distiller_Latency(source_id)
+        .SetLatency(elapsed.InMilliseconds())
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
+// Records whether the given source ID for a navigation is distillable or not.
+void RecordReaderModeDistillationResult(bool is_distillable,
+                                        ukm::SourceId source_id) {
+  if (source_id != ukm::kInvalidSourceId) {
+    ukm::builders::IOS_ReaderMode_Distiller_Result(source_id)
+        .SetResult(static_cast<int64_t>(
+            is_distillable ? ReaderModeDistillerResult::kPageIsDistillable
+                           : ReaderModeDistillerResult::kPageIsNotDistillable))
+        .Record(ukm::UkmRecorder::Get());
+  }
 }
 
 }  // namespace
@@ -123,6 +143,18 @@ void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
     ReaderModeHeuristicResult result) {
   UMA_HISTOGRAM_ENUMERATION(kReaderModeHeuristicResultHistogram, result);
 
+  const ukm::SourceId source_id =
+      ukm::GetSourceIdForWebStateDocument(web_state_);
+  if (source_id != ukm::kInvalidSourceId) {
+    ukm::builders::IOS_ReaderMode_Heuristic_Result(source_id)
+        .SetResult(static_cast<int64_t>(result))
+        .Record(ukm::UkmRecorder::Get());
+  }
+
+  if (!base::FeatureList::IsEnabled(kEnableReaderModeDistiller)) {
+    return;
+  }
+
   // Gets the instance of the WebFramesManager from `web_state_` that can
   // execute the DOM distiller JavaScript in the isolated content world.
   web::WebFramesManager* web_frames_manager =
@@ -153,6 +185,13 @@ void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
 void ReaderModeTabHelper::RecordReaderModeHeuristicLatency(
     const base::TimeDelta& delta) {
   UMA_HISTOGRAM_TIMES(kReaderModeHeuristicLatencyHistogram, delta);
+  const ukm::SourceId source_id =
+      ukm::GetSourceIdForWebStateDocument(web_state_);
+  if (source_id != ukm::kInvalidSourceId) {
+    ukm::builders::IOS_ReaderMode_Heuristic_Latency(source_id)
+        .SetLatency(delta.InMilliseconds())
+        .Record(ukm::UkmRecorder::Get());
+  }
 }
 
 void ReaderModeTabHelper::TriggerReaderModeHeuristic() {
@@ -182,7 +221,10 @@ void ReaderModeTabHelper::PageDistillationCompleted(
   if (!web_state_ || web_state_->IsBeingDestroyed()) {
     return;
   }
-  RecordReaderModeDistillationLatency(base::TimeTicks::Now() - start_time);
+  const ukm::SourceId source_id =
+      ukm::GetSourceIdForWebStateDocument(web_state_);
+  RecordReaderModeDistillationLatency(base::TimeTicks::Now() - start_time,
+                                      source_id);
 
   std::unique_ptr<dom_distiller::proto::DomDistillerResult> distiller_result =
       std::make_unique<dom_distiller::proto::DomDistillerResult>();
@@ -197,6 +239,7 @@ void ReaderModeTabHelper::PageDistillationCompleted(
 
   bool is_distillable_page =
       found_content && !distiller_result->distilled_content().html().empty();
+  RecordReaderModeDistillationResult(is_distillable_page, source_id);
   RecordReaderModeHeuristicClassification(is_distillable_page,
                                           heuristic_result);
 }

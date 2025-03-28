@@ -203,6 +203,9 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   private showAdvancedFeaturesMainControl_: boolean;
   private enableAiSettingsPageRefresh_: boolean;
   private aiPageTitle_: string;
+  // <if expr="enable_glic">
+  private showGlicSection_: boolean;
+  // </if>
   private showPrivacyGuidePromo_: boolean;
   private privacyGuidePromoWasShown_: boolean;
   private privacyGuideBrowserProxy_: PrivacyGuideBrowserProxy =

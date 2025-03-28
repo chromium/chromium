@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -60,8 +61,9 @@ class TestDigitalIdentityProvider final
 
     base::OnceClosure observer = std::move(credential_request_observer_);
     // Calling the callback might destroy `this`.
-    std::move(callback).Run(
-        DigitalCredential(/*protocol=*/std::nullopt, "token"));
+    std::move(callback).Run(DigitalCredential(
+        /*protocol=*/std::nullopt,
+        base::JSONReader::Read(R"({"token" : "test token"})")));
     if (observer) {
       std::move(observer).Run();
     }

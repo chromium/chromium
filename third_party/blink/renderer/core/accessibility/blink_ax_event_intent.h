@@ -67,7 +67,7 @@ class CORE_EXPORT BlinkAXEventIntent final {
   // Used by HashCountedSet to create a deleted BlinkAXEventIntent instance.
   explicit BlinkAXEventIntent(WTF::HashTableDeletedValueType type);
 
-  virtual ~BlinkAXEventIntent();
+  ~BlinkAXEventIntent();
 
   BlinkAXEventIntent(const BlinkAXEventIntent& intent);
   BlinkAXEventIntent& operator=(const BlinkAXEventIntent& intent);

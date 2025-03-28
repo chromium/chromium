@@ -36,17 +36,22 @@ enum class DiscountClusterType {
   kPageLevel = 2,
   kMaxValue = kPageLevel,
 };
-// LINT.ThenChange(/tools/metrics/histograms/enums.xml:DiscountClusterType)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/commerce/enums.xml:DiscountClusterType)
 
 // Discount types.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.commerce.core
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DiscountType)
 enum class DiscountType {
   kUnspecified = 0,
   kFreeListingWithCode = 1,
   kCrawledPromotion = 2,
   kMaxValue = kCrawledPromotion,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/commerce/enums.xml:DiscountType)
 
 // Information returned by the discount APIs.
 struct DiscountInfo {

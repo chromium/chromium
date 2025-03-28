@@ -36,6 +36,7 @@ using base::Value;
 using base::ValueView;
 using testing::_;
 using testing::DoAll;
+using testing::Eq;
 using testing::Optional;
 using testing::WithArg;
 
@@ -919,7 +920,7 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetUsingModernFormat) {
 
 TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInRequest) {
   const std::string kProtocol = "protocol";
-  const std::string kResponseData = R"({"token": "token data"})";
+  const Value kResponseData(Value::Dict().Set("token", "token data"));
 
   DigitalCredentialRequestPtr digital_credential_request =
       DigitalCredentialRequest::New();
@@ -942,14 +943,15 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInRequest) {
         // to avoid dangling pointers after invoking the callback.
         reset_provider_pointer();
 
-        std::move(callback).Run(DigitalCredential(std::nullopt, kResponseData));
+        std::move(callback).Run(
+            DigitalCredential(std::nullopt, kResponseData.Clone()));
       }));
 
   base::MockCallback<GetCallback> mock_callback;
   // The protocol in the request should be used when invoking the callback,
   // since no protocol was available in the response.
   EXPECT_CALL(mock_callback, Run(RequestDigitalIdentityStatus::kSuccess,
-                                 Optional(kProtocol), Optional(kResponseData)))
+                                 Optional(kProtocol), _))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
 
   digital_identity_request_impl()->Get(std::move(requests),
@@ -962,7 +964,7 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInRequest) {
 TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInResponse) {
   const std::string kProtocolInRequest = "protocol_in_request";
   const std::string kProtocolInResponse = "protocol_in_response";
-  const std::string kResponseData = R"({"token": "token data"})";
+  const Value kResponseData(Value::Dict().Set("token", "token data"));
 
   DigitalCredentialRequestPtr digital_credential_request =
       DigitalCredentialRequest::New();
@@ -986,14 +988,13 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInResponse) {
         reset_provider_pointer();
 
         std::move(callback).Run(
-            DigitalCredential(kProtocolInResponse, kResponseData));
+            DigitalCredential(kProtocolInResponse, kResponseData.Clone()));
       }));
 
   base::MockCallback<GetCallback> mock_callback;
   // The protocol in the response should be used when invoking the callback.
-  EXPECT_CALL(mock_callback,
-              Run(RequestDigitalIdentityStatus::kSuccess,
-                  Optional(kProtocolInResponse), Optional(kResponseData)))
+  EXPECT_CALL(mock_callback, Run(RequestDigitalIdentityStatus::kSuccess,
+                                 Optional(kProtocolInResponse), _))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
 
   digital_identity_request_impl()->Get(std::move(requests),
@@ -1059,7 +1060,7 @@ TEST_F(DigitalIdentityRequestImplTest,
 
 TEST_F(DigitalIdentityRequestImplTest,
        ShouldErrorWhenMultipleRequestsAndNoProtocolInResponse) {
-  const std::string kResponseData = R"({"token": "token data"})";
+  const Value kResponseData(Value::Dict().Set("token", "token data"));
 
   std::vector<DigitalCredentialRequestPtr> requests;
 
@@ -1082,14 +1083,15 @@ TEST_F(DigitalIdentityRequestImplTest,
 
   // Simulate a provider that returns a response without a protocol.
   EXPECT_CALL(*mock_digital_identity_provider(), Get)
-      .WillOnce(WithArg<3>([this](DigitalIdentityCallback callback) {
-        // Running the `callback` will destroy the provider, reset the pointer
-        // to avoid dangling pointers after invoking the callback.
-        reset_provider_pointer();
+      .WillOnce(
+          WithArg<3>([this, &kResponseData](DigitalIdentityCallback callback) {
+            // Running the `callback` will destroy the provider, reset the
+            // pointer to avoid dangling pointers after invoking the callback.
+            reset_provider_pointer();
 
-        std::move(callback).Run(DigitalCredential(
-            /*protocol=*/std::nullopt, R"({"token": "token data"})"));
-      }));
+            std::move(callback).Run(DigitalCredential(
+                /*protocol=*/std::nullopt, kResponseData.Clone()));
+          }));
 
   base::MockCallback<GetCallback> mock_callback;
   // The callback should be invoked with an error since the digital wallet

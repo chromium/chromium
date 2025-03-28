@@ -54,12 +54,7 @@ public class PostTask {
             new TaskRunner[TaskTraits.UI_TRAITS_END + 1];
 
     static {
-        for (@TaskTraits int i = 0; i <= TaskTraits.THREAD_POOL_TRAITS_END; i++) {
-            sTraitsToRunnerMap[i] = new TaskRunnerImpl(i);
-        }
-        for (@TaskTraits int i = TaskTraits.UI_TRAITS_START; i <= TaskTraits.UI_TRAITS_END; i++) {
-            sTraitsToRunnerMap[i] = new UiThreadTaskRunnerImpl(i);
-        }
+        resetTaskRunner();
     }
 
     // Used by AsyncTask / ChainedTask to auto-cancel tasks from prior tests.
@@ -333,5 +328,15 @@ public class PostTask {
     public static void resetUiThreadForTesting() {
         // UI Thread cannot be reset cleanly after native initialization.
         assert !sNativeInitialized;
+    }
+
+    @CalledByNative
+    private static void resetTaskRunner() {
+        for (@TaskTraits int i = 0; i <= TaskTraits.THREAD_POOL_TRAITS_END; i++) {
+            sTraitsToRunnerMap[i] = new TaskRunnerImpl(i);
+        }
+        for (@TaskTraits int i = TaskTraits.UI_TRAITS_START; i <= TaskTraits.UI_TRAITS_END; i++) {
+            sTraitsToRunnerMap[i] = new UiThreadTaskRunnerImpl(i);
+        }
     }
 }

@@ -33,18 +33,18 @@ class CONTENT_EXPORT BluetoothEmulationHandler
 
  private:
   // BluetoothEmulation::Backend
-  Response Enable(const String& in_state, bool in_le_supported) override;
+  Response Enable(const std::string& in_state, bool in_le_supported) override;
   Response Disable() override;
   void SetSimulatedCentralState(
-      const String& in_state,
+      const std::string& in_state,
       std::unique_ptr<SetSimulatedCentralStateCallback> callback) override;
   void SimulatePreconnectedPeripheral(
-      const String& in_address,
-      const String& in_name,
+      const std::string& in_address,
+      const std::string& in_name,
       std::unique_ptr<
           protocol::Array<protocol::BluetoothEmulation::ManufacturerData>>
           in_manufacturer_data,
-      std::unique_ptr<protocol::Array<String>> in_known_service_uuids,
+      std::unique_ptr<protocol::Array<std::string>> in_known_service_uuids,
       std::unique_ptr<SimulatePreconnectedPeripheralCallback> callback)
       override;
 
@@ -56,15 +56,24 @@ class CONTENT_EXPORT BluetoothEmulationHandler
       std::unique_ptr<SimulateAdvertisementCallback> callback) override;
 
   void SimulateGATTOperationResponse(
-      const String& in_address,
-      const String& in_type,
+      const std::string& in_address,
+      const std::string& in_type,
       int in_code,
       std::unique_ptr<SimulateGATTOperationResponseCallback> callback) override;
+
+  void AddService(const std::string& in_address,
+                  const std::string& in_uuid,
+                  std::unique_ptr<AddServiceCallback> callback) override;
+  void RemoveService(const std::string& in_address,
+                     const std::string& in_id,
+                     std::unique_ptr<RemoveServiceCallback> callback) override;
 
   // bluetooth::mojom::FakeCentralClient
   void DispatchGATTOperationEvent(
       bluetooth::mojom::GATTOperationType type,
       const std::string& peripheral_address) override;
+
+  bool is_enabled() { return fake_central_.is_bound(); }
 
   std::optional<BluetoothEmulation::Frontend> frontend_;
   // Tracks emulation usage across all instances, since the backend can only

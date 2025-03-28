@@ -423,10 +423,14 @@ void QuickInsertView::SelectSearchResult(
     UpdateSearchQueryAndActivePage(search_request_data->primary_text);
   } else if (const QuickInsertEditorResult* editor_data =
                  std::get_if<QuickInsertEditorResult>(&result)) {
+    delegate_->GetSessionMetrics().SetOutcome(
+        QuickInsertSessionMetrics::SessionOutcome::kRedirected);
     delegate_->ShowEditor(
         editor_data->preset_query_id,
         base::UTF16ToUTF8(search_field_view_->GetQueryText()));
   } else if (std::get_if<QuickInsertLobsterResult>(&result)) {
+    delegate_->GetSessionMetrics().SetOutcome(
+        QuickInsertSessionMetrics::SessionOutcome::kRedirected);
     delegate_->ShowLobster(
         base::UTF16ToUTF8(search_field_view_->GetQueryText()));
   } else {
@@ -469,13 +473,12 @@ void QuickInsertView::ToggleGifs(bool is_checked) {
 void QuickInsertView::ShowEmojiPicker(ui::EmojiPickerCategory category) {
   QuickInsertSessionMetrics& session_metrics = delegate_->GetSessionMetrics();
   session_metrics.SetSelectedCategory(QuickInsertCategory::kEmojisGifs);
-
+  session_metrics.SetOutcome(
+      QuickInsertSessionMetrics::SessionOutcome::kRedirected);
   if (auto* widget = GetWidget()) {
     widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
   }
 
-  session_metrics.SetOutcome(
-      QuickInsertSessionMetrics::SessionOutcome::kRedirected);
   delegate_->ShowEmojiPicker(category, search_field_view_->GetQueryText());
 }
 
@@ -743,20 +746,22 @@ void QuickInsertView::SelectCategoryWithQuery(QuickInsertCategory category,
 
   if (category == QuickInsertCategory::kEmojisGifs ||
       category == QuickInsertCategory::kEmojis) {
+    session_metrics.SetOutcome(
+        QuickInsertSessionMetrics::SessionOutcome::kRedirected);
     if (auto* widget = GetWidget()) {
       // TODO(b/316936394): Correctly handle opening of emoji picker. Probably
       // best to wait for the IME on focus event, or save some coordinates and
       // open emoji picker in the correct location in some other way.
       widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
     }
-    session_metrics.SetOutcome(
-        QuickInsertSessionMetrics::SessionOutcome::kRedirected);
     delegate_->ShowEmojiPicker(ui::EmojiPickerCategory::kEmojis, query);
     return;
   }
 
   if (category == QuickInsertCategory::kEditorWrite ||
       category == QuickInsertCategory::kEditorRewrite) {
+    session_metrics.SetOutcome(
+        QuickInsertSessionMetrics::SessionOutcome::kRedirected);
     if (auto* widget = GetWidget()) {
       // TODO: b/330267329 - Correctly handle opening of Editor. Probably
       // best to wait for the IME on focus event, or save some coordinates and
@@ -764,8 +769,6 @@ void QuickInsertView::SelectCategoryWithQuery(QuickInsertCategory category,
       widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
     }
     CHECK(query.empty());
-    session_metrics.SetOutcome(
-        QuickInsertSessionMetrics::SessionOutcome::kRedirected);
     delegate_->ShowEditor(/*preset_query_id*/ std::nullopt,
                           /*freeform_text=*/std::nullopt);
     return;
@@ -773,11 +776,11 @@ void QuickInsertView::SelectCategoryWithQuery(QuickInsertCategory category,
 
   if (category == QuickInsertCategory::kLobsterWithNoSelectedText ||
       category == QuickInsertCategory::kLobsterWithSelectedText) {
+    session_metrics.SetOutcome(
+        QuickInsertSessionMetrics::SessionOutcome::kRedirected);
     if (auto* widget = GetWidget()) {
       widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
     }
-    session_metrics.SetOutcome(
-        QuickInsertSessionMetrics::SessionOutcome::kRedirected);
     delegate_->ShowLobster(/*query=*/std::nullopt);
     return;
   }

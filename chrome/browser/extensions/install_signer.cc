@@ -23,9 +23,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
+#include "crypto/hash.h"
 #include "crypto/random.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
 #include "extensions/common/extension.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -83,26 +82,23 @@ GURL GetBackendUrl() {
 
 // Hashes |salt| with the machine id, base64-encodes it and returns it in
 // |result|.
-bool HashWithMachineId(const std::string& salt, std::string* result) {
+std::optional<std::string> HashWithMachineId(const std::string& salt) {
   std::string machine_id;
 #if BUILDFLAG(ENABLE_RLZ)
   if (!rlz_lib::GetMachineId(&machine_id))
-    return false;
+    return std::nullopt;
 #else
   machine_id = "unknown";
 #endif
 
-  std::unique_ptr<crypto::SecureHash> hash(
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256));
+  crypto::hash::Hasher hash(crypto::hash::HashKind::kSha256);
 
-  hash->Update(base::as_byte_span(machine_id));
-  hash->Update(base::as_byte_span(salt));
+  hash.Update(base::as_byte_span(machine_id));
+  hash.Update(base::as_byte_span(salt));
 
-  std::array<uint8_t, crypto::kSHA256Length> result_bytes;
-  hash->Finish(result_bytes);
-
-  *result = base::Base64Encode(result_bytes);
-  return true;
+  std::array<uint8_t, crypto::hash::kSha256Size> result;
+  hash.Finish(result);
+  return base::Base64Encode(result);
 }
 
 // Validates that |input| is a string of the form "YYYY-MM-DD".
@@ -211,10 +207,11 @@ bool InstallSigner::VerifySignature(const InstallSignature& signature) {
   for (auto i = signature.ids.begin(); i != signature.ids.end(); ++i)
     signed_data.append(*i);
 
-  std::string hash_base64;
-  if (!HashWithMachineId(signature.salt, &hash_base64))
+  auto hash = HashWithMachineId(signature.salt);
+  if (!hash.has_value()) {
     return false;
-  signed_data.append(hash_base64);
+  }
+  signed_data.append(*hash);
 
   signed_data.append(signature.expire_date);
 
@@ -263,8 +260,8 @@ void InstallSigner::GetSignature(SignatureCallback callback) {
   salt_ = std::string(kSaltBytes, 0);
   crypto::RandBytes(base::as_writable_byte_span(salt_));
 
-  std::string hash_base64;
-  if (!HashWithMachineId(salt_, &hash_base64)) {
+  auto hash = HashWithMachineId(salt_);
+  if (!hash.has_value()) {
     ReportErrorViaCallback();
     return;
   }
@@ -313,7 +310,7 @@ void InstallSigner::GetSignature(SignatureCallback callback) {
   // }
   base::Value::Dict dictionary;
   dictionary.Set(kProtocolVersionKey, 1);
-  dictionary.Set(kHashKey, hash_base64);
+  dictionary.Set(kHashKey, *hash);
   base::Value::List id_list;
   for (const ExtensionId& extension_id : ids_) {
     id_list.Append(extension_id);

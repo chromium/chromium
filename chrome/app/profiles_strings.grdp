@@ -1093,5 +1093,17 @@
       other {These extensions are saved in your Google Account, but any data they've saved only on this device may be deleted}
       }
     </message>
+
+    <!-- History Sync Opt-in Desktop -->
+    <!-- TODO(crbug.com/406751006): Finalize the strings and make them translateable. -->
+    <message translateable="false" name="IDS_HISTORY_SYNC_OPT_IN_TITLE" desc="">
+      Save time, type less
+    </message>
+    <message translateable="false" name="IDS_HISTORY_SYNC_OPT_IN_SUBTITLE" desc="">
+      To quickly get back to sites you've visited, sync your tabs and history
+    </message>
+    <message translateable="false" name="IDS_HISTORY_SYNC_OPT_IN_DESCRIPTION" desc="">
+      You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+    </message>
   </if>
 </grit-part>

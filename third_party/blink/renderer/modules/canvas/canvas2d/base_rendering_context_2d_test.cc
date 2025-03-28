@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
+
 #include <optional>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_record.h"
 #include "cc/test/paint_op_matchers.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -22,12 +26,13 @@
 #include "third_party/blink/renderer/core/css/resolver/font_style_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/recording_test_utils.h"
 #include "third_party/blink/renderer/core/html/canvas/unique_font_selector.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_test_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -35,10 +40,12 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
+#include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
+#include "third_party/blink/renderer/platform/graphics/predefined_color_space.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -70,10 +77,11 @@ class TestRenderingContext2D final
  public:
   explicit TestRenderingContext2D(V8TestingScope& scope)
       : BaseRenderingContext2D(
+            MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument()),
+            CanvasContextCreationAttributesCore(),
             scheduler::GetSingleThreadTaskRunnerForTesting()),
         execution_context_(scope.GetExecutionContext()),
-        recorder_(gfx::Size(Width(), Height()), this),
-        host_canvas_element_(nullptr) {}
+        recorder_(gfx::Size(Width(), Height()), this) {}
   ~TestRenderingContext2D() override = default;
 
   // Returns the content of the paint recorder, leaving it empty.
@@ -119,26 +127,22 @@ class TestRenderingContext2D final
 
   bool HasAlpha() const override { return true; }
 
-  void SetContextLost(bool context_lost) { context_lost_ = context_lost; }
-  bool isContextLost() const override { return context_lost_; }
+  void SetContextLost(LostContextMode context_lost_mode) {
+    context_lost_mode_ = context_lost_mode;
+  }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(execution_context_);
-    visitor->Trace(host_canvas_element_);
     BaseRenderingContext2D::Trace(visitor);
   }
 
-  void SetHostHTMLCanvas(HTMLCanvasElement* host_canvas_element) {
-    host_canvas_element_ = host_canvas_element;
+  HTMLCanvasElement* HostAsHTMLCanvasElement() const override {
+    return static_cast<HTMLCanvasElement*>(Host());
   }
 
  protected:
   PredefinedColorSpace GetDefaultImageDataColorSpace() const override {
     return PredefinedColorSpace::kSRGB;
-  }
-
-  HTMLCanvasElement* HostAsHTMLCanvasElement() const override {
-    return host_canvas_element_;
   }
 
  private:
@@ -158,14 +162,14 @@ class TestRenderingContext2D final
   }
 
   bool ResolveFont(const String& new_font) override {
-    if (host_canvas_element_ == nullptr) {
+    if (Host() == nullptr) {
       return false;
     }
     auto* style = CSSParser::ParseFont(new_font, execution_context_);
     if (style == nullptr) {
       return false;
     }
-    auto* selector = host_canvas_element_->GetFontSelector();
+    auto* selector = Host()->GetFontSelector();
     FontDescription font_description =
         FontStyleResolver::ComputeFont(*style, selector->BaseFontSelector());
     GetState().SetFont(font_description, selector);
@@ -176,11 +180,27 @@ class TestRenderingContext2D final
     return nullptr;
   }
 
+  // Implementing pure virtual functions from CanvasRenderingContext.
+  SkAlphaType GetAlphaType() const override {
+    return SkAlphaType::kUnknown_SkAlphaType;
+  }
+  viz::SharedImageFormat GetSharedImageFormat() const override {
+    return viz::SharedImageFormat();
+  }
+  gfx::ColorSpace GetColorSpace() const override {
+    return gfx::ColorSpace::CreateSRGB();
+  }
+  scoped_refptr<StaticBitmapImage> GetImage(FlushReason) override {
+    return nullptr;
+  }
+  bool IsComposited() const override { return false; }
+  void PageVisibilityChanged() override { return; }
+  bool IsPaintable() const override { return true; }
+  void Stop() override {}
+
   Member<ExecutionContext> execution_context_;
   bool restore_matrix_enabled_ = true;
-  bool context_lost_ = false;
   MemoryManagedPaintRecorder recorder_;
-  Member<HTMLCanvasElement> host_canvas_element_;
 };
 
 BeginLayerOptions* FilterOption(blink::V8TestingScope& scope,
@@ -197,7 +217,7 @@ TEST(BaseRenderingContextLayerTests, ContextLost) {
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
   NonThrowableExceptionState exception_state;
 
-  context->SetContextLost(true);
+  context->SetContextLost(CanvasRenderingContext::kRealLostContext);
   context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
                       exception_state);
   context->endLayer(exception_state);
@@ -232,8 +252,6 @@ TEST(BaseRenderingContextLayersCSSTests,
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
   V8TestingScope scope;
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
-  context->SetHostHTMLCanvas(
-      MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument()));
   context->setFont("10px sans-serif");
   NonThrowableExceptionState exception_state;
   context->beginLayer(scope.GetScriptState(),
@@ -254,10 +272,8 @@ TEST(BaseRenderingContextPlaceElementTests, DrawsPlacedElement) {
   NonThrowableExceptionState exception_state;
 
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
-  auto* host = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
   auto* img = MakeGarbageCollected<HTMLImageElement>(scope.GetDocument());
-  context->SetHostHTMLCanvas(host);
-  host->appendChild(img);
+  context->HostAsHTMLCanvasElement()->appendChild(img);
 
   context->placeElement(img, /*x=*/12, /*y=*/34, exception_state);
 
@@ -270,9 +286,7 @@ TEST(BaseRenderingContextPlaceElementTests, PlaceElementThrowsForNonChildNode) {
   V8TestingScope scope;
 
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
-  auto* host = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
   auto* img = MakeGarbageCollected<HTMLImageElement>(scope.GetDocument());
-  context->SetHostHTMLCanvas(host);
   // `img` isn't a child of `host`.
 
   context->placeElement(img, /*x=*/12, /*y=*/34, scope.GetExceptionState());
@@ -287,10 +301,8 @@ TEST(BaseRenderingContextPlaceElementTests, PlaceElementThrowsForChildCanvas) {
   V8TestingScope scope;
 
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
-  auto* host = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
   auto* canvas = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
-  context->SetHostHTMLCanvas(host);
-  host->appendChild(canvas);
+  context->HostAsHTMLCanvasElement()->appendChild(canvas);
 
   context->placeElement(canvas, /*x=*/12, /*y=*/34, scope.GetExceptionState());
 
@@ -305,12 +317,10 @@ TEST(BaseRenderingContextPlaceElementTests, PlaceElementAbortsIfContextLost) {
   NonThrowableExceptionState exception_state;
 
   auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
-  auto* host = MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
   auto* img = MakeGarbageCollected<HTMLImageElement>(scope.GetDocument());
-  context->SetHostHTMLCanvas(host);
-  host->appendChild(img);
+  context->HostAsHTMLCanvasElement()->appendChild(img);
 
-  context->SetContextLost(true);
+  context->SetContextLost(CanvasRenderingContext::kRealLostContext);
   context->placeElement(img, /*x=*/12, /*y=*/34, exception_state);
 
   EXPECT_THAT(context->FlushRecorder(), RecordedOpsAre());

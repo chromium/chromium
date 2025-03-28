@@ -14,6 +14,10 @@
 
 class ProfileIOS;
 
+namespace signin {
+class IdentityManager;
+}
+
 // The event reporting client that sends an event to the reporting server and
 // it's utilized by the reporting event router.
 namespace enterprise_connectors {
@@ -38,6 +42,8 @@ class IOSRealtimeReportingClient : public RealtimeReportingClientBase {
 
   void SetBrowserCloudPolicyClientForTesting(policy::CloudPolicyClient* client);
   void SetProfileCloudPolicyClientForTesting(policy::CloudPolicyClient* client);
+
+  void SetIdentityManagerForTesting(signin::IdentityManager* identity_manager);
 
   // policy::CloudPolicyClient::Observer overrides:
   void OnClientError(policy::CloudPolicyClient* client) override;

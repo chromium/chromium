@@ -230,6 +230,8 @@ public class PasswordManagerHelper {
                         activity,
                         mProfile,
                         PasswordManagerUtilBridge.isGooglePlayServicesUpdatable(),
+                        PasswordManagerUtilBridge.isPasswordManagerAvailable(
+                                UserPrefs.get(mProfile)),
                         settingsCustomTabLauncher);
     }
 

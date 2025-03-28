@@ -44,6 +44,25 @@ class PrivacySandboxServiceTestInterface {
   virtual void PromptActionOccurred(int action, int surface_type) const = 0;
 };
 
+// Allow tests to access private variables and functions from
+// `PrivacySandboxSettingsImpl`.
+class PrivacySandboxSettingsTestPeer {
+ public:
+  explicit PrivacySandboxSettingsTestPeer(
+      privacy_sandbox::PrivacySandboxSettingsImpl* pss_impl)
+      : pss_impl_(pss_impl) {}
+  ~PrivacySandboxSettingsTestPeer() = default;
+
+  using Status = privacy_sandbox::PrivacySandboxSettingsImpl::Status;
+
+  static bool IsAllowed(Status status);
+
+  bool IsFledgeJoiningAllowed(const url::Origin& top_frame_origin) const;
+
+ private:
+  raw_ptr<privacy_sandbox::PrivacySandboxSettingsImpl> pss_impl_;
+};
+
 class MockPrivacySandboxObserver
     : public privacy_sandbox::PrivacySandboxSettings::Observer {
  public:

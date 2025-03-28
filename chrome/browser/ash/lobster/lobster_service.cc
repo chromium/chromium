@@ -28,6 +28,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
@@ -58,7 +59,8 @@ LobsterService::LobsterService(
       resizer_(std::make_unique<LobsterCandidateResizer>(image_fetcher_.get())),
       system_state_provider_(std::make_unique<LobsterSystemStateProviderImpl>(
           profile->GetPrefs(),
-          IdentityManagerFactory::GetForProfile(profile))),
+          IdentityManagerFactory::GetForProfile(profile),
+          /*is_in_demo_mode=*/ash::demo_mode::IsDeviceInDemoMode())),
       announcer_(
           std::make_unique<LobsterLiveRegionAnnouncer>(kAnnouncementViewName)) {
   if (profile != nullptr) {

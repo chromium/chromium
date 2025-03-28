@@ -115,6 +115,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
     CreateAccountSelectionModal();
     dialog_->ShowMultiAccountPicker(account_list_, {idp_data_},
+                                    /*rp_icon=*/gfx::Image(),
                                     /*show_back_button=*/false);
     account_selection_view_->UpdateDialogPosition();
   }
@@ -594,6 +595,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     }
     CreateAccountSelectionModal();
     dialog()->ShowMultiAccountPicker(account_list_, {idp_data()},
+                                     /*rp_icon=*/gfx::Image(),
                                      /*show_back_button=*/false);
     account_selection_view_->UpdateDialogPosition();
 
@@ -630,6 +632,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     account_list_[1]->is_filtered_out = true;
     CreateAccountSelectionModal();
     dialog()->ShowMultiAccountPicker(account_list_, {idp_data()},
+                                     /*rp_icon=*/gfx::Image(),
                                      /*show_back_button=*/false);
     account_selection_view_->UpdateDialogPosition();
 

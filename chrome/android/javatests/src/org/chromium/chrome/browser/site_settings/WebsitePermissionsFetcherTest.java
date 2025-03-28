@@ -85,7 +85,8 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     WebsitePermissionsFetcherTest.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
-    WebsitePermissionsFetcherTest.ENABLE_WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND
+    WebsitePermissionsFetcherTest.ENABLE_WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND,
+    WebsitePermissionsFetcherTest.ENABLE_BLUETOOTH_RFCOMM_ANDROID
 })
 @Batch(Batch.PER_CLASS)
 public class WebsitePermissionsFetcherTest {
@@ -102,6 +103,12 @@ public class WebsitePermissionsFetcherTest {
     /** Command line flag to enable the new Web Bluetooth permissions backend in tests. */
     public static final String ENABLE_WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND =
             "enable-features=WebBluetoothNewPermissionsBackend";
+
+    /**
+     * Command line flag to enable Bluetooth RFCOMM support for serial ports on Android in tests.
+     */
+    public static final String ENABLE_BLUETOOTH_RFCOMM_ANDROID =
+            "enable-features=BluetoothRfcommAndroid";
 
     private static final BrowserContextHandle UNUSED_BROWSER_CONTEXT_HANDLE = null;
 
@@ -869,6 +876,13 @@ public class WebsitePermissionsFetcherTest {
                         "Wireless",
                         "Object",
                         false));
+        websitePreferenceBridge.addChosenObjectInfo(
+                new ChosenObjectInfo(
+                        ContentSettingsType.SERIAL_CHOOSER_DATA,
+                        ORIGIN,
+                        "Serial",
+                        "Object",
+                        false));
 
         fetcher.fetchAllPreferences(
                 (sites) -> {
@@ -988,13 +1002,16 @@ public class WebsitePermissionsFetcherTest {
                     // Check chooser info types.
                     ArrayList<ChosenObjectInfo> chosenObjectInfos =
                             new ArrayList<>(site.getChosenObjectInfo());
-                    assertEquals(2, chosenObjectInfos.size());
+                    assertEquals(3, chosenObjectInfos.size());
                     assertEquals(
                             ContentSettingsType.BLUETOOTH_CHOOSER_DATA,
                             chosenObjectInfos.get(0).getContentSettingsType());
                     assertEquals(
                             ContentSettingsType.USB_CHOOSER_DATA,
                             chosenObjectInfos.get(1).getContentSettingsType());
+                    assertEquals(
+                            ContentSettingsType.SERIAL_CHOOSER_DATA,
+                            chosenObjectInfos.get(2).getContentSettingsType());
                 });
     }
 
@@ -1419,7 +1436,8 @@ public class WebsitePermissionsFetcherTest {
                 new ArrayList<>(
                         Arrays.asList(
                                 SiteSettingsCategory.Type.USB,
-                                SiteSettingsCategory.Type.BLUETOOTH));
+                                SiteSettingsCategory.Type.BLUETOOTH,
+                                SiteSettingsCategory.Type.SERIAL_PORT));
 
         for (@SiteSettingsCategory.Type int type : chooserDataTypes) {
             WebsitePermissionsFetcher fetcher =

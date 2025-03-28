@@ -380,7 +380,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandSentWhenUIIsDismissed) {
 
   EXPECT_OCMOCK_VERIFY(mockHandler);
 
-  // TODO(crbug.com/40066949): Reset the expectation for the SignInUIDismissed
+  // TODO(crbug.com/364574533): Reset the expectation for the SignInUIDismissed
   // call.
 }
 

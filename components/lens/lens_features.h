@@ -745,6 +745,14 @@ extern bool IsUpdatedClientContextEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldShowMGTInSidePanel();
 
+// Whether to use the alt loading hint when overlay is opened on web pages.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool ShouldUseAltLoadingHintWeb();
+
+// Whether to use the alt loading hint when overlay is opened on pdfs.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool ShouldUseAltLoadingHintPdf();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

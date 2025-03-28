@@ -42,6 +42,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/permissions_manager.h"
@@ -330,7 +331,7 @@ const Extension* ExtensionContextMenuModelTest::AddExtensionWithHostPermission(
   if (!extension.get())
     ADD_FAILURE();
   PermissionsUpdater(profile()).GrantActivePermissions(extension.get());
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   return extension.get();
 }
 
@@ -339,7 +340,7 @@ void ExtensionContextMenuModelTest::InitializeAndAddExtension(
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(&extension);
   updater.GrantActivePermissions(&extension);
-  service()->AddExtension(&extension);
+  registrar()->AddExtension(&extension);
 }
 
 Browser* ExtensionContextMenuModelTest::GetBrowser() {
@@ -520,7 +521,7 @@ TEST_F(ExtensionContextMenuModelTest, ComponentExtensionContextMenu) {
             .SetID(crx_file::id_util::GenerateId("component"))
             .SetLocation(ManifestLocation::kComponent)
             .Build();
-    service()->AddExtension(extension.get());
+    registrar()->AddExtension(extension.get());
 
     ExtensionContextMenuModel menu(extension.get(), GetBrowser(),
                                    /*is_pinned=*/true, nullptr, true,
@@ -561,7 +562,7 @@ TEST_F(ExtensionContextMenuModelTest, ComponentExtensionContextMenu) {
     ExtensionContextMenuModel menu(extension.get(), GetBrowser(),
                                    /*is_pinned=*/true, nullptr, true,
                                    ContextMenuSource::kToolbarAction);
-    service()->AddExtension(extension.get());
+    registrar()->AddExtension(extension.get());
     EXPECT_TRUE(OptionsPageInfo::HasOptionsPage(extension.get()));
     EXPECT_EQ(GetCommandState(menu, ExtensionContextMenuModel::OPTIONS),
               CommandState::kEnabled);
@@ -655,7 +656,7 @@ TEST_F(ExtensionContextMenuModelTest,
           .SetManifestVersion(2)
           .SetID(crx_file::id_util::GenerateId("extension"))
           .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   {
     // Verify the "options" entry is absent if the extension doesn't have
@@ -673,7 +674,7 @@ TEST_F(ExtensionContextMenuModelTest,
           .SetID(crx_file::id_util::GenerateId("extension_with_options_page"))
           .SetManifestKey("options_page", "options_page.html")
           .Build();
-  service()->AddExtension(extension_with_options.get());
+  registrar()->AddExtension(extension_with_options.get());
 
   {
     // Verify the "options" entry is enabled if and only if the
@@ -1851,7 +1852,7 @@ TEST_P(ExtensionActionContextMenuModelTest,
 
   scoped_refptr<const Extension> extension =
       BuildExtensionWithActionType(action_type);
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   MenuManager* const manager = CreateMenuManager();
 
@@ -1881,7 +1882,7 @@ TEST_P(ExtensionActionContextMenuModelTest, ActionMenuItemsAreLimited) {
 
   scoped_refptr<const Extension> extension =
       BuildExtensionWithActionType(action_type);
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   MenuManager* const manager = CreateMenuManager();
 
@@ -1912,7 +1913,7 @@ TEST_P(ExtensionActionContextMenuModelTest,
 
   scoped_refptr<const Extension> extension =
       BuildExtensionWithActionType(action_type);
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   MenuManager* const manager = CreateMenuManager();
 

@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/search/ntp_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -93,6 +95,29 @@ bool SidePanelControllerViews::CanShowOnURL(const GURL& url) const {
   return true;
 }
 
+bool SidePanelControllerViews::ShouldEnableEditTheme(const GURL& url) const {
+  return NewTabPageUI::IsNewTabPageOrigin(url) ||
+         (base::FeatureList::IsEnabled(ntp_features::kNtpFooter) &&
+          IsExtensionNtp(url));
+}
+
+bool SidePanelControllerViews::IsExtensionNtp(const GURL& url) const {
+  if (!url.SchemeIs(extensions::kExtensionScheme)) {
+    return false;
+  }
+
+  Profile* const profile =
+      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
+  const extensions::Extension* extension_managing_ntp =
+      extensions::GetExtensionOverridingNewTabPage(profile);
+
+  if (!extension_managing_ntp) {
+    return false;
+  }
+
+  return extension_managing_ntp->id() == url.host();
+}
+
 void SidePanelControllerViews::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // Check the actual navigation entry of the page, this is more proper than the
@@ -104,11 +129,13 @@ void SidePanelControllerViews::DidFinishNavigation(
     entry = tab_->GetContents()->GetController().GetVisibleEntry();
   }
 
-  if (CanShowOnURL(entry->GetURL())) {
+  const GURL& url = entry->GetURL();
+  if (CanShowOnURL(url)) {
     CreateAndRegisterEntry();
     if (customize_chrome_ui_) {
       customize_chrome_ui_->AttachedTabStateUpdated(
-          NewTabPageUI::IsNewTabPageOrigin(entry->GetURL()));
+          NewTabPageUI::IsNewTabPageOrigin(url));
+      customize_chrome_ui_->UpdateThemeEditable(ShouldEnableEditTheme(url));
     }
   } else {
     DeregisterEntry();
@@ -212,8 +239,10 @@ SidePanelControllerViews::CreateCustomizeChromeWebView(
   if (!entry) {
     entry = tab_->GetContents()->GetController().GetVisibleEntry();
   }
+  const GURL& url = entry->GetURL();
   customize_chrome_ui_->AttachedTabStateUpdated(
-      NewTabPageUI::IsNewTabPageOrigin(entry->GetURL()));
+      NewTabPageUI::IsNewTabPageOrigin(url));
+  customize_chrome_ui_->UpdateThemeEditable(ShouldEnableEditTheme(url));
 
   return customize_chrome_web_view;
 }

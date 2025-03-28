@@ -282,6 +282,9 @@ extern const char kFeedBackgroundRefreshDescription[];
 extern const char kFeedSwipeInProductHelpName[];
 extern const char kFeedSwipeInProductHelpDescription[];
 
+extern const char kFeedbackIncludeVariationsName[];
+extern const char kFeedbackIncludeVariationsDescription[];
+
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
@@ -356,6 +359,9 @@ extern const char kIOSPasswordBottomSheetAutofocusDescription[];
 
 extern const char kIOSProactivePasswordGenerationBottomSheetName[];
 extern const char kIOSProactivePasswordGenerationBottomSheetDescription[];
+
+extern const char kIOSPromptSearchEngineChoiceAfterDeviceRestoreName[];
+extern const char kIOSPromptSearchEngineChoiceAfterDeviceRestoreDescription[];
 
 extern const char kIOSQuickDeleteName[];
 extern const char kIOSQuickDeleteDescription[];
@@ -612,6 +618,9 @@ extern const char kOptimizationGuidePushNotificationClientDescription[];
 extern const char kOneTapForMapsName[];
 extern const char kOneTapForMapsDescription[];
 
+extern const char kPageActionMenuName[];
+extern const char kPageActionMenuDescription[];
+
 extern const char kPageContentAnnotationsName[];
 extern const char kPageContentAnnotationsDescription[];
 
@@ -658,14 +667,11 @@ extern const char kIPHPriceNotificationsWhileBrowsingDescription[];
 extern const char kNotificationSettingsMenuItemName[];
 extern const char kNotificationSettingsMenuItemDescription[];
 
+extern const char kReaderModeDistillerName[];
+extern const char kReaderModeDistillerDescription[];
+
 extern const char kReaderModeDistillerHeuristicName[];
 extern const char kReaderModeDistillerHeuristicDescription[];
-
-extern const char kReaderModeDistillerHeuristicSamplingName[];
-extern const char kReaderModeDistillerHeuristicSamplingDescription[];
-
-extern const char kReaderModeDistillerHeuristicPageLoadDelayName[];
-extern const char kReaderModeDistillerHeuristicPageLoadDelayDescription[];
 
 // Title and description for the flag to refactor the toolbarsSize.
 extern const char kRefactorToolbarsSizeName[];
@@ -743,6 +749,9 @@ extern const char kShowAutofillTypePredictionsDescription[];
 
 extern const char kSignInButtonNoAvatarName[];
 extern const char kSignInButtonNoAvatarDescription[];
+
+extern const char kNTPBackgroundCustomizationName[];
+extern const char kNTPBackgroundCustomizationDescription[];
 
 extern const char kSpotlightNeverRetainIndexName[];
 extern const char kSpotlightNeverRetainIndexDescription[];

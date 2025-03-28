@@ -527,8 +527,9 @@ EncoderStatus NdkVideoEncodeAccelerator::Initialize(
         codec, num_temporal_layers_);
   }
 
-  if (!ResetMediaCodec()) {
-    return {EncoderStatus::Codes::kEncoderInitializationError};
+  const EncoderStatus status = ResetMediaCodec();
+  if (!status.is_ok()) {
+    return status;
   }
 
   const size_t bitstream_buffer_size = EstimateBitstreamBufferSize(
@@ -991,7 +992,7 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
       DCHECK_EQ(mc_buffer_size, 0u);
       encoder_color_space_ = pending_color_space_;
       pending_color_space_.reset();
-      if (!ResetMediaCodec()) {
+      if (!ResetMediaCodec().is_ok()) {
         NotifyErrorStatus(
             {EncoderStatus::Codes::kEncoderFailedEncode,
              "Failed to recreate media codec for color space change."});
@@ -1100,7 +1101,7 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
                                   output_buffer.buffer_index, false);
 }
 
-bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
+EncoderStatus NdkVideoEncodeAccelerator::ResetMediaCodec() {
   DCHECK(!pending_color_space_);
 
   have_encoded_frames_ = false;
@@ -1114,7 +1115,7 @@ bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
   if (!name) {
     MEDIA_LOG(ERROR, log_) << "No suitable MedicCodec found for: "
                            << config_.AsHumanReadableString();
-    return false;
+    return {EncoderStatus::Codes::kEncoderUnsupportedCodec};
   }
 
   auto configured_size = aligned_size_.value_or(config_.input_visible_size);
@@ -1125,7 +1126,7 @@ bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
   if (!media_format) {
     MEDIA_LOG(ERROR, log_) << "Fail to create media format for: "
                            << config_.AsHumanReadableString();
-    return false;
+    return {EncoderStatus::Codes::kEncoderUnsupportedConfig};
   }
 
   // We do the following in a loop since we may need to recreate the MediaCodec
@@ -1137,7 +1138,7 @@ bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
       MEDIA_LOG(ERROR, log_)
           << "Can't create media codec (" << name.value()
           << ") for config: " << config_.AsHumanReadableString();
-      return false;
+      return {EncoderStatus::Codes::kEncoderInitializationError};
     }
     media_status_t status = AMediaCodec_configure(
         media_codec_->codec(), media_format.get(), nullptr, nullptr,
@@ -1145,12 +1146,12 @@ bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
 
     if (status != AMEDIA_OK) {
       MEDIA_LOG(ERROR, log_) << "Can't configure media codec. Error " << status;
-      return false;
+      return {EncoderStatus::Codes::kEncoderInitializationError};
     }
 
     if (!SetInputBufferLayout(configured_size)) {
       MEDIA_LOG(ERROR, log_) << "Can't get input buffer layout from MediaCodec";
-      return false;
+      return {EncoderStatus::Codes::kEncoderInitializationError};
     }
 
     if (aligned_size_.value_or(configured_size) != configured_size) {
@@ -1177,15 +1178,19 @@ bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
   } while (!media_codec_);
 
   media_status_t status = media_codec_->Start();
+  if (status == AMEDIACODEC_ERROR_INSUFFICIENT_RESOURCE) {
+    MEDIA_LOG(ERROR, log_) << "No more encoders available. Error " << status;
+    return {EncoderStatus::Codes::kOutOfPlatformEncoders};
+  }
   if (status != AMEDIA_OK) {
     MEDIA_LOG(ERROR, log_) << "Can't start media codec. Error " << status;
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   MEDIA_LOG(INFO, log_) << "Created MediaCodec (" << name.value()
                         << ") for config: " << config_.AsHumanReadableString();
 
-  return true;
+  return {EncoderStatus::Codes::kOk};
 }
 
 void NdkVideoEncodeAccelerator::SetEncoderColorSpace() {

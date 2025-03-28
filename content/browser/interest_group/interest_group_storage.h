@@ -88,12 +88,14 @@ class CONTENT_EXPORT InterestGroupStorage {
       const std::set<std::string>& interest_groups_to_keep,
       const url::Origin& main_frame_origin);
 
-  // Gets lockout for sending forDebuggingOnly reports.
-  std::optional<DebugReportLockout> GetDebugReportLockout();
-
-  // Gets lockout and cooldowns for sending forDebuggingOnly reports.
+  // Gets lockout and cooldowns of `origins` for sending forDebuggingOnly
+  // reports.
   std::optional<DebugReportLockoutAndCooldowns>
   GetDebugReportLockoutAndCooldowns(const base::flat_set<url::Origin>& origins);
+
+  // Gets lockout and all cooldowns for sending forDebuggingOnly reports.
+  std::optional<DebugReportLockoutAndCooldowns>
+  GetDebugReportLockoutAndAllCooldowns();
 
   // Updates the interest group `name` of `owner` with the populated fields of
   // `update`.

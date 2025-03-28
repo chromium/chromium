@@ -5,7 +5,7 @@ promise_test(async t => {
   await ensureLanguageModel();
 
   // Start a new session.
-  const session = await ai.languageModel.create();
+  const session = await LanguageModel.create();
 
   // Calling `session.destroy()` immediately after `session.prompt()` will
   // trigger the "The model execution session has been destroyed." exception.

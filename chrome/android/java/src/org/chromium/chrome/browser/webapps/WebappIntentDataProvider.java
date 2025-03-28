@@ -101,7 +101,7 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     @Override
-    public @Nullable String getUrlToLoad() {
+    public String getUrlToLoad() {
         return mWebappExtras.url;
     }
 

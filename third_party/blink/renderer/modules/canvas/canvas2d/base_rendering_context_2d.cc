@@ -114,8 +114,11 @@ const char BaseRenderingContext2D::kInheritString[] = "inherit";
 const base::TimeDelta kTryRestoreContextInterval = base::Milliseconds(500);
 
 BaseRenderingContext2D::BaseRenderingContext2D(
+    CanvasRenderingContextHost* canvas,
+    const CanvasContextCreationAttributesCore& attrs,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : dispatch_context_lost_event_timer_(
+    : CanvasRenderingContext(canvas, attrs, CanvasRenderingAPI::k2D),
+      dispatch_context_lost_event_timer_(
           task_runner,
           this,
           &BaseRenderingContext2D::DispatchContextLostEvent),
@@ -725,6 +728,7 @@ void BaseRenderingContext2D::Trace(Visitor* visitor) const {
   visitor->Trace(try_restore_context_event_timer_);
   visitor->Trace(webgpu_access_texture_);
   visitor->Trace(placed_elements_);
+  CanvasRenderingContext::Trace(visitor);
   Canvas2DRecorderContext::Trace(visitor);
 }
 
@@ -1041,9 +1045,10 @@ void BaseRenderingContext2D::DrawTextInternal(
     }
   } else {
     if (run_start == 0 && run_end == text.length()) [[likely]] {
-      font_width = font->Width(text_run, &bounds);
+      font_width = font->DeprecatedWidth(text_run, &bounds);
     } else {
-      font_width = font->SubRunWidth(text_run, run_start, run_end, &bounds);
+      font_width =
+          font->DeprecatedSubRunWidth(text_run, run_start, run_end, &bounds);
     }
   }
 
@@ -1115,9 +1120,9 @@ void BaseRenderingContext2D::DrawTextInternal(
           TextRunPaintInfo text_run_paint_info(text_run);
           text_run_paint_info.from = run_start;
           text_run_paint_info.to = run_end;
-          font->DrawBidiText(c, text_run_paint_info, location,
-                             Font::kUseFallbackIfFontNotReady, *flags,
-                             draw_type);
+          font->DeprecatedDrawBidiText(c, text_run_paint_info, location,
+                                       Font::kUseFallbackIfFontNotReady, *flags,
+                                       draw_type);
         }
       },
       [](const SkIRect& rect)  // overdraw test lambda
@@ -1562,6 +1567,10 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
 
   WillDraw(SkIRect::MakeXYWH(0, 0, Width(), Height()),
            CanvasPerformanceMonitor::DrawType::kOther);
+}
+
+int BaseRenderingContext2D::LayerCount() const {
+  return Canvas2DRecorderContext::LayerCount();
 }
 
 }  // namespace blink

@@ -91,6 +91,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1269405891096105529">Çevre birimi, Misafir modunda desteklenmiyor</translation>
 <translation id="1270290102613614947">Dokunmatik klavye devre dışı</translation>
 <translation id="1272079795634619415">Durdur</translation>
+<translation id="12741168609094094">Arama yapmak, metin kopyalamak ve diğer işlemler için ekranınızda isteğiniz öğeyi seçin</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> güç sağlıyor</translation>
 <translation id="1275718070701477396">Seçildi</translation>
 <translation id="1276975447697633661">Dosyayı seçip <ph name="KEY" /> tuşuna basın</translation>
@@ -227,6 +228,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1720230731642245863">Hotspot kapalı</translation>
 <translation id="1731815243805539470">Önceki kullanıcıya geçin</translation>
 <translation id="1733996486177697563">Koyu ve açık tema arasında geçiş yapın. Masaüstüne dokunup basılı tuttuktan sonra Duvar kağıdı ve stil'i seçin.</translation>
+<translation id="1735992454301033090">Alan seçildi, taşımak için ok tuşlarını kullanın</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />", Bluetooth cihazlara görünür durumda.</translation>
 <translation id="1737078180382804488">Telefonunuzdaki bildirimleri görme seçeneğini ayarlamayı kapatın</translation>
 <translation id="174102739345480129">İşaretçi kapalı.</translation>
@@ -494,6 +496,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2683887737780133806">Geçen hafta <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">Klavye kısayolu değişti</translation>
 <translation id="2689613560355655046">Masa 8</translation>
+<translation id="2692092709110488417">Seçili alana odaklanmak ve bunu taşımak için sekme tuşuna basın</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Klavye ayarlarını göster. <ph name="KEYBOARD_NAME" /> seçildi.</translation>
 <translation id="2699913284398121653">Okul hesabı verilerinizi kişisel hesabınıza taşımak için İçerik Aktarımı uygulamasını kullanın</translation>
@@ -1033,6 +1036,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4412698727486357573">Yardım merkezi</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> özelliği kapalı.</translation>
 <translation id="4417647906073317561">Odaklanma ayarları. İşe koyulmak için zamanlayıcı, görev ve müzik ayarlayın.</translation>
+<translation id="4418600384772451109">Paneli kapat</translation>
 <translation id="4424159417645388645">Masa 5</translation>
 <translation id="4426817706804363424">Tebrikler!</translation>
 <translation id="4430019312045809116">Ses</translation>
@@ -1049,7 +1053,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4471354919263203780">Konuşma tanıma dosyaları indiriliyor... %<ph name="PERCENT" /></translation>
 <translation id="4471432286288241507">{0,plural, =0{Cihazı şimdi güncelleyin}=1{Cihazı 1 saniye içinde güncelleyin}other{Cihazı # saniye içinde güncelleyin}}</translation>
 <translation id="4472575034687746823">Başlayın</translation>
-<translation id="4473489370276014885">Google Contacts</translation>
+<translation id="4473489370276014885">Google Kişiler</translation>
 <translation id="4477350412780666475">Sonraki Parça</translation>
 <translation id="4477751544736611934">Bu işlem için veri ücreti ödemeniz gerekebilir.
 1 cihaz bağlı.</translation>
@@ -2229,6 +2233,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8287009018010202411">Verimlilik</translation>
 <translation id="828708037801473432">Kapalı</translation>
 <translation id="8297006494302853456">Zayıf</translation>
+<translation id="8300451473979404345">Tutma yeri seçildi, taşımak için ok tuşlarını kullanın</translation>
 <translation id="8308637677604853869">Önceki menü</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock açık</translation>
@@ -2289,6 +2294,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="851458219935658693">Geçerli masadaki pencereleri göster, radyo düğmesi seçildi</translation>
 <translation id="851660987304951246">İçerikleri hızlıca özetlemek veya soru sormak için "Okumama yardım et"i kullanın</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> cihazınız açıkken şarj olmayabilir.</translation>
+<translation id="8519329096920173967">Google Lens ile ekranımda arama yap</translation>
 <translation id="8535393432370007982">Renge göre sıralama ölçütünü geri al</translation>
 <translation id="8536886494750559755">Quick Share ayarlarını göster. <ph name="TIME_REMAINING" /> boyunca herkes tarafından görülebilir</translation>
 <translation id="8539803091108018926">Metin panoya kopyalandı</translation>

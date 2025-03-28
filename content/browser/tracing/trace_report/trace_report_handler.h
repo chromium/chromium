@@ -20,7 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
-// Handles communication between the browser and chrome://traces-internals.
+// Handles communication between the browser and chrome://traces.
 class CONTENT_EXPORT TraceReportHandler
     : public trace_report::mojom::PageHandler {
  public:

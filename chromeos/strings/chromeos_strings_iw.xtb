@@ -11,6 +11,7 @@
 <translation id="102432830749687801">‏צריך להעביר את הנתונים מהחשבון הבית ספרי לחשבון האישי עם אפליקציית "העברת תוכן" של Google לפני שהגישה אליהם תאבד.</translation>
 <translation id="1026212596705997935">מקש הקיצור הזה משמש לביצוע הפעולה '<ph name="CONFLICT_ACCEL_NAME" />'. עליך להקיש על מקש קיצור אחר. כדי להחליף את קיצור הדרך הקיים, צריך להקיש שוב על מקש הקיצור הזה.</translation>
 <translation id="1030856839388844477">איפוס השימוש בחבילת הגלישה</translation>
+<translation id="1047095725494118091">לא ניתן להוריד. צריך לנסות שוב או להפעיל מחדש את <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> שרשורים, GHz‏ <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">יש תכונה חדשה. למידע נוסף יש להקיש על מקש החץ למעלה.</translation>
 <translation id="1049663189809099096">בצבע צהוב פסטל</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">שומר המסך בהורדה</translation>
 <translation id="1094693127011229778">‏כתובת ה-IP לא זמינה</translation>
 <translation id="1100902271996134409">התמונות נוצרות…</translation>
+<translation id="1107856713690040084">אודיו בפורמט <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">מידע כללי</translation>
 <translation id="1118572504348554005">יכול להיות שנשתף משוב שנשלח באמצעות הטופס הזה עם השותפים שלנו כדי לתקן באגים ולפתור בעיות אחרות שדווחו. אין להזין מידע רגיש כמו סיסמאות.</translation>
 <translation id="1119403468619527527">יש מעט מדי מילים כדי לפשט</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">הפעלת המצב הכהה</translation>
 <translation id="2164131940279488868">כדי להתחיל להקליט אודיו, צריך לוודא שהמיקרופון מחובר</translation>
 <translation id="2173302385160625112">יש לבדוק את החיבור לאינטרנט</translation>
+<translation id="2176909213844392588">אי אפשר להוריד את מודל התמלול ב<ph name="LANGUAGE_NAME" />. צריך לנסות שוב או להפעיל מחדש את <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">משהו השתבש. צריך לנסות לפתוח את האפליקציה מחדש.</translation>
 <translation id="2189104374785738357">‏עריכת פרטי ה-APN</translation>
 <translation id="2195732836444333448">יש עומס גדול מהרגיל. אפשר לנסות שוב בעוד כמה דקות.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">הכנסת מסמכים (שני צדדים)</translation>
 <translation id="3201315366910775591">אנשים אחרים יכולים לעדכן את האלבומים המשותפים</translation>
 <translation id="3211671540163313381">‏לחצני החיצים (D-pad) למיפוי מקשים</translation>
+<translation id="3217462202230355157">צריך לוודא שהמיקרופון מחובר או להפעיל מחדש את <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">מתבצע חיפוש של סורקים</translation>
 <translation id="3226657629376379887">תפריט הפעולות בפריסה</translation>
 <translation id="3227186760713762082">צריך לחלק את הערך של <ph name="CATEGORY_TEXT" /> ב-<ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">בלעדי</translation>
 <translation id="3404249063913988450">הפעלת שומר המסך</translation>
 <translation id="3413935475507503304">צריך ללחוץ על 'הבא' כדי להמשיך בעדכון.</translation>
+<translation id="3416709353545797224">הקלטת כל האודיו ב-<ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">בחוץ</translation>
 <translation id="3428971106895559033">פסטלי</translation>
 <translation id="3434107140712555581">‎<ph name="BATTERY_PERCENTAGE" />%‎</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">יש לוודא שהסורק מופעל וזמין דרך הרשת או דרך חיבור ישיר</translation>
 <translation id="4159238217853743776">חלקי</translation>
 <translation id="4159784952369912983">סגול</translation>
+<translation id="416219735020840807">לא ניתן להוריד את מודל התמלול. צריך לנסות שוב או להפעיל מחדש את <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4170180284036919717">צילום תמונה</translation>
 <translation id="4170700058716978431">הבדיקה הסתיימה בכישלון</translation>
 <translation id="4171077696775491955">הפחתת הבהירות</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">המערכת מחליפה את הטקסט שנבחר בהצעה</translation>
 <translation id="5346687412805619883">רשת מקומית</translation>
 <translation id="5358174242040570474">משהו השתבש. כדאי לנסות לבחור טפט מחדש או לפתוח מחדש את האפליקציה.</translation>
+<translation id="5368228070728130240">אי אפשר להוריד את המודל ליצירת סיכום ושם. צריך לנסות שוב או להפעיל מחדש את <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">‏רשת ה-Wi-Fi לא מאובטחת</translation>
 <translation id="5376354385557966694">מצב בהיר אוטומטי</translation>
 <translation id="5378184552853359930">‏סוג IP</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">‏בקשות לזיהוי DNS שנכשלו</translation>
 <translation id="6768237774506518020">‏שיעור כישלון גבוה לנסיונות זיהוי DNS</translation>
 <translation id="6786747875388722282">תוספים</translation>
+<translation id="6789891265243243337">כשהאודיו של <ph name="DEVICE_TYPE" /> מופעל, מכשיר ההקלטה מקליט את כל האודיו שמושמע במכשיר הזה</translation>
 <translation id="6791471867139427246">צבע התאורה של המקלדת</translation>
 <translation id="6796229976413584781">מקש הקיצור נמחק</translation>
 <translation id="6798678288485555829">ניווט בטקסט</translation>
@@ -1532,6 +1540,7 @@
 <translation id="8010765388850538088">‏מידע נוסף על AI גנרטיבי</translation>
 <translation id="8017679124341497925">קיצור הדרך עבר עריכה</translation>
 <translation id="802154636333426148">ההורדה נכשלה</translation>
+<translation id="8027467664787098346">מידע נוסף על הטפט שנבחר</translation>
 <translation id="8028993641010258682">גודל</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">הפעלה של מצב צבע אוטומטי</translation>
@@ -1728,6 +1737,7 @@
 <translation id="8930622219860340959">אלחוטי</translation>
 <translation id="8933650076320258356">המקש שנבחר הוא <ph name="KEYS" /> עבור <ph name="DIRECTION" />. ‫<ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">‏כתובת ה-IP של הלקוח</translation>
+<translation id="8938606491880817721">לא ניתן להוריד. צריך לנסות שוב או להפעיל מחדש את <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8944651180182756621">צבע מרכז האפליקציות</translation>
 <translation id="8945308580158685341">דבורים</translation>
 <translation id="894617464444543719">המכשיר הוא טלפון.</translation>

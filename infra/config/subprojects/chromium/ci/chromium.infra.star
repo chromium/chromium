@@ -180,27 +180,15 @@ packager_builder(
                 "tools/android/avd/proto_creation/android_30_google_apis_x86.textpb",
                 "tools/android/avd/proto_creation/android_31_google_apis_x64.textpb",
                 "tools/android/avd/proto_creation/android_32_google_apis_x64_foldable.textpb",
-                "tools/android/avd/proto_creation/android_32_google_apis_x64_foldable_landscape.textpb",
                 "tools/android/avd/proto_creation/android_33_google_apis_x64.textpb",
                 "tools/android/avd/proto_creation/android_34_google_apis_x64.textpb",
                 "tools/android/avd/proto_creation/android_35_google_apis_x64.textpb",
+                "tools/android/avd/proto_creation/android_36_google_apis_x64.textpb",
 
                 # google_apis_tablet system images
                 "tools/android/avd/proto_creation/android_35_google_apis_tablet_x64.textpb",
 
-                # google_atd system images
-                "tools/android/avd/proto_creation/android_30_google_atd_x86.textpb",
-                "tools/android/avd/proto_creation/android_30_google_atd_x64.textpb",
-                "tools/android/avd/proto_creation/android_31_google_atd_x64.textpb",
-                "tools/android/avd/proto_creation/android_32_google_atd_x64_foldable.textpb",
-                "tools/android/avd/proto_creation/android_33_google_atd_x64.textpb",
-
                 # TODO(hypan): Using more specific names for the configs below.
-                "tools/android/avd/proto_creation/generic_android19.textpb",
-                "tools/android/avd/proto_creation/generic_android22.textpb",
-                "tools/android/avd/proto_creation/generic_android23.textpb",
-                "tools/android/avd/proto_creation/generic_android24.textpb",
-                "tools/android/avd/proto_creation/generic_android25.textpb",
                 "tools/android/avd/proto_creation/generic_android26.textpb",
                 "tools/android/avd/proto_creation/generic_android27.textpb",
             ],

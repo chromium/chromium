@@ -8,9 +8,9 @@
 #include <memory>
 #include <optional>
 
-#include "chrome/browser/ui/tabs/tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
+#include "components/tab_collections/public/tab_collection.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 

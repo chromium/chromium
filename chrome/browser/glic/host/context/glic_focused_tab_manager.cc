@@ -25,8 +25,6 @@ constexpr base::TimeDelta kDebounceDelay = base::Seconds(0.1);
 
 }  // namespace
 
-// TODO(wry): Add interactive_ui_tests to check basic functionality.
-
 GlicFocusedTabManager::GlicFocusedTabManager(
     Profile* profile,
     GlicWindowController& window_controller)
@@ -158,109 +156,185 @@ void GlicFocusedTabManager::MaybeUpdateFocusedTab(bool force_notify,
 
 void GlicFocusedTabManager::PerformMaybeUpdateFocusedTab(bool force_notify) {
   cached_force_notify_ = false;
-  FocusedTabData new_focused_tab_data = ComputeFocusedTabData();
-  bool focus_same = focused_tab_data_.IsSame(new_focused_tab_data);
-  if (!focus_same) {
-    focused_tab_data_ = new_focused_tab_data;
-
-    // This is sufficient for now because there's currently no way for an
-    // invalid focusable to become valid without changing |WebContents|.
-    Observe(focused_tab_data_.focus());
+  struct FocusedTabState new_focused_tab_state = ComputeFocusedTabState();
+  bool focus_changed = !focused_tab_state_.IsSame(new_focused_tab_state);
+  if (focus_changed) {
+    focused_tab_state_ = new_focused_tab_state;
+    focused_tab_data_ = GetFocusedTabData(new_focused_tab_state);
   }
 
-  if (!focus_same || force_notify) {
+  // If we have one, observe tab candidate. If not, whether that's because there
+  // was never one, or because it's been invalidated, turn off tab candidate
+  // observation.
+  Observe(focused_tab_state_.candidate_tab.get());
+
+  if (focus_changed || force_notify) {
     NotifyFocusedTabChanged();
   }
 }
 
-FocusedTabData GlicFocusedTabManager::ComputeFocusedTabData() {
+struct GlicFocusedTabManager::FocusedTabState
+GlicFocusedTabManager::ComputeFocusedTabState() {
+  struct FocusedTabState focused_tab_state = FocusedTabState();
+
+  BrowserWindowInterface* candidate_browser = ComputeBrowserCandidate();
+  if (candidate_browser) {
+    focused_tab_state.candidate_browser = candidate_browser->GetWeakPtr();
+  }
+  if (!IsBrowserStateValid(candidate_browser)) {
+    return focused_tab_state;
+  }
+
+  focused_tab_state.focused_browser = focused_tab_state.candidate_browser;
+
+  content::WebContents* candidate_tab = ComputeTabCandidate(candidate_browser);
+  if (candidate_tab) {
+    focused_tab_state.candidate_tab = candidate_tab->GetWeakPtr();
+  }
+  if (!IsTabStateValid(candidate_tab)) {
+    return focused_tab_state;
+  }
+
+  focused_tab_state.focused_tab = focused_tab_state.candidate_tab;
+
+  return focused_tab_state;
+}
+
+BrowserWindowInterface* GlicFocusedTabManager::ComputeBrowserCandidate() {
   if (window_controller_->IsAttached()) {
     // When attached, we only allow focus if attached window is active.
     Browser* const attached_browser = window_controller_->attached_browser();
     if (attached_browser &&
-        (attached_browser->IsActive() || window_controller_->IsActive())) {
-      return ComputeFocusableTabDataForBrowser(attached_browser);
+        (attached_browser->IsActive() || window_controller_->IsActive()) &&
+        IsBrowserValid(attached_browser)) {
+      return attached_browser;
     }
-    return {NoFocusedTabData("attached browser window inactive")};
+    return nullptr;
   }
 
   if (window_controller_->IsActive()) {
     Browser* const profile_last_active =
         chrome::FindLastActiveWithProfile(profile_);
-    return ComputeFocusableTabDataForBrowser(profile_last_active);
+    return IsBrowserValid(profile_last_active) ? profile_last_active : nullptr;
   }
 
   Browser* const active_browser = BrowserList::GetInstance()->GetLastActive();
-  if (active_browser && active_browser->IsActive()) {
-    return ComputeFocusableTabDataForBrowser(active_browser);
+  if (active_browser && active_browser->IsActive() &&
+      IsBrowserValid(active_browser)) {
+    return active_browser;
   }
 
-  return {NoFocusedTabData("no active browser window")};
+  return nullptr;
 }
 
-FocusedTabData GlicFocusedTabManager::ComputeFocusableTabDataForBrowser(
-    Browser* browser) {
-  if (!IsBrowserValid(browser) || !IsBrowserStateValid(browser)) {
-    return {NoFocusedTabData("no active browser window")};
+content::WebContents* GlicFocusedTabManager::ComputeTabCandidate(
+    BrowserWindowInterface* browser_interface) {
+  if (IsBrowserValid(browser_interface) &&
+      IsBrowserStateValid(browser_interface)) {
+    content::WebContents* active_contents =
+        browser_interface->GetActiveTabInterface()
+            ? browser_interface->GetActiveTabInterface()->GetContents()
+            : nullptr;
+    if (IsTabValid(active_contents)) {
+      return active_contents;
+    }
   }
-  content::WebContents* web_contents =
-      browser->GetActiveTabInterface()
-          ? browser->GetActiveTabInterface()->GetContents()
-          : nullptr;
 
-  if (!IsValidCandidate(web_contents) || !IsValidFocusable(web_contents)) {
-    return {NoFocusedTabData("no focusable tab available", web_contents)};
-  }
-  return {web_contents->GetWeakPtr()};
+  return nullptr;
 }
 
 void GlicFocusedTabManager::NotifyFocusedTabChanged() {
   focused_callback_list_.Notify(GetFocusedTabData());
 }
 
-bool GlicFocusedTabManager::IsBrowserValid(Browser* browser) {
-  if (!browser) {
+bool GlicFocusedTabManager::IsBrowserValid(
+    BrowserWindowInterface* browser_interface) {
+  if (!browser_interface) {
     return false;
   }
 
-  if (browser->GetProfile() != profile_) {
+  if (browser_interface->GetProfile() != profile_) {
     return false;
   }
 
-  if (browser->GetProfile()->IsOffTheRecord()) {
-    return false;
-  }
-
-  return true;
-}
-
-bool GlicFocusedTabManager::IsBrowserStateValid(Browser* browser) {
-  if (browser->window()->IsMinimized()) {
+  if (browser_interface->GetProfile()->IsOffTheRecord()) {
     return false;
   }
 
   return true;
 }
 
-bool GlicFocusedTabManager::IsValidCandidate(
-    content::WebContents* web_contents) {
+bool GlicFocusedTabManager::IsBrowserStateValid(
+    BrowserWindowInterface* browser_interface) {
+  if (!browser_interface) {
+    return false;
+  }
+
+  if (browser_interface->IsMinimized()) {
+    return false;
+  }
+
+  return true;
+}
+
+bool GlicFocusedTabManager::IsTabValid(content::WebContents* web_contents) {
   return web_contents != nullptr;
 }
 
-bool GlicFocusedTabManager::IsValidFocusable(
+bool GlicFocusedTabManager::IsTabStateValid(
     content::WebContents* web_contents) {
   if (!web_contents) {
     return false;
   }
+
   auto url =
       const_cast<content::WebContents*>(web_contents)->GetLastCommittedURL();
-  if (url.SchemeIs(content::kChromeDevToolsScheme)) {
-    return false;
+  if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile()) {
+    return true;
   }
-  return true;
+
+  return false;
+}
+
+FocusedTabData GlicFocusedTabManager::GetFocusedTabData(
+    const GlicFocusedTabManager::FocusedTabState& focused_state) {
+  if (focused_state.focused_tab) {
+    return {focused_state.focused_tab};
+  }
+
+  if (focused_state.candidate_tab) {
+    return {NoFocusedTabData("no focusable tab",
+                             focused_state.candidate_tab.get())};
+  }
+
+  if (focused_state.focused_browser) {
+    return {NoFocusedTabData("no focusable tab")};
+  }
+
+  if (focused_state.candidate_browser) {
+    return {NoFocusedTabData("no focusable browser window")};
+  }
+
+  return {NoFocusedTabData("no browser window")};
 }
 
 FocusedTabData GlicFocusedTabManager::GetFocusedTabData() {
   return focused_tab_data_;
+}
+
+GlicFocusedTabManager::FocusedTabState::FocusedTabState() = default;
+GlicFocusedTabManager::FocusedTabState::~FocusedTabState() = default;
+GlicFocusedTabManager::FocusedTabState::FocusedTabState(
+    const GlicFocusedTabManager::FocusedTabState& src) = default;
+GlicFocusedTabManager::FocusedTabState&
+GlicFocusedTabManager::FocusedTabState::operator=(
+    const GlicFocusedTabManager::FocusedTabState& src) = default;
+
+bool GlicFocusedTabManager::FocusedTabState::IsSame(
+    const FocusedTabState& other) const {
+  return IsWeakPtrSame(candidate_browser, other.candidate_browser) &&
+         IsWeakPtrSame(focused_browser, other.focused_browser) &&
+         IsWeakPtrSame(candidate_tab, other.candidate_tab) &&
+         IsWeakPtrSame(focused_tab, other.focused_tab);
 }
 }  // namespace glic

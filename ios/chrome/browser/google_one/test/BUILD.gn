@@ -1,0 +1,39 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("constants") {
+  testonly = true
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "google_one_app_interface.h",
+    "google_one_app_interface.mm",
+    "test_google_one_controller.h",
+    "test_google_one_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/test/app:test_support",
+    "//ios/public/provider/chrome/browser/google_one:google_one_api",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "google_one_app_interface.h",
+    "google_one_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}

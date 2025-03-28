@@ -152,7 +152,7 @@ AesDecryptor::SessionIdDecryptionKeyMap::Find(const std::string& session_id) {
 
 void AesDecryptor::SessionIdDecryptionKeyMap::Erase(
     KeyList::iterator position) {
-  DCHECK(!position->second.empty());
+  CHECK(!position->second.empty(), base::NotFatalUntil::M140);
   key_list_.erase(position);
 }
 
@@ -182,9 +182,9 @@ AesDecryptor::AesDecryptor(
       session_closed_cb_(session_closed_cb),
       session_keys_change_cb_(session_keys_change_cb) {
   DVLOG(1) << __func__;
-  DCHECK(session_message_cb_);
-  DCHECK(session_closed_cb_);
-  DCHECK(session_keys_change_cb_);
+  CHECK(session_message_cb_, base::NotFatalUntil::M140);
+  CHECK(session_closed_cb_, base::NotFatalUntil::M140);
+  CHECK(session_keys_change_cb_, base::NotFatalUntil::M140);
 }
 
 AesDecryptor::~AesDecryptor() {
@@ -199,6 +199,13 @@ void AesDecryptor::SetServerCertificate(
                   "SetServerCertificate() is not supported.");
 }
 
+void AesDecryptor::GetStatusForPolicy(
+    HdcpVersion min_hdcp_version,
+    std::unique_ptr<KeyStatusCdmPromise> promise) {
+  // For ClearKey, return Usable for all HDCP levels.
+  promise->resolve(CdmKeyInformation::KeyStatus::USABLE);
+}
+
 void AesDecryptor::CreateSessionAndGenerateRequest(
     CdmSessionType session_type,
     EmeInitDataType init_data_type,
@@ -206,7 +213,8 @@ void AesDecryptor::CreateSessionAndGenerateRequest(
     std::unique_ptr<NewSessionCdmPromise> promise) {
   std::string session_id = GenerateSessionId();
   bool session_added = CreateSession(session_id, session_type);
-  DCHECK(session_added) << "Failed to add new session " << session_id;
+  CHECK(session_added, base::NotFatalUntil::M140)
+      << "Failed to add new session " << session_id;
 
   std::vector<uint8_t> message;
   std::vector<std::vector<uint8_t>> keys;

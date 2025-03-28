@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/signin/signin_util_win.h"
+
 #include <stddef.h>
+
+#include <memory>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -20,9 +24,11 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_util_win.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/startup/first_run_service.h"
+#include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
@@ -31,17 +37,22 @@
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 
 class SigninUIError;
 
 namespace {
 
+// Automatically accepts enterprise confirmation screens and turns sync on.
 class TestTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
   ~TestTurnSyncOnHelperDelegate() override = default;
 
@@ -195,21 +206,19 @@ class BrowserTestHelper {
   std::string refresh_token_;
 };
 
-class SigninUtilWinBrowserTest
-    : public BrowserTestHelper,
-      public InProcessBrowserTest,
-      public testing::WithParamInterface<SigninUtilWinBrowserTestParams> {
+class SigninUtilWinBrowserTestBase : public BrowserTestHelper,
+                                     public InProcessBrowserTest {
  public:
-  SigninUtilWinBrowserTest()
-      : BrowserTestHelper(GetParam().gaia_id,
-                          GetParam().email,
-                          GetParam().refresh_token) {}
+  explicit SigninUtilWinBrowserTestBase(SigninUtilWinBrowserTestParams params)
+      : BrowserTestHelper(params.gaia_id, params.email, params.refresh_token),
+        params_(params) {}
+
+  const SigninUtilWinBrowserTestParams& GetTestParam() { return params_; }
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(GetParam().is_first_run
-                                   ? switches::kForceFirstRun
-                                   : switches::kNoFirstRun);
+    command_line->AppendSwitch(params_.is_first_run ? switches::kForceFirstRun
+                                                    : switches::kNoFirstRun);
   }
 
   bool SetUpUserDataDirectory() override {
@@ -226,9 +235,20 @@ class SigninUtilWinBrowserTest
 
  private:
   registry_util::RegistryOverrideManager registry_override_;
+
+  SigninUtilWinBrowserTestParams params_;
 };
 
-IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, Run) {
+// `GetTestParam()` and `GetParam()` are equivalent in this test suite.
+class SigninUtilWinBrowserTestWithParams
+    : public SigninUtilWinBrowserTestBase,
+      public testing::WithParamInterface<SigninUtilWinBrowserTestParams> {
+ public:
+  SigninUtilWinBrowserTestWithParams()
+      : SigninUtilWinBrowserTestBase(GetParam()) {}
+};
+
+IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTestWithParams, Run) {
   ASSERT_EQ(GetParam().is_first_run, first_run::IsChromeFirstRun());
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -244,11 +264,12 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, Run) {
 
   // If a refresh token was specified and a sign in attempt was expected, make
   // sure the refresh token was removed from the registry.
-  if (!GetParam().refresh_token.empty() && GetParam().expect_is_started)
+  if (!GetParam().refresh_token.empty() && GetParam().expect_is_started) {
     ExpectRefreshTokenExists(false);
+  }
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, ReauthNoop) {
+IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTestWithParams, ReauthNoop) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
 
@@ -259,7 +280,8 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, ReauthNoop) {
   ASSERT_FALSE(signin_util::ReauthWithCredentialProviderIfPossible(profile));
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, NoReauthAfterSignout) {
+IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTestWithParams,
+                       NoReauthAfterSignout) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
 
@@ -285,7 +307,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, NoReauthAfterSignout) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, FixReauth) {
+IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTestWithParams, FixReauth) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
@@ -315,7 +337,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, FixReauth) {
 }
 
 INSTANTIATE_TEST_SUITE_P(SigninUtilWinBrowserTest1,
-                         SigninUtilWinBrowserTest,
+                         SigninUtilWinBrowserTestWithParams,
                          testing::Values(SigninUtilWinBrowserTestParams(
                              /*is_first_run=*/false,
                              /*gaia_id=*/std::wstring(),
@@ -324,7 +346,7 @@ INSTANTIATE_TEST_SUITE_P(SigninUtilWinBrowserTest1,
                              /*expect_is_started=*/false)));
 
 INSTANTIATE_TEST_SUITE_P(SigninUtilWinBrowserTest2,
-                         SigninUtilWinBrowserTest,
+                         SigninUtilWinBrowserTestWithParams,
                          testing::Values(SigninUtilWinBrowserTestParams(
                              /*is_first_run=*/true,
                              /*gaia_id=*/std::wstring(),
@@ -333,7 +355,7 @@ INSTANTIATE_TEST_SUITE_P(SigninUtilWinBrowserTest2,
                              /*expect_is_started=*/false)));
 
 INSTANTIATE_TEST_SUITE_P(SigninUtilWinBrowserTest3,
-                         SigninUtilWinBrowserTest,
+                         SigninUtilWinBrowserTestWithParams,
                          testing::Values(SigninUtilWinBrowserTestParams(
                              /*is_first_run=*/true,
                              /*gaia_id=*/L"gaia-123456",
@@ -342,7 +364,7 @@ INSTANTIATE_TEST_SUITE_P(SigninUtilWinBrowserTest3,
                              /*expect_is_started=*/false)));
 
 INSTANTIATE_TEST_SUITE_P(SigninUtilWinBrowserTest4,
-                         SigninUtilWinBrowserTest,
+                         SigninUtilWinBrowserTestWithParams,
                          testing::Values(SigninUtilWinBrowserTestParams(
                              /*is_first_run=*/true,
                              /*gaia_id=*/L"gaia-123456",
@@ -351,7 +373,7 @@ INSTANTIATE_TEST_SUITE_P(SigninUtilWinBrowserTest4,
                              /*expect_is_started=*/false)));
 
 INSTANTIATE_TEST_SUITE_P(SigninUtilWinBrowserTest5,
-                         SigninUtilWinBrowserTest,
+                         SigninUtilWinBrowserTestWithParams,
                          testing::Values(SigninUtilWinBrowserTestParams(
                              /*is_first_run=*/true,
                              /*gaia_id=*/L"gaia-123456",
@@ -360,13 +382,143 @@ INSTANTIATE_TEST_SUITE_P(SigninUtilWinBrowserTest5,
                              /*expect_is_started=*/true)));
 
 INSTANTIATE_TEST_SUITE_P(SigninUtilWinBrowserTest6,
-                         SigninUtilWinBrowserTest,
+                         SigninUtilWinBrowserTestWithParams,
                          testing::Values(SigninUtilWinBrowserTestParams(
                              /*is_first_run=*/false,
                              /*gaia_id=*/L"gaia-123456",
                              /*email=*/L"foo@gmail.com",
                              /*refresh_token=*/"lst-123456",
                              /*expect_is_started=*/true)));
+
+// The test suite prepares a setup that is closer to the production setup when
+// running GCPW. It also allows to control the different steps triggers, so we
+// can properly check the states in between.
+//
+// More specifically in FRE, the test suite ensures this order of events:
+// - Test setup with FRE mode and without attempting to create an explicit
+// browser. GCPW logic to retrieve the tokens from the registry runs before
+// attempting to open a browser. Relies on test keep alives to keep the browser
+// process alive.
+// - Enforces the creation of the `FirstRunService` on profile creation - which
+// test setup does not ensure automatically.
+// - Profile is created and reads the account information from the registry.
+// - Check the state before opening first browser (that will attempt to run the
+// FRE)
+// - Can attempt to open the first browser simulating the remainder of flow in
+// the test description.
+//
+// TODO(crbug.com/396696524): Investigate if there is a need to migrate all
+// tests in this file that expects to run with FRE mode in order to support the
+// proper flow setup. The other setups create an initial browser, do not enforce
+// the FRE properly and shows the sync dialog (that signs the user indireclty)
+// in the existing browser and accepts sync by default.
+class SigninUtilWinNoStartingWindowBrowserTest
+    : public SigninUtilWinBrowserTestBase {
+ public:
+  SigninUtilWinNoStartingWindowBrowserTest()
+      : SigninUtilWinBrowserTestBase(SigninUtilWinBrowserTestParams(
+            /*is_first_run=*/true,
+            /*gaia_id=*/L"gaia-123456",
+            /*email=*/L"foo@gmail.com",
+            /*refresh_token=*/"lst-123456",
+            /*expect_is_started=*/true)),
+        keep_alive_(std::make_unique<ScopedKeepAlive>(
+            KeepAliveOrigin::BROWSER,
+            KeepAliveRestartOption::DISABLED)) {}
+
+  bool IsFirstRunFinished() {
+    return g_browser_process->local_state()->GetBoolean(
+        prefs::kFirstRunFinished);
+  }
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SigninUtilWinBrowserTestBase::SetUpCommandLine(command_line);
+    // No startup windows allows to properly simulate the GCPW FRE flow.
+    command_line->AppendSwitch(switches::kNoStartupWindow);
+  }
+
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    SigninUtilWinBrowserTestBase::SetUpDefaultCommandLine(command_line);
+    // Remove this default switch to ensure the FRE is attempted properly.
+    command_line->RemoveSwitch(switches::kNoFirstRun);
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    // By default the service is not created. Enforce it here before attempting
+    // to open a browser.
+    FirstRunServiceFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindRepeating([](content::BrowserContext* browser_context)
+                                -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(browser_context);
+          return std::make_unique<FirstRunService>(
+              *profile, *IdentityManagerFactory::GetForProfile(profile));
+        }));
+  }
+
+ private:
+  // Keeps the browser process running while browsers are closed.
+  std::unique_ptr<ScopedKeepAlive> keep_alive_;
+};
+
+// This test is similar to
+// `SigninUtilWinBrowserTest5/SigninUtilWinBrowserTestWithParams.Run` as it runs
+// the GCPW flow from FRE with final expectations on being signed in, but has a
+// different initial setup which is more aligned with to the production setup
+// for the GCPW flow. Along with the test suite setup, it actually tests the
+// basic GCPW FRE flow with a proper token set in the registry.
+IN_PROC_BROWSER_TEST_F(SigninUtilWinNoStartingWindowBrowserTest,
+                       FRESigninFlow) {
+  // First run and no browser is active yet.
+  ASSERT_TRUE(first_run::IsChromeFirstRun());
+  ASSERT_TRUE(BrowserList::GetInstance()->empty());
+  ASSERT_FALSE(g_browser_process->IsShuttingDown());
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
+
+  Profile* profile = profile_manager->GetLastUsedProfile();
+  ASSERT_EQ(ProfileManager::GetInitialProfileDir(), profile->GetBaseName());
+  ASSERT_EQ(nullptr, chrome::FindLastActiveWithProfile(profile));
+
+  // FRE completion is not set yet since no attempt to open a browser was done
+  // yet.
+  ASSERT_FALSE(IsFirstRunFinished());
+  // Make sure the service exists for a complete test.
+  ASSERT_TRUE(FirstRunServiceFactory::GetForBrowserContext(profile));
+
+  // User is expected to be signed in.
+  AssertSigninStarted(true, profile);
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  EXPECT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // Attempt to run the first browser through the startup flow; simulating
+  // opening the first browser after GCPW was done processing the refresh token
+  // set in the registry. This call is synchronous.
+  profiles::FindOrCreateNewWindowForProfile(
+      profile, chrome::startup::IsProcessStartup::kYes,
+      chrome::startup::IsFirstRun::kYes, /*always_create=*/true);
+  Browser* first_browser = chrome::FindLastActiveWithProfile(profile);
+  EXPECT_TRUE(first_browser);
+
+  // FRE should be marked as completed because it was bypassed by the already
+  // signed in profile without the user seeing the FRE screens.
+  EXPECT_FALSE(ProfilePicker::IsFirstRunOpen());
+  EXPECT_TRUE(IsFirstRunFinished());
+
+  // Refresh token are expected to be consumed.
+  ExpectRefreshTokenExists(false);
+
+  // User is still signed in.
+  EXPECT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // Cleanup browsers created as part of the flow explicitly.
+  CloseAllBrowsers();
+}
 
 struct ExistingWinBrowserSigninUtilTestParams : SigninUtilWinBrowserTestParams {
   ExistingWinBrowserSigninUtilTestParams(

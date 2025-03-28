@@ -2327,7 +2327,9 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       media_device_id_salt_base_(CreateRandomMediaDeviceIDSalt()),
       document_associated_data_(std::in_place, *this, document_token),
       lifecycle_state_(lifecycle_state),
-      cookie_observers_(*this),
+      cookie_observers_(
+          base::BindRepeating(&RenderFrameHostImpl::NotifyCookiesAccessed,
+                              base::Unretained(this))),
       code_cache_host_receivers_(
           GetProcess()->GetStoragePartition()->GetGeneratedCodeCacheContext()),
       fenced_frame_status_(fenced_frame_status),
@@ -17965,30 +17967,6 @@ void RenderFrameHostImpl::CreateMdnsResponder(
       std::move(receiver));
 }
 #endif  // BUILDFLAG(ENABLE_MDNS)
-
-RenderFrameHostImpl::CookieAccessObservers::CookieAccessObservers(
-    RenderFrameHostImpl& parent)
-    : parent_(parent) {}
-
-RenderFrameHostImpl::CookieAccessObservers::~CookieAccessObservers() = default;
-
-void RenderFrameHostImpl::CookieAccessObservers::Add(
-    mojo::PendingReceiver<network::mojom::CookieAccessObserver> receiver,
-    CookieAccessDetails::Source source) {
-  cookie_observer_set_.Add(this, std::move(receiver), source);
-}
-
-void RenderFrameHostImpl::CookieAccessObservers::OnCookiesAccessed(
-    std::vector<network::mojom::CookieAccessDetailsPtr> details_vector) {
-  parent_->NotifyCookiesAccessed(std::move(details_vector),
-                                 cookie_observer_set_.current_context());
-}
-
-void RenderFrameHostImpl::CookieAccessObservers::Clone(
-    mojo::PendingReceiver<network::mojom::CookieAccessObserver> observer) {
-  cookie_observer_set_.Add(this, std::move(observer),
-                           cookie_observer_set_.current_context());
-}
 
 void RenderFrameHostImpl::Clone(
     mojo::PendingReceiver<network::mojom::TrustTokenAccessObserver> observer) {

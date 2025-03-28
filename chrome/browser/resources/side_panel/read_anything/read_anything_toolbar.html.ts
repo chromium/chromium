@@ -15,7 +15,8 @@ export function getHtml(this: ReadAnythingToolbarElement) {
     @reset-toolbar="${this.onResetToolbar_}"
     @toolbar-overflow="${this.onToolbarOverflow_}">
   ${this.isReadAloudEnabled_ ? html`
-    <span id="audio-controls" class="audio-background-when-active-${this.isSpeechActive}">
+    <span id="audio-controls"
+        class="audio-background-when-active-${this.isSpeechActive}">
       <span ?hidden="${this.hideSpinner_}">
         <picture class="spinner toolbar-button audio-controls">
           <source media="(prefers-color-scheme: dark)"
@@ -34,7 +35,8 @@ export function getHtml(this: ReadAnythingToolbarElement) {
           tabindex="0"
           @click="${this.onPlayPauseClick_}">
       </cr-icon-button>
-      <span id="granularity-container" ?hidden="${!this.isSpeechActive}">
+      <span id="granularity-container"
+          class="granularity-container-when-active-${this.isSpeechActive}">
         <cr-icon-button id="previousGranularity"
             class="toolbar-button audio-controls"
             ?disabled="${!this.isReadAloudPlayable}"

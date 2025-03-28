@@ -205,6 +205,10 @@ class FullscreenModel : public ChromeBroadcastObserverInterface,
     return fullscreen_scroll_direction_;
   }
 
+  // Sets the last scroll direction. If the direction has changed, the base
+  // offset is updated.
+  void SetLastScrollDirection(FullscreenModelScrollDirection direction);
+
   // Helper for updating `progress_` accordingly to `distance_offset_`.
   CGFloat UpdateProgressHelper(CGFloat progress_shift,
                                CGFloat delta,

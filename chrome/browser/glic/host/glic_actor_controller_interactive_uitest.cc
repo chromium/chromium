@@ -7,6 +7,7 @@
 
 #include "base/base64.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
@@ -25,18 +26,11 @@ namespace {
 using optimization_guide::proto::BrowserAction;
 using optimization_guide::proto::ClickAction;
 
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTabId);
+// TODO(https://crbug.com/402086021): Get the actual target details for the
+// button in the test page.
+constexpr int32_t kContentNodeId = 123;
 
-BrowserAction GetClickButtonAction() {
-  BrowserAction action;
-  ClickAction* click = action.add_action_information()->mutable_click();
-  // TODO(https://crbug.com/402086021): Get the actual target details for the
-  // button in the test page.
-  click->mutable_target()->set_content_node_id(123);
-  click->set_click_type(ClickAction::LEFT);
-  click->set_click_count(ClickAction::SINGLE);
-  return action;
-}
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTabId);
 
 class GlicActorControllerUiTest : public test::InteractiveGlicTest {
  public:
@@ -131,8 +125,11 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionSucceeds) {
-  std::string encodedProto = EncodeActionProto(GetClickButtonAction());
+// TODO(https://crbug.com/402086021): Enable test after using real nodeId in
+// proto.
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, DISABLED_ActionSucceeds) {
+  std::string encodedProto =
+      EncodeActionProto(actor::MakeClick(kContentNodeId));
   RunTestSequence(InstrumentTab(kActiveTabId),
                   NavigateWebContents(kActiveTabId,
                                       embedded_test_server()->GetURL(
@@ -161,7 +158,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionProtoInvalid) {
 // calling to do the action.
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
                        DISABLED_ActionTargetNotFound) {
-  std::string encodedProto = EncodeActionProto(GetClickButtonAction());
+  std::string encodedProto =
+      EncodeActionProto(actor::MakeClick(kContentNodeId));
   RunTestSequence(
       InstrumentTab(kActiveTabId),
       NavigateWebContents(

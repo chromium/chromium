@@ -254,6 +254,7 @@ public class DragAndDropLauncherActivityUnitTest {
                         tabIdsToUrls,
                         /* tabGroupColor= */ 0,
                         tabGroupTitle,
+                        /* mhtmlTabTitle= */ null,
                         /* tabGroupCollapsed= */ false,
                         /* isGroupShared= */ false,
                         /* isIncognito= */ false);

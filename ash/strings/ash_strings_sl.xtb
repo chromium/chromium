@@ -91,6 +91,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1269405891096105529">Dodatna oprema v načinu za goste ni podprta.</translation>
 <translation id="1270290102613614947">Zaslonska tipkovnica onemogočena</translation>
 <translation id="1272079795634619415">Ustavi</translation>
+<translation id="12741168609094094">Izberite kar koli na zaslonu, če želite iskati, kopirati besedilo in drugo</translation>
 <translation id="1275285675049378717">Napajanje naprave <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Izbrano</translation>
 <translation id="1276975447697633661">Izberite datoteko, nato pritisnite <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1720230731642245863">Dostopna točka je izklopljena</translation>
 <translation id="1731815243805539470">Preklop na prejšnjega uporabnika</translation>
 <translation id="1733996486177697563">Preklopite med temno in svetlo temo. Pridržite namizje in izberite Zaslonsko ozadje in slog.</translation>
+<translation id="1735992454301033090">Izbrano območje, uporabite puščične tipke za premikanje</translation>
 <translation id="1736898441010944794">Naprava »<ph name="NAME" />« je vidna napravam Bluetooth.</translation>
 <translation id="1737078180382804488">Opustitev nastavitve ogleda obvestil telefona</translation>
 <translation id="174102739345480129">Označevalnik je izklopljen.</translation>
@@ -494,6 +496,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> prejšnji teden</translation>
 <translation id="2687510499067466116">Bližnjična tipka je spremenjena</translation>
 <translation id="2689613560355655046">Namizje 8</translation>
+<translation id="2692092709110488417">Pritisnite tabulatorko, če se želite osredotočiti na izbrano območje in ga premakniti</translation>
 <translation id="2695305337569143674">splet</translation>
 <translation id="2697697418792422688">Prikaz nastavitev tipkovnice. Izbrana je ta tipkovnica: <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Uporabite aplikacijo za prenos vsebine, če želite podatke iz šolskega računa premakniti v osebni račun</translation>
@@ -1033,6 +1036,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4412698727486357573">Center za pomoč</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> je izklopljena.</translation>
 <translation id="4417647906073317561">Nastavitve Osredotočenosti. Nastavite časovnik, opravilo in glasbo za boljšo koncentracijo.</translation>
+<translation id="4418600384772451109">Zapiranje podokna</translation>
 <translation id="4424159417645388645">Namizje 5</translation>
 <translation id="4426817706804363424">Bravo!</translation>
 <translation id="4430019312045809116">Glasnost</translation>
@@ -2229,6 +2233,7 @@ Nova namestitev</translation>
 <translation id="8287009018010202411">Storilnost</translation>
 <translation id="828708037801473432">Izklopljeno</translation>
 <translation id="8297006494302853456">Šibek</translation>
+<translation id="8300451473979404345">Izbrana ročica, uporabite puščične tipke za premikanje</translation>
 <translation id="8308637677604853869">Prejšnji meni</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Tipka Caps Lock je vklopljena</translation>
@@ -2289,6 +2294,7 @@ Nova namestitev</translation>
 <translation id="851458219935658693">Prikaz oken na trenutnem namizju, izbran je izbirni gumb</translation>
 <translation id="851660987304951246">Uporabite funkcijo Pomagaj mi brati za hiter povzetek vsebine ali postavljanje vprašanj</translation>
 <translation id="8517041960877371778">Akumulator naprave <ph name="DEVICE_TYPE" /> se morda ne bo polnil, medtem ko je naprava vklopljena.</translation>
+<translation id="8519329096920173967">Iskanje po zaslonu z Googlom Lens</translation>
 <translation id="8535393432370007982">Razveljavi način razvrščanja po barvi</translation>
 <translation id="8536886494750559755">Prikaz nastavitev Hitrega deljenja. Vidno vsem <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">Besedilo je kopirano v odložišče</translation>

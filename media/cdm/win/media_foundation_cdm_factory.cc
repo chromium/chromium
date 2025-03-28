@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -52,7 +53,8 @@ MediaFoundationCdmFactory::~MediaFoundationCdmFactory() = default;
 void MediaFoundationCdmFactory::SetCreateCdmFactoryCallbackForTesting(
     const std::string& key_system,
     CreateCdmFactoryCB create_cdm_factory_cb) {
-  DCHECK(!create_cdm_factory_cbs_for_testing_.count(key_system));
+  CHECK(!create_cdm_factory_cbs_for_testing_.count(key_system),
+        base::NotFatalUntil::M140);
   create_cdm_factory_cbs_for_testing_[key_system] =
       std::move(create_cdm_factory_cb);
 }
@@ -69,8 +71,8 @@ void MediaFoundationCdmFactory::Create(
   // IMFContentDecryptionModule CDMs typically require persistent storage and
   // distinctive identifier and this should be guaranteed by key system support
   // code. Update this if there are new CDMs that doesn't require these.
-  DCHECK(cdm_config.allow_persistent_state);
-  DCHECK(cdm_config.allow_distinctive_identifier);
+  CHECK(cdm_config.allow_persistent_state, base::NotFatalUntil::M140);
+  CHECK(cdm_config.allow_distinctive_identifier, base::NotFatalUntil::M140);
 
   // Don't cache `cdm_origin_id` in this class since user can clear it any time.
   helper_->GetMediaFoundationCdmData(
@@ -152,7 +154,7 @@ HRESULT MediaFoundationCdmFactory::GetCdmFactory(
   auto itr = create_cdm_factory_cbs_for_testing_.find(key_system);
   if (itr != create_cdm_factory_cbs_for_testing_.end()) {
     auto& create_cdm_factory_cb = itr->second;
-    DCHECK(create_cdm_factory_cb);
+    CHECK(create_cdm_factory_cb, base::NotFatalUntil::M140);
     RETURN_IF_FAILED(create_cdm_factory_cb.Run(cdm_factory));
     return S_OK;
   }

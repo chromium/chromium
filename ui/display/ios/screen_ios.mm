@@ -12,6 +12,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_features.h"
 #include "ui/display/screen_base.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace display {
@@ -82,13 +83,36 @@ class ScreenIos : public ScreenBase, public ScreenNotification {
       return;
     }
 
-    Display display(0, gfx::Rect(screen.bounds));
+    const int64_t display_id = 0;
+    Display display(display_id, gfx::Rect(screen.bounds));
     CGFloat scale = [screen scale];
 
     if (Display::HasForceDeviceScaleFactor()) {
       scale = Display::GetForcedDeviceScaleFactor();
     }
     display.set_device_scale_factor(scale);
+    Display::Rotation rotation = Display::ROTATE_0;
+    switch (UIDevice.currentDevice.orientation) {
+      case UIDeviceOrientationPortrait:
+      case UIDeviceOrientationFaceUp:
+      case UIDeviceOrientationFaceDown:
+      case UIDeviceOrientationUnknown:
+        rotation = Display::ROTATE_0;
+        break;
+      case UIDeviceOrientationPortraitUpsideDown:
+        rotation = Display::ROTATE_180;
+        break;
+      case UIDeviceOrientationLandscapeLeft:
+        rotation = Display::ROTATE_90;
+        break;
+      case UIDeviceOrientationLandscapeRight:
+        rotation = Display::ROTATE_270;
+        break;
+    }
+    display.set_rotation(rotation);
+    display.set_touch_support(Display::TouchSupport::AVAILABLE);
+    display.set_accelerometer_support(Display::AccelerometerSupport::AVAILABLE);
+    AddInternalDisplayId(display_id);
     ProcessDisplayChanged(display, true /* is_primary */);
   }
 

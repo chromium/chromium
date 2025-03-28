@@ -45,7 +45,7 @@ class MockAccountSelectionView : public AccountSelectionView {
   MOCK_METHOD(
       bool,
       Show,
-      (const std::string& rp_for_display,
+      (const content::RelyingPartyData& rp_data,
        const std::vector<IdentityProviderDataPtr>& identity_provider_data,
        const std::vector<IdentityRequestAccountPtr>& accounts,
        Account::SignInMode sign_in_mode,
@@ -246,7 +246,7 @@ TEST_F(IdentityDialogControllerTest, OnAccountSelectedButtonCallsDismiss) {
 
   // Show button mode accounts dialog.
   controller.ShowAccountsDialog(
-      kTopFrameEtldPlusOne, {idp_data}, accounts,
+      content::RelyingPartyData(kTopFrameEtldPlusOne), {idp_data}, accounts,
       content::IdentityRequestAccount::SignInMode::kExplicit,
       blink::mojom::RpMode::kActive,
       /*new_accounts=*/std::vector<IdentityRequestAccountPtr>(),
@@ -277,7 +277,7 @@ TEST_F(IdentityDialogControllerTest, OnAccountSelectedWidgetResetsDismiss) {
 
   // Show widget mode accounts dialog.
   controller.ShowAccountsDialog(
-      kTopFrameEtldPlusOne, {idp_data}, accounts,
+      content::RelyingPartyData(kTopFrameEtldPlusOne), {idp_data}, accounts,
       content::IdentityRequestAccount::SignInMode::kExplicit,
       blink::mojom::RpMode::kPassive,
       /*new_accounts=*/std::vector<IdentityRequestAccountPtr>(),
@@ -300,7 +300,7 @@ TEST_F(IdentityDialogControllerTest, NoTabDoesNotCrash) {
 
   // Show button mode accounts dialog.
   EXPECT_FALSE(controller.ShowAccountsDialog(
-      kTopFrameEtldPlusOne, {idp_data}, accounts,
+      content::RelyingPartyData(kTopFrameEtldPlusOne), {idp_data}, accounts,
       content::IdentityRequestAccount::SignInMode::kExplicit,
       blink::mojom::RpMode::kActive,
       /*new_accounts=*/std::vector<IdentityRequestAccountPtr>(),

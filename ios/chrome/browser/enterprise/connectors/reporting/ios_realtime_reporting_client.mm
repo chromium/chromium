@@ -70,6 +70,11 @@ void IOSRealtimeReportingClient::SetProfileCloudPolicyClientForTesting(
   }
 }
 
+void IOSRealtimeReportingClient::SetIdentityManagerForTesting(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_ = identity_manager;
+}
+
 std::pair<std::string, policy::CloudPolicyClient*>
 IOSRealtimeReportingClient::InitProfileReportingClient(
     const std::string& dm_token) {

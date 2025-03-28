@@ -5,15 +5,21 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_MOST_VISITED_SITES_PROVIDER_H_
 #define COMPONENTS_OMNIBOX_BROWSER_MOST_VISITED_SITES_PROVIDER_H_
 
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/autocomplete_provider_debouncer.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "ui/base/device_form_factor.h"
+
+using QueryMostVisitedURLsCallback =
+    base::OnceCallback<void(history::MostVisitedURLList)>;
 
 // Autocomplete provider serving Most Visited Sites in zero-prefix context.
 // Serves most frequently visited URLs in a form of either individual- or
@@ -23,6 +29,8 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
   MostVisitedSitesProvider(AutocompleteProviderClient* client,
                            AutocompleteProviderListener* listener);
 
+  // AutocompleteProvider:
+  void StartPrefetch(const AutocompleteInput& input) override;
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
   void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
   void DeleteMatch(const AutocompleteMatch& match) override;
@@ -35,6 +43,10 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest, NoSRPCoverage);
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
                            DesktopProviderDoesNotAllowChromeSites);
+  FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
+                           PrefetchingUpdatesCachedSites);
+  FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
+                           StartDoesNotUpdateMatchesWhenPrefetchEnabled);
 
   ~MostVisitedSitesProvider() override;
 
@@ -58,8 +70,24 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
 
   void BlockURL(const GURL& site_url);
 
+  // Calls HistoryService's QueryMostVisitedURLs().
+  // Called in `StartPrefetch()` and in `Start()` by the debouncer.
+  void RequestSitesFromHistoryService(const AutocompleteInput& input);
+
+  // Updates the list of cached sites.
+  void UpdateCachedSites(history::MostVisitedURLList sites);
+
   // Task tracker for querying the most visited URLs from HistoryService.
   base::CancelableTaskTracker cancelable_task_tracker_;
+
+  // Debouncer used to throttle the frequency of calls to HistoryService's
+  // `QueryMostVisitedURLs()`.
+  std::unique_ptr<AutocompleteProviderDebouncer> debouncer_;
+
+  // `cached_sites_` stores both the prefetched sites as well as sites returned
+  // returned from subsequent queries to the history service when prefetching
+  // is enabled.
+  history::MostVisitedURLList cached_sites_;
 
   const ui::DeviceFormFactor device_form_factor_;
   const raw_ptr<AutocompleteProviderClient, DanglingUntriaged> client_;

@@ -83,6 +83,7 @@ export class AppElement extends AppElementBase {
       footerEnabled_: {type: Boolean},
       wallpaperSearchEnabled_: {type: Boolean},
       isSourceTabFirstPartyNtp_: {type: Boolean},
+      showEditTheme_: {type: Boolean},
     };
   }
 
@@ -105,8 +106,10 @@ export class AppElement extends AppElementBase {
   protected wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
   protected isSourceTabFirstPartyNtp_: boolean = true;
+  protected showEditTheme_: boolean = true;
   private scrollToSectionListenerId_: number|null = null;
   private attachedTabStateUpdatedId_: number|null = null;
+  private setThemeEditableId_: number|null = null;
   private pageHandler_: CustomizeChromePageHandlerInterface =
       CustomizeChromeApiProxy.getInstance().handler;
 
@@ -155,6 +158,12 @@ export class AppElement extends AppElementBase {
                 });
     this.pageHandler_.updateAttachedTabState();
 
+    this.setThemeEditableId_ = CustomizeChromeApiProxy.getInstance()
+                                   .callbackRouter.setThemeEditable.addListener(
+                                       (isThemeEditable: boolean) => {
+                                         this.showEditTheme_ = isThemeEditable;
+                                       });
+
     // We wait for load because `scrollIntoView` above requires the page to be
     // laid out.
     window.addEventListener('load', () => {
@@ -191,6 +200,10 @@ export class AppElement extends AppElementBase {
     assert(this.attachedTabStateUpdatedId_);
     CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
         this.attachedTabStateUpdatedId_);
+
+    assert(this.setThemeEditableId_);
+    CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
+        this.setThemeEditableId_);
   }
 
   protected async onBackClick_() {

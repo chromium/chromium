@@ -29,6 +29,9 @@ WorkerOrWorkletDevToolsAgentHost::WorkerOrWorkletDevToolsAgentHost(
       name_(name),
       destroyed_callback_(std::move(destroyed_callback)) {
   DCHECK(!devtools_worker_token.is_empty());
+  if (auto* rph = RenderProcessHost::FromID(process_id)) {
+    process_observation_.Observe(rph);
+  }
   AddRef();  // Self keep-alive while the worker agent is alive.
 }
 
@@ -97,6 +100,13 @@ void WorkerOrWorkletDevToolsAgentHost::Reload() {}
 
 bool WorkerOrWorkletDevToolsAgentHost::Close() {
   return false;
+}
+
+void WorkerOrWorkletDevToolsAgentHost::RenderProcessHostDestroyed(
+    RenderProcessHost* host) {
+  GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
+                                    ChildProcessHost::kInvalidUniqueID);
+  process_observation_.Reset();
 }
 
 }  // namespace content

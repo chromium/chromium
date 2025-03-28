@@ -9,10 +9,10 @@
 #include "ash/constants/devicetype.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
@@ -145,8 +145,9 @@ AssistantAllowedState IsAssistantAllowedForProfile(const Profile* profile) {
   if (profile->IsOffTheRecord())
     return AssistantAllowedState::DISALLOWED_BY_INCOGNITO;
 
-  if (ash::DemoSession::IsDeviceInDemoMode())
+  if (ash::demo_mode::IsDeviceInDemoMode()) {
     return AssistantAllowedState::DISALLOWED_BY_DEMO_MODE;
+  }
 
   if (!IsAssistantAllowedForUserType(profile))
     return GetErrorForUserType(profile);

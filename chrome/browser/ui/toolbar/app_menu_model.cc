@@ -142,6 +142,12 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/menus/simple_menu_model.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#endif
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_CHROMEOS)
 #include "base/feature_list.h"
 #endif
@@ -894,7 +900,8 @@ void ToolsMenuModel::Build(Browser* browser) {
     if (features::HasTabSearchToolbarButton()) {
       // TODO(crbug.com/404319632): Update with proper icon
       AddItemWithStringIdAndVectorIcon(this, IDC_TAB_SEARCH,
-                                       IDS_TAB_SEARCH_MENU, kSearchMenuIcon);
+                                       IDS_TAB_SEARCH_MENU,
+                                       vector_icons::kExpandMoreIcon);
     }
 
     if (base::FeatureList::IsEnabled(features::kTabOrganizationAppMenuItem) &&
@@ -1235,6 +1242,15 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_PRINT);
       break;
+#if BUILDFLAG(ENABLE_GLIC)
+    case IDC_OPEN_GLIC:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.OpenGlic",
+                                      delta);
+      }
+      LogMenuAction(MENU_ACTION_OPEN_GLIC);
+      break;
+#endif
 
     case IDC_SHOW_TRANSLATE:
       if (!uma_action_recorded_) {
@@ -1908,6 +1924,15 @@ void AppMenuModel::Build() {
   AddSeparator(ui::NORMAL_SEPARATOR);
 
   AddItemWithStringIdAndVectorIcon(this, IDC_PRINT, IDS_PRINT, kPrintMenuIcon);
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic::GlicEnabling::IsProfileEligible(browser_->profile())) {
+    AddItemWithStringIdAndVectorIcon(this, IDC_OPEN_GLIC,
+                                     IDS_GLIC_THREE_DOT_MENU_ITEM,
+                                     glic::GlicVectorIconManager::GetVectorIcon(
+                                         IDR_GLIC_BUTTON_VECTOR_ICON));
+  }
+#endif
 
   if (browser()
           ->GetFeatures()

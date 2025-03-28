@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">ભાષા સેટિંગ બતાવો</translation>
 <translation id="1459693405370120464">હવામાન</translation>
 <translation id="1460620680449458626">વૉલ્યૂમ મ્યૂટ કરેલું છે.</translation>
+<translation id="1462439140224375968">Google Docsમાં દસ્તાવેજ બનાવ્યો</translation>
 <translation id="14648076227129703">આમ કરવાથી કૅમેરાની પરવાનગી ધરાવતી <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> તથા બધી ઍપ અને વેબસાઇટ માટે, કૅમેરાના ઍક્સેસની મંજૂરી આપવામાં આવે છે</translation>
 <translation id="1467432559032391204">ડાબું</translation>
 <translation id="146902737843070955">તમારા ઍડમિનિસ્ટ્રેટરે આ ફેરફારની વિનંતી કરી છે</translation>
@@ -550,6 +551,7 @@
 <translation id="2872353916818027657">પ્રાથમિક મૉનિટર સ્વેપ કરો</translation>
 <translation id="2872961005593481000">શટ ડાઉન કરો</translation>
 <translation id="2876338922445400217">સ્ક્રીન પર મોટું કરો</translation>
+<translation id="2876760662374103627">ફેસ કન્ટ્રોલ સક્રિય છે</translation>
 <translation id="2878884018241093801">કોઈ તાજેતરની આઇટમ નથી</translation>
 <translation id="2880541185262491188">પિન વડે ઘણા બધા પ્રયાસો. <ph name="TIME_LEFT" /> રાહ જુઓ અને ફરી પ્રયાસ કરો</translation>
 <translation id="2883271196820422439">માઉસ કીની સુવિધા ફરી શરૂ કરો</translation>
@@ -593,6 +595,7 @@
 <translation id="301584155502740476">હૉટસ્પૉટની વિગતો બતાવો. હૉટસ્પૉટ બંધ છે</translation>
 <translation id="3017079585324758401">બૅકગ્રાઉન્ડ</translation>
 <translation id="3018135054368884502">મીડિયાને ફાસ્ટ ફૉરવર્ડ કરો</translation>
+<translation id="3026897869154397692">કૅલેન્ડરમાં ઉમેર્યું</translation>
 <translation id="3033545621352269033">ચાલુ</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> સાથે જોડો</translation>
 <translation id="3036649622769666520">Files ખોલો</translation>
@@ -1514,6 +1517,7 @@
 <translation id="595202126637698455">ભજવણી ટ્રેસિંગ સક્ષમ</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">નિરીક્ષણ કરેલ વપરાશકર્તા</translation>
+<translation id="596035801491797438">ફેસ કન્ટ્રોલ બંધ કરો</translation>
 <translation id="5960410286721553511">તમારા ફોનના તાજેતરના ફોટા અને મીડિયા જુઓ</translation>
 <translation id="5965524703725988602">ઘેરી થીમ ટૉગલ કરો. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">windows મારફતે આગળની ઍપ પર જવા સાઇકલ ફૉરવર્ડ કરો</translation>
@@ -1896,6 +1900,7 @@
 <translation id="7228968829656641943">મારી સ્ક્રીન પર શોધવા માટે વિસ્તાર પસંદ કરો. કીબોર્ડ નૅવિગેશન માટે tab પછી space દબાવો.</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> મેમરી | કુલ <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">માઉસના બન્ને બટન</translation>
+<translation id="7240636904654154599">Google Sheetsમાં શીટ બનાવી</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% બૅટરી બાકી છે. તમારા ડિવાઇસને પાવર સૉર્સ સાથે કનેક્ટ કરો.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. અપડેટ લાગુ કરવા માટે આ Chromebookને ફરી શરૂ કરવાની જરૂર છે. આમાં 1 મિનિટ જેટલો સમય લાગી શકે છે.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2406,6 +2411,7 @@
 <translation id="8921624153894383499">Google Assistant આ ભાષા બોલતું નથી.</translation>
 <translation id="8926951137623668982">શેલ્ફ હંમેશાં છુપાવવામાં આવે છે</translation>
 <translation id="8929566928381252430">Caps Lockનો ઉપયોગ કરવાનો પ્રયાસ કરો છો? ઉપયોગ કરો</translation>
+<translation id="8929623844713377237">સંપર્ક બનાવ્યો</translation>
 <translation id="8934418770423095813">Google Doc બનાવો</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ફાઇલ}one{# ફાઇલ}other{# ફાઇલ}}</translation>
 <translation id="8936501819958976551">નિષ્ક્રિય કરેલું</translation>

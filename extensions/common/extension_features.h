@@ -53,10 +53,6 @@ BASE_DECLARE_FEATURE(kApiRuntimeActionData);
 // the permissions API.
 BASE_DECLARE_FEATURE(kApiPermissionsHostAccessRequests);
 
-// Controls whether chrome.Printing API uses margins and scale ticket items when
-// submitting a print job.
-BASE_DECLARE_FEATURE(kApiPrintingMarginsAndScale);
-
 // Controls the availability of executing user scripts programmatically using
 // the userScripts API.
 BASE_DECLARE_FEATURE(kApiUserScriptsExecute);
@@ -190,6 +186,10 @@ BASE_DECLARE_FEATURE(kStructuredCloningForMV3Messaging);
 // approval will be enabled. Read more about the platform here:
 // https://chromium.googlesource.com/chromium/src/+/master/docs/telemetry_extension/README.md.
 BASE_DECLARE_FEATURE(kTelemetryExtensionPendingApprovalApi);
+
+// Used to control whether downloads initiated by `WebstoreInstaller` are marked
+// as having a corresponding user gesture or not.
+BASE_DECLARE_FEATURE(kWebstoreInstallerUserGestureKillSwitch);
 
 #if BUILDFLAG(IS_WIN)
 // TODO(https://crbug.com/400119351): Remove this feature flag in M138.

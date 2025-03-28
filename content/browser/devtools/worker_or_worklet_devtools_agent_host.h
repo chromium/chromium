@@ -5,8 +5,11 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_WORKER_OR_WORKLET_DEVTOOLS_AGENT_HOST_H_
 #define CONTENT_BROWSER_DEVTOOLS_WORKER_OR_WORKLET_DEVTOOLS_AGENT_HOST_H_
 
+#include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 #include "url/gurl.h"
 
@@ -15,7 +18,8 @@ namespace content {
 // This is a base class for dedicated (but not shared or service) workers and
 // for common worklets. See DedicatedWorkerDevToolsAgentHost and
 // WorkletDevToolsAgentHost for concrete implementation.
-class WorkerOrWorkletDevToolsAgentHost : public DevToolsAgentHostImpl {
+class WorkerOrWorkletDevToolsAgentHost : public DevToolsAgentHostImpl,
+                                         RenderProcessHostObserver {
  public:
   WorkerOrWorkletDevToolsAgentHost(
       const WorkerOrWorkletDevToolsAgentHost&) = delete;
@@ -61,6 +65,9 @@ class WorkerOrWorkletDevToolsAgentHost : public DevToolsAgentHostImpl {
 
   void Disconnected();
 
+  // RenderProcessHostObserver implementation.
+  void RenderProcessHostDestroyed(RenderProcessHost* host) override;
+
  private:
   const base::UnguessableToken devtools_worker_token_;
   const std::string parent_id_;
@@ -69,6 +76,8 @@ class WorkerOrWorkletDevToolsAgentHost : public DevToolsAgentHostImpl {
   GURL url_;
   std::string name_;
   base::OnceCallback<void(DevToolsAgentHostImpl*)> destroyed_callback_;
+  base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
+      process_observation_{this};
 };
 
 }  // namespace content

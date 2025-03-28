@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
+#include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
 #include "url/gurl.h"
 
@@ -83,6 +84,11 @@ class BrowserSavePasswordProgressLogger
                                autofill::FormSignature form_signature,
                                autofill::FieldSignature field_signature,
                                const autofill::PasswordRequirementsSpec& spec);
+
+  void LogProvisionalSaveFailure(
+      PasswordManagerMetricsRecorder::ProvisionalSaveFailure failure,
+      std::optional<GURL> main_frame_url = std::nullopt,
+      std::optional<GURL> form_origin = std::nullopt);
 
  protected:
   // autofill::SavePasswordProgressLogger:

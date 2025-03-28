@@ -51,7 +51,7 @@ export class OnboardingChooseWipeDevicePage extends
       /**
        * Used to refer to the enum values in HTML file.
        */
-      wipeDeviceOption: {
+      wipeDeviceOptionEnum: {
         type: Object,
         value: WipeDeviceOption,
       },

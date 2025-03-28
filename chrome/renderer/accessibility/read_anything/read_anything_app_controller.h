@@ -134,6 +134,8 @@ class ReadAnythingAppController
   void ScreenAIServiceReady() override;
   void OnGetVoicePackInfo(
       read_anything::mojom::VoicePackInfoPtr voice_pack_info) override;
+  void OnReadingModeHidden() override;
+  void OnTabWillDetach() override;
 #if BUILDFLAG(IS_CHROMEOS)
   void OnDeviceLocked() override;
 #else
@@ -186,6 +188,12 @@ class ReadAnythingAppController
   int PhraseHighlighting() const;
   int SentenceHighlighting() const;
   int NoHighlighting() const;
+  int PauseButtonStopSource() const;
+  int KeyboardShortcutStopSource() const;
+  int EngineInterruptStopSource() const;
+  int EngineErrorStopSource() const;
+  int ContentFinishedStopSource() const;
+  int UnexpectedUpdateContentStopSource() const;
   std::string GetStoredVoice() const;
   std::vector<std::string> GetLanguagesEnabledInPref() const;
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) const;
@@ -376,7 +384,10 @@ class ReadAnythingAppController
 
   // Helpers for logging UmaHistograms based on times recorded in WebUI.
   void IncrementMetricCount(const std::string& metric);
-  void LogSpeechEventCounts();
+
+  void LogSpeechStop(int source);
+
+  void OnUrlInformationSet();
 
   // Stores a screenshot of the page and triggers distillation to record protos.
   // This function is not used in production and is behind the disabled

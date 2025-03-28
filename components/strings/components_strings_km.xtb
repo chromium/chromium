@@ -224,7 +224,6 @@
 <translation id="1363028406613469049">សំឡេង</translation>
 <translation id="1364822246244961190">គោលការណ៍​នេះ​ត្រូវបាន​ទប់ស្កាត់ ហើយតម្លៃរបស់វានឹងមិនត្រូវបាន​អើពើទេ។</translation>
 <translation id="1368318639262510626">ហ្គេមដាយណូស័រ។ ដាយណូស័រមានរូបរាងព្រាលគេចពីដើមដំបងយក្ស និងសត្វបក្សីយក្ស ខណៈពេលរត់កាត់វាលរហោស្ថាន។ នៅពេលអ្នកស្ដាប់​ឮសញ្ញាជាសំឡេង សូមចុចដកឃ្លា ដើម្បីលោតរំលងឧបសគ្គ។</translation>
-<translation id="1369735141991626842">បំពេញកន្លែងបញ្ចូលដោយប្រើ AI</translation>
 <translation id="1374468813861204354">ការផ្តល់យោបល់</translation>
 <translation id="1375198122581997741">អំពីកំណែ</translation>
 <translation id="1375293861397106342">ជម្រើសទាំងអស់ជាធម្មតា <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -541,7 +540,6 @@
 <translation id="1919526244108283799">400 x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{គ្មាន}=1{ទំព័រ 1}other{ទំព័រ #}}</translation>
 <translation id="192095259937375524">ប៊ូតុង "ចែករំលែកផ្ទាំងនេះ", បើកដំណើរការ ដើម្បីចែករំលែកផ្ទាំងនេះតាមរយៈការចែករំលែកតំណ, ការបង្កើតកូដ QR, ការភ្ជាប់ និងសកម្មភាពជាច្រើនទៀត</translation>
-<translation id="1921479021518565778">បានផ្ទុកការណែនាំ</translation>
 <translation id="1924727005275031552">ថ្មី</translation>
 <translation id="1927439846988093361">ការថែទាំសក់</translation>
 <translation id="1935353813610900265">ផ្ញើមតិកែលម្អសម្រាប់ការស្វែងរកក្នុងប្រវត្តិ ដែលដំណើរការដោយ AI</translation>
@@ -977,6 +975,7 @@
 <translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">បាទ/ចាស បន្ត</translation>
 <translation id="2690699652723742414">30 ថ្ងៃ​ចុងក្រោយ</translation>
+<translation id="2691385045260836588">ម៉ូដែល</translation>
 <translation id="2691924980723297736">ការព្រមាន​អំពីសុវត្ថិភាព</translation>
 <translation id="2697248912349197812">សួរ <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">មាន​ម៉ឺនុយរង, ប្រើ <ph name="SHORTCUT" /> ដើម្បី​ទៅកាន់​ជម្រើសបន្ថែម។</translation>
@@ -1532,6 +1531,7 @@
 <translation id="3664782872746246217">ពាក្យ​គន្លឹះ៖</translation>
 <translation id="3665100783276035932">គេហទំព័រ​ភាគច្រើន​គួរ​តែ​ដំណើរការដូច​ការរំពឹង​ទុក</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />ស្វែងយល់បន្ថែម<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">លេខ</translation>
 <translation id="3670229581627177274">បើកប៊្លូធូស</translation>
 <translation id="3671117652518853176">នៅពេលបិទ អ្នកប្រហែលជា​ត្រូវបានស្នើឱ្យ​ផ្ទៀងផ្ទាត់​ម្ដងម្កាលសម្រាប់​គោលបំណង​សុវត្ថិភាព</translation>
 <translation id="3671540257457995106">អនុញ្ញាតឱ្យប្ដូរទំហំ?</translation>
@@ -1546,7 +1546,6 @@
 <translation id="3681007416295224113">ព័ត៌មានវិញ្ញាបនប័ត្រ</translation>
 <translation id="3681421644246505351">Chrome កត់​ចំណាំ​ប្រធានបទ​ដែលគួរឱ្យចាប់អារម្មណ៍ដោយ​ផ្អែកលើ​ប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិតរបស់អ្នកនាពេល​ថ្មីៗ។</translation>
 <translation id="3682094733650754138">ជម្រើស "បំពេញ​អាសយដ្ឋាន" ត្រូវបាន​ជ្រើសរើស</translation>
-<translation id="3687493962714153124">គ្រប់គ្រង "បំពេញស្វ័យប្រវត្តិដោយប្រើ AI"</translation>
 <translation id="3687920599421452763">ឡាន​ដឹក​ទំនិញ និង​ឡាន​ដឹក​ទំនិញ​តូច</translation>
 <translation id="3693327506115126094">ជ្រើសរើស​របៀប​ដែលអ្នកនឹងផ្ទៀងផ្ទាត់​ថាជាអ្នក</translation>
 <translation id="3698353241727597930">អ្នកគ្រប់គ្រងរបស់អ្នកបានកំណត់រចនាសម្ព័ន្ធ ដើម្បីរក្សាទុក<ph name="FILES" />នៅក្នុងទំហំ​ផ្ទុក <ph name="CLOUD_STORAGE" /> ដែលគ្រប់គ្រងដោយសហគ្រាសរបស់អ្នក។ ឯកសារទាំងនេះអាចត្រូវបានត្រួតពិនិត្យ ធ្វើសវនកម្ម និងរក្សាទុកនៅពេលអ្នកលុបឯកសារទាំងនោះ។</translation>
@@ -1700,6 +1699,7 @@
 <translation id="3950820424414687140">ចូល</translation>
 <translation id="3953505489397572035">តម្លៃនេះ​គឺជា​តម្លៃធម្មតា</translation>
 <translation id="3958057596965527988">4 x 4 in</translation>
+<translation id="3959969108528118741">ម្ចាស់</translation>
 <translation id="3961148744525529027">សន្លឹកកម្មវិធី​គ្រប់គ្រងការបង់ប្រាក់​បានបើកពាក់កណ្ដាល</translation>
 <translation id="3962859241508114581">សំនៀងមុន</translation>
 <translation id="3963721102035795474">របៀបកម្មវិធីអាន</translation>
@@ -1925,7 +1925,6 @@
 <translation id="4312866146174492540">រារាំង (លំនាំដើម)</translation>
 <translation id="4314815835985389558">គ្រប់គ្រង​សមកាលកម្ម</translation>
 <translation id="4316057107946726368">សូមបញ្ចូលសារហេតុផលច្រើនបំផុតត្រឹម <ph name="MAX_CHAR_COUNT" /> តួ។ បានប្រើអស់ <ph name="ACTUAL_CHAR_COUNT" /> នៃ <ph name="MAX_CHAR_COUNT" /> តួ។</translation>
-<translation id="431740489189220419">កំពុង​ផ្ទុក​ការ​ណែនាំ</translation>
 <translation id="4318213823155573975">គ្រឿង​ពាក់​លើ​ក្បាល</translation>
 <translation id="4318312030194671742">សេវាកម្ម​រៀបចំ​មើលសាកល្បង​ការផ្គុំរូបរាង​គេហទំព័រ​</translation>
 <translation id="4318566738941496689">អាសយដ្ឋានបណ្ដាញ និងឈ្មោះ​ឧបករណ៍របស់អ្នក</translation>
@@ -2333,6 +2332,7 @@
 <translation id="5087286274860437796">វិញ្ញាបនបត្រម៉ាស៊ីនមេមិនមានសុពលភាពទេនៅពេលនេះ។</translation>
 <translation id="5087580092889165836">បន្ថែមកាត</translation>
 <translation id="5088142053160410913">សារផ្ញើទៅ​ប្រតិបត្តិករ</translation>
+<translation id="5089810972385038852">រដ្ឋ</translation>
 <translation id="5090647584136241764">បញ្ចូល​ផ្ទាំង​ដែលមាន​ផលិតផល​ស្រដៀងគ្នា ដើម្បី​ងាយស្រួល​ប្រៀបធៀប​ព័ត៌មានលម្អិត​ដែលសំខាន់​ចំពោះអ្នក</translation>
 <translation id="5093232627742069661">បត់​ជាអក្សរ Z</translation>
 <translation id="5094747076828555589">ម៉ាស៊ីនមេនេះមិនអាចបង្ហាញថាវាជា <ph name="DOMAIN" /> ទេ វិញ្ញាបនប័ត្រសុវត្ថិភាពរបស់វាមិនអាចត្រូវបានជឿជាក់ដោយ Chromium ទេ។ នេះអាចបណ្តាលមកពីការកំណត់មិនត្រឹមត្រូវ ឬមានការស្ទាក់ការភ្ជាប់របស់អ្នកពីអ្នកវាយប្រហារ។</translation>
@@ -2471,6 +2471,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />ម៉ាស៊ីន​ស្វែងរកលំនាំដើម​របស់អ្នក​អាច​ឱ្យ​អ្នក​ស្វែងរកលើ​អ៊ីនធឺណិត និង​ដំណើរការ​មុខងារ Chromium<ph name="END_BOLD" /> ដូចជា​ការស្វែងរក​ពី​របារអាសយដ្ឋាន និង​ពី​រូបភាព​នៅលើ​ទំព័រ​បណ្ដាញជាដើម។ អ្នកប្រហែលមិនអាចប្រើមុខងារមួយ​បានទេ ប្រសិនបើ​ម៉ាស៊ីន​ស្វែងរក​របស់អ្នក​មិន​ស្គាល់មុខងារនោះ។</translation>
 <translation id="5323043727018853753">អនុញ្ញាតខ្លឹមសារ​ដែលបានបង្កប់</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> ក្នុង​ចំណោម <ph name="NUM_MATCHES" /></translation>
+<translation id="5327248766486351172">ឈ្មោះ</translation>
 <translation id="5329858041417644019">កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នកមិនត្រូវ​បានគ្រប់គ្រងទេ</translation>
 <translation id="5331585574693522196">កំណត់ជាលំនាំដើម</translation>
 <translation id="5332219387342487447">វិធីសាស្រ្ត​នៃការ​ដឹកជញ្ជូន</translation>
@@ -2684,7 +2685,6 @@
 <translation id="569000877158168851">តម្លៃ DnsOverHttpsTemplates គឺ​មិន​ពាក់ព័ន្ធ​ទេ ហើយ​នឹង​មិន​ត្រូវបាន​ប្រើប្រាស់​ឡើយ លុះត្រាតែ​កំណត់​គោលការណ៍ DnsOverHttpsMode ទៅ <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ឬ <ph name="SECURE_DNS_MODE_SECURE" />។</translation>
 <translation id="5691848789297492617">រក្សាទុក​កាត​ដែលបានបើក​ពេញអេក្រង់។</translation>
 <translation id="5695542892312572833">ប្រើ Windows Hello ដើម្បី​ផ្ទៀងផ្ទាត់ និង​បញ្ចប់ការទិញ​របស់អ្នកឬ?</translation>
-<translation id="5697827549745555938">ព័ត៌មានដែលអ្នកបានរក្សាទុក និងទំព័រនេះត្រូវបានបញ្ជូនទៅ Google ដើម្បីមើលថាតើមុខងារបំពេញស្វ័យប្រវត្តិអាចជួយបំពេញទម្រង់បែបបទនេះបានឬអត់។ ទិន្នន័យ​ប្រហែល​ត្រូវអ្នកត្រួតពិនិត្យជាមនុស្សមើលឃើញ​ក្នុងការកែលម្អ​មុខងារនេះ។</translation>
 <translation id="5699628521141772782">ផលិតផលពីទឹក​ដោះគោ និង​ស៊ុត</translation>
 <translation id="5700761515355162635">បានអនុញ្ញាត​ខូគី​ភាគីទីបី</translation>
 <translation id="5701381305118179107">កណ្តាល</translation>
@@ -3113,6 +3113,7 @@
 <translation id="6440503408713884761">មិនត្រូវបាន​អើពើ</translation>
 <translation id="6443406338865242315">ថាតើ​កម្មវិធីបន្ថែម និងកម្មវិធី​ជំនួយណាខ្លះដែលអ្នកបានដំឡើង</translation>
 <translation id="6444329331928531170">ការចូលនិវត្តន៍ និងប្រាក់​សោធន​និវត្តន៍</translation>
+<translation id="6445051938772793705">ប្រទេស</translation>
 <translation id="6446608382365791566">បញ្ចូលព័ត៌មានបន្ថែម</translation>
 <translation id="6447842834002726250">ខុកឃី</translation>
 <translation id="6448371595882710519">ស្វែងយល់បន្ថែមអំពីការគ្រប់គ្រងទិន្នន័យ</translation>
@@ -3593,7 +3594,6 @@
 <translation id="7316521168101843192">កំពុងរក្សាទុកឯកសារទៅ Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ជំនួយ​ការតភ្ជាប់</translation>
-<translation id="7321111802407017850">រក្សាទុកព័ត៌មានរបស់អ្នក ដើម្បីបំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="7323804146520582233">លាក់​ផ្នែក "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">ការលុបពីលើ​គណនី​មូលដ្ឋាន​ក្នុង​ឧបករណ៍</translation>
 <translation id="7334320624316649418">ធ្វើការតម្រៀបឡើងវិញ</translation>

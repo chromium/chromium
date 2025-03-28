@@ -185,7 +185,7 @@ public class ReloadButtonMediatorTest {
         assertEquals(
                 "Background ripple effect should be default",
                 mModel.get(ReloadButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE),
-                R.drawable.toolbar_button_ripple);
+                R.drawable.default_icon_background);
     }
 
     @Test
@@ -196,7 +196,7 @@ public class ReloadButtonMediatorTest {
         assertEquals(
                 "Background ripple effect should be default",
                 mModel.get(ReloadButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE),
-                R.drawable.toolbar_button_ripple);
+                R.drawable.default_icon_background);
     }
 
     @Test
@@ -207,7 +207,7 @@ public class ReloadButtonMediatorTest {
         assertEquals(
                 "Background ripple effect should be default",
                 mModel.get(ReloadButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE),
-                R.drawable.toolbar_button_ripple);
+                R.drawable.default_icon_background);
     }
 
     @Test
@@ -218,7 +218,7 @@ public class ReloadButtonMediatorTest {
         assertEquals(
                 "Background ripple effect should be incognito",
                 mModel.get(ReloadButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE),
-                R.drawable.toolbar_button_ripple_incognito);
+                R.drawable.default_icon_background_baseline);
     }
 
     @Test

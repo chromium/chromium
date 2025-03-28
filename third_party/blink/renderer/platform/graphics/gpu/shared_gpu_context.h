@@ -17,12 +17,6 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
-namespace gpu {
-
-class GpuMemoryBufferManager;
-
-}  // namespace gpu
-
 namespace blink {
 
 class WebGraphicsContext3DProvider;
@@ -73,10 +67,6 @@ class PLATFORM_EXPORT SharedGpuContext {
   // to not interfere with the next test and when terminating web workers.
   static void Reset();
 
-  static gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager();
-  static void SetGpuMemoryBufferManagerForTesting(
-      gpu::GpuMemoryBufferManager* mgr);
-
  private:
   friend class WTF::ThreadSpecific<SharedGpuContext>;
 
@@ -96,11 +86,6 @@ class PLATFORM_EXPORT SharedGpuContext {
 
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
-
-  // RAW_PTR_EXCLUSION: Performance (MotionMark). Please see crbug.com/346693834
-  // for more details.
-  RAW_PTR_EXCLUSION gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_ =
-      nullptr;
 };
 
 }  // blink

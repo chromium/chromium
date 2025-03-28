@@ -259,6 +259,17 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
   // This state transition checking the current state is kOnIdle.
   SetState(ActiveSessionAuthState::kWaitForInit);
 
+  CHECK(Shell::Get());
+  CHECK(Shell::Get()->session_controller());
+
+  if (Shell::Get()->session_controller()->GetSessionState() !=
+      session_manager::SessionState::ACTIVE) {
+    LOG(ERROR) << "SessionState is not active.";
+    return false;
+  }
+
+  Shell::Get()->session_controller()->AddObserver(this);
+
   CHECK(!auth_request_);
   auth_request_ = std::move(auth_request);
 
@@ -460,13 +471,17 @@ void ActiveSessionAuthControllerImpl::InitUi() {
 void ActiveSessionAuthControllerImpl::StartClose() {
   VLOG(1) << "Close with : " << ActiveSessionAuthStateToString(state_)
           << " state.";
-
   CHECK(user_context_);
   CHECK(auth_request_);
   CHECK(auth_performer_);
   if (!IsPreInitializedState()) {
     uma_recorder_.RecordClose();
   }
+
+  if (Shell::Get() && Shell::Get()->session_controller()) {
+    Shell::Get()->session_controller()->RemoveObserver(this);
+  }
+
   contents_view_observer_.Reset();
   if (contents_view_) {
     contents_view_->RemoveObserver(this);
@@ -515,6 +530,32 @@ void ActiveSessionAuthControllerImpl::CompleteClose(
   description_.clear();
   fp_auth_tracker_.reset();
   widget_.reset();
+}
+
+void ActiveSessionAuthControllerImpl::OnSessionStateChanged(
+    session_manager::SessionState session_state) {
+  if (session_state == session_manager::SessionState::ACTIVE) {
+    return;
+  }
+  VLOG(1) << "SessionState changed, closing process started";
+  switch (state_) {
+    case ActiveSessionAuthState::kOnIdle:
+    case ActiveSessionAuthState::kWaitForInit:
+    case ActiveSessionAuthState::kInitialized:
+      StartClose();
+      return;
+    case ActiveSessionAuthState::kPasswordAuthStarted:
+    case ActiveSessionAuthState::kPinAuthStarted:
+      SetState(ActiveSessionAuthState::kCloseRequested);
+      return;
+    case ActiveSessionAuthState::kPasswordAuthSucceeded:
+    case ActiveSessionAuthState::kPinAuthSucceeded:
+    case ActiveSessionAuthState::kFingerprintAuthSucceeded:
+    case ActiveSessionAuthState::kFingerprintAuthSucceededWaiting:
+    case ActiveSessionAuthState::kCloseRequested:
+      return;
+  }
+  NOTREACHED();
 }
 
 void ActiveSessionAuthControllerImpl::OnViewPreferredSizeChanged(

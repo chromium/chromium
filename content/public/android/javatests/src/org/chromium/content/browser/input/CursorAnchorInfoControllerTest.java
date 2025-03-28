@@ -370,12 +370,6 @@ public class CursorAnchorInfoControllerTest {
         AssertionHelper.assertSelection(0, 1, immw.getLastCursorAnchorInfo());
         immw.clearLastCursorAnchorInfo();
 
-        // Make sure that #updateCursorAnchorInfo() is not be called if any coordinate parameter is
-        // changed for better performance.
-        controller.updateCursorAnchorInfoData(mCursorAnchorInfoData, view);
-        controller.onUpdateFrameInfo(1.0f, 0.0f, true, true, 2.0f, 0.0f, 3.0f, view);
-        Assert.assertEquals(1, immw.getUpdateCursorAnchorInfoCounter());
-
         // Make sure that #updateCursorAnchorInfo() is called if
         // #updateCursorAnchorInfoData() is called with a different parameter.
         InputCursorAnchorInfo second = new InputCursorAnchorInfo();

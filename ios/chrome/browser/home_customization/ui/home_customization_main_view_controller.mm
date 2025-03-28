@@ -6,11 +6,13 @@
 
 #import <map>
 
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_view_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_toggle_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_view_controller_protocol.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -30,6 +32,9 @@
 
   // Registration for the HomeCustomizationToggleCells.
   UICollectionViewCellRegistration* _toggleCellRegistration;
+
+  // Registration for the background customization cell.
+  UICollectionViewCellRegistration* _backgroundCustomizationRegistration;
 }
 
 // Synthesized from HomeCustomizationViewControllerProtocol.
@@ -74,6 +79,16 @@
              [cell configureCellWithType:toggleType enabled:enabled];
              cell.mutator = weakSelf.mutator;
            }];
+
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    _backgroundCustomizationRegistration = [UICollectionViewCellRegistration
+        registrationWithCellClass:[HomeCustomizationBackgroundViewCell class]
+             configurationHandler:^(HomeCustomizationBackgroundViewCell* cell,
+                                    NSIndexPath* indexPath,
+                                    NSNumber* itemIdentifier) {
+               cell.mutator = weakSelf.mutator;
+             }];
+  }
 }
 
 // Creates a data snapshot representing the content of the collection view.
@@ -81,6 +96,17 @@
     dataSnapshot {
   NSDiffableDataSourceSnapshot<CustomizationSection*, NSNumber*>* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
+
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    // Create background customization section and add items to it.
+    [snapshot
+        appendSectionsWithIdentifiers:@[ kCustomizationSectionBackground ]];
+
+    NSInteger smallestExistingIdentifier =
+        static_cast<NSInteger>(self.toggleMap.begin()->first);
+    [snapshot appendItemsWithIdentifiers:@[ @(smallestExistingIdentifier - 1) ]
+               intoSectionWithIdentifier:kCustomizationSectionBackground];
+  }
 
   // Create toggles section and add items to it.
   [snapshot
@@ -101,9 +127,15 @@
 - (NSCollectionLayoutSection*)
       sectionForIndex:(NSInteger)sectionIndex
     layoutEnvironment:(id<NSCollectionLayoutEnvironment>)layoutEnvironment {
-  if (sectionIndex ==
+  NSInteger mainTogglesIdentifier = [self.diffableDataSource.snapshot
+      indexOfSectionIdentifier:kCustomizationSectionMainToggles];
+
+  NSInteger backgroundCustomizationIdentifier =
       [self.diffableDataSource.snapshot
-          indexOfSectionIdentifier:kCustomizationSectionMainToggles]) {
+          indexOfSectionIdentifier:kCustomizationSectionBackground];
+
+  if (sectionIndex == mainTogglesIdentifier ||
+      sectionIndex == backgroundCustomizationIdentifier) {
     return [_collectionConfigurator
         verticalListSectionForLayoutEnvironment:layoutEnvironment];
   }
@@ -112,11 +144,18 @@
 
 - (UICollectionViewCell*)configuredCellForIndexPath:(NSIndexPath*)indexPath
                                      itemIdentifier:(NSNumber*)itemIdentifier {
-  if (kCustomizationSectionMainToggles ==
-      [_diffableDataSource.snapshot
-          sectionIdentifierForSectionContainingItemIdentifier:itemIdentifier]) {
+  CustomizationSection* section = [_diffableDataSource.snapshot
+      sectionIdentifierForSectionContainingItemIdentifier:itemIdentifier];
+
+  if (kCustomizationSectionMainToggles == section) {
     return [_collectionView
         dequeueConfiguredReusableCellWithRegistration:_toggleCellRegistration
+                                         forIndexPath:indexPath
+                                                 item:itemIdentifier];
+  } else if (kCustomizationSectionBackground == section) {
+    return [_collectionView
+        dequeueConfiguredReusableCellWithRegistration:
+            _backgroundCustomizationRegistration
                                          forIndexPath:indexPath
                                                  item:itemIdentifier];
   }

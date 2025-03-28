@@ -1519,8 +1519,6 @@ IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, HelloWorld) {
 
   int expected_count = (IsSearchifyEnabled() && IsOcrAvailable()) ? 1 : 0;
   // Screen Reader is always enabled for this test.
-  // TODO(crbug.com/360803943): Try adding Searchify browser test without
-  // screen reader.
   histograms.ExpectUniqueSample(
       "Accessibility.ScreenAI.Searchify.ScreenReaderModeEnabled",
       /*sample=*/true, expected_count);

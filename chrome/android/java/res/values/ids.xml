@@ -36,6 +36,8 @@ found in the LICENSE file.
     <item type="id" name="show_menu" />
     <item type="id" name="open_recently_closed_tab" />
     <item type="id" name="toggle_bookmark_bar" />
+    <item type="id" name="switch_keyboard_focus_row" />
+    <item type="id" name="focus_bookmarks" />
 
     <!-- Editor dialog -->
     <item type="id" name="editor_dialog_done_button" />
@@ -47,6 +49,7 @@ found in the LICENSE file.
     <!-- Page Group -->
     <item type="id" name="contextmenu_save_page" />
     <item type="id" name="contextmenu_share_page" />
+    <item type="id" name="contextmenu_print_page" />
 
     <!-- Custom Tab Group -->
     <item type="id" name="contextmenu_open_in_new_chrome_tab" />

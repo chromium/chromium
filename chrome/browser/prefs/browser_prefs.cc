@@ -255,6 +255,7 @@
 #include "chrome/browser/notifications/notification_channels_provider_android.h"
 #include "chrome/browser/partnerbookmarks/partner_bookmarks_shim.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
+#include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #include "chrome/browser/readaloud/android/prefs.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
@@ -1076,6 +1077,7 @@ inline constexpr char kAutoEnrollmentPowerLimit[] = "AutoEnrollmentPowerLimit";
 // Deprecated 03/2025.
 inline constexpr char kDeviceRestrictionScheduleHighestSeenTime[] =
     "device_restriction_schedule_highest_seen_time";
+constexpr char kSunfishEnabled[] = "ash.capture_mode.sunfish_enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Register local state used only for migration (clearing or moving to a new
@@ -1502,6 +1504,11 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 03/2025.
   registry->RegisterBooleanPref(kPasswordChangeFlowNoticeAgreement, false);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 03/2025.
+  registry->RegisterBooleanPref(kSunfishEnabled, true);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -2453,10 +2460,13 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // and this call (to compute said pref) should be removed once
   // kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration is launched and
   // enough clients have migrated. UsesSplitStoresAndUPMForLocal() should be
-  // updated to check the GmsCoreVersion directly instead of the pref, or might
-  // be removed entirely, depending how the outdated GmsCore case is handled.
-  password_manager_android_util::SetUsesSplitStoresAndUPMForLocal(profile_prefs,
-                                                                  profile_path);
+  // updated to check the GmsCoreVersion directly instead of the pref, or
+  // might be removed entirely, depending how the outdated GmsCore case is
+  // handled.
+  password_manager_android_util::SetUsesSplitStoresAndUPMForLocal(
+      profile_prefs, profile_path,
+      std::make_unique<
+          password_manager_android_util::PasswordManagerUtilBridge>());
 #endif
 
   // Added 04/2024.
@@ -2763,6 +2773,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if !BUILDFLAG(IS_CHROMEOS)
   // Added 03/2025.
   profile_prefs->ClearPref(prefs::kChildAccountStatusKnown);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Added 03/2025.
+  profile_prefs->ClearPref(kSunfishEnabled);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

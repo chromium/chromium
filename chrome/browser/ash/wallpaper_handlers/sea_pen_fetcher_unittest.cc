@@ -1062,7 +1062,9 @@ TEST_F(SeaPenFetcherTest, FetchFreeformWallpaper_ExperimentOff_UsesUserPrompt) {
           manta::features::kMantaService,
           ash::features::kSeaPenTextInput,
       },
-      {});
+      {
+          ash::features::kSeaPenQueryRewrite,
+      });
   auto user_query = MakeFreeformQuery();
   std::string generative_prompt = "prompt used to generate images";
   ash::personalization_app::mojom::SeaPenQueryPtr generative_prompt_query =

@@ -164,6 +164,9 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   }
 
   private blockedSites_: BlockedSite[];
+  // <if expr="is_win or is_macosx or is_chromeos">
+  private isBiometricAuthenticationForFillingToggleVisible_: boolean;
+  // </if>
   private hasPasskeys_: boolean;
   private passwordManagerDisabled_: boolean;
   private hasPasswordsToExport_: boolean;

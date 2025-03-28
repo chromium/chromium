@@ -108,7 +108,7 @@ EmbeddedPermissionPromptSystemSettingsView::GetButtonsConfiguration() const {
 void EmbeddedPermissionPromptSystemSettingsView::DidBecomeActive(
     BrowserWindowInterface* browser_window_interface) {
   for (const auto& request : delegate()->Requests()) {
-    if (!system_permission_settings::IsAllowed(
+    if (system_permission_settings::IsDenied(
             request->GetContentSettingsType())) {
       return;
     }
@@ -119,8 +119,7 @@ void EmbeddedPermissionPromptSystemSettingsView::DidBecomeActive(
   // a new widget from activating the current window again at this exact moment
   // in time.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &EmbeddedPermissionPromptViewDelegate::SystemPermissionsAllowed,
-          delegate()));
+      FROM_HERE, base::BindOnce(&EmbeddedPermissionPromptViewDelegate::
+                                    SystemPermissionsNoLongerDenied,
+                                delegate()));
 }

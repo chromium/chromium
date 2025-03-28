@@ -39,6 +39,10 @@ class OnTaskSystemWebAppManager {
   virtual void SetPinStateForSystemWebAppWindow(bool pinned,
                                                 SessionID window_id) = 0;
 
+  // Pause/unpause the specified Boca SWA window based on the specified value.
+  virtual void SetPauseStateForSystemWebAppWindow(bool paused,
+                                                  SessionID window_id) = 0;
+
   // Set the window tracker to track the browser browser window with specified
   // id.
   virtual void SetWindowTrackerForSystemWebAppWindow(

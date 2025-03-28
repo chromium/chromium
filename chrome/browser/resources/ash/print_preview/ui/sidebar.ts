@@ -159,6 +159,7 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   pageCount: number;
   state: State;
   private controlsDisabled_: boolean;
+  maxSheets: number;
   private firstLoad_: boolean;
   private isInAppKioskMode_: boolean;
   private settingsExpandedByUser_: boolean;

@@ -1224,6 +1224,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 return R.string.website_settings_automatic_downloads_page_description;
             } else if (mCategory.getType() == SiteSettingsCategory.Type.FILE_EDITING) {
                 return R.string.website_settings_file_editing_page_description;
+            } else if (mCategory.getType() == SiteSettingsCategory.Type.SERIAL_PORT) {
+                return R.string.website_settings_serial_port_page_description;
             }
         }
         return -1;

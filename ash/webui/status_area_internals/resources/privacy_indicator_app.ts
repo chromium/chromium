@@ -29,7 +29,7 @@ export class PrivacyIndicatorAppElement extends PolymerElement {
 
   static get properties(): PolymerElementProperties {
     return {
-      id: {
+      appid: {
         type: String,
         value: '',
       },
@@ -48,10 +48,10 @@ export class PrivacyIndicatorAppElement extends PolymerElement {
     };
   }
 
-  private appid: string = '';
-  private name: string = '';
-  private useCamera: boolean = false;
-  private useMicrophone: boolean = false;
+  private appid: string;
+  private name: string;
+  private useCamera: boolean;
+  private useMicrophone: boolean;
 
   onTriggerPrivacyIndicators(e: Event) {
     e.stopPropagation();

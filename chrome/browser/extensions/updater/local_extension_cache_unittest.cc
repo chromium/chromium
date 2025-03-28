@@ -21,7 +21,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -82,7 +82,7 @@ class LocalExtensionCacheTest : public testing::Test {
                                         base::FilePath* filename) {
     std::string data(size, 0);
     const std::string hex_hash = base::ToLowerASCII(
-        base::HexEncode(crypto::SHA256Hash(base::as_byte_span(data))));
+        base::HexEncode(crypto::hash::Sha256(base::as_byte_span(data))));
 
     const base::FilePath file =
         GetExtensionFileName(dir, id, version, hex_hash);

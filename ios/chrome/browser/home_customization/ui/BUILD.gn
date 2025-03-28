@@ -4,6 +4,8 @@
 
 source_set("ui") {
   sources = [
+    "home_customization_background_view_cell.h",
+    "home_customization_background_view_cell.mm",
     "home_customization_collection_configurator.h",
     "home_customization_collection_configurator.mm",
     "home_customization_discover_consumer.h",
@@ -27,6 +29,7 @@ source_set("ui") {
   deps = [
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/home_customization/utils",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",

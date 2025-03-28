@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRELOADING_SPECULATION_RULES_SPECULATION_RULES_TAGS_H_
 #define CONTENT_BROWSER_PRELOADING_SPECULATION_RULES_SPECULATION_RULES_TAGS_H_
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -19,18 +20,22 @@ namespace content {
 class CONTENT_EXPORT SpeculationRulesTags {
  public:
   SpeculationRulesTags();
+  // TODO(crbug.com/381687257): Use std::set instead of std::vector.
   explicit SpeculationRulesTags(std::vector<std::optional<std::string>> tags);
-  SpeculationRulesTags(SpeculationRulesTags&& tags);
-  SpeculationRulesTags(const SpeculationRulesTags& tags);
-
   ~SpeculationRulesTags();
+
+  // Copyable and movable.
+  SpeculationRulesTags(const SpeculationRulesTags&);
+  SpeculationRulesTags& operator=(const SpeculationRulesTags&);
+  SpeculationRulesTags(SpeculationRulesTags&& tags) noexcept;
+  SpeculationRulesTags& operator=(SpeculationRulesTags&&) noexcept;
 
   std::optional<std::string> ConvertStringToHeaderString();
 
  private:
   net::structured_headers::List ConvertStringToStructuredHeader();
 
-  std::vector<std::optional<std::string>> tags_;
+  std::set<std::optional<std::string>> tags_;
 };
 
 }  // namespace content

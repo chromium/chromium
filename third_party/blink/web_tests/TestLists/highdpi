@@ -19,14 +19,6 @@ animations/responsive/stacked-visibility-animations-responsive.html
 animations/responsive/zoom-responsive-transform-animation-001.html
 animations/stability/font-builder-crash.html
 animations/state-at-end-event.html
-animations/svg-attribute-composition/svg-amplitude-composition.html
-animations/svg-attribute-composition/svg-azimuth-composition.html
-animations/svg-attribute-composition/svg-baseFrequency-composition.html
-animations/svg-attribute-composition/svg-bias-composition.html
-animations/svg-attribute-interpolation/svg-edgeMode-interpolation.html
-animations/svg-attribute-interpolation/svg-elevation-interpolation.html
-animations/svg-attribute-interpolation/svg-exponent-interpolation.html
-animations/svg-attribute-interpolation/svg-viewBox-interpolation.html
 animations/svg/animated-filter-svg-element.html
 animations/web-animations/KeyframeEffect-animation.html
 clipboard/copy-image-at.html

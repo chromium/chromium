@@ -37,6 +37,7 @@ class SVGPathElement final : public SVGGeometryElement {
   explicit SVGPathElement(Document&);
 
   Path AsPath() const override;
+  PathBuilder AsMutablePath() const override;
   Path AttributePath() const;
 
   float getTotalLength(ExceptionState&) override;

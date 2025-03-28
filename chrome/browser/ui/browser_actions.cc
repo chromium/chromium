@@ -367,7 +367,7 @@ void BrowserActions::InitializeBrowserActions() {
                              },
                              base::Unretained(browser)),
                          kActionTabSearch, IDS_TAB_SEARCH_MENU,
-                         IDS_TAB_SEARCH_MENU, kSearchMenuIcon)
+                         IDS_TAB_SEARCH_MENU, vector_icons::kExpandMoreIcon)
             .Build());
   }
 

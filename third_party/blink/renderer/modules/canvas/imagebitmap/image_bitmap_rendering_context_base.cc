@@ -116,6 +116,7 @@ bool ImageBitmapRenderingContextBase::IsPaintable() const {
 
 void ImageBitmapRenderingContextBase::Trace(Visitor* visitor) const {
   visitor->Trace(image_layer_bridge_);
+  ScriptWrappable::Trace(visitor);
   CanvasRenderingContext::Trace(visitor);
 }
 

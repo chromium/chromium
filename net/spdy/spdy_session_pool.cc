@@ -526,15 +526,10 @@ std::unique_ptr<base::Value> SpdySessionPool::SpdySessionPoolInfoToValue()
     const {
   base::Value::List list;
 
-  for (const auto& available_session : available_sessions_) {
-    // Only add the session if the key in the map matches the main
-    // host_port_proxy_pair (not an alias).
-    const SpdySessionKey& key = available_session.first;
-    const SpdySessionKey& session_key =
-        available_session.second->spdy_session_key();
-    if (key == session_key)
-      list.Append(available_session.second->GetInfoAsValue());
+  for (const auto& session : sessions_) {
+    list.Append(session->GetInfoAsValue());
   }
+
   return std::make_unique<base::Value>(std::move(list));
 }
 

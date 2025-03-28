@@ -173,13 +173,13 @@ TEST(UnencodedDigestParserTest, WellFormedHeaderWithSingleDigest) {
     headers.Set(http_names::kUnencodedDigest, AtomicString(test.header));
 
     IntegrityMetadata expected;
-    expected.SetAlgorithm(test.alg);
-    expected.SetDigest(kHelloWorlds.at(test.alg));
+    expected.algorithm = test.alg;
+    expected.digest = kHelloWorlds.at(test.alg);
 
     auto result = UnencodedDigest::Create(headers);
     EXPECT_TRUE(result.has_value());
     EXPECT_EQ(1u, result->digests().size());
-    EXPECT_TRUE(result->digests().Contains(expected.ToPair()));
+    EXPECT_TRUE(result->digests().Contains(expected));
   }
 }
 
@@ -220,9 +220,9 @@ TEST(UnencodedDigestParserTest, MultipleDigests) {
 
     for (const auto& algorithm : test.alg) {
       IntegrityMetadata expected;
-      expected.SetAlgorithm(algorithm);
-      expected.SetDigest(kHelloWorlds.at(algorithm));
-      EXPECT_TRUE(result->digests().Contains(expected.ToPair()));
+      expected.algorithm = algorithm;
+      expected.digest = kHelloWorlds.at(algorithm);
+      EXPECT_TRUE(result->digests().Contains(expected));
     }
   }
 }

@@ -41,14 +41,18 @@ using ::testing::Optional;
 
 LobsterCandidateStore GetDummyLobsterCandidateStore() {
   LobsterCandidateStore store;
-  store.Cache({.id = 0,
-               .image_bytes = "a1b2c3",
-               .seed = 20,
-               .query = "a nice raspberry"});
-  store.Cache({.id = 1,
-               .image_bytes = "d4e5f6",
-               .seed = 21,
-               .query = "a nice raspberry"});
+  store.Cache(
+      LobsterImageCandidate(/*id=*/0,
+                            /*image_bytes=*/"a1b2c3",
+                            /*seed=*/20,
+                            /*user_query=*/"a nice raspberry",
+                            /*rewritten_query=*/"rewritten: a nice raspberry"));
+  store.Cache(
+      LobsterImageCandidate(/*id=*/1,
+                            /*image_bytes=*/"d4e5f6",
+                            /*seed=*/21,
+                            /*query=*/"a nice raspberry",
+                            /*rewritten_query=*/"rewritten: a nice raspberry"));
 
   return store;
 }
@@ -144,15 +148,21 @@ TEST_F(LobsterSessionImplTest, RequestCandidatesWithThreeResults) {
       .WillOnce(testing::Invoke([](std::string_view query, int num_candidates,
                                    RequestCandidatesCallback done_callback) {
         std::vector<LobsterImageCandidate> image_candidates = {
-            LobsterImageCandidate(/*id=*/0, /*image_bytes=*/"a1b2c3",
-                                  /*seed=*/20,
-                                  /*query=*/"a nice strawberry"),
-            LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"d4e5f6",
-                                  /*seed=*/21,
-                                  /*query=*/"a nice strawberry"),
-            LobsterImageCandidate(/*id=*/2, /*image_bytes=*/"g7h8i9",
-                                  /*seed=*/22,
-                                  /*query=*/"a nice strawberry")};
+            LobsterImageCandidate(
+                /*id=*/0, /*image_bytes=*/"a1b2c3",
+                /*seed=*/20,
+                /*user_query=*/"a nice strawberry",
+                /*rewritten_query=*/"rewritten: a nice strawberry"),
+            LobsterImageCandidate(
+                /*id=*/1, /*image_bytes=*/"d4e5f6",
+                /*seed=*/21,
+                /*user_query=*/"a nice strawberry",
+                /*rewritten_query=*/"rewritten: a nice strawberry"),
+            LobsterImageCandidate(
+                /*id=*/2, /*image_bytes=*/"g7h8i9",
+                /*seed=*/22,
+                /*user_query=*/"a nice strawberry",
+                /*rewritten_query=*/"rewritten: a nice strawberry")};
         std::move(done_callback).Run(std::move(image_candidates));
       }));
 
@@ -165,18 +175,23 @@ TEST_F(LobsterSessionImplTest, RequestCandidatesWithThreeResults) {
   session.RequestCandidates(/*query=*/"a nice strawberry", /*num_candidates=*/3,
                             future.GetCallback());
 
-  EXPECT_THAT(
-      future.Get().value(),
-      testing::ElementsAre(
-          LobsterImageCandidate(/*expected_id=*/0,
-                                /*expected_image_bytes=*/"a1b2c3",
-                                /*seed=*/20, /*query=*/"a nice strawberry"),
-          LobsterImageCandidate(/*expected_id=*/1,
-                                /*expected_image_bytes=*/"d4e5f6",
-                                /*seed=*/21, /*query=*/"a nice strawberry"),
-          LobsterImageCandidate(/*expected_id=*/2,
-                                /*expected_image_bytes=*/"g7h8i9",
-                                /*seed=*/22, /*query=*/"a nice strawberry")));
+  EXPECT_THAT(future.Get().value(),
+              testing::ElementsAre(
+                  LobsterImageCandidate(
+                      /*expected_id=*/0,
+                      /*expected_image_bytes=*/"a1b2c3",
+                      /*seed=*/20, /*user_query=*/"a nice strawberry",
+                      /*rewritten_query=*/"rewritten: a nice strawberry"),
+                  LobsterImageCandidate(
+                      /*expected_id=*/1,
+                      /*expected_image_bytes=*/"d4e5f6",
+                      /*seed=*/21, /*user_query=*/"a nice strawberry",
+                      /*rewritten_query=*/"rewritten: a nice strawberry"),
+                  LobsterImageCandidate(
+                      /*expected_id=*/2,
+                      /*expected_image_bytes=*/"g7h8i9",
+                      /*seed=*/22, /*user_query=*/"a nice strawberry",
+                      /*rewritten_query=*/"rewritten: a nice strawberry")));
 }
 
 TEST_F(LobsterSessionImplTest, RequestCandidatesReturnsUnknownError) {
@@ -228,7 +243,8 @@ TEST_F(LobsterSessionImplTest, CanDownloadACandidateIfItIsInCache) {
         std::vector<LobsterImageCandidate> inflated_candidates = {
             LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"a1b2c3",
                                   /*seed=*/30,
-                                  /*query=*/"a nice strawberry")};
+                                  /*user_query=*/"a nice strawberry",
+                                  /*rewritten_query=*/"a nice strawberry")};
         std::move(done_callback).Run(std::move(inflated_candidates));
       });
 
@@ -455,7 +471,8 @@ TEST_F(LobsterSessionImplTest,
         std::vector<LobsterImageCandidate> inflated_candidates = {
             LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"a1b2c3",
                                   /*seed=*/31,
-                                  /*query=*/"a nice strawberry")};
+                                  /*user_query=*/"a nice strawberry",
+                                  /*rewritten_query=*/"a nice strawberry")};
         std::move(done_callback).Run(std::move(inflated_candidates));
       });
 
@@ -517,7 +534,8 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenCommittingAsInsert) {
         std::vector<LobsterImageCandidate> inflated_candidates = {
             LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"a1b2c3",
                                   /*seed=*/21,
-                                  /*query=*/"a nice strawberry")};
+                                  /*user_query=*/"a nice strawberry",
+                                  /*rewritten_query=*/"a nice strawberry")};
         std::move(done_callback).Run(std::move(inflated_candidates));
       });
 
@@ -583,7 +601,8 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenCommittingAsDownload) {
         std::vector<LobsterImageCandidate> inflated_candidates = {
             LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"a1b2c3",
                                   /*seed=*/21,
-                                  /*query=*/"a nice strawberry")};
+                                  /*user_query=*/"a nice strawberry",
+                                  /*rewritten_query=*/"a nice strawberry")};
         std::move(done_callback).Run(std::move(inflated_candidates));
       });
 

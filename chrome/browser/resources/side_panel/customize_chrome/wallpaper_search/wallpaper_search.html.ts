@@ -111,7 +111,7 @@ export function getHtml(this: WallpaperSearchElement) {
         </svg>
       </cr-loading-gradient>
     </div>
-    <cr-grid id="resultGrid" columns="3" disable-arrow-navigation
+    <cr-grid id="resultGrid" columns="3"
         ?hidden="${!this.results_}" role="radiogroup">
       ${this.results_.map((item, index) => html`
         <div class="tile result" tabindex="0" role="radio"
@@ -182,7 +182,7 @@ ${this.inspirationCardEnabled_ ? html`
               ${this.getInspirationGroupTitle_(item.descriptors)}
             </div>
           </h3>
-          <cr-grid columns="3" disable-arrow-navigation role="radiogroup">
+          <cr-grid columns="3" role="radiogroup">
             ${item.inspirations.map((item, index) => html`
               <div class="tile result"
                   data-group-index="${groupIndex}" data-index="${index}"
@@ -210,7 +210,7 @@ ${this.inspirationCardEnabled_ ? html`
     <h2 slot="heading">$i18n{wallpaperSearchHistoryHeader}</h2>
   </sp-heading>
   <div class="content">
-    <cr-grid columns="3" disable-arrow-navigation role="radiogroup">
+    <cr-grid columns="3" role="radiogroup">
       ${this.history_.map((item, index) => html`
         <div class="tile result" tabindex="0" role="radio"
             aria-label="${this.getHistoryResultAriaLabel_(index, item)}"

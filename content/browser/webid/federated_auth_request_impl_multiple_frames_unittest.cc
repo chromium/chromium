@@ -158,7 +158,7 @@ class TestDialogController
   TestDialogController& operator=(TestDialogController&) = delete;
 
   bool ShowAccountsDialog(
-      const std::string& rp_for_display,
+      content::RelyingPartyData rp_data,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       IdentityRequestAccount::SignInMode sign_in_mode,
@@ -170,7 +170,7 @@ class TestDialogController
       IdentityRequestDialogController::AccountsDisplayedCallback
           accounts_displayed_callback) override {
     state_->did_show_accounts_dialog = true;
-    state_->rp_for_display = rp_for_display;
+    state_->rp_for_display = rp_data.rp_for_display;
     if (accounts_dialog_action_ == AccountsDialogAction::kSelectAccount) {
       std::move(on_selected)
           .Run(GURL(kProviderUrlFull), kAccountId, /*is_sign_in=*/true);

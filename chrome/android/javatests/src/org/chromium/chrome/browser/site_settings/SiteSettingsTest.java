@@ -148,6 +148,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -169,7 +170,10 @@ import java.util.concurrent.TimeoutException;
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
     "ignore-certificate-errors"
 })
-@EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_RELATED_WEBSITE_SETS_UI})
+@EnableFeatures({
+    ChromeFeatureList.PRIVACY_SANDBOX_RELATED_WEBSITE_SETS_UI,
+    DeviceFeatureList.BLUETOOTH_RFCOMM_ANDROID
+})
 // TODO(crbug.com/370008370): Update individual tests after launch.
 @DisableFeatures({
     ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
@@ -1450,7 +1454,7 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesShown() {
         // If you add a category in the SiteSettings UI, please update this total AND add a test for
         // it below, named "testOnlyExpectedPreferences<Category>".
-        Assert.assertEquals(34, SiteSettingsCategory.Type.NUM_ENTRIES);
+        Assert.assertEquals(35, SiteSettingsCategory.Type.NUM_ENTRIES);
     }
 
     @Test
@@ -2066,6 +2070,14 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    public void testOnlyExpectedPreferencesSerialPort() {
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.SERIAL_PORT, BINARY_TOGGLE, BINARY_TOGGLE);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesUseStorage() {
         checkPreferencesForCategory(SiteSettingsCategory.Type.USE_STORAGE, NULL_ARRAY);
     }
@@ -2294,6 +2306,30 @@ public class SiteSettingsTest {
     public void testBlockUsb() {
         new TwoStatePermissionTestCase(
                         "USB", SiteSettingsCategory.Type.USB, ContentSettingsType.USB_GUARD, false)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testAllowSerialPort() {
+        new TwoStatePermissionTestCase(
+                        "SerialPort",
+                        SiteSettingsCategory.Type.SERIAL_PORT,
+                        ContentSettingsType.SERIAL_GUARD,
+                        true)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testBlockSerialPort() {
+        new TwoStatePermissionTestCase(
+                        "SerialPort",
+                        SiteSettingsCategory.Type.SERIAL_PORT,
+                        ContentSettingsType.SERIAL_GUARD,
+                        false)
                 .run();
     }
 

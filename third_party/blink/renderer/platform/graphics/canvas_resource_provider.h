@@ -215,8 +215,12 @@ class PLATFORM_EXPORT CanvasResourceProvider
     NOTREACHED();
   }
 
-  void OnResourceReturnedFromCompositor(scoped_refptr<CanvasResource>&&);
-  void SetResourceRecyclingEnabled(bool);
+  // CanvasResourceProviderSharedImage overrides these methods as part of
+  // implementing resource recycling.
+  virtual void OnResourceReturnedFromCompositor(
+      scoped_refptr<CanvasResource>&&) {}
+  virtual void SetResourceRecyclingEnabled(bool) {}
+
   void ClearRecycledResources();
 
   SkSurface* GetSkSurface() const;
@@ -419,11 +423,11 @@ class PLATFORM_EXPORT CanvasResourceProvider
   WTF::Vector<UnusedResource> canvas_resources_;
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
+  base::OneShotTimer unused_resources_reclaim_timer_;
 
  private:
   friend class FlushForImageListener;
 
-  void RecycleResource(scoped_refptr<CanvasResource>&&);
   virtual sk_sp<SkSurface> CreateSkSurface() const = 0;
   virtual bool UseOopRasterization() { return false; }
   bool UseHardwareDecodeCache() const {
@@ -444,9 +448,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // Called after the recording was cleared from any draw ops it might have had.
   void RecordingCleared() override;
-
-  void MaybePostUnusedResourcesReclaimTask();
-  void ClearOldUnusedResources();
 
   // Disables lines drawing as paths if necessary. Drawing lines as paths is
   // only needed for ganesh.
@@ -474,14 +475,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
       cc::PaintImage::kInvalidContentId;
   uint32_t snapshot_sk_image_id_ = 0u;
 
-  base::OneShotTimer unused_resources_reclaim_timer_;
-  bool resource_recycling_enabled_ = true;
   bool oopr_uses_dmsaa_ = false;
   bool always_enable_raster_timers_for_testing_ = false;
 
-  // The maximum number of in-flight resources waiting to be used for
-  // recycling.
-  static constexpr int kMaxRecycledCanvasResources = 3;
   // The maximum number of draw ops executed on the canvas, after which the
   // underlying GrContext is flushed.
   // Note: This parameter does not affect the flushing of recorded PaintOps.

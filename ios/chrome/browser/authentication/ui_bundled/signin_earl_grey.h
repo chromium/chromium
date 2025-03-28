@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
 
@@ -140,6 +141,12 @@ class GURL;
 // Checks that fore each histogram listed above as properties, it’s emitted the
 // number of time indicated in the property for `accessPoint`.
 - (void)assertExpectedSigninHistograms:(ExpectedSigninHistograms*)expecteds;
+
+// Stores a policy that will be returned for the next fetch profile separation
+// policy request.
+- (void)setPolicyResponseForNextProfileSeparationPolicyRequest:
+    (policy::ProfileSeparationDataMigrationSettings)
+        profileSeparationDataMigrationSettings;
 
 @end
 

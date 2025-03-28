@@ -102,6 +102,21 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness {
         /*attempt=*/nullptr);
   }
 
+  std::unique_ptr<PrefetchContainer> CreateBrowserContextPrefetchContainer(
+      const GURL& prefetch_url,
+      const net::HttpRequestHeaders& additional_headers = {},
+      bool should_append_additional_headers = true) {
+    return std::make_unique<PrefetchContainer>(
+        browser_context(), prefetch_url,
+        PrefetchType(PreloadingTriggerType::kEmbedder,
+                     /*use_prefetch_proxy=*/true),
+        blink::mojom::Referrer(), /*javascript_enabled=*/true,
+        /*referring_origin=*/std::nullopt,
+        /*no_vary_search_hint=*/std::nullopt,
+        /*attempt=*/nullptr, additional_headers,
+        /*request_status_listener=*/nullptr, base::Minutes(10),
+        should_append_additional_headers);
+  }
   bool SetCookie(const GURL& url, const std::string& value) {
     std::unique_ptr<net::CanonicalCookie> cookie(
         net::CanonicalCookie::CreateForTesting(url, value, base::Time::Now()));
@@ -277,6 +292,30 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
   AddRedirectHop(prefetch_container.get(), kTestNonEligibleUrl2);
   EXPECT_FALSE(
       request->cors_exempt_headers.HasHeader(variations::kClientDataHeader));
+}
+
+TEST_P(PrefetchContainerXClientDataHeaderTest,
+       NeverAddHeaderIfBrowserContextSettingIsOff) {
+  const GURL kTestEligibleUrl = GURL("https://google.com");
+  net::HttpRequestHeaders additional_headers;
+  additional_headers.SetHeader(variations::kClientDataHeader,
+                               "test_client_data");
+
+  auto prefetch_container = CreateBrowserContextPrefetchContainer(
+      kTestEligibleUrl, additional_headers, false);
+  variations::VariationsIdsProvider::GetInstance()->ForceVariationIds({"1"},
+                                                                      {"2"});
+
+  prefetch_container->MakeResourceRequest({});
+  auto* request = prefetch_container->GetResourceRequest();
+
+  EXPECT_TRUE(request->headers.HasHeader(variations::kClientDataHeader));
+  // It should be treated as non-trusted.
+  EXPECT_FALSE(
+      request->cors_exempt_headers.HasHeader(variations::kClientDataHeader));
+  // Make sure it doesn't get overridden.
+  EXPECT_EQ(request->headers.GetHeader(variations::kClientDataHeader).value(),
+            "test_client_data");
 }
 
 INSTANTIATE_TEST_SUITE_P(PrefetchContainerXClientDataTests,

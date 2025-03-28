@@ -103,23 +103,23 @@ export class CastFeedbackUiElement extends CrLitElement {
     };
   }
 
-  protected allowContactByEmail_: boolean = false;
-  protected attachLogs_: boolean = false;
-  protected audioQuality_: string = '';
-  protected comments_: string = '';
-  protected feedbackType_: FeedbackType = FeedbackType.BUG;
-  protected hasNetworkSoftware_: string = '';
-  private networkDescription_: string = '';
-  protected logData_: string = loadTimeData.getString('logData');
+  protected accessor allowContactByEmail_: boolean = false;
+  protected accessor attachLogs_: boolean = false;
+  protected accessor audioQuality_: string = '';
+  protected accessor comments_: string = '';
+  protected accessor feedbackType_: FeedbackType = FeedbackType.BUG;
+  protected accessor hasNetworkSoftware_: string = '';
+  private accessor networkDescription_: string = '';
+  protected accessor logData_: string = loadTimeData.getString('logData');
   private categoryTag_: string = loadTimeData.getString('categoryTag');
-  protected projectedContentUrl_: string = '';
-  protected sendDialogText_: string = '';
-  protected sendDialogIsInteractive_: boolean = false;
-  protected sufficientFeedback_: boolean = false;
-  protected userEmail_: string = '';
-  protected videoQuality_: string = '';
-  protected videoSmoothness_: string = '';
-  protected visibleInSetup_: string = '';
+  protected accessor projectedContentUrl_: string = '';
+  protected accessor sendDialogText_: string = '';
+  protected accessor sendDialogIsInteractive_: boolean = false;
+  protected accessor sufficientFeedback_: boolean = false;
+  protected accessor userEmail_: string = '';
+  protected accessor videoQuality_: string = '';
+  protected accessor videoSmoothness_: string = '';
+  protected accessor visibleInSetup_: string = '';
 
   private browserProxy_: FeedbackUiBrowserProxy =
       FeedbackUiBrowserProxyImpl.getInstance();

@@ -170,6 +170,9 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   private allFieldsAreEmpty_: boolean;
   private canSave_: boolean;
   private userClickedSaveButton_: boolean;
+  private months_: string[];
+  private days_: string[];
+  private years_: string[];
 
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();
@@ -327,6 +330,17 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     this.onAttributeInstanceFieldInput_(e);
   }
 
+
+
+  private isExistingYearOutOfBounds_(
+      attributeInstance: AttributeInstance, years: string[]): boolean {
+    const year = this.getExistingYear_(attributeInstance);
+    return year.length > 0 && !years.includes(year);
+  }
+
+  private getExistingYear_(attributeInstance: AttributeInstance): string {
+    return (attributeInstance.value as DateValue).year;
+  }
 
   /**
    * Returns true if the date is invalid. A date is invalid either if it is

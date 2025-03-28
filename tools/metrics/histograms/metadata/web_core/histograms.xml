@@ -102,7 +102,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="WebCore.FindInPage.TaskDuration" units="ms"
     expires_after="2023-05-07">
   <owner>rakina@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
   <summary>
     Records how long one find-in-page task took from invocation start to end.
     Emitted when a find-in-page task finished running.

@@ -133,7 +133,7 @@ Response BluetoothEmulationHandler::Enable(const String& in_state,
     return Response::ServerError("BluetoothEmulation already enabled");
   }
 
-  CHECK(!fake_central_.is_bound());
+  CHECK(!is_enabled());
   CHECK(!client_receiver_.is_bound());
   emulation_enabled_ = true;
   global_factory_values_ =
@@ -156,7 +156,7 @@ Response BluetoothEmulationHandler::Enable(const String& in_state,
 }
 
 Response BluetoothEmulationHandler::Disable() {
-  if (fake_central_.is_bound()) {
+  if (is_enabled()) {
     CHECK(emulation_enabled_);
     client_receiver_.reset();
     fake_central_.reset();
@@ -177,7 +177,7 @@ Response BluetoothEmulationHandler::Disable() {
 void BluetoothEmulationHandler::SetSimulatedCentralState(
     const String& in_state,
     std::unique_ptr<SetSimulatedCentralStateCallback> callback) {
-  if (!fake_central_.is_bound()) {
+  if (!is_enabled()) {
     std::move(callback)->sendFailure(
         Response::ServerError("BluetoothEmulation not enabled"));
     return;
@@ -196,7 +196,7 @@ void BluetoothEmulationHandler::SimulatePreconnectedPeripheral(
         in_manufacturer_data,
     std::unique_ptr<protocol::Array<String>> in_known_service_uuids,
     std::unique_ptr<SimulatePreconnectedPeripheralCallback> callback) {
-  if (!fake_central_.is_bound()) {
+  if (!is_enabled()) {
     std::move(callback)->sendFailure(
         Response::ServerError("BluetoothEmulation not enabled"));
     return;
@@ -211,7 +211,7 @@ void BluetoothEmulationHandler::SimulatePreconnectedPeripheral(
 void BluetoothEmulationHandler::SimulateAdvertisement(
     std::unique_ptr<protocol::BluetoothEmulation::ScanEntry> in_entry,
     std::unique_ptr<SimulateAdvertisementCallback> callback) {
-  if (!fake_central_.is_bound()) {
+  if (!is_enabled()) {
     std::move(callback)->sendFailure(
         Response::ServerError("BluetoothEmulation not enabled"));
     return;
@@ -230,7 +230,7 @@ void BluetoothEmulationHandler::SimulateGATTOperationResponse(
     const String& in_type,
     int in_code,
     std::unique_ptr<SimulateGATTOperationResponseCallback> callback) {
-  if (!fake_central_.is_bound()) {
+  if (!is_enabled()) {
     std::move(callback)->sendFailure(
         Response::ServerError("BluetoothEmulation not enabled"));
     return;
@@ -257,6 +257,68 @@ void BluetoothEmulationHandler::SimulateGATTOperationResponse(
             std::move(callback)->sendSuccess();
           },
           std::move(callback), in_type));
+}
+
+void BluetoothEmulationHandler::AddService(
+    const String& in_address,
+    const String& in_uuid,
+    std::unique_ptr<AddServiceCallback> callback) {
+  if (!is_enabled()) {
+    std::move(callback)->sendFailure(
+        Response::ServerError("BluetoothEmulation not enabled"));
+    return;
+  }
+
+  device::BluetoothUUID uuid(in_uuid);
+  if (!uuid.IsValid()) {
+    std::move(callback)->sendFailure(Response::InvalidParams(
+        base::StrCat({in_uuid, " is not a valid UUID"})));
+    return;
+  }
+
+  fake_central_->AddFakeService(
+      in_address, uuid,
+      base::BindOnce(
+          [](std::unique_ptr<AddServiceCallback> callback,
+             const std::string& error_message,
+             const std::optional<std::string>& identifier) {
+            if (!identifier) {
+              std::move(callback)->sendFailure(
+                  Response::ServerError(error_message));
+              return;
+            }
+            std::move(callback)->sendSuccess(*identifier);
+          },
+          std::move(callback),
+          base::StrCat({"Failed to add service ", in_uuid, " to peripheral ",
+                        in_address})));
+}
+
+void BluetoothEmulationHandler::RemoveService(
+    const String& in_address,
+    const String& in_id,
+    std::unique_ptr<RemoveServiceCallback> callback) {
+  if (!is_enabled()) {
+    std::move(callback)->sendFailure(
+        Response::ServerError("BluetoothEmulation not enabled"));
+    return;
+  }
+
+  fake_central_->RemoveFakeService(
+      in_id, in_address,
+      base::BindOnce(
+          [](std::unique_ptr<RemoveServiceCallback> callback,
+             const std::string& error_message, bool success) {
+            if (!success) {
+              std::move(callback)->sendFailure(
+                  Response::ServerError(error_message));
+              return;
+            }
+            std::move(callback)->sendSuccess();
+          },
+          std::move(callback),
+          base::StrCat({"Failed to remove service represented by ", in_id,
+                        " from peripheral ", in_address})));
 }
 
 void BluetoothEmulationHandler::DispatchGATTOperationEvent(

@@ -229,6 +229,12 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
       policy_data.set_metrics_log_segment(
           policy_storage()->metrics_log_segment().value());
     }
+    if (policy_storage()->k12_age_classification_metrics_log_segment()) {
+      policy_data.set_k12_age_classification_metrics_log_segment(
+          policy_storage()
+              ->k12_age_classification_metrics_log_segment()
+              .value());
+    }
   } else if (policy_type == dm_protocol::kChromeDevicePolicyType) {
     std::vector<std::string> device_affiliation_ids =
         policy_storage()->device_affiliation_ids();

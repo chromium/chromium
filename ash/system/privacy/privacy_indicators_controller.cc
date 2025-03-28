@@ -416,9 +416,16 @@ bool PrivacyIndicatorsController::IsMicrophoneUsed() const {
          !CrasAudioHandler::Get()->IsInputMuted();
 }
 
-void UpdatePrivacyIndicatorsScreenShareStatus(bool is_screen_sharing) {
+void UpdatePrivacyIndicatorsScreenShareStatus(
+    bool is_screen_sharing,
+    bool is_remote_screen_sharing_notification) {
   if (features::IsVideoConferenceEnabled()) {
-    return;
+    // Privacy indicators should not be visible when video conferencing is
+    // enabled. But, video conferencing feature doesn't show an indicator when a
+    // device is remotely accessed. Hence, remote screen activity privacy
+    // indicator should be shown irrespective of the state of video conferencing
+    // feature.
+    CHECK(is_remote_screen_sharing_notification);
   }
 
   DCHECK(Shell::HasInstance());

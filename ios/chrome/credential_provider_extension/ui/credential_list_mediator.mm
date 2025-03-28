@@ -129,7 +129,7 @@
 
 #pragma mark - Private
 
-// Fetches and presents credentials that are relavent to the service the user is
+// Fetches and presents credentials that are relevant to the service the user is
 // trying to log into.
 - (void)fetchAndPresentRelevantCredentials {
   self.allCredentials = [self fetchAllCredentials];

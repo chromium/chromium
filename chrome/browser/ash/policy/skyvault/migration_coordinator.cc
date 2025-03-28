@@ -19,10 +19,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/message_formatter.h"
 #include "base/logging.h"
-#include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
@@ -32,11 +31,12 @@
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
-#include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/origin.h"
 
 namespace policy::local_user_files {
 
@@ -67,38 +67,38 @@ bool ErrorCanBeIgnored(MigrationUploadError error) {
 
 std::string FormatErrorMessage(MigrationDestination destination,
                                MigrationUploadError error) {
-  DCHECK(IsCloudDestination(destination));
+  CHECK(IsCloudDestination(destination));
   switch (error) {
     case MigrationUploadError::kCloudQuotaFull:
-      return base::UTF16ToUTF8(
-          base::i18n::MessageFormatter::FormatWithNumberedArgs(
-              l10n_util::GetStringUTF16(
-                  IDS_OFFICE_UPLOAD_ERROR_FREE_UP_SPACE_TO_MOVE),
-              1,
-              l10n_util::GetStringUTF16(
-                  destination == MigrationDestination::kGoogleDrive
-                      ? IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE_SHORT
-                      : IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE_SHORT)));
+      return base::UTF16ToUTF8(base::ReplaceStringPlaceholders(
+          l10n_util::GetStringUTF16(
+              IDS_POLICY_SKYVAULT_MIGRATION_UPLOAD_ERROR_NO_SPACE),
+          l10n_util::GetStringUTF16(
+              destination == MigrationDestination::kGoogleDrive
+                  ? IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE_SHORT
+                  : IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE_SHORT),
+          /*offset=*/nullptr));
     case MigrationUploadError::kFileNotFound:
       return l10n_util::GetStringUTF8(
-          IDS_OFFICE_UPLOAD_ERROR_FILE_NOT_EXIST_TO_MOVE);
-    case MigrationUploadError::kInvalidURL:
-      return l10n_util::GetStringUTF8(IDS_OFFICE_UPLOAD_ERROR_REJECTED);
+          IDS_POLICY_SKYVAULT_MIGRATION_UPLOAD_ERROR_FILE_NOT_EXIST);
     case MigrationUploadError::kAuthRequired:
       return l10n_util::GetStringUTF8(
-          IDS_OFFICE_UPLOAD_ERROR_REAUTHENTICATION_REQUIRED);
+          IDS_POLICY_SKYVAULT_MIGRATION_UPLOAD_ERROR_ODFS_SIGN_IN);
+    case MigrationUploadError::kNetworkError:
+    case MigrationUploadError::kReconnectTimeout:
+      return l10n_util::GetStringUTF8(
+          IDS_POLICY_SKYVAULT_MIGRATION_UPLOAD_ERROR_NO_INTERNET);
     case MigrationUploadError::kCopyFailed:
     case MigrationUploadError::kCreateFolderFailed:
     case MigrationUploadError::kSyncFailed:
-    case MigrationUploadError::kDeleteFailed:  // should not be logged
+    case MigrationUploadError::kDeleteFailed:
     case MigrationUploadError::kMoveFailed:
-    case MigrationUploadError::kCancelled:  // should not be logged
+    case MigrationUploadError::kCancelled:
     case MigrationUploadError::kUnexpectedError:
     case MigrationUploadError::kServiceUnavailable:
-    // TODO: use a dedicated network error string, not generic
-    case MigrationUploadError::kNetworkError:
-    case MigrationUploadError::kReconnectTimeout:
-      return l10n_util::GetStringUTF8(IDS_OFFICE_UPLOAD_ERROR_GENERIC);
+    case MigrationUploadError::kInvalidURL:
+      return l10n_util::GetStringUTF8(
+          IDS_POLICY_SKYVAULT_MIGRATION_UPLOAD_ERROR_GENERIC);
   }
 }
 

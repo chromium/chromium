@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "chrome/browser/ui/tabs/split_tab_id.h"
-#include "chrome/browser/ui/tabs/tab_collection.h"
+#include "components/tab_collections/public/tab_collection.h"
 #include "url/gurl.h"
 
 namespace tabs {

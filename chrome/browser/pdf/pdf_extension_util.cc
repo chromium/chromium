@@ -261,6 +261,9 @@ void AddAdditionalData(bool enable_printing,
     annotations_enabled = enable_annotations;
   }
   dict->Set("pdfInk2Enabled", use_ink2);
+  bool text_annotations_enabled =
+      use_ink2 && chrome_pdf::features::kPdfInk2TextAnnotations.Get();
+  dict->Set("pdfTextAnnotationsEnabled", text_annotations_enabled);
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
   dict->Set("printingEnabled", printing_enabled);
   dict->Set("pdfAnnotationsEnabled", annotations_enabled);

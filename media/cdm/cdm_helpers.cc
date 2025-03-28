@@ -10,6 +10,7 @@
 #include "media/cdm/cdm_helpers.h"
 
 #include "base/check.h"
+#include "base/not_fatal_until.h"
 #include "ui/gfx/color_space.h"
 
 namespace media {
@@ -99,22 +100,22 @@ cdm::Buffer* VideoFrameImpl::FrameBuffer() {
 }
 
 void VideoFrameImpl::SetPlaneOffset(cdm::VideoPlane plane, uint32_t offset) {
-  DCHECK(plane < cdm::kMaxPlanes);
+  CHECK(plane < cdm::kMaxPlanes, base::NotFatalUntil::M140);
   plane_offsets_[plane] = offset;
 }
 
 uint32_t VideoFrameImpl::PlaneOffset(cdm::VideoPlane plane) {
-  DCHECK(plane < cdm::kMaxPlanes);
+  CHECK(plane < cdm::kMaxPlanes, base::NotFatalUntil::M140);
   return plane_offsets_[plane];
 }
 
 void VideoFrameImpl::SetStride(cdm::VideoPlane plane, uint32_t stride) {
-  DCHECK(plane < cdm::kMaxPlanes);
+  CHECK(plane < cdm::kMaxPlanes, base::NotFatalUntil::M140);
   strides_[plane] = stride;
 }
 
 uint32_t VideoFrameImpl::Stride(cdm::VideoPlane plane) {
-  DCHECK(plane < cdm::kMaxPlanes);
+  CHECK(plane < cdm::kMaxPlanes, base::NotFatalUntil::M140);
   return strides_[plane];
 }
 

@@ -392,6 +392,29 @@ bool ValidateSignatureValue(
   return true;
 }
 
+bool MatchExpectedPublicKeys(
+    mojom::SRIMessageSignaturesPtr& message_signatures,
+    const std::vector<std::string>& expected_public_keys) {
+  if (expected_public_keys.empty()) {
+    return true;
+  }
+  for (const std::string& key : expected_public_keys) {
+    for (const auto& signature : message_signatures->signatures) {
+      if (signature->keyid == key) {
+        return true;
+      }
+    }
+  }
+
+  // We failed to match above, so add an issue and return false:
+  auto issue = mojom::SRIMessageSignatureIssue::New();
+  issue->error =
+      mojom::SRIMessageSignatureError::kValidationFailedIntegrityMismatch;
+  issue->integrity_assertions = expected_public_keys;
+  message_signatures->issues.push_back(std::move(issue));
+  return false;
+}
+
 }  // namespace
 
 mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
@@ -715,13 +738,13 @@ std::optional<mojom::BlockedByResponseReason>
 MaybeBlockResponseForSRIMessageSignature(
     const GURL& request_url,
     const network::mojom::URLResponseHead& response,
-    bool checks_forced_by_initiator,
+    const std::vector<std::string>& expected_public_keys,
     const raw_ptr<mojom::DevToolsObserver> devtools_observer,
     const std::string& devtools_request_id) {
   // If the feature is disabled, never block resources.
   if (!base::FeatureList::IsEnabled(
           features::kSRIMessageSignatureEnforcement) &&
-      !checks_forced_by_initiator) {
+      expected_public_keys.empty()) {
     return std::nullopt;
   }
 
@@ -730,9 +753,11 @@ MaybeBlockResponseForSRIMessageSignature(
     return std::nullopt;
   }
   auto parsed_headers = ParseSRIMessageSignaturesFromHeaders(*response.headers);
-  bool passed_validation = !parsed_headers->signatures.size() ||
-                           ValidateSRIMessageSignaturesOverHeaders(
-                               parsed_headers, request_url, *response.headers);
+  bool passed_validation =
+      !parsed_headers->signatures.size() ||
+      (ValidateSRIMessageSignaturesOverHeaders(parsed_headers, request_url,
+                                               *response.headers) &&
+       MatchExpectedPublicKeys(parsed_headers, expected_public_keys));
 
   if (devtools_observer && !devtools_request_id.empty()) {
     devtools_observer->OnSRIMessageSignatureIssue(

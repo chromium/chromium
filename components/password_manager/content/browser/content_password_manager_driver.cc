@@ -188,9 +188,10 @@ void ContentPasswordManagerDriver::SetPasswordFillData(
   }
 }
 
-void ContentPasswordManagerDriver::InformNoSavedCredentials() {
+void ContentPasswordManagerDriver::InformNoSavedCredentials(
+    bool should_show_popup_without_passwords) {
   if (const auto& agent = GetPasswordAutofillAgent()) {
-    agent->InformNoSavedCredentials();
+    agent->InformNoSavedCredentials(should_show_popup_without_passwords);
   }
 }
 

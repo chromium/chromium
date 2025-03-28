@@ -122,11 +122,11 @@ PlayerUtils.registerEMEEventListeners = function(player) {
       }
 
       if (keySystem == CLEARKEY) {
-        // AesDecryptor does not support getStatusForPolicy() so the promise
-        // is always rejected.
+        // For ClearKey, getStatusForPolicy() should always return usable.
         return Promise.all([
-          getStatusForHdcpPolicy(mediaKeys, '', 'rejected'),
-          getStatusForHdcpPolicy(mediaKeys, '1.0', 'rejected'),
+          getStatusForHdcpPolicy(mediaKeys, '', 'usable'),
+          getStatusForHdcpPolicy(mediaKeys, '1.0', 'usable'),
+          getStatusForHdcpPolicy(mediaKeys, '2.3', 'usable'),
         ]);
       }
 

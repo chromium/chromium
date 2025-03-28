@@ -37,12 +37,17 @@ using autofill_metrics::CreditCardFormEventLogger;
 class CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest
     : public CreditCardAccessManagerTestBase {
  public:
-  CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest() = default;
+  CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillEnableCardInfoRuntimeRetrieval,
+                              features::
+                                  kAutofillEnableFpanRiskBasedAuthentication},
+        /*disabled_features=*/{});
+  }
   ~CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest() override =
       default;
 
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillEnableFpanRiskBasedAuthentication};
+  base::test::ScopedFeatureList feature_list_;
 
   void MockRiskBasedAuthSucceedsWithoutPanReturned(
       const CreditCard* card,
@@ -486,7 +491,6 @@ TEST_F(
                    ->risk_based_authentication_invoked());
 }
 
-#if !BUILDFLAG(IS_IOS)
 // Test the green path flow when the masked server card enrolled in card info
 // retrieval is successfully returned from the server during a risk-based
 // retrieval.
@@ -579,6 +583,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
       1);
 }
 
+#if !BUILDFLAG(IS_IOS)
 // Test the yellow path flow when the masked server card enrolled in card info
 // retrieval is retrieved from the server with Sms Otp authentication.
 TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,

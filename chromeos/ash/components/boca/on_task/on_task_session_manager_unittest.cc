@@ -66,6 +66,10 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
               (bool pinned, SessionID window_id),
               (override));
   MOCK_METHOD(void,
+              SetPauseStateForSystemWebAppWindow,
+              (bool paused, SessionID window_id),
+              (override));
+  MOCK_METHOD(void,
               SetWindowTrackerForSystemWebAppWindow,
               (SessionID window_id,
                const std::vector<boca::BocaWindowObserver*> observers),

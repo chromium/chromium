@@ -102,6 +102,7 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
   installationProgress: InstallationProgress;
   private isInitiallyInflight = false;
   private lastDeviceRequestId: DeviceRequestId|null = null;
+  private updateIsDone: boolean;
   dialogContent = initialDialogContent;
   private updateProvider = getUpdateProvider();
   private installController: InstallControllerRemote|null = null;

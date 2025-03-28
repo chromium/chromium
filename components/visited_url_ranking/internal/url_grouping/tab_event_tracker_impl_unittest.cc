@@ -59,6 +59,12 @@ TEST_F(TabEventTrackerImplTest, SwitchedCount) {
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
 
+  // Selection with no current tab change does not change counts.
+  tab_event_tracker_->DidSelectTab(
+      1, TabEventTracker::TabSelectionType::kFromUser, 1);
+  EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId1));
+  EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
+
   tab_event_tracker_->DidSelectTab(
       2, TabEventTracker::TabSelectionType::kFromUser, 1);
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId1));

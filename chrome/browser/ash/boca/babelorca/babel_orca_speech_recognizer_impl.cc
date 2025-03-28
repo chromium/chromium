@@ -9,12 +9,22 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
+#include "chromeos/ash/components/boca/babelorca/soda_installer.h"
 #include "chromeos/ash/components/boca/babelorca/speech_recognition_event_handler.h"
 #include "components/live_caption/pref_names.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 
 namespace ash::babelorca {
+
+namespace {
+void UnwrapSodaInstallationStatus(
+    base::OnceCallback<void(bool)> availabililty_callback,
+    SodaInstaller::InstallationStatus status) {
+  std::move(availabililty_callback)
+      .Run(status == SodaInstaller::InstallationStatus::kReady);
+}
+}  // namespace
 
 BabelOrcaSpeechRecognizerImpl::BabelOrcaSpeechRecognizerImpl(
     Profile* profile,
@@ -26,10 +36,6 @@ BabelOrcaSpeechRecognizerImpl::BabelOrcaSpeechRecognizerImpl(
       soda_installer_(global_prefs, profile->GetPrefs(), application_locale),
       speech_recognition_event_handler_(application_locale),
       primary_profile_(profile) {
-  // TODO(384026579): Notify Producer of error, then retry or alert user.
-  // We pass DoNothing here as there is no error reporting mechanism and
-  // we don't want to start speech recognition until Start is called.
-  soda_installer_.GetAvailabilityOrInstall(base::DoNothing());
 }
 BabelOrcaSpeechRecognizerImpl::~BabelOrcaSpeechRecognizerImpl() = default;
 
@@ -47,9 +53,11 @@ void BabelOrcaSpeechRecognizerImpl::OnLanguageIdentificationEvent(
 
 void BabelOrcaSpeechRecognizerImpl::Start() {
   // TODO(384026579): Notify Producer of error, then retry or alert user.
-  soda_installer_.GetAvailabilityOrInstall(base::BindOnce(
-      &SystemLiveCaptionService::SpeechRecognitionAvailabilityChanged,
-      service_ptr_factory_.GetWeakPtr()));
+  soda_installer_.InstallSoda(base::BindOnce(
+      &UnwrapSodaInstallationStatus,
+      base::BindOnce(
+          &SystemLiveCaptionService::SpeechRecognitionAvailabilityChanged,
+          service_ptr_factory_.GetWeakPtr())));
 }
 
 void BabelOrcaSpeechRecognizerImpl::Stop() {

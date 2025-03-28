@@ -22,6 +22,8 @@ static_library("core_public") {
     "collaboration_flow_entry_point.h",
     "collaboration_flow_type.h",
     "collaboration_service.h",
+    "collaboration_utils.cc",
+    "collaboration_utils.h",
     "service_status.cc",
     "service_status.h",
   ]

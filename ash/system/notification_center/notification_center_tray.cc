@@ -135,11 +135,9 @@ void NotificationCenterTray::Initialize() {
   // only added by host views.
   notification_icons_controller_->AddNotificationTrayItems(tray_container());
 
-  // Privacy indicator is only enabled when Video Conference is disabled.
-  if (!features::IsVideoConferenceEnabled()) {
-    privacy_indicators_view_ = tray_container()->AddChildView(
-        std::make_unique<PrivacyIndicatorsTrayItemView>(shelf()));
-  }
+  privacy_indicators_view_ = tray_container()->AddChildView(
+      std::make_unique<PrivacyIndicatorsTrayItemView>(shelf()));
+
   for (views::View* tray_item : tray_container()->children()) {
     static_cast<TrayItemView*>(tray_item)->AddObserver(this);
   }

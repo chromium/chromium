@@ -13,8 +13,8 @@ import android.view.MotionEvent;
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
-import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContents.UserDataFactory;
 import org.chromium.device.gamepad.GamepadList;
 
 /**
@@ -31,8 +31,7 @@ class Gamepad implements WindowEventObserver, UserData {
 
     public static Gamepad from(WebContents webContents) {
         Gamepad ret =
-                ((WebContentsImpl) webContents)
-                        .getOrSetUserData(Gamepad.class, UserDataFactoryLazyHolder.INSTANCE);
+                webContents.getOrSetUserData(Gamepad.class, UserDataFactoryLazyHolder.INSTANCE);
         assert ret != null;
         return ret;
     }

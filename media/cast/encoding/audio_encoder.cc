@@ -20,6 +20,8 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/tick_clock.h"
@@ -61,6 +63,8 @@ struct OpusEncoderDeleter {
 class AudioEncoder::ImplBase
     : public base::RefCountedThreadSafe<AudioEncoder::ImplBase> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   ImplBase(const scoped_refptr<CastEnvironment>& cast_environment,
            AudioCodec codec,
            int num_channels,
@@ -738,13 +742,15 @@ AudioEncoder::AudioEncoder(
   DETACH_FROM_THREAD(insert_thread_checker_);
   switch (codec) {
     case AudioCodec::kOpus:
-      impl_ = new OpusImpl(cast_environment, num_channels, sampling_rate,
-                           bitrate, std::move(frame_encoded_callback));
+      impl_ = base::MakeRefCounted<OpusImpl>(cast_environment, num_channels,
+                                             sampling_rate, bitrate,
+                                             std::move(frame_encoded_callback));
       break;
 #if BUILDFLAG(IS_APPLE)
     case AudioCodec::kAAC:
-      impl_ = new AppleAacImpl(cast_environment, num_channels, sampling_rate,
-                               bitrate, std::move(frame_encoded_callback));
+      impl_ = base::MakeRefCounted<AppleAacImpl>(
+          cast_environment, num_channels, sampling_rate, bitrate,
+          std::move(frame_encoded_callback));
       break;
 #endif  // BUILDFLAG(IS_MAC)
     default:

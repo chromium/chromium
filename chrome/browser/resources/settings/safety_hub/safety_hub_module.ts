@@ -109,6 +109,7 @@ export class SettingsSafetyHubModuleElement extends
   }
 
   sites: SiteInfo[];
+  animated: boolean;
   header: string;
   subheader: string|TrustedHTML;
   headerIcon: string;

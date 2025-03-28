@@ -56,8 +56,6 @@ class DataTypeStoreBase {
 
     // Transfers the changes from a MetadataChangeList into this WriteBatch.
     // `mcl` must have previously been created by CreateMetadataChangeList().
-    // TODO(mastiz): Revisit whether the last requirement above can be removed
-    // and make this API more type-safe.
     void TakeMetadataChangesFrom(std::unique_ptr<MetadataChangeList> mcl);
   };
 

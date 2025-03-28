@@ -204,6 +204,16 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.Discounts.DiscountBubble.SourceTypeOnShow"
+    enum="DiscountType" expires_after="2025-09-15">
+  <owner>ihsuanchen@google.com</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the discount source type (merchant provided, and crawled type) when
+    the discount bubble is opened.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.Discounts.DiscountBubble.TypeOnShow"
     enum="DiscountClusterType" expires_after="2025-07-27">
   <owner>meiliang@chromium.org</owner>
@@ -211,6 +221,17 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <summary>
     Records the discount type (page level vs product level) when the discount
     bubble is opened.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Discounts.DiscountsBubble.SourceTypeOnCopy"
+    enum="DiscountType" expires_after="2025-09-15">
+  <owner>ihsuanchen@google.com</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the discount source type (merchant provided, and crawled type) on
+    Discount bubble closing if user has copied the coupon code, so this records
+    at most once per opened bubble.
   </summary>
 </histogram>
 
@@ -265,6 +286,16 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <summary>
     Records whether the Discounts page action icon has expanded when user clicks
     the icon.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Discounts.PageActionIcon.SourceTypeOnShown"
+    enum="DiscountType" expires_after="2025-09-15">
+  <owner>ihsuanchen@google.com</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the discount source (merchant provided, and crawled type) when the
+    discount page action icon is shown.
   </summary>
 </histogram>
 

@@ -180,7 +180,7 @@ bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
 }
 
 // Attempts to fetch the keys for the account associated with the provided gaia
-// ID if no error occured at the previous stage. `canReauthenticate` indicates
+// ID if no error occurred at the previous stage. `canReauthenticate` indicates
 // whether the user can be asked to reauthenticate by entering their GPM PIN.
 // This argument should only be set to `NO` if the user has already been asked
 // to reauthenticate.

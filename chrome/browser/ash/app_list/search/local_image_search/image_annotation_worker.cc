@@ -36,6 +36,7 @@
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "ui/gfx/image/image_skia_operations.h"
 
 namespace app_list {
 namespace {
@@ -51,6 +52,7 @@ constexpr int kMaxNumRetries = 12;          // Over 2 hrs.
 constexpr int kDefaultIndexingLimit = 500;  // 500 images per user session.
 constexpr base::TimeDelta kInitialIndexingDelay = base::Seconds(1);
 constexpr base::TimeDelta kMaxImageProcessingTime = base::Minutes(2);
+constexpr int kMaxOcrImageSize = 1000;  // The max allowed width&height in DIP.
 
 // These values persist to logs. Entries should not be renumbered and numeric
 // values should never be reused.
@@ -512,12 +514,26 @@ void ImageAnnotationWorker::OnDecodeImageFile(
       base::BindOnce(&ImageAnnotationWorker::OnImageProcessTimeout,
                      weak_ptr_factory_.GetWeakPtr(), image_info.path));
 
+  // Downsamples Image if it is too big for OCR, and it helps reduce the memory
+  // usage and ocr processing time. We scale to the smaller ratio to ensure that
+  // the resized width and height won't exceed the max value.
+  gfx::ImageSkia resized_image;
+
+  if (use_ocr_ && (image_skia.height() > kMaxOcrImageSize ||
+                   image_skia.width() > kMaxOcrImageSize)) {
+    float scale = static_cast<float>(kMaxOcrImageSize) /
+                  std::max(image_skia.width(), image_skia.height());
+    gfx::Size target_size = gfx::ScaleToRoundedSize(image_skia.size(), scale);
+    resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
+        image_skia, skia::ImageOperations::RESIZE_BEST, target_size);
+  }
+
   if (use_ocr_ && use_ica_) {
     LogIndexingUma(IndexingStatus::kOcrStart);
     LogIndexingUma(IndexingStatus::kIcaStart);
     LogIcaUma(IcaStatus::kStartWithOcr);
     optical_character_recognizer_->PerformOCR(
-        *image_skia.bitmap(),
+        resized_image.isNull() ? *image_skia.bitmap() : *resized_image.bitmap(),
         base::BindOnce(&ImageAnnotationWorker::OnPerformOcr,
                        weak_ptr_factory_.GetWeakPtr(), image_info)
             .Then(base::BindOnce(
@@ -532,7 +548,7 @@ void ImageAnnotationWorker::OnDecodeImageFile(
   if (use_ocr_) {
     LogIndexingUma(IndexingStatus::kOcrStart);
     optical_character_recognizer_->PerformOCR(
-        *image_skia.bitmap(),
+        resized_image.isNull() ? *image_skia.bitmap() : *resized_image.bitmap(),
         base::BindOnce(&ImageAnnotationWorker::OnPerformOcr,
                        weak_ptr_factory_.GetWeakPtr(), std::move(image_info)));
     return;

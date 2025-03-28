@@ -226,6 +226,12 @@ void FakeTabGroupSyncService::MakeTabGroupShared(
   }
 }
 
+void FakeTabGroupSyncService::MakeTabGroupSharedForTesting(
+    const LocalTabGroupID& local_group_id,
+    std::string_view collaboration_id) {
+  // No op.
+}
+
 void FakeTabGroupSyncService::AboutToUnShareTabGroup(
     const LocalTabGroupID& local_group_id,
     base::OnceClosure on_complete_callback) {

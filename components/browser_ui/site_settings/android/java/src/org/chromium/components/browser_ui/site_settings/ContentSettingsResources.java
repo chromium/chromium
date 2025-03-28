@@ -548,6 +548,32 @@ public class ContentSettingsResources {
                         .setDisabledDescriptionText(
                                 R.string.website_settings_motion_sensors_block_description);
 
+            case ContentSettingsType.SERIAL_CHOOSER_DATA:
+                return new ResourceItem(
+                        R.drawable.gm_filled_developer_board_24,
+                        0,
+                        ContentSettingValues.ASK,
+                        ContentSettingValues.BLOCK,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0);
+
+            case ContentSettingsType.SERIAL_GUARD:
+                return new ResourceItem(
+                        R.drawable.gm_filled_developer_board_24,
+                        R.string.website_settings_serial_port,
+                        ContentSettingValues.ASK,
+                        ContentSettingValues.BLOCK,
+                        R.string.website_settings_category_serial_port_ask,
+                        R.string.website_settings_category_serial_port_blocked,
+                        R.string.website_settings_category_serial_port_a11y,
+                        R.drawable.gm_filled_developer_board_off_24,
+                        R.string.website_settings_serial_port_ask,
+                        R.string.website_settings_serial_port_block);
+
             case ContentSettingsType.SOUND:
                 return new ResourceItem(
                                 R.drawable.ic_volume_up_grey600_24dp,

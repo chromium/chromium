@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Izmantojiet Google lietotni Satura pārsūtīšana, lai pārvietotu savus mācību iestādes konta datus uz personīgo kontu, pirms zaudējat piekļuvi.</translation>
 <translation id="1026212596705997935">Īsinājumtaustiņš tiek izmantots darbībai “<ph name="CONFLICT_ACCEL_NAME" />”. Nospiediet jaunu īsinājumtaustiņu. Lai aizstātu esošo īsinājumtaustiņu, vēlreiz nospiediet šo īsinājumtaustiņu.</translation>
 <translation id="1030856839388844477">Atiestatīt datu lietojumu</translation>
+<translation id="1047095725494118091">Nevar lejupielādēt. Mēģiniet vēlreiz vai restartējiet savu ierīci (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (pavedienu skaits: <ph name="THREAD_COUNT" />; <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Pieejama jauna funkcija. Lai uzzinātu vairāk, nospiediet augšupvērsto bultiņu.</translation>
 <translation id="1049663189809099096">pasteļdzeltenā</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Notiek ekrānsaudzētāja lejupielāde</translation>
 <translation id="1094693127011229778">IP adrese nav pieejama</translation>
 <translation id="1100902271996134409">Notiek attēlu izveide…</translation>
+<translation id="1107856713690040084">Ierīces (<ph name="DEVICE_TYPE" />) audio</translation>
 <translation id="1116694919640316211">Par</translation>
 <translation id="1118572504348554005">Mēs varam kopīgot šajā veidlapā sniegtās atsauksmes ar saviem partneriem, lai novērstu kļūdas un citas problēmas, par kurām esat ziņojis. Neietveriet sensitīvu informāciju, piemēram, paroles.</translation>
 <translation id="1119403468619527527">Pārāk maz vārdu, lai vienkāršotu.</translation>
@@ -286,6 +288,7 @@
 <translation id="2163937499206714165">Ieslēgt tumšo režīmu</translation>
 <translation id="2164131940279488868">Lai varētu sākt audio ierakstīšanu, jābūt pievienotam mikrofonam.</translation>
 <translation id="2173302385160625112">Pārbaudiet interneta savienojumu</translation>
+<translation id="2176909213844392588">Nevar lejupielādēt <ph name="LANGUAGE_NAME" /> valodas transkribēšanas modeli. Mēģiniet vēlreiz vai restartējiet savu ierīci (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="2180197493692062006">Radās kļūda. Mēģiniet atkārtoti atvērt lietotni.</translation>
 <translation id="2189104374785738357">APN informācijas rediģēšana</translation>
 <translation id="2195732836444333448">Šobrīd funkcija ir pārslogota. Atgriezieties pēc brīža!</translation>
@@ -474,6 +477,7 @@
 <translation id="3199982728237701504">Dokumentu padevējs (divpusēji)</translation>
 <translation id="3201315366910775591">Kopīgotos albumus var atjaunināt citi lietotāji</translation>
 <translation id="3211671540163313381">Taustiņu saistīšanas virzienu slēdzis</translation>
+<translation id="3217462202230355157">Pārbaudiet, vai mikrofons ir pievienots, vai restartējiet savu ierīci (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="3226405216343213872">Notiek skeneru meklēšana…</translation>
 <translation id="3226657629376379887">Izkārtojuma darbību izvēlne</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> jādala ar <ph name="CONVERSION_RATE" /></translation>
@@ -509,6 +513,7 @@
 <translation id="3383623117265110236">Ekskluzīvi</translation>
 <translation id="3404249063913988450">Iespējot ekrānsaudzētāju</translation>
 <translation id="3413935475507503304">Lai veiktu atjaunināšanu, noklikšķiniet uz “Tālāk”.</translation>
+<translation id="3416709353545797224">Visa ierīces (<ph name="DEVICE_TYPE" />) audio ierakstīšana</translation>
 <translation id="3428551088151258685">ārpus telpām</translation>
 <translation id="3428971106895559033">pasteļtoņos</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -672,6 +677,7 @@
 <translation id="4155551848414053977">Skenerim ir jābūt ieslēgtam un ar to ir jāizveido savienojums tīklā vai tiešs savienojums.</translation>
 <translation id="4159238217853743776">Daļēji</translation>
 <translation id="4159784952369912983">Violets</translation>
+<translation id="416219735020840807">Nevar lejupielādēt transkribēšanas modeli. Mēģiniet vēlreiz vai restartējiet savu ierīci (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="4170180284036919717">Uzņemt fotoattēlu</translation>
 <translation id="4170700058716978431">NESEKMĪGA</translation>
 <translation id="4171077696775491955">samazināt spilgtumu</translation>
@@ -940,6 +946,7 @@
 <translation id="5344619683981067131">Notiek atlasītā teksta aizstāšana ar ieteikumu</translation>
 <translation id="5346687412805619883">Lokālais tīkls</translation>
 <translation id="5358174242040570474">Radās kļūda. Mēģiniet vēlreiz izvēlēties fona tapeti vai atkārtoti atveriet lietotni.</translation>
+<translation id="5368228070728130240">Nevar lejupielādēt modeli kopsavilkuma un nosaukuma izveidei. Mēģiniet vēlreiz vai restartējiet savu ierīci (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="5372659122375744710">Wi-Fi tīkls nav drošs</translation>
 <translation id="5376354385557966694">Automātisks gaišais režīms</translation>
 <translation id="5378184552853359930">IP veids</translation>
@@ -1245,6 +1252,7 @@
 <translation id="6766275201586212568">DNS atrisināšanas kļūmes</translation>
 <translation id="6768237774506518020">Biežas DNS atrisināšanas kļūmes</translation>
 <translation id="6786747875388722282">Paplašinājumi</translation>
+<translation id="6789891265243243337">Ja ierīces (<ph name="DEVICE_TYPE" />) audio ir ieslēgts, lietotnē Ierakstītājs tiek ierakstīts viss šajā ierīcē atskaņotais audio saturs.</translation>
 <translation id="6791471867139427246">tastatūras apgaismojuma krāsa</translation>
 <translation id="6796229976413584781">Īsinājumtaustiņš ir izdzēsts</translation>
 <translation id="6798678288485555829">Navigācija tekstā</translation>
@@ -1716,6 +1724,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8930622219860340959">Bezvadu</translation>
 <translation id="8933650076320258356">Taustiņš <ph name="KEYS" /> ir atlasīts šādam virzienam: <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Klienta IP adrese</translation>
+<translation id="8938606491880817721">Nevar lejupielādēt. Mēģiniet vēlreiz vai restartējiet savu ierīci (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="8944651180182756621">Palaidēja krāsa</translation>
 <translation id="8945308580158685341">bites</translation>
 <translation id="894617464444543719">Ierīce ir tālrunis.</translation>

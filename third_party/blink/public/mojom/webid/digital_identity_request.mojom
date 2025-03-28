@@ -58,7 +58,7 @@ interface DigitalIdentityRequest {
   Get(array<DigitalCredentialRequest> digital_credential_requests, GetRequestFormat format) =>
       (RequestDigitalIdentityStatus status,
       string? protocol,
-      string? token);
+      mojo_base.mojom.Value? token);
 
   // Requests a token to be generated, given a DigitalCredentialRequest.
   // Returns:
@@ -71,7 +71,7 @@ interface DigitalIdentityRequest {
   Create(DigitalCredentialRequest digital_credential_request) =>
       (RequestDigitalIdentityStatus status,
       string? protocol,
-      string? token);
+      mojo_base.mojom.Value? token);
 
   // Aborts the pending request, if any.
   Abort();

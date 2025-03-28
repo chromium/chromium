@@ -850,15 +850,8 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
 // Returns YES if the group is shared.
 - (BOOL)isShared {
   CHECK(_tabGroup);
-  BOOL isSharedTabGroupSupported =
-      _shareKitService && _shareKitService->IsSupported();
-
-  if (!isSharedTabGroupSupported || !_tabGroupSyncService) {
-    return NO;
-  }
-
-  return tab_groups::utils::IsTabGroupShared(_tabGroup.get(),
-                                             _tabGroupSyncService);
+  return tab_groups::utils::IsTabGroupShared(
+      _tabGroup.get(), _tabGroupSyncService, _shareKitService);
 }
 
 // Updates the consumer after a data sharing service update for the current tab
@@ -891,8 +884,7 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
 // Updates the sharing state for the current `_tabGroup`.
 - (void)updateTabGroupSharingState {
   CHECK(_tabGroup);
-  BOOL shared = tab_groups::utils::IsTabGroupShared(_tabGroup.get(),
-                                                    _tabGroupSyncService);
+  BOOL shared = [self isShared];
   if (!shared) {
     [_groupConsumer setSharingState:SharingState::kNotShared];
     return;

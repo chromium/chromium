@@ -406,7 +406,8 @@ void ExpectAppCommandPing(UpdaterScope scope,
                           int errorcode,
                           int eventresult,
                           int event_type,
-                          const base::Version& version);
+                          const base::Version& version,
+                          const base::Version& updater_version);
 
 void ExpectUpdateCheckRequest(UpdaterScope scope, ScopedServer* test_server);
 

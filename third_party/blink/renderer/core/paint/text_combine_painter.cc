@@ -180,7 +180,7 @@ void TextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
         PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kForeground));
     return;
   }
-  graphics_context().DrawEmphasisMarks(
+  graphics_context().DeprecatedDrawEmphasisMarks(
       emphasis_mark_font, placeholder_text_run, emphasis_mark(),
       emphasis_mark_text_origin,
       PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kForeground));

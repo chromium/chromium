@@ -1855,8 +1855,10 @@ if (is_chromeos && enable_js_type_check) {
   }
 }
 
-if (use_remoteexec) {
+if (use_remoteexec && target_os != "chromeos" && rbe_exec_root != "/") {
   # Different nesting levels technically work, but cache hits are basically zero.
+  # for `target_os="chromeos" rbe_exec_root="/"` is used for chromeos chroot
+  # and it doesn't use 2-level out dir.
   assert(
       rebase_path("//", root_build_dir) == "../../",
       "In order for remote builds (use_remoteexec=true) to have cache hits, output directories should be nested two directories deep within src (e.g. \"out/Debug\", or \"foo/bar\"). Found: $root_build_dir")

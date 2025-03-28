@@ -942,17 +942,23 @@ AccessibilityPrivateSetKeyboardListenerFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+AccessibilityPrivateSetNativeAccessibilityEnabledFunction::
+    AccessibilityPrivateSetNativeAccessibilityEnabledFunction() = default;
+
+AccessibilityPrivateSetNativeAccessibilityEnabledFunction::
+    ~AccessibilityPrivateSetNativeAccessibilityEnabledFunction() = default;
+
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSetNativeAccessibilityEnabledFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
   bool enabled = args()[0].GetBool();
   if (enabled) {
-    content::BrowserAccessibilityState::GetInstance()
-        ->EnableProcessAccessibility();
+    scoped_accessibility_mode_ =
+        content::BrowserAccessibilityState::GetInstance()
+            ->CreateScopedModeForProcess(ui::kAXModeComplete);
   } else {
-    content::BrowserAccessibilityState::GetInstance()
-        ->DisableProcessAccessibility();
+    scoped_accessibility_mode_.reset();
   }
   return RespondNow(NoArguments());
 }

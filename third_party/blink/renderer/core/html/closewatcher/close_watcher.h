@@ -30,13 +30,50 @@ class CloseWatcher final : public EventTarget, public ExecutionContextClient {
 
   static CloseWatcher* Create(LocalDOMWindow&);
 
-  explicit CloseWatcher(LocalDOMWindow&);
+  // If multiple close watchers are active in a given window, they form a stack
+  // of groups of close watchers. Groups close together in response to a single
+  // close request, and new close watchers are either added to the topmost group
+  // or to a new group depending on user activation state.
+  class WatcherStack final : public GarbageCollected<WatcherStack>,
+                             public mojom::blink::CloseListener {
+   public:
+    explicit WatcherStack(LocalDOMWindow*);
+
+    void Add(CloseWatcher*);
+    void Remove(CloseWatcher*);
+
+    void SetHadUserInteraction(bool);
+    bool CancelEventCanBeCancelable() const;
+
+    void Trace(Visitor*) const;
+
+    void EscapeKeyHandler(KeyboardEvent*);
+
+    bool AnyEnabledWatchers();
+    void MaybeCloseReceiver();
+    void BindNewPipe();
+
+   private:
+    // mojom::blink::CloseListener override:
+    void Signal() final;
+
+    HeapVector<HeapVector<Member<CloseWatcher>>> watcher_groups_;
+    bool next_user_interaction_creates_a_new_allowed_group_ = true;
+    wtf_size_t allowed_groups_ = 1;
+
+    // Holds a pipe which the service uses to notify this object
+    // when the idle state has changed.
+    HeapMojoReceiver<mojom::blink::CloseListener, WatcherStack> receiver_;
+    Member<LocalDOMWindow> window_;
+  };
+
+  CloseWatcher(LocalDOMWindow&, WatcherStack& stack);
 
   void Trace(Visitor*) const override;
 
   bool IsClosed() const { return state_ == State::kClosed; }
 
-  void setEnabled(bool enabled) { enabled_ = enabled; }
+  void setEnabled(bool enabled);
 
   void requestCloseForBinding();
 
@@ -58,39 +95,6 @@ class CloseWatcher final : public EventTarget, public ExecutionContextClient {
     return ExecutionContextClient::GetExecutionContext();
   }
 
-  // If multiple close watchers are active in a given window, they form a stack
-  // of groups of close watchers. Groups close together in response to a single
-  // close request, and new close watchers are either added to the topmost group
-  // or to a new group depending on user activation state.
-  class WatcherStack final : public GarbageCollected<WatcherStack>,
-                             public mojom::blink::CloseListener {
-   public:
-    explicit WatcherStack(LocalDOMWindow*);
-
-    void Add(CloseWatcher*);
-    void Remove(CloseWatcher*);
-
-    void SetHadUserInteraction(bool);
-    bool CancelEventCanBeCancelable() const;
-
-    void Trace(Visitor*) const;
-
-    void EscapeKeyHandler(KeyboardEvent*);
-
-   private:
-    // mojom::blink::CloseListener override:
-    void Signal() final;
-
-    HeapVector<HeapVector<Member<CloseWatcher>>> watcher_groups_;
-    bool next_user_interaction_creates_a_new_allowed_group_ = true;
-    wtf_size_t allowed_groups_ = 1;
-
-    // Holds a pipe which the service uses to notify this object
-    // when the idle state has changed.
-    HeapMojoReceiver<mojom::blink::CloseListener, WatcherStack> receiver_;
-    Member<LocalDOMWindow> window_;
-  };
-
  private:
   static CloseWatcher* CreateInternal(LocalDOMWindow&,
                                       WatcherStack&,
@@ -101,6 +105,7 @@ class CloseWatcher final : public EventTarget, public ExecutionContextClient {
   bool dispatching_cancel_ = false;
   bool enabled_ = true;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
+  Member<WatcherStack> stack_;
 };
 
 }  // namespace blink

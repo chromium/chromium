@@ -108,6 +108,8 @@ void BrowserDeactivationWaiter::OnBrowserNoLongerActive(Browser* browser) {
 }
 
 bool BringBrowserWindowToFront(const Browser* browser) {
+  BrowserActivationWaiter waiter(browser);
+
   gfx::NativeWindow window = gfx::NativeWindow();
   if (!GetNativeWindow(browser, &window)) {
     return false;
@@ -117,7 +119,6 @@ bool BringBrowserWindowToFront(const Browser* browser) {
     return false;
   }
 
-  BrowserActivationWaiter waiter(browser);
   waiter.WaitForActivation();
   return true;
 }

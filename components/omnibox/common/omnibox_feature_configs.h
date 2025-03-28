@@ -270,6 +270,13 @@ struct OmniboxUrlSuggestionsOnFocus : Config<OmniboxUrlSuggestionsOnFocus> {
   // Whether MostVisitedProvider should directly query HistoryService for its
   // most visited sites list. False if the provider should query TopSites.
   bool directly_query_history_service;
+  // Whether to prefetch the most visited sites.
+  bool prefetch_most_visited_sites;
+  // The debouncing delay (in milliseconds) to use when throttling
+  // HistoryService requests.
+  int prefetch_most_visited_sites_delay_ms;
+
+  bool MostVisitedPrefetchingEnabled() const;
 };
 
 // Enables the HaTS for On-Focus ZPS so that it may show up for a user.

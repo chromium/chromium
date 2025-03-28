@@ -322,7 +322,9 @@ void ExtensionServiceTestBase::InitializeExtensionServiceWithUpdater() {
   ExtensionServiceInitParams params;
   params.autoupdate_enabled = true;
   InitializeExtensionService(std::move(params));
-  service_->updater()->Start();
+  auto* updater = ExtensionUpdater::Get(profile());
+  CHECK(updater->enabled());
+  updater->Start();
 }
 
 void ExtensionServiceTestBase::

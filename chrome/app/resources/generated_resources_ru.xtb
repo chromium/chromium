@@ -1567,7 +1567,6 @@
 <translation id="2081816110395725788">Режим ожидания при работе от батареи</translation>
 <translation id="2082187087049518845">Добавить вкладку в группу</translation>
 <translation id="2082510809738716738">Выберите цвета темы</translation>
-<translation id="208547068587548667">Вход в <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Повторите попытку.</translation>
 <translation id="208634871997892083">Постоянная сеть VPN</translation>
 <translation id="208654914566977272">Предлагать действия во время поиска на экране</translation>
@@ -3999,7 +3998,6 @@
 <translation id="3778740492972734840">&amp;Инструменты разработчика</translation>
 <translation id="3778868487658107119">Это ваш личный помощник, который всегда рядом. Просто спросите его о чем-нибудь или дайте поручение.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{история посещения # сайта}one{история посещения # сайта}few{история посещения # сайтов}many{история посещения # сайтов}other{история посещения # сайта}}</translation>
-<translation id="3779244863011082655">Использовать другой аккаунт <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> не может проверить ваши пароли на предмет утечки данных. Повторите попытку позже.</translation>
 <translation id="3781742599892759500">Доступ к микрофону в Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5502,6 +5500,7 @@
 <translation id="4848191975108266266">Фраза "Окей, Google" для Google Ассистента</translation>
 <translation id="4849286518551984791">Всемирное координированное время (UTC/GMT)</translation>
 <translation id="4849517651082200438">Не устанавливать</translation>
+<translation id="4849731766219625109">Использовать аккаунт <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="485053257961878904">Не удалось настроить синхронизацию уведомлений</translation>
 <translation id="4850548109381269495">Убедитесь, что оба устройства подключены к интернету, включите Bluetooth и повторите попытку.</translation>
 <translation id="4850669014075537160">Прокрутка</translation>
@@ -5690,6 +5689,7 @@
 <translation id="4979510648199782334">Настройка Microsoft 365 завершена</translation>
 <translation id="4980805016576257426">Это расширение содержит вредоносное ПО.</translation>
 <translation id="4983159853748980742">Доступ к паролю не был предоставлен. Проверьте подключение к интернету и убедитесь, что вы вошли в Chrome. Затем, повторите попытку.</translation>
+<translation id="498624032394115435">Все, у кого есть ссылка, могут изменять любые вкладки.</translation>
 <translation id="4986706507552097681">Вы всегда можете выбрать, какие данные синхронизировать, в настройках. Google может использовать историю ваших действий для персонализации Поиска и других сервисов.</translation>
 <translation id="4986728572522335985">С электронного ключа будут удалены все данные, включая PIN-код</translation>
 <translation id="4987944280765486504">Когда обновление будет скачано, Chromebook перезапустится. После этого вы сможете продолжить установку.</translation>
@@ -8305,7 +8305,6 @@
 <translation id="6873571253135628430">Изменить разрешения сайтов</translation>
 <translation id="6876155724392614295">Велосипед</translation>
 <translation id="6876469544038980967">Бесполезно</translation>
-<translation id="687838958001010630">Все, у кого есть ссылка, могут изменять любые вкладки.</translation>
 <translation id="6878422606530379992">Использование датчиков разрешено</translation>
 <translation id="6878862640969460273">Горизонтально</translation>
 <translation id="6880587130513028875">Показ изображений запрещен для этой страниц.</translation>

@@ -31,7 +31,7 @@ class CORE_EXPORT LCPCriticalPathPredictor final
     : public GarbageCollected<LCPCriticalPathPredictor> {
  public:
   explicit LCPCriticalPathPredictor(LocalFrame& frame);
-  virtual ~LCPCriticalPathPredictor();
+  ~LCPCriticalPathPredictor();
 
   LCPCriticalPathPredictor(const LCPCriticalPathPredictor&) = delete;
   LCPCriticalPathPredictor& operator=(const LCPCriticalPathPredictor&) = delete;

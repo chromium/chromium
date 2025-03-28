@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog;
 
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
@@ -16,27 +17,35 @@ import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileE
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditDelegates.ViewToMediator;
 import org.chromium.url.GURL;
 
-/** The Mediator of the Most Visited Tile Edit Dialog. */
+/** The Mediator of the Custom Tile Edit Dialog. */
 @NullMarked
 class CustomTileEditMediator implements ViewToMediator {
-    private final MediatorToBrowser mBrowserDelegate;
-    private final MediatorToView mViewDelegate;
     private final @Nullable Tile mOriginalTile;
+
+    private MediatorToView mViewDelegate;
+    private MediatorToBrowser mBrowserDelegate;
 
     /**
      * Constructs a new CustomTileEditMediator.
      *
-     * @param browserDelegate The interface to the Browser.
-     * @param viewDelegate The interface to the View.
      * @param originalTile the tile being edited, or null if adding a new tile.
      */
-    CustomTileEditMediator(
-            MediatorToBrowser browserDelegate,
-            MediatorToView viewDelegate,
-            @Nullable Tile originalTile) {
-        mBrowserDelegate = browserDelegate;
-        mViewDelegate = viewDelegate;
+    CustomTileEditMediator(@Nullable Tile originalTile) {
         mOriginalTile = originalTile;
+    }
+
+    /**
+     * Assigns delegates for interacting with the Browser and the View.
+     *
+     * @param viewDelegate The interface to the View.
+     * @param browserDelegate The interface to the Browser.
+     */
+    @Initializer
+    void setDelegates(MediatorToView viewDelegate, MediatorToBrowser browserDelegate) {
+        assert mViewDelegate == null;
+        mViewDelegate = viewDelegate;
+        assert mBrowserDelegate == null;
+        mBrowserDelegate = browserDelegate;
     }
 
     // ViewToMediator implementation.

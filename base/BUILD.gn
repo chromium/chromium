@@ -73,7 +73,12 @@ declare_args() {
   # Set to true to enable mutex priority inheritance. See the comments in
   # LockImpl::PriorityInheritanceAvailable() in lock_impl_posix.cc for the
   # platform requirements to safely enable priority inheritance.
-  enable_mutex_priority_inheritance = false
+  #
+  # Enabled only on 64-bit Android. On 32 bit Android, PI mutexes have an extra
+  # level of indirection, so we don't bother enabling it. See:
+  # https://cs.android.com/android/platform/superproject/+/android14-qpr3-release:bionic/libc/bionic/pthread_mutex.cpp;drc=9108f258adad329a537e10461fbd526d5b9ad8bf;l=242
+  enable_mutex_priority_inheritance =
+      is_android && (current_cpu == "x64" || current_cpu == "arm64")
 
   # Control whether the ios stack sampling profiler is enabled. This flag is
   # only supported on iOS 64-bit architecture, but some project build //base
@@ -86,7 +91,8 @@ declare_args() {
 # Chromecast builds have full control over the platform and ensure that
 # the kernel and glibc versions used have patched the vulnerabilities,
 # so it is safe to use mutex priority inheritance on Chromecast platform.
-assert(!enable_mutex_priority_inheritance || is_castos || is_cast_android,
+assert(!enable_mutex_priority_inheritance ||
+           (is_castos || is_cast_android || is_android),
        "Do not enable PI mutexes without consulting the security team")
 
 assert(!is_nacl || is_nacl_saigo,

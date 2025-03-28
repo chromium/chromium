@@ -49,7 +49,7 @@ TSAN_TEST(TextRendererThreadedTest, MeasureText) {
     TextRun text_run(text, TextDirection::kLtr,
                      /* directional_override */ false,
                      /* normalize_space */ true);
-    gfx::RectF text_bounds = font->SelectionRectForText(
+    gfx::RectF text_bounds = font->DeprecatedSelectionRectForText(
         text_run, gfx::PointF(), font->GetFontDescription().ComputedSize(), 0,
         -1);
 
@@ -59,7 +59,7 @@ TSAN_TEST(TextRendererThreadedTest, MeasureText) {
           78, MakeGarbageCollected<PlainTextPainter>(PlainTextPainter::kCanvas)
                   ->ComputeInlineSize(text_run, *font));
     } else {
-      EXPECT_EQ(78, font->Width(text_run));
+      EXPECT_EQ(78, font->DeprecatedWidth(text_run));
     }
     EXPECT_EQ(0, text_bounds.x());
     EXPECT_EQ(78, text_bounds.right());
@@ -105,9 +105,9 @@ TSAN_TEST(TextRendererThreadedTest, DrawText) {
                                 flags, Font::DrawType::kGlyphsAndClusters);
     } else {
       TextRunPaintInfo text_run_paint_info(text_run);
-      font->DrawBidiText(&mpc, text_run_paint_info, location,
-                         Font::kUseFallbackIfFontNotReady, flags,
-                         Font::DrawType::kGlyphsAndClusters);
+      font->DeprecatedDrawBidiText(&mpc, text_run_paint_info, location,
+                                   Font::kUseFallbackIfFontNotReady, flags,
+                                   Font::DrawType::kGlyphsAndClusters);
     }
   });
 }

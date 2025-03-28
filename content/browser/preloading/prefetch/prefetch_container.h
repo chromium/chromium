@@ -147,7 +147,8 @@ class CONTENT_EXPORT PrefetchContainer {
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener =
           nullptr,
       base::TimeDelta ttl_in_sec =
-          PrefetchContainerDefaultTtlInPrefetchService());
+          PrefetchContainerDefaultTtlInPrefetchService(),
+      bool should_append_variations_header = true);
 
   ~PrefetchContainer();
 
@@ -268,6 +269,11 @@ class CONTENT_EXPORT PrefetchContainer {
   // Returns whether the tags of the speculation rules that triggered this
   // prefetch exists.
   bool HasSpeculationRulesTags() { return speculation_rules_tags_.has_value(); }
+
+  // Returns the serialized string of speculation rules tags.
+  std::optional<std::string> GetSpeculationRulesTagsHeaderString() {
+    return speculation_rules_tags_->ConvertStringToHeaderString();
+  }
 
   // The type of this prefetch. Controls how the prefetch is handled.
   const PrefetchType& GetPrefetchType() const { return prefetch_type_; }
@@ -814,7 +820,8 @@ class CONTENT_EXPORT PrefetchContainer {
       const net::HttpRequestHeaders& additional_headers,
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
       bool is_javascript_enabled,
-      base::TimeDelta ttl_in_sec);
+      base::TimeDelta ttl_in_sec,
+      bool should_append_variations_header);
 
   // Update |prefetch_status_| and report prefetch status to
   // DevTools without updating TriggeringOutcome.
@@ -1064,6 +1071,12 @@ class CONTENT_EXPORT PrefetchContainer {
   // for browser-initiated prefetch that doesn't depend on web content.
   // Default value is `PrefetchContainerDefaultTtlInPrefetchService()`.
   base::TimeDelta ttl_in_sec_;
+
+  // Whether to add the X-Client-Data header with experiment IDs from field
+  // trials. This will not be applied to redirects. Currently, this is
+  // configured for browser-initiated prefetch that doesn't depend on web
+  // content.
+  const bool should_append_variations_header_ = true;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

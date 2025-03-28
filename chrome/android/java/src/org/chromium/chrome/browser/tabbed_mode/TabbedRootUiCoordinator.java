@@ -4,13 +4,18 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
@@ -46,6 +51,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarCoordinator;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSettingProvider;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.collaboration.CollaborationControllerDelegateFactory;
@@ -247,6 +254,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final @NonNull EdgeToEdgeManager mEdgeToEdgeManager;
     protected @Nullable InstantMessageDelegateImpl mInstantMessageDelegateImpl;
     private @Nullable BookmarkBarCoordinator mBookmarkBarCoordinator;
+    private @Nullable BookmarkBarSettingProvider mBookmarkBarSettingProvider;
     private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
     private @Nullable BookmarkOpener mBookmarkOpener;
     private @NonNull ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
@@ -532,7 +540,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         .removeObserver(mOnTabStripHeightChangedCallback);
                 mOnTabStripHeightChangedCallback = null;
             }
-            mToolbarManager.setBookmarkBarHeightSupplier(null);
         }
 
         if (mOfflineIndicatorInProductHelpController != null) {
@@ -612,14 +619,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mInstantMessageDelegateImpl.detachWindow(mWindowAndroid);
         }
 
-        if (mBookmarkBarCoordinator != null) {
-            mBookmarkBarCoordinator.destroy();
-            mBookmarkBarCoordinator = null;
-        }
-
-        if (mBookmarkOpener != null) {
-            mBookmarkOpener.destroy();
-            mBookmarkOpener = null;
+        if (mBookmarkBarSettingProvider != null) {
+            destroyBookmarkBarIfNecessary();
+            mBookmarkBarSettingProvider.destroy();
+            mBookmarkBarSettingProvider = null;
         }
 
         if (mLoadingFullscreenCoordinator != null) {
@@ -865,25 +868,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         new OneShotCallback<>(mProfileSupplier, this::initCollaborationDelegatesOnProfile);
 
-        if (ChromeFeatureList.sAndroidBookmarkBar.isEnabled()
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
-            mBookmarkOpener =
-                    new BookmarkOpenerImpl(
-                            mBookmarkModelSupplier, mActivity, mActivity.getComponentName());
-            mBookmarkBarCoordinator =
-                    new BookmarkBarCoordinator(
-                            mActivity,
-                            mBrowserControlsManager,
-                            /* heightChangeCallback= */ (height) -> updateTopControlsHeight(),
-                            mProfileSupplier,
-                            /* viewStub= */ mActivity.findViewById(R.id.bookmark_bar_stub),
-                            mBookmarkOpener,
-                            mBookmarkManagerOpenerSupplier);
-
-            if (mToolbarManager != null) {
-                mToolbarManager.setBookmarkBarHeightSupplier(
-                        mBookmarkBarCoordinator.getHeightSupplier());
-            }
+        if (BookmarkBarUtils.isFeatureEnabled(mActivity)) {
+            mBookmarkBarSettingProvider =
+                    new BookmarkBarSettingProvider(
+                            mProfileSupplier, /* callback= */ this::updateBookmarkBarIfNecessary);
         }
     }
 
@@ -1642,6 +1630,72 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 profile,
                 mModalDialogManagerSupplier,
                 () -> ApplicationLifetime.terminate(true));
+    }
+
+    private void createBookmarkBarIfNecessary() {
+        if (mBookmarkOpener == null) {
+            mBookmarkOpener =
+                    new BookmarkOpenerImpl(
+                            mBookmarkModelSupplier, mActivity, mActivity.getComponentName());
+        }
+
+        if (mBookmarkBarCoordinator == null) {
+            mBookmarkBarCoordinator =
+                    new BookmarkBarCoordinator(
+                            mActivity,
+                            mBrowserControlsManager,
+                            /* heightChangeCallback= */ (height) -> updateTopControlsHeight(),
+                            mProfileSupplier,
+                            /* viewStub= */ mActivity.findViewById(R.id.bookmark_bar_stub),
+                            mBookmarkOpener,
+                            mBookmarkManagerOpenerSupplier);
+        }
+
+        if (mToolbarManager != null) {
+            mToolbarManager.setBookmarkBarHeightSupplier(
+                    mBookmarkBarCoordinator.getHeightSupplier());
+        }
+    }
+
+    private void destroyBookmarkBarIfNecessary() {
+        View view = null;
+
+        if (mBookmarkBarCoordinator != null) {
+            view = mBookmarkBarCoordinator.getView();
+            mBookmarkBarCoordinator.destroy();
+            mBookmarkBarCoordinator = null;
+        }
+
+        if (mBookmarkOpener != null) {
+            mBookmarkOpener.destroy();
+            mBookmarkOpener = null;
+        }
+
+        if (mToolbarManager != null) {
+            mToolbarManager.setBookmarkBarHeightSupplier(null);
+        }
+
+        if (view != null) {
+            // Remove view for bookmark bar.
+            final var parent = (ViewGroup) view.getParent();
+            final int index = parent.indexOfChild(view);
+            parent.removeViewInLayout(view);
+
+            // Add stub for bookmark bar.
+            final var viewStub = new ViewStub(mActivity, R.layout.bookmark_bar);
+            viewStub.setId(R.id.bookmark_bar_stub);
+            viewStub.setInflatedId(R.id.bookmark_bar);
+            parent.addView(viewStub, index, new LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+        }
+    }
+
+    private void updateBookmarkBarIfNecessary(boolean isSettingEnabled) {
+        if (isSettingEnabled) {
+            createBookmarkBarIfNecessary();
+        } else {
+            destroyBookmarkBarIfNecessary();
+        }
+        updateTopControlsHeight();
     }
 
     public static void setDisableTopControlsAnimationsForTesting(boolean disable) {

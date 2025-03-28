@@ -4,11 +4,16 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
 
+import org.chromium.base.FileUtils;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.external_intents.ExternalNavigationHandler;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,6 +43,7 @@ public class TabGroupMetadataExtractor {
         // tab group, otherwise default select the first tab in the group after re-parenting to
         // destination window.
         LinkedHashMap<Integer, String> tabIdsToUrls = new LinkedHashMap();
+        @Nullable String mhtmlTabTitle = null;
         boolean selectedTabIsInGroup = false;
         // Tabs are stored in reverse to ensure the correct opening order. Because tabs are inserted
         // one-by-one at the same start index in the target window, storing them in their original
@@ -45,7 +51,11 @@ public class TabGroupMetadataExtractor {
         for (int i = groupedTabs.size() - 1; i >= 0; i--) {
             Tab tab = groupedTabs.get(i);
             if (tab.getId() == selectedTabId) selectedTabIsInGroup = true;
-            tabIdsToUrls.put(tab.getId(), tab.getUrl().getSpec());
+            String url = tab.getUrl().getSpec();
+            tabIdsToUrls.put(tab.getId(), url);
+            if (isMhtmlUrl(url)) {
+                mhtmlTabTitle = tab.getTitle();
+            }
         }
         if (!selectedTabIsInGroup) selectedTabId = groupedTabs.get(0).getId();
 
@@ -60,6 +70,9 @@ public class TabGroupMetadataExtractor {
         @Nullable String tabGroupTitle = TabGroupTitleUtils.getTabGroupTitle(rootId);
         boolean tabGroupCollapsed = TabGroupCollapsedUtils.getTabGroupCollapsed(rootId);
 
+        // If the tab group is collapsed, do not select any tab within the group.
+        if (tabGroupCollapsed) selectedTabId = Tab.INVALID_TAB_ID;
+
         // 4. Create and populate TabGroupMetadata with data gathered above.
         TabGroupMetadata tabGroupMetadata =
                 new TabGroupMetadata(
@@ -70,9 +83,18 @@ public class TabGroupMetadataExtractor {
                         tabIdsToUrls,
                         tabGroupColor,
                         tabGroupTitle,
+                        mhtmlTabTitle,
                         tabGroupCollapsed,
                         isGroupShared,
                         firstTab.isIncognitoBranded());
         return tabGroupMetadata;
+    }
+
+    private static boolean isMhtmlUrl(String url) {
+        String scheme = ExternalNavigationHandler.getSanitizedUrlScheme(url);
+        boolean isFileUriScheme = TextUtils.equals(scheme, UrlConstants.FILE_SCHEME);
+        String extension = FileUtils.getExtension(url);
+        boolean isMhtmlExtension = extension.equals("mhtml") || extension.equals("mht");
+        return isFileUriScheme && isMhtmlExtension;
     }
 }

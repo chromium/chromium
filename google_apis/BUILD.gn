@@ -191,6 +191,10 @@ component("google_apis") {
     frameworks = [ "Foundation.framework" ]
   }
 
+  if (is_android) {
+    deps += [ "gaia/android:jni_headers" ]
+  }
+
   defines = [ "IS_GOOGLE_APIS_IMPL" ]
 }
 

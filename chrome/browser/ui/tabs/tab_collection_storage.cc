@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/notimplemented.h"
-#include "chrome/browser/ui/tabs/tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "components/tab_collections/public/tab_collection.h"
 
 namespace tabs {
 

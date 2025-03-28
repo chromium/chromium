@@ -18,8 +18,8 @@ from telemetry.web_perf import timeline_based_measurement
 
 from page_sets import speedometer3_pages
 
-_PERF_TEST_DIR = os.path.join(path_util.GetChromiumSrcDir(), 'third_party',
-                              'speedometer')
+_SPEEDOMETER_DIR = os.path.join(path_util.GetChromiumSrcDir(), 'third_party',
+                                'speedometer')
 _ARCHIVE_DATA_FILE = 'data/crossbench_android_speedometer_3.0.json'
 _CLOUD_STORAGE_BUCKET = story.PARTNER_BUCKET
 
@@ -153,7 +153,7 @@ class Speedometer30(_Speedometer3):
   """Speedometer3.0 benchmark.
   Explicitly named version."""
 
-  _SOURCE_DIR = os.path.join(_PERF_TEST_DIR, 'v3.0')
+  _SOURCE_DIR = os.path.join(_SPEEDOMETER_DIR, 'v3.0')
 
   @classmethod
   def GetStoryClass(cls):

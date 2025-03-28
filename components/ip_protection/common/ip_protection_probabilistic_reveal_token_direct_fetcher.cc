@@ -292,9 +292,9 @@ void IpProtectionProbabilisticRevealTokenDirectFetcher::
                                 response_proto.epoch_id());
   }
   outcome.public_key = std::move(response_proto.public_key().y());
-  outcome.expiration_time_seconds = response_proto.expiration_time_seconds();
+  outcome.expiration_time_seconds = response_proto.expiration_time().seconds();
   outcome.next_epoch_start_time_seconds =
-      response_proto.next_epoch_start_time_seconds();
+      response_proto.next_epoch_start_time().seconds();
   outcome.num_tokens_with_signal = response_proto.num_tokens_with_signal();
   std::move(callback).Run(
       std::optional<TryGetProbabilisticRevealTokensOutcome>{std::move(outcome)},
@@ -314,7 +314,7 @@ IpProtectionProbabilisticRevealTokenDirectFetcher::
   }
   base::TimeDelta expiration_time_delta =
       base::Time::FromSecondsSinceUnixEpoch(
-          response.expiration_time_seconds()) -
+          response.expiration_time().seconds()) -
       base::Time::Now();
   if (expiration_time_delta < kMinExpirationTimeDelta) {
     return TryGetProbabilisticRevealTokensStatus::kExpirationTooSoon;

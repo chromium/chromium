@@ -49,16 +49,11 @@ export class PrivacyGuideCompletionFragmentElement extends
 
   static get properties() {
     return {
-      isNoLinkLayout: {
+      isNoLinkLayout_: {
         reflectToAttribute: true,
         type: Boolean,
         computed: 'computeIsNoLinkLayout_(shouldShowWaa_,' +
             'shouldShowPrivacySandbox_)',
-      },
-
-      subheader_: {
-        type: String,
-        computed: 'computeSubheader_(isNoLinkLayout)',
       },
 
       shouldShowAiSettings_: {
@@ -86,6 +81,8 @@ export class PrivacyGuideCompletionFragmentElement extends
     };
   }
 
+  private isNoLinkLayout_: boolean;
+  private shouldShowAiSettings_: boolean;
   private shouldShowPrivacySandbox_: boolean;
   private shouldShowWaa_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -126,7 +123,7 @@ export class PrivacyGuideCompletionFragmentElement extends
     return !this.shouldShowWaa_ && !this.shouldShowPrivacySandbox_;
   }
 
-  private computeSubheader_(): string {
+  private getSubheader_(): string {
     return this.computeIsNoLinkLayout_() ?
         this.i18n('privacyGuideCompletionCardSubHeaderNoLinks') :
         this.i18n('privacyGuideCompletionCardSubHeader');

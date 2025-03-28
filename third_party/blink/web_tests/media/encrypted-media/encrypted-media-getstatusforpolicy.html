@@ -15,22 +15,20 @@
                 var mediaKeys;
 
                 // Calls getStatusForPolicy() with |hdcpVersion| and expects it
-                // to fail. If |expectedError| is specified, the resulting
-                // error must match. If |expectedError| not specified, the
-                // resulting error must be a NotSupportedError exception.
+                // to resolve.
                 function getStatusForHdcpPolicy(hdcpVersion, expectedError)
                 {
                     return mediaKeys.getStatusForPolicy(hdcpVersion).then(function(MediaKeyStatus) {
-                        // getStatusForPolicy() is not supported by Clear Key
-                        // key system and the promise should always be rejected.
-                        return Promise.reject('Promise resolved unexpectedly');
+                        // getStatusForPolicy() is supported by Clear Key key
+                        // system and the promise should always be resolved.
+                        return Promise.resolve();
                     }, function(error) {
                         if (expectedError === undefined) {
                             assert_equals(error.name, 'NotSupportedError');
                         } else {
                             assert_equals(error, expectedError);
                         }
-                        return Promise.resolve();
+                        return Promise.resolve('Error encountered as expected.');
                     });
                 };
 

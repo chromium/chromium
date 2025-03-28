@@ -147,6 +147,8 @@ class GlicMetrics {
   // ----Public API called by other glic classes-----
   // Called when the glic window starts to open.
   void OnGlicWindowOpen(bool attached, mojom::InvocationSource source);
+  // Called when the glic window is open and ready.
+  void OnGlicWindowOpenAndReady();
   // Called when the glic window finishes closing.
   void OnGlicWindowClose();
   // Called when the glic window attaches or detaches.
@@ -158,6 +160,10 @@ class GlicMetrics {
 
   // Must be called when context is requested.
   void DidRequestContextFromFocusedTab();
+
+  void set_show_start_time(base::TimeTicks time) { show_start_time_ = time; }
+
+  void set_starting_mode(mojom::WebClientMode mode) { starting_mode_ = mode; }
 
  private:
   // Called when `impression_timer_` fires.
@@ -171,6 +177,9 @@ class GlicMetrics {
 
   // Called when kGlicPinnedToTabstrip changes.
   void OnPinningPrefChanged();
+
+  // Resets the window timing state variables.
+  void ResetGlicWindowPresentationTimingState();
 
   // These members are cleared in OnResponseStopped.
   base::TimeTicks input_submitted_time_;
@@ -217,6 +226,13 @@ class GlicMetrics {
   // metrics for changes to the last value.
   bool is_pinned_ = false;
   PrefChangeRegistrar pref_registrar_;
+
+  // The following two variables are used together for recording metrics and are
+  // reset together after the metric is recorded.
+  // The timestamp when the glic window starts to be shown.
+  base::TimeTicks show_start_time_;
+  // Web client's operation modes.
+  mojom::WebClientMode starting_mode_;
 };
 
 }  // namespace glic

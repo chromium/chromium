@@ -175,9 +175,10 @@ void ChromeUserSelectionScreen::SetPublicSessionLocales(
 
   // Construct the list of available locales. This list consists of the
   // recommended locales, followed by all others.
-  base::Value::List available_locales =
-      GetUILanguageList(&recommended_locales, std::string(),
-                        input_method::InputMethodManager::Get());
+  // TODO(crbug.com/404133029): Remove g_browser_process usage.
+  base::Value::List available_locales = GetUILanguageList(
+      g_browser_process->GetApplicationLocale(), &recommended_locales,
+      std::string(), input_method::InputMethodManager::Get());
 
   // Set the initially selected locale to the first recommended locale that is
   // actually available or the current UI locale if none of them are available.

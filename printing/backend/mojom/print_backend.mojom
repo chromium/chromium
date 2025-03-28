@@ -119,4 +119,10 @@ struct PrinterSemanticCapsAndDefaults {
 
   array<MediaType>? media_types;  // Allowed to be empty.
   MediaType? default_media_type;
+
+  // Print scaling capability
+  [EnableIf=is_chromeos]
+  array<PrintScalingType> print_scaling_types;  // Allowed to be empty.
+  [EnableIf=is_chromeos]
+  PrintScalingType print_scaling_type_default = kUnknownPrintScalingType;
 };

@@ -51,8 +51,8 @@ export class KeyValuePairViewerElement extends CrLitElement {
     };
   }
 
-  loading: boolean = false;
-  entries: KeyValuePairEntry[] = [];
+  accessor loading: boolean = false;
+  accessor entries: KeyValuePairEntry[] = [];
 
   private eventTracker_: EventTracker = new EventTracker();
 

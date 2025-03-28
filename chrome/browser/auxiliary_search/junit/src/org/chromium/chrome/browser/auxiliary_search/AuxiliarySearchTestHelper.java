@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.auxiliary_search;
 
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -14,6 +15,10 @@ import java.util.List;
 public class AuxiliarySearchTestHelper {
     static final int TAB_ID_1 = 1;
     static final int TAB_ID_2 = 2;
+    static final int VISIT_ID_1 = 3;
+    static final int VISIT_ID_2 = 4;
+    static final int SCORE_1 = 111;
+    static final int SCORE_2 = 112;
     static final String TITLE_1 = "Title 1";
     static final String TITLE_2 = "Title 2";
 
@@ -38,7 +43,8 @@ public class AuxiliarySearchTestHelper {
                         /* lastActiveTime= */ timestamp,
                         /* tabId= */ TAB_ID_1,
                         /* appId= */ null,
-                        /* visitId= */ -1));
+                        /* visitId= */ -1,
+                        /* score= */ 0));
         entries.add(
                 new AuxiliarySearchDataEntry(
                         /* type= */ AuxiliarySearchEntryType.TAB,
@@ -47,7 +53,34 @@ public class AuxiliarySearchTestHelper {
                         /* lastActiveTime= */ timestamp,
                         /* tabId= */ TAB_ID_2,
                         /* appId= */ null,
-                        /* visitId= */ -1));
+                        /* visitId= */ -1,
+                        /* score= */ 0));
+        return entries;
+    }
+
+    public static List<AuxiliarySearchDataEntry> createAuxiliarySearchDataEntries_TopSite(
+            long timestamp) {
+        List<AuxiliarySearchDataEntry> entries = new ArrayList<>();
+        entries.add(
+                new AuxiliarySearchDataEntry(
+                        /* type= */ AuxiliarySearchEntryType.TOP_SITE,
+                        /* url= */ JUnitTestGURLs.URL_1,
+                        /* title= */ TITLE_1,
+                        /* lastActiveTime= */ timestamp,
+                        /* tabId= */ Tab.INVALID_TAB_ID,
+                        /* appId= */ null,
+                        /* visitId= */ VISIT_ID_1,
+                        /* score= */ SCORE_1));
+        entries.add(
+                new AuxiliarySearchDataEntry(
+                        /* type= */ AuxiliarySearchEntryType.TOP_SITE,
+                        /* url= */ JUnitTestGURLs.URL_2,
+                        /* title= */ TITLE_2,
+                        /* lastActiveTime= */ timestamp,
+                        /* tabId= */ Tab.INVALID_TAB_ID,
+                        /* appId= */ null,
+                        /* visitId= */ VISIT_ID_2,
+                        /* score= */ SCORE_2));
         return entries;
     }
 }

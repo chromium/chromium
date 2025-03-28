@@ -92,7 +92,7 @@ void UkmMessageHandler::RegisterMessages() {
 }  // namespace
 
 // Changes to this class should be in sync with its iOS equivalent
-// ios/chrome/browser/ui/webui/ukm_internals_ui.mm
+// ios/chrome/browser/webui/ui_bundled/ukm_internals_ui.mm
 UkmInternalsUI::UkmInternalsUI(WebUI* web_ui) : WebUIController(web_ui) {
   ukm::UkmService* ukm_service = GetContentClient()->browser()->GetUkmService();
   web_ui->AddMessageHandler(std::make_unique<UkmMessageHandler>(ukm_service));

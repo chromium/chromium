@@ -17,6 +17,6 @@ found in the LICENSE file.
   <dimen name="ntp_customization_bottom_sheet_layout_padding_bottom">24dp</dimen>
   <dimen name="ntp_customization_ntp_cards_margin">20dp</dimen>
   <dimen name="ntp_customization_back_button_margin">36dp</dimen>
-  <dimen name="ntp_customization_forward_arrow_icon_size">24dp</dimen>
+  <dimen name="ntp_customization_bottom_sheet_list_item_icon_size">24dp</dimen>
   <dimen name="ntp_customization_edit_icon_background_size">40dp</dimen>
 </resources>

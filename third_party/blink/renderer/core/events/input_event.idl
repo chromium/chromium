@@ -8,7 +8,7 @@
 [
     Exposed=Window
 ] interface InputEvent : UIEvent {
-    [RaisesException] constructor(DOMString type, optional InputEventInit eventInitDict = {});
+    [RaisesException, CallWith=Isolate] constructor(DOMString type, optional InputEventInit eventInitDict = {});
     readonly attribute DOMString? data;
     readonly attribute boolean isComposing;
 

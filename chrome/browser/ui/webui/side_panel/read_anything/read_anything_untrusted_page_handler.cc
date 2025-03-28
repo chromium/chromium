@@ -788,10 +788,23 @@ void ReadAnythingUntrustedPageHandler::SetDefaultLanguageCode(
 
 void ReadAnythingUntrustedPageHandler::Activate(bool active) {
   active_ = active;
+  if (features::IsReadAnythingReadAloudEnabled() && !active &&
+      side_panel_controller_->tab()->IsActivated() && !tab_will_detach_) {
+    page_->OnReadingModeHidden();
+  }
 }
 
 void ReadAnythingUntrustedPageHandler::OnSidePanelControllerDestroyed() {
   side_panel_controller_ = nullptr;
+}
+
+void ReadAnythingUntrustedPageHandler::OnTabWillDetach() {
+  if (!features::IsReadAnythingReadAloudEnabled()) {
+    return;
+  }
+
+  tab_will_detach_ = true;
+  page_->OnTabWillDetach();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

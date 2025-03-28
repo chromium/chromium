@@ -128,6 +128,12 @@ class NET_EXPORT URLRequestJob {
   // doesn't have a charset will return false.
   virtual bool GetCharset(std::string* charset);
 
+  // Get the content encoding types (e.g., gzip, deflate) that were specified
+  // in the Content-Encoding response header but not decoded by the net stack,
+  // indicating how the response body needs to be decoded on the client side.
+  virtual void GetClientSideContentDecodingTypes(
+      std::vector<net::SourceStreamType>* types) const;
+
   // Called to get response info.
   virtual void GetResponseInfo(HttpResponseInfo* info);
 

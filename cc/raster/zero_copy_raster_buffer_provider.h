@@ -22,7 +22,12 @@ class ConvertableToTraceFormat;
 }
 }
 
+namespace gpu {
+class SharedImageInterface;
+}
+
 namespace cc {
+class LayerTreeFrameSink;
 
 // RasterBuffer for the zero copy upload, which is given to the raster worker
 // threads for raster/upload.
@@ -30,7 +35,9 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
  public:
   ZeroCopyRasterBufferImpl(
       const ResourcePool::InUsePoolResource& in_use_resource,
-      scoped_refptr<gpu::SharedImageInterface> sii);
+      scoped_refptr<gpu::SharedImageInterface> sii,
+      bool resource_has_previous_content,
+      bool is_software);
 
   ZeroCopyRasterBufferImpl(const ZeroCopyRasterBufferImpl&) = delete;
 
@@ -54,6 +61,8 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
   raw_ptr<ResourcePool::Backing> backing_;
   const scoped_refptr<gpu::SharedImageInterface> sii_;
   bool failed_to_map_shared_image_ = false;
+  bool resource_has_previous_content_ = false;
+  bool is_software_ = false;
 };
 
 class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
@@ -61,6 +70,10 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
   ZeroCopyRasterBufferProvider(
       viz::RasterContextProvider* compositor_context_provider,
       const RasterCapabilities& raster_caps);
+
+  // Constructor used with software compositing.
+  explicit ZeroCopyRasterBufferProvider(LayerTreeFrameSink* frame_sink);
+
   ZeroCopyRasterBufferProvider(const ZeroCopyRasterBufferProvider&) = delete;
   ~ZeroCopyRasterBufferProvider() override;
 
@@ -93,8 +106,14 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> StateAsValue()
       const;
 
+  bool is_software_ = false;
+
+  // Used with the GPU compositor.
   raw_ptr<viz::RasterContextProvider> compositor_context_provider_;
   const viz::SharedImageFormat tile_format_;
+
+  // Used with the software compositor.
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
 };
 
 }  // namespace cc

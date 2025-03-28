@@ -102,8 +102,8 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   // `status_for_metrics`.
   void CompleteRequest(
       std::optional<std::string> protocol,
-      const base::expected<DigitalIdentityProvider::DigitalCredential,
-                           DigitalIdentityProvider::RequestStatusForMetrics>&
+      base::expected<DigitalIdentityProvider::DigitalCredential,
+                     DigitalIdentityProvider::RequestStatusForMetrics>
           status_for_metrics);
 
   void CompleteRequestWithError(
@@ -112,8 +112,8 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   void CompleteRequestWithStatus(
       std::optional<std::string> protocol,
       blink::mojom::RequestDigitalIdentityStatus status,
-      const base::expected<DigitalIdentityProvider::DigitalCredential,
-                           DigitalIdentityProvider::RequestStatusForMetrics>&
+      base::expected<DigitalIdentityProvider::DigitalCredential,
+                     DigitalIdentityProvider::RequestStatusForMetrics>
           response);
 
   std::unique_ptr<DigitalIdentityProvider> provider_;

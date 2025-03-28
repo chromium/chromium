@@ -32,8 +32,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
@@ -52,7 +53,8 @@ import java.util.ArrayDeque;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ContentViewFocusTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final int WAIT_RESPONSE_MS = 2000;
 
@@ -113,14 +115,14 @@ public class ContentViewFocusTest {
     @Test
     @DisabledTest(message = "http://crbug.com/172473")
     public void testHideSelectionOnPhoneTabSwiping() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         // Setup
         ChromeTabUtils.newTabsFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity(), 2);
         String url =
                 UrlUtils.getIsolatedTestFileUrl(
                         "chrome/test/data/android/content_view_focus/content_view_focus_long_text.html");
-        mActivityTestRule.loadUrl(url);
+        mActivityTestRule.getActivityTestRule().loadUrl(url);
         View view = mActivityTestRule.getActivity().getActivityTab().getContentView();
 
         // Give the content view focus
@@ -179,7 +181,7 @@ public class ContentViewFocusTest {
     @Restriction(DeviceFormFactor.PHONE)
     @DisabledTest(message = "http://crbug.com/967128")
     public void testHideSelectionOnPhoneTabSwitcher() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         // Setup
         View currentView = mActivityTestRule.getActivity().getActivityTab().getContentView();
         addFocusChangedListener(currentView);
@@ -213,7 +215,7 @@ public class ContentViewFocusTest {
     @Test
     @MediumTest
     public void testPauseTriggersBlur() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         final WebContents webContents = mActivityTestRule.getWebContents();
         final CallbackHelper onTitleUpdatedHelper = new CallbackHelper();
         final WebContentsObserver observer =
@@ -231,7 +233,7 @@ public class ContentViewFocusTest {
         String url =
                 UrlUtils.getIsolatedTestFileUrl(
                         "chrome/test/data/android/content_view_focus/content_view_blur_focus.html");
-        mActivityTestRule.loadUrl(url);
+        mActivityTestRule.getActivityTestRule().loadUrl(url);
         ViewEventSink eventSink = WebContentsUtils.getViewEventSink(webContents);
         onTitleUpdatedHelper.waitForCallback(callCount);
         // The document can start out as focused or not focused at first, depending on whether a

@@ -660,9 +660,10 @@ chromium-metrics-reviews@google.com.
   <int value="70" label="Address bubble"/>
   <int value="71" label="CCT account mismatch notification"/>
   <int value="72" label="Drive file picker (iOS only)"/>
-  <int value="73" label="Share group collaboration authentication"/>
+  <int value="73" label="Share collaboration tab group authentication"/>
   <int value="74" label="Glic launch button"/>
   <int value="75" label="History page (Android only)"/>
+  <int value="76" label="Join collaboration tab group authentication"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

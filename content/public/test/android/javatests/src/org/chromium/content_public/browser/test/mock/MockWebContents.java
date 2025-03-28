@@ -13,6 +13,7 @@ import android.os.Parcel;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.UserData;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.ImageDownloadCallback;
@@ -383,4 +384,13 @@ public class MockWebContents implements WebContents, WebContentsObserver.Observa
 
     @Override
     public void setSupportsForwardTransitionAnimation(boolean supports) {}
+
+    @Override
+    public <T extends UserData> @Nullable T getOrSetUserData(
+            Class<T> key, @Nullable UserDataFactory<T> userDataFactory) {
+        return null;
+    }
+
+    @Override
+    public <T extends UserData> void removeUserData(Class<T> key) {}
 }

@@ -23,7 +23,7 @@ float ComputeTextWidth(const StringView& text, const ComputedStyle& style) {
     return PlainTextPainter::Shared().ComputeInlineSize(text_run,
                                                         *style.GetFont());
   }
-  return style.GetFont()->Width(text_run);
+  return style.GetFont()->DeprecatedWidth(text_run);
 }
 
 }  // namespace blink

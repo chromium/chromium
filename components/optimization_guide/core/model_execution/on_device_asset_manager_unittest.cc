@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/test_on_device_model_component_state_manager.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -106,7 +107,7 @@ class OnDeviceAssetManagerTest : public testing::Test {
   }
 
   void SetModelComponentReady() {
-    component_manager_.SetReady(base::FilePath());
+    component_manager_.SetReady(base_model_asset_);
   }
 
   void CreateAssetManager() {
@@ -132,6 +133,7 @@ class OnDeviceAssetManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple local_state_;
+  FakeBaseModelAsset base_model_asset_;
   scoped_refptr<FakeServiceController> service_controller_;
   TestOnDeviceModelComponentStateManager component_manager_{&local_state_};
   FakeModelProvider model_provider_;

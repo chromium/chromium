@@ -83,8 +83,8 @@ export const IMAGES_DISABLED_ICON = 'read-anything:images-disabled';
 export const IMAGES_TOGGLE_BUTTON_ID = 'images-toggle-button';
 
 // Constants for styling the toolbar when page zoom changes.
-const whiteSpaceTypical = 'nowrap';
-const whiteSpaceOverflow = 'normal';
+const flexWrapTypical = 'nowrap';
+const flexWrapOverflow = 'wrap';
 
 const ReadAnythingToolbarElementBase =
     WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
@@ -216,15 +216,15 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
     // When the toolbar's width exceeds the parent width, then the content has
     // overflowed.
-    const parentWidth = toolbar.offsetParent.clientWidth;
-    if (toolbar.clientWidth > parentWidth) {
+    const parentWidth = toolbar.offsetParent.scrollWidth;
+    if (toolbar.scrollWidth > parentWidth) {
       // Hide at least 3 buttons and more if needed.
       let numOverflowButtons = 3;
       let nextOverflowButton = buttons[buttons.length - numOverflowButtons];
       assert(nextOverflowButton);
       // No need to hide a button if it only exceeds the width by a little (i.e.
       // only the padding overflows).
-      const maxDiff = 10;
+      const maxDiff = 5;
       let overflowLength = nextOverflowButton.offsetLeft +
           nextOverflowButton.offsetWidth - parentWidth;
       while (overflowLength > maxDiff) {
@@ -399,7 +399,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   protected onResetToolbar_() {
     this.$.moreOptionsMenu.getIfExists()?.close();
     this.moreOptionsButtons_ = [];
-    this.style.setProperty('--toolbar-white-space', whiteSpaceTypical);
+    this.style.setProperty('--toolbar-flex-wrap', flexWrapTypical);
   }
 
   protected onToolbarOverflow_(
@@ -411,7 +411,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // the whole app.
     if (firstHiddenButton < 0 &&
         event.detail.overflowLength < minOverflowLengthToScroll) {
-      this.style.setProperty('--toolbar-white-space', whiteSpaceOverflow);
+      this.style.setProperty('--toolbar-flex-wrap', flexWrapOverflow);
       return;
     }
 
@@ -721,6 +721,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   protected onPlayPauseClick_() {
     this.logger_.logSpeechControlClick(
         this.isSpeechActive ? SpeechControls.PAUSE : SpeechControls.PLAY);
+    if (this.isSpeechActive) {
+      this.logger_.logSpeechStopSource(
+          chrome.readingMode.pauseButtonStopSource);
+    }
     this.fire(ToolbarEvent.PLAY_PAUSE);
   }
 

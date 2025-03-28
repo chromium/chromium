@@ -408,6 +408,16 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     base::debug::DumpWithoutCrashing();
     return false;
   }
+  if (!data.ReadPrintScalingTypes(&out->print_scaling_types)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  if (!data.ReadPrintScalingTypeDefault(&out->print_scaling_type_default)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Extra validity checks.
@@ -444,6 +454,14 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
   if (advanced_capabilities_dup_checker.HasDuplicates(
           out->advanced_capabilities)) {
     DLOG(ERROR) << "Duplicate advanced_capabilities detected.";
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  DuplicateChecker<printing::mojom::PrintScalingType>
+      print_scaling_types_dup_checker;
+  if (print_scaling_types_dup_checker.HasDuplicates(out->print_scaling_types)) {
+    DLOG(ERROR) << "Duplicate print_scaling_types detected.";
     base::debug::Alias(&data);
     base::debug::DumpWithoutCrashing();
     return false;

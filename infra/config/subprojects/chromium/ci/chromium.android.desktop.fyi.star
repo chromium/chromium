@@ -50,6 +50,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "x64_builder_mb",
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.ANDROID,
         ),

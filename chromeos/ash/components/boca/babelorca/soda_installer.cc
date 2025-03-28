@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/boca/babelorca/soda_installer.h"
 
+#include <algorithm>
+
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "components/soda/constants.h"
@@ -20,22 +22,42 @@ SodaInstaller::SodaInstaller(PrefService* global_prefs,
 SodaInstaller::~SodaInstaller() {
   speech::SodaInstaller::GetInstance()->RemoveObserver(this);
 }
-void SodaInstaller::GetAvailabilityOrInstall(AvailabilityCallback callback) {
-  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  speech::LanguageCode language_code =
-      speech::GetLanguageCode(std::string(language_));
 
-  if (soda_installer->IsSodaInstalled(language_code)) {
-    std::move(callback).Run(true);
+SodaInstaller::InstallationStatus SodaInstaller::GetStaus() {
+  if (!ValidLanguage()) {
+    status_ = InstallationStatus::kLanguageUnavailable;
+    return status_;
+  }
+
+  if (IsAlreadyInstalled()) {
+    status_ = InstallationStatus::kReady;
+    return status_;
+  }
+
+  return status_;
+}
+
+void SodaInstaller::InstallSoda(AvailabilityCallback callback) {
+  if (!ValidLanguage()) {
+    status_ = InstallationStatus::kLanguageUnavailable;
+    std::move(callback).Run(InstallationStatus::kLanguageUnavailable);
+    return;
+  }
+
+  if (IsAlreadyInstalled()) {
+    status_ = InstallationStatus::kReady;
+    std::move(callback).Run(InstallationStatus::kReady);
     return;
   }
 
   callbacks_.push(std::move(callback));
 
-  if (installing_) {
+  if (status_ == InstallationStatus::kInstalling) {
     return;
   }
-  installing_ = true;
+  status_ = InstallationStatus::kInstalling;
+
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
 
   soda_installer->AddObserver(this);
 
@@ -59,10 +81,10 @@ void SodaInstaller::OnSodaInstalled(speech::LanguageCode language_code) {
     return;
   }
 
-  FlushCallbacks(true);
+  status_ = InstallationStatus::kReady;
+  FlushCallbacks(InstallationStatus::kReady);
 
   speech::SodaInstaller::GetInstance()->RemoveObserver(this);
-  installing_ = false;
 }
 
 void SodaInstaller::OnSodaInstallError(
@@ -75,9 +97,9 @@ void SodaInstaller::OnSodaInstallError(
   // If the language code is kNone then the binary failed to install.
   if (language_code == speech::GetLanguageCode(language_) ||
       language_code == speech::LanguageCode::kNone) {
-    FlushCallbacks(false);
+    status_ = InstallationStatus::kInstallationFailure;
+    FlushCallbacks(InstallationStatus::kInstallationFailure);
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
-    installing_ = false;
   }
 }
 
@@ -86,11 +108,24 @@ void SodaInstaller::OnSodaInstallError(
 void SodaInstaller::OnSodaProgress(speech::LanguageCode language_code,
                                    int progress) {}
 
-void SodaInstaller::FlushCallbacks(bool result) {
+void SodaInstaller::FlushCallbacks(InstallationStatus status) {
   while (!callbacks_.empty()) {
-    std::move(callbacks_.front()).Run(result);
+    std::move(callbacks_.front()).Run(status);
     callbacks_.pop();
   }
+}
+
+bool SodaInstaller::ValidLanguage() {
+  std::vector<std::string> languages =
+      speech::SodaInstaller::GetInstance()->GetAvailableLanguages();
+
+  return std::find(languages.begin(), languages.end(), language_) !=
+         languages.end();
+}
+
+bool SodaInstaller::IsAlreadyInstalled() {
+  return speech::SodaInstaller::GetInstance()->IsSodaInstalled(
+      speech::GetLanguageCode(language_));
 }
 
 }  // namespace ash::babelorca

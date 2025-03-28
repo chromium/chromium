@@ -1571,7 +1571,6 @@
 <translation id="2081816110395725788">Неактивност при работа на батерия</translation>
 <translation id="2082187087049518845">Добавяне на раздела към група</translation>
 <translation id="2082510809738716738">Изберете цвят на темата</translation>
-<translation id="208547068587548667">Вход в(ъв) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Моля, опитайте отново</translation>
 <translation id="208634871997892083">Винаги включена VPN</translation>
 <translation id="208654914566977272">Предложени действия при търсене на екрана ви</translation>
@@ -4006,7 +4005,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3778740492972734840">&amp;Инструменти за програмисти</translation>
 <translation id="3778868487658107119">Вашият личен помощник от Google – винаги на разположение, за да отговаря на въпросите ви и да изпълнява желанията ви.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{историята ви на сърфиране за # сайт}other{историята ви на сърфиране за # сайта}}</translation>
-<translation id="3779244863011082655">Използване на друг профил в(ъв) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> не може да провери паролите ви за нарушения на сигурността на данните. Опитайте отново по-късно.</translation>
 <translation id="3781742599892759500">Достъп на Linux до микрофона</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5511,6 +5509,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4848191975108266266">„Ok Google“ на Google Асистент</translation>
 <translation id="4849286518551984791">Координирано универсално време (UTC/GMT)</translation>
 <translation id="4849517651082200438">Да не се инсталира</translation>
+<translation id="4849731766219625109">Използване на профила ви в(ъв) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="485053257961878904">Синхронизирането на известията не бе настроено</translation>
 <translation id="4850548109381269495">Проверете връзката си с интернет и включете Bluetooth и на двете устройства. След това опитайте отново.</translation>
 <translation id="4850669014075537160">Превъртане</translation>
@@ -5699,6 +5698,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4979510648199782334">Настройването на Microsoft 365 е завършено</translation>
 <translation id="4980805016576257426">Това разширение съдържа злонамерен софтуер.</translation>
 <translation id="4983159853748980742">Паролата ви не бе споделена. Проверете връзката си с интернет и се уверете, че сте влезли в профила си в Chrome. След това опитайте отново.</translation>
+<translation id="498624032394115435">Всеки, който разполага с връзката, може да редактира всички раздели.</translation>
 <translation id="4986706507552097681">Винаги можете да изберете какво да се синхронизира от настройките. Google може да персонализира Търсене и други услуги въз основа на историята ви.</translation>
 <translation id="4986728572522335985">Това ще изтрие всички данни на ключа за сигурност, включително ПИН кода му</translation>
 <translation id="4987944280765486504">След като изтеглянето завърши, вашият Chromebook ще се рестартира и ще можете да продължите с настройването.</translation>
@@ -8309,7 +8309,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6873571253135628430">Промяна на разрешенията за сайтовете</translation>
 <translation id="6876155724392614295">Колело</translation>
 <translation id="6876469544038980967">Не е полезно</translation>
-<translation id="687838958001010630">Всеки, който разполага с връзката, може да редактира всички раздели</translation>
 <translation id="6878422606530379992">Достъпът до сензорите е разрешен</translation>
 <translation id="6878862640969460273">Хоризонтално</translation>
 <translation id="6880587130513028875">Изображенията са блокирани на тази страница.</translation>

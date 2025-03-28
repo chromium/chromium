@@ -459,10 +459,10 @@ public class ReorderDelegate {
     }
 
     /** Update and animate views for external tabs to drop on strip. */
-    public void handleDropForExternalView(
+    public boolean handleDropForExternalView(
             StripLayoutGroupTitle[] groupTitles, List<Integer> tabIds, int dropIndex) {
         assert mInitialized && mExternalViewDragDropReorderStrategy != null;
-        mExternalViewDragDropReorderStrategy.handleDrop(groupTitles, tabIds, dropIndex);
+        return mExternalViewDragDropReorderStrategy.handleDrop(groupTitles, tabIds, dropIndex);
     }
 
     // ============================================================================================

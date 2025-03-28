@@ -53,19 +53,7 @@ class AXBlockFlowData : public GarbageCollected<AXBlockFlowData> {
   // AXInlineTextBox. The LineItem is used for determining if the next or
   // previous fragment is on the same line, and to determine if a trailing
   // space is required in the text content for an AXInlineTextBox.
-  struct FragmentProperties {
-    // Index of the corresponding line in the vector of lines.
-    std::optional<wtf_size_t> line_index;
-    // Index of the previous or next fragment that is on the same line that
-    // may be part of another LayoutObject. Typically, this index directly
-    // corresponds to the index within a physical box fragments vector of
-    // fragment items; however, there is an additional index flattening process
-    // in the case where a layout block flow contains multiple physical box
-    // fragments. See FindFirstFragment for details.
-    std::optional<wtf_size_t> previous_on_line;
-    std::optional<wtf_size_t> next_on_line;
-  };
-
+  //
   // Each LineItem in the layout fragmentation has a corresponding Line instant
   // containing pertinent details for the construction of AXInlineTextBox
   // objects.
@@ -142,7 +130,8 @@ class AXBlockFlowData : public GarbageCollected<AXBlockFlowData> {
 
   WTF::String GetText(wtf_size_t index) const;
 
-  const FragmentProperties& GetProperties(wtf_size_t index) const;
+  std::optional<Line> GetLine(wtf_size_t index) const;
+
   Neighbor ComputeNeighborOnLine(FragmentIndex index, bool forward) const;
 
  private:
@@ -158,7 +147,6 @@ class AXBlockFlowData : public GarbageCollected<AXBlockFlowData> {
   HeapHashMap<Member<const LayoutObject>, wtf_size_t> layout_fragment_map_;
 
   HeapVector<Line> lines_;
-  HeapVector<FragmentProperties> fragment_properties_;
 
   wtf_size_t total_fragment_count_ = 0;
 };

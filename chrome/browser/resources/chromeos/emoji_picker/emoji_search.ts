@@ -61,7 +61,6 @@ export class EmojiSearch extends PolymerElement {
       gifSupport: {type: Boolean, value: false},
       sealSupport: {type: Boolean, value: false},
       status: {type: Status, value: null},
-      searchQuery: {type: String, value: ''},
       nextGifPos: {type: String, value: ''},
       errorMessage: {type: String, value: NO_INTERNET_SEARCH_ERROR_MSG},
       closeGifNudgeOverlay: {type: Object},
@@ -100,6 +99,7 @@ export class EmojiSearch extends PolymerElement {
   private fuseInstances = new Map<CategoryEnum, Fuse<EmojiVariants>>();
   private nextGifPos: string;  // This variable ensures that we get the correct
                                // set of GIFs when fetching more.
+  private errorMessage: string;
   private scrollTimeout: number|null;
 
   static get observers() {

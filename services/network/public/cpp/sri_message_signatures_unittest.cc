@@ -1411,8 +1411,8 @@ TEST_P(SRIMessageSignatureEnforcementTest, NoHeaders) {
       features::kSRIMessageSignatureEnforcement, feature_flag_enabled);
 
   auto head = ResponseHead("", "", "");
-  auto result = MaybeBlockResponseForSRIMessageSignature(
-      this->url(), *head, /*checks_forced_by_initiator=*/false);
+  auto result =
+      MaybeBlockResponseForSRIMessageSignature(this->url(), *head, {});
   EXPECT_FALSE(result.has_value());
 }
 
@@ -1425,9 +1425,64 @@ TEST_P(SRIMessageSignatureEnforcementTest, ValidHeaders) {
 
   auto head = ResponseHead(kValidDigestHeader, kValidSignatureHeader,
                            kValidSignatureInputHeader);
-  auto result = MaybeBlockResponseForSRIMessageSignature(
-      this->url(), *head, /*checks_forced_by_initiator=*/false);
+  auto result =
+      MaybeBlockResponseForSRIMessageSignature(this->url(), *head, {});
   EXPECT_FALSE(result.has_value());
+}
+
+TEST_P(SRIMessageSignatureEnforcementTest, ValidHeadersWithMatchingIntegrity) {
+  bool feature_flag_enabled = GetParam();
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatureState(
+      features::kSRIMessageSignatureEnforcement, feature_flag_enabled);
+
+  auto head = ResponseHead(kValidDigestHeader, kValidSignatureHeader,
+                           kValidSignatureInputHeader);
+
+  // Matching key.
+  {
+    auto result = MaybeBlockResponseForSRIMessageSignature(this->url(), *head,
+                                                           {kPublicKey});
+    EXPECT_FALSE(result.has_value());
+  }
+
+  // Matching key + non-matching key.
+  {
+    std::string wrong_key = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    auto result = MaybeBlockResponseForSRIMessageSignature(
+        this->url(), *head, {kPublicKey, wrong_key});
+    EXPECT_FALSE(result.has_value());
+  }
+
+  // Non-matching key + matching key.
+  {
+    std::string wrong_key = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    auto result = MaybeBlockResponseForSRIMessageSignature(
+        this->url(), *head, {wrong_key, kPublicKey});
+    EXPECT_FALSE(result.has_value());
+  }
+}
+
+TEST_P(SRIMessageSignatureEnforcementTest,
+       ValidHeadersWithMismatchedIntegrity) {
+  bool feature_flag_enabled = GetParam();
+  std::string wrong_key = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatureState(
+      features::kSRIMessageSignatureEnforcement, feature_flag_enabled);
+
+  auto head = ResponseHead(kValidDigestHeader, kValidSignatureHeader,
+                           kValidSignatureInputHeader);
+  auto result =
+      MaybeBlockResponseForSRIMessageSignature(this->url(), *head, {wrong_key});
+
+  // Regardless of the feature-flag's state, integrity requirements are
+  // enforced.
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch,
+            result.value());
 }
 
 TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeaders) {
@@ -1445,8 +1500,8 @@ TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeaders) {
   auto head = ResponseHead(kValidDigestHeader,
                            SignatureHeader("bad-signature", wrong_signature),
                            SignatureInputHeader("bad-signature", wrong_key));
-  auto result = MaybeBlockResponseForSRIMessageSignature(
-      this->url(), *head, /*checks_forced_by_initiator=*/false);
+  auto result =
+      MaybeBlockResponseForSRIMessageSignature(this->url(), *head, {});
   if (feature_flag_enabled) {
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch,
@@ -1474,8 +1529,8 @@ TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeadersAndForcedChecks) {
   auto head = ResponseHead(kValidDigestHeader,
                            SignatureHeader("bad-signature", wrong_signature),
                            SignatureInputHeader("bad-signature", wrong_key));
-  auto result = MaybeBlockResponseForSRIMessageSignature(
-      this->url(), *head, /*checks_forced_by_initiator=*/true);
+  auto result =
+      MaybeBlockResponseForSRIMessageSignature(this->url(), *head, {wrong_key});
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch,
             result.value());

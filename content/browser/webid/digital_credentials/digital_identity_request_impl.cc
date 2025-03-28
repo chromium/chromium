@@ -42,6 +42,7 @@ using blink::mojom::GetRequestFormat;
 
 namespace content {
 namespace {
+using base::Value;
 
 constexpr char kOpenid4vpProtocol[] = "openid4vp";
 constexpr char kOpenid4vp10Protocol[] = "openid4vp1.0";
@@ -339,13 +340,12 @@ DigitalIdentityRequestImpl::~DigitalIdentityRequestImpl() = default;
 
 void DigitalIdentityRequestImpl::CompleteRequest(
     std::optional<std::string> protocol,
-    const base::expected<DigitalIdentityProvider::DigitalCredential,
-                         RequestStatusForMetrics>& response) {
-  CompleteRequestWithStatus(
-      std::move(protocol),
+    base::expected<DigitalIdentityProvider::DigitalCredential,
+                   RequestStatusForMetrics> response) {
+  RequestDigitalIdentityStatus status =
       response.has_value() ? RequestDigitalIdentityStatus::kSuccess
-                           : ToRequestDigitalIdentityStatus(response.error()),
-      response);
+                           : ToRequestDigitalIdentityStatus(response.error());
+  CompleteRequestWithStatus(std::move(protocol), status, std::move(response));
 }
 
 void DigitalIdentityRequestImpl::CompleteRequestWithError(
@@ -357,8 +357,8 @@ void DigitalIdentityRequestImpl::CompleteRequestWithError(
 void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
     std::optional<std::string> protocol,
     RequestDigitalIdentityStatus status,
-    const base::expected<DigitalIdentityProvider::DigitalCredential,
-                         RequestStatusForMetrics>& response) {
+    base::expected<DigitalIdentityProvider::DigitalCredential,
+                   RequestStatusForMetrics> response) {
   // Invalidate pending requests in case that the request gets aborted.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
@@ -383,8 +383,9 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
     // absent, the protocol specified in the original request will be used
     // instead. This fallback mechanism maintains backward compatibility with
     // digital wallets that do not include the protocol in their response.
-    std::move(callback_).Run(
-        status, response->protocol.value_or(protocol.value()), response->data);
+    std::move(callback_).Run(status,
+                             response->protocol.value_or(protocol.value()),
+                             std::move(response->data));
   } else {
     std::move(callback_).Run(status, std::nullopt, std::nullopt);
   }
@@ -601,7 +602,8 @@ void DigitalIdentityRequestImpl::OnGetRequestJsonParsed(
         base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
                        weak_ptr_factory_.GetWeakPtr(), protocol,
                        DigitalIdentityProvider::DigitalCredential(
-                           protocol, "fake_test_token")),
+                           protocol, Value(Value::Dict().Set(
+                                         "token", "fake_test_token")))),
         base::Milliseconds(1));
     return;
   }
@@ -655,7 +657,8 @@ void DigitalIdentityRequestImpl::OnCreateRequestJsonParsed(
         base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
                        weak_ptr_factory_.GetWeakPtr(), protocol,
                        DigitalIdentityProvider::DigitalCredential(
-                           protocol, "fake_test_token")),
+                           protocol, Value(Value::Dict().Set(
+                                         "token", "fake_test_token")))),
         base::Milliseconds(1));
     return;
   }

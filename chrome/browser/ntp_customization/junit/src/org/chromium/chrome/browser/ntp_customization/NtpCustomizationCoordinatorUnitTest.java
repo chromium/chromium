@@ -5,13 +5,12 @@
 package org.chromium.chrome.browser.ntp_customization;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.NTP_CARDS_BACK_PRESS_HANDLER;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.NTP_CARDS_OPTION_CLICK_LISTENER;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 
 import android.content.Context;
 import android.view.View;
@@ -30,7 +29,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link NtpCustomizationCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -39,7 +37,6 @@ public class NtpCustomizationCoordinatorUnitTest {
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private NtpCustomizationMediator mMediator;
-    @Mock private PropertyModel mPropertyModel;
     @Mock private View mView;
     @Mock private ViewFlipper mViewFlipper;
 
@@ -50,27 +47,9 @@ public class NtpCustomizationCoordinatorUnitTest {
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         mNtpCustomizationCoordinator =
-                new NtpCustomizationCoordinator(mContext, mBottomSheetController, mPropertyModel);
-        mNtpCustomizationCoordinator.setMediatorForTesting(mMediator);
+                new NtpCustomizationCoordinator(mContext, mBottomSheetController);
         mNtpCustomizationCoordinator.setViewFlipperForTesting(mViewFlipper);
-    }
-
-    @Test
-    @SmallTest
-    public void testConstructor() {
-        // Verifies that the mNtpCardsCoordinator is initialized.
-        NtpCustomizationCoordinator coordinator =
-                new NtpCustomizationCoordinator(
-                        mContext,
-                        mBottomSheetController,
-                        new PropertyModel(NtpCustomizationViewProperties.ALL_KEYS));
-
-        View ntpCards =
-                coordinator
-                        .getContentViewForTesting()
-                        .findViewById(R.id.new_tab_page_cards_list_item_container);
-        ntpCards.performClick();
-        assertNotNull(coordinator.getNtpCardsCoordinatorForTesting());
+        mNtpCustomizationCoordinator.setMediatorForTesting(mMediator);
     }
 
     @Test
@@ -82,8 +61,9 @@ public class NtpCustomizationCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testImplementBottomSheetDelegate() {
-        BottomSheetDelegate delegate = mNtpCustomizationCoordinator.getDelegateForTesting();
+    public void testBottomSheetDelegateImplementation() {
+        BottomSheetDelegate delegate =
+                mNtpCustomizationCoordinator.getBottomSheetDelegateForTesting();
 
         // Verifies each implementation calls the corresponding method of the mediator.
         delegate.registerBottomSheetLayout(11, mView);
@@ -96,12 +76,25 @@ public class NtpCustomizationCoordinatorUnitTest {
 
     @Test
     @SmallTest
+    public void testGetOptionClickListener() {
+        View.OnClickListener listener =
+                mNtpCustomizationCoordinator.getOptionClickListener(NTP_CARDS);
+
+        listener.onClick(new View(mContext));
+        assertNotNull(mNtpCustomizationCoordinator.getNtpCardsCoordinatorForTesting());
+        verify(mMediator).showBottomSheet(eq(NTP_CARDS));
+    }
+
+    @Test
+    @SmallTest
     public void testDestroy() {
+        NtpCardsCoordinator ntpCardsCoordinator = mock(NtpCardsCoordinator.class);
+        mNtpCustomizationCoordinator.setNtpCardsCoordinatorForTesting(ntpCardsCoordinator);
+
         mNtpCustomizationCoordinator.destroy();
 
-        assertNull(mPropertyModel.get(NTP_CARDS_OPTION_CLICK_LISTENER));
-        assertNull(mPropertyModel.get(NTP_CARDS_BACK_PRESS_HANDLER));
         verify(mViewFlipper).removeAllViews();
         verify(mMediator).destroy();
+        verify(ntpCardsCoordinator).destroy();
     }
 }

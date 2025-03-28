@@ -16,12 +16,18 @@
 #include "base/component_export.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
  public:
   //
   // These enumerations are referenced by integer value in HTML login code and
   // in UMA histograms. Do not change the numeric values.
   //
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.google_apis.gaia
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: GoogleServiceAuthErrorState
   enum State {
     // The user is authenticated.
     NONE = 0,
@@ -208,6 +214,14 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
   // both.
   bool IsTransientError() const;
 
+#if BUILDFLAG(IS_ANDROID)
+  static GoogleServiceAuthError FromJavaObject(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& j_auth_error);
+
+  jni_zero::ScopedJavaLocalRef<jobject> ToJavaObject(JNIEnv* env) const;
+#endif  // BUILDFLAG(IS_ANDROID)
+
  private:
   GoogleServiceAuthError(State s, int error);
 
@@ -229,5 +243,25 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
   std::optional<ScopeLimitedUnrecoverableErrorReason>
       scope_limited_unrecoverable_error_reason_;
 };
+
+#if BUILDFLAG(IS_ANDROID)
+namespace jni_zero {
+
+template <>
+inline GoogleServiceAuthError FromJniType<GoogleServiceAuthError>(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_auth_error) {
+  return GoogleServiceAuthError::FromJavaObject(env, j_auth_error);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType(
+    JNIEnv* env,
+    const GoogleServiceAuthError& auth_error) {
+  return auth_error.ToJavaObject(env);
+}
+
+}  // namespace jni_zero
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #endif  // GOOGLE_APIS_GAIA_GOOGLE_SERVICE_AUTH_ERROR_H_

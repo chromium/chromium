@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
+#include "third_party/blink/renderer/platform/geometry/path_types.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -32,7 +33,7 @@ class SVGPathByteStreamBuilder;
 
 // StringView/SVGPathByteStream -> Path
 Path CORE_EXPORT BuildPathFromString(const StringView&);
-Path BuildPathFromByteStream(const SVGPathByteStream&);
+Path BuildPathFromByteStream(const SVGPathByteStream&, WindRule);
 
 SVGParsingError CORE_EXPORT
 BuildByteStreamFromString(const StringView&, SVGPathByteStreamBuilder&);

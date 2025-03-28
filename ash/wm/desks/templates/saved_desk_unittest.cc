@@ -1888,38 +1888,6 @@ TEST_F(SavedDeskTest, EnteringInTabletMode) {
   EXPECT_FALSE(GetSaveDeskButtonContainerForRoot(root));
 }
 
-// Tests that the library buttons and save desk buttons are hidden when
-// transitioning from clamshell to tablet mode.
-TEST_F(SavedDeskTest, ClamshellToTabletModeOld) {
-  base::test::ScopedFeatureList disable;
-  disable.InitAndDisableFeature(features::kForestFeature);
-
-  // Create a window and add a test entry. Otherwise the templates UI wouldn't
-  // show up.
-  auto test_window_1 = CreateAppWindow();
-  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
-           DeskTemplateType::kTemplate);
-
-  // Test that on entering overview, the zero state desks templates button and
-  // the save template button are visible.
-  ToggleOverview();
-  aura::Window* root = Shell::GetPrimaryRootWindow();
-  auto* desks_bar_view = GetDesksBarViewForRoot(root);
-  ASSERT_TRUE(desks_bar_view);
-  auto* library_button = GetLibraryButtonForRoot(root);
-  ASSERT_TRUE(library_button);
-  EXPECT_TRUE(library_button->GetVisible());
-  EXPECT_EQ(DeskIconButton::State::kZero, library_button->state());
-  EXPECT_TRUE(OverviewGridTestApi(root).IsSaveDeskAsTemplateButtonVisible());
-
-  // Tests that after transitioning, we remain in overview mode and all the
-  // buttons are invisible.
-  EnterTabletMode();
-  ASSERT_TRUE(GetOverviewSession());
-  EXPECT_FALSE(library_button->GetVisible());
-  EXPECT_FALSE(OverviewGridTestApi(root).IsSaveDeskAsTemplateButtonVisible());
-}
-
 // Tests that the library button and save desk options in the desk context menu
 // are hidden when transitioning from clamshell to tablet mode.
 TEST_F(SavedDeskTest, ClamshellToTabletMode) {

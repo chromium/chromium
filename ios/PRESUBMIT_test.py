@@ -316,7 +316,8 @@ class CheckNewColorIntroductionTest(unittest.TestCase):
                 'test_file.json', [],
                 action='A'),
             PRESUBMIT_test_mocks.MockFile(
-                'ios/chrome/browser/ui/colors/test_file.mm', [], action='M')
+                'ios/chrome/browser/colors/ui_bundled/test_file.mm', [],
+                action='M')
         ]
         results = PRESUBMIT._CheckNewColorIntroduction(self.mock_input,
                                                        self.mock_output)

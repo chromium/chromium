@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
 
 import type {CrLazyListElement} from 'chrome://resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement, css, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -218,7 +218,6 @@ suite('CrLazyListTest', () => {
   test('List size updates', async () => {
     await setupTest(getTestItems(1));
     assertEquals(1, queryItems().length);
-
 
     // Ensure that on updating the list with an array smaller in size
     // than the viewport item count, all the array items are rendered.
@@ -552,5 +551,85 @@ suite('CrLazyListTest', () => {
     testApp.listItems = [];
     await eventToPromise('items-rendered', lazyList);
     assertEquals(0, queryItems().length);
+  });
+
+  class TestListWithVariedHeightsApp extends CrLitElement {
+    static get is() {
+      return 'test-list-with-varied-heights-app';
+    }
+
+    static override get properties() {
+      return {
+        itemSize: {type: Number},
+        listItems: {type: Array},
+      };
+    }
+
+    itemSize?: number;
+    listItems: Array<{height: number}> = [];
+
+    static override get styles() {
+      return css`
+        :host {
+          display: block;
+          overflow: auto;
+        }
+      `;
+    }
+
+    override render() {
+      return html`
+      <cr-lazy-list
+          .items="${this.listItems}" .itemSize="${this.itemSize}"
+          .chunkSize="${10}"
+          .scrollTarget="${this}"
+          .template=${(item: {height: number}) => html`
+              <div class="item" style="height: ${item.height}px"></div>
+            `}>
+      </cr-lazy-list>`;
+    }
+  }
+
+  customElements.define(
+      TestListWithVariedHeightsApp.is, TestListWithVariedHeightsApp);
+
+  test('Uses itemSize property instead of calculating', async () => {
+    const viewSize = 100;
+    const typicalItemSize = 20;
+    // Add a couple of tall items and then a bunch of typically sized items.
+    const items = [
+      {height: 50},
+      {height: 50},
+      ...[...Array(20)].map(() => ({height: typicalItemSize})),
+    ];
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    let testApp = document.createElement('test-list-with-varied-heights-app') as
+        TestListWithVariedHeightsApp;
+    testApp.listItems = items;
+    testApp.itemSize = typicalItemSize;
+    testApp.style.height = `${viewSize}px`;
+    document.body.appendChild(testApp);
+
+    let lazyList = testApp.shadowRoot.querySelector('cr-lazy-list');
+    assertTrue(!!lazyList);
+    await eventToPromise('viewport-filled', lazyList);
+    assertEquals(
+        viewSize / typicalItemSize, lazyList.querySelectorAll('.item').length,
+        'Number of items created should depend the typical item size');
+
+    // No itemSize specified should mean the actual height is used.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testApp = document.createElement('test-list-with-varied-heights-app') as
+        TestListWithVariedHeightsApp;
+    testApp.listItems = items;
+    testApp.style.height = `${viewSize}px`;
+    document.body.appendChild(testApp);
+    lazyList = testApp.shadowRoot.querySelector('cr-lazy-list');
+    assertTrue(!!lazyList);
+    await eventToPromise('viewport-filled', lazyList);
+    assertEquals(
+        viewSize / items[0]!.height, lazyList.querySelectorAll('.item').length,
+        'Number of items created should reflect the height of the first item.');
   });
 });

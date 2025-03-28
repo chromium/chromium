@@ -34,6 +34,8 @@ enum ModelBackendType {
   // The APU accelerator backend. Only available on devices with APU, and need
   // special APU model files.
   kApu,
+  // The CPU backend.
+  kCpu,
 };
 
 // Options for specifying the performance characteristics of the model to load.

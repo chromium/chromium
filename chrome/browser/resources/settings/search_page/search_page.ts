@@ -52,15 +52,6 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
        */
       searchEngines_: Array,
 
-      // Whether we need to set the icon size to large because they are loaded
-      // in the binary or smaller because we get them from the favicon service.
-      isEeaChoiceCountry_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isEeaChoiceCountry');
-        },
-      },
-
       // The selected default search engine.
       defaultSearchEngine_: {
         type: Object,
@@ -89,7 +80,12 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   private focusConfig_: Map<string, string>|null;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
-  private useLargeSearchEngineIcons_: boolean;
+
+  // Whether we need to set the icon size to large because they are loaded
+  // in the binary or smaller because we get them from the favicon service.
+  private isEeaChoiceCountry_: boolean =
+      loadTimeData.getBoolean('isEeaChoiceCountry');
+
   private confirmationToastLabel_: string;
 
   override ready() {
@@ -163,7 +159,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
 
   private setFaviconSize_() {
     this.style.setProperty(
-        '--favicon-size', this.useLargeSearchEngineIcons_ ? '24px' : '16px');
+        '--favicon-size', this.isEeaChoiceCountry_ ? '24px' : '16px');
   }
 }
 

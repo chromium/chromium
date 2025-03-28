@@ -64,8 +64,6 @@ android_resources("java_resources") {
     "java/res/color/selection_control_button_tint_list.xml",
     "java/res/color/text_button_ripple_color_list.xml",
     "java/res/color/text_highlight_color.xml",
-    "java/res/color/toolbar_button_highlight_color.xml",
-    "java/res/color/toolbar_button_highlight_color_incognito.xml",
     "java/res/color/toolbar_icon_unfocused_activity_tint_list.xml",
     "java/res/drawable-hdpi/btn_star_filled.png",
     "java/res/drawable-hdpi/ic_delete_white_24dp.png",

@@ -546,18 +546,10 @@ void KeyboardEventManager::DefaultArrowEventHandler(
 }
 
 void KeyboardEventManager::DefaultTabEventHandler(KeyboardEvent* event) {
-  // TODO (liviutinta) remove TRACE after fixing crbug.com/1063548
-  TRACE_EVENT0("input", "KeyboardEventManager::DefaultTabEventHandler");
   DCHECK_EQ(event->type(), event_type_names::kKeydown);
   // We should only advance focus on tabs if no special modifier keys are held
   // down.
   if (event->ctrlKey() || event->metaKey()) {
-    // TODO (liviutinta) remove TRACE after fixing crbug.com/1063548
-    TRACE_EVENT_INSTANT1(
-        "input", "KeyboardEventManager::DefaultTabEventHandler",
-        TRACE_EVENT_SCOPE_THREAD, "reason_tab_does_not_advance_focus",
-        (event->ctrlKey() ? (event->metaKey() ? "Ctrl+MetaKey+Tab" : "Ctrl+Tab")
-                          : "MetaKey+Tab"));
     return;
   }
 
@@ -565,30 +557,15 @@ void KeyboardEventManager::DefaultTabEventHandler(KeyboardEvent* event) {
   // Option-Tab is a shortcut based on a system-wide preference on Mac but
   // should be ignored on all other platforms.
   if (event->altKey()) {
-    // TODO (liviutinta) remove TRACE after fixing crbug.com/1063548
-    TRACE_EVENT_INSTANT1("input",
-                         "KeyboardEventManager::DefaultTabEventHandler",
-                         TRACE_EVENT_SCOPE_THREAD,
-                         "reason_tab_does_not_advance_focus", "Alt+Tab");
     return;
   }
 #endif
 
   Page* page = frame_->GetPage();
   if (!page) {
-    // TODO (liviutinta) remove TRACE after fixing crbug.com/1063548
-    TRACE_EVENT_INSTANT1("input",
-                         "KeyboardEventManager::DefaultTabEventHandler",
-                         TRACE_EVENT_SCOPE_THREAD,
-                         "reason_tab_does_not_advance_focus", "Page is null");
     return;
   }
   if (!page->TabKeyCyclesThroughElements()) {
-    // TODO (liviutinta) remove TRACE after fixing crbug.com/1063548
-    TRACE_EVENT_INSTANT1(
-        "input", "KeyboardEventManager::DefaultTabEventHandler",
-        TRACE_EVENT_SCOPE_THREAD, "reason_tab_does_not_advance_focus",
-        "TabKeyCyclesThroughElements is false");
     return;
   }
 
@@ -598,11 +575,6 @@ void KeyboardEventManager::DefaultTabEventHandler(KeyboardEvent* event) {
 
   // Tabs can be used in design mode editing.
   if (frame_->GetDocument()->InDesignMode()) {
-    // TODO (liviutinta) remove TRACE after fixing crbug.com/1063548
-    TRACE_EVENT_INSTANT1(
-        "input", "KeyboardEventManager::DefaultTabEventHandler",
-        TRACE_EVENT_SCOPE_THREAD, "reason_tab_does_not_advance_focus",
-        "DesignMode is true");
     return;
   }
 
@@ -612,13 +584,6 @@ void KeyboardEventManager::DefaultTabEventHandler(KeyboardEvent* event) {
                                                   ->GetInputDeviceCapabilities()
                                                   ->FiresTouchEvents(false))) {
     event->SetDefaultHandled();
-  } else {
-    // TODO (liviutinta) remove TRACE after fixing crbug.com/1063548
-    TRACE_EVENT_INSTANT1(
-        "input", "KeyboardEventManager::DefaultTabEventHandler",
-        TRACE_EVENT_SCOPE_THREAD, "reason_tab_does_not_advance_focus",
-        "AdvanceFocus returned false");
-    return;
   }
 }
 

@@ -8,7 +8,7 @@ promise_test(async t => {
   const iframe = document.createElement('iframe');
   document.childNodes[document.childNodes.length - 1].appendChild(iframe);
 
-  const session = await iframe.contentWindow.ai.languageModel.create();
+  const session = await iframe.contentWindow.LanguageModel.create();
   session.prompt(kTestPrompt);
   // Detach the iframe.
   iframe.remove();

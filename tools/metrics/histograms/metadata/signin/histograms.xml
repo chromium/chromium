@@ -1865,6 +1865,22 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.IOSNumberOfAccountSwitches.{TimeRange}"
+    units="switches" expires_after="2026-03-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    The number of times the user switched accounts in the {TimeRange}. Emitted
+    no more than once every 24 hours, as soon as Chrome detects that more than
+    24 hours passed from the last recording. Recorded only on iOS.
+  </summary>
+  <token key="TimeRange">
+    <variant name="Last7Days" summary="last 7 days"/>
+    <variant name="Last28Days" summary="last 28 days"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.IOSNumberOfDeviceAccounts" units="accounts"
     expires_after="2025-08-24">
   <owner>jlebel@chromium.org</owner>
@@ -2038,6 +2054,26 @@ the browser and content area. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.NumberOfActiveAccounts.AnyManaged.{TimeRange}"
+    units="accounts" expires_after="2025-07-31">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    The number of accounts that were active in the {TimeRange}, i.e. that were
+    used as the primary account in any profile. Emitted no more than once every
+    24 hours, as soon as Chrome detects that more than 24 hours passed from the
+    last recording, and only if at least one of the active accounts was a
+    managed account. See also `Signin.NumberOfActiveAccounts.Last7/28Days` for
+    the number of active accounts independent of managed-ness status.
+  </summary>
+  <token key="TimeRange">
+    <variant name="Last7Days" summary="last 7 days"/>
+    <variant name="Last28Days" summary="last 28 days"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.NumberOfActiveAccounts.{TimeRange}" units="accounts"
     expires_after="2025-07-31">
   <owner>bsazonov@chromium.org</owner>
@@ -2049,6 +2085,26 @@ the browser and content area. -->
     used as the primary account in any profile. Emitted no more than once every
     24 hours, as soon as Chrome detects that more than 24 hours passed from the
     last recording.
+  </summary>
+  <token key="TimeRange">
+    <variant name="Last7Days" summary="last 7 days"/>
+    <variant name="Last28Days" summary="last 28 days"/>
+  </token>
+</histogram>
+
+<histogram name="Signin.NumberOfActiveManagedAccounts.{TimeRange}"
+    units="accounts" expires_after="2025-07-31">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    The number of managed accounts that were active in the {TimeRange}, i.e.
+    that were used as the primary account in any profile. Emitted no more than
+    once every 24 hours, as soon as Chrome detects that more than 24 hours
+    passed from the last recording. See also
+    `Signin.NumberOfActiveAccounts.Last7/28Days` for the number of active
+    accounts independent of managed-ness status.
   </summary>
   <token key="TimeRange">
     <variant name="Last7Days" summary="last 7 days"/>

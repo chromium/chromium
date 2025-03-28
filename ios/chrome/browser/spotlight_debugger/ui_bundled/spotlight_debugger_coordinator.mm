@@ -33,7 +33,7 @@
 - (void)start {
   [super start];
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   self.viewController = [[SpotlightDebuggerViewController alloc]
       initWithPrefService:profile->GetPrefs()];
   self.viewController.delegate = self;

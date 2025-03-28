@@ -4,9 +4,13 @@
 
 #include "extensions/browser/json_file_sanitizer.h"
 
+#include <optional>
+#include <string>
+
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/task/sequenced_task_runner.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -103,17 +107,16 @@ void JsonFileSanitizer::JsonParsingDone(
   }
 
   // Reserialize the JSON and write it back to the original file.
-  std::string json_string;
-  JSONStringValueSerializer serializer(&json_string);
-  serializer.set_pretty_print(true);
-  if (!serializer.Serialize(*json_value)) {
+  std::optional<std::string> json_string = base::WriteJsonWithOptions(
+      *json_value, base::JSONWriter::OPTIONS_PRETTY_PRINT);
+  if (!json_string) {
     ReportError(Status::kSerializingError, std::string());
     return;
   }
 
   io_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&WriteStringToFile, std::move(json_string), file_path),
+      base::BindOnce(&WriteStringToFile, std::move(*json_string), file_path),
       base::BindOnce(&JsonFileSanitizer::JsonFileWritten,
                      weak_factory_.GetWeakPtr(), file_path));
 }

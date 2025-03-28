@@ -45,6 +45,7 @@ if (use_blink) {
       ":test_support",
       "//base/test:test_support",
       "//components/privacy_sandbox:features",
+      "//components/privacy_sandbox:test_support",
       "//components/privacy_sandbox/privacy_sandbox_attestations/proto:proto",
       "//content/test:test_support",
       "//net",

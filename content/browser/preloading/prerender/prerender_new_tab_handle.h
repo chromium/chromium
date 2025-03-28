@@ -65,7 +65,7 @@ class PrerenderNewTabHandle {
 
   // Returns SpeculationEagerness.
   std::optional<blink::mojom::SpeculationEagerness> eagerness() const {
-    return attributes_.eagerness;
+    return attributes_.GetEagerness();
   }
 
   PrerenderHostRegistry& GetPrerenderHostRegistry();

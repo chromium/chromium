@@ -461,13 +461,6 @@ void InterestGroupCachingStorage::GetInterestGroupsForUpdate(
       .Then(std::move(callback));
 }
 
-void InterestGroupCachingStorage::GetDebugReportLockout(
-    base::OnceCallback<void(std::optional<DebugReportLockout>)> callback) {
-  return interest_group_storage_
-      .AsyncCall(&InterestGroupStorage::GetDebugReportLockout)
-      .Then(std::move(callback));
-}
-
 void InterestGroupCachingStorage::GetDebugReportLockoutAndCooldowns(
     base::flat_set<url::Origin> origins,
     base::OnceCallback<void(std::optional<DebugReportLockoutAndCooldowns>)>
@@ -475,6 +468,14 @@ void InterestGroupCachingStorage::GetDebugReportLockoutAndCooldowns(
   return interest_group_storage_
       .AsyncCall(&InterestGroupStorage::GetDebugReportLockoutAndCooldowns)
       .WithArgs(std::move(origins))
+      .Then(std::move(callback));
+}
+
+void InterestGroupCachingStorage::GetDebugReportLockoutAndAllCooldowns(
+    base::OnceCallback<void(std::optional<DebugReportLockoutAndCooldowns>)>
+        callback) {
+  return interest_group_storage_
+      .AsyncCall(&InterestGroupStorage::GetDebugReportLockoutAndAllCooldowns)
       .Then(std::move(callback));
 }
 

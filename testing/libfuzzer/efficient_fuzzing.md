@@ -283,8 +283,11 @@ Add a fuzzer dictionary:
 
 ### Custom build
 
-If you need to change the code being tested by your fuzz target, you can use an
-`#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION` macro in your target code.
+If you need to change the code being tested by your fuzz target, you can use
+conditional compilation as follows:
+
+* `#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION` in C/C++ code
+* `if cfg!(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) { ... }` in Rust code
 
 *** note
 **Note:** Patching target code is not a preferred way of improving the

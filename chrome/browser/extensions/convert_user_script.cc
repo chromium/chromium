@@ -20,7 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/common/chrome_paths.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "extensions/browser/extension_user_script_loader.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/constants.h"
@@ -85,9 +85,8 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   // identity is its namespace+name, so we hash that to create a public key.
   // There will be no corresponding private key, which means user scripts cannot
   // be auto-updated, or claimed in the gallery.
-  uint8_t raw[crypto::kSHA256Length] = {};
-  crypto::SHA256HashString(script_name, raw, crypto::kSHA256Length);
-  std::string key = base::Base64Encode(raw);
+  std::string key =
+      base::Base64Encode(crypto::hash::Sha256(base::as_byte_span(script_name)));
 
   // The script may not have a name field, but we need one for an extension. If
   // it is missing, use the filename of the original URL.

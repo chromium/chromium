@@ -9,15 +9,19 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/ui/views/media_preview/camera_preview/blur_switch_view_controller.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_mediator.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_view_controller.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_coordinator.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/views/view_tracker.h"
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+#include "chrome/browser/ui/views/media_preview/camera_preview/blur_switch_view_controller.h"
+#endif
 
 // Acts as a middle man between the ViewController and the Mediator.
 // Maintains the lifetime of its views.
@@ -66,7 +70,9 @@ class CameraCoordinator {
   const bool allow_device_selection_;
   const media_preview_metrics::Context metrics_context_;
   std::optional<CameraViewController> camera_view_controller_;
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   std::optional<BlurSwitchViewController> blur_switch_view_controller_;
+#endif
   std::optional<VideoStreamCoordinator> video_stream_coordinator_;
 };
 

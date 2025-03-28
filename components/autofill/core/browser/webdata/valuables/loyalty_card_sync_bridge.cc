@@ -17,7 +17,7 @@
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
-#include "components/sync/protocol/autofill_loyalty_card_specifics.pb.h"
+#include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/webdata/common/web_database.h"
 
@@ -97,11 +97,11 @@ std::optional<syncer::ModelError> LoyaltyCardSyncBridge::MergeFullSyncData(
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     switch (change->type()) {
       case syncer::EntityChange::ACTION_ADD: {
-        DCHECK(change->data().specifics.has_autofill_loyalty_card());
+        DCHECK(change->data().specifics.has_autofill_valuable());
         // Deserialize the LoyaltyCardSpecifics and add them in the DB.
         std::optional<LoyaltyCard> remote =
             CreateAutofillLoyaltyCardFromSpecifics(
-                change->data().specifics.autofill_loyalty_card());
+                change->data().specifics.autofill_valuable());
         // Since the specifics are guaranteed to be valid by
         // `IsEntityDataValid()`, the conversion will succeed.
         DCHECK(remote);
@@ -166,9 +166,9 @@ LoyaltyCardSyncBridge::GetAllDataForDebugging() {
 
 bool LoyaltyCardSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
-  DCHECK(entity_data.specifics.has_autofill_loyalty_card());
+  DCHECK(entity_data.specifics.has_autofill_valuable());
   return AreAutofillLoyaltyCardSpecificsValid(
-      entity_data.specifics.autofill_loyalty_card());
+      entity_data.specifics.autofill_valuable());
 }
 
 std::string LoyaltyCardSyncBridge::GetClientTag(
@@ -179,7 +179,7 @@ std::string LoyaltyCardSyncBridge::GetClientTag(
 std::string LoyaltyCardSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
   DCHECK(IsEntityDataValid(entity_data));
-  return entity_data.specifics.autofill_loyalty_card().id();
+  return entity_data.specifics.autofill_valuable().id();
 }
 
 void LoyaltyCardSyncBridge::ApplyDisableSyncChanges(
@@ -209,20 +209,19 @@ void LoyaltyCardSyncBridge::ApplyDisableSyncChanges(
 sync_pb::EntitySpecifics
 LoyaltyCardSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     const sync_pb::EntitySpecifics& entity_specifics) const {
-  sync_pb::AutofillLoyaltyCardSpecifics
-      trimmed_autofill_loyalty_card_specifics =
-          TrimLoyaltyCardSpecificsDataForCaching(
-              entity_specifics.autofill_loyalty_card());
+  sync_pb::AutofillValuableSpecifics trimmed_autofill_valuable_specifics =
+      TrimAutofillValuableSpecificsDataForCaching(
+          entity_specifics.autofill_valuable());
 
-  // If all fields are cleared from the loyalty card specifics, return a fresh
+  // If all fields are cleared from the valuable specifics, return a fresh
   // EntitySpecifics to avoid caching a few residual bytes.
-  if (trimmed_autofill_loyalty_card_specifics.ByteSizeLong() == 0u) {
+  if (trimmed_autofill_valuable_specifics.ByteSizeLong() == 0u) {
     return sync_pb::EntitySpecifics();
   }
 
   sync_pb::EntitySpecifics trimmed_entity_specifics;
-  *trimmed_entity_specifics.mutable_autofill_loyalty_card() =
-      std::move(trimmed_autofill_loyalty_card_specifics);
+  *trimmed_entity_specifics.mutable_autofill_valuable() =
+      std::move(trimmed_autofill_valuable_specifics);
 
   return trimmed_entity_specifics;
 }

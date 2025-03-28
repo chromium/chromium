@@ -61,31 +61,46 @@ class EslintTsTest(unittest.TestCase):
     _EXPECTED_STRING = "@typescript-eslint/require-await"
     self.assertTrue(_EXPECTED_STRING in str(context.exception))
 
-  def testWebUiEslintPlugin_LitErrors(self):
+  def testWebUiEslintPlugin_LitPropertyAccessor(self):
     with self.assertRaises(RuntimeError) as context:
       self._run_test(["with_webui_plugin_lit_violations.ts"])
 
     _EXPECTED_STRING = "@webui-eslint/lit-property-accessor"
     self.assertTrue(_EXPECTED_STRING in str(context.exception))
     errors = [
-        "Missing 'accessor' keyword when declaring Litreactive property 'prop2'",
-        "Unnecessary 'accessor' keyword when declaring regular (non Lit reactive) property 'prop3'",
-        "Missing 'accessor' keyword when declaring Litreactive property 'prop1'",
-        "Unnecessary 'accessor' keyword when declaring regular (non Lit reactive) property 'prop4'",
+        "Missing 'accessor' keyword when declaring Lit reactive property 'prop2' in class 'SomeElement'",
+        "Unnecessary 'accessor' keyword when declaring regular (non Lit reactive) property 'prop3' in class 'SomeElement'",
+        "Missing 'accessor' keyword when declaring Lit reactive property 'prop1' in class 'SomeOtherElement'",
+        "Unnecessary 'accessor' keyword when declaring regular (non Lit reactive) property 'prop4' in class 'SomeOtherElement'",
     ]
     for e in errors:
       self.assertTrue(e in str(context.exception))
 
-  def testWebUiEslintPlugin_PolymerErrors(self):
+  def testWebUiEslintPlugin_PolymerPropertyDeclare(self):
     with self.assertRaises(RuntimeError) as context:
       self._run_test(["with_webui_plugin_polymer_violations.ts"])
 
     _EXPECTED_STRING = "@webui-eslint/polymer-property-declare"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
     errors = [
-        "Missing 'declare' keyword when declaring Polymer property 'prop2'",
-        "Unnecessary 'declare' keyword when declaring regular (non Polymer) property 'prop3'",
-        "Missing 'declare' keyword when declaring Polymer property 'prop1'",
-        "Unnecessary 'declare' keyword when declaring regular (non Polymer) property 'prop4'",
+        "Missing 'declare' keyword when declaring Polymer property 'prop2' in class 'SomeElement'",
+        "Unnecessary 'declare' keyword when declaring regular (non Polymer) property 'prop3' in class 'SomeElement'",
+        "Missing 'declare' keyword when declaring Polymer property 'prop1' in class 'SomeOtherElement'",
+        "Unnecessary 'declare' keyword when declaring regular (non Polymer) property 'prop4' in class 'SomeOtherElement'",
+    ]
+    for e in errors:
+      self.assertTrue(e in str(context.exception))
+
+  def testWebUiEslintPlugin_PolymerPropertyClassMember(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test(
+          ["with_webui_plugin_polymer_property_class_member_violations.ts"])
+
+    _EXPECTED_STRING = "@webui-eslint/polymer-property-class-member"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
+    errors = [
+        "Polymer property 'prop3' in class 'SomeElement' must also be declared as a class member",
+        "Polymer property 'prop1' in class 'SomeOtherElement' must also be declared as a class member",
     ]
     for e in errors:
       self.assertTrue(e in str(context.exception))

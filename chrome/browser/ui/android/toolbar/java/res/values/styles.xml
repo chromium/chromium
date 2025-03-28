@@ -15,7 +15,7 @@ found in the LICENSE file.
         <item name="android:layout_height">match_parent</item>
         <item name="android:scaleType">centerInside</item>
         <item name="tint">@color/default_icon_color_tint_list</item>
-        <item name="android:background">@drawable/omnibox_button_ripple</item>
+        <item name="android:background">@drawable/search_box_icon_background</item>
     </style>
     <style name="LocationBarActionButtonForFakeSearchBox" parent="LocationBarActionButton">
         <item name="android:layout_height">@dimen/location_bar_action_icon_width</item>
@@ -29,7 +29,7 @@ found in the LICENSE file.
         <item name="android:scaleType">center</item>
     </style>
     <style name="ToolbarHoverableButton" parent="ToolbarButton">
-        <item name="android:background">@drawable/toolbar_button_ripple</item>
+        <item name="android:background">@drawable/default_icon_background</item>
     </style>
     <style name="ToolbarMenuButton" parent="ToolbarButton">
         <item name="android:layout_gravity">top</item>

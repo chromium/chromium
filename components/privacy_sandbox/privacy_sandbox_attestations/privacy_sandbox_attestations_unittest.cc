@@ -19,6 +19,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/schemeful_site.h"
@@ -27,14 +28,15 @@
 
 namespace privacy_sandbox {
 
+using ::privacy_sandbox_test_util::PrivacySandboxSettingsTestPeer;
+using Status = PrivacySandboxSettingsTestPeer::Status;
+
 class PrivacySandboxAttestationsTestBase : public testing::Test {
  public:
   PrivacySandboxAttestationsTestBase()
       : scoped_attestations_(PrivacySandboxAttestations::CreateForTesting()) {}
 
  protected:
-  using Status = PrivacySandboxSettingsImpl::Status;
-
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
   }

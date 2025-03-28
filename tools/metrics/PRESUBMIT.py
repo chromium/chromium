@@ -14,13 +14,13 @@ ENUMS_XML = 'enums.xml'
 
 def CheckChange(input_api, output_api):
   """Checks that ukm/ukm.xml is validated on changes to histograms/enums.xml"""
-  for f in input_api.AffectedTextFiles():
+  for f in input_api.AffectedFiles():
     p = f.AbsoluteLocalPath()
     # Early return if the ukm file is changed, then the presubmit script in the
     # ukm directory would run and report the errors.
     if (UKM_XML in p):
       return []
-  for f in input_api.AffectedTextFiles():
+  for f in input_api.AffectedFiles():
     p = f.AbsoluteLocalPath()
     filepath = input_api.os_path.relpath(p, input_api.PresubmitLocalPath())
     if (ENUMS_XML in filepath):

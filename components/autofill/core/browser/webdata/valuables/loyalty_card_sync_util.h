@@ -6,34 +6,34 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_LOYALTY_CARD_SYNC_UTIL_H_
 
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
-#include "components/sync/protocol/autofill_loyalty_card_specifics.pb.h"
+#include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 
 namespace autofill {
 // For a given `LoyaltyCard`, returns the corresponding
-// `sync_pb::AutofillLoyaltyCardSpecifics`.
-sync_pb::AutofillLoyaltyCardSpecifics CreateSpecificsFromLoyaltyCard(
+// `sync_pb::AutofillValuableSpecifics`.
+sync_pb::AutofillValuableSpecifics CreateSpecificsFromLoyaltyCard(
     const LoyaltyCard& card);
 
-// Converts the given `loyaltyCard` into a `syncer::EntityData`.
+// Converts the given `loyalty_card` into a `syncer::EntityData`.
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(
     const LoyaltyCard& loyalty_card);
 
-// Converts the given loyalty card `specifics` into an equivalent
-// `LoyaltyCard` or returns `nullopt` if specifics are invalid.
+// Converts the given valuable `specifics` into an equivalent LoyaltyCard
+// instance or returns `nullopt` if specifics are invalid.
 std::optional<LoyaltyCard> CreateAutofillLoyaltyCardFromSpecifics(
-    const sync_pb::AutofillLoyaltyCardSpecifics& specifics);
+    const sync_pb::AutofillValuableSpecifics& specifics);
 
-// Tests if the loyalty card `specifics` are valid and can be converted into an
-// `LoyaltyCard` using `CreateAutofillLoyaltyCardFromSpecifics()`.
+// Tests if the valuable `specifics` are valid and can be converted into an
+// Autofill class instance using `CreateAutofillLoyaltyCardFromSpecifics()`.
 bool AreAutofillLoyaltyCardSpecificsValid(
-    const sync_pb::AutofillLoyaltyCardSpecifics& specifics);
+    const sync_pb::AutofillValuableSpecifics& specifics);
 
 // Clears all supported fields from `specifics`. Supported
 // fields are all fields in the protobuf definition that have already been
 // included in the client version.
-sync_pb::AutofillLoyaltyCardSpecifics TrimLoyaltyCardSpecificsDataForCaching(
-    const sync_pb::AutofillLoyaltyCardSpecifics& specifics);
+sync_pb::AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
+    const sync_pb::AutofillValuableSpecifics& specifics);
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_LOYALTY_CARD_SYNC_UTIL_H_

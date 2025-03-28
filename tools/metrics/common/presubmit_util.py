@@ -114,7 +114,7 @@ def DoPresubmitMain(*args, **kwargs):
 
 def CheckChange(xml_file, input_api, output_api):
   """Checks that xml is pretty-printed and well-formatted."""
-  for f in input_api.AffectedTextFiles():
+  for f in input_api.AffectedFiles():
     p = f.AbsoluteLocalPath()
     if (input_api.basename(p) == xml_file
         and input_api.os_path.dirname(p) == input_api.PresubmitLocalPath()):

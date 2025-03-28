@@ -92,20 +92,20 @@ bool Font::operator==(const Font& other) const {
          font_description_ == other.font_description_;
 }
 
-void Font::DrawText(cc::PaintCanvas* canvas,
-                    const TextRun& run,
-                    const gfx::PointF& point,
-                    const cc::PaintFlags& flags,
-                    DrawType draw_type) const {
-  DrawText(canvas, run, point, cc::kInvalidNodeId, flags, draw_type);
+void Font::DeprecatedDrawText(cc::PaintCanvas* canvas,
+                              const TextRun& run,
+                              const gfx::PointF& point,
+                              const cc::PaintFlags& flags,
+                              DrawType draw_type) const {
+  DeprecatedDrawText(canvas, run, point, cc::kInvalidNodeId, flags, draw_type);
 }
 
-void Font::DrawText(cc::PaintCanvas* canvas,
-                    const TextRun& run,
-                    const gfx::PointF& point,
-                    cc::NodeId node_id,
-                    const cc::PaintFlags& flags,
-                    DrawType draw_type) const {
+void Font::DeprecatedDrawText(cc::PaintCanvas* canvas,
+                              const TextRun& run,
+                              const gfx::PointF& point,
+                              cc::NodeId node_id,
+                              const cc::PaintFlags& flags,
+                              DrawType draw_type) const {
   // Don't draw anything while we are using custom fonts that are in the process
   // of loading.
   if (ShouldSkipDrawing())
@@ -143,12 +143,13 @@ void Font::DrawText(cc::PaintCanvas* canvas,
   DrawTextBlobs(bloberizer.Blobs(), *canvas, point, flags, node_id);
 }
 
-bool Font::DrawBidiText(cc::PaintCanvas* canvas,
-                        const TextRunPaintInfo& run_info,
-                        const gfx::PointF& point,
-                        CustomFontNotReadyAction custom_font_not_ready_action,
-                        const cc::PaintFlags& flags,
-                        DrawType draw_type) const {
+bool Font::DeprecatedDrawBidiText(
+    cc::PaintCanvas* canvas,
+    const TextRunPaintInfo& run_info,
+    const gfx::PointF& point,
+    CustomFontNotReadyAction custom_font_not_ready_action,
+    const cc::PaintFlags& flags,
+    DrawType draw_type) const {
   // Don't draw anything while we are using custom fonts that are in the process
   // of loading, except if the 'force' argument is set to true (in which case it
   // will use a fallback font).
@@ -171,8 +172,9 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
     TextRun run_with_override(text_with_override, run.Direction(),
                               /* directional_override */ false,
                               run.NormalizeSpace());
-    return DrawBidiText(canvas, TextRunPaintInfo(run_with_override), point,
-                        custom_font_not_ready_action, flags, draw_type);
+    return DeprecatedDrawBidiText(canvas, TextRunPaintInfo(run_with_override),
+                                  point, custom_font_not_ready_action, flags,
+                                  draw_type);
   }
 
   BidiParagraph::Runs bidi_runs;
@@ -235,11 +237,11 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
 }
 
 // This function is not used if TextCombineEmphasisNG flag is enabled.
-void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
-                             const TextRun& run,
-                             const AtomicString& mark,
-                             const gfx::PointF& point,
-                             const cc::PaintFlags& flags) const {
+void Font::DeprecatedDrawEmphasisMarks(cc::PaintCanvas* canvas,
+                                       const TextRun& run,
+                                       const AtomicString& mark,
+                                       const gfx::PointF& point,
+                                       const cc::PaintFlags& flags) const {
   if (ShouldSkipDrawing())
     return;
 
@@ -292,16 +294,17 @@ gfx::RectF Font::TextInkBounds(const TextFragmentPaintInfo& text_info) const {
   return text_info.shape_result->ComputeInkBounds();
 }
 
-float Font::Width(const TextRun& run, gfx::RectF* glyph_bounds) const {
+float Font::DeprecatedWidth(const TextRun& run,
+                            gfx::RectF* glyph_bounds) const {
   FontCachePurgePreventer purge_preventer;
   CachingWordShaper shaper(*this);
   return shaper.Width(run, glyph_bounds);
 }
 
-float Font::SubRunWidth(const TextRun& run,
-                        unsigned from,
-                        unsigned to,
-                        gfx::RectF* glyph_bounds) const {
+float Font::DeprecatedSubRunWidth(const TextRun& run,
+                                  unsigned from,
+                                  unsigned to,
+                                  gfx::RectF* glyph_bounds) const {
   if (run.length() == 0) {
     return 0;
   }
@@ -424,11 +427,11 @@ static inline gfx::RectF PixelSnappedSelectionRect(const gfx::RectF& rect) {
                     rect.height());
 }
 
-gfx::RectF Font::SelectionRectForText(const TextRun& run,
-                                      const gfx::PointF& point,
-                                      float height,
-                                      int from,
-                                      int to) const {
+gfx::RectF Font::DeprecatedSelectionRectForText(const TextRun& run,
+                                                const gfx::PointF& point,
+                                                float height,
+                                                int from,
+                                                int to) const {
   to = (to == -1 ? run.length() : to);
 
   FontCachePurgePreventer purge_preventer;
@@ -440,10 +443,10 @@ gfx::RectF Font::SelectionRectForText(const TextRun& run,
       gfx::RectF(point.x() + range.start, point.y(), range.Width(), height));
 }
 
-int Font::OffsetForPosition(const TextRun& run,
-                            float x_float,
-                            IncludePartialGlyphsOption partial_glyphs,
-                            BreakGlyphsOption break_glyphs) const {
+int Font::DeprecatedOffsetForPosition(const TextRun& run,
+                                      float x_float,
+                                      IncludePartialGlyphsOption partial_glyphs,
+                                      BreakGlyphsOption break_glyphs) const {
   FontCachePurgePreventer purge_preventer;
   CachingWordShaper shaper(*this);
   return shaper.OffsetForPosition(run, x_float, partial_glyphs, break_glyphs);

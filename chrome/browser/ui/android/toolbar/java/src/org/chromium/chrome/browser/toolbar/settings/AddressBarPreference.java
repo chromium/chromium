@@ -14,6 +14,7 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.toolbar.R;
@@ -31,6 +32,18 @@ public class AddressBarPreference extends Preference implements RadioGroup.OnChe
         super(context, attrs);
         // Inflating from XML.
         setLayoutResource(R.layout.address_bar_preference);
+    }
+
+    /**
+     * Returns whether the toolbar is user-configured to show on top. If no value has been set
+     * explicitly by the user a default param is used. The value of the default param is
+     * configurable for experimental purposes but defaults to top.
+     */
+    public static boolean isToolbarConfiguredToShowOnTop() {
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(
+                        ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                        ChromeFeatureList.sAndroidBottomToolbarDefaultToTop.getValue());
     }
 
     @Override
@@ -56,9 +69,7 @@ public class AddressBarPreference extends Preference implements RadioGroup.OnChe
     }
 
     private void initializeRadioButtonSelection() {
-        boolean showOnTop =
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
+        boolean showOnTop = isToolbarConfiguredToShowOnTop();
         mTopButton.setChecked(showOnTop);
         mBottomButton.setChecked(!showOnTop);
     }

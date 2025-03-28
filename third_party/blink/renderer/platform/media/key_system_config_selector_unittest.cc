@@ -414,8 +414,7 @@ class FakeMediaPermission : public media::MediaPermission {
 class FakeWebLocalFrameDelegate
     : public KeySystemConfigSelector::WebLocalFrameDelegate {
  public:
-  FakeWebLocalFrameDelegate()
-      : KeySystemConfigSelector::WebLocalFrameDelegate(nullptr) {}
+  FakeWebLocalFrameDelegate() = default;
   bool IsCrossOriginToOutermostMainFrame() override { return is_cross_origin_; }
   bool AllowStorageAccessSync(
       WebContentSettingsClient::StorageType storage_type) override {

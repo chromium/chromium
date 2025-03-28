@@ -18,17 +18,14 @@ namespace syncer {
 // be assumed to be fixed while sync is enabled (or, more precisely, is
 // representative of the last (re)configuration request). It's built by
 // SyncServiceImpl and plumbed through DataTypeManager until datatype
-// controllers, which for USS datatypes propagate analogous information to the
-// processor/bridge via DataTypeActivationRequest.
+// controllers, which propagate analogous information to the processor/bridge
+// via DataTypeActivationRequest.
 struct ConfigureContext {
   CoreAccountId authenticated_account_id;
   std::string cache_guid;
   SyncMode sync_mode = SyncMode::kFull;
   ConfigureReason reason = CONFIGURE_REASON_UNKNOWN;
   base::Time configuration_start_time;
-  // TODO(mastiz): Consider adding `requested_types` here, but currently there
-  // are subtle differences across layers (e.g. where control types are
-  // enforced).
 };
 
 }  // namespace syncer

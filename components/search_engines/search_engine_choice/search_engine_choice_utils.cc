@@ -224,6 +224,17 @@ void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,
 #endif
 }
 
+std::optional<base::Time> GetChoiceScreenCompletionTimestamp(
+    PrefService& prefs) {
+  if (!prefs.HasPrefPath(
+          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
+    return std::nullopt;
+  }
+
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(prefs.GetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)));
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 std::u16string GetMarketingSnippetString(
     const TemplateURLData& template_url_data) {
@@ -246,6 +257,6 @@ int GetIconResourceId(const std::u16string& engine_keyword) {
   return iterator == kSearchEngineResourceIdMap.cend() ? -1 : iterator->second;
 }
 
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace search_engines

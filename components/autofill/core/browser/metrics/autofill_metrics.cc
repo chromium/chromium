@@ -38,6 +38,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
+#include "components/autofill/core/common/metrics_enums.h"
 #include "components/language/core/browser/language_usage_metrics.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -1537,6 +1538,27 @@ void AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory() {
                             /*delete_confirmed=*/true);
   base::UmaHistogramBoolean("Autofill.ProfileDeleted.Any",
                             /*delete_confirmed=*/true);
+}
+
+// static
+void AutofillMetrics::LogDataListSuggestionsShown() {
+  base::UmaHistogramEnumeration(
+      "Autofill.DataList.Events",
+      AutofillDataListEvents::kDataListSuggestionsShown);
+}
+
+// static
+void AutofillMetrics::LogDataListSuggestionsUpdated() {
+  base::UmaHistogramEnumeration(
+      "Autofill.DataList.Events",
+      AutofillDataListEvents::kDataListSuggestionsUpdated);
+}
+
+// static
+void AutofillMetrics::LogDataListSuggestionsInserted() {
+  base::UmaHistogramEnumeration(
+      "Autofill.DataList.Events",
+      AutofillDataListEvents::kDataListSuggestionsInserted);
 }
 
 }  // namespace autofill

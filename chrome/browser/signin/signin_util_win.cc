@@ -39,6 +39,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace signin_util {
@@ -120,17 +121,22 @@ void ImportCredentialsFromProvider(Profile* profile,
       AboutSigninInternalsFactory::GetInstance()->GetForProfile(profile);
   signin_internals->OnAuthenticationResultReceived("Credential Provider");
 
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
   CoreAccountId account_id =
-      IdentityManagerFactory::GetForProfile(profile)
-          ->GetAccountsMutator()
-          ->AddOrUpdateAccount(GaiaId(base::WideToUTF8(gaia_id)),
-                               base::WideToUTF8(email), refresh_token,
-                               /*is_under_advanced_protection=*/false,
-                               kCredentialsProviderAccessPointWin,
-                               signin_metrics::SourceForRefreshTokenOperation::
-                                   kMachineLogon_CredentialProvider);
+      identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
+          GaiaId(base::WideToUTF8(gaia_id)), base::WideToUTF8(email),
+          refresh_token,
+          /*is_under_advanced_protection=*/false,
+          kCredentialsProviderAccessPointWin,
+          signin_metrics::SourceForRefreshTokenOperation::
+              kMachineLogon_CredentialProvider);
 
   if (turn_on_sync) {
+    identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+        account_id, signin::ConsentLevel::kSignin,
+        kCredentialsProviderAccessPointWin);
+
     Browser* browser = chrome::FindLastActiveWithProfile(profile);
     if (browser) {
       FinishImportCredentialsFromProvider(account_id, profile, browser);

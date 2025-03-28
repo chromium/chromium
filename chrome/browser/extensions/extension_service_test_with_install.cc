@@ -289,9 +289,8 @@ void ExtensionServiceTestWithInstall::UpdateExtension(
   // Create an ExtensionUpdater and use it to create a CrxInstaller.
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   ExtensionUpdater updater(profile());
-  updater.Init(prefs, prefs->pref_service(),
-               /*frequency_seconds=*/600, /*cache=*/nullptr,
-               ExtensionDownloader::Factory());
+  updater.InitAndEnable(prefs, prefs->pref_service(), base::Minutes(10),
+                        /*cache=*/nullptr, ExtensionDownloader::Factory());
   auto installer = updater.CreateUpdateInstaller(crx_info, true);
 
   if (installer) {

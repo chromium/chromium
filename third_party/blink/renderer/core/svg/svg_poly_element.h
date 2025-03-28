@@ -27,6 +27,7 @@
 
 namespace blink {
 
+class PathBuilder;
 class SVGAnimatedPointList;
 class SVGPointListTearOff;
 
@@ -42,7 +43,7 @@ class SVGPolyElement : public SVGGeometryElement {
  protected:
   SVGPolyElement(const QualifiedName&, Document&);
 
-  Path AsPathFromPoints() const;
+  PathBuilder AsPathFromPoints() const;
 
  private:
   void SvgAttributeChanged(const SvgAttributeChangedParams&) final;

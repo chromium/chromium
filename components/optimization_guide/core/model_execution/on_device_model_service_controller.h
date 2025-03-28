@@ -169,7 +169,6 @@ class OnDeviceModelServiceController
   };
   friend class OnDeviceModelAdaptationController;
   friend class OnDeviceModelClient;
-  friend class OnDeviceModelExecutionEnabledBrowserTest;
   friend class base::RefCounted<OnDeviceModelServiceController>;
 
   // Ensures the service is running and provides a remote for the model.

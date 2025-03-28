@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.translate.TranslationObserver;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
@@ -377,6 +378,10 @@ public class ReadAloudController
     // Whether or not to highlight the page. Change will only have effect if
     // isHighlightingSupported() returns true.
     private final ObservableSupplierImpl<Boolean> mHighlightingEnabled;
+
+    // Whether or not to show the playback mode selector.
+    private final ObservableSupplierImpl<Boolean> mPlaybackModeSelectionEnabled;
+
     // Voices to show in voice selection menu.
     private final ObservableSupplierImpl<List<PlaybackVoice>> mCurrentLanguageVoices;
     // Selected voice ID.
@@ -545,6 +550,7 @@ public class ReadAloudController
         mBottomControlsStacker = bottomControlsStacker;
         mLayoutManagerSupplier = layoutManagerSupplier;
         mHighlightingEnabled = new ObservableSupplierImpl<>(false);
+        mPlaybackModeSelectionEnabled = new ObservableSupplierImpl<>(false);
         ApplicationStatus.registerApplicationStateListener(this);
         ApplicationStatus.registerStateListenerForActivity(this, mActivity);
         mActivityWindowAndroid = activityWindowAndroid;
@@ -1070,6 +1076,7 @@ public class ReadAloudController
                     ReadAloudMetrics.recordIsTabPlaybackCreationSuccessful(true);
                     ReadAloudMetrics.recordTabCreationSuccess(entrypoint, Entrypoint.NUM_ENTRIES);
                     maybeSetUpHighlighter(playback.getMetadata());
+                    updatePlaybackModeSelectionEnabled();
                     updateVoiceMenu(
                             isTranslated
                                     ? playbackLanguage
@@ -1308,6 +1315,11 @@ public class ReadAloudController
         return language;
     }
 
+    private void updatePlaybackModeSelectionEnabled() {
+        // TODO(crbug.com/401256755): Implement with actual logic.
+        mPlaybackModeSelectionEnabled.set(false);
+    }
+
     private void updateVoiceMenu(@Nullable String language) {
         if (language == null) {
             return;
@@ -1376,6 +1388,16 @@ public class ReadAloudController
     @Override
     public ObservableSupplier<String> getVoiceIdSupplier() {
         return mSelectedVoiceId;
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getPlaybackModeSelectionEnabled() {
+        return mPlaybackModeSelectionEnabled;
+    }
+
+    @Override
+    public void setPlaybackModeAndApplyToPlayback(PlaybackMode mode) {
+        // TODO(crbug.com/401256755): Implement.
     }
 
     @Override

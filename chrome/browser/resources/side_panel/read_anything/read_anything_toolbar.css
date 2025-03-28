@@ -34,14 +34,26 @@
 #audio-controls {
   background: var(--audio-controls-background);
   border-radius: 18px;
-  display: inline-block;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   height: fit-content;
   margin-inline-end: var(--audio-controls-right-margin);
-  padding: 4px var(--audio-controls-right-padding) 4px 2px;
+  padding: 4px var(--audio-controls-right-padding) 4px 4px;
 }
 
 .audio-controls {
-  margin: 0px 2px;
+  margin: 0px;
+}
+
+.granularity-container-when-active-true {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.granularity-container-when-active-false {
+  display: none;
 }
 
 #font-size-decrease {
@@ -66,10 +78,12 @@
 }
 
 .toolbar-container {
-  display: inline-block;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   overflow: visible;
   padding: 6px 8px;
-  white-space: var(--toolbar-white-space);
+  flex-wrap: var(--toolbar-flex-wrap);
 }
 
 #more {
@@ -79,10 +93,9 @@
 .separator {
   border: 1px solid var(--color-side-panel-divider);
   display: inline;
-  height: 0px;
-  margin: 10px 4px;
-  transform: rotate(-90deg);
-  width: 20px;
+  height: 20px;
+  margin: 6px 8px;
+  width: 0px;
 }
 
 .spinner {

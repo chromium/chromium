@@ -33,7 +33,6 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './autofill_page.html.js';
-import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 import {PasswordManagerImpl, PasswordManagerPage} from './password_manager_proxy.js';
 
 const SettingsAutofillPageElementBase =
@@ -74,18 +73,6 @@ export class SettingsAutofillPageElement extends
         },
       },
 
-      plusAddressIcon_: {
-        type: String,
-        value() {
-          // <if expr="_google_chrome">
-          return 'settings-internal:plus-address-logo-medium';
-          // </if>
-          // <if expr="not _google_chrome">
-          return 'settings:email';
-          // </if>
-        },
-      },
-
       userEligibleForAutofillAi_: {
         type: Boolean,
         value() {
@@ -93,44 +80,19 @@ export class SettingsAutofillPageElement extends
         },
       },
 
-      userHasAutofillAiEntries_: {
-        type: Boolean,
-        value: false,
-      },
-
       autofillAiAvailable_: {
         type: Boolean,
-        computed: 'computeAutofillAiAvailable_(userEligibleForAutofillAi_, ' +
-            'userHasAutofillAiEntries_)',
+        value() {
+          return loadTimeData.getBoolean('showAutofillAiControl');
+        },
       },
     };
   }
 
   private passkeyFilter_: string;
   private userEligibleForAutofillAi_: boolean;
-  private userHasAutofillAiEntries_: boolean;
   private autofillAiAvailable_: boolean;
   private focusConfig_: Map<string, string>;
-
-  override connectedCallback() {
-    super.connectedCallback();
-    if (loadTimeData.getBoolean('autofillAiFeatureEnabled')) {
-      EntityDataManagerProxyImpl.getInstance().loadEntityInstances().then(
-          entityInstances => {
-            this.userHasAutofillAiEntries_ = entityInstances.length > 0;
-          });
-    }
-  }
-
-  /**
-   * Computes `autofillAiAvailable_`.
-   */
-  private computeAutofillAiAvailable_(): boolean {
-    // Users who are not eligible but have data saved are able to access the
-    // Autofill Ai settings page, so that they can update or delete their data.
-    return loadTimeData.getBoolean('autofillAiFeatureEnabled') &&
-        (this.userEligibleForAutofillAi_ || this.userHasAutofillAiEntries_);
-  }
 
   /**
    * Shows the manage addresses sub page.

@@ -13,8 +13,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.permissions.OsAdditionalSecurityPermissionProvider;
 import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
-import org.chromium.components.permissions.PermissionsAndroidFeatureList;
-import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.ui.base.WindowAndroid;
 
 /** A class for showing UI whenever the Android-OS-supplied advanced-protection state changes. */
@@ -25,10 +23,7 @@ public class AdvancedProtectionMediator implements OsAdditionalSecurityPermissio
         mWindowAndroid = windowAndroid;
 
         var provider = OsAdditionalSecurityPermissionUtil.getProviderInstance();
-        if (provider != null
-                && !PermissionsAndroidFeatureMap.isEnabled(
-                        PermissionsAndroidFeatureList
-                                .OS_ADDITIONAL_SECURITY_PERMISSION_KILL_SWITCH)) {
+        if (provider != null) {
             provider.addObserver(this);
         }
     }
@@ -41,11 +36,6 @@ public class AdvancedProtectionMediator implements OsAdditionalSecurityPermissio
     }
 
     public boolean showMessageOnStartupIfNeeded() {
-        if (PermissionsAndroidFeatureMap.isEnabled(
-                PermissionsAndroidFeatureList.OS_ADDITIONAL_SECURITY_PERMISSION_KILL_SWITCH)) {
-            return false;
-        }
-
         var provider = OsAdditionalSecurityPermissionUtil.getProviderInstance();
         if (provider == null) return false;
 

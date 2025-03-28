@@ -4,6 +4,8 @@
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+// Test file for @webui-eslint/polymer-property-declare
+
 export class SomeElement extends PolymerElement {
   static override get properties() {
     return {
@@ -24,7 +26,7 @@ export class SomeElement extends PolymerElement {
 }
 
 // Test the case where multiple PolymerElement classes exist in the same file.
-export class SomeElement extends PolymerElement {
+export class SomeOtherElement extends PolymerElement {
   static override get properties() {
     return {
       prop1: {type: String},

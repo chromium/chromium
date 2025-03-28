@@ -431,24 +431,11 @@ static_library("test_support") {
     "test_optimization_guide_model_provider.cc",
     "test_optimization_guide_model_provider.h",
   ]
-  if (build_with_tflite_lib) {
-    sources += [
-      "test_tflite_model_executor.cc",
-      "test_tflite_model_executor.h",
-      "test_tflite_model_handler.h",
-    ]
-  }
-  if (build_with_model_execution) {
-    sources += [
-      "mock_optimization_guide_model_executor.cc",
-      "mock_optimization_guide_model_executor.h",
-    ]
-  }
-
   deps = [
     ":bloomfilter",
     ":core",
     "//base",
+    "//base/test:test_support",
     "//components/leveldb_proto",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//services/network/public/cpp",
@@ -457,7 +444,32 @@ static_library("test_support") {
     "//url",
   ]
   if (build_with_tflite_lib) {
+    sources += [
+      "test_tflite_model_executor.cc",
+      "test_tflite_model_executor.h",
+      "test_tflite_model_handler.h",
+    ]
     deps += [ "//third_party/abseil-cpp:absl" ]
+  }
+  if (build_with_model_execution) {
+    sources += [
+      "mock_optimization_guide_model_executor.cc",
+      "mock_optimization_guide_model_executor.h",
+      "model_execution/test/fake_model_assets.cc",
+      "model_execution/test/fake_model_assets.h",
+      "model_execution/test/feature_config_builder.cc",
+      "model_execution/test/feature_config_builder.h",
+      "model_execution/test/request_builder.cc",
+      "model_execution/test/request_builder.h",
+      "model_execution/test/response_holder.cc",
+      "model_execution/test/response_holder.h",
+      "model_execution/test/test_on_device_model_component_state_manager.cc",
+      "model_execution/test/test_on_device_model_component_state_manager.h",
+    ]
+    deps += [
+      "//services/on_device_model/public/cpp:types",
+      "//services/on_device_model/public/cpp/test_support:test_support",
+    ]
   }
 }
 
@@ -549,16 +561,6 @@ source_set("unit_tests") {
       "model_execution/safety_checker_unittest.cc",
       "model_execution/simple_response_parser_unittest.cc",
       "model_execution/substitution_unittest.cc",
-      "model_execution/test/fake_model_assets.cc",
-      "model_execution/test/fake_model_assets.h",
-      "model_execution/test/feature_config_builder.cc",
-      "model_execution/test/feature_config_builder.h",
-      "model_execution/test/request_builder.cc",
-      "model_execution/test/request_builder.h",
-      "model_execution/test/response_holder.cc",
-      "model_execution/test/response_holder.h",
-      "model_execution/test/test_on_device_model_component_state_manager.cc",
-      "model_execution/test/test_on_device_model_component_state_manager.h",
       "model_quality/model_execution_logging_wrappers_unittest.cc",
     ]
   }

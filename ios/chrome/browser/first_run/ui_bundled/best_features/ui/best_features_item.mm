@@ -207,11 +207,30 @@
         ]];
         break;
       case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
-        // TODO(crbug.com/405405829): Update the instructions when the new
-        // strings are uploaded.
-        [instructions addObjectsFromArray:@[
-          @"",
-        ]];
+        // Add the correct strings depending on the device OS.
+        if (@available(iOS 18, *)) {
+          [instructions addObjectsFromArray:@[
+            l10n_util::GetNSString(
+                IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_1),
+            l10n_util::GetNSString(
+                IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_2_GENERAL),
+            l10n_util::GetNSString(
+                IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_3_AUTOFILL_SETTINGS),
+            l10n_util::GetNSString(
+                IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_4_TOGGLE),
+          ]];
+        } else {
+          [instructions addObjectsFromArray:@[
+            l10n_util::GetNSString(
+                IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_1),
+            l10n_util::GetNSString(
+                IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_2_PASSWORDS),
+            l10n_util::GetNSString(
+                IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_3_PASSWORD_OPTIONS),
+            l10n_util::GetNSString(
+                IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_4_SELECT),
+          ]];
+        }
         break;
       case BestFeaturesItemType::kSharePasswordsWithFamily:
         [instructions addObjectsFromArray:@[

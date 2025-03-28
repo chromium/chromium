@@ -90,7 +90,8 @@ void WebFont::DrawText(cc::PaintCanvas* canvas,
                                                *canvas, left_baseline, flags);
     return;
   }
-  private_->GetFont()->DrawText(canvas, text_run, left_baseline, flags);
+  private_->GetFont()->DeprecatedDrawText(canvas, text_run, left_baseline,
+                                          flags);
 }
 
 int WebFont::CalculateWidth(const WebTextRun& run) const {
@@ -98,7 +99,7 @@ int WebFont::CalculateWidth(const WebTextRun& run) const {
     return PlainTextPainter::Shared().ComputeInlineSizeWithoutBidi(
         run, *private_->GetFont());
   }
-  return private_->GetFont()->Width(run, nullptr);
+  return private_->GetFont()->DeprecatedWidth(run, nullptr);
 }
 
 int WebFont::OffsetForPosition(const WebTextRun& run, float position) const {
@@ -107,7 +108,7 @@ int WebFont::OffsetForPosition(const WebTextRun& run, float position) const {
         run, *private_->GetFont(), position, kIncludePartialGlyphs,
         BreakGlyphsOption(false));
   }
-  return private_->GetFont()->OffsetForPosition(
+  return private_->GetFont()->DeprecatedOffsetForPosition(
       run, position, kIncludePartialGlyphs, BreakGlyphsOption(false));
 }
 
@@ -121,8 +122,8 @@ gfx::RectF WebFont::SelectionRectForText(const WebTextRun& run,
         run, from, to == -1 ? run.text.length() : to, *private_->GetFont(),
         left_baseline, height);
   }
-  return private_->GetFont()->SelectionRectForText(run, left_baseline, height,
-                                                   from, to);
+  return private_->GetFont()->DeprecatedSelectionRectForText(run, left_baseline,
+                                                             height, from, to);
 }
 
 }  // namespace blink

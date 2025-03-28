@@ -367,10 +367,11 @@ declare global {
         ONEDRIVE = 'onedrive',
       }
 
-      export enum CloudProvider {
+      export enum MigrationDestination {
         NOT_SPECIFIED = 'not_specified',
         GOOGLE_DRIVE = 'google_drive',
         ONEDRIVE = 'onedrive',
+        DELETE = 'delete',
       }
 
       export interface FileTaskDescriptor {
@@ -560,7 +561,8 @@ declare global {
         driveFsBulkPinningEnabled: boolean;
         localUserFilesAllowed: boolean;
         defaultLocation: DefaultLocation;
-        skyVaultMigrationDestination: CloudProvider;
+        skyVaultMigrationDestination: MigrationDestination;
+        skyVaultMigrationStartTime?: string;
       }
 
       export interface PreferencesChange {

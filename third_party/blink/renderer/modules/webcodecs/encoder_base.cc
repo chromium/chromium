@@ -143,7 +143,8 @@ void EncoderBase<Traits>::encode(InputType* input,
 
   // This will fail if |input| is already closed.
   // Remove exceptions relating to cloning closed input.
-  auto* internal_input = input->clone(IGNORE_EXCEPTION);
+  auto* internal_input =
+      input->clone(IgnoreException(script_state_->GetIsolate()));
 
   if (!internal_input) {
     exception_state.ThrowTypeError("Cannot encode closed input.");

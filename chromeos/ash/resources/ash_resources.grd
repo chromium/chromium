@@ -21,6 +21,7 @@
       </if>
       <if expr="is_chrome_branded">
         <part file="growth_framework_resources.grdp" />
+        <part file="scanner_resources.grdp" />
       </if>
     </includes>
   </release>

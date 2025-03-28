@@ -13,12 +13,15 @@
 #include "base/files/scoped_temp_dir.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
 namespace optimization_guide {
+
+class OnDeviceModelComponentStateManager;
 
 // Base model files and metadata suitable for a FakeOnDeviceModelService.
 class FakeBaseModelAsset {
@@ -28,6 +31,7 @@ class FakeBaseModelAsset {
     proto::OnDeviceModelExecutionConfig config;
     std::string version = "0.0.1";
   };
+  FakeBaseModelAsset();
   explicit FakeBaseModelAsset(Content&& content);
   explicit FakeBaseModelAsset(
       proto::OnDeviceModelValidationConfig&& validation_config);
@@ -39,6 +43,12 @@ class FakeBaseModelAsset {
   const base::FilePath& path() const { return temp_dir_.GetPath(); }
 
   const std::string& version() const { return version_; }
+
+  // Returns a fake manifest content for this asset.
+  base::Value::Dict Manifest() const;
+
+  // Pass this asset to manager->SetReady.
+  void SetReadyIn(OnDeviceModelComponentStateManager& manager) const;
 
  private:
   std::string version_;
@@ -55,11 +65,13 @@ class FakeAdaptationAsset {
   explicit FakeAdaptationAsset(Content&& content);
   ~FakeAdaptationAsset();
 
-  int64_t version() { return 12345; }
-  ModelBasedCapabilityKey feature() { return feature_; }
-  std::unique_ptr<OnDeviceModelAdaptationMetadata> metadata() {
+  int64_t version() const { return 12345; }
+  ModelBasedCapabilityKey feature() const { return feature_; }
+  std::unique_ptr<OnDeviceModelAdaptationMetadata> metadata() const {
     return std::make_unique<OnDeviceModelAdaptationMetadata>(*metadata_);
   }
+
+  void SendTo(OnDeviceModelServiceController& controller) const;
 
  private:
   base::ScopedTempDir temp_dir_;

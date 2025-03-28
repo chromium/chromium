@@ -75,8 +75,6 @@ export class SettingsAddressEditDialogElement extends
       },
 
       components_: Array,
-      phoneNumber_: String,
-      email_: String,
       canSave_: Boolean,
 
       isAccountAddress_: {
@@ -111,6 +109,7 @@ export class SettingsAddressEditDialogElement extends
   private components_: uiComponents.AddressComponentUi[][] = [];
   private canSave_: boolean;
   private isAccountAddress_: boolean;
+  private accountAddressRecordTypeNotice_: string;
   private countryDetailManager_: CountryDetailManagerProxy =
       CountryDetailManagerProxyImpl.getInstance();
 
