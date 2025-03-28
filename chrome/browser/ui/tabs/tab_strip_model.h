@@ -50,6 +50,10 @@ namespace content {
 class WebContents;
 }
 
+namespace split_tabs {
+class SplitTabData;
+}
+
 namespace tabs {
 class TabStripCollection;
 class TabGroupTabCollection;
@@ -452,6 +456,8 @@ class TabStripModel : public TabGroupController {
   // closed.
   bool IsTabClosable(const content::WebContents* contents) const;
 
+  split_tabs::SplitTabData* GetSplitData(split_tabs::SplitTabId split_id);
+
   // Returns the group that contains the tab at |index|, or nullopt if the tab
   // index is invalid or not grouped.
   std::optional<tab_groups::TabGroupId> GetTabGroupForTab(
@@ -541,6 +547,13 @@ class TabStripModel : public TabGroupController {
   std::pair<std::optional<int>, std::optional<int>>
   GetAdjacentTabsAfterSelectedMove(base::PassKey<DraggingTabsSession>,
                                    int destination_index);
+
+  // Updates the layout for the tabs with `split_id` and notifies observers.
+  void UpdateSplitLayout(split_tabs::SplitTabId split_id,
+                         tabs::SplitTabLayout tab_layout);
+
+  // Reverses the order of tabs with `split_id`.
+  void SwapTabsInSplit(split_tabs::SplitTabId split_id);
 
   // Create a new split view with the active tab and add the set of tabs pointed
   // to by |indices| to it. Reorders the tabs so they are contiguous. |indices|
@@ -931,6 +944,12 @@ class TabStripModel : public TabGroupController {
   std::vector<int> GetSelectedPinnedTabs();
   std::vector<int> GetSelectedUnpinnedTabs();
 
+  split_tabs::SplitTabId AddToSplitImpl(split_tabs::SplitTabId split_id,
+                                        std::vector<int> indices,
+                                        tabs::SplitTabLayout tab_layout);
+
+  void RemoveSplitImpl(split_tabs::SplitTabId split_id);
+
   // Adds tabs to newly-allocated group id |new_group|. This group must be new
   // and have no tabs in it.
   void AddToNewGroupImpl(
@@ -1067,6 +1086,9 @@ class TabStripModel : public TabGroupController {
   std::optional<int> DetermineNewSelectedIndex(
       const tab_groups::TabGroupId& removed_group_id) const;
 
+  std::vector<std::pair<tabs::TabInterface*, int>> GetTabsAndIndicesInSplit(
+      split_tabs::SplitTabId split_id);
+
   // The WebContents data currently hosted within this TabStripModel. This must
   // be kept in sync with |selection_model_|.
   std::unique_ptr<tabs::TabStripCollection> contents_data_;
@@ -1098,6 +1120,11 @@ class TabStripModel : public TabGroupController {
 
   // Tracks whether a modal UI is showing.
   bool showing_modal_ui_ = false;
+
+  // TODO(crbug.com/392951786): Remove this and use the information from
+  // collections.
+  std::map<split_tabs::SplitTabId, std::unique_ptr<split_tabs::SplitTabData>>
+      split_tab_data_map_;
 
   base::WeakPtrFactory<TabStripModel> weak_factory_{this};
 };
