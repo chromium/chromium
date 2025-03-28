@@ -15,11 +15,13 @@ namespace device_signals {
 // Returns the hostname of the current machine.
 std::string GetHostName();
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Returns the hostname of the current machine.
 std::vector<std::string> GetSystemDnsServers();
 
 // Returns the current state of the OS firewall.
 SettingValue GetOSFirewall();
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX)
 // Returns the path to the ufw configuration file.
