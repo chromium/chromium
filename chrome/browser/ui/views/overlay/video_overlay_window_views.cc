@@ -1601,14 +1601,16 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
     live_status_->SetVisible(is_live_);
 
     // The play/pause button and replay/forward 10 seconds buttons should not be
-    // visible while dragging the progress bar.
+    // visible while dragging the progress bar or for live media.
     const bool is_dragging_progress_bar =
         progress_view_drag_state_ ==
         global_media_controls::DragState::kDragStarted;
     play_pause_controls_view_->SetVisible(show_play_pause_button_ &&
                                           !is_dragging_progress_bar);
-    replay_10_seconds_button_->SetVisible(!is_dragging_progress_bar);
-    forward_10_seconds_button_->SetVisible(!is_dragging_progress_bar);
+    replay_10_seconds_button_->SetVisible(!is_dragging_progress_bar &&
+                                          !is_live_);
+    forward_10_seconds_button_->SetVisible(!is_dragging_progress_bar &&
+                                           !is_live_);
 
     return;
   }
