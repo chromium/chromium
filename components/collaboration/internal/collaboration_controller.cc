@@ -1068,6 +1068,11 @@ void CollaborationController::Exit() {
       FROM_HERE, base::BindOnce(std::move(finish_and_delete_)));
 }
 
+void CollaborationController::Cancel() {
+  delegate()->Cancel(base::IgnoreArgs<Outcome>(base::BindOnce(
+      &CollaborationController::Exit, weak_ptr_factory_.GetWeakPtr())));
+}
+
 void CollaborationController::SetStateForTesting(StateId state) {
   current_state_ = CreateStateObject(state);
   current_state_->OnEnter(ErrorInfo(ErrorInfo::Type::kUnknown));

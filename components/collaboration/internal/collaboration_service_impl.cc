@@ -126,10 +126,10 @@ void CollaborationServiceImpl::CancelAllFlows(
   }
 
   for (const auto& [token, controller] : join_controllers_) {
-    controller->Exit();
+    controller->Cancel();
   }
   for (const auto& [id, controller] : share_controllers_) {
-    controller->Exit();
+    controller->Cancel();
   }
 
   // Post task to start new flow after all flows finishes.

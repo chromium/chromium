@@ -174,6 +174,9 @@ class CollaborationController {
   // service.
   void Exit();
 
+  // Cancels and exits the current flow.
+  void Cancel();
+
   // Helper functions used in tests.
   void SetStateForTesting(StateId state);
   StateId GetStateForTesting();
