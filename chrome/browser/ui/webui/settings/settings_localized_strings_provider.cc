@@ -1473,10 +1473,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "plusAddressManagementUrl",
       plus_addresses::features::kPlusAddressManagementUrl.Get());
 
-  html_source->AddBoolean("autofillAiFeatureEnabled",
-                          base::FeatureList::IsEnabled(
-                              autofill::features::kAutofillAiWithDataSchema));
-
   auto* autofill_client =
       autofill::ContentAutofillClient::FromWebContents(web_contents);
   html_source->AddBoolean(

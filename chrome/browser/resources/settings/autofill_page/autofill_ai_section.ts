@@ -34,8 +34,6 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {routes} from '../route.js';
-import {Router} from '../router.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
 import {getTemplate} from './autofill_ai_section.html.js';
@@ -181,17 +179,8 @@ export class SettingsAutofillAiSectionElement extends
         });
 
     this.entityDataManager_.loadEntityInstances().then(
-        (entityInstances: EntityInstanceWithLabels[]) => {
-          // If the user is ineligible for Autofill with Ai and has no data
-          // saved, then they should not be able to access this page. These
-          // lines prevent such a user manually navigating to this page by
-          // typing its URL.
-          if (this.ineligibleUser && entityInstances.length === 0) {
-            Router.getInstance().navigateTo(routes.AUTOFILL);
-            return;
-          }
-          this.entityInstances_ = entityInstances;
-        });
+        (entityInstances: EntityInstanceWithLabels[]) => this.entityInstances_ =
+            entityInstances);
 
     // TODO(crbug.com/393318914): Remove this help bubble, which was introduced
     // in crrev.com/c/5939704.
