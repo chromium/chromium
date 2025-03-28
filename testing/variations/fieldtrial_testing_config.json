@@ -22521,28 +22521,6 @@
             ]
         }
     ],
-    "SharedTabGroupsTeamfood": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "show_send_feedback": "true"
-                    },
-                    "enable_features": [
-                        "DataSharing",
-                        "DeferMediaLoadInBackgroundTab",
-                        "EnableTabTitleSanitization",
-                        "EnableUrlRestriction",
-                        "SyncSharedTabGroupDataInTransportMode"
-                    ]
-                }
-            ]
-        }
-    ],
     "SharedWorkerBlobURLFix": [
         {
             "platforms": [
