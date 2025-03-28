@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFocusableDescendant;
+
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -2835,6 +2837,13 @@ public class ToolbarPhone extends ToolbarLayout
     public void onTransitionEnd() {
         mInLayoutTransition = false;
         updateToolbarBackgroundFromState(mVisualState);
+    }
+
+    @Override
+    public void requestKeyboardFocus() {
+        setFocusOnFirstFocusableDescendant(this);
+        // TODO(crbug.com/360423850): Replace this setFocus(mLocationBar) when omnibox keyboard
+        // behavior is fixed.
     }
 
     /**
