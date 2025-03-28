@@ -94,9 +94,10 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   // parsed as a URL.
   bool GetFileURL(GURL* url) const;
 
-  // Returns true if |formats_| contains a string format and the string can be
-  // parsed as a URL.
-  bool GetPlainTextURL(GURL* url) const;
+  // Returns a GURL if `formats_` contains a string format and the string is a
+  // valid GURL, and if `IsRendererTainted()` is true, that the scheme of the
+  // url is http or https. Otherwise, returns `std::nullopt`.
+  std::optional<GURL> GetPlainTextURL() const;
 
   // Actual formats that have been set.
   // for details.
