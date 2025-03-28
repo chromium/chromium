@@ -14113,24 +14113,6 @@
             ]
         }
     ],
-    "LoginDbDeprecationAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "login-db-deprecation-export-delay-seconds": "5"
-                    },
-                    "enable_features": [
-                        "LoginDbDeprecationAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "LongAnimationFrameSourceCharPosition": [
         {
             "platforms": [
