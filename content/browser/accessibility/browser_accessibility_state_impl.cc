@@ -193,20 +193,17 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
       ax_platform_(*this),
       scoped_modes_for_process_(base::BindRepeating(
           &BrowserAccessibilityStateImpl::OnModeChangedForProcess,
-          base::Unretained(this))),
-      process_accessibility_mode_(scoped_modes_for_process_.Add(ui::AXMode())) {
+          base::Unretained(this))) {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
-  bool manually_enabled = false;
-
   bool disallow_changes = false;
+  ui::AXMode initial_mode;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableRendererAccessibility)) {
     disallow_changes = true;
   } else if (base::CommandLine::ForCurrentProcess()->HasSwitch(
                  switches::kForceRendererAccessibility)) {
-    manually_enabled = true;
 #if BUILDFLAG(IS_WIN)
     std::string ax_mode_bundle = base::WideToUTF8(
         base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
@@ -220,24 +217,38 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
     if (ax_mode_bundle.empty()) {
       // For backwards compatibility, when --force-renderer-accessibility has no
       // parameter, use the complete bundle but allow changes.
-      AddAccessibilityModeFlags(ui::kAXModeComplete);
+      initial_mode = ui::kAXModeComplete;
     } else {
       // Support --force-renderer-accessibility=[basic|form-controls|complete]
-      disallow_changes = true;
       if (ax_mode_bundle.compare(kAXModeBundleBasic) == 0) {
-        AddAccessibilityModeFlags(ui::kAXModeBasic);
+        initial_mode = ui::kAXModeBasic;
       } else if (ax_mode_bundle.compare(kAXModeBundleFormControls) == 0) {
 #if BUILDFLAG(IS_ANDROID)
-        AddAccessibilityModeFlags(ui::kAXModeFormControls);
+        initial_mode = ui::kAXModeFormControls;
+#else
+        // TODO(crbug.com/40943426) Reenable the flag on non-Android, after
+        // resolving fuzzer issue.
+        DVLOG(1) << "Currently, --force-renderer-accessibility=form-controls "
+                    "is only supported on Android. Basic mode has been "
+                    "enabled instead.";
+        initial_mode = ui::kAXModeBasic;
 #endif
       } else {
         // If AXMode is 'complete' or invalid, default to complete bundle.
-        AddAccessibilityModeFlags(ui::kAXModeComplete);
+        initial_mode = ui::kAXModeComplete;
       }
+      disallow_changes = true;
     }
   }
 
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.ManuallyEnabled", manually_enabled);
+  // Create an initial process-wide ScopedAccessibilityMode whether any flags
+  // are enabled or not. Always creating a ScopedAccessibilityMode
+  // (even if it holds a mode with all flags off) allows us to avoid null
+  // checks elsewhere, thereby simplifying other logic.
+  process_accessibility_mode_ = CreateScopedModeForProcess(initial_mode);
+
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.ManuallyEnabled",
+                        !initial_mode.is_mode_off());
 
   SetAXModeChangeAllowed(!disallow_changes);
 }
