@@ -8,7 +8,6 @@
  * settings.
  */
 
-import '../icons.html.js';
 import '../settings_shared.css.js';
 import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -339,18 +338,18 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
    */
   protected getOutputIcon_(): string {
     if (this.isOutputMuted_) {
-      return 'settings20:volume-up-off';
+      return 'os-settings:volume-up-off';
     }
 
     if (this.outputVolume_ === VOLUME_ICON_OFF_LEVEL) {
-      return 'settings20:volume-zero';
+      return 'os-settings:volume-zero';
     }
 
     if (this.outputVolume_ < VOLUME_ICON_LOUD_LEVEL) {
-      return 'settings20:volume-down';
+      return 'os-settings:volume-down';
     }
 
-    return 'settings20:volume-up';
+    return 'os-settings:volume-up';
   }
 
   /**

@@ -12,7 +12,6 @@ import 'chrome://resources/js/focus_row.js';
 import 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '../icons.html.js';
 import '../settings_shared.css.js';
 import './os_search_result_row.js';
 
