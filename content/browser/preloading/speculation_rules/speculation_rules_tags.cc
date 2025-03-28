@@ -11,8 +11,11 @@ namespace content {
 
 SpeculationRulesTags::SpeculationRulesTags() = default;
 SpeculationRulesTags::SpeculationRulesTags(
-    std::vector<std::optional<std::string>> tags)
-    : tags_(std::move(tags)) {}
+    std::vector<std::optional<std::string>> tags) {
+  for (auto& tag : tags) {
+    tags_.insert(std::move(tag));
+  }
+}
 
 SpeculationRulesTags::~SpeculationRulesTags() = default;
 
