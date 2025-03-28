@@ -151,6 +151,9 @@ bool URLRequestJob::GetCharset(std::string* charset) {
   return false;
 }
 
+void URLRequestJob::GetClientSideContentDecodingTypes(
+    std::vector<net::SourceStreamType>* types) const {}
+
 void URLRequestJob::GetResponseInfo(HttpResponseInfo* info) {
 }
 

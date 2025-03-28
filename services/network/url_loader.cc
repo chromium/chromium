@@ -1791,12 +1791,8 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
       private_network_access_checker_.ClientAddressSpace();
 
   response->load_with_storage_access = ShouldSetLoadWithStorageAccess();
-  if (url_request_->client_side_content_decoding_enabled() &&
-      response->headers) {
-    response->client_side_content_decoding_types =
-        net::FilterSourceStream::GetContentEncodingTypes(
-            url_request_->accepted_stream_types(), *response->headers);
-  }
+  url_request_->GetClientSideContentDecodingTypes(
+      &response->client_side_content_decoding_types);
 
   return response;
 }

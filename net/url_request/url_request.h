@@ -587,6 +587,14 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // the delegate's OnResponseStarted method has been called.
   void GetCharset(std::string* charset) const;
 
+  // Get the content encoding types (e.g., gzip, deflate) that were specified
+  // in the Content-Encoding response header but not decoded by the net stack,
+  // indicating how the response body needs to be decoded on the client side.
+  // This method may only be called once the delegate's OnResponseStarted
+  // method has been called.
+  void GetClientSideContentDecodingTypes(
+      std::vector<net::SourceStreamType>* types) const;
+
   // Returns the HTTP response code (e.g., 200, 404, and so on).  This method
   // may only be called once the delegate's OnResponseStarted method has been
   // called.  For non-HTTP requests, this method returns -1.

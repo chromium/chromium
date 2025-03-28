@@ -8309,6 +8309,8 @@ data/sxg/test.example.org_long_cert_validity.sxg.mock-http-headers
 data/sxg/test.example.org_noext_test.sxg
 data/sxg/test.example.org_test.html.gz.sxg
 data/sxg/test.example.org_test.sxg
+data/sxg/test.example.org_test.sxg.gz
+data/sxg/test.example.org_test.sxg.gz.mock-http-headers
 data/sxg/test.example.org_test.sxg.mock-http-headers
 data/sxg/test.example.org_test_bad_mice.sxg
 data/sxg/test.example.org_test_bad_mice.sxg.mock-http-headers
