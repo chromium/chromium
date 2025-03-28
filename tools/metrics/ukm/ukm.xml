@@ -3407,7 +3407,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="BackForwardCacheDisabledForRenderFrameHostReason">
-  <owner>altimin@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <summary>
     Recorded at a history commit for each reason passed to
@@ -3432,7 +3431,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="BackForwardCacheDisallowActivationReason">
-  <owner>altimin@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
@@ -11298,7 +11296,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="HistoryNavigation" singular="True">
-  <owner>altimin@chromium.org</owner>
   <owner>arthursonzogni@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <summary>
@@ -16563,7 +16560,6 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="IsCrossProcessNavigation">
-    <owner>altimin@chromium.org</owner>
     <owner>arthursonzogni@chromium.org</owner>
     <summary>
       Whether the navigation resulted in the main frame being hosted in a
@@ -16709,7 +16705,6 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="MainDocumentSequenceNumber">
-    <owner>altimin@chromium.org</owner>
     <owner>arthursonzogni@chromium.org</owner>
     <summary>
       An id for the main frame's document associated with the current
@@ -16824,7 +16819,6 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="NavigationEntryOffset">
-    <owner>altimin@chromium.org</owner>
     <owner>arthursonzogni@chromium.org</owner>
     <summary>
       Difference between the last committed navigation entry index before and
@@ -23979,7 +23973,6 @@ be describing additional metrics about the same event.
 
 <event name="UserPerceivedPageVisit" singular="True">
   <owner>djw@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
   <summary>
     Metrics related to a page visit as a user perceives it, regardless of how
     the page was visited. More metrics may be associated with a particular page
