@@ -507,35 +507,41 @@ gfx::Rect GetHitTestRectForFineTunePosition(
 // Calculates the bounds for a widget of `preferred_size` so that it appears
 // along one of the edges of `capture_bounds`, or slightly above
 // `capture_bar_bounds` if there is not a good edge.
+// If non-empty, `other_container_root_bounds` specifies the root bounds of
+// another container which should be avoided to prevent overlap.
 gfx::Rect CalculateRegionEdgeBounds(
     const gfx::Size& preferred_size,
     const gfx::Rect& capture_bar_root_bounds,
     const gfx::Rect& capture_region_root_bounds,
-    const gfx::Rect& action_container_widget_root_bounds,
+    const gfx::Rect& other_container_root_bounds,
     aura::Window* root,
     CaptureRegionWidgetAlignment preferred_alignment) {
   // The capture button may be placed along the edge of a capture region if it
   // cannot be placed in the middle. This enum represents the possible edges.
   enum class Direction { kBottom, kTop, kLeft, kRight };
-
-  // Try placing the label slightly outside |capture_bounds|. The label will
-  // be |kCaptureButtonDistanceFromRegionDp| away from |capture_bounds| along
-  // one of the edges. The order we will try is bottom, top, left then right.
-  const std::vector<Direction> directions = {
-      Direction::kBottom, Direction::kTop, Direction::kLeft, Direction::kRight};
-
   // Start off with the bounds at the preferred horizontal position but centered
   // vertically. We will shift the bounds to slightly outside `capture_bounds`
   // for each direction if needed.
   gfx::Rect initial_bounds(preferred_size);
+  // `directions` specifies the edges of the capture region in the order that we
+  // will try positioning the widget.
+  std::vector<Direction> directions;
   switch (preferred_alignment) {
     case CaptureRegionWidgetAlignment::kCenter:
       initial_bounds.set_x(capture_region_root_bounds.CenterPoint().x() -
                            preferred_size.width() / 2);
+      // Prefer falling back to above the capture region rather than below the
+      // capture region, to allow widgets with right alignment to keep their
+      // default bottom right position if possible.
+      directions = {Direction::kTop, Direction::kBottom, Direction::kLeft,
+                    Direction::kRight};
       break;
     case CaptureRegionWidgetAlignment::kRight:
       initial_bounds.set_x(capture_region_root_bounds.right() -
                            preferred_size.width());
+      // Prefer right alignment below the capture region if possible.
+      directions = {Direction::kBottom, Direction::kTop, Direction::kLeft,
+                    Direction::kRight};
       break;
   }
   initial_bounds.set_y(capture_region_root_bounds.CenterPoint().y() -
@@ -566,11 +572,11 @@ gfx::Rect CalculateRegionEdgeBounds(
     }
 
     // If `widget_bounds` does not overlap with `capture_bar_root_bounds` or
-    // `action_container_widget_root_bounds` and is fully contained in root,
+    // `other_container_root_bounds` and is fully contained in root,
     // we're good.
     bool intersects_action_buttons =
-        !action_container_widget_root_bounds.IsEmpty() &&
-        widget_bounds.Intersects(action_container_widget_root_bounds);
+        !other_container_root_bounds.IsEmpty() &&
+        widget_bounds.Intersects(other_container_root_bounds);
     if (!widget_bounds.Intersects(capture_bar_root_bounds) &&
         !intersects_action_buttons && root->bounds().Contains(widget_bounds)) {
       return widget_bounds;
@@ -590,8 +596,8 @@ gfx::Rect CalculateRegionEdgeBounds(
   // above the capture bar if they both would like to be placed there.
   // If both the action buttons and the capture button want to be above the
   // capture bar, move the capture button even higher.
-  if (!action_container_widget_root_bounds.IsEmpty() &&
-      widget_bounds.Intersects(action_container_widget_root_bounds)) {
+  if (!other_container_root_bounds.IsEmpty() &&
+      widget_bounds.Intersects(other_container_root_bounds)) {
     widget_bounds.set_y(widget_bounds.y() -
                         CaptureModeSession::kCaptureButtonDistanceFromRegionDp -
                         preferred_size.height());
@@ -3303,8 +3309,12 @@ gfx::Rect CaptureModeSession::CalculateCaptureLabelWidgetBounds() {
   const gfx::Size preferred_size = capture_label_view_->GetPreferredSize();
   const gfx::Rect capture_bar_bounds =
       capture_mode_bar_widget_->GetNativeWindow()->bounds();
+  // Ignore the action container widget bounds when it is not visible.
+  // Otherwise, the capture label widget can move around unexpectedly in order
+  // to avoid an invisible widget while the user is adjusting the capture
+  // region.
   const gfx::Rect action_container_widget_bounds =
-      action_container_widget_
+      action_container_widget_ && action_container_widget_->IsVisible()
           ? action_container_widget_->GetNativeWindow()->bounds()
           : gfx::Rect();
 
@@ -3671,11 +3681,17 @@ gfx::Rect CaptureModeSession::CalculateActionContainerWidgetBounds() const {
   const gfx::Size preferred_size = action_container_view_->GetPreferredSize();
   const gfx::Rect capture_bar_bounds =
       capture_mode_bar_widget_->GetNativeWindow()->bounds();
-
+  // If the capture label exists, take its bounds into consideration regardless
+  // of whether it is currently visible or not. Otherwise there may be overlap
+  // if the action container and capture label both appear at the same time.
+  const gfx::Rect capture_label_widget_bounds =
+      capture_label_widget_ ? capture_label_widget_->GetNativeWindow()->bounds()
+                            : gfx::Rect();
   const gfx::Rect capture_region = controller_->user_capture_region();
   gfx::Rect bounds = CalculateRegionEdgeBounds(
-      preferred_size, capture_bar_bounds, capture_region, gfx::Rect(),
-      current_root_, CaptureRegionWidgetAlignment::kRight);
+      preferred_size, capture_bar_bounds, capture_region,
+      capture_label_widget_bounds, current_root_,
+      CaptureRegionWidgetAlignment::kRight);
 
   // User capture bounds are in root window coordinates so convert them here.
   wm::ConvertRectToScreen(current_root_, &bounds);
