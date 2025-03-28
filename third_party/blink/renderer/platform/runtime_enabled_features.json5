@@ -3274,10 +3274,6 @@
       base_feature: "none",
     },
     {
-      name: "PaymentInstruments",
-      depends_on: ["PaymentApp"],
-    },
-    {
       // https://chromestatus.com/feature/5198846820352000
       name: "PaymentLinkDetection",
       status: "experimental",
