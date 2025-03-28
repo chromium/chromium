@@ -5,8 +5,10 @@
 #include "components/visited_url_ranking/internal/url_grouping/grouping_heuristics.h"
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/tab_metadata.h"
 #include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions.h"
@@ -81,6 +83,7 @@ class GroupingHeuristicsTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList features_;
   std::unique_ptr<GroupingHeuristics> heuristics_;
 };
 
@@ -336,6 +339,74 @@ TEST_F(GroupingHeuristicsTest,
   candidates.push_back(CreateVisitForTab(base::Seconds(350), 113));
   GetTabMetadata(candidates[2]).tab_android_launch_type = 4;
   GetTabMetadata(candidates[2]).parent_tab_id = -1;
+
+  std::optional<GroupSuggestions> suggestions = GetSuggestionsFor(
+      std::move(candidates), GroupSuggestion::SuggestionReason::kSimilarSource);
+
+  ASSERT_FALSE(suggestions.has_value());
+}
+
+TEST_F(GroupingHeuristicsTest, DisableRecentlyOpen) {
+  // Reset heuristics so that Recently Open heuristics is not enabled.
+  features_.InitAndEnableFeatureWithParameters(
+      features::kGroupSuggestionService,
+      {{"group_suggestion_enable_recently_opened", "false"}});
+  heuristics_.reset();
+  heuristics_ = std::make_unique<GroupingHeuristics>();
+
+  std::vector<URLVisitAggregate> candidates = {};
+
+  candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
+  candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
+  candidates.push_back(CreateVisitForTab(base::Seconds(350), 113));
+  candidates.push_back(CreateVisitForTab(base::Seconds(30), 114));
+
+  std::optional<GroupSuggestions> suggestions =
+      GetSuggestionsFor(std::move(candidates),
+                        GroupSuggestion::SuggestionReason::kRecentlyOpened);
+
+  ASSERT_FALSE(suggestions.has_value());
+}
+
+TEST_F(GroupingHeuristicsTest, DisableSwitchBetween) {
+  // Reset heuristics so that Switch Between heuristics is not enabled.
+  features_.InitAndEnableFeatureWithParameters(
+      features::kGroupSuggestionService,
+      {{"group_suggestion_enable_switch_between", "false"}});
+  heuristics_.reset();
+  heuristics_ = std::make_unique<GroupingHeuristics>();
+
+  std::vector<URLVisitAggregate> candidates = {};
+
+  candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
+  SetRecentFgCount(candidates[0], 2);
+  candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
+  SetRecentFgCount(candidates[1], 3);
+
+  std::optional<GroupSuggestions> suggestions =
+      GetSuggestionsFor(std::move(candidates),
+                        GroupSuggestion::SuggestionReason::kSwitchedBetween);
+
+  ASSERT_FALSE(suggestions.has_value());
+}
+
+TEST_F(GroupingHeuristicsTest, DisableSimilarSource) {
+  // Reset heuristics so that Similar Source heuristics is not enabled.
+  features_.InitAndEnableFeatureWithParameters(
+      features::kGroupSuggestionService,
+      {{"group_suggestion_enable_similar_source", "false"}});
+  heuristics_.reset();
+  heuristics_ = std::make_unique<GroupingHeuristics>();
+
+  std::vector<URLVisitAggregate> candidates = {};
+
+  candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
+  GetTabMetadata(candidates[0]).launch_package_name = "package1";
+  candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
+  GetTabMetadata(candidates[1]).launch_package_name = "package1";
+  candidates.push_back(CreateVisitForTab(base::Seconds(200), 113));
+  GetTabMetadata(candidates[2]).launch_package_name = "package1";
+  candidates.push_back(CreateVisitForTab(base::Seconds(200), 114));
 
   std::optional<GroupSuggestions> suggestions = GetSuggestionsFor(
       std::move(candidates), GroupSuggestion::SuggestionReason::kSimilarSource);

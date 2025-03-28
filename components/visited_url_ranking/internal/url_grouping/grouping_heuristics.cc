@@ -6,6 +6,7 @@
 
 #include <variant>
 
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/hash/hash.h"
@@ -15,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_schema.h"
@@ -273,12 +275,18 @@ std::optional<GroupSuggestions> GetAllGroupSuggestions(
 }  // namespace
 
 GroupingHeuristics::GroupingHeuristics() {
-  heuristics_.emplace(GroupSuggestion::SuggestionReason::kSwitchedBetween,
-                      std::make_unique<SwitchedBetweenHeuristic>());
-  heuristics_.emplace(GroupSuggestion::SuggestionReason::kSimilarSource,
-                      std::make_unique<SimilarSourceHeuristic>());
-  heuristics_.emplace(GroupSuggestion::SuggestionReason::kRecentlyOpened,
-                      std::make_unique<RecentlyOpenedHeuristic>());
+  if (features::kGroupSuggestionEnableRecentlyOpened.Get()) {
+    heuristics_.emplace(GroupSuggestion::SuggestionReason::kRecentlyOpened,
+                        std::make_unique<RecentlyOpenedHeuristic>());
+  }
+  if (features::kGroupSuggestionEnableSwitchBetween.Get()) {
+    heuristics_.emplace(GroupSuggestion::SuggestionReason::kSwitchedBetween,
+                        std::make_unique<SwitchedBetweenHeuristic>());
+  }
+  if (features::kGroupSuggestionEnableSimilarSource.Get()) {
+    heuristics_.emplace(GroupSuggestion::SuggestionReason::kSimilarSource,
+                        std::make_unique<SimilarSourceHeuristic>());
+  }
 }
 
 GroupingHeuristics::~GroupingHeuristics() = default;
@@ -309,6 +317,9 @@ void GroupingHeuristics::GetSuggestions(
     signals.push_back(AsInputContext(kSuggestionsPredictionSchema, candidate));
   }
   for (const auto type : heuristics_priority) {
+    if (!base::Contains(heuristics_, type)) {
+      continue;
+    }
     auto& heuristic = heuristics_[type];
     heuristic_results.emplace(heuristic->reason(), heuristic->Run(signals));
   }
