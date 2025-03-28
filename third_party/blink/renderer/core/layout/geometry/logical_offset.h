@@ -8,6 +8,7 @@
 #include <tuple>
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
@@ -18,7 +19,6 @@ class String;
 namespace blink {
 
 struct LogicalDelta;
-struct PhysicalOffset;
 struct PhysicalSize;
 
 // LogicalOffset is the position of a rect (typically a fragment) relative to

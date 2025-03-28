@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_number.h"
 #include "third_party/blink/renderer/core/svg/svg_point_tear_off.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -121,7 +122,7 @@ bool SVGGeometryElement::isPointInStroke(const DOMPointInit* point) const {
 
   AffineTransform root_transform;
 
-  Path path = AsPath();
+  PathBuilder path = AsMutablePath();
   gfx::PointF local_point(ClampTo<float>(point->x()),
                           ClampTo<float>(point->y()));
   if (layout_shape.HasNonScalingStroke()) {
@@ -144,17 +145,19 @@ bool SVGGeometryElement::isPointInStroke(const DOMPointInit* point) const {
       PathLengthScaleFactor());
 
   // Path::StrokeContains will reject points with a non-finite component.
-  return path.StrokeContains(local_point, stroke_data, root_transform);
+  return path.Finalize().StrokeContains(local_point, stroke_data,
+                                        root_transform);
 }
 
 Path SVGGeometryElement::ToClipPath() const {
-  Path path = AsPath();
+  PathBuilder path = AsMutablePath();
   path.Transform(CalculateTransform(SVGElement::kIncludeMotionTransform));
 
   DCHECK(GetLayoutObject());
   DCHECK(GetLayoutObject()->Style());
   path.SetWindRule(GetLayoutObject()->StyleRef().ClipRule());
-  return path;
+
+  return path.Finalize();
 }
 
 float SVGGeometryElement::getTotalLength(ExceptionState& exception_state) {
@@ -183,7 +186,7 @@ SVGPointTearOff* SVGGeometryElement::getPointAtLength(
     return nullptr;
   }
 
-  const Path& path = AsPath();
+  const Path path = AsPath();
 
   if (path.IsEmpty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,

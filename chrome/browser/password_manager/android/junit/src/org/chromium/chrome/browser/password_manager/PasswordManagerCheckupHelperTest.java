@@ -1168,6 +1168,7 @@ public class PasswordManagerCheckupHelperTest {
                         eq(testActivity),
                         eq(mProfile),
                         /* isGooglePlayServicesAvailable= */ eq(true),
+                        /* isPasswordManagerAvailable= */ eq(false),
                         eq(mSettingsCustomTabLauncher));
     }
 
@@ -1200,6 +1201,7 @@ public class PasswordManagerCheckupHelperTest {
                         eq(testActivity),
                         eq(mProfile),
                         /* isGooglePlayServicesAvailable= */ eq(false),
+                        /* isPasswordManagerAvailable= */ eq(false),
                         eq(mSettingsCustomTabLauncher));
     }
 

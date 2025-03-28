@@ -8,11 +8,11 @@ promise_test(async t => {
   let iframe = document.createElement("iframe");
   document.childNodes[document.childNodes.length - 1].appendChild(iframe);
   let iframeWindow = iframe.contentWindow;
-  iframeWindow.languageModel = iframeWindow.ai.languageModel;
+  iframeWindow.languageModel = iframeWindow.LanguageModel;
   let iframeDOMException = iframeWindow.DOMException;
   // Detach the iframe.
   iframe.remove();
-  // Calling `ai.languageModel.availability()` from an invalid script state will trigger
+  // Calling `LanguageModel.availability()` from an invalid script state will trigger
   // the "The execution context is not valid." exception.
   await promise_rejects_dom(
     t, 'InvalidStateError', iframeDOMException, iframeWindow.languageModel.availability(),

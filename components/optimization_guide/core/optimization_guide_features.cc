@@ -658,7 +658,7 @@ int GetOnDeviceModelMinTokensForContext() {
 int GetOnDeviceModelMaxTokensForContext() {
   static const base::FeatureParam<int> kOnDeviceModelMaxTokensForContext{
       &kOptimizationGuideOnDeviceModel,
-      "on_device_model_max_tokens_for_context", 4096};
+      "on_device_model_max_tokens_for_context", 8192};
   return kOnDeviceModelMaxTokensForContext.Get();
 }
 
@@ -845,6 +845,13 @@ std::vector<uint32_t> GetOnDeviceModelAllowedAdaptationRanks() {
     }
   }
   return ranks;
+}
+
+bool ForceCpuBackendForOnDeviceModel() {
+  static const base::FeatureParam<bool> kForceCpuBackend{
+      &kOptimizationGuideOnDeviceModel, "on_device_model_force_cpu_backend",
+      false};
+  return kForceCpuBackend.Get();
 }
 
 bool IsOnDeviceModelValidationEnabled() {

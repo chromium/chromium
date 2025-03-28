@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_delegate.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_factory.h"
@@ -26,22 +27,24 @@ class FakeAffiliationFetcher : public AffiliationFetcherInterface {
 
   // Simulates successful completion of the request with |fake_result|. Note
   // that the consumer may choose to destroy |this| from within this call.
-  void SimulateSuccess(
-      std::unique_ptr<AffiliationFetcherDelegate::Result> fake_result);
+  void SimulateSuccess(const ParsedFetchResponse& fake_result);
 
   // Simulates completion of the request with failure. Note that the consumer
   // may choose to destroy |this| from within this call.
   void SimulateFailure();
 
   // AffiliationFetcherInterface
-  void StartRequest(const std::vector<FacetURI>& facet_uris,
-                    RequestInfo request_info) override;
+  void StartRequest(
+      const std::vector<FacetURI>& facet_uris,
+      RequestInfo request_info,
+      base::OnceCallback<void(FetchResult)> result_callback) override;
   const std::vector<FacetURI>& GetRequestedFacetURIs() const override;
 
  private:
   const raw_ptr<AffiliationFetcherDelegate> delegate_;
 
   std::vector<FacetURI> facets_;
+  base::OnceCallback<void(FetchResult)> result_callback_;
 };
 
 // Used in tests to return fake API responses to users of AffiliationFetcher.

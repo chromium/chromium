@@ -392,9 +392,15 @@ void CreditCardAccessManager::FetchCreditCard(
 }
 
 bool CreditCardAccessManager::IsMaskedServerCardRiskBasedAuthAvailable() const {
+  bool isCardInfoRetrievalEnrolled =
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableCardInfoRuntimeRetrieval) &&
+      (card_->card_info_retrieval_enrollment_state() ==
+       CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
   return !card_->IsExpired(AutofillClock::Now()) &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillEnableFpanRiskBasedAuthentication);
+         (base::FeatureList::IsEnabled(
+              features::kAutofillEnableFpanRiskBasedAuthentication) ||
+          isCardInfoRetrievalEnrolled);
 }
 
 void CreditCardAccessManager::FIDOAuthOptChange(bool opt_in) {

@@ -991,6 +991,11 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="1675391557079742340">Activer l'annonce de l'encodage du contenu <ph name="ZSTANDARD_SHORTNAME" /> dans l'en-tête Accept-Encoding</translation>
+<translation id="167550754083555945">Configure les règles de création de rapports cloud.
+
+Pour les appareils gérés, si la règle <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> est désactivée ou n'est pas configurée, ces règles sont ignorées au niveau du navigateur. Sur les plates-formes autres que <ph name="PRODUCT_OS_NAME" />, cette règle n'est compatible qu'avec les navigateurs enregistrés avec <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> pour <ph name="PRODUCT_NAME" />.
+
+Pour les profils gérés, si la règle <ph name="CLOUD_PROFILE_REPORTING_ENABLED_POLICY_NAME" /> est désactivée ou n'est pas configurée, ces règles sont ignorées au niveau du profil.</translation>
 <translation id="1678137412645922426">Contrôle l'utilisation de <ph name="AES_KL_NAME" /> pour le chiffrement du stockage de l'utilisateur si celui-ci est compatible</translation>
 <translation id="1682063842123336408">Permet de spécifier l'espace disque libre requis (en Go) pour installer <ph name="PLUGIN_VM_NAME" />.
 
@@ -2812,6 +2817,15 @@ Remarque : Pour voir des exemples détaillés, accédez à The Chromium Projec
 <translation id="305106159605171619">La réduction user-agent est désactivée et ne peut pas être activée par les essais Field-Trials et Origin-Trials.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">Ne pas autoriser l'utilisation de Chrome for Testing</translation>
+<translation id="3060608694980129910">Cette règle permet de contrôler les rapports cloud <ph name="PRODUCT_NAME" /> sur les signaux de sécurité pour un profil géré donné.
+
+Si cette règle est activée, les rapports sur les signaux de sécurité concernant l'appareil, le navigateur et le profil sont transmis au serveur de gestion des appareils.
+
+Si cette règle est désactivée ou n'est pas configurée, la collecte et l'importation de signaux de sécurité ne sont pas déclenchées.
+
+Le rapport contient l'état du profil ainsi que des informations sur l'utilisation, y compris, mais sans s'y limiter, la version de l'OS et du navigateur, les extensions installées et les règles applicables.
+
+Cette règle ne peut être configurée que comme règle relative aux utilisateurs du cloud.</translation>
 <translation id="3063302084011279315">Désactiver l'enregistreur d'écran</translation>
 <translation id="3063307261083019730">Interdire le stockage des pages avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> dans le cache amélioré.</translation>
 <translation id="3064530882228745118">Utiliser la consultation CNAME lors de l'authentification Kerberos</translation>
@@ -5601,6 +5615,7 @@ Si cette règle n'est pas configurée ou qu'elle est désactivée, les cookies e
 <translation id="5152787786897382519">Chromium et Google Chrome possèdent tous deux des groupes de règles interdépendantes pour contrôler une fonctionnalité. Ces ensembles sont représentés par les groupes de règles suivants. Les règles pouvant avoir plusieurs sources, seules les valeurs issues de la source ayant la priorité la plus haute sont appliquées. Les valeurs provenant d'une source ayant une priorité inférieure dans le même groupe sont ignorées. L'ordre de priorité est défini à la page <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Icône des fonctionnalités expérimentales du navigateur dans la barre d'outils</translation>
 <translation id="5159674159887919923">Ne pas envoyer de données matérielles supplémentaires sur ChromeOS Flex</translation>
+<translation id="5162571264806471078">Activer la création de rapports cloud sur les signaux de sécurité dans les profils gérés</translation>
 <translation id="5162982931329320509">Liste des domaines pour lesquels utiliser DNS-over-HTTPS. DNS-over-HTTPS ne sera pas utilisé pour les domaines qui ne figurent pas sur la liste. Cette règle est ignorée lorsque le mode DNS sécurisé est désactivé (utilisez toujours le DNS en texte brut).
 
 Si la liste est vide ou si la règle n'est pas configurée, tous les domaines utiliseront DNS-over-HTTPS lorsque c'est possible. Ce comportement est identique pour une liste de domaines inclus dont la valeur est de [*].
@@ -5713,11 +5728,6 @@ Si cette règle n'est pas configurée ou si la liste ne contient aucune référe
       Si ce paramètre n'est pas défini, la période par défaut est fixée à 604 800 000 millisecondes (une semaine).</translation>
 <translation id="5212810195096589189">Spécifier l'autorisation concernant l'interface de ligne de commande pour les machines virtuelles</translation>
 <translation id="5213038356678567351">Sites Web qui ne doivent jamais déclencher un changement de navigateur.</translation>
-<translation id="5216520638921067085">Précise l'ancienneté minimale de la version au-delà de laquelle les notifications de relance deviennent plus fréquentes. L'ancienneté est calculée à partir de la date de dernière diffusion aux clients de la version en cours.
-
-Si une nouvelle version est en attente, qu'un redémarrage du navigateur ou de l'appareil est nécessaire et que la version actuelle a été remplacée depuis plus de jours que le nombre indiqué par ce paramètre, la règle <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> est remplacée par deux heures. Si la règle <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> est définie sur 1 ("Obligatoire"), les utilisateurs seront obligés de relancer ou de redémarrer à la fin de la période.
-
-Si elle n'est pas définie ou que l'ancienneté de la version ne peut pas être déterminée, la règle <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> sera utilisée pour toutes les mises à jour.</translation>
 <translation id="5216815237712190041">Configurez le fond d'écran de l'appareil à afficher sur la page de connexion avant qu'un utilisateur ne se connecte à l'appareil. Pour configurer cette règle, vous devez indiquer l'URL depuis laquelle l'appareil Chrome OS peut télécharger l'image de fond d'écran et un hachage chiffré utilisé pour vérifier l'intégrité du téléchargement. L'image doit être au format JPEG, et sa taille ne doit pas dépasser 16 Mo. L'URL doit être accessible sans authentification. L'image de fond d'écran est téléchargée et mise en cache. Elle sera de nouveau téléchargée à chaque modification de l'URL ou du hachage.
 
       Si la règle relative au fond d'écran est configurée, l'appareil Chrome OS téléchargera et utilisera l'image de fond d'écran sur l'écran de connexion si aucun utilisateur ne s'est encore connecté à l'appareil. Lorsque l'utilisateur se connecte, la règle relative au fond d'écran pour cet utilisateur est activée.
@@ -6302,6 +6312,7 @@ Remarque : Cette règle ne s'applique ni à la navigation privée ni au mode In
       Sachez que cette méthode n'est pas recommandée, car l'extension nameConstraints qui limite les noms d'hôtes pour lesquels un certificat donné peut être autorisé risque d'être ignorée.
 
       Si cette règle n'est pas configurée, ou si elle est définie sur "False", les certificats de serveur qui ne comportent pas d'extension subjectAlternativeName contenant soit un nom DNS, soit une adresse IP, ne seront pas approuvés.</translation>
+<translation id="5576376485226897323">Désactiver la création de rapports cloud sur les signaux de sécurité utilisateur</translation>
 <translation id="5576377426850850084">Utiliser l'authentification NTLM</translation>
 <translation id="5577475143148445339">Nombre de jours et pourcentage du parc à mettre à jour une fois ce nombre atteint.</translation>
 <translation id="5582429816116769246">Permet de contrôler si les utilisateurs peuvent accéder à des imprimantes n'appartenant pas à l'entreprise.
@@ -6587,6 +6598,7 @@ Si elle est désactivée ou n'est pas configurée, les Glanceables ne sont pas a
       Si la règle est définie sur "False" ou n'est pas définie, ces informations ne sont pas transmises.
       Si elle est définie sur "True", les informations concernant les données VPD de l'appareil sont transmises.
       Les données vitales du produit (VPD) sont un ensemble de données de configuration et d'informations (numéros de pièce et de série, par exemple) associées à l'appareil.</translation>
+<translation id="5760861224093391268">Désactiver l'authentification interne lors de la création de rapports sur les signaux de sécurité utilisateur</translation>
 <translation id="5762969307102447459">Désactiver la saisie automatique pour les adresses</translation>
 <translation id="5765780083710877561">Description :</translation>
 <translation id="5766438888216077649">Ne définissez pas <ph name="WINDOW_OPENER_PROPERTY" /> pour les liens ciblant <ph name="BLANK_PAGE_NAME" /></translation>
@@ -6765,6 +6777,15 @@ Si cette règle est désactivée, les sons seront désactivés en mode Sans dist
 <translation id="5893303508158298667">Si la règle <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> est activée ou qu'elle n'est pas configurée, et que la règle <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> est activée, les clients distants peuvent utiliser des serveurs relais pour se connecter à cet ordinateur quand aucune connexion directe n'est disponible (par exemple, en raison de restrictions du pare-feu).
 
       Si cette règle est désactivée, l'accès à distance n'est pas désactivé, et seules les connexions à partir du même réseau sont autorisées (pas de relais ni de Traversée NAT).</translation>
+<translation id="5895049442553435093">Cette règle permet de contrôler comment <ph name="PRODUCT_NAME" /> utilise l'authentification utilisateur interne lors de la création de rapports sur les signaux de sécurité utilisateur pour un profil géré donné.
+
+Si cette règle est activée, l'authentification interne est utilisée lors de l'importation des signaux de sécurité.
+
+Si cette règle est désactivée ou n'est pas configurée, l'authentification interne n'est pas utilisée lors de l'importation des signaux de sécurité.
+
+Les rapports sur les signaux de sécurité utilisateur ne sont importés que lorsque <ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME" /> est activé.
+
+Cette règle ne peut être configurée que comme règle relative aux utilisateurs du cloud.</translation>
 <translation id="5895569286536062756">Activer Sélectionner pour écouter sur l'écran de connexion</translation>
 <translation id="5895861015839311441">Créer des rapports sur les données télémétriques d'utilisation des applis pour les utilisateurs affiliés.
 
@@ -8896,6 +8917,7 @@ Les espaces blancs sont désormais conservés dans toutes les URL de données, q
 Si cette règle n'est pas configurée ou qu'elle est définie sur "True", le nouveau comportement est activé.
 
 Si elle est définie sur "False", l'ancien comportement est activé.</translation>
+<translation id="7366637365754181686">Activer la création de rapports cloud sur les signaux de sécurité utilisateur</translation>
 <translation id="7366948865469126526">Désactiver la conversion d'unités pour Réponses rapides</translation>
 <translation id="7367734504783638685">Synchronisation des mots de passe entre les fournisseurs SSO tiers et les appareils Google Chrome</translation>
 <translation id="7372831798009983116">Activer la fonctionnalité d'accessibilité de clic automatique</translation>
@@ -10760,6 +10782,7 @@ Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cl
 <translation id="8807728576820212213">Activer l'intégration Lens</translation>
 <translation id="8809082103104823938">Prise en charge des GIF dans le sélecteur d'emoji</translation>
 <translation id="8812091410765157924">Autoriser les pop-up ouverts avec une cible <ph name="BLANK_PAGE_NAME" /> à interagir avec la page qui a ouvert le pop-up uniquement si celle-ci accepte explicitement ce type d'interaction</translation>
+<translation id="8812631362927615118">Activer l'authentification interne lors de la création de rapports sur les signaux de sécurité utilisateur</translation>
 <translation id="8816370949847593408">Il se peut que les applis Chrome ne soient pas autorisées à s'exécuter, selon l'état d'avancement du processus d'abandon.</translation>
 <translation id="8818768076343557335">Prédire les actions réseau sur tous les réseaux, sauf les réseaux mobiles
           (Option abandonnée dans la version 50 et supprimée dans la version 52. Au-delà de la version 52, si la valeur 1 est définie, elle est traitée comme la valeur 0 : Prédire les actions réseau lors d'une connexion au réseau.)</translation>

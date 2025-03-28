@@ -91,6 +91,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1269405891096105529">Urządzenia peryferyjnego nie można używać w trybie gościa</translation>
 <translation id="1270290102613614947">Klawiatura ekranowa wyłączona</translation>
 <translation id="1272079795634619415">Zatrzymaj</translation>
+<translation id="12741168609094094">Zaznacz dowolny element na ekranie, aby wyszukać, skopiować tekst itp.</translation>
 <translation id="1275285675049378717">Zasilanie przez <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Zaznaczony</translation>
 <translation id="1276975447697633661">Wybierz plik i naciśnij <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1720230731642245863">Hotspot jest wyłączony</translation>
 <translation id="1731815243805539470">Przełącz na poprzedniego użytkownika</translation>
 <translation id="1733996486177697563">Przełącz między ciemnym i jasnym motywem. Naciśnij i przytrzymaj pulpit, a następnie wybierz Tapeta i styl.</translation>
+<translation id="1735992454301033090">Zaznaczono obszar. Aby go przesunąć, użyj klawiszy strzałek</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />” jest widoczny dla urządzeń Bluetooth.</translation>
 <translation id="1737078180382804488">Zamknij konfigurację wyświetlania powiadomień z telefonu</translation>
 <translation id="174102739345480129">Pisak jest wyłączony.</translation>
@@ -494,6 +496,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> w zeszłym tygodniu</translation>
 <translation id="2687510499067466116">Skrót klawiszowy został zmieniony</translation>
 <translation id="2689613560355655046">Biurko 8</translation>
+<translation id="2692092709110488417">Naciśnij Tab, aby zaznaczyć i przenieść wybrany obszar</translation>
 <translation id="2695305337569143674">internet</translation>
 <translation id="2697697418792422688">Pokaż ustawienia klawiatury. Wybrano: <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Za pomocą aplikacji Przenoszenie treści możesz przenieść dane z konta szkolnego na osobiste</translation>
@@ -551,6 +554,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="2872353916818027657">Zamień główny monitor</translation>
 <translation id="2872961005593481000">Wyłącz</translation>
 <translation id="2876338922445400217">Powiększ na ekranie</translation>
+<translation id="2876760662374103627">Sterowanie za pomocą twarzy jest aktywne</translation>
 <translation id="2878884018241093801">Brak ostatnich elementów</translation>
 <translation id="2880541185262491188">Zbyt wiele prób podania kodu PIN. Poczekaj <ph name="TIME_LEFT" /> i spróbuj ponownie</translation>
 <translation id="2883271196820422439">Wznów klawisze myszy</translation>
@@ -1032,6 +1036,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4412698727486357573">Centrum pomocy</translation>
 <translation id="4412944820643904175">Funkcja <ph name="FEATURE_NAME" /> jest wyłączona.</translation>
 <translation id="4417647906073317561">Ustawienia trybu pełnej koncentracji. Ustaw minutnik, zadanie i muzykę, aby stworzyć odpowiedni nastrój.</translation>
+<translation id="4418600384772451109">Zamknij panel</translation>
 <translation id="4424159417645388645">Biurko 5</translation>
 <translation id="4426817706804363424">Doskonale!</translation>
 <translation id="4430019312045809116">Głośność</translation>
@@ -1516,6 +1521,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="595202126637698455">Śledzenie wydajności jest włączone</translation>
 <translation id="5955304353782037793">aplikacja</translation>
 <translation id="5958529069007801266">Użytkownik nadzorowany</translation>
+<translation id="596035801491797438">Wyłącz sterowanie za pomocą twarzy</translation>
 <translation id="5960410286721553511">Wyświetlaj najnowsze zdjęcia i pliki multimedialne z telefonu</translation>
 <translation id="5965524703725988602">Przełącz ciemny motyw. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Przełączaj się do przodu między oknami</translation>
@@ -2226,6 +2232,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8287009018010202411">Produktywność</translation>
 <translation id="828708037801473432">Wyłączono</translation>
 <translation id="8297006494302853456">Słaby</translation>
+<translation id="8300451473979404345">Wybrano uchwyt. Aby go przesunąć, użyj klawiszy strzałek</translation>
 <translation id="8308637677604853869">Poprzednie menu</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock jest włączony.</translation>
@@ -2286,6 +2293,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="851458219935658693">Wybrano opcję Pokaż okna z bieżącego biurka</translation>
 <translation id="851660987304951246">Użyj funkcji Pomóż mi czytać, aby szybko podsumować treść lub zadać pytania</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> nie może się ładować, gdy jest włączony.</translation>
+<translation id="8519329096920173967">Przeszukaj ekran za pomocą Obiektywu Google</translation>
 <translation id="8535393432370007982">Cofnij sortowanie według koloru</translation>
 <translation id="8536886494750559755">Pokaż ustawienia szybkiego udostępniania. Widoczne dla wszystkich przez <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Tekst został skopiowany do schowka</translation>

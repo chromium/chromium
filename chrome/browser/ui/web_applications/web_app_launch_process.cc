@@ -23,12 +23,12 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/webapps/browser/launch_queue/launch_queue.h"
 #include "extensions/common/constants.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/scoped_display_for_new_windows.h"
@@ -422,7 +422,7 @@ void WebAppLaunchProcess::MaybeEnqueueWebLaunchParams(
     bool is_file_handling,
     content::WebContents* web_contents,
     bool started_new_navigation) {
-  WebAppLaunchParams launch_params;
+  webapps::LaunchParams launch_params;
   launch_params.started_new_navigation = started_new_navigation;
   launch_params.app_id = web_app_->app_id();
   launch_params.target_url = launch_url;

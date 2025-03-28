@@ -1590,10 +1590,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         final LinkedHashMap<Integer, String> tabIdsToUrls = tabGroupMetadata.tabIdsToUrls;
         @TabOpenType int tabOpenType = IntentHandler.getTabOpenType(intent);
 
-        // This should not be set for group URL intents.
-        int tabIdToBringToFront = IntentHandler.getBringTabToFrontId(intent);
-        assert tabIdToBringToFront == Tab.INVALID_TAB_ID;
-
         ArrayList<Tab> tabs = new ArrayList();
         for (Map.Entry<Integer, String> entry : tabIdsToUrls.entrySet()) {
             int tabId = entry.getKey();
@@ -1605,34 +1601,20 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             // 1. Set intent tabId and url for each iteration.
             IntentHandler.setTabId(intent, tabId);
             intent.setData(Uri.parse(url));
+            assert !IntentHandler.isIntentForMhtmlFileOrContent(intent)
+                    : "Attempt to drop a tab group with MHTML tab";
 
             // 2. Create LoadUrlParams for the given URL.
             LoadUrlParams loadUrlParams =
                     IntentHandler.createLoadUrlParamsForIntent(url, intent, mIntentHandlingTimeMs);
 
-            // 3. Handle MHTML files or special content intents if necessary.
-            // TODO(crbug.com/403293319) Properly handle MHTML intents to ensure they are handled
-            // synchronously with other tabs.
-            if (IntentHandler.isIntentForMhtmlFileOrContent(intent)
-                    && tabOpenType == TabOpenType.OPEN_NEW_TAB
-                    && loadUrlParams.getReferrer() == null
-                    && loadUrlParams.getVerbatimHeaders() == null) {
-                getProfileProviderSupplier()
-                        .runSyncOrOnAvailable(
-                                (profileProvider) -> {
-                                    handleMhtmlFileOrContentIntent(
-                                            profileProvider.getOriginalProfile(), url, intent);
-                                });
-                continue;
-            }
-
-            // 4. Process the intent and open a new tab for the URL.
+            // 3. Process the intent and open a new tab for the URL.
             Tab tab =
                     processUrlViewIntent(
                             loadUrlParams,
                             tabOpenType,
                             IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
-                            tabIdToBringToFront,
+                            Tab.INVALID_TAB_ID,
                             intent);
             tabs.add(tab);
         }

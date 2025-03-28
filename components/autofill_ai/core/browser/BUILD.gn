@@ -13,6 +13,8 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "autofill_ai_logger.h",
       "autofill_ai_manager.cc",
       "autofill_ai_manager.h",
+      "autofill_ai_ukm_logger.cc",
+      "autofill_ai_ukm_logger.h",
       "autofill_ai_utils.cc",
       "autofill_ai_utils.h",
       "suggestion/autofill_ai_suggestions.cc",
@@ -25,6 +27,8 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//components/autofill/core/common",
       "//components/keyed_service/core",
       "//components/strings",
+      "//services/metrics/public/cpp:metrics_cpp",
+      "//services/metrics/public/cpp:ukm_builders",
       "//ui/native_theme:native_theme",
     ]
   }

@@ -623,6 +623,14 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
     PDFiumPage::LinkTarget target_;
   };
 
+  struct PointData {
+    PDFiumPage::Area area = PDFiumPage::NONSELECTABLE_AREA;
+    int page_index = -1;
+    int char_index = -1;
+    int form_type = FPDF_FORMFIELD_UNKNOWN;
+    PDFiumPage::LinkTarget target;
+  };
+
   struct RegionData {
     RegionData(base::span<uint8_t> buffer, size_t stride);
     RegionData(RegionData&&) noexcept;
@@ -796,13 +804,8 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // the plugin's text selection.
   void SetFormSelectedText(FPDF_FORMHANDLE form_handle, FPDF_PAGE page);
 
-  // Given `point`, returns which page and character location it's closest to,
-  // as well as extra information about objects at that point.
-  PDFiumPage::Area GetCharIndex(const gfx::PointF& point,
-                                int* page_index,
-                                int* char_index,
-                                int* form_type,
-                                PDFiumPage::LinkTarget* target);
+  // Returns information about `point` and the objects at that point.
+  PointData GetPointData(const gfx::PointF& point);
 
   void OnSingleClick(int page_index, int char_index);
   void OnMultipleClick(int click_count, int page_index, int char_index);

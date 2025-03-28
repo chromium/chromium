@@ -1045,8 +1045,8 @@ TEST_F(IpProtectionCoreHostTest, TryGetProbabilisticRevealTokensSuccess) {
       token->set_e(std::string(kPRTPointSize, 'e'));
     }
     response_proto.mutable_public_key()->set_y(public_key);
-    response_proto.set_expiration_time_seconds(expiration);
-    response_proto.set_next_epoch_start_time_seconds(next_start);
+    response_proto.mutable_expiration_time()->set_seconds(expiration);
+    response_proto.mutable_next_epoch_start_time()->set_seconds(next_start);
     response_proto.set_num_tokens_with_signal(num_tokens_with_signal);
     response_proto.set_epoch_id(std::string(8, '0'));
     response_str = response_proto.SerializeAsString();
@@ -1113,8 +1113,8 @@ TEST_F(IpProtectionCoreHostTest,
       token->set_e(std::string(29, 'e'));
     }
     response_proto.mutable_public_key()->set_y(public_key);
-    response_proto.set_expiration_time_seconds(expiration);
-    response_proto.set_next_epoch_start_time_seconds(next_start);
+    response_proto.mutable_expiration_time()->set_seconds(expiration);
+    response_proto.mutable_next_epoch_start_time()->set_seconds(next_start);
     response_proto.set_num_tokens_with_signal(num_tokens_with_signal);
     response_str = response_proto.SerializeAsString();
   }

@@ -18,6 +18,10 @@ NSString* AppGroupUserDefaultsCredentialProviderManagedUserID();
 // Key for the app group user defaults containing the current user ID.
 NSString* AppGroupUserDefaultsCredentialProviderUserID();
 
+// Key for the app group user defaults containing whether multiple profiles are
+// currently in use.
+NSString* AppGroupUserDefaultsCredentialProviderMultiProfileSetting();
+
 // Key for the app group user defaults containing the current user email.
 NSString* AppGroupUserDefaultsCredentialProviderUserEmail();
 

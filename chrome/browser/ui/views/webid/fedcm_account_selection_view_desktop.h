@@ -85,7 +85,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // AccountSelectionView:
   bool Show(
-      const std::string& rp_for_display,
+      const content::RelyingPartyData& rp_data,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       Account::SignInMode sign_in_mode,
@@ -450,6 +450,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list,
+      const gfx::Image& rp_icon,
       bool show_back_button);
 
   // PictureInPictureOcclusionObserver:
@@ -503,7 +504,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // are multiple accounts, but it is size 0 when there are no new accounts.
   std::vector<IdentityRequestAccountPtr> new_accounts_;
 
-  std::u16string rp_for_display_;
+  // The RP icon to be displayed in the UI when needed.
+  gfx::Image rp_icon_;
 
   State state_{State::MULTI_ACCOUNT_PICKER};
 

@@ -17,11 +17,11 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/web_app_launch_params.h"
-#include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
+#include "components/webapps/browser/launch_queue/launch_params.h"
+#include "components/webapps/browser/launch_queue/launch_queue.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -107,7 +107,7 @@ void SendFilesToProjectorApp(std::vector<base::FilePath> files) {
     return;
   }
 
-  web_app::WebAppLaunchParams launch_params;
+  webapps::LaunchParams launch_params;
   launch_params.started_new_navigation = false;
   launch_params.app_id = ash::kChromeUIUntrustedProjectorSwaAppId;
   // Sending files should not navigate the app. This argument is used for

@@ -11,17 +11,22 @@ constexpr char kDigitalCredentialType[] = "digital";
 }  // anonymous namespace
 
 DigitalCredential* DigitalCredential::Create(const String& protocol,
-                                             const String& data) {
+                                             ScriptObject data) {
   return MakeGarbageCollected<DigitalCredential>(protocol, data);
 }
 
-DigitalCredential::DigitalCredential(const String& protocol, const String& data)
+DigitalCredential::DigitalCredential(const String& protocol, ScriptObject data)
     : Credential(/* id = */ "", kDigitalCredentialType),
       protocol_(protocol),
       data_(data) {}
 
 bool DigitalCredential::IsDigitalCredential() const {
   return true;
+}
+
+void DigitalCredential::Trace(Visitor* visitor) const {
+  visitor->Trace(data_);
+  Credential::Trace(visitor);
 }
 
 }  // namespace blink

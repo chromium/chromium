@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerGlicFlowControllerBrowserTest,
 }
 
 // TODO(crbug.com/404425678): Re-enable failing test on Windows.
-#if defined(IS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PickProfileWithCurrentProfile \
   DISABLED_PickProfileWithCurrentProfile
 #else

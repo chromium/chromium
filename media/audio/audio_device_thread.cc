@@ -70,7 +70,7 @@ AudioDeviceThread::AudioDeviceThread(Callback* callback,
 }
 
 AudioDeviceThread::~AudioDeviceThread() {
-  in_shutdown_.Set();
+  in_shutdown_ = true;
   socket_.Shutdown();
   if (thread_handle_.is_null())
     return;
@@ -98,7 +98,7 @@ void AudioDeviceThread::ThreadMain() {
     // tells us that the writer is done and will be closing the connection.
     // Nothing that happens after that is considered an error.
     if (pending_data == std::numeric_limits<uint32_t>::max() - 1) {
-      in_shutdown_.Set();
+      in_shutdown_ = true;
       break;
     }
 
@@ -135,7 +135,7 @@ void AudioDeviceThread::ThreadMain() {
     }
   }
 
-  if (!in_shutdown_.IsSet()) {
+  if (!in_shutdown_.load()) {
     callback_->OnSocketError();
   }
 }

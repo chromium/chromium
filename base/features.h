@@ -32,11 +32,16 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOnMidRangeDevices);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+BASE_EXPORT BASE_DECLARE_FEATURE(kBackgroundNotPerceptibleBinding);
 BASE_EXPORT BASE_DECLARE_FEATURE(kCollectAndroidFrameTimelineMetrics);
 BASE_EXPORT BASE_DECLARE_FEATURE(
     kPostPowerMonitorBroadcastReceiverInitToBackground);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPostGetMyMemoryStateToBackground);
 #endif
+
+#if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
+BASE_EXPORT BASE_DECLARE_FEATURE(kUsePriorityInheritanceMutex);
+#endif  // BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
 
 // Policy for emitting profiler metadata from `ThreadController`.
 enum class EmitThreadControllerProfilerMetadata {

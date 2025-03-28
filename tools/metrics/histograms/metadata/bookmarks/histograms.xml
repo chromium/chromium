@@ -227,7 +227,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bookmarks.BookmarksBar.DragDropType"
     enum="BookmarkBarDragDropType" expires_after="2025-09-14">
   <owner>dfried@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records whether a bookmarks bar drag-drop is from a URL (e.g. from the
     location bar) or from the bookmarks bar itself (which is effectively a
@@ -238,7 +238,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bookmarks.BookmarksBarStatus.OnReadingListOpened"
     enum="BookmarkBarPrefAndState" expires_after="2022-08-28">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     This records the Boomarks bar pref state and status when the reading list is
     opened. This will help determine how often the reading list is accessed from
@@ -279,7 +279,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bookmarks.EditLocation" enum="BookmarkLaunchLocation"
     expires_after="2025-09-14">
   <owner>dfried@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Logs a UI location from which a bookmark is edited, after the user opts to
     edit or rename a bookmark or folder via a context menu, and immediately
@@ -455,7 +455,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bookmarks.ParentFolderType" enum="BookmarkFolderType"
     expires_after="2025-08-10">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     This histogram records the parent folder added to whenever a bookmark is
     created or moved.
@@ -506,7 +506,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bookmarks.RemovedLocation" enum="BookmarkLaunchLocation"
     expires_after="2025-09-14">
   <owner>dfried@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Logs a UI location from which one or more bookmarks are removed, after the
     user requests them to be removed via a menu and immediately before they are
@@ -551,7 +551,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bookmarks.StarEntryPoint.ClickedAction"
     enum="StarEntryPointAction" expires_after="2022-08-28">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Recorded when an action in the Bookmark icon menu is clicked.
   </summary>

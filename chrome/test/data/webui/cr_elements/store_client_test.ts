@@ -46,23 +46,26 @@ class StoreClientTestElement extends TestStoreClientMixin
 
   static get properties() {
     return {
-      value_: Number,
-      neverTwo_: Number,
+      value: Number,
+      neverTwo: Number,
     };
   }
 
+  value: number = -1;
+  neverTwo: number = -1;
+
   static get template() {
     return html`<div>
-      <span id="value">[[value_]]</span>
-      <span id="neverTwo">[[neverTwo_]]</span>
+      <span id="value">[[value]]</span>
+      <span id="neverTwo">[[neverTwo]]</span>
     </div>`;
   }
 
   override connectedCallback() {
     super.connectedCallback();
-    this.watch<number>('value_', state => state.value);
+    this.watch<number>('value', state => state.value);
     this.watch<number>(
-        'neverTwo_', state => state.value === 2 ? undefined : state.value);
+        'neverTwo', state => state.value === 2 ? undefined : state.value);
     this.updateFromStore();
   }
 }

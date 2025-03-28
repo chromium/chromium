@@ -1565,7 +1565,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2081816110395725788">Energia em suspensão na bateria</translation>
 <translation id="2082187087049518845">Agrupar separador</translation>
 <translation id="2082510809738716738">Escolha uma cor do tema</translation>
-<translation id="208547068587548667">Iniciar sessão em <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Tente novamente</translation>
 <translation id="208634871997892083">VPN sempre ativada</translation>
 <translation id="208654914566977272">Ações sugeridas ao pesquisar no ecrã</translation>
@@ -4000,7 +3999,6 @@ Quer pará-lo?</translation>
 <translation id="3778740492972734840">Ferramentas &amp;do programador</translation>
 <translation id="3778868487658107119">Faça-lhe perguntas. Diga-lhe para realizar tarefas. É o seu Google pessoal, sempre pronto para ajudar.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{o seu histórico de navegação de # site}other{o seu histórico de navegação de # sites}}</translation>
-<translation id="3779244863011082655">Usar outra conta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3780542776224651912">O <ph name="BRAND" /> não consegue verificar as suas palavras-passe relativamente a violações de dados. Tente mais tarde.</translation>
 <translation id="3781742599892759500">Acesso ao microfone do Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5504,6 +5502,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4848191975108266266">Comando "OK Google" do Assistente Google</translation>
 <translation id="4849286518551984791">Tempo universal coordenado (UTC/GMT)</translation>
 <translation id="4849517651082200438">Não instalar</translation>
+<translation id="4849731766219625109">Usar conta do <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="485053257961878904">Não foi possível configurar a sincronização de notificações</translation>
 <translation id="4850548109381269495">Em ambos os dispositivos, verifique a sua ligação à Internet e ative o Bluetooth. Em seguida, tente novamente.</translation>
 <translation id="4850669014075537160">Deslocamento</translation>
@@ -5692,6 +5691,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4979510648199782334">Configuração do Microsoft 365 concluída</translation>
 <translation id="4980805016576257426">Esta extensão contém um software malicioso.</translation>
 <translation id="4983159853748980742">A sua palavra-passe não foi partilhada. Verifique a ligação à Internet e certifique-se de que tem sessão iniciada no Chrome. Em seguida, tente novamente.</translation>
+<translation id="498624032394115435">Qualquer pessoa com o link pode editar todos os separadores.</translation>
 <translation id="4986706507552097681">Pode sempre escolher o que quer sincronizar nas definições. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="4986728572522335985">Isto elimina todos os dados na chave de segurança, incluindo o respetivo PIN</translation>
 <translation id="4987944280765486504">O Chromebook é reiniciado após a conclusão da transferência e pode continuar a configuração.</translation>
@@ -8302,7 +8302,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6873571253135628430">Altere as autorizações de sites</translation>
 <translation id="6876155724392614295">Bicicleta</translation>
 <translation id="6876469544038980967">Inútil</translation>
-<translation id="687838958001010630">Qualquer pessoa com o link pode editar todos os separadores</translation>
 <translation id="6878422606530379992">Sensores permitidos</translation>
 <translation id="6878862640969460273">Horizontal</translation>
 <translation id="6880587130513028875">As imagens foram bloqueadas nesta página.</translation>

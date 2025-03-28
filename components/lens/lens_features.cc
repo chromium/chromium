@@ -386,6 +386,11 @@ constexpr base::FeatureParam<bool> kAutoFocusSearchbox{
 constexpr base::FeatureParam<bool> kUpdateViewportEachQuery{
     &kLensOverlayContextualSearchbox, "update-viewport-each-query", false};
 
+constexpr base::FeatureParam<bool> kUseAltLoadingHintWeb{
+    &kLensOverlayContextualSearchbox, "use-alt-loading-hint-web", false};
+constexpr base::FeatureParam<bool> kUseAltLoadingHintPdf{
+    &kLensOverlayContextualSearchbox, "use-alt-loading-hint-pdf", false};
+
 constexpr base::FeatureParam<std::string> kTranslateEndpointUrl{
     &kLensOverlayTranslateLanguages, "translate-endpoint-url",
     "https://translate-pa.googleapis.com/v1/supportedLanguages"};
@@ -944,6 +949,14 @@ bool IsUpdatedClientContextEnabled() {
 
 bool ShouldShowMGTInSidePanel() {
   return base::FeatureList::IsEnabled(kLensOverlayMGTInSidePanel);
+}
+
+bool ShouldUseAltLoadingHintWeb() {
+  return kUseAltLoadingHintWeb.Get();
+}
+
+bool ShouldUseAltLoadingHintPdf() {
+  return kUseAltLoadingHintPdf.Get();
 }
 
 }  // namespace lens::features

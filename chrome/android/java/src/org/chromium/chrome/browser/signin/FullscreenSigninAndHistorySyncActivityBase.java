@@ -99,7 +99,9 @@ public abstract class FullscreenSigninAndHistorySyncActivityBase extends AsyncIn
         //  during re-FRE, this is just a temporary visual fix.
         if (BuildInfo.getInstance().isAutomotive) {
             StatusBarColorController.setStatusBarColor(
-                    getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper(),
+                    (getEdgeToEdgeManager() != null)
+                            ? getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper()
+                            : null,
                     getWindow(),
                     Color.BLACK);
         }

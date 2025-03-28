@@ -164,7 +164,7 @@ def uploadScratch(creds, file_name, scratch_dir):
 
 
 def writeCommonArgs(f):
-    f.write("target_os = 'linux'\n")
+    f.write("target_os = \"linux\"\n")
     f.write("clang_use_chrome_plugins = false\n")
     f.write("dcheck_always_on = true\n")
     f.write("is_chrome_branded = true\n")
@@ -192,7 +192,6 @@ run("git reset --hard origin/main")
 # Setup a build directory to evaluate the patches. This is common to all the
 # patches to avoid recompiling the entire project for each patch.
 run("gclient sync -fD", exit_on_error=False)
-run("gn gen out/linux", "Failed to generate out/linux.")
 
 try:
     run("gcertstatus --check_remaining=3h --nocheck_ssh")
@@ -208,6 +207,9 @@ except:
         f.write("use_remoteexec = false\n")
         f.write("use_reclient = false\n")
         f.write("use_siso = true\n")
+
+# We've updated the args and need to generate new build files.
+run("gn gen out/linux", "Failed to generate out/linux.")
 
 # Produce a full rewrite, and store individual patches below ~/scratch/patch_*
 run("./tools/clang/spanify/rewrite-multiple-platforms.sh")

@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "media/base/video_frame.h"
 #include "media/cdm/cdm_helpers.h"
 #include "media/cdm/simple_cdm_buffer.h"
@@ -34,7 +35,7 @@ class SimpleCdmVideoFrame final : public VideoFrameImpl {
   // VideoFrameImpl implementation.
   scoped_refptr<media::VideoFrame> TransformToVideoFrame(
       gfx::Size natural_size) override {
-    DCHECK(FrameBuffer());
+    CHECK(FrameBuffer(), base::NotFatalUntil::M140);
 
     cdm::Buffer* buffer = FrameBuffer();
     gfx::Size frame_size(Size().width, Size().height);

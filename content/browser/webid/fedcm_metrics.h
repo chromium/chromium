@@ -507,6 +507,9 @@ class CONTENT_EXPORT FedCmMetrics {
   // Records the page scroll Y-axis position upon account selection.
   void RecordAccountSelectionScrollPosition(const gfx::Point& scroll_position);
 
+  // Records the count of identity providers in the request
+  void RecordIdentityProvidersCount(int count);
+
   int session_id() { return session_id_; }
 
  private:
@@ -563,9 +566,6 @@ void RecordRawAccountsSize(int size);
 // Records the number of accounts received after applying login/domain hints
 // filter. If no account left, nothing will be recorded.
 void RecordReadyToShowAccountsSize(int size);
-
-// Records the count of identity providers in the request
-void RecordIdentityProvidersCount(int count);
 
 }  // namespace content
 

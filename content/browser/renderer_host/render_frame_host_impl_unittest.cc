@@ -508,48 +508,48 @@ class FakeLocalFrameWithBeforeUnload : public content::FakeLocalFrame {
     Init(test_host->GetRemoteAssociatedInterfaces());
   }
 
-  bool was_before_unload_called() const { return was_before_unload_called_; }
-
-  void RunBeforeUnloadCallback() {
-    ASSERT_TRUE(before_unload_callback_);
-    std::move(before_unload_callback_)
-        .Run(true, base::TimeTicks::Now(), base::TimeTicks::Now());
+  bool was_before_unload_sent_to_renderer() const {
+    return was_before_unload_sent_to_renderer_;
   }
 
   // FakeLocalFrame:
   void BeforeUnload(bool is_reload, BeforeUnloadCallback callback) override {
-    was_before_unload_called_ = true;
-    before_unload_callback_ = std::move(callback);
+    was_before_unload_sent_to_renderer_ = true;
   }
 
  private:
-  bool was_before_unload_called_ = false;
-  BeforeUnloadCallback before_unload_callback_;
+  bool was_before_unload_sent_to_renderer_ = false;
 };
 
 // Verifies BeforeUnload() is not sent to renderer if there is no before
 // unload handler present.
 TEST_F(RenderFrameHostImplTest, BeforeUnloadNotSentToRenderer) {
-  FakeLocalFrameWithBeforeUnload local_frame(contents()->GetPrimaryMainFrame());
+  TestRenderFrameHost* rfh = contents()->GetPrimaryMainFrame();
+  base::RunLoop run_loop;
+  bool before_unload_completed = false;
+  rfh->set_on_process_before_unload_completed_for_testing(
+      base::BindLambdaForTesting([&]() {
+        before_unload_completed = true;
+        EXPECT_TRUE(rfh->is_waiting_for_beforeunload_completion());
+        run_loop.Quit();
+      }));
+  FakeLocalFrameWithBeforeUnload local_frame(rfh);
   auto simulator = NavigationSimulatorImpl::CreateBrowserInitiated(
       GURL("https://example.com/simple.html"), contents());
   simulator->set_block_invoking_before_unload_completed_callback(true);
   simulator->Start();
-  EXPECT_TRUE(contents()
-                  ->GetPrimaryMainFrame()
-                  ->is_waiting_for_beforeunload_completion());
-  EXPECT_FALSE(local_frame.was_before_unload_called());
+  run_loop.Run();
+  EXPECT_TRUE(before_unload_completed);
+  EXPECT_FALSE(local_frame.was_before_unload_sent_to_renderer());
   // This is necessary to trigger FakeLocalFrameWithBeforeUnload to be bound.
-  contents()->GetPrimaryMainFrame()->FlushLocalFrameMessages();
+  rfh->FlushLocalFrameMessages();
   // This runs a MessageLoop, which also results in the PostTask() scheduled
   // completing.
   local_frame.FlushMessages();
-  EXPECT_FALSE(local_frame.was_before_unload_called());
+  EXPECT_FALSE(local_frame.was_before_unload_sent_to_renderer());
   // Because of the nested message loops run by the previous calls, the task
   // that RenderFrameHostImpl will have also completed.
-  EXPECT_FALSE(contents()
-                   ->GetPrimaryMainFrame()
-                   ->is_waiting_for_beforeunload_completion());
+  EXPECT_FALSE(rfh->is_waiting_for_beforeunload_completion());
 }
 
 class LoadingStateChangedDelegate : public WebContentsDelegate {

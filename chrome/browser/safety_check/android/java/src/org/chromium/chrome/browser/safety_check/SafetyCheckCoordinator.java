@@ -13,6 +13,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -185,7 +186,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
             SafetyCheckSettingsFragment settingsFragment, PropertyModel safetyCheckModel) {
         if (isAccountPasswordStorageUsed()) {
             String title =
-                    usesSplitStoresAndUPMForLocal(mPrefService)
+                    usesFullUpm()
                             ? mSettingsFragment.getString(
                                     R.string.safety_check_passwords_account_title,
                                     CoreAccountInfo.getEmailFrom(mSyncService.getAccountInfo()))
@@ -199,7 +200,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
         }
         if (isLocalPasswordStorageUsed()) {
             String title =
-                    usesSplitStoresAndUPMForLocal(mPrefService)
+                    usesFullUpm()
                             ? mSettingsFragment.getString(
                                     R.string.safety_check_passwords_local_title)
                             : mSettingsFragment.getString(R.string.safety_check_passwords_title);
@@ -247,7 +248,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
     @Override
     public boolean isLocalPasswordStorageUsed() {
         if (!PasswordManagerHelper.hasChosenToSyncPasswords(mSyncService)) return true;
-        if (usesSplitStoresAndUPMForLocal(mPrefService)) return true;
+        if (usesFullUpm()) return true;
         return false;
     }
 
@@ -255,5 +256,15 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
     public boolean isAccountPasswordStorageUsed() {
         if (PasswordManagerHelper.hasChosenToSyncPasswords(mSyncService)) return true;
         return false;
+    }
+
+    private boolean usesFullUpm() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)) {
+            // In this case, Safety Check is only used from the PhishGuard dialog if
+            // a phished credential is in both local and account stores, so UPM is definitely
+            // available.
+            return true;
+        }
+        return usesSplitStoresAndUPMForLocal(mPrefService);
     }
 }

@@ -379,6 +379,11 @@ void ZeroSuggestProvider::StartPrefetch(const AutocompleteInput& input) {
 
   TRACE_EVENT0("omnibox", "ZeroSuggestProvider::StartPrefetch");
 
+  if (!OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabledInContext(
+          input.current_page_classification())) {
+    return;
+  }
+
   auto [result_type, eligible] = GetResultTypeAndEligibility(client(), input);
   LogOmniboxZeroSuggestEligibility(result_type, eligible);
   if (!eligible) {

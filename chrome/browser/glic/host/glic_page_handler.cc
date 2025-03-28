@@ -369,12 +369,18 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     switch (options->highlightField) {
       case mojom::SettingsPageField::kOsHotkey:
         ::glic::OpenGlicKeyboardShortcutSetting(profile_);
+        base::RecordAction(
+            base::UserMetricsAction("GlicSessionSettingsOpened.OsHotkey"));
         break;
       case mojom::SettingsPageField::kOsEntrypointToggle:
         ::glic::OpenGlicOsToggleSetting(profile_);
+        base::RecordAction(base::UserMetricsAction(
+            "GlicSessionSettingsOpened.OsEntrypointToggle"));
         break;
       case mojom::SettingsPageField::kNone:  // Default value.
         ::glic::OpenGlicSettingsPage(profile_);
+        base::RecordAction(
+            base::UserMetricsAction("GlicSessionSettingsOpened.Default"));
         break;
     }
   }

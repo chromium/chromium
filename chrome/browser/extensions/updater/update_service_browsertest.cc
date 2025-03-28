@@ -104,6 +104,10 @@ class UpdateServiceTest : public ExtensionUpdateClientBaseTest {
   base::Value::Dict GetFirstApp(const base::Value::Dict& root) {
     return GetApp(root, 0);
   }
+
+  ExtensionUpdater* extension_updater() {
+    return ExtensionUpdater::Get(profile());
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(UpdateServiceTest, NoUpdate) {
@@ -124,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, NoUpdate) {
 
   extensions::ExtensionUpdater::CheckParams params;
   params.ids = {kExtensionId};
-  extension_service()->updater()->CheckNow(std::move(params));
+  extension_updater()->CheckNow(std::move(params));
 
   // UpdateService should emit a not-updated event.
   EXPECT_EQ(update_client::ComponentState::kUpToDate,
@@ -165,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, UpdateCheckError) {
 
   extensions::ExtensionUpdater::CheckParams params;
   params.ids = {kExtensionId};
-  extension_service()->updater()->CheckNow(std::move(params));
+  extension_updater()->CheckNow(std::move(params));
 
   // UpdateService should emit an error update event.
   EXPECT_EQ(update_client::ComponentState::kUpdateError,
@@ -209,18 +213,18 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, TwoUpdateCheckErrors) {
       InstallExtension(crx_path2, 1, ManifestLocation::kExternalPolicyDownload);
   ASSERT_TRUE(extension1 && extension2);
 
-  extensions::ExtensionUpdater::CheckParams params;
-
   base::RunLoop run_loop1;
-  params.ids = {extension1->id(), extension2->id()};
-  params.callback = run_loop1.QuitClosure();
-  extension_service()->updater()->CheckNow(std::move(params));
+  extensions::ExtensionUpdater::CheckParams params1;
+  params1.ids = {extension1->id(), extension2->id()};
+  params1.callback = run_loop1.QuitClosure();
+  extension_updater()->CheckNow(std::move(params1));
   run_loop1.Run();
 
   base::RunLoop run_loop2;
-  params.ids = {extension1->id()};
-  params.callback = run_loop2.QuitClosure();
-  extension_service()->updater()->CheckNow(std::move(params));
+  extensions::ExtensionUpdater::CheckParams params2;
+  params2.ids = {extension1->id()};
+  params2.callback = run_loop2.QuitClosure();
+  extension_updater()->CheckNow(std::move(params2));
   run_loop2.Run();
 
   ASSERT_EQ(2, update_interceptor_->GetCount())
@@ -271,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, SuccessfulUpdate) {
   extensions::ExtensionUpdater::CheckParams params;
   params.ids = {kExtensionId};
   params.callback = run_loop.QuitClosure();
-  extension_service()->updater()->CheckNow(std::move(params));
+  extension_updater()->CheckNow(std::move(params));
 
   ExpectProfileKeepAlive(true);
 
@@ -400,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, UninstallExtensionWhileUpdating) {
   extensions::ExtensionUpdater::CheckParams params;
   params.ids = {kExtensionId};
   params.callback = run_loop.QuitClosure();
-  extension_service()->updater()->CheckNow(std::move(params));
+  extension_updater()->CheckNow(std::move(params));
 
   // Uninstall the extension right before the message loop is executed to
   // emulate uninstalling an extension in the middle of an extension update.

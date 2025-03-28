@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -90,6 +91,8 @@ public class ReaderModeActionProviderTest {
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         setReaderModeBackendSignal(true);
         provider.getAction(mMockTab, accumulator);
+        ShadowLooper.idleMainLooper();
+
         Assert.assertTrue(accumulator.hasReaderMode());
     }
 
@@ -98,6 +101,8 @@ public class ReaderModeActionProviderTest {
         ReaderModeActionProvider provider = new ReaderModeActionProvider();
         // Get action before distillability is determined.
         provider.getAction(mMockTab, mMockSignalAccumulator);
+        ShadowLooper.idleMainLooper();
+
         verify(mMockSignalAccumulator, never()).setHasReaderMode(anyBoolean());
         verify(mMockSignalAccumulator, never()).notifySignalAvailable();
 
@@ -125,6 +130,8 @@ public class ReaderModeActionProviderTest {
                         .build();
         setReaderModeBackendSignal(true);
         provider.getAction(mMockTab, mMockSignalAccumulator);
+        ShadowLooper.idleMainLooper();
+
         verify(mMockSignalAccumulator).setHasReaderMode(true);
         verify(mMockSignalAccumulator).notifySignalAvailable();
         watcher.assertExpected();
@@ -148,6 +155,8 @@ public class ReaderModeActionProviderTest {
                         .build();
         setReaderModeBackendSignal(true);
         provider.getAction(mMockTab, mMockSignalAccumulator);
+        ShadowLooper.idleMainLooper();
+
         verify(mMockSignalAccumulator).setHasReaderMode(true);
         verify(mMockSignalAccumulator).notifySignalAvailable();
         watcher.assertExpected();
@@ -168,6 +177,8 @@ public class ReaderModeActionProviderTest {
 
         setReaderModeBackendSignal(true);
         provider.getAction(mMockTab, mMockSignalAccumulator);
+        ShadowLooper.idleMainLooper();
+
         verify(mMockSignalAccumulator).setHasReaderMode(false);
         verify(mMockSignalAccumulator).notifySignalAvailable();
     }
@@ -188,6 +199,8 @@ public class ReaderModeActionProviderTest {
 
         setReaderModeBackendSignal(true);
         provider.getAction(mMockTab, mMockSignalAccumulator);
+        ShadowLooper.idleMainLooper();
+
         verify(mMockSignalAccumulator).setHasReaderMode(true);
         verify(mMockSignalAccumulator).notifySignalAvailable();
     }
@@ -197,6 +210,8 @@ public class ReaderModeActionProviderTest {
         ReaderModeActionProvider provider = new ReaderModeActionProvider();
         provider.getAction(mMockTab, mMockSignalAccumulator);
         provider.destroy();
+        ShadowLooper.idleMainLooper();
+
         setReaderModeBackendSignal(true);
         verify(mMockSignalAccumulator, never()).setHasReaderMode(anyBoolean());
         verify(mMockSignalAccumulator, never()).notifySignalAvailable();

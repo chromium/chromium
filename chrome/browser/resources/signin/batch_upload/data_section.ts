@@ -73,24 +73,24 @@ export class DataSectionElement extends DataSectionElementBase {
   }
 
   // Data to be displayed.
-  dataContainer: DataContainer = createEmptyContainer();
+  accessor dataContainer: DataContainer = createEmptyContainer();
 
   // Title of the section, updated on each item checkbox selection based on the
   // number of selected items.
-  protected title_: string = '';
+  protected accessor title_: string = '';
   // Computed once on page load as it does not contain the selected item count.
-  protected titleWithoutCount_: string = '';
+  protected accessor titleWithoutCount_: string = '';
 
   // If the collapse section is exapnded.
-  protected expanded_: boolean = false;
+  protected accessor expanded_: boolean = false;
   // If the section toggle is off.
-  protected disabled_: boolean = false;
+  protected accessor disabled_: boolean = false;
 
   // Map containing the ids of the selected items in the section. Initialized
   // with all the ids of the section.
   // To be used as the output of the section as well for the parent element.
   dataSelected: Set<number> = new Set<number>();
-  protected dataSelectedCount_: number = 0;
+  protected accessor dataSelectedCount_: number = 0;
 
   // Animation variables used to update the main view height based on the
   // collapse animation duration. Initialized to 0 and gets their values in

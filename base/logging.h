@@ -316,15 +316,15 @@ BASE_EXPORT int GetVlogLevelHelper(const char* file_start, size_t N);
 // Gets the current vlog level for the given file (usually taken from __FILE__).
 template <size_t N>
 int GetVlogLevel(const char (&file)[N]) {
-  // Disable runtime VLOG()s in official builds. This saves ~135k on the
-  // android-binary-size bot in crrev.com/c/6344673. Parts of the code can, and
-  // do, override ENABLED_VLOG_LEVEL to collect logs in the wild. The rest is
-  // dead-code stripped.
-#if defined(OFFICIAL_BUILD) && BUILDFLAG(IS_ANDROID)
+  // Disable runtime VLOG()s in official non-DCHECK builds. This saves ~135k on
+  // the android-binary-size bot in crrev.com/c/6344673. Parts of the code can,
+  // and do, override ENABLED_VLOG_LEVEL to collect logs in the wild. The rest
+  // is dead-code stripped.
+#if defined(OFFICIAL_BUILD) && !DCHECK_IS_ON() && BUILDFLAG(IS_ANDROID)
   return -1;
 #else
   return GetVlogLevelHelper(file, N);
-#endif  // defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(OFFICIAL_BUILD) && !DCHECK_IS_ON() && BUILDFLAG(IS_ANDROID)
 }
 
 // Sets the common items you want to be prepended to each log message.

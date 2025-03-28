@@ -374,6 +374,19 @@ TEST_F(AppMenuModelTest, DeclutterTabsItem) {
   EXPECT_EQ(1, model.log_metrics_count_);
 }
 
+#if BUILDFLAG(ENABLE_GLIC)
+TEST_F(AppMenuModelTest, GlicItem) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      {features::kGlic, features::kTabstripComboButton}, {});
+
+  TestLogMetricsAppMenuModel model(this, browser());
+  model.Init();
+  model.ExecuteCommand(IDC_OPEN_GLIC, 0);
+  EXPECT_EQ(1, model.log_metrics_count_);
+}
+#endif
+
 TEST_F(AppMenuModelTest, ModelHasIcons) {
   // Skip the items that are either not supposed to have an icon, or are not
   // ready to be tested. Remove items once they're ready for testing.

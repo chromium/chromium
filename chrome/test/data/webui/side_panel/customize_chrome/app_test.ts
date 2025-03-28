@@ -302,6 +302,7 @@ suite('AppTest', () => {
           assertEquals(customizeChromeApp, document.activeElement);
 
           callbackRouter.attachedTabStateUpdated(false);
+          callbackRouter.setThemeEditable(false);
           await microtasksFinished();
 
           assertTrue(

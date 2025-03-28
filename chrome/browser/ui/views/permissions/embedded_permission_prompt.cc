@@ -229,18 +229,26 @@ void EmbeddedPermissionPrompt::StopAllowing() {
 void EmbeddedPermissionPrompt::ShowSystemSettings() {
   const auto& requests = delegate()->Requests();
   CHECK_GT(requests.size(), 0U);
-  // TODO(crbug.com/40275129) Chrome always shows the first permission in a
-  // group, as it is not possible to open multiple System Setting pages. Figure
-  // out a better way to handle this scenario.
+
   prompt_model_->RecordOsMetrics(permissions::OsScreenAction::kSystemSettings);
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kSystemSettings);
-  system_permission_settings::OpenSystemSettings(
-      delegate()->GetAssociatedWebContents(),
-      Requests()[0]->GetContentSettingsType());
+  for (const auto& request : requests) {
+    if (system_permission_settings::IsDenied(
+            request->GetContentSettingsType())) {
+      system_permission_settings::OpenSystemSettings(
+          delegate()->GetAssociatedWebContents(),
+          request->GetContentSettingsType());
+      return;
+    }
+  }
+
+  // Since we don't observe system level permission status changes, there is a
+  // possibility that all permission settings have been granted at this point.
+  SystemPermissionsNoLongerDenied();
 }
 
-void EmbeddedPermissionPrompt::SystemPermissionsAllowed() {
+void EmbeddedPermissionPrompt::SystemPermissionsNoLongerDenied() {
   CHECK(prompt_model_->prompt_variant() ==
         permissions::EmbeddedPermissionPromptFlowModel::Variant::
             kOsSystemSettings);

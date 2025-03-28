@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -60,31 +61,6 @@ enum : uint32_t {
 // used instead of std::atomic because the latter can create global ctors
 // and dtors.
 subtle::AtomicWord g_histogram_allocator = 0;
-
-// Take an array of range boundaries and create a proper BucketRanges object
-// which is returned to the caller. A return of nullptr indicates that the
-// passed boundaries are invalid.
-std::unique_ptr<BucketRanges> CreateRangesFromData(
-    HistogramBase::Sample32* ranges_data,
-    uint32_t ranges_checksum,
-    size_t count) {
-  // To avoid racy destruction at shutdown, the following may be leaked.
-  std::unique_ptr<BucketRanges> ranges(new BucketRanges(count));
-  DCHECK_EQ(count, ranges->size());
-  for (size_t i = 0; i < count; ++i) {
-    if (i > 0 && UNSAFE_TODO(ranges_data[i] <= ranges_data[i - 1])) {
-      return nullptr;
-    }
-    ranges->set_range(i, UNSAFE_TODO(ranges_data[i]));
-  }
-
-  ranges->ResetChecksum();
-  if (ranges->checksum() != ranges_checksum) {
-    return nullptr;
-  }
-
-  return ranges;
-}
 
 // Calculate the number of bytes required to store all of a histogram's
 // "counts". This will return zero (0) if `bucket_count` is not valid.
@@ -598,33 +574,37 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::CreateHistogram(
   // changed at any moment by a malicious actor that shares access. The local
   // values are validated below and then used to create the histogram, knowing
   // they haven't changed between validation and use.
-  int32_t histogram_type = histogram_data_ptr->histogram_type;
-  int32_t histogram_flags = histogram_data_ptr->flags;
-  int32_t histogram_minimum = histogram_data_ptr->minimum;
-  int32_t histogram_maximum = histogram_data_ptr->maximum;
-  uint32_t histogram_bucket_count = histogram_data_ptr->bucket_count;
-  uint32_t histogram_ranges_ref = histogram_data_ptr->ranges_ref;
-  uint32_t histogram_ranges_checksum = histogram_data_ptr->ranges_checksum;
+  const int32_t histogram_type = histogram_data_ptr->histogram_type;
+  const int32_t histogram_flags = histogram_data_ptr->flags;
+  const int32_t histogram_minimum = histogram_data_ptr->minimum;
+  const int32_t histogram_maximum = histogram_data_ptr->maximum;
+  const uint32_t histogram_bucket_count = histogram_data_ptr->bucket_count;
+  const uint32_t histogram_ranges_ref = histogram_data_ptr->ranges_ref;
+  const uint32_t histogram_ranges_checksum =
+      histogram_data_ptr->ranges_checksum;
 
   size_t allocated_bytes = 0;
-  HistogramBase::Sample32* ranges_data =
+  const HistogramBase::Sample32* const ranges_data =
       memory_allocator_->GetAsArray<HistogramBase::Sample32>(
           histogram_ranges_ref, kTypeIdRangesArray,
           PersistentMemoryAllocator::kSizeAny, &allocated_bytes);
-
+  const size_t ranges_size = histogram_bucket_count + 1;
   const uint32_t max_buckets =
       std::numeric_limits<uint32_t>::max() / sizeof(HistogramBase::Sample32);
-  size_t required_bytes =
-      (histogram_bucket_count + 1) * sizeof(HistogramBase::Sample32);
+
+  const size_t required_bytes = ranges_size * sizeof(HistogramBase::Sample32);
   if (!ranges_data || histogram_bucket_count < 2 ||
       histogram_bucket_count >= max_buckets ||
       allocated_bytes < required_bytes) {
     return nullptr;
   }
 
-  std::unique_ptr<const BucketRanges> created_ranges = CreateRangesFromData(
-      ranges_data, histogram_ranges_checksum, histogram_bucket_count + 1);
-  if (!created_ranges || created_ranges->size() != histogram_bucket_count + 1 ||
+  auto created_ranges = std::make_unique<const BucketRanges>(
+      // SAFETY: We have validated above that `ranges_size` elements can be read
+      // from the allocation holding `ranges_data`.
+      UNSAFE_BUFFERS(base::span(ranges_data, ranges_size)));
+  if (!created_ranges || created_ranges->size() != ranges_size ||
+      created_ranges->checksum() != histogram_ranges_checksum ||
       created_ranges->range(1) != histogram_minimum ||
       created_ranges->range(histogram_bucket_count - 1) != histogram_maximum) {
     return nullptr;

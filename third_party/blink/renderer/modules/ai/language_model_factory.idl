@@ -1,0 +1,38 @@
+// Copyright 2025 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/webmachinelearning/prompt-api
+
+// The `LanguageModelFactory` is no longer needed from the web platform JS API,
+// but we need to keep this IDL for the extension API.
+
+[
+  Exposed=(Window,Worker),
+  SecureContext,
+  RuntimeEnabled=AIPromptAPI
+]
+interface LanguageModelFactory {
+  [
+    MeasureAs=LanguageModel_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<LanguageModel> create(
+    optional LanguageModelCreateOptions options = {}
+  );
+  [
+    MeasureAs=LanguageModel_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AIAvailability> availability(
+    optional LanguageModelCreateCoreOptions options = {}
+  );
+  [
+    MeasureAs=LanguageModel_Params,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<LanguageModelParams?> params();
+};

@@ -36,7 +36,7 @@ class OnDeviceModelFeatureAdapter final
  public:
   // Constructs an adapter from a configuration proto.
   explicit OnDeviceModelFeatureAdapter(
-      proto::OnDeviceModelExecutionFeatureConfig&& config);
+      proto::OnDeviceModelExecutionFeatureConfig config);
 
   // Constructs the model input from `request`.
   std::optional<SubstitutionResult> ConstructInputString(

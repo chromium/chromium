@@ -147,6 +147,7 @@ export interface MetricsBrowserProxy {
   recordSpeechError(error: ReadAnythingSpeechError): void;
   recordSpeechPlaybackLength(time: number): void;
   recordSpeechSettingsChange(settingsChange: ReadAloudSettingsChange): void;
+  recordSpeechStopSource(source: number): void;
   recordTextSettingsChange(settingsChange: ReadAnythingSettingsChange): void;
   recordTime(umaName: string, time: number): void;
   recordVoiceSpeed(index: number): void;
@@ -156,6 +157,10 @@ export interface MetricsBrowserProxy {
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
   incrementMetricCount(umaName: string) {
     chrome.readingMode.incrementMetricCount(umaName);
+  }
+
+  recordSpeechStopSource(source: number) {
+    chrome.readingMode.logSpeechStop(source);
   }
 
   recordSpeechError(error: ReadAnythingSpeechError) {

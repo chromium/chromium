@@ -22,6 +22,9 @@ export class ExtensionPermission extends PolymerElement {
     };
   }
 
+  permission: string;
+  detail: string;
+
   showDetails() {
     this.setDetailsVisibility(true);
   }

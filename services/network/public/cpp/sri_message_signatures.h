@@ -69,7 +69,7 @@ std::optional<mojom::BlockedByResponseReason>
 MaybeBlockResponseForSRIMessageSignature(
     const GURL& request_url,
     const network::mojom::URLResponseHead& response,
-    bool checks_forced_by_initiator,
+    const std::vector<std::string>& expected_public_keys,
     const raw_ptr<mojom::DevToolsObserver> devtools_observer = nullptr,
     const std::string& devtools_request_id = std::string());
 

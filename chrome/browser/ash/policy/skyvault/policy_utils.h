@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_SKYVAULT_POLICY_UTILS_H_
 #define CHROME_BROWSER_ASH_POLICY_SKYVAULT_POLICY_UTILS_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
+#include "base/time/time.h"
 
 class Profile;
 
@@ -135,6 +138,9 @@ bool DownloadToTemp(Profile* profile);
 
 // Returns the path of MyFiles folder for `profile`.
 base::FilePath GetMyFilesPath(Profile* profile);
+
+// Returns the scheduled start time for local file migration or deletion.
+std::optional<base::Time> GetMigrationStartTime(Profile* profile);
 
 }  // namespace policy::local_user_files
 

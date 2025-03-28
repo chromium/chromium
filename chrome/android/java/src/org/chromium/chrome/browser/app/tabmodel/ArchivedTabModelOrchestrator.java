@@ -108,14 +108,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                 public void onDeclutterPassCompleted() {
                     saveState();
                 }
-
-                @Override
-                public void onArchivePersistedTabDataCreated() {
-                    if (mTriggerAutodeleteAfterDataCreated) {
-                        mTabArchiver.doAutodeletePass();
-                        mTriggerAutodeleteAfterDataCreated = false;
-                    }
-                }
             };
 
     private final Profile mProfile;
@@ -146,7 +138,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private CallbackController mCallbackController = new CallbackController();
     private ObservableSupplier<Integer> mUnderlyingTabCountSupplier;
     private @Nullable HistoricalTabModelObserver mHistoricalTabModelObserver;
-    private boolean mTriggerAutodeleteAfterDataCreated;
 
     /**
      * Returns the ArchivedTabModelOrchestrator that corresponds to the given profile. Must be
@@ -430,11 +421,15 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                             mTabArchiveSettings.setArchiveTimeDeltaHours(archiveTimeHours);
                         }
                         resumeSaveTabList(orchestrator);
+                    }
+
+                    @Override
+                    public void onArchivePersistedTabDataCreated() {
+                        mTabArchiver.doAutodeletePass();
                         mTabArchiver.removeObserver(this);
                     }
                 });
 
-        mTriggerAutodeleteAfterDataCreated = true;
         mTabArchiver.doArchivePass(orchestrator.getTabModelSelector());
     }
 

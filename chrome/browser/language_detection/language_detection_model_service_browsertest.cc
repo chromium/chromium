@@ -114,7 +114,7 @@ class LanguageDetectionModelServiceDisabledBrowserTest
                      base::StringPrintf(R"(
         (async () => {
             try {
-            return await ai.languageDetector.availability();
+            return await LanguageDetector.availability();
             } catch (e) {
             return e.toString();
             }

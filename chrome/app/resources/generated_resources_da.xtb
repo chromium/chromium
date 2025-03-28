@@ -404,6 +404,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1264956950255940376">Knib det venstre øje sammen</translation>
 <translation id="1265094893042958831">Genererer forslag til denne side…</translation>
 <translation id="1265279736024499987">Dine apps og indstillinger synkroniseres på tværs af alle de ChromeOS Flex-enheder, hvor du er logget ind med din Google-konto. Du kan se muligheder for synkronisering af browseren i <ph name="LINK_BEGIN" />indstillingerne for Chrome<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Når du har taget et screenshot eller søgt på skærmen, kan du få vist flere handlinger, f.eks. tilføjelse i Kalender, oprettelse af Google-dokumenter og meget mere.</translation>
 <translation id="126710816202626562">Sprog, der skal oversættes til:</translation>
 <translation id="1267649802567297774">Billede <ph name="INDEX" /> af <ph name="SUBJECT" /> i stilen <ph name="STYLE" /> med stemningen <ph name="MOOD" /> er genereret.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1576,9 +1577,9 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2081816110395725788">Inaktiv tilstand ved batteribrug</translation>
 <translation id="2082187087049518845">Opret en gruppe med fanen</translation>
 <translation id="2082510809738716738">Vælg en temafarve</translation>
-<translation id="208547068587548667">Log ind på <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Prøv igen</translation>
 <translation id="208634871997892083">Konstant VPN</translation>
+<translation id="208654914566977272">Foreslåede handlinger, når du søger på skærmen</translation>
 <translation id="2087822576218954668">Udskrift: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Du kan først tilmelde dig, når du har installeret <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Indbygget TrackPoint</translation>
@@ -4010,7 +4011,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3778740492972734840">&amp;Udviklerværktøjer</translation>
 <translation id="3778868487658107119">Stil den spørgsmål. Giv den opgaver. Den er dit personlige Google, der altid er parat til at hjælpe dig.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{din browserhistorik for # website}one{din browserhistorik for # website}other{din browserhistorik for # websites}}</translation>
-<translation id="3779244863011082655">Brug en anden <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-konto</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> kan ikke tjekke dine adgangskoder i forbindelse med brud på datasikkerheden. Prøv igen senere.</translation>
 <translation id="3781742599892759500">Adgang til mikrofonen i Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5514,6 +5514,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4848191975108266266">Google Assistent-funktionen "Hey Google"</translation>
 <translation id="4849286518551984791">UTC/GMT (Coordinated Universal Time)</translation>
 <translation id="4849517651082200438">Installer ikke</translation>
+<translation id="4849731766219625109">Brug din <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-konto</translation>
 <translation id="485053257961878904">Synkronisering af notifikationer kunne ikke konfigureres</translation>
 <translation id="4850548109381269495">Tjek din internetforbindelse på begge enheder, og aktivér Bluetooth. Prøv derefter igen.</translation>
 <translation id="4850669014075537160">Rulning</translation>
@@ -5702,6 +5703,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4979510648199782334">Konfigurationen af Microsoft 365 er fuldført</translation>
 <translation id="4980805016576257426">Denne udvidelse indeholder malware.</translation>
 <translation id="4983159853748980742">Din adgangskode blev ikke delt. Tjek din internetforbindelse, og sørg for, at du er logget ind i Chrome. Prøv derefter igen.</translation>
+<translation id="498624032394115435">Alle med linket kan redigere alle faner.</translation>
 <translation id="4986706507552097681">Du kan altid vælge, hvad der skal synkroniseres, i indstillingerne. Google kan personligt tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="4986728572522335985">Denne handling sletter alle data på sikkerhedsnøglen, bl.a. pinkoden</translation>
 <translation id="4987944280765486504">Din Chromebook genstarter, når downloaden er fuldført, og du kan fortsætte konfigurationen.</translation>
@@ -8313,7 +8315,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6873571253135628430">Rediger websitetilladelser</translation>
 <translation id="6876155724392614295">Cykel</translation>
 <translation id="6876469544038980967">Ikke nyttig</translation>
-<translation id="687838958001010630">Alle med linket kan redigere alle faner</translation>
 <translation id="6878422606530379992">Der er givet adgang til sensorer</translation>
 <translation id="6878862640969460273">Liggende format</translation>
 <translation id="6880587130513028875">Billeder blev blokeret på denne side.</translation>

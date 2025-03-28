@@ -406,6 +406,7 @@
 <translation id="1264956950255940376">Зіщулити ліве око</translation>
 <translation id="1265094893042958831">Створення пропозицій для цієї сторінки…</translation>
 <translation id="1265279736024499987">Ваші додатки та налаштування буде синхронізовано на всіх пристроях з ОС Chrome Flex, де ви ввійшли в обліковий запис Google. Щоб переглянути параметри синхронізації веб-переглядача, відкрийте <ph name="LINK_BEGIN" />налаштування Chrome<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Після створення знімка екрана або пошуку на екрані показувати додаткові дії, наприклад додавання в Календар, створення документів Google тощо.</translation>
 <translation id="126710816202626562">Мова перекладу:</translation>
 <translation id="1267649802567297774">Створене зображення <ph name="INDEX" /> об’єкта "<ph name="SUBJECT" />". Стиль: <ph name="STYLE" />. Настрій: <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1577,9 +1578,9 @@
 <translation id="2081816110395725788">Пристрій неактивний і не заряджається</translation>
 <translation id="2082187087049518845">Додати вкладку в групу</translation>
 <translation id="2082510809738716738">Виберіть колір теми</translation>
-<translation id="208547068587548667">Увійти на сайті <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Повторіть спробу</translation>
 <translation id="208634871997892083">VPN завжди ввімкнено</translation>
+<translation id="208654914566977272">Рекомендовані дії під час пошуку на екрані</translation>
 <translation id="2087822576218954668">Друк: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Зареєструватися можна лише після встановлення <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Вбудований джойстик TrackPoint</translation>
@@ -4011,7 +4012,6 @@
 <translation id="3778740492972734840">&amp;Інструменти розробника</translation>
 <translation id="3778868487658107119">Ставте запитання. Давайте завдання. Ваш персональний Google Асистент завжди готовий допомогти.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{історія вебперегляду з # сайту}one{історія вебперегляду з # сайту}few{історія вебперегляду з # сайтів}many{історія вебперегляду з # сайтів}other{історія вебперегляду з # сайту}}</translation>
-<translation id="3779244863011082655">Вибрати інший обліковий запис <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> не може перевірити, чи було розкрито ваші паролі через порушення безпеки даних. Спробуйте пізніше.</translation>
 <translation id="3781742599892759500">Доступ до мікрофона в Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5514,6 +5514,7 @@
 <translation id="4848191975108266266">Команда "Ok Google" у Google Асистенті</translation>
 <translation id="4849286518551984791">Універсальний час (UTC/GMT)</translation>
 <translation id="4849517651082200438">Не встановлювати</translation>
+<translation id="4849731766219625109">Використовувати обліковий запис <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="485053257961878904">Не вдалося налаштувати синхронізацію сповіщень</translation>
 <translation id="4850548109381269495">Перевірте інтернет-з’єднання на обох пристроях і ввімкніть Bluetooth. Потім повторіть спробу.</translation>
 <translation id="4850669014075537160">Прокручування</translation>
@@ -5702,6 +5703,7 @@
 <translation id="4979510648199782334">Налаштування Microsoft 365 завершено</translation>
 <translation id="4980805016576257426">Це розширення містить зловмисне програмне забезпечення.</translation>
 <translation id="4983159853748980742">Не вдалося поділитися паролем. Перевірте інтернет-з’єднання й переконайтеся, що ви ввійшли в Chrome. Потім повторіть спробу.</translation>
+<translation id="498624032394115435">Кожен, хто має посилання, може редагувати всі вкладки.</translation>
 <translation id="4986706507552097681">Ви можете будь-коли вибрати дані для синхронізації в налаштуваннях. Google може персоналізувати Пошук та інші сервіси на основі вашої історії.</translation>
 <translation id="4986728572522335985">Усі дані на ключі безпеки (зокрема, PIN-код) буде видалено</translation>
 <translation id="4987944280765486504">Щойно завантаження буде завершено, пристрій Chromebook перезапуститься, і ви зможете продовжити налаштування.</translation>
@@ -8313,7 +8315,6 @@
 <translation id="6873571253135628430">Змінити дозволи для сайтів</translation>
 <translation id="6876155724392614295">Велосипед</translation>
 <translation id="6876469544038980967">Не корисно</translation>
-<translation id="687838958001010630">Кожен, хто має посилання, може редагувати всі вкладки</translation>
 <translation id="6878422606530379992">Використання датчиків дозволено</translation>
 <translation id="6878862640969460273">Горизонтальна</translation>
 <translation id="6880587130513028875">На цій сторінці зображення заблоковано.</translation>

@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,7 +22,7 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -97,14 +98,10 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
-    public @GoogleServiceAuthError.State int getAuthError() {
+    public GoogleServiceAuthError getAuthError() {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
-        int authErrorCode = SyncServiceImplJni.get().getAuthError(mSyncServiceAndroidBridge);
-        if (authErrorCode < 0 || authErrorCode >= GoogleServiceAuthError.State.NUM_ENTRIES) {
-            throw new IllegalArgumentException("No state for code: " + authErrorCode);
-        }
-        return authErrorCode;
+        return SyncServiceImplJni.get().getAuthError(mSyncServiceAndroidBridge);
     }
 
     @Override
@@ -610,7 +607,8 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
 
         void getAllNodes(long nativeSyncServiceAndroidBridge, Callback<JSONArray> callback);
 
-        int getAuthError(long nativeSyncServiceAndroidBridge);
+        @JniType("GoogleServiceAuthError")
+        GoogleServiceAuthError getAuthError(long nativeSyncServiceAndroidBridge);
 
         boolean hasUnrecoverableError(long nativeSyncServiceAndroidBridge);
 

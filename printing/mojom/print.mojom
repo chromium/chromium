@@ -61,6 +61,17 @@ enum DuplexMode {
   kShortEdge,
 };
 
+// Print job print scaling values.
+[EnableIf=is_chromeos]
+enum PrintScalingType {
+  kUnknownPrintScalingType = -1,
+  kAuto,
+  kAutoFit,
+  kFit,
+  kFill,
+  kNone,
+};
+
 // Struct that holds margin and content area sizes of a page. Units are
 // arbitrary and can be chosen by the programmer.
 struct PageSizeMargins {

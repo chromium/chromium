@@ -71,7 +71,7 @@ class BluetoothPowerControllerImplTest : public testing::Test {
                       bool is_new_profile = false) {
     const user_manager::User* user;
     if (is_user_kiosk) {
-      user = user_manager::TestHelper(*fake_user_manager_)
+      user = user_manager::TestHelper(fake_user_manager_.Get())
                  .AddKioskAppUser(display_email);
     } else {
       user = fake_user_manager_->AddGaiaUser(

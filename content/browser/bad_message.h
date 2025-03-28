@@ -350,6 +350,7 @@ enum BadMessageReason {
   RFH_INITIATOR_BASE_URL_IS_EMPTY = 321,
   MDDH_SELECT_AUDIO_OUTPUT_WITHOUT_FEATURE = 322,
   MDDH_SET_PREFERRED_SINK_ID_WITHOUT_FEATURE = 323,
+  MH_MULTIPLE_MIDI_SESSIONS = 324,
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
   // reason. After making changes, you MUST update histograms.xml by running:

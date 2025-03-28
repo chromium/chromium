@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/digital_credentials/digital_identity_low_risk_origins.h"
@@ -124,6 +125,7 @@ void DigitalIdentityProviderAndroid::OnReceive(
   std::move(callback_).Run(
       (status_for_metrics == RequestStatusForMetrics::kSuccess)
           ? base::expected<DigitalCredential, RequestStatusForMetrics>(
-                DigitalCredential(std::move(protocol), std::move(result)))
+                DigitalCredential(std::move(protocol),
+                                  base::JSONReader::Read(result)))
           : base::unexpected(status_for_metrics));
 }

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
@@ -33,7 +34,6 @@ class ImageResourceObserver;
 class LayoutBox;
 class Node;
 struct PaintInfo;
-struct PhysicalOffset;
 struct PhysicalRect;
 
 // Base class for box painting. Has no dependencies on the layout tree and thus

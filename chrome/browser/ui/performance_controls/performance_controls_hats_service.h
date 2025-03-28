@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_CONTROLS_HATS_SERVICE_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_CONTROLS_HATS_SERVICE_H_
 
+#include <optional>
+#include <string>
+
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
@@ -18,6 +21,16 @@ class PerformanceControlsHatsService
       public performance_manager::user_tuning::BatterySaverModeManager::
           Observer {
  public:
+  // Names of Product Specific Data bit entries.
+  static constexpr char kBatterySaverPSDName[] = "Battery Saver Mode Enabled";
+  static constexpr char kMemorySaverPSDName[] = "Memory Saver Mode Enabled";
+  static constexpr char kUniformSamplePSDName[] = "Selected for Uniform Sample";
+
+  // Names of Product Specific Data string entries.
+  static constexpr char kChannelPSDName[] = "Channel";
+  static constexpr char kPerformanceSegmentPSDName[] =
+      "Performance Characteristics (OS and Total Memory)";
+
   explicit PerformanceControlsHatsService(Profile* profile);
   ~PerformanceControlsHatsService() override;
 
@@ -46,15 +59,28 @@ class PerformanceControlsHatsService
     delay_before_ppm_survey_ = delay;
   }
 
+  // Overrides the amount of physical memory reported for testing.
+  void SetAmountOfPhysicalMemoryMBForTesting(uint64_t memory_mb) {
+    memory_mb_for_testing_ = memory_mb;
+  }
+
  private:
   // Returns true if the PPM survey can be shown at this time.
   bool MayLaunchPPMSurvey() const;
+
+  // Returns the name of the segment this client falls into for the PPM survey,
+  // or an empty string if it doesn't fall into any defined survey segment.
+  std::string GetPPMSurveySegmentName();
 
   raw_ptr<Profile> profile_;
 
   // Delay before showing the PPM UMA survey. Randomly generated when the
   // service is created.
   base::TimeDelta delay_before_ppm_survey_;
+
+  // A value to use instead of calling base::SysInfo::AmountOfPhysicalMemoryMB()
+  // in tests.
+  std::optional<uint64_t> memory_mb_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_CONTROLS_HATS_SERVICE_H_

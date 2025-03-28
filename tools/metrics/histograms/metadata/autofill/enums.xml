@@ -364,6 +364,15 @@ chromium-metrics-reviews@google.com.
       label="CVC auth temporarily failed due to the card being expired"/>
 </enum>
 
+<!-- TODO(crbug.com/316143236): Remove when debugging is complete. -->
+
+<enum name="AutofillDataListEvents">
+  <int value="0" label="Data list suggestions were attemped to be displayed"/>
+  <int value="1" label="The rendered has parsed data list options"/>
+  <int value="2" label="Data list suggestions were updated"/>
+  <int value="3" label="Data list suggestions were inserted"/>
+</enum>
+
 <enum name="AutofillDataUtilization">
   <int value="0" label="Not autofilled"/>
   <int value="1" label="Autofilled"/>

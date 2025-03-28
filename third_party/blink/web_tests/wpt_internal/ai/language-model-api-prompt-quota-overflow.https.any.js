@@ -6,7 +6,7 @@ promise_test(async () => {
   await ensureLanguageModel();
 
   // Start a new session.
-  const session = await ai.languageModel.create();
+  const session = await LanguageModel.create();
   // Make sure there is something to evict.
   await session.prompt("Please write a sentence in English.");
   // Register the event listener.

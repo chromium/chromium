@@ -569,14 +569,6 @@ MetadataFilterPredicate TraceLog::GetMetadataFilterPredicate() const {
   return metadata_filter_predicate_;
 }
 
-void TraceLog::SetRecordHostAppPackageName(bool record_host_app_package_name) {
-  record_host_app_package_name_ = record_host_app_package_name;
-}
-
-bool TraceLog::ShouldRecordHostAppPackageName() const {
-  return record_host_app_package_name_;
-}
-
 TraceConfig TraceLog::GetCurrentTraceConfig() const {
   const auto chrome_config =
       GetCurrentTrackEventDataSourceConfig().chrome_config();

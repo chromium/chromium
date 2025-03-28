@@ -9,6 +9,7 @@
 
 #import <string>
 
+@protocol AutocompleteSuggestion;
 @class OmniboxAutocompleteController;
 class OmniboxController;
 @protocol OmniboxTextControllerDelegate;
@@ -80,6 +81,12 @@ class OmniboxViewIOS;
 
 /// Called when the backspace button is pressed in the Omnibox text field.
 - (void)onDeleteBackward;
+
+#pragma mark - Omnibox popup event
+
+/// Previews `suggestion` in the Omnibox. Called when a suggestion is
+/// highlighted in the popup.
+- (void)previewSuggestion:(id<AutocompleteSuggestion>)suggestion;
 
 @end
 

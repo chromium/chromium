@@ -48,9 +48,8 @@ BASE_FEATURE(kUseCopyToGpuMemoryBufferAsync,
 class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
  public:
   explicit Context(base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
-                       context_provider,
-                   gpu::GpuMemoryBufferManager* gmb_manager)
-      : weak_context_provider_(context_provider), gmb_manager_(gmb_manager) {}
+                       context_provider)
+      : weak_context_provider_(context_provider) {}
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       const gfx::Size& size,
@@ -97,7 +96,6 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
 
   base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
       weak_context_provider_;
-  raw_ptr<gpu::GpuMemoryBufferManager> gmb_manager_;
 };
 
 }  // namespace
@@ -105,17 +103,9 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
 WebGraphicsContext3DVideoFramePool::WebGraphicsContext3DVideoFramePool(
     base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
         weak_context_provider)
-    : WebGraphicsContext3DVideoFramePool(
-          std::move(weak_context_provider),
-          SharedGpuContext::GetGpuMemoryBufferManager()) {}
-
-WebGraphicsContext3DVideoFramePool::WebGraphicsContext3DVideoFramePool(
-    base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
-        weak_context_provider,
-    gpu::GpuMemoryBufferManager* gmb_manager)
     : weak_context_provider_(weak_context_provider),
       pool_(media::RenderableGpuMemoryBufferVideoFramePool::Create(
-          std::make_unique<Context>(weak_context_provider, gmb_manager))) {}
+          std::make_unique<Context>(weak_context_provider))) {}
 
 WebGraphicsContext3DVideoFramePool::~WebGraphicsContext3DVideoFramePool() =
     default;

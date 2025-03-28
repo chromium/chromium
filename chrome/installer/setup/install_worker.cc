@@ -23,7 +23,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/enterprise_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -637,11 +636,6 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
   std::wstring brand;
   if (!GoogleUpdateSettings::GetBrand(&brand))
     return;
-
-  // Only update if this machine is a managed device, including domain join.
-  if (!base::IsManagedDevice()) {
-    return;
-  }
 
   std::wstring new_brand = GetUpdatedBrandCode(brand);
   // Rewrite the old brand so that the next step can potentially apply both

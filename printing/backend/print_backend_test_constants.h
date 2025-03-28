@@ -32,6 +32,9 @@ struct OptionalSampleCapabilities {
 #if BUILDFLAG(IS_CHROMEOS)
   bool pin_supported = false;
   AdvancedCapabilities advanced_capabilities;
+  std::vector<mojom::PrintScalingType> print_scaling_types;
+  mojom::PrintScalingType print_scaling_type_default =
+      mojom::PrintScalingType::kUnknownPrintScalingType;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_WIN)
   std::optional<PageOutputQuality> page_output_quality;
@@ -147,10 +150,19 @@ inline const PrinterSemanticCapsAndDefaults::MediaType kDefaultMediaType =
     kMediaTypePlain;
 #if BUILDFLAG(IS_CHROMEOS)
 inline constexpr bool kPinSupported = true;
+inline constexpr std::array<mojom::PrintScalingType, 6> kPrintScalingTypes{
+    mojom::PrintScalingType::kAuto,
+    mojom::PrintScalingType::kAutoFit,
+    mojom::PrintScalingType::kFill,
+    mojom::PrintScalingType::kFit,
+    mojom::PrintScalingType::kNone,
+    mojom::PrintScalingType::kUnknownPrintScalingType};
+inline constexpr mojom::PrintScalingType kPrintScalingTypeDefault =
+    mojom::PrintScalingType::kFit;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-OptionalSampleCapabilities SampleWithPinAndAdvancedCapabilities();
+OptionalSampleCapabilities SampleWithScaleAndPinAndAdvancedCapabilities();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)

@@ -1791,12 +1791,8 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
       private_network_access_checker_.ClientAddressSpace();
 
   response->load_with_storage_access = ShouldSetLoadWithStorageAccess();
-  if (url_request_->client_side_content_decoding_enabled() &&
-      response->headers) {
-    response->client_side_content_decoding_types =
-        net::FilterSourceStream::GetContentEncodingTypes(
-            url_request_->accepted_stream_types(), *response->headers);
-  }
+  url_request_->GetClientSideContentDecodingTypes(
+      &response->client_side_content_decoding_types);
 
   return response;
 }
@@ -2267,8 +2263,7 @@ void URLLoader::ContinueOnResponseStartedImmediately() {
   // https://wicg.github.io/signature-based-sri/
   if (std::optional<mojom::BlockedByResponseReason> blocked_reason =
           MaybeBlockResponseForSRIMessageSignature(
-              url_request_->url(), *response_,
-              /*checks_forced_by_initiator=*/!expected_public_keys_.empty(),
+              url_request_->url(), *response_, expected_public_keys_,
               devtools_observer_, devtools_request_id().value_or(""))) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);
@@ -3122,6 +3117,7 @@ void URLLoader::SetRawRequestHeadersAndNotify(
     if (!reported_cookies.empty()) {
       cookie_access_details_.emplace_back(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kRead, url_request_->url(),
+          url_request_->isolation_info().frame_origin(),
           url_request_->isolation_info().top_frame_origin().value_or(
               url::Origin()),
           url_request_->site_for_cookies(), std::move(reported_cookies),
@@ -3457,6 +3453,7 @@ void URLLoader::ReportFlaggedResponseCookies(bool call_cookie_observer) {
   if (!reported_cookies.empty()) {
     cookie_access_details_.emplace_back(mojom::CookieAccessDetails::New(
         mojom::CookieAccessDetails::Type::kChange, url_request_->url(),
+        url_request_->isolation_info().frame_origin(),
         url_request_->isolation_info().top_frame_origin().value_or(
             url::Origin()),
         url_request_->site_for_cookies(), std::move(reported_cookies),

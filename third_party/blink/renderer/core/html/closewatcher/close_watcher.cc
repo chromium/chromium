@@ -43,13 +43,46 @@ class DestroyOnAbortAlgorithm final : public AbortSignal::Algorithm {
 CloseWatcher::WatcherStack::WatcherStack(LocalDOMWindow* window)
     : receiver_(this, window), window_(window) {}
 
-void CloseWatcher::WatcherStack::Add(CloseWatcher* watcher) {
-  if (watcher_groups_.empty()) {
-    auto& host = window_->GetFrame()->GetLocalFrameHostRemote();
-    host.SetCloseListener(receiver_.BindNewPipeAndPassRemote(
-        window_->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+bool CloseWatcher::WatcherStack::AnyEnabledWatchers() {
+  for (auto& group : watcher_groups_) {
+    for (auto& watcher : group) {
+      if (watcher->enabled_) {
+        return true;
+      }
+    }
   }
+  return false;
+}
 
+void CloseWatcher::WatcherStack::MaybeCloseReceiver() {
+  if (!AnyEnabledWatchers()) {
+    receiver_.reset();
+  }
+}
+
+void CloseWatcher::WatcherStack::BindNewPipe() {
+  auto& host = window_->GetFrame()->GetLocalFrameHostRemote();
+  host.SetCloseListener(receiver_.BindNewPipeAndPassRemote(
+      window_->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+}
+
+void CloseWatcher::setEnabled(bool enabled) {
+  if (enabled_ == enabled) {
+    return;
+  }
+  if (enabled && !stack_->AnyEnabledWatchers()) {
+    stack_->BindNewPipe();
+  }
+  enabled_ = enabled;
+  if (!enabled) {
+    stack_->MaybeCloseReceiver();
+  }
+}
+
+void CloseWatcher::WatcherStack::Add(CloseWatcher* watcher) {
+  if (!AnyEnabledWatchers() && watcher->enabled_) {
+    BindNewPipe();
+  }
   if (watcher_groups_.size() < allowed_groups_) {
     HeapVector<Member<CloseWatcher>> group;
     group.push_back(watcher);
@@ -79,9 +112,7 @@ void CloseWatcher::WatcherStack::Remove(CloseWatcher* watcher) {
     }
   }
 
-  if (watcher_groups_.empty()) {
-    receiver_.reset();
-  }
+  MaybeCloseReceiver();
 }
 
 void CloseWatcher::WatcherStack::SetHadUserInteraction(
@@ -125,22 +156,21 @@ bool CloseWatcher::WatcherStack::CancelEventCanBeCancelable() const {
 }
 
 void CloseWatcher::WatcherStack::EscapeKeyHandler(KeyboardEvent* event) {
-  if (!watcher_groups_.empty() && !event->DefaultHandled() &&
-      event->isTrusted() && event->keyCode() == VKEY_ESCAPE) {
+  if (AnyEnabledWatchers() && !event->DefaultHandled() && event->isTrusted() &&
+      event->keyCode() == VKEY_ESCAPE) {
     Signal();
   }
 }
 
 void CloseWatcher::WatcherStack::Signal() {
-  if (!watcher_groups_.empty()) {
-    auto& group = watcher_groups_.back();
-    for (auto& watcher : base::Reversed(group)) {
-      if (!watcher->RequestClose(AllowCancel::kWithUserActivation)) {
-        break;
-      }
+  DCHECK(AnyEnabledWatchers())
+      << "If there aren't watchers enabled, the mojo pipe should be reset";
+  auto& group = watcher_groups_.back();
+  for (auto& watcher : base::Reversed(group)) {
+    if (!watcher->RequestClose(AllowCancel::kWithUserActivation)) {
+      break;
     }
   }
-
   if (allowed_groups_ > 1) {
     --allowed_groups_;
   }
@@ -184,7 +214,7 @@ CloseWatcher* CloseWatcher::CreateInternal(LocalDOMWindow& window,
                                            CloseWatcherOptions* options) {
   CHECK(window.document()->IsActive());
 
-  CloseWatcher* watcher = MakeGarbageCollected<CloseWatcher>(window);
+  CloseWatcher* watcher = MakeGarbageCollected<CloseWatcher>(window, stack);
 
   if (options && options->hasSignal()) {
     AbortSignal* signal = options->signal();
@@ -200,8 +230,8 @@ CloseWatcher* CloseWatcher::CreateInternal(LocalDOMWindow& window,
   return watcher;
 }
 
-CloseWatcher::CloseWatcher(LocalDOMWindow& window)
-    : ExecutionContextClient(&window) {}
+CloseWatcher::CloseWatcher(LocalDOMWindow& window, WatcherStack& stack)
+    : ExecutionContextClient(&window), stack_(stack) {}
 
 void CloseWatcher::requestCloseForBinding() {
   RequestClose(AllowCancel::kAlways);
@@ -268,6 +298,7 @@ const AtomicString& CloseWatcher::InterfaceName() const {
 
 void CloseWatcher::Trace(Visitor* visitor) const {
   visitor->Trace(abort_handle_);
+  visitor->Trace(stack_);
   EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }

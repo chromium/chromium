@@ -1575,7 +1575,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2081816110395725788">Kuasa melahu pada bateri</translation>
 <translation id="2082187087049518845">Tab Kumpulan</translation>
 <translation id="2082510809738716738">Pilih warna tema</translation>
-<translation id="208547068587548667">Log masuk ke <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Sila cuba lagi</translation>
 <translation id="208634871997892083">VPN sentiasa dihidupkan</translation>
 <translation id="208654914566977272">Tindakan yang dicadangkan apabila mencari pada skrin anda</translation>
@@ -2994,6 +2993,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3045447014237878114">Tapak ini memuat turun berbilang fail secara automatik</translation>
 <translation id="3046178388369461825">Ruang cakera Linux terlalu sedikit</translation>
 <translation id="304644035656848980">Pratonton mikrofon anda</translation>
+<translation id="3046892784550338476">Versi <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Haaman Web, Lengkap</translation>
 <translation id="304747341537320566">Enjin Pertuturan</translation>
 <translation id="3047678109605649715">Tiada suara <ph name="LANGUAGE" /> pada peranti anda. Kosongkan ruang pada peranti anda dan cuba lagi.</translation>
@@ -4012,7 +4012,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3778740492972734840">&amp;Alat pembangun</translation>
 <translation id="3778868487658107119">Tanya soalan dan berikannya tugas. Peranti ini ialah Google peribadi anda yang sentiasa bersedia untuk membantu.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# laman sejarah penyemakan imbas anda}other{# laman sejarah penyemakan imbas anda}}</translation>
-<translation id="3779244863011082655">Gunakan akaun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yang lain</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> tidak dapat menyemak kata laluan anda terhadap pelanggaran data. Cuba lagi nanti.</translation>
 <translation id="3781742599892759500">Akses mikrofon Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5516,6 +5515,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4848191975108266266">"Ok Google" Google Assistant</translation>
 <translation id="4849286518551984791">Waktu Universal Selaras (UTC/GMT)</translation>
 <translation id="4849517651082200438">Jangan Pasang</translation>
+<translation id="4849731766219625109">Gunakan akaun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> anda</translation>
 <translation id="485053257961878904">Tidak dapat menyediakan penyegerakan pemberitahuan</translation>
 <translation id="4850548109381269495">Pada kedua-dua peranti, semak sambungan Internet anda dan hidupkan Bluetooth. Kemudian cuba lagi.</translation>
 <translation id="4850669014075537160">Menatal</translation>
@@ -5704,6 +5704,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4979510648199782334">Persediaan Microsoft 365 selesai</translation>
 <translation id="4980805016576257426">Sambungan ini mengandungi perisian hasad.</translation>
 <translation id="4983159853748980742">Kata laluan anda tidak dikongsi. Semak sambungan Internet anda dan pastikan anda dilog masuk ke Chrome. Kemudian cuba lagi.</translation>
+<translation id="498624032394115435">Sesiapa sahaja yang mempunyai pautan boleh mengedit semua tab.</translation>
 <translation id="4986706507552097681">Anda boleh memilih item yang hendak disegerakkan dalam tetapan pada bila-bila masa. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="4986728572522335985">Tindakan ini akan memadamkan semua data pada kunci keselamatan, termasuk PIN kunci keselamatan</translation>
 <translation id="4987944280765486504">Chromebook anda akan dimulakan semula setelah muat turun selesai dan anda boleh meneruskan penyediaan.</translation>
@@ -8313,7 +8314,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6873571253135628430">Tukar kebenaran laman</translation>
 <translation id="6876155724392614295">Basikal</translation>
 <translation id="6876469544038980967">Tidak Membantu</translation>
-<translation id="687838958001010630">Sesiapa sahaja yang mempunyai pautan boleh mengedit semua tab</translation>
 <translation id="6878422606530379992">Penderia dibenarkan</translation>
 <translation id="6878862640969460273">Landskap</translation>
 <translation id="6880587130513028875">Imej disekat pada halaman ini.</translation>

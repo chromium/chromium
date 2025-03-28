@@ -22,7 +22,7 @@
 - (void)showFixDegradedRecoverabilityWelcomeScreen:
     (ProceduralBlock)fixDegradedRecoverabilityBlock;
 
-// Presents the passkey reauthentication weclome screen.
+// Presents the passkey reauthentication welcome screen.
 - (void)showReauthenticationWelcomeScreen:(ProceduralBlock)reauthenticateBlock;
 
 @end

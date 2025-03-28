@@ -5,11 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_ADAPTIVE_TOOLBAR_VIEW_CONTROLLER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_ADAPTIVE_TOOLBAR_VIEW_CONTROLLER_DELEGATE_H_
 
+enum class FullscreenExitReason;
+
 // Protocol implemented by the delegate of the AdaptiveToolbarViewController.
 @protocol AdaptiveToolbarViewControllerDelegate
 
 // Exits fullscreen.
-- (void)exitFullscreen;
+- (void)exitFullscreen:(FullscreenExitReason)FullscreenExitReason;
 
 @end
 

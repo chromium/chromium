@@ -23,7 +23,7 @@ class DocumentParserTiming final
   explicit DocumentParserTiming(Document&);
   DocumentParserTiming(const DocumentParserTiming&) = delete;
   DocumentParserTiming& operator=(const DocumentParserTiming&) = delete;
-  virtual ~DocumentParserTiming() = default;
+  ~DocumentParserTiming() = default;
 
   static DocumentParserTiming& From(Document&);
 

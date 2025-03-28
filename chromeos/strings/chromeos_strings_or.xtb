@@ -11,6 +11,7 @@
 <translation id="102432830749687801">ଆକ୍ସେସ ହରାଇବା ପୂର୍ବରୁ ଆପଣଙ୍କ ସ୍କୁଲ ଆକାଉଣ୍ଟ ଡାଟାକୁ ଆପଣଙ୍କର ବ୍ୟକ୍ତିଗତ ଆକାଉଣ୍ଟକୁ ମୁଭ କରିବା ପାଇଁ Googleର Content Transfer ଆପକୁ ବ୍ୟବହାର କରିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="1026212596705997935">ସର୍ଟକଟକୁ "<ph name="CONFLICT_ACCEL_NAME" />" ପାଇଁ ବ୍ୟବହାର କରାଯାଉଛି। ଏକ ନୂଆ ସର୍ଟକଟକୁ ଦବାନ୍ତୁ। ପୂର୍ବରୁ ଥିବା ସର୍ଟକଟକୁ ବଦଳାଇବା ପାଇଁ ଏହି ସର୍ଟକଟକୁ ପୁଣି ଦବାନ୍ତୁ।</translation>
 <translation id="1030856839388844477">ଡାଟା ବ୍ୟବହାର ରିସେଟ କରନ୍ତୁ</translation>
+<translation id="1047095725494118091">ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />ଟି ଥ୍ରେଡ୍, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ନୂଆ ଫିଚର୍ ଉପଲବ୍ଧ ଅଛି, ଅଧିକ ଜାଣିବାକୁ ଅପ୍ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1049663189809099096">ପେଷ୍ଟେଲ ହଳଦିଆ</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">ସ୍କ୍ରିନ ସେଭର ଡାଉନଲୋଡ କରାଯାଉଛି</translation>
 <translation id="1094693127011229778">IP ଠିକଣା ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="1100902271996134409">ଇମେଜଗୁଡ଼ିକ ତିଆରି କରାଯାଉଛି...</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> ଅଡିଓ</translation>
 <translation id="1116694919640316211">ବିଷୟରେ</translation>
 <translation id="1118572504348554005">ଆପଣ ଆମକୁ ରିପୋର୍ଟ କରିଥିବା ବଗ ଏବଂ ଅନ୍ୟ ସମସ୍ୟାଗୁଡ଼ିକର ଟ୍ରବୁଲସୁଟ କରିବା ପାଇଁ ଏହି ଫର୍ମ ମାଧ୍ୟମରେ ଦାଖଲ କରାଯାଇଥିବା ମତାମତକୁ ଆମେ ଆମ ପାର୍ଟନରମାନଙ୍କ ସହ ସେୟାର କରିପାରୁ। ପାସୱାର୍ଡଗୁଡ଼ିକ ପରି ସମ୍ବେଦନଶୀଳ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ।</translation>
 <translation id="1119403468619527527">ସରଳ କରିବା ପାଇଁ ବହୁତ କମ ଶବ୍ଦ ଅଛି</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">ଡାର୍କ ମୋଡ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2164131940279488868">ଅଡିଓ ରେକର୍ଡ କରିବା ଆରମ୍ଭ କରିବାକୁ ଏକ ମାଇକ କାନେକ୍ଟ ହୋଇଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="2173302385160625112">ଆପଣଙ୍କ ଇଣ୍ଟର୍ନେଟ୍ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
+<translation id="2176909213844392588"><ph name="LANGUAGE_NAME" /> ଟ୍ରାନ୍ସକ୍ରିପ୍ସନ ମଡେଲକୁ ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="2180197493692062006">କିଛି ତ୍ରୁଟି ହୋଇଛି। ଆପକୁ ପୁଣି ଖୋଲିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2189104374785738357">APN ବିବରଣୀକୁ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="2195732836444333448">ବର୍ତ୍ତମାନ କୌଣସି ରିସୋର୍ସ ନାହିଁ। ଶୀଘ୍ର ଫେରି ଆସନ୍ତୁ।</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">ଡକ୍ୟୁମେଣ୍ଟ ଫିଡର୍ (ଦୁଇ-ପାର୍ଶ୍ୱ)</translation>
 <translation id="3201315366910775591">ସେୟାର କରାଯାଇଥିବା ଆଲବମ ଅନ୍ୟ ଲୋକମାନଙ୍କ ଦ୍ୱାରା ଅପଡେଟ କରାଯାଇପାରିବ</translation>
 <translation id="3211671540163313381">କୀମେପିଂ ଡି-ପେଡ</translation>
+<translation id="3217462202230355157">ଆପଣଙ୍କ ମାଇକ ସଂଯୁକ୍ତ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="3226405216343213872">ସ୍କାନରଗୁଡ଼ିକୁ ଖୋଜାଯାଉଛି</translation>
 <translation id="3226657629376379887">ଲେଆଉଟ ଆକ୍ସନ ମେନୁ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> ଭେଲ୍ୟୁକୁ <ph name="CONVERSION_RATE" /> ଦ୍ୱାରା ଭାଗ କରନ୍ତୁ</translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">ଏକ୍ସକ୍ଲୁସିଭ</translation>
 <translation id="3404249063913988450">ସ୍କ୍ରିନ୍ ସେଭର୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="3413935475507503304">ଅପଡେଟ କରିବାକୁ ଆଗକୁ ବଢ଼ିବା ପାଇଁ, "ପରବର୍ତ୍ତୀ"କୁ କ୍ଲିକ କରନ୍ତୁ।</translation>
+<translation id="3416709353545797224">ସମସ୍ତ <ph name="DEVICE_TYPE" /> ଅଡିଓ ରେକର୍ଡ କରୁଛି</translation>
 <translation id="3428551088151258685">ଆଉଟଡୋର</translation>
 <translation id="3428971106895559033">ପାଷ୍ଟେଲ</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">ସ୍କାନରକୁ ଚାଲୁ କରାଯାଇଛି ଏବଂ ଏହା ଆପଣଙ୍କ ନେଟୱାର୍କ କିମ୍ବା ଏକ ସିଧାସଳଖ ସଂଯୋଗ ମାଧ୍ୟମରେ ଉପଲବ୍ଧ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="4159238217853743776">ଆଂଶିକ</translation>
 <translation id="4159784952369912983">ବାଇଗଣୀ</translation>
+<translation id="416219735020840807">ଟ୍ରାନ୍ସକ୍ରିପ୍ସନ ମଡେଲକୁ ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="4170180284036919717">ଗୋଟିଏ ଫଟୋ ଉଠାନ୍ତୁ</translation>
 <translation id="4170700058716978431">ବିଫଳ ହୋଇଛି</translation>
 <translation id="4171077696775491955">ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">ପରାମର୍ଶ ସହିତ ଚୟନିତ ଟେକ୍ସଟକୁ ପରିବର୍ତ୍ତନ କରାଯାଉଛି</translation>
 <translation id="5346687412805619883">ସ୍ଥାନୀୟ ନେଟୱାର୍କ</translation>
 <translation id="5358174242040570474">କିଛି ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଏକ ୱାଲପେପର ବାଛିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପକୁ ପୁଣି ଖୋଲନ୍ତୁ।</translation>
+<translation id="5368228070728130240">ସାରାଂଶ ଏବଂ ଟାଇଟେଲ କ୍ରିଏସନ ପାଇଁ ମଡେଲ ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="5372659122375744710">ୱାଇଫାଇ ନେଟୱାର୍କ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
 <translation id="5376354385557966694">ସ୍ଵଚାଳିତ ଲାଇଟ୍ ମୋଡ୍</translation>
 <translation id="5378184552853359930">IP ପ୍ରକାର</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">ବିଫଳ ହୋଇଥିବା DNS ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="6768237774506518020">ଉଚ୍ଚ DNS ରିଜୋଲ୍ୟୁସନ୍ ବିଫଳତା ହାର</translation>
 <translation id="6786747875388722282">ପରିବର୍ଦ୍ଧନ</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" /> ଅଡିଓ ଚାଲୁ ଥିଲେ, Recorder ଏହି ଭିଡିଓରେ ପ୍ଲେ ହେଉଥିବା ସମସ୍ତ ଅଡିଓକୁ କେପଚର କରେ</translation>
 <translation id="6791471867139427246">କୀ'ବୋର୍ଡ ଲାଇଟ ରଙ୍ଗ</translation>
 <translation id="6796229976413584781">ସର୍ଟକଟ ଡିଲିଟ କରାଯାଇଛି</translation>
 <translation id="6798678288485555829">ଟେକ୍ସଟ ନାଭିଗେସନ</translation>
@@ -1728,6 +1736,7 @@
 <translation id="8930622219860340959">ୱେୟାରଲେସ୍</translation>
 <translation id="8933650076320258356"><ph name="DIRECTION" /> ପାଇଁ ଚୟନିତ କୀ ହେଉଛି <ph name="KEYS" />। <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">କ୍ଲାଏଣ୍ଟର IP ଠିକଣା</translation>
+<translation id="8938606491880817721">ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="8944651180182756621">ଲଞ୍ଚରର ରଙ୍ଗ</translation>
 <translation id="8945308580158685341">ମହୁମାଛି</translation>
 <translation id="894617464444543719">ଡିଭାଇସଟି ଏକ ଫୋନ ଅଟେ।</translation>

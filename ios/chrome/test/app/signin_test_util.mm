@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "base/test/ios/wait_util.h"
+#import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
@@ -180,19 +181,17 @@ void ResetHistorySyncPreferencesForTesting() {
 
 void ResetSyncAccountSettingsPrefs() {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
-  // Clear the new per-account selected types and per-account passphrase.
+  // Clear the per-account selected types and per-account passphrase.
   SyncServiceFactory::GetForProfile(profile)
       ->GetUserSettings()
       ->KeepAccountSettingsPrefsOnlyForUsers({});
-  // And the old global selected types for syncing users. SyncUserSettings::
-  // SetSelectedTypes() CHECKs the user is signed-in, so go through SyncPrefs
-  // directly.
-  // TODO(crbug.com/40066949): Remove once sync-the-feature is gone on iOS.
-  syncer::SyncPrefs(profile->GetPrefs())
-      .SetSelectedTypesForSyncingUser(
-          /*sync_everything=*/true,
-          /*registered_types=*/syncer::UserSelectableTypeSet::All(),
-          /*selected_types=*/syncer::UserSelectableTypeSet::All());
+}
+
+void SetPolicyResponseForNextProfileSeparationPolicyRequest(
+    policy::ProfileSeparationDataMigrationSettings
+        profileSeparationDataMigrationSettings) {
+  [AuthenticationFlow forcePolicyResponseForNextRequestForTesting:
+                          profileSeparationDataMigrationSettings];
 }
 
 }  // namespace chrome_test_util

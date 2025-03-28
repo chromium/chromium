@@ -31,7 +31,8 @@ void TabEventTrackerImpl::DidAddTab(int tab_id, int tab_launch_type) {
 void TabEventTrackerImpl::DidSelectTab(int tab_id,
                                        TabSelectionType tab_selection_type,
                                        int last_tab_id) {
-  if (tab_selection_type != TabSelectionType::kFromUser) {
+  if (tab_selection_type != TabSelectionType::kFromUser ||
+      last_tab_id == tab_id) {
     return;
   }
   tab_id_selection_map_[tab_id].emplace_back(tab_id, tab_selection_type,

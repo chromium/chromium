@@ -106,10 +106,14 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       IDS_LENS_OVERLAY_TARGET_LANGUAGE_ACCESSIBILITY_LABEL);
   html_source->AddLocalizedString(
       "searchboxGhostLoaderHintTextPrimaryDefault",
-      IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_PRIMARY);
+      lens::features::ShouldUseAltLoadingHintWeb()
+          ? IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_PRIMARY_ALT
+          : IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_PRIMARY);
   html_source->AddLocalizedString(
       "searchboxGhostLoaderHintTextPrimaryPdf",
-      IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_PRIMARY_PDF);
+      lens::features::ShouldUseAltLoadingHintPdf()
+          ? IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_PRIMARY_ALT
+          : IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_PRIMARY_PDF);
   html_source->AddLocalizedString(
       "searchboxGhostLoaderHintTextSecondary",
       IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_SECONDARY);

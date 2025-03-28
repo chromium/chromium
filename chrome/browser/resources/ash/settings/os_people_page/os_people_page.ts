@@ -27,6 +27,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isAccountManagerEnabled} from '../common/load_time_booleans.js';
+import type {PrefsState} from '../common/types.js';
 import {type GraduationHandlerInterface, GraduationObserverReceiver} from '../mojom-webui/graduation_handler.mojom-webui.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 
@@ -100,6 +101,7 @@ export class OsSettingsPeoplePageElement extends
     };
   }
 
+  prefs: PrefsState;
   private accounts_: Account[];
   private deviceAccount_: Account|null;
   private graduationMojoProvider_: GraduationHandlerInterface;

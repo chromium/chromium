@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/frame/use_counter_impl.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/scheme_registry.h"
@@ -169,6 +170,8 @@ void UseCounterImpl::DidCommitLoad(const LocalFrame* frame) {
   if (context_ == kExtensionContext || context_ == kFileContext) {
     CountFeature(WebFeature::kPageVisits);
   }
+
+  ReportTotalTakenTime(frame, /*did_commit_load=*/true);
 }
 
 bool UseCounterImpl::IsCounted(CSSPropertyID unresolved_property,
@@ -291,6 +294,9 @@ bool UseCounterImpl::ReportMeasurement(const UseCounterFeature& feature,
 
   if (!frame || !frame->Client())
     return false;
+
+  base::ElapsedTimer timer;
+
   auto* client = frame->Client();
 
   if (feature.type() == mojom::blink::UseCounterFeatureType::kWebFeature)
@@ -301,6 +307,7 @@ bool UseCounterImpl::ReportMeasurement(const UseCounterFeature& feature,
   // |MetricsWebContentsObserver::DoesTimingUpdateHaveError| anyway.
   if (context_ == kDefaultContext) {
     client->DidObserveNewFeatureUsage(feature);
+    total_taken_time_for_reporting_ += timer.Elapsed();
     return true;
   }
 
@@ -311,6 +318,30 @@ bool UseCounterImpl::ReportMeasurement(const UseCounterFeature& feature,
   }
 
   return false;
+}
+
+void UseCounterImpl::ReportTotalTakenTime(const LocalFrame* frame,
+                                          bool did_commit_load) {
+  if (!frame->IsOutermostMainFrame()) {
+    return;
+  }
+  const auto* document = frame->GetDocument();
+  if (document->IsInitialEmptyDocument() ||
+      !document->Url().ProtocolIsInHTTPFamily()) {
+    return;
+  }
+
+  String suffix;
+  if (did_commit_load) {
+    suffix = ".DidCommitLoad";
+  } else if (document->HasFinishedParsing()) {
+    suffix = ".FinishedParsing";
+  }
+
+  base::UmaHistogramTimes(
+      base::StrCat(
+          {"Blink.UseCounter.TotalTakenTimeForReporting", suffix.Ascii()}),
+      total_taken_time_for_reporting_);
 }
 
 // Note that HTTPArchive tooling looks specifically for this event - see

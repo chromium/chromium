@@ -257,13 +257,12 @@ class CORE_EXPORT WebFrameWidgetImpl
   void DidChangeCursor(const ui::Cursor&) override;
   void GetCompositionCharacterBoundsInWindow(
       Vector<gfx::Rect>* bounds_in_dips) override;
-  // Return the last calculated line bounds.
-  Vector<gfx::Rect>& GetVisibleLineBoundsOnScreenForTesting();
+  // Return the last calculated cursor anchor info.
+  mojom::blink::InputCursorAnchorInfoPtr& GetLastCursorAnchorInfoForTesting();
   bool HasImeRenderWidgetHost() const override {
     return !!ime_render_widget_host_;
   }
-  void UpdateLineBounds() override;
-  void UpdateCursorAnchorInfo() override;
+  void UpdateCursorAnchorInfo(bool update_requested) override;
   gfx::Range CompositionRange() override;
   WebTextInputInfo TextInputInfo() override;
   ui::mojom::VirtualKeyboardVisibilityRequest
@@ -1071,10 +1070,9 @@ class CORE_EXPORT WebFrameWidgetImpl
       const PositionWithAffinity& pivot_position) const;
 #endif  // BUILDFLAG(IS_WIN)
 
-  // Stores the current composition line bounds. These bounds are rectangles
-  // which surround each line of text in a currently focused input or textarea
-  // element.
-  Vector<gfx::Rect> input_visible_line_bounds_;
+  // Stores the last cursor anchor info calculated for the currently focused
+  // editable element.
+  mojom::blink::InputCursorAnchorInfoPtr last_cursor_anchor_info_;
 
   // A copy of the web drop data object we received from the browser.
   Member<DataObject> current_drag_data_;

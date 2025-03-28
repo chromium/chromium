@@ -610,12 +610,6 @@ UpdateCheckResult UpdateCheckDriver::BeginUpdateCheckInternal() {
     if (FAILED(hresult)) {
       return {error_code, hresult};
     }
-    if (elevation_window_) {
-      // Likewise, a failure to set the parent window need not block an update
-      // check.
-      app_bundle->put_parentHWND(
-          reinterpret_cast<ULONG_PTR>(elevation_window_));
-    }
     app_bundle_.Swap(app_bundle);
   }
 

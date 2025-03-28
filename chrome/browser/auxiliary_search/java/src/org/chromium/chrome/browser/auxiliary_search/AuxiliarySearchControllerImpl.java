@@ -298,7 +298,7 @@ public class AuxiliarySearchControllerImpl
         long startTimeMs = TimeUtils.uptimeMillis();
 
         mHasDeletingTask = true;
-        if (!mDonor.deleteAllTabs(
+        if (!mDonor.deleteAll(
                 (success) -> {
                     onAllTabDeleted(success, startTimeMs);
                 })) {

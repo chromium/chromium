@@ -12,9 +12,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.content.browser.webcontents.WebContentsImpl;
-import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContents.UserDataFactory;
 import org.chromium.content_public.browser.WebContentsObserver;
 
 /**
@@ -46,10 +45,8 @@ public class PaymentRequestWebContentsData extends WebContentsObserver implement
     public static @Nullable PaymentRequestWebContentsData from(WebContents webContents) {
         return sInstanceForTesting != null
                 ? sInstanceForTesting
-                : ((WebContentsImpl) webContents)
-                        .getOrSetUserData(
-                                PaymentRequestWebContentsData.class,
-                                UserDataFactoryLazyHolder.INSTANCE);
+                : webContents.getOrSetUserData(
+                        PaymentRequestWebContentsData.class, UserDataFactoryLazyHolder.INSTANCE);
     }
 
     /** Constructor used for creating a test instance. */

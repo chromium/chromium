@@ -1565,7 +1565,6 @@
 <translation id="2081816110395725788">ელკვება უმოქმედობისას ბატერეით მუშაობის დროს</translation>
 <translation id="2082187087049518845">ჩანართის დაჯგუფება</translation>
 <translation id="2082510809738716738">აირჩიეთ თემის ფერი</translation>
-<translation id="208547068587548667"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ში შესვლა</translation>
 <translation id="208586643495776849">გთხოვთ, ცადოთ ხელახლა</translation>
 <translation id="208634871997892083">ყოველთვის ჩართული VPN</translation>
 <translation id="208654914566977272">მოქმედებების შემოთავაზება ეკრანზე ძიებისას</translation>
@@ -3999,7 +3998,6 @@
 <translation id="3778740492972734840">შ&amp;ემმუშავებლის ხელსაწყოები</translation>
 <translation id="3778868487658107119">დაუსვით შეკითხვები, მიეცით დავალებები — თქვენი საკუთარი Google ყოველთვის მზად არის თქვენს დასახმარებლად.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# საიტის თქვენი დათვალიერების ისტორია}other{# საიტის თქვენი დათვალიერების ისტორია}}</translation>
-<translation id="3779244863011082655">გამოიყენეთ სხვა <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ანგარიში</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> ვერ ამოწმებს, შეეხო თუ არა თქვენს პაროლებს პერსონალურ მონაცემთა გაჟონვის შემთხვევები. ცადეთ მოგვიანებით.</translation>
 <translation id="3781742599892759500">Linux-ის წვდომა მიკროფონზე</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5503,6 +5501,7 @@
 <translation id="4848191975108266266">Google ასისტენტის „Ok Google“</translation>
 <translation id="4849286518551984791">საერთაშორისო კოორდინირებული დრო (UTC/GMT)</translation>
 <translation id="4849517651082200438">არ დააინსტალიროთ</translation>
+<translation id="4849731766219625109">თქვენი <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ანგარიშის გამოყენება</translation>
 <translation id="485053257961878904">შეტყობინებების სინქრონიზაციის დაყენება ვერ მოხერხდა</translation>
 <translation id="4850548109381269495">ორივე მოწყობილობაზე შეამოწმეთ კავშირი ინტერნეტთან და ჩართეთ Bluetooth. ამის შემდეგ ხელახლა ცადეთ.</translation>
 <translation id="4850669014075537160">გადაადგილება</translation>
@@ -5691,6 +5690,7 @@
 <translation id="4979510648199782334">Microsoft 365-ის დაყენება დასრულდა</translation>
 <translation id="4980805016576257426">ეს გაფართოება მავნე პროგრამას შეიცავს.</translation>
 <translation id="4983159853748980742">თქვენი პაროლი არ გაზიარებულა. შეამოწმეთ კავშირი ინტერნეტთან და დარწმუნდით, რომ შესული ხართ Chrome-ში. შემდეგ კი ხელახლა ცადეთ.</translation>
+<translation id="498624032394115435">ყველას, ვისაც აქვს ბმული, შეუძლია ნებისმიერი ჩანართის რედაქტირება.</translation>
 <translation id="4986706507552097681">პარამეტრებიდან ნებისმიერ დროს შეგიძლიათ აირჩიოთ, რისი სინქრონიზაცია გსურთ. თქვენი ისტორიის მეშვეობით Google შეძლებს Search-ისა და სხვა სერვისების თქვენზე მორგებას.</translation>
 <translation id="4986728572522335985">ეს ქმედება წაშლის უსაფრთხოების გასაღებში შენახულ ყველა მონაცემს, მათ შორის, მის PIN-კოდს</translation>
 <translation id="4987944280765486504">თქვენი Chromebook გადაიტვირთება, როცა ჩამოტვირთვა დასრულდება და დაყენების გაგრძელების საშუალება გექნებათ.</translation>
@@ -8300,7 +8300,6 @@
 <translation id="6873571253135628430">საიტის ნებართვების შეცვლა</translation>
 <translation id="6876155724392614295">ველოსიპედი</translation>
 <translation id="6876469544038980967">უსარგებლო</translation>
-<translation id="687838958001010630">ყველას, ვისაც აქვს ბმული, შეუძლია ნებისმიერი ჩანართის რედაქტირება</translation>
 <translation id="6878422606530379992">სენსორების გამოყენება დაშვებულია</translation>
 <translation id="6878862640969460273">ლანდშაფტი</translation>
 <translation id="6880587130513028875">ამ გვერდზე მოხდა სურათების დაბლოკვა.</translation>

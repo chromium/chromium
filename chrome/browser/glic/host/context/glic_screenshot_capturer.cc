@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
@@ -123,6 +124,20 @@ void GlicScreenshotCapturer::OnSourceSelected(const std::string& err,
                     kUserCancelledScreenPickerDialog);
     return;
   }
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/405177421): Remove this delay once we land the code to skip
+  // the screen picker entirely on Windows.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&GlicScreenshotCapturer::OnCaptureStarted,
+                     weak_ptr_factory_.GetWeakPtr(), id),
+      base::Milliseconds(500));
+#else
+  OnCaptureStarted(id);
+#endif
+}
+
+void GlicScreenshotCapturer::OnCaptureStarted(content::DesktopMediaID id) {
   desktop_capturer_ = content::desktop_capture::CreateScreenCapturer();
   desktop_capturer_->Start(this);
   if (!desktop_capturer_->SelectSource(id.id)) {

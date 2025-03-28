@@ -223,7 +223,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1363028406613469049">Spor</translation>
 <translation id="1364822246244961190">Denne politik er blokeret, og dens værdi ignoreres.</translation>
 <translation id="1368318639262510626">Dino-spillet. En pixeleret dinosaur suser gennem et øde landskab, hvor den hopper over kaktusser og undviger flyveøgler. Når du hører en lyd, skal du trykke på mellemrumstasten for at hoppe over forhindringer.</translation>
-<translation id="1369735141991626842">Udfyld felter med AI</translation>
 <translation id="1374468813861204354">forslag</translation>
 <translation id="1375198122581997741">Om version</translation>
 <translation id="1375293861397106342">Alle købsmuligheder koster normalt mellem <ph name="LOW_PRICE" />-<ph name="HIGH_PRICE" /></translation>
@@ -539,7 +538,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1919526244108283799">400 x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ingen}=1{1 website}one{# website}other{# websites}}</translation>
 <translation id="192095259937375524">Knappen Del denne fane, aktivér for at dele denne fane ved at dele linket, oprette en QR-kode, caste m.m.</translation>
-<translation id="1921479021518565778">Forslagene er indlæst</translation>
 <translation id="1924727005275031552">Ny</translation>
 <translation id="1927439846988093361">Hårpleje</translation>
 <translation id="1935353813610900265">Send feedback om søgning i historikken, som er baseret på AI</translation>
@@ -900,6 +898,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2539524384386349900">Registrer</translation>
 <translation id="2541219929084442027">Når du har lukket alle dine inkognitofaner, gemmes der hverken cookies, browser- eller søgehistorik for de sider, du besøger i inkognitotilstand. Dog gemmes alle de filer, du downloader, og bogmærker, du opretter.</translation>
 <translation id="2542106216580219892">Surfing</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – Hold fingeren på |<ph name="ACCELERATOR" />| for at afslutte fuld skærm</translation>
 <translation id="2544546346215446551">Administratoren har genstartet din enhed</translation>
 <translation id="2544644783021658368">Enkelt dokument</translation>
 <translation id="254524874071906077">Angiv Chrome som standardbrowser</translation>
@@ -973,6 +972,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">Ja, fortsæt</translation>
 <translation id="2690699652723742414">Seneste 30 dage</translation>
+<translation id="2691385045260836588">Model</translation>
 <translation id="2691924980723297736">Sikkerhedsadvarsel</translation>
 <translation id="2697248912349197812">Spørg <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Der er en tilgængelig undermenu. Brug <ph name="SHORTCUT" /> til at gå til yderligere valgmuligheder.</translation>
@@ -1528,6 +1528,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3664782872746246217">Søgeord:</translation>
 <translation id="3665100783276035932">De fleste websites bør fungere som forventet</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Få flere oplysninger<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">Nummer</translation>
 <translation id="3670229581627177274">Slå Bluetooth til</translation>
 <translation id="3671117652518853176">Når funktionen er deaktiveret, kan du af sikkerhedsmæssige årsager blive bedt om at verificere af og til</translation>
 <translation id="3671540257457995106">Vil du tillade valg af andre størrelser?</translation>
@@ -1542,7 +1543,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3681007416295224113">Certifikatoplysninger</translation>
 <translation id="3681421644246505351">Chrome registrerer emner, du kan være interesseret i, baseret på din seneste browserhistorik.</translation>
 <translation id="3682094733650754138">Valgmuligheden for udfyldelse af adresse blev valgt</translation>
-<translation id="3687493962714153124">Administrer autofyld med AI</translation>
 <translation id="3687920599421452763">Kassevogne og minibusser</translation>
 <translation id="3693327506115126094">Vælg, hvordan du vil verificere din identitet</translation>
 <translation id="3698353241727597930">Din administrator har konfigureret at gemme <ph name="FILES" /> i din virksomhedsadministrerede <ph name="CLOUD_STORAGE" />-lagerplads. Disse filer kan overvåges, kontrolleres og opbevares, når du sletter dem.</translation>
@@ -1695,6 +1695,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3950820424414687140">Log ind</translation>
 <translation id="3953505489397572035">Dette er normalprisen</translation>
 <translation id="3958057596965527988">4 x 4 tommer</translation>
+<translation id="3959969108528118741">Ejer</translation>
 <translation id="3961148744525529027">Regnearket for betalingshandler er åbnet halvt</translation>
 <translation id="3962859241508114581">Forrige nummer</translation>
 <translation id="3963721102035795474">Læser-tilstand</translation>
@@ -1920,7 +1921,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4312866146174492540">Bloker (standardindstilling)</translation>
 <translation id="4314815835985389558">Administrer synkronisering</translation>
 <translation id="4316057107946726368">Angiv en begrundelsesmeddelelse på højst <ph name="MAX_CHAR_COUNT" /> tegn. Du har angivet <ph name="ACTUAL_CHAR_COUNT" /> ud af <ph name="MAX_CHAR_COUNT" /> tegn.</translation>
-<translation id="431740489189220419">Indlæser forslag</translation>
 <translation id="4318213823155573975">Hovedbeklædning</translation>
 <translation id="4318312030194671742">Tjeneste til forhåndsvisning af visuelt indhold</translation>
 <translation id="4318566738941496689">Din enheds navn og netværksadresse</translation>
@@ -2327,6 +2327,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5087286274860437796">Serverens certifikatet er ikke gyldigt i øjeblikket.</translation>
 <translation id="5087580092889165836">Tilføj kort</translation>
 <translation id="5088142053160410913">Meddelelse til operator</translation>
+<translation id="5089810972385038852">Stat</translation>
 <translation id="5090647584136241764">Tilføj faner med lignende produkter, så du nemt kan sammenligne de oplysninger, du skal bruge</translation>
 <translation id="5093232627742069661">Z-fals</translation>
 <translation id="5094747076828555589">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da Chromium ikke har tillid til sikkerhedscertifikatet. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
@@ -2465,6 +2466,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Din standardsøgemaskine giver dig mulighed for at søge på nettet og understøtter Chromium-funktioner<ph name="END_BOLD" /> som f.eks. søgning via adresselinjen eller billeder på websider. En funktion er muligvis ikke tilgængelig, hvis din søgemaskine ikke understøtter den.</translation>
 <translation id="5323043727018853753">Indlejret indhold er tilladt</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> af <ph name="NUM_MATCHES" /></translation>
+<translation id="5327248766486351172">Navn</translation>
 <translation id="5329858041417644019">Din browser administreres ikke</translation>
 <translation id="5331585574693522196">Angiv som standard</translation>
 <translation id="5332219387342487447">Leveringsmetode</translation>
@@ -2677,7 +2679,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="569000877158168851">DnsOverHttpsTemplates-værdien er ikke relevant og anvendes ikke, medmindre politikken DnsOverHttpsMode er angivet som enten <ph name="SECURE_DNS_MODE_AUTOMATIC" /> eller <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">"Gem kort" er åbnet i fuld højde.</translation>
 <translation id="5695542892312572833">Vil du bruge Windows Hello til at verificere og gennemføre dit køb?</translation>
-<translation id="5697827549745555938">De oplysninger, du har gemt, og denne side sendes til Google for at se, om autofyld kan hjælpe med at udfylde denne formular. Data kan blive set af menneskelige kontrollanter med henblik på at forbedre denne funktion.</translation>
 <translation id="5699628521141772782">Mejerivarer og æg</translation>
 <translation id="5700761515355162635">Tredjepartscookies er tilladt</translation>
 <translation id="5701381305118179107">Centrér</translation>
@@ -3106,6 +3107,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6440503408713884761">Ignoreret</translation>
 <translation id="6443406338865242315">Hvilke udvidelser og plugins, du har installeret</translation>
 <translation id="6444329331928531170">Pension</translation>
+<translation id="6445051938772793705">Land</translation>
 <translation id="6446608382365791566">Tilføj flere oplysninger</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6448371595882710519">Få flere oplysninger om datastyring</translation>
@@ -3587,7 +3589,6 @@ Yderligere oplysninger:
 <translation id="7316521168101843192">Gemmer filen i Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Hjælp til at oprette forbindelse</translation>
-<translation id="7321111802407017850">Gem dine oplysninger til autofyld</translation>
 <translation id="7323804146520582233">Skjul sektionen "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Tilsidesættelse af enhedslokal konto</translation>
 <translation id="7334320624316649418">&amp;Annuller fortryd omarrangering</translation>
@@ -3932,6 +3933,7 @@ Yderligere oplysninger:
 <translation id="7887885240995164102">Åbn integreret billede</translation>
 <translation id="7888575728750733395">Formål for udskriftsgengivelse</translation>
 <translation id="7890748547282909375">Log ind på Microsoft OneDrive for at gemme screenshottet</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – Tryk på |<ph name="ACCELERATOR" />| for at få vist din markør</translation>
 <translation id="7892865709991296481">betalingsindstillinger</translation>
 <translation id="7894280532028510793">Hvis stavningen er korrekt, kan du <ph name="BEGIN_LINK" />prøve at køre Netværksdiagnosticering<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Konvolut 7 x 9 tommer</translation>
@@ -4625,6 +4627,7 @@ Yderligere oplysninger:
 <translation id="9155646082713385498">Magasiner</translation>
 <translation id="9157595877708044936">Konfigurerer...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> indeholder muligvis følsomt indhold}one{<ph name="FILE_COUNT" /> fil indeholder muligvis følsomt indhold}other{<ph name="FILE_COUNT" /> filer indeholder muligvis følsomt indhold}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – Tryk på |<ph name="ACCELERATOR" />| for at afslutte fuld skærm</translation>
 <translation id="9165305804774426672">De websites, du besøger, kan også skønne hvad du kan lide, baseret på din aktivitet på websitet. Hvis du f.eks. besøger et website, der sælger løbesko til langdistanceløb, kan websitet vurdere, at du er interesseret i at løbe maraton.</translation>
 <translation id="9166851138617700776">Flere oplysninger om foreslåede annoncer fra websites og annoncemåling</translation>
 <translation id="9167054383925257837">Oplysninger om browseren og enhedens OS (f.eks. browser- og OS-versioner)</translation>

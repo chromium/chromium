@@ -177,7 +177,7 @@ public class TabArchiverTest {
 
     @Test
     @MediumTest
-    public void testArchiveThenUnarchiveTab() {
+    public void testArchiveThenUnarchiveTab() throws Exception {
         Tab tab =
                 sActivityTestRule.loadUrlInNewTab(
                         sActivityTestRule.getTestServer().getURL(TEST_PATH),
@@ -235,7 +235,7 @@ public class TabArchiverTest {
 
     @Test
     @MediumTest
-    public void testArchiveThenUnarchiveTab_NoTimestampUpdate() {
+    public void testArchiveThenUnarchiveTab_NoTimestampUpdate() throws Exception {
         Tab tab =
                 sActivityTestRule.loadUrlInNewTab(
                         sActivityTestRule.getTestServer().getURL(TEST_PATH),
@@ -293,7 +293,7 @@ public class TabArchiverTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS)
-    public void testGroupedTabsAreNotArchived() {
+    public void testGroupedTabsAreNotArchived() throws Exception {
         sActivityTestRule.loadUrlInNewTab(
                 sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
         sActivityTestRule.loadUrlInNewTab(
@@ -345,7 +345,7 @@ public class TabArchiverTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS)
-    public void testGroupedTabsAreArchived() {
+    public void testGroupedTabsAreArchived() throws Exception {
         sActivityTestRule.loadUrlInNewTab(
                 sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
         sActivityTestRule.loadUrlInNewTab(
@@ -398,7 +398,7 @@ public class TabArchiverTest {
     @MediumTest
     @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS)
     @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS)
-    public void testGroupedDuplicateTabsAreNotArchived() {
+    public void testGroupedDuplicateTabsAreNotArchived() throws Exception {
         sActivityTestRule.loadUrlInNewTab(
                 sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
         sActivityTestRule.loadUrlInNewTab(
@@ -455,7 +455,7 @@ public class TabArchiverTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS)
-    public void testDuplicateTabsAreArchived() {
+    public void testDuplicateTabsAreArchived() throws Exception {
         // Tab 2
         sActivityTestRule.loadUrlInNewTab(
                 sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
@@ -507,7 +507,7 @@ public class TabArchiverTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS)
-    public void testDuplicateTabsAreNotArchivedWithSwitchOff() {
+    public void testDuplicateTabsAreNotArchivedWithSwitchOff() throws Exception {
         // Tab 2
         sActivityTestRule.loadUrlInNewTab(
                 sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
@@ -552,7 +552,7 @@ public class TabArchiverTest {
     @MediumTest
     @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS)
     @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS)
-    public void testDuplicateTabInGroupIsNotArchived_BaseDuplicateOutOfGroup() {
+    public void testDuplicateTabInGroupIsNotArchived_BaseDuplicateOutOfGroup() throws Exception {
         // Tab 2
         sActivityTestRule.loadUrlInNewTab(
                 sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
@@ -610,7 +610,7 @@ public class TabArchiverTest {
 
     @Test
     @MediumTest
-    public void testTabModelSelectorInactiveTabsAreArchived() {
+    public void testTabModelSelectorInactiveTabsAreArchived() throws Exception {
         runOnUiThreadBlocking(
                 () -> {
                     // Set the tab to expire after 1 hour to simplify testing.
@@ -717,15 +717,16 @@ public class TabArchiverTest {
 
     @Test
     @MediumTest
-    public void testTabModelSelectorUninitialized() {
+    public void testTabModelSelectorUninitialized() throws Exception {
         doReturn(false).when(mSelector).isTabStateInitialized();
         runOnUiThreadBlocking(() -> mTabArchiver.doArchivePass(mSelector));
         verify(mSelector, times(0)).getModel(anyBoolean());
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     @MediumTest
-    public void testTabModelSelectorInactiveTabsAreArchived_AssertsWhenDisabled() throws Throwable {
+    public void testTabModelSelectorInactiveTabsAreArchived_NoActionTakenWhenDisabled()
+            throws Exception {
         runOnUiThreadBlocking(
                 () -> {
                     mTabArchiveSettings.setArchiveEnabled(false);
@@ -747,24 +748,21 @@ public class TabArchiverTest {
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
 
-        try {
-            // Send an event, similar to how TabWindowManager would.
-            runOnUiThreadBlocking(
-                    () ->
-                            mTabArchiver.doArchivePass(
-                                    sActivityTestRule
-                                            .getActivity()
-                                            .getTabModelSelectorSupplier()
-                                            .get()));
-        } catch (RuntimeException re) {
-            // The UI thread hop will wrap with a RuntimeException, we want to verify the cause.
-            throw re.getCause();
-        }
+        // Send an event, similar to how TabWindowManager would.
+        runOnUiThreadBlocking(
+                () ->
+                        mTabArchiver.doArchivePass(
+                                sActivityTestRule
+                                        .getActivity()
+                                        .getTabModelSelectorSupplier()
+                                        .get()));
+        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
     }
 
     @Test
     @MediumTest
-    public void testArchivedTabParentRootIdsReset() {
+    public void testArchivedTabParentRootIdsReset() throws Exception {
         Tab tab =
                 sActivityTestRule.loadUrlInNewTab(
                         sActivityTestRule.getTestServer().getURL(TEST_PATH),
@@ -800,7 +798,7 @@ public class TabArchiverTest {
 
     @Test
     @MediumTest
-    public void testTabIdPresentInBothModelsDeletesRegularTab() {
+    public void testTabIdPresentInBothModelsDeletesRegularTab() throws Exception {
         Tab tab =
                 sActivityTestRule.loadUrlInNewTab(
                         sActivityTestRule.getTestServer().getURL(TEST_PATH),
@@ -948,7 +946,7 @@ public class TabArchiverTest {
 
     @Test
     @MediumTest
-    public void testTabArchiverDestroyedWhileCreatingPtd() throws TimeoutException {
+    public void testTabArchverDestroyedWhileCreatingPTD() throws TimeoutException {
         // Setup the clock to differentiate between PTD created by tab archiver versus the
         // verification code.
         long tabArchiverTimestamp = 99L;
@@ -985,7 +983,7 @@ public class TabArchiverTest {
 
     @Test
     @MediumTest
-    public void testTabArchiverDestroyedWhileDestroyingPtd() throws TimeoutException {
+    public void testTabArchverDestroyedWhileDestroyingPTD() throws TimeoutException {
         // Setup the clock to differentiate between PTD created by tab archiver versus the
         // verification code.
         long tabArchiverTimestamp = 99L;

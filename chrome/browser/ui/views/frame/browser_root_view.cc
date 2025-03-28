@@ -434,14 +434,25 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
     if (active_tab_index.has_value()) {
       Tab* active_tab = tabstrip()->tab_at(active_tab_index.value());
       if (active_tab && active_tab->GetVisible()) {
-        gfx::RectF bounds(active_tab->GetMirroredBounds());
-        // The root of the views tree that hosts tabstrip is BrowserRootView.
-        // Except in Mac Immersive Fullscreen where the tabstrip is hosted in
-        // `overlay_widget` or `tab_overlay_widget`, each have their own root
-        // view.
-        ConvertRectToTarget(tabstrip(), tabstrip()->GetWidget()->GetRootView(),
-                            &bounds);
-        canvas->ClipRect(bounds, SkClipOp::kDifference);
+        auto clip_rect_for_tab = [canvas, this](Tab* tab) {
+          gfx::RectF bounds(tab->GetMirroredBounds());
+          // The root of the views tree that hosts tabstrip is BrowserRootView.
+          // Except in Mac Immersive Fullscreen where the tabstrip is hosted in
+          // `overlay_widget` or `tab_overlay_widget`, each have their own root
+          // view.
+          ConvertRectToTarget(tabstrip(),
+                              tabstrip()->GetWidget()->GetRootView(), &bounds);
+          canvas->ClipRect(bounds, SkClipOp::kDifference);
+        };
+
+        if (active_tab->split()) {
+          for (Tab* split_tab :
+               active_tab->controller()->GetTabsInSplit(active_tab)) {
+            clip_rect_for_tab(split_tab);
+          }
+        } else {
+          clip_rect_for_tab(active_tab);
+        }
       }
     }
     canvas->UndoDeviceScaleFactor();

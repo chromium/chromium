@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">אין תמיכה בציוד היקפי במצב אורח</translation>
 <translation id="1270290102613614947">המקלדת הווירטואלית מושבתת</translation>
 <translation id="1272079795634619415">הפסקה</translation>
+<translation id="12741168609094094">אפשר לבחור כל דבר במסך כדי לחפש, להעתיק טקסט ועוד</translation>
 <translation id="1275285675049378717">מספק חשמל ל-<ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">נבחר</translation>
 <translation id="1276975447697633661">בחירת הקובץ והקשה על <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">נקודת האינטרנט כבויה</translation>
 <translation id="1731815243805539470">מעבר אל המשתמש הקודם</translation>
 <translation id="1733996486177697563">אפשר להחליף בין עיצוב כהה לעיצוב בהיר. לוחצים לחיצה ארוכה על שולחן העבודה ובוחרים באפשרות 'טפט וסגנון'.</translation>
+<translation id="1735992454301033090">האזור שנבחר, אפשר להזיז אותו עם מקשי החיצים</translation>
 <translation id="1736898441010944794">‏"<ph name="NAME" />" זמין למכשירי Bluetooth.</translation>
 <translation id="1737078180382804488">ביטול ההגדרה של הצגת ההתראות שבטלפון</translation>
 <translation id="174102739345480129">כלי הסימון מושבת.</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806">יום <ph name="DAY_OF_WEEK" /> בשבוע שעבר</translation>
 <translation id="2687510499067466116">מקשי הקיצור שונו</translation>
 <translation id="2689613560355655046">שולחן עבודה וירטואלי 8</translation>
+<translation id="2692092709110488417">‏מקישים על Tab כדי להדגיש ולהזיז את האזור שנבחר</translation>
 <translation id="2695305337569143674">אינטרנט</translation>
 <translation id="2697697418792422688">צפייה בהגדרות המקלדת. בחרת את <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">צריך להשתמש באפליקציית "העברת תוכן" כדי להעביר את הנתונים מהחשבון הבית ספרי שלך לחשבון האישי שלך</translation>
@@ -551,6 +554,7 @@
 <translation id="2872353916818027657">החלפת הצג הראשי</translation>
 <translation id="2872961005593481000">כיבוי</translation>
 <translation id="2876338922445400217">הגדלת התצוגה במסך</translation>
+<translation id="2876760662374103627">התכונה "שליטה באמצעות תנועות הפנים" פעילה</translation>
 <translation id="2878884018241093801">אין פריטים אחרונים</translation>
 <translation id="2880541185262491188">היו יותר מדי ניסיונות להזנת קוד האימות. צריך להמתין <ph name="TIME_LEFT" /> ולנסות שוב</translation>
 <translation id="2883271196820422439">המשך השליטה בעכבר מהמקלדת</translation>
@@ -1032,6 +1036,7 @@
 <translation id="4412698727486357573">מרכז העזרה</translation>
 <translation id="4412944820643904175">התכונה <ph name="FEATURE_NAME" /> מושבתת.</translation>
 <translation id="4417647906073317561">ההגדרות של מצב הריכוז. אפשר להגדיר טיימר, משימה ומוזיקה כדי להיכנס לקצב העבודה.</translation>
+<translation id="4418600384772451109">סגירת החלונית</translation>
 <translation id="4424159417645388645">שולחן עבודה וירטואלי 5</translation>
 <translation id="4426817706804363424">כל הכבוד!</translation>
 <translation id="4430019312045809116">עוצמת קול</translation>
@@ -1516,6 +1521,7 @@
 <translation id="595202126637698455">מעקב אחר הביצועים מופעל</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">משתמש בפיקוח</translation>
+<translation id="596035801491797438">השבתת התכונה "שליטה באמצעות תנועות הפנים"</translation>
 <translation id="5960410286721553511">הצגה של המדיה והתמונות שבטלפון מהזמן האחרון</translation>
 <translation id="5965524703725988602">הפעלה או השבתה של עיצוב כהה. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">מעבר קדימה בין חלונות</translation>
@@ -2229,6 +2235,7 @@
 <translation id="8287009018010202411">פרודוקטיביות</translation>
 <translation id="828708037801473432">כבויה</translation>
 <translation id="8297006494302853456">חלש</translation>
+<translation id="8300451473979404345">נקודת האחיזה שנבחרה. אפשר להשתמש במקשי החיצים כדי להזיז אותה</translation>
 <translation id="8308637677604853869">התפריט הקודם</translation>
 <translation id="830868413617744215">ביטא</translation>
 <translation id="8314772463905284467">‏Caps Lock מופעל</translation>
@@ -2289,6 +2296,7 @@
 <translation id="851458219935658693">הצגת חלונות משולחן העבודה הווירטואלי הנוכחי, כפתור הבחירה נבחר</translation>
 <translation id="851660987304951246">כדאי להשתמש בכלי 'עזרה בקריאה' כדי לסכם תוכן או לשאול שאלות במהירות</translation>
 <translation id="8517041960877371778">ייתכן שה-<ph name="DEVICE_TYPE" /> לא ייטען כשהוא פועל.</translation>
+<translation id="8519329096920173967">‏חיפוש במסך שלי באמצעות Google Lens</translation>
 <translation id="8535393432370007982">ביטול של סדר המיון לפי צבע</translation>
 <translation id="8536886494750559755">הצגת ההגדרות של "שיתוף מהיר". במצב גלוי לכולם למשך <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">הטקסט הועתק ללוח</translation>

@@ -168,8 +168,9 @@ enum DataType {
   // standard syncable prefs.
   PLUS_ADDRESS_SETTING,
 
-  // Loyalty cards stored in the Google Wallet.
+  // Valuables stored in the Google Wallet.
   // Read-only on the client.
+  // TODO(crbug.com/393119606): Rename to AUTOFILL_VALUABLE
   AUTOFILL_LOYALTY_CARD,
 
   // Account-local metadata for shared tab groups.

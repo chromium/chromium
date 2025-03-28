@@ -1288,9 +1288,7 @@ TEST_F(InlineNodeTest, PreservedNewlineWithRemovedBidiAndRelayout) {
             "<pre id=container>foo<span dir=rtl>\nbar</span></pre>");
   EXPECT_EQ(String(u"foo\u2067\u2069\n\u2067bar\u2069"), GetText());
 
-  GetDocument()
-      .QuerySelector(AtomicString("span"))
-      ->removeAttribute(html_names::kDirAttr);
+  QuerySelector("span")->removeAttribute(html_names::kDirAttr);
   UpdateAllLifecyclePhasesForTest();
 
   // The bidi control characters around '\n' should not preserve
@@ -1302,9 +1300,7 @@ TEST_F(InlineNodeTest, PreservedNewlineWithRemovedLtrDirAndRelayout) {
             "<pre id=container>foo<span dir=ltr>\nbar</span></pre>");
   EXPECT_EQ(String(u"foo\u2066\u2069\n\u2066bar\u2069"), GetText());
 
-  GetDocument()
-      .QuerySelector(AtomicString("span"))
-      ->removeAttribute(html_names::kDirAttr);
+  QuerySelector("span")->removeAttribute(html_names::kDirAttr);
   UpdateAllLifecyclePhasesForTest();
 
   // The bidi control characters around '\n' should not preserve
@@ -1329,9 +1325,7 @@ TEST_F(InlineNodeTest, CollapsibleSpaceFollowingBRWithNoWrapStyle) {
   SetupHtml("t", "<div id=t><span style=white-space:pre><br></span> </div>");
   EXPECT_EQ("\n", GetText());
 
-  GetDocument()
-      .QuerySelector(AtomicString("span"))
-      ->removeAttribute(html_names::kStyleAttr);
+  QuerySelector("span")->removeAttribute(html_names::kStyleAttr);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ("\n", GetText());
 }
@@ -1340,9 +1334,7 @@ TEST_F(InlineNodeTest, CollapsibleSpaceFollowingNewlineWithPreStyle) {
   SetupHtml("t", "<div id=t><span style=white-space:pre>\n</span> </div>");
   EXPECT_EQ("\n", GetText());
 
-  GetDocument()
-      .QuerySelector(AtomicString("span"))
-      ->removeAttribute(html_names::kStyleAttr);
+  QuerySelector("span")->removeAttribute(html_names::kStyleAttr);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ("", GetText());
 }

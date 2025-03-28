@@ -461,7 +461,7 @@ void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
       supported_method == kAndroidPayMethod ||
       supported_method == kGooglePayAuthenticationMethod) {
     SetAndroidPayMethodData(execution_context.GetIsolate(), input, output,
-                            IGNORE_EXCEPTION);
+                            IgnoreException(execution_context.GetIsolate()));
   }
 
   // Parse method data to avoid parsing JSON in the browser.

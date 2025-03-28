@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/shared_storage_test_utils.h"
 #include "content/public/test/test_renderer_host.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -63,8 +64,10 @@ class TestLockRequest : public blink::mojom::LockRequest {
 class SharedStorageLockManagerTest : public RenderViewHostTestHarness {
  public:
   SharedStorageLockManagerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
+    web_locks_feature_.InitAndEnableFeature(
         blink::features::kSharedStorageWebLocks);
+    transactional_batch_update_feature_.InitAndEnableFeature(
+        network::features::kSharedStorageTransactionalBatchUpdate);
   }
 
   void SetUp() override {
@@ -115,6 +118,8 @@ class SharedStorageLockManagerTest : public RenderViewHostTestHarness {
   std::unique_ptr<SharedStorageLockManager> test_lock_manager_;
   std::unique_ptr<TestLockRequest> external_lock_request1_;
   std::unique_ptr<TestLockRequest> external_lock_request2_;
+  base::test::ScopedFeatureList web_locks_feature_;
+  base::test::ScopedFeatureList transactional_batch_update_feature_;
 
  private:
   void CreateExternalLockRequestHelper(
@@ -156,7 +161,6 @@ class SharedStorageLockManagerTest : public RenderViewHostTestHarness {
 
   mojo::Remote<blink::mojom::LockManager> external_lock_manager1_;
   mojo::Remote<blink::mojom::LockManager> external_lock_manager2_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SharedStorageLockManagerTest,
@@ -289,6 +293,8 @@ TEST_F(SharedStorageLockManagerTest, BatchUpdateWithLock_ImmediatelyHandled) {
       methods_with_options;
   methods_with_options.push_back(MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
                                                 /*ignore_if_present=*/true));
+  methods_with_options.push_back(MojomSetMethod(/*key=*/u"c", /*value=*/u"d",
+                                                /*ignore_if_present=*/true));
 
   base::test::TestFuture<const std::string&> error_message_future;
 
@@ -304,6 +310,7 @@ TEST_F(SharedStorageLockManagerTest, BatchUpdateWithLock_ImmediatelyHandled) {
   EXPECT_TRUE(error_message_future.IsReady());
   EXPECT_TRUE(error_message_future.Take().empty());
   EXPECT_EQ(SharedStorageGet(origin, /*key=*/u"a"), u"b");
+  EXPECT_EQ(SharedStorageGet(origin, /*key=*/u"c"), u"d");
 }
 
 TEST_F(SharedStorageLockManagerTest, BatchUpdateWithLock_WaitForGranted) {
@@ -316,6 +323,8 @@ TEST_F(SharedStorageLockManagerTest, BatchUpdateWithLock_WaitForGranted) {
   std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
       methods_with_options;
   methods_with_options.push_back(MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                                /*ignore_if_present=*/true));
+  methods_with_options.push_back(MojomSetMethod(/*key=*/u"c", /*value=*/u"d",
                                                 /*ignore_if_present=*/true));
 
   base::test::TestFuture<const std::string&> error_message_future;
@@ -332,6 +341,7 @@ TEST_F(SharedStorageLockManagerTest, BatchUpdateWithLock_WaitForGranted) {
   EXPECT_TRUE(external_lock_request1_->granted());
   EXPECT_FALSE(error_message_future.IsReady());
   EXPECT_EQ(SharedStorageGet(origin, /*key=*/u"a"), u"");
+  EXPECT_EQ(SharedStorageGet(origin, /*key=*/u"c"), u"");
 
   // After the external lock is released, the `SharedStorageBatchUpdate()` gets
   // handled.
@@ -341,11 +351,22 @@ TEST_F(SharedStorageLockManagerTest, BatchUpdateWithLock_WaitForGranted) {
   EXPECT_TRUE(error_message_future.IsReady());
   EXPECT_TRUE(error_message_future.Take().empty());
   EXPECT_EQ(SharedStorageGet(origin, /*key=*/u"a"), u"b");
+  EXPECT_EQ(SharedStorageGet(origin, /*key=*/u"c"), u"d");
 }
+
+class SharedStorageLockManagerTransactionalBatchUpdateDisabledTest
+    : public SharedStorageLockManagerTest {
+ public:
+  SharedStorageLockManagerTransactionalBatchUpdateDisabledTest() {
+    transactional_batch_update_feature_.Reset();
+    transactional_batch_update_feature_.InitAndDisableFeature(
+        network::features::kSharedStorageTransactionalBatchUpdate);
+  }
+};
 
 // Test `SharedStorageBatchUpdate` with two methods. The first method requests a
 // lock and waits for it to be granted. The second method is handled first.
-TEST_F(SharedStorageLockManagerTest,
+TEST_F(SharedStorageLockManagerTransactionalBatchUpdateDisabledTest,
        BatchUpdate_FirstMethodLockWaitForGranted) {
   url::Origin origin = url::Origin::Create(GURL("https://foo.com"));
 
@@ -391,7 +412,8 @@ TEST_F(SharedStorageLockManagerTest,
 // Test `SharedStorageBatchUpdate` with two methods, both requesting locks and
 // waiting for them to be granted. The second method's lock is granted first,
 // and thus the second method is handled first.
-TEST_F(SharedStorageLockManagerTest, BatchUpdate_SecondMethodLockGrantedFirst) {
+TEST_F(SharedStorageLockManagerTransactionalBatchUpdateDisabledTest,
+       BatchUpdate_SecondMethodLockGrantedFirst) {
   url::Origin origin = url::Origin::Create(GURL("https://foo.com"));
 
   CreateExternalLockRequest1(origin, /*lock_name=*/"lock1",
@@ -448,7 +470,7 @@ TEST_F(SharedStorageLockManagerTest, BatchUpdate_SecondMethodLockGrantedFirst) {
   EXPECT_EQ(SharedStorageGet(origin, /*key=*/u"c"), u"d");
 }
 
-TEST_F(SharedStorageLockManagerTest,
+TEST_F(SharedStorageLockManagerTransactionalBatchUpdateDisabledTest,
        BatchUpdate_BatchLockSameWithInnerMethodLock_Deadlock) {
   url::Origin origin = url::Origin::Create(GURL("https://foo.com"));
 
@@ -474,7 +496,7 @@ TEST_F(SharedStorageLockManagerTest,
   EXPECT_EQ(SharedStorageGet(origin, /*key=*/u"a"), u"");
 }
 
-TEST_F(SharedStorageLockManagerTest,
+TEST_F(SharedStorageLockManagerTransactionalBatchUpdateDisabledTest,
        BatchUpdate_TwoInnerMethodsWithSameLock_ImmediatelyHandled) {
   url::Origin origin = url::Origin::Create(GURL("https://foo.com"));
 

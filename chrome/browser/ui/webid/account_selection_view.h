@@ -80,16 +80,16 @@ class AccountSelectionView {
   virtual ~AccountSelectionView() = default;
 
   // Instructs the view to show the provided accounts to the user.
-  // `rp_for_display` is the relying party's URL. All IDP-specific information,
-  // is stored in `idp_list`. `sign_in_mode`
+  // `rp_data` is the relying party's data, such as the display name and icon.
+  // All IDP-specific information, is stored in `idp_list`. `sign_in_mode`
   // represents whether this is an auto re-authn flow. If it is the auto
-  // re-authn flow, `idp_list` will only include the single
-  // returning account and its IDP. `new_accounts` is a vector where each member
-  // is a newly logged in account that ought to be prioritized in the UI.
-  // Returns true if it was possible to show UI. If this method could not show
-  // UI and called Dismiss, returns false.
+  // re-authn flow, `idp_list` will only include the single returning account
+  // and its IDP. `new_accounts` is a vector where each member is a newly logged
+  // in account that ought to be prioritized in the UI. Returns true if it was
+  // possible to show UI. If this method could not show UI and called Dismiss,
+  // returns false.
   virtual bool Show(
-      const std::string& rp_for_display,
+      const content::RelyingPartyData& rp_data,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       Account::SignInMode sign_in_mode,

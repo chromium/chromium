@@ -12,11 +12,20 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.DISCOVER_FEED;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 
+import android.content.Context;
+import android.view.View;
+
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -35,6 +44,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
 import java.util.Map;
 
 /** Unit tests for {@link NtpCustomizationMediator} */
@@ -44,17 +54,25 @@ public class NtpCustomizationMediatorUnitTest {
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private NtpCustomizationBottomSheetContent mBottomSheetContent;
-    @Mock private PropertyModel mPropertyModel;
+    @Mock private PropertyModel mViewFlipperPropertyModel;
+    @Mock private PropertyModel mContainerPropertyModel;
 
     private NtpCustomizationMediator mMediator;
     private Map<Integer, Integer> mViewFlipperMap;
+    private ListContainerViewDelegate mListDelegate;
+    private Context mContext;
 
     @Before
     public void setUp() {
+        mContext = ApplicationProvider.getApplicationContext();
         mMediator =
                 new NtpCustomizationMediator(
-                        mBottomSheetController, mBottomSheetContent, mPropertyModel);
+                        mBottomSheetController,
+                        mBottomSheetContent,
+                        mViewFlipperPropertyModel,
+                        mContainerPropertyModel);
         mViewFlipperMap = mMediator.getViewFlipperMapForTesting();
+        mListDelegate = mMediator.createListDelegate();
     }
 
     @Test
@@ -128,7 +146,7 @@ public class NtpCustomizationMediatorUnitTest {
 
         mMediator.showBottomSheet(bottomSheetType);
 
-        verify(mPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(viewFlipperIndex));
+        verify(mViewFlipperPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(viewFlipperIndex));
         assertEquals(bottomSheetType, (int) mMediator.getCurrentBottomSheetForTesting());
     }
 
@@ -151,7 +169,7 @@ public class NtpCustomizationMediatorUnitTest {
 
         verify(mBottomSheetController, never())
                 .hideContent(any(BottomSheetContent.class), anyBoolean());
-        verify(mPropertyModel, never()).set(eq(LAYOUT_TO_DISPLAY), anyInt());
+        verify(mViewFlipperPropertyModel, never()).set(eq(LAYOUT_TO_DISPLAY), anyInt());
     }
 
     @Test
@@ -166,7 +184,7 @@ public class NtpCustomizationMediatorUnitTest {
         assertNull(mMediator.getCurrentBottomSheetForTesting());
 
         // Verifies that showBottomSheet() is not called.
-        verify(mPropertyModel, never()).set(eq(LAYOUT_TO_DISPLAY), anyInt());
+        verify(mViewFlipperPropertyModel, never()).set(eq(LAYOUT_TO_DISPLAY), anyInt());
     }
 
     @Test
@@ -182,25 +200,34 @@ public class NtpCustomizationMediatorUnitTest {
         verify(mBottomSheetController, never())
                 .hideContent(any(BottomSheetContent.class), anyBoolean());
         assertEquals(BottomSheetType.MAIN, (int) mMediator.getCurrentBottomSheetForTesting());
-        verify(mPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(10));
+        verify(mViewFlipperPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(10));
     }
 
     @Test
     @SmallTest
     public void testDestroy() {
+        // Verifies mViewFlipperMap is cleared.
         mViewFlipperMap.put(BottomSheetType.NTP_CARDS, 9);
         mViewFlipperMap.put(BottomSheetType.MAIN, 10);
 
         assertEquals(2, mViewFlipperMap.size());
         mMediator.destroy();
         assertEquals(0, mViewFlipperMap.size());
+
+        // Verifies mTypeToListenerMap is cleared.
+        Map<Integer, View.OnClickListener> typeToListenerMap =
+                mMediator.getTypeToListenersForTesting();
+        typeToListenerMap.put(BottomSheetType.NTP_CARDS, view -> {});
+        assertEquals(1, typeToListenerMap.size());
+        mMediator.destroy();
+        assertEquals(0, typeToListenerMap.size());
     }
 
     @Test
     @SmallTest
     public void testBottomSheetObserver() {
         // Verifies the supplier is set to true when the sheet opens.
-        BottomSheetObserver observer = mMediator.getBottomSheetObserver();
+        BottomSheetObserver observer = mMediator.getBottomSheetObserverForTesting();
         observer.onSheetOpened(0);
         verify(mBottomSheetContent).onSheetOpened();
 
@@ -214,5 +241,45 @@ public class NtpCustomizationMediatorUnitTest {
         observer.onSheetClosed(0); // Closes the sheet by clicking the system back button.
         verify(mBottomSheetContent).onSheetClosed();
         verify(mBottomSheetController).removeObserver(eq(observer));
+    }
+
+    @Test
+    @SmallTest
+    public void testListContainerViewDelegate() {
+        // Verifies that the content of the delegate.getListItems() is consist of MAIN and FEEDS
+        // while MAIN comes before FEEDS.
+        List<Integer> content = mListDelegate.getListItems();
+        assertEquals(NTP_CARDS, (int) content.get(0));
+        assertEquals(DISCOVER_FEED, (int) content.get(1));
+
+        // Verifies the subtitle of the "feeds" list item is "On" and is null for other list item.
+        assertEquals("On", mListDelegate.getListItemSubtitle(DISCOVER_FEED, mContext));
+        assertNull(mListDelegate.getListItemSubtitle(MAIN, mContext));
+
+        // Verifies the listener returned from the delegate is in mTypeToListeners map.
+        Map<Integer, View.OnClickListener> typeToListenerMap =
+                mMediator.getTypeToListenersForTesting();
+        View.OnClickListener ntpListener = mock(View.OnClickListener.class);
+        View.OnClickListener feedsListener = mock(View.OnClickListener.class);
+        typeToListenerMap.put(NTP_CARDS, ntpListener);
+        typeToListenerMap.put(DISCOVER_FEED, feedsListener);
+        assertEquals(ntpListener, mListDelegate.getListener(NTP_CARDS));
+        assertEquals(feedsListener, mListDelegate.getListener(DISCOVER_FEED));
+    }
+
+    @Test
+    @SmallTest
+    public void testRegisterClickListener() {
+        View.OnClickListener listener = mock(View.OnClickListener.class);
+        mMediator.registerClickListener(10, listener);
+        assertEquals(listener, mMediator.getTypeToListenersForTesting().get(10));
+    }
+
+    @Test
+    @SmallTest
+    public void testRenderContent() {
+        mMediator.renderListContent();
+        verify(mContainerPropertyModel)
+                .set(eq(LIST_CONTAINER_VIEW_DELEGATE), any(ListContainerViewDelegate.class));
     }
 }

@@ -2139,6 +2139,7 @@ static_library("browser") {
     "//components/fingerprinting_protection_filter/browser",
     "//components/fingerprinting_protection_filter/common",
     "//components/fingerprinting_protection_filter/common:prefs",
+    "//components/fingerprinting_protection_filter/interventions/browser:features",
     "//components/fingerprinting_protection_filter/mojom",
     "//components/gcm_driver",
     "//components/guest_view/buildflags",
@@ -2317,6 +2318,7 @@ static_library("browser") {
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
+    "//components/safe_browsing/core/browser/realtime:enterprise_url_lookup_service",
     "//components/safe_browsing/core/browser/realtime:policy_engine",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service",
     "//components/safe_browsing/core/browser/sync",
@@ -6788,6 +6790,7 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
+      "//chrome/browser/ui/webui/signin/history_sync_optin:mojo_bindings",
       "//chrome/services/system_signals/public/cpp/browser",
       "//components/supervised_user/core/common:features",
     ]

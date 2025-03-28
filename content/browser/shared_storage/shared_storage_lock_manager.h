@@ -20,6 +20,13 @@ class StoragePartitionImpl;
 // protected by these locks. It also provides a convenient proxy method for
 // invoking the shared storage modifier method that may or may not require
 // acquiring a lock.
+//
+// NOTE: This class contains members used exclusively by the legacy batch update
+//       implementation. When the transactional batch update is enabled
+//       (controlled by a feature flag), these members are not used.
+//       Specifically: `LegacyBatchUpdateState`,
+//       `OnMethodWithinLegacyBatchUpdateFinished()`, and
+//       `pending_legacy_batch_updates_`.
 class CONTENT_EXPORT SharedStorageLockManager
     : public blink::mojom::LockRequest {
  public:
@@ -101,16 +108,16 @@ class CONTENT_EXPORT SharedStorageLockManager
     mojo::Remote<blink::mojom::LockManager> lock_manager;
   };
 
-  struct BatchUpdateState {
-    BatchUpdateState(
+  struct LegacyBatchUpdateState {
+    LegacyBatchUpdateState(
         size_t pending_updates_count,
         SharedStorageUpdateCallback callback,
         mojo::AssociatedRemote<blink::mojom::LockHandle> lock_handle,
         mojo::Remote<blink::mojom::LockManager> lock_manager);
-    BatchUpdateState();
-    BatchUpdateState(const BatchUpdateState& other) = delete;
-    BatchUpdateState(BatchUpdateState&& other);
-    ~BatchUpdateState();
+    LegacyBatchUpdateState();
+    LegacyBatchUpdateState(const LegacyBatchUpdateState& other) = delete;
+    LegacyBatchUpdateState(LegacyBatchUpdateState&& other);
+    ~LegacyBatchUpdateState();
 
     // The number of methods within the batch that haven't been sent to the
     // `SharedStorageManager` yet. This includes methods waiting for the batch
@@ -147,7 +154,7 @@ class CONTENT_EXPORT SharedStorageLockManager
       FrameTreeNodeId main_frame_id,
       std::optional<int> worklet_id,
       SharedStorageUpdateCallback callback,
-      std::optional<int> batch_update_id);
+      std::optional<int> legacy_batch_update_id);
 
   void OnReadyToHandleUpdate(
       network::mojom::SharedStorageModifierMethodPtr method,
@@ -156,7 +163,7 @@ class CONTENT_EXPORT SharedStorageLockManager
       FrameTreeNodeId main_frame_id,
       std::optional<int> worklet_id,
       SharedStorageUpdateCallback callback,
-      std::optional<int> batch_update_id,
+      std::optional<int> legacy_batch_update_id,
       mojo::AssociatedRemote<blink::mojom::LockHandle> lock_handle,
       mojo::Remote<blink::mojom::LockManager> lock_manager);
 
@@ -171,12 +178,20 @@ class CONTENT_EXPORT SharedStorageLockManager
       mojo::AssociatedRemote<blink::mojom::LockHandle> lock_handle,
       mojo::Remote<blink::mojom::LockManager> lock_manager);
 
-  void OnMethodWithinBatchFinished(int batch_update_id,
-                                   const std::string& error_message);
+  void OnMethodWithinLegacyBatchUpdateFinished(
+      int legacy_batch_update_id,
+      const std::string& error_message);
 
   void RequestLock(const url::Origin& shared_storage_origin,
                    const std::string& lock_name,
                    LockGrantedCallback lock_granted_callback);
+
+  void NotifySharedStorageAccessed(
+      const network::mojom::SharedStorageModifierMethodPtr& method,
+      const url::Origin& shared_storage_origin,
+      AccessScope scope,
+      FrameTreeNodeId main_frame_id,
+      std::optional<int> worklet_id);
 
   // `storage_partition_` indirectly owns `this`, and thus outlives `this`.
   raw_ref<StoragePartitionImpl> storage_partition_;
@@ -198,7 +213,7 @@ class CONTENT_EXPORT SharedStorageLockManager
 
   // Stores the state of unfinished batch updates. The map is keyed by the batch
   // update ID.
-  std::map<int, BatchUpdateState> pending_batch_updates_;
+  std::map<int, LegacyBatchUpdateState> pending_legacy_batch_updates_;
 
   base::WeakPtrFactory<SharedStorageLockManager> weak_ptr_factory_{this};
 };

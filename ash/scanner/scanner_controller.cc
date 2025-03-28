@@ -88,7 +88,8 @@ std::u16string GetTitleForActionProgressNotification(
       return l10n_util::GetStringUTF16(
           IDS_ASH_SCANNER_ACTION_PROGRESS_TITLE_CREATING);
     case manta::proto::ScannerAction::kCopyToClipboard:
-      // No progress notification is shown for the copy to clipboard action.
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_PROGRESS_TITLE_COPYING);
     case manta::proto::ScannerAction::ACTION_NOT_SET:
       NOTREACHED();
   }
@@ -109,7 +110,7 @@ std::u16string GetDisplaySourceForActionProgressNotification(
       return l10n_util::GetStringUTF16(
           IDS_ASH_SCANNER_ACTION_NEW_GOOGLE_SHEET_SOURCE);
     case manta::proto::ScannerAction::kCopyToClipboard:
-      // No progress notification is shown for the copy to clipboard action.
+      return l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ACTION_COPY_TEXT_SOURCE);
     case manta::proto::ScannerAction::ACTION_NOT_SET:
       NOTREACHED();
   }
@@ -161,18 +162,10 @@ std::u16string GetToastMessageForActionFailure(
   }
 }
 
-// Shows an action progress notification if needed. The new notification will
-// remove the previous action notification if there is one.
+// Shows an action progress notification. The new notification will remove the
+// previous action notification if there was one.
 void ShowActionProgressNotification(
     const ScannerActionViewModel& scanner_action) {
-  // No need to show a progress notification for the copy to clipboard action
-  // since this action should be quite fast in typical use cases.
-  manta::proto::ScannerAction::ActionCase action_case =
-      scanner_action.GetActionCase();
-  if (action_case == manta::proto::ScannerAction::kCopyToClipboard) {
-    return;
-  }
-
   message_center::RichNotificationData optional_fields;
   // Show an infinite loading progress bar.
   optional_fields.progress = -1;
@@ -182,6 +175,8 @@ void ShowActionProgressNotification(
   auto* message_center = message_center::MessageCenter::Get();
   message_center->RemoveNotification(kScannerActionNotificationId,
                                      /*by_user=*/false);
+  manta::proto::ScannerAction::ActionCase action_case =
+      scanner_action.GetActionCase();
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_PROGRESS,

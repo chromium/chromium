@@ -108,14 +108,14 @@ class RTCPeerConnectionTest : public testing::Test {
   void AddStream(V8TestingScope& scope,
                  RTCPeerConnection* pc,
                  MediaStream* stream) {
-    pc->addStream(scope.GetScriptState(), stream, scope.GetExceptionState());
+    pc->addStream(scope.GetIsolate(), stream, scope.GetExceptionState());
     EXPECT_EQ("", GetExceptionMessage(scope));
   }
 
   void RemoveStream(V8TestingScope& scope,
                     RTCPeerConnection* pc,
                     MediaStream* stream) {
-    pc->removeStream(stream, scope.GetExceptionState());
+    pc->removeStream(scope.GetIsolate(), stream, scope.GetExceptionState());
     EXPECT_EQ("", GetExceptionMessage(scope));
   }
 
@@ -212,8 +212,10 @@ TEST_F(RTCPeerConnectionTest, GetTrackRemoveStreamAndGCAll) {
     // Transceivers will still reference the stream even after it is "removed".
     // To make the GC tests work, clear the stream from tracks so that the
     // stream does not keep tracks alive.
-    while (!stream->getTracks().empty())
-      stream->removeTrack(stream->getTracks()[0], scope.GetExceptionState());
+    while (!stream->getTracks().empty()) {
+      stream->removeTrack(scope.GetIsolate(), stream->getTracks()[0],
+                          scope.GetExceptionState());
+    }
   }
 
   // This will destroy |MediaStream|, |MediaStreamTrack| and its
@@ -249,8 +251,10 @@ TEST_F(RTCPeerConnectionTest,
     // Transceivers will still reference the stream even after it is "removed".
     // To make the GC tests work, clear the stream from tracks so that the
     // stream does not keep tracks alive.
-    while (!stream->getTracks().empty())
-      stream->removeTrack(stream->getTracks()[0], scope.GetExceptionState());
+    while (!stream->getTracks().empty()) {
+      stream->removeTrack(scope.GetIsolate(), stream->getTracks()[0],
+                          scope.GetExceptionState());
+    }
   }
 
   // This will destroy |MediaStream| and |MediaStreamTrack| (but not

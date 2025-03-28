@@ -164,10 +164,7 @@ class PLATFORM_EXPORT FrameWidget {
   virtual bool HasImeRenderWidgetHost() const { return false; }
 
   // Called to send new cursor anchor info data to the browser.
-  virtual void UpdateCursorAnchorInfo() = 0;
-
-  // Update the current visible line bounds for the focused element.
-  virtual void UpdateLineBounds() = 0;
+  virtual void UpdateCursorAnchorInfo(bool update_requested) = 0;
 
   virtual gfx::Range CompositionRange() = 0;
   // Returns ime_text_spans and corresponding window coordinates for the list

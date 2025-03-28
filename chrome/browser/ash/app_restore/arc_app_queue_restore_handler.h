@@ -50,32 +50,6 @@ struct CpuTick {
   }
 };
 
-// This is used for logging, so do not remove or reorder existing entries.
-enum class RestoreResult {
-  kFinish = 0,
-  kNotFinish = 1,
-
-  // Add any new values above this one, and update kMaxValue to the highest
-  // enumerator value.
-  kMaxValue = kNotFinish,
-};
-
-// This is used for logging, so do not remove or reorder existing entries.
-enum class ArcRestoreState {
-  kSuccess = 0,
-  kSuccessWithMemoryPressure = 1,
-  kSuccessWithCPUUsageRateLimiting = 2,
-  kSuccessWithMemoryPressureAndCPUUsageRateLimiting = 3,
-  kFailedWithMemoryPressure = 4,
-  kFailedWithCPUUsageRateLimiting = 5,
-  kFailedWithMemoryPressureAndCPUUsageRateLimiting = 6,
-  kFailedWithUnknown = 7,
-
-  // Add any new values above this one, and update kMaxValue to the highest
-  // enumerator value.
-  kMaxValue = kFailedWithUnknown,
-};
-
 constexpr char kRestoredAppWindowCountHistogram[] =
     "Apps.RestoreArcWindowCount";
 
@@ -284,10 +258,6 @@ class ArcAppQueueRestoreHandler
       ResourcedClient::PressureLevel::MODERATE;
 
   std::optional<bool> should_apply_cpu_restirction_;
-
-  // Record if the restore process faced memory pressure or CPU usage limiting.
-  bool was_memory_pressured_ = false;
-  bool was_cpu_usage_limited_ = false;
 
   mojo::Remote<cros_healthd::mojom::CrosHealthdProbeService> probe_service_;
 

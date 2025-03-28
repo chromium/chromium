@@ -266,10 +266,6 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
                       WebFeature::kStaticPropertyInAnimation);
   }
 
-  // Presently limited to a single Native Paint Worklet property per
-  // animation.
-  NativePaintImageGenerator* generator = nullptr;
-
   // Limit to one native property and one CSS custom property per animation.
   for (const auto& property : properties) {
     if (!property.IsCSSProperty()) {
@@ -299,53 +295,54 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
       }
     }
 
-    switch (property.GetCSSProperty().PropertyID()) {
-      case CSSPropertyID::kBackgroundColor:
-      case CSSPropertyID::kBoxShadow:
-      case CSSPropertyID::kClipPath:
-        if (!layout_object) {
-          // Not having a layout object is a reason for not compositing marked
-          // in CompositorAnimations::CheckCanStartElementOnCompositor.
-          break;
-        }
-        if (generator) {
-          // Presently limited to a single Native Paint Worklet property per
-          // animation.
-          DefaultToUnsupportedProperty(unsupported_properties_for_tracing,
-                                       property, &reasons);
-          break;
-        }
-        if (property.GetCSSProperty().PropertyID() ==
-                CSSPropertyID::kBackgroundColor &&
-            RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled()) {
-          generator = target_element.GetDocument()
-                          .GetFrame()
-                          ->GetBackgroundColorPaintImageGenerator();
-        } else if (property.GetCSSProperty().PropertyID() ==
-                       CSSPropertyID::kBoxShadow &&
-                   RuntimeEnabledFeatures ::
-                       CompositeBoxShadowAnimationEnabled()) {
-          generator = target_element.GetDocument()
-                          .GetFrame()
-                          ->GetBoxShadowPaintImageGenerator();
-        } else if (property.GetCSSProperty().PropertyID() ==
-                       CSSPropertyID::kClipPath &&
-                   RuntimeEnabledFeatures::
-                       CompositeClipPathAnimationEnabled()) {
-          generator = target_element.GetDocument()
-                          .GetFrame()
-                          ->GetClipPathPaintImageGenerator();
-        }
+    // Presently native paint worklets only work with monotonic timelines.
+    NativePaintImageGenerator* generator = nullptr;
+    Animation::NativePaintWorkletReasons npw_reasons =
+        Animation::NativePaintWorkletProperties::kNoPaintWorklet;
+    if (animation_to_add) {
+      AnimationTimeline* timeline = animation_to_add->TimelineInternal();
+      if (timeline && timeline->IsMonotonicallyIncreasing()) {
+        npw_reasons = animation_to_add->GetNativePaintWorkletReasons();
+      }
+    }
 
-        if (!generator ||
-            !generator->GetAnimationIfCompositable(&target_element)) {
-          DefaultToUnsupportedProperty(unsupported_properties_for_tracing,
-                                       property, &reasons);
-        }
-        break;
+    if (layout_object) {
+      // Not having a layout object is a reason for not compositing marked
+      // in CompositorAnimations::CheckCanStartElementOnCompositor.
+      switch (property.GetCSSProperty().PropertyID()) {
+        case CSSPropertyID::kBackgroundColor:
+          if (npw_reasons == Animation::NativePaintWorkletProperties::
+                                 kBackgroundColorPaintWorklet) {
+            DCHECK(RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled());
+            generator = target_element.GetDocument()
+                            .GetFrame()
+                            ->GetBackgroundColorPaintImageGenerator();
+          }
+          if (!generator ||
+              !generator->GetAnimationIfCompositable(&target_element)) {
+            DefaultToUnsupportedProperty(unsupported_properties_for_tracing,
+                                         property, &reasons);
+          }
+          break;
 
-      default:
-        break;
+        case CSSPropertyID::kClipPath:
+          if (npw_reasons ==
+              Animation::NativePaintWorkletProperties::kClipPathPaintWorklet) {
+            DCHECK(RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled());
+            generator = target_element.GetDocument()
+                            .GetFrame()
+                            ->GetClipPathPaintImageGenerator();
+          }
+          if (!generator ||
+              !generator->GetAnimationIfCompositable(&target_element)) {
+            DefaultToUnsupportedProperty(unsupported_properties_for_tracing,
+                                         property, &reasons);
+          }
+          break;
+
+        default:
+          break;
+      }
     }
 
     const PropertySpecificKeyframeVector& keyframes =
@@ -381,7 +378,6 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           // like regular filters do, so they can still be composited.
           break;
         case CSSPropertyID::kBackgroundColor:
-        case CSSPropertyID::kBoxShadow:
         case CSSPropertyID::kClipPath:
           // Handled above. No additional checks required on a per-keyframe
           // basis.

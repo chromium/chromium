@@ -266,7 +266,7 @@ void LoggedInSpokenFeedbackTest::EnableChromeVox(bool check_for_intro) {
                                           : "*");
   sm_.Call([this]() {
     ImportJSModuleForChromeVox("ChromeVox",
-                               "/chromevox/background/chromevox.js");
+                               "/chromevox/mv2/background/chromevox.js");
   });
   sm_.Call([this]() { DisableEarcons(); });
 }
@@ -283,7 +283,7 @@ void LoggedInSpokenFeedbackTest::ExecuteCommandHandlerCommand(
     std::string command) {
   ImportJSModuleForChromeVox(
       "CommandHandlerInterface",
-      "/chromevox/background/input/command_handler_interface.js");
+      "/chromevox/mv2/background/input/command_handler_interface.js");
   RunJSForChromeVox("CommandHandlerInterface.instance.onCommand('" + command +
                     "');");
 }

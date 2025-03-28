@@ -7,6 +7,8 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_pin_util.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -16,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/ui/base/window_pin_type.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
@@ -619,6 +622,34 @@ TEST_F(WorkspaceEventHandlerTest, DoubleTapCaptionTogglesMaximize) {
 
   EXPECT_FALSE(window_state->IsMaximized());
   EXPECT_EQ(bounds.ToString(), window->bounds().ToString());
+}
+
+TEST_F(WorkspaceEventHandlerTest,
+       DoubleTapOnLockedFullscreenWindowDoesNotToggleMaximize) {
+  // Enable tablet mode controller to leverage tablet mode window states for
+  // testing purposes.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  aura::test::TestWindowDelegate delegate;
+  const gfx::Rect bounds(10, 20, 30, 40);
+  const std::unique_ptr<aura::Window> window(
+      CreateTestWindow(&delegate, bounds));
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      aura::client::kResizeBehaviorCanMaximize);
+  delegate.set_window_component(HTCAPTION);
+
+  // Lock window.
+  window_util::PinWindow(window.get(), /*trusted=*/true);
+  WindowState* const window_state = WindowState::Get(window.get());
+  ASSERT_TRUE(window_state->IsTrustedPinned());
+
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
+                                     window.get());
+
+  const gfx::Point tap_target = window->bounds().top_center();
+  generator.GestureTapAt(tap_target);
+  generator.GestureTapAt(tap_target);
+  EXPECT_TRUE(window_state->IsTrustedPinned());
 }
 
 // Verifies deleting the window while dragging doesn't crash.

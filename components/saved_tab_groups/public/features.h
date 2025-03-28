@@ -30,8 +30,6 @@ BASE_DECLARE_FEATURE(kUseAlternateHistorySyncIllustration);
 
 BASE_DECLARE_FEATURE(kForceRemoveClosedTabGroupsOnStartup);
 
-BASE_DECLARE_FEATURE(kEnableTabTitleSanitization);
-
 BASE_DECLARE_FEATURE(kEnableUrlRestriction);
 
 BASE_DECLARE_FEATURE(kEnableOriginatingSavedGroupCleanUp);

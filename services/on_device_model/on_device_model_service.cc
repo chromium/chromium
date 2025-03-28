@@ -354,7 +354,8 @@ std::unique_ptr<mojom::OnDeviceModelService> OnDeviceModelService::Create(
         "Unable to load chrome_ml library.");
     return nullptr;
   }
-  if (ml::IsGpuBlocked(chrome_ml->api())) {
+  if (!optimization_guide::features::ForceCpuBackendForOnDeviceModel() &&
+      ml::IsGpuBlocked(chrome_ml->api())) {
     receiver.ResetWithReason(
         static_cast<uint32_t>(ServiceDisconnectReason::kGpuBlocked),
         "The device's GPU is not supported.");

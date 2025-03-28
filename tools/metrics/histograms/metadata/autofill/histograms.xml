@@ -2180,6 +2180,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
 </histogram>
 
+<histogram name="Autofill.DataList.Events" enum="AutofillDataListEvents"
+    expires_after="2025-08-24">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records different events about datalist suggestions and the parsing of data
+    list options. It is emitted at different times, including during parsing
+    (for the respective event), suggestion generation and popup being displayed
+  </summary>
+</histogram>
+
 <histogram name="Autofill.DataUtilization.ByPossibleType"
     enum="AutofillDataUtilizationByFieldType" expires_after="2025-08-24">
   <owner>battre@chromium.org</owner>
@@ -3156,15 +3167,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     <variant name="FillAfterSuggestion"
         summary="Given a form where the user saw FormsAI filling suggestions,
                  records whether the suggestion was filled or not."/>
-    <variant name="FillingSuggestionAfterLoading"
-        summary="Given a form where the user triggered FormsAI filling
-                 suggestions, records whether filling suggestions where
-                 generated for the form or not. (Deprecated)"/>
-    <variant name="LoadingAfterSuggestion"
-        summary="Given a form where the user saw a FormsAI trigger
-                 suggestion, records whether the user accepted the trigger
-                 suggestion and went to the state of waiting for filling
-                 suggestions to load, or not. (Deprecated)"/>
     <variant name="ReadinessAfterEligibility"
         summary="Given a FormsAI-eligible form, this metric records whether
                  the user has stored data to fill the form."/>

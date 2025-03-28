@@ -156,8 +156,6 @@ class PLATFORM_EXPORT Path {
 
   // TODO(crbug.com/378688986): convert clients to PathBuilder and remove all
   // editing (non-const) methods.
-  void SetWindRule(const WindRule);
-
   void MoveTo(const gfx::PointF&);
   void AddLineTo(const gfx::PointF&);
   void AddQuadCurveTo(const gfx::PointF& control_point,

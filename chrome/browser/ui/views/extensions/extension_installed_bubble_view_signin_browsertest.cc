@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/extensions/extension_install_ui_desktop.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/singleton_tabs.h"
@@ -93,8 +94,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsSignInBrowserTest,
       bubble_view_widget->widget_delegate());
   ASSERT_TRUE(view_delegate);
 
-  // The sign in promo should be shown for a syncable extension.
-  EXPECT_TRUE(view_delegate->model()->show_sign_in_promo());
+  // The sync promo should be shown for a syncable extension.
+  EXPECT_TRUE(
+      signin::ShouldShowExtensionSyncPromo(*browser()->profile(), *extension));
 
   // Simulate a user signing in from the promo. This should open up a new tab
   // with the sign in page.
@@ -145,7 +147,8 @@ class ExtensionInstalledBubbleViewsExplicitSignInBrowserTest
     ASSERT_TRUE(view_delegate);
 
     // The sign in promo should be shown for a syncable extension.
-    EXPECT_TRUE(view_delegate->model()->show_sign_in_promo());
+    EXPECT_TRUE(signin::ShouldShowExtensionSignInPromo(*browser()->profile(),
+                                                       *extension));
 
     // Initiate a sign in from the promo.
     BubbleSignInPromoDelegate delegate(

@@ -117,11 +117,45 @@ void PerformanceInterventionBubble::CloseBubble(
 }
 
 DialogStrings PerformanceInterventionBubble::GetStrings(int count) {
-  return {
-      l10n_util::GetStringUTF16(IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V1),
-      l10n_util::GetStringUTF16(
-          count > 1 ? IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V1
-                    : IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V1),
-      l10n_util::GetStringUTF16(
-          IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V1)};
+  const std::u16string body_text = l10n_util::GetStringUTF16(
+      count > 1 ? IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V1
+                : IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V1);
+
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::
+              kPerformanceInterventionNotificationStringImprovements)) {
+    const int string_version =
+        performance_manager::features::kNotificationStringVersion.Get();
+    if (string_version == 1) {
+      return {
+          l10n_util::GetPluralStringFUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V1, count),
+          body_text,
+          l10n_util::GetPluralStringFUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_UPDATED_V1,
+              count)};
+    } else if (string_version == 2) {
+      return {
+          l10n_util::GetPluralStringFUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V2, count),
+          body_text,
+          l10n_util::GetPluralStringFUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_UPDATED_V2,
+              count)};
+    } else {
+      return {
+          l10n_util::GetPluralStringFUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V3, count),
+          body_text,
+          l10n_util::GetPluralStringFUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_UPDATED_V2,
+              count)};
+    }
+  } else {
+    return {
+        l10n_util::GetStringUTF16(IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V1),
+        body_text,
+        l10n_util::GetStringUTF16(
+            IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V1)};
+  }
 }

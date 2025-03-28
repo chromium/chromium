@@ -551,6 +551,7 @@ Ansonsten wird das integrierte Touchpad in <ph name="TIMEOUT_SECONDS" /> wieder 
 <translation id="2872353916818027657">Hauptmonitor tauschen</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
 <translation id="2876338922445400217">Auf dem Bildschirm heranzoomen</translation>
+<translation id="2876760662374103627">Mimik-Steuerung aktiv</translation>
 <translation id="2878884018241093801">Keine kürzlich verwendeten Elemente</translation>
 <translation id="2880541185262491188">Zu viele PIN‑Eingabeversuche. Warte <ph name="TIME_LEFT" /> und versuch es dann noch einmal.</translation>
 <translation id="2883271196820422439">Tastaturmaus aktivieren</translation>
@@ -1516,6 +1517,7 @@ Keine Geräte verbunden.</translation>
 <translation id="595202126637698455">Leistungsnachverfolgung aktiviert</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Betreuter Nutzer</translation>
+<translation id="596035801491797438">Mimik-Steuerung deaktivieren</translation>
 <translation id="5960410286721553511">Die letzten Fotos und Medien von deinem Smartphone abrufen</translation>
 <translation id="5965524703725988602">Dunkles Design aktivieren/deaktivieren. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Vorwärts von Fenster zu Fenster wechseln</translation>

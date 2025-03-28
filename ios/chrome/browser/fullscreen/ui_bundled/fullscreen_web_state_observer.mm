@@ -94,7 +94,7 @@ void FullscreenWebStateObserver::DidStartLoading(web::WebState* web_state) {
   // considered as being in the SameDocument by the NavigationContext, so the
   // toolbar isn't shown in the DidFinishNavigation. For example this is
   // needed to load AMP pages from Google Search Result Page.
-  controller_->ExitFullscreen();
+  controller_->ExitFullscreen(FullscreenExitReason::kForcedByCode);
 }
 
 void FullscreenWebStateObserver::WebStateDestroyed(web::WebState* web_state) {

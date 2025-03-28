@@ -403,6 +403,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1264956950255940376">Linkes Auge zusammenkneifen</translation>
 <translation id="1265094893042958831">Vorschläge für diese Seite werden generiert…</translation>
 <translation id="1265279736024499987">Deine Apps und Einstellungen werden auf allen Chrome OS Flex-Geräten synchronisiert, auf denen du mit deinem Google-Konto angemeldet bist. Die Optionen zur Browsersynchronisation findest du in den <ph name="LINK_BEGIN" />Chrome-Einstellungen<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Nach dem Erstellen eines Screenshots oder der Suche auf dem Bildschirm weitere Aktionen wie „Zum Kalender hinzufügen“ oder „Google-Dokument erstellen“ anzeigen.</translation>
 <translation id="126710816202626562">Zielsprache:</translation>
 <translation id="1267649802567297774">Generiertes Bild <ph name="INDEX" /> von <ph name="SUBJECT" /> im Stil „<ph name="STYLE" />“ und mit der Stimmung „<ph name="MOOD" />“.</translation>
 <translation id="126768002343224824">16-fach</translation>
@@ -1561,9 +1562,9 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2081816110395725788">Inaktivität im Akkubetrieb</translation>
 <translation id="2082187087049518845">Tab gruppieren</translation>
 <translation id="2082510809738716738">Designfarbe auswählen</translation>
-<translation id="208547068587548667">In <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> anmelden</translation>
 <translation id="208586643495776849">Versuche es bitte noch einmal</translation>
 <translation id="208634871997892083">Durchgehend aktives VPN</translation>
+<translation id="208654914566977272">Vorgeschlagene Aktionen bei der Suche auf dem Bildschirm</translation>
 <translation id="2087822576218954668">Drucken: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Die Anmeldung wird erst nach der Installation von <ph name="DEVICE_OS" /> unterstützt.</translation>
 <translation id="2088564884469682888">Eingebauter TrackPoint</translation>
@@ -3990,7 +3991,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3778740492972734840">E&amp;ntwicklertools</translation>
 <translation id="3778868487658107119">Du kannst ihm Fragen stellen und ihn Dinge erledigen lassen. Er ist immer für dich da.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{dein Browserverlauf von # Website}other{dein Browserverlauf von # Websites}}</translation>
-<translation id="3779244863011082655">Anderes <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-Konto verwenden</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> kann deine Passwörter nicht auf Datenpannen prüfen. Versuch es bitte später noch einmal.</translation>
 <translation id="3781742599892759500">Mikrofonzugriff für Linux</translation>
 <translation id="3783640748446814672">Alt</translation>
@@ -5493,6 +5493,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4848191975108266266">"Ok Google" bei Google Assistant</translation>
 <translation id="4849286518551984791">Koordinierte Weltzeit (UTC/GMT)</translation>
 <translation id="4849517651082200438">Nicht installieren</translation>
+<translation id="4849731766219625109"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-Konto verwenden</translation>
 <translation id="485053257961878904">Benachrichtigungssynchronisierung konnte nicht eingerichtet werden</translation>
 <translation id="4850548109381269495">Prüfe auf beiden Geräten die Internetverbindung und aktiviere Bluetooth. Versuche es dann noch einmal.</translation>
 <translation id="4850669014075537160">Scrollen</translation>
@@ -5681,6 +5682,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4979510648199782334">Einrichtung von Microsoft 365 abgeschlossen</translation>
 <translation id="4980805016576257426">Diese Erweiterung enthält Malware.</translation>
 <translation id="4983159853748980742">Dein Passwort wurde nicht geteilt. Prüfe deine Internetverbindung und achte darauf, dass du in Chrome angemeldet bist. Versuch es dann noch einmal.</translation>
+<translation id="498624032394115435">Jeder Nutzer mit dem Link kann alle Tabs bearbeiten.</translation>
 <translation id="4986706507552097681">In den Einstellungen kannst du auswählen, was synchronisiert werden soll. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="4986728572522335985">Damit werden alle Daten auf dem Sicherheitsschlüssel und die dazugehörige PIN gelöscht</translation>
 <translation id="4987944280765486504">Dein Chromebook wird neu gestartet, sobald der Download abgeschlossen ist, und du kannst dann mit der Einrichtung fortfahren.</translation>
@@ -8286,7 +8288,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6873571253135628430">Websiteberechtigungen ändern</translation>
 <translation id="6876155724392614295">Fahrrad</translation>
 <translation id="6876469544038980967">Nicht hilfreich</translation>
-<translation id="687838958001010630">Jeder Nutzer mit dem Link kann alle Tabs bearbeiten</translation>
 <translation id="6878422606530379992">Sensorennutzung erlaubt</translation>
 <translation id="6878862640969460273">Querformat</translation>
 <translation id="6880587130513028875">Bilder wurden auf dieser Seite blockiert.</translation>

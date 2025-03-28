@@ -79,7 +79,8 @@ TEST_F(LobsterCandidateResizerTest, InflateImageCallsSnapperProvider) {
                   CreateTestBitmap(kFullImageDimensionLength,
                                    kFullImageDimensionLength),
                   /*expected_generation_seed=*/kFakeBaseGenerationSeed,
-                  /*expected_query=*/"a nice strawberry")));
+                  /*expected_query=*/"a nice strawberry",
+                  /*expected_rewritten_query=*/"a nice strawberry")));
 }
 
 TEST_F(LobsterCandidateResizerTest,

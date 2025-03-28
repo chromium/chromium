@@ -49,7 +49,7 @@ class CORE_EXPORT CSSSelectorWatch final
   static const char kSupplementName[];
 
   explicit CSSSelectorWatch(Document&);
-  virtual ~CSSSelectorWatch() = default;
+  ~CSSSelectorWatch() = default;
 
   static CSSSelectorWatch& From(Document&);
   static CSSSelectorWatch* FromIfExists(Document&);

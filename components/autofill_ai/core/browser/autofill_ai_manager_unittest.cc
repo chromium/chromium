@@ -393,19 +393,24 @@ TEST_F(AutofillAiManagerImportFormTest, StrikesForSavePromptsPerUrl) {
         .WillOnce(RunOnceCallback<2>(decline));
   }
 
-  ASSERT_TRUE(manager().MaybeImportForm(*CreatePassportForm()));
-  ASSERT_TRUE(manager().MaybeImportForm(*CreatePassportForm()));
   ASSERT_TRUE(
-      manager().MaybeImportForm(*CreatePassportForm(kOtherPassportNumber)));
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
+  ASSERT_TRUE(manager().OnFormSubmitted(
+      *CreatePassportForm(kOtherPassportNumber), /*ukm_source_id=*/{}));
   // The fourth attempt is ignored.
-  EXPECT_FALSE(manager().MaybeImportForm(*CreatePassportForm()));
+  EXPECT_FALSE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
 
   // But submitting on a different page leads to a prompt.
   check.Call();
-  EXPECT_TRUE(manager().MaybeImportForm(
-      *CreatePassportForm(kDefaultPassportNumber, "https://other.com")));
+  EXPECT_TRUE(manager().OnFormSubmitted(
+      *CreatePassportForm(kDefaultPassportNumber, "https://other.com"),
+      /*ukm_source_id=*/{}));
   // And so does submitting a different entity type on the original page.
-  EXPECT_TRUE(manager().MaybeImportForm(*CreateVehicleForm()));
+  EXPECT_TRUE(
+      manager().OnFormSubmitted(*CreateVehicleForm(), /*ukm_source_id=*/{}));
 }
 
 // Tests that save prompts are only shown three times per strike attribute (in
@@ -434,19 +439,26 @@ TEST_F(AutofillAiManagerImportFormTest, StrikesForSavePromptsPerAttribute) {
         .WillOnce(RunOnceCallback<2>(decline));
   }
 
-  ASSERT_TRUE(manager().MaybeImportForm(*CreatePassportForm()));
-  ASSERT_TRUE(manager().MaybeImportForm(*CreatePassportForm()));
-  ASSERT_TRUE(manager().MaybeImportForm(*CreatePassportForm()));
-  ASSERT_TRUE(manager().MaybeImportForm(*CreatePassportForm()));
-  ASSERT_TRUE(manager().MaybeImportForm(*CreatePassportForm()));
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
   // The next attempt is ignored, even though it is a different domain.
-  EXPECT_FALSE(manager().MaybeImportForm(
-      *CreatePassportForm(kDefaultPassportNumber, "https://other.com")));
+  EXPECT_FALSE(manager().OnFormSubmitted(
+      *CreatePassportForm(kDefaultPassportNumber, "https://other.com"),
+      /*ukm_source_id*/ {}));
 
   // But submitting a different passport number leads to a prompt.
   check.Call();
-  EXPECT_TRUE(manager().MaybeImportForm(
-      *CreatePassportForm(kOtherPassportNumber, "https://other.com")));
+  EXPECT_TRUE(manager().OnFormSubmitted(
+      *CreatePassportForm(kOtherPassportNumber, "https://other.com"),
+      /*ukm_source_id*/ {}));
 }
 
 // Tests that update prompts are only shown three times per entity that is to
@@ -493,31 +505,32 @@ TEST_F(AutofillAiManagerImportFormTest, StrikesForUpdates) {
         .WillRepeatedly(RunOnceCallbackRepeatedly<2>(decline));
   }
 
-  ASSERT_TRUE(manager().MaybeImportForm(*CreatePassportForm()));
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
   // The first dialog was accepted.
   EXPECT_THAT(GetEntityInstances(), SizeIs(1));
 
   // Simulate three submissions - the last prompt is accepted.
-  ASSERT_TRUE(
-      manager().MaybeImportForm(*CreatePassportForm(kOtherPassportNumber)));
-  ASSERT_TRUE(
-      manager().MaybeImportForm(*CreatePassportForm(kOtherPassportNumber)));
-  ASSERT_TRUE(
-      manager().MaybeImportForm(*CreatePassportForm(kOtherPassportNumber)));
+  ASSERT_TRUE(manager().OnFormSubmitted(
+      *CreatePassportForm(kOtherPassportNumber), /*ukm_source_id=*/{}));
+  ASSERT_TRUE(manager().OnFormSubmitted(
+      *CreatePassportForm(kOtherPassportNumber), /*ukm_source_id=*/{}));
+  ASSERT_TRUE(manager().OnFormSubmitted(
+      *CreatePassportForm(kOtherPassportNumber), /*ukm_source_id=*/{}));
 
   // Simulate four more submissions - only three prompts are shown.
-  EXPECT_TRUE(
-      manager().MaybeImportForm(*CreatePassportForm(kOtherPassportNumber2)));
-  EXPECT_TRUE(
-      manager().MaybeImportForm(*CreatePassportForm(kOtherPassportNumber2)));
-  EXPECT_TRUE(
-      manager().MaybeImportForm(*CreatePassportForm(kOtherPassportNumber2)));
-  EXPECT_TRUE(
-      manager().MaybeImportForm(*CreatePassportForm(kOtherPassportNumber2)));
-  EXPECT_TRUE(
-      manager().MaybeImportForm(*CreatePassportForm(kOtherPassportNumber2)));
-  EXPECT_FALSE(
-      manager().MaybeImportForm(*CreatePassportForm(kOtherPassportNumber2)));
+  EXPECT_TRUE(manager().OnFormSubmitted(
+      *CreatePassportForm(kOtherPassportNumber2), /*ukm_source_id=*/{}));
+  EXPECT_TRUE(manager().OnFormSubmitted(
+      *CreatePassportForm(kOtherPassportNumber2), /*ukm_source_id=*/{}));
+  EXPECT_TRUE(manager().OnFormSubmitted(
+      *CreatePassportForm(kOtherPassportNumber2), /*ukm_source_id=*/{}));
+  EXPECT_TRUE(manager().OnFormSubmitted(
+      *CreatePassportForm(kOtherPassportNumber2), /*ukm_source_id=*/{}));
+  EXPECT_TRUE(manager().OnFormSubmitted(
+      *CreatePassportForm(kOtherPassportNumber2), /*ukm_source_id=*/{}));
+  EXPECT_FALSE(manager().OnFormSubmitted(
+      *CreatePassportForm(kOtherPassportNumber2), /*ukm_source_id=*/{}));
 }
 
 // Tests that accepting a save prompt for an entity resets the strike counter
@@ -565,25 +578,30 @@ TEST_F(AutofillAiManagerImportFormTest, AcceptingResetsStrikesPerUrl) {
         .WillRepeatedly(RunOnceCallbackRepeatedly<2>(decline));
   }
 
-  ASSERT_TRUE(manager().MaybeImportForm(*CreatePassportForm()));
-  ASSERT_TRUE(manager().MaybeImportForm(*CreatePassportForm()));
-  ASSERT_TRUE(manager().MaybeImportForm(*CreateVehicleForm()));
-  ASSERT_TRUE(manager().MaybeImportForm(*CreateVehicleForm()));
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreateVehicleForm(), /*ukm_source_id=*/{}));
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreateVehicleForm(), /*ukm_source_id=*/{}));
   check.Call();
 
   // This one will be accepted.
-  ASSERT_TRUE(manager().MaybeImportForm(*CreatePassportForm()));
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
 
   // Now attempt to show more dialogs.
-  EXPECT_TRUE(
-      manager().MaybeImportForm(*CreateVehicleForm(kOtherLicensePlate)));
+  EXPECT_TRUE(manager().OnFormSubmitted(*CreateVehicleForm(kOtherLicensePlate),
+                                        /*ukm_source_id=*/{}));
   // This one will be ignored because strikes were only reset for passports.
-  EXPECT_FALSE(
-      manager().MaybeImportForm(*CreateVehicleForm(kOtherLicensePlate)));
-  EXPECT_TRUE(
-      manager().MaybeImportForm(*CreatePassportForm(kOtherPassportNumber)));
-  EXPECT_TRUE(
-      manager().MaybeImportForm(*CreatePassportForm(kOtherPassportNumber)));
+  EXPECT_FALSE(manager().OnFormSubmitted(*CreateVehicleForm(kOtherLicensePlate),
+                                         /*ukm_source_id=*/{}));
+  EXPECT_TRUE(manager().OnFormSubmitted(
+      *CreatePassportForm(kOtherPassportNumber), /*ukm_source_id=*/{}));
+  EXPECT_TRUE(manager().OnFormSubmitted(
+      *CreatePassportForm(kOtherPassportNumber), /*ukm_source_id=*/{}));
 }
 
 // Tests that accepting a save prompt for an entity resets the strike counter
@@ -615,17 +633,22 @@ TEST_F(AutofillAiManagerImportFormTest, AcceptingResetsStrikesPerAttribute) {
         .WillRepeatedly(RunOnceCallbackRepeatedly<2>(decline));
   }
 
-  ASSERT_TRUE(manager().MaybeImportForm(*CreatePassportForm()));
-  ASSERT_TRUE(manager().MaybeImportForm(*CreatePassportForm()));
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
   // This one will be accepted.
-  ASSERT_TRUE(manager().MaybeImportForm(*CreatePassportForm()));
+  ASSERT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
 
   // User deletes the passport.
   ASSERT_THAT(GetEntityInstances(), SizeIs(1));
   RemoveEntityInstance(GetEntityInstances()[0].guid());
 
-  EXPECT_TRUE(manager().MaybeImportForm(*CreatePassportForm()));
-  EXPECT_TRUE(manager().MaybeImportForm(*CreatePassportForm()));
+  EXPECT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
+  EXPECT_TRUE(
+      manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
 }
 
 TEST_F(AutofillAiManagerImportFormTest,
@@ -642,7 +665,7 @@ TEST_F(AutofillAiManagerImportFormTest,
   EXPECT_CALL(client(), ShowSaveOrUpdateBubble)
       .WillOnce(DoAll(SaveArg<0>(&new_entity), SaveArg<1>(&old_entity),
                       MoveArg<2>(&save_callback)));
-  EXPECT_TRUE(manager().MaybeImportForm(*form));
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
   // This is a save bubble, `old_entity` should not exist.
   EXPECT_FALSE(old_entity.has_value());
 
@@ -677,7 +700,7 @@ TEST_F(AutofillAiManagerImportFormTest,
   AutofillAiClient::SaveOrUpdatePromptResultCallback save_callback;
   EXPECT_CALL(client(), ShowSaveOrUpdateBubble)
       .WillOnce(MoveArg<2>(&save_callback));
-  EXPECT_TRUE(manager().MaybeImportForm(*form));
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
 
   // Decline the bubble.
   std::move(save_callback).Run(AutofillAiClient::SaveOrUpdatePromptResult());
@@ -695,7 +718,7 @@ TEST_F(AutofillAiManagerImportFormTest,
   form->field(1)->set_value(u"1234321");
 
   EXPECT_CALL(client(), ShowSaveOrUpdateBubble).Times(0);
-  EXPECT_FALSE(manager().MaybeImportForm(*form));
+  EXPECT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
 
   // Tests that no entity was saved.
   base::span<const EntityInstance> saved_entities = GetEntityInstances();
@@ -716,7 +739,7 @@ TEST_F(AutofillAiManagerImportFormTest, EntityAlreadyStored_DoNotShowPrompt) {
   AddOrUpdateEntityInstance(entity);
 
   EXPECT_CALL(client(), ShowSaveOrUpdateBubble).Times(0);
-  EXPECT_FALSE(manager().MaybeImportForm(*form));
+  EXPECT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
 
   // Tests that no entity was saved.
   base::span<const EntityInstance> saved_entities = GetEntityInstances();
@@ -740,7 +763,7 @@ TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
       .WillOnce(DoAll(SaveArg<0>(&entity), SaveArg<1>(&old_entity),
                       MoveArg<2>(&save_callback)));
 
-  EXPECT_TRUE(manager().MaybeImportForm(*form));
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
   // This is a save bubble, `old_entity` should not exist.
   EXPECT_FALSE(old_entity.has_value());
 
@@ -808,7 +831,7 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
   EXPECT_CALL(client(), ShowSaveOrUpdateBubble)
       .WillOnce(DoAll(SaveArg<0>(&entity), SaveArg<1>(&old_entity),
                       MoveArg<2>(&save_callback)));
-  EXPECT_TRUE(manager().MaybeImportForm(*form));
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
   // This is an update bubble, `old_entity` should exist.
   ASSERT_TRUE(old_entity.has_value());
   EXPECT_EQ(*old_entity, existing_entity_without_issue_and_expiry_dates);

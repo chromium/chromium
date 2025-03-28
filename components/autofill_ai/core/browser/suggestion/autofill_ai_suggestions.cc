@@ -8,12 +8,12 @@
 #include <string>
 #include <string_view>
 #include <utility>
-#include <vector>
 
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
@@ -35,6 +35,11 @@ namespace autofill_ai {
 
 namespace {
 
+// Alias defining a list of labels available for each AutofillAi suggestion.
+using SuggestionsLabels =
+    base::StrongAlias<class SuggestionLabelsTag,
+                      std::vector<std::vector<std::u16string>>>;
+
 using autofill::AttributeInstance;
 using autofill::AttributeType;
 using autofill::AutofillField;
@@ -44,13 +49,14 @@ using autofill::Suggestion;
 using autofill::SuggestionType;
 
 constexpr char16_t kLabelSeparator[] = u" · ";
+constexpr size_t kMaxNumberOfLabels = 3;
 
 struct SuggestionWithMetadata {
   // A suggestion whose payload is of type `Suggestion::AutofillAiPayload`.
   Suggestion suggestion;
 
-  // The values that would be filled by `suggestion`, indexed by the underlying
-  // attribute's type. The value is always based on the "top level type" for the
+  // The attribute values present in the entity responsible for generating the
+  // suggestion. The value is always based on the "top level type" for the
   // attribute, this means that for both field types such as NAME_FIRST and
   // NAME_LAST, the root value will be NAME_FULL, similarly for date types. This
   // is used to generate labels, where we want to use only complete values.
@@ -64,33 +70,52 @@ struct SuggestionWithMetadata {
 // For each suggestion in `suggestions`, create its label.
 // `labels_for_all_suggestions` contain for each suggestion all the strings that
 // should be concatenated to generate the final label.
-std::vector<Suggestion> GetSuggestionsWithLabels(
-    std::vector<std::vector<std::u16string>> labels_for_all_suggestions,
+std::vector<Suggestion> AssignLabelsToSuggestions(
+    SuggestionsLabels labels_for_all_suggestions,
     std::vector<Suggestion> suggestions) {
-  CHECK_EQ(labels_for_all_suggestions.size(), suggestions.size());
+  CHECK_EQ(labels_for_all_suggestions->size(), suggestions.size());
 
   size_t suggestion_index = 0;
   for (Suggestion& suggestion : suggestions) {
     suggestion.labels.push_back({Suggestion::Text(base::JoinString(
-        labels_for_all_suggestions[suggestion_index], kLabelSeparator))});
+        (*labels_for_all_suggestions)[suggestion_index], kLabelSeparator))});
     suggestion_index++;
   }
 
   return suggestions;
 }
 
-// Generates all labels that it can use to disambiguate a list of suggestions
+// Generates all labels that can be used to disambiguate a list of suggestions
 // for each suggestion in `suggestions_with_metadata`. The vector
-// of labels for each suggestion is sorted from lowest to highest priority. The
-// available labels are generated based on the values a suggestion would fill.
-std::vector<std::vector<std::u16string>> GetAvailableLabelsForSuggestions(
+// of labels for each suggestion is sorted from lowest to highest priority and
+// only contain values that will be added to the second line of the suggestion
+// UI (so not the main text). The available labels are generated based on the
+// values held by the entity used to create a certain suggestion.
+//
+// This function retrieves the available labels by doing the following:
+//
+// 1. Initializes for all suggestions, all attributes and values associated
+//    with the entity used to build the suggestions
+//    (stored in `suggestions_with_metadata`).
+//
+// 2. Removes a possible attribute and value if its type is the same as
+//   `triggering_field_attribute`, since it is already reflected in the main
+//    suggestion text (first line in the UI).
+//
+// 3. Sorts the available labels based on their respective attribute type
+//    disambiguation order priority.
+//
+// 4. Counts the occurrences of each attribute type and its value, removing if
+//    any combination of these two repeats across all entities/suggestions.
+SuggestionsLabels GetAvailableLabelsForSuggestions(
     AttributeType triggering_field_attribute,
     base::span<const SuggestionWithMetadata> suggestions_with_metadata) {
   CHECK(!suggestions_with_metadata.empty());
   const size_t n_suggestions = suggestions_with_metadata.size();
 
-  // Stores for all suggestions all attributes associated with the fields it
-  // will fill and their respective values.
+  // Step 1#
+  // Stores for all suggestions all attributes associated with the entity used
+  // to build each suggestion.
   std::vector<std::vector<std::pair<AttributeType, std::u16string>>>
       attribute_types_and_values_available_for_suggestions;
   attribute_types_and_values_available_for_suggestions.reserve(n_suggestions);
@@ -98,6 +123,7 @@ std::vector<std::vector<std::u16string>> GetAvailableLabelsForSuggestions(
   // Used to determine whether a certain attribute and value pair repeats across
   // all suggestions. In this case, adding a label for this value is
   // redundant.
+  // This will be used in the step 4# of this method documentation.
   std::map<std::pair<AttributeType, std::u16string>, size_t>
       attribute_type_and_value_occurrences;
 
@@ -109,6 +135,7 @@ std::vector<std::vector<std::u16string>> GetAvailableLabelsForSuggestions(
     std::vector<std::pair<AttributeType, std::u16string>>
         suggestion_attribute_types_and_labels(s.attribute_type_to_value.begin(),
                                               s.attribute_type_to_value.end());
+    // Step 2#
     // The triggering field type is never used as a possible label. This is
     // because its value is already used as the suggestion's main text.
     std::erase_if(suggestion_attribute_types_and_labels,
@@ -117,6 +144,7 @@ std::vector<std::vector<std::u16string>> GetAvailableLabelsForSuggestions(
                     return attribute_and_label.first ==
                            triggering_field_attribute;
                   });
+    // Step 3#
     // Sort so that the label with highest priority comes last.
     // For each suggestion, stores all the attribute types found in the form it
     // will fill, together with their respective values. Note that these are
@@ -136,9 +164,10 @@ std::vector<std::vector<std::u16string>> GetAvailableLabelsForSuggestions(
   }
 
   // The output of this method.
-  std::vector<std::vector<std::u16string>> labels_available_for_suggestions;
-  labels_available_for_suggestions.reserve(suggestions_with_metadata.size());
+  SuggestionsLabels labels_available_for_suggestions;
+  labels_available_for_suggestions->reserve(suggestions_with_metadata.size());
 
+  // Step 4#
   // Now remove the redundant values from
   // `attribute_types_and_values_available_for_suggestions` and generate the
   // output. A value is considered redundant if it repeats across all
@@ -164,24 +193,47 @@ std::vector<std::vector<std::u16string>> GetAvailableLabelsForSuggestions(
       labels_for_suggestion.push_back(
           suggestion_attribute_types_and_value.back().second);
     }
-    labels_available_for_suggestions.push_back(
+    labels_available_for_suggestions->push_back(
         std::move(labels_for_suggestion));
   }
 
   return labels_available_for_suggestions;
 }
 
-// Generate labels for suggestions in `suggestions_with_metadata` given
-// a triggering field of `AttributeType`.
-std::vector<Suggestion> GenerateFillingSuggestionLabels(
+// Generates suggestions with labels given `suggestions_with_metadata` (which
+// holds both the suggestions and their respective entity attributes and values)
+// and a triggering field of `AttributeType`. This function works as follows:
+//
+// 1. Initializes the output (a vector of suggestions) and its default labels.
+//    The labels at this point are all the same (single string with the entity
+//    name).
+//
+// 2. If there is only one suggestion, this method returns this single
+//    suggestion with the label initialized in step 1#. Its label will be simply
+//    the entity name.
+//
+// 3. Checks whether the triggering field type is part of the disambiguation
+//    order. If true, it is used as disambiguation criteria
+//    (for example the user passport name but not the number).
+//
+//    If the main texts of all suggestions are different, also return early and
+//    keep only the entity name as suggestions labels (initialized in step 1#).
+//    The rationale here is that information such as the user name is already
+//    valuable for disambiguation, but a passport number is not.
+//
+// 4. At this point further labels besides only the entity name are required.
+//    This step retrieves all available labels for each suggestion given
+//   `suggestions_with_metadata`, see `GetAvailableLabelsForSuggestions()`.
+//
+// 5. Go over all labels available for each suggestion and add them to a final
+//    list of labels to be used. This step makes sure that no more labels
+//    are added when unique labels across all suggestions are found.
+//
+// 6. Assign the labels acquired in step 5# and return the updated suggestions.
+std::vector<Suggestion> GenerateFillingSuggestionWithLabels(
     AttributeType triggering_field_attribute,
     std::vector<SuggestionWithMetadata> suggestions_with_metadata) {
-  // Get all label strings each suggestion can concatenate to build the final
-  // label. Already sorted based on priority.
-  std::vector<std::vector<std::u16string>> labels_available_for_suggestions =
-      GetAvailableLabelsForSuggestions(triggering_field_attribute,
-                                       suggestions_with_metadata);
-
+  // Step 1#
   const size_t n_suggestions = suggestions_with_metadata.size();
   // Initialize the output using `suggestions_with_metadata`.
   std::vector<Suggestion> suggestions_with_labels;
@@ -190,47 +242,89 @@ std::vector<Suggestion> GenerateFillingSuggestionLabels(
     suggestions_with_labels.push_back(std::move(s.suggestion));
   }
 
-  // The maximum number of labels is defined based on the suggestion with the
-  // largest number of available labels.
+  // Initialize the final list of labels to be used by each suggestion. Note
+  // that they always contain at least the entity name.
+  SuggestionsLabels suggestions_labels =
+      SuggestionsLabels(std::vector<std::vector<std::u16string>>(
+          n_suggestions,
+          {std::u16string(
+              triggering_field_attribute.entity_type().GetNameForI18n())}));
+  // Step 2#
+  // For a single suggestion, no further label is needed (only the entity name).
+  if (n_suggestions == 1) {
+    return AssignLabelsToSuggestions(std::move(suggestions_labels),
+                                     std::move(suggestions_with_labels));
+  }
+
+  // Step 3
+  // If the attribute type used to create the suggestion's main text is already
+  // part of an entity disambiguation order, we do not need to add further
+  // labels if all main texts are unique.
+  if (triggering_field_attribute.is_disambiguation_type()) {
+    auto unique_main_texts = base::MakeFlatSet<std::u16string>(
+        suggestions_with_labels, {},
+        [](const Suggestion& s) { return s.main_text.value; });
+
+    if (unique_main_texts.size() == n_suggestions) {
+      return AssignLabelsToSuggestions(std::move(suggestions_labels),
+                                       std::move(suggestions_with_labels));
+    }
+  }
+
+  // Step 4#
+  // Get all label strings each suggestion can concatenate to build the final
+  // label. Already sorted based on priority.
+  SuggestionsLabels labels_available_for_suggestions =
+      GetAvailableLabelsForSuggestions(triggering_field_attribute,
+                                       suggestions_with_metadata);
   size_t max_number_of_labels = 0;
   for (const std::vector<std::u16string>& suggestion_labels_available :
-       labels_available_for_suggestions) {
+       *labels_available_for_suggestions) {
     max_number_of_labels =
         std::max(max_number_of_labels, suggestion_labels_available.size());
   }
-  constexpr size_t kMinimumNumberOfLabelsToUse = 1;
+  max_number_of_labels = std::min(max_number_of_labels, kMaxNumberOfLabels);
 
-  // Initialize the final list of labels to be used by each suggestions. Note
-  // that they always contain at least the entity name.
-  std::vector<std::vector<std::u16string>> suggestions_labels(
-      n_suggestions,
-      {std::u16string(
-          triggering_field_attribute.entity_type().GetNameForI18n())});
-
-  // Try to generate suggestions with unique labels, starting from the first
-  // available label for each suggestion. Note that the uniqueness check only
-  // happens at the end of each label count iteration, so we optimize for labels
-  // that have similar length (not always possible because some entities might
-  // simply not have enough data).
+  // Step 5#
+  // Creates the concatenation of all labels used by the suggestion in index
+  // `suggestion_index` (and a possible main text). This is stored in a Set to
+  // track when unique labels are found across suggestions. Note that if the
+  // triggering field is not part of the entity disambiguation attributes, the
+  // main text is not taken into account and we simply use an empty string in
+  // the concatenation.
+  auto make_label_string = [&](size_t suggestion_index) {
+    const Suggestion& suggestion = suggestions_with_labels[suggestion_index];
+    const std::vector<std::u16string> labels =
+        (*suggestions_labels)[suggestion_index];
+    const std::u16string& main_text =
+        triggering_field_attribute.is_disambiguation_type()
+            ? suggestion.main_text.value
+            : base::EmptyString16();
+    return base::StrCat({main_text, kLabelSeparator,
+                         base::JoinString(labels, kLabelSeparator)});
+  };
   for (size_t label_count = 1; label_count <= max_number_of_labels;
        label_count++) {
     size_t suggestion_index = 0;
     // Used to check whether a suggestion main text and label are unique.
-    std::set<std::u16string> main_text_and_labels;
+    // Note that the main text is only relevant when it is part of the
+    // disambiguation order for the entity (therefore
+    // "possible_main_text_and_labels").
+    std::set<std::u16string> possible_main_text_and_labels;
+    bool found_unique_labels = false;
 
-    // Iterate over the available labels for each suggestion.
+    // Iterate over the available labels for each suggestion and add labels to
+    // the final `suggestions_labels`, until the concatenation of all labels
+    // leads to unique strings across all suggestions. Note that
+    // `suggestions_labels` contains for each suggestion a vector of labels
+    // (strings) to be used.
     for (std::vector<std::u16string>& suggestion_labels_available :
-         labels_available_for_suggestions) {
-      const std::u16string& main_text =
-          suggestions_with_labels[suggestion_index].main_text.value;
-      std::u16string current_label_and_main_text =
-          base::StrCat({main_text, kLabelSeparator,
-                        base::JoinString(suggestions_labels[suggestion_index],
-                                         kLabelSeparator)});
+         *labels_available_for_suggestions) {
       // If there is no more available label for a suggestion, simply add the
       // concatenation of all labels already used and the main text to the Set.
       if (suggestion_labels_available.empty()) {
-        main_text_and_labels.insert(std::move(current_label_and_main_text));
+        possible_main_text_and_labels.insert(
+            make_label_string(suggestion_index));
         suggestion_index++;
         continue;
       }
@@ -238,26 +332,28 @@ std::vector<Suggestion> GenerateFillingSuggestionLabels(
       // Otherwise add the current top label, update the set and remove the
       // label from the available list. Note that the labels are sorted from
       // lowest to highest priority.
-      suggestions_labels[suggestion_index].push_back(
+      (*suggestions_labels)[suggestion_index].push_back(
           suggestion_labels_available.back());
-      main_text_and_labels.insert(
-          base::StrCat({current_label_and_main_text, kLabelSeparator,
-                        suggestion_labels_available.back()}));
+      possible_main_text_and_labels.insert(make_label_string(suggestion_index));
+
+      // Label uniqueness was reached if the number of unique main_text + labels
+      // concatenated strings is same as the suggestions size
+      if (possible_main_text_and_labels.size() ==
+          suggestions_with_labels.size()) {
+        found_unique_labels = true;
+        break;
+      }
       suggestion_labels_available.pop_back();
       suggestion_index++;
     }
-
-    // Label uniqueness was reached if the number of unique main_text + labels
-    // concatenated strings is same as the suggestions size.
-    const bool are_all_labels_unique =
-        main_text_and_labels.size() == suggestions_with_labels.size();
-    if (are_all_labels_unique && label_count >= kMinimumNumberOfLabelsToUse) {
+    if (found_unique_labels) {
       break;
     }
   }
 
-  return GetSuggestionsWithLabels(std::move(suggestions_labels),
-                                  std::move(suggestions_with_labels));
+  // Step 6#
+  return AssignLabelsToSuggestions(std::move(suggestions_labels),
+                                   std::move(suggestions_with_labels));
 }
 
 // Returns a suggestion to manage AutofillAi data.
@@ -367,8 +463,6 @@ std::vector<Suggestion> CreateFillingSuggestions(
       }
     }
 
-    std::vector<std::pair<AttributeType, std::u16string>>
-        attribute_type_to_value;
     std::vector<std::pair<FieldGlobalId, std::u16string>> field_to_value;
     for (const std::unique_ptr<AutofillField>& field : form.fields()) {
       // Only fill fields that match the triggering field section.
@@ -396,19 +490,28 @@ std::vector<Suggestion> CreateFillingSuggestions(
         continue;
       }
 
-      const std::u16string full_attribute_value =
-          attribute->GetCompleteInfo(app_locale);
       const std::u16string attribute_value =
           attribute->GetInfo(field->Type().GetStorableType(), app_locale,
                              autofill_field->format_string());
 
-      if (full_attribute_value.empty() || attribute_value.empty()) {
+      if (attribute_value.empty()) {
         continue;
       }
 
-      attribute_type_to_value.emplace_back(*attribute_type,
-                                           full_attribute_value);
       field_to_value.emplace_back(field->global_id(), attribute_value);
+    }
+
+    // Retrieve all entity values, this will be used to generate labels.
+    std::vector<std::pair<AttributeType, std::u16string>>
+        attribute_type_to_value;
+    for (const AttributeInstance& attribute : entity.attributes()) {
+      const std::u16string full_attribute_value =
+          attribute.GetCompleteInfo(app_locale);
+      if (full_attribute_value.empty()) {
+        continue;
+      }
+      attribute_type_to_value.emplace_back(attribute.type(),
+                                           full_attribute_value);
     }
 
     SuggestionWithMetadata& s = suggestions_with_metadata.emplace_back();
@@ -428,7 +531,7 @@ std::vector<Suggestion> CreateFillingSuggestions(
     return {};
   }
 
-  std::vector<Suggestion> suggestions = GenerateFillingSuggestionLabels(
+  std::vector<Suggestion> suggestions = GenerateFillingSuggestionWithLabels(
       *trigger_field_attribute_type,
       DedupeFillingSuggestions(std::move(suggestions_with_metadata)));
 

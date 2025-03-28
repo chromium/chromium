@@ -13,6 +13,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -201,7 +202,7 @@ HRESULT MediaFoundationCdmSession::GenerateRequest(
     const std::vector<uint8_t>& init_data,
     SessionIdCB session_id_cb) {
   DVLOG_FUNC(1);
-  DCHECK(session_id_.empty() && !session_id_cb_);
+  CHECK((session_id_.empty() && !session_id_cb_), base::NotFatalUntil::M140);
 
   session_id_cb_ = std::move(session_id_cb);
 
@@ -263,7 +264,7 @@ void MediaFoundationCdmSession::OnSessionMessage(
   if (session_id_.empty() && !SetSessionId())
     return;
 
-  DCHECK(!session_id_.empty());
+  CHECK(!session_id_.empty(), base::NotFatalUntil::M140);
   session_message_cb_.Run(session_id_, message_type, message);
 }
 
@@ -297,20 +298,22 @@ void MediaFoundationCdmSession::OnSessionKeysChange() {
 }
 
 bool MediaFoundationCdmSession::SetSessionId() {
-  DCHECK(session_id_.empty() && session_id_cb_);
+  CHECK((session_id_.empty() && session_id_cb_), base::NotFatalUntil::M140);
 
   base::win::ScopedCoMem<wchar_t> session_id;
   HRESULT hr = mf_cdm_session_->GetSessionId(&session_id);
   if (FAILED(hr) || !session_id) {
     bool success = std::move(session_id_cb_).Run("");
-    DCHECK(!success) << "Empty session ID should not be accepted";
+    CHECK(!success, base::NotFatalUntil::M140)
+        << "Empty session ID should not be accepted";
     return false;
   }
 
   auto session_id_str = base::WideToUTF8(session_id.get());
   if (session_id_str.empty()) {
     bool success = std::move(session_id_cb_).Run("");
-    DCHECK(!success) << "Empty session ID should not be accepted";
+    CHECK(!success, base::NotFatalUntil::M140)
+        << "Empty session ID should not be accepted";
     return false;
   }
 
@@ -326,7 +329,7 @@ bool MediaFoundationCdmSession::SetSessionId() {
 }
 
 HRESULT MediaFoundationCdmSession::UpdateExpirationIfNeeded() {
-  DCHECK(!session_id_.empty());
+  CHECK(!session_id_.empty(), base::NotFatalUntil::M140);
 
   // Media Foundation CDM follows the EME spec where Time generally represents
   // an instant in time with millisecond accuracy.

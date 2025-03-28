@@ -17,22 +17,18 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.toolbar.R;
 
 /** The header shows on the top of {@link AddressBarPreference}. */
 public class AddressBarHeaderPreference extends Preference
         implements OnSharedPreferenceChangeListener {
-    private @NonNull SharedPreferencesManager mSharedPreferencesManager;
     private @NonNull ImageView mToolbarPositionImage;
 
     public AddressBarHeaderPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         // Inflating from XML.
         setLayoutResource(R.layout.address_bar_header_preference);
-        mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
     }
 
     @Override
@@ -66,9 +62,7 @@ public class AddressBarHeaderPreference extends Preference
     }
 
     private void updateImageVisibility() {
-        boolean showOnTop =
-                mSharedPreferencesManager.readBoolean(
-                        ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
+        boolean showOnTop = AddressBarPreference.isToolbarConfiguredToShowOnTop();
 
         mToolbarPositionImage.setSelected(showOnTop);
         int stringRes =

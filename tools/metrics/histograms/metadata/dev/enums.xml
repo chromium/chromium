@@ -1164,6 +1164,8 @@ Called by update_protocol_commands_enum.py.-->
   <int value="110"
       label="SRIMessageSignatureIssue::ValidationFailedSignatureMismatch"/>
   <int value="111" label="CorsIssue::LocalNetworkAccessPermissionDenied"/>
+  <int value="112"
+      label="SRIMessageSignatureIssue::ValidationFailedIntegrityMismatch"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">

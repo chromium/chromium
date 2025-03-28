@@ -465,9 +465,13 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kHistoryPage:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is not supposed to log signin user actions.";
-    case AccessPoint::kCollaborationTabGroup:
-      base::RecordAction(
-          base::UserMetricsAction("Signin_Signin_FromCollaborationTabGroup"));
+    case AccessPoint::kCollaborationShareTabGroup:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromCollaborationShareTabGroup"));
+      break;
+    case AccessPoint::kCollaborationJoinTabGroup:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromCollaborationJoinTabGroup"));
       break;
     case AccessPoint::kSafetyCheck:
       VLOG(1) << "Signin_Signin_From* user action is not recorded "
@@ -738,9 +742,10 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kAccountMenuFailedSwitch:
     case AccessPoint::kCctAccountMismatchNotification:
     case AccessPoint::kDriveFilePickerIos:
-    case AccessPoint::kCollaborationTabGroup:
+    case AccessPoint::kCollaborationShareTabGroup:
     case AccessPoint::kGlicLaunchButton:
     case AccessPoint::kHistoryPage:
+    case AccessPoint::kCollaborationJoinTabGroup:
       NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
                       "for access point "
                    << static_cast<int>(access_point);

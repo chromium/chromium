@@ -830,6 +830,7 @@ Bu politika ayarlanmadan bırakılırsa kullanıcıların, engellenebilir karma 
       Bu politikanın ayarlanmadığı siteler için, ayarlanmışsa <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> politikası geçerli olur. Aksi takdirde ilgili izin, tarayıcının varsayılan ayarına uyarak kullanıcıların site bazında bu izni belirlemesine imkan verir.</translation>
 <translation id="1574258262373444557">Kullanıcı depolama alanı şifrelemesi için şifreleme algoritması olarak <ph name="AES_KL_NAME" /> kullanma</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise Bağlayıcı için yapılandırma politikası</translation>
+<translation id="1576797364335927541"><ph name="ALR_FEATURE_NAME" /> özelliğini devre dışı bırak</translation>
 <translation id="1577162851453388235">Direct Sockets API, TCP ve UDP kullanarak rastgele uç noktalarla iletişime izin verir.
 Ayrıntılar için lütfen https://github.com/WICG/direct-sockets adresini inceleyin.
 
@@ -2283,6 +2284,16 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
 <translation id="2608535066974278204">Yeniden başlatma zaman aralığının uzunluğunu belirten zaman dilimi (dakika).</translation>
 <translation id="2608887839902987727">Giriş portalı kimlik doğrulamasının, proxy ayarlarını yoksaymasını engelle</translation>
 <translation id="2608985885792348429">Varsayılan pano ayarı</translation>
+<translation id="2613388238625781546">Gizlilik nedeniyle <ph name="AL_HEADER_NAME" /> HTTP istek başlığı ve JavaScript <ph name="JS_GETTER_NAME" /> alıcısının kısaltılması planlanıyor.
+Bu politika, test sürecini kolaylaştırmak ve uyumluluğu sağlamak için <ph name="ALR_FEATURE_NAME" /> özelliğini etkinleştirmenize veya devre dışı bırakmanıza olanak tanır.
+
+Bu politika, etkin değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="ALR_FEATURE_NAME" />, saha denemeleriyle uygulanır.
+Bu politika, devre dışı değerine ayarlanırsa <ph name="ALR_FEATURE_NAME" />, saha denemeleriyle etkinleştirilemez.
+
+Bu özellik hakkında daha fazla bilgi için lütfen https://github.com/explainers-by-googlers/reduce-accept-language adresini ziyaret edin.
+
+NOT: Tarayıcı çalışırken bu politikada yapılan değişiklikleri yalnızca
+yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 <translation id="2613493229743687635"><ph name="GET_ALL_SCREENS_MEDIA_NAME" /> API, kaynaklarıyla tanımlanan yalıtılmış web uygulamalarının ek kullanıcı izni olmaksızın aynı anda birden fazla yüzeyi yakalamasına olanak tanır.
       Politika ayarlanmazsa <ph name="GET_ALL_SCREENS_MEDIA_NAME" />, hiçbir web uygulaması tarafından kullanılamaz.
 Bu politika, gizliliği artırmak için, politika değerinin oturum ortasında güncellenmesini desteklemez. Bu nedenle, değişiklikler yalnızca kullanıcı çıkış yapıp tekrar giriş yaptıktan sonra geçerli olur.
@@ -5812,11 +5823,6 @@ Bu politika ayarlanmazsa veya listede geçerli bir resim referansı yoksa <ph na
       Bu politika ayarlanmazsa varsayılan süre olan 604800000 milisaniye (bir hafta) kullanılır.</translation>
 <translation id="5212810195096589189">Sanal makine KSA izinlerini belirleme</translation>
 <translation id="5213038356678567351">Hiçbir zaman başka bir tarayıcıya geçişi tetiklememesi gereken web siteleri.</translation>
-<translation id="5216520638921067085">Sonraki sürümlerde yeniden başlatma bildirimlerinin daha agresif olacağı minimum sürüm yaşını belirtir. Bu yaş, geçerli sürümün istemcilere en son sunulduğu zamana göre hesaplanır.
-
-Yeni bir sürüm beklemedeyse, tarayıcının ya da cihazın yeniden başlatılması gerekiyorsa ve geçerli sürüm, bu ayarda belirtilen gün sayısından daha uzun bir süre boyunca geçersiz kılınmışsa <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> politikası geçersiz kılınarak 2 saat olarak ayarlanır. <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> politikası 1 ("Zorunlu") değerine ayarlanırsa kullanıcılar, sürenin sonunda yeniden başlatmaya zorlanır.
-
-Politika ayarlanmazsa veya sürüm yaşı belirlenemezse tüm güncellemelerde <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> politikası kullanılır.</translation>
 <translation id="5216815237712190041">Henüz cihazda oturum açmış kullanıcı yoksa giriş ekranında gösterilecek cihaz düzeyinde duvar kağıdı resmini yapılandırın. Politikayı ayarlamak için ChromeOS cihazın, duvar kağıdı resmini hangi URL'den indireceği ve indirme işleminin bütünlüğünü doğrulamak için kullanılacak şifreleme karması belirtilmelidir. Resim JPEG biçiminde olmalı, dosya boyutu 16 MB'tan fazla olmamalıdır. URL'ye kimlik doğrulaması yapmadan erişilebilmelidir. Duvar kağıdı resmi indirilir ve önbelleğe alınır. URL veya karma her değiştiğinde bu tekrar indirilir.
 
       Cihaz duvar kağıdı politikası ayarlanırsa ChromeOS cihaz, duvar kağıdı resmini indirir ve cihazda henüz hiçbir kullanıcı oturum açmamışken giriş ekranında bu resmi kullanır. Kullanıcı giriş yaptıktan sonra, kullanıcının duvar kağıdı politikası devreye girer.
@@ -8906,6 +8912,7 @@ Bu politika ayarının desteği <ph name="PRODUCT_NAME" /> 146 sürümünde sonl
 <translation id="7203243973351251622">Kaydedici (130 sürümünden itibaren desteklenir)</translation>
 <translation id="7207095846245296855">Google Güvenli Arama'yı zorla</translation>
 <translation id="7211368186050418507">Saat dilimini hiçbir zaman otomatik algılama</translation>
+<translation id="7214815535735080007"><ph name="ALR_FEATURE_NAME" /> özelliğini denetle</translation>
 <translation id="721617466745658461">Kullanıcıların <ph name="LACROS_NAME" /> tarayıcı ikili programını seçmesine izin ver</translation>
 <translation id="7216442368414164495">Kullanıcıların Güvenli Tarama genişletilmiş raporlamasını etkinleştirmesine izin ver</translation>
 <translation id="7218238054592349618">Bu sitelerde JavaScript optimizasyonuna izin ver</translation>
@@ -10936,6 +10943,7 @@ yükleyicide "daha fazla bilgi" URL'si görünmez. Görünüyorsa https şeması
 <translation id="8768528324886802059">Politikanın ayarlanması, reddetme listesine tabi olmayan yerel mesajlaşma ana makinelerini belirtir. Reddetme listesi değerinin <ph name="WILDCARD_VALUE" /> olması, açıkça izin verilmediği sürece tüm yerel mesajlaşma ana makinelerinin reddedileceği anlamına gelir.
 
       Varsayılan olarak tüm yerel mesajlaşma ana makinelerine izin verilir. Ancak tüm yerel mesajlaşma ana makineleri politikaya göre yasaklandıysa yönetici, bu politikayı değiştirmek için izin verilenler listesini kullanabilir.</translation>
+<translation id="8769201477622486852"><ph name="ALR_FEATURE_NAME" /> özelliğini etkinleştir</translation>
 <translation id="877101880914876353">Cihaz ekran koruyucusu giriş ekranı resim görüntüleme aralığı.</translation>
 <translation id="877557628527387598">Şifreyle oturum açma</translation>
 <translation id="8777369558049831576">Harici protokol iletişim kutusunda "Her zaman aç" onay kutusu göster.</translation>

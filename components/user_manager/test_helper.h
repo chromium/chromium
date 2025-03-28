@@ -51,7 +51,8 @@ class TestHelper {
   // Valid AccountId must be used, otherwise CHECKed.
   static std::string GetFakeUsernameHash(const AccountId& account_id);
 
-  explicit TestHelper(UserManager& user_manager);
+  // `user_manager` must outlive the instance of the TestHelper.
+  explicit TestHelper(UserManager* user_manager);
   ~TestHelper();
 
   // Creates and adds a regular (persisted) user, and returns it.

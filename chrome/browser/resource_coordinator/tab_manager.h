@@ -68,15 +68,6 @@ class TabManager : public LifecycleUnitObserver,
   // vector after a LifecycleUnit has been destroyed.
   LifecycleUnitVector GetSortedLifecycleUnits();
 
-  // Discards a tab to free the memory occupied by its renderer. The tab still
-  // exists in the tab-strip; clicking on it will reload it. If the |reason| is
-  // urgent, an aggressive fast-kill will be attempted if the sudden termination
-  // disablers are allowed to be ignored (e.g. On ChromeOS, we can ignore an
-  // unload handler and fast-kill the tab regardless).
-  void DiscardTab(
-      LifecycleUnitDiscardReason reason,
-      TabDiscardDoneCB tab_discard_done = TabDiscardDoneCB(base::DoNothing()));
-
   // Method used by the extensions API to discard tabs. If |contents| is null,
   // discards the least important tab using DiscardTab(). Otherwise discards
   // the given contents. Returns the new web_contents or null if no tab

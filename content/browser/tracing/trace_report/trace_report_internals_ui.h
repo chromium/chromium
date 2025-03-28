@@ -24,12 +24,20 @@ class TraceReportInternalsUIConfig
       : DefaultInternalWebUIConfig(kChromeUITracesInternalsHost) {}
 };
 
+// Temporary WebUIConfig to also register legacy chrome://traces-internals URL.
+class TraceReportInternalsLegacyUIConfig
+    : public DefaultInternalWebUIConfig<TraceReportInternalsUI> {
+ public:
+  TraceReportInternalsLegacyUIConfig()
+      : DefaultInternalWebUIConfig("traces-internals") {}
+};
+
 // WebUIController for the chrome://traces page.
 class CONTENT_EXPORT TraceReportInternalsUI
     : public WebUIController,
       public trace_report::mojom::TraceReportHandlerFactory {
  public:
-  explicit TraceReportInternalsUI(content::WebUI* web_ui);
+  explicit TraceReportInternalsUI(content::WebUI* web_ui, const GURL& url);
   ~TraceReportInternalsUI() override;
 
   TraceReportInternalsUI(const TraceReportInternalsUI&) = delete;

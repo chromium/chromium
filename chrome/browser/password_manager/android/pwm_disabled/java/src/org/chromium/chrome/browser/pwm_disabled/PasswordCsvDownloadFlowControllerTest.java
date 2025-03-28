@@ -49,11 +49,13 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.pwm_disabled.PwmDeprecationDialogsMetricsRecorder.DownloadCsvFlowStep;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
 import org.chromium.ui.widget.ToastManager;
@@ -78,6 +80,13 @@ public class PasswordCsvDownloadFlowControllerTest {
             "name,url,username,password,note\n"
                     + "example.com,https://example.com/,Someone,Secret,\"Note Line 1\n"
                     + "\"Note Line 2\"";
+
+    private static final String NO_GMS_DOWNLOAD_FLOW_LAST_STEP_HISTOGRAM =
+            "PasswordManager.UPM.NoGms.DownloadCsvFlowLastStep";
+    private static final String OLD_GMS_DOWNLOAD_FLOW_LAST_STEP_HISTOGRAM =
+            "PasswordManager.UPM.OldGms.DownloadCsvFlowLastStep";
+    private static final String FULL_SUPPORT_GMS_DOWNLOAD_FLOW_LAST_STEP_HISTOGRAM =
+            "PasswordManager.UPM.FullUpmSupportGms.DownloadCsvFlowLastStep";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -111,8 +120,13 @@ public class PasswordCsvDownloadFlowControllerTest {
 
     @Test
     public void testScreenLockNotAvailable() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FULL_SUPPORT_GMS_DOWNLOAD_FLOW_LAST_STEP_HISTOGRAM,
+                        DownloadCsvFlowStep.NO_SCREEN_LOCK);
         mController = new PasswordCsvDownloadFlowController(mEndOfFlowCallback);
-        mController.showDialogAndStartFlow(mActivity, mProfile, true, mSettingsCustomTabLauncher);
+        mController.showDialogAndStartFlow(
+                mActivity, mProfile, true, true, mSettingsCustomTabLauncher);
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
@@ -134,12 +148,18 @@ public class PasswordCsvDownloadFlowControllerTest {
         mActivity.getSupportFragmentManager().executePendingTransactions();
         assertFalse(dialog.isShowing());
         verify(mEndOfFlowCallback).run();
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testScreenLockAvailableAuthFailed() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FULL_SUPPORT_GMS_DOWNLOAD_FLOW_LAST_STEP_HISTOGRAM,
+                        DownloadCsvFlowStep.REAUTH_FAILED);
         mController = new PasswordCsvDownloadFlowController(mEndOfFlowCallback);
-        mController.showDialogAndStartFlow(mActivity, mProfile, true, mSettingsCustomTabLauncher);
+        mController.showDialogAndStartFlow(
+                mActivity, mProfile, true, true, mSettingsCustomTabLauncher);
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
@@ -156,15 +176,21 @@ public class PasswordCsvDownloadFlowControllerTest {
 
         assertFalse(dialog.isShowing());
         verify(mEndOfFlowCallback).run();
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testDestinationNotSet() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FULL_SUPPORT_GMS_DOWNLOAD_FLOW_LAST_STEP_HISTOGRAM,
+                        DownloadCsvFlowStep.CANCELLED_FILE_SELECTION);
         // Make sure the auto-exported csv is set up.
         File sourceFile = setUpTempAutoExportedCsv(TEST_FILE_DATA);
 
         mController = new PasswordCsvDownloadFlowController(mEndOfFlowCallback);
-        mController.showDialogAndStartFlow(mActivity, mProfile, true, mSettingsCustomTabLauncher);
+        mController.showDialogAndStartFlow(
+                mActivity, mProfile, true, true, mSettingsCustomTabLauncher);
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
@@ -195,15 +221,21 @@ public class PasswordCsvDownloadFlowControllerTest {
         // file didn't complete.
         assertTrue(sourceFile.exists());
         verify(mEndOfFlowCallback).run();
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testErrorDialog() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FULL_SUPPORT_GMS_DOWNLOAD_FLOW_LAST_STEP_HISTOGRAM,
+                        DownloadCsvFlowStep.CSV_WRITE_FAILED);
         // Make sure the auto-exported csv is set up.
         File sourceFile = setUpTempAutoExportedCsv(TEST_FILE_DATA);
 
         mController = new PasswordCsvDownloadFlowController(mEndOfFlowCallback);
-        mController.showDialogAndStartFlow(mActivity, mProfile, true, mSettingsCustomTabLauncher);
+        mController.showDialogAndStartFlow(
+                mActivity, mProfile, true, true, mSettingsCustomTabLauncher);
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
@@ -263,15 +295,21 @@ public class PasswordCsvDownloadFlowControllerTest {
         // file didn't complete.
         assertTrue(sourceFile.exists());
         verify(mEndOfFlowCallback).run();
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testDownloadFlow() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FULL_SUPPORT_GMS_DOWNLOAD_FLOW_LAST_STEP_HISTOGRAM,
+                        DownloadCsvFlowStep.SUCCESS);
         // Make sure the auto-exported csv is set up.
         File sourceFile = setUpTempAutoExportedCsv(TEST_FILE_DATA);
 
         mController = new PasswordCsvDownloadFlowController(mEndOfFlowCallback);
-        mController.showDialogAndStartFlow(mActivity, mProfile, true, mSettingsCustomTabLauncher);
+        mController.showDialogAndStartFlow(
+                mActivity, mProfile, true, true, mSettingsCustomTabLauncher);
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
@@ -308,6 +346,43 @@ public class PasswordCsvDownloadFlowControllerTest {
         assertFalse(sourceFile.exists());
 
         verify(mEndOfFlowCallback).run();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordsCorrectDialogTypeOldGms() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        OLD_GMS_DOWNLOAD_FLOW_LAST_STEP_HISTOGRAM,
+                        DownloadCsvFlowStep.DISMISSED_DIALOG);
+
+        mController = new PasswordCsvDownloadFlowController(mEndOfFlowCallback);
+        mController.showDialogAndStartFlow(
+                mActivity, mProfile, true, false, mSettingsCustomTabLauncher);
+        mActivity.getSupportFragmentManager().executePendingTransactions();
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        dialog.findViewById(R.id.negative_button).performClick();
+        verify(mEndOfFlowCallback).run();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordsCorrectDialogTypeNoGms() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        NO_GMS_DOWNLOAD_FLOW_LAST_STEP_HISTOGRAM,
+                        DownloadCsvFlowStep.DISMISSED_DIALOG);
+
+        mController = new PasswordCsvDownloadFlowController(mEndOfFlowCallback);
+        mController.showDialogAndStartFlow(
+                mActivity, mProfile, false, false, mSettingsCustomTabLauncher);
+        mActivity.getSupportFragmentManager().executePendingTransactions();
+
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        dialog.findViewById(R.id.negative_button).performClick();
+        verify(mEndOfFlowCallback).run();
+        histogramWatcher.assertExpected();
     }
 
     private File setUpTempAutoExportedCsv(String data) throws IOException {

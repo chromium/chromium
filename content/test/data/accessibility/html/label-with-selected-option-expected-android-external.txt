@@ -27,7 +27,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++CheckBox text:"Test 5: Flash the screen two 3 times." viewIdResName:"test5" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="checkBox", clickableScore="300", roleDescription="checkbox"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="labelText"]
 ++++++TextView text:"Test 5: Flash the screen " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++++ListView text:"two" stateDescription:"multiselectable, 2 of 3 selected." clickable focusable CollectionInfo:[rows=3, cols=1] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBox", clickableScore="300", roleDescription="list box"]
+++++++ListView text:"two" stateDescription:"multiselectable, 2 of 3 selected." clickable focusable CollectionInfo:[selection_mode_multiple, rows=3, cols=1] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBox", clickableScore="300", roleDescription="list box"]
 ++++++++View text:"1" clickable focusable CollectionItemInfo:[rowIndex=0, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]
 ++++++++View text:"two" clickable focusable selected CollectionItemInfo:[rowIndex=1, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]
 ++++++++View text:"3" clickable focusable selected CollectionItemInfo:[rowIndex=2, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]

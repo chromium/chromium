@@ -34,7 +34,9 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
+import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
@@ -43,10 +45,14 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
+import org.chromium.printing.PrintManagerDelegateImpl;
+import org.chromium.printing.PrintingController;
+import org.chromium.printing.PrintingControllerImpl;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
@@ -105,6 +111,13 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     }
 
     /**
+     * @return Whether the current profile enables printing.
+     */
+    public boolean isPrintSupported() {
+        return UserPrefs.get(mTab.getProfile()).getBoolean(Pref.PRINTING_ENABLED);
+    }
+
+    /**
      * @return Whether the "Open in other window" context menu item should be shown.
      */
     public boolean isOpenInOtherWindowSupported() {
@@ -121,6 +134,13 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     public boolean startDownload(GURL url, boolean isLink) {
         return !isLink
                 || !ChromeDownloadDelegate.from(mTab).shouldInterceptContextMenuDownload(url);
+    }
+
+    /** Initiates the printing process of the current page. */
+    public void startPrint() {
+        PrintingController printingController = PrintingControllerImpl.getInstance();
+        printingController.startPrint(
+                new TabPrinter(mTab), new PrintManagerDelegateImpl(mActivity));
     }
 
     @Override

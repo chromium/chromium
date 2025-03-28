@@ -2179,7 +2179,8 @@ bool LocalFrameView::UpdateLifecyclePhases(
         observer->DidFinishLifecycleUpdate(frame_view);
     });
     if (frame_->GetWidgetForLocalRoot()) {
-      frame_->GetWidgetForLocalRoot()->UpdateLineBounds();
+      frame_->GetWidgetForLocalRoot()->UpdateCursorAnchorInfo(
+          /*update_requested=*/false);
     }
   }
 

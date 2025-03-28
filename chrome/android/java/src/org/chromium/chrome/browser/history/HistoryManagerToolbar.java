@@ -114,6 +114,17 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
         }
     }
 
+    @Override
+    protected boolean handleEnterKeyPress() {
+        return getMenu().performIdentifierAction(R.id.search_menu_id, 0);
+    }
+
+    // Move focus to list content view.
+    @Override
+    protected View getNextFocusForward() {
+        return mManager.getListContentView();
+    }
+
     /** Should be called when the user's sign in state changes. */
     public void onSignInStateChange() {
         updateMenuItemVisibility();

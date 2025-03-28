@@ -110,8 +110,8 @@ class DiscardsTabElement extends DiscardsTabElementBase {
     };
   }
 
-  private tabInfos_: TabDiscardsInfo[];
-  private isPerformanceInterventionDemoModeEnabled_: boolean;
+  declare private tabInfos_: TabDiscardsInfo[];
+  declare private isPerformanceInterventionDemoModeEnabled_: boolean;
 
   /** The current update timer if any. */
   private updateTimer_: number = 0;

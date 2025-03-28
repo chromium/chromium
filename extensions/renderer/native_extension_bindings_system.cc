@@ -1191,7 +1191,7 @@ void NativeExtensionBindingsSystem::UpdateBindingsForPromptAPI(
   v8::Local<v8::String> language_model_name =
       gin::StringToSymbol(isolate, kStringNameLanguageModel);
   v8::Local<v8::Value> language_model_value =
-      blink::WebAILanguageModel::GetAILanguageModelFactory(v8_context, isolate);
+      blink::WebAILanguageModel::GetLanguageModelFactory(v8_context, isolate);
   success = chrome_ai_object->CreateDataProperty(
       v8_context, language_model_name, language_model_value);
   CHECK(success.IsJust() && success.FromJust());

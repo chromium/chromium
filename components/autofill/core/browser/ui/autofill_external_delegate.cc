@@ -515,49 +515,6 @@ void AutofillExternalDelegate::OnSuggestionsShown(
   const DenseSet<SuggestionType> shown_suggestion_types(suggestions,
                                                         &Suggestion::type);
 
-  if (shown_suggestion_types.contains(
-          SuggestionType::kCreateNewPlusAddressInline)) {
-    if (auto* plus_address_delegate =
-            manager_->client().GetPlusAddressDelegate()) {
-      plus_address_delegate->OnShowedInlineSuggestion(
-          manager_->client().GetLastCommittedPrimaryMainFrameOrigin(),
-          suggestions, CreateUpdateSuggestionsCallback());
-    }
-  }
-
-  if (std::ranges::any_of(shown_suggestion_types,
-                          [](const SuggestionType& type) {
-                            return GetFillingProductFromSuggestionType(type) ==
-                                   FillingProduct::kAutofillAi;
-                          })) {
-    if (auto* autofill_ai_delegate =
-            manager_->client().GetAutofillAiDelegate()) {
-      autofill_ai_delegate->OnSuggestionsShown(shown_suggestion_types,
-                                               query_form_.global_id());
-    }
-  }
-
-  // Notify the BNPL manager about suggestion shown if the current shown
-  // suggesion list contains a credit card entry.
-  if (shown_suggestion_types.contains(SuggestionType::kCreditCardEntry)) {
-    if (payments::BnplManager* bnpl_manager = manager_->client()
-                                                  .GetPaymentsAutofillClient()
-                                                  ->GetPaymentsBnplManager()) {
-      bnpl_manager->OnSuggestionsShown(suggestions,
-                                       CreateUpdateSuggestionsCallback());
-    }
-  }
-
-  if (std::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
-        const Suggestion::AutofillProfilePayload* profile_payload =
-            std::get_if<Suggestion::AutofillProfilePayload>(
-                &suggestion.payload);
-        return profile_payload && !profile_payload->email_override.empty();
-      })) {
-    base::RecordAction(
-        base::UserMetricsAction("PlusAddresses.AddressFillSuggestionShown"));
-  }
-
   if (std::ranges::any_of(shown_suggestion_types,
                           HasAutofillSugestionsForA11y)) {
     OnAutofillAvailabilityEvent(
@@ -574,14 +531,6 @@ void AutofillExternalDelegate::OnSuggestionsShown(
       AutofillMetrics::OnAutocompleteSuggestionsShown();
     }
   }
-  if (std::ranges::any_of(shown_suggestion_types,
-                          IsAutofillAndFirstLayerSuggestionId) &&
-      shown_suggestion_types.contains(SuggestionType::kDevtoolsTestAddresses)) {
-    autofill_metrics::OnDevtoolsTestAddressesShown();
-  }
-
-  manager_->DidShowSuggestions(shown_suggestion_types, query_form_,
-                               query_field_.global_id());
 
   if (shown_suggestion_types.contains(SuggestionType::kShowAccountCards)) {
     autofill_metrics::LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
@@ -594,10 +543,9 @@ void AutofillExternalDelegate::OnSuggestionsShown(
     }
   }
 
-  if (shown_suggestion_types.contains(SuggestionType::kScanCreditCard)) {
-    AutofillMetrics::LogScanCreditCardPromptMetric(
-        AutofillMetrics::SCAN_CARD_ITEM_SHOWN);
-  }
+  manager_->DidShowSuggestions(suggestions, query_form_,
+                               query_field_.global_id(),
+                               CreateUpdateSuggestionsCallback());
 }
 
 void AutofillExternalDelegate::OnSuggestionsHidden() {
@@ -1215,6 +1163,7 @@ void AutofillExternalDelegate::InsertDataListValues(
     return;
   }
 
+  AutofillMetrics::LogDataListSuggestionsInserted();
   // Go through the list of autocomplete values and remove them if they are in
   // the list of datalist values.
   auto datalist_values = base::MakeFlatSet<std::u16string_view>(

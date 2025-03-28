@@ -191,14 +191,14 @@ void RequestDispatcher::OnComplete(
       std::move(callback_).Run(
           Response(DigitalIdentityProvider::DigitalCredential(
               base::OptionalFromPtr(data_dict.FindString("protocol")),
-              base::WriteJson(*wallet_data).value_or(""))));
+              wallet_data->Clone())));
       return;
     }
   }
   FIDO_LOG(EVENT) << "No proper standard format is received from the mobile "
                      "device. Fallback to legacy format.";
   std::move(callback_).Run(Response(DigitalIdentityProvider::DigitalCredential(
-      /*protocol=*/std::nullopt, base::WriteJson(*data).value_or(""))));
+      /*protocol=*/std::nullopt, data->Clone())));
 }
 
 }  // namespace content::digital_credentials::cross_device

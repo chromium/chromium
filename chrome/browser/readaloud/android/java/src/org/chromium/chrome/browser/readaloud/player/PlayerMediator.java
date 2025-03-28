@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.readaloud.player;
-
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.BUFFERING;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.ERROR;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PAUSED;
@@ -143,6 +142,8 @@ class PlayerMediator implements InteractionHandler {
     private final Callback<List<PlaybackVoice>> mVoiceListObserver = this::setVoices;
     private final Callback<String> mVoiceIdObserver = this::setVoice;
 
+    private final Callback<Boolean> mPlaybackModeSelectionEnabledObserver = this::setPlaybackModeSelectionEnabled;
+
     private Playback mPlayback;
     @Nullable Playback mVoicePreviewPlayback;
 
@@ -157,6 +158,7 @@ class PlayerMediator implements InteractionHandler {
 
         mDelegate.getCurrentLanguageVoicesSupplier().addObserver(mVoiceListObserver);
         mDelegate.getVoiceIdSupplier().addObserver(mVoiceIdObserver);
+        mDelegate.getPlaybackModeSelectionEnabled().addObserver(mPlaybackModeSelectionEnabledObserver);
     }
 
     void destroy() {
@@ -183,6 +185,9 @@ class PlayerMediator implements InteractionHandler {
                     mDelegate.getHighlightingEnabledSupplier().get());
             mModel.set(
                     PlayerProperties.HIGHLIGHTING_SUPPORTED, mDelegate.isHighlightingSupported());
+            mModel.set(
+                PlayerProperties.PLAYBACK_MODE,
+                mPlayback.getMetadata().playbackMode().getValue());
 
             mTotalTimeMillis = 0;
             mLastStartTimeMillis = mClock.currentTimeMillis();
@@ -380,6 +385,10 @@ class PlayerMediator implements InteractionHandler {
         } else {
             mPlayback.seekRelative(nanos);
         }
+    }
+
+    private void setPlaybackModeSelectionEnabled(boolean enabled) {
+        mModel.set(PlayerProperties.PLAYBACK_MODE_SELECTION_ENABLED, enabled);
     }
 
     private void setVoices(List<PlaybackVoice> voices) {

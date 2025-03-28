@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 
@@ -83,7 +84,7 @@ class DualBadgeMapTest : public ExtensionServiceTestBase {
   }
 
   void AddExtension(const Extension* extension) {
-    service()->AddExtension(extension);
+    registrar()->AddExtension(extension);
   }
 
   void RemoveExtension(const Extension* extension) {

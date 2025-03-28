@@ -352,7 +352,7 @@ chromium_strings.grd. -->
         Search
       </message>
       <message name="IDS_TASK_MANAGER_SEARCH_ACCESSIBILITY_NAME" desc="The accessibility description for the Search bar in the Task Manager window" translateable="false">
-        Look up the name of any tab title or extension to highlight it in the process table.
+        Search for any process from the list.
       </message>
       <message name="IDS_TASK_MANAGER_CLEAR_SEARCH_BUTTON_ACCESSIBILITY_NAME" desc="The accessibility name for the clear button accompanying the task manager search bar input.">
         Clear search
@@ -2492,6 +2492,20 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V1" desc="Body text for a dialog suggesting users to deactivate certain tabs to improve performance.">
           This tab is using extra resources. To improve your performance, let Chrome make it inactive.
         </message>
+        <if expr="use_titlecase">
+          <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V3" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
+            {NUM_TABS, plural,
+            =1 {Chrome Recommends Pausing the Tab Slowing Your Browser}
+            other {Chrome Recommends Pausing the Tabs Slowing Your Browser}}
+          </message>
+        </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V3" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
+            {NUM_TABS, plural,
+            =1 {Chrome recommends pausing the tab slowing your browser}
+            other {Chrome recommends pausing the tabs slowing your browser}}
+          </message>
+        </if>
       </if>
 
       <!-- Delete Browsing Data -->

@@ -47,12 +47,12 @@ export class SigninErrorAppElement extends SigninErrorAppElementBase {
     };
   }
 
-  protected fromProfilePicker_: boolean =
+  protected accessor fromProfilePicker_: boolean =
       loadTimeData.getBoolean('fromProfilePicker');
-  protected switchButtonUnavailable_: boolean = false;
-  protected hideNormalError_: boolean =
+  protected accessor switchButtonUnavailable_: boolean = false;
+  protected accessor hideNormalError_: boolean =
       loadTimeData.getString('signinErrorMessage').length === 0;
-  protected hideProfileBlockingErrors_: boolean[];
+  protected accessor hideProfileBlockingErrors_: boolean[];
 
   constructor() {
     super();

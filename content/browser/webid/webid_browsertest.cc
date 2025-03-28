@@ -1291,8 +1291,10 @@ MATCHER_P(JsonMatches, ref, "") {
 // JS API
 IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
                        NavigatorIdentityApi) {
-  constexpr char kIdentityProviderResponse[] =
-      "&vp_token=token&presentation_submission=bar";
+  base::Value kIdentityProviderResponse =
+      base::JSONReader::Read(
+          R"({"vp_token": "token data" , "presentation_submission":"bar"})")
+          .value();
 
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
   MockDigitalIdentityProvider* digital_identity_provider =
@@ -1322,10 +1324,10 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
 
   EXPECT_CALL(*digital_identity_provider, Get(_, _, JsonMatches(json), _))
       .WillOnce(WithArg<3>(
-          [kIdentityProviderResponse](
+          [&kIdentityProviderResponse](
               DigitalIdentityProvider::DigitalIdentityCallback callback) {
-            std::move(callback).Run(
-                DigitalCredential("openid4vp", kIdentityProviderResponse));
+            std::move(callback).Run(DigitalCredential(
+                "openid4vp", kIdentityProviderResponse.Clone()));
           }));
 
   EXPECT_EQ(kIdentityProviderResponse, RunDigitalIdentityValidRequest(shell()));
@@ -1335,8 +1337,10 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
 // navigator.credentials JS API too.
 IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
                        NavigatorCredentialsApi) {
-  constexpr char kIdentityProviderResponse[] =
-      "&vp_token=token&presentation_submission=bar";
+  base::Value kIdentityProviderResponse =
+      base::JSONReader::Read(
+          R"({"vp_token": "token data" , "presentation_submission":"bar"})")
+          .value();
 
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
   MockDigitalIdentityProvider* digital_identity_provider =
@@ -1366,10 +1370,10 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
 
   EXPECT_CALL(*digital_identity_provider, Get(_, _, JsonMatches(json), _))
       .WillOnce(WithArg<3>(
-          [kIdentityProviderResponse](
+          [&kIdentityProviderResponse](
               DigitalIdentityProvider::DigitalIdentityCallback callback) {
-            std::move(callback).Run(
-                DigitalCredential("openid4vp", kIdentityProviderResponse));
+            std::move(callback).Run(DigitalCredential(
+                "openid4vp", kIdentityProviderResponse.Clone()));
           }));
 
   std::string script = base::StringPrintf(
@@ -1387,6 +1391,9 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
       static_cast<MockDigitalIdentityProvider*>(
           test_browser_client_->GetDigitalIdentityProviderForTests());
 
+  base::Value kResponse =
+      base::JSONReader::Read(R"({"token":"test-mdoc"})").value();
+
   EXPECT_CALL(*digital_identity_provider, Get)
       .WillOnce(WithArg<3>(
           [&](DigitalIdentityProvider::DigitalIdentityCallback callback) {
@@ -1395,10 +1402,10 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
                 "may be outstanding at one time.",
                 ExtractJsError(RunDigitalIdentityValidRequest(shell())));
             std::move(callback).Run(
-                DigitalCredential("openid4vp", "test-mdoc"));
+                DigitalCredential("openid4vp", kResponse.Clone()));
           }));
 
-  EXPECT_EQ("test-mdoc", RunDigitalIdentityValidRequest(shell()));
+  EXPECT_EQ(kResponse, RunDigitalIdentityValidRequest(shell()));
 }
 
 // Test that when the user declines a digital identity request, the error
@@ -1437,8 +1444,9 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
   EXPECT_CALL(*digital_identity_provider, Get)
       .WillOnce(WithArg<3>(
           [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
-            std::move(callback).Run(
-                DigitalCredential("openid4vp", "test-mdoc"));
+            std::move(callback).Run(DigitalCredential(
+                "openid4vp",
+                base::JSONReader::Read(R"({"token":"test-mdoc"})").value()));
           }));
 
   RunDigitalIdentityValidRequest(shell());

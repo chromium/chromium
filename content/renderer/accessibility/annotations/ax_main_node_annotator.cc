@@ -119,6 +119,8 @@ void AXMainNodeAnnotator::Annotate(const WebDocument& document,
         .GetInterface(annotator.InitWithNewPipeAndPassReceiver());
     annotator_remote_.Bind(std::move(annotator));
     annotator_remote_.reset_on_disconnect();
+    annotator_remote_->SetClientType(
+        screen_ai::mojom::MceClientType::kMainNode);
   }
 
   // Identify the main node using Screen2x.

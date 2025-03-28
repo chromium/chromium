@@ -36,6 +36,7 @@ found in the LICENSE file.
     <color name="baseline_neutral_99">#FDFCFB</color>
     <color name="baseline_neutral_95">#F2F2F2</color>
     <color name="baseline_neutral_90">#E3E3E3</color>
+    <color name="baseline_neutral_90_alpha_8">#14E3E3E3</color>
     <color name="baseline_neutral_90_alpha_10">#19E3E3E3</color>
     <color name="baseline_neutral_90_alpha_12">#1EE3E3E3</color>
     <color name="baseline_neutral_90_alpha_38">#61E3E3E3</color>

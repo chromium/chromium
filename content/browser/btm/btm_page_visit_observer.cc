@@ -70,10 +70,8 @@ class NavigationState
     filter_.AddAccess(url, op);
   }
 
-  // Idempotent for multiple calls with the same value of
-  // `redirect_chain_index`.
   void RecordServerRedirectAtChainIndex(size_t redirect_chain_index) {
-    server_redirect_chain_indices_.insert(redirect_chain_index);
+    server_redirect_chain_indices_.push_back(redirect_chain_index);
   }
 
   // Returns the navigation info paired with the cookie access of the final
@@ -96,13 +94,12 @@ class NavigationState
     // recorded an access type for.
     urls.push_back(navigation_handle.GetURL());
     CHECK(filter_.Filter(urls, accesses));
-    int i = 0;
-    for (const size_t redirect_chain_index : server_redirect_chain_indices_) {
+    for (size_t i = 0; i < server_redirect_chain_indices_.size(); ++i) {
       navigation.server_redirects.emplace_back(
           urls[i],
-          btm::GetRedirectSourceId(&navigation_handle, redirect_chain_index),
+          btm::GetRedirectSourceId(&navigation_handle,
+                                   server_redirect_chain_indices_[i]),
           IsWrite(accesses[i]));
-      i += 1;
     }
 
     BtmDataAccessType committed_url_access_type = accesses.back();
@@ -114,11 +111,7 @@ class NavigationState
 
  private:
   CookieAccessFilter filter_;
-  // This is a set instead of a vector because there can be multiple callers
-  // recording server redirects per instance of `NavigationState`, and we
-  // therefore need repeated recordings of the same server redirect to be
-  // idempotent.
-  std::set<size_t> server_redirect_chain_indices_;
+  std::vector<size_t> server_redirect_chain_indices_;
 };
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationState);
@@ -239,9 +232,6 @@ void BtmPageVisitObserver::OnCookiesAccessed(
 
   // Check to see if this is a late report for a redirect. Only Navigation
   // cookie accesses should be attributed to redirects.
-  //
-  // TODO: crbug.com/394059601 - once we have support for unit-testing cookie
-  // accesses, add a unit test for this case.
   if (details.source == CookieAccessDetails::Source::kNavigation) {
     for (VisitTuple& visit : pending_visits_) {
       for (BtmServerRedirectInfo& redirect :

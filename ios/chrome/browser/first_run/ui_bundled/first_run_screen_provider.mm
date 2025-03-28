@@ -31,12 +31,12 @@ void AddDBPromoAndBestFeaturesScreens(NSMutableArray* screens) {
   switch (bestFeaturesType) {
     case kGeneralScreenAfterDBPromo:
     case kGeneralScreenWithPasswordItemAfterDBPromo:
+    case kShoppingUsersWithFallbackAfterDBPromo:
     case kSignedInUsersOnlyAfterDBPromo:
       [screens addObject:@(kDefaultBrowserPromo)];
       [screens addObject:@(kBestFeatures)];
       break;
     case kGeneralScreenBeforeDBPromo:
-    case kShoppingUsersWithFallbackBeforeDBPromo:
       [screens addObject:@(kBestFeatures)];
       [screens addObject:@(kDefaultBrowserPromo)];
       break;

@@ -130,6 +130,10 @@ void OnDeviceInternalsPageHandler::OnModelAssetsLoaded(
     on_device_model::ModelAssets assets) {
   auto params = on_device_model::mojom::LoadModelParams::New();
   params->assets = assets;
+  params->backend_type =
+      optimization_guide::features::ForceCpuBackendForOnDeviceModel()
+          ? ml::ModelBackendType::kCpuBackend
+          : ml::ModelBackendType::kGpuBackend;
   params->max_tokens = 4096;
   params->performance_hint = performance_hint;
   GetService().LoadModel(

@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Датотека манифеста је неважећа</translation>
 <translation id="7217838517480956708">Администратор овог уређаја захтева да додатак <ph name="EXTENSION_NAME" /> буде инсталиран. Не можете да га уклоните или измените.</translation>
 <translation id="7612608473764576263">Улазна вредност за приватни кључ мора да буде важећи формат (PEM кодирани RSA кључ у PKCS#8 формату).</translation>
+<translation id="7876803335449432072">Учитавање фајла <ph name="RELATIVE_PATH" /> за скрипту садржаја није успело. Описи стилова за скрипту садржаја могу да се учитају само из подржаних фајлова описа стилова, као што су .css фајлови.</translation>
 <translation id="7939686037314084444">Додатак се није правилно учитао. Можда неће моћи да преусмерава мрежне захтеве.</translation>
 <translation id="7972881773422714442">Опције: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Предња</translation>
 <translation id="8047248493720652249">Овај додатак није успео да преузетој датотеци дâ назив „<ph name="ATTEMPTED_FILENAME" />“ зато што је један други додатак (<ph name="EXTENSION_NAME" />) одредио другачији назив датотеке „<ph name="ACTUAL_FILENAME" />“.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> продавца <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Датотека манифеста недостаје или није могла да се чита</translation>
+<translation id="8621383749470166852">Учитавање фајла <ph name="RELATIVE_PATH" /> за скрипту садржаја није успело. Скрипте садржаја могу да се учитавају само из подржаних JavaScript фајлова, као што су .js фајлови.</translation>
 <translation id="8636666366616799973">Пакет је неважећи. Детаљи: „<ph name="ERROR_MESSAGE" />“.</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />“ захтева приступ неком од уређаја:</translation>
 <translation id="8885905466771744233">Приватни кључ за наведени додатак већ постоји. Поново користите тај кључ или га прво избришите.</translation>

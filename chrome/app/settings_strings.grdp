@@ -412,9 +412,8 @@
   <message name="IDS_SETTINGS_AUTOFILL_DETAIL" desc="Description of what toggling the 'Autofill' setting does. Immediately underneath IDS_SETTINGS_AUTOFILL">
     Enable Autofill to fill out forms in a single click
   </message>
-  <!-- TODO(crbug.com/395807244): Make string translateable. -->
-  <message name="IDS_SETTINGS_AUTOFILL_DROPDOWN_NO_OPTION_SELECTED" desc="An option inside a dropdown that spells: No option selected. The user can select this option." translateable="false">
-    No option selected
+  <message name="IDS_SETTINGS_AUTOFILL_DROPDOWN_NO_OPTION_SELECTED" desc="The default option in a dropdown menu that serves both to suggest to the user that they select something and also allows them to not select anything (by leaving the default value chosen). For example, a country dropdown includes the values 'Select, Afghanistan, Albania, Algeria etc.'. The user can choose to leave 'Select' selected — effectively not choosing a country at all.">
+    Select
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_CARD_DESCRIPTION" desc="The (accessibility) credit card description from the network of the card and last 4 digits of the card number.">
     <ph name="NETWORK_NAME">$1<ex>Visa</ex></ph> ending in <ph name="LAST_FOUR_DIGITS">$2<ex>1234</ex></ph>
@@ -617,55 +616,54 @@
   <message name="IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE" desc="The title of the page in Settings that allows managing the Autofill AI settings.">
     Autofill with AI
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_NEW_FEATURE"  desc="One of the items on the Autofill AI settings page that describes what the user should consider before enabling Autofill AI.">
-    This feature uses AI, is in early development, and won’t always get it right
+  <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_SAVED_INFO" desc="Bullet 1 of 2 that appears beneath the 'When on' title. 'Autofill': the user is on the 'Autofill with AI' feature page, but we want to frame this new type of autofill as just 'Autofill'. 'Can offer to save info when you submit forms': we want to convey that the user has the choice, each time a form is submitted, whether they want their info saved to Chrome for the purposes of Autofill. 'Like your driver's license or passport number': Today, supported data types for 'Autofill with AI' include 1) driver's licenses, 2) passports, and 3) vehicles. Eventually we'll support more, but this example needs to mention these types of data and not others.">
+    Autofill can offer to save info when you submit forms, like your driver's license or passport number
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE"  desc="One of the items on the Autofill AI settings page that describes what the user should consider before enabling Autofill AI.">
-    When you fill a form, your info and the page it comes from are sent to Google to generate suggestions
+  <message name="IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE" desc="Bullet 1 of 2 that appears beneath the 'Things to consider' title. The point of this bullet is to convey to the user the types of data that get shared with Google to support this feature. There are 2 data types: 1) 'sites you visit' can mean browsing history and the URL of the page the user is visiting, and 2) 'page content', by which we mean the words, visuals, and layout of the pages the user visits. This notion that Google is considering 'page content' is new. We want to lead with 'To offer suggestions' even though it might be a bit grammatically awkward, because we want to express the need / value before explaining the data that gets shared.">
+    To offer suggestions, sites you visit and page content are shared with Google
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_STORAGE"  desc="One of the items on the Autofill AI settings page that describes what the user should consider before enabling Autofill AI.">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_STORAGE" desc="Bullet 2 of 2 that appears beneath the 'Things to consider' title. This statement isn't immediately relevant to how Autofill with AI works, but it's intended as a reassuring statement.">
     Your saved information is stored on your device
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_IMPROVEMENT"  desc="One of the items on the Autofill AI settings page that describes what the user should consider before enabling Autofill AI.">
-    Data may be seen by human reviewers to improve this feature
-  </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_ENTITY_INSTANCES_HEADER"  desc="Header of the entity instance list on the Autofill with AI settings page.">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_ENTITY_INSTANCES_HEADER" desc="Header of the entity instance list on the Autofill with AI settings page.">
     Saved information
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_ENTITY_INSTANCES_NONE"  desc="Placeholder for empty entity instance list on the Autofill with AI settings page.">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_ENTITY_INSTANCES_NONE" desc="Placeholder for empty entity instance list on the Autofill with AI settings page.">
     Saved information will appear here
   </message>
-  <!-- TODO(crbug.com/395807244): Make string translateable. -->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_MORE_ACTIONS_FOR_ENTITY_INSTANCE" desc="The (accessibility) title of the More Button, which brings up a menu of actions that can be taken on a stored entity instance. The entity instance is described by its label and sublabel. The More Button has the icon of 3 vertical dots." translateable = "false">
-    More actions for <ph name="ENTITY_INSTANCE_LABEL">$1<ex>Toyota</ex></ph>, <ph name="ENTITY_INSTANCE_SUBLABEL">$2<ex>Car</ex></ph>
+  <message name="IDS_SETTINGS_AUTOFILL_AI_MORE_ACTIONS_FOR_ENTITY_INSTANCE" desc="The accessibility label of the More options menu. Options in the menu include 'Edit' and 'Delete'. If including specific verbs in your language adds undo complexity, it's also acceptable to use something like: 'More options for 'label', 'sublabel''. Examples of 'label' and 'sublabel' include 'Toyota Corolla, Vehicle'.">
+    More options to edit or delete <ph name="ENTITY_INSTANCE_LABEL">$1<ex>Toyota</ex></ph>, <ph name="ENTITY_INSTANCE_SUBLABEL">$2<ex>Car</ex></ph>
   </message>
-  <!-- TODO(crbug.com/395807244): Make string translateable. -->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_DELETE_ENTITY_INSTANCE_DIALOG_TITLE"  desc="The title of the delete entity instance confirmation dialog, on the Autofill AI settings page." translateable = "false">
+  <!-- TODO(crbug.com/393318914): Change this string in favor of entity specific strings. -->
+  <message name="IDS_SETTINGS_AUTOFILL_AI_DELETE_ENTITY_INSTANCE_DIALOG_TITLE" desc="A title of a dialog within settings that allows a user to delete an entry. The user opened this dialog by choosing 'Delete' from the more options menu.">
     Delete info?
   </message>
-  <!-- TODO(crbug.com/395807244): Make string translateable. -->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_DELETE_ENTITY_INSTANCE_DIALOG_TEXT"  desc="The body text of the delete entity instance confirmation dialog, on the Autofill AI settings page." translateable = "false">
-    Autofill will have less info for filling out forms.
+  <message name="IDS_SETTINGS_AUTOFILL_AI_DELETE_ENTITY_INSTANCE_DIALOG_TEXT" desc="The body text of the delete entity instance confirmation dialog, on the Autofill AI settings page.">
+    Autofill won't have this info on this device to help fill out forms
   </message>
-  <!-- TODO(crbug.com/395807244): Make string translateable. -->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_ACCESSIBILITY_LABEL_MONTH_DROPDOWN" desc="The accessibility label on the month dropdown of a date field, to let users know the dropdown corresponds to the month." translateable = "false">
-    <ph name="DROPDOWN_NAME">$1<ex>Expiration date</ex></ph>: month
+  <message name="IDS_SETTINGS_AUTOFILL_AI_ACCESSIBILITY_LABEL_MONTH_DROPDOWN" desc="The accessibility label on the month dropdown of a date field, to let users know the dropdown corresponds to the month.">
+    <ph name="DROPDOWN_NAME">$1<ex>Expiration date</ex></ph> month
   </message>
-  <!-- TODO(crbug.com/395807244): Make string translateable. -->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_ACCESSIBILITY_LABEL_DAY_DROPDOWN" desc="The accessibility label on the day dropdown of a date field, to let users know the dropdown corresponds to the day." translateable = "false">
-    <ph name="DROPDOWN_NAME">$1<ex>Expiration date</ex></ph>: day
+  <message name="IDS_SETTINGS_AUTOFILL_AI_ACCESSIBILITY_LABEL_DAY_DROPDOWN" desc="The accessibility label on the day dropdown of a date field, to let users know the dropdown corresponds to the day.">
+    <ph name="DROPDOWN_NAME">$1<ex>Expiration date</ex></ph> day
   </message>
-  <!-- TODO(crbug.com/395807244): Make string translateable. -->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_ACCESSIBILITY_LABEL_YEAR_DROPDOWN" desc="The accessibility label on the year dropdown of a date field, to let users know the dropdown corresponds to the year." translateable = "false">
-    <ph name="DROPDOWN_NAME">$1<ex>Expiration date</ex></ph>: year
+  <message name="IDS_SETTINGS_AUTOFILL_AI_ACCESSIBILITY_LABEL_YEAR_DROPDOWN" desc="The accessibility label on the year dropdown of a date field, to let users know the dropdown corresponds to the year.">
+    <ph name="DROPDOWN_NAME">$1<ex>Expiration date</ex></ph> year
   </message>
-  <!-- TODO(crbug.com/395807244): Make string translateable. -->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_DATE_VALIDATION_ERROR"  desc="An error message if the user clicks Save with an invalid date." translateable = "false">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_MONTH_DROPDOWN_NO_OPTION_SELECTED" desc="The default option in a dropdown menu that serves both to suggest to the user that they select something and also allows them to not select anything (by leaving the default value chosen). For example, a month dropdown includes the values 'MM, Jan, Feb, Mar, etc.'. The user can choose to leave 'MM' selected — effectively not choosing a month at all.">
+    MM
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_AI_DAY_DROPDOWN_NO_OPTION_SELECTED" desc="The default option in a dropdown menu that serves both to suggest to the user that they select something and also allows them to not select anything (by leaving the default value chosen). For example, a day dropdown includes the values 'DD, 1, 2, 3, etc.'. The user can choose to leave 'DD' selected — effectively not choosing a day at all.">
+    DD
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_AI_YEAR_DROPDOWN_NO_OPTION_SELECTED" desc="The default option in a dropdown menu that serves both to suggest to the user that they select something and also allows them to not select anything (by leaving the default value chosen). For example, a year dropdown includes the values 'YYYY, 2025, 2024, 2023, etc.'. The user can choose to leave 'YYYY' selected — effectively not choosing a year at all.">
+    YYYY
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_DATE_VALIDATION_ERROR" desc="An error message that appears beneath a date picker in the case that the user doesn't add a full date. For example, the user sees this error if they set the month but not the day or year, or choose an invalid date like February 30.">
     Check the date
   </message>
-  <!-- TODO(crbug.com/395807244): Make string translateable. -->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_VALIDATION_ERROR"  desc="An error message if the user clicks Save without having filled at least one value in the form." translateable = "false">
-    Fill at least one field before saving.
+  <message name="IDS_SETTINGS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_VALIDATION_ERROR" desc="An error message if the user clicks Save without having filled at least one value in the form.">
+    Fill at least one field before saving
   </message>
 
   <if expr="is_win or is_macosx">
@@ -1067,6 +1065,9 @@
   <!-- TODO(crbug.com/397187800): Make DBDv2 strings translatable. -->
   <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_SHOW_MORE" translateable="false">
     Show more
+  </message>
+  <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_MORE" translateable="false">
+    More
   </message>
   <message name="IDS_SETTINGS_CLEAR_PERIOD_15_MINUTES" desc="The option to delete browsing data from the last 15 minutes." translateable="false">
     Last 15 min

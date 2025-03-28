@@ -8,6 +8,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "ui/gfx/color_space.h"
 
 namespace {
 
@@ -71,7 +72,9 @@ bool StructTraits<blink::mojom::AcceleratedStaticBitmapImage::DataView,
   out->format =
       viz::SkColorTypeToSinglePlaneSharedImageFormat(image_info.colorType());
   out->alpha_type = image_info.alphaType();
-  out->sk_color_space = image_info.refColorSpace();
+  out->color_space = image_info.refColorSpace()
+                         ? gfx::ColorSpace(*image_info.refColorSpace())
+                         : gfx::ColorSpace::CreateSRGB();
 
   auto callback = data.TakeReleaseCallback<
       mojo::PendingRemote<blink::mojom::ImageReleaseCallback>>();

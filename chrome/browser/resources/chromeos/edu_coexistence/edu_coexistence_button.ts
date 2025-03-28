@@ -37,11 +37,6 @@ export class EduCoexistenceButton extends EduCoexistenceButtonBase {
         value: ButtonTypes.ACTION,
       },
 
-      buttonClasses: {
-        type: String,
-        computed: 'getClass(buttonType)',
-      },
-
       disabled: {
         type: Boolean,
         value: false,

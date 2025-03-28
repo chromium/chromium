@@ -330,6 +330,10 @@ bool LayoutSVGShape::StrokeContains(const HitTestLocation& location,
 SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
     const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
+  if (layout_info.viewport_changed && HasViewportDependence()) {
+    // TODO: Only invalidate the shape if it depends on the viewport.
+    SetNeedsShapeUpdate();
+  }
 
   // The cached stroke may be affected by the ancestor transform, and so needs
   // to be cleared regardless of whether the shape or bounds have changed.

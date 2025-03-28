@@ -102,7 +102,8 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
             extends IdentityCredentialsDelegate {
         @Override
         public Promise<DigitalCredential> get(Activity activity, String origin, String request) {
-            return Promise.fulfilled(new DigitalCredential("protocol", "token".getBytes()));
+            return Promise.fulfilled(
+                    new DigitalCredential("protocol", "{\"token\" : \"test_token\"}".getBytes()));
         }
     }
 
@@ -198,7 +199,7 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
 
         DOMUtils.clickNode(mActivityTestRule.getWebContents(), nodeIdToClick);
 
-        waitTillLogTextAreaHasTextContent("\"token\"");
+        waitTillLogTextAreaHasTextContent("\"test_token\"");
 
         if (expectedInterstitialParagraph1ResourceId >= 0) {
             assertTrue(mModalDialogObserver.wasDialogShown());

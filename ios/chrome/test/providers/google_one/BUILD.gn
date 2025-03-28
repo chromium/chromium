@@ -3,10 +3,7 @@
 # found in the LICENSE file.
 
 source_set("google_one") {
-  sources = [
-    "test_google_one.h",
-    "test_google_one.mm",
-  ]
+  sources = [ "test_google_one.mm" ]
   deps = [
     "//base",
     "//ios/public/provider/chrome/browser/google_one:google_one_api",

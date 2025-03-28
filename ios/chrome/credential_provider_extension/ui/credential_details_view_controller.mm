@@ -179,44 +179,48 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 
   switch ([self rowIdentifier:indexPath.row]) {
     case RowIdentifier::RowIdentifierURL:
-      [self showTootip:NSLocalizedString(
-                           @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_COPY", @"Copy")
-            atBottomOf:cell
-                action:@selector(copyURL)];
+      [self
+          showTooltip:NSLocalizedString(
+                          @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_COPY", @"Copy")
+           atBottomOf:cell
+               action:@selector(copyURL)];
       break;
     case RowIdentifier::RowIdentifierUsername:
-      [self showTootip:NSLocalizedString(
-                           @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_COPY", @"Copy")
-            atBottomOf:cell
-                action:@selector(copyUsername)];
+      [self
+          showTooltip:NSLocalizedString(
+                          @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_COPY", @"Copy")
+           atBottomOf:cell
+               action:@selector(copyUsername)];
       break;
     case RowIdentifier::RowIdentifierPassword:
       if (self.clearPassword) {
-        [self
-            showTootip:NSLocalizedString(
-                           @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_COPY", @"Copy")
-            atBottomOf:cell
-                action:@selector(copyPassword)];
+        [self showTooltip:NSLocalizedString(
+                              @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_COPY",
+                              @"Copy")
+               atBottomOf:cell
+                   action:@selector(copyPassword)];
       } else {
-        [self
-            showTootip:NSLocalizedString(
-                           @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_SHOW_PASSWORD",
-                           @"Show Password")
-            atBottomOf:cell
-                action:@selector(showPassword)];
+        [self showTooltip:
+                  NSLocalizedString(
+                      @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_SHOW_PASSWORD",
+                      @"Show Password")
+               atBottomOf:cell
+                   action:@selector(showPassword)];
       }
       break;
     case RowIdentifier::RowIdentifierUserDisplayName:
-      [self showTootip:NSLocalizedString(
-                           @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_COPY", @"Copy")
-            atBottomOf:cell
-                action:@selector(copyUserDisplayName)];
+      [self
+          showTooltip:NSLocalizedString(
+                          @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_COPY", @"Copy")
+           atBottomOf:cell
+               action:@selector(copyUserDisplayName)];
       break;
     case RowIdentifier::RowIdentifierCreationDate:
-      [self showTootip:NSLocalizedString(
-                           @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_COPY", @"Copy")
-            atBottomOf:cell
-                action:@selector(copyCreationDate)];
+      [self
+          showTooltip:NSLocalizedString(
+                          @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_COPY", @"Copy")
+           atBottomOf:cell
+               action:@selector(copyCreationDate)];
       break;
     default:
       break;
@@ -381,7 +385,7 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
   return button;
 }
 
-// Called when show/hine password icon is tapped.
+// Called when show/hide password icon is tapped.
 - (void)passwordIconButtonTapped:(id)sender event:(id)event {
   // Only password reveal / hide is an accessory, so no need to check
   // indexPath.
@@ -416,9 +420,9 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
                         withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
-- (void)showTootip:(NSString*)message
-        atBottomOf:(UITableViewCell*)cell
-            action:(SEL)action {
+- (void)showTooltip:(NSString*)message
+         atBottomOf:(UITableViewCell*)cell
+             action:(SEL)action {
   TooltipView* tooltip = [[TooltipView alloc] initWithKeyWindow:self.view
                                                          target:self
                                                          action:action];

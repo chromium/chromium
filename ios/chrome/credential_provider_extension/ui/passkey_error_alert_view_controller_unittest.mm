@@ -39,7 +39,8 @@ class PasskeyErrorAlertViewControllerTest : public PlatformTest {
 
 // Tests that the view's content with the `kEnterpriseDisabledSavingCredentials`
 // error type is as expected.
-TEST_F(PasskeyErrorAlertViewControllerTest, TestContentWithEntepriseErrorType) {
+TEST_F(PasskeyErrorAlertViewControllerTest,
+       TestContentWithEnterpriseErrorType) {
   PasskeyErrorAlertViewController* controller =
       CreateController(ErrorType::kEnterpriseDisabledSavingCredentials);
   [controller loadView];

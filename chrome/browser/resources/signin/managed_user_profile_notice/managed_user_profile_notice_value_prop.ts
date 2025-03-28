@@ -36,12 +36,12 @@ export class ManagedUserProfileNoticeValuePropElement extends CrLitElement {
     };
   }
 
-  pictureUrl: string = '';
-  override title: string = '';
-  subtitle: string = '';
-  email: string = '';
-  accountName: string = '';
-  showEnterpriseBadge: boolean = false;
+  accessor pictureUrl: string = '';
+  override accessor title: string = '';
+  accessor subtitle: string = '';
+  accessor email: string = '';
+  accessor accountName: string = '';
+  accessor showEnterpriseBadge: boolean = false;
 
   override firstUpdated() {
     const titleElement = this.shadowRoot.querySelector<HTMLElement>('.title');

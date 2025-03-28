@@ -523,10 +523,15 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, IncognitoModeDisabledNoShow) {
 
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, CheckedWithinADayNoShow) {
   SetMetricsConsent(true);
+  base::HistogramTester histogram_tester;
   HatsServiceDesktop::SurveyMetadata metadata;
   metadata.last_survey_check_time = base::Time::Now() - base::Hours(23);
   GetHatsService()->SetSurveyMetadataForTesting(metadata);
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
+  histogram_tester.ExpectUniqueSample(
+      kHatsShouldShowSurveyReasonHistogram,
+      HatsServiceDesktop::ShouldShowSurveyReasons::kNoLastSurveyCheckTooRecent,
+      1);
   EXPECT_FALSE(HatsNextDialogCreated());
 }
 

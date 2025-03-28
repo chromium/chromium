@@ -46,6 +46,7 @@
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/metrics_enums.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -2041,6 +2042,11 @@ void WebFormControlElementToFormField(
     if (extract_options.contains(ExtractOption::kDatalist) ||
         base::FeatureList::IsEnabled(
             features::kAutofillOptimizeFormExtraction)) {
+      // TODO(crbug.com/316143236): Remove this metric once debugging is
+      // complete.
+      base::UmaHistogramEnumeration(
+          "Autofill.DataList.Events",
+          AutofillDataListEvents::kDataListOptionsParsed);
       field->set_datalist_options(GetDataListOptions(input_element));
     }
   } else if (IsTextAreaElement(element)) {

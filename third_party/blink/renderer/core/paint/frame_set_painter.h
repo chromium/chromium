@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FRAME_SET_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FRAME_SET_PAINTER_H_
 
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace gfx {
@@ -18,7 +19,6 @@ class DisplayItemClient;
 class PhysicalBoxFragment;
 struct AutoDarkMode;
 struct PaintInfo;
-struct PhysicalOffset;
 
 class FrameSetPainter {
   STACK_ALLOCATED();

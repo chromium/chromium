@@ -492,7 +492,12 @@ void FrameNodeImpl::SetViewportIntersection(
       case blink::mojom::FrameVisibility::kNotRendered:
         return false;
       case blink::mojom::FrameVisibility::kRenderedOutOfViewport:
-        return features::kRenderedOutOfViewIsNotVisible.Get();
+        if (!features::kRenderedOutOfViewIsNotVisible.Get()) {
+          // Old, seemingly incorrect behavior. Treat an out of view frame as
+          // intersecting with the viewport.
+          return true;
+        }
+        return false;
       case blink::mojom::FrameVisibility::kRenderedInViewport:
         // Since we don't know if this frame is intersecting with a large area
         // of the viewport, it'll be inherited from the parent.

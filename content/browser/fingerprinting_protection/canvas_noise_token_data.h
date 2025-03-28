@@ -23,13 +23,11 @@ class CONTENT_EXPORT CanvasNoiseTokenData
   // Gets the 64 bit BrowserContext-associated noise token.
   static uint64_t GetToken(BrowserContext* context);
 
- private:
-  // TODO(crbug.com/402088092): |force_create| will be responsible for
-  // regenerating possible existing tokens, add integration for regenerating
-  // tokens.
-  static uint64_t GetOrCreateForBrowserContext(BrowserContext* context);
+  // Regenerates the noise token, returning the updated token value.
+  static uint64_t SetNewToken(BrowserContext* context);
 
-  uint64_t session_token_{base::RandUint64()};
+ private:
+  uint64_t session_token_ = base::RandUint64();
 };
 
 }  // namespace content

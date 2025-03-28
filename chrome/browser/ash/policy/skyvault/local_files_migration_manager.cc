@@ -290,6 +290,10 @@ void LocalFilesMigrationManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+base::Time LocalFilesMigrationManager::GetMigrationStartTime() const {
+  return migration_start_time_;
+}
+
 void LocalFilesMigrationManager::SetNotificationManagerForTesting(
     MigrationNotificationManager* notification_manager) {
   CHECK_IS_TEST();

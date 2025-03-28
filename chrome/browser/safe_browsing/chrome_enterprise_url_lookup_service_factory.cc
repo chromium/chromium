@@ -13,13 +13,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
@@ -103,7 +104,9 @@ std::unique_ptr<KeyedService> ChromeEnterpriseRealTimeUrlLookupServiceFactory::
           profile),
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
           profile),
-      profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
+      profile->GetPrefs(),
+      /*webui_delegate=*/WebUIInfoSingleton::GetInstance(),
+      IdentityManagerFactory::GetForProfile(profile),
       policy::ManagementServiceFactory::GetForProfile(profile),
       profile->IsOffTheRecord(), profile->IsGuestSession(),
       base::BindRepeating(&GetProfileEmail, profile),

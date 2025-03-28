@@ -3611,20 +3611,14 @@ TEST_F(MainThreadSchedulerImplTest, ThrottleHandleThrottlesQueue) {
 }
 
 class ThreadedScrollPreventRenderingStarvationTest
-    : public MainThreadSchedulerImplTest,
-      public ::testing::WithParamInterface<int> {
+    : public MainThreadSchedulerImplTest {
  public:
-  ThreadedScrollPreventRenderingStarvationTest() {
-    feature_list_.Reset();
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kThreadedScrollPreventRenderingStarvation,
-          base::FieldTrialParams(
-              {{"threshold_ms", base::NumberToString(GetParam())}})}},
-        {});
+  static constexpr base::TimeDelta StarvationThreshold() {
+    return MainThreadSchedulerImpl::kDefaultRenderingStarvationThreshold;
   }
 };
 
-TEST_P(ThreadedScrollPreventRenderingStarvationTest, CompositorPriority) {
+TEST_F(ThreadedScrollPreventRenderingStarvationTest, CompositorPriority) {
   SimulateEnteringCompositorGestureUseCase();
 
   // Compositor task queues should initially have low priority.
@@ -3635,7 +3629,7 @@ TEST_P(ThreadedScrollPreventRenderingStarvationTest, CompositorPriority) {
   EXPECT_EQ(UseCase::kCompositorGesture, CurrentUseCase());
 
   // The priority should remain low up to the timeout.
-  AdvanceTimeWithTask(base::Milliseconds(GetParam() - 1));
+  AdvanceTimeWithTask(StarvationThreshold() - base::Milliseconds(1));
   // The policy has a max duration, so simulate a longer scroll (multiple
   // updates) with another scroll start.
   SimulateEnteringCompositorGestureUseCase();
@@ -3667,7 +3661,7 @@ TEST_P(ThreadedScrollPreventRenderingStarvationTest, CompositorPriority) {
   EXPECT_EQ(UseCase::kCompositorGesture, CurrentUseCase());
 }
 
-TEST_P(ThreadedScrollPreventRenderingStarvationTest,
+TEST_F(ThreadedScrollPreventRenderingStarvationTest,
        CompositorPriorityWithRenderBlockingTaskStarvation) {
   // The starved-by-render-blocking-tasks bit isn't cleared when we change use
   // cases, so start out in scrolling use case.
@@ -3684,29 +3678,8 @@ TEST_P(ThreadedScrollPreventRenderingStarvationTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(UseCase::kCompositorGesture, CurrentUseCase());
 
-  if (base::Milliseconds(GetParam()) >
-      MainThreadSchedulerImpl::kRenderBlockingStarvationThreshold) {
-    // No anti-starvation should kick in.
-    EXPECT_THAT(run_order, testing::ElementsAre("R1", "D1", "D2", "C1", "C2"));
-
-    // Advance far enough to trigger the render-blocking anti-starvation.
-    run_order.clear();
-    SimulateRenderBlockingTask(
-        base::Milliseconds(GetParam()) -
-        MainThreadSchedulerImpl::kRenderBlockingStarvationThreshold);
-    SimulateEnteringCompositorGestureUseCase();
-
-    PostTestTasks(&run_order, "D1 C1 D2 R1 C2");
-    base::RunLoop().RunUntilIdle();
-    EXPECT_EQ(UseCase::kCompositorGesture, CurrentUseCase());
-  }
-
   EXPECT_THAT(run_order, testing::ElementsAre("C1", "R1", "C2", "D1", "D2"));
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         ThreadedScrollPreventRenderingStarvationTest,
-                         testing::Values(100, 250, 500, 600));
 
 TEST_F(MainThreadSchedulerImplTest, RenderBlockingTaskPriority) {
   Vector<String> run_order;

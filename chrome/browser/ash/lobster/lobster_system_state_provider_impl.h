@@ -28,7 +28,8 @@ class LobsterSystemStateProviderImpl : public LobsterSystemStateProvider,
  public:
   explicit LobsterSystemStateProviderImpl(
       PrefService* pref,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      bool is_in_demo_mode);
 
   ~LobsterSystemStateProviderImpl() override;
 
@@ -42,6 +43,7 @@ class LobsterSystemStateProviderImpl : public LobsterSystemStateProvider,
   raw_ptr<PrefService> pref_;
   specialized_features::FeatureAccessChecker access_checker_;
   bool is_in_tablet_mode_ = false;
+  bool is_in_demo_mode_ = false;
   display::ScopedDisplayObserver display_observer_{this};
 };
 

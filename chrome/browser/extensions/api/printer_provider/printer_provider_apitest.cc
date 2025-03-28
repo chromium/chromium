@@ -5,12 +5,14 @@
 #include <stddef.h>
 
 #include <functional>
+#include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -68,11 +70,8 @@ std::pair<bool, std::string> ParsePrintResult(const base::Value& status) {
   return {success, status_str};
 }
 
-std::string SerializeDict(const base::Value::Dict& value) {
-  std::string result;
-  JSONStringValueSerializer serializer(&result);
-  EXPECT_TRUE(serializer.Serialize(value));
-  return result;
+std::optional<std::string> SerializeDict(const base::Value::Dict& value) {
+  return base::WriteJson(value);
 }
 
 // Tests for chrome.printerProvider API.
@@ -218,7 +217,8 @@ class PrinterProviderApiTest : public ExtensionApiTest,
     ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
     auto result = SerializeDict(capability_future.Get());
-    EXPECT_EQ(expected_result, result);
+    ASSERT_TRUE(result);
+    EXPECT_EQ(expected_result, *result);
   }
 
   bool SimulateExtensionUnload(const ExtensionId& extension_id) {
@@ -349,7 +349,8 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetCapabilityExtensionUnloaded) {
 
   ASSERT_TRUE(SimulateExtensionUnload(extension_id));
   auto result = SerializeDict(capability_future.Get());
-  EXPECT_EQ("{}", result);
+  ASSERT_TRUE(result);
+  EXPECT_EQ("{}", *result);
 }
 
 IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersSuccess) {

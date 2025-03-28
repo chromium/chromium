@@ -535,14 +535,6 @@ void SetFeatureFlags() {
   SetV8FlagsIfOverridden(features::kWebAssemblyInliningCallIndirect,
                          "--wasm-inlining-call-indirect",
                          "--no-wasm-inlining-call-indirect");
-  SetV8FlagsIfOverridden(features::kWebAssemblyMultipleMemories,
-                         "--experimental-wasm-multi-memory",
-                         "--no-experimental-wasm-multi-memory");
-  SetV8FlagsIfOverridden(features::kWebAssemblyTurboshaft, "--turboshaft-wasm",
-                         "--no-turboshaft-wasm");
-  SetV8FlagsIfOverridden(features::kWebAssemblyTurboshaftInstructionSelection,
-                         "--turboshaft-wasm-instruction-selection-staged",
-                         "--no-turboshaft-wasm-instruction-selection-staged");
 }
 
 }  // namespace

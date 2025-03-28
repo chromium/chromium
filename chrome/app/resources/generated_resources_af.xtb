@@ -403,6 +403,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1264956950255940376">Trek linkeroog skrefies</translation>
 <translation id="1265094893042958831">Genereer tans voorstelle vir hierdie bladsy …</translation>
 <translation id="1265279736024499987">Jou programme en instellings sal gesinkroniseer word op alle Chrome OS Flex-toestelle waarop jy met jou Google-rekening aangemeld is. Gaan na <ph name="LINK_BEGIN" />Chrome-instellings<ph name="LINK_END" /> toe vir blaaiersinkroniseringopsies.</translation>
+<translation id="1267081565119405990">Nadat jy ’n skermskoot geneem het of jou skerm deursoek het, kan meer handelinge gewys word, soos Voeg by Kalender, Skep Google Dokumente en meer.</translation>
 <translation id="126710816202626562">Vertaaltaal:</translation>
 <translation id="1267649802567297774">Gegenereerde prent <ph name="INDEX" /> van <ph name="SUBJECT" />, in <ph name="STYLE" />-styl, met <ph name="MOOD" />-luim.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1574,9 +1575,9 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2081816110395725788">Sluimerkraggebruik wanneer battery gebruik word</translation>
 <translation id="2082187087049518845">Groepoortjie</translation>
 <translation id="2082510809738716738">Kies 'n temakleur</translation>
-<translation id="208547068587548667">Meld op <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> aan</translation>
 <translation id="208586643495776849">Probeer asseblief weer</translation>
 <translation id="208634871997892083">Altydaan-VPN</translation>
+<translation id="208654914566977272">Voorgestelde handelinge wanneer jy jou skerm deursoek</translation>
 <translation id="2087822576218954668">Druk uit: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Inskrywing word eers gesteun nadat jy <ph name="DEVICE_OS" /> installeer.</translation>
 <translation id="2088564884469682888">Ingeboude TrackPoint</translation>
@@ -4008,7 +4009,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3778740492972734840">Ontwikkelaarnutsgoed</translation>
 <translation id="3778868487658107119">Vra dit vrae. Sê dit aan om dinge te doen. Dis jou eie persoonlike Google en dis altyd gereed om te help.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{jou blaaigeskiedenis van # werf}other{jou blaaigeskiedenis van # werwe}}</translation>
-<translation id="3779244863011082655">Gebruik ’n ander <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-rekening</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> kan nie nagaan of jou wagwoorde deur dataskendings geraak is nie. Probeer later weer.</translation>
 <translation id="3781742599892759500">Linux-mikrofoontoegang</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5512,6 +5512,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4848191975108266266">Google Assistent "Ok Google"</translation>
 <translation id="4849286518551984791">Gekoördineerde universele tyd (UTC/GMT)</translation>
 <translation id="4849517651082200438">Moenie installeer nie</translation>
+<translation id="4849731766219625109">Gebruik jou <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-rekening</translation>
 <translation id="485053257961878904">Kon nie kennisgewingsinkronisering opstel nie</translation>
 <translation id="4850548109381269495">Gaan op albei toestelle jou internetverbinding na en skakel Bluetooth aan. Probeer dan weer.</translation>
 <translation id="4850669014075537160">Rollees</translation>
@@ -5700,6 +5701,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4979510648199782334">Microsoft 365-opstelling is voltooi</translation>
 <translation id="4980805016576257426">Hierdie uitbreiding bevat wanware.</translation>
 <translation id="4983159853748980742">Jou wagwoord is nie gedeel nie. Gaan jou internetverbinding na en maak seker dat jy by Chrome aangemeld is. Probeer dan weer.</translation>
+<translation id="498624032394115435">Enigiemand met die skakel kan alle oortjies wysig.</translation>
 <translation id="4986706507552097681">Jy kan altyd in instellings kies wat om te sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="4986728572522335985">Dit sal alle data op die sekuriteitsleutel, insluitend sy PIN, uitvee</translation>
 <translation id="4987944280765486504">Jou Chromebook sal herbegin sodra die aflaai voltooi is en jy kan dan voortgaan met opstelling.</translation>
@@ -8310,7 +8312,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6873571253135628430">Verander werftoestemmings</translation>
 <translation id="6876155724392614295">Fiets</translation>
 <translation id="6876469544038980967">Nie nuttig nie</translation>
-<translation id="687838958001010630">Enigiemand met die skakel kan alle oortjies wysig</translation>
 <translation id="6878422606530379992">Sensors toegelaat</translation>
 <translation id="6878862640969460273">Landskap</translation>
 <translation id="6880587130513028875">Prente is op hierdie bladsy geblokkeer.</translation>

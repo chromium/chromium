@@ -1,3 +1,7 @@
+<!-- #html_wrapper_imports_start
+import {AnnotationMode} from './constants.js';
+#html_wrapper_imports_end -->
+
 <viewer-toolbar id="toolbar" .annotationMode="${this.annotationMode_}"
     .docTitle="${this.title_}" .docLength="${this.docLength_}"
     .embeddedViewer="${this.embedded_}" .pageNo="${this.pageNo_}"
@@ -67,15 +71,30 @@
     </div>
     <if expr="enable_pdf_ink2">
       ${this.shouldShowInkBottomToolbar_() ? html`
-        <div id="bottom">
-          <viewer-bottom-toolbar .strings="${this.strings}">
+        <cr-page-selector id="bottom" attr-for-selected="toolbar-name"
+            selected="${this.annotationMode_}">
+          <viewer-bottom-toolbar .strings="${this.strings}"
+              toolbar-name="${AnnotationMode.DRAW}">
           </viewer-bottom-toolbar>
-        </div>` : ''}
+          <div toolbar-name="${AnnotationMode.TEXT}"
+              style="background-color: lightgray; position: fixed; bottom: 0;">
+            Text Annotation coming soon
+          </div>
+        </cr-page-selector>` : ''}
     </if>
   </div>
   <if expr="enable_pdf_ink2">
     ${this.shouldShowInkSidePanel_() ? html`
-      <viewer-side-panel></viewer-side-panel>` : ''}
+      <cr-page-selector attr-for-selected="page-name" id="side-panel"
+          selected="${this.annotationMode_}">
+        <viewer-side-panel page-name="${AnnotationMode.DRAW}">
+        </viewer-side-panel>
+        <div page-name="${AnnotationMode.TEXT}"
+            style="color: lightgray; width: 288px;">
+          Text Annotation coming soon
+        </div>
+      </cr-page-selector>
+    ` : ''}
   </if>
   <cr-toast id="searchifyProgress">
     <div class="spinner"></div>

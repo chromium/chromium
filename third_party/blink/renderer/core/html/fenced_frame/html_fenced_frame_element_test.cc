@@ -237,9 +237,8 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestSandboxFlags) {
       WebSandboxFlags::kAll);
 
   auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
-  fenced_frame->SetAttributeWithValidation(html_names::kSrcAttr,
-                                           AtomicString("https://test.com/"),
-                                           ASSERT_NO_EXCEPTION);
+  fenced_frame->SetAttributeWithoutValidation(
+      html_names::kSrcAttr, AtomicString("https://test.com/"));
   doc.body()->AppendChild(fenced_frame);
   histogram_tester_.ExpectUniqueSample(
       kFencedFrameCreationOrNavigationOutcomeHistogram,
@@ -268,9 +267,8 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestSandboxFlagsInIframe) {
 
   // Create iframe and embed it in the main document
   auto* iframe = MakeGarbageCollected<HTMLIFrameElement>(doc);
-  iframe->SetAttributeWithValidation(html_names::kSrcAttr,
-                                     AtomicString("https://test.com/"),
-                                     ASSERT_NO_EXCEPTION);
+  iframe->SetAttributeWithoutValidation(html_names::kSrcAttr,
+                                        AtomicString("https://test.com/"));
   doc.body()->AppendChild(iframe);
   Document* iframe_doc = iframe->contentDocument();
   iframe_doc->GetFrame()->DomWindow()->GetSecurityContext().SetSandboxFlags(
@@ -279,9 +277,8 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestSandboxFlagsInIframe) {
   // Create fenced frame and embed it in the main frame
   auto* fenced_frame =
       MakeGarbageCollected<HTMLFencedFrameElement>(*iframe_doc);
-  fenced_frame->SetAttributeWithValidation(html_names::kSrcAttr,
-                                           AtomicString("https://test.com/"),
-                                           ASSERT_NO_EXCEPTION);
+  fenced_frame->SetAttributeWithoutValidation(
+      html_names::kSrcAttr, AtomicString("https://test.com/"));
   iframe_doc->body()->AppendChild(fenced_frame);
 
   // Test that it logged that the fenced frame creation attempt was NOT in the

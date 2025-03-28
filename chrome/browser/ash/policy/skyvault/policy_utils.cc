@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 
+#include <optional>
+
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
+#include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -105,6 +109,18 @@ bool DownloadToTemp(Profile* profile) {
 
 base::FilePath GetMyFilesPath(Profile* profile) {
   return profile->GetPath().Append("MyFiles");
+}
+
+std::optional<base::Time> GetMigrationStartTime(Profile* profile) {
+  const LocalFilesMigrationManager* manager =
+      LocalFilesMigrationManagerFactory::GetInstance()->GetForBrowserContext(
+          profile);
+  if (!manager) {
+    LOG(ERROR) << "LocalFilesMigrationManager not available for profile. "
+                  "Migration/deletion start time cannot be determined.";
+    return std::nullopt;
+  }
+  return manager->GetMigrationStartTime();
 }
 
 }  // namespace policy::local_user_files

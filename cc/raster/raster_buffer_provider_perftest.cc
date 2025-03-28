@@ -20,7 +20,6 @@
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
 #include "build/build_config.h"
-#include "cc/raster/bitmap_raster_buffer_provider.h"
 #include "cc/raster/gpu_raster_buffer_provider.h"
 #include "cc/raster/one_copy_raster_buffer_provider.h"
 #include "cc/raster/raster_query_queue.h"
@@ -394,8 +393,9 @@ class RasterBufferProviderPerfTest
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_BITMAP:
         CreateSoftwareResourceProvider();
-        raster_buffer_provider_ = std::make_unique<BitmapRasterBufferProvider>(
-            layer_tree_frame_sink_.get());
+        raster_buffer_provider_ =
+            std::make_unique<ZeroCopyRasterBufferProvider>(
+                layer_tree_frame_sink_.get());
         break;
     }
     DCHECK(raster_buffer_provider_);
@@ -561,7 +561,7 @@ class RasterBufferProviderPerfTest
       case RASTER_BUFFER_PROVIDER_TYPE_GPU:
         return std::string("_gpu_raster_buffer_provider");
       case RASTER_BUFFER_PROVIDER_TYPE_BITMAP:
-        return std::string("_bitmap_raster_buffer_provider");
+        return std::string("_sw_compositing_zero_copy_raster_buffer_provider");
     }
     NOTREACHED();
   }

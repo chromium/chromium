@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.collaboration;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -88,7 +89,7 @@ public class CollaborationIntegrationTest {
         // Verify that the fullscreen sign-in promo is shown and cancel.
         onViewWaiting(withText(R.string.collaboration_signin_description))
                 .check(matches(isDisplayed()));
-        onView(withText(R.string.collaboration_cancel)).perform(click());
+        onView(withText(R.string.collaboration_cancel)).perform(scrollTo(), click());
 
         // The new data sharing url was intercepted and the tab closed.
         Assert.assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ false));
@@ -103,7 +104,7 @@ public class CollaborationIntegrationTest {
         // Verify that the fullscreen sign-in promo is shown and cancel.
         onViewWaiting(withText(R.string.collaboration_signin_description))
                 .check(matches(isDisplayed()));
-        onView(withText(R.string.collaboration_cancel)).perform(click());
+        onView(withText(R.string.collaboration_cancel)).perform(scrollTo(), click());
 
         // The new data sharing url was intercepted and the tab closed.
         Assert.assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ false));

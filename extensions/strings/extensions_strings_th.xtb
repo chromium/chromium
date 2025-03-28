@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">ไฟล์ Manifest ไม่ถูกต้อง</translation>
 <translation id="7217838517480956708">ผู้ดูแลระบบของเครื่องนี้ต้องการให้มีการติดตั้ง <ph name="EXTENSION_NAME" /> โดยไม่สามารถลบหรือแก้ไขได้</translation>
 <translation id="7612608473764576263">ค่าที่ป้อนสำหรับคีย์ส่วนตัวจะต้องเป็นรูปแบบที่ถูกต้อง (คีย์ RSA ที่เข้ารหัส PEM ในรูปแบบ PKCS#8)</translation>
+<translation id="7876803335449432072">โหลดไฟล์ "<ph name="RELATIVE_PATH" />" สําหรับสคริปต์เนื้อหาไม่ได้ สไตล์ชีตของสคริปต์เนื้อหาจะโหลดได้เฉพาะจากไฟล์สไตล์ชีตที่รองรับเท่านั้น เช่น ไฟล์ .css</translation>
 <translation id="7939686037314084444">ส่วนขยายโหลดไม่ถูกต้อง และอาจดักจับคำขอของเครือข่ายไม่ได้</translation>
 <translation id="7972881773422714442">ตัวเลือก: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">กล้องหน้า</translation>
 <translation id="8047248493720652249">ส่วนขยายนี้ล้มเหลวในการตั้งชื่อการดาวน์โหลดว่า "<ph name="ATTEMPTED_FILENAME" />" เนื่องจากอีกส่วนขยายหนึ่ง (<ph name="EXTENSION_NAME" />) ได้กำหนดชื่อไฟล์ที่แตกต่างไว้ว่า "<ph name="ACTUAL_FILENAME" />"</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> จาก <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">ไฟล์ Manifest หายไปหรืออ่านไม่ได้</translation>
+<translation id="8621383749470166852">โหลดไฟล์ "<ph name="RELATIVE_PATH" />" สําหรับสคริปต์เนื้อหาไม่ได้ สคริปต์เนื้อหาจะโหลดได้เฉพาะจากไฟล์ JavaScript ที่รองรับเท่านั้น เช่น ไฟล์ .js</translation>
 <translation id="8636666366616799973">แพ็กเกจไม่ถูกต้อง รายละเอียด: "<ph name="ERROR_MESSAGE" />"</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" ขอสิทธิ์ในการเข้าถึงอุปกรณ์เครื่องใดเครื่องหนึ่งของคุณ:</translation>
 <translation id="8885905466771744233">คีย์ส่วนตัวของส่วนขยายที่ระบุมีอยู่แล้ว นำคีย์นั้นมาใช้ซ้ำหรือลบคีย์ออกก่อน</translation>

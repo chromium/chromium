@@ -1575,7 +1575,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2081816110395725788">Tidak ada aktivitas saat menggunakan baterai</translation>
 <translation id="2082187087049518845">Masukkan Tab ke Grup</translation>
 <translation id="2082510809738716738">Pilih warna tema</translation>
-<translation id="208547068587548667">Login ke <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Coba lagi</translation>
 <translation id="208634871997892083">VPN selalu aktif</translation>
 <translation id="208654914566977272">Tindakan yang disarankan saat menelusuri layar</translation>
@@ -2019,6 +2018,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2373666622366160481">Paskan dengan kertas</translation>
 <translation id="2375406435414127095">Hubungkan ke ponsel Anda</translation>
 <translation id="2376056713414548745">Bacakan lisan</translation>
+<translation id="2376122016044804363">Konfirmasi disalin ke papan klip</translation>
 <translation id="2377667304966270281">Hard Fault</translation>
 <translation id="237828693408258535">Terjemahkan halaman ini?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Ekstensi ini mungkin tidak akan didukung lagi dalam waktu dekat}other{Ekstensi ini mungkin tidak akan didukung lagi dalam waktu dekat}}</translation>
@@ -3173,6 +3173,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3192586965067888278">Jelaskan masalahnya secara mendetail. Masukan akan dikirim ke Google untuk peninjauan manual dan dapat digunakan untuk meningkatkan kualitas atau mengembangkan produk dan layanan Google.</translation>
 <translation id="3192947282887913208">File Audio</translation>
 <translation id="3193695589337931419">Utilitas Sinyal Sistem</translation>
+<translation id="3194095220941877499">Menampilkan konfirmasi saat Anda menyalin link, gambar, atau video</translation>
 <translation id="3196912927885212665">Untuk melakukan penyiapan dengan ponsel Android, Bluetooth Chromebook harus diaktifkan</translation>
 <translation id="3197453258332670132">Dengan klik kanan atau tekan lama, tampilkan info terkait untuk teks yang Anda pilih</translation>
 <translation id="3199127022143353223">Server</translation>
@@ -4010,7 +4011,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3778740492972734840">Alat &amp;pengembang</translation>
 <translation id="3778868487658107119">Ajukan pertanyaan. Minta untuk melakukan berbagai hal. Ini adalah Google pribadi Anda yang selalu siap membantu.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{histori penjelajahan Anda untuk # situs}other{histori penjelajahan Anda untuk # situs}}</translation>
-<translation id="3779244863011082655">Gunakan akun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> lain</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> tidak dapat memeriksa sandi Anda dari pelanggaran data. Coba lagi nanti.</translation>
 <translation id="3781742599892759500">Akses mikrofon Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5514,6 +5514,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4848191975108266266">"Ok Google" Asisten Google</translation>
 <translation id="4849286518551984791">Waktu Universal Terkoordinasi (UTC/GMT)</translation>
 <translation id="4849517651082200438">Jangan Dipasang</translation>
+<translation id="4849731766219625109">Gunakan akun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> Anda</translation>
 <translation id="485053257961878904">Tidak dapat menyiapkan sinkronisasi notifikasi</translation>
 <translation id="4850548109381269495">Di kedua perangkat, periksa koneksi internet Anda dan aktifkan Bluetooth. Lalu, coba lagi.</translation>
 <translation id="4850669014075537160">Scroll</translation>
@@ -5702,6 +5703,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4979510648199782334">Penyiapan Microsoft 365 selesai</translation>
 <translation id="4980805016576257426">Ekstensi ini berisi software perusak.</translation>
 <translation id="4983159853748980742">Sandi Anda tidak dibagikan. Periksa koneksi internet dan pastikan Anda login ke Chrome. Lalu, coba lagi.</translation>
+<translation id="498624032394115435">Siapa saja yang memiliki link ini dapat mengedit semua tab.</translation>
 <translation id="4986706507552097681">Anda dapat memilih jenis data yang akan disinkronkan di setelan kapan saja. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="4986728572522335985">Tindakan ini akan menghapus semua data di kunci keamanan, termasuk PIN-nya</translation>
 <translation id="4987944280765486504">Chromebook akan dimulai ulang setelah download selesai dan Anda dapat melanjutkan penyiapan.</translation>
@@ -8311,7 +8313,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6873571253135628430">Ubah izin situs</translation>
 <translation id="6876155724392614295">Sepeda</translation>
 <translation id="6876469544038980967">Tidak Berguna</translation>
-<translation id="687838958001010630">Siapa saja yang memiliki link ini dapat mengedit semua tab</translation>
 <translation id="6878422606530379992">Sensor diizinkan</translation>
 <translation id="6878862640969460273">Lanskap</translation>
 <translation id="6880587130513028875">Gambar diblokir di halaman ini.</translation>

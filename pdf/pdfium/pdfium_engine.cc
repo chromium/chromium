@@ -58,6 +58,7 @@
 #include "pdf/pdfium/pdfium_document.h"
 #include "pdf/pdfium/pdfium_document_metadata.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
+#include "pdf/pdfium/pdfium_page.h"
 #include "pdf/pdfium/pdfium_permissions.h"
 #include "pdf/pdfium/pdfium_text_fragment_finder.h"
 #include "pdf/pdfium/pdfium_unsupported_features.h"
@@ -309,7 +310,7 @@ void TearDownV8() {
 #endif  // defined(PDF_ENABLE_V8)
 
 // Returns true if the given `area` and `form_type` combination from
-// PDFiumEngine::GetCharIndex() indicates it is a form text area.
+// PDFiumEngine::GetPointData() indicates it is a form text area.
 bool IsFormTextArea(PDFiumPage::Area area, int form_type) {
   if (form_type == FPDF_FORMFIELD_UNKNOWN)
     return false;
@@ -1289,11 +1290,8 @@ void PDFiumEngine::PrintEnd() {
   FORM_DoDocumentAAction(form(), FPDFDOC_AACTION_DP);
 }
 
-PDFiumPage::Area PDFiumEngine::GetCharIndex(const gfx::PointF& point,
-                                            int* page_index,
-                                            int* char_index,
-                                            int* form_type,
-                                            PDFiumPage::LinkTarget* target) {
+PDFiumEngine::PointData PDFiumEngine::GetPointData(const gfx::PointF& point) {
+  PointData point_data;
   int page = -1;
   const gfx::Point point_in_page = DeviceToScreen(point);
   for (int visible_page : visible_pages_) {
@@ -1302,22 +1300,27 @@ PDFiumPage::Area PDFiumEngine::GetCharIndex(const gfx::PointF& point,
       break;
     }
   }
-  if (page == -1)
-    return PDFiumPage::NONSELECTABLE_AREA;
+  if (page == -1) {
+    return point_data;
+  }
 
   // If the page hasn't finished rendering, calling into the page sometimes
   // leads to hangs.
   for (const auto& paint : progressive_paints_) {
-    if (paint.page_index() == page)
-      return PDFiumPage::NONSELECTABLE_AREA;
+    if (paint.page_index() == page) {
+      return point_data;
+    }
   }
 
-  *page_index = page;
+  point_data.page_index = page;
   PDFiumPage::Area result = pages_[page]->GetCharIndex(
-      point_in_page, GetCurrentOrientation(), char_index, form_type, target);
-  return (client_->IsPrintPreview() && result == PDFiumPage::WEBLINK_AREA)
-             ? PDFiumPage::NONSELECTABLE_AREA
-             : result;
+      point_in_page, GetCurrentOrientation(), &point_data.char_index,
+      &point_data.form_type, &point_data.target);
+  point_data.area =
+      (client_->IsPrintPreview() && result == PDFiumPage::WEBLINK_AREA)
+          ? PDFiumPage::NONSELECTABLE_AREA
+          : result;
+  return point_data;
 }
 
 bool PDFiumEngine::OnMouseDown(const blink::WebMouseEvent& event) {
@@ -1386,29 +1389,25 @@ bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
       std::make_unique<SelectionChangeInvalidator>(this);
   selection_.clear();
 
-  int page_index = -1;
-  int char_index = -1;
-  int form_type = FPDF_FORMFIELD_UNKNOWN;
-  PDFiumPage::LinkTarget target;
   const gfx::PointF& point = event.PositionInWidget();
-  PDFiumPage::Area area =
-      GetCharIndex(point, &page_index, &char_index, &form_type, &target);
-  DCHECK_GE(form_type, FPDF_FORMFIELD_UNKNOWN);
-  mouse_down_state_.Set(area, target);
+  auto point_data = GetPointData(point);
+  DCHECK_GE(point_data.form_type, FPDF_FORMFIELD_UNKNOWN);
+  mouse_down_state_.Set(point_data.area, point_data.target);
 
   // Decide whether to open link or not based on user action in mouse up and
   // mouse move events.
-  if (IsLinkArea(area))
+  if (IsLinkArea(point_data.area)) {
     return true;
+  }
 
-  if (page_index != -1) {
+  if (point_data.page_index != -1) {
     UpdateFocusElementType(FocusElementType::kPage);
-    last_focused_page_ = page_index;
+    last_focused_page_ = point_data.page_index;
     double page_x;
     double page_y;
-    DeviceToPage(page_index, point, &page_x, &page_y);
+    DeviceToPage(point_data.page_index, point, &page_x, &page_y);
 
-    if (form_type != FPDF_FORMFIELD_UNKNOWN) {
+    if (point_data.form_type != FPDF_FORMFIELD_UNKNOWN) {
       // FORM_OnLButton*() will trigger a callback to
       // OnFocusedAnnotationUpdated(), which will call SetFieldFocus().
       // Destroy SelectionChangeInvalidator object before SetFieldFocus()
@@ -1420,7 +1419,7 @@ bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
       selection_invalidator.reset();
     }
 
-    FPDF_PAGE page = pages_[page_index]->GetPage();
+    FPDF_PAGE page = pages_[point_data.page_index]->GetPage();
 
     if (event.ClickCount() == 1) {
       FORM_OnLButtonDown(form(), page, event.GetModifiers(), page_x, page_y);
@@ -1428,18 +1427,21 @@ bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
       FORM_OnLButtonDoubleClick(form(), page, event.GetModifiers(), page_x,
                                 page_y);
     }
-    if (form_type != FPDF_FORMFIELD_UNKNOWN)
+    if (point_data.form_type != FPDF_FORMFIELD_UNKNOWN) {
       return true;  // Return now before we get into the selection code.
+    }
   }
   SetFieldFocus(FocusFieldType::kNoFocus);
 
-  if (area != PDFiumPage::TEXT_AREA)
+  if (point_data.area != PDFiumPage::TEXT_AREA) {
     return true;  // Return true so WebKit doesn't do its own highlighting.
+  }
 
   if (event.ClickCount() == 1)
-    OnSingleClick(page_index, char_index);
+    OnSingleClick(point_data.page_index, point_data.char_index);
   else if (event.ClickCount() == 2 || event.ClickCount() == 3)
-    OnMultipleClick(event.ClickCount(), page_index, char_index);
+    OnMultipleClick(event.ClickCount(), point_data.page_index,
+                    point_data.char_index);
 
   return true;
 }
@@ -1453,19 +1455,14 @@ bool PDFiumEngine::OnMiddleMouseDown(const blink::WebMouseEvent& event) {
 
   ClearTextSelection();
 
-  int unused_page_index = -1;
-  int unused_char_index = -1;
-  int unused_form_type = FPDF_FORMFIELD_UNKNOWN;
-  PDFiumPage::LinkTarget target;
-  PDFiumPage::Area area =
-      GetCharIndex(mouse_middle_button_last_position_, &unused_page_index,
-                   &unused_char_index, &unused_form_type, &target);
-  mouse_down_state_.Set(area, target);
+  auto point_data = GetPointData(mouse_middle_button_last_position_);
+  mouse_down_state_.Set(point_data.area, point_data.target);
 
   // Decide whether to open link or not based on user action in mouse up and
   // mouse move events.
-  if (IsLinkArea(area))
+  if (IsLinkArea(point_data.area)) {
     return true;
+  }
 
   if (kViewerImplementedPanning) {
     // Switch to hand cursor when panning.
@@ -1480,24 +1477,20 @@ bool PDFiumEngine::OnRightMouseDown(const blink::WebMouseEvent& event) {
   DCHECK_EQ(blink::WebPointerProperties::Button::kRight, event.button);
 
   const gfx::PointF& point = event.PositionInWidget();
-  int page_index = -1;
-  int char_index = -1;
-  int form_type = FPDF_FORMFIELD_UNKNOWN;
-  PDFiumPage::LinkTarget target;
-  PDFiumPage::Area area =
-      GetCharIndex(point, &page_index, &char_index, &form_type, &target);
-  DCHECK_GE(form_type, FPDF_FORMFIELD_UNKNOWN);
+  auto point_data = GetPointData(point);
+  DCHECK_GE(point_data.form_type, FPDF_FORMFIELD_UNKNOWN);
 
-  bool is_form_text_area = IsFormTextArea(area, form_type);
+  bool is_form_text_area =
+      IsFormTextArea(point_data.area, point_data.form_type);
 
   double page_x = -1;
   double page_y = -1;
   FPDF_PAGE page = nullptr;
   if (is_form_text_area) {
-    DCHECK_NE(page_index, -1);
+    DCHECK_NE(point_data.page_index, -1);
 
-    DeviceToPage(page_index, point, &page_x, &page_y);
-    page = pages_[page_index]->GetPage();
+    DeviceToPage(point_data.page_index, point, &page_x, &page_y);
+    page = pages_[point_data.page_index]->GetPage();
   }
 
   // Handle the case when focus starts inside a form text area.
@@ -1585,16 +1578,11 @@ bool PDFiumEngine::OnMouseUp(const blink::WebMouseEvent& event) {
   else if (event.button == blink::WebPointerProperties::Button::kMiddle)
     mouse_middle_button_down_ = false;
 
-  int page_index = -1;
-  int char_index = -1;
-  int form_type = FPDF_FORMFIELD_UNKNOWN;
-  PDFiumPage::LinkTarget target;
   const gfx::PointF& point = event.PositionInWidget();
-  PDFiumPage::Area area =
-      GetCharIndex(point, &page_index, &char_index, &form_type, &target);
+  auto point_data = GetPointData(point);
 
   // Open link on mouse up for same link for which mouse down happened earlier.
-  if (mouse_down_state_.Matches(area, target)) {
+  if (mouse_down_state_.Matches(point_data.area, point_data.target)) {
     int modifiers = event.GetModifiers();
     bool middle_button =
         !!(modifiers & blink::WebInputEvent::Modifiers::kMiddleButtonDown);
@@ -1607,25 +1595,28 @@ bool PDFiumEngine::OnMouseUp(const blink::WebMouseEvent& event) {
     WindowOpenDisposition disposition = ui::DispositionFromClick(
         middle_button, alt_key, ctrl_key, meta_key, shift_key);
 
-    if (NavigateToLinkDestination(area, target, disposition))
+    if (NavigateToLinkDestination(point_data.area, point_data.target,
+                                  disposition)) {
       return true;
+    }
   }
 
   if (event.button == blink::WebPointerProperties::Button::kMiddle) {
     if (kViewerImplementedPanning) {
       // Update the cursor when panning stops.
-      client_->UpdateCursor(DetermineCursorType(area, form_type));
+      client_->UpdateCursor(
+          DetermineCursorType(point_data.area, point_data.form_type));
     }
 
     // Prevent middle mouse button from selecting texts.
     return false;
   }
 
-  if (page_index != -1) {
+  if (point_data.page_index != -1) {
     double page_x;
     double page_y;
-    DeviceToPage(page_index, point, &page_x, &page_y);
-    FORM_OnLButtonUp(form(), pages_[page_index]->GetPage(),
+    DeviceToPage(point_data.page_index, point, &page_x, &page_y);
+    FORM_OnLButtonUp(form(), pages_[point_data.page_index]->GetPage(),
                      event.GetModifiers(), page_x, page_y);
   }
 
@@ -1637,35 +1628,33 @@ bool PDFiumEngine::OnMouseUp(const blink::WebMouseEvent& event) {
 }
 
 bool PDFiumEngine::OnMouseMove(const blink::WebMouseEvent& event) {
-  int page_index = -1;
-  int char_index = -1;
-  int form_type = FPDF_FORMFIELD_UNKNOWN;
-  PDFiumPage::LinkTarget target;
   const gfx::PointF& point = event.PositionInWidget();
-  PDFiumPage::Area area =
-      GetCharIndex(point, &page_index, &char_index, &form_type, &target);
+  auto point_data = GetPointData(point);
 
   // Clear `mouse_down_state_` if mouse moves away from where the mouse down
   // happened.
-  if (!mouse_down_state_.Matches(area, target))
+  if (!mouse_down_state_.Matches(point_data.area, point_data.target)) {
     mouse_down_state_.Reset();
+  }
 
   if (!selecting_) {
-    client_->UpdateCursor(DetermineCursorType(area, form_type));
+    client_->UpdateCursor(
+        DetermineCursorType(point_data.area, point_data.form_type));
 
-    if (page_index != -1) {
+    if (point_data.page_index != -1) {
       double page_x;
       double page_y;
-      DeviceToPage(page_index, point, &page_x, &page_y);
-      FORM_OnMouseMove(form(), pages_[page_index]->GetPage(), 0, page_x,
-                       page_y);
+      DeviceToPage(point_data.page_index, point, &page_x, &page_y);
+      FORM_OnMouseMove(form(), pages_[point_data.page_index]->GetPage(), 0,
+                       page_x, page_y);
     }
 
     UpdateLinkUnderCursor(GetLinkAtPosition(point));
 
     // If in form text area while left mouse button is held down, check if form
     // text selection needs to be updated.
-    if (mouse_left_button_down_ && area == PDFiumPage::FORM_TEXT_AREA &&
+    if (mouse_left_button_down_ &&
+        point_data.area == PDFiumPage::FORM_TEXT_AREA &&
         PageIndexInBounds(last_focused_page_)) {
       SetFormSelectedText(form(), pages_[last_focused_page_]->GetPage());
     }
@@ -1690,16 +1679,18 @@ bool PDFiumEngine::OnMouseMove(const blink::WebMouseEvent& event) {
 
   // We're selecting but right now we're not over text, so don't change the
   // current selection.
-  if (page_index < 0 || char_index < 0)
+  if (point_data.page_index < 0 || point_data.char_index < 0) {
     return false;
+  }
 
   // Similarly, do not select if `area` is not a selectable type. This can occur
   // even if there is text in the area. e.g. When print previewing.
-  if (!IsSelectableArea(area))
+  if (!IsSelectableArea(point_data.area)) {
     return false;
+  }
 
   SelectionChangeInvalidator selection_invalidator(this);
-  return ExtendSelection(page_index, char_index);
+  return ExtendSelection(point_data.page_index, point_data.char_index);
 }
 
 ui::mojom::CursorType PDFiumEngine::DetermineCursorType(PDFiumPage::Area area,
@@ -2427,16 +2418,9 @@ void PDFiumEngine::HandleAccessibilityAction(
 }
 
 std::string PDFiumEngine::GetLinkAtPosition(const gfx::PointF& point) {
-  std::string url;
-  int temp;
-  int page_index = -1;
-  int form_type = FPDF_FORMFIELD_UNKNOWN;
-  PDFiumPage::LinkTarget target;
-  PDFiumPage::Area area =
-      GetCharIndex(point, &page_index, &temp, &form_type, &target);
-  if (area == PDFiumPage::WEBLINK_AREA)
-    url = target.url;
-  return url;
+  auto point_data = GetPointData(point);
+  return point_data.area == PDFiumPage::WEBLINK_AREA ? point_data.target.url
+                                                     : std::string();
 }
 
 bool PDFiumEngine::HasPermission(DocumentPermission permission) const {
@@ -4181,18 +4165,14 @@ void PDFiumEngine::SetCaretPosition(const gfx::Point& position) {
 }
 
 void PDFiumEngine::MoveRangeSelectionExtent(const gfx::Point& extent) {
-  int page_index = -1;
-  int char_index = -1;
-  int form_type = FPDF_FORMFIELD_UNKNOWN;
-  PDFiumPage::LinkTarget target;
-  GetCharIndex(gfx::PointF(extent), &page_index, &char_index, &form_type,
-               &target);
-  if (page_index < 0 || char_index < 0)
+  auto point_data = GetPointData(gfx::PointF(extent));
+  if (point_data.page_index < 0 || point_data.char_index < 0) {
     return;
+  }
 
   SelectionChangeInvalidator selection_invalidator(this);
   if (range_selection_direction_ == RangeSelectionDirection::Right) {
-    ExtendSelection(page_index, char_index);
+    ExtendSelection(point_data.page_index, point_data.char_index);
     return;
   }
 
@@ -4200,13 +4180,13 @@ void PDFiumEngine::MoveRangeSelectionExtent(const gfx::Point& extent) {
   // point based on the new left position. We then extend that selection out to
   // the previously provided base location.
   selection_.clear();
-  selection_.push_back(PDFiumRange(pages_[page_index].get(), char_index, 0));
+  selection_.push_back(PDFiumRange(pages_[point_data.page_index].get(),
+                                   point_data.char_index, 0));
 
   // This should always succeeed because the range selection base should have
   // already been selected.
-  GetCharIndex(gfx::PointF(range_selection_base_), &page_index, &char_index,
-               &form_type, &target);
-  ExtendSelection(page_index, char_index);
+  point_data = GetPointData(gfx::PointF(range_selection_base_));
+  ExtendSelection(point_data.page_index, point_data.char_index);
 }
 
 void PDFiumEngine::SetSelectionBounds(const gfx::Point& base,

@@ -879,6 +879,16 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
+  // Install a LaunchScreenViewController as root view for the newly connected
+  // SceneState and make the window visible (but do not force it above all the
+  // other windows by making it key window). This ensures that something will
+  // be displayed during the blocking steps of the application and/or profile
+  // initialisation (e.g. fetching variation seeds, load profiles' preferences,
+  // migrating session storage, ...).
+  UIWindow* window = sceneState.window;
+  window.rootViewController = [[LaunchScreenViewController alloc] init];
+  window.hidden = NO;
+
   if (appState.initStage < AppInitStage::kFinal) {
     return;
   }
@@ -1634,30 +1644,23 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
     UISceneConnectionOptions* savedConnectionOptions =
         sceneState.connectionOptions;
 
-    // Install a new root view controller before destroying the UI (since it
-    // does not support dismissing the root view controller after the Browser
-    // has been destroyed).
-    // TODO(crbug.com/376667510): SceneDelegate should manage the view
-    // controller and this should be unnecessary (in fact, it should be possible
-    // to install a temporary view controller to perform an animation).
-    LaunchScreenViewController* launchScreen =
-        [[LaunchScreenViewController alloc] init];
-    [sceneState setRootViewController:launchScreen makeKeyAndVisible:YES];
-
     [sceneDelegate sceneDidDisconnect:scene];  // destroy the old SceneState
     sceneState = sceneDelegate.sceneState;     // recreate a new SceneState
     sceneState.currentOrigin = savedOrigin;
     sceneState.connectionOptions = savedConnectionOptions;
-    sceneState.activationLevel = SceneActivationLevelBackground;
     sceneState.scene = scene;
 
     // Reconnect the scene. This will attach a profile automatically based
     // on the information stored in the ProfileAttributesStorageIOS.
-    [self appState:self.appState sceneConnected:sceneState];
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:UISceneWillConnectNotification
+                      object:scene];
     DCHECK(sceneState.profileState);
 
-    // Restore the saved activation level.
-    sceneState.activationLevel = savedLevel;
+    while (sceneState.activationLevel < savedLevel) {
+      sceneState.activationLevel = static_cast<SceneActivationLevel>(
+          base::to_underlying(sceneState.activationLevel) + 1);
+    }
   }
 
   // Wait for the profile to complete its initialisation.

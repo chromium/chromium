@@ -76,7 +76,9 @@ public class DigitalCredentialProviderTest {
                         input ->
                                 Promise.fulfilled(
                                         new DigitalCredential(
-                                                "protocol", EXPECTED_MDOC.getBytes())));
+                                                "protocol",
+                                                ("{\"token\": \"" + EXPECTED_MDOC + "\"}")
+                                                        .getBytes())));
 
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
         DOMUtils.clickNode(mActivityTestRule.getWebContents(), "request_age_only_button");
@@ -100,7 +102,10 @@ public class DigitalCredentialProviderTest {
     @EnableFeatures(ContentFeatureList.WEB_IDENTITY_DIGITAL_CREDENTIALS_CREATION)
     public void testCreate() throws TimeoutException {
         when(mDelegate.create(any(), any(), any()))
-                .thenAnswer(input -> Promise.fulfilled(EXPECTED_CREATION_RESPONSE));
+                .thenAnswer(
+                        input ->
+                                Promise.fulfilled(
+                                        ("{\"token\": \"" + EXPECTED_CREATION_RESPONSE + "\"}")));
 
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
         DOMUtils.clickNode(mActivityTestRule.getWebContents(), "create_button");

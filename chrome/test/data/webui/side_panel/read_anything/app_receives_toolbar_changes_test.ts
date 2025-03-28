@@ -10,14 +10,16 @@ import {SpeechBrowserProxyImpl, ToolbarEvent, VoiceClientSideStatusCode, WordBou
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, emitEvent, setupBasicSpeech} from './common.js';
+import {createApp, emitEvent, mockMetrics, setupBasicSpeech} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('AppReceivesToolbarChanges', () => {
   let app: AppElement;
   let speech: TestSpeechBrowserProxy;
+  let metrics: TestMetricsBrowserProxy;
 
   function containerLetterSpacing(): number {
     return +window.getComputedStyle(app.$.container)
@@ -80,6 +82,7 @@ suite('AppReceivesToolbarChanges', () => {
     SpeechBrowserProxyImpl.setInstance(speech);
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+    metrics = mockMetrics();
     app = await createApp();
   });
 
@@ -318,6 +321,7 @@ suite('AppReceivesToolbarChanges', () => {
 
         assertTrue(app.speechPlayingState.isSpeechActive);
         assertTrue(propagatedActiveState);
+        assertEquals(0, metrics.getCallCount('recordSpeechStopSource'));
       });
 
       test('second press pauses', async () => {
@@ -327,6 +331,9 @@ suite('AppReceivesToolbarChanges', () => {
 
         assertFalse(app.speechPlayingState.isSpeechActive);
         assertFalse(propagatedActiveState);
+        assertEquals(
+            chrome.readingMode.keyboardShortcutStopSource,
+            await metrics.whenCalled('recordSpeechStopSource'));
       });
     });
   });

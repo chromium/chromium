@@ -29,6 +29,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
@@ -48,7 +49,6 @@ class LocalFrame;
 class PhysicalBoxFragment;
 class SelectionEditor;
 struct PaintInvalidatorContext;
-struct PhysicalOffset;
 
 class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
  public:

@@ -21,6 +21,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
 #include "services/tracing/public/cpp/perfetto/metadata_data_source.h"
+#include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -476,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
 #if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
                        PackageNameRecordedTraceLogSet) {
-  base::trace_event::TraceLog::GetInstance()->SetRecordHostAppPackageName(true);
+  tracing::TrackNameRecorder::GetInstance()->SetRecordHostAppPackageName(true);
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace(base::test::DefaultTraceConfig("foo", false),
                  perfetto::kCustomBackend);
@@ -508,8 +509,7 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
                        PackageNameNotRecordedTraceLogNotSet) {
-  base::trace_event::TraceLog::GetInstance()->SetRecordHostAppPackageName(
-      false);
+  tracing::TrackNameRecorder::GetInstance()->SetRecordHostAppPackageName(false);
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace(base::test::DefaultTraceConfig("foo", false),
                  perfetto::kCustomBackend);

@@ -28,6 +28,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/network_session_configurator/common/network_switches.h"
+#include "content/browser/renderer_host/cookie_access_observers.h"
 #include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -574,6 +575,87 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
               HasUrlAndMatchingSourceId(url3, &ukm_recorder()));
 
   EXPECT_EQ(recorder.visits().size(), 3u);
+}
+
+IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
+                       DelayedNavigationalCookieAccesses) {
+  const GURL url1 =
+      embedded_https_test_server().GetURL("a.test", "/set-cookie?foo=bar");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  WebContents* web_contents = shell()->web_contents();
+
+  CookieAccessInterceptor interceptor(*web_contents);
+  BtmPageVisitRecorder recorder(web_contents);
+  URLCookieAccessObserver access_observer(web_contents, url1,
+                                          CookieOperation::kChange);
+
+  // Perform a navigational cookie write for a.test.
+  ASSERT_TRUE(NavigateToURL(web_contents, url1));
+  // TODO: crbug.com/394059601 - Replace with Resume() once
+  // CookieAccessInterceptor supports frame accesses.
+  access_observer.Wait();
+
+  // End the page visit on `url1` by navigating away.
+  ASSERT_TRUE(NavigateToURL(web_contents, url2));
+  ASSERT_TRUE(recorder.WaitForSize(2));
+
+  BtmPageVisitRecorder::VisitTuple first_visit = recorder.visits()[0];
+  ASSERT_THAT(first_visit.navigation.destination,
+              HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
+
+  BtmPageVisitRecorder::VisitTuple second_visit = recorder.visits()[1];
+  ASSERT_THAT(second_visit.navigation.destination,
+              HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
+  ASSERT_THAT(second_visit.prev_page,
+              HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
+
+  // Navigational cookie writes are active storage accesses and should be
+  // reported.
+  EXPECT_TRUE(second_visit.prev_page.had_qualifying_storage_access);
+}
+
+IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
+                       DelayedServerRedirectCookieAccess) {
+  const GURL url1 = embedded_https_test_server().GetURL(
+      "a.test", "/server-redirect-with-cookie?/empty.html");
+  const GURL url1b =
+      embedded_https_test_server().GetURL("a.test", "/empty.html");
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+  WebContents* web_contents = shell()->web_contents();
+
+  CookieAccessInterceptor interceptor(*web_contents);
+  BtmPageVisitRecorder recorder(web_contents);
+  URLCookieAccessObserver access_observer(web_contents, url1,
+                                          CookieOperation::kChange);
+
+  // Start a navigation to `url1` which will write cookies and redirect to
+  // `url1b`.
+  ASSERT_TRUE(NavigateToURL(web_contents, url1, url1b));
+  // TODO: crbug.com/394059601 - Replace with Resume() once
+  // CookieAccessInterceptor supports frame accesses.
+  access_observer.Wait();
+
+  // End the page visit on `url1b` by navigating away.
+  ASSERT_TRUE(NavigateToURL(web_contents, url2));
+  ASSERT_TRUE(recorder.WaitForSize(2));
+
+  BtmPageVisitRecorder::VisitTuple first_visit = recorder.visits()[0];
+  ASSERT_THAT(first_visit.navigation.destination,
+              HasUrlAndMatchingSourceId(url1b, &ukm_recorder()));
+  // The navigational cookie write of the redirect should be reported even
+  // if delayed.
+  EXPECT_TRUE(first_visit.navigation.server_redirects[0].did_write_cookies);
+
+  BtmPageVisitRecorder::VisitTuple second_visit = recorder.visits()[1];
+  ASSERT_THAT(second_visit.navigation.destination,
+              HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
+  ASSERT_THAT(second_visit.prev_page,
+              HasUrlAndMatchingSourceId(url1b, &ukm_recorder()));
+
+  // The navigational cookie write was done by the redirect not the page.
+  EXPECT_FALSE(second_visit.prev_page.had_qualifying_storage_access);
 }
 
 IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, SubresourceCookie) {

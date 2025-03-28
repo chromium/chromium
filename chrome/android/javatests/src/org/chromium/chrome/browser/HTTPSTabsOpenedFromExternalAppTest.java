@@ -14,11 +14,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.network.mojom.ReferrerPolicy;
@@ -26,15 +28,17 @@ import org.chromium.network.mojom.ReferrerPolicy;
 /** Test the behavior of tabs when opening an HTTPS URL from an external app. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class HTTPSTabsOpenedFromExternalAppTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     private EmbeddedTestServer mTestServer;
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
     }
 
     /**
@@ -50,6 +54,10 @@ public class HTTPSTabsOpenedFromExternalAppTest {
                         ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
         String url = mTestServer.getURL("/chrome/test/data/android/about.html");
         TabsOpenedFromExternalAppTest.loadUrlAndVerifyReferrerWithPolicy(
-                url, mActivityTestRule, ReferrerPolicy.DEFAULT, HTTP_REFERRER, HTTP_REFERRER);
+                url,
+                mActivityTestRule.getActivityTestRule(),
+                ReferrerPolicy.DEFAULT,
+                HTTP_REFERRER,
+                HTTP_REFERRER);
     }
 }

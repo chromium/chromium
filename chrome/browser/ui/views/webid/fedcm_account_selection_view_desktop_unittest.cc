@@ -76,6 +76,7 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
   void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list,
+      const gfx::Image& rp_icon,
       bool show_back_button) override {
     show_back_button_ = show_back_button;
     sheet_type_ = SheetType::kAccountPicker;
@@ -363,8 +364,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
             blink::mojom::RpMode rp_mode,
             const std::vector<IdentityRequestAccountPtr>& new_accounts =
                 std::vector<IdentityRequestAccountPtr>()) {
-    controller.Show(kTopFrameEtldPlusOne, {idp_data_}, accounts, sign_in_mode,
-                    rp_mode, new_accounts);
+    controller.Show(content::RelyingPartyData(kTopFrameEtldPlusOne),
+                    {idp_data_}, accounts, sign_in_mode, rp_mode, new_accounts);
   }
 
   std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShowMismatchDialog(
@@ -422,8 +423,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       blink::mojom::RpMode rp_mode) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
         delegate_.get(), tab_interface_.get(), this);
-    controller->Show(kTopFrameEtldPlusOne, idp_list, accounts, sign_in_mode,
-                     rp_mode,
+    controller->Show(content::RelyingPartyData(kTopFrameEtldPlusOne), idp_list,
+                     accounts, sign_in_mode, rp_mode,
                      /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
     return controller;
   }

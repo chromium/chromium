@@ -223,7 +223,6 @@
 <translation id="1363028406613469049">추적</translation>
 <translation id="1364822246244961190">차단된 정책이므로 값이 무시됩니다.</translation>
 <translation id="1368318639262510626">공룡 게임입니다. 픽셀 스타일의 공룡이 선인장과 프테로사우루스를 피하며 황무지를 달려갑니다. 오디오 신호음이 들리면 Space 키를 눌러 장애물을 뛰어넘으세요.</translation>
-<translation id="1369735141991626842">AI로 입력란 작성</translation>
 <translation id="1374468813861204354">제안사항</translation>
 <translation id="1375198122581997741">버전 정보</translation>
 <translation id="1375293861397106342">일반적으로 모든 옵션은 <ph name="LOW_PRICE" />~<ph name="HIGH_PRICE" />입니다</translation>
@@ -539,7 +538,6 @@
 <translation id="1919526244108283799">400x600mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{없음}=1{사이트 1개}other{사이트 #개}}</translation>
 <translation id="192095259937375524">이 탭 공유 버튼, 링크 공유, QR 코드 생성, 전송 등의 옵션으로 이 탭을 공유하려면 활성화하세요.</translation>
-<translation id="1921479021518565778">추천 항목 로드 완료</translation>
 <translation id="1924727005275031552">새로운 주소</translation>
 <translation id="1927439846988093361">헤어 케어</translation>
 <translation id="1935353813610900265">AI 기반 방문 기록 검색에 관한 의견 보내기</translation>
@@ -974,6 +972,7 @@
 <translation id="2688186765492306706">500x760mm</translation>
 <translation id="2688969097326701645">예, 계속 진행합니다</translation>
 <translation id="2690699652723742414">지난 30일</translation>
+<translation id="2691385045260836588">모델</translation>
 <translation id="2691924980723297736">안전 경고</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> 질문하기</translation>
 <translation id="2699273987028089219">하위 메뉴를 사용할 수 있습니다. 추가 옵션으로 이동하려면 <ph name="SHORTCUT" />를 사용하세요.</translation>
@@ -1529,6 +1528,7 @@
 <translation id="3664782872746246217">키워드:</translation>
 <translation id="3665100783276035932">대부분의 사이트가 예상대로 작동합니다.</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />자세히 알아보기<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">번호</translation>
 <translation id="3670229581627177274">블루투스 켜기</translation>
 <translation id="3671117652518853176">사용 중지된 경우 보안 목적으로 확인을 요청하는 메시지가 때때로 표시될 수 있습니다.</translation>
 <translation id="3671540257457995106">크기 조절을 허용하시겠습니까?</translation>
@@ -1543,7 +1543,6 @@
 <translation id="3681007416295224113">인증서 정보</translation>
 <translation id="3681421644246505351">Chrome에서는 내 최근 방문 기록을 기반으로 관심 주제를 파악합니다.</translation>
 <translation id="3682094733650754138">주소 입력 옵션이 선택됨</translation>
-<translation id="3687493962714153124">AI로 자동 완성 관리</translation>
 <translation id="3687920599421452763">밴 및 미니밴</translation>
 <translation id="3693327506115126094">본인 인증 방법 선택</translation>
 <translation id="3698353241727597930">관리자가 엔터프라이즈 관리 <ph name="CLOUD_STORAGE" /> 스토리지에 <ph name="FILES" />을(를) 저장하도록 구성했습니다. 이러한 파일은 삭제 시 모니터링, 감사, 보관될 수 있습니다.</translation>
@@ -1697,6 +1696,7 @@
 <translation id="3950820424414687140">로그인</translation>
 <translation id="3953505489397572035">일반적인 가격</translation>
 <translation id="3958057596965527988">4x4인치</translation>
+<translation id="3959969108528118741">소유자</translation>
 <translation id="3961148744525529027">결제 핸들러 시트가 절반 높이로 열림</translation>
 <translation id="3962859241508114581">이전 트랙</translation>
 <translation id="3963721102035795474">리더 모드</translation>
@@ -1922,7 +1922,6 @@
 <translation id="4312866146174492540">차단(기본값)</translation>
 <translation id="4314815835985389558">동기화 관리</translation>
 <translation id="4316057107946726368">근거 메시지를 <ph name="MAX_CHAR_COUNT" />자 이하(영문 기준)로 입력하세요. <ph name="MAX_CHAR_COUNT" />자 중 <ph name="ACTUAL_CHAR_COUNT" />자를 사용했습니다.</translation>
-<translation id="431740489189220419">추천 항목 로드 중</translation>
 <translation id="4318213823155573975">머리 장식</translation>
 <translation id="4318312030194671742">페인트 미리보기 합성 서비스</translation>
 <translation id="4318566738941496689">기기 이름 및 네트워크 주소</translation>
@@ -2329,6 +2328,7 @@
 <translation id="5087286274860437796">서버의 인증서가 현재 유효하지 않습니다.</translation>
 <translation id="5087580092889165836">카드 추가</translation>
 <translation id="5088142053160410913">운영자에게 보내는 메시지</translation>
+<translation id="5089810972385038852">시/도</translation>
 <translation id="5090647584136241764">비슷한 제품이 있는 탭을 추가하여 나에게 중요한 세부정보를 손쉽게 비교하세요.</translation>
 <translation id="5093232627742069661">Z 폴드</translation>
 <translation id="5094747076828555589">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 Chromium에서 신뢰하는 보안 인증서가 아닙니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
@@ -2467,6 +2467,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />기본 검색엔진을 사용하면 웹 검색 및 Chromium 기능<ph name="END_BOLD" />(예: 주소 표시줄 및 웹페이지의 이미지 검색)을 사용할 수 있습니다. 사용 중인 검색엔진에서 Chromium 기능을 지원하지 않으면 Chromium 기능이 제공되지 않을 수도 있습니다.</translation>
 <translation id="5323043727018853753">삽입된 콘텐츠가 허용됩니다.</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES" /></translation>
+<translation id="5327248766486351172">이름</translation>
 <translation id="5329858041417644019">관리 대상 브라우저가 아닙니다</translation>
 <translation id="5331585574693522196">기본값으로 설정</translation>
 <translation id="5332219387342487447">배송 방법</translation>
@@ -2680,7 +2681,6 @@
 <translation id="569000877158168851">DnsOverHttpsMode 정책이 <ph name="SECURE_DNS_MODE_AUTOMATIC" /> 또는 <ph name="SECURE_DNS_MODE_SECURE" />(으)로 설정되지 않는 한 DnsOverHttpsTemplates 값은 관련성이 없어 앞으로 사용되지 않습니다.</translation>
 <translation id="5691848789297492617">저장 카드가 전체 높이로 열렸습니다.</translation>
 <translation id="5695542892312572833">Windows Hello를 사용해 구매를 확인하고 완료하시겠습니까?</translation>
-<translation id="5697827549745555938">저장한 정보와 이 페이지가 Google로 전송되어 자동 완성이 이 양식을 작성하는 데 도움이 되는지 확인합니다. 이 기능의 개선을 위해 인적 검토자가 데이터를 확인할 수도 있습니다.</translation>
 <translation id="5699628521141772782">유제품 및 계란</translation>
 <translation id="5700761515355162635">서드 파티 쿠키 허용됨</translation>
 <translation id="5701381305118179107">가운데</translation>
@@ -3109,6 +3109,7 @@
 <translation id="6440503408713884761">무시됨</translation>
 <translation id="6443406338865242315">내가 설치한 확장 프로그램 및 플러그인</translation>
 <translation id="6444329331928531170">은퇴 및 연금</translation>
+<translation id="6445051938772793705">국가</translation>
 <translation id="6446608382365791566">자세한 정보 추가</translation>
 <translation id="6447842834002726250">쿠키</translation>
 <translation id="6448371595882710519">데이터 컨트롤에 관해 자세히 알아보기</translation>
@@ -3590,7 +3591,6 @@
 <translation id="7316521168101843192">Microsoft OneDrive에 파일 저장 중</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">연결 도움말</translation>
-<translation id="7321111802407017850">자동 완성을 위해 정보 저장</translation>
 <translation id="7323804146520582233">‘<ph name="SECTION" />’ 섹션 숨기기</translation>
 <translation id="733354035281974745">기기 로컬 계정 재정의</translation>
 <translation id="7334320624316649418">재정렬 다시 실행(&amp;R)</translation>

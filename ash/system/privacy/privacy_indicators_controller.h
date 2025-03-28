@@ -204,8 +204,9 @@ class ASH_EXPORT PrivacyIndicatorsController
 
 // Update `PrivacyIndicatorsTrayItemView` screen share status across all status
 // area widgets.
-void ASH_EXPORT
-UpdatePrivacyIndicatorsScreenShareStatus(bool is_screen_sharing);
+void ASH_EXPORT UpdatePrivacyIndicatorsScreenShareStatus(
+    bool is_screen_sharing,
+    bool is_remote_screen_sharing_notification);
 
 }  // namespace ash
 

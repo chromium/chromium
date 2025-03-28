@@ -51,7 +51,7 @@ constexpr static base::TimeDelta kEmphasisRampDownDuration =
 constexpr static base::TimeDelta kEmphasisDuration = base::Milliseconds(1500);
 // Time since creation will roll over after this time to prevent growing
 // indefinitely.
-constexpr static base::TimeDelta kMaxTime = base::Days(1);
+constexpr static base::TimeDelta kMaxTime = base::Hours(1);
 
 float ClampAndInterpolate(gfx::Tween::Type type,
                           float t,
@@ -113,15 +113,20 @@ class GlicBorderView::BorderViewUpdater {
     content::WebContents* contents = focused_tab_data.focus();
     auto* previous_focus = glic_focused_contents_in_current_window_.get();
     if (contents && IsTabInCurrentWindow(contents)) {
-      glic_focused_contents_in_current_window_ =
-          const_cast<content::WebContents*>(contents)->GetWeakPtr();
+      glic_focused_contents_in_current_window_ = contents->GetWeakPtr();
     } else {
       glic_focused_contents_in_current_window_.reset();
     }
 
-    bool tab_switch =
-        previous_focus && glic_focused_contents_in_current_window_ &&
-        previous_focus != glic_focused_contents_in_current_window_.get();
+    auto* current_focus = glic_focused_contents_in_current_window_.get();
+    bool focus_changed = previous_focus != current_focus;
+    if (border_view_->tester_ && focus_changed) [[unlikely]] {
+      auto current_focus_url = current_focus ? current_focus->GetURL() : GURL();
+      border_view_->tester_->FocusedTabChanged(current_focus_url);
+    }
+
+    bool tab_switch = previous_focus &&
+                      glic_focused_contents_in_current_window_ && focus_changed;
     // OnFocusedTabChanged is dispatched after the previous focused WebContents
     // is destroyed, making it no different than the focus changing to a
     // different browser window. `border_view_->compositor_` helps
@@ -281,8 +286,7 @@ class GlicBorderView::BorderViewUpdater {
   const raw_ptr<BrowserWindowInterface> browser_;
 
   // Tracked states and their subscriptions.
-  base::WeakPtr<const content::WebContents>
-      glic_focused_contents_in_current_window_;
+  base::WeakPtr<content::WebContents> glic_focused_contents_in_current_window_;
   base::CallbackListSubscription focus_change_subscription_;
   bool context_access_indicator_enabled_ = false;
   base::CallbackListSubscription indicator_change_subscription_;
@@ -357,7 +361,8 @@ void GlicBorderView::OnPaint(gfx::Canvas* canvas) {
       {.name = SkString("u_emphasis"), .value = emphasis_},
       {.name = SkString("u_corner_radius"), .value = corner_radius},
       {.name = SkString("u_insets"),
-       .value = static_cast<float>(uniform_insets.left())}};
+       .value = static_cast<float>(uniform_insets.left())},
+      {.name = SkString("u_progress"), .value = progress_}};
   std::vector<cc::PaintShader::Float2Uniform> float2_uniforms = {
       // TODO(https://crbug.com/406026829): Ideally `u_resolution` should be a
       // vec4(x, y, w, h) and does not assume the origin is (0, 0). This way we
@@ -447,6 +452,7 @@ void GlicBorderView::OnAnimationStep(base::TimeTicks timestamp) {
   emphasis_ = GetEmphasis(emphasis_since_first_frame);
   base::TimeDelta opacity_since_first_frame = timestamp - first_frame_time_;
   opacity_ = GetOpacity(timestamp);
+  progress_ = GetEffectProgress(timestamp);
 
   // TODO(liuwilliam): Ideally this should be done in paint-related methods.
   // Consider moving it to LayerDelegate::OnPaintLayer().
@@ -679,6 +685,19 @@ float GlicBorderView::GetEffectTime() const {
       ((last_animation_step_time_ - GetCreationTime()) - total_steady_time_) %
       kMaxTime;
   return time_since_creation.InSecondsF();
+}
+
+float GlicBorderView::GetEffectProgress(base::TimeTicks timestamp) const {
+  if (skip_emphasis_animation_) {
+    return 0.0;
+  }
+  base::TimeDelta time_since_first_frame = timestamp - first_emphasis_frame_;
+  base::TimeDelta total_duration =
+      kEmphasisRampUpDuration + kEmphasisRampDownDuration + kEmphasisDuration;
+  return std::clamp(
+      static_cast<float>(time_since_first_frame.InMillisecondsF() /
+                         total_duration.InMillisecondsF()),
+      0.0f, 1.0f);
 }
 
 base::TimeTicks GlicBorderView::GetCreationTime() const {

@@ -149,6 +149,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1455242230282523554">Shfaq cilësimet e gjuhës</translation>
 <translation id="1459693405370120464">Moti</translation>
 <translation id="1460620680449458626">Volumi është i çaktivizuar.</translation>
+<translation id="1462439140224375968">U krijua një dokument i "Dokumenteve të Google"</translation>
 <translation id="14648076227129703">Kjo lejon qasjen te kamera për <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dhe të gjitha aplikacionet dhe uebsajtet me lejen e kamerës</translation>
 <translation id="1467432559032391204">Majtas</translation>
 <translation id="146902737843070955">Ky ndryshim është kërkuar nga administratori yt</translation>
@@ -550,6 +551,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="2872353916818027657">Ndërro monitorin parësor</translation>
 <translation id="2872961005593481000">Ndërprit punën</translation>
 <translation id="2876338922445400217">Zmadho ekranin</translation>
+<translation id="2876760662374103627">Kontrolli me anë të fytyrës është aktiv</translation>
 <translation id="2878884018241093801">Nuk ka asnjë artikull të fundit</translation>
 <translation id="2880541185262491188">Shumë përpjekje me kodin PIN. Prit <ph name="TIME_LEFT" /> dhe provo përsëri</translation>
 <translation id="2883271196820422439">Vazhdo përdorimin e tasteve të miut</translation>
@@ -593,6 +595,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="301584155502740476">Shfaq detajet e zonës së qasjes për internet. Zona e qasjes për internet është joaktive.</translation>
 <translation id="3017079585324758401">Sfondi</translation>
 <translation id="3018135054368884502">Kalo median shpejt përpara</translation>
+<translation id="3026897869154397692">U shtua te "Kalendari"</translation>
 <translation id="3033545621352269033">Aktiv</translation>
 <translation id="3033912566804961911">Kombinoje me <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Hap skedarët</translation>
@@ -1514,6 +1517,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="595202126637698455">Gjurmimi i rendimentit u aktivizua</translation>
 <translation id="5955304353782037793">aplikacion</translation>
 <translation id="5958529069007801266">Përdorues i mbikëqyrur</translation>
+<translation id="596035801491797438">Çaktivizo "Kontrollin me anë të fytyrës"</translation>
 <translation id="5960410286721553511">Shiko fotografitë dhe mediat më të fundit të telefonit tënd</translation>
 <translation id="5965524703725988602">Aktivizo/çaktivizo "Temën e errët". <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Lëviz para përmes dritareve</translation>
@@ -1896,6 +1900,7 @@ Instalim i ri</translation>
 <translation id="7228968829656641943">Zgjidh për të kërkuar në ekranin tim. Shtyp Tab dhe më pas tastin e hapësirës për navigimin me tastierë.</translation>
 <translation id="7229029500464092426">Memoria: <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> në total</translation>
 <translation id="7239814253344511868">Të dy butonat e miut</translation>
+<translation id="7240636904654154599">U krijua një fletë e "Fletëve të Google"</translation>
 <translation id="7244725679040769470">Bateria e mbetur: <ph name="PERCENTAGE" />%. Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Kjo pajisje Chromebook duhet të riniset për të zbatuar një përditësim. Kjo mund të zgjasë deri në 1 minutë.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2406,6 +2411,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8921624153894383499">"Asistenti i Google" nuk e flet këtë gjuhë.</translation>
 <translation id="8926951137623668982">Rafti gjithmonë i fshehur</translation>
 <translation id="8929566928381252430">Po përpiqesh të përdorësh tastin "Caps Lock"? Përdor</translation>
+<translation id="8929623844713377237">U krijua një kontakt</translation>
 <translation id="8934418770423095813">Krijo "Dokument të Google"</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 skedar}other{# skedarë}}</translation>
 <translation id="8936501819958976551">çaktivizuar</translation>

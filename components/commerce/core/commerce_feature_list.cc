@@ -218,10 +218,11 @@ BASE_FEATURE(kEnableDiscountInfoApi,
              "EnableDiscountInfoApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO(crbug.com/406555154): Clean up this flag when discount on clank launched.
 const char kDiscountOnShoppyPageParam[] = "discount-on-shoppy-page";
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 const base::FeatureParam<bool> kDiscountOnShoppyPage{
     &kEnableDiscountInfoApi, kDiscountOnShoppyPageParam, true};
 #else

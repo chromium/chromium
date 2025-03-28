@@ -183,10 +183,7 @@ int ImpressionsCount(const base::Value::List& impressions,
 
   if (_prefObserverBridge) {
     _prefChangeRegistrar.RemoveAll();
-    if (IsHomeCustomizationEnabled()) {
-      _userPrefChangeRegistrar.RemoveAll();
-    }
-
+    _userPrefChangeRegistrar.RemoveAll();
     _prefObserverBridge.reset();
   }
 

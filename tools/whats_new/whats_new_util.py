@@ -47,7 +47,7 @@ def UpdateWhatsNewItemAndGetNewTypeValue(feature_dict: dict[str, str]) -> int:
     feature_name = feature_dict['Feature name']
     whats_new_item_file = os.path.join(
         BASE_DIR,
-        '../ios/chrome/browser/ui/whats_new/data_source/whats_new_item.h')
+        '../ios/chrome/browser/whats_new/ui/data_source/whats_new_item.h')
     with open(whats_new_item_file, 'r+', encoding='utf-8', newline='') as file:
         file_content = file.read()
         read_whats_new_types_regex = r'enum class WhatsNewType\s*\{\s(.*?)\s\}'
@@ -103,7 +103,7 @@ def CleanUpFeaturesPlist() -> None:
 
   """
     whats_new_plist_file = os.path.join(
-        BASE_DIR, '../ios/chrome/browser/ui/whats_new/data_source/'
+        BASE_DIR, '../ios/chrome/browser/whats_new/ui/data_source/'
         'resources/whats_new_entries.plist')
     with open(whats_new_plist_file, 'rb') as file:
         plist_data = plistlib.load(file)
@@ -143,7 +143,7 @@ def UpdateWhatsNewPlist(feature_dict: dict[str, str], feature_type: int,
         'LearnMoreUrlString': feature_dict['Help url']
     }
     whats_new_plist_file = os.path.join(
-        BASE_DIR, '../ios/chrome/browser/ui/whats_new/data_source/'
+        BASE_DIR, '../ios/chrome/browser/whats_new/ui/data_source/'
         'resources/whats_new_entries.plist')
     with open(whats_new_plist_file, 'rb') as file:
         plist_data = plistlib.load(file)
@@ -160,7 +160,8 @@ def UpdateWhatsNewUtils(feature_dict: dict[str, str]) -> None:
   """
     feature_name = feature_dict['Feature name']
     whats_new_util_file = os.path.join(
-        BASE_DIR, '..', 'ios/chrome/browser/ui/whats_new/whats_new_util.mm')
+        BASE_DIR, '..',
+        'ios/chrome/browser/whats_new/coordinator/whats_new_util.mm')
     with open(whats_new_util_file, 'r+', encoding='utf-8', newline='') as file:
         read_data = file.read()
         whats_new_type_error_regex = r'case WhatsNewType::kError:'
@@ -190,7 +191,7 @@ def CopyAnimationFilesToResources(feature_dict: dict[str, str],
     animation_name = feature_dict['Animation']
     milestone = feature_dict['Milestone'].lower()
     DEST_DIR = os.path.join(
-        BASE_DIR, '../ios/chrome/browser/ui/whats_new/data_source/resources',
+        BASE_DIR, '../ios/chrome/browser/whats_new/ui/data_source/resources',
         milestone)
     os.makedirs(DEST_DIR, exist_ok=True)
     darkmode_src_file = os.path.join(path_to_milestone_folder, feature_name,
@@ -215,7 +216,7 @@ def UpdateResourcesBuildFile(feature_dict: dict[str, str]) -> None:
     milestone = feature_dict['Milestone'].lower()
     whats_new_resources_build_file = os.path.join(
         BASE_DIR,
-        '../ios/chrome/browser/ui/whats_new/data_source/resources/BUILD.gn')
+        '../ios/chrome/browser/whats_new/ui/data_source/resources/BUILD.gn')
     with open(whats_new_resources_build_file,
               'r+',
               encoding='utf-8',
@@ -254,7 +255,7 @@ def AddStrings(feature_dict: dict[str, str],
             if paragraph.text:
                 paragraphs_string_builder.append(paragraph.text)
     milestone_string_grd_file = os.path.join(
-        BASE_DIR, '../ios/chrome/browser/ui/whats_new/strings/',
+        BASE_DIR, '../ios/chrome/browser/whats_new/ui/strings/',
         milestone + '_strings.grdp')
     if not os.path.exists(milestone_string_grd_file):
         #Create new file and add to grd main
@@ -269,7 +270,7 @@ def AddStrings(feature_dict: dict[str, str],
             grd_file_handler.write('\n'.join(grd_content_builder))
         #open and add to main grd
         whats_new_strings_grd_file = os.path.join(
-            BASE_DIR, '../ios/chrome/browser/ui/whats_new',
+            BASE_DIR, '../ios/chrome/browser/whats_new/ui',
             'strings/ios_whats_new_strings.grd')
         with open(whats_new_strings_grd_file,
                   'r+',
@@ -286,7 +287,7 @@ def AddStrings(feature_dict: dict[str, str],
     else:
         #search for '</grit-part>' and add above
         feature_strings_grd_file = os.path.join(
-            BASE_DIR, '../ios/chrome/browser/ui/whats_new/strings/',
+            BASE_DIR, '../ios/chrome/browser/whats_new/ui/strings/',
             milestone + '_strings.grdp')
         with open(feature_strings_grd_file, 'r+', encoding='utf-8',
                   newline='') as file:
@@ -316,7 +317,7 @@ def UploadScreenshots(feature_dict: dict[str, str],
     animation_texts_string = feature_dict['Animation texts'].splitlines()
     titles.extend("".join(StripWhitespacesAndEmptyLines(json.loads(a)['value'])) for a in animation_texts_string)
     screenshot_dir = os.path.join(
-        BASE_DIR, '../ios/chrome/browser/ui/whats_new/strings',
+        BASE_DIR, '../ios/chrome/browser/whats_new/ui/strings',
         milestone + '_strings_grdp')
     os.makedirs(screenshot_dir, exist_ok=True)
     for title in titles:
@@ -364,7 +365,7 @@ def RemoveStringsForMilestone(milestone: str) -> None:
         milestone: milestone for which the strings will be removed.
     """
     whats_new_strings_grd_file = os.path.join(
-        BASE_DIR, '../ios/chrome/browser/ui/whats_new',
+        BASE_DIR, '../ios/chrome/browser/whats_new/ui',
         'strings/ios_whats_new_strings.grd')
     with open(whats_new_strings_grd_file, 'r+', encoding='utf-8',
               newline='') as file:
@@ -381,7 +382,7 @@ def RemoveStringsForMilestone(milestone: str) -> None:
                 'for more information.')
     try:
         screenshot_milestone_dir = os.path.join(
-            BASE_DIR, '../ios/chrome/browser/ui/whats_new/strings',
+            BASE_DIR, '../ios/chrome/browser/whats_new/ui/strings',
             milestone + '_strings_grdp')
         shutil.rmtree(screenshot_milestone_dir)
     except:
@@ -389,7 +390,7 @@ def RemoveStringsForMilestone(milestone: str) -> None:
               'been removed.')
     try:
         strings_file = os.path.join(
-            BASE_DIR, '../ios/chrome/browser/ui/whats_new/strings',
+            BASE_DIR, '../ios/chrome/browser/whats_new/ui/strings',
             milestone + '_strings.grdp')
         os.remove(strings_file)
     except:
@@ -407,7 +408,7 @@ def RemoveAnimationAssetsForMilestone(milestone: str) -> None:
     try:
         whats_new_milestone_resource_dir = os.path.join(
             BASE_DIR,
-            '../ios/chrome/browser/ui/whats_new/data_source/resources',
+            '../ios/chrome/browser/whats_new/ui/data_source/resources',
             milestone)
         shutil.rmtree(whats_new_milestone_resource_dir)
     except:
@@ -416,7 +417,7 @@ def RemoveAnimationAssetsForMilestone(milestone: str) -> None:
     screenshots_lists_regex = r'screenshots_lists\s*=\s*(\[.*?\])'
     whats_new_resources_build_file = os.path.join(
         BASE_DIR,
-        '../ios/chrome/browser/ui/whats_new/data_source/resources/BUILD.gn')
+        '../ios/chrome/browser/whats_new/ui/data_source/resources/BUILD.gn')
     with open(whats_new_resources_build_file,
               'r+',
               encoding='utf-8',

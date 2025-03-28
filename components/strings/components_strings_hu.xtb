@@ -223,7 +223,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1363028406613469049">Szám</translation>
 <translation id="1364822246244961190">Ez a házirend le van tiltva, ezért az értékét figyelmen kívül hagyja a rendszer.</translation>
 <translation id="1368318639262510626">Dinós játék. Pixelgrafikás dinoszaurusz kaktuszokat és pterodaktiluszokat kerülget futás közben egy kietlen vidéken. Amikor hangjelzést hall, a szóköz billentyűt nyomogatva ugorja át az akadályokat.</translation>
-<translation id="1369735141991626842">Mezők kitöltése AI segítségével</translation>
 <translation id="1374468813861204354">javaslatok</translation>
 <translation id="1375198122581997741">A verzióról</translation>
 <translation id="1375293861397106342">Az összes lehetőség általában: <ph name="LOW_PRICE" />–<ph name="HIGH_PRICE" /></translation>
@@ -539,7 +538,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1919526244108283799">400 × 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nincs}=1{1 webhely}other{# webhely}}</translation>
 <translation id="192095259937375524">Lap megosztása gomb. A gombot megnyomva megoszthatja ezt a lapot link megosztása, QR-kód létrehozása, átküldés és egyebek révén.</translation>
-<translation id="1921479021518565778">Javaslatok betöltve</translation>
 <translation id="1924727005275031552">Új</translation>
 <translation id="1927439846988093361">Hajápolás</translation>
 <translation id="1935353813610900265">Visszajelzés küldése az előzmények közötti, AI-alapú kereséséről</translation>
@@ -900,6 +898,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2539524384386349900">Felismerés</translation>
 <translation id="2541219929084442027">Az inkognitó lapon megtekintett oldalak az összes inkognitó lap bezárását követően nem szerepelnek majd böngészési előzményei között, a cookie-k gyűjtőhelyén, illetve a keresési előzményekben. A letöltött fájlok és a könyvjelzők azonban megmaradnak.</translation>
 <translation id="2542106216580219892">Szörfözés</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – A teljes képernyős nézetből való kilépéshez tartsa lenyomva a következőt: |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Rendszergazdája újraindította az Ön eszközét</translation>
 <translation id="2544644783021658368">Egyetlen dokumentum</translation>
 <translation id="254524874071906077">A Chrome beállítása alapértelmezett böngészőként</translation>
@@ -973,6 +972,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2688186765492306706">500 × 760 mm</translation>
 <translation id="2688969097326701645">Igen, folytatás</translation>
 <translation id="2690699652723742414">Legutóbbi 30 nap</translation>
+<translation id="2691385045260836588">Modell</translation>
 <translation id="2691924980723297736">Biztonsági figyelmeztetés</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> megkérdezése</translation>
 <translation id="2699273987028089219">Az almenü rendelkezésre áll. A további lehetőségekhez használja a(z) <ph name="SHORTCUT" /> billentyűt.</translation>
@@ -1526,6 +1526,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3664782872746246217">Kulcsszavak:</translation>
 <translation id="3665100783276035932">A legtöbb webhely a várt módon fog működni</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />További információ.<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">Szám</translation>
 <translation id="3670229581627177274">Bluetooth bekapcsolása</translation>
 <translation id="3671117652518853176">Kikapcsolása esetén előfordulhat, hogy a rendszer biztonsági okokból időnként megerősítést kér Öntől.</translation>
 <translation id="3671540257457995106">Engedélyezi az újraméretezést?</translation>
@@ -1540,7 +1541,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3681007416295224113">Tanúsítvány adatai</translation>
 <translation id="3681421644246505351">A Chrome feljegyzi az Önt érdeklő témákat a legutóbbi böngészési előzményei alapján.</translation>
 <translation id="3682094733650754138">A „Cím kitöltése” lehetőség volt kiválasztva</translation>
-<translation id="3687493962714153124">Az Automatikus kitöltés AI-jal funkció kezelése</translation>
 <translation id="3687920599421452763">Mikrobuszok és kisbuszok</translation>
 <translation id="3693327506115126094">Válassza ki, hogyan szeretné igazolni személyazonosságát</translation>
 <translation id="3698353241727597930">A rendszergazda úgy konfigurálta a <ph name="FILES" /> mentését, hogy a vállalati kezelésű <ph name="CLOUD_STORAGE" />-tárhelyre kerüljenek. Ezek a fájlok figyelhetők, auditálhatók és megőrizhetők, amikor törli őket.</translation>
@@ -1694,6 +1694,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3950820424414687140">Bejelentkezés</translation>
 <translation id="3953505489397572035">Ez az ár átlagos</translation>
 <translation id="3958057596965527988">4 × 4 hüvelyk</translation>
+<translation id="3959969108528118741">Tulajdonos</translation>
 <translation id="3961148744525529027">A fizetési információkat tartalmazó munkalap félmagasságban van megnyitva</translation>
 <translation id="3962859241508114581">Előző szám</translation>
 <translation id="3963721102035795474">Olvasási mód</translation>
@@ -1918,7 +1919,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4312866146174492540">Letiltás (alapértelmezett)</translation>
 <translation id="4314815835985389558">Szinkronizálás kezelése</translation>
 <translation id="4316057107946726368">Adjon meg egy legfeljebb <ph name="MAX_CHAR_COUNT" /> karakterből álló indoklást. <ph name="MAX_CHAR_COUNT" />/<ph name="ACTUAL_CHAR_COUNT" /> karakter felhasználva.</translation>
-<translation id="431740489189220419">Javaslatok betöltése</translation>
 <translation id="4318213823155573975">Fejfedők</translation>
 <translation id="4318312030194671742">Paint Preview Compositor szolgáltatás</translation>
 <translation id="4318566738941496689">Az eszköz neve és hálózati címe</translation>
@@ -2325,6 +2325,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5087286274860437796">A szerver tanúsítványa jelenleg nem érvényes.</translation>
 <translation id="5087580092889165836">Kártya hozzáadása</translation>
 <translation id="5088142053160410913">Üzenet az operátornak</translation>
+<translation id="5089810972385038852">Állam</translation>
 <translation id="5090647584136241764">Adjon hozzá hasonló termékeket tartalmazó lapokat, hogy könnyedén összehasonlíthassa a fontosnak tartott részleteket</translation>
 <translation id="5093232627742069661">Z-hajtás</translation>
 <translation id="5094747076828555589">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa a Chromium szerint nem megbízható. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
@@ -2463,6 +2464,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Az alapértelmezett keresőmotor lehetővé teszi az internetes keresést, és támogatja a Chromium-funkciókat<ph name="END_BOLD" />, például a címsávból és a weboldalakon található képek alapján történő keresést. Előfordulhat, hogy egy funkció nem áll rendelkezésre, ha a keresőmotor nem támogatja.</translation>
 <translation id="5323043727018853753">Beágyazott tartalmak engedélyezve</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" /> elemből a következő pozícióban: <ph name="MATCH_POSITION" />.</translation>
+<translation id="5327248766486351172">Név</translation>
 <translation id="5329858041417644019">A böngésző nem áll felügyelet alatt</translation>
 <translation id="5331585574693522196">Alapbeállítás</translation>
 <translation id="5332219387342487447">Szállítási mód</translation>
@@ -2676,7 +2678,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="569000877158168851">A DnsOverHttpsTemplates érték nem releváns, és a rendszer nem fogja használni, kivéve ha a DnsOverHttpsMode házirend <ph name="SECURE_DNS_MODE_AUTOMATIC" /> vagy <ph name="SECURE_DNS_MODE_SECURE" /> értékre van állítva.</translation>
 <translation id="5691848789297492617">A „Kártya mentése” utasítás teljes magasságban van megnyitva.</translation>
 <translation id="5695542892312572833">Szeretné a Windows Hello használatával igazolni és befejezni vásárlását?</translation>
-<translation id="5697827549745555938">A mentett információkat és az oldalt elküldjük a Google-nak, hogy lássuk, segíthet-e az automatikus kitöltés az űrlap kitöltésében. A funkció továbbfejlesztése érdekében előfordulhat, hogy felülvizsgálatot végző emberek is átnézik ezeket az adatokat.</translation>
 <translation id="5699628521141772782">Tejtermékek és tojás</translation>
 <translation id="5700761515355162635">Harmadik féltől származó cookie-k engedélyezve</translation>
 <translation id="5701381305118179107">Középre</translation>
@@ -3105,6 +3106,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6440503408713884761">Figyelmen kívül hagyva</translation>
 <translation id="6443406338865242315">Ön milyen bővítményeket és beépülő modulokat telepített.</translation>
 <translation id="6444329331928531170">Nyugdíjba vonulás és nyugdíj</translation>
+<translation id="6445051938772793705">Ország</translation>
 <translation id="6446608382365791566">További adatok hozzáadása</translation>
 <translation id="6447842834002726250">Cookie-k</translation>
 <translation id="6448371595882710519">További információ az adatszabályozókról</translation>
@@ -3586,7 +3588,6 @@ További részletek:
 <translation id="7316521168101843192">Fájl mentése a Microsoft OneDrive szolgáltatásba</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Segítség a kapcsolódáshoz</translation>
-<translation id="7321111802407017850">Adatok mentése az automatikus kitöltéshez</translation>
 <translation id="7323804146520582233">A(z) „<ph name="SECTION" />” szakasz elrejtése</translation>
 <translation id="733354035281974745">Eszköz helyi fiókja általi felülbírálás</translation>
 <translation id="7334320624316649418">&amp;Átrendezés újra</translation>
@@ -3932,6 +3933,7 @@ További részletek:
 <translation id="7887885240995164102">Belépés a kép a képben módba</translation>
 <translation id="7888575728750733395">Nyomatmegjelenítési szándék</translation>
 <translation id="7890748547282909375">Jelentkezzen be a Microsoft OneDrive szolgáltatásba a képernyőkép mentéséhez</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – A kurzor megjelenítéséhez nyomja le a következőt: |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">fizetési beállítások</translation>
 <translation id="7894280532028510793">Ha helyesen írta, <ph name="BEGIN_LINK" />próbálkozzon a hálózati diagnosztika futtatásával<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">7 × 9 hüvelykes boríték</translation>
@@ -4626,6 +4628,7 @@ További részletek:
 <translation id="9155646082713385498">Magazinok</translation>
 <translation id="9157595877708044936">Előkészítés...</translation>
 <translation id="9161794544616754735">{0,plural, =1{A(z) <ph name="FILE_NAME" /> bizalmas adatokat tartalmazhat}other{<ph name="FILE_COUNT" /> fájl bizalmas adatokat tartalmazhat}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – A teljes képernyős nézetből való kilépéshez nyomja le a következőt: |<ph name="ACCELERATOR" />|</translation>
 <translation id="9165305804774426672">A felkeresett webhelyek a webhelyen végzett tevékenységei alapján is kikövetkeztethetik, hogy mit kedvel. Ha például Ön felkeres egy hosszútávfutáshoz készült cipőket árusító webhelyet, akkor előfordulhat, hogy a webhely úgy dönt, Ön érdeklődik a maratonfutás iránt.</translation>
 <translation id="9166851138617700776">További információ a webhely által javasolt hirdetésekről és a hirdetésmérésről</translation>
 <translation id="9167054383925257837">A böngésző és az eszköz operációs rendszerének adatai (például a böngésző és az operációs rendszer verziója)</translation>

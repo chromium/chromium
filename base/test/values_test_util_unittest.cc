@@ -15,9 +15,8 @@ using testing::Not;
 
 TEST(ValuesTestUtilTest, IsSupersetOfValue_Supersets) {
   // Identical value is ok.
-  const base::Value template_dict =
-      ParseJson(R"json({"foo": [{"bar": "baz"}]})json");
-  const base::Value template_list =
+  const Value template_dict = ParseJson(R"json({"foo": [{"bar": "baz"}]})json");
+  const Value template_list =
       ParseJson(R"json([{"bar": "baz", "list": [1, 2, 3]}, 3, 42])json");
   EXPECT_THAT(template_dict, IsSupersetOfValue(template_dict));
   EXPECT_THAT(template_list, IsSupersetOfValue(template_list));
@@ -44,10 +43,10 @@ TEST(ValuesTestUtilTest, IsSupersetOfValue_Supersets) {
 }
 
 TEST(ValuesTestUtilTest, IsSupersetOfValue_Subsets) {
-  const base::Value template_dict =
+  const Value template_dict =
       ParseJson(R"json({"foo": [{"bar": "baz"}, 3], "zip": "zap"})json");
 
-  const base::Value template_list =
+  const Value template_list =
       ParseJson(R"json([{"bar": "baz", "list": [1, 2, 3]}, 3, 42])json");
 
   // Missing top-level list element.

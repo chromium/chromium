@@ -9,11 +9,12 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "chrome/renderer/actor/tool_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 class RenderFrame;
-}
+}  // namespace content
 
 namespace actor {
 
@@ -36,9 +37,12 @@ class ToolExecutor {
                   ToolExecutorCallback callback);
 
  private:
-  // Raw ref since the executor is currently only stack allocated by the render
-  // frame so it must be outlived.
+  void ToolFinished(ToolExecutorCallback callback, bool tool_status);
+
+  // Raw ref since the executor is currently only stack allocated by the
+  // render frame so it must be outlived.
   base::raw_ref<content::RenderFrame> frame_;
+  std::unique_ptr<ToolBase> tool_;
 };
 
 }  // namespace actor

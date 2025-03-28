@@ -3374,16 +3374,22 @@ void PaintLayerScrollableArea::SetSnappedQueryTargetIds(
 
 ScrollMarkerGroupPseudoElement* PaintLayerScrollableArea::GetScrollMarkerGroup()
     const {
-  if (Element* element = DynamicTo<Element>(GetLayoutBox()->GetNode())) {
-    if (PseudoElement* before =
-            element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
-      auto* group_before = DynamicTo<ScrollMarkerGroupPseudoElement>(before);
-      return group_before;
-    } else if (PseudoElement* after =
-                   element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
-      auto* group_after = DynamicTo<ScrollMarkerGroupPseudoElement>(after);
-      return group_after;
-    }
+  Element* element = DynamicTo<Element>(GetLayoutBox()->GetNode());
+  if (GetLayoutBox()->GetNode() &&
+      GetLayoutBox()->GetNode()->IsDocumentNode()) {
+    element = GetDocument()->documentElement();
+  }
+  if (!element) {
+    return nullptr;
+  }
+  if (PseudoElement* before =
+          element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
+    auto* group_before = DynamicTo<ScrollMarkerGroupPseudoElement>(before);
+    return group_before;
+  } else if (PseudoElement* after =
+                 element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
+    auto* group_after = DynamicTo<ScrollMarkerGroupPseudoElement>(after);
+    return group_after;
   }
   return nullptr;
 }

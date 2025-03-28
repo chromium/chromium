@@ -185,6 +185,8 @@ public class AuxiliarySearchProvider {
                         } else {
                             if (type == AuxiliarySearchEntryType.CUSTOM_TAB) {
                                 stream.writeUTF(dataEntry.appId);
+                            } else if (type == AuxiliarySearchEntryType.TOP_SITE) {
+                                stream.writeInt(dataEntry.score);
                             }
                             stream.writeInt(dataEntry.visitId);
                         }
@@ -232,11 +234,14 @@ public class AuxiliarySearchProvider {
                 int id = Tab.INVALID_TAB_ID;
                 String appId = null;
                 int visitId = Tab.INVALID_TAB_ID;
+                int score = -1;
                 if (type == AuxiliarySearchEntryType.TAB) {
                     id = stream.readInt();
                 } else {
                     if (type == AuxiliarySearchEntryType.CUSTOM_TAB) {
                         appId = stream.readUTF();
+                    } else if (type == AuxiliarySearchEntryType.TOP_SITE) {
+                        score = stream.readInt();
                     }
                     visitId = stream.readInt();
                 }
@@ -246,7 +251,14 @@ public class AuxiliarySearchProvider {
                 entry =
                         (T)
                                 new AuxiliarySearchDataEntry(
-                                        type, new GURL(url), title, timeStamp, id, appId, visitId);
+                                        type,
+                                        new GURL(url),
+                                        title,
+                                        timeStamp,
+                                        id,
+                                        appId,
+                                        visitId,
+                                        score);
             }
             if (entry != null) {
                 entryList.add(entry);

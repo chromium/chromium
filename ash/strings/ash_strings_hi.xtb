@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">मेहमान मोड चालू होने पर, सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) काम नहीं करते.</translation>
 <translation id="1270290102613614947">ऑन-स्‍क्रीन कीबोर्ड अक्षम है</translation>
 <translation id="1272079795634619415">रोकें</translation>
+<translation id="12741168609094094">कुछ खोजने, टेक्स्ट कॉपी करने, और दूसरी कार्रवाइयां करने के लिए, अपनी स्क्रीन पर मौजूद कोई भी कॉन्टेंट चुनें</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> चार्ज कर रहा है</translation>
 <translation id="1275718070701477396">चयनित</translation>
 <translation id="1276975447697633661">फ़ाइल चुनें, फिर <ph name="KEY" /> दबाएं</translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">हॉटस्पॉट बंद है</translation>
 <translation id="1731815243805539470">पिछले उपयोगकर्ता पर स्विच करने के लिए</translation>
 <translation id="1733996486177697563">गहरे और हल्के रंग वाली थीम के बीच स्विच करें. डेस्कटॉप पर बटन को दबाकर रखें और 'वॉलपेपर और स्टाइल' चुनें.</translation>
+<translation id="1735992454301033090">चुना गया हिस्सा, इसे मूव करने के लिए ऐरो बटन का इस्तेमाल करें</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" ब्लूटूथ डिवाइसों को दिख रहा है.</translation>
 <translation id="1737078180382804488">अपने फ़ोन की सूचनाओं को देखने की सुविधा सेट अप करने की प्रक्रिया रद्द करें</translation>
 <translation id="174102739345480129">मार्कर बंद है.</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806">पिछले हफ़्ते का <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">कीबोर्ड शॉर्टकट बदल दिया गया है</translation>
 <translation id="2689613560355655046">डेस्क 8</translation>
+<translation id="2692092709110488417">चुने गए हिस्से पर फ़ोकस करने और उसे मूव करने के लिए, Tab दबाएं</translation>
 <translation id="2695305337569143674">वेब</translation>
 <translation id="2697697418792422688">कीबोर्ड की सेटिंग दिखाएं. <ph name="KEYBOARD_NAME" /> को चुना गया है.</translation>
 <translation id="2699913284398121653">स्कूल वाले अपने खाते के डेटा को निजी खाते में ट्रांसफ़र करने के लिए, कॉन्टेंट ट्रांसफ़र ऐप्लिकेशन का इस्तेमाल करें</translation>
@@ -1034,6 +1037,7 @@
 <translation id="4412698727486357573">सहायता केंद्र</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> बंद है.</translation>
 <translation id="4417647906073317561">फ़ोकस मोड की सेटिंग. इस सेटिंग को आज़माने के लिए, टाइमर, टास्क, और संगीत सेट करें.</translation>
+<translation id="4418600384772451109">पैनल बंद करें</translation>
 <translation id="4424159417645388645">डेस्क 5</translation>
 <translation id="4426817706804363424">आगे बढ़ें!</translation>
 <translation id="4430019312045809116">आवाज़</translation>
@@ -2230,6 +2234,7 @@
 <translation id="8287009018010202411">प्रोडक्टिविटी</translation>
 <translation id="828708037801473432">बंद है</translation>
 <translation id="8297006494302853456">कमज़ोर</translation>
+<translation id="8300451473979404345">चुना गया हैंडल, इसे मूव करने के लिए ऐरो बटन का इस्तेमाल करें</translation>
 <translation id="8308637677604853869">पिछला मेन्यू</translation>
 <translation id="830868413617744215">बीटा</translation>
 <translation id="8314772463905284467">Caps Lock चालू है</translation>
@@ -2290,6 +2295,7 @@
 <translation id="851458219935658693">मौजूदा डेस्क से विंडो देखें, रेडियो बटन चुना गया</translation>
 <translation id="851660987304951246">कॉन्टेंट के बारे में तुरंत खास जानकारी पाने या सवाल पूछने के लिए, 'पढ़ने में मेरी मदद करें' सुविधा का इस्तेमाल करें</translation>
 <translation id="8517041960877371778">हो सकता है आपका <ph name="DEVICE_TYPE" /> चालू होने पर चार्ज नहीं होता हो.</translation>
+<translation id="8519329096920173967">Google Lens की मदद से, स्क्रीन पर दिख रहे किसी कॉन्टेंट के बारे में खोजें</translation>
 <translation id="8535393432370007982">रंग के हिसाब से लगाए गए क्रम को पहले जैसा करें</translation>
 <translation id="8536886494750559755">क्विक शेयर की सेटिंग दिखाएं. डिवाइस <ph name="TIME_REMAINING" /> तक सभी को दिखेगा</translation>
 <translation id="8539803091108018926">टेक्स्ट को क्लिपबोर्ड पर कॉपी किया गया</translation>

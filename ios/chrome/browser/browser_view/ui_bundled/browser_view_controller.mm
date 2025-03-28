@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_reason.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
@@ -761,7 +762,8 @@ enum HeaderBehaviour {
   } else {
     self.inNewTabAnimation = YES;
     // Exit fullscreen if needed.
-    self.fullscreenController->ExitFullscreen();
+    self.fullscreenController->ExitFullscreen(
+        FullscreenExitReason::kForcedByCode);
     const CGFloat kAnimatedViewSize = 50;
     BackgroundTabAnimationView* animatedView =
         [[BackgroundTabAnimationView alloc]

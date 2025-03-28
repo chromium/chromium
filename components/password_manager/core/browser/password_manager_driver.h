@@ -50,9 +50,10 @@ class PasswordManagerDriver {
       const autofill::PasswordFormFillData& form_data) = 0;
 
   // Informs the driver that there are no saved credentials in the password
-  // store for the current page.
-  // TODO(crbug.com/41259715): Remove and observe FormFetcher instead.
-  virtual void InformNoSavedCredentials() {}
+  // store for the current page. In certain situations the password manager will
+  // show popups (e.g. promo UIs) when there are no saved credentials.
+  virtual void InformNoSavedCredentials(
+      bool should_show_popup_without_passwords) {}
 
   // Notifies the driver that a password can be generated on the fields
   // identified by `form`.

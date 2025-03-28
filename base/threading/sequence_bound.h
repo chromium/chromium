@@ -581,7 +581,9 @@ class SequenceBound {
     ~AsyncCallWithBoundArgsBuilderDefault() {
       // Must use Then() since the method's return type is not void.
       // Should be optimized out if the code is bug-free.
-      CHECK(!this->sequence_bound_);
+      CHECK(!this->sequence_bound_)
+          << "Then() not invoked for a method that returns a non-void type; "
+          << "make sure to invoke Then() or use base::IgnoreResult()";
     }
 
     template <template <typename> class CallbackType, typename ThenArg>

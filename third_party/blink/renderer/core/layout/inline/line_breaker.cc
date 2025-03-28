@@ -3445,6 +3445,8 @@ LineInfo LineBreaker::CreateSubLineInfo(
   sub_line_breaker.OverrideAvailableWidth(limit);
   sub_line_breaker.NextLine(&sub_line_info);
   if (disallow_auto_wrap) {
+    // If this check fails, a forced break or a block-in-inline might
+    // appear unexpectedly.
     CHECK(sub_line_breaker.IsAtEnd());
   }
   return sub_line_info;

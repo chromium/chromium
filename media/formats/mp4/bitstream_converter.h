@@ -25,6 +25,8 @@ namespace mp4 {
 class MEDIA_EXPORT BitstreamConverter
     : public base::RefCountedThreadSafe<BitstreamConverter> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // Describes the result of Analyze(). Not all analyses are implemented or
   // enabled across mp4::BitstreamConverter implementations, hence the use of
   // std::optional<>.

@@ -20,6 +20,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
@@ -121,6 +123,8 @@ class ExternalVideoEncoder::VEAClientImpl final
     : public VideoEncodeAccelerator::Client,
       public base::RefCountedThreadSafe<VEAClientImpl> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   using EncoderStatusChangeCallback =
       base::RepeatingCallback<void(media::EncoderStatus, OperationalStatus)>;
   VEAClientImpl(
@@ -842,9 +846,9 @@ void ExternalVideoEncoder::OnCreateVideoEncodeAccelerator(
           weak_factory_.GetWeakPtr(), status_change_cb);
 
   DCHECK(!client_);
-  client_ = new VEAClientImpl(cast_environment_, encoder_task_runner,
-                              std::move(vea), video_config.max_frame_rate,
-                              std::move(wrapped_status_change_cb));
+  client_ = base::MakeRefCounted<VEAClientImpl>(
+      cast_environment_, encoder_task_runner, std::move(vea),
+      video_config.max_frame_rate, std::move(wrapped_status_change_cb));
   metrics_provider_->Initialize(codec_profile, frame_size_,
                                 /*is_hardware_encoder=*/true);
   client_->task_runner()->PostTask(

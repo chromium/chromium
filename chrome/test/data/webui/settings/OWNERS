@@ -1,6 +1,6 @@
 file://chrome/browser/resources/settings/OWNERS
 
-per-file clear_browsing_data_dialog_v2_test.ts=zalmashni@google.com
+per-file *clear_browsing_data_*=zalmashni@google.com,rainhard@chromium.org
 per-file cookies_page_test.ts=fmacintosh@google.com,rainhard@chromium.org
 per-file cr_lottie*=nsatragno@chromium.org
 per-file *language* , translate_* = file://components/language/OWNERS

@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
+#include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test/mock_bnpl_manager.h"
@@ -244,10 +245,22 @@ class MockAutofillClient : public TestAutofillClient {
 #endif
 };
 
+class TestCreditCardAccessManager : public CreditCardAccessManager {
+ public:
+  using CreditCardAccessManager::CreditCardAccessManager;
+  void PrepareToFetchCreditCard() override {
+    // Do nothing for testing.
+  }
+};
+
 class MockBrowserAutofillManager : public TestBrowserAutofillManager {
  public:
   explicit MockBrowserAutofillManager(AutofillDriver* driver)
-      : TestBrowserAutofillManager(driver) {}
+      : TestBrowserAutofillManager(driver) {
+    test_api(*this).set_credit_card_access_manager(
+        std::make_unique<TestCreditCardAccessManager>(
+            this, test_api(*this).credit_card_form_event_logger()));
+  }
   MockBrowserAutofillManager(const MockBrowserAutofillManager&) = delete;
   MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
       delete;
@@ -257,12 +270,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source) const override {
     return should_show_cards_from_account_option_;
-  }
-
-  void DidShowSuggestions(DenseSet<SuggestionType> shown_suggestion_types,
-                          const FormData& form,
-                          const FieldGlobalId& field_id) override {
-    // Do nothing for testing.
   }
 
   void ShowCardsFromAccountOption() {

@@ -54,6 +54,7 @@ static_library("projector") {
     "//components/signin/public/identity_manager",
     "//components/soda",
     "//components/soda:constants",
+    "//components/webapps/browser",
     "//content/public/browser",
     "//media",
     "//net",

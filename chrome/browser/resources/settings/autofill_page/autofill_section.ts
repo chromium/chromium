@@ -96,6 +96,7 @@ export class SettingsAutofillSectionElement extends
   private accountInfo_: chrome.autofillPrivate.AccountInfo|null = null;
   private showAddressDialog_: boolean;
   private showAddressRemoveConfirmationDialog_: boolean;
+  private isPlusAddressEnabled_: boolean;
   private autofillManager_: AutofillManagerProxy =
       AutofillManagerImpl.getInstance();
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;

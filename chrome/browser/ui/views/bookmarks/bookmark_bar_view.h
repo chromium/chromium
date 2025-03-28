@@ -408,6 +408,11 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   void MaybeShowSavedTabGroupsIntroPromo() const;
 
+  // True if BookmarkMergedSurfaceServiceLoaded() has been invoked,
+  // either by manually checking `bookmark_service_->loaded()` or by
+  // notification via BookmarkMergedSurfaceServiceObserver.
+  bool bookmark_service_loaded_signal_processed_ = false;
+
   // Needed to react to bookmark bar pref changes.
   PrefChangeRegistrar profile_pref_registrar_;
 

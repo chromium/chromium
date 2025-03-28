@@ -496,12 +496,11 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, CloseOpenGlicWindowWhenDisabled) {
 
   // Show the panel as if the glic button was clicked.
   {
-    base::test::TestFuture<void> wait_for_panel_attached;
+    base::test::TestFuture<void> wait_for_panel;
     PanelStateObserver panel_state_observer(
-        mojom::PanelState::Kind::kAttached,
-        wait_for_panel_attached.GetCallback());
+        mojom::PanelState::Kind::kDetached,
+        wait_for_panel.GetCallback());
     service->window_controller().AddStateObserver(&panel_state_observer);
-
     BrowserWindowInterface* bwi = browser()
                                       ->window()
                                       ->AsBrowserView()
@@ -511,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, CloseOpenGlicWindowWhenDisabled) {
     service->ToggleUI(bwi, /*prevent_close=*/false,
                       mojom::InvocationSource::kOsButton);
 
-    EXPECT_TRUE(wait_for_panel_attached.Wait());
+    EXPECT_TRUE(wait_for_panel.Wait());
     service->window_controller().RemoveStateObserver(&panel_state_observer);
   }
 

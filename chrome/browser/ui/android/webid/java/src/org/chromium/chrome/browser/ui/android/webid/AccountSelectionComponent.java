@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import android.graphics.Bitmap;
+
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
@@ -68,6 +70,7 @@ public interface AccountSelectionComponent {
      * @param idpDataList The list with information about the identity providers.
      * @param isAutoReauthn A {@link boolean} that represents whether this is an auto re-authn flow.
      * @param newAccounts The newly logged in accounts.
+     * @param favicon represents the favicon to be used when multi IDP UI is to be shown.
      * @return whether the invocation is successful. If false is returned, the caller must assume
      *     that onDismiss was called and must return early.
      */
@@ -76,7 +79,8 @@ public interface AccountSelectionComponent {
             List<Account> accounts,
             List<IdentityProviderData> idpDataList,
             boolean isAutoReauthn,
-            List<Account> newAccounts);
+            List<Account> newAccounts,
+            Bitmap favicon);
 
     /**
      * Displays a dialog telling the user that they can sign in to an IDP for the purpose of

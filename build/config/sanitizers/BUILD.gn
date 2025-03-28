@@ -609,6 +609,7 @@ config("ubsan_vptr_flags") {
 config("fuzzing_build_mode") {
   if (use_fuzzing_engine) {
     defines = [ "FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION" ]
+    rustflags = [ "--cfg=FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION" ]
   }
 }
 

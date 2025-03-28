@@ -2113,31 +2113,23 @@ class LayerTreeHostTestEffectTreeSync : public LayerTreeHostTest {
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 1:
         node->opacity = 0.5f;
-        node->is_currently_animating_opacity = true;
         break;
       case 2:
-        node->is_currently_animating_opacity = true;
         break;
       case 3:
-        node->is_currently_animating_opacity = false;
         break;
       case 4:
         node->opacity = 0.25f;
-        node->is_currently_animating_opacity = true;
         break;
       case 5:
         node->filters = blur_filter_;
-        node->is_currently_animating_filter = true;
         break;
       case 6:
-        node->is_currently_animating_filter = true;
         break;
       case 7:
-        node->is_currently_animating_filter = false;
         break;
       case 8:
         node->filters = sepia_filter_;
-        node->is_currently_animating_filter = true;
         break;
     }
   }

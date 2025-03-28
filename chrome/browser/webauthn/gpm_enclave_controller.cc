@@ -611,9 +611,7 @@ void GPMEnclaveController::OnAccountStateDownloaded(
       SetAccountState(AccountState::kIrrecoverable);
       break;
   }
-  if (result.gpm_pin_metadata && result.gpm_pin_metadata->usable_pin_metadata) {
-    pin_metadata_ = std::move(result.gpm_pin_metadata);
-  }
+  pin_metadata_ = std::move(result.gpm_pin_metadata);
   security_domain_icloud_recovery_keys_ = std::move(result.icloud_keys);
   user_gaia_id_ = std::move(gaia_id);
 
@@ -652,7 +650,10 @@ void GPMEnclaveController::OnKeysStored() {
   CHECK(enclave_manager_->has_pending_keys());
   CHECK(!enclave_manager_->is_ready());
 
-  if (pin_metadata_.has_value() || *can_make_uv_keys_) {
+  if ((pin_metadata_.has_value() && pin_metadata_->usable_pin_metadata) ||
+      *can_make_uv_keys_) {
+    // No need to create a GPM PIN if the user already has a usable GPM PIN or
+    // can make UV keys.
     if (!enclave_manager_->AddDeviceToAccount(
             std::move(pin_metadata_),
             base::BindOnce(&GPMEnclaveController::OnDeviceAdded,
@@ -660,8 +661,8 @@ void GPMEnclaveController::OnKeysStored() {
       model_->SetStep(Step::kGPMError);
     }
   } else {
-    // Create a GPM PIN if the user doesn't have one and can't make
-    // a UV key locally.
+    // Create a GPM PIN if the user doesn't have one (or it cannot be used) and
+    // can't make a UV key locally.
     model_->SetStep(Step::kGPMCreatePin);
   }
 }
@@ -686,6 +687,7 @@ void GPMEnclaveController::RecoverSecurityDomain() {
   device::enclave::ICloudRecoveryKey::Retrieve(
       base::BindOnce(&GPMEnclaveController::OnICloudKeysRetrievedForRecovery,
                      weak_ptr_factory_.GetWeakPtr()),
+      trusted_vault::SecurityDomainId::kPasskeys,
       kICloudKeychainRecoveryKeyAccessGroup);
 #else
   model_->SetStep(Step::kRecoverSecurityDomain);
@@ -698,6 +700,7 @@ void GPMEnclaveController::MaybeAddICloudRecoveryKey() {
   device::enclave::ICloudRecoveryKey::Retrieve(
       base::BindOnce(&GPMEnclaveController::OnICloudKeysRetrievedForEnrollment,
                      weak_ptr_factory_.GetWeakPtr()),
+      trusted_vault::SecurityDomainId::kPasskeys,
       kICloudKeychainRecoveryKeyAccessGroup);
 }
 
@@ -729,6 +732,7 @@ void GPMEnclaveController::OnICloudKeysRetrievedForEnrollment(
   device::enclave::ICloudRecoveryKey::Create(
       base::BindOnce(&GPMEnclaveController::EnrollICloudRecoveryKey,
                      weak_ptr_factory_.GetWeakPtr()),
+      trusted_vault::SecurityDomainId::kPasskeys,
       kICloudKeychainRecoveryKeyAccessGroup);
 }
 
@@ -1130,8 +1134,9 @@ void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {
     CHECK(enclave_manager_->has_pending_keys());
     // In this case, we were waiting for the user to create their GPM PIN.
     enclave_manager_->AddDeviceAndPINToAccount(
-        *pin_, base::BindOnce(&GPMEnclaveController::OnDeviceAdded,
-                              weak_ptr_factory_.GetWeakPtr()));
+        *pin_, pin_metadata_ ? pin_metadata_->public_key : std::nullopt,
+        base::BindOnce(&GPMEnclaveController::OnDeviceAdded,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else if (account_state_ == AccountState::kEmpty) {
     // The user has set a PIN to create the account.
     enclave_manager_->SetupWithPIN(

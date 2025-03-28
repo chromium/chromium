@@ -28,7 +28,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
-import org.chromium.chrome.browser.price_tracking.PriceTrackingState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -50,8 +49,8 @@ public class PriceInsightsBottomSheetMediator {
     private final TabModelSelector mTabModelSelector;
     private final PropertyModel mPropertyModel;
     private final PriceInsightsDelegate mPriceInsightsDelegate;
-    private final ObservableSupplier<PriceTrackingState> mPriceTrackingStateSupplier;
-    private final Callback<PriceTrackingState> mUpdatePriceTrackingButtonModelCallback =
+    private final ObservableSupplier<Boolean> mPriceTrackingStateSupplier;
+    private final Callback<Boolean> mUpdatePriceTrackingButtonModelCallback =
             this::updatePriceTrackingButtonModel;
 
     private @PriceBucket int mPriceBucket;
@@ -90,8 +89,7 @@ public class PriceInsightsBottomSheetMediator {
         mPriceTrackingStateSupplier.removeObserver(mUpdatePriceTrackingButtonModelCallback);
     }
 
-    private void updatePriceTrackingButtonModel(PriceTrackingState priceTrackingState) {
-        boolean isPriceTracked = priceTrackingState == PriceTrackingState.TRACKED;
+    private void updatePriceTrackingButtonModel(boolean isPriceTracked) {
         boolean priceTrackingEligible = isPriceTrackingEligible();
 
         mPropertyModel.set(PRICE_TRACKING_BUTTON_ENABLED, priceTrackingEligible);

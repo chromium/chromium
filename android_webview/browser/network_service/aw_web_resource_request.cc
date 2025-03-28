@@ -16,11 +16,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwWebResourceRequest_jni.h"
 
-using base::android::ConvertJavaStringToUTF16;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ToJavaArrayOfStrings;
-
 namespace android_webview {
 
 AwWebResourceRequest::AwWebResourceRequest(
@@ -56,21 +51,6 @@ AwWebResourceRequest::AwWebResourceRequest(AwWebResourceRequest&& other) =
 AwWebResourceRequest& AwWebResourceRequest::operator=(
     AwWebResourceRequest&& other) = default;
 AwWebResourceRequest::~AwWebResourceRequest() = default;
-
-AwWebResourceRequest::AwJavaWebResourceRequest::AwJavaWebResourceRequest() =
-    default;
-AwWebResourceRequest::AwJavaWebResourceRequest::~AwJavaWebResourceRequest() =
-    default;
-
-// static
-void AwWebResourceRequest::ConvertToJava(JNIEnv* env,
-                                         const AwWebResourceRequest& request,
-                                         AwJavaWebResourceRequest* jRequest) {
-  jRequest->jurl = ConvertUTF8ToJavaString(env, request.url);
-  jRequest->jmethod = ConvertUTF8ToJavaString(env, request.method);
-  jRequest->jheader_names = ToJavaArrayOfStrings(env, request.header_names);
-  jRequest->jheader_values = ToJavaArrayOfStrings(env, request.header_values);
-}
 
 }  // namespace android_webview
 //

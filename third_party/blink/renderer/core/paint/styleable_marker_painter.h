@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_STYLEABLE_MARKER_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_STYLEABLE_MARKER_PAINTER_H_
 
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -14,7 +15,6 @@ class ComputedStyle;
 class GraphicsContext;
 class StyleableMarker;
 struct LineRelativeRect;
-struct PhysicalOffset;
 
 // Painter for StyleableMarkers.
 // This paints text decorations (underlines) for composition (input method) and

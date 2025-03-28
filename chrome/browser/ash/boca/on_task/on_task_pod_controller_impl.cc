@@ -141,10 +141,29 @@ void OnTaskPodControllerImpl::OnWindowBoundsChanged(
   if (is_window_pinned_ != is_window_pinned) {
     on_task_pod_view->OnLockedModeUpdate();
 
-    // Resize the widget to fit the contents view.
+    // Resize and reset bounds of the widget to fit the contents view.
     pod_widget_->SetSize(on_task_pod_view->GetPreferredSize());
+    pod_widget_->SetBounds(CalculateWidgetBounds());
   }
   is_window_pinned_ = is_window_pinned;
+}
+
+void OnTaskPodControllerImpl::OnPauseModeChanged() {
+  if (!pod_widget_) {
+    return;
+  }
+  views::View* const pod_widget_contents_view = pod_widget_->GetContentsView();
+  if (!pod_widget_contents_view) {
+    return;
+  }
+  OnTaskPodView* const on_task_pod_view =
+      static_cast<OnTaskPodView*>(pod_widget_contents_view);
+
+  on_task_pod_view->OnLockedModeUpdate();
+
+  // Resize and reset bounds of the widget to fit the contents view.
+  pod_widget_->SetSize(on_task_pod_view->GetPreferredSize());
+  pod_widget_->SetBounds(CalculateWidgetBounds());
 }
 
 void OnTaskPodControllerImpl::OnPageNavigationContextChanged() {
@@ -175,7 +194,10 @@ bool OnTaskPodControllerImpl::CanNavigateToNextPage() {
 }
 
 bool OnTaskPodControllerImpl::CanToggleTabStripVisibility() {
-  return browser_ && platform_util::IsBrowserLockedFullscreen(browser_.get());
+  const auto* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser_.get());
+  return browser_ && platform_util::IsBrowserLockedFullscreen(browser_.get()) &&
+         browser_view->immersive_mode_controller()->IsEnabled();
 }
 
 const gfx::Rect OnTaskPodControllerImpl::CalculateWidgetBounds() {

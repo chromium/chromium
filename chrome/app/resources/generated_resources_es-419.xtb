@@ -1562,7 +1562,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2081816110395725788">Suspender mientras se usa la batería</translation>
 <translation id="2082187087049518845">Crear un grupo con la pestaña</translation>
 <translation id="2082510809738716738">Elige un color de tema</translation>
-<translation id="208547068587548667">Acceder a <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Vuelve a intentarlo</translation>
 <translation id="208634871997892083">VPN siempre activada</translation>
 <translation id="208654914566977272">Acciones sugeridas cuando buscas en la pantalla</translation>
@@ -3994,7 +3993,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3778740492972734840">&amp;Herramientas del desarrollador</translation>
 <translation id="3778868487658107119">Hazle preguntas. Encárgale tareas. Es tu versión personal de Google, está siempre lista para ayudarte.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{tu historial de navegación de # sitio}other{tu historial de navegación de # sitios}}</translation>
-<translation id="3779244863011082655">Usar otra cuenta de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> no puede revisar tus contraseñas para detectar una violación de la seguridad de los datos. Vuelve a intentarlo más tarde.</translation>
 <translation id="3781742599892759500">Acceso al micrófono en Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5498,6 +5496,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4848191975108266266">"Ok Google" del Asistente de Google</translation>
 <translation id="4849286518551984791">Tiempo universal coordinado (UTC/GMT)</translation>
 <translation id="4849517651082200438">No instalar</translation>
+<translation id="4849731766219625109">Usar tu cuenta de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="485053257961878904">No se pudo configurar la sincronización de notificaciones</translation>
 <translation id="4850548109381269495">Comprueba la conexión a Internet en ambos dispositivos y activa Bluetooth. Luego, vuelve a intentarlo.</translation>
 <translation id="4850669014075537160">Desplazamiento</translation>
@@ -5686,6 +5685,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4979510648199782334">Se completó la configuración de Microsoft 365</translation>
 <translation id="4980805016576257426">Esta extensión contiene software malicioso.</translation>
 <translation id="4983159853748980742">No se compartió tu contraseña. Comprueba tu conexión a Internet y asegúrate de que accediste a Chrome. Luego, vuelve a intentarlo.</translation>
+<translation id="498624032394115435">Cualquier persona que tenga el vínculo puede editar todas las pestañas.</translation>
 <translation id="4986706507552097681">En la configuración, puedes elegir los datos para sincronizar en cualquier momento. Es posible que Google personalice la Búsqueda y otros servicios en función de tu Historial.</translation>
 <translation id="4986728572522335985">Esta acción borrará todos los datos de la llave de seguridad, incluido su PIN</translation>
 <translation id="4987944280765486504">Tu Chromebook se reiniciará una vez que se complete la descarga y puedas continuar con la configuración.</translation>
@@ -8295,7 +8295,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6873571253135628430">Cambiar los permisos de sitios</translation>
 <translation id="6876155724392614295">Bicicleta</translation>
 <translation id="6876469544038980967">Poco útil</translation>
-<translation id="687838958001010630">Cualquier persona que tenga el vínculo puede editar todas las pestañas</translation>
 <translation id="6878422606530379992">Se permite el acceso a los sensores</translation>
 <translation id="6878862640969460273">Horizontal</translation>
 <translation id="6880587130513028875">Se bloquearon las imágenes en esta página.</translation>
@@ -9797,7 +9796,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7948407723851303488">Todas las páginas de <ph name="DOMAIN_NAME" /></translation>
 <translation id="7950629216186736592">Motivo: LBS solo admite URLs con http://, https:// y file://.</translation>
 <translation id="7950814699499457511">Activada • Esta extensión no publicó prácticas de privacidad, como la forma en que recopila y usa datos</translation>
-<translation id="7951265006188088697">Para agregar o administrar formas de pago de Google Pay, visita tu <ph name="BEGIN_LINK" />Cuenta de Google<ph name="END_LINK" /></translation>
+<translation id="7951265006188088697">Para agregar o administrar formas de pago de Google Pay, visita tu <ph name="BEGIN_LINK" />Cuenta de Google<ph name="END_LINK" />.</translation>
 <translation id="795130320946928025">Desactivar la tarjeta virtual</translation>
 <translation id="795240231873601803">Usa la inscripción empresarial para las cuentas de trabajo o instituciones educativas</translation>
 <translation id="7952708427581814389">Permitir que los sitios soliciten permiso para ver imágenes y texto del portapapeles</translation>

@@ -23,6 +23,43 @@ constexpr char kOauthConsumerName[] = "manta_walrus";
 constexpr base::TimeDelta kTimeout = base::Seconds(30);
 // The maximum number of pixels after resizing an image.
 constexpr int32_t kMaxPixelsAfterResizing = 512 * 512;
+constexpr auto kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("chromeos_walrus_provider", R"(
+      semantics {
+        sender: "ChromeOS Walrus"
+        description:
+          "Requests the trust and safety verdict of images and text prompt "
+          "from the Mantis service."
+        trigger:
+          "User editing an image in the Gallery app with 'Edit with AI'"
+        internal {
+          contacts {
+            email: "cros-mantis@google.com"
+          }
+        }
+        user_data {
+          type: USER_CONTENT
+        }
+        data:
+          "The image user selected to edit in the gallery and the text prompt "
+          "typed in a editable text field. The generated images from the model "
+          "are also sent for the trust and safety verdict."
+        destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2025-03-26"
+      }
+      policy {
+        cookies_allowed: NO
+        setting:
+            "User/Admin can enable or disable this feature via the Google "
+            "Admin Console by updating the GenAI Photo Editing settings. "
+            "The feature is enabled by default."
+        chrome_policy {
+            GenAIPhotoEditingSettings {
+              GenAIPhotoEditingSettings: 0
+            }
+        }
+      }
+    )");
 
 void OnServerResponseOrErrorReceived(
     MantaGenericCallback callback,
@@ -175,12 +212,9 @@ void WalrusProvider::Filter(const std::optional<std::string>& text_prompt,
     return;
   }
 
-  // TODO(b:370476808): MISSING_TRAFFIC_ANNOTATION should be resolved before
-  // launch.
   RequestInternal(
       GURL{GetProviderEndpoint(features::IsWalrusUseProdServerEnabled())},
-      kOauthConsumerName, MISSING_TRAFFIC_ANNOTATION, request,
-      MantaMetricType::kWalrus,
+      kOauthConsumerName, kTrafficAnnotation, request, MantaMetricType::kWalrus,
       base::BindOnce(&OnServerResponseOrErrorReceived,
                      std::move(done_callback)),
       kTimeout);

@@ -144,10 +144,9 @@ p {
   margin-inline-start: 16px;
 }
 
-/* Remove focus-visible outline styles, because forced focus is used for
-screen reader and chrome vox provides its own focus style. */
-.frame-blocked:focus-visible,
-button:focus-visible {
+/* Remove focus-visible outline for the top level div, which are force focused
+for screen readers. The screen readers will also have their own styling. */
+.frame-blocked:focus-visible {
   outline: none;
 }
 

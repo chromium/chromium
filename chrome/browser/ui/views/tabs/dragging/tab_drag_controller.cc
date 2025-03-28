@@ -6,9 +6,11 @@
 
 #include <algorithm>
 #include <limits>
+#include <memory>
 #include <optional>
 #include <set>
 #include <utility>
+#include <variant>
 
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organization/metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -43,6 +46,7 @@
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -1172,7 +1176,9 @@ void TabDragController::StartDrag() {
 void TabDragController::AttachToNewContext(
     TabDragContext* attached_context,
     std::unique_ptr<TabDragController> controller,
-    std::vector<std::unique_ptr<tabs::TabModel>> owned_tabs) {
+    std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
+                             std::unique_ptr<DetachedTabGroup>>>
+        owned_tabs_and_groups) {
   // We should already have detached by the time we get here.
   CHECK(!attached_context_);
   attached_context_ = attached_context;
@@ -1188,49 +1194,58 @@ void TabDragController::AttachToNewContext(
   selection_model_before_attach_ =
       attached_context_->GetTabStripModel()->selection_model();
 
-  // Register a new group if necessary, so that the insertion index in the
-  // tab strip can be calculated based on the group membership of tabs.
-  if (drag_data_.group_drag_data_.has_value()) {
-    const tab_groups::TabGroupVisualData og_visual_data =
-        drag_data_.source_view_drag_data()
-            ->tab_group_data.value()
-            .group_visual_data;
-    // Create the new group already un-collapsed, regardless of whether the
-    // original group started out collapsed or not.
-    const tab_groups::TabGroupVisualData new_visual_data =
-        tab_groups::TabGroupVisualData(og_visual_data.title(),
-                                       og_visual_data.color(),
-                                       /*is_collapsed=*/false);
-
-    attached_context_->GetTabStripModel()->AddTabGroup(
-        drag_data_.group_drag_data_.value().group, new_visual_data);
-  }
-
   // Insert at any valid index in the tabstrip. We'll fix up the insertion
   // index in MoveAttached() later, if we're transitioning to kDraggingTabs;
   // if we're transitioning to kDraggingWindow this is the correct index, 0.
-  const int index = attached_context_->GetPinnedTabCount();
+  size_t index = attached_context_->GetPinnedTabCount();
 
   base::AutoReset<bool> setter(&is_mutating_, true);
-  for (size_t i = first_tab_index(); i < drag_data_.tab_drag_data_.size();
-       ++i) {
-    int add_types = AddTabTypes::ADD_NONE;
-    if (drag_data_.tab_drag_data_[i].pinned) {
-      add_types |= AddTabTypes::ADD_PINNED;
-    }
 
-    attached_context_->GetTabStripModel()->InsertDetachedTabAt(
-        index + i - first_tab_index(), std::move(owned_tabs[i]), add_types,
-        drag_data_.group_drag_data_.has_value()
-            ? std::make_optional<tab_groups::TabGroupId>(
-                  drag_data_.group_drag_data_.value().group)
-            : std::nullopt);
+  const auto update_sad_tab = base::BindRepeating(
+      [](TabStripModel* model, size_t sad_index) {
+        // If a sad tab is showing, the SadTabView needs to be updated.
+        SadTabHelper* const sad_tab_helper =
+            SadTabHelper::FromWebContents(model->GetWebContentsAt(sad_index));
+        if (sad_tab_helper) {
+          sad_tab_helper->ReinstallInWebView();
+        }
+      },
+      attached_context_->GetTabStripModel());
 
-    // If a sad tab is showing, the SadTabView needs to be updated.
-    SadTabHelper* const sad_tab_helper =
-        SadTabHelper::FromWebContents(drag_data_.tab_drag_data_[i].contents);
-    if (sad_tab_helper) {
-      sad_tab_helper->ReinstallInWebView();
+  for (auto& tab_or_group : owned_tabs_and_groups) {
+    if (auto* tab =
+            std::get_if<std::unique_ptr<tabs::TabModel>>(&tab_or_group)) {
+      // If it's a tab - we add it to the tabstrip.
+      int add_types = AddTabTypes::ADD_NONE;
+      TabDragData& tab_data = *std::find_if(
+          drag_data_.tab_drag_data_.begin(), drag_data_.tab_drag_data_.end(),
+          [](TabDragData& tab_data) { return true; });
+      if (tab_data.pinned) {
+        add_types |= AddTabTypes::ADD_PINNED;
+      }
+
+      const size_t inserted_index =
+          attached_context_->GetTabStripModel()->InsertDetachedTabAt(
+              index, std::move(*tab), add_types);
+      CHECK_EQ(inserted_index, index);
+      update_sad_tab.Run(index);
+      index++;
+    } else {
+      auto group = std::move(
+          *std::get_if<std::unique_ptr<DetachedTabGroup>>(&tab_or_group));
+      // If it's a group - we add it to the tabstrip. This will add all the
+      // tabs.
+      const gfx::Range group_indices =
+          attached_context_->GetTabStripModel()->InsertDetachedTabGroupAt(
+              std::move(group), index);
+
+      CHECK_EQ(group_indices.start(), index);
+      index += group_indices.length();
+
+      for (size_t sad_index = group_indices.start();
+           sad_index < group_indices.end(); sad_index++) {
+        update_sad_tab.Run(sad_index);
+      }
     }
   }
 
@@ -1268,7 +1283,8 @@ void TabDragController::AttachImpl() {
 }
 
 std::tuple<std::unique_ptr<TabDragController>,
-           std::vector<std::unique_ptr<tabs::TabModel>>>
+           std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
+                                    std::unique_ptr<DetachedTabGroup>>>>
 TabDragController::Detach(ReleaseCapture release_capture) {
   TRACE_EVENT1("views", "TabDragController::Detach", "release_capture",
                release_capture);
@@ -1295,20 +1311,48 @@ TabDragController::Detach(ReleaseCapture release_capture) {
   // Attach. Otherwise, the group will get emptied out as we close all the tabs.
   MaybePauseTrackingSavedTabGroup();
 
-  std::vector<std::unique_ptr<tabs::TabModel>> owned_tabs(
-      drag_data_.tab_drag_data_.size());
-  for (size_t i = first_tab_index(); i < drag_data_.tab_drag_data_.size();
-       ++i) {
-    int index = attached_model->GetIndexOfWebContents(
-        drag_data_.tab_drag_data_[i].contents);
-    DCHECK_NE(TabStripModel::kNoTab, index);
-    // Move the tab out of `attached_model`. Marking the view as detached tells
-    // the TabStrip to not animate its closure, as it's actually being moved.
-    drag_data_.tab_drag_data_[i].attached_view->set_detached();
-    owned_tabs[i] = attached_model->DetachTabAtForInsertion(index);
+  for (TabDragData& tab_drag_datum : drag_data_.tab_drag_data_) {
+    // Marking the view as detached tells the TabStrip to not animate its
+    // closure, as it's actually being moved.
+    // TODO(tbergquist): Is this the right path for this bit to take? Would it
+    // make more sense for the model notification to have this information, and
+    // for the tabstrip to use that instead?
+    tab_drag_datum.attached_view->set_detached();
+    // Detaching may end up deleting the view, drop references to it.
+    tab_drag_datum.attached_view = nullptr;
+  }
 
-    // Detaching may end up deleting the tab, drop references to it.
-    drag_data_.tab_drag_data_[i].attached_view = nullptr;
+  std::vector<int> dragged_indices;
+  for (int dragged_index :
+       attached_model->selection_model().selected_indices()) {
+    dragged_indices.push_back(dragged_index);
+  }
+  const std::vector<tab_groups::TabGroupId> groups_to_move =
+      attached_model->GetGroupsDestroyedFromRemovingIndices(dragged_indices);
+
+  std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
+                           std::unique_ptr<DetachedTabGroup>>>
+      owned_tabs_and_groups;
+  for (TabDragData& tab_drag_datum : drag_data_.tab_drag_data_) {
+    const int index =
+        attached_model->GetIndexOfWebContents(tab_drag_datum.contents);
+
+    if (index == TabStripModel::kNoTab) {
+      // If this is a tab, we already moved it as part of its group.
+      // If this is a header, we will move it when we get to its first tab.
+      continue;
+    }
+
+    const std::optional<tab_groups::TabGroupId> group =
+        attached_model->GetTabGroupForTab(index);
+    if (std::find(groups_to_move.begin(), groups_to_move.end(), group) !=
+        groups_to_move.end()) {
+      owned_tabs_and_groups.emplace_back(
+          attached_model->DetachTabGroupForInsertion(group.value()));
+    } else {
+      owned_tabs_and_groups.emplace_back(
+          attached_model->DetachTabAtForInsertion(index));
+    }
   }
   if (drag_data_.group_drag_data_.has_value()) {
     drag_data_.tab_drag_data_[drag_data_.source_view_index_].attached_view =
@@ -1333,7 +1377,7 @@ TabDragController::Detach(ReleaseCapture release_capture) {
   attached_context_->DraggedTabsDetached();
   attached_context_ = nullptr;
 
-  return std::make_tuple(std::move(me), std::move(owned_tabs));
+  return std::make_tuple(std::move(me), std::move(owned_tabs_and_groups));
 }
 
 TabDragController::Liveness
@@ -1777,6 +1821,8 @@ void TabDragController::RevertHeaderDrag(tab_groups::TabGroupId group_id) {
     source_context_->GetTabStripModel()->AddTabGroup(
         drag_data_.group_drag_data_.value().group, og_visual_data);
 
+    // Drop the group header ptr before it is destroyed during revert.
+    drag_data_.tab_drag_data_[0].attached_view = nullptr;
     for (size_t i = first_tab_index(); i < drag_data_.tab_drag_data_.size();
          ++i) {
       if (drag_data_.tab_drag_data_[i].contents) {
@@ -1825,6 +1871,8 @@ void TabDragController::RevertDragAt(size_t drag_index) {
     // put it back into the original one. Marking the view as detached tells
     // the TabStrip to not animate its closure, as it's actually being moved.
     data->attached_view->set_detached();
+    // Drop the ptr, as this view will be deleted as part of detaching.
+    data->attached_view = nullptr;
     std::unique_ptr<tabs::TabModel> detached_tab =
         attached_context_->GetTabStripModel()->DetachTabAtForInsertion(index);
     // No-longer removing the last tab, so reset state.

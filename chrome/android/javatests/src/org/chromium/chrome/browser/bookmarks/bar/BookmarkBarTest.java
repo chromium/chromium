@@ -24,14 +24,14 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.nullValue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewStub;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -94,6 +94,8 @@ public class BookmarkBarTest {
     @Before
     public void setUp() {
         mCtaTestRule.startOnBlankPage();
+        ThreadUtils.runOnUiThreadBlocking(() -> setBookmarkBarSetting(/* enabled= */ true));
+        waitForBookmarkBarVisibility(/* visible= */ true);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -109,6 +111,127 @@ public class BookmarkBarTest {
             ThreadUtils.runOnUiThreadBlocking(() -> mItemIds.forEach(mModel::deleteBookmark));
             mItemIds = null;
         }
+    }
+
+    @Test
+    @MediumTest
+    public void testOnAllBookmarksButtonClick() {
+        onViewWaiting(bookmarkBarItemWithText("All Bookmarks")).perform(click());
+        onViewWaiting(bookmarkManagerToolbarWithText("Bookmarks")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testOnBookmarkBarToggledViaKeyboard() {
+        final var activity = mCtaTestRule.getActivity();
+        final var evt =
+                new KeyEvent(
+                        /* downTime= */ SystemClock.uptimeMillis(),
+                        /* eventTime= */ SystemClock.uptimeMillis(),
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_B,
+                        /* repeat= */ 0,
+                        KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON);
+
+        // Set up.
+        ThreadUtils.runOnUiThreadBlocking(() -> setBookmarkBarSetting(/* enabled= */ false));
+        waitForBookmarkBarVisibility(/* visible= */ false);
+
+        // Case: Toggle w/ feature enabled.
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onKeyDown(evt.getKeyCode(), evt));
+        waitForBookmarkBarVisibility(/* visible= */ true);
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onKeyDown(evt.getKeyCode(), evt));
+        waitForBookmarkBarVisibility(/* visible= */ false);
+
+        // Case: Toggle w/ feature disabled.
+        BookmarkBarUtils.setFeatureEnabledForTesting(false);
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onKeyDown(evt.getKeyCode(), evt));
+        waitForBookmarkBarVisibility(/* visible= */ false);
+    }
+
+    @Test
+    @MediumTest
+    public void testOnBookmarkFolderClick() throws ExecutionException {
+        final String title = "Folder";
+        mItemIds = List.of(addFolder(title));
+        onViewWaiting(bookmarkBarItemWithText(title)).perform(click());
+        onViewWaiting(bookmarkManagerToolbarWithText(title)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testOnBookmarkItemClick() throws ExecutionException {
+        final Tab originalTab = getCurrentTab();
+        final String title = "Google";
+        final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
+        mItemIds = List.of(addBookmark(/* index= */ 0, title, url));
+        onViewWaiting(bookmarkBarItemWithText(title)).perform(click());
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    final Tab currentTab = getCurrentTab();
+                    Criteria.checkThat(currentTab, is(originalTab));
+                    Criteria.checkThat(currentTab, notNullValue());
+                    Criteria.checkThat(currentTab.getUrl(), notNullValue());
+                    Criteria.checkThat(currentTab.getUrl(), is(url));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testOnBookmarkItemControlClick() throws ExecutionException {
+        // Set up.
+        final String title = "Google";
+        final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
+        mItemIds = List.of(addBookmark(/* index= */ 0, title, url));
+
+        {
+            // Case: perform control-click via touch.
+            final Tab originalTab = getCurrentTab();
+            final GURL originalUrl = originalTab.getUrl();
+            onViewWaiting(bookmarkBarItemWithText(title)).perform(clickWith(META_CTRL_ON));
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        final Tab currentTab = getCurrentTab();
+                        Criteria.checkThat(currentTab, is(originalTab));
+                        Criteria.checkThat(currentTab, notNullValue());
+                        Criteria.checkThat(currentTab.getUrl(), notNullValue());
+                        Criteria.checkThat(currentTab.getUrl(), is(originalUrl));
+
+                        final Tab lastTab = getLastTab();
+                        Criteria.checkThat(lastTab, is(not(currentTab)));
+                        Criteria.checkThat(lastTab, notNullValue());
+                        Criteria.checkThat(lastTab.getUrl(), notNullValue());
+                        Criteria.checkThat(lastTab.getUrl(), is(url));
+                    });
+        }
+
+        {
+            // Case: perform ENTER-click to ensure control-click via touch is not sticky.
+            final Tab originalTab = getCurrentTab();
+            onViewWaiting(bookmarkBarItemWithText(title)).perform(focus(), pressKey(KEYCODE_ENTER));
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        final Tab currentTab = getCurrentTab();
+                        Criteria.checkThat(currentTab, is(originalTab));
+                        Criteria.checkThat(currentTab, notNullValue());
+                        Criteria.checkThat(currentTab.getUrl(), notNullValue());
+                        Criteria.checkThat(currentTab.getUrl(), is(url));
+                    });
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testOnOverflowButtonClick() {
+        final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
+        mItemIds =
+                IntStream.range(0, 100)
+                        .mapToObj(i -> optionalOfThrowable(() -> addBookmark(i, "" + i, url)))
+                        .map(Optional::get)
+                        .collect(Collectors.toList());
+        onViewWaiting(bookmarkBarOverflowButton()).check(matches(isDisplayed())).perform(click());
+        onViewWaiting(bookmarkManagerToolbarWithText("Bookmarks bar"))
+                .check(matches(isDisplayed()));
     }
 
     private @Nullable BookmarkId addBookmark(int index, @NonNull String title, @NonNull GURL url)
@@ -227,134 +350,27 @@ public class BookmarkBarTest {
                         .build());
     }
 
-    @Test
-    @MediumTest
-    public void testOnAllBookmarksButtonClick() {
-        onViewWaiting(bookmarkBarItemWithText("All Bookmarks")).perform(click());
-        onViewWaiting(bookmarkManagerToolbarWithText("Bookmarks")).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    public void testOnBookmarkBarToggledViaKeyboard() {
+    private void setBookmarkBarSetting(boolean enabled) {
         final var activity = mCtaTestRule.getActivity();
-
-        final var profile =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> activity.getProfileProviderSupplier().get().getOriginalProfile());
-
-        final var keyEvent =
-                new KeyEvent(
-                        /* downTime= */ SystemClock.uptimeMillis(),
-                        /* eventTime= */ SystemClock.uptimeMillis(),
-                        KeyEvent.ACTION_DOWN,
-                        KeyEvent.KEYCODE_B,
-                        /* repeat= */ 0,
-                        KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // Case: Toggle w/ feature enabled.
-                    // TODO(crbug.com/394614520): Verify UI updates once implemented.
-                    assertTrue(BookmarkBarUtils.isFeatureEnabled(activity));
-                    assertFalse(BookmarkBarUtils.isSettingEnabled(profile));
-                    activity.onKeyDown(keyEvent.getKeyCode(), keyEvent);
-                    assertTrue(BookmarkBarUtils.isSettingEnabled(profile));
-                    activity.onKeyDown(keyEvent.getKeyCode(), keyEvent);
-                    assertFalse(BookmarkBarUtils.isSettingEnabled(profile));
-
-                    // Case: Toggle w/ feature disabled.
-                    // TODO(crbug.com/394614520): Verify UI updates once implemented.
-                    BookmarkBarUtils.setFeatureEnabledForTesting(false);
-                    assertFalse(BookmarkBarUtils.isFeatureEnabled(activity));
-                    assertFalse(BookmarkBarUtils.isSettingEnabled(profile));
-                    activity.onKeyDown(keyEvent.getKeyCode(), keyEvent);
-                    assertFalse(BookmarkBarUtils.isSettingEnabled(profile));
-                });
+        final var profile = activity.getProfileProviderSupplier().get().getOriginalProfile();
+        BookmarkBarUtils.setSettingEnabled(profile, enabled);
     }
 
-    @Test
-    @MediumTest
-    public void testOnBookmarkFolderClick() throws ExecutionException {
-        final String title = "Folder";
-        mItemIds = List.of(addFolder(title));
-        onViewWaiting(bookmarkBarItemWithText(title)).perform(click());
-        onViewWaiting(bookmarkManagerToolbarWithText(title)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    public void testOnBookmarkItemClick() throws ExecutionException {
-        final Tab originalTab = getCurrentTab();
-        final String title = "Google";
-        final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
-        mItemIds = List.of(addBookmark(/* index= */ 0, title, url));
-        onViewWaiting(bookmarkBarItemWithText(title)).perform(click());
+    private void waitForBookmarkBarVisibility(boolean visible) {
         CriteriaHelper.pollUiThread(
                 () -> {
-                    final Tab currentTab = getCurrentTab();
-                    Criteria.checkThat(currentTab, is(originalTab));
-                    Criteria.checkThat(currentTab, notNullValue());
-                    Criteria.checkThat(currentTab.getUrl(), notNullValue());
-                    Criteria.checkThat(currentTab.getUrl(), is(url));
+                    final var activity = mCtaTestRule.getActivity();
+                    final var view = activity.<BookmarkBar>findViewById(R.id.bookmark_bar);
+                    final var viewStub = activity.<ViewStub>findViewById(R.id.bookmark_bar_stub);
+                    if (visible) {
+                        Criteria.checkThat(view, is(notNullValue()));
+                        Criteria.checkThat(view.getVisibility(), is(View.VISIBLE));
+                        Criteria.checkThat(view.isLaidOut(), is(true));
+                        Criteria.checkThat(viewStub, is(nullValue()));
+                    } else {
+                        Criteria.checkThat(view, is(nullValue()));
+                        Criteria.checkThat(viewStub, is(notNullValue()));
+                    }
                 });
-    }
-
-    @Test
-    @MediumTest
-    public void testOnBookmarkItemControlClick() throws ExecutionException {
-        // Set up.
-        final String title = "Google";
-        final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
-        mItemIds = List.of(addBookmark(/* index= */ 0, title, url));
-
-        {
-            // Case: perform control-click via touch.
-            final Tab originalTab = getCurrentTab();
-            final GURL originalUrl = originalTab.getUrl();
-            onViewWaiting(bookmarkBarItemWithText(title)).perform(clickWith(META_CTRL_ON));
-            CriteriaHelper.pollUiThread(
-                    () -> {
-                        final Tab currentTab = getCurrentTab();
-                        Criteria.checkThat(currentTab, is(originalTab));
-                        Criteria.checkThat(currentTab, notNullValue());
-                        Criteria.checkThat(currentTab.getUrl(), notNullValue());
-                        Criteria.checkThat(currentTab.getUrl(), is(originalUrl));
-
-                        final Tab lastTab = getLastTab();
-                        Criteria.checkThat(lastTab, is(not(currentTab)));
-                        Criteria.checkThat(lastTab, notNullValue());
-                        Criteria.checkThat(lastTab.getUrl(), notNullValue());
-                        Criteria.checkThat(lastTab.getUrl(), is(url));
-                    });
-        }
-
-        {
-            // Case: perform ENTER-click to ensure control-click via touch is not sticky.
-            final Tab originalTab = getCurrentTab();
-            onViewWaiting(bookmarkBarItemWithText(title)).perform(focus(), pressKey(KEYCODE_ENTER));
-            CriteriaHelper.pollUiThread(
-                    () -> {
-                        final Tab currentTab = getCurrentTab();
-                        Criteria.checkThat(currentTab, is(originalTab));
-                        Criteria.checkThat(currentTab, notNullValue());
-                        Criteria.checkThat(currentTab.getUrl(), notNullValue());
-                        Criteria.checkThat(currentTab.getUrl(), is(url));
-                    });
-        }
-    }
-
-    @Test
-    @MediumTest
-    public void testOnOverflowButtonClick() {
-        final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
-        mItemIds =
-                IntStream.range(0, 100)
-                        .mapToObj(i -> optionalOfThrowable(() -> addBookmark(i, "" + i, url)))
-                        .map(Optional::get)
-                        .collect(Collectors.toList());
-        onViewWaiting(bookmarkBarOverflowButton()).check(matches(isDisplayed())).perform(click());
-        onViewWaiting(bookmarkManagerToolbarWithText("Bookmarks bar"))
-                .check(matches(isDisplayed()));
     }
 }

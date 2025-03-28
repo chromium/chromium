@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -159,9 +160,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
     }
 
     private void displayMenu(View view) {
-        boolean onTop =
-                mSharedPreferencesManager.readBoolean(
-                        ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
+        boolean onTop = AddressBarPreference.isToolbarConfiguredToShowOnTop();
 
         BasicListMenu listMenu =
                 BrowserUiListMenuUtils.getBasicListMenu(
@@ -235,9 +234,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
     }
 
     private void handleMoveAddressBarTo() {
-        boolean onTop =
-                mSharedPreferencesManager.readBoolean(
-                        ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
+        boolean onTop = AddressBarPreference.isToolbarConfiguredToShowOnTop();
         mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, !onTop);
     }
 

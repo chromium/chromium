@@ -91,6 +91,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1269405891096105529">Išorinis įrenginys nepalaikomas naudojant svečio režimą</translation>
 <translation id="1270290102613614947">Ekrano klaviatūra išjungta</translation>
 <translation id="1272079795634619415">Sustabdyti</translation>
+<translation id="12741168609094094">Pasirinkite bet ką ekrane, kad galėtumėte ieškoti, kopijuoti tekstą ir kt.</translation>
 <translation id="1275285675049378717">Teikia maitinimą šiam įrenginiui: <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Pasirinkta</translation>
 <translation id="1276975447697633661">Pasirinkite failą, tada paspauskite <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1720230731642245863">Viešosios interneto prieigos taškas išjungtas</translation>
 <translation id="1731815243805539470">Perjungti į ankstesnį naudotoją</translation>
 <translation id="1733996486177697563">Perjunkite iš tamsiosios į šviesiąją temą ir atvirkščiai. Palieskite ir palaikykite darbalaukyje, tada pasirinkite „Ekrano fonas ir stilius“.</translation>
+<translation id="1735992454301033090">Pasirinkta sritis, naudokite rodyklių klavišus, kad perkeltumėte</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />“ matomas „Bluetooth“ įrenginiams.</translation>
 <translation id="1737078180382804488">Atsisakyti nustatyti telefono pranešimų peržiūrą</translation>
 <translation id="174102739345480129">Žymeklis išjungtas.</translation>
@@ -494,6 +496,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" />, praėjusi savaitė</translation>
 <translation id="2687510499067466116">Pakeistas spartusis klavišas</translation>
 <translation id="2689613560355655046">8 darbalaukis</translation>
+<translation id="2692092709110488417">Paspauskite tabuliavimo klavišą, kad paryškintumėte ir perkeltumėte pasirinktą sritį</translation>
 <translation id="2695305337569143674">žiniatinklis</translation>
 <translation id="2697697418792422688">Rodyti klaviatūros nustatymus. Pasirinkta: <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Naudodami programą „Turinio perkėlimo įrankis“ perkelkite mokyklos paskyros duomenis į asmeninę paskyrą</translation>
@@ -1033,6 +1036,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4412698727486357573">Pagalbos centras</translation>
 <translation id="4412944820643904175">„<ph name="FEATURE_NAME" />“ išjungta.</translation>
 <translation id="4417647906073317561">Fokusavimo nustatymai. Nustatykite laikmatį, užduotį ir muziką, kad įsitrauktumėte į srautą.</translation>
+<translation id="4418600384772451109">Uždaryti skydelį</translation>
 <translation id="4424159417645388645">5 darbalaukis</translation>
 <translation id="4426817706804363424">Šaunu!</translation>
 <translation id="4430019312045809116">Apimtis</translation>
@@ -2229,6 +2233,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8287009018010202411">Produktyvumas</translation>
 <translation id="828708037801473432">Išjungta</translation>
 <translation id="8297006494302853456">Silpnas</translation>
+<translation id="8300451473979404345">Pasirinkta rankenėlė, naudokite rodyklių klavišus, kad perkeltumėte</translation>
 <translation id="8308637677604853869">Ankstesnis meniu</translation>
 <translation id="830868413617744215">Beta versija</translation>
 <translation id="8314772463905284467">Įjungtas didžiųjų raidžių klavišas</translation>
@@ -2289,6 +2294,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="851458219935658693">Rodyti dabartinio darbalaukio langus, pasirinkta akutė</translation>
 <translation id="851660987304951246">Naudokite funkciją „Padėkite man skaityti“, kad galėtumėte sparčiai apibendrinti turinį ar užduoti klausimų</translation>
 <translation id="8517041960877371778">„<ph name="DEVICE_TYPE" />“ gali nebūti kraunamas, kai yra įjungtas.</translation>
+<translation id="8519329096920173967">Paieška ekrane naudojant „Google Lens“</translation>
 <translation id="8535393432370007982">Anuliuoti rūšiavimo tvarką pagal spalvą</translation>
 <translation id="8536886494750559755">Rodyti sparčiojo bendrinimo nustatymus. Matoma visiems <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Tekstas nukopijuotas į iškarpinę</translation>

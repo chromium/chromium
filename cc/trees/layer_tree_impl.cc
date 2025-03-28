@@ -3037,6 +3037,9 @@ void LayerTreeImpl::AddViewTransitionRequest(
 
 std::vector<std::unique_ptr<ViewTransitionRequest>>
 LayerTreeImpl::TakeViewTransitionRequests() {
+  if (HasViewTransitionRequests()) {
+    set_needs_update_draw_properties();
+  }
   return std::move(view_transition_requests_);
 }
 

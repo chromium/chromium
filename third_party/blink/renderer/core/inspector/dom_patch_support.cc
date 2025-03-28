@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
@@ -91,7 +92,8 @@ void DOMPatchSupport::PatchDocument(const String& markup) {
   Digest* new_info =
       CreateDigest(new_document->documentElement(), &unused_nodes_map_);
 
-  if (!InnerPatchNode(old_info, new_info, IGNORE_EXCEPTION_FOR_TESTING)) {
+  if (!InnerPatchNode(old_info, new_info,
+                      IgnoreException(GetDocument().GetAgent().isolate()))) {
     // Fall back to rewrite.
     GetDocument().write(markup);
     GetDocument().close();
@@ -121,10 +123,12 @@ Node* DOMPatchSupport::PatchNode(Node* node,
   auto* target_element = To<Element>(target_node);
 
   // FIXME: This code should use one of createFragment* in Serialization.h
-  if (IsA<HTMLDocument>(GetDocument()))
+  if (IsA<HTMLDocument>(GetDocument())) {
     fragment->ParseHTML(markup, target_element);
-  else
-    fragment->ParseXML(markup, target_element, IGNORE_EXCEPTION);
+  } else {
+    fragment->ParseXML(markup, target_element,
+                       IgnoreException(GetDocument().GetAgent().isolate()));
+  }
 
   // Compose the old list.
   ContainerNode* parent_node = node->parentNode();

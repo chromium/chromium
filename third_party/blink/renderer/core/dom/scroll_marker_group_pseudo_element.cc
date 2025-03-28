@@ -134,7 +134,8 @@ void ScrollMarkerGroupPseudoElement::UpdateSelectedScrollMarker() {
   // https://drafts.csswg.org/css-overflow-5/#scroll-container-scroll.
   auto* scroller =
       DynamicTo<LayoutBox>(UltimateOriginatingElement().GetLayoutObject());
-  if (!scroller || !scroller->IsScrollContainer()) {
+  if (!scroller ||
+      (!scroller->IsScrollContainer() && !scroller->IsDocumentElement())) {
     return;
   }
 

@@ -22,6 +22,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,8 +31,9 @@ namespace collaboration {
 
 namespace {
 
-const char kGroupId[] = "/?-group_id";
+const data_sharing::GroupId kGroupId("/?-group_id");
 const char kAccessToken[] = "/?-access_token";
+constexpr char kUserEmail[] = "test@email.com";
 
 using StateId = CollaborationController::StateId;
 using Outcome = CollaborationControllerDelegate::Outcome;
@@ -75,7 +77,8 @@ class CollaborationControllerTest : public testing::Test {
         .WillOnce(MoveArg<1>(&prepare_ui_callback_));
     controller_ = std::make_unique<CollaborationController>(
         flow, collaboration_service_.get(), data_sharing_service_.get(),
-        tab_group_sync_service_.get(), sync_service_.get(), std::move(delegate),
+        tab_group_sync_service_.get(), sync_service_.get(),
+        identity_test_env_.identity_manager(), std::move(delegate),
         base::BindOnce(&CollaborationControllerTest::FinishFlow,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(run_on_flow_exit)));
@@ -84,8 +87,7 @@ class CollaborationControllerTest : public testing::Test {
   void InitializeJoinController(OnceClosure run_on_flow_exit) {
     InitializeController(
         std::move(run_on_flow_exit),
-        Flow(FlowType::kJoin,
-             GroupToken(data_sharing::GroupId(kGroupId), kAccessToken)));
+        Flow(FlowType::kJoin, GroupToken(kGroupId, kAccessToken)));
   }
 
   void FinishFlow(OnceClosure run_on_flow_exit) {
@@ -96,6 +98,7 @@ class CollaborationControllerTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  signin::IdentityTestEnvironment identity_test_env_;
   base::OnceCallback<void(Outcome)> prepare_ui_callback_;
   MockCollaborationControllerDelegate* delegate_;
   std::unique_ptr<MockCollaborationService> collaboration_service_;
@@ -156,12 +159,11 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
 
   // Simulate that the user is not already in the tab group.
   EXPECT_CALL(*tab_group_sync_service_, RemoveObserver(sync_observer));
-  data_sharing::GroupId group_id(kGroupId);
-  const GroupToken& token = GroupToken(group_id, kAccessToken);
+  const GroupToken& token = GroupToken(kGroupId, kAccessToken);
   base::OnceCallback<void(
       const data_sharing::DataSharingService::GroupDataOrFailureOutcome&)>
       group_data_callback;
-  EXPECT_CALL(*collaboration_service_, GetCurrentUserRoleForGroup(group_id))
+  EXPECT_CALL(*collaboration_service_, GetCurrentUserRoleForGroup(kGroupId))
       .WillRepeatedly(Return(data_sharing::MemberRole::kUnknown));
   EXPECT_CALL(*data_sharing_service_, ReadNewGroup(token, IsNotNullCallback()))
       .WillOnce(MoveArg<1>(&group_data_callback));
@@ -174,7 +176,7 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
   // The user should be shown invitation screen for joining a collaboration
   // group.
   GroupData group_data =
-      GroupData(group_id, /*display_name=*/"",
+      GroupData(kGroupId, /*display_name=*/"",
                 /*members=*/{}, /*former_members=*/{}, kAccessToken);
   base::OnceCallback<void(Outcome)> join_ui_callback;
   base::OnceCallback<void(const data_sharing::DataSharingService::
@@ -197,8 +199,7 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
   // added in sync.
   SavedTabGroup tab_group(std::u16string(u"title"),
                           tab_groups::TabGroupColorId::kGrey, {});
-  tab_group.SetCollaborationId(
-      tab_groups::CollaborationId(std::string(kGroupId)));
+  tab_group.SetCollaborationId(tab_groups::CollaborationId(kGroupId.value()));
   std::vector<SavedTabGroup> all_tab_groups;
   EXPECT_CALL(*tab_group_sync_service_, GetAllGroups())
       .WillRepeatedly(Return(all_tab_groups));
@@ -215,7 +216,7 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
             StateId::kWaitingForSyncAndDataSharingGroup);
 
   // Added tab group in sync but not in data sharing should not transition.
-  EXPECT_CALL(*collaboration_service_, GetCurrentUserRoleForGroup(group_id))
+  EXPECT_CALL(*collaboration_service_, GetCurrentUserRoleForGroup(kGroupId))
       .WillOnce(Return(data_sharing::MemberRole::kUnknown));
   sync_observer->OnTabGroupAdded(tab_group, tab_groups::TriggerSource::REMOTE);
   EXPECT_EQ(controller_->GetStateForTesting(),
@@ -223,10 +224,9 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
 
   // Simulate added in both tab group and data_sharing group.
   base::OnceCallback<void(Outcome)> promote_ui_callback;
-  EXPECT_CALL(*collaboration_service_, GetCurrentUserRoleForGroup(group_id))
+  EXPECT_CALL(*collaboration_service_, GetCurrentUserRoleForGroup(kGroupId))
       .WillOnce(Return(data_sharing::MemberRole::kMember));
-  EXPECT_CALL(*delegate_, PromoteTabGroup(data_sharing::GroupId(kGroupId),
-                                          IsNotNullCallback()))
+  EXPECT_CALL(*delegate_, PromoteTabGroup(kGroupId, IsNotNullCallback()))
       .WillOnce(MoveArg<1>(&promote_ui_callback));
   EXPECT_CALL(*tab_group_sync_service_, RemoveObserver(sync_observer));
   EXPECT_CALL(*data_sharing_service_, RemoveObserver(data_sharing_observer));
@@ -436,8 +436,7 @@ TEST_F(CollaborationControllerTest, ReadNewGroupError) {
       callback;
   EXPECT_CALL(
       *data_sharing_service_,
-      ReadNewGroup(GroupToken(data_sharing::GroupId(kGroupId), kAccessToken),
-                   IsNotNullCallback()))
+      ReadNewGroup(GroupToken(kGroupId, kAccessToken), IsNotNullCallback()))
       .WillOnce(MoveArg<1>(&callback));
 
   controller_->SetStateForTesting(StateId::kCheckingFlowRequirements);
@@ -446,8 +445,36 @@ TEST_F(CollaborationControllerTest, ReadNewGroupError) {
       base::unexpected(data_sharing::DataSharingService::
                            PeopleGroupActionFailure::kPersistentFailure));
 
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
+}
+
+TEST_F(CollaborationControllerTest, ReadNewGroupAlreadyExist) {
+  // Start Join flow.
+  InitializeJoinController(base::DoNothing());
+
+  base::OnceCallback<void(
+      const data_sharing::DataSharingService::GroupDataOrFailureOutcome&)>
+      callback;
+  EXPECT_CALL(
+      *data_sharing_service_,
+      ReadNewGroup(GroupToken(kGroupId, kAccessToken), IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&callback));
+
+  controller_->SetStateForTesting(StateId::kCheckingFlowRequirements);
+
+  CoreAccountInfo account = identity_test_env_.SetPrimaryAccount(
+      kUserEmail, signin::ConsentLevel::kSignin);
+  data_sharing::GroupMember self;
+  self.gaia_id = account.gaia;
+  self.role = data_sharing::MemberRole::kOwner;
+  GroupData group_data =
+      GroupData(kGroupId, /*display_name=*/"",
+                /*members=*/{self}, /*former_members=*/{}, kAccessToken);
+  std::move(callback).Run(group_data);
+
   // Fix this to expect error when SDK implementation is done.
-  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kAddingUserToGroup);
+  EXPECT_EQ(controller_->GetStateForTesting(),
+            StateId::kWaitingForSyncAndDataSharingGroup);
 }
 
 TEST_F(CollaborationControllerTest, PreviewDataUrlInvalidFailure) {
@@ -458,9 +485,8 @@ TEST_F(CollaborationControllerTest, PreviewDataUrlInvalidFailure) {
                               SharedDataPreviewOrFailureOutcome&)>
       preview_callback;
   EXPECT_CALL(*data_sharing_service_,
-              GetSharedEntitiesPreview(
-                  GroupToken(data_sharing::GroupId(kGroupId), kAccessToken),
-                  IsNotNullCallback()))
+              GetSharedEntitiesPreview(GroupToken(kGroupId, kAccessToken),
+                                       IsNotNullCallback()))
       .WillOnce(MoveArg<1>(&preview_callback));
   controller_->SetStateForTesting(StateId::kAddingUserToGroup);
   base::OnceCallback<void(Outcome)> error_ui_callback;
@@ -556,9 +582,8 @@ TEST_F(CollaborationControllerTest, AuthenticationCanceledAfterSignIn) {
                               SharedDataPreviewOrFailureOutcome&)>
       preview_callback;
   EXPECT_CALL(*data_sharing_service_,
-              GetSharedEntitiesPreview(
-                  GroupToken(data_sharing::GroupId(kGroupId), kAccessToken),
-                  IsNotNullCallback()))
+              GetSharedEntitiesPreview(GroupToken(kGroupId, kAccessToken),
+                                       IsNotNullCallback()))
       .WillOnce(MoveArg<1>(&preview_callback));
   EXPECT_CALL(*delegate_, ShowJoinDialog(_, _, IsNotNullCallback()))
       .WillOnce(MoveArg<2>(&join_ui_callback));
@@ -686,17 +711,17 @@ TEST_F(CollaborationControllerTest, FullShareFlowAllStates) {
       .WillOnce(Return(tab_group));
   tab_groups::TabGroupSyncService::TabGroupSharingCallback
       tab_group_sharing_callback;
-  EXPECT_CALL(*tab_group_sync_service_,
-              MakeTabGroupShared(local_id, kGroupId, IsNotNullCallback()))
+  EXPECT_CALL(
+      *tab_group_sync_service_,
+      MakeTabGroupShared(local_id, kGroupId.value(), IsNotNullCallback()))
       .WillOnce(MoveArg<2>(&tab_group_sharing_callback));
   base::OnceCallback<void(
       const data_sharing::DataSharingService::GroupDataOrFailureOutcome&)>
       group_data_callback;
-  data_sharing::GroupId group_id(kGroupId);
   EXPECT_CALL(*data_sharing_service_,
-              ReadGroupDeprecated(group_id, IsNotNullCallback()))
+              ReadGroupDeprecated(kGroupId, IsNotNullCallback()))
       .WillOnce(MoveArg<1>(&group_data_callback));
-  data_sharing::GroupToken token(group_id, kAccessToken);
+  data_sharing::GroupToken token(kGroupId, kAccessToken);
   std::move(share_dialog_callback).Run(Outcome::kSuccess, token);
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kMakingTabGroupShared);
 
@@ -705,9 +730,9 @@ TEST_F(CollaborationControllerTest, FullShareFlowAllStates) {
   EXPECT_CALL(*data_sharing_service_, GetDataSharingUrl(_))
       .WillOnce(Return(std::make_unique<GURL>(url)));
   EXPECT_CALL(*delegate_,
-              OnUrlReadyToShare(group_id, GURL(url), IsNotNullCallback()));
+              OnUrlReadyToShare(kGroupId, GURL(url), IsNotNullCallback()));
   GroupData group_data =
-      GroupData(group_id, /*display_name=*/"",
+      GroupData(kGroupId, /*display_name=*/"",
                 /*members=*/{}, /*former_members=*/{}, kAccessToken);
   std::move(group_data_callback).Run(group_data);
   std::move(tab_group_sharing_callback)
@@ -742,8 +767,7 @@ TEST_F(CollaborationControllerTest, CheckingFlowRequirementsManageFlow) {
                           tab_groups::TabGroupColorId::kGrey, {});
   tab_group.SetLocalGroupId(local_id);
   // Simulate that the tab group exists locally and is a shared tab group.
-  tab_group.SetCollaborationId(
-      tab_groups::CollaborationId(std::string(kGroupId)));
+  tab_group.SetCollaborationId(tab_groups::CollaborationId(kGroupId.value()));
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(either_id))
       .WillRepeatedly(Return(tab_group));
 

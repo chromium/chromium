@@ -73,7 +73,6 @@ void SunfishScannerFeatureWatcher::OnActiveUserPrefServiceChanged(
                           weak_ptr_factory_.GetWeakPtr());
 
   // Sunfish prefs:
-  pref_change_registrar_.Add(prefs::kSunfishEnabled, update_feature_states);
   pref_change_registrar_.Add(lens::prefs::kLensOverlaySettings,
                              update_feature_states);
   pref_change_registrar_.Add(lens::prefs::kGenAiLensOverlaySettings,

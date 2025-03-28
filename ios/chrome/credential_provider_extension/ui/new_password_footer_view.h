@@ -9,7 +9,7 @@
 
 @interface NewPasswordFooterView : UITableViewHeaderFooterView
 
-// ReuseID for ths class.
+// ReuseID for this class.
 @property(class, readonly) NSString* reuseID;
 
 @end

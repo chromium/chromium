@@ -23,10 +23,12 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.Account;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.AnalyzeAttachment;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.AvailabilityRequest;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.AvailabilityResponse;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.Capability;
+import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.ClientInfo;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.File;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.LaunchRequest;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.SummarizeUrl;
@@ -36,8 +38,11 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -142,7 +147,7 @@ public class AiAssistantService {
         if (!isTabElegible(tab)) return;
 
         Futures.addCallback(
-                requestAvailabilityFromService(context),
+                requestAvailabilityFromService(context, tab.getProfile()),
                 new FutureCallback<@Nullable Boolean>() {
                     @Override
                     public void onSuccess(@Nullable Boolean result) {
@@ -170,7 +175,7 @@ public class AiAssistantService {
 
         if (!mIsInitialized) {
             // Request availability.
-            var initFuture = initialize(context);
+            var initFuture = initialize(context, tab.getProfile());
             // If after requesting we are still not initialized that means that we queried the
             // system service, return false as it's an async process.
             if (!initFuture.isDone()) {
@@ -189,7 +194,7 @@ public class AiAssistantService {
         return false;
     }
 
-    private ListenableFuture<Boolean> initialize(Context context) {
+    private ListenableFuture<Boolean> initialize(Context context, Profile profile) {
         if (mIsInitializing) {
             return Futures.immediateFuture(false);
         }
@@ -205,14 +210,14 @@ public class AiAssistantService {
             }
             case PrefLoadingResult.NOT_AVAILABLE -> {
                 // Request availability from system provider if cache is empty.
-                return requestAvailabilityFromService(context);
+                return requestAvailabilityFromService(context, profile);
             }
             case PrefLoadingResult.EXPIRED -> {
                 mIsInitializing = false;
                 mIsInitialized = true;
                 // If the cache is expired then use its results one last time, and query the
                 // provider to refresh the results in the background.
-                requestAvailabilityFromService(context);
+                requestAvailabilityFromService(context, profile);
                 return Futures.immediateFuture(true);
             }
             default -> throw new IllegalStateException(
@@ -220,13 +225,22 @@ public class AiAssistantService {
         }
     }
 
-    private ListenableFuture<Boolean> requestAvailabilityFromService(Context context) {
-        var availabilityRequest =
+    private ListenableFuture<Boolean> requestAvailabilityFromService(
+            Context context, Profile profile) {
+        var availabilityRequestBuilder =
                 AvailabilityRequest.newBuilder()
                         .addRequestedCapabilities(Capability.ANALYZE_ATTACHMENT_CAPABILITY)
-                        .addRequestedCapabilities(Capability.SUMMARIZE_URL_CAPABILITY)
-                        .build();
-        var availabilityFuture = mSystemAiProvider.isAvailable(context, availabilityRequest);
+                        .addRequestedCapabilities(Capability.SUMMARIZE_URL_CAPABILITY);
+
+        if (shouldAttachClientInfo()) {
+            var accountEmail = getAccountEmail(profile);
+            if (accountEmail != null) {
+                availabilityRequestBuilder.setClientInfo(getClientInfo(accountEmail));
+            }
+        }
+
+        var availabilityFuture =
+                mSystemAiProvider.isAvailable(context, availabilityRequestBuilder.build());
         var catchingFuture =
                 Futures.catching(
                         availabilityFuture,
@@ -339,7 +353,7 @@ public class AiAssistantService {
                 && mIsAnalyzeAttachmentAvailable) {
             sendLaunchRequest(
                     context,
-                    getLaunchRequestForAnalyzeAttachment(pdfPage),
+                    getLaunchRequestForAnalyzeAttachment(tab, pdfPage),
                     /* shouldUseSystemProvider= */ mIsSystemAiProviderAvailable
                             && mIsAnalyzeAttachmentAvailable);
         } else if (isTabWebPage(tab) && mIsSummarizeAvailable) {
@@ -393,7 +407,14 @@ public class AiAssistantService {
                 && tab.getWebContents() != null;
     }
 
-    private LaunchRequest getLaunchRequestForAnalyzeAttachment(PdfPage pdfPage) {
+    private boolean shouldAttachClientInfo() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
+                "attach_client_info",
+                false);
+    }
+
+    private LaunchRequest getLaunchRequestForAnalyzeAttachment(Tab tab, PdfPage pdfPage) {
         assert pdfPage.getUri() != null;
         var file =
                 File.newBuilder()
@@ -401,19 +422,51 @@ public class AiAssistantService {
                         .setDisplayName(pdfPage.getTitle())
                         .setMimeType("application/pdf");
         var analyzeAttachment = AnalyzeAttachment.newBuilder().addFiles(file);
-        var launchRequest =
-                LaunchRequest.newBuilder().setAnalyzeAttachment(analyzeAttachment).build();
+        var launchRequestBuilder =
+                LaunchRequest.newBuilder().setAnalyzeAttachment(analyzeAttachment);
+        maybeAttachClientInfoToLaunchRequest(launchRequestBuilder, tab.getProfile());
 
-        return launchRequest;
+        return launchRequestBuilder.build();
     }
 
     private LaunchRequest getLaunchRequestForSummarizeUrl(Tab tab, String innerText) {
         var urlContext =
                 UrlContext.newBuilder().setUrl(tab.getUrl().getSpec()).setPageContent(innerText);
         var summarizeUrl = SummarizeUrl.newBuilder().setUrlContext(urlContext);
-        var launchRequest = LaunchRequest.newBuilder().setSummarizeUrl(summarizeUrl).build();
+        var launchRequestBuilder = LaunchRequest.newBuilder().setSummarizeUrl(summarizeUrl);
+        maybeAttachClientInfoToLaunchRequest(launchRequestBuilder, tab.getProfile());
 
-        return launchRequest;
+        return launchRequestBuilder.build();
+    }
+
+    private void maybeAttachClientInfoToLaunchRequest(
+            LaunchRequest.Builder builder, Profile profile) {
+        if (!shouldAttachClientInfo()) {
+            return;
+        }
+
+        var accountEmail = getAccountEmail(profile);
+
+        if (accountEmail == null) return;
+
+        builder.setClientInfo(getClientInfo(accountEmail));
+    }
+
+    private ClientInfo getClientInfo(String accountEmail) {
+        var account = Account.newBuilder();
+        account.setEmail(accountEmail);
+        var clientInfo = ClientInfo.newBuilder().addClientAccount(account);
+        return clientInfo.build();
+    }
+
+    private @Nullable String getAccountEmail(Profile profile) {
+        var identityManager = IdentityServicesProvider.get().getIdentityManager(profile);
+        if (identityManager == null) return null;
+
+        var accountInfo = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        if (accountInfo == null) return null;
+
+        return accountInfo.getEmail();
     }
 
     private void sendLaunchRequest(

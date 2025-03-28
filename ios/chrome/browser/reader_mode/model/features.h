@@ -12,6 +12,9 @@
 // an approximation of when the Reader Mode UI will be available.
 BASE_DECLARE_FEATURE(kEnableReaderModeDistillerHeuristic);
 
+// Feature to enable Reader Mode page distillation.
+BASE_DECLARE_FEATURE(kEnableReaderModeDistiller);
+
 // Name to configure the page load probability.
 extern const char kReaderModeDistillerPageLoadProbabilityName[];
 // Configurable rate from (0, 1] at which to trigger the distiller heuristic.

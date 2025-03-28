@@ -870,10 +870,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     transition_ = MakeGarbageCollected<NavigationTransition>(
         window_, navigation_type, currentEntry());
     navigate_event->MaybeCommitImmediately(script_state);
-  }
-
-  if (navigate_event->HasNavigationActions() ||
-      params->event_type != NavigateEventType::kCrossDocument) {
+  } else if (params->event_type != NavigateEventType::kCrossDocument) {
     navigate_event->React(script_state);
   }
 

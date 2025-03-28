@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
-import org.chromium.chrome.browser.price_tracking.PriceTrackingState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
@@ -23,16 +22,16 @@ import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 public class PriceInsightsDelegateImpl implements PriceInsightsDelegate {
 
     private final Context mContext;
-    private final ObservableSupplier<PriceTrackingState> mPriceTrackingStateSupplier;
+    private final ObservableSupplier<Boolean> mPriceTrackingStateSupplier;
 
     public PriceInsightsDelegateImpl(
-            Context context, ObservableSupplier<PriceTrackingState> priceTrackingStateSupplier) {
+            Context context, ObservableSupplier<Boolean> priceTrackingStateSupplier) {
         mContext = context;
         mPriceTrackingStateSupplier = priceTrackingStateSupplier;
     }
 
     @Override
-    public ObservableSupplier<PriceTrackingState> getPriceTrackingStateSupplier(Tab tab) {
+    public ObservableSupplier<Boolean> getPriceTrackingStateSupplier(Tab tab) {
         return mPriceTrackingStateSupplier;
     }
 

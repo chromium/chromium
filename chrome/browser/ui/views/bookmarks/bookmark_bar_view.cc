@@ -1150,9 +1150,18 @@ void BookmarkBarView::BookmarkMenuControllerDeleted(
 }
 
 void BookmarkBarView::BookmarkMergedSurfaceServiceLoaded() {
-  // There should be no buttons. If non-zero it means Load was invoked more than
-  // once, or we didn't properly clear things. Either of which shouldn't happen.
-  // The actual bookmark buttons are added from Layout().
+  // Ensures this method is executed only once, as it can be triggered both
+  // directly during initialization and indirectly via a notification from
+  // BookmarkMergedSurfaceService. This happens when another
+  // BookmarkMergedSurfaceServiceObserver triggers the creation of the bookmark
+  // bar, as seen with `BookmarkRestorer::BookmarkMergedSurfaceServiceLoaded`.
+  if (bookmark_service_loaded_signal_processed_) {
+    return;
+  }
+  bookmark_service_loaded_signal_processed_ = true;
+
+  // There should be no buttons. If non-zero it means we didn't properly clear
+  // things. The actual bookmark buttons are added from Layout().
   DCHECK(bookmark_buttons_.empty());
   const std::u16string all_bookmarks_button_text =
       l10n_util::GetStringUTF16(IDS_BOOKMARKS_ALL_BOOKMARKS);

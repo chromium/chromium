@@ -27,27 +27,121 @@ chrome.test.runTests([
   },
 
   // Test that annotation mode can be set.
+  // TODO (crbug.com/402547554): Remove this test once text annotations
+  // launches, since it will be fully covered by the test below.
   async function testSetAnnotationMode() {
     mockMetricsPrivate.reset();
 
+    // Disable text annotations.
+    loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': false});
+    viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
+    await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
 
-    viewer.$.toolbar.setAnnotationMode(AnnotationMode.DRAW);
+    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
     await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
     mockMetricsPrivate.assertCount(UserAction.ENTER_INK2_ANNOTATION_MODE, 1);
 
-    viewer.$.toolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
     await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
     mockMetricsPrivate.assertCount(UserAction.EXIT_INK2_ANNOTATION_MODE, 1);
     chrome.test.succeed();
   },
 
+  // Test that annotation modes can be set when text annotations are enabled.
+  async function testSetAnnotationModeTextEnabled() {
+    mockMetricsPrivate.reset();
+
+    // Enable text annotations.
+    loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': true});
+    viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
+    await microtasksFinished();
+
+    function assertMetrics(expected: {
+      ink2: {enter: number, exit: number},
+      text: {enter: number, exit: number},
+      sidepanel: number,
+    }) {
+      mockMetricsPrivate.assertCount(
+          UserAction.ENTER_INK2_ANNOTATION_MODE, expected.ink2.enter);
+      mockMetricsPrivate.assertCount(
+          UserAction.ENTER_INK2_TEXT_ANNOTATION_MODE, expected.text.enter);
+      mockMetricsPrivate.assertCount(
+          UserAction.EXIT_INK2_ANNOTATION_MODE, expected.ink2.exit);
+      mockMetricsPrivate.assertCount(
+          UserAction.EXIT_INK2_TEXT_ANNOTATION_MODE, expected.text.exit);
+
+      // Also confirm that the side panel metrics get recorded.
+      mockMetricsPrivate.assertCount(
+          UserAction.OPEN_INK2_SIDE_PANEL, expected.sidepanel);
+      mockMetricsPrivate.assertCount(UserAction.OPEN_INK2_BOTTOM_TOOLBAR, 0);
+    }
+
+    // Initial state, no metrics recorded.
+    assertMetrics(
+        {ink2: {enter: 0, exit: 0}, text: {enter: 0, exit: 0}, sidepanel: 0});
+    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+
+    // NONE -> TEXT
+    viewerToolbar.setAnnotationMode(AnnotationMode.TEXT);
+    await microtasksFinished();
+    chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
+    assertMetrics(
+        {ink2: {enter: 0, exit: 0}, text: {enter: 1, exit: 0}, sidepanel: 1});
+
+    // TEXT -> NONE
+    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    await microtasksFinished();
+    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    assertMetrics(
+        {ink2: {enter: 0, exit: 0}, text: {enter: 1, exit: 1}, sidepanel: 1});
+
+    // NONE -> DRAW
+    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
+    await microtasksFinished();
+    chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
+    assertMetrics(
+        {ink2: {enter: 1, exit: 0}, text: {enter: 1, exit: 1}, sidepanel: 2});
+
+    // DRAW -> TEXT
+    viewerToolbar.setAnnotationMode(AnnotationMode.TEXT);
+    await microtasksFinished();
+    chrome.test.assertEq(AnnotationMode.TEXT, viewerToolbar.annotationMode);
+    // Back and forth between draw and text doesn't increment sidepanel entry
+    // metric.
+    assertMetrics(
+        {ink2: {enter: 1, exit: 1}, text: {enter: 2, exit: 1}, sidepanel: 2});
+
+    // TEXT -> DRAW
+    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
+    await microtasksFinished();
+    chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
+    assertMetrics(
+        {ink2: {enter: 2, exit: 1}, text: {enter: 2, exit: 2}, sidepanel: 2});
+
+    // DRAW -> NONE
+    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    await microtasksFinished();
+    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    assertMetrics(
+        {ink2: {enter: 2, exit: 2}, text: {enter: 2, exit: 2}, sidepanel: 2});
+
+    chrome.test.succeed();
+  },
+
   // Test that the side panel is shown when annotation mode is enabled and
   // hidden when annotation mode is disabled.
+  // TODO (crbug.com/402547554): Remove this test once text annotations
+  // launches, since it will be fully covered by the test below.
   async function testSidePanelVisible() {
     mockMetricsPrivate.reset();
+
+    // Disable text annotations.
+    loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': false});
+    viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
+    await microtasksFinished();
 
     chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
 
@@ -68,6 +162,49 @@ chrome.test.runTests([
     // The side panel should be hidden when annotation mode is disabled.
     chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
     chrome.test.assertFalse(isVisible(sidePanel));
+
+    chrome.test.succeed();
+  },
+
+  // Test that the correct side panel is shown for the annotation mode when
+  // text annotations are enabled.
+  async function testSidePanelVisibleTextEnabled() {
+    mockMetricsPrivate.reset();
+
+    // Enable text annotations.
+    loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': true});
+    viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
+    await microtasksFinished();
+
+    const drawPanelQuery = 'viewer-side-panel';
+    const textPanelQuery = `div[page-name="${AnnotationMode.TEXT}"]`;
+
+    // Panels are not in the DOM in NONE annotation mode.
+    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(textPanelQuery));
+    chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(drawPanelQuery));
+
+    // In text mode, only the text panel is visible.
+    viewerToolbar.setAnnotationMode(AnnotationMode.TEXT);
+    await microtasksFinished();
+    const drawPanel = viewer.shadowRoot.querySelector(drawPanelQuery);
+    const textPanel = viewer.shadowRoot.querySelector(textPanelQuery);
+    chrome.test.assertTrue(!!drawPanel);
+    chrome.test.assertTrue(!!textPanel);
+    chrome.test.assertFalse(isVisible(drawPanel));
+    chrome.test.assertTrue(isVisible(textPanel));
+
+    // In draw mode, only the draw panel is visible.
+    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
+    await microtasksFinished();
+    chrome.test.assertTrue(isVisible(drawPanel));
+    chrome.test.assertFalse(isVisible(textPanel));
+
+    // Both removed from the DOM again when annotation mode is disabled.
+    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    await microtasksFinished();
+    chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(textPanelQuery));
+    chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(drawPanelQuery));
 
     chrome.test.succeed();
   },

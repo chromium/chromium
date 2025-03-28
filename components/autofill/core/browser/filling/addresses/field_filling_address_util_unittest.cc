@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/transliterator.h"
 #include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
 #include "components/autofill/core/browser/data_quality/addresses/address_normalizer_impl.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -864,7 +865,10 @@ struct AlternativeNameFillingTestCase {
 class AlternativeNameFillingTest
     : public FieldFillingAddressUtilTest,
       public testing::WithParamInterface<
-          std::tuple<FieldType, AlternativeNameFillingTestCase>> {};
+          std::tuple<FieldType, AlternativeNameFillingTestCase>> {
+ public:
+  AlternativeNameFillingTest() { ClearCachedTransliterators(); }
+};
 
 TEST_P(AlternativeNameFillingTest, FillAlternativeName) {
   base::test::ScopedFeatureList features{

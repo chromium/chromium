@@ -11,6 +11,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
@@ -24,18 +25,27 @@ class MockAutofillAiDelegate : public AutofillAiDelegate {
               GetSuggestions,
               (autofill::FormGlobalId, autofill::FieldGlobalId),
               (override));
-  MOCK_METHOD(bool, MaybeImportForm, (const FormStructure&), (override));
+  MOCK_METHOD(bool,
+              OnFormSubmitted,
+              (const FormStructure&, ukm::SourceId),
+              (override));
   MOCK_METHOD(bool,
               ShouldDisplayIph,
               (autofill::FormGlobalId, autofill::FieldGlobalId),
               (const override));
   MOCK_METHOD(void,
               OnSuggestionsShown,
-              (const DenseSet<SuggestionType>&, const FormGlobalId&),
+              (const FormStructure&, const AutofillField&, ukm::SourceId),
               (override));
   MOCK_METHOD(void, OnFormSeen, (const FormStructure&), (override));
-  MOCK_METHOD(void, OnDidFillSuggestion, (FormGlobalId), (override));
-  MOCK_METHOD(void, OnEditedAutofilledField, (FormGlobalId), (override));
+  MOCK_METHOD(void,
+              OnDidFillSuggestion,
+              (const FormStructure&, const AutofillField&, ukm::SourceId),
+              (override));
+  MOCK_METHOD(void,
+              OnEditedAutofilledField,
+              (const FormStructure&, const AutofillField&, ukm::SourceId),
+              (override));
 };
 
 }  // namespace autofill

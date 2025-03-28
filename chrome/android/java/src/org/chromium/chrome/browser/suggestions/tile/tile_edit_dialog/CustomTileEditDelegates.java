@@ -14,7 +14,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/** Interfaces to decouple Coordinator / Mediator / View for the Most Visited Tile Edit Dialog. */
+/** Interfaces to decouple Coordinator / Mediator / View for the Custom Tile Edit Dialog. */
 @NullMarked
 class CustomTileEditDelegates {
     @IntDef({

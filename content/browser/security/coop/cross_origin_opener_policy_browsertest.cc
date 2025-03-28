@@ -4581,6 +4581,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 // BrowsingInstance swap required by COOP).
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                        NoExtraProcessSwapFromDiscardedSpeculativeRFH) {
+  base::HistogramTester histogram_tester;
   if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
     IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
                              {url::Origin::Create(GURL("https://b.test/"))});
@@ -4639,6 +4640,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // it cannot be reused, and we end up creating a new speculative RFH and
   // destroying the original one.
   EXPECT_TRUE(speculative_rfh.IsDestroyed());
+
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.ProcessReuseOnCOOP.DifferentSiteInstance", true, 1);
 }
 
 // Ensure that same-site navigations that result in a COOP mismatch avoid an
@@ -4646,6 +4650,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 // BrowsingContextGroup of size 1 (in this case, in the same WebContents).
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                        NoExtraProcessSwapFromSameSiteCOOPMismatch) {
+  base::HistogramTester histogram_tester;
   GURL url_1(https_server()->GetURL("a.test", "/empty.html"));
   GURL url_2(https_server()->GetURL(
       "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin"));
@@ -4706,8 +4711,19 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                     ->GetProcess()
                     ->GetProcessLock()
                     .is_locked_to_site());
+    histogram_tester.ExpectUniqueSample("Navigation.ProcessReuseOnCOOP.None",
+                                        false, 1);
   } else {
     EXPECT_EQ(rph_id_2, rph_id_3);
+
+    if (IsBackForwardCacheEnabled() || ShouldCreateNewHostForAllFrames()) {
+      histogram_tester.ExpectUniqueSample(
+          "Navigation.ProcessReuseOnCOOP.DifferentSiteInstance", true, 1);
+    } else {
+      histogram_tester.ExpectUniqueSample(
+          "Navigation.ProcessReuseOnCOOP.SameSiteNavigationInSingleWebContents",
+          true, 1);
+    }
   }
 }
 
@@ -4715,6 +4731,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 // one COOP page to another COOP page.
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                        NavigatingFromCOOPToCOOPHasNoExtraProcessCreation) {
+  base::HistogramTester histogram_tester;
   GURL url_1(https_server()->GetURL(
       "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin"));
   GURL url_2(https_server()->GetURL(
@@ -4723,6 +4740,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // Navigate to a COOP URL.
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
   int rph_id_1 = current_frame_host()->GetProcess()->GetDeprecatedID();
+  histogram_tester.ExpectUniqueSample("Navigation.ProcessReuseOnCOOP.None",
+                                      false, 1);
 
   // Start a navigation to another same-site COOP URL.
   TestNavigationManager navigation(web_contents(), url_2);
@@ -4774,6 +4793,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 // fresh process.
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                        NoProcessReuseForSameSiteCOOPMismatchInPopup) {
+  base::HistogramTester histogram_tester;
   GURL url_1(https_server()->GetURL("a.test", "/empty.html"));
   GURL url_2(https_server()->GetURL(
       "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin"));
@@ -4796,6 +4816,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   int rph_id_2 =
       popup_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
   EXPECT_NE(rph_id_1, rph_id_2);
+  histogram_tester.ExpectUniqueSample("Navigation.ProcessReuseOnCOOP.None",
+                                      false, 1);
 }
 
 // Tests the behavior around COOP BrowsingInstance swap when prerendering a COOP
@@ -4803,6 +4825,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 // Regression test for crbug.com/1519131.
 IN_PROC_BROWSER_TEST_P(ProcessReuseOnPrerenderCOOPSwapBrowserTest,
                        COOPSwapForPrerenderingCOOPPage) {
+  base::HistogramTester histogram_tester;
   GURL initial_page(https_server()->GetURL("a.test", "/empty.html"));
   GURL prerender_page(https_server()->GetURL(
       "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin"));
@@ -4858,6 +4881,8 @@ IN_PROC_BROWSER_TEST_P(ProcessReuseOnPrerenderCOOPSwapBrowserTest,
   EXPECT_NE(bi_token_2, bi_token_3);
   // Renderer process is reused.
   EXPECT_EQ(rph_id_2, rph_id_3);
+  histogram_tester.ExpectUniqueSample("Navigation.ProcessReuseOnCOOP.Prerender",
+                                      true, 1);
 }
 
 // TODO(crbug.com/40138297). Test inheritance of the virtual browsing

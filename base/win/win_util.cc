@@ -1255,17 +1255,6 @@ ScopedDomainStateForTesting::~ScopedDomainStateForTesting() {
   *GetDomainEnrollmentStateStorage() = initial_state_;
 }
 
-ScopedDeviceRegisteredWithManagementForTesting::
-    ScopedDeviceRegisteredWithManagementForTesting(bool state)
-    : initial_state_(IsDeviceRegisteredWithManagement()) {
-  *GetRegisteredWithManagementStateStorage() = state;
-}
-
-ScopedDeviceRegisteredWithManagementForTesting::
-    ~ScopedDeviceRegisteredWithManagementForTesting() {
-  *GetRegisteredWithManagementStateStorage() = initial_state_;
-}
-
 ScopedAzureADJoinStateForTesting::ScopedAzureADJoinStateForTesting(bool state)
     : initial_state_(std::exchange(*GetAzureADJoinStateStorage(), state)) {}
 

@@ -88,12 +88,12 @@ export class SignInPromoElement extends SignInPromoElementBase {
 
   private browserProxy_: IntroBrowserProxy =
       IntroBrowserProxyImpl.getInstance();
-  protected benefitCards_: BenefitCard[];
+  protected accessor benefitCards_: BenefitCard[];
   private divisionLineResizeObserver_: ResizeObserver|null = null;
-  protected managedDeviceDisclaimer_: string = '';
-  protected isDeviceManaged_: boolean =
+  protected accessor managedDeviceDisclaimer_: string = '';
+  protected accessor isDeviceManaged_: boolean =
       loadTimeData.getBoolean('isDeviceManaged');
-  private anyButtonClicked_: boolean = false;
+  private accessor anyButtonClicked_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();

@@ -65,6 +65,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_zwp_relative_pointer_manager.h"
 #include "ui/ozone/platform/wayland/host/xdg_activation.h"
 #include "ui/ozone/platform/wayland/host/xdg_foreign_wrapper.h"
+#include "ui/ozone/platform/wayland/host/xdg_session_manager.h"
 #include "ui/ozone/platform/wayland/host/zwp_idle_inhibit_manager.h"
 #include "ui/ozone/platform/wayland/host/zwp_primary_selection_device_manager.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
@@ -193,6 +194,8 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
                               &ZwpIdleInhibitManager::Instantiate);
   RegisterGlobalObjectFactory(ZwpPrimarySelectionDeviceManager::kInterfaceName,
                               &ZwpPrimarySelectionDeviceManager::Instantiate);
+  RegisterGlobalObjectFactory(XdgSessionManager::kInterfaceName,
+                              &XdgSessionManager::Instantiate);
 
   display_.reset(wl_display_connect(nullptr));
   if (!display_) {
@@ -502,6 +505,11 @@ bool WaylandConnection::UsePerSurfaceScaling() const {
 bool WaylandConnection::IsUiScaleEnabled() const {
   return base::FeatureList::IsEnabled(features::kWaylandUiScale) &&
          UsePerSurfaceScaling();
+}
+
+bool WaylandConnection::SupportsSessionManagement() const {
+  return base::FeatureList::IsEnabled(features::kWaylandSessionManagement) &&
+         !!session_manager_;
 }
 
 bool WaylandConnection::ShouldUseOverlayDelegation() const {
