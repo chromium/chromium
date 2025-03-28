@@ -77,7 +77,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kErrorMessage);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOpenLanguageSettings);
 
-  TranslateBubbleView(views::View* anchor_view,
+  TranslateBubbleView(const base::WeakPtr<actions::ActionItem> action_item,
+                      views::View* anchor_view,
                       std::unique_ptr<TranslateBubbleModel> model,
                       translate::TranslateErrors error_type,
                       content::WebContents* web_contents,
