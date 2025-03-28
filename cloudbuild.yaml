@@ -105,7 +105,7 @@ steps:
             cd /workspace/hopium/src
   
             # Define args
-            GN_ARGS_MULTILINE=$(cat <<EOF
+            GN_ARGS_MULTILINE=$$(cat <<EOF
             is_component_build=false
             is_debug=false
             is_official_build=true
@@ -123,7 +123,7 @@ steps:
             enable_media_foundation=true
             EOF
             )
-            GN_ARGS=$(echo "$GN_ARGS_MULTILINE" | tr '\n' ' ' | sed 's/^ *//;s/ *$//')
+            GN_ARGS=$$(echo "$GN_ARGS_MULTILINE" | tr '\n' ' ' | sed 's/^ *//;s/ *$//')
   
             mkdir -p out/Debug
             /workspace/depot_tools/gn gen out/Debug --args="$GN_ARGS"
