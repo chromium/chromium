@@ -651,6 +651,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter architecture
 [Worker]     getter description
 [Worker]     getter device
+[Worker]     getter isFallbackAdapter
 [Worker]     getter subgroupMaxSize
 [Worker]     getter subgroupMinSize
 [Worker]     getter vendor

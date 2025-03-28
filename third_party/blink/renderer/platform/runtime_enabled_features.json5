@@ -5035,6 +5035,10 @@
       public: true,
     },
     {
+      name: "WebGPUAdapterInfoIsFallbackAdapter",
+      status: "stable",
+    },
+    {
       // WebGPU developer features are deliberately not enabled by experimental
       // web platform features.
       name: "WebGPUDeveloperFeatures",
