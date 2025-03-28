@@ -1608,6 +1608,8 @@ TEST_F(BocaAppPageHandlerTest, UpdateNonEmptyStudentActivitySucceed) {
   EXPECT_EQ(2u, result.size());
   // Verify only first device added.
   EXPECT_EQ("1", result[0]->id);
+  EXPECT_EQ(mojom::StudentStatusDetail::kActive,
+            result[0]->activity->student_status_detail);
   EXPECT_FALSE(result[0]->activity->is_active);
   EXPECT_EQ("google", result[0]->activity->active_tab);
   // Connection code should be set
