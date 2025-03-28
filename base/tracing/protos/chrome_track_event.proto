@@ -1677,6 +1677,7 @@ message ScrollMetrics {
 //
 // All data comes from MotionEvent getters so read these for more context:
 // https://developer.android.com/reference/android/view/MotionEvent
+// Next id: 9
 message EventForwarder {
   // The events getHistorySize().
   optional int32 history_size = 1;
@@ -1684,6 +1685,9 @@ message EventForwarder {
   optional int64 oldest_time_ns = 2;
   // The time of the newest event (getEventTimeNanos(0)).
   optional int64 latest_time_ns = 5;
+  // The down time of event gotten from `MotionEvent.GetDownTime` or
+  // `AMotionEvent_getDownTime`.
+  optional int64 down_time_ns = 8;
   // The X coordinate of the event as reported by MotionEvent.getX().
   optional float x_pixel = 3;
   // The Y coordinate of the event as reported by MotionEvent.getY().

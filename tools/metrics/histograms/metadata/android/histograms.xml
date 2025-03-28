@@ -2357,6 +2357,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.InputOnViz.Browser.SequenceDroppedReason"
+    enum="InputOnVizSequenceDroppedReason" expires_after="2025-06-30">
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    Records the reason a touch sequence was dropped on browser process while
+    InputOnViz was enabled. A dropped touch sequence would have not have any
+    affect on web contents, the input events never get transferred over to
+    Renderer for such a sequence.
+
+    `Android.InputOnViz.Browser.EventTypesInDroppedSequence` and
+    `Android.InputOnViz.Browser.NumEventsInDroppedSequence` could be used to
+    know what type of events exist in dropped sequences and the number of events
+    in these dropped sequences.
+  </summary>
+</histogram>
+
 <histogram name="Android.InputOnViz.Browser.TouchMovesSeenAfterTransfer"
     units="counts" expires_after="2025-09-14">
   <owner>kartarsingh@google.com</owner>

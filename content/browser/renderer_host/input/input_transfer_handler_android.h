@@ -64,6 +64,8 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
       "Android.InputOnViz.Browser.NumEventsInDroppedSequence";
   static constexpr const char* kEventTypesInDroppedSequenceHistogram =
       "Android.InputOnViz.Browser.EventTypesInDroppedSequence";
+  static constexpr const char* kTouchSequenceDroppedReasonHistogram =
+      "Android.InputOnViz.Browser.SequenceDroppedReason";
 
   bool touch_transferred() {
     return handler_state_ == HandlerState::kConsumeEventsUntilCancel;
@@ -95,6 +97,21 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   void Reset();
   void OnTouchTransferredSuccessfully(const ui::MotionEventAndroid& event,
                                       bool browser_would_have_handled);
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(InputOnVizSequenceDroppedReason)
+  enum class InputOnVizSequenceDroppedReason {
+    kActiveSeqOnVizAbnormalDownTime = 0,
+    kFailedToTransferPotentialPointer = 1,
+    kMaxValue = kFailedToTransferPotentialPointer,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:InputOnVizSequenceDroppedReason)
+
+  void OnStartDroppingSequence(const ui::MotionEventAndroid& event,
+                               InputOnVizSequenceDroppedReason reason);
+
   void DropCurrentSequence(const ui::MotionEventAndroid& event);
   void ConsumeEventsUntilCancel(const ui::MotionEventAndroid& event);
 

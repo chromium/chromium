@@ -77,13 +77,35 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
     return false;
   }
 
+  const bool active_touch_sequence_on_viz =
+      cached_transferred_sequence_down_time_ms_ > last_seen_touch_end_ts_;
+
   // GetDownTime is in milliseconds precision, convert delta to milliseconds
   // precision as well for accurate comparison.
   const int64_t delta =
       (event.GetEventTime() - event.GetDownTime()).InMilliseconds();
-  CHECK_GE(delta, 0);
+  if (delta < 0) {
+    // TODO(crbug.com/406485568): Investigate this negative delta and
+    // potentially file an Android platform bug.
+    TRACE_EVENT_INSTANT("input", "DownTimeAfterEventTime");
+    base::UmaHistogramEnumeration(
+        kTransferInputToVizResultHistogram,
+        TransferInputToVizResult::kDownTimeAfterEventTime);
+    if (active_touch_sequence_on_viz) {
+      OnStartDroppingSequence(
+          event,
+          InputOnVizSequenceDroppedReason::kActiveSeqOnVizAbnormalDownTime);
+      return true;
+    }
+    // Let browser handle this sequence.
+    return false;
+  }
+
   const bool is_transferred_back_sequence = delta > 0;
   if (is_transferred_back_sequence) {
+    base::UmaHistogramEnumeration(
+        kTransferInputToVizResultHistogram,
+        TransferInputToVizResult::kSequenceTransferredBackFromViz);
     // We don't want to retransfer this sequence which was transferred back from
     // Viz.
     return false;
@@ -102,9 +124,6 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
     OnTouchTransferredSuccessfully(event, /*browser_would_have_handled=*/false);
     return true;
   }
-
-  const bool active_touch_sequence_on_viz =
-      cached_transferred_sequence_down_time_ms_ > last_seen_touch_end_ts_;
 
   if (!active_touch_sequence_on_viz) {
     return false;
@@ -132,9 +151,9 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
     }
   }
 
-  CHECK_EQ(handler_state_, HandlerState::kIdle);
-  handler_state_ = HandlerState::kDroppingCurrentSequence;
-  DropCurrentSequence(event);
+  OnStartDroppingSequence(
+      event,
+      InputOnVizSequenceDroppedReason::kFailedToTransferPotentialPointer);
 
   // Consume events for a potential pointer sequence that failed to transfer, to
   // not have Browser and Viz both sending touch sequences to Renderer at the
@@ -161,6 +180,15 @@ void InputTransferHandlerAndroid::RequestInputBack() {
 
 void InputTransferHandlerAndroid::OnTouchEnd(base::TimeTicks event_time) {
   last_seen_touch_end_ts_ = event_time;
+}
+
+void InputTransferHandlerAndroid::OnStartDroppingSequence(
+    const ui::MotionEventAndroid& event,
+    InputOnVizSequenceDroppedReason reason) {
+  CHECK_EQ(handler_state_, HandlerState::kIdle);
+  base::UmaHistogramEnumeration(kTouchSequenceDroppedReasonHistogram, reason);
+  handler_state_ = HandlerState::kDroppingCurrentSequence;
+  DropCurrentSequence(event);
 }
 
 void InputTransferHandlerAndroid::DropCurrentSequence(
