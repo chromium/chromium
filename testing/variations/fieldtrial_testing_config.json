@@ -3028,6 +3028,26 @@
             ]
         }
     ],
+    "BackForwardCachePrioritizedEntry": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250327",
+                    "enable_features": [
+                        "BackForwardCachePrioritizedEntry"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackForwardTransitions": [
         {
             "platforms": [
