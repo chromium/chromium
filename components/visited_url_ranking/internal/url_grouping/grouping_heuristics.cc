@@ -9,7 +9,9 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/hash/hash.h"
+#include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
@@ -30,7 +32,7 @@ constexpr auto kReasonToMinTabCount =
     base::MakeFixedFlatMap<GroupSuggestion::SuggestionReason, unsigned>({
         {GroupSuggestion::SuggestionReason::kRecentlyOpened, 4},
         {GroupSuggestion::SuggestionReason::kSwitchedBetween, 2},
-        {GroupSuggestion::SuggestionReason::kSimilarSource, 2},
+        {GroupSuggestion::SuggestionReason::kSimilarSource, 3},
     });
 
 // Limit for tab age till which a tab is considered recent.
@@ -151,14 +153,21 @@ class SimilarSourceHeuristic : public GroupingHeuristics::Heuristic {
         // Assign a cluster ID based on hash of the package name.
         result[i] = base::FastHash(tab_launch_package_name->str_val);
         continue;
-      } else if (tab_launch_type) {
+      } else if (tab_launch_type && tab_parent_id &&
+                 tab_parent_id->float_val != -1) {
         // TODO(ssid): Reconsider grouping based on all launch types.
-        // Cluster ID is the launch type of the tab.
-        result[i] = tab_launch_type->float_val;
+
+        // Assign a cluster ID based on both launch type and parent tab ID.
+        // TODO(yuezhanggg): Simplify the serialization.
+        base::Value::Dict dict;
+        dict.Set("launch_type",
+                 base::NumberToString(tab_launch_type->float_val));
+        dict.Set("parent_id", base::NumberToString(tab_parent_id->float_val));
+        std::string json_string;
+        base::JSONWriter::Write(dict, &json_string);
+        result[i] = base::FastHash(json_string);
         continue;
       }
-      // TODO(ssid): Same parent ID should already be captured by launch type,
-      // but consider adding explicit case.
     }
     return result;
   }
