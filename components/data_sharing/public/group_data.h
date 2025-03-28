@@ -26,6 +26,15 @@ enum class MemberRole {
   kFormerMember = 4
 };
 
+// This tells if the group is enabled or not. This field is set by chrome client
+// after comparing the version info from ReadGroup request and comparing it with
+// hardcoded version info in Chrome client.
+enum class GroupEnabledStatus {
+  kUnknown = 0,
+  kEnabled = 1,
+  kDisabledChromeNeedsUpdate = 2,
+};
+
 struct GroupMember {
   GroupMember();
 
@@ -102,7 +111,8 @@ struct GroupData {
             std::string display_name,
             std::vector<GroupMember> members,
             std::vector<GroupMember> former_members,
-            std::string access_token);
+            std::string access_token,
+            GroupEnabledStatus enabled_status = GroupEnabledStatus::kUnknown);
 
   GroupData(const GroupData&);
   GroupData& operator=(const GroupData&);
@@ -116,6 +126,7 @@ struct GroupData {
   std::string display_name;
   std::vector<GroupMember> members;
   std::vector<GroupMember> former_members;
+  GroupEnabledStatus enabled_status = GroupEnabledStatus::kUnknown;
 };
 
 struct GroupEvent {
