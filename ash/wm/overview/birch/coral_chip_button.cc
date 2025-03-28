@@ -146,6 +146,7 @@ void CoralChipButton::ExecuteCommand(int command_id, int event_flags) {
 
       auto* coral_provider = BirchCoralProvider::Get();
       Shell::Get()->coral_controller()->CreateSavedDeskFromGroup(
+          base::UTF16ToUTF8(title()->GetText()),
           coral_provider->ExtractGroupById(
               static_cast<BirchCoralItem*>(item_)->group_id()),
           root_window);
