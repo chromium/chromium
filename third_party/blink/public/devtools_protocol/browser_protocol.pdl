@@ -13307,6 +13307,21 @@ experimental domain BluetoothEmulation
       GATTOperationType type
       integer code
 
+  # Adds a service with |uuid| to the peripheral with |address|.
+  command addService
+    parameters
+      string address
+      string serviceUuid
+    returns
+      # An identifier that uniquely represents this service.
+      string id
+
+  # Removes the service respresented by |id| from the peripheral with |address|.
+  command removeService
+    parameters
+      string address
+      string id
+
   # Event for when a GATT operation of |type| to the peripheral with |address|
   # happened.
   event gattOperationReceived
