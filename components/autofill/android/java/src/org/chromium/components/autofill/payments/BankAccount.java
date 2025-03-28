@@ -103,6 +103,18 @@ public class BankAccount extends PaymentInstrument {
                 && mAccountType == other.getAccountType();
     }
 
+    /**
+     * Returns the obfuscated account number with visible suffix like '••••12'. The bank account
+     * number is displayed to the user in this format.
+     */
+    public @Nullable String getObfuscatedAccountNumber() {
+        if (mAccountNumberSuffix == null || mAccountNumberSuffix.isEmpty()) {
+            return null;
+        }
+
+        return "••••" + mAccountNumberSuffix;
+    }
+
     /** Builder for {@link BankAccount}. */
     public static final class Builder {
         private @Nullable String mBankName;
