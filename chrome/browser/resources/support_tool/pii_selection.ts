@@ -62,10 +62,10 @@ export class PiiSelectionElement extends PiiSelectionElementBase {
     };
   }
 
-  private selectAll_: boolean;
-  private selectedRadioButton_: string;
-  private showPIISelection_: boolean;
-  private detectedPIIItems_: PiiDataItem[];
+  declare private selectAll_: boolean;
+  declare private selectedRadioButton_: string;
+  declare private showPIISelection_: boolean;
+  declare private detectedPIIItems_: PiiDataItem[];
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   updateDetectedPiiItems(items: PiiDataItem[]) {

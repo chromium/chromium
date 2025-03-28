@@ -33,7 +33,7 @@ export class SpinnerPageElement extends SpinnerPageElementBase {
     };
   }
 
-  pageTitle: string;
+  declare pageTitle: string;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   private onCancelClick_() {

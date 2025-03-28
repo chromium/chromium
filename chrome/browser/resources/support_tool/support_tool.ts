@@ -83,8 +83,8 @@ export class SupportToolElement extends SupportToolElementBase {
     };
   }
 
-  private errorMessage_: string;
-  private selectedPage_: SupportToolPageIndex;
+  declare private errorMessage_: string;
+  declare private selectedPage_: SupportToolPageIndex;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override connectedCallback() {
