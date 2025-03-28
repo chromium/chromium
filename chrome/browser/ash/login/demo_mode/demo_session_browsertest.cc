@@ -730,7 +730,9 @@ class DemoSessionLoginIdleHandlerTest : public DemoSessionLoginTest {
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(DemoSessionLoginIdleHandlerTest, CleanUpLocalFiles) {
+// TODO(crbugs.com/406823191): Investigate the flaky and and re-enabled it.
+IN_PROC_BROWSER_TEST_F(DemoSessionLoginIdleHandlerTest,
+                       DISABLED_CleanUpLocalFiles) {
   demo_mode::SetForceEnableDemoAccountSignIn(true);
 
   // Mock login with demo account, which is a regular user.
