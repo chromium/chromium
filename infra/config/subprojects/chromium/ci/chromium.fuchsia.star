@@ -119,6 +119,7 @@ ci.builder(
     targets = targets.bundle(
         targets = [
             "fuchsia_arm64_tests",
+            "gtests_once",
         ],
         additional_compile_targets = [
             "all",

@@ -488,6 +488,7 @@ ci.thin_tester(
         targets = [
             "chromium_linux_gtests",
             "chromium_linux_rel_isolated_scripts_once",
+            "gtests_once",
         ],
         mixins = [
             "isolate_profile_data",
