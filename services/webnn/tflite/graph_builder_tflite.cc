@@ -5215,7 +5215,7 @@ auto GraphBuilderTflite::SerializeQuantizeLinear(
       min_value = 0.0f;
       max_value = 255.0f;
     } else if (output_tensor_info.data_type == ::tflite::TensorType_INT32) {
-      min_value = 0.0f;
+      min_value = -2147483648.0f;
       max_value = 2147483647.0f;
     } else {
       NOTREACHED() << "This data type is not supported.";
