@@ -28,7 +28,7 @@ interface AuctionSharedStorageHost {
   // acquired on the resource with name `with_lock`. `with_lock` shouldn't start
   // with '-'.
   SharedStorageBatchUpdate(
-    array<network.mojom.SharedStorageModifierMethodWithOptions> methods_with_options,
+    network.mojom.SharedStorageBatchUpdateMethodsArgument methods_with_options,
     network.mojom.LockName? with_lock,
     AuctionWorkletFunction source_auction_worklet_function);
 };

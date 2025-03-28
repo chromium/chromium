@@ -45,6 +45,7 @@ source_set("test_support") {
     "//components/history/core/browser",
     "//components/metrics",
     "//components/metrics/demographics:test_support",
+    "//components/policy/core/browser",
     "//components/prefs",
     "//components/previous_session_info",
     "//components/saved_tab_groups/internal:tab_group_sync_bridge",

@@ -1,51 +1,51 @@
 promise_test(async t => {
   assert_true(!!ai);
   assert_not_equals(
-    await ai.languageModel.availability(),
+    await LanguageModel.availability(),
     'unavailable'
   );
   assert_not_equals(
-    await ai.languageModel.availability({ expectedInputs: [{ type: "text", languages: ["en"] }]}),
+    await LanguageModel.availability({ expectedInputs: [{ type: "text", languages: ["en"] }]}),
     'unavailable',
     'availability() with supported language should not return unavailable.'
   );
   assert_equals(
-    await ai.languageModel.availability({ expectedInputs: [{ type: "text", languages: ["ja"] }]}),
+    await LanguageModel.availability({ expectedInputs: [{ type: "text", languages: ["ja"] }]}),
     'unavailable',
     'availability() with unsupported language should return unavailable.'
   );
   assert_not_equals(
-    await ai.languageModel.availability({ topK: 3, temperature: 0.5 }),
+    await LanguageModel.availability({ topK: 3, temperature: 0.5 }),
     'unavailable',
     'availability() with valid topK and temperature should not return unavailable.'
   );
   assert_equals(
-    await ai.languageModel.availability({ topK: 0, temperature: 0.5 }),
+    await LanguageModel.availability({ topK: 0, temperature: 0.5 }),
     'unavailable',
     'availability() with zero topK should return unavailable.'
   );
   assert_equals(
-    await ai.languageModel.availability({ topK: -3, temperature: 0.5 }),
+    await LanguageModel.availability({ topK: -3, temperature: 0.5 }),
     'unavailable',
     'availability() with negative topK should return unavailable.'
   );
   assert_equals(
-    await ai.languageModel.availability({ topK: 3, temperature: -0.1 }),
+    await LanguageModel.availability({ topK: 3, temperature: -0.1 }),
     'unavailable',
     'availability() with negative temperature should return unavailable.'
   );
   assert_equals(
-    await ai.languageModel.availability({ topK: 3 }),
+    await LanguageModel.availability({ topK: 3 }),
     'unavailable',
     'availability() with only topK should return unavailable.'
   );
   assert_equals(
-    await ai.languageModel.availability({ temperature: 0.5 }),
+    await LanguageModel.availability({ temperature: 0.5 }),
     'unavailable',
     'availability() with only temperature should return unavailable.'
   );
   assert_not_equals(
-    await ai.languageModel.availability({
+    await LanguageModel.availability({
       topK: 3,
       temperature: 1.5,
       expectedInputs: [{ type: "text", languages: ["en"] }]
@@ -54,7 +54,7 @@ promise_test(async t => {
     'availability() with valid sampling params and supported language should not return unavailable.'
   );
   assert_equals(
-    await ai.languageModel.availability({
+    await LanguageModel.availability({
       topK: 3,
       temperature: -1,
       expectedInputs: [{ type: "text", languages: ["en"] }]

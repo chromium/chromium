@@ -677,6 +677,7 @@
 <translation id="4195643157523330669">在新标签页中打开</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{此设备上的 1 个标签页}other{此设备上的 # 个标签页}}</translation>
 <translation id="4198423547019359126">没有可用的下载内容保存位置</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • 您曾通过该账号访问此网站</translation>
 <translation id="4214315110991671325">如果您允许使用 Cookie，Chrome 便可能会使用 Cookie 进行预加载。</translation>
 <translation id="4216511743389425832">读出此网页的内容</translation>
 <translation id="4225725533026049334">已关注</translation>

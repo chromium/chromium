@@ -2,20 +2,20 @@
 
 promise_test(async t => {
   await testAbortPromise(t, signal => {
-    return AISummarizer.create({ signal: signal });
+    return Summarizer.create({ signal: signal });
   });
-}, "Aborting AISummarizer.create().");
+}, "Aborting Summarizer.create().");
 
 promise_test(async t => {
-  const session = await AISummarizer.create();
+  const session = await Summarizer.create();
   await testAbortPromise(t, signal => {
     return session.summarize(kTestPrompt, { signal: signal });
   });
-}, "Aborting AISummarizer.summarize().");
+}, "Aborting Summarizer.summarize().");
 
 promise_test(async t => {
-  const session = await AISummarizer.create();
+  const session = await Summarizer.create();
   await testAbortReadableStream(t, signal => {
     return session.summarizeStreaming(kTestPrompt, { signal: signal });
   });
-}, "Aborting AISummarizer.summarizeStreaming().");
+}, "Aborting Summarizer.summarizeStreaming().");

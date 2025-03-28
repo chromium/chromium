@@ -39,12 +39,12 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
@@ -253,8 +253,9 @@ public class SyncSettingsUtils {
             return context.getString(R.string.sync_settings_not_confirmed);
         }
 
-        if (syncService.getAuthError() != GoogleServiceAuthError.State.NONE) {
-            return getSyncStatusSummaryForAuthError(context, syncService.getAuthError());
+        @GoogleServiceAuthErrorState int authErrorState = syncService.getAuthError().getState();
+        if (authErrorState != GoogleServiceAuthErrorState.NONE) {
+            return getSyncStatusSummaryForAuthError(context, authErrorState);
         }
 
         if (syncService.requiresClientUpgrade()) {
@@ -298,30 +299,33 @@ public class SyncSettingsUtils {
     }
 
     /**
-     * Gets the sync status summary for a given {@link GoogleServiceAuthError.State}.
+     * Gets the sync status summary for a given {@link GoogleServiceAuthErrorState}.
+     *
      * @param context The application context, used by the method to get string resources.
      * @param state Must not be GoogleServiceAuthError.State.None.
      */
     private static String getSyncStatusSummaryForAuthError(
-            Context context, @GoogleServiceAuthError.State int state) {
-        switch (state) {
-            case GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS:
-                return context.getString(R.string.sync_error_ga);
-            case GoogleServiceAuthError.State.CONNECTION_FAILED:
-                return context.getString(R.string.sync_error_connection);
-            case GoogleServiceAuthError.State.SERVICE_UNAVAILABLE:
-                return context.getString(R.string.sync_error_service_unavailable);
-            case GoogleServiceAuthError.State.REQUEST_CANCELED:
-            case GoogleServiceAuthError.State.UNEXPECTED_SERVICE_RESPONSE:
-            case GoogleServiceAuthError.State.SERVICE_ERROR:
-                return context.getString(R.string.sync_error_generic);
-            case GoogleServiceAuthError.State.NONE:
+            Context context, @GoogleServiceAuthErrorState int state) {
+        return switch (state) {
+            case GoogleServiceAuthErrorState.INVALID_GAIA_CREDENTIALS -> context.getString(
+                    R.string.sync_error_ga);
+            case GoogleServiceAuthErrorState.CONNECTION_FAILED -> context.getString(
+                    R.string.sync_error_connection);
+            case GoogleServiceAuthErrorState.SERVICE_UNAVAILABLE -> context.getString(
+                    R.string.sync_error_service_unavailable);
+            case GoogleServiceAuthErrorState.REQUEST_CANCELED,
+                    GoogleServiceAuthErrorState.UNEXPECTED_SERVICE_RESPONSE,
+                    GoogleServiceAuthErrorState.SERVICE_ERROR -> context.getString(
+                    R.string.sync_error_generic);
+            case GoogleServiceAuthErrorState.NONE -> {
                 assert false : "No summary if there's no auth error";
-                return "";
-            default:
+                yield "";
+            }
+            default -> {
                 assert false : "Unknown auth error state";
-                return "";
-        }
+                yield "";
+            }
+        };
     }
 
     /** Returns an icon that represents the current sync state. */
@@ -592,7 +596,8 @@ public class SyncSettingsUtils {
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         assert syncService != null;
 
-        if (syncService.getAuthError() == GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS) {
+        if (syncService.getAuthError().getState()
+                == GoogleServiceAuthErrorState.INVALID_GAIA_CREDENTIALS) {
             return SyncError.AUTH_ERROR;
         }
 
@@ -600,7 +605,7 @@ public class SyncSettingsUtils {
             return SyncError.CLIENT_OUT_OF_DATE;
         }
 
-        if (syncService.getAuthError() != GoogleServiceAuthError.State.NONE
+        if (syncService.getAuthError().getState() != GoogleServiceAuthErrorState.NONE
                 || syncService.hasUnrecoverableError()) {
             return SyncError.OTHER_ERRORS;
         }

@@ -27,8 +27,9 @@ import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/ir
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
-import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
+import {GlobalScrollTargetMixin, type GlobalScrollTargetMixinInterface} from '../global_scroll_target_mixin.js';
 import {routes} from '../route.js';
+import type {Route} from '../router.js';
 
 import type {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from './search_engines_browser_proxy.js';
@@ -52,8 +53,10 @@ export interface SettingsSearchEnginesPageElement {
 }
 
 const SettingsSearchEnginesPageElementBase =
-    GlobalScrollTargetMixin(WebUiListenerMixin(PolymerElement)) as
-    {new (): PolymerElement & WebUiListenerMixinInterface};
+    GlobalScrollTargetMixin(WebUiListenerMixin(PolymerElement)) as {
+      new (): PolymerElement & WebUiListenerMixinInterface &
+          GlobalScrollTargetMixinInterface,
+    };
 
 export class SettingsSearchEnginesPageElement extends
     SettingsSearchEnginesPageElementBase {
@@ -148,10 +151,12 @@ export class SettingsSearchEnginesPageElement extends
     return ['extensionsChanged_(extensions, showExtensionsList_)'];
   }
 
+  prefs: {[key: string]: any};
   defaultEngines: SearchEngine[];
   activeEngines: SearchEngine[];
   otherEngines: SearchEngine[];
   extensions: SearchEngine[];
+  override subpageRoute: Route;
   private showExtensionsList_: boolean;
   filter: string;
   private matchingDefaultEngines_: SearchEngine[];

@@ -192,7 +192,7 @@ public class PageInfoDiscoverabilityTest {
             parameters.add(
                     new ParameterSet()
                             .name("Chooser.Serial")
-                            .value(ContentSettingsType.SERIAL_CHOOSER_DATA, false));
+                            .value(ContentSettingsType.SERIAL_CHOOSER_DATA, true));
 
             return parameters;
         }

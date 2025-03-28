@@ -139,10 +139,56 @@ class V8ValueConverterForTest final : public WebV8ValueConverter {
   void SetDateAllowed(bool val) override {}
   void SetRegExpAllowed(bool val) override {}
 
-  v8::Local<v8::Value> ToV8Value(base::ValueView,
+  v8::Local<v8::Value> ToV8Value(base::ValueView value,
                                  v8::Local<v8::Context> context) override {
-    NOTREACHED();
+    // The following logic is forked from V8ValueConverterImpl::ToV8Value() to
+    // support converting basic types.
+    struct Visitor {
+      raw_ptr<const V8ValueConverterForTest> converter;
+      raw_ptr<v8::Isolate> isolate;
+      v8::Local<v8::Object> creation_context;
+
+      v8::Local<v8::Value> operator()(std::monostate value) {
+        return v8::Null(isolate);
+      }
+
+      v8::Local<v8::Value> operator()(bool value) {
+        return v8::Boolean::New(isolate, value);
+      }
+
+      v8::Local<v8::Value> operator()(int value) {
+        return v8::Integer::New(isolate, value);
+      }
+
+      v8::Local<v8::Value> operator()(double value) {
+        return v8::Number::New(isolate, value);
+      }
+
+      v8::Local<v8::Value> operator()(std::string_view value) {
+        return v8::String::NewFromUtf8(isolate, value.data(),
+                                       v8::NewStringType::kNormal,
+                                       value.length())
+            .ToLocalChecked();
+      }
+
+      v8::Local<v8::Value> operator()(const base::Value::BlobStorage& value) {
+        NOTREACHED();
+      }
+
+      v8::Local<v8::Value> operator()(const base::Value::Dict& value) {
+        NOTREACHED();
+      }
+
+      v8::Local<v8::Value> operator()(const base::Value::List& value) {
+        NOTREACHED();
+      }
+    };
+
+    return value.Visit(Visitor{.converter = this,
+                               .isolate = context->GetIsolate(),
+                               .creation_context = context->Global()});
   }
+
   std::unique_ptr<base::Value> FromV8Value(
       v8::Local<v8::Value> val,
       v8::Local<v8::Context> context) override {

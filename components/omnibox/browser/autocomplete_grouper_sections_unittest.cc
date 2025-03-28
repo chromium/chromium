@@ -1701,6 +1701,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopSRPZpsSectionWithUrls) {
       scoped_config;
   scoped_config.Get().enabled = true;
   scoped_config.Get().max_search_suggestions = 4;
+  scoped_config.Get().max_url_suggestions = 4;
   auto test = [](ACMatches matches, std::vector<int> expected_relevances,
                  bool trends_has_default_side_type = true) {
     PSections sections;
@@ -1709,7 +1710,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopSRPZpsSectionWithUrls) {
     group_configs[omnibox::GROUP_PREVIOUS_SEARCH_RELATED];
     // Max 8 suggestions, with an upper limit of 4 search suggestions.
     sections.push_back(
-        std::make_unique<DesktopSRPZpsSection>(group_configs, 8u, 4u));
+        std::make_unique<DesktopSRPZpsSection>(group_configs, 8u, 4u, 4u));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };
@@ -1737,7 +1738,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopSRPZpsSectionWithUrls) {
   {
     SCOPED_TRACE(
         "Given 12 srp zps matches, if there aren't enough serach suggestions, "
-        "backfill with url suggestions");
+        "backfill with max_url_suggestions suggestions");
     test(
         {
             CreateMatch(100, omnibox::GROUP_MOST_VISITED),
@@ -1753,7 +1754,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopSRPZpsSectionWithUrls) {
             CreateMatch(89, omnibox::GROUP_MOST_VISITED),
             CreateMatch(88, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
         },
-        {88, 100, 99, 98, 97, 96, 95, 94});
+        {88, 100, 99, 98, 97});
   }
 }
 
@@ -1773,7 +1774,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsSectionWithUrls) {
     group_configs[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST];
     // Max 8 suggestions, with an upper limit of 4 url suggestions.
     sections.push_back(
-        std::make_unique<DesktopWebZpsSection>(group_configs, 8u, 4u));
+        std::make_unique<DesktopWebZpsSection>(group_configs, 8u, 4u, 4u));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };

@@ -1576,7 +1576,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2081816110395725788">Aðgerðarleysi við notkun rafhlöðu</translation>
 <translation id="2082187087049518845">Hópaflipi</translation>
 <translation id="2082510809738716738">Veldu þemalit</translation>
-<translation id="208547068587548667">Skráðu þig inn á <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Reyndu aftur</translation>
 <translation id="208634871997892083">VPN alltaf virkt</translation>
 <translation id="208654914566977272">Tillögur að aðgerðum þegar þú leitar á skjánum</translation>
@@ -4011,7 +4010,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3778740492972734840">Forritunartól</translation>
 <translation id="3778868487658107119">Spyrðu hann spurninga. Biddu hann um að gera eitthvað fyrir þig. Þetta er þitt eigið Google, alltaf reiðubúið til aðstoðar.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{vafraferil fyrir # vefsvæði}one{vafraferil fyrir # vefsvæði}other{vafraferil fyrir # vefsvæði}}</translation>
-<translation id="3779244863011082655">Nota annan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-reikning</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> getur ekki athugað hvort aðgangsorðin þín hafi komið fram í öryggisbroti. Reyndu aftur síðar.</translation>
 <translation id="3781742599892759500">Aðgangur að hljóðnema í Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5515,6 +5513,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4848191975108266266">„Ok Google“ Google hjálparans</translation>
 <translation id="4849286518551984791">Samræmdur alþjóðlegur tími (UTC/GMT)</translation>
 <translation id="4849517651082200438">Ekki setja upp</translation>
+<translation id="4849731766219625109">Notaðu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-reikninginn þinn</translation>
 <translation id="485053257961878904">Ekki tókst að setja upp samstillingu tilkynninga</translation>
 <translation id="4850548109381269495">Kannaðu nettenginguna þína í báðum tækjum og kveiktu á Bluetooth. Reyndu svo aftur.</translation>
 <translation id="4850669014075537160">Fletting</translation>
@@ -5703,6 +5702,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4979510648199782334">Uppsetningu Microsoft 365 er lokið</translation>
 <translation id="4980805016576257426">Þessi viðbót inniheldur spilliforrit.</translation>
 <translation id="4983159853748980742">Aðgangsorðinu var ekki deilt. Athugaðu nettenginguna og gakktu úr skugga um að þú sért innskráð(ur) á Chrome. Reyndu svo aftur.</translation>
+<translation id="498624032394115435">Allir með tengilinn geta breytt öllum flipum.</translation>
 <translation id="4986706507552097681">Þú getur alltaf valið hvað á að samstilla í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="4986728572522335985">Þetta eyðir öllum gögnum á öryggislyklinum, þar á meðal PIN-númerinu</translation>
 <translation id="4987944280765486504">Chromebook endurræsir sig þegar niðurhalinu er lokið og þú getur þá haldið uppsetningunni áfram.</translation>
@@ -8314,7 +8314,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6873571253135628430">Breyta heimildum vefsvæðis</translation>
 <translation id="6876155724392614295">Hjól</translation>
 <translation id="6876469544038980967">Ekki gagnlegt</translation>
-<translation id="687838958001010630">Allir með tengilinn geta breytt öllum flipum</translation>
 <translation id="6878422606530379992">Skynjarar eru leyfðir</translation>
 <translation id="6878862640969460273">Langsnið</translation>
 <translation id="6880587130513028875">Myndir á þessari síðu voru útilokaðar.</translation>

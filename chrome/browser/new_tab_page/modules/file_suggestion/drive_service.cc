@@ -326,7 +326,10 @@ void DriveService::GetDriveFilesInternal() {
       base::BindOnce(&DriveService::OnTokenReceived,
                      weak_factory_.GetWeakPtr()),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-      signin::ConsentLevel::kSync);
+      base::FeatureList::IsEnabled(
+          ntp_features::kNtpDriveModuleNoSyncRequirement)
+          ? signin::ConsentLevel::kSignin
+          : signin::ConsentLevel::kSync);
 }
 
 void DriveService::DismissModule() {

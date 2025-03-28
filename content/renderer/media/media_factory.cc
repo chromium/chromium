@@ -10,9 +10,11 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -283,6 +285,30 @@ std::unique_ptr<blink::WebVideoFrameSubmitter> CreateSubmitter(
       settings, /*use_sync_primitives=*/true);
 }
 
+class LocalFrameDelegate
+    : public blink::KeySystemConfigSelector::WebLocalFrameDelegate {
+ public:
+  explicit LocalFrameDelegate(blink::WebLocalFrame* web_frame)
+      : web_frame_(CHECK_DEREF(web_frame)) {}
+
+  bool IsCrossOriginToOutermostMainFrame() override {
+    return web_frame_->IsCrossOriginToOutermostMainFrame();
+  }
+
+  bool AllowStorageAccessSync(
+      blink::WebContentSettingsClient::StorageType storage_type) override {
+    return web_frame_->AllowStorageAccessSyncAndNotify(storage_type);
+  }
+
+  ~LocalFrameDelegate() override = default;
+
+ private:
+  // The pointer below will always be valid for the lifetime of this object
+  // because it is held by KeySystemConfigSelector whose chain of ownership is
+  // the same as RenderFrameImpl.
+  const raw_ref<blink::WebLocalFrame> web_frame_;
+};
+
 }  // namespace
 
 namespace content {
@@ -495,11 +521,11 @@ std::unique_ptr<blink::WebMediaPlayer> MediaFactory::CreateMediaPlayer(
 
 blink::WebEncryptedMediaClient* MediaFactory::EncryptedMediaClient() {
   if (!web_encrypted_media_client_) {
-    web_encrypted_media_client_ = std::make_unique<
-        blink::WebEncryptedMediaClientImpl>(
-        GetKeySystems(), GetCdmFactory(), render_frame_->GetMediaPermission(),
-        std::make_unique<blink::KeySystemConfigSelector::WebLocalFrameDelegate>(
-            render_frame_->GetWebFrame()));
+    web_encrypted_media_client_ =
+        std::make_unique<blink::WebEncryptedMediaClientImpl>(
+            GetKeySystems(), GetCdmFactory(),
+            render_frame_->GetMediaPermission(),
+            std::make_unique<LocalFrameDelegate>(render_frame_->GetWebFrame()));
   }
   return web_encrypted_media_client_.get();
 }

@@ -58,7 +58,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
                     Arrays.asList(mNewUserAccount),
                     Arrays.asList(mIdpData),
                     /* isAutoReauthn= */ false,
-                    /* newAccounts= */ Collections.EMPTY_LIST);
+                    /* newAccounts= */ Collections.EMPTY_LIST,
+                    /* favicon= */ null);
             mMediator.showVerifySheet(mAnaAccount);
 
             assertEquals(1, mSheetAccountItems.size());
@@ -80,7 +81,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
                     Arrays.asList(mAnaAccount),
                     Arrays.asList(mIdpData),
                     /* isAutoReauthn= */ true,
-                    /* newAccounts= */ Collections.EMPTY_LIST);
+                    /* newAccounts= */ Collections.EMPTY_LIST,
+                    /* favicon= */ null);
 
             assertEquals(1, mSheetAccountItems.size());
             assertEquals(
@@ -97,7 +99,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
                 Arrays.asList(mAnaAccountWithoutBrandIcons),
                 Arrays.asList(mIdpDataWithoutIcons),
                 /* isAutoReauthn= */ false,
-                /* newAccounts= */ Collections.EMPTY_LIST);
+                /* newAccounts= */ Collections.EMPTY_LIST,
+                /* favicon= */ null);
 
         assertNull(mModel.get(ItemProperties.HEADER).get(RP_BRAND_ICON));
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);

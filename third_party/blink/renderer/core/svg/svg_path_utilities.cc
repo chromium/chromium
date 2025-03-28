@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/svg/svg_path_string_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_path_string_source.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_types.h"
 
 namespace blink {
 
@@ -40,11 +41,12 @@ Path BuildPathFromString(const StringView& path_string) {
   return builder.Finalize();
 }
 
-Path BuildPathFromByteStream(const SVGPathByteStream& stream) {
+Path BuildPathFromByteStream(const SVGPathByteStream& stream,
+                             WindRule wind_rule) {
   if (stream.IsEmpty())
     return Path();
 
-  SVGPathBuilder builder;
+  SVGPathBuilder builder(wind_rule);
   SVGPathByteStreamSource source(stream);
   svg_path_parser::ParsePath(source, builder);
 

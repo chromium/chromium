@@ -26,7 +26,6 @@
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display_embedder/output_surface_provider.h"
 #include "components/viz/service/display_embedder/vsync_parameter_listener.h"
-#include "components/viz/service/frame_sinks/external_begin_frame_source_mojo.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/hit_test/hit_test_aggregator.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
@@ -39,6 +38,9 @@
 
 #if BUILDFLAG(IS_IOS)
 #include "components/viz/common/frame_sinks/external_begin_frame_source_ios.h"
+#include "components/viz/service/frame_sinks/external_begin_frame_source_mojo_ios.h"
+#else
+#include "components/viz/service/frame_sinks/external_begin_frame_source_mojo.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -134,7 +136,9 @@ RootCompositorFrameSinkImpl::Create(
   // |params|.
   std::unique_ptr<ExternalBeginFrameSource> external_begin_frame_source;
   std::unique_ptr<SyntheticBeginFrameSource> synthetic_begin_frame_source;
+#if !BUILDFLAG(IS_IOS)
   ExternalBeginFrameSourceMojo* external_begin_frame_source_mojo = nullptr;
+#endif
   bool hw_support_for_multiple_refresh_rates = false;
 #if BUILDFLAG(IS_MAC)
   bool created_external_begin_frame_source_mac = false;
@@ -144,18 +148,23 @@ RootCompositorFrameSinkImpl::Create(
 #endif
 
   if (params->external_begin_frame_controller) {
-    auto owned_external_begin_frame_source_mojo =
+#if BUILDFLAG(IS_IOS)
+    hw_support_for_multiple_refresh_rates = true;
+    external_begin_frame_source =
+        std::make_unique<ExternalBeginFrameSourceMojoIOS>(
+            std::move(params->external_begin_frame_controller),
+            std::move(params->external_begin_frame_controller_client),
+            restart_id);
+#else
+    external_begin_frame_source =
         std::make_unique<ExternalBeginFrameSourceMojo>(
             frame_sink_manager,
             std::move(params->external_begin_frame_controller),
             std::move(params->external_begin_frame_controller_client),
             restart_id);
     external_begin_frame_source_mojo =
-        owned_external_begin_frame_source_mojo.get();
-    external_begin_frame_source =
-        std::move(owned_external_begin_frame_source_mojo);
-#if BUILDFLAG(IS_IOS)
-    hw_support_for_multiple_refresh_rates = true;
+        static_cast<ExternalBeginFrameSourceMojo*>(
+            external_begin_frame_source.get());
 #endif
   } else {
 #if BUILDFLAG(IS_ANDROID)
@@ -238,8 +247,11 @@ RootCompositorFrameSinkImpl::Create(
       std::move(output_surface), std::move(overlay_processor),
       std::move(scheduler), std::move(task_runner));
 
-  if (external_begin_frame_source_mojo)
+#if !BUILDFLAG(IS_IOS)
+  if (external_begin_frame_source_mojo) {
     external_begin_frame_source_mojo->SetDisplay(display.get());
+  }
+#endif
 
   // base::WrapUnique instead of std::make_unique because the ctor is private.
   auto impl = base::WrapUnique(new RootCompositorFrameSinkImpl(

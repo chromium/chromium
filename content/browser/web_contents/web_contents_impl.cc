@@ -11793,9 +11793,9 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
         prerender_navigation_handle_callback) {
   PrerenderAttributes attributes(
       prerendering_url, trigger_type, embedder_histogram_suffix,
-      /*target_hint=*/std::nullopt, content::Referrer(),
-      /*eagerness=*/std::nullopt, std::move(no_vary_search_hint),
-      /*initiato_render_frame_host=*/nullptr, GetWeakPtr(), page_transition,
+      /*speculation_rules_params=*/std::nullopt, content::Referrer(),
+      std::move(no_vary_search_hint),
+      /*initiator_render_frame_host=*/nullptr, GetWeakPtr(), page_transition,
       should_warm_up_compositor, should_prepare_paint_tree,
       std::move(url_match_predicate),
       std::move(prerender_navigation_handle_callback),

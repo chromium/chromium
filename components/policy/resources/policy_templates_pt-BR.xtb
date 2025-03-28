@@ -5949,11 +5949,6 @@ Se a política não for definida ou se a lista não tiver referências de imagem
       Se a política não for definida, o período padrão de 604.800.000 milissegundos (uma semana) será usado.</translation>
 <translation id="5212810195096589189">Especificar permissão para CLI de VM</translation>
 <translation id="5213038356678567351">Sites que nunca acionarão uma troca de navegador.</translation>
-<translation id="5216520638921067085">Especifica a idade mínima da versão para notificações de reinicialização mais agressivas. A idade é calculada a partir do momento em que a versão atual foi veiculada aos clientes pela última vez.
-
-Se uma nova versão estiver pendente ou for necessário reinicializar o navegador/reiniciar o dispositivo e a versão atual tiver sido substituída por mais tempo do que o número de dias especificado por essa configuração, a política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> será substituída por duas horas. Se a política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> estiver definida como 1 (obrigatória), os usuários vão precisar reinicializar ou reiniciar ao final do período.
-
-Se ela estiver sem definição ou não for possível determinar a idade de lançamento, a política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> será usada para todas as atualizações.</translation>
 <translation id="5216815237712190041">Configure a imagem de plano de fundo que vai aparecer na tela de login do dispositivo quando nenhum usuário tiver feito login. A política é definida especificando o URL do qual o dispositivo ChromeOS pode fazer o download da imagem de plano de fundo e de uma hash criptográfica usada para verificar a integridade do download. A imagem precisa estar no formato JPEG, e o tamanho desse arquivo não pode ultrapassar 16 MB. É necessário que o URL possa ser acessado sem qualquer tipo de autenticação. A imagem do plano de fundo é baixada e armazenada em cache. O download vai ser refeito sempre que o URL ou o hash mudarem.
 
       Se esta política de plano de fundo for definida, o dispositivo ChromeOS vai fazer o download da imagem de plano de fundo, que será usada na tela de login caso nenhum usuário tenha feito login no dispositivo. Depois que o usuário faz login, a política de plano de fundo dele entra em ação.

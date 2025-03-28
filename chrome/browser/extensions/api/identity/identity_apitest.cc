@@ -187,7 +187,8 @@ class AsyncFunctionRunner {
   std::string WaitForError(ExtensionFunction* function) {
     RunMessageLoopUntilResponse();
     CHECK(function->response_type());
-    EXPECT_EQ(ExtensionFunction::FAILED, *function->response_type());
+    EXPECT_EQ(ExtensionFunction::ResponseType::kFailed,
+              *function->response_type());
     return function->GetError();
   }
 

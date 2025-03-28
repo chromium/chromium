@@ -2469,10 +2469,6 @@ inline constexpr char kCaptureModeEducationLastShown[] =
 inline constexpr char kCaptureModePolicySavePath[] =
     "ash.capture_mode.policy_save_path";
 
-// A boolean pref that records whether the Sunfish feature has been enabled or
-// not.
-inline constexpr char kSunfishEnabled[] = "ash.capture_mode.sunfish_enabled";
-
 // The name of a boolean pref that records whether the Scanner consent
 // disclaimer has been accepted (despite the pref path being for Sunfish).
 inline constexpr char kScannerConsentDisclaimerAccepted[] =

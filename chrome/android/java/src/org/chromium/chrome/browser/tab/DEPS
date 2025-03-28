@@ -32,6 +32,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/offlinepages/RequestCoordinatorBridge.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/paint_preview/PaintPreviewTabHelper.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/policy/PolicyAuditor.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/printing/TabPrinter.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/tab",
   "+chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabbedModeTabPersistencePolicy.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/tabmodel/document/ChromeAsyncTabLauncher.java",

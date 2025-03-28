@@ -1162,7 +1162,8 @@
                   'content/browser/media/.*(cdm|key_system|media_license|encrypted)|' \
                   'media/base/android/.*drm|' \
                   'media/cdm/|' \
-                  'third_party/widevine/cdm/'
+                  'third_party/widevine/cdm/' \
+                  'third_party/blink/web_tests/external/wpt/encrypted-media/'
     },
     'enterprise_data_protection': {
       'filepath': 'chrome/browser/enterprise/connectors/|' \
@@ -1395,7 +1396,7 @@
                   'ios/chrome/browser/resources/Settings.bundle/Experimental\.plist',
     },
     'ios_ntp': {
-      'filepath': 'ios/chrome/browser/ui/ntp/',
+      'filepath': 'ios/chrome/browser/ntp/',
     },
     'ios_payments_autofill': {
       'filepath': 'ios/chrome/browser/autofill/ui_bundled/ios_chrome_payments'\
@@ -1414,9 +1415,8 @@
                   'components/password_manager/ios|'\
                   'ios/chrome/browser/autofill|'\
                   'ios/chrome/browser/passwords|'\
-                  'ios/chrome/browser/ui/passwords|'\
-                  'ios/chrome/browser/ui/settings/autofill|'\
-                  'ios/chrome/browser/ui/settings/password',
+                  'ios/chrome/browser/settings/ui_bundled/autofill|'\
+                  'ios/chrome/browser/settings/ui_bundled/password',
     },
     'ios_web': {
       'filepath': 'ios/web(_view)?/',
@@ -1803,7 +1803,7 @@
                   '|chrome/browser/ui/.*/page_info/'\
                   '|chrome/android/java/src/org/chromium/chrome/browser/page_info/'\
                   '|components/page_info_strings.grdp'\
-                  '|ios/chrome/browser/ui/page_info/'
+                  '|ios/chrome/browser/page_info/'
     },
     'page_load_metrics' : {
       'filepath': '/page_load_metrics/'
@@ -1846,7 +1846,6 @@
                   '|content/browser/payments'\
                   '|content/test/data/payments'\
                   '|ios/chrome/browser/payments'\
-                  '|ios/chrome/browser/ui/payments'\
                   '|ios/web/payments'\
                   '|ios/web/public/payments'\
                   '|third_party/blink/web_tests/external/wpt/payment-request'\
@@ -2283,7 +2282,6 @@
                   'components/translate|'\
                   'components/translate_strings_grdp|'\
                   'ios/chrome/browser/translate|'\
-                  'ios/chrome/browser/ui/translate|'\
                   'ios/web_view/internal/translate'
     },
     'turtledove': {

@@ -120,8 +120,7 @@ class AuthenticationService : public KeyedService,
       signin::ConsentLevel consent_level) const;
 
   // Grants signin::ConsentLevel::kSignin to `identity` and records the signin
-  // at `access_point`. This method does not set up Sync-the-feature for the
-  // identity. Virtual for testing.
+  // at `access_point`. Virtual for testing.
   virtual void SignIn(id<SystemIdentity> identity,
                       signin_metrics::AccessPoint access_point);
 

@@ -25,6 +25,9 @@ namespace glic {
 
 namespace {
 
+constexpr char kHistogramGlicPanelPresentationTime[] =
+    "Glic.PanelPresentationTime";
+
 enum class ModeOffset : int {
   kTextAttached = 1,
   kAudioAttached = 2,
@@ -202,6 +205,31 @@ void GlicMetrics::OnGlicWindowOpen(bool attached,
       .Record(ukm::UkmRecorder::Get());
 }
 
+void GlicMetrics::OnGlicWindowOpenAndReady() {
+  if (show_start_time_.is_null()) {
+    return;
+  }
+
+  // Record the presentation time of showing the glic panel in an UMA histogram.
+  std::string input_mode;
+  if (starting_mode_ == mojom::WebClientMode::kText) {
+    input_mode = ".Text";
+  } else if (starting_mode_ == mojom::WebClientMode::kAudio) {
+    input_mode = ".Audio";
+  }
+  base::TimeDelta presentation_time = base::TimeTicks::Now() - show_start_time_;
+  base::UmaHistogramCustomTimes(
+      base::StrCat({kHistogramGlicPanelPresentationTime, ".All"}),
+      presentation_time, base::Milliseconds(1), base::Seconds(60), 50);
+  if (starting_mode_ != mojom::WebClientMode::kUnknown) {
+    base::UmaHistogramCustomTimes(
+        base::StrCat({kHistogramGlicPanelPresentationTime, input_mode}),
+        presentation_time, base::Milliseconds(1), base::Seconds(60), 50);
+  }
+
+  ResetGlicWindowPresentationTimingState();
+}
+
 void GlicMetrics::OnGlicWindowClose() {
   base::RecordAction(base::UserMetricsAction("GlicSessionEnd"));
   base::UmaHistogramCounts1000("Glic.Session.ResponseCount",
@@ -313,6 +341,11 @@ void GlicMetrics::OnPinningPrefChanged() {
   } else {
     base::RecordAction(base::UserMetricsAction("Glic.Unpinned"));
   }
+}
+
+void GlicMetrics::ResetGlicWindowPresentationTimingState() {
+  show_start_time_ = base::TimeTicks();
+  starting_mode_ = mojom::WebClientMode::kUnknown;
 }
 
 void GlicMetrics::OnAttachedToBrowser(AttachChangeReason reason) {

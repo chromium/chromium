@@ -238,7 +238,7 @@ AccountSelectionViewAndroid::~AccountSelectionViewAndroid() {
 }
 
 bool AccountSelectionViewAndroid::Show(
-    const std::string& rp_for_display,
+    const content::RelyingPartyData& rp_data,
     const std::vector<IdentityProviderDataPtr>& idp_list,
     const std::vector<IdentityRequestAccountPtr>& accounts,
     Account::SignInMode sign_in_mode,
@@ -271,10 +271,15 @@ bool AccountSelectionViewAndroid::Show(
   ScopedJavaLocalRef<jobjectArray> identity_providers_list =
       ConvertToJavaIdentityProvidersList(env, identity_providers_map);
 
+  ScopedJavaLocalRef<jobject> java_rp_icon = nullptr;
+  if (!rp_data.rp_icon.IsEmpty()) {
+    java_rp_icon = gfx::ConvertToJavaBitmap(*rp_data.rp_icon.ToSkBitmap());
+  }
+
   return Java_AccountSelectionBridge_showAccounts(
-      env, java_object_internal_, rp_for_display, accounts_obj,
+      env, java_object_internal_, rp_data.rp_for_display, accounts_obj,
       identity_providers_list, sign_in_mode == Account::SignInMode::kAuto,
-      new_accounts_obj);
+      new_accounts_obj, java_rp_icon);
 }
 
 bool AccountSelectionViewAndroid::ShowFailureDialog(

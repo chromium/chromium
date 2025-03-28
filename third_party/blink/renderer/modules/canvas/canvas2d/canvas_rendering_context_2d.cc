@@ -167,8 +167,9 @@ CanvasRenderingContext* CanvasRenderingContext2D::Factory::Create(
 CanvasRenderingContext2D::CanvasRenderingContext2D(
     HTMLCanvasElement* canvas,
     const CanvasContextCreationAttributesCore& attrs)
-    : CanvasRenderingContext(canvas, attrs, CanvasRenderingAPI::k2D),
-      BaseRenderingContext2D(
+    : BaseRenderingContext2D(
+          canvas,
+          attrs,
           canvas->GetDocument().GetTaskRunner(TaskType::kInternalDefault)),
       should_prune_local_font_cache_(false),
       color_params_(attrs.color_space, attrs.pixel_format, attrs.alpha) {
@@ -250,7 +251,7 @@ void CanvasRenderingContext2D::RestoreProviderAndContextIfPossible() {
 
 void CanvasRenderingContext2D::Trace(Visitor* visitor) const {
   visitor->Trace(filter_operations_);
-  CanvasRenderingContext::Trace(visitor);
+  ScriptWrappable::Trace(visitor);
   BaseRenderingContext2D::Trace(visitor);
   SVGResourceClient::Trace(visitor);
 }
@@ -1168,10 +1169,6 @@ HTMLCanvasElement* CanvasRenderingContext2D::HostAsHTMLCanvasElement() const {
 
 UniqueFontSelector* CanvasRenderingContext2D::GetFontSelector() const {
   return canvas()->GetFontSelector();
-}
-
-int CanvasRenderingContext2D::LayerCount() const {
-  return BaseRenderingContext2D::LayerCount();
 }
 
 CanvasResourceProvider*

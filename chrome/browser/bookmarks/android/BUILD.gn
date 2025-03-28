@@ -58,6 +58,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkSearchBoxRow.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkTextInputLayout.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkToolbar.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkToolbarCoordinator.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkToolbarMediator.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkToolbarProperties.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkToolbarViewBinder.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkUiObserver.java",

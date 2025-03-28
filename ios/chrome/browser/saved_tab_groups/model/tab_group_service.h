@@ -9,6 +9,8 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_groups_delegate.h"
 
+class ProfileIOS;
+class ShareKitService;
 class TabGroup;
 
 namespace tab_groups {
@@ -23,7 +25,9 @@ class WebState;
 class TabGroupService : public KeyedService, public WebStateListGroupsDelegate {
  public:
   explicit TabGroupService(
-      tab_groups::TabGroupSyncService* tab_group_sync_service);
+      ProfileIOS* profile,
+      tab_groups::TabGroupSyncService* tab_group_sync_service,
+      ShareKitService* share_kit_service);
   ~TabGroupService() override;
 
   // KeyedService implementation:
@@ -34,8 +38,17 @@ class TabGroupService : public KeyedService, public WebStateListGroupsDelegate {
   std::unique_ptr<web::WebState> WebStateToAddToEmptyGroup() override;
 
  private:
+  // true if the group is shared.
+  bool IsSharedGroup(const TabGroup* group);
+
+  // Associated profile.
+  raw_ptr<ProfileIOS> profile_;
+
   // The service to handle tab group sync.
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
+
+  // The share kit service.
+  raw_ptr<ShareKitService> share_kit_service_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_TAB_GROUP_SERVICE_H_

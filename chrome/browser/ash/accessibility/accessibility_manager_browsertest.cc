@@ -1825,7 +1825,7 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
   }
 
   void CreateSession(const AccountId& account_id) {
-    ASSERT_TRUE(user_manager::TestHelper(*user_manager::UserManager::Get())
+    ASSERT_TRUE(user_manager::TestHelper(user_manager::UserManager::Get())
                     .AddRegularUser(account_id));
 
     auto* session_manager = session_manager::SessionManager::Get();

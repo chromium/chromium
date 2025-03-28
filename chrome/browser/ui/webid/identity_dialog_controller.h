@@ -44,7 +44,7 @@ class IdentityDialogController
 
   // content::IdentityRequestDialogController
   bool ShowAccountsDialog(
-      const std::string& rp_for_display,
+      content::RelyingPartyData rp_data,
       const std::vector<IdentityProviderDataPtr>& identity_provider_data,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       content::IdentityRequestAccount::SignInMode sign_in_mode,

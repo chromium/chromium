@@ -1015,8 +1015,9 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabsWithMinimizedWindow) {
   // Advance time so everything is urgent discardable.
   test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
 
-  for (int i = 0; i < 8; ++i)
-    tab_manager()->DiscardTab(LifecycleUnitDiscardReason::EXTERNAL);
+  for (int i = 0; i < 8; ++i) {
+    tab_manager()->DiscardTabByExtension(nullptr);
+  }
 
   base::RunLoop().RunUntilIdle();
 
@@ -1062,7 +1063,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabsWithOccludedWindow) {
   test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
 
   for (int i = 0; i < 3; ++i)
-    tab_manager()->DiscardTab(LifecycleUnitDiscardReason::URGENT);
+    tab_manager()->DiscardTabByExtension(nullptr);
 
   base::RunLoop().RunUntilIdle();
 

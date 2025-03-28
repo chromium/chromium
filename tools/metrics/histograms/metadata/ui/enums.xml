@@ -706,6 +706,7 @@ chromium-metrics-reviews@google.com.
   <int value="-566908909" label="chrome://suggestions/"/>
   <int value="-548156607" label="chrome://feedback/"/>
   <int value="-543577801" label="chrome://history-side-panel.top-chrome/"/>
+  <int value="-532669066" label="chrome://traces/"/>
   <int value="-528306235" label="chrome://sync/"/>
   <int value="-525954994" label="chrome-untrusted://lens/"/>
   <int value="-516792794" label="chrome://downloads/"/>
@@ -749,6 +750,7 @@ chromium-metrics-reviews@google.com.
   <int value="48333657" label="chrome://about/"/>
   <int value="57900378" label="chrome://conch/"/>
   <int value="58807865" label="chrome://local-state/"/>
+  <int value="71502624" label="chrome://history-sync-optin/"/>
   <int value="84832110" label="chrome://fileicon/"/>
   <int value="104579118" label="chrome://boca-app/"/>
   <int value="110166858" label="chrome://saved-tab-groups-unsupported/"/>
@@ -1023,6 +1025,7 @@ chromium-metrics-reviews@google.com.
   <int value="91" label="Open extension settings (Safety Hub)"/>
   <int value="92" label="Show customize chrome side panel"/>
   <int value="93" label="Show tab search declutter page"/>
+  <int value="94" label="Open glic"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->

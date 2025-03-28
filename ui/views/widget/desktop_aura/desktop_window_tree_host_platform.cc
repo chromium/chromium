@@ -166,6 +166,13 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
     }
   }
   properties.inhibit_keyboard_shortcuts = params.inhibit_keyboard_shortcuts;
+
+  // Forward widget's platform session data.
+  if (auto session_data = params.session_data) {
+    properties.session_id = session_data->session_id;
+    properties.session_window_new_id = session_data->window_id;
+    properties.session_window_restore_id = session_data->restore_id;
+  }
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)

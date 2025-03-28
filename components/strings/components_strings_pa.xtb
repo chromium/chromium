@@ -223,7 +223,6 @@
 <translation id="1363028406613469049">ਟਰੈਕ</translation>
 <translation id="1364822246244961190">ਇਹ ਨੀਤੀ ਬਲਾਕ ਕੀਤੀ ਗਈ ਹੈ, ਇਸਦਾ ਮੁੱਲ ਅਣਡਿੱਠ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1368318639262510626">Dino ਗੇਮ। ਪਿਕਸਲ ਰੂਪੀ ਡਾਇਨਾਸੌਰ ਨਾਗਫਣੀਆਂ ਅਤੇ ਉੱਡਣ ਵਾਲੇ ਪੰਛੀਆਂ ਤੋਂ ਬਚ ਕੇ ਵੀਰਾਨ ਰਾਹ 'ਤੇ ਦੌੜਦਾ ਹੈ। ਆਡੀਓ ਸੰਕੇਤ ਸੁਣਾਈ ਦੇਣ 'ਤੇ, ਰੁਕਾਵਟਾਂ ਉੱਪਰੋਂ ਛਾਲ ਮਾਰਨ ਲਈ Space ਦਬਾਓ।</translation>
-<translation id="1369735141991626842">AI ਨਾਲ ਖੇਤਰ ਭਰੋ</translation>
 <translation id="1374468813861204354">ਸੁਝਾਅ</translation>
 <translation id="1375198122581997741">ਵਰਜਨ ਬਾਰੇ</translation>
 <translation id="1375293861397106342">ਆਮ ਤੌਰ 'ਤੇ ਸਾਰੇ ਵਿਕਲਪ <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -539,7 +538,6 @@
 <translation id="1919526244108283799">400 x 600 ਮਿ.ਮੀ.</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਸਾਈਟ}other{# ਸਾਈਟਾਂ}}</translation>
 <translation id="192095259937375524">'ਇਸ ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰੋ' ਬਟਨ, ਲਿੰਕ ਸਾਂਝਾ ਕਰ ਕੇ, QR ਕੋਡ ਬਣਾ ਕੇ, ਕਾਸਟ ਕਰ ਕੇ ਅਤੇ ਹੋਰ ਵਿਕਲਪਾਂ ਨਾਲ ਇਸ ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
-<translation id="1921479021518565778">ਸੁਝਾਅ ਲੋਡ ਕੀਤੇ ਗਏ</translation>
 <translation id="1924727005275031552">ਨਵਾਂ</translation>
 <translation id="1927439846988093361">ਵਾਲਾਂ ਦੀ ਦੇਖਭਾਲ</translation>
 <translation id="1935353813610900265">AI ਵੱਲੋਂ ਸੰਚਾਲਿਤ ਇਤਿਹਾਸ ਦੀ ਖੋਜ ਲਈ ਵਿਚਾਰ ਭੇਜੋ</translation>
@@ -974,6 +972,7 @@
 <translation id="2688186765492306706">500 x 760 ਮਿ.ਮੀ.</translation>
 <translation id="2688969097326701645">ਹਾਂ, ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2690699652723742414">ਪਿਛਲੇ 30 ਦਿਨ</translation>
+<translation id="2691385045260836588">ਮਾਡਲ</translation>
 <translation id="2691924980723297736">ਸੁਰੱਖਿਆ ਚਿਤਾਵਨੀ</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="2699273987028089219">ਸਬਮੀਨੂ ਉਪਲਬਧ ਹੈ, ਵਧੀਕ ਵਿਕਲਪਾਂ 'ਤੇ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ <ph name="SHORTCUT" /> ਵਰਤੋ।</translation>
@@ -1526,6 +1525,7 @@
 <translation id="3664782872746246217">ਪ੍ਰਮੁੱਖ-ਸ਼ਬਦ:</translation>
 <translation id="3665100783276035932">ਜ਼ਿਆਦਾਤਰ ਸਾਈਟਾਂ ਉਮੀਦ ਮੁਤਾਬਕ ਕੰਮ ਕਰਨਗੀਆਂ</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">ਨੰਬਰ</translation>
 <translation id="3670229581627177274">ਬਲੂਟੁੱਥ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3671117652518853176">ਬੰਦ ਹੋਣ 'ਤੇ, ਤੁਹਾਨੂੰ ਸੁਰੱਖਿਆ ਦੇ ਉਦੇਸ਼ਾਂ ਲਈ ਕਦੇ-ਕਦਾਈਂ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਕਿਹਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="3671540257457995106">ਕੀ ਆਕਾਰ ਬਦਲਣ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣੀ ਹੈ?</translation>
@@ -1540,7 +1540,6 @@
 <translation id="3681007416295224113">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਬਾਰੇ ਜਾਣਕਾਰੀ</translation>
 <translation id="3681421644246505351">Chrome ਤੁਹਾਡੇ ਹਾਲੀਆ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ ਦਿਲਚਸਪੀ ਵਾਲੇ ਵਿਸ਼ਿਆਂ ਨੂੰ ਨੋਟ ਕਰਦਾ ਹੈ।</translation>
 <translation id="3682094733650754138">'ਪਤਾ ਭਰੋ' ਵਿਕਲਪ ਚੁਣਿਆ ਗਿਆ ਸੀ</translation>
-<translation id="3687493962714153124">AI ਨਾਲ ਆਟੋਫਿਲ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="3687920599421452763">ਵੈਨਾਂ ਅਤੇ ਮਿਨੀਵੈਨਾਂ</translation>
 <translation id="3693327506115126094">ਚੁਣੋ ਕਿ ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਿਵੇਂ ਕੀਤੀ ਜਾਵੇ</translation>
 <translation id="3698353241727597930">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਐਂਟਰਪ੍ਰਾਈਜ਼ ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤੀ <ph name="CLOUD_STORAGE" /> ਸਟੋਰੇਜ ਵਿੱਚ <ph name="FILES" /> ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਸੰਰੂਪਣ ਕੀਤਾ ਹੈ। ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਨ੍ਹਾਂ ਫ਼ਾਈਲਾਂ ਦੀ ਨਿਗਰਾਨੀ ਕੀਤੀ ਜਾਵੇ, ਇਨ੍ਹਾਂ ਦਾ ਆਡਿਟ ਕੀਤਾ ਜਾਵੇ ਅਤੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਮਿਟਾਉਣ 'ਤੇ ਵੀ ਇਨ੍ਹਾਂ ਨੂੰ ਬਰਕਰਾਰ ਰੱਖਿਆ ਜਾਵੇ।</translation>
@@ -1693,6 +1692,7 @@
 <translation id="3950820424414687140">ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="3953505489397572035">ਇਹ ਕੀਮਤ ਆਮ ਹੈ</translation>
 <translation id="3958057596965527988">4 x 4 ਇੰਚ</translation>
+<translation id="3959969108528118741">ਮਾਲਕ</translation>
 <translation id="3961148744525529027">ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸ਼ੀਟ ਅੱਧੀ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ</translation>
 <translation id="3962859241508114581">ਪਿਛਲਾ ਟਰੈਕ</translation>
 <translation id="3963721102035795474">ਪਾਠਕ ਮੋਡ</translation>
@@ -1918,7 +1918,6 @@
 <translation id="4312866146174492540">ਬਲਾਕ ਕਰੋ (ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="4314815835985389558">ਸਿੰਕ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="4316057107946726368">ਕਿਰਪਾ ਕਰਕੇ ਵੱਧ ਤੋਂ ਵੱਧ <ph name="MAX_CHAR_COUNT" /> ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਵਾਲਾ ਇਕਸਾਰਤਾ ਸੁਨੇਹਾ ਦਾਖਲ ਕਰੋ। <ph name="MAX_CHAR_COUNT" /> ਵਿੱਚੋਂ <ph name="ACTUAL_CHAR_COUNT" /> ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਨੂੰ ਵਰਤਿਆ ਗਿਆ।</translation>
-<translation id="431740489189220419">ਸੁਝਾਅ ਲੋਡ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ</translation>
 <translation id="4318213823155573975">ਸਿਰ 'ਤੇ ਪਹਿਨਣ ਵਾਲੀ ਚੀਜ਼</translation>
 <translation id="4318312030194671742">Paint Preview ਕੰਪੋਜ਼ੀਟਰ ਸੇਵਾ</translation>
 <translation id="4318566738941496689">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ ਨਾਮ ਅਤੇ ਨੈੱਟਵਰਕ ਪਤਾ</translation>
@@ -2325,6 +2324,7 @@
 <translation id="5087286274860437796">ਇਸ ਸਮੇਂ ਸਰਵਰ ਦਾ ਪ੍ਰਮਾਣ ਪੱਤਰ ਵੈਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="5087580092889165836">ਕਾਰਡ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5088142053160410913">ਓਪਰੇਟਰ ਲਈ ਸੁਨੇਹਾ</translation>
+<translation id="5089810972385038852">ਰਾਜ</translation>
 <translation id="5090647584136241764">ਤੁਹਾਡੇ ਲਈ ਮਹੱਤਵਪੂਰਨ ਵੇਰਵਿਆਂ ਦੀ ਆਸਾਨੀ ਨਾਲ ਤੁਲਨਾ ਕਰਨ ਲਈ ਮਿਲਦੇ-ਜੁਲਦੇ ਉਤਪਾਦਾਂ ਵਾਲੀਆਂ ਟੈਬਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5093232627742069661">Z-ਤਹਿ</translation>
 <translation id="5094747076828555589">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ Chromium ਵੱਲੋਂ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਸੰਰੂਪਣ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
@@ -2463,6 +2463,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />ਤੁਹਾਡਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਇੰਜਣ ਤੁਹਾਨੂੰ ਵੈੱਬ 'ਤੇ ਖੋਜ ਕਰਨ ਅਤੇ Chromium ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦਿੰਦਾ ਹੈ<ph name="END_BOLD" /> ਜਿਵੇਂ ਕਿ ਪਤਾ ਬਾਰ ਅਤੇ ਵੈੱਬ ਪੰਨਿਆਂ 'ਤੇ ਮੌਜੂਦ ਚਿੱਤਰਾਂ ਦੀ ਮਦਦ ਨਾਲ ਖੋਜ ਕਰਨਾ। ਜੇ ਤੁਹਾਡਾ ਖੋਜ ਇੰਜਣ ਕਿਸੇ ਸੁਵਿਧਾ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ, ਤਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਉਪਲਬਧ ਨਾ ਹੋਵੇ।</translation>
 <translation id="5323043727018853753">ਪਰੋਈ ਗਈ ਸਮੱਗਰੀ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" /> ਵਿੱਚੋਂ <ph name="MATCH_POSITION" /></translation>
+<translation id="5327248766486351172">ਨਾਮ</translation>
 <translation id="5329858041417644019">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="5331585574693522196">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਵਜੋਂ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="5332219387342487447">ਸ਼ਿਪਿੰਗ ਵਿਧੀ</translation>
@@ -2675,7 +2676,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates ਮੁੱਲ ਢੁਕਵਾਂ ਨਹੀਂ ਹੈ, ਅਤੇ ਇਸਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾਵੇਗੀ, ਜਦੋਂ ਤੱਕ ਕਿ DnsOverHttpsMode ਨੀਤੀ <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ਜਾਂ <ph name="SECURE_DNS_MODE_SECURE" /> 'ਤੇ ਸੈੱਟ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ।</translation>
 <translation id="5691848789297492617">"ਕਾਰਡ ਰੱਖਿਅਤ ਕਰੋ" ਉਤਪ੍ਰੇਰਕ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹਿਆ ਹੈ।</translation>
 <translation id="5695542892312572833">ਕੀ ਤੁਸੀਂ ਆਪਣੀਆਂ ਖਰੀਦਾਂ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ Windows Hello ਵਰਤਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
-<translation id="5697827549745555938">ਤੁਹਾਡੇ ਵੱਲੋਂ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ ਜਾਣਕਾਰੀ ਨੂੰ ਅਤੇ ਇਸ ਪੰਨੇ ਨੂੰ ਇਹ ਦੇਖਣ ਲਈ Google ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ ਕਿ ਕੀ ਆਟੋਫਿਲ ਇਸ ਫ਼ਾਰਮ ਨੂੰ ਭਰਨ ਵਿੱਚ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ। ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਮਨੁੱਖੀ ਸਮੀਖਿਅਕਾਂ ਵੱਲੋਂ ਇਹ ਡਾਟਾ ਦੇਖਿਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="5699628521141772782">ਡੇਅਰੀ ਅਤੇ ਆਂਡੇ</translation>
 <translation id="5700761515355162635">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="5701381305118179107">ਕੇਂਦਰ</translation>
@@ -3103,6 +3103,7 @@
 <translation id="6440503408713884761">ਅਣਡਿੱਠ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6443406338865242315">ਤੁਸੀਂ ਕਿਹੜੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਪਲੱਗਇਨ ਸਥਾਪਤ ਕੀਤੇ ਹੋਏ ਹਨ</translation>
 <translation id="6444329331928531170">ਰਿਟਾਇਰਮੈਂਟ ਅਤੇ ਪੈਨਸ਼ਨ</translation>
+<translation id="6445051938772793705">ਦੇਸ਼</translation>
 <translation id="6446608382365791566">ਹੋਰ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6447842834002726250">ਕੁਕੀਜ਼</translation>
 <translation id="6448371595882710519">ਡਾਟਾ ਕੰਟਰੋਲਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
@@ -3583,7 +3584,6 @@
 <translation id="7316521168101843192">ਫ਼ਾਈਲ ਨੂੰ Microsoft OneDrive ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ਕਨੈਕਸ਼ਨ ਸੰਬੰਧੀ ਮਦਦ</translation>
-<translation id="7321111802407017850">ਆਪਣੀ ਜਾਣਕਾਰੀ ਨੂੰ ਆਟੋਫਿਲ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" ਸੈਕਸ਼ਨ ਲੁਕਾਓ</translation>
 <translation id="733354035281974745">ਡੀਵਾਈਸ ਦੇ ਸਥਾਨਕ ਖਾਤੇ ਨੂੰ ਓਵਰਰਾਈਡ</translation>
 <translation id="7334320624316649418">&amp;ਦੁਬਾਰਾ ਕ੍ਰਮ ਦੇਣ ਨੂੰ ਰੀਡੂ ਕਰੋ</translation>

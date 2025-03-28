@@ -52,6 +52,7 @@
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/browsing_context_state.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
+#include "content/browser/renderer_host/cookie_access_observers.h"
 #include "content/browser/renderer_host/document_associated_data.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/keep_alive_handle_factory.h"
@@ -3526,35 +3527,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            FinalPoliciesAboutBlankWithInitiatorAndHistory);
 
   class SubresourceLoaderFactoriesConfig;
-
-  // A thin wrapper around ReceiverSet that inherits from
-  // mojom::CookieAccessObserver, so that RenderFrameHostImpl doesn't need to
-  // implement that interface. Directly subclassing CookieAccessObserver would
-  // force RenderFrameHostImpl to have a public OnCookiesAccessed() method that
-  // doesn't take a CookieAccessDetails::Source, and we don't want to expose
-  // that. If other classes call RenderFrameHostImpl::OnCookiesAccessed() they
-  // need to pass a Source.
-  class CookieAccessObservers : public network::mojom::CookieAccessObserver {
-   public:
-    explicit CookieAccessObservers(RenderFrameHostImpl& parent);
-    ~CookieAccessObservers() override;
-
-    void Add(
-        mojo::PendingReceiver<network::mojom::CookieAccessObserver> receiver,
-        CookieAccessDetails::Source source);
-
-    // network::mojom::CookieAccessObserver
-    void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>
-                               details_vector) override;
-    void Clone(mojo::PendingReceiver<network::mojom::CookieAccessObserver>
-                   observer) override;
-
-   private:
-    raw_ref<RenderFrameHostImpl> parent_;
-    mojo::ReceiverSet<network::mojom::CookieAccessObserver,
-                      CookieAccessDetails::Source>
-        cookie_observer_set_;
-  };
 
   FrameTreeNode* GetSibling(int relative_offset) const;
 

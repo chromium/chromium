@@ -87,18 +87,18 @@ export function getHtml(this: AppElement) {
       </div>
     `: ''}
   </div>
-  ${(this.isSourceTabFirstPartyNtp_) ? html`
+  ${(this.showEditTheme_) ? html`
   <customize-chrome-categories @back-click="${this.onBackClick_}"
       @collection-select="${this.onCollectionSelect_}" page-name="categories"
       id="categoriesPage" @local-image-upload="${this.onLocalImageUpload_}"
       @wallpaper-search-select="${this.onWallpaperSearchSelect_}">
   </customize-chrome-categories>`: ''}
-  ${(this.isSourceTabFirstPartyNtp_) ? html`
+  ${(this.showEditTheme_) ? html`
   <customize-chrome-themes @back-click="${this.onBackClick_}"
       page-name="themes" id="themesPage"
       .selectedCollection="${this.selectedCollection_}">
   </customize-chrome-themes>`: ''}
-  ${(this.wallpaperSearchEnabled_ && this.isSourceTabFirstPartyNtp_) ? html`
+  ${(this.wallpaperSearchEnabled_ && this.showEditTheme_) ? html`
     <customize-chrome-wallpaper-search @back-click="${this.onBackClick_}"
         page-name="wallpaper-search" id="wallpaperSearchPage">
     </customize-chrome-wallpaper-search>

@@ -10,11 +10,14 @@ import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createAndSetVoices, createSpeechErrorEvent, createSpeechSynthesisVoice, emitEvent, mockMetrics, setSimpleAxTreeWithText, setupBasicSpeech} from './common.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('Speech', () => {
   let app: AppElement;
   let speech: TestSpeechBrowserProxy;
+  let metrics: TestMetricsBrowserProxy;
+
   const paragraph1: string[] = [
     'Something has changed within me, something is not the same.',
     'I\'m through with playing by the rules of someone else\'s game.',
@@ -82,7 +85,7 @@ suite('Speech', () => {
     chrome.readingMode.restoreSettingsFromPrefs = () => {};
     chrome.readingMode.languageChanged = () => {};
     chrome.readingMode.onTtsEngineInstalled = () => {};
-    mockMetrics();
+    metrics = mockMetrics();
 
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
@@ -165,6 +168,18 @@ suite('Speech', () => {
     test('speechPlayingState initialized correctly', () => {
       assertFalse(app.speechPlayingState.isSpeechBeingRepositioned);
     });
+  });
+
+  test('on finished, logs speech stop source', async () => {
+    app.playSpeech();
+    for (let i = 0; i < paragraph1.length + paragraph2.length; i++) {
+      const spoken = speech.getArgs('speak')[i];
+      assertTrue(!!spoken);
+      spoken.onend();
+    }
+    assertEquals(
+        chrome.readingMode.contentFinishedStopSource,
+        await metrics.whenCalled('recordSpeechStopSource'));
   });
 
   suite('with text selected', () => {
@@ -412,7 +427,7 @@ suite('Speech', () => {
         assertTrue(app.speechPlayingState.isSpeechBeingRepositioned);
       });
 
-  test('interrupt error stops speech', () => {
+  test('interrupt error stops speech', async () => {
     app.speechPlayingState.isSpeechTreeInitialized = true;
     app.speechPlayingState.isAudioCurrentlyPlaying = true;
     app.playSpeech();
@@ -424,8 +439,10 @@ suite('Speech', () => {
     assertFalse(app.speechPlayingState.isAudioCurrentlyPlaying);
     assertFalse(app.speechPlayingState.isSpeechActive);
     assertFalse(app.speechPlayingState.isSpeechBeingRepositioned);
+    assertEquals(
+        chrome.readingMode.engineInterruptStopSource,
+        await metrics.whenCalled('recordSpeechStopSource'));
   });
-
 
   suite('very long text', () => {
     const longSentences =
@@ -479,6 +496,7 @@ suite('Speech', () => {
 
       assertEquals(0, speech.getCallCount('pause'));
       assertEquals(1, speech.getCallCount('cancel'));
+      assertEquals(0, metrics.getCallCount('recordSpeechStopSource'));
       const spoken1 = speech.getArgs('speak')[0];
       assertEquals(
           longSentences.substring(0, accessibleTextLength), getSpokenText());
@@ -557,7 +575,7 @@ suite('Speech', () => {
       assertTrue(app.$.toolbar.isReadAloudPlayable);
     });
 
-    test('selects default voice on language-unavailable', () => {
+    test('selects default voice on language-unavailable', async () => {
       const pageLanguage = 'es';
       assertFalse(pageLanguage === chrome.readingMode.defaultLanguageForSpeech);
       assertFalse(
@@ -578,6 +596,9 @@ suite('Speech', () => {
       assertEquals(
           chrome.readingMode.defaultLanguageForSpeech,
           app.speechSynthesisLanguage);
+      assertEquals(
+          chrome.readingMode.engineErrorStopSource,
+          await metrics.whenCalled('recordSpeechStopSource'));
     });
 
     suite('voice change to unavailable voice', () => {
@@ -589,7 +610,7 @@ suite('Speech', () => {
         utterance = speech.getArgs('speak')[0];
       });
 
-      test('cancels and selects default voice', () => {
+      test('cancels and selects default voice', async () => {
         emitEvent(app, ToolbarEvent.VOICE, {
           detail: {
             selectedVoice:
@@ -606,6 +627,9 @@ suite('Speech', () => {
         assertEquals(0, speech.getCallCount('pause'));
         assertEquals(0, speech.getCallCount('speak'));
         assertEquals(speech.getVoices()[0], app.getSpeechSynthesisVoice());
+        assertEquals(
+            chrome.readingMode.engineErrorStopSource,
+            await metrics.whenCalled('recordSpeechStopSource'));
       });
 
       test('still in getVoices(), cancels and selects another voice', () => {
@@ -652,7 +676,6 @@ suite('Speech', () => {
           });
     });
 
-
     test('invalid argument cancels and uses default rate', () => {
       app.playSpeech();
       assertEquals(1, speech.getCallCount('speak'));
@@ -672,10 +695,11 @@ suite('Speech', () => {
       assertTrue(!!utterance.onerror);
       utterance.onerror(createSpeechErrorEvent(utterance, 'invalid-argument'));
 
-      assertEquals(3, speech.getCallCount('cancel'));
+      assertEquals(2, speech.getCallCount('cancel'));
       assertEquals(0, speech.getCallCount('pause'));
       assertEquals(1, speech.getCallCount('speak'));
       assertEquals(1, speechRate);
+      assertEquals(0, metrics.getCallCount('recordSpeechStopSource'));
     });
 
     suite('and voice preview is played', () => {

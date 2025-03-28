@@ -19,9 +19,9 @@
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/app/arc_playstore_search_request_state.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
 
 namespace app_list::test {
@@ -75,7 +75,7 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
   }
 
   void AddExtension(const extensions::Extension* extension) {
-    service()->AddExtension(extension);
+    registrar()->AddExtension(extension);
   }
 
  private:

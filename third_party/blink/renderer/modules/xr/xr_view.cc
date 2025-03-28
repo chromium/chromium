@@ -81,8 +81,8 @@ NotShared<DOMFloat32Array> XRView::projectionMatrix() const {
   if (!projection_matrix_ || !projection_matrix_->Data()) {
     // A page may take the projection matrix value and detach it so
     // projection_matrix_ is a detached array buffer.  This breaks the
-    // inspector, so return null instead.
-    return NotShared<DOMFloat32Array>();
+    // inspector, so return an empty array instead.
+    return NotShared<DOMFloat32Array>(DOMFloat32Array::Create(0));
   }
 
   return projection_matrix_;

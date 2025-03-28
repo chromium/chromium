@@ -249,8 +249,12 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   private diagramMechanicalLayout: DiagramMechanicalLayout|null;
   private diagramPhysicalLayout: DiagramPhysicalLayout|null;
   private showNumberPad: boolean;
+  private showAssistantKey: boolean;
   private boardName: string = '';
   private topRowKeys: KeyboardDiagramTopRowKey[];
+  private bottomLeftLayout: string;
+  private bottomRightLayout: string;
+  private numberPadLayout: string;
   private receiver: KeyboardObserverReceiver|null = null;
   private inputDataProvider: InputDataProviderInterface =
       getInputDataProvider();

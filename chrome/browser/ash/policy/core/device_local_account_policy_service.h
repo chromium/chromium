@@ -73,6 +73,7 @@ class DeviceLocalAccountPolicyService {
                    invalidation::InvalidationListener*>
           invalidation_service_provider_or_listener,
       scoped_refptr<base::SequencedTaskRunner> store_background_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> store_first_load_task_runner,
       scoped_refptr<base::SequencedTaskRunner> extension_cache_task_runner,
       scoped_refptr<base::SequencedTaskRunner>
           external_data_service_backend_task_runner,
@@ -178,6 +179,7 @@ class DeviceLocalAccountPolicyService {
   std::set<std::string> busy_extension_cache_directories_;
 
   const scoped_refptr<base::SequencedTaskRunner> store_background_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> store_first_load_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> extension_cache_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> resource_cache_task_runner_;
 

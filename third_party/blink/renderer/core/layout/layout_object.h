@@ -1547,7 +1547,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   bool IsScrollContainerWithScrollMarkerGroup() const {
     NOT_DESTROYED();
-    return IsScrollContainer() && !Style()->ScrollMarkerGroupNone();
+    return (IsScrollContainer() || IsDocumentElement()) &&
+           !Style()->ScrollMarkerGroupNone();
   }
 
   // Not returning StyleRef().HasTransformRelatedProperty() because some objects

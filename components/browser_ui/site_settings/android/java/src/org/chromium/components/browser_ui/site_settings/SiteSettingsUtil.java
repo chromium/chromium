@@ -57,6 +57,8 @@ public class SiteSettingsUtil {
         ContentSettingsType.USB_CHOOSER_DATA,
         // Bluetooth is only shown when WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND is enabled.
         ContentSettingsType.BLUETOOTH_CHOOSER_DATA,
+        // Serial port is only shown when BLUETOOTH_RFCOMM_ANDROID is enabled.
+        ContentSettingsType.SERIAL_CHOOSER_DATA,
     };
 
     static final int[] EMBEDDED_PERMISSIONS = {

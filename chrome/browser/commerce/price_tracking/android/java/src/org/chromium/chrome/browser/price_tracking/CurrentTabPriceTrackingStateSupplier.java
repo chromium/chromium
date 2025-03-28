@@ -28,8 +28,8 @@ import org.chromium.url.GURL;
  * page by listening to navigations and tab changes, and it listens to ShoppingService for updates
  * within the same page.
  */
-public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl<PriceTrackingState>
-        implements ObservableSupplier<PriceTrackingState> {
+public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl<Boolean>
+        implements ObservableSupplier<Boolean> {
 
     private CurrentTabObserver mCurrentTabObserver;
     private CommerceSubscription mCurrentTabCommerceSubscription;
@@ -43,14 +43,14 @@ public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl
                 @Override
                 public void onSubscribe(CommerceSubscription subscription, boolean succeeded) {
                     if (succeeded && subscription.equals(mCurrentTabCommerceSubscription)) {
-                        updatePriceTrackingState(PriceTrackingState.TRACKED);
+                        updatePriceTrackingState(true);
                     }
                 }
 
                 @Override
                 public void onUnsubscribe(CommerceSubscription subscription, boolean succeeded) {
                     if (succeeded && subscription.equals(mCurrentTabCommerceSubscription)) {
-                        updatePriceTrackingState(PriceTrackingState.UNTRACKED);
+                        updatePriceTrackingState(false);
                     }
                 }
             };
@@ -64,7 +64,7 @@ public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl
      */
     public CurrentTabPriceTrackingStateSupplier(
             ObservableSupplier<Tab> tabSupplier, ObservableSupplier<Profile> profileSupplier) {
-        super(PriceTrackingState.UNKNOWN);
+        super(false);
         mTabSupplier = tabSupplier;
         mProfileSupplier = profileSupplier;
 
@@ -114,7 +114,6 @@ public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl
         if (!mTabSupplier.hasValue()
                 || mTabSupplier.get().getUrl() == null
                 || mShoppingService == null) {
-            updatePriceTrackingState(PriceTrackingState.UNKNOWN);
             return;
         }
 
@@ -127,7 +126,7 @@ public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl
                 || !productInfo.productClusterId.isPresent()
                 || mShoppingService == null) {
             mCurrentTabCommerceSubscription = null;
-            updatePriceTrackingState(PriceTrackingState.NOT_ELIGIBLE);
+            updatePriceTrackingState(false);
             return;
         }
 
@@ -154,19 +153,16 @@ public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl
                         return;
                     }
 
-                    updatePriceTrackingState(
-                            isCurrentTabPriceTracked
-                                    ? PriceTrackingState.TRACKED
-                                    : PriceTrackingState.UNTRACKED);
+                    updatePriceTrackingState(isCurrentTabPriceTracked);
                 });
     }
 
-    private void updatePriceTrackingState(PriceTrackingState priceTrackingState) {
-        super.set(priceTrackingState);
+    private void updatePriceTrackingState(boolean isCurrentTabPriceTracked) {
+        super.set(isCurrentTabPriceTracked);
     }
 
     @Override
-    public PriceTrackingState addObserver(Callback<PriceTrackingState> obs) {
+    public Boolean addObserver(Callback<Boolean> obs) {
         return addSyncObserver(obs);
     }
 }

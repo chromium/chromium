@@ -400,6 +400,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Invalid choice version"/>
   <int value="3" label="Force reprompt"/>
   <int value="4" label="Command line flag"/>
+  <int value="5" label="Device restore (iOS only)"/>
 </enum>
 
 <enum name="SearchPolicyConflictType">

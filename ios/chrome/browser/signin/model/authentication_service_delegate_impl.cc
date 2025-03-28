@@ -33,7 +33,7 @@ void AuthenticationServiceDelegateImpl::ClearBrowsingDataForSignedinPeriod(
   BrowsingDataRemoveMask remove_mask =
       BrowsingDataRemoveMask::REMOVE_ALL_FOR_TIME_PERIOD;
 
-  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+  if (IsIdentityDiscAccountMenuEnabled()) {
     // If fast account switching via the account particle disk on the NTP is
     // enabled, then also close any tabs that were used since the signin. This
     // requires separately querying the tab-usage timestamps first.

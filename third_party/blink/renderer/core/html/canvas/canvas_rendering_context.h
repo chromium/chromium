@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -86,8 +85,7 @@ class
 class WebGraphicsContext3DVideoFramePool;
 
 class CORE_EXPORT CanvasRenderingContext
-    : public ScriptWrappable,
-      public ActiveScriptWrappable<CanvasRenderingContext>,
+    : public ActiveScriptWrappable<CanvasRenderingContext>,
       public Thread::TaskObserver {
   USING_PRE_FINALIZER(CanvasRenderingContext, Dispose);
 

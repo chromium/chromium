@@ -271,8 +271,7 @@ void LockedSessionWindowTracker::SetNotificationManagerForTesting(
   notifications_manager_ = std::move(notifications_manager);
 }
 
-ash::OnTaskPodController*
-LockedSessionWindowTracker::GetOnTaskPodControllerForTesting() {
+ash::OnTaskPodController* LockedSessionWindowTracker::on_task_pod_controller() {
   if (!on_task_pod_controller_) {
     return nullptr;
   }

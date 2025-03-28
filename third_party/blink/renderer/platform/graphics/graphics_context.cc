@@ -532,26 +532,17 @@ void GraphicsContext::DrawText(const Font& font,
   });
 }
 
-template <typename TextPaintInfo>
-void GraphicsContext::DrawEmphasisMarksInternal(
+// This function is not used if TextCombineEmphasisNG flag is enabled.
+void GraphicsContext::DeprecatedDrawEmphasisMarks(
     const Font& font,
-    const TextPaintInfo& text_info,
+    const TextRun& run,
     const AtomicString& mark,
     const gfx::PointF& point,
     const AutoDarkMode& auto_dark_mode) {
   DrawTextPasses([&](const cc::PaintFlags& flags) {
-    font.DrawEmphasisMarks(canvas_, text_info, mark, point,
-                           DarkModeFlags(this, auto_dark_mode, flags));
+    font.DeprecatedDrawEmphasisMarks(
+        canvas_, run, mark, point, DarkModeFlags(this, auto_dark_mode, flags));
   });
-}
-
-// This function is not used if TextCombineEmphasisNG flag is enabled.
-void GraphicsContext::DrawEmphasisMarks(const Font& font,
-                                        const TextRun& run,
-                                        const AtomicString& mark,
-                                        const gfx::PointF& point,
-                                        const AutoDarkMode& auto_dark_mode) {
-  DrawEmphasisMarksInternal(font, run, mark, point, auto_dark_mode);
 }
 
 void GraphicsContext::DrawEmphasisMarks(const Font& font,
@@ -559,7 +550,10 @@ void GraphicsContext::DrawEmphasisMarks(const Font& font,
                                         const AtomicString& mark,
                                         const gfx::PointF& point,
                                         const AutoDarkMode& auto_dark_mode) {
-  DrawEmphasisMarksInternal(font, text_info, mark, point, auto_dark_mode);
+  DrawTextPasses([&](const cc::PaintFlags& flags) {
+    font.DrawEmphasisMarks(canvas_, text_info, mark, point,
+                           DarkModeFlags(this, auto_dark_mode, flags));
+  });
 }
 
 void GraphicsContext::DrawBidiText(const Font& font,
@@ -577,11 +571,12 @@ void GraphicsContext::DrawBidiText(const Font& font,
       }
       return;
     }
-    if (font.DrawBidiText(canvas_, TextRunPaintInfo(run), point,
-                          Font::kDoNotPaintIfFontNotReady,
-                          DarkModeFlags(this, auto_dark_mode, flags),
-                          printing_ ? Font::DrawType::kGlyphsAndClusters
-                                    : Font::DrawType::kGlyphsOnly)) {
+    if (font.DeprecatedDrawBidiText(canvas_, TextRunPaintInfo(run), point,
+                                    Font::kDoNotPaintIfFontNotReady,
+                                    DarkModeFlags(this, auto_dark_mode, flags),
+                                    printing_
+                                        ? Font::DrawType::kGlyphsAndClusters
+                                        : Font::DrawType::kGlyphsOnly)) {
       paint_controller_.SetTextPainted();
     }
   });

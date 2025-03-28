@@ -63,6 +63,12 @@ class SidePanelControllerViews : public SidePanelController,
   // Currently this limits to the New Tab Page only.
   bool CanShowOnURL(const GURL& url) const;
 
+  // Returns true for 1P NTP or extension NTP, otherwise returns false.
+  bool ShouldEnableEditTheme(const GURL& url) const;
+
+  // Helper function to check if the URL belongs to an extension NTP.
+  bool IsExtensionNtp(const GURL& url) const;
+
   // Generates the view for the SidePanel contents. This is the WebUI for the
   // SidePanel. Used by the SidepanelRegistry to create the view.
   std::unique_ptr<views::View> CreateCustomizeChromeWebView(

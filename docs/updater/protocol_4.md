@@ -729,9 +729,9 @@ For `type == "download"`: Download a payload.
     the provided `outhash_sha256` or has an unexpected size also qualifies.
     Other network errors may also qualify.
 
-For `type == "decompress_lzma"`: Decompress a file produced by the previous
-    operation. The file is compressed using
-    [LZMA](https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Markov_chain_algorithm).
+For `type == "xz"`: Decompress an xz file produced by the previous operation.
+    The file is compressed using the
+    [XZ File Format](https://tukaani.org/xz/xz-file-format.txt).
 
 For `type == "zucc"`: Apply a differential Zucchini patch produced by a
     previous operation to a cached payload. The patch is generated using
@@ -832,7 +832,7 @@ attmpted as part of this update session. All events have the following members:
      *   3: An update session.
      *   4: An uninstall session.
      *   14: A `download` operation.
-     *   60: A `decompress_lzma` operation.
+     *   60: An `xz` operation.
      *   61: A `zucchini` patch application operation.
      *   62: A `puffin` patch application operation.
      *   63: A `crx3` package installation operation.

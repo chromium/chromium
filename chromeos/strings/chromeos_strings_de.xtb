@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Verwende die App „Inhaltsübertragung“ von Google, um die Daten deines Kontos einer Bildungseinrichtung in dein privates Konto zu übertragen, bevor du den Zugriff verlierst.</translation>
 <translation id="1026212596705997935">Tastenkombination wird bereits für „<ph name="CONFLICT_ACCEL_NAME" />“ verwendet. Soll diese nicht ersetzt werden, drücke eine andere Kombination. Wenn du die ursprüngliche Tastenkombination ersetzen möchtest, drücke diese Tastenkombination noch einmal.</translation>
 <translation id="1030856839388844477">Datennutzung zurücksetzen</translation>
+<translation id="1047095725494118091">Download nicht möglich. Versuche es noch einmal oder starte dein Gerät „<ph name="DEVICE_TYPE" />“ neu.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> Threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Neue Funktion verfügbar. Verwende den Aufwärtspfeil, um mehr zu erfahren.</translation>
 <translation id="1049663189809099096">pastellgelb</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Bildschirmschoner wird herunterladen</translation>
 <translation id="1094693127011229778">IP-Adresse ist nicht verfügbar</translation>
 <translation id="1100902271996134409">Bilder werden erstellt…</translation>
+<translation id="1107856713690040084">Audio des Geräts „<ph name="DEVICE_TYPE" />“</translation>
 <translation id="1116694919640316211">Über</translation>
 <translation id="1118572504348554005">Wir leiten über dieses Formular gesendetes Feedback möglicherweise an unsere Partner weiter, um Fehler und andere Probleme zu beheben, die du uns meldest. Gib keine vertraulichen Daten wie Passwörter an.</translation>
 <translation id="1119403468619527527">Zu wenige Wörter zum Vereinfachen</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Dunklen Modus einschalten</translation>
 <translation id="2164131940279488868">Vergewissere dich, dass ein Mikrofon angeschlossen ist, um Audio aufzunehmen</translation>
 <translation id="2173302385160625112">Bitte überprüfe deine Internetverbindung</translation>
+<translation id="2176909213844392588">Transkriptmodell für <ph name="LANGUAGE_NAME" /> kann nicht heruntergeladen werden. Versuche es noch einmal oder starte dein Gerät „<ph name="DEVICE_TYPE" />“ neu.</translation>
 <translation id="2180197493692062006">Es gab ein Problem. Versuche, die App wieder zu öffnen.</translation>
 <translation id="2189104374785738357">APN-Details bearbeiten</translation>
 <translation id="2195732836444333448">Das Tool ist derzeit ausgelastet. Versuche es später noch einmal.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Dokumenteneinzug (beidseitig)</translation>
 <translation id="3201315366910775591">Geteilte Alben können von anderen Personen aktualisiert werden</translation>
 <translation id="3211671540163313381">Tastenbelegung des Steuerkreuzes</translation>
+<translation id="3217462202230355157">Prüfe, ob das Mikrofon angeschlossen ist, oder starte dein Gerät „<ph name="DEVICE_TYPE" />“ neu</translation>
 <translation id="3226405216343213872">Suche nach Scannern läuft</translation>
 <translation id="3226657629376379887">Layout-Aktionsmenü</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> durch <ph name="CONVERSION_RATE" /> dividieren</translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Exklusiv</translation>
 <translation id="3404249063913988450">Bildschirmschoner aktivieren</translation>
 <translation id="3413935475507503304">Klicke zum Fortsetzen der Aktualisierung auf „Weiter“.</translation>
+<translation id="3416709353545797224">Audio des Geräts „<ph name="DEVICE_TYPE" />“ aufzeichnen</translation>
 <translation id="3428551088151258685">Outdoor</translation>
 <translation id="3428971106895559033">Pastelltönen</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Achte darauf, dass der Scanner eingeschaltet und entweder über das Netzwerk oder direkt verbunden ist</translation>
 <translation id="4159238217853743776">Teilweise</translation>
 <translation id="4159784952369912983">Violett</translation>
+<translation id="416219735020840807">Transkriptmodell kann nicht heruntergeladen werden. Versuche es noch einmal oder starte dein Gerät „<ph name="DEVICE_TYPE" />“ neu.</translation>
 <translation id="4170180284036919717">Foto aufnehmen</translation>
 <translation id="4170700058716978431">FEHLGESCHLAGEN</translation>
 <translation id="4171077696775491955">Helligkeit verringern</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Ausgewählter Text wird durch Vorschlag ersetzt</translation>
 <translation id="5346687412805619883">Lokales Netzwerk</translation>
 <translation id="5358174242040570474">Es gab ein Problem. Wähle noch einmal einen Hintergrund aus oder öffne die App ein weiteres Mal.</translation>
+<translation id="5368228070728130240">Modell für Erstellung von Zusammenfassung und Titel kann nicht heruntergeladen werden. Versuche es noch einmal oder starte dein Gerät „<ph name="DEVICE_TYPE" />“ neu.</translation>
 <translation id="5372659122375744710">WLAN ist nicht sicher</translation>
 <translation id="5376354385557966694">Automatischer heller Modus</translation>
 <translation id="5378184552853359930">IP-Typ</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">Fehlgeschlagene DNS-Auflösungen</translation>
 <translation id="6768237774506518020">Hohe Fehlerrate bei der DNS-Auflösung</translation>
 <translation id="6786747875388722282">Erweiterungen</translation>
+<translation id="6789891265243243337">Wenn Audio des Geräts „<ph name="DEVICE_TYPE" />“ aktiviert ist, werden alle auf diesem Gerät wiedergegebenen Audioinhalte von der Rekorder App aufgezeichnet</translation>
 <translation id="6791471867139427246">Farbe der Tastaturbeleuchtung</translation>
 <translation id="6796229976413584781">Tastenkombination gelöscht</translation>
 <translation id="6798678288485555829">Textnavigation</translation>
@@ -1728,6 +1736,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8930622219860340959">Drahtlos</translation>
 <translation id="8933650076320258356">Die ausgewählte Taste ist „<ph name="KEYS" />“ für „<ph name="DIRECTION" />“. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">IP-Adresse des Clients</translation>
+<translation id="8938606491880817721">Fehler beim Download. Versuche es noch einmal oder starte dein Gerät „<ph name="DEVICE_TYPE" />“ neu.</translation>
 <translation id="8944651180182756621">Launcher-Farbe</translation>
 <translation id="8945308580158685341">Bienen</translation>
 <translation id="894617464444543719">Das Gerät ist ein Smartphone.</translation>

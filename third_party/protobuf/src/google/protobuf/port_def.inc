@@ -590,7 +590,7 @@ static_assert(PROTOBUF_ABSL_MIN(20230125, 3),
 #define PROTOBUF_PREFETCH_WITH_OFFSET(base, offset)
 #endif
 
-#if __has_attribute(no_sanitize)
+#if defined(__has_attribute) && __has_attribute(no_sanitize)
 #define PROTOBUF_NO_SANITIZE(...) __attribute__((no_sanitize(__VA_ARGS__)))
 #else
 #define PROTOBUF_NO_SANITIZE(...)

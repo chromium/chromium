@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest,
     std::string error_log;
     ASSERT_TRUE(base::ReadFileToString(error_log_path_, &error_log));
     EXPECT_EQ(absl::StrFormat("%s - %s\n", file_path.AsUTF8Unsafe(),
-                              "Free up space in OneDrive to move this file"),
+                              "Free up space in OneDrive before trying again"),
               error_log);
   }
 }
@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, FailedUpload) {
     std::string error_log;
     ASSERT_TRUE(base::ReadFileToString(error_log_path_, &error_log));
     EXPECT_EQ(absl::StrFormat("%s - %s\n", file_path.AsUTF8Unsafe(),
-                              "Something went wrong. Try again."),
+                              "Something went wrong. Try again later."),
               error_log);
   }
 }

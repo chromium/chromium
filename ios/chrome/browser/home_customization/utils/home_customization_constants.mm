@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
+CustomizationSection* const kCustomizationSectionBackground =
+    @"kCustomizationSectionBackground";
+
 CustomizationSection* const kCustomizationSectionMainToggles =
     @"kCustomizationSectionMainToggles";
 

@@ -282,6 +282,11 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
 #if BUILDFLAG(IS_CHROMEOS)
   bool pin_supported = false;
   AdvancedCapabilities advanced_capabilities;
+
+  // Print scaling capability
+  std::vector<mojom::PrintScalingType> print_scaling_types;
+  mojom::PrintScalingType print_scaling_type_default =
+      mojom::PrintScalingType::kUnknownPrintScalingType;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)

@@ -1565,7 +1565,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2081816110395725788">Modo de inactividad con batería</translation>
 <translation id="2082187087049518845">Agrupar pestañas</translation>
 <translation id="2082510809738716738">Elige un color de tema</translation>
-<translation id="208547068587548667">Iniciar sesión en <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Vuelve a intentarlo</translation>
 <translation id="208634871997892083">VPN siempre activada</translation>
 <translation id="208654914566977272">Acciones sugeridas al hacer búsquedas en tu pantalla</translation>
@@ -3998,7 +3997,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3778740492972734840">&amp;Herramientas para desarrolladores</translation>
 <translation id="3778868487658107119">Puedes hacerle preguntas e indicarle tareas para que las realice. Esta función, siempre lista para ayudarte, te permite utilizar Google de forma personalizada.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{tu historial de navegación de # sitio}other{tu historial de navegación de # sitios}}</translation>
-<translation id="3779244863011082655">Usar otra cuenta de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> no puede comprobar tus contraseñas en busca de brechas de seguridad de datos. Inténtalo de nuevo más tarde.</translation>
 <translation id="3781742599892759500">Acceso a micrófono en Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5500,6 +5498,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4848191975108266266">"Ok Google" en el Asistente de Google</translation>
 <translation id="4849286518551984791">Tiempo universal coordinado (UTC/GMT)</translation>
 <translation id="4849517651082200438">No instalar</translation>
+<translation id="4849731766219625109">Usar tu cuenta de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="485053257961878904">No se ha podido configurar la sincronización de notificaciones</translation>
 <translation id="4850548109381269495">En ambos dispositivos, comprueba tu conexión a Internet y activa el Bluetooth. Después, inténtalo de nuevo.</translation>
 <translation id="4850669014075537160">Desplazamiento</translation>
@@ -5688,6 +5687,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4979510648199782334">Configuración de Microsoft 365 completada</translation>
 <translation id="4980805016576257426">Esta extensión contiene malware.</translation>
 <translation id="4983159853748980742">No se ha compartido tu contraseña. Comprueba tu conexión a Internet y asegúrate de haber iniciado sesión en Chrome. Después, inténtalo de nuevo.</translation>
+<translation id="498624032394115435">Cualquier persona que tenga el enlace puede editar todas las pestañas.</translation>
 <translation id="4986706507552097681">Siempre puedes seleccionar qué contenido quieres sincronizar en los ajustes. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="4986728572522335985">Esta acción borrará todos los datos de la llave de seguridad, incluido el PIN</translation>
 <translation id="4987944280765486504">Una vez completada la descarga, tu Chromebook se reiniciará y podrás continuar con la configuración.</translation>
@@ -8296,7 +8296,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6873571253135628430">Cambiar permisos de sitios</translation>
 <translation id="6876155724392614295">Bici</translation>
 <translation id="6876469544038980967">No es útil</translation>
-<translation id="687838958001010630">Cualquier persona que tenga el enlace puede editar todas las pestañas</translation>
 <translation id="6878422606530379992">Sensores permitidos</translation>
 <translation id="6878862640969460273">Horizontal</translation>
 <translation id="6880587130513028875">Se han bloqueado las imágenes en esta página.</translation>

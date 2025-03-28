@@ -56,20 +56,35 @@ void HistogramMemoryKB(std::atomic_uintptr_t* atomic_histogram_pointer,
 }
 
 // Wrapper around HISTOGRAM_POINTER_USE - mimics
+// UMA_HISTOGRAM_CUSTOM_COUNTS but allows for an external
+// atomic_histogram_pointer.
+void HistogramCustomCounts(std::atomic_uintptr_t* atomic_histogram_pointer,
+                           const char* name,
+                           int sample,
+                           int min_count,
+                           int max_count,
+                           size_t bucket_count) {
+  HISTOGRAM_POINTER_USE(atomic_histogram_pointer, name, Add(sample),
+                        base::Histogram::FactoryGet(
+                            name, min_count, max_count, bucket_count,
+                            base::HistogramBase::kUmaTargetedHistogramFlag));
+}
+
+// Wrapper around HISTOGRAM_POINTER_USE - mimics
 // UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES but allows for an external
 // atomic_histogram_pointer.
 void HistogramCustomMicrosecondsTimes(
     std::atomic_uintptr_t* atomic_histogram_pointer,
     const char* name,
-    int64_t sampleUSec,
-    unsigned minUSec,
-    unsigned maxUSec,
-    size_t bucketCount) {
+    int64_t sample_usec,
+    unsigned min_usec,
+    unsigned max_usec,
+    size_t bucket_count) {
   HISTOGRAM_POINTER_USE(
-      atomic_histogram_pointer, name, Add(sampleUSec),
+      atomic_histogram_pointer, name, Add(sample_usec),
       base::Histogram::FactoryMicrosecondsTimeGet(
-          name, base::Microseconds(minUSec), base::Microseconds(maxUSec),
-          bucketCount, base::HistogramBase::kUmaTargetedHistogramFlag));
+          name, base::Microseconds(min_usec), base::Microseconds(max_usec),
+          bucket_count, base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
 }  // namespace skia

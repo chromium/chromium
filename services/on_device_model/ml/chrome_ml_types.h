@@ -44,6 +44,8 @@ enum class ModelBackendType {
   // The APU accelerator backend. Only available on devices with APU, and need
   // special APU model files.
   kApuBackend,
+  // The CPU backend.
+  kCpuBackend,
 };
 
 }  // namespace ml

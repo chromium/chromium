@@ -3672,7 +3672,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
     }
   }
 
-  AttachPseudoElement(kPseudoIdScrollMarkerGroupBefore, context);
+  AttachLayoutPrecedingPseudoElements(context);
 
   AttachContext children_context(context);
   LayoutObject* layout_object = nullptr;
@@ -3702,13 +3702,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
   }
   children_context.use_previous_in_flow = true;
 
-  // The order for buttons is described in
-  // https://drafts.csswg.org/css-overflow-5/#scroll-buttons.
-  AttachPseudoElement(kPseudoIdScrollButtonBlockStart, context);
-  AttachPseudoElement(kPseudoIdScrollButtonInlineStart, context);
-  AttachPseudoElement(kPseudoIdScrollButtonInlineEnd, context);
-  AttachPseudoElement(kPseudoIdScrollButtonBlockEnd, context);
-  AttachPseudoElement(kPseudoIdScrollMarkerGroupAfter, context);
+  AttachLayoutSucceedingPseudoElements(context);
 
   if (skipped_container_descendants &&
       (!layout_object || !layout_object->IsEligibleForSizeContainment())) {
@@ -4194,7 +4188,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   if (const ComputedStyle* style = GetComputedStyle()) {
     child_recalc_context
         .has_scroller_ancestor_with_scroll_marker_group_property |=
-        style->IsScrollContainer() && !style->ScrollMarkerGroupNone();
+        (style->IsScrollContainer() || IsDocumentElement()) &&
+        !style->ScrollMarkerGroupNone();
     if (style->CanMatchSizeContainerQueries(*this)) {
       // IsSuppressed() means we are at the root of a container subtree called
       // from UpdateStyleAndLayoutTreeForContainer(). If so, we can not skip
@@ -9249,6 +9244,19 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
     }
   }
   if (const ComputedStyle* style = GetComputedStyle()) {
+    if (IsDocumentElement()) {
+      // The root element is never a scroll container, but is scrolled by the
+      // viewport, which is always (programmatically) scrollable.
+      // ::scroll-marker-group pseudo element boxes are generated as children of
+      // the root element box, and not as siblings which is the case for other
+      // elements.
+      if (pseudo_id == kPseudoIdScrollMarkerGroupBefore) {
+        return style->HasScrollMarkerGroupBefore();
+      }
+      if (pseudo_id == kPseudoIdScrollMarkerGroupAfter) {
+        return style->HasScrollMarkerGroupAfter();
+      }
+    }
     return style->CanGeneratePseudoElement(pseudo_id);
   }
   return false;
@@ -11191,7 +11199,9 @@ Element::ValidateAttributeIndex(wtf_size_t index,
   // See https://crbug.com/333739948.
 
   if (index == kNotFound) {
-    return index;
+    return RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()
+               ? FindAttributeIndex(qname)
+               : index;
   }
 
   // If we previously found an attribute, we must also have attribute data.
@@ -11212,9 +11222,52 @@ void Element::SetAttributeWithoutValidation(const QualifiedName& name,
                        AttributeModificationReason::kDirectly);
 }
 
-void Element::SetAttributeWithValidation(const QualifiedName& name,
+void Element::SetAttributeWithValidation(Attr* attribute,
                                          const AtomicString& value,
                                          ExceptionState& exception_state) {
+  if (RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()) {
+    CHECK(attribute);
+    // Corresponds to:
+    // https://whatpr.org/dom/1268.html#set-an-existing-attribute-value
+    // Eventually: https://dom.spec.whatwg.org/#set-an-existing-attribute-value
+
+    // Step 1: If attribute's element is null, then set attribute [...]
+    // Note: Was performed by the caller.
+    // Step 2.1: Let originalElement be attribute's element.
+    // Note: originalElement is this. We already remember that.
+
+    // Step 2.2: Let verifiedValue be [..] verify attribute value [...].
+    AtomicString verified_value = AtomicString(TrustedTypesCheckFor(
+        ExpectedTrustedTypeForAttribute(attribute->GetQualifiedName()), value,
+        GetExecutionContext(), "Element", "setAttribute", exception_state));
+    if (exception_state.HadException()) {
+      return;
+    }
+
+    // Step 2.3: If attribute’s element is null, then set attribute’s value to
+    // value, and return.
+    // Note: Step 2.2 might have changed element_.
+    // Note: Without an owner element, attribute should accept the value without
+    //       additional checking.
+    if (!attribute->ownerElement()) {
+      attribute->setValue(verified_value, ASSERT_NO_EXCEPTION);
+      return;
+    }
+
+    // Step 2.4: If attribute’s element is not originalElement, then return.
+    if (attribute->ownerElement() != this) {
+      return;
+    }
+
+    // Step 2.5: Change attribute to verifiedValue.
+    // Note: We've done all the validations here, so we can now call 'without':
+    SetAttributeWithoutValidation(attribute->GetQualifiedName(),
+                                  verified_value);
+    return;
+  }
+
+  // Legacy behaviour. To be removed once TrustedTypesHTML is perma-enabled.
+  const QualifiedName name = attribute->GetQualifiedName();
   SynchronizeAttribute(name);
 
   AtomicString trusted_value(TrustedTypesCheckFor(
@@ -11258,7 +11311,7 @@ void Element::SetAttributeHinted(AtomicString local_name,
   }
   // The `TrustedTypesCheckFor` call above may run script, which may modify
   // the current element, which in turn may invalidate the index. So we'll
-  // check, and re-calculcate it if necessary.
+  // check, and re-calculate it if necessary.
   index = ValidateAttributeIndex(index, q_name);
 
   SetAttributeInternal(index, q_name, trusted_value,
@@ -11287,7 +11340,7 @@ void Element::SetAttributeHinted(AtomicString local_name,
   }
   // The `TrustedTypesCheckFor` call above may run script, which may modify
   // the current element, which in turn may invalidate the index. So we'll
-  // check, and re-calculcate it if necessary.
+  // check, and re-calculate it if necessary.
   index = ValidateAttributeIndex(index, q_name);
 
   SetAttributeInternal(index, q_name, value,

@@ -21,6 +21,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditDelegates.DialogMode;
@@ -30,7 +31,6 @@ import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileE
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link CustomTileEditMediator}. */
-/** Tests for {@link MostVisitedTilesViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
@@ -41,12 +41,10 @@ public class CustomTileEditMediatorUnitTest {
     @Mock private MediatorToView mViewDelegate;
     @Mock private Tile mOriginalTile;
 
-    private CustomTileEditMediator mMediator;
-
     @Test
     public void testShowAddNewTile() {
-        mMediator = new CustomTileEditMediator(mBrowserDelegate, mViewDelegate, null);
-        mMediator.show();
+        CustomTileEditMediator mediator = createAndSetupMediator(/* originalTile= */ null);
+        mediator.show();
 
         verify(mViewDelegate).setDialogMode(DialogMode.ADD_SHORTCUT);
         verify(mViewDelegate).setName("");
@@ -58,8 +56,8 @@ public class CustomTileEditMediatorUnitTest {
     public void testShowEditExistingTile() {
         when(mOriginalTile.getTitle()).thenReturn("Test Name");
         when(mOriginalTile.getUrl()).thenReturn(new GURL("http://test.com"));
-        mMediator = new CustomTileEditMediator(mBrowserDelegate, mViewDelegate, mOriginalTile);
-        mMediator.show();
+        CustomTileEditMediator mediator = createAndSetupMediator(mOriginalTile);
+        mediator.show();
 
         verify(mViewDelegate).setDialogMode(DialogMode.EDIT_SHORTCUT);
         verify(mViewDelegate).setName("Test Name");
@@ -69,8 +67,8 @@ public class CustomTileEditMediatorUnitTest {
 
     @Test
     public void testOnUrlTextChangedValidUrl() {
-        mMediator = new CustomTileEditMediator(mBrowserDelegate, mViewDelegate, null);
-        mMediator.onUrlTextChanged("http://valid.com");
+        CustomTileEditMediator mediator = createAndSetupMediator(/* originalTile= */ null);
+        mediator.onUrlTextChanged("http://valid.com");
 
         verify(mViewDelegate, never()).setUrlErrorByCode(anyInt());
         verify(mViewDelegate).toggleSaveButton(true);
@@ -78,8 +76,8 @@ public class CustomTileEditMediatorUnitTest {
 
     @Test
     public void testOnUrlTextChangedInvalidUrl() {
-        mMediator = new CustomTileEditMediator(mBrowserDelegate, mViewDelegate, null);
-        mMediator.onUrlTextChanged("invalid url");
+        CustomTileEditMediator mediator = createAndSetupMediator(/* originalTile= */ null);
+        mediator.onUrlTextChanged("invalid url");
 
         verify(mViewDelegate).setUrlErrorByCode(UrlErrorCode.INVALID_URL);
         verify(mViewDelegate).toggleSaveButton(false);
@@ -88,8 +86,8 @@ public class CustomTileEditMediatorUnitTest {
     @Test
     public void testOnUrlTextChangedDuplicateUrl() {
         when(mBrowserDelegate.isUrlDuplicate(any())).thenReturn(true);
-        mMediator = new CustomTileEditMediator(mBrowserDelegate, mViewDelegate, null);
-        mMediator.onUrlTextChanged("http://duplicate.com");
+        CustomTileEditMediator mediator = createAndSetupMediator(/* originalTile= */ null);
+        mediator.onUrlTextChanged("http://duplicate.com");
 
         verify(mViewDelegate).setUrlErrorByCode(UrlErrorCode.DUPLICATE_URL);
         verify(mViewDelegate).toggleSaveButton(false);
@@ -98,8 +96,8 @@ public class CustomTileEditMediatorUnitTest {
     @Test
     public void testOnUrlTextChangedOriginalUrlUnchanged() {
         when(mOriginalTile.getUrl()).thenReturn(new GURL("http://original.com"));
-        mMediator = new CustomTileEditMediator(mBrowserDelegate, mViewDelegate, mOriginalTile);
-        mMediator.onUrlTextChanged("http://original.com");
+        CustomTileEditMediator mediator = createAndSetupMediator(mOriginalTile);
+        mediator.onUrlTextChanged("http://original.com");
 
         verify(mBrowserDelegate, never()).isUrlDuplicate(any());
         verify(mViewDelegate, never()).setUrlErrorByCode(anyInt());
@@ -109,8 +107,8 @@ public class CustomTileEditMediatorUnitTest {
     @Test
     public void testOnSaveValidSubmit() {
         when(mBrowserDelegate.submitChange(any(), any())).thenReturn(true);
-        mMediator = new CustomTileEditMediator(mBrowserDelegate, mViewDelegate, null);
-        mMediator.onSave("Test", "http://valid.com");
+        CustomTileEditMediator mediator = createAndSetupMediator(/* originalTile= */ null);
+        mediator.onSave("Test", "http://valid.com");
 
         verify(mBrowserDelegate).closeEditDialog(true);
         verify(mViewDelegate, never()).setUrlErrorByCode(anyInt());
@@ -118,8 +116,8 @@ public class CustomTileEditMediatorUnitTest {
 
     @Test
     public void testOnSaveInvalidUrl() {
-        mMediator = new CustomTileEditMediator(mBrowserDelegate, mViewDelegate, null);
-        mMediator.onSave("Test", "invalid url");
+        CustomTileEditMediator mediator = createAndSetupMediator(/* originalTile= */ null);
+        mediator.onSave("Test", "invalid url");
 
         verify(mBrowserDelegate, never()).closeEditDialog(anyBoolean());
         verify(mViewDelegate).setUrlErrorByCode(UrlErrorCode.INVALID_URL);
@@ -129,8 +127,8 @@ public class CustomTileEditMediatorUnitTest {
     @Test
     public void testOnSaveDuplicateUrl() {
         when(mBrowserDelegate.submitChange(any(), any())).thenReturn(false);
-        mMediator = new CustomTileEditMediator(mBrowserDelegate, mViewDelegate, null);
-        mMediator.onSave("Test", "http://duplicate.com");
+        CustomTileEditMediator mediator = createAndSetupMediator(/* originalTile= */ null);
+        mediator.onSave("Test", "http://duplicate.com");
 
         verify(mBrowserDelegate, never()).closeEditDialog(anyBoolean());
         verify(mViewDelegate).setUrlErrorByCode(UrlErrorCode.DUPLICATE_URL);
@@ -139,9 +137,20 @@ public class CustomTileEditMediatorUnitTest {
 
     @Test
     public void testOnCancel() {
-        mMediator = new CustomTileEditMediator(mBrowserDelegate, mViewDelegate, null);
-        mMediator.onCancel();
+        CustomTileEditMediator mediator = createAndSetupMediator(/* originalTile= */ null);
+        mediator.onCancel();
 
         verify(mBrowserDelegate).closeEditDialog(false);
+    }
+
+    /**
+     * Helper to create the Mediator, assuming mocks have been set up.
+     *
+     * @param originalTile The tile to edit, or null to add a new tile.
+     */
+    private CustomTileEditMediator createAndSetupMediator(@Nullable Tile originalTile) {
+        CustomTileEditMediator mediator = new CustomTileEditMediator(originalTile);
+        mediator.setDelegates(mViewDelegate, mBrowserDelegate);
+        return mediator;
     }
 }

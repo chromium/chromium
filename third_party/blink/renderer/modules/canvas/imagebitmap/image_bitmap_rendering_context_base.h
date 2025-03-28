@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -23,7 +24,8 @@ class ImageLayerBridge;
 class V8UnionHTMLCanvasElementOrOffscreenCanvas;
 
 class MODULES_EXPORT ImageBitmapRenderingContextBase
-    : public CanvasRenderingContext {
+    : public ScriptWrappable,
+      public CanvasRenderingContext {
  public:
   ImageBitmapRenderingContextBase(CanvasRenderingContextHost*,
                                   const CanvasContextCreationAttributesCore&);

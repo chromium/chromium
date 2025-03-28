@@ -134,8 +134,10 @@ interface PasswordAutofillAgent {
                                 mojo_base.mojom.String16 password);
 
   // Informs that there are no saved credentials for filling.
-  // This is the "no results" equivalent of SetPasswordFillData.
-  InformNoSavedCredentials();
+  // This is the "no results" equivalent of SetPasswordFillData. In certain
+  // cases the password manager shows popups (e.g. promo UIs) even if there are
+  // no saved credentials.
+ InformNoSavedCredentials(bool should_show_popup_without_passwords);
 
   // Fills the given `credential` into the last focused text input.
   FillIntoFocusedField(

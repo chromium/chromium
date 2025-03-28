@@ -10,12 +10,9 @@
 
 class PrefService;
 
-namespace base {
-class FilePath;
-}
-
 namespace optimization_guide {
 
+class FakeBaseModelAsset;
 class FakeOnDeviceModelComponentStateManagerDelegate;
 
 // Provides scoped creation and destruction of
@@ -35,8 +32,7 @@ class TestOnDeviceModelComponentStateManager {
 
   void SetFreeDiskSpace(int64_t free_space_bytes);
 
-  void SetReady(const base::FilePath& install_dir,
-                const std::string& version = "0.0.1");
+  void SetReady(const FakeBaseModelAsset& asset);
 
   struct State;
 

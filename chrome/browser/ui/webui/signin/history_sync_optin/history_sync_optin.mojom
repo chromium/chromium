@@ -1,0 +1,21 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module history_sync_optin.mojom;
+
+// Factory ensures that the Page and Handler interfaces
+// are always created together without requiring an initialization call from the
+// WebUI to the handler.
+interface PageHandlerFactory {
+  // Creates both the `page `and `handler` to be used for communication between
+  // the Browser and the Renderer.
+  CreateHistorySyncOptinHandler(
+      pending_remote<Page> page, pending_receiver<PageHandler> handler);
+};
+
+// Called from TS side of chrome://history-sync-optin (Renderer -> Browser)
+interface PageHandler {};
+
+// Called from C++ side of chrome://history-sync-optin (Browser -> Renderer)
+interface Page {};

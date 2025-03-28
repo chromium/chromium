@@ -44,6 +44,9 @@ constexpr base::TimeDelta kRemoveTabRetryDelay = base::Seconds(1);
 // Delay in seconds before we attempt to pin or unpin the active SWA window.
 constexpr base::TimeDelta kSetPinnedStateDelay = base::Seconds(3);
 
+// Delay in seconds before we attempt to pause or unpause the active SWA window.
+constexpr base::TimeDelta kSetPausedStateDelay = base::Seconds(3);
+
 }  // namespace
 
 OnTaskSessionManager::OnTaskSessionManager(
@@ -189,6 +192,7 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
   }
 
   LockOrUnlockWindow(bundle.locked());
+  PauseOrUnpauseApp(bundle.lock_to_app_home());
 
   // Show relevant notifications if content was added or deleted.
   if (has_new_content) {
@@ -276,6 +280,7 @@ void OnTaskSessionManager::OnAppReloaded() {
 
 void OnTaskSessionManager::LockOrUnlockWindow(bool lock_window) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  lock_in_progress_ = lock_window;
   bool locked_mode_state_changed = (should_lock_window_ != lock_window);
   should_lock_window_ = lock_window;
   notifications_manager_->ConfigureForLockedMode(should_lock_window_);
@@ -329,6 +334,7 @@ void OnTaskSessionManager::LockOrUnlockWindow(bool lock_window) {
 void OnTaskSessionManager::EnterLockedMode() {
   // If the Boca SWA is closed during the countdown, we launch it again so we
   // can pin the SWA window.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (const SessionID window_id =
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       !window_id.is_valid()) {
@@ -338,6 +344,24 @@ void OnTaskSessionManager::EnterLockedMode() {
       /*pinned=*/true,
       base::BindRepeating(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OnTaskSessionManager::PauseOrUnpauseApp(bool pause_app) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (lock_in_progress_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&OnTaskSessionManager::PauseOrUnpauseApp,
+                       weak_ptr_factory_.GetWeakPtr(), pause_app),
+        kSetPausedStateDelay);
+    return;
+  }
+  if (const SessionID window_id =
+          system_web_app_manager_->GetActiveSystemWebAppWindowID();
+      window_id.is_valid()) {
+    system_web_app_manager_->SetPauseStateForSystemWebAppWindow(pause_app,
+                                                                window_id);
+  }
 }
 
 void OnTaskSessionManager::OnTabAdded(const SessionID active_tab_id,
@@ -538,6 +562,8 @@ void OnTaskSessionManager::OnBundleTabRemoved(GURL url) {
 }
 
 void OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  lock_in_progress_ = false;
   // TODO (b/370871395): Move `SetWindowTrackerForSystemWebAppWindow` to
   // `OnTaskSystemWebAppManager` eliminating the need for this callback.
   if (const SessionID window_id =

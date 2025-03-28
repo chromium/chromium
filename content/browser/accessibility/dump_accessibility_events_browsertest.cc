@@ -519,12 +519,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("checked-mixed-changed.html"));
 }
 
-// http:/crbug.com/889013
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       DISABLED_AccessibilityEventsCaretMove) {
-  RunEventTest(FILE_PATH_LITERAL("caret-move.html"));
-}
-
 // Flaky on Windows, disabled on Linux: https://crbug.com/1186887
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityEventsCaretMoveHiddenInput \
@@ -543,16 +537,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("checkbox-validity.html"));
 }
 
-// Flaky on TSAN, see https://crbug.com/1066702
-#if defined(THREAD_SANITIZER)
-#define MAYBE_AccessibilityEventsCaretBrowsingEnabled \
-  DISABLED_AccessibilityEventsCaretBrowsingEnabled
-#else
-#define MAYBE_AccessibilityEventsCaretBrowsingEnabled \
-  AccessibilityEventsCaretBrowsingEnabled
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsCaretBrowsingEnabled) {
+                       AccessibilityEventsCaretBrowsingEnabled) {
   // This actually enables caret browsing without setting the pref.
   GetWebContents()->GetMutableRendererPrefs()->caret_browsing_enabled = true;
   // This notifies accessibility that caret browsing is on so that it sends

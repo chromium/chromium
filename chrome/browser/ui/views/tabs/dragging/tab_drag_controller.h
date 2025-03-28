@@ -59,6 +59,7 @@ class TabStripModel;
 class TabStripScrollSession;
 class WindowFinder;
 class TabStripScrollSession;
+struct DetachedTabGroup;
 
 // TabDragController is responsible for managing the tab dragging session. When
 // the user presses the mouse on a tab a new TabDragController is created and
@@ -350,7 +351,9 @@ class TabDragController : public views::WidgetObserver
   void AttachToNewContext(
       TabDragContext* attached_context,
       std::unique_ptr<TabDragController> controller,
-      std::vector<std::unique_ptr<tabs::TabModel>> owned_tabs);
+      std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
+                               std::unique_ptr<DetachedTabGroup>>>
+          owned_tabs_and_groups);
 
   // Sets up dragging in `attached_context_`. The dragged tabs must already
   // be present.
@@ -361,7 +364,8 @@ class TabDragController : public views::WidgetObserver
   // `attached_context_` currently owns a controller. Otherwise returns
   // nullptr.
   std::tuple<std::unique_ptr<TabDragController>,
-             std::vector<std::unique_ptr<tabs::TabModel>>>
+             std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
+                                      std::unique_ptr<DetachedTabGroup>>>>
   Detach(ReleaseCapture release_capture);
 
   // Detach from `attached_context_` and attach to `target_context` instead.

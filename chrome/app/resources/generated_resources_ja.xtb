@@ -1562,7 +1562,6 @@
 <translation id="2081816110395725788">バッテリー駆動時のアイドル設定</translation>
 <translation id="2082187087049518845">タブをグループ化する</translation>
 <translation id="2082510809738716738">テーマカラーを選択</translation>
-<translation id="208547068587548667"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> にログイン</translation>
 <translation id="208586643495776849">もう一度お試しください</translation>
 <translation id="208634871997892083">常時接続 VPN</translation>
 <translation id="208654914566977272">画面検索時の操作の提案</translation>
@@ -1985,7 +1984,7 @@
 <translation id="2359556993567737338">Bluetooth デバイスの接続</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2360792123962658445">このページに関して、概要、関連する検索、その他の有益な情報を確認するには、ツールバーの Google 検索サイドパネル ボタンを選択します</translation>
-<translation id="2361100938102002520">このブラウザに管理対象プロファイルを追加します。このプロファイルは管理者の制御下にあり、管理者はプロファイルのデータにアクセスできます。</translation>
+<translation id="2361100938102002520">このブラウザに管理対象プロフィールを追加します。このプロフィールは管理者の制御下にあり、管理者はプロフィールのデータにアクセスできます。</translation>
 <translation id="236117173274098341">最適化</translation>
 <translation id="2361340419970998028">フィードバックを送信しています...</translation>
 <translation id="236141728043665931">マイクのアクセスを常にブロックする</translation>
@@ -2001,6 +2000,7 @@
 <translation id="2373666622366160481">用紙に合わせる</translation>
 <translation id="2375406435414127095">スマートフォンに接続</translation>
 <translation id="2376056713414548745">読み上げ</translation>
+<translation id="2376122016044804363">クリップボードへのコピーの確認</translation>
 <translation id="2377667304966270281">ハードの障害数</translation>
 <translation id="237828693408258535">このページを翻訳しますか？</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{この拡張機能はまもなくサポートされなくなる可能性があります}other{これらの拡張機能はまもなくサポートされなくなる可能性があります}}</translation>
@@ -3152,6 +3152,7 @@
 <translation id="3192586965067888278">問題の内容を詳しく説明します。フィードバックは、人間によるレビューのため Google に送信され、Google のプロダクトやサービスの改善または開発の目的で使用される場合があります。</translation>
 <translation id="3192947282887913208">音声ファイル</translation>
 <translation id="3193695589337931419">システム シグナル ユーティリティ</translation>
+<translation id="3194095220941877499">リンク、画像、または動画をコピーするときに確認メッセージを表示する</translation>
 <translation id="3196912927885212665">Android スマートフォンでセットアップするには、Chromebook の Bluetooth をオンにする必要があります</translation>
 <translation id="3197453258332670132">右クリックするか長押しすると、選択したテキストに関連する情報が表示されます</translation>
 <translation id="3199127022143353223">サーバー</translation>
@@ -3988,7 +3989,6 @@
 <translation id="3778740492972734840">デベロッパー ツール(&amp;D)</translation>
 <translation id="3778868487658107119">あなただけの Google が、知りたいこと、やりたいことをサポートします。なんでも話してみてください。</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# 件のサイトの閲覧履歴}other{# 件のサイトの閲覧履歴}}</translation>
-<translation id="3779244863011082655">別の <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> アカウントを使用</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> でパスワードがデータ侵害の被害にあっていないか確認することができません。しばらくしてからもう一度お試しください。</translation>
 <translation id="3781742599892759500">Linux のマイクへのアクセス</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5489,6 +5489,7 @@
 <translation id="4848191975108266266">Google アシスタントの「OK Google」</translation>
 <translation id="4849286518551984791">協定世界時（UTC / GMT）</translation>
 <translation id="4849517651082200438">インストールしない</translation>
+<translation id="4849731766219625109"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> アカウントを使用する</translation>
 <translation id="485053257961878904">通知の同期を設定できませんでした</translation>
 <translation id="4850548109381269495">両方のデバイスでインターネット接続を確認してから、Bluetooth をオンにして、もう一度お試しください。</translation>
 <translation id="4850669014075537160">スクロール</translation>
@@ -5677,6 +5678,7 @@
 <translation id="4979510648199782334">Microsoft 365 のセットアップが完了しました</translation>
 <translation id="4980805016576257426">この拡張機能には不正なソフトウェアが含まれています。</translation>
 <translation id="4983159853748980742">パスワードは共有されませんでした。インターネット接続と、Chrome にログインしていることを確認してから、もう一度お試しください。</translation>
+<translation id="498624032394115435">リンクを知っているユーザーは誰でも、すべてのタブを編集できます。</translation>
 <translation id="4986706507552097681">同期する項目はいつでも [設定] で選択できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
 <translation id="4986728572522335985">セキュリティ キーに保存されているすべてのデータ（PIN を含む）が削除されます</translation>
 <translation id="4987944280765486504">ダウンロードが完了すると Chromebook が再起動し、セットアップを続行できます。</translation>
@@ -8280,7 +8282,6 @@
 <translation id="6873571253135628430">サイトの権限を変更する</translation>
 <translation id="6876155724392614295">自転車</translation>
 <translation id="6876469544038980967">役に立たなかった</translation>
-<translation id="687838958001010630">リンクを知っているユーザーは誰でも、すべてのタブを編集できます</translation>
 <translation id="6878422606530379992">センサーが許可されました</translation>
 <translation id="6878862640969460273">横向き</translation>
 <translation id="6880587130513028875">このページの画像はブロックされました。</translation>
@@ -8348,7 +8349,7 @@
 <translation id="6922763095098248079">このデバイスは組織によって管理されています。管理者はこのデバイスの任意のプロファイルのデータにアクセスできます。</translation>
 <translation id="6923633482430812883">共有フォルダのマウントエラー。接続先のファイル サーバーが SMBv2 以降に対応しているか確認してください。</translation>
 <translation id="6924109527536857168">同期が必要です</translation>
-<translation id="6925127338315966709">このブラウザに管理対象プロファイルを追加します。このプロファイルは管理者の制御下にあり、管理者はプロファイルのデータにアクセスできます。同期が有効化されている場合は、ブックマーク、履歴、パスワード、その他の設定がアカウントに同期され、管理者が管理できます。</translation>
+<translation id="6925127338315966709">このブラウザに管理対象プロフィールを追加します。このプロフィールは管理者の制御下にあり、管理者はプロフィールのデータにアクセスできます。同期が有効化されている場合は、ブックマーク、履歴、パスワード、その他の設定がアカウントに同期され、管理者が管理できます。</translation>
 <translation id="6928650056523249512">使用していないサイトから権限を自動的に削除する</translation>
 <translation id="6929126689972602640">保護者による使用制限は学校用アカウントではサポートされていません。学校用アカウントを追加し、Google Classroom や他のウェブサイトにアクセスして自宅で学習できるようにするには、まずお子様の個人アカウントでログインしてください。学校用アカウントは設定の後半で追加できます。</translation>
 <translation id="6929760895658557216">OK Google</translation>
@@ -11466,7 +11467,7 @@
 <translation id="9111330022786356709">マウスボタンの追加または指定</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111519254489533373">セーフ ブラウジングの設定に移動</translation>
-<translation id="9111668656364922873">新しいプロファイルへようこそ</translation>
+<translation id="9111668656364922873">新しいプロフィールへようこそ</translation>
 <translation id="9112517757103905964">このファイルには機密コンテンツが含まれているため、組織は削除することを推奨しています</translation>
 <translation id="9112748030372401671">壁紙を変更する</translation>
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> は危害を及ぼす可能性があります。Google に送信してスキャンしますか？</translation>

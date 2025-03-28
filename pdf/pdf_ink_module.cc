@@ -1073,6 +1073,7 @@ PdfInkModule::CreateInProgressStrokeSegmentsFromInputs() const {
 
   const DrawingStrokeState& state = drawing_stroke_state();
   const ink::Brush& brush = GetDrawingBrush().ink_brush();
+  CHECK(PdfInkBrush::IsToolSizeInRange(brush.GetSize()));
   std::vector<ink::InProgressStroke> stroke_segments;
   stroke_segments.reserve(state.inputs.size());
   for (size_t segment_number = 0; const auto& segment : state.inputs) {

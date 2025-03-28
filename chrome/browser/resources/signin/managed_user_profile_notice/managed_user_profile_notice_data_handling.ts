@@ -34,8 +34,8 @@ export class ManagedUserProfileNoticeDataHandlingElement extends CrLitElement {
     };
   }
 
-  override title: string = '';
-  selectedDataHandling: BrowsingDataHandling|null = null;
+  override accessor title: string = '';
+  accessor selectedDataHandling: BrowsingDataHandling|null = null;
 
   override firstUpdated() {
     const titleElement = this.shadowRoot.querySelector<HTMLElement>('.title');

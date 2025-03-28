@@ -20,6 +20,10 @@
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "printing/printing_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace printer = cloud_devices::printer;
 
 namespace cloud_print {
@@ -256,6 +260,49 @@ printer::VendorCapabilities GetVendorCapabilities(
 
   return vendor_capabilities;
 }
+
+printer::FitToPageCapability GetFitToPageCapabilities(
+    const printing::PrinterSemanticCapsAndDefaults& semantic_info) {
+  auto ToFitToPageType = [](const printing::mojom::PrintScalingType& type) {
+    switch (type) {
+      case printing::mojom::PrintScalingType::kAuto:
+        return printer::FitToPageType::AUTO;
+      case printing::mojom::PrintScalingType::kAutoFit:
+        return printer::FitToPageType::AUTO_FIT;
+      case printing::mojom::PrintScalingType::kFit:
+        return printer::FitToPageType::FIT;
+      case printing::mojom::PrintScalingType::kFill:
+        return printer::FitToPageType::FILL;
+      case printing::mojom::PrintScalingType::kNone:
+        return printer::FitToPageType::NONE;
+      case printing::mojom::PrintScalingType::kUnknownPrintScalingType:
+        NOTREACHED();
+    }
+  };
+
+  printer::FitToPageCapability fit_to_page;
+  for (const auto& value : semantic_info.print_scaling_types) {
+    if (value == printing::mojom::PrintScalingType::kUnknownPrintScalingType) {
+      continue;
+    }
+    fit_to_page.AddOption(ToFitToPageType(value));
+  }
+
+  if (semantic_info.print_scaling_type_default !=
+      printing::mojom::PrintScalingType::kUnknownPrintScalingType) {
+    auto default_type =
+        ToFitToPageType(semantic_info.print_scaling_type_default);
+    // If default value is not among supported options, return empty options.
+    if (!fit_to_page.Contains(default_type)) {
+      return {};
+    }
+    fit_to_page.AddDefaultOption(default_type, true);
+  } else if (!fit_to_page.empty()) {
+    fit_to_page.AddDefaultOption(fit_to_page[0], true);
+  }
+
+  return fit_to_page;
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
@@ -356,6 +403,17 @@ base::Value PrinterSemanticCapsAndDefaultsToCdd(
     printer::VendorCapabilities vendor_capabilities =
         GetVendorCapabilities(semantic_info);
     vendor_capabilities.SaveTo(&description);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          printing::features::kApiPrintingMarginsAndScale)) {
+    if (!semantic_info.print_scaling_types.empty()) {
+      printer::FitToPageCapability fit_to_page =
+          GetFitToPageCapabilities(semantic_info);
+      if (fit_to_page.IsValid()) {
+        fit_to_page.SaveTo(&description);
+      }
+    }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

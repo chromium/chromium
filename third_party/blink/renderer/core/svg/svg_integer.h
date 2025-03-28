@@ -44,7 +44,7 @@ class SVGInteger final : public SVGPropertyHelper<SVGInteger> {
 
   explicit SVGInteger(int = 0);
 
-  virtual SVGInteger* Clone() const;
+  SVGInteger* Clone() const;
 
   int Value() const { return value_; }
   void SetValue(int value) { value_ = value; }

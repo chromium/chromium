@@ -111,7 +111,7 @@ using signin_metrics::PromoAction;
                     identityManager:IdentityManagerFactory::GetForProfile(
                                         profile)];
 
-  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+  if (IsIdentityDiscAccountMenuEnabled()) {
     ManageAccountsTableViewController* viewController =
         [[ManageAccountsTableViewController alloc]
             initWithOfferSignout:self.showSignoutButton];

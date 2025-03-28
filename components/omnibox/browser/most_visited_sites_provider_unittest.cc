@@ -157,6 +157,13 @@ class MostVisitedSitesProviderTest : public testing::Test,
                                   metrics::OmniboxFocusType::INTERACTION_FOCUS);
   }
 
+  // A prefetch AutocompleteInput on Web.
+  AutocompleteInput BuildAutocompletePrefetchInputForWeb() {
+    return BuildAutocompleteInput(
+        WEB_URL, WEB_URL, metrics::OmniboxEventProto::OTHER_ZPS_PREFETCH,
+        metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  }
+
   // Iterate over all matches offered by the Provider and verify these against
   // the supplied list of History URLs.
   void CheckMatchesEquivalentTo(const std::vector<TestData>& data,
@@ -596,6 +603,7 @@ TEST_F(MostVisitedSitesProviderTest, TestDesktopQueryingHistoryService) {
   scoped_config.Get().most_visited_recency_factor =
       history::kMvtScoringParamRecencyFactor_Default;
   scoped_config.Get().max_suggestions = 8;
+  scoped_config.Get().prefetch_most_visited_sites = false;
 
   history::HistoryService::QueryMostVisitedURLsCallback callback;
   EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))
@@ -639,6 +647,7 @@ TEST_F(MostVisitedSitesProviderTest, TestDeleteMatch) {
       scoped_config;
   scoped_config.Get().enabled = true;
   scoped_config.Get().max_suggestions = 8;
+  scoped_config.Get().prefetch_most_visited_sites = false;
 
   history::HistoryService::QueryMostVisitedURLsCallback callback;
   EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))
@@ -679,6 +688,102 @@ TEST_F(MostVisitedSitesProviderTest, TestDeleteMatch) {
   provider_->DeleteMatch(provider_->matches().at(0));
 
   ASSERT_EQ(3u, provider_->matches().size());
+}
+
+TEST_F(MostVisitedSitesProviderTest, PrefetchingUpdatesCachedSites) {
+  // Set a MockHistoryService.
+  auto history_service = std::make_unique<MockHistoryService>();
+  auto& history_service_ref = *history_service;
+  client_.set_history_service(std::move(history_service));
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
+      scoped_config;
+  scoped_config.Get().enabled = true;
+  scoped_config.Get().max_suggestions = 8;
+  scoped_config.Get().prefetch_most_visited_sites = true;
+
+  history::HistoryService::QueryMostVisitedURLsCallback callback;
+  EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))
+      .Times(2)
+      .WillRepeatedly(
+          [&](int result_count,
+              history::HistoryService::QueryMostVisitedURLsCallback cb,
+              base::CancelableTaskTracker* tracker,
+              std::optional<std::string> recency_factor_name,
+              std::optional<size_t> recency_window_days)
+              -> base::CancelableTaskTracker::TaskId {
+            // Add 1 to simulate 1 site being open.
+            EXPECT_EQ(static_cast<int>(scoped_config.Get().max_suggestions) + 1,
+                      result_count);
+            callback = std::move(cb);
+            return {};
+          });
+
+  AutocompleteInput input(BuildAutocompletePrefetchInputForWeb());
+  // `StartPrefetch()` shouldn't affect provider state.
+  EXPECT_TRUE(provider_->done());
+  provider_->StartPrefetch(input);
+  EXPECT_TRUE(provider_->done());
+  history::MostVisitedURLList result;
+  for (const auto& test_element : DefaultTestData()) {
+    result.push_back(test_element.entry);
+  }
+
+  std::move(callback).Run(std::move(result));
+
+  // `StartPrefetch()` should update the list of cached sites, but not
+  // update the actual provider's matches.
+  ASSERT_EQ(5u, provider_->cached_sites_.size());
+  ASSERT_EQ(0u, provider_->matches().size());
+
+  // Calling Start() should use the cached sites to create matches. Shouldn't
+  // include the SRP result.
+  provider_->Start(input, false);
+  ASSERT_EQ(4u, provider_->matches().size());
+}
+
+TEST_F(MostVisitedSitesProviderTest,
+       StartDoesNotUpdateMatchesWhenPrefetchEnabled) {
+  // Set a MockHistoryService.
+  auto history_service = std::make_unique<MockHistoryService>();
+  auto& history_service_ref = *history_service;
+  client_.set_history_service(std::move(history_service));
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
+      scoped_config;
+  scoped_config.Get().enabled = true;
+  scoped_config.Get().max_suggestions = 8;
+  scoped_config.Get().prefetch_most_visited_sites = true;
+
+  history::HistoryService::QueryMostVisitedURLsCallback callback;
+  EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))
+      .WillOnce([&](int result_count,
+                    history::HistoryService::QueryMostVisitedURLsCallback cb,
+                    base::CancelableTaskTracker* tracker,
+                    std::optional<std::string> recency_factor_name,
+                    std::optional<size_t> recency_window_days)
+                    -> base::CancelableTaskTracker::TaskId {
+        // Add 1 to simulate 1 site being open.
+        EXPECT_EQ(static_cast<int>(scoped_config.Get().max_suggestions) + 1,
+                  result_count);
+        callback = std::move(cb);
+        return {};
+      });
+
+  AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
+  provider_->Start(input, false);
+  history::MostVisitedURLList result;
+  for (const auto& test_element : DefaultTestData()) {
+    result.push_back(test_element.entry);
+  }
+
+  std::move(callback).Run(std::move(result));
+
+  EXPECT_FALSE(provider_->done());
+  // `Start()` when prefetch is enabled should update the list of cached sites,
+  // but not update the actual provider's matches if the cache is empty.
+  ASSERT_EQ(5u, provider_->cached_sites_.size());
+  ASSERT_EQ(0u, provider_->matches().size());
 }
 
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))

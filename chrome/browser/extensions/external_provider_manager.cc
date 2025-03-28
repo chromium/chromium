@@ -130,21 +130,18 @@ void ExternalProviderManager::CheckForExternalUpdates() {
 void ExternalProviderManager::OnAllExternalProvidersReady() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  Profile* profile = Profile::FromBrowserContext(context_.get());
 #if BUILDFLAG(IS_CHROMEOS)
-  auto* install_limiter =
-      InstallLimiter::Get(Profile::FromBrowserContext(context_.get()));
+  auto* install_limiter = InstallLimiter::Get(profile);
   if (install_limiter) {
     install_limiter->OnAllExternalProvidersReady();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Install any pending extensions.
-  ExtensionService* service =
-      ExtensionSystem::Get(context_)->extension_service();
-  DCHECK(service);
-  ExtensionUpdater* updater = service->updater();
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile);
 
-  if (update_once_all_providers_are_ready_ && updater) {
+  if (update_once_all_providers_are_ready_ && updater->enabled()) {
     update_once_all_providers_are_ready_ = false;
     ExtensionUpdater::CheckParams params;
     params.callback = external_updates_finished_callback_
@@ -498,11 +495,9 @@ void ExternalProviderManager::OnExternalProviderUpdateComplete(
     CheckExternalUninstall(id);
   }
 
-  ExtensionService* service =
-      ExtensionSystem::Get(context_)->extension_service();
-  DCHECK(service);
-  ExtensionUpdater* updater = service->updater();
-  if (!update_url_extensions.empty() && updater) {
+  Profile* profile = Profile::FromBrowserContext(context_);
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile);
+  if (!update_url_extensions.empty() && updater->enabled()) {
     // Empty params will cause pending extensions to be updated.
     updater->CheckNow(ExtensionUpdater::CheckParams());
   }

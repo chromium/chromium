@@ -109,7 +109,7 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
 }
 
 bool FedCmAccountSelectionView::Show(
-    const std::string& rp_for_display,
+    const content::RelyingPartyData& rp_data,
     const std::vector<IdentityProviderDataPtr>& idp_list,
     const std::vector<IdentityRequestAccountPtr>& accounts,
     Account::SignInMode sign_in_mode,
@@ -129,7 +129,7 @@ bool FedCmAccountSelectionView::Show(
     // WeakPtrs to methods with return values.
     show_accounts_dialog_callback_ =
         base::BindOnce(base::IgnoreResult(&FedCmAccountSelectionView::Show),
-                       weak_ptr_factory_.GetWeakPtr(), rp_for_display, idp_list,
+                       weak_ptr_factory_.GetWeakPtr(), rp_data, idp_list,
                        accounts, sign_in_mode, rp_mode, new_accounts);
     // This is considered successful since we are intentionally delaying showing
     // the UI.
@@ -149,6 +149,7 @@ bool FedCmAccountSelectionView::Show(
   idp_list_ = idp_list;
   accounts_ = accounts;
   new_accounts_ = new_accounts;
+  rp_icon_ = rp_data.rp_icon;
 
   size_t accounts_or_mismatches_size = accounts.size();
   bool supports_add_account = false;
@@ -181,7 +182,6 @@ bool FedCmAccountSelectionView::Show(
           ? std::make_optional<std::u16string>(
                 base::UTF8ToUTF16(idp_list_[0]->idp_for_display))
           : std::nullopt;
-  rp_for_display_ = base::UTF8ToUTF16(rp_for_display);
 
   // If a modal dialog was created previously but there is no modal support for
   // this type of dialog, reset account_selection_view_ to create a bubble
@@ -194,8 +194,8 @@ bool FedCmAccountSelectionView::Show(
 
   bool create_view = !account_selection_view_;
   if (create_view) {
-    CreateViewAndWidget(rp_for_display_, idp_title, rp_context, rp_mode,
-                        has_modal_support);
+    CreateViewAndWidget(base::UTF8ToUTF16(rp_data.rp_for_display), idp_title,
+                        rp_context, rp_mode, has_modal_support);
   }
 
   if (sign_in_mode == Account::SignInMode::kAuto) {
@@ -265,7 +265,7 @@ bool FedCmAccountSelectionView::Show(
         // with most recently signed in accounts at the top to reduce the
         // exposure of extra UI surfaces and to work around the account picker
         // not having a back button.
-        ShowMultiAccountPicker(accounts_, idp_list_,
+        ShowMultiAccountPicker(accounts_, idp_list_, rp_icon_,
                                /*show_back_button=*/false);
       }
     } else {
@@ -277,7 +277,7 @@ bool FedCmAccountSelectionView::Show(
                 supports_add_account);
       } else {
         ShowMultiAccountPicker(
-            new_accounts_, {new_accounts_[0]->identity_provider},
+            new_accounts_, {new_accounts_[0]->identity_provider}, rp_icon_,
             /*show_back_button=*/accounts_or_mismatches_size >
                 new_accounts_.size());
         // Override the state to NEWLY_LOGGED_IN_ACCOUNT_PICKER so the back
@@ -290,7 +290,8 @@ bool FedCmAccountSelectionView::Show(
         (supports_add_account || has_filtered_out_accounts)) {
       // The logic to support add account is in ShowMultiAccountPicker for the
       // bubble dialog.
-      ShowMultiAccountPicker(accounts_, idp_list_, /*show_back_button=*/false);
+      ShowMultiAccountPicker(accounts_, idp_list_, rp_icon_,
+                             /*show_back_button=*/false);
     } else {
       state_ = State::SINGLE_ACCOUNT_PICKER;
       account_selection_view_->ShowSingleAccountConfirmDialog(
@@ -298,7 +299,7 @@ bool FedCmAccountSelectionView::Show(
           /*show_back_button=*/false);
     }
   } else {
-    ShowMultiAccountPicker(accounts_, idp_list_,
+    ShowMultiAccountPicker(accounts_, idp_list_, rp_icon_,
                            /*show_back_button=*/false);
   }
   UpdateDialogVisibilityAndPosition();
@@ -361,10 +362,10 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
   }
 
   bool create_view = !account_selection_view_;
-  rp_for_display_ = base::UTF8ToUTF16(rp_for_display);
   if (create_view) {
-    CreateViewAndWidget(rp_for_display_, base::UTF8ToUTF16(idp_etld_plus_one),
-                        rp_context, rp_mode, has_modal_support);
+    CreateViewAndWidget(base::UTF8ToUTF16(rp_for_display),
+                        base::UTF8ToUTF16(idp_etld_plus_one), rp_context,
+                        rp_mode, has_modal_support);
   }
 
   account_selection_view_->ShowFailureDialog(
@@ -401,8 +402,9 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
 
   bool create_view = !account_selection_view_;
   if (create_view) {
-    CreateViewAndWidget(rp_for_display_, base::UTF8ToUTF16(idp_etld_plus_one),
-                        rp_context, rp_mode, has_modal_support);
+    CreateViewAndWidget(base::UTF8ToUTF16(rp_for_display),
+                        base::UTF8ToUTF16(idp_etld_plus_one), rp_context,
+                        rp_mode, has_modal_support);
   }
 
   account_selection_view_->ShowErrorDialog(base::UTF8ToUTF16(idp_etld_plus_one),
@@ -604,7 +606,7 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
     UpdateDialogPosition();
     return;
   }
-  ShowMultiAccountPicker(accounts_, idp_list_,
+  ShowMultiAccountPicker(accounts_, idp_list_, rp_icon_,
                          /*show_back_button=*/false);
   UpdateDialogPosition();
 }
@@ -1035,9 +1037,10 @@ void FedCmAccountSelectionView::TabWillEnterBackground(
 void FedCmAccountSelectionView::ShowMultiAccountPicker(
     const std::vector<IdentityRequestAccountPtr>& accounts,
     const std::vector<IdentityProviderDataPtr>& idp_list,
+    const gfx::Image& rp_icon,
     bool show_back_button) {
   state_ = State::MULTI_ACCOUNT_PICKER;
-  account_selection_view_->ShowMultiAccountPicker(accounts, idp_list,
+  account_selection_view_->ShowMultiAccountPicker(accounts, idp_list, rp_icon,
                                                   show_back_button);
 }
 

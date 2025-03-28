@@ -19,6 +19,7 @@ static_library("assistant") {
     "//ash/public/cpp",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/services/assistant/public/cpp",
     "//components/language/core/browser",
   ]

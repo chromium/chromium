@@ -141,7 +141,8 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
     api_test_utils::RunFunction(
         function, std::move(args), browser_context,
         extensions::api_test_utils::FunctionMode::kNone);
-    EXPECT_EQ(ExtensionFunction::FAILED, *function->response_type());
+    EXPECT_EQ(ExtensionFunction::ResponseType::kFailed,
+              *function->response_type());
     return function->GetError();
   }
 

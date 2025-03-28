@@ -24,6 +24,7 @@ import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
+import("//services/video_effects/args.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/metrics/generate_allowlist_from_histograms_file.gni")
 import("//ui/base/ui_features.gni")
@@ -3037,16 +3038,23 @@ static_library("ui") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
+      "profiles/profile_customization_bubble_sync_controller.h",
+      "profiles/profile_customization_synced_theme_waiter.cc",
+      "profiles/profile_customization_synced_theme_waiter.h",
+      "profiles/profile_customization_util.cc",
+      "profiles/profile_customization_util.h",
+      "profiles/profile_picker.cc",
+      "profiles/profile_picker.h",
       "shortcuts/desktop_shortcuts_utils.cc",
       "shortcuts/desktop_shortcuts_utils.h",
       "startup/default_browser_prompt/default_browser_prompt.cc",
       "startup/default_browser_prompt/default_browser_prompt.h",
+      "startup/first_run_service.cc",
+      "startup/first_run_service.h",
       "startup/web_app_info_recorder_utils.cc",
       "startup/web_app_info_recorder_utils.h",
       "views/media_preview/active_devices_media_coordinator.cc",
       "views/media_preview/active_devices_media_coordinator.h",
-      "views/media_preview/camera_preview/blur_switch_view_controller.cc",
-      "views/media_preview/camera_preview/blur_switch_view_controller.h",
       "views/media_preview/camera_preview/camera_coordinator.cc",
       "views/media_preview/camera_preview/camera_coordinator.h",
       "views/media_preview/camera_preview/camera_mediator.cc",
@@ -3087,79 +3095,6 @@ static_library("ui") {
       "views/media_preview/permission_prompt_previews_coordinator.h",
       "views/media_preview/scroll_media_preview.cc",
       "views/media_preview/scroll_media_preview.h",
-      "views/web_apps/deprecated_apps_dialog_view.cc",
-      "views/web_apps/deprecated_apps_dialog_view.h",
-      "views/web_apps/force_installed_deprecated_apps_dialog_view.cc",
-      "views/web_apps/force_installed_deprecated_apps_dialog_view.h",
-      "views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.cc",
-      "views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.h",
-      "webui/app_home/app_home_page_handler.cc",
-      "webui/app_home/app_home_page_handler.h",
-      "webui/app_home/app_home_ui.cc",
-      "webui/app_home/app_home_ui.h",
-      "webui/app_management/web_app_settings_page_handler.cc",
-      "webui/app_management/web_app_settings_page_handler.h",
-      "webui/app_settings/web_app_settings_navigation_throttle.cc",
-      "webui/app_settings/web_app_settings_navigation_throttle.h",
-      "webui/app_settings/web_app_settings_ui.cc",
-      "webui/app_settings/web_app_settings_ui.h",
-      "webui/browser_switch/browser_switch_ui.cc",
-      "webui/browser_switch/browser_switch_ui.h",
-      "webui/on_device_translation_internals/on_device_translation_internals_page_handler_impl.cc",
-      "webui/on_device_translation_internals/on_device_translation_internals_page_handler_impl.h",
-      "webui/on_device_translation_internals/on_device_translation_internals_ui.cc",
-      "webui/on_device_translation_internals/on_device_translation_internals_ui.h",
-    ]
-
-    deps += [
-      "//chrome/app:generated_resources",
-      "//chrome/browser/on_device_translation",
-      "//chrome/browser/on_device_translation:language_pack_util",
-      "//chrome/browser/shortcuts",
-      "//components/capture_mode",
-      "//services/audio/public/mojom",
-      "//services/video_capture/public/mojom",
-    ]
-  }
-
-  if (is_win || is_mac || is_linux || is_chromeos) {
-    sources += [
-      "passwords/password_cross_domain_confirmation_popup_view.h",
-      "webui/app_management/app_management_page_handler_base.cc",
-      "webui/app_management/app_management_page_handler_base.h",
-      "webui/app_management/app_management_page_handler_factory.cc",
-      "webui/app_management/app_management_page_handler_factory.h",
-      "webui/connectors_internals/connectors_internals_page_handler.cc",
-      "webui/connectors_internals/connectors_internals_page_handler.h",
-      "webui/connectors_internals/connectors_internals_ui.cc",
-      "webui/connectors_internals/connectors_internals_ui.h",
-      "webui/connectors_internals/device_trust_utils.cc",
-      "webui/connectors_internals/device_trust_utils.h",
-    ]
-
-    deps += [
-      "//chrome/browser/enterprise/connectors/device_trust:features",
-      "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
-      "//chrome/browser/enterprise/connectors/device_trust/common",
-      "//components/device_signals/core/browser",
-    ]
-
-    if (enterprise_client_certificates) {
-      deps += [ "//components/enterprise/client_certificates/core" ]
-    }
-  }
-
-  if (is_win || is_mac || is_linux) {
-    sources += [
-      "profiles/profile_customization_bubble_sync_controller.h",
-      "profiles/profile_customization_synced_theme_waiter.cc",
-      "profiles/profile_customization_synced_theme_waiter.h",
-      "profiles/profile_customization_util.cc",
-      "profiles/profile_customization_util.h",
-      "profiles/profile_picker.cc",
-      "profiles/profile_picker.h",
-      "startup/first_run_service.cc",
-      "startup/first_run_service.h",
       "views/profiles/badged_profile_photo.cc",
       "views/profiles/badged_profile_photo.h",
       "views/profiles/profile_customization_bubble_sync_controller.cc",
@@ -3185,10 +3120,32 @@ static_library("ui") {
       "views/profiles/profile_picker_view.cc",
       "views/profiles/profile_picker_view.h",
       "views/profiles/profile_picker_web_contents_host.h",
+      "views/web_apps/deprecated_apps_dialog_view.cc",
+      "views/web_apps/deprecated_apps_dialog_view.h",
+      "views/web_apps/force_installed_deprecated_apps_dialog_view.cc",
+      "views/web_apps/force_installed_deprecated_apps_dialog_view.h",
+      "views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.cc",
+      "views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.h",
+      "webui/app_home/app_home_page_handler.cc",
+      "webui/app_home/app_home_page_handler.h",
+      "webui/app_home/app_home_ui.cc",
+      "webui/app_home/app_home_ui.h",
+      "webui/app_management/web_app_settings_page_handler.cc",
+      "webui/app_management/web_app_settings_page_handler.h",
+      "webui/app_settings/web_app_settings_navigation_throttle.cc",
+      "webui/app_settings/web_app_settings_navigation_throttle.h",
+      "webui/app_settings/web_app_settings_ui.cc",
+      "webui/app_settings/web_app_settings_ui.h",
+      "webui/browser_switch/browser_switch_ui.cc",
+      "webui/browser_switch/browser_switch_ui.h",
       "webui/intro/intro_handler.cc",
       "webui/intro/intro_handler.h",
       "webui/intro/intro_ui.cc",
       "webui/intro/intro_ui.h",
+      "webui/on_device_translation_internals/on_device_translation_internals_page_handler_impl.cc",
+      "webui/on_device_translation_internals/on_device_translation_internals_page_handler_impl.h",
+      "webui/on_device_translation_internals/on_device_translation_internals_ui.cc",
+      "webui/on_device_translation_internals/on_device_translation_internals_ui.h",
       "webui/profile_helper.cc",
       "webui/profile_helper.h",
       "webui/settings/settings_default_browser_handler.cc",
@@ -3199,10 +3156,25 @@ static_library("ui") {
       "webui/settings/system_handler.h",
     ]
 
+    if (enable_video_effects) {
+      sources += [
+        "views/media_preview/camera_preview/blur_switch_view_controller.cc",
+        "views/media_preview/camera_preview/blur_switch_view_controller.h",
+      ]
+    }
+
     deps += [
+      "//chrome/app:generated_resources",
+      "//chrome/browser/on_device_translation",
+      "//chrome/browser/on_device_translation:language_pack_util",
+      "//chrome/browser/shortcuts",
       "//chrome/browser/ui/webui/signin:profile",
       "//chrome/browser/ui/webui/signin:profile_impl",
+      "//components/capture_mode",
       "//components/country_codes",
+      "//services/audio/public/mojom",
+      "//services/video_capture/public/mojom",
+      "//services/video_effects/buildflags",
     ]
 
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
@@ -3243,6 +3215,33 @@ static_library("ui") {
       ]
 
       deps += [ "webui/signin/batch_upload:mojo_bindings" ]
+    }
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [
+      "passwords/password_cross_domain_confirmation_popup_view.h",
+      "webui/app_management/app_management_page_handler_base.cc",
+      "webui/app_management/app_management_page_handler_base.h",
+      "webui/app_management/app_management_page_handler_factory.cc",
+      "webui/app_management/app_management_page_handler_factory.h",
+      "webui/connectors_internals/connectors_internals_page_handler.cc",
+      "webui/connectors_internals/connectors_internals_page_handler.h",
+      "webui/connectors_internals/connectors_internals_ui.cc",
+      "webui/connectors_internals/connectors_internals_ui.h",
+      "webui/connectors_internals/device_trust_utils.cc",
+      "webui/connectors_internals/device_trust_utils.h",
+    ]
+
+    deps += [
+      "//chrome/browser/enterprise/connectors/device_trust:features",
+      "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
+      "//chrome/browser/enterprise/connectors/device_trust/common",
+      "//components/device_signals/core/browser",
+    ]
+
+    if (enterprise_client_certificates) {
+      deps += [ "//components/enterprise/client_certificates/core" ]
     }
   }
 

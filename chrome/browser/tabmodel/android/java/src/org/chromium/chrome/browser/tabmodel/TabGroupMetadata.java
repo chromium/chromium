@@ -32,6 +32,7 @@ public class TabGroupMetadata {
     private static final String KEY_TAB_GROUP_COLLAPSED = "tabGroupCollapsed";
     private static final String KEY_IS_GROUP_SHARED = "isGroupShared";
     private static final String KEY_IS_INCOGNITO = "isIncognito";
+    private static final String KEY_MHTML_TAB_TITLE = "mhtmlTabTitle";
 
     public final int rootId;
     public final int selectedTabId;
@@ -40,6 +41,7 @@ public class TabGroupMetadata {
     public final LinkedHashMap<Integer, String> tabIdsToUrls;
     public final @ColorInt int tabGroupColor;
     @Nullable public final String tabGroupTitle;
+    @Nullable public final String mhtmlTabTitle;
     public final boolean tabGroupCollapsed;
     public final boolean isGroupShared;
     public final boolean isIncognito;
@@ -54,6 +56,7 @@ public class TabGroupMetadata {
      * @param tabIdsToUrls The LinkedHashMap containing key-value pairs of tab IDs and URLs.
      * @param tabGroupColor The color of the tab group.
      * @param tabGroupTitle The title of the tab group.
+     * @param mhtmlTabTitle The title of the first MHTML tab in the group if there is any.
      * @param tabGroupCollapsed Whether the tab group is currently collapsed.
      * @param isGroupShared Whether the tab group is shared with other collaborators.
      * @param isIncognito Whether the tab group is in incognito mode.
@@ -66,6 +69,7 @@ public class TabGroupMetadata {
             LinkedHashMap<Integer, String> tabIdsToUrls,
             @ColorInt int tabGroupColor,
             @Nullable String tabGroupTitle,
+            @Nullable String mhtmlTabTitle,
             boolean tabGroupCollapsed,
             boolean isGroupShared,
             boolean isIncognito) {
@@ -76,6 +80,7 @@ public class TabGroupMetadata {
         this.tabIdsToUrls = tabIdsToUrls;
         this.tabGroupColor = tabGroupColor;
         this.tabGroupTitle = tabGroupTitle;
+        this.mhtmlTabTitle = mhtmlTabTitle;
         this.tabGroupCollapsed = tabGroupCollapsed;
         this.isGroupShared = isGroupShared;
         this.isIncognito = isIncognito;
@@ -95,6 +100,7 @@ public class TabGroupMetadata {
         bundle.putSerializable(KEY_TAB_IDS_TO_URLS, tabIdsToUrls);
         bundle.putInt(KEY_TAB_GROUP_COLOR, tabGroupColor);
         bundle.putString(KEY_TAB_GROUP_TITLE, tabGroupTitle);
+        bundle.putString(KEY_MHTML_TAB_TITLE, mhtmlTabTitle);
         bundle.putBoolean(KEY_TAB_GROUP_COLLAPSED, tabGroupCollapsed);
         bundle.putBoolean(KEY_IS_GROUP_SHARED, isGroupShared);
         bundle.putBoolean(KEY_IS_INCOGNITO, isIncognito);
@@ -135,6 +141,7 @@ public class TabGroupMetadata {
                         tabIdsToUrls,
                         bundle.getInt(KEY_TAB_GROUP_COLOR),
                         bundle.getString(KEY_TAB_GROUP_TITLE),
+                        bundle.getString(KEY_MHTML_TAB_TITLE),
                         bundle.getBoolean(KEY_TAB_GROUP_COLLAPSED),
                         bundle.getBoolean(KEY_IS_GROUP_SHARED),
                         bundle.getBoolean(KEY_IS_INCOGNITO));
@@ -155,7 +162,8 @@ public class TabGroupMetadata {
                 && isIncognito == that.isIncognito
                 && Objects.equals(tabGroupId, that.tabGroupId)
                 && Objects.equals(tabIdsToUrls, that.tabIdsToUrls)
-                && Objects.equals(tabGroupTitle, that.tabGroupTitle);
+                && Objects.equals(tabGroupTitle, that.tabGroupTitle)
+                && Objects.equals(mhtmlTabTitle, that.mhtmlTabTitle);
     }
 
     @Override
@@ -168,6 +176,7 @@ public class TabGroupMetadata {
                 this.tabIdsToUrls,
                 this.tabGroupColor,
                 this.tabGroupTitle,
+                this.mhtmlTabTitle,
                 this.tabGroupCollapsed,
                 this.isGroupShared,
                 this.isIncognito);
@@ -189,6 +198,9 @@ public class TabGroupMetadata {
                 + tabGroupColor
                 + ", tabGroupTitle='"
                 + tabGroupTitle
+                + '\''
+                + ", mhtmlTabTitle='"
+                + mhtmlTabTitle
                 + '\''
                 + ", isCollapsed="
                 + tabGroupCollapsed

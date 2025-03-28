@@ -7,20 +7,18 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import type {SettingsAutofillSectionElement, SettingsPaymentsSectionElement, SettingsAutofillAiSectionElement} from 'chrome://settings/lazy_load.js';
-import {AutofillManagerImpl, EntityDataManagerProxyImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
+import type {SettingsAutofillSectionElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
+import {AutofillManagerImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {resetRouterForTesting} from 'chrome://settings/settings.js';
 import type {CrLinkRowElement, SettingsAutofillPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, OpenWindowProxyImpl, PasswordManagerImpl, SettingsPluralStringProxyImpl, PasswordManagerPage} from 'chrome://settings/settings.js';
-import {assertEquals, assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {Router, routes} from 'chrome://settings/settings.js';
 
 import {AutofillManagerExpectations, createAddressEntry, createCreditCardEntry, createIbanEntry, createPayOverTimeIssuerEntry, PaymentsManagerExpectations, STUB_USER_ACCOUNT_INFO, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
-import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 
 // clang-format on
 
@@ -134,16 +132,8 @@ suite('PasswordsAndForms', function() {
 
   let autofillManager: TestAutofillManager;
   let paymentsManager: TestPaymentsManager;
-  let entityDataManager: TestEntityDataManagerProxy;
   let prefs: SettingsPrefsElement;
   let element: SettingsAutofillPageElement;
-
-  const testEntityInstanceWithLabels:
-      chrome.autofillPrivate.EntityInstanceWithLabels = {
-    guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
-    entityInstanceLabel: 'Toyota',
-    entityInstanceSubLabel: 'Car',
-  };
 
   setup(async function() {
     loadTimeData.overrideValues({
@@ -159,10 +149,6 @@ suite('PasswordsAndForms', function() {
     // Override the PaymentsManagerImpl for testing.
     paymentsManager = new TestPaymentsManager();
     PaymentsManagerImpl.setInstance(paymentsManager);
-
-    // Override EntityDataManagerProxyImpl for testing.
-    entityDataManager = new TestEntityDataManagerProxy();
-    EntityDataManagerProxyImpl.setInstance(entityDataManager);
 
     prefs = await createPrefs(true, true);
     element = createAutofillElement(prefs);
@@ -189,72 +175,30 @@ suite('PasswordsAndForms', function() {
     paymentsManager.assertExpectations(paymentsExpectations);
   });
 
-  // The Autofill AI button is hidden if the user is not eligible and if the
-  // user has no data saved.
-  test('autofillAiButtonHiddenIfFeatureNotEnabled', async function() {
+  test('autofillAiButtonHidden', async function() {
     loadTimeData.overrideValues({
-      autofillAiFeatureEnabled: false,
-      userEligibleForAutofillAi: true,
+      showAutofillAiControl: false,
     });
     // Recreate the element with the new `loadTimeData`.
     element.remove();
     element = createAutofillElement(prefs);
     // Make sure that the button is not created asynchronously.
     await flushTasks();
+    // Assert that the button is not visible.
     const autofillAiManagerButton =
         element.shadowRoot!.querySelector<CrLinkRowElement>(
             '#autofillAiManagerButton');
     assertTrue(autofillAiManagerButton === null);
   });
 
-  // The Autofill AI button is hidden if the user is not eligible and if the
-  // user has no data saved.
-  test('AutofillAIHiddenIfFeatureEnabled', async function() {
+  test('AutofillAIButtonVisible', function() {
     loadTimeData.overrideValues({
-      autofillAiFeatureEnabled: true,
-      userEligibleForAutofillAi: false,
+      showAutofillAiControl: true,
     });
     // Recreate the element with the new `loadTimeData`.
     element.remove();
     element = createAutofillElement(prefs);
-    // Make sure that the button is not created asynchronously.
-    await flushTasks();
-    const autofillAiManagerButton =
-        element.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#autofillAiManagerButton');
-    assertTrue(autofillAiManagerButton === null);
-  });
-
-  // The Autofill AI button is visible if the user is eligible, but has no data
-  // saved.
-  test('AutofillAIVisibleIfUserIsEligible', function() {
-    loadTimeData.overrideValues({
-      autofillAiFeatureEnabled: true,
-      userEligibleForAutofillAi: true,
-    });
-    // Recreate the element with the new `loadTimeData`.
-    element.remove();
-    element = createAutofillElement(prefs);
-    const autofillAiManagerButton =
-        element.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#autofillAiManagerButton');
-    assertTrue(autofillAiManagerButton !== null);
-  });
-
-  // The Autofill AI button is visible if the user has data saved, but is not
-  // eligible.
-  test('AutofillAIVisibleIfUserHasDataSaved', async function() {
-    entityDataManager.setLoadEntityInstancesResponse(
-        [testEntityInstanceWithLabels]);
-    loadTimeData.overrideValues({
-      autofillAiFeatureEnabled: true,
-      userEligibleForAutofillAi: false,
-    });
-    // Recreate the element with the new `loadTimeData` and entity instances.
-    element.remove();
-    element = createAutofillElement(prefs);
-    // Make sure that the entity instances were loaded.
-    await flushTasks();
+    // Assert that the button is visible.
     const autofillAiManagerButton =
         element.shadowRoot!.querySelector<CrLinkRowElement>(
             '#autofillAiManagerButton');
@@ -371,64 +315,5 @@ suite('PasswordsUITest', function() {
     autofillSection.$.passwordManagerButton.click();
     const param = await passwordManager.whenCalled('showPasswordManager');
     assertEquals(PasswordManagerPage.PASSWORDS, param);
-  });
-});
-
-suite('AutofillAiRedirectTest', function() {
-  let section: SettingsAutofillAiSectionElement;
-  let entityDataManager: TestEntityDataManagerProxy;
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    // Enable the Autofill AI feature so that the route is defined.
-    loadTimeData.overrideValues({
-      autofillAiFeatureEnabled: true,
-    });
-
-    resetRouterForTesting();
-
-    entityDataManager = new TestEntityDataManagerProxy();
-    EntityDataManagerProxyImpl.setInstance(entityDataManager);
-
-    // Simulate navigating to the AUTOFILL_AI route.
-    Router.getInstance().navigateTo(routes.AUTOFILL_AI);
-  });
-
-  test('Redirects to Autofill when disabled and no entries', async function() {
-    section = document.createElement('settings-autofill-ai-section');
-    section.ineligibleUser = true;
-
-    document.body.appendChild(section);
-    await flushTasks();
-
-    assertEquals(routes.AUTOFILL, Router.getInstance().getCurrentRoute());
-  });
-});
-
-// This suite simulates that the private API will always throw an error, which
-// happens when the feature is disabled. This is done by not instantiating the
-// `EntityDataManagerProxyImpl`.
-suite('AutofillAiFeatureDisabledAndPrivateApiThrowsError', function() {
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    loadTimeData.overrideValues({
-      autofillAiFeatureEnabled: false,
-    });
-  });
-
-  test('AutofillAiHiddenWithoutErrors', async function() {
-    // Make sure the button is not displayed even if the user is eligible for
-    // Autofill with Ai.
-    loadTimeData.overrideValues({
-      userEligibleForAutofillAi: true,
-    });
-    const element = document.createElement('settings-autofill-page');
-    document.body.appendChild(element);
-    await flushTasks();
-
-    const autofillAiManagerButton =
-        element.shadowRoot!.querySelector('#autofillAiManagerButton');
-    assertFalse(!!autofillAiManagerButton);
   });
 });

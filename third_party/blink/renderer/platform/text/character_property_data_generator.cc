@@ -111,8 +111,8 @@ class CharacterPropertyValues {
   // Set all characters that have the `UCHAR_EMOJI_PRESENTATION` property as CJK
   // symbol characters.
   void SetIsCJKIdeographOrSymbolForEmoji() {
-    SetForUnicodeSet("[:Emoji_Presentation:]",
-                     CharacterProperty::kIsCJKIdeographOrSymbol);
+    SetForUnicodePattern("[:Emoji_Presentation:]",
+                         CharacterProperty::kIsCJKIdeographOrSymbol);
   }
 
   void SetHanKerning() {
@@ -131,14 +131,14 @@ class CharacterPropertyValues {
     Set(kMiddleDotCharacter, HanKerningCharType::kMiddle);
     Set(kHyphenationPointCharacter, HanKerningCharType::kMiddle);
     Set(kKatakanaMiddleDot, HanKerningCharType::kMiddle);
-    SetForUnicodeSet("[[:blk=CJK_Symbols:][:ea=F:] & [:gc=Ps:]]",
-                     HanKerningCharType::kOpen);
-    SetForUnicodeSet("[[:blk=CJK_Symbols:][:ea=F:] & [:gc=Pe:]]",
-                     HanKerningCharType::kClose);
-    SetForUnicodeSet("[[:gc=Ps:] - [:blk=CJK_Symbols:] - [:ea=F:]]",
-                     HanKerningCharType::kOpenNarrow);
-    SetForUnicodeSet("[[:gc=Pe:] - [:blk=CJK_Symbols:] - [:ea=F:]]",
-                     HanKerningCharType::kCloseNarrow);
+    SetForUnicodePattern("[[:blk=CJK_Symbols:][:ea=F:] & [:gc=Ps:]]",
+                         HanKerningCharType::kOpen);
+    SetForUnicodePattern("[[:blk=CJK_Symbols:][:ea=F:] & [:gc=Pe:]]",
+                         HanKerningCharType::kClose);
+    SetForUnicodePattern("[[:gc=Ps:] - [:blk=CJK_Symbols:] - [:ea=F:]]",
+                         HanKerningCharType::kOpenNarrow);
+    SetForUnicodePattern("[[:gc=Pe:] - [:blk=CJK_Symbols:] - [:ea=F:]]",
+                         HanKerningCharType::kCloseNarrow);
   }
 
   static CharacterProperty ToCharacterProperty(HanKerningCharType value) {
@@ -150,20 +150,20 @@ class CharacterPropertyValues {
         << static_cast<unsigned>(CharacterProperty::kHanKerningShift));
   }
 
-  void SetForUnicodeSet(const char* pattern, HanKerningCharType type) {
-    SetForUnicodeSet(pattern, ToCharacterProperty(type),
-                     CharacterProperty::kHanKerningShiftedMask);
+  void SetForUnicodePattern(const char* pattern, HanKerningCharType type) {
+    SetForUnicodePattern(pattern, ToCharacterProperty(type),
+                         CharacterProperty::kHanKerningShiftedMask);
   }
 
   // For `patterns`, see:
   // https://unicode-org.github.io/icu/userguide/strings/unicodeset.html#unicodeset-patterns
-  void SetForUnicodeSet(const char* pattern, CharacterProperty value) {
-    SetForUnicodeSet(pattern, value, value);
+  void SetForUnicodePattern(const char* pattern, CharacterProperty value) {
+    SetForUnicodePattern(pattern, value, value);
   }
 
-  void SetForUnicodeSet(const char* pattern,
-                        CharacterProperty value,
-                        CharacterProperty mask) {
+  void SetForUnicodePattern(const char* pattern,
+                            CharacterProperty value,
+                            CharacterProperty mask) {
     UErrorCode error = U_ZERO_ERROR;
     icu::UnicodeSet set(icu::UnicodeString(pattern), error);
     CHECK_EQ(error, U_ZERO_ERROR);

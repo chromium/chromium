@@ -37,7 +37,6 @@ class ExtensionInstalledBubbleModel {
   bool show_how_to_use() const { return show_how_to_use_; }
   bool show_how_to_manage() const { return show_how_to_manage_; }
   bool show_key_binding() const { return show_key_binding_; }
-  bool show_sign_in_promo() const { return show_sign_in_promo_; }
 
   std::u16string GetHowToUseText() const;
 
@@ -59,9 +58,6 @@ class ExtensionInstalledBubbleModel {
 
   // Whether to show the extension's key binding in the install bubble.
   bool show_key_binding_ = false;
-
-  // Whether to show a signin promo in the install bubble.
-  bool show_sign_in_promo_ = false;
 
   std::u16string how_to_use_text_;
 

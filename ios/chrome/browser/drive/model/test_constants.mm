@@ -10,3 +10,5 @@ const char kTestDriveFileUploaderCommandLineSwitchSucceed[] =
     "kTestDriveFileUploaderCommandLineSwitchSucceed";
 const char kTestDriveFileUploaderCommandLineSwitchFailAndThenSucceed[] =
     "kTestDriveFileUploaderCommandLineSwitchFailAndThenSucceed";
+const char kTestDriveFileUploaderCommandLineSwitchFullStorage[] =
+    "kTestDriveFileUploaderCommandLineSwitchFullStorage";

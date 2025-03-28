@@ -33,6 +33,9 @@ class CONTENT_EXPORT SharedStorageEventParams {
     SharedStorageUrlSpecWithMetadata& operator=(
         const SharedStorageUrlSpecWithMetadata&);
     bool operator==(const SharedStorageUrlSpecWithMetadata&) const;
+    friend std::ostream& operator<<(
+        std::ostream& os,
+        const SharedStorageUrlSpecWithMetadata& url_with_metadata);
   };
 
   static SharedStorageEventParams CreateForAddModule(
@@ -65,8 +68,6 @@ class CONTENT_EXPORT SharedStorageEventParams {
       const std::string& key,
       std::optional<int> worklet_id = std::nullopt);
 
-  // TODO(crbug.com/401011862): Use `CreateWithWorkletId()` for the worklet
-  // events that previously used `CreateDefault()`.
   static SharedStorageEventParams CreateWithWorkletId(int worklet_id);
   static SharedStorageEventParams CreateDefault();
 

@@ -11,3 +11,11 @@ BASE_FEATURE(kEnhancedCalendar,
 bool IsEnhancedCalendarEnabled() {
   return base::FeatureList::IsEnabled(kEnhancedCalendar);
 }
+
+BASE_FEATURE(kPageActionMenu,
+             "PageActionMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPageActionMenuEnabled() {
+  return base::FeatureList::IsEnabled(kPageActionMenu);
+}

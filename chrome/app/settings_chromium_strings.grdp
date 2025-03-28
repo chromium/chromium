@@ -85,19 +85,14 @@
   </message>
 
   <!-- Autofill with AI Page-->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION" desc="The description of the autofill AI button on chrome://settings/ai.">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION" desc="The description of the autofill AI button on chrome://settings/autofill.">
     Chromium understands forms better and can autofill them faster for you
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using Autofill with AI, this feature can offer to save the user's submitted info. When Chrome saves that info, we save the submitted values and consider the page context.">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using Autofill with AI, this feature can offer to save the user's submitted info. When Chromium saves that info, we save the submitted values and consider the page context.">
     Chromium understands forms better and can autofill them faster for you
   </message>
-  <!-- TODO(crbug.com/395807244): Make string translateable. -->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_SAVED_INFO" desc="One of the items on the Autofill AI settings page that describes what happens when Autofill AI is enabled." translateable="false">
-    Chromium will ask if you want to save form information, such as your birthday, age, and passport number
-  </message>
-  <!-- TODO(crbug.com/395807244): Make string translateable. -->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_USE_TO_FILL"  desc="One of the items on the Autofill AI settings page that describes what happens when Autofill AI is enabled.." translateable="false">
-    Later, Chromium will ask if you want to use saved info to automatically fill forms
+  <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_USE_TO_FILL"  desc="Bullet 2 of 2 that appears beneath the “When on” title. “Later”: this is a two-step feature. 1) data is saved, 2) it becomes valuable to the user later when they want to fill in a form with similar data. “Chromium can ask”: the user has a choice, every time, whether their data is saved and also whether they want to autofill their saved info into forms.">
+    Later, Chromium can ask if you want to use saved info to autofill forms for you
   </message>
 
   <!-- Default Browser Page -->

@@ -50,6 +50,8 @@ export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
     };
   }
 
+  subLabelHtml: string;
+
   static get observers() {
     return [
       'onSubLabelChanged_(subLabel, subLabelHtml)',

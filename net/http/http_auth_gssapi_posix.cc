@@ -118,7 +118,8 @@ class ScopedName {
 bool OidEquals(const gss_OID left, const gss_OID right) {
   if (left->length != right->length)
     return false;
-  return 0 == memcmp(left->elements, right->elements, right->length);
+  return 0 ==
+         UNSAFE_TODO(memcmp(left->elements, right->elements, right->length));
 }
 
 base::Value::Dict GetGssStatusCodeValue(GSSAPILibrary* gssapi_lib,

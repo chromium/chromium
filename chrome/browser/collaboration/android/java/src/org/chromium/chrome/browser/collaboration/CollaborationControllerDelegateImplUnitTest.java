@@ -180,7 +180,7 @@ public class CollaborationControllerDelegateImplUnitTest {
                         eq(mActivity),
                         eq(mProfile),
                         any(FullscreenSigninAndHistorySyncConfig.class),
-                        eq(SigninAccessPoint.COLLABORATION_TAB_GROUP));
+                        eq(SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP));
 
         mCollaborationControllerDelegateImpl.showAuthenticationUi(resultCallback);
         ArgumentCaptor<IntentCallback> intentCallbackCaptor =
@@ -250,7 +250,7 @@ public class CollaborationControllerDelegateImplUnitTest {
                         eq(mActivity),
                         eq(mProfile),
                         any(BottomSheetSigninAndHistorySyncConfig.class),
-                        eq(SigninAccessPoint.COLLABORATION_TAB_GROUP));
+                        eq(SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP));
 
         mCollaborationControllerDelegateImpl.showAuthenticationUi(resultCallback);
         ArgumentCaptor<IntentCallback> intentCallbackCaptor =
@@ -277,7 +277,7 @@ public class CollaborationControllerDelegateImplUnitTest {
                         eq(mActivity),
                         eq(mProfile),
                         any(FullscreenSigninAndHistorySyncConfig.class),
-                        eq(SigninAccessPoint.COLLABORATION_TAB_GROUP));
+                        eq(SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP));
         doReturn(requestCode)
                 .when(mWindowAndroid)
                 .showCancelableIntent(eq(intent), any(IntentCallback.class), eq(null));

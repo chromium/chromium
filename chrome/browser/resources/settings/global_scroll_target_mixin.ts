@@ -109,6 +109,7 @@ export const GlobalScrollTargetMixin = dedupingMixin(
 export interface GlobalScrollTargetMixinInterface extends
     RouteObserverMixinInterface {
   scrollTarget: HTMLElement;
+  subpageRoute: Route;
 }
 
 /**

@@ -29,7 +29,7 @@ BOOL IsPasswordSyncEnabled();
 // the policy isn't set in user defaults. The policy itself returns `true` for
 // unmanaged users, or for users whose enterprise has not configured this
 // policy. IMPORTANT: If `IsPasswordCreationUserEnabled()` is `NO`, that
-// supercedes this policy.
+// supersedes this policy.
 std::optional<bool> GetPasskeyCreationPolicy();
 
 // Whether the passkeys M2 feature is currently enabled.

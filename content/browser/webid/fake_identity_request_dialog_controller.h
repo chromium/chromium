@@ -37,7 +37,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
   ~FakeIdentityRequestDialogController() override;
 
   bool ShowAccountsDialog(
-      const std::string& rp_for_display,
+      content::RelyingPartyData rp_data,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       IdentityRequestAccount::SignInMode sign_in_mode,

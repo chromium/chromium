@@ -366,6 +366,10 @@ void CustomizeChromePageHandler::UpdateTheme() {
   page_->SetTheme(std::move(theme));
 }
 
+void CustomizeChromePageHandler::UpdateThemeEditable(bool is_theme_editable) {
+  page_->SetThemeEditable(is_theme_editable);
+}
+
 void CustomizeChromePageHandler::OpenChromeWebStore() {
   open_url_callback_.Run(
       GURL("https://chrome.google.com/webstore?category=theme"));

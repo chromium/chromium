@@ -2081,29 +2081,55 @@ TEST_F(QuickInsertViewTest, MainContentAboveSearchFieldNearBottomOfScreen) {
 }
 
 TEST_P(QuickInsertViewEmojiTest, ShowsEmojiPickerWhenClickingOnExpressions) {
-  FakeQuickInsertViewDelegate delegate({
-      .available_categories = {GetParam()},
-  });
-  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
-  widget->Show();
+  {
+    FakeQuickInsertViewDelegate delegate({
+        .available_categories = {GetParam()},
+    });
+    auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
+    widget->Show();
 
-  LeftClickOn(GetFirstCategoryItemView(GetQuickInsertViewFromWidget(*widget)));
+    LeftClickOn(
+        GetFirstCategoryItemView(GetQuickInsertViewFromWidget(*widget)));
 
-  EXPECT_TRUE(widget->IsClosed());
-  EXPECT_THAT(delegate.emoji_picker_query(), Optional(Eq(u"")));
+    EXPECT_TRUE(widget->IsClosed());
+    EXPECT_THAT(delegate.emoji_picker_query(), Optional(Eq(u"")));
+  }
+
+  cros_events::Picker_FinishSession expected_event;
+  expected_event.SetOutcome(cros_events::PickerSessionOutcome::REDIRECTED)
+      .SetAction(cros_events::PickerAction::OPEN_EXPRESSIONS)
+      .SetResultSource(cros_events::PickerResultSource::UNKNOWN)
+      .SetResultType(cros_events::PickerResultType::UNKNOWN)
+      .SetTotalEdits(0)
+      .SetFinalQuerySize(0)
+      .SetResultIndex(-1);
+  EXPECT_THAT(metrics_recorder_.GetEvents(), ContainsEvent(expected_event));
 }
 
 TEST_F(QuickInsertViewTest, ShowsEditorWhenClickingOnEditor) {
-  FakeQuickInsertViewDelegate delegate({
-      .available_categories = {QuickInsertCategory::kEditorWrite},
-  });
-  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
-  widget->Show();
+  {
+    FakeQuickInsertViewDelegate delegate({
+        .available_categories = {QuickInsertCategory::kEditorWrite},
+    });
+    auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
+    widget->Show();
 
-  LeftClickOn(GetFirstCategoryItemView(GetQuickInsertViewFromWidget(*widget)));
+    LeftClickOn(
+        GetFirstCategoryItemView(GetQuickInsertViewFromWidget(*widget)));
 
-  EXPECT_TRUE(widget->IsClosed());
-  EXPECT_TRUE(delegate.showed_editor());
+    EXPECT_TRUE(widget->IsClosed());
+    EXPECT_TRUE(delegate.showed_editor());
+  }
+
+  cros_events::Picker_FinishSession expected_event;
+  expected_event.SetOutcome(cros_events::PickerSessionOutcome::REDIRECTED)
+      .SetAction(cros_events::PickerAction::OPEN_EDITOR_WRITE)
+      .SetResultSource(cros_events::PickerResultSource::UNKNOWN)
+      .SetResultType(cros_events::PickerResultType::UNKNOWN)
+      .SetTotalEdits(0)
+      .SetFinalQuerySize(0)
+      .SetResultIndex(-1);
+  EXPECT_THAT(metrics_recorder_.GetEvents(), ContainsEvent(expected_event));
 }
 
 TEST_F(QuickInsertViewTest, PressingEnterDoesNothingOnEmptySearchResultsPage) {

@@ -33,6 +33,9 @@ enum class IdentityRequestDialogDisclosureField {
   kUsername
 };
 
+// The client metadata that will be used to display a FedCM dialog. This data is
+// extracted from the client metadata endpoint from the FedCM API, where
+// 'client' is essentially the relying party which invoked the API.
 struct CONTENT_EXPORT ClientMetadata {
   ClientMetadata(const GURL& terms_of_service_url,
                  const GURL& privacy_policy_url,
@@ -48,11 +51,18 @@ struct CONTENT_EXPORT ClientMetadata {
   gfx::Image brand_decoded_icon;
 };
 
+// The information about an error that will be used to display a FedCM dialog.
+// This data is extracted from the error object returned by the identity
+// provider when the user attempts to login via the FedCM API and an error
+// occurs.
 struct CONTENT_EXPORT IdentityCredentialTokenError {
   std::string code;
   GURL url;
 };
 
+// The metadata about the identity provider that will be used to display a FedCM
+// dialog. This data is extracted from the config file which is fetched when the
+// FedCM API is invoked.
 struct CONTENT_EXPORT IdentityProviderMetadata {
   IdentityProviderMetadata();
   IdentityProviderMetadata(const IdentityProviderMetadata& other);
@@ -81,6 +91,10 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
   gfx::Image brand_decoded_icon;
 };
 
+// This class contains all of the data specific to an identity provider that is
+// going to be used to display a FedCM dialog. This data is gathered from
+// endpoints fetched when the FedCM API is invoked as well as from the
+// parameters provided by the relying party when the API is invoked.
 class CONTENT_EXPORT IdentityProviderData
     : public base::RefCounted<IdentityProviderData> {
  public:
@@ -107,6 +121,19 @@ class CONTENT_EXPORT IdentityProviderData
   friend class base::RefCounted<IdentityProviderData>;
 
   ~IdentityProviderData();
+};
+
+// The relying party data that will be used to display a FedCM dialog. This data
+// is extracted from the website which invoked the API, not from the FedCM
+// endpoints themselves.
+struct CONTENT_EXPORT RelyingPartyData {
+ public:
+  explicit RelyingPartyData(const std::string& rp_for_display);
+  RelyingPartyData(const RelyingPartyData& other);
+  ~RelyingPartyData();
+
+  std::string rp_for_display;
+  gfx::Image rp_icon;
 };
 
 // IdentityRequestDialogController is an interface, overridden and implemented
@@ -181,16 +208,15 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // `new_accounts` are the accounts that were just logged in, which should
   // be prioritized in the UI. Returns true if the method successfully showed
   // UI. When false, the caller should assume that the API invocation was
-  // terminated and the cleanup methods invoked.
+  // terminated and the cleanup methods invoked. `rp_data` may be modified by
+  // this method, such as by setting the RP icon.
   virtual bool ShowAccountsDialog(
-      const std::string& rp_for_display,
-      const std::vector<scoped_refptr<content::IdentityProviderData>>& idp_list,
-      const std::vector<scoped_refptr<content::IdentityRequestAccount>>&
-          accounts,
-      content::IdentityRequestAccount::SignInMode sign_in_mode,
+      RelyingPartyData rp_data,
+      const std::vector<scoped_refptr<IdentityProviderData>>& idp_list,
+      const std::vector<scoped_refptr<IdentityRequestAccount>>& accounts,
+      IdentityRequestAccount::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
-      const std::vector<scoped_refptr<content::IdentityRequestAccount>>&
-          new_accounts,
+      const std::vector<scoped_refptr<IdentityRequestAccount>>& new_accounts,
       AccountSelectionCallback on_selected,
       LoginToIdPCallback on_add_account,
       DismissCallback dismiss_callback,

@@ -2447,7 +2447,8 @@ TEST_F(PasswordAutofillAgentTest, NoPopupOnPasswordFieldWithoutSuggestions) {
   ClearUsernameAndPasswordFieldValues();
   UpdateRendererIDsInFillData();
 
-  password_autofill_agent_->InformNoSavedCredentials();
+  password_autofill_agent_->InformNoSavedCredentials(
+      /*should_show_popup_without_passwords=*/false);
 
   ASSERT_TRUE(SimulateElementClick(kPasswordName));
 
@@ -2457,28 +2458,32 @@ TEST_F(PasswordAutofillAgentTest, NoPopupOnPasswordFieldWithoutSuggestions) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // when kEnablePendingModePasswordsPromo is enabled users in pending state will
 // be shown a suggestion to "verify it's you" even when there are no passwords
-TEST_F(PasswordAutofillAgentTest,
-       PopupOnPasswordFieldWithoutSuggestionsByDefault) {
+TEST_F(
+    PasswordAutofillAgentTest,
+    NoPopupOnPasswordFieldWithoutSuggestionsByDefaultWhenNotEligibleForPromo) {
   scoped_feature_list_.InitAndEnableFeature(
       ::switches::kEnablePendingModePasswordsPromo);
 
   ClearUsernameAndPasswordFieldValues();
   UpdateRendererIDsInFillData();
 
-  EXPECT_CALL(fake_driver_, ShowPasswordSuggestions)
-      .Times(NumShowSuggestionsCalls());
+  password_autofill_agent_->InformNoSavedCredentials(false);
+
+  EXPECT_CALL(fake_driver_, ShowPasswordSuggestions).Times(0);
 
   ASSERT_TRUE(SimulateElementClick(kPasswordName));
 }
 
-TEST_F(PasswordAutofillAgentTest, PopupOnPasswordFieldWithoutSuggestions) {
+TEST_F(PasswordAutofillAgentTest,
+       PopupOnPasswordFieldWithoutSuggestionsWhenEligibleForPromo) {
   scoped_feature_list_.InitAndEnableFeature(
       ::switches::kEnablePendingModePasswordsPromo);
 
   ClearUsernameAndPasswordFieldValues();
   UpdateRendererIDsInFillData();
 
-  password_autofill_agent_->InformNoSavedCredentials();
+  password_autofill_agent_->InformNoSavedCredentials(
+      /*should_show_popup_without_passwords=*/true);
 
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions)
       .Times(NumShowSuggestionsCalls());

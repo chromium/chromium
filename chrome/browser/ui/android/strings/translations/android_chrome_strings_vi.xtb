@@ -677,6 +677,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4195643157523330669">Mở trong thẻ mới</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 thẻ trên thiết bị này}other{# thẻ trên thiết bị này}}</translation>
 <translation id="4198423547019359126">Không có vị trí tải xuống</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Bạn đã dùng trên trang web này</translation>
 <translation id="4214315110991671325">Nếu bạn cho phép cookie thì Chrome có thể dùng các cookie này để tải trước.</translation>
 <translation id="4216511743389425832">Đọc trang này</translation>
 <translation id="4225725533026049334">Đang theo dõi</translation>

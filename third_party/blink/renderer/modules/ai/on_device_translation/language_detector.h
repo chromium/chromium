@@ -8,7 +8,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_availability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_detection_result.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_detector_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_detector_detect_options.h"
 #include "third_party/blink/renderer/modules/ai/on_device_translation/resolver_with_abort_signal.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -20,6 +22,15 @@ class LanguageDetector final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static ScriptPromise<V8AIAvailability> availability(
+      ScriptState* script_state,
+      ExceptionState& exception_state);
+
+  static ScriptPromise<LanguageDetector> create(
+      ScriptState* script_state,
+      LanguageDetectorCreateOptions* options,
+      ExceptionState& exception_state);
+
   explicit LanguageDetector(
       LanguageDetectionModel* language_detection_model,
       scoped_refptr<base::SequencedTaskRunner>& task_runner);

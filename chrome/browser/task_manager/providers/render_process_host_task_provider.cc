@@ -6,6 +6,7 @@
 
 #include "base/process/process.h"
 #include "chrome/browser/task_manager/providers/child_process_task.h"
+#include "chrome/common/buildflags.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
@@ -13,15 +14,50 @@
 #include "content/public/common/process_type.h"
 #include "extensions/buildflags/buildflags.h"
 
-using content::RenderProcessHost;
-using content::BrowserThread;
-using content::ChildProcessData;
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/process_map.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
+#endif
+
+using content::BrowserThread;
+using content::ChildProcessData;
+using content::RenderProcessHost;
+
 namespace task_manager {
+
+namespace {
+
+#if BUILDFLAG(ENABLE_GLIC)
+bool IsHostForGlic(content::RenderProcessHost* host) {
+  // This needs to match the GlicKeyedServiceFactory initialization logic in
+  // EnsureBrowserContextKeyedServiceFactoriesBuilt().
+  if (!glic::GlicEnabling::IsEnabledByFlags()) {
+    return false;
+  }
+
+  auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+      host->GetBrowserContext());
+  if (!glic_service) {
+    return false;
+  }
+
+  auto& window_controller = glic_service->window_controller();
+  auto* wc = window_controller.GetWebContents();
+  if (wc && wc->GetPrimaryMainFrame()->GetProcess() == host) {
+    return true;
+  }
+
+  auto* fre_wc = window_controller.GetFreWebContents();
+  return fre_wc && fre_wc->GetPrimaryMainFrame()->GetProcess() == host;
+}
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
+}  // namespace
 
 RenderProcessHostTaskProvider::RenderProcessHostTaskProvider() = default;
 
@@ -74,10 +110,15 @@ void RenderProcessHostTaskProvider::CreateTask(
   ChildProcessData data(content::PROCESS_TYPE_RENDERER, host->GetID());
   data.SetProcess(host->GetProcess().Duplicate());
 
+  auto subtype = ChildProcessTask::ProcessSubtype::kUnknownRenderProcess;
+#if BUILDFLAG(ENABLE_GLIC)
+  if (IsHostForGlic(host)) {
+    subtype = ChildProcessTask::ProcessSubtype::kGlicRenderProcess;
+  }
+#endif
   std::unique_ptr<ChildProcessTask>& task =
       tasks_by_rph_id_[render_process_host_id];
-  task = std::make_unique<ChildProcessTask>(
-      data, ChildProcessTask::ProcessSubtype::kUnknownRenderProcess);
+  task = std::make_unique<ChildProcessTask>(data, subtype);
   NotifyObserverTaskAdded(task.get());
 }
 

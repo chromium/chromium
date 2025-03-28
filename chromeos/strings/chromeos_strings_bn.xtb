@@ -11,6 +11,7 @@
 <translation id="102432830749687801">অ্যাক্সেস হারানোর আগে, Google-এর কন্টেন্ট ট্রান্সফার অ্যাপের সাহায্যে স্কুল অ্যাকাউন্টের ডেটা আপনার ব্যক্তিগত অ্যাকাউন্টে পাঠাতে ভুলবেন না।</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />"-এর জন্য শর্টকাট ব্যবহার করা হচ্ছে। নতুন শর্টকাট প্রেস করুন। আগে থাকা শর্টকাট পরিবর্তন করতে, আবার এই শর্টকাটে প্রেস করুন।</translation>
 <translation id="1030856839388844477">ডেটা ব্যবহার রিসেট করুন</translation>
+<translation id="1047095725494118091">ডাউনলোড করা যাচ্ছে না। আবার চেষ্টা করুন অথবা আপনার <ph name="DEVICE_TYPE" /> রিস্টার্ট করুন।</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />টি থ্রেড, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">নতুন ফিচার উপলভ্য আছে, আরও জানতে, 'উর্ধমুখী তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
 <translation id="1049663189809099096">হাল্কা হলুদ</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">স্ক্রিন সেভার ডাউনলোড করা হচ্ছে</translation>
 <translation id="1094693127011229778">IP অ্যাড্রেস উপলভ্য নয়</translation>
 <translation id="1100902271996134409">ছবি তৈরি হচ্ছে...</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> অডিও</translation>
 <translation id="1116694919640316211">সম্পর্কে</translation>
 <translation id="1118572504348554005">আমরা আমাদের পার্টনারদের সাথে এই ফর্মের মাধ্যমে জমা দেওয়া মতামত শেয়ার করতে পারি, যাতে আপনার অভিযোগ করা সমস্যা এবং অন্যান্য সমস্যার সমাধান করা যায়। পাসওয়ার্ডের মতো সংবেদনশীল তথ্য দেবেন না।</translation>
 <translation id="1119403468619527527">সহজে বোঝার জন্য বেছে নেওয়া শব্দ খুব কম</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">'ডার্ক মোড' চালু করুন</translation>
 <translation id="2164131940279488868">অডিও রেকর্ড করার সময় দেখে নিন যে মাইক কানেক্ট করা আছে কিনা</translation>
 <translation id="2173302385160625112">আপনার ইন্টারনেট কানেকশন ঠিক আছে কিনা ভাল করে দেখে নিন</translation>
+<translation id="2176909213844392588"><ph name="LANGUAGE_NAME" /> ট্রান্সক্রিপশন মডেল ডাউনলোড করা যাচ্ছে না। আবার চেষ্টা করুন অথবা আপনার <ph name="DEVICE_TYPE" /> রিস্টার্ট করুন।</translation>
 <translation id="2180197493692062006">কোনও সমস্যা হয়েছে। অ্যাপটি আবার খোলার চেষ্টা করে দেখুন।</translation>
 <translation id="2189104374785738357">APN সম্পর্কিত বিবরণ এডিট করুন</translation>
 <translation id="2195732836444333448">সর্বোচ্চ সীমায় পৌঁছে গেছে। কিছুক্ষণ পরে চেষ্টা করুন।</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">ডকুমেন্ট ফিডার (দুই পিঠের)</translation>
 <translation id="3201315366910775591">অন্য ব্যক্তির মাধ্যমে শেয়ার করা অ্যালবাম আপডেট করা হতে পারে</translation>
 <translation id="3211671540163313381">কীম্যাপ করার ডি-প্যাড</translation>
+<translation id="3217462202230355157">আপনার মাইক কানেক্ট করা আছে কিনা ভালোভাবে দেখে নিন অথবা আপনার <ph name="DEVICE_TYPE" /> রিস্টার্ট করে দেখুন</translation>
 <translation id="3226405216343213872">স্ক্যানার খোঁজা হচ্ছে</translation>
 <translation id="3226657629376379887">লেআউট অ্যাকশন মেনু</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" /> মান দ্বারা <ph name="CATEGORY_TEXT" /> ভাগ করুন</translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">এক্সক্লুসিভ</translation>
 <translation id="3404249063913988450">স্ক্রিন সেভার চালু করুন</translation>
 <translation id="3413935475507503304">আপডেটগুলি ব্যবহার করে চালিয়ে যাওয়ার জন্য, 'পরবর্তী' বিকল্পে ক্লিক করুন।</translation>
+<translation id="3416709353545797224">সব <ph name="DEVICE_TYPE" /> অডিও রেকর্ড করা হচ্ছে</translation>
 <translation id="3428551088151258685">আউটডোর</translation>
 <translation id="3428971106895559033">প্যাস্টেল</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">আপনার স্ক্যানার চালু এবং নেটওয়ার্ক বা সরাসরি কানেকশনের মাধ্যমে উপলভ্য রয়েছে তা দেখে নিন</translation>
 <translation id="4159238217853743776">আংশিক</translation>
 <translation id="4159784952369912983">বেগুনি</translation>
+<translation id="416219735020840807">ট্রান্সক্রিপশন মডেল ডাউনলোড করা যাচ্ছে না। আবার চেষ্টা করুন অথবা আপনার <ph name="DEVICE_TYPE" /> রিস্টার্ট করুন।</translation>
 <translation id="4170180284036919717">ফটো তুলুন</translation>
 <translation id="4170700058716978431">ব্যর্থ হয়েছে</translation>
 <translation id="4171077696775491955">উজ্জ্বলতা কমান</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">সাজেশনের মাধ্যমে বেছে নেওয়া টেক্সট পরিবর্তন করা হচ্ছে</translation>
 <translation id="5346687412805619883">স্থানীয় নেটওয়ার্ক</translation>
 <translation id="5358174242040570474">কোনও সমস্যা হয়েছে। কোনও ওয়ালপেপার বেছে নিয়ে চেষ্টা করুন বা অ্যাপ আবার খুলুন।</translation>
+<translation id="5368228070728130240">সারসংক্ষেপ ও শীর্ষক তৈরির জন্য মডেল ডাউনলোড করা যাচ্ছে না। আবার চেষ্টা করুন অথবা আপনার <ph name="DEVICE_TYPE" /> রিস্টার্ট করুন।</translation>
 <translation id="5372659122375744710">ওয়াই-ফাই নেটওয়ার্ক সুরক্ষিত নয়</translation>
 <translation id="5376354385557966694">অটোমেটিক 'লাইট মোড'</translation>
 <translation id="5378184552853359930">IP ধরন</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">DNS রেজোলিউশন সফল হয়নি</translation>
 <translation id="6768237774506518020">DNS রেজোলিউশনের বেশি ফেল রেট</translation>
 <translation id="6786747875388722282">এক্সটেনশানসমূহ</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" />-এর অডিও চালু থাকলে, Recorder এই ডিভাইসে চলা সব অডিও ক্যাপচার করে</translation>
 <translation id="6791471867139427246">কীবোর্ড লাইট কালার</translation>
 <translation id="6796229976413584781">শর্টকার্ট মুছে ফেলা হয়েছে</translation>
 <translation id="6798678288485555829">টেক্সট নেভিগেশন</translation>
@@ -1728,6 +1736,7 @@
 <translation id="8930622219860340959">ওয়্যারলেস</translation>
 <translation id="8933650076320258356"><ph name="DIRECTION" />-এর জন্য <ph name="KEYS" /> কী বেছে নেওয়া হয়েছে। <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">ক্লায়েন্ট IP অ্যাড্রেস</translation>
+<translation id="8938606491880817721">ডাউনলোড করা যাচ্ছে না। আবার চেষ্টা করুন অথবা আপনার <ph name="DEVICE_TYPE" /> রিস্টার্ট করুন।</translation>
 <translation id="8944651180182756621">লঞ্চারের রঙ</translation>
 <translation id="8945308580158685341">মৌমাছি</translation>
 <translation id="894617464444543719">ডিভাইস একটি ফোন।</translation>

@@ -1,3 +1,7 @@
+<!-- #html_wrapper_imports_start
+import {AnnotationMode} from '../constants.js';
+#html_wrapper_imports_end -->
+
 <div id="toolbar">
   <div id="start">
     <cr-icon-button id="sidenavToggle" iron-icon="${this.menuIcon_()}"
@@ -53,7 +57,17 @@
     ${this.showInk2Buttons_() ? html`
       <span id="annotate-controls">
         <span class="vertical-separator"></span>
+        ${this.pdfTextAnnotationsEnabled_ ? html`
+          <!-- TODO(crbug.com/402547554): Add aria-label and i18n string -->
+          <cr-icon-button id="text-annotate" iron-icon="pdf:text-annotate"
+              class="annotate-button ${this.getActive_(AnnotationMode.TEXT)}"
+              @click="${this.onTextAnnotationClick_}"
+              ?disabled="${!this.annotationAvailable}"
+              title="Text annotation">
+          </cr-icon-button>
+        ` : ''}
         <cr-icon-button id="annotate" iron-icon="pdf:annotate"
+            class="annotate-button ${this.getActive_(AnnotationMode.DRAW)}"
             @click="${this.onAnnotationClick_}"
             aria-label="$i18n{ink2Draw}"
             ?disabled="${!this.annotationAvailable}"
@@ -76,6 +90,7 @@
   <if expr="enable_ink">
     ${this.showInkAnnotationButton_() ? html`<cr-icon-button id="annotate"
           iron-icon="cr:create"
+          class="annotate-button ${this.getActive_(AnnotationMode.DRAW)}"
           @click="${this.onAnnotationClick_}"
           aria-label="$i18n{tooltipAnnotate}"
           ?disabled="${!this.annotationAvailable}"

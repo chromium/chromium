@@ -652,6 +652,8 @@ class NET_EXPORT SpdySession
     WRITE_STATE_DO_WRITE_COMPLETE,
   };
 
+  static std::string_view AvailabilityStateToString(AvailabilityState state);
+
   // Has the shared logic for the other two Initialize methods that call it.
   void InitializeInternal(SpdySessionPool* pool);
 

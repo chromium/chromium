@@ -18,7 +18,7 @@ class BLINK_EXPORT WebAILanguageModel {
   // `chrome.aiOriginTrial.languageModel` for extension, see
   // `NativeExtensionBindingsSystem::UpdateBindingsForPromptAPI` for more
   // information.
-  static v8::Local<v8::Value> GetAILanguageModelFactory(
+  static v8::Local<v8::Value> GetLanguageModelFactory(
       v8::Local<v8::Context> v8_context,
       v8::Isolate* isolate);
 };

@@ -44,23 +44,35 @@ gfx::RectF TextElementTiming::ComputeIntersectionRect(
     const LocalFrameView* frame_view) {
   Node* node = object.GetNode();
   DCHECK(node);
-  if (!NeededForElementTiming(*node))
+  if (!NeededForTiming(*node)) {
     return gfx::RectF();
+  }
 
   return ElementTimingUtils::ComputeIntersectionRect(
       &frame_view->GetFrame(), aggregated_visual_rect, property_tree_state);
 }
 
-bool TextElementTiming::CanReportElements() const {
+bool TextElementTiming::CanReportToElementTiming() const {
   DCHECK(performance_);
   return performance_->HasObserverFor(PerformanceEntry::kElement) ||
          !performance_->IsElementTimingBufferFull();
+}
+bool TextElementTiming::CanReportToContainerTiming() {
+  DCHECK(performance_);
+  if (!RuntimeEnabledFeatures::ContainerTimingEnabled()) {
+    return false;
+  }
+  EnsureContainerTiming();
+  return container_timing_->CanReportToContainerTiming();
+}
+bool TextElementTiming::CanReportElements() {
+  return CanReportToElementTiming() || CanReportToContainerTiming();
 }
 
 void TextElementTiming::OnTextObjectPainted(
     const TextRecord& record,
     const DOMPaintTimingInfo& paint_timing_info) {
-  DCHECK(record.is_needed_for_element_timing_);
+  DCHECK(record.is_needed_for_timing_);
   Node* node = record.node_;
 
   // Text aggregators need to be Elements. This will not be the case if the
@@ -75,21 +87,36 @@ void TextElementTiming::OnTextObjectPainted(
   }
 
   auto* element = To<Element>(node);
-  const AtomicString& id = element->GetIdAttribute();
-  if (!element->FastHasAttribute(html_names::kElementtimingAttr))
-    return;
 
-  DEFINE_STATIC_LOCAL(const AtomicString, kTextPaint, ("text-paint"));
-  performance_->AddElementTiming(
-      kTextPaint, g_empty_string, record.element_timing_rect_,
-      paint_timing_info, base::TimeTicks(),
-      element->FastGetAttribute(html_names::kElementtimingAttr), gfx::Size(),
-      id, element);
+  if (CanReportToElementTiming() &&
+      element->FastHasAttribute(html_names::kElementtimingAttr)) {
+    DEFINE_STATIC_LOCAL(const AtomicString, kTextPaint, ("text-paint"));
+    const AtomicString& id = element->GetIdAttribute();
+    performance_->AddElementTiming(
+        kTextPaint, g_empty_string, record.element_timing_rect_,
+        paint_timing_info, base::TimeTicks(),
+        element->FastGetAttribute(html_names::kElementtimingAttr), gfx::Size(),
+        id, element);
+  }
+  if (CanReportToContainerTiming()) {
+    container_timing_->OnElementPainted(paint_timing_info, element,
+                                        record.element_timing_rect_);
+  }
 }
 
 void TextElementTiming::Trace(Visitor* visitor) const {
   Supplement<LocalDOMWindow>::Trace(visitor);
   visitor->Trace(performance_);
+  visitor->Trace(container_timing_);
+}
+
+void TextElementTiming::EnsureContainerTiming() {
+  if (container_timing_) {
+    return;
+  }
+  LocalDOMWindow* window = GetSupplementable();
+  DCHECK(window);
+  container_timing_ = ContainerTiming::From(*window);
 }
 
 }  // namespace blink

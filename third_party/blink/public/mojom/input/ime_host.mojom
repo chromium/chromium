@@ -45,6 +45,19 @@ struct InputCursorAnchorInfo {
   TextAppearanceInfo text_appearance_info;
   // The bounding rectangles of each line in the currently focused element.
   array<gfx.mojom.Rect> visible_line_bounds;
+  // There are two times we might send new data from Blink to the browser. The
+  // first is when the IME has explicitly requested new data. When this happens,
+  // we calculate new data in the renderer and once this object reaches Java, we
+  // send a new update to the IME.
+  // The second time we may send this object to the browser is when Blink
+  // detects differences in one of the fields (eg. the text has changed or the
+  // focused element has changed). In this case, we don't want to send an update
+  // to the IME as they haven't requested any updates. Instead, we want this new
+  // data to be kept in the browser ready for the next time the IME requests new
+  // data.
+  // This field keeps track of whether to send a new update to the IME or not
+  // after this data has reached the browser.
+  bool requested;
 };
 
 // An interface exposed by the browser to the renderer which lets the renderer

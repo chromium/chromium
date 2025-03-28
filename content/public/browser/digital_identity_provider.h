@@ -26,7 +26,8 @@ class WebContents;
 class CONTENT_EXPORT DigitalIdentityProvider {
  public:
   struct CONTENT_EXPORT DigitalCredential {
-    DigitalCredential(std::optional<std::string> protocol, std::string data);
+    DigitalCredential(std::optional<std::string> protocol,
+                      std::optional<base::Value> data);
     DigitalCredential(DigitalCredential&& other);
     DigitalCredential& operator=(DigitalCredential&& other);
     DigitalCredential(DigitalCredential& other) = delete;
@@ -34,7 +35,7 @@ class CONTENT_EXPORT DigitalIdentityProvider {
     ~DigitalCredential();
 
     std::optional<std::string> protocol;
-    std::string data;
+    std::optional<base::Value> data;
   };
   // Do not reorder or change the values because the enum values are being
   // recorded in metrics.
@@ -80,7 +81,7 @@ class CONTENT_EXPORT DigitalIdentityProvider {
       DigitalIdentityInterstitialCallback callback) = 0;
 
   using DigitalIdentityCallback = base::OnceCallback<void(
-      const base::expected<DigitalCredential, RequestStatusForMetrics>&)>;
+      base::expected<DigitalCredential, RequestStatusForMetrics>)>;
 
   // Coordinates the call to present a digital credential between the web and
   // native apps.

@@ -61,7 +61,8 @@ class GeolocationDialog extends PolymerElement {
     };
   }
 
-  bodyText: string;
+  bodyTextParagraph1: string;
+  bodyTextParagraph2: string;
   cancelButtonText: string;
   confirmButtonText: string;
 

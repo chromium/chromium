@@ -330,6 +330,28 @@ suite('Basic', function() {
     assertNotEquals(routesLocal1, routesLocal2);
     assertEquals(routes, routesLocal2);
   });
+
+  test('autofillAi route defined', function() {
+    resetPageVisibilityForTesting({
+      autofill: true,
+    });
+    loadTimeData.overrideValues({
+      showAutofillAiControl: true,
+    });
+    resetRouterForTesting();
+    assertTrue(!!routes.AUTOFILL_AI);
+  });
+
+  test('autofillAi route not defined', function() {
+    resetPageVisibilityForTesting({
+      autofill: true,
+    });
+    loadTimeData.overrideValues({
+      showAutofillAiControl: false,
+    });
+    resetRouterForTesting();
+    assertFalse(!!routes.AUTOFILL_AI);
+  });
 });
 
 suite('DynamicParameters', function() {

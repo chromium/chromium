@@ -425,6 +425,16 @@ index 8bcd839f73cc4..933c6b641f73f 100644
  		DeleteRegion( tess, reg );
  		if ( !tessMeshDelete( tess->mesh, eTopRight ) ) longjmp(tess->env,1);
  		eTopRight = eTopLeft->Oprev;
+@@ -1143,9 +1143,7 @@ static void InitEdgeDict( TESStesselator *tess )
+ static void DoneEdgeDict( TESStesselator *tess )
+ {
+ 	ActiveRegion *reg;
+-#ifndef NDEBUG
+ 	int fixedEdges = 0;
+-#endif
+ 
+ 	while( (reg = (ActiveRegion *)dictKey( dictMin( tess->dict ))) != NULL ) {
+ 		/*
 @@ -1144,10 +1144,10 @@ static void DoneEdgeDict( TESStesselator *tess )
  		* created by ConnectRightVertex().
  		*/

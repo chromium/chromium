@@ -1587,8 +1587,13 @@ void PasswordAutofillAgent::AnnotateFieldsWithParsingResult(
                                  "confirmation_password_element");
 }
 
-void PasswordAutofillAgent::InformNoSavedCredentials() {
+void PasswordAutofillAgent::InformNoSavedCredentials(
+    bool should_show_popup_without_passwords) {
   autofilled_elements_cache_.clear();
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  should_show_popup_without_passwords_ = should_show_popup_without_passwords;
+#endif
 
   // Clear the actual field values.
   std::vector<WebFormControlElement> elements;
@@ -2108,6 +2113,7 @@ bool PasswordAutofillAgent::CanShowPopupWithoutPasswords(
     const WebInputElement& password_element) const {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   return password_element && IsElementEditable(password_element) &&
+         should_show_popup_without_passwords_ &&
          base::FeatureList::IsEnabled(
              switches::kEnablePendingModePasswordsPromo);
 #else

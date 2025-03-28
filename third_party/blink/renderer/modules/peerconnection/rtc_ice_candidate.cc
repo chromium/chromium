@@ -73,7 +73,7 @@ RTCIceCandidate* RTCIceCandidate::Create(
       MakeGarbageCollected<RTCIceCandidatePlatform>(
           candidate_init->candidate(), sdp_mid, std::move(sdp_m_line_index),
           candidate_init->usernameFragment(),
-          /*url can not be reconstruncted*/ std::nullopt));
+          /*url can not be reconstruncted*/ String()));
 }
 
 RTCIceCandidate* RTCIceCandidate::Create(
@@ -134,11 +134,11 @@ std::optional<V8RTCIceCandidateType> RTCIceCandidate::type() const {
 }
 
 std::optional<V8RTCIceTcpCandidateType> RTCIceCandidate::tcpType() const {
-  std::optional<String> tcp_type = platform_candidate_->TcpType();
-  if (!tcp_type.has_value()) {
+  String tcp_type = platform_candidate_->TcpType();
+  if (tcp_type.IsNull()) {
     return std::nullopt;
   }
-  return V8RTCIceTcpCandidateType::Create(tcp_type.value());
+  return V8RTCIceTcpCandidateType::Create(tcp_type);
 }
 
 String RTCIceCandidate::relatedAddress() const {
@@ -154,20 +154,16 @@ String RTCIceCandidate::usernameFragment() const {
 }
 
 String RTCIceCandidate::url() const {
-  const std::optional<String> url = platform_candidate_->Url();
-  if (!url) {
-    return g_null_atom;
-  }
-  return *url;
+  return platform_candidate_->Url();
 }
 
 std::optional<V8RTCIceServerTransportProtocol> RTCIceCandidate::relayProtocol()
     const {
-  std::optional<String> relay_protocol = platform_candidate_->RelayProtocol();
-  if (!relay_protocol.has_value()) {
+  String relay_protocol = platform_candidate_->RelayProtocol();
+  if (relay_protocol.IsNull()) {
     return std::nullopt;
   }
-  return V8RTCIceServerTransportProtocol::Create(relay_protocol.value());
+  return V8RTCIceServerTransportProtocol::Create(relay_protocol);
 }
 
 ScriptObject RTCIceCandidate::toJSONForBinding(ScriptState* script_state) {

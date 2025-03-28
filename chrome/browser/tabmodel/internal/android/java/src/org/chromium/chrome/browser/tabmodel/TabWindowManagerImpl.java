@@ -48,7 +48,7 @@ import java.util.Map;
  *
  * <p>Also manages tabs being reparented in AsyncTabParamsManager.
  */
-public class TabWindowManagerImpl implements ActivityStateListener, TabWindowManager {
+public class TabWindowManagerImpl implements TabWindowManager {
 
     public static final String TAG_MULTI_INSTANCE = "MultiInstance";
 
@@ -82,7 +82,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
     private final Map<TabModelSelector, @WindowId Integer> mSelectorsToWindowId = new HashMap<>();
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final Map<Activity, TabModelSelector> mAssignments = new HashMap<>();
-
+    private final ActivityStateListener mActivityStateListener = this::onActivityStateChange;
     private final TabModelSelectorFactory mSelectorFactory;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final int mMaxSelectors;
@@ -95,8 +95,8 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
             int maxSelectors) {
         mSelectorFactory = selectorFactory;
         mAsyncTabParamsManager = asyncTabParamsManager;
-        ApplicationStatus.registerStateListenerForAllActivities(this);
         mMaxSelectors = maxSelectors;
+        ApplicationStatus.registerStateListenerForAllActivities(mActivityStateListener);
     }
 
     @Override
@@ -502,9 +502,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
         return !isPossiblyAnArchivedTab && getTabById(tabId) == null;
     }
 
-    // ActivityStateListener
-    @Override
-    public void onActivityStateChange(Activity activity, int newState) {
+    private void onActivityStateChange(Activity activity, @ActivityState int newState) {
         if (newState == ActivityState.DESTROYED) {
             clearSelectorAndWindowIdAssignments(activity);
             // TODO(dtrainor): Move TabModelSelector#destroy() calls here.

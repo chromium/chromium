@@ -123,7 +123,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 @property(nonatomic, strong) LocationBarMediator* mediator;
 @property(nonatomic, strong) LocationBarSteadyViewMediator* steadyViewMediator;
 @property(nonatomic, strong) LocationBarViewController* viewController;
-@property(nonatomic, readonly) ProfileIOS* profile;
 @property(nonatomic, readonly) WebStateList* webStateList;
 
 // Tracks calls in progress to -cancelOmniboxEdit to avoid calling it from
@@ -138,10 +137,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 @implementation LocationBarCoordinator
 
 #pragma mark - Accessors
-
-- (ProfileIOS*)profile {
-  return self.browser ? self.browser->GetProfile() : nullptr;
-}
 
 - (WebStateList*)webStateList {
   return self.browser ? self.browser->GetWebStateList() : nullptr;
@@ -176,7 +171,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   self.viewController = [[LocationBarViewController alloc] init];
   self.viewController.incognito = isIncognito;
-  self.viewController.profilePrefs = self.browser->GetProfile()->GetPrefs();
+  self.viewController.profilePrefs = self.profile->GetPrefs();
   self.viewController.delegate = self;
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
@@ -185,8 +180,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
          LensCommands, LensOverlayCommands, OmniboxCommands>>(
       self.browser->GetCommandDispatcher());
   self.viewController.tracker =
-      feature_engagement::TrackerFactory::GetForProfile(
-          self.browser->GetProfile());
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   self.viewController.voiceSearchEnabled =
       ios::provider::IsVoiceSearchEnabled();
   self.viewController.layoutGuideCenter =
@@ -287,8 +281,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                                     OverlayModality::kWebContentArea);
   self.steadyViewMediator.consumer = self;
   self.steadyViewMediator.tracker =
-      feature_engagement::TrackerFactory::GetForProfile(
-          self.browser->GetProfile());
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
 
   _omniboxFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
       fullscreenController, self.viewController);

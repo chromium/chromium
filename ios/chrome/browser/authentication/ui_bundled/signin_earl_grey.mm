@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 
 #import "base/test/ios/wait_util.h"
+#import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/expected_signin_histograms.h"
@@ -232,6 +233,14 @@ using base::test::ios::WaitUntilConditionOrTimeout;
                             forHistogram:histogram];
     chrome_test_util::GREYAssertErrorNil(error);
   }
+}
+
+- (void)setPolicyResponseForNextProfileSeparationPolicyRequest:
+    (policy::ProfileSeparationDataMigrationSettings)
+        profileSeparationDataMigrationSettings {
+  [SigninEarlGreyAppInterface
+      setPolicyResponseForNextProfileSeparationPolicyRequest:
+          profileSeparationDataMigrationSettings];
 }
 
 @end

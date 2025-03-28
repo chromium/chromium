@@ -40,6 +40,7 @@ export class EmojiCategoryButton extends PolymerElement {
   name: CategoryEnum;
   icon: string;
   active: boolean;
+  searchActive: boolean;
   private gifSupport: boolean;
 
 

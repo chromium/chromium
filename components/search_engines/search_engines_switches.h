@@ -62,6 +62,11 @@ extern const base::FeatureParam<std::string>
 // restart until the user has made a decision.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 extern const base::FeatureParam<int> kSearchEngineChoiceMaximumSkipCount;
+
+// Feature flag to prompt for the search engine choice in EEA countries after
+// device restore.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kIOSPromptSearchEngineChoiceAfterDeviceRestore);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

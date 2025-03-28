@@ -425,7 +425,7 @@ void DumpAccessibilityTestBase::WaitForFinalTreeContents(ui::AXMode mode) {
 }
 
 void DumpAccessibilityTestBase::RunTestForPlatform(
-    ui::AXMode mode,
+    ui::AXMode ax_mode_for_test,
     const base::FilePath file_path,
     const char* file_dir,
     const base::FilePath::StringType& expectations_qualifier) {
@@ -437,6 +437,27 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
 #if BUILDFLAG(IS_ANDROID)
   ui::AccessibilityState::ForceRespectDisplayedPasswordTextForTesting();
 #endif
+
+  // If there are unwanted AXMode flags already set, skip the test.
+  // TODO(crbug.com/371230119): This condition is mostly needed because the
+  // Android Automotive bot is enabling accessibility with kAXModeComplete,
+  // which causes form controls tests to fail, but it could also help prevent
+  // future failures where bots turn on the wrong flags for a test.
+  ui::AXMode initial_ax_mode =
+      BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
+  // Perform a bitwise AND between initial_ax_mode and the bitwise NOT of
+  // ax_mode_for_test. If the result is non-zero, it means there are flags set
+  // in initial_ax_mode that are NOT set in ax_mode_for_test.
+  ui::AXMode unwanted_mode_flags = ~ax_mode_for_test;
+  if ((initial_ax_mode & unwanted_mode_flags).is_mode_off() == false) {
+    // There were extra AXMode flags present, so the test cannot continue.
+    GTEST_SKIP() << "The initial AXMode contained more flags than the test is "
+                    "designed for."
+                 << "\n* Test requires: " << ax_mode_for_test
+                 << "\n* Initial AXMode: " << initial_ax_mode
+                 << "\n* Extra, unwanted flags: "
+                 << (initial_ax_mode & unwanted_mode_flags);
+  }
 
   // Normally some accessibility events that would be fired are suppressed or
   // delayed, depending on what has focus or the type of event. For testing,
@@ -478,17 +499,12 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
       "/" + std::string(file_dir) + "/" + file_path.BaseName().MaybeAsASCII()));
   WebContentsImpl* web_contents = GetWebContents();
 
-  // Start with no AXMode, so that in case the test was run with
-  // --force-renderer-accessibility, we can still set the correct mode for the
-  // test, e.g. form controls mode.
-  BrowserAccessibilityState::GetInstance()->DisableProcessAccessibility();
-
   if (enable_accessibility_after_navigating_ &&
       web_contents->GetAccessibilityMode().is_mode_off()) {
     // Load the url, then enable accessibility.
     EXPECT_TRUE(NavigateToURL(shell(), url));
     AccessibilityNotificationWaiter accessibility_waiter(
-        web_contents, mode, ax::mojom::Event::kNone);
+        web_contents, ax_mode_for_test, ax::mojom::Event::kNone);
     static_cast<BrowserAccessibilityStateImpl*>(
         BrowserAccessibilityState::GetInstance())
         ->SetAXModeChangeAllowed(false);
@@ -497,7 +513,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     // Enable accessibility, then load the test html and wait for the
     // "load complete" AX event.
     AccessibilityNotificationWaiter accessibility_waiter(
-        web_contents, mode, ax::mojom::Event::kLoadComplete);
+        web_contents, ax_mode_for_test, ax::mojom::Event::kLoadComplete);
     static_cast<BrowserAccessibilityStateImpl*>(
         BrowserAccessibilityState::GetInstance())
         ->SetAXModeChangeAllowed(false);
@@ -507,10 +523,10 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     ASSERT_TRUE(accessibility_waiter.WaitForNotification());
   }
 
-  WaitForAllFramesLoaded(mode);
+  WaitForAllFramesLoaded(ax_mode_for_test);
 
   // Call the subclass to dump the output.
-  std::vector<std::string> actual_lines = Dump(mode);
+  std::vector<std::string> actual_lines = Dump(ax_mode_for_test);
 
   // Execute and wait for specified string
   for (const auto& function_name : scenario_.execute) {
@@ -526,7 +542,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
       if (base::Contains(tree_dump, str)) {
         wait_for_string = false;
         // Append an additional dump if the specified string was found.
-        std::vector<std::string> additional_dump = Dump(mode);
+        std::vector<std::string> additional_dump = Dump(ax_mode_for_test);
         actual_lines.emplace_back("=== Start Continuation ===");
         actual_lines.insert(actual_lines.end(), additional_dump.begin(),
                             additional_dump.end());

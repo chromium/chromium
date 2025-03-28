@@ -499,10 +499,10 @@ class SubresourceFilteringRulesetServiceDeathTest
 
  protected:
   void SetUpTempDir() override {
-    if (environment_->HasVar(kInheritedTempDirKey)) {
-      std::string value;
-      ASSERT_TRUE(environment_->GetVar(kInheritedTempDirKey, &value));
-      inherited_temp_dir_ = base::FilePath::FromUTF8Unsafe(value);
+    std::optional<std::string> value =
+        environment_->GetVar(kInheritedTempDirKey);
+    if (value.has_value()) {
+      inherited_temp_dir_ = base::FilePath::FromUTF8Unsafe(value.value());
     } else {
       SubresourceFilteringRulesetServiceTest::SetUpTempDir();
       environment_->SetVar(kInheritedTempDirKey,

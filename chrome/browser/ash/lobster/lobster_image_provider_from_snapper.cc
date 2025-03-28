@@ -127,7 +127,8 @@ ash::LobsterErrorCode MantaToLobsterStatusCode(
 std::optional<ash::LobsterImageCandidate> ToLobsterImageCandidate(
     uint32_t id,
     uint32_t seed,
-    const std::string& query,
+    const std::string& user_query,
+    const std::string& rewritten_query,
     const SkBitmap& decoded_bitmap) {
   base::AssertLongCPUWorkAllowed();
 
@@ -141,13 +142,15 @@ std::optional<ash::LobsterImageCandidate> ToLobsterImageCandidate(
       /*id=*/id, /*image_bytes=*/
       std::string(base::as_string_view(data.value())),
       /*seed=*/seed,
-      /*query=*/query.data());
+      /*user_query=*/user_query,
+      /*rewritten_query=*/rewritten_query);
 }
 
 void EncodeBitmap(
     uint32_t id,
     uint32_t seed,
-    const std::string& query,
+    const std::string& user_query,
+    const std::string& rewritten_query,
     base::OnceCallback<void(std::optional<ash::LobsterImageCandidate>)>
         callback,
     const SkBitmap& decoded_bitmap) {
@@ -158,7 +161,8 @@ void EncodeBitmap(
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&ToLobsterImageCandidate, id, seed, query, decoded_bitmap),
+      base::BindOnce(&ToLobsterImageCandidate, id, seed, user_query,
+                     rewritten_query, decoded_bitmap),
       std::move(callback));
 }
 
@@ -166,7 +170,7 @@ void SanitizePreviewJpgBytes(
     const manta::proto::OutputData& output_data,
     data_decoder::DataDecoder* data_decoder,
     uint32_t id,
-    const std::string& query,
+    const std::string& user_query,
     base::OnceCallback<void(std::optional<ash::LobsterImageCandidate>)>
         callback) {
   data_decoder::DecodeImage(
@@ -174,6 +178,7 @@ void SanitizePreviewJpgBytes(
       data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes, gfx::Size(),
       base::BindOnce(&EncodeBitmap, id, output_data.generation_seed(),
+                     user_query,
                      // if the `generative_prompt`is populated with the
                      // rewritten query if query rewritter is enabled, and is
                      // populated with the original query otherwise.

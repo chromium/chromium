@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -320,14 +321,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     if (!ui_data_json) {
       return std::nullopt;
     }
-
-    JSONStringValueDeserializer deserializer(*ui_data_json);
-    auto deserialized = deserializer.Deserialize(nullptr, nullptr);
-
-    if (!deserialized || !deserialized->is_dict()) {
-      return std::nullopt;
-    }
-    return std::move(*deserialized).TakeDict();
+    return base::JSONReader::ReadDict(*ui_data_json);
   }
 
   bool GetUserSettingStringData(const std::string& guid,
@@ -394,7 +388,8 @@ TEST_F(NetworkingPrivateApiTest, SetPrivateNetworkPropertiesWebUI) {
   RunFunction(
       set_properties.get(),
       base::StringPrintf(R"(["%s", {"Priority": 0}])", kSharedWifiGuid));
-  EXPECT_EQ(ExtensionFunction::SUCCEEDED, *set_properties->response_type());
+  EXPECT_EQ(ExtensionFunction::ResponseType::kSucceeded,
+            *set_properties->response_type());
 
   const ash::NetworkState* network =
       ash::NetworkHandler::Get()
@@ -411,7 +406,8 @@ TEST_F(NetworkingPrivateApiTest, SetPrivateNetworkProperties) {
   RunFunction(
       set_properties.get(),
       base::StringPrintf(R"(["%s", {"Priority": 0}])", kPrivateWifiGuid));
-  EXPECT_EQ(ExtensionFunction::SUCCEEDED, *set_properties->response_type());
+  EXPECT_EQ(ExtensionFunction::ResponseType::kSucceeded,
+            *set_properties->response_type());
 
   const ash::NetworkState* network =
       ash::NetworkHandler::Get()
@@ -520,7 +516,8 @@ TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedPropertiesFromWebUI) {
   RunFunction(
       set_properties.get(),
       base::StringPrintf(R"(["%s", %s])", kPrivateWifiGuid, kCombinedSettings));
-  EXPECT_EQ(ExtensionFunction::SUCCEEDED, *set_properties->response_type());
+  EXPECT_EQ(ExtensionFunction::ResponseType::kSucceeded,
+            *set_properties->response_type());
 
   EXPECT_TRUE(GetUserSettingStringData(kPrivateWifiGuid, "ProxySettings.Type"));
   EXPECT_TRUE(
@@ -602,7 +599,8 @@ TEST_F(NetworkingPrivateApiTest, CreatePrivateNetwork) {
 
   RunFunction(set_properties.get(),
               base::StringPrintf(R"(["%s", {"Priority": 2}])", guid.c_str()));
-  EXPECT_EQ(ExtensionFunction::SUCCEEDED, *set_properties->response_type());
+  EXPECT_EQ(ExtensionFunction::ResponseType::kSucceeded,
+            *set_properties->response_type());
 
   EXPECT_EQ(2, GetNetworkPriority(network));
 }

@@ -256,10 +256,17 @@ export class BannerController extends EventTarget {
   private bulkPinningEnabled_ = false;
 
   /**
-   * SkyVault migration destination. If set, one of {Google Drive, OneDrive}.
+   * SkyVault migration destination. If set, one of {Google Drive, OneDrive,
+   * Delete}.
    */
-  private migrationDestination_: chrome.fileManagerPrivate.CloudProvider =
-      chrome.fileManagerPrivate.CloudProvider.NOT_SPECIFIED;
+  private migrationDestination_:
+      chrome.fileManagerPrivate.MigrationDestination =
+      chrome.fileManagerPrivate.MigrationDestination.NOT_SPECIFIED;
+
+  /**
+   * SkyVault migration or deletion start time.
+   */
+  private migrationStartTime_: string|undefined = undefined;
 
   constructor(
       private directoryModel_: DirectoryModel,
@@ -289,10 +296,12 @@ export class BannerController extends EventTarget {
     chrome.fileManagerPrivate.getPreferences(pref => {
       if (this.bulkPinningAvailable_ !== pref.driveFsBulkPinningAvailable ||
           this.bulkPinningEnabled_ !== pref.driveFsBulkPinningEnabled ||
-          this.migrationDestination_ !== pref.skyVaultMigrationDestination) {
+          this.migrationDestination_ !== pref.skyVaultMigrationDestination ||
+          this.migrationStartTime_ !== pref.skyVaultMigrationStartTime) {
         this.bulkPinningAvailable_ = pref.driveFsBulkPinningAvailable;
         this.bulkPinningEnabled_ = pref.driveFsBulkPinningEnabled;
         this.migrationDestination_ = pref.skyVaultMigrationDestination;
+        this.migrationStartTime_ = pref.skyVaultMigrationStartTime;
         this.reconcile();
       }
     });
@@ -439,8 +448,11 @@ export class BannerController extends EventTarget {
 
       this.registerCustomBannerFilter(FilesMigratingToCloudBannerTagName, {
         shouldShow: () => this.migrationDestination_ !==
-            chrome.fileManagerPrivate.CloudProvider.NOT_SPECIFIED,
-        context: () => ({cloudProvider: this.migrationDestination_}),
+            chrome.fileManagerPrivate.MigrationDestination.NOT_SPECIFIED,
+        context: () => ({
+          migrationDestination: this.migrationDestination_,
+          migrationStartTime: this.migrationStartTime_,
+        }),
       });
 
       this.registerCustomBannerFilter(OdfsOfflineBannerTagName, {

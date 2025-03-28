@@ -190,6 +190,12 @@ auto CreateServiceProviderOrListenersForProjects(
   return invalidation_service_provider_or_listener_per_project;
 }
 
+scoped_refptr<base::SequencedTaskRunner> CreateUserVisibleTaskRunner() {
+  return base::ThreadPool::CreateUpdateableSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+}
+
 }  // namespace
 
 // static
@@ -279,7 +285,10 @@ void BrowserPolicyConnectorAsh::Init(
           invalidation::UniquePointerVariantToPointer(
               invalidation_service_provider_or_listener_per_project_
                   [device_local_account_policy_project_number]),
-          CreateBackgroundTaskRunner(), CreateBackgroundTaskRunner(),
+          /*store_background_task_runner=*/CreateBackgroundTaskRunner(),
+          /*store_first_load_task_runner=*/CreateUserVisibleTaskRunner(),
+          /*extension_cache_task_runner=*/CreateBackgroundTaskRunner(),
+          /*external_data_service_backend_task_runner=*/
           CreateBackgroundTaskRunner(), url_loader_factory);
   device_local_account_policy_service_->Connect(device_management_service());
 

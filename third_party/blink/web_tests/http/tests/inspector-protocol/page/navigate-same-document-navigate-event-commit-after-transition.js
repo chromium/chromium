@@ -6,10 +6,8 @@
   await session.evaluate(`
     navigation.onnavigate = e => {
       e.intercept({
-        commit: 'after-transition',
-        handler: async () => {
+        precommitHandler: async () => {
           await new Promise(r => setTimeout(r, 1000));
-          e.commit();
         }
       });
     };

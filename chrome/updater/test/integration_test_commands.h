@@ -68,13 +68,15 @@ class IntegrationTestCommands
   virtual void ExpectPing(ScopedServer* test_server,
                           int event_type,
                           std::optional<GURL> target_url) const = 0;
-  virtual void ExpectAppCommandPing(ScopedServer* test_server,
-                                    const std::string& appid,
-                                    const std::string& appcommandid,
-                                    int errorcode,
-                                    int eventresult,
-                                    int event_type,
-                                    const base::Version& version) const = 0;
+  virtual void ExpectAppCommandPing(
+      ScopedServer* test_server,
+      const std::string& appid,
+      const std::string& appcommandid,
+      int errorcode,
+      int eventresult,
+      int event_type,
+      const base::Version& version,
+      const base::Version& updater_version) const = 0;
   virtual void ExpectUpdateCheckRequest(ScopedServer* test_server) const = 0;
   virtual void ExpectUpdateCheckSequence(
       ScopedServer* test_server,

@@ -2760,11 +2760,11 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, EnableChromeVox) {
   speech_monitor.Call([this]() {
     // Disable earcons (https://crbug.com/396507).
     const std::string script(R"JS(
-        let module = await import('/chromevox/background/chromevox.js');
+        let module = await import('/chromevox/mv2/background/chromevox.js');
         module.ChromeVox.earcons.playEarcon = function() {};
-        module = await import('/chromevox/background/chromevox_state.js');
+        module = await import('/chromevox/mv2/background/chromevox_state.js');
         let ChromeVoxState = module.ChromeVoxState;
-        module = await import('/chromevox/background/chromevox_range.js');
+        module = await import('/chromevox/mv2/background/chromevox_range.js');
         let ChromeVoxRange = module.ChromeVoxRange;
 
         await ChromeVoxState.ready();

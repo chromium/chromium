@@ -223,7 +223,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1363028406613469049">Suivre</translation>
 <translation id="1364822246244961190">Cette règle est bloquée. Sa valeur sera ignorée.</translation>
 <translation id="1368318639262510626">Jeu du dino. Un dinosaure pixelisé traverse un paysage désolé en esquivant les cactus et les ptérodactyles. Lorsque vous entendez un signal audio, appuyez sur Espace pour le faire sauter par-dessus les obstacles.</translation>
-<translation id="1369735141991626842">Remplir les champs avec l'IA</translation>
 <translation id="1374468813861204354">suggestions</translation>
 <translation id="1375198122581997741">À propos de la version</translation>
 <translation id="1375293861397106342">Gamme de prix habituelle pour toutes les options : <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -539,7 +538,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1919526244108283799">400 x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Aucun}=1{1 site}one{# site}other{# sites}}</translation>
 <translation id="192095259937375524">Bouton "Partager cet onglet" à activer pour partager cet onglet en le castant, en créant un QR code, en partageant le lien, etc.</translation>
-<translation id="1921479021518565778">Suggestions chargées</translation>
 <translation id="1924727005275031552">Nouvelle</translation>
 <translation id="1927439846988093361">Soins capillaires</translation>
 <translation id="1935353813610900265">Envoyez des commentaires sur la recherche dans l'historique optimisée par l'IA</translation>
@@ -900,6 +898,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2539524384386349900">Détecter</translation>
 <translation id="2541219929084442027">Les pages consultées dans les onglets de navigation privée ne sont pas enregistrées dans l'historique de votre navigateur, dans les cookies ni dans l'historique des recherches une fois que vous avez fermé tous les onglets de navigation privée. Les fichiers téléchargés et les favoris ajoutés sont conservés.</translation>
 <translation id="2542106216580219892">Surf</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – Pour quitter le plein écran, appuyez de manière prolongée sur |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Votre administrateur a redémarré votre appareil</translation>
 <translation id="2544644783021658368">Document unique</translation>
 <translation id="254524874071906077">Définir Chrome comme navigateur par défaut</translation>
@@ -973,6 +972,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">Oui, continuer</translation>
 <translation id="2690699652723742414">30 derniers jours</translation>
+<translation id="2691385045260836588">Modèle</translation>
 <translation id="2691924980723297736">Avertissement de sécurité</translation>
 <translation id="2697248912349197812">Demander à <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Sous-menu disponible. Appuyez sur <ph name="SHORTCUT" /> pour accéder à des options supplémentaires.</translation>
@@ -1528,6 +1528,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3664782872746246217">Mots-clés :</translation>
 <translation id="3665100783276035932">La plupart des sites devraient fonctionner comme prévu</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />En savoir plus<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">Numéro</translation>
 <translation id="3670229581627177274">Activer le Bluetooth</translation>
 <translation id="3671117652518853176">Même si cette option est désactivée, vous devrez parfois procéder à une validation pour des raisons de sécurité</translation>
 <translation id="3671540257457995106">Autoriser le redimensionnement ?</translation>
@@ -1542,7 +1543,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3681007416295224113">Informations relatives au certificat</translation>
 <translation id="3681421644246505351">Chrome relève les thèmes qui vous intéressent grâce à votre historique de navigation.</translation>
 <translation id="3682094733650754138">L'option "Remplir l'adresse" a été sélectionnée</translation>
-<translation id="3687493962714153124">Gérer la saisie automatique avec l'IA</translation>
 <translation id="3687920599421452763">Fourgons et fourgonnettes</translation>
 <translation id="3693327506115126094">Choisir comment confirmer votre identité</translation>
 <translation id="3698353241727597930">Votre administrateur a configuré l'enregistrement des <ph name="FILES" /> dans votre espace de stockage <ph name="CLOUD_STORAGE" /> géré par l'entreprise. Ces fichiers peuvent être surveillés, audités et conservés lorsque vous les supprimez.</translation>
@@ -1695,6 +1695,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3950820424414687140">Se connecter</translation>
 <translation id="3953505489397572035">Ce prix est dans la gamme habituelle</translation>
 <translation id="3958057596965527988">4 x 4 pouces</translation>
+<translation id="3959969108528118741">Propriétaire</translation>
 <translation id="3961148744525529027">La feuille du gestionnaire de paiement est ouverte à moitié</translation>
 <translation id="3962859241508114581">Titre précédent</translation>
 <translation id="3963721102035795474">Mode lecture</translation>
@@ -1920,7 +1921,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4312866146174492540">Bloquer (par défaut)</translation>
 <translation id="4314815835985389558">Gérer la synchronisation</translation>
 <translation id="4316057107946726368">Veuillez saisir un message de justification contenant au maximum <ph name="MAX_CHAR_COUNT" /> caractères. Caractères utilisés : <ph name="ACTUAL_CHAR_COUNT" /> sur <ph name="MAX_CHAR_COUNT" />.</translation>
-<translation id="431740489189220419">Chargement des suggestions…</translation>
 <translation id="4318213823155573975">Chapeaux</translation>
 <translation id="4318312030194671742">Service de composition d'aperçus Paint</translation>
 <translation id="4318566738941496689">Nom et adresse réseau de votre appareil</translation>
@@ -2327,6 +2327,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5087286274860437796">Le certificat actuel du serveur n'est pas valide.</translation>
 <translation id="5087580092889165836">Ajouter une carte</translation>
 <translation id="5088142053160410913">Message à l'opérateur</translation>
+<translation id="5089810972385038852">État</translation>
 <translation id="5090647584136241764">Ajoutez des onglets avec des produits similaires pour comparer facilement les détails qui vous intéressent</translation>
 <translation id="5093232627742069661">Pli en Z</translation>
 <translation id="5094747076828555589">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité n'est pas considéré comme fiable par Chromium. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
@@ -2465,6 +2466,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Votre moteur de recherche par défaut vous permet d'effectuer des recherches sur le Web et d'alimenter des fonctionnalités Chromium<ph name="END_BOLD" /> telles que la recherche à partir de la barre d'adresse ou à partir d'images dans les pages Web. Une fonctionnalité peut ne pas être disponible si votre moteur de recherche ne la prend pas en charge.</translation>
 <translation id="5323043727018853753">Contenu intégré autorisé</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> sur <ph name="NUM_MATCHES" /></translation>
+<translation id="5327248766486351172">Nom</translation>
 <translation id="5329858041417644019">Votre navigateur n'est pas géré</translation>
 <translation id="5331585574693522196">Définir par défaut</translation>
 <translation id="5332219387342487447">Mode de livraison</translation>
@@ -2677,7 +2679,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="569000877158168851">La valeur de la règle DnsOverHttpsTemplates n'est pas valide et ne sera pas utilisée, sauf si la règle DnsOverHttpsMode est définie sur <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ou <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Invite "Enregistrer la carte" ouverte à pleine hauteur.</translation>
 <translation id="5695542892312572833">Utiliser Windows Hello pour valider et finaliser votre achat ?</translation>
-<translation id="5697827549745555938">Les informations que vous avez enregistrées et cette page sont envoyées à Google pour déterminer si la saisie automatique peut vous aider à remplir ce formulaire. Des réviseurs humains peuvent consulter les données pour améliorer cette fonctionnalité.</translation>
 <translation id="5699628521141772782">Produits laitiers et œufs</translation>
 <translation id="5700761515355162635">Cookies tiers autorisés</translation>
 <translation id="5701381305118179107">Centrer</translation>
@@ -3106,6 +3107,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6440503408713884761">Ignoré</translation>
 <translation id="6443406338865242315">Les extensions et les plug-ins que vous avez installés</translation>
 <translation id="6444329331928531170">Pension et retraite</translation>
+<translation id="6445051938772793705">Pays</translation>
 <translation id="6446608382365791566">Ajouter d'autres informations</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6448371595882710519">En savoir plus sur le contrôle des données</translation>
@@ -3588,7 +3590,6 @@ Informations supplémentaires :
 <translation id="7316521168101843192">Enregistrement du fichier sur Microsoft OneDrive…</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Aide à la connexion</translation>
-<translation id="7321111802407017850">Enregistrer vos infos dans la saisie automatique</translation>
 <translation id="7323804146520582233">Masquer la section "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Ignorer le compte local de l'appareil</translation>
 <translation id="7334320624316649418">&amp;Rétablir la réorganisation</translation>
@@ -3933,6 +3934,7 @@ Informations supplémentaires :
 <translation id="7887885240995164102">Utiliser le mode Picture-in-picture</translation>
 <translation id="7888575728750733395">Intent de rendu d'impression</translation>
 <translation id="7890748547282909375">Connectez-vous à Microsoft OneDrive pour enregistrer la capture d'écran</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – Pour afficher le curseur, appuyez sur |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">paramètres de paiement</translation>
 <translation id="7894280532028510793">S'il n'y a pas d'erreur, essayez de <ph name="BEGIN_LINK" />faire un diagnostic réseau<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Enveloppe 180x230</translation>
@@ -4624,6 +4626,7 @@ Informations supplémentaires :
 <translation id="9155646082713385498">Magazines</translation>
 <translation id="9157595877708044936">Configuration en cours...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> peut inclure du contenu sensible}one{<ph name="FILE_COUNT" /> fichier peut inclure du contenu sensible}other{<ph name="FILE_COUNT" /> fichiers peuvent inclure du contenu sensible}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – Pour quitter le plein écran, appuyez sur |<ph name="ACCELERATOR" />|</translation>
 <translation id="9165305804774426672">Les sites que vous visitez peuvent aussi déterminer ce qui vous intéresse en fonction de votre activité sur ces sites. Par exemple, si vous consultez un site qui vend des chaussures de running pour les longues distances, le site peut déterminer que le marathon fait partie de vos centres d'intérêt.</translation>
 <translation id="9166851138617700776">En savoir plus sur les annonces suggérées par les sites et la mesure des annonces</translation>
 <translation id="9167054383925257837">Informations sur le navigateur et l'OS de l'appareil (versions du navigateur et de l'OS, par exemple)</translation>

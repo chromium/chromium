@@ -23,8 +23,7 @@ const StylePath* StylePath::EmptyPath() {
 
 const Path& StylePath::GetPath() const {
   if (!path_) {
-    path_ = BuildPathFromByteStream(byte_stream_);
-    path_->SetWindRule(wind_rule_);
+    path_ = BuildPathFromByteStream(byte_stream_, wind_rule_);
   }
   return *path_;
 }

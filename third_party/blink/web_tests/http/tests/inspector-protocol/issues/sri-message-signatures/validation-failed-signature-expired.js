@@ -20,7 +20,7 @@ const valid_signature_input = `signature=("unencoded-digest";sf);keyid="JrQLj5P/
   let testURL = new URL('/inspector-protocol/resources/sri-message-signature-test.php', self.origin);
   testURL.searchParams.set('digest', valid_digest);
   testURL.searchParams.set('signature', valid_signature);
-  testURL.searchParams.set('input', valid_signature + ";expires=1");
+  testURL.searchParams.set('input', valid_signature_input + ";expires=1");
   await session.evaluate(`fetch('${testURL.href}')`);
 
   // Dump the issue:

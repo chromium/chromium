@@ -141,10 +141,9 @@ struct EnclaveManager::PendingAction {
   std::string set_pin;      // the PIN to set on an existing account.
   std::string updated_pin;  // a new PIN, to replace the current PIN.
   std::string rapt;         // ReAuthentication Proof Token.
-  bool update_wrapped_pin;  // copy `wrapped_pin` and `pin_public_key` to the
-                            // state.
+  bool update_wrapped_pin;  // copy `wrapped_pin` to the state.
   std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin;
-  std::optional<std::string> pin_public_key;
+  std::optional<std::string> pin_public_key;  // the current PIN PK in the SDS.
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_recovery_key;
 #endif                      // BUILDFLAG(IS_MAC)
@@ -352,9 +351,6 @@ std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
     return __LINE__;
   }
 
-  if (user.has_wrapped_pin() != user.has_pin_public_key()) {
-    return __LINE__;
-  }
   if (user.has_wrapped_pin()) {
     return CheckPINInvariants(user.wrapped_pin());
   }
@@ -1568,7 +1564,6 @@ class EnclaveManager::StateMachine {
 
     if (action_->update_wrapped_pin) {
       *user_->mutable_wrapped_pin() = std::move(*action_->wrapped_pin);
-      user_->set_pin_public_key(std::move(*action_->pin_public_key));
       manager_->WriteState(&local_state_);
     }
 
@@ -1891,7 +1886,6 @@ class EnclaveManager::StateMachine {
 
     if (action_->wrapped_pin) {
       *user_->mutable_wrapped_pin() = std::move(*action_->wrapped_pin);
-      user_->set_pin_public_key(std::move(*action_->pin_public_key));
       action_->wrapped_pin.reset();
     }
 
@@ -1976,9 +1970,9 @@ class EnclaveManager::StateMachine {
       // security domain requires the current PIN public key to be set when
       // joining a PIN, which Chrome will do later during processing.
       if (result->gpm_pin_metadata->public_key) {
-        FIDO_LOG(EVENT) << "Updating GPM PIN public key";
-        user_->set_pin_public_key(
-            std::move(*result->gpm_pin_metadata->public_key));
+        FIDO_LOG(EVENT) << "GPM PIN public key updated";
+        action_->pin_public_key =
+            std::move(*result->gpm_pin_metadata->public_key);
       }
       if (result->gpm_pin_metadata->usable_pin_metadata) {
         const auto& metadata = *result->gpm_pin_metadata->usable_pin_metadata;
@@ -2243,11 +2237,11 @@ class EnclaveManager::StateMachine {
     std::string wrapped_pin_proto_serialized =
         wrapped_pin_proto_->SerializeAsString();
     *user_->mutable_wrapped_pin() = std::move(*wrapped_pin_proto_);
-    const std::string previous_pin_public_key = user_->pin_public_key();
     // If changing the PIN, there must be a previous PIN member public key.
-    // If setting a first PIN, there must not be one.
-    CHECK_EQ(!previous_pin_public_key.empty(), updating_pin_member);
-    user_->set_pin_public_key(vault_public_key);
+    // If enrolling with a PIN, it's possible Chrome is replacing an existing
+    // PIN that cannot be used, in which case we also need to set the previous
+    // PIN member public key.
+    CHECK(!updating_pin_member || action_->pin_public_key);
 
     state_ = (updating_pin_member || is_set_pin_)
                  ? State::kJoiningUpdatedPINToDomain
@@ -2269,7 +2263,7 @@ class EnclaveManager::StateMachine {
         *primary_account_info_, std::move(*member_keys_source),
         *secure_box_pub_key,
         trusted_vault::GpmPinMetadata(
-            previous_pin_public_key,
+            action_->pin_public_key,
             trusted_vault::UsableRecoveryPinMetadata(
                 std::move(wrapped_pin_proto_serialized),
                 /*expiry=*/base::Time())),
@@ -2827,10 +2821,12 @@ bool EnclaveManager::AddDeviceToAccount(
 
 void EnclaveManager::AddDeviceAndPINToAccount(
     std::string pin,
+    std::optional<std::string> previous_pin_public_key,
     EnclaveManager::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto action = std::make_unique<PendingAction>();
+  action->pin_public_key = std::move(previous_pin_public_key);
   action->callback = std::move(callback);
   action->store_keys_args = std::move(pending_keys_);
   action->pin = std::move(pin);
@@ -2946,7 +2942,7 @@ bool EnclaveManager::ConsiderSecurityDomainState(
         !CheckPINInvariants(*wrapped_pin).has_value()) {
       if (metadata.public_key.has_value() &&
           (!user_->has_wrapped_pin() ||
-           user_->wrapped_pin().generation() != wrapped_pin->generation())) {
+           user_->wrapped_pin().wrapped_pin() != wrapped_pin->wrapped_pin())) {
         std::unique_ptr<PendingAction> action =
             std::make_unique<PendingAction>();
         action->callback = std::move(callback);

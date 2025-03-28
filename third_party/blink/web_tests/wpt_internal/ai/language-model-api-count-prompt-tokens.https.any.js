@@ -5,7 +5,7 @@ promise_test(async t => {
   await ensureLanguageModel();
 
   // Start a new session.
-  const session = await ai.languageModel.create();
+  const session = await LanguageModel.create();
 
   // Test the measureInputUsage() API.
   let result = await session.measureInputUsage("This is a prompt.");

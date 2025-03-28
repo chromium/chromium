@@ -175,6 +175,22 @@ class PassThroughException {
   ExceptionState exception_state_;
 };
 
+class IgnoreException {
+  STACK_ALLOCATED();
+
+ public:
+  explicit IgnoreException(v8::Isolate* isolate)
+      : exception_state_(nullptr), try_catch_(isolate) {}
+
+  operator ExceptionState&() & = delete;
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator ExceptionState&() && { return exception_state_; }
+
+ private:
+  ExceptionState exception_state_;
+  v8::TryCatch try_catch_;
+};
+
 // NonThrowableExceptionState never allow call sites to throw an exception.
 // Should be used if an exception must not be thrown.
 class PLATFORM_EXPORT NonThrowableExceptionState final : public ExceptionState {
@@ -232,8 +248,8 @@ class PLATFORM_EXPORT TryRethrowScope {
 // This can be used as a default value of an ExceptionState parameter like this:
 //
 //     Node* removeChild(Node*, ExceptionState& = IGNORE_EXCEPTION);
-#define IGNORE_EXCEPTION (::blink::ExceptionState(nullptr).ReturnThis())
-#define IGNORE_EXCEPTION_FOR_TESTING IGNORE_EXCEPTION
+#define IGNORE_EXCEPTION_FOR_TESTING \
+  (::blink::ExceptionState(nullptr).ReturnThis())
 
 // Syntax sugar for NonThrowableExceptionState.
 // This can be used as a default value of an ExceptionState parameter like this:
@@ -242,7 +258,7 @@ class PLATFORM_EXPORT TryRethrowScope {
 #if DCHECK_IS_ON()
 #define ASSERT_NO_EXCEPTION (::blink::NonThrowableExceptionState().ReturnThis())
 #else
-#define ASSERT_NO_EXCEPTION IGNORE_EXCEPTION
+#define ASSERT_NO_EXCEPTION IGNORE_EXCEPTION_FOR_TESTING
 #endif
 }  // namespace blink
 

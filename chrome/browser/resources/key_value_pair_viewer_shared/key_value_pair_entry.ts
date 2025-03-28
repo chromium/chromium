@@ -51,9 +51,9 @@ export class KeyValuePairEntryElement extends CrLitElement {
     };
   }
 
-  entry: KeyValuePairEntry = {key: '', value: ''};
-  collapsed: boolean = true;
-  protected collapsible_: boolean = false;
+  accessor entry: KeyValuePairEntry = {key: '', value: ''};
+  accessor collapsed: boolean = true;
+  protected accessor collapsible_: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

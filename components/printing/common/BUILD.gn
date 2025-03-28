@@ -53,4 +53,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx/geometry:geometry",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//printing" ]
+  }
 }

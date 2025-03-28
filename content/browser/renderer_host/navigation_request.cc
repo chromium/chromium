@@ -414,10 +414,8 @@ void AddAdditionalRequestHeaders(
   // compatibility concerns (See
   // https://github.com/WICG/nav-speculation/issues/133).
   if (frame_tree_node->frame_tree().is_prerendering()) {
-    headers->SetHeader(blink::kSecPurposeHeaderName,
-                       blink::kSecPurposePrefetchPrerenderHeaderValue);
-    headers->SetHeader(blink::kPurposeHeaderName,
-                       blink::kSecPurposePrefetchHeaderValue);
+    PrerenderHost::GetFromFrameTreeNode(*frame_tree_node)
+        .AddAdditionalRequestHeaders(*headers, *frame_tree_node);
   } else if (frame_tree_node->frame_tree()
                  .page_delegate()
                  ->IsPageInPreviewMode()) {
@@ -1725,6 +1723,9 @@ NavigationRequest::NavigationRequest(
           IsDocumentToCommitAnonymous(frame_tree_node,
                                       is_synchronous_renderer_commit)),
       previous_page_ukm_source_id_(GetPageUkmSourceId(frame_tree_node_)),
+      cookie_observers_(std::make_unique<CookieAccessObservers>(
+          base::BindRepeating(&NavigationRequest::NotifyCookiesAccessed,
+                              base::Unretained(this)))),
       is_pdf_(is_pdf),
       is_embedder_initiated_fenced_frame_navigation_(
           is_embedder_initiated_fenced_frame_navigation),
@@ -2330,6 +2331,11 @@ NavigationRequest::~NavigationRequest() {
 void NavigationRequest::RegisterCommitDeferringConditionForTesting(
     std::unique_ptr<CommitDeferringCondition> condition) {
   commit_deferrer_->AddConditionForTesting(std::move(condition));  // IN-TEST
+}
+
+void NavigationRequest::SetCookieAccessObserversForTesting(
+    std::unique_ptr<CookieAccessObservers> observers) {
+  cookie_observers_ = std::move(observers);
 }
 
 bool NavigationRequest::IsCommitDeferringConditionDeferredForTesting() {
@@ -4974,7 +4980,8 @@ NavigationRequest::CreateNavigationEarlyHintsManagerParams(
       GetOriginForURLLoaderFactoryBeforeResponse(sandbox_flags);
 
   mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer;
-  Clone(cookie_observer.InitWithNewPipeAndPassReceiver());
+  cookie_observers_->Add(cookie_observer.InitWithNewPipeAndPassReceiver(),
+                         CookieAccessDetails::Source::kNavigation);
 
   mojo::PendingRemote<network::mojom::TrustTokenAccessObserver>
       trust_token_observer;
@@ -9803,7 +9810,8 @@ PrerenderHostRegistry& NavigationRequest::GetPrerenderHostRegistry() {
 mojo::PendingRemote<network::mojom::CookieAccessObserver>
 NavigationRequest::CreateCookieAccessObserver() {
   mojo::PendingRemote<network::mojom::CookieAccessObserver> remote;
-  cookie_observers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
+  cookie_observers_->Add(remote.InitWithNewPipeAndPassReceiver(),
+                         CookieAccessDetails::Source::kNavigation);
   return remote;
 }
 
@@ -9830,8 +9838,9 @@ NavigationRequest::CreateDeviceBoundSessionObserver() {
   return remote;
 }
 
-void NavigationRequest::OnCookiesAccessed(
-    std::vector<network::mojom::CookieAccessDetailsPtr> details_vector) {
+void NavigationRequest::NotifyCookiesAccessed(
+    std::vector<network::mojom::CookieAccessDetailsPtr> details_vector,
+    CookieAccessDetails::Source source) {
   TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::OnCookiesAccessed",
                          TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
                                              TRACE_ID_LOCAL(navigation_id_)),
@@ -9845,8 +9854,7 @@ void NavigationRequest::OnCookiesAccessed(
 
     CookieAccessDetails allowed;
     CookieAccessDetails blocked;
-    SplitCookiesIntoAllowedAndBlocked(
-        details, CookieAccessDetails::Source::kNavigation, &allowed, &blocked);
+    SplitCookiesIntoAllowedAndBlocked(details, source, &allowed, &blocked);
     if (!allowed.cookie_access_result_list.empty()) {
       GetDelegate()->OnCookiesAccessed(this, allowed);
     }
@@ -9877,14 +9885,9 @@ void NavigationRequest::OnCookiesAccessed(
   }
 }
 
-void NavigationRequest::Clone(
-    mojo::PendingReceiver<network::mojom::CookieAccessObserver> observer) {
-  cookie_observers_.Add(this, std::move(observer));
-}
-
 std::vector<mojo::PendingReceiver<network::mojom::CookieAccessObserver>>
 NavigationRequest::TakeCookieObservers() {
-  return cookie_observers_.TakeReceivers();
+  return cookie_observers_->TakeReceivers();
 }
 
 void NavigationRequest::OnTrustTokensAccessed(

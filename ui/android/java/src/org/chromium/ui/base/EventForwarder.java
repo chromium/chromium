@@ -27,7 +27,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.ui.MotionEventUtils;
+import org.chromium.ui.util.MotionEventUtils;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;

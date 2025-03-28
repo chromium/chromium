@@ -204,9 +204,9 @@ DeveloperPrivateAutoUpdateFunction::~DeveloperPrivateAutoUpdateFunction() =
     default;
 
 ExtensionFunction::ResponseAction DeveloperPrivateAutoUpdateFunction::Run() {
-  ExtensionUpdater* updater =
-      ExtensionSystem::Get(browser_context())->extension_service()->updater();
-  if (updater) {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile);
+  if (updater->enabled()) {
     ExtensionUpdater::CheckParams params;
     params.fetch_priority = DownloadFetchPriority::kForeground;
     params.install_immediately = true;

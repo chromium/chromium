@@ -78,7 +78,7 @@ class PrerenderHandle final : public GarbageCollected<PrerenderHandle> {
 
   const KURL& Url() const;
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
  private:
   const KURL url_;

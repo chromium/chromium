@@ -181,21 +181,18 @@ public final class StatusMediatorUnitTest {
                 .when(mLocationBarDataProvider)
                 .getPageClassification(false);
 
-        // Tooltip and hover highlight should be set when StatusViewIcon is visible.
+        // Tooltip and background should be set when StatusViewIcon is visible.
         mMediator.setStatusIconShown(true);
         Assert.assertEquals(
                 R.string.accessibility_menu_info,
                 mModel.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
-        Assert.assertEquals(
-                R.drawable.status_view_ripple,
-                mModel.get(StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT));
+        Assert.assertNotNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
 
-        // Tooltip and hover highlight should NOT be set when StatusViewIcon is gone.
+        // Tooltip and background should NOT be set when StatusViewIcon is gone.
         mMediator.setStatusIconShown(false);
         Assert.assertEquals(
                 Resources.ID_NULL, mModel.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
-        Assert.assertEquals(
-                Resources.ID_NULL, mModel.get(StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT));
+        Assert.assertNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
     }
 
     @Test
@@ -459,9 +456,7 @@ public final class StatusMediatorUnitTest {
                 mContext.getColor(R.color.locationbar_status_preview_color_dark),
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR));
 
-        Assert.assertEquals(
-                R.drawable.status_view_verbose_ripple,
-                mModel.get(StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT));
+        Assert.assertNotNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
 
         // When only offline is enabled, it should be shown.
         mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, true, false);
@@ -585,8 +580,7 @@ public final class StatusMediatorUnitTest {
                 mModel.get(StatusProperties.STATUS_ICON_DESCRIPTION_RES));
         Assert.assertEquals(
                 Resources.ID_NULL, mModel.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
-        Assert.assertEquals(
-                Resources.ID_NULL, mModel.get(StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT));
+        Assert.assertNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
         Assert.assertEquals(
                 R.string.accessibility_toolbar_exit_hub_search,
                 mModel.get(StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES));
@@ -609,18 +603,15 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void testSetHoverHighlight() {
+    public void testSetBackground() {
         doReturn(PageClassification.NTP_VALUE)
                 .when(mLocationBarDataProvider)
                 .getPageClassification(false);
 
         mModel.set(StatusProperties.SHOW_STATUS_ICON, true);
-        mMediator.setHoverHighlight(Resources.ID_NULL);
-        // Assert that the below non verbose drawable is always set when #setHoverHighlight is
-        // called.
-        Assert.assertEquals(
-                R.drawable.status_view_ripple,
-                mModel.get(StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT));
+        mMediator.setBackground();
+        // Assert that the non verbose drawable is always set when #setBackground is called.
+        Assert.assertNotNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
     }
 
     @Test

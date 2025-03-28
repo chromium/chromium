@@ -10,6 +10,7 @@
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/cookie_or_cache_deletion_choice.h"
 #import "components/browsing_data/core/pref_names.h"
+#import "components/data_sharing/public/features.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/command_line_switches.h"
@@ -283,6 +284,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   config.additional_args.push_back(std::string("--") +
                                    syncer::kSyncShortNudgeDelayForTest);
   config.features_enabled.push_back(kTabGroupsIPad);
+  config.features_enabled.push_back(
+      data_sharing::features::kDataSharingFeature);
   return config;
 }
 

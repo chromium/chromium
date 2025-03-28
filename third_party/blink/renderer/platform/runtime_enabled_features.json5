@@ -1190,6 +1190,7 @@
     {
       name: "CSSMasonryLayout",
       status: "test",
+      public: true,
     },
     // https://drafts.csswg.org/css-values-5/#progress
     // media-progress()
@@ -1742,10 +1743,7 @@
     // IncludeJSCallStacksInCrashReports. https://chromestatus.com/feature/4731248572628992
     {
       name: "DocumentPolicyIncludeJSCallStacksInCrashReports",
-      origin_trial_feature_name: "DocumentPolicyIncludeJSCallStacksInCrashReports",
-      status: "experimental",
-      base_feature_status: "enabled",
-      copied_from_base_feature_if: "overridden",
+      status: "stable",
     },
     {
       name: "DocumentPolicyNegotiation",
@@ -3811,6 +3809,11 @@
       status: "stable",
     },
     {
+      // crbug.com/402200344
+      name: "RubyFieldsetCrashFix",
+      status: "stable",
+    },
+    {
       // crbug.com/329776386
       name: "RubyOverhangOverlapFix",
       status: "stable",
@@ -4791,8 +4794,7 @@
       name: "WarnOnContentVisibilityRenderAccess",
     },
     {
-      name: "WebAnimationsSVG",
-      status: "experimental",
+      name: "WebAnimationsSVG"
     },
     {
       name: "WebAppInstallation",

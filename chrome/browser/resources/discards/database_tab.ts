@@ -218,9 +218,9 @@ class DatabaseTabElement extends DatabaseTabElementBase {
     };
   }
 
-  private rows_: SiteDataEntry[]|null;
-  private size_: SiteDataDatabaseSize;
-  private newOrigin_: string;
+  declare private rows_: SiteDataEntry[]|null;
+  declare private size_: SiteDataDatabaseSize;
+  declare private newOrigin_: string;
 
   private updateTableTimer_: number = 0;
   private updateSizesTimer_: number = 0;

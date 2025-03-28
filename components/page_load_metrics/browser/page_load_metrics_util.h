@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_UTIL_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_UTIL_H_
 
+#include <cstdint>
 #include <optional>
 #include <string_view>
 
@@ -14,6 +15,7 @@
 #include "components/page_load_metrics/common/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_visit_final_status.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
+#include "url/gurl.h"
 
 // Up to 10 minutes, with 100 buckets.
 #define PAGE_LOAD_HISTOGRAM(name, sample)                             \
@@ -248,6 +250,20 @@ PageVisitFinalStatus RecordPageVisitFinalStatusForTiming(
     const page_load_metrics::mojom::PageLoadTiming& timing,
     const PageLoadMetricsObserverDelegate& delegate,
     ukm::SourceId source_id);
+
+// Returns the ID if `url` contains a URL param "category" where the param value
+// matches the pattern configured by Finch. Returns std::nullopt if the param
+// value is not recognized.
+//
+// For example, if the valid pattern prefix is "pattern", this function may
+// return an ID for (1) but not for (2):
+//
+// (1) http://a.com?category=pattern1
+// (2) http://b.com?category=invalid-pattern
+//
+// UKM Review:
+// https://docs.google.com/document/d/1TSbtp5I5Bc1pbAKrrEHfmZlAwgeh6AlgAH7GbDMNPRQ/edit?disco=AAABe5h90jQ
+std::optional<uint32_t> GetCategoryIdFromUrl(const GURL& url);
 
 }  // namespace page_load_metrics
 

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "ios/chrome/browser/signin/model/capabilities_dict.h"
 #import "url/gurl.h"
 
@@ -106,6 +107,12 @@ enum class UserSelectableType;
 
 // Returns if the data type is enabled for the sync service.
 + (BOOL)isSelectedTypeEnabled:(syncer::UserSelectableType)type;
+
+// Stores a policy that will be returned for the next fetch profile separation
+// policy request.
++ (void)setPolicyResponseForNextProfileSeparationPolicyRequest:
+    (policy::ProfileSeparationDataMigrationSettings)
+        profileSeparationDataMigrationSettings;
 
 @end
 

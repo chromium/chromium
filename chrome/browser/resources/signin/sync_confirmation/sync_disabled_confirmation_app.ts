@@ -39,7 +39,7 @@ export class SyncDisabledConfirmationAppElement extends CrLitElement {
     };
   }
 
-  protected signoutDisallowed_: boolean =
+  protected accessor signoutDisallowed_: boolean =
       loadTimeData.getBoolean('signoutDisallowed');
   private syncConfirmationBrowserProxy_: SyncConfirmationBrowserProxy =
       SyncConfirmationBrowserProxyImpl.getInstance();

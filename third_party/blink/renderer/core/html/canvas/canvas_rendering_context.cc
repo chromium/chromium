@@ -241,7 +241,6 @@ CanvasRenderingContext::RenderingAPIFromId(const String& id) {
 
 void CanvasRenderingContext::Trace(Visitor* visitor) const {
   visitor->Trace(host_);
-  ScriptWrappable::Trace(visitor);
   ActiveScriptWrappable::Trace(visitor);
 }
 

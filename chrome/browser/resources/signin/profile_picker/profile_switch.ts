@@ -45,8 +45,8 @@ export class ProfileSwitchElement extends CrLitElement {
     };
   }
 
-  protected profileState_: ProfileState = createDummyProfileState();
-  protected isProfileStateInitialized_: boolean = false;
+  protected accessor profileState_: ProfileState = createDummyProfileState();
+  protected accessor isProfileStateInitialized_: boolean = false;
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
 

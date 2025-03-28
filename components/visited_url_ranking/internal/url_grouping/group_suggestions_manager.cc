@@ -178,7 +178,9 @@ void GroupSuggestionsManager::ShowSuggestion(
         base::BindOnce(&GroupSuggestionsDelegate::ShowSuggestion,
                        base::Unretained(delegate), std::move(*suggestions),
                        std::move(result_callback)),
-        suggestion_computed_callback_);
+        suggestion_computed_callback_.is_null()
+            ? base::DoNothing()
+            : suggestion_computed_callback_);
   } else {
     VLOG(1) << "Suggestion discarded for " << scope.tab_session_id;
     if (!suggestion_computed_callback_.is_null()) {

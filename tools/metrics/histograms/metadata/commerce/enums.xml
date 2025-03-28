@@ -106,6 +106,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/commerce/core/commerce_types.h:DiscountClusterType) -->
 
+<!-- LINT.IfChange(DiscountType) -->
+
+<enum name="DiscountType">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="FreeListingWithCode"/>
+  <int value="2" label="CrawledPromotion"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/commerce/core/commerce_types.h:DiscountType) -->
+
 <enum name="MerchantTrustBottomSheetOpenedSource">
   <int value="0" label="Unknown"/>
   <int value="1" label="From message"/>

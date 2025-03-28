@@ -1480,13 +1480,18 @@ int BrowserView::GetInactiveSplitTabIndex() {
   // TODO(crbug.com/392951786): Use the Collections API for accessing the tabs
   // in a split view, rather than searching by index.
   int active_index = browser_->tab_strip_model()->active_index();
+  std::optional<split_tabs::SplitTabId> active_split_id =
+      browser_->tab_strip_model()->GetTabAtIndex(active_index)->GetSplit();
   const std::vector<int> potential_split_indices = {active_index - 1,
                                                     active_index + 1};
   for (int index : potential_split_indices) {
     if (index < 0 || index >= browser_->tab_strip_model()->GetTabCount()) {
       continue;
     }
-    if (browser_->tab_strip_model()->GetTabAtIndex(index)->IsSplit()) {
+    auto* potential_split_tab =
+        browser_->tab_strip_model()->GetTabAtIndex(index);
+    if (potential_split_tab->IsSplit() &&
+        potential_split_tab->GetSplit() == active_split_id) {
       return index;
     }
   }

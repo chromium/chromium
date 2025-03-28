@@ -16,10 +16,19 @@
 
 namespace blink {
 
-class IntegrityMetadata;
-
 using IntegrityAlgorithm = network::mojom::blink::IntegrityAlgorithm;
-using IntegrityMetadataPair = std::pair<String, IntegrityAlgorithm>;
+
+struct PLATFORM_EXPORT IntegrityMetadata {
+  IntegrityMetadata() = default;
+  IntegrityMetadata(String digest, IntegrityAlgorithm);
+
+  bool operator==(const IntegrityMetadata& other) const {
+    return this->digest == other.digest && this->algorithm == other.algorithm;
+  }
+
+  String digest;
+  IntegrityAlgorithm algorithm;
+};
 
 // Contains the result of SRI's "Parse Metadata" algorithm:
 //
@@ -27,35 +36,15 @@ using IntegrityMetadataPair = std::pair<String, IntegrityAlgorithm>;
 struct PLATFORM_EXPORT IntegrityMetadataSet {
   IntegrityMetadataSet() = default;
   bool empty() const { return hashes.empty() && public_keys.empty(); }
-  WTF::Vector<IntegrityMetadataPair> hashes;
-  WTF::Vector<IntegrityMetadataPair> public_keys;
+  WTF::Vector<IntegrityMetadata> hashes;
+  WTF::Vector<IntegrityMetadata> public_keys;
 
-  void Insert(const IntegrityMetadataPair& pair);
+  void Insert(IntegrityMetadata pair);
 
   bool operator==(const IntegrityMetadataSet& other) const {
     return this->hashes == other.hashes &&
            this->public_keys == other.public_keys;
   }
-};
-
-class PLATFORM_EXPORT IntegrityMetadata {
-  STACK_ALLOCATED();
-
- public:
-  IntegrityMetadata() = default;
-  IntegrityMetadata(String digest, IntegrityAlgorithm);
-  IntegrityMetadata(IntegrityMetadataPair);
-
-  String Digest() const { return digest_; }
-  void SetDigest(const String& digest) { digest_ = digest; }
-  IntegrityAlgorithm Algorithm() const { return algorithm_; }
-  void SetAlgorithm(IntegrityAlgorithm algorithm) { algorithm_ = algorithm; }
-
-  IntegrityMetadataPair ToPair() const;
-
- private:
-  String digest_;
-  IntegrityAlgorithm algorithm_;
 };
 
 enum class ResourceIntegrityDisposition : uint8_t {

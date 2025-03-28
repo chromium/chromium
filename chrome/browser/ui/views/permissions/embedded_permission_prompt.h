@@ -64,7 +64,7 @@ class EmbeddedPermissionPrompt
   void Acknowledge() override;
   void StopAllowing() override;
   void ShowSystemSettings() override;
-  void SystemPermissionsAllowed() override;
+  void SystemPermissionsNoLongerDenied() override;
   base::WeakPtr<permissions::PermissionPrompt::Delegate>
   GetPermissionPromptDelegate() const override;
   const std::vector<

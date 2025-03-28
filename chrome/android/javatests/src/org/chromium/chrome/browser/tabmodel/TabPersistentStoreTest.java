@@ -317,7 +317,7 @@ public class TabPersistentStoreTest {
                     }
                 }
             };
-    private static TabWindowManagerImpl sTabWindowManager;
+    private static TabWindowManager sTabWindowManager;
     private static CipherFactory sCipherFactory;
 
     /** Class for mocking out the directory containing all of the TabState files. */
@@ -345,11 +345,8 @@ public class TabPersistentStoreTest {
 
         sCipherFactory = new CipherFactory();
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    sTabWindowManager =
-                            (TabWindowManagerImpl) TabWindowManagerSingleton.getInstance();
-                });
+        sTabWindowManager =
+                ThreadUtils.runOnUiThreadBlocking(TabWindowManagerSingleton::getInstance);
     }
 
     @AfterClass
@@ -439,8 +436,6 @@ public class TabPersistentStoreTest {
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    sTabWindowManager.onActivityStateChange(
-                            mChromeActivity, ActivityState.DESTROYED);
                     ApplicationStatus.onStateChangeForTesting(
                             mChromeActivity, ActivityState.DESTROYED);
                     ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
@@ -1448,13 +1443,15 @@ public class TabPersistentStoreTest {
         TestTabModelSelector selector =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            ApplicationStatus.onStateChangeForTesting(
-                                    mChromeActivity, ActivityState.STARTED);
                             // Clear any existing TestTabModelSelector (required when
                             // createAndRestoreRealTabModelImpls is called multiple times in one
                             // test).
-                            sTabWindowManager.onActivityStateChange(
+                            ApplicationStatus.onStateChangeForTesting(
                                     mChromeActivity, ActivityState.DESTROYED);
+                            ApplicationStatus.onStateChangeForTesting(
+                                    mChromeActivity, ActivityState.CREATED);
+                            ApplicationStatus.onStateChangeForTesting(
+                                    mChromeActivity, ActivityState.STARTED);
                             var profileProvider =
                                     new ActivityProfileProvider(
                                             mChromeActivity.getLifecycleDispatcher());

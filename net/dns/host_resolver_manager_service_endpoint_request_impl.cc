@@ -357,7 +357,13 @@ int HostResolverManager::ServiceEndpointRequestImpl::DoResolveLocally() {
   }
 
   if (is_stale && stale_allowed_while_refreshing) {
-    stale_endpoints_ = results.ConvertToServiceEndpoints(host_.GetPort());
+    // Allow using stale results only when there is no network change.
+    // TODO(crbug.com/383174960): This also exclude results that are obtained
+    // from the same network but the device got disconnected/connected events.
+    // Ideally we should be able to use such results.
+    if (results.network_changes() == host_cache()->network_changes()) {
+      stale_endpoints_ = results.ConvertToServiceEndpoints(host_.GetPort());
+    }
     if (!stale_endpoints_.empty()) {
       net_log_.AddEvent(
           NetLogEventType::HOST_RESOLVER_SERVICE_ENDPOINTS_STALE_RESULTS, [&] {

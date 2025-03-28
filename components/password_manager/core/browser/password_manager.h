@@ -54,11 +54,11 @@ class FormData;
 
 namespace password_manager {
 
+class BrowserSavePasswordProgressLogger;
 class PasswordManagerClient;
 class PasswordManagerDriver;
 class PasswordFormManagerForUI;
 class PasswordFormManager;
-class PasswordManagerMetricsRecorder;
 struct PasswordForm;
 struct PossibleUsernameData;
 
@@ -352,12 +352,6 @@ class PasswordManager : public PasswordManagerInterface {
   // TODO(crbug.com/40570965): Remove when the old PasswordFormManager is
   // gone.
   std::unique_ptr<PasswordFormManagerForUI> MoveOwnedSubmittedManager();
-
-  // Records provisional save failure using current |client_| and
-  // |main_frame_url_|.
-  void RecordProvisionalSaveFailure(
-      PasswordManagerMetricsRecorder::ProvisionalSaveFailure failure,
-      const GURL& form_origin);
 
   // Returns the manager which manages |form_id|. |driver| is needed to
   // determine the match. Returns nullptr when no matched manager is found.

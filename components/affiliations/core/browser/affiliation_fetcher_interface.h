@@ -7,13 +7,28 @@
 
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_delegate.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "net/http/http_status_code.h"
 
 namespace affiliations {
 
 class AffiliationFetcherInterface {
  public:
+  using ParsedFetchResponse = AffiliationFetcherDelegate::Result;
+  struct FetchResult {
+    FetchResult();
+    FetchResult(const FetchResult& other);
+    FetchResult(FetchResult&& other);
+    FetchResult& operator=(const FetchResult& other);
+    FetchResult& operator=(FetchResult&& other);
+    ~FetchResult();
+
+    std::optional<ParsedFetchResponse> data;
+    int network_status;
+    std::optional<net::HttpStatusCode> http_status_code;
+  };
   // A struct that enables to set Affiliation Fetcher request mask.
   struct RequestInfo {
     bool branding_info = false;
@@ -35,8 +50,12 @@ class AffiliationFetcherInterface {
 
   // Starts the request to retrieve affiliations for each facet in
   // |facet_uris|.
-  virtual void StartRequest(const std::vector<FacetURI>& facet_uris,
-                            RequestInfo request_info) = 0;
+  // This will run |result_callback| on a successful or a failed fetch,
+  // including if the fetcher had been destroyed before its fetch finished.
+  virtual void StartRequest(
+      const std::vector<FacetURI>& facet_uris,
+      RequestInfo request_info,
+      base::OnceCallback<void(FetchResult)> result_callback) = 0;
 
   // Returns requested facet uris.
   virtual const std::vector<FacetURI>& GetRequestedFacetURIs() const = 0;

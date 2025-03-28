@@ -10,11 +10,11 @@
 
 #include "base/containers/adapters.h"
 #include "chrome/browser/ui/tabs/pinned_tab_collection.h"
-#include "chrome/browser/ui/tabs/tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_collection_storage.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/unpinned_tab_collection.h"
+#include "components/tab_collections/public/tab_collection.h"
 
 namespace tabs {
 

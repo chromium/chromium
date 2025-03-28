@@ -17,7 +17,6 @@
 #include "crypto/aead.h"
 #include "crypto/hkdf.h"
 #include "crypto/random.h"
-#include "crypto/symmetric_key.h"
 
 namespace enterprise_obfuscation {
 
@@ -69,7 +68,7 @@ const std::vector<uint8_t> ComputeNonce(base::span<const uint8_t> nonce_prefix,
 
 BASE_FEATURE(kEnterpriseFileObfuscation,
              "EnterpriseFileObfuscation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsFileObfuscationEnabled() {
   return base::FeatureList::IsEnabled(kEnterpriseFileObfuscation);

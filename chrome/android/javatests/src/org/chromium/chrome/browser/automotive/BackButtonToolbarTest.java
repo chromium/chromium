@@ -259,7 +259,8 @@ public class BackButtonToolbarTest {
             throws Exception {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    final FullscreenAlertDialog dialog = new FullscreenAlertDialog(context);
+                    final FullscreenAlertDialog dialog =
+                            new FullscreenAlertDialog(context, /* shouldPadForContent= */ false);
                     View testView = LayoutInflater.from(context).inflate(TEST_DIALOG_LAYOUT, null);
                     dialog.setView(testView);
                     dialog.show();
@@ -272,7 +273,8 @@ public class BackButtonToolbarTest {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final AlertDialog dialog =
-                            new FullscreenAlertDialog.Builder(context)
+                            new FullscreenAlertDialog.Builder(
+                                            context, /* shouldPadForContent= */ false)
                                     .setView(TEST_DIALOG_LAYOUT)
                                     .create();
                     dialog.show();

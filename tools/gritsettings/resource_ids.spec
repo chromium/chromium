@@ -636,6 +636,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [4940],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/signin/history_sync_optin/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [4950],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/signin/profile_picker/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [4960],

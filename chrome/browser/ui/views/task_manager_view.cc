@@ -347,7 +347,6 @@ void TaskManagerView::MenuClosed(ui::SimpleMenuModel* source) {
 }
 
 void TaskManagerView::SearchBarOnInputChanged(std::u16string_view query) {
-  // TODO(zhzhliu): Clean up tab disabled related code.
   search_terms_ = query;
   PerformFilter(
       kTabDefinitions[tabs_->GetSelectedTabIndex()].associated_category);

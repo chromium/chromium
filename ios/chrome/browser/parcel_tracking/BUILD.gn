@@ -19,17 +19,6 @@ source_set("features") {
   ]
 }
 
-source_set("opt_in_status") {
-  sources = [
-    "parcel_tracking_opt_in_status.h",
-    "parcel_tracking_opt_in_status.mm",
-  ]
-  deps = [
-    "//components/prefs",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
-  ]
-}
-
 source_set("prefs") {
   sources = [
     "parcel_tracking_prefs.h",

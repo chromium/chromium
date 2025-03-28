@@ -910,7 +910,7 @@ TEST_F(ScannerControllerTest, ShowsNotificationWhileExecutingNewEventAction) {
 }
 
 TEST_F(ScannerControllerTest,
-       NoNotificationWhileExecutingCopyToClipboardAction) {
+       ShowsNotificationWhileExecutingCopyToClipboardAction) {
   base::test::TestFuture<ScannerSession::FetchActionsResponse> actions_future;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
@@ -938,8 +938,16 @@ TEST_F(ScannerControllerTest,
   ASSERT_THAT(actions, ValueIs(SizeIs(1)));
   scanner_controller->ExecuteAction(actions.value()[0]);
 
-  // No notification needs to be shown while the copy to clipboard action is
-  // executing.
+  // Notification should be shown while the action is executing.
+  EXPECT_THAT(message_center::MessageCenter::Get()->GetVisibleNotifications(),
+              SizeIs(1));
+
+  // Finish executing the action.
+  fetch_action_details_future.Take().Run(
+      std::make_unique<manta::proto::ScannerOutput>(output),
+      manta::MantaStatus());
+
+  // Notification should be hidden.
   EXPECT_THAT(message_center::MessageCenter::Get()->GetVisibleNotifications(),
               IsEmpty());
 }

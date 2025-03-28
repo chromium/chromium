@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.TooltipManager;
-import org.chromium.ui.MotionEventUtils;
+import org.chromium.ui.util.MotionEventUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

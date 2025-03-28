@@ -26,7 +26,7 @@ class DOMTaskContinuation final : public GarbageCollected<DOMTaskContinuation> {
                       DOMScheduler::DOMTaskQueue*,
                       uint64_t task_id_for_tracing);
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
  private:
   // Entry point for running this continuation.

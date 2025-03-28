@@ -2,20 +2,20 @@
 
 promise_test(async t => {
   await testAbortPromise(t, signal => {
-    return AIRewriter.create({ signal: signal });
+    return Rewriter.create({ signal: signal });
   });
-}, "Aborting AIRewriter.create().");
+}, "Aborting Rewriter.create().");
 
 promise_test(async t => {
-  const session = await AIRewriter.create();
+  const session = await Rewriter.create();
   await testAbortPromise(t, signal => {
     return session.rewrite(kTestPrompt, { signal: signal });
   });
-}, "Aborting AIRewriter.rewrite().");
+}, "Aborting Rewriter.rewrite().");
 
 promise_test(async t => {
-  const session = await AIRewriter.create();
+  const session = await Rewriter.create();
   await testAbortReadableStream(t, signal => {
     return session.rewriteStreaming(kTestPrompt, { signal: signal });
   });
-}, "Aborting AIRewriter.rewriteStreaming().");
+}, "Aborting Rewriter.rewriteStreaming().");

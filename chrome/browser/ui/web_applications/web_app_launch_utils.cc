@@ -67,8 +67,6 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
-#include "chrome/browser/web_applications/web_app_launch_params.h"
-#include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -78,6 +76,8 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/webapps/browser/launch_queue/launch_params.h"
+#include "components/webapps/browser/launch_queue/launch_queue.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -972,7 +972,7 @@ void EnqueueLaunchParams(content::WebContents* contents,
                          const GURL& url,
                          bool wait_for_navigation_to_complete) {
   CHECK(contents);
-  WebAppLaunchParams launch_params;
+  webapps::LaunchParams launch_params;
   launch_params.started_new_navigation = wait_for_navigation_to_complete;
   launch_params.app_id = app_id;
   launch_params.target_url = url;

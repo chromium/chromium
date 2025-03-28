@@ -36,10 +36,10 @@ public class PriceTrackingBottomSheetContentMediator {
     private final Supplier<Tab> mTabSupplier;
     private final PropertyModel mPropertyModel;
     private final PriceInsightsDelegate mPriceInsightsDelegate;
-    private final Callback<PriceTrackingState> mUpdatePriceTrackingButtonModelCallback =
+    private final Callback<Boolean> mUpdatePriceTrackingButtonModelCallback =
             this::updatePriceTrackingButtonModel;
 
-    private ObservableSupplier<PriceTrackingState> mPriceTrackingStateSupplier;
+    private ObservableSupplier<Boolean> mPriceTrackingStateSupplier;
 
     public PriceTrackingBottomSheetContentMediator(
             @NonNull Context context,
@@ -58,13 +58,10 @@ public class PriceTrackingBottomSheetContentMediator {
         mPriceTrackingStateSupplier.addObserver(mUpdatePriceTrackingButtonModelCallback);
 
         updatePriceTrackingButtonModel(mPriceTrackingStateSupplier.get());
-        // TODO(crbug.com/362361187): Update to not show price tracking content when price tracking
-        // state is not eligible or unknown.
         contentReadyCallback.onResult(true);
     }
 
-    private void updatePriceTrackingButtonModel(PriceTrackingState priceTrackingState) {
-        boolean isPriceTracked = priceTrackingState == PriceTrackingState.TRACKED;
+    private void updatePriceTrackingButtonModel(boolean isPriceTracked) {
         boolean priceTrackingEligible =
                 CommerceFeatureUtils.isShoppingListEligible(
                         ShoppingServiceFactory.getForProfile(mTabSupplier.get().getProfile()));

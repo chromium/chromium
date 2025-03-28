@@ -136,6 +136,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
 
   private currentUpdateStatusEvent_: UpdateStatusChangedEvent|null;
   private isManaged_: boolean;
+  private managedByIcon_: string;
 
   // <if expr="_google_chrome and is_macosx">
   private promoteUpdaterStatus_: PromoteUpdaterStatus;

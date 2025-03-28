@@ -1,5 +1,0 @@
-This is a wdspec test.
-[FAIL] test_subscribe
-  asyncio.exceptions.CancelledError
-Harness: the test ran to completion.
-

@@ -1353,7 +1353,7 @@ void WidgetBase::UpdateCompositionInfo(bool immediate_request) {
   // If the new pipeline for CursorAnchorInfo data is available, send data from
   // the frame widget instead.
   if (frame_widget->HasImeRenderWidgetHost()) {
-    frame_widget->UpdateCursorAnchorInfo();
+    frame_widget->UpdateCursorAnchorInfo(/*update_requested=*/true);
     return;
   }
   if (mojom::blink::WidgetInputHandlerHost* host =

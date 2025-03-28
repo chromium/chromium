@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Окуу аккаунтуңузга кирүү мүмкүнчүлүгүнөн айрылып калганга чейин андагы маалыматты жеке аккаунтуңузга жылдыруу үчүн Google'дун Content Transfer колдонмосун пайдаланыңыз.</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />" үчүн колдонулган ыкчам баскыч. Жаңы ыкчам баскычты басыңыз. Учурдагы ыкчам баскычты алмаштыруу үчүн жаңысын кайра басыңыз.</translation>
 <translation id="1030856839388844477">Дайын-даректердин өткөрүлүшүн калыбына келтирүү</translation>
+<translation id="1047095725494118091">Жүктөлүп алынбай жатат. Кайталап көрүңүз же <ph name="DEVICE_TYPE" /> түзмөгүңүздү өчүрүп күйгүзүңүз.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> топтом, <ph name="CPU_MAX_CLOCK_SPEED" />ГГц)</translation>
 <translation id="1047773237499189053">Жаңы функциялар бар. Кеңири маалымат алуу үчүн Өйдө жебе баскычын басыңыз.</translation>
 <translation id="1049663189809099096">пастель сары</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Көшөгө жүктөлүп алынууда</translation>
 <translation id="1094693127011229778">IP дареги жеткиликсиз</translation>
 <translation id="1100902271996134409">Сүрөттөр түзүлүүдө...</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> аудиосу</translation>
 <translation id="1116694919640316211">Программа жөнүндө</translation>
 <translation id="1118572504348554005">Бузулууларды аныктап оңдоо жана сиз кабарлаган башка маселелерди чечүү үчүн бул форма аркылуу тапшырылган маалымат өнөктөштөрүбүз менен бөлүшүлүшү мүмкүн. Сырсөздөр сыяктуу купуя маалыматты жазбаңыз.</translation>
 <translation id="1119403468619527527">Өтө аз сөз тандалды</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Караңгы теманы күйгүзүү</translation>
 <translation id="2164131940279488868">Аудиону жаздырып баштоо үчүн микрофон туташканын текшериңиз</translation>
 <translation id="2173302385160625112">Интернет байланышыңызды текшериңиз</translation>
+<translation id="2176909213844392588"><ph name="LANGUAGE_NAME" /> транскрипциянын үлгүсүн жүктөп алуу мүмкүн эмес. Кайталап көрүңүз же <ph name="DEVICE_TYPE" /> түзмөгүңүздү өчүрүп күйгүзүңүз.</translation>
 <translation id="2180197493692062006">Бир жерден ката кетти. Колдонмону кайрадан ачып көрүңүз.</translation>
 <translation id="2189104374785738357">APN маалыматын түзөтүү</translation>
 <translation id="2195732836444333448">Учурда иштете албайт. Кийинчерээк кайра кирип көрүңүз.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Документтерди берүүчү түзмөк (эки тараптуу)</translation>
 <translation id="3201315366910775591">Башка адамдар жалпы альбомдорду жаңырта алышат</translation>
 <translation id="3211671540163313381">Баскычтарды дайындоо үчүн D-pad</translation>
+<translation id="3217462202230355157">Микрофонуңуз туташып турганын текшерип же <ph name="DEVICE_TYPE" /> түзмөгүңүздү өчүрүп күйгүзүп көрүңүз</translation>
 <translation id="3226405216343213872">Сканерлер изделүүдө</translation>
 <translation id="3226657629376379887">Калып боюнча аракеттер менюсу</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> маанисин төмөнкүгө бөлүңүз: <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Эксклюзивдүү</translation>
 <translation id="3404249063913988450">Көшөгөнү иштетүү</translation>
 <translation id="3413935475507503304">Жаңыртуу үчүн "Кийинки" баскычын басыңыз.</translation>
+<translation id="3416709353545797224"><ph name="DEVICE_TYPE" /> түзмөгүнөн чыгып жаткан бардык үндөр жаздырылууда</translation>
 <translation id="3428551088151258685">ачык абада</translation>
 <translation id="3428971106895559033">пастель</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Сканер күйгүзүлгөнүн жана тармак аркылуу жеткиликтүү же түздөн-түз туташууга даяр экенин текшериңиз</translation>
 <translation id="4159238217853743776">Жарым-жартылай</translation>
 <translation id="4159784952369912983">Кызгылт көгүш</translation>
+<translation id="416219735020840807">Транскрипциянын үлгүсүн жүктөп алуу мүмкүн эмес. Кайталап көрүңүз же <ph name="DEVICE_TYPE" /> түзмөгүңүздү өчүрүп күйгүзүңүз.</translation>
 <translation id="4170180284036919717">Сүрөткө тартуу</translation>
 <translation id="4170700058716978431">АТКАРЫЛГАН ЖОК</translation>
 <translation id="4171077696775491955">жарыктыгын азайтуу</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Тандалган текст сунушталганга алмаштырылууда</translation>
 <translation id="5346687412805619883">Жергиликтүү тармак</translation>
 <translation id="5358174242040570474">Бир жерден ката кетти. Тушкагазды кайра тандап көрүңүз же колдонмону кайра ачыңыз.</translation>
+<translation id="5368228070728130240">Корутунду жана аталыш түзүү үлгүсү жүктөлүп алынбай жатат. Кайталап көрүңүз же <ph name="DEVICE_TYPE" /> түзмөгүңүздү өчүрүп күйгүзүңүз.</translation>
 <translation id="5372659122375744710">WiFi тармагы кооптуу</translation>
 <translation id="5376354385557966694">Жарык режимдин автоматтык графиги</translation>
 <translation id="5378184552853359930">IP түрү</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">DNS резолюциялары орундалган жок</translation>
 <translation id="6768237774506518020">DNS резолюциясынын бузулуу деңгээли жогору</translation>
 <translation id="6786747875388722282">Кеңейтүүлөр</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" /> аудиосу күйүп турганда, Диктофон бул түзмөктөн чыгып жаткан бардык үндөрдү жаздырат</translation>
 <translation id="6791471867139427246">баскычтоптун жарыгынын түсү</translation>
 <translation id="6796229976413584781">Ыкчам баскыч өчүрүлдү</translation>
 <translation id="6798678288485555829">Текстте өтүү</translation>
@@ -1728,6 +1736,7 @@
 <translation id="8930622219860340959">Зымсыз</translation>
 <translation id="8933650076320258356">Тандалган <ph name="KEYS" /> баскычы <ph name="DIRECTION" /> багыты үчүн. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Кардардын IP-дареги</translation>
+<translation id="8938606491880817721">Жүктөлүп алынбай жатат. Кайталап көрүңүз же <ph name="DEVICE_TYPE" /> түзмөгүңүздү өчүрүп күйгүзүңүз.</translation>
 <translation id="8944651180182756621">Жүргүзгүчтүн түсү</translation>
 <translation id="8945308580158685341">аарылар</translation>
 <translation id="894617464444543719">Түзмөк — телефон.</translation>

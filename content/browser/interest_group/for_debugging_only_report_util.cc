@@ -4,11 +4,13 @@
 
 #include "content/browser/interest_group/for_debugging_only_report_util.h"
 
+#include <map>
 #include <optional>
 
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -43,6 +45,17 @@ base::Time CeilToNearestNextHour(base::TimeDelta delta) {
       delta.CeilToMultiple(base::Hours(1)));
 }
 
+std::optional<base::TimeDelta> ConvertDebugReportCooldownTypeToDuration(
+    DebugReportCooldownType type) {
+  switch (type) {
+    case DebugReportCooldownType::kShortCooldown:
+      return blink::features::kFledgeDebugReportShortCooldown.Get();
+    case DebugReportCooldownType::kRestrictedCooldown:
+      return blink::features::kFledgeDebugReportRestrictedCooldown.Get();
+  }
+  return std::nullopt;
+}
+
 bool IsInDebugReportLockout(const std::optional<DebugReportLockout>& lockout,
                             const base::Time now) {
   if (!lockout.has_value()) {
@@ -56,6 +69,30 @@ bool IsInDebugReportLockout(const std::optional<DebugReportLockout>& lockout,
       lockout->starting_time < filtering_starting_from;
   bool is_in_lockout = lockout->starting_time + lockout->duration >= now;
   return !is_lockout_before_filtering_starting && is_in_lockout;
+}
+
+bool IsInDebugReportCooldown(
+    const url::Origin& origin,
+    const std::map<url::Origin, DebugReportCooldown>& cooldowns_map,
+    const base::Time now) {
+  const auto cooldown_it = cooldowns_map.find(origin);
+  if (cooldown_it != cooldowns_map.end()) {
+    std::optional<base::TimeDelta> duration =
+        ConvertDebugReportCooldownTypeToDuration(cooldown_it->second.type);
+    if (duration.has_value()) {
+      bool is_cooldown_before_filtering_starting =
+          cooldown_it->second.starting_time <
+          CeilToNearestNextHour(
+              blink::features::kFledgeEnableFilteringDebugReportStartingFrom
+                  .Get());
+      bool is_in_cooldown =
+          cooldown_it->second.starting_time + *duration >= now;
+      if (!is_cooldown_before_filtering_starting && is_in_cooldown) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 }  // namespace content

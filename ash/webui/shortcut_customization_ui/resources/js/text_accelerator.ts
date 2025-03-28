@@ -80,6 +80,7 @@ export class TextAcceleratorElement extends PolymerElement {
   }
 
   parts: TextAcceleratorPart[];
+  isOnlyText: boolean;
   narrow: boolean;
   displayLockIcon: boolean;
   highlighted: boolean;

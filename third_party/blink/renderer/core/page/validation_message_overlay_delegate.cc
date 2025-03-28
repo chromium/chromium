@@ -46,8 +46,8 @@ class ValidationMessageChromeClient : public EmptyChromeClient {
   }
 
   void ScheduleAnimation(const LocalFrameView*,
-                         base::TimeDelta delay = base::TimeDelta(),
-                         bool urgent = false) override {
+                         base::TimeDelta delay,
+                         bool urgent) override {
     // Need to pass LocalFrameView for the anchor element because the Frame for
     // this overlay doesn't have an associated WebFrameWidget, which schedules
     // animation.

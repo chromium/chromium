@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/timer/elapsed_timer.h"
@@ -35,8 +36,10 @@ class HashAffiliationFetcher : public AffiliationFetcherInterface {
   ~HashAffiliationFetcher() override;
 
   // AffiliationFetcherInterface
-  void StartRequest(const std::vector<FacetURI>& facet_uris,
-                    RequestInfo request_info) override;
+  void StartRequest(
+      const std::vector<FacetURI>& facet_uris,
+      RequestInfo request_info,
+      base::OnceCallback<void(FetchResult)> result_callback) override;
   const std::vector<FacetURI>& GetRequestedFacetURIs() const override;
 
   // Builds the URL for the Affiliation API's lookup method.
@@ -70,6 +73,7 @@ class HashAffiliationFetcher : public AffiliationFetcherInterface {
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
 
   std::vector<FacetURI> requested_facet_uris_;
+  base::OnceCallback<void(FetchResult)> result_callback_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const raw_ptr<AffiliationFetcherDelegate> delegate_;
   base::ElapsedTimer fetch_timer_;

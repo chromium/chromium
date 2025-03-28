@@ -20,8 +20,8 @@ import org.chromium.content.browser.PopupController.HideablePopup;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
-import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContents.UserDataFactory;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -49,17 +49,17 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
     }
 
     /**
-     * Get {@link TextSuggestionHost} object used for the give WebContents.
-     * {@link #create()} should precede any calls to this.
+     * Get {@link TextSuggestionHost} object used for the give WebContents. {@link #create()} should
+     * precede any calls to this.
+     *
      * @param webContents {@link WebContents} object.
      * @return {@link TextSuggestionHost} object.
      */
     @VisibleForTesting
     static TextSuggestionHost fromWebContents(WebContents webContents) {
         TextSuggestionHost ret =
-                ((WebContentsImpl) webContents)
-                        .getOrSetUserData(
-                                TextSuggestionHost.class, UserDataFactoryLazyHolder.INSTANCE);
+                webContents.getOrSetUserData(
+                        TextSuggestionHost.class, UserDataFactoryLazyHolder.INSTANCE);
         assert ret != null;
         return ret;
     }

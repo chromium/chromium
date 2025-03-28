@@ -40,7 +40,7 @@ class CORE_EXPORT ImageElementTiming final
   explicit ImageElementTiming(LocalDOMWindow&);
   ImageElementTiming(const ImageElementTiming&) = delete;
   ImageElementTiming& operator=(const ImageElementTiming&) = delete;
-  virtual ~ImageElementTiming() = default;
+  ~ImageElementTiming() = default;
 
   static ImageElementTiming& From(LocalDOMWindow&);
 

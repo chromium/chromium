@@ -35,6 +35,7 @@ class SVGCircleElement final : public SVGGeometryElement {
   explicit SVGCircleElement(Document&);
 
   Path AsPath() const override;
+  PathBuilder AsMutablePath() const override;
 
   SVGAnimatedLength* cx() const { return cx_.Get(); }
   SVGAnimatedLength* cy() const { return cy_.Get(); }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
+#include "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
@@ -178,8 +178,8 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
         enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
             profile),
         referrer_chain_provider_.get(), &test_pref_service_,
-        identity_test_env_.identity_manager(), management_service_.get(),
-        is_off_the_record, is_guest_session,
+        /*webui_delegate=*/nullptr, identity_test_env_.identity_manager(),
+        management_service_.get(), is_off_the_record, is_guest_session,
         base::BindRepeating([]() -> std::string { return kTestProfileEmail; }),
         base::BindRepeating([] { return true; }),
         /*is_command_line_switch_supported=*/true);

@@ -205,9 +205,7 @@ using base::UserMetricsAction;
   // On first update, don't set the preview text, as omnibox will automatically
   // receive the suggestion as inline autocomplete through OmniboxViewIOS.
   if (!isFirstUpdate) {
-    // Remove additional text when previewing suggestions.
-    [self.omniboxTextController setAdditionalText:u""];
-    [self.consumer updateText:suggestion.omniboxPreviewText];
+    [self.omniboxTextController previewSuggestion:suggestion];
   }
 
   // When no suggestion is previewed, just show the default image.

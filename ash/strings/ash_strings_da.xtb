@@ -551,6 +551,7 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="2872353916818027657">Skift primær skærm</translation>
 <translation id="2872961005593481000">Sluk</translation>
 <translation id="2876338922445400217">Zoom ind på skærmen</translation>
+<translation id="2876760662374103627">Ansigtsstyring er aktiveret</translation>
 <translation id="2878884018241093801">Der er ingen nye elementer</translation>
 <translation id="2880541185262491188">For mange pinkodeforsøg. Vent <ph name="TIME_LEFT" />, og prøv igen</translation>
 <translation id="2883271196820422439">Genaktiver musetaster</translation>
@@ -1516,6 +1517,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="595202126637698455">Sporing af ydelsen er aktiveret</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Overvåget bruger</translation>
+<translation id="596035801491797438">Deaktiver ansigtsstyring</translation>
 <translation id="5960410286721553511">Se de seneste billeder og mediefiler fra din telefon</translation>
 <translation id="5965524703725988602">Slå Mørkt tema til/fra. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Skift til et af de efterfølgende vinduer</translation>

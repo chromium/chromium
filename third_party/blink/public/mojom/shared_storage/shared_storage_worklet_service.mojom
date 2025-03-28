@@ -74,7 +74,7 @@ interface SharedStorageWorkletServiceClient {
   // with '-'. Return an empty `error_message` on success, and return an
   // non-empty `error_message` on failure.
   SharedStorageBatchUpdate(
-    array<network.mojom.SharedStorageModifierMethodWithOptions> methods_with_options,
+    network.mojom.SharedStorageBatchUpdateMethodsArgument methods_with_options,
     network.mojom.LockName? with_lock)
       => (string error_message);
 

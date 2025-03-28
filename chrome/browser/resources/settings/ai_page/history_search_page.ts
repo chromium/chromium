@@ -90,7 +90,10 @@ export class SettingsHistorySearchPageElement extends
   }
 
   private enableAiSettingsPageRefresh_: boolean;
+  private isAnswersFeatureEnabled_: boolean;
   private numericUncheckedValues_: FeatureOptInState[];
+  private toggleSubLabel_: string;
+  private toggleSubLabelV2_: string;
   private enterprisePref_: chrome.settingsPrivate.PrefObject;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();

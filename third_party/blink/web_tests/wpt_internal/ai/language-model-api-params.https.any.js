@@ -3,7 +3,7 @@
 promise_test(async () => {
   await ensureLanguageModel();
 
-  const params = await ai.languageModel.params();
+  const params = await LanguageModel.params();
   assert_true(!!params);
   assert_equals(typeof params.maxTopK, "number");
   assert_equals(typeof params.defaultTopK, "number");

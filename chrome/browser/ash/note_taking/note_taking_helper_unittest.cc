@@ -70,6 +70,7 @@
 #include "components/user_manager/test_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/api/app_runtime.h"
@@ -326,9 +327,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   // Installs or uninstalls |extension| in |profile|.
   void InstallExtension(const extensions::Extension* extension,
                         Profile* profile) {
-    extensions::ExtensionSystem::Get(profile)
-        ->extension_service()
-        ->AddExtension(extension);
+    extensions::ExtensionRegistrar::Get(profile)->AddExtension(extension);
   }
   void UninstallExtension(const extensions::Extension* extension,
                           Profile* profile) {

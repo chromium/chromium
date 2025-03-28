@@ -10,7 +10,7 @@ import static org.hamcrest.core.IsCollectionContaining.hasItems;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.ClassRule;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,8 +23,9 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,13 +36,14 @@ import java.util.List;
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Batch(Batch.PER_CLASS)
 public class FeaturesAnnotationsTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
+            ChromeTransitTestRules.blankPageStartReusedActivityRule();
+
+    @Before
+    public void setUp() {
+        mActivityTestRule.start();
+    }
 
     /**
      * Tests that {@link EnableFeatures} and {@link DisableFeatures} can alter the flags registered

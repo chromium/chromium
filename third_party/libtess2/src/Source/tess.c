@@ -89,6 +89,11 @@ static void ComputeNormal( TESStesselator *tess, TESSreal norm[3] )
 	int i;
 
 	v = vHead->next;
+	if (v == vHead) {
+		/* No vertex is initialized -- normal doesn't matter */
+		norm[0] = 0; norm[1] = 0; norm[2] = 1;
+		return;
+	}
 	for( i = 0; i < 3; ++i ) {
 		c = v->coords[i];
 		minVal[i] = c;
@@ -933,12 +938,15 @@ void tessAddContour( TESStesselator *tess, int size, const void* vertices,
 		size = 3;
 
 	e = NULL;
-
 	for( i = 0; i < numVertices; ++i )
 	{
 		const TESSreal* coords = (const TESSreal*)src;
 		src += stride;
-
+		if (isnan(coords[0]) || isnan(coords[1]) || (size > 2 && isnan(coords[2]))) {
+			// "Out of memory" isn't quite right, but give up and bail out
+			tess->outOfMemory = 1;
+			return;
+		}
 		if( e == NULL ) {
 			/* Make a self-loop (one vertex, one edge). */
 			e = tessMeshMakeEdge( tess->mesh );
@@ -1035,7 +1043,7 @@ int tessTesselate( TESStesselator *tess, int windingRule, int elementType,
 		return 0;
 	}
 
-	if (!tess->mesh)
+	if (tess->outOfMemory || !tess->mesh)
 	{
 		return 0;
 	}

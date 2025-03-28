@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -754,5 +755,11 @@ void ReadAloudAppModel::IncrementMetric(const std::string& metric_name) {
   if (metric_to_single_sample_[metric_name]) {
     metric_to_single_sample_[metric_name]->SetSample(
         metric_to_count_map_[metric_name]);
+  }
+}
+
+void ReadAloudAppModel::LogSpeechStop(ReadAloudStopSource source) {
+  if (features::IsReadAnythingReadAloudEnabled()) {
+    base::UmaHistogramEnumeration(kSpeechStopSourceHistogramName, source);
   }
 }

@@ -22,6 +22,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController.ActionProvider;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -84,5 +85,26 @@ public class SignalAccumulatorTest {
         Assert.assertFalse(accumulator.hasReaderMode());
         Assert.assertFalse(accumulator.hasPriceInsights());
         Assert.assertFalse(accumulator.hasDiscounts());
+    }
+
+    @Test
+    public void testSetReaderModeRecordsTime() throws TimeoutException {
+        List<ActionProvider> actionProviders = new ArrayList<>();
+        ActionProvider actionProvider =
+                (tab, accumulator) -> {
+                    accumulator.setHasReaderMode(false);
+                };
+        actionProviders.add(actionProvider);
+        final CallbackHelper callbackHelper = new CallbackHelper();
+        SignalAccumulator accumulator = new SignalAccumulator(mHandler, mMockTab, actionProviders);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecordTimes(
+                                SignalAccumulator.READER_MODE_SIGNAL_TIME_HISTOGRAM, 1)
+                        .build();
+        accumulator.getSignals(() -> callbackHelper.notifyCalled());
+        callbackHelper.waitForNext();
+        watcher.assertExpected();
     }
 }

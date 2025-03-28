@@ -24,6 +24,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
@@ -112,7 +113,10 @@ bool IsCorsSafelistedLowerCaseContentType(const std::string& value) {
   }
 
   return *mime_type == "application/x-www-form-urlencoded" ||
-         *mime_type == "multipart/form-data" || *mime_type == "text/plain";
+         *mime_type == "multipart/form-data" || *mime_type == "text/plain" ||
+         (*mime_type == "message/ad-auction-trusted-signals-request" &&
+          base::FeatureList::IsEnabled(
+              features::kProtectedAudienceCorsSafelistKVv2Signals));
 }
 
 bool IsNoCorsSafelistedHeaderNameLowerCase(const std::string& lower_name) {
@@ -524,12 +528,12 @@ bool CalculateCredentialsFlag(mojom::CredentialsMode credentials_mode,
   //    response tainting is "basic"
   // is true, and unset otherwise.
   switch (credentials_mode) {
-    case network::mojom::CredentialsMode::kOmit:
-    case network::mojom::CredentialsMode::kOmitBug_775438_Workaround:
+    case mojom::CredentialsMode::kOmit:
+    case mojom::CredentialsMode::kOmitBug_775438_Workaround:
       return false;
-    case network::mojom::CredentialsMode::kSameOrigin:
-      return response_tainting == network::mojom::FetchResponseType::kBasic;
-    case network::mojom::CredentialsMode::kInclude:
+    case mojom::CredentialsMode::kSameOrigin:
+      return response_tainting == mojom::FetchResponseType::kBasic;
+    case mojom::CredentialsMode::kInclude:
       return true;
   }
 }
@@ -538,14 +542,14 @@ mojom::FetchResponseType CalculateResponseType(
     mojom::RequestMode mode,
     bool is_request_considered_same_origin) {
   if (is_request_considered_same_origin ||
-      mode == network::mojom::RequestMode::kNavigate ||
-      mode == network::mojom::RequestMode::kSameOrigin) {
-    return network::mojom::FetchResponseType::kBasic;
-  } else if (mode == network::mojom::RequestMode::kNoCors) {
-    return network::mojom::FetchResponseType::kOpaque;
+      mode == mojom::RequestMode::kNavigate ||
+      mode == mojom::RequestMode::kSameOrigin) {
+    return mojom::FetchResponseType::kBasic;
+  } else if (mode == mojom::RequestMode::kNoCors) {
+    return mojom::FetchResponseType::kOpaque;
   } else {
-    DCHECK(network::cors::IsCorsEnabledRequestMode(mode)) << mode;
-    return network::mojom::FetchResponseType::kCors;
+    DCHECK(cors::IsCorsEnabledRequestMode(mode)) << mode;
+    return mojom::FetchResponseType::kCors;
   }
 }
 

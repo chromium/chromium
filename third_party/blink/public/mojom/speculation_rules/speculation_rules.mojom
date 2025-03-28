@@ -99,5 +99,13 @@ struct SpeculationCandidate {
   // and it is optional as both null and empty are valid values. Null and empty
   // string will be stored as they are into the vector.
   // Explainer: https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md
+  //
+  // Mapping:
+  // - An empty string tag is represented as
+  //   - empty `WTF::String` in blink/
+  //   - empty `std::string` in content/
+  // - No tag (null tag) is represented as
+  //   - null `WTF::String` in blink/
+  //   - nullopt `std::optional<std::string>` in content/
   array<string?> tags;
 };

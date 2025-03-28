@@ -161,8 +161,14 @@ void FullscreenControllerImpl::EnterFullscreen() {
   mediator_.EnterFullscreen();
 }
 
+// Needs to be cleanup.
 void FullscreenControllerImpl::ExitFullscreen() {
-  mediator_.ExitFullscreen();
+  mediator_.ExitFullscreen(FullscreenExitReason::kForcedByCode);
+}
+
+void FullscreenControllerImpl::ExitFullscreen(
+    FullscreenExitReason fullscreen_exit_reason) {
+  mediator_.ExitFullscreen(fullscreen_exit_reason);
 }
 
 void FullscreenControllerImpl::ExitFullscreenWithoutAnimation() {

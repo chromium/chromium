@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/download/ui/download_manager_constants.h"
 #import "ios/chrome/browser/drive/model/drive_policy.h"
 #import "ios/chrome/browser/drive/model/test_constants.h"
+#import "ios/chrome/browser/google_one/test/constants.h"
+#import "ios/chrome/browser/google_one/test/google_one_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/scoped_policy_list.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination_picker_constants.h"
@@ -26,6 +28,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/public/provider/chrome/browser/google_one/google_one_api.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/embedded_test_server_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -109,6 +112,20 @@ id<GREYMatcher> AccountPickerPrimaryButton() {
       grey_interactable(), nil);
 }
 
+// Matcher for "Manage storage" button in the alert
+id<GREYMatcher> ManageStorageButton() {
+  // For some reason, the alert buttons are not buttons. Use "interactable
+  // labels" instead.
+  return grey_allOf(grey_text(l10n_util::GetNSString(
+                        IDS_IOS_MANAGE_STORAGE_ALERT_MANAGE_STORAGE_BUTTON)),
+                    grey_interactable(), nil);
+}
+
+// Matcher for "GoogleOne" view (or at least a mock of it).
+id<GREYMatcher> G1View() {
+  return grey_accessibilityID(kTestGoogleOneControllerAccessibilityID);
+}
+
 // Provides downloads landing page with download link.
 std::unique_ptr<net::test_server::HttpResponse> GetResponse(
     const net::test_server::HttpRequest& request) {
@@ -140,13 +157,36 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
 
+- (void)tearDownHelper {
+  [GoogleOneAppInterface restoreGoogleOneController];
+  [super tearDownHelper];
+}
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration configuration;
+  AppLaunchConfiguration configuration = [super appConfigurationForTestCase];
   if ([self isRunningTest:@selector(testCanRetryDownloadToDrive)]) {
     const std::string commandLineSwitch =
         std::string(kTestDriveFileUploaderCommandLineSwitch);
     const std::string commandLineValue =
         std::string(kTestDriveFileUploaderCommandLineSwitchFailAndThenSucceed);
+    configuration.additional_args.push_back(base::StringPrintf(
+        "--%s=%s", commandLineSwitch.c_str(), commandLineValue.c_str()));
+  }
+  if ([self isRunningTest:@selector(testDriveFullStorage)]) {
+    configuration.features_disabled.push_back(kIOSManageAccountStorage);
+    const std::string commandLineSwitch =
+        std::string(kTestDriveFileUploaderCommandLineSwitch);
+    const std::string commandLineValue =
+        std::string(kTestDriveFileUploaderCommandLineSwitchFullStorage);
+    configuration.additional_args.push_back(base::StringPrintf(
+        "--%s=%s", commandLineSwitch.c_str(), commandLineValue.c_str()));
+  }
+  if ([self isRunningTest:@selector(testDriveFullStorageG1)]) {
+    configuration.features_enabled.push_back(kIOSManageAccountStorage);
+    const std::string commandLineSwitch =
+        std::string(kTestDriveFileUploaderCommandLineSwitch);
+    const std::string commandLineValue =
+        std::string(kTestDriveFileUploaderCommandLineSwitchFullStorage);
     configuration.additional_args.push_back(base::StringPrintf(
         "--%s=%s", commandLineSwitch.c_str(), commandLineValue.c_str()));
   }
@@ -240,6 +280,74 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
       waitForUIElementToAppearWithMatcher:DownloadManagerGetTheAppButton()
                                   timeout:base::test::ios::
                                               kWaitForDownloadTimeout];
+}
+
+// Tests that if the storage is full, an alert is displayed and user can open a
+// tab to manage their storage.
+- (void)testDriveFullStorage {
+  // Sign-in.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  // Load a page with a download button and tap the download button.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
+  // Check that the "Drive" button is presented and tap it.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SaveEllipsisButton()];
+  [[EarlGrey selectElementWithMatcher:SaveEllipsisButton()]
+      performAction:grey_tap()];
+  // Wait for the account picker to appear, select "Drive" and tap "Save".
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:AccountPicker()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:FileDestinationDriveButton()];
+  [[EarlGrey selectElementWithMatcher:FileDestinationDriveButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:AccountPickerPrimaryButton()]
+      performAction:grey_tap()];
+
+  // Wait for the alert to appear and tap it.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ManageStorageButton()];
+  [[EarlGrey selectElementWithMatcher:ManageStorageButton()]
+      performAction:grey_tap()];
+
+  // Wait for the account picker to disappear and a new tab to be opened.
+  // Note: this will open an external URL, so just ignore the result as soon
+  // as the tab is created.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:AccountPicker()];
+  [ChromeEarlGrey waitForMainTabCount:2];
+}
+
+// Tests that if the storage is full, an alert is displayed and user can open G1
+// settings to manage their storage.
+- (void)testDriveFullStorageG1 {
+  [GoogleOneAppInterface overrideGoogleOneController];
+  // Sign-in.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  // Load a page with a download button and tap the download button.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
+  // Check that the "Drive" button is presented and tap it.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SaveEllipsisButton()];
+  [[EarlGrey selectElementWithMatcher:SaveEllipsisButton()]
+      performAction:grey_tap()];
+  // Wait for the account picker to appear, select "Drive" and tap "Save".
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:AccountPicker()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:FileDestinationDriveButton()];
+  [[EarlGrey selectElementWithMatcher:FileDestinationDriveButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:AccountPickerPrimaryButton()]
+      performAction:grey_tap()];
+
+  // Wait for the alert to appear and tap it.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ManageStorageButton()];
+  [[EarlGrey selectElementWithMatcher:ManageStorageButton()]
+      performAction:grey_tap()];
+
+  // Wait for the G1 view to appear.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:G1View()];
 }
 
 // Tests that when the user is signed-in, they can choose Drive as destination

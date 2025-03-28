@@ -62,6 +62,14 @@ declare namespace chrome {
     let sentenceHighlighting: number;
     let noHighlighting: number;
 
+    // Enum values for speech stop sources.
+    let pauseButtonStopSource: number;
+    let keyboardShortcutStopSource: number;
+    let engineInterruptStopSource: number;
+    let engineErrorStopSource: number;
+    let contentFinishedStopSource: number;
+    let unexpectedUpdateContentStopSource: number;
+
     // Whether the Read Aloud feature flag is enabled.
     let isReadAloudEnabled: boolean;
 
@@ -373,8 +381,8 @@ declare namespace chrome {
     // Log UmaHistogramCount
     function incrementMetricCount(metricName: string): void;
 
-    // Log speech errors.
-    function logSpeechError(errorCode: string): void;
+    // Log when speech stops and why.
+    function logSpeechStop(source: number): void;
 
     // Returns a list of node ids and ranges (start and length) associated with
     // the index within the given text segment. The intended use is for

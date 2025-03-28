@@ -227,7 +227,6 @@
 <translation id="1363028406613469049">Կատարում</translation>
 <translation id="1364822246244961190">Այս կանոնն արգելափակված է: Դրա արժեքը կանտեսվի:</translation>
 <translation id="1368318639262510626">Dino խաղ։ Պիքսելային դինոզավրը վազում է անապատով՝ խուսափելով կակտուսներից և պտերոդակտիլներից։ Երբ լսեք ձայնային հուշում, սեղմեք բացատը՝ խոչընդոտի վրայով ցատկելու համար։</translation>
-<translation id="1369735141991626842">Լրացրեք դաշտերը ԱԲ-ի օգնությամբ</translation>
 <translation id="1374468813861204354">առաջարկներ</translation>
 <translation id="1375198122581997741">Տարբերակի մասին</translation>
 <translation id="1375293861397106342">Բոլոր տարբերակները սովորաբար <ph name="LOW_PRICE" /> – <ph name="HIGH_PRICE" /></translation>
@@ -543,7 +542,6 @@
 <translation id="1919526244108283799">400 x 600 մմ</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ոչինչ չկա}=1{1 կայք}one{# կայք}other{# կայք}}</translation>
 <translation id="192095259937375524">«Կիսվել այս ներդիրով» կոճակ․ ակտիվացրեք, որպեսզի կիսվեք այս ներդիրով՝ ուղարկելով հղում կամ ստեղծելով QR կոդ, հեռարձակում և այլն</translation>
-<translation id="1921479021518565778">Առաջարկները բեռնվեցին</translation>
 <translation id="1924727005275031552">Նոր</translation>
 <translation id="1927439846988093361">Մազերի խնամք</translation>
 <translation id="1935353813610900265">Կարծիք հայտնեք ԱԲ-ի միջոցով այցելությունների պատմությունում որոնման մասին</translation>
@@ -978,6 +976,7 @@
 <translation id="2688186765492306706">500 x 760 մմ</translation>
 <translation id="2688969097326701645">Այո, շարունակել</translation>
 <translation id="2690699652723742414">Վերջին 30 օրը</translation>
+<translation id="2691385045260836588">Մոդել</translation>
 <translation id="2691924980723297736">Զգուշացում</translation>
 <translation id="2697248912349197812">Հարցրեք <ph name="KEYWORD_SHORT_NAME" />-ին</translation>
 <translation id="2699273987028089219">Ենթացանկը հասանելի է, օգտագործեք <ph name="SHORTCUT" /> դյուրանցումը՝ լրացուցիչ ընտրանքներին անցնելու համար։</translation>
@@ -1535,6 +1534,7 @@
 <translation id="3664782872746246217">Հիմնաբառեր՝</translation>
 <translation id="3665100783276035932">Կայքերի մեծ մասը պետք է պատշաճ կերպով աշխատի</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Իմանալ ավելին<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">Քարտի համարը</translation>
 <translation id="3670229581627177274">Միացնել Bluetooth-ը</translation>
 <translation id="3671117652518853176">Երբ անջատված է, անվտանգության նկատառումներով ձեզնից երբեմն կարող է պահանջվել, որ հաստատեք</translation>
 <translation id="3671540257457995106">Թույլատրե՞լ չափի փոփոխումը</translation>
@@ -1549,7 +1549,6 @@
 <translation id="3681007416295224113">Վկայագրի տեղեկություններ</translation>
 <translation id="3681421644246505351">Chrome-ը որոշում է ձեզ հետաքրքրող թեմաները ձեր վերջին այցելությունների պատմության հիման վրա։</translation>
 <translation id="3682094733650754138">Ընտրվել է հասցեի լրացման տարբերակը</translation>
-<translation id="3687493962714153124">Կառավարել «Ինքնալրացում ԱԲ-ի օգնությամբ» գործառույթը</translation>
 <translation id="3687920599421452763">Ֆուրգոններ և մինիվեններ</translation>
 <translation id="3693327506115126094">Ընտրեք, թե ինչպես եք հաստատելու ձեր ինքնությունը</translation>
 <translation id="3698353241727597930">Ձեր ադմինիստրատորն այնպես է կարգավորել, որ <ph name="FILES" /> պահվեն ձեր կազմակերպության կողմից կառավարվող տարածքում <ph name="CLOUD_STORAGE" />։ Այս ֆայլերը կարող են դիտվել, ստուգվել և պահպանվել, երբ ջնջեք դրանք։</translation>
@@ -1704,6 +1703,7 @@
 <translation id="3950820424414687140">Մուտք գործել</translation>
 <translation id="3953505489397572035">Սա միջին գին է</translation>
 <translation id="3958057596965527988">4 x 4 դյույմ</translation>
+<translation id="3959969108528118741">Սեփականատեր</translation>
 <translation id="3961148744525529027">Վճարման մշակման թերթը կիսով չափ բացված է</translation>
 <translation id="3962859241508114581">Նախորդ կատարումը</translation>
 <translation id="3963721102035795474">Ընթերցողի ռեժիմ</translation>
@@ -1927,7 +1927,6 @@
 <translation id="4312866146174492540">Արգելափակել (կանխադրված)</translation>
 <translation id="4314815835985389558">Համաժամացման կառավարում</translation>
 <translation id="4316057107946726368">Գրեք առավելագույնը <ph name="MAX_CHAR_COUNT" /> նիշ երկարությամբ հիմնավորում։ Օգտագործված է <ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /> նիշ։</translation>
-<translation id="431740489189220419">Առաջարկների բեռնում</translation>
 <translation id="4318213823155573975">Գլխարկներ</translation>
 <translation id="4318312030194671742">Paint-ի նախադիտումների գրաշարման ծառայություն</translation>
 <translation id="4318566738941496689">Ձեր սարքի անունը և ցանցի հասցեն</translation>
@@ -2335,6 +2334,7 @@
 <translation id="5087286274860437796">Սերվերի վկայագիրն այս անգամ վավեր չէ:</translation>
 <translation id="5087580092889165836">Ավելացնել քարտ</translation>
 <translation id="5088142053160410913">Հաղորդագրություն օպերատորին</translation>
+<translation id="5089810972385038852">Նահանգ</translation>
 <translation id="5090647584136241764">Ավելացրեք նմանատիպ ապրանքներով ներդիրներ, որպեսզի համեմատեք ձեզ համար կարևոր մանրամասները</translation>
 <translation id="5093232627742069661">Երկծալք զիգզագաձև ծալում</translation>
 <translation id="5094747076828555589">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Chromium-ը չի վստահում դրա անվտանգության վկայականին: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
@@ -2475,6 +2475,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Կանխադրված որոնողական համակարգը թույլ է տալիս որոնել համացանցում և աջակցում է Chromium-ի այնպիսի գործառույթներ<ph name="END_BOLD" />, ինչպիսիք են որոնումը հասցեագոտուց և պատկերների միջոցով վեբ էջերում։ Գործառույթը կարող է հասանելի չլինել, եթե ձեր որոնողական համակարգը չի աջակցում այն։</translation>
 <translation id="5323043727018853753">Զետեղված բովանդակությունը թույլատրված է</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES" /></translation>
+<translation id="5327248766486351172">Անուն</translation>
 <translation id="5329858041417644019">Ձեր դիտարկիչը չի կառավարվում</translation>
 <translation id="5331585574693522196">Սահմանել որպես կանխադրված</translation>
 <translation id="5332219387342487447">Առաքման եղանակը</translation>
@@ -2687,7 +2688,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates կանոնի արժեքը անհամապատասխան է և չի կարող օգտագործվել, եթե DnsOverHttpsMode կանոնի համար չի կարգավորվել <ph name="SECURE_DNS_MODE_AUTOMATIC" /> կամ <ph name="SECURE_DNS_MODE_SECURE" /> արժեքը:</translation>
 <translation id="5691848789297492617">Քարտի տվյալների պահման պատուհանը բացված է ամբողջությամբ։</translation>
 <translation id="5695542892312572833">Հաստատե՞լ և ավարտել ձեր գնումը Windows Hello-ի միջոցով</translation>
-<translation id="5697827549745555938">Ձեր պահած տեղեկությունները և այս էջը կուղարկվեն Google-ին՝ տեսնելու, թե արդյոք ինքնալրացումը կարող է օգնել լրացնել այս ձևը։ Տվյալները կարող են դիտվել մասնագետների կողմից՝ գործառույթը բարելավելու համար։</translation>
 <translation id="5699628521141772782">Կաթնամթերք և ձու</translation>
 <translation id="5700761515355162635">Երրորդ կողմի քուքիները թույլատրված են</translation>
 <translation id="5701381305118179107">Կենտրոնաբերել</translation>
@@ -3116,6 +3116,7 @@
 <translation id="6440503408713884761">Անտեսված</translation>
 <translation id="6443406338865242315">Ինչ ընդլայնումներ և փլագիններ եք դուք տեղադրել</translation>
 <translation id="6444329331928531170">Կենսաթոշակ</translation>
+<translation id="6445051938772793705">Երկիր</translation>
 <translation id="6446608382365791566">Ավելացրեք լրացուցիչ տեղեկություններ</translation>
 <translation id="6447842834002726250">Cookie ֆայլեր</translation>
 <translation id="6448371595882710519">Իմանալ ավելին Տվյալների կառավարման տարրերի մասին</translation>
@@ -3596,7 +3597,6 @@
 <translation id="7316521168101843192">Ֆայլը պահվում է Microsoft OneDrive-ում</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Օգնություն կապի խնդիրների դեպքում</translation>
-<translation id="7321111802407017850">Պահեք տեղեկությունները ավտոմատ լրացման համար</translation>
 <translation id="7323804146520582233">Թաքցնել «<ph name="SECTION" />» բաժինը</translation>
 <translation id="733354035281974745">Լոկալ հաշվի փոփոխում սարքում</translation>
 <translation id="7334320624316649418">&amp;Վերարկել վերադասավորումը</translation>

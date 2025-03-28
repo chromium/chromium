@@ -12,7 +12,7 @@
 
 namespace syncer {
 
-// A minimal error object for use by USS data type code.
+// A minimal error object that individual datatypes can report.
 class ModelError {
  public:
   // Creates a set error object with the given location and message.

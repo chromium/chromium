@@ -37,9 +37,6 @@ class CaptureModeMenuToggleButton : public views::View {
 
   Switch* toggle_button() { return toggle_button_; }
 
-  // views::View
-  void OnThemeChanged() override;
-
  private:
   raw_ptr<views::ImageView> icon_view_;
   raw_ptr<views::Label> label_view_;

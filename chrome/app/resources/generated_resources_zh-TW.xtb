@@ -1565,7 +1565,6 @@
 <translation id="2081816110395725788">使用電池時閒置電源</translation>
 <translation id="2082187087049518845">將分頁分組</translation>
 <translation id="2082510809738716738">請選擇主題顏色</translation>
-<translation id="208547068587548667">登入 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">請再試一次</translation>
 <translation id="208634871997892083">永久連線 VPN</translation>
 <translation id="208654914566977272">搜尋畫面內容時顯示的建議動作</translation>
@@ -3994,7 +3993,6 @@
 <translation id="3778740492972734840">開發人員工具(&amp;D)</translation>
 <translation id="3778868487658107119">Google 助理可根據你的問題提供解答，或是依指令執行各種操作。它是你專屬的 Google 服務，隨時為你提供協助。</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# 個網站的瀏覽記錄}other{# 個網站的瀏覽記錄}}</translation>
-<translation id="3779244863011082655">使用其他 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 帳戶</translation>
 <translation id="3780542776224651912"><ph name="BRAND" />無法檢查你的密碼是否在資料侵害事件中外洩，請稍後再試。</translation>
 <translation id="3781742599892759500">Linux 麥克風存取權</translation>
 <translation id="3783640748446814672">Alt</translation>
@@ -5496,6 +5494,7 @@
 <translation id="4848191975108266266">Google 助理的「Ok Google」</translation>
 <translation id="4849286518551984791">世界標準時間 (UTC/GMT)</translation>
 <translation id="4849517651082200438">不要安裝</translation>
+<translation id="4849731766219625109">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 帳戶</translation>
 <translation id="485053257961878904">無法設定通知同步功能</translation>
 <translation id="4850548109381269495">檢查兩部裝置的網路連線並開啟藍牙，然後再試一次。</translation>
 <translation id="4850669014075537160">捲動</translation>
@@ -5684,6 +5683,7 @@
 <translation id="4979510648199782334">Microsoft 365 設定完成</translation>
 <translation id="4980805016576257426">這個擴充功能含有惡意軟體。</translation>
 <translation id="4983159853748980742">系統未分享你的密碼。請檢查網際網路連線，並確定你已登入 Chrome，然後再試一次。</translation>
+<translation id="498624032394115435">知道連結的使用者都可以編輯所有分頁。</translation>
 <translation id="4986706507552097681">你隨時可以在設定中選擇要同步處理的資料。Google 可能會根據你的歷史記錄在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="4986728572522335985">這項操作將刪除這個安全金鑰上的所有資料，包括 PIN 碼</translation>
 <translation id="4987944280765486504">下載完成後，Chromebook 就會重新啟動，方便你繼續設定。</translation>
@@ -8288,7 +8288,6 @@
 <translation id="6873571253135628430">變更網站權限</translation>
 <translation id="6876155724392614295">自行車</translation>
 <translation id="6876469544038980967">沒有幫助</translation>
-<translation id="687838958001010630">知道連結的使用者都可以編輯所有分頁</translation>
 <translation id="6878422606530379992">可使用感應器</translation>
 <translation id="6878862640969460273">橫向</translation>
 <translation id="6880587130513028875">系統已封鎖此網頁的圖片。</translation>

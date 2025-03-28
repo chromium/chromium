@@ -51,7 +51,7 @@ export class SettingsOnStartupPageElement extends
 
       ntpExtension_: Object,
 
-      prefValues_: {readOnly: true, type: Object, value: PrefValues},
+      prefValuesEnum_: {readOnly: true, type: Object, value: PrefValues},
     };
   }
 

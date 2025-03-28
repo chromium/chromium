@@ -19,8 +19,8 @@ FuchsiaCdmFactory::FuchsiaCdmFactory(
     std::unique_ptr<FuchsiaCdmProvider> cdm_provider,
     KeySystems* key_systems)
     : cdm_provider_(std::move(cdm_provider)), key_systems_(key_systems) {
-  DCHECK(cdm_provider_);
-  DCHECK(key_systems_);
+  CHECK(cdm_provider_, base::NotFatalUntil::M140);
+  CHECK(key_systems_, base::NotFatalUntil::M140);
 }
 
 FuchsiaCdmFactory::~FuchsiaCdmFactory() = default;

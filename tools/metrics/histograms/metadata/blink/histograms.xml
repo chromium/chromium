@@ -5281,6 +5281,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.UseCounter.TotalTakenTimeForReporting.{Timing}"
+    units="ms" expires_after="2026-03-09">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the accumulated time taken by recording the feautre usage in the
+    renderer, at the timing of {Timing}.
+
+    This metrics is recorded only when the frame is outer-most main frame, the
+    document is not the initial empty document, and the URL is HTTP or HTTPS.
+
+    This is triggered at the {Timing} phase.
+  </summary>
+  <token key="Timing">
+    <variant name="DidCommitLoad"/>
+    <variant name="FinishedParsing"/>
+  </token>
+</histogram>
+
 <histogram name="Blink.UseCounter.WebDXFeatures" enum="WebDXFeatureObserver"
     expires_after="never">
 <!-- expires-never: used by Chrome Platform Status dashboard, etc -->

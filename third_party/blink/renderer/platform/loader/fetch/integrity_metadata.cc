@@ -6,19 +6,19 @@
 
 namespace blink {
 
-void IntegrityMetadataSet::Insert(const IntegrityMetadataPair& pair) {
-  switch (pair.second) {
+void IntegrityMetadataSet::Insert(IntegrityMetadata item) {
+  switch (item.algorithm) {
     case IntegrityAlgorithm::kSha256:
     case IntegrityAlgorithm::kSha384:
     case IntegrityAlgorithm::kSha512:
-      if (!hashes.Contains(pair)) {
-        hashes.push_back(std::move(pair));
+      if (!hashes.Contains(item)) {
+        hashes.push_back(std::move(item));
       }
       break;
 
     case IntegrityAlgorithm::kEd25519:
-      if (!public_keys.Contains(pair)) {
-        public_keys.push_back(std::move(pair));
+      if (!public_keys.Contains(item)) {
+        public_keys.push_back(std::move(item));
       }
       break;
   }
@@ -26,13 +26,6 @@ void IntegrityMetadataSet::Insert(const IntegrityMetadataPair& pair) {
 
 IntegrityMetadata::IntegrityMetadata(WTF::String digest,
                                      IntegrityAlgorithm algorithm)
-    : digest_(digest), algorithm_(algorithm) {}
-
-IntegrityMetadata::IntegrityMetadata(IntegrityMetadataPair pair)
-    : digest_(pair.first), algorithm_(pair.second) {}
-
-IntegrityMetadataPair IntegrityMetadata::ToPair() const {
-  return IntegrityMetadataPair(digest_, algorithm_);
-}
+    : digest(std::move(digest)), algorithm(algorithm) {}
 
 }  // namespace blink

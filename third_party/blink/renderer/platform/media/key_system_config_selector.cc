@@ -27,7 +27,6 @@
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/platform/media/media_player_util.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -188,18 +187,6 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
 }
 
 }  // namespace
-
-bool KeySystemConfigSelector::WebLocalFrameDelegate::
-    IsCrossOriginToOutermostMainFrame() {
-  DCHECK(web_frame_);
-  return web_frame_->IsCrossOriginToOutermostMainFrame();
-}
-
-bool KeySystemConfigSelector::WebLocalFrameDelegate::AllowStorageAccessSync(
-    WebContentSettingsClient::StorageType storage_type) {
-  DCHECK(web_frame_);
-  return web_frame_->AllowStorageAccessSyncAndNotify(storage_type);
-}
 
 struct KeySystemConfigSelector::SelectionRequest {
   std::string key_system;

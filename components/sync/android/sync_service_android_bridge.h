@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "components/sync/service/sync_service_observer.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace syncer {
 
@@ -89,7 +90,7 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   jlong GetExplicitPassphraseTime(JNIEnv* env);
   void GetAllNodes(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& callback);
-  jint GetAuthError(JNIEnv* env);
+  GoogleServiceAuthError GetAuthError(JNIEnv* env);
   jboolean HasUnrecoverableError(JNIEnv* env);
   jboolean RequiresClientUpgrade(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetAccountInfo(JNIEnv* env);

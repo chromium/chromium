@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -27,6 +28,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "crypto/sha2.h"
 #include "media/midi/midi_service.h"
@@ -155,11 +157,11 @@ std::string GetVendor(udev_device* dev) {
   return vendor;
 }
 
-void SetStringIfNonEmpty(base::Value::Dict* value,
-                         const std::string& path,
-                         const std::string& in_value) {
+void SetStringIfNonEmpty(base::Value::Dict& value,
+                         std::string_view path,
+                         std::string in_value) {
   if (!in_value.empty())
-    value->Set(path, in_value);
+    value.Set(path, std::move(in_value));
 }
 
 }  // namespace
@@ -356,8 +358,8 @@ MidiManagerAlsa::MidiPort::MidiPort(const std::string& path,
 MidiManagerAlsa::MidiPort::~MidiPort() = default;
 
 // Note: keep synchronized with the MidiPort::Match* methods.
-std::unique_ptr<base::Value::Dict> MidiManagerAlsa::MidiPort::Value() const {
-  std::unique_ptr<base::Value::Dict> value(new base::Value::Dict);
+base::Value::Dict MidiManagerAlsa::MidiPort::Value() const {
+  base::Value::Dict value;
 
   std::string type;
   switch (type_) {
@@ -368,26 +370,26 @@ std::unique_ptr<base::Value::Dict> MidiManagerAlsa::MidiPort::Value() const {
       type = "output";
       break;
   }
-  value->Set("type", type);
-  SetStringIfNonEmpty(value.get(), "path", path_);
-  SetStringIfNonEmpty(value.get(), "clientName", client_name_);
-  SetStringIfNonEmpty(value.get(), "portName", port_name_);
-  value->Set("clientId", client_id_);
-  value->Set("portId", port_id_);
-  value->Set("midiDevice", midi_device_);
+  value.Set("type", std::move(type));
+  SetStringIfNonEmpty(value, "path", path_);
+  SetStringIfNonEmpty(value, "clientName", client_name_);
+  SetStringIfNonEmpty(value, "portName", port_name_);
+  value.Set("clientId", client_id_);
+  value.Set("portId", port_id_);
+  value.Set("midiDevice", midi_device_);
 
   // Flatten id fields.
-  SetStringIfNonEmpty(value.get(), "bus", id_.bus());
-  SetStringIfNonEmpty(value.get(), "vendorId", id_.vendor_id());
-  SetStringIfNonEmpty(value.get(), "modelId", id_.model_id());
-  SetStringIfNonEmpty(value.get(), "usbInterfaceNum", id_.usb_interface_num());
-  SetStringIfNonEmpty(value.get(), "serial", id_.serial());
+  SetStringIfNonEmpty(value, "bus", id_.bus());
+  SetStringIfNonEmpty(value, "vendorId", id_.vendor_id());
+  SetStringIfNonEmpty(value, "modelId", id_.model_id());
+  SetStringIfNonEmpty(value, "usbInterfaceNum", id_.usb_interface_num());
+  SetStringIfNonEmpty(value, "serial", id_.serial());
 
   return value;
 }
 
 std::string MidiManagerAlsa::MidiPort::JSONValue() const {
-  return base::WriteJson(*Value()).value_or(std::string());
+  return base::WriteJson(Value()).value_or(std::string());
 }
 
 // TODO(agoode): Do not use SHA256 here. Instead store a persistent

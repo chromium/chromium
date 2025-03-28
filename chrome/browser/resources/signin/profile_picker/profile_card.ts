@@ -55,8 +55,8 @@ export class ProfileCardElement extends ProfileCardElementBase {
     };
   }
 
-  profileState: ProfileState = createDummyProfileState();
-  protected pattern_: string = '.*\\S.*';
+  accessor profileState: ProfileState = createDummyProfileState();
+  protected accessor pattern_: string = '.*\\S.*';
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
 

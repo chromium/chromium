@@ -8,15 +8,17 @@ import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-c
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {setupBasicSpeech} from './common.js';
+import {mockMetrics, setupBasicSpeech} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeTreeBuilder} from './fake_tree_builder.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('UpdateContent', () => {
   let app: AppElement;
   let readingMode: FakeReadingMode;
+  let metrics: TestMetricsBrowserProxy;
 
   const textNodeIds = [3, 5, 7, 9];
   const texts = [
@@ -34,6 +36,7 @@ suite('UpdateContent', () => {
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     const speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
+    metrics = mockMetrics();
 
     // Don't use await createApp() when using a FakeTree, as it seems to cause
     // flakiness.
@@ -68,6 +71,16 @@ suite('UpdateContent', () => {
     await microtasksFinished();
 
     assertFalse(app.$.toolbar.isReadAloudPlayable);
+  });
+
+  test('logs speech stop if called while audio playing', async () => {
+    app.speechPlayingState.isAudioCurrentlyPlaying = true;
+    app.updateContent();
+    await microtasksFinished();
+
+    assertEquals(
+        chrome.readingMode.unexpectedUpdateContentStopSource,
+        await metrics.whenCalled('recordSpeechStopSource'));
   });
 
   test('hides loading page', async () => {

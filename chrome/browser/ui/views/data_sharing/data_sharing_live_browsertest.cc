@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -226,8 +227,14 @@ IN_PROC_BROWSER_TEST_F(DataSharingLiveTest, ManageSharedTabGroup) {
       OpenTabGroupByTitle(tab_group_service(), shared_group_title);
   CHECK(tab_group_id.has_value());
 
+  // Share the group.
   data_sharing::RequestInfo request_info(tab_group_id.value(),
-                                         data_sharing::FlowType::kManage);
+                                         data_sharing::FlowType::kShare);
+  DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
+      request_info);
+
+  // Manage the group.
+  request_info.type = data_sharing::FlowType::kManage;
   DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
       request_info);
 

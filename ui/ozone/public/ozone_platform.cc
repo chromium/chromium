@@ -19,6 +19,7 @@
 #include "ui/ozone/public/platform_keyboard_hook.h"
 #include "ui/ozone/public/platform_menu_utils.h"
 #include "ui/ozone/public/platform_screen.h"
+#include "ui/ozone/public/platform_session_manager.h"
 #include "ui/ozone/public/platform_user_input_monitor.h"
 
 namespace ui {
@@ -143,6 +144,10 @@ std::unique_ptr<PlatformKeyboardHook> OzonePlatform::CreateKeyboardHook(
     base::RepeatingCallback<void(KeyEvent* event)> callback,
     std::optional<base::flat_set<DomCode>> dom_codes,
     gfx::AcceleratedWidget accelerated_widget) {
+  return nullptr;
+}
+
+PlatformSessionManager* OzonePlatform::GetSessionManager() {
   return nullptr;
 }
 

@@ -105,6 +105,13 @@ BASE_FEATURE(kFledgeQueryKAnonymity,
              "FledgeQueryKAnonymity",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Send forDebuggingOnly's per ad tech cooldown statuses to B&A server side in
+// the request. Only lockout status is sent to B&A server side when this flag is
+// disabled.
+BASE_FEATURE(kFledgeSendDebugReportCooldownsToBandA,
+             "FledgeSendDebugReportCooldownsToBandA",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables starting worklet processes at auction start time in anticipation
 // of needing them for future worklets.
 BASE_FEATURE(kFledgeStartAnticipatoryProcesses,

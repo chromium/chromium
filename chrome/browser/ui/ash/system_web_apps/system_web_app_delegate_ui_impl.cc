@@ -11,10 +11,10 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
+#include "components/webapps/browser/launch_queue/launch_queue.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
@@ -92,7 +92,7 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
     base::FilePath launch_dir = GetLaunchDirectory(params);
 
     if (!launch_dir.empty() || !params.launch_files.empty()) {
-      web_app::WebAppLaunchParams launch_params;
+      webapps::LaunchParams launch_params;
       launch_params.started_new_navigation = started_new_navigation;
       launch_params.app_id = params.app_id;
       launch_params.target_url = web_contents->GetURL();

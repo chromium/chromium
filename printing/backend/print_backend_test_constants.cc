@@ -21,10 +21,13 @@ OptionalSampleCapabilities& OptionalSampleCapabilities::operator=(
 OptionalSampleCapabilities::~OptionalSampleCapabilities() = default;
 
 #if BUILDFLAG(IS_CHROMEOS)
-OptionalSampleCapabilities SampleWithPinAndAdvancedCapabilities() {
+OptionalSampleCapabilities SampleWithScaleAndPinAndAdvancedCapabilities() {
   OptionalSampleCapabilities caps;
   caps.pin_supported = kPinSupported;
   caps.advanced_capabilities = kAdvancedCapabilities;
+  caps.print_scaling_types = {kPrintScalingTypes.begin(),
+                              kPrintScalingTypes.end()};
+  caps.print_scaling_type_default = kPrintScalingTypeDefault;
   return caps;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -60,11 +63,13 @@ PrinterSemanticCapsAndDefaults GenerateSamplePrinterSemanticCapsAndDefaults(
 #if BUILDFLAG(IS_CHROMEOS)
   caps.pin_supported = sample_capabilities.pin_supported;
   caps.advanced_capabilities = sample_capabilities.advanced_capabilities;
+  caps.print_scaling_type_default =
+      sample_capabilities.print_scaling_type_default;
+  caps.print_scaling_types = sample_capabilities.print_scaling_types;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_WIN)
   caps.page_output_quality = sample_capabilities.page_output_quality;
 #endif  // BUILDFLAG(IS_WIN)
-
   return caps;
 }
 

@@ -23,6 +23,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/base_i18n_switches.h"
@@ -106,6 +107,7 @@
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/fingerprinting_protection_filter/interventions/browser/interventions_features.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/history/core/browser/features.h"
 #include "components/history_clusters/core/config.h"
@@ -2834,6 +2836,13 @@ const FeatureEntry::FeatureVariation
              kAndroidAppIntegrationMultiDataSource_UseSchemaV1AndSkipDeviceCheck),
          nullptr}};
 
+const FeatureEntry::FeatureParam kAndroidBottomToolbar_DefaultToBottom[] = {
+    {"default_to_top", "false"}};
+
+const FeatureEntry::FeatureVariation kAndroidBottomToolbarVariations[] = {
+    {"default to bottom", kAndroidBottomToolbar_DefaultToBottom,
+     std::size(kAndroidBottomToolbar_DefaultToBottom), nullptr}};
+
 const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_20[] = {
     {chrome::android::kAuxiliarySearchMaxBookmarksCountParam.name, "20"},
     {chrome::android::kAuxiliarySearchMaxTabsCountParam.name, "20"}};
@@ -4071,32 +4080,6 @@ const FeatureEntry::FeatureVariation kDeferRendererTasksAfterInputVariations[] =
     {"with all task types", kDeferRendererTasksAfterInputAllTypesPolicyParam,
      std::size(kDeferRendererTasksAfterInputAllTypesPolicyParam), nullptr}};
 
-const FeatureEntry::FeatureParam
-    kThreadedScrollPreventRenderingStarvation_66ms[] = {{"threshold_ms", "66"}};
-const FeatureEntry::FeatureParam
-    kThreadedScrollPreventRenderingStarvation_100ms[] = {
-        {"threshold_ms", "100"}};
-const FeatureEntry::FeatureParam
-    kThreadedScrollPreventRenderingStarvation_200ms[] = {
-        {"threshold_ms", "200"}};
-const FeatureEntry::FeatureParam
-    kThreadedScrollPreventRenderingStarvation_333ms[] = {
-        {"threshold_ms", "333"}};
-const FeatureEntry::FeatureVariation
-    kThreadedScrollPreventRenderingStarvationVariations[] = {
-        {"with a 66ms threshold",
-         kThreadedScrollPreventRenderingStarvation_66ms,
-         std::size(kThreadedScrollPreventRenderingStarvation_66ms), nullptr},
-        {"with a 100ms threshold",
-         kThreadedScrollPreventRenderingStarvation_100ms,
-         std::size(kThreadedScrollPreventRenderingStarvation_100ms), nullptr},
-        {"with a 200ms threshold",
-         kThreadedScrollPreventRenderingStarvation_200ms,
-         std::size(kThreadedScrollPreventRenderingStarvation_200ms), nullptr},
-        {"with a 333ms threshold",
-         kThreadedScrollPreventRenderingStarvation_333ms,
-         std::size(kThreadedScrollPreventRenderingStarvation_333ms), nullptr}};
-
 // LINT.IfChange(AutofillUploadCardRequestTimeouts)
 const FeatureEntry::FeatureParam
     kAutofillUploadCardRequestTimeout_6Point5Seconds[] = {
@@ -4590,6 +4573,12 @@ constexpr auto kScannerDisclaimerDebugOverrideChoices =
          ash::switches::kScannerDisclaimerDebugOverrideFull},
     });
 #endif
+
+const FeatureEntry::FeatureParam kEnableCanvasNoiseInAllModes[] = {
+    {"enable_in_regular_mode", "true"}};
+const FeatureEntry::FeatureVariation kEnableCanvasNoiseVariations[] = {
+    {" - In all browsing modes", kEnableCanvasNoiseInAllModes,
+     std::size(kEnableCanvasNoiseInAllModes), nullptr}};
 
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
@@ -5441,6 +5430,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableIsolatedWebAppUnmanagedInstallDescription,
      kOsCrOS, FEATURE_VALUE_TYPE(features::kIsolatedWebAppUnmanagedInstall)},
 #endif
+    {"enable-isolated-web-app-allowlist",
+     flag_descriptions::kEnableIsolatedWebAppAllowlistName,
+     flag_descriptions::kEnableIsolatedWebAppAllowlistDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kIsolatedWebAppAllowlist)},
     {"enable-isolated-web-app-dev-mode",
      flag_descriptions::kEnableIsolatedWebAppDevModeName,
      flag_descriptions::kEnableIsolatedWebAppDevModeDescription, kOsDesktop,
@@ -5708,6 +5701,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWaylandLinuxDrmSyncobjName,
      flag_descriptions::kWaylandLinuxDrmSyncobjDescription, kOsLinux,
      FEATURE_VALUE_TYPE(features::kWaylandLinuxDrmSyncobj)},
+
+    {"wayland-session-management",
+     flag_descriptions::kWaylandSessionManagementName,
+     flag_descriptions::kWaylandSessionManagementDescription, kOsLinux,
+     FEATURE_VALUE_TYPE(features::kWaylandSessionManagement)},
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_VR)
@@ -6484,7 +6482,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"android-bottom-toolbar", flag_descriptions::kAndroidBottomToolbarName,
      flag_descriptions::kAndroidBottomToolbarDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidBottomToolbar)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidBottomToolbar,
+                                    kAndroidBottomToolbarVariations,
+                                    "AndroidBottomToolbar")},
 
     {"auxiliary-search-donation",
      flag_descriptions::kAuxiliarySearchDonationName,
@@ -9846,6 +9846,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupPaneAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(tab_groups::kTabGroupPaneAndroid)},
 
+    {"tab-group-entry-points-android",
+     flag_descriptions::kTabGroupEntryPointsAndroidName,
+     flag_descriptions::kTabGroupEntryPointsAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabGroupEntryPointsAndroid)},
+
     {"tab-group-parity-bottom-sheet-android",
      flag_descriptions::kTabGroupParityBottomSheetAndroidName,
      flag_descriptions::kTabGroupParityBottomSheetAndroidDescription,
@@ -10453,6 +10458,10 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableLoyaltyCardsFilling)},
 
 #if BUILDFLAG(IS_ANDROID)
+    {"background-not-perceptible-binding",
+     flag_descriptions::kBackgroundNotPerceptibleBindingName,
+     flag_descriptions::kBackgroundNotPerceptibleBindingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(base::features::kBackgroundNotPerceptibleBinding)},
     {"boarding-pass-detector", flag_descriptions::kBoardingPassDetectorName,
      flag_descriptions::kBoardingPassDetectorDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kBoardingPassDetector,
@@ -10956,6 +10965,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCssTextBoxTrimDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCSSTextBoxTrim)},
 
+    {"css-masonry-layout", flag_descriptions::kCssMasonryLayoutName,
+     flag_descriptions::kCssMasonryLayoutDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kCSSMasonryLayout)},
+
     {"storage-access-headers", flag_descriptions::kStorageAccessHeadersName,
      flag_descriptions::kStorageAccessHeadersDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kStorageAccessHeaders)},
@@ -11009,15 +11022,6 @@ const FeatureEntry kFeatureEntries[] = {
          blink::features::kDeferRendererTasksAfterInput,
          kDeferRendererTasksAfterInputVariations,
          "DeferRendererTasksAfterInput")},
-
-    {"threaded-scroll-prevent-rendering-starvation",
-     flag_descriptions::kThreadedScrollPreventRenderingStarvationName,
-     flag_descriptions::kThreadedScrollPreventRenderingStarvationDescription,
-     kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         blink::features::kThreadedScrollPreventRenderingStarvation,
-         kThreadedScrollPreventRenderingStarvationVariations,
-         "ThreadedScrollPreventRenderingStarvation")},
 
     {"autofill-upload-card-request-timeout",
      flag_descriptions::kAutofillUploadCardRequestTimeoutName,
@@ -12020,12 +12024,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableNewFopDisplayDesktop)},
 
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_CHROMEOS)
     {"enable-printing-margins-and-scale",
      flag_descriptions::kEnablePrintingMarginsAndScale,
      flag_descriptions::kEnablePrintingMarginsAndScaleDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(extensions_features::kApiPrintingMarginsAndScale)},
-#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+     FEATURE_VALUE_TYPE(printing::features::kApiPrintingMarginsAndScale)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     {"supervised-user-block-interstitial-v3",
      flag_descriptions::kSupervisedUserBlockInterstitialV3Name,
@@ -12109,6 +12113,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNotebookLmAppPreinstallDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kNotebookLmAppPreinstall)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+    {"enable-canvas-noise", flag_descriptions::kEnableCanvasNoiseName,
+     flag_descriptions::kEnableCanvasNoiseDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         fingerprinting_protection_interventions::features::kCanvasNoise,
+         kEnableCanvasNoiseVariations,
+         "EnableCanvasNoise")},
 
     // Add new entries above this line.
 

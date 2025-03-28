@@ -383,7 +383,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Stability.DebugScenario.Navigation" enum="DebugScenario"
     expires_after="2023-08-08">
   <owner>nasko@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
   <summary>
     Logged at the time when a complex debugging scenario is encountered. The
     enum value is the type of scenario encountered. This metric will give us two

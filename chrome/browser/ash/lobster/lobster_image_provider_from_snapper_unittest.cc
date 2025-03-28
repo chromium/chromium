@@ -74,22 +74,25 @@ TEST_F(LobsterImageProviderFromSnapperTest,
       /*query=*/"a lovely cake",
       /*num_candidates=*/2, future.GetCallback());
 
-  EXPECT_THAT(future.Get().value(),
-              testing::ElementsAre(
-                  EqLobsterImageCandidate(
-                      /*expected_id=*/0,
-                      /*expected_bitmap=*/
-                      CreateTestBitmap(kPreviewImageDimensionSize,
-                                       kPreviewImageDimensionSize),
-                      /*expected_generation_seed=*/10,
-                      /*expected_query=*/"rewritten 1: a nice cake"),
-                  EqLobsterImageCandidate(
-                      /*expected_id=*/1,
-                      /*expected_bitmap=*/
-                      CreateTestBitmap(kPreviewImageDimensionSize,
-                                       kPreviewImageDimensionSize),
-                      /*expected_generation_seed=*/11,
-                      /*expected_query=*/"rewritten 2: a beautiful cake")));
+  EXPECT_THAT(
+      future.Get().value(),
+      testing::ElementsAre(
+          EqLobsterImageCandidate(
+              /*expected_id=*/0,
+              /*expected_bitmap=*/
+              CreateTestBitmap(kPreviewImageDimensionSize,
+                               kPreviewImageDimensionSize),
+              /*expected_generation_seed=*/10,
+              /*expected_user_query=*/"a lovely cake",
+              /*expected_rewritten_query=*/"rewritten 1: a nice cake"),
+          EqLobsterImageCandidate(
+              /*expected_id=*/1,
+              /*expected_bitmap=*/
+              CreateTestBitmap(kPreviewImageDimensionSize,
+                               kPreviewImageDimensionSize),
+              /*expected_generation_seed=*/11,
+              /*expected_user_query=*/"a lovely cake",
+              /*expected_rewritten_query=*/"rewritten 2: a beautiful cake")));
 }
 
 TEST_F(LobsterImageProviderFromSnapperTest,
@@ -134,7 +137,8 @@ TEST_F(LobsterImageProviderFromSnapperTest,
           /*expected_bitmap=*/
           CreateTestBitmap(kFullImageDimensionSize, kFullImageDimensionSize),
           /*expected_generation_seed=*/kFakeBaseGenerationSeed,
-          /*expected_query=*/"rewritten 1: a nice cake")));
+          /*expected_rewritten_query=*/"a lovely cake",
+          /*expected_rewritten_query=*/"rewritten 1: a nice cake")));
 }
 
 TEST_F(

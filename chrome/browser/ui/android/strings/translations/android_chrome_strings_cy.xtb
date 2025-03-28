@@ -677,6 +677,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="4195643157523330669">Agor mewn tab newydd</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tab ar y ddyfais hon}zero{# tab ar y ddyfais hon}two{# dab ar y ddyfais hon}few{# thab ar y ddyfais hon}many{# thab ar y ddyfais hon}other{# tab ar y ddyfais hon}}</translation>
 <translation id="4198423547019359126">Nid oes unrhyw leoliadau lawrlwytho ar gael</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Gwnaethoch ddefnyddio ar y wefan hon</translation>
 <translation id="4214315110991671325">Os ydych yn caniatáu cwcis, gall Chrome eu defnyddio ar gyfer rhaglwytho.</translation>
 <translation id="4216511743389425832">Gwrando ar y dudalen hon</translation>
 <translation id="4225725533026049334">Yn dilyn</translation>

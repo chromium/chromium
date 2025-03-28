@@ -223,7 +223,6 @@
 <translation id="1363028406613469049">Бақылау нөмірі</translation>
 <translation id="1364822246244961190">Бұл саясат өшірулі, оның мәні еленбейтін болады.</translation>
 <translation id="1368318639262510626">Динозавр ойыны. Пиксельдік динозавр шөл далада жүгіріп, кактустар мен птеродактильдерге тимеу үшін секіруі және бұғып қалуы керек. Дыбыстық сигнал шыққанда, бос орын пернесін басып, кедергілерден аттап өтіңіз.</translation>
-<translation id="1369735141991626842">Өрістерді жасанды интеллект көмегімен толтыру</translation>
 <translation id="1374468813861204354">ұсыныстар</translation>
 <translation id="1375198122581997741">Нұсқа туралы</translation>
 <translation id="1375293861397106342">Барлық әдеттегі опция: <ph name="LOW_PRICE" />–<ph name="HIGH_PRICE" /></translation>
@@ -539,7 +538,6 @@
 <translation id="1919526244108283799">400 x 600 мм</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Жоқ}=1{1 сайт}other{# сайт}}</translation>
 <translation id="192095259937375524">"Осы қойындыны бөлісу" түймесі, сілтемені бөлісу, QR кодын жасау, трансляциялау және т.б. арқылы осы қойындыны бөлісу үшін белсендіріңіз</translation>
-<translation id="1921479021518565778">Ұсыныстар жүктелді</translation>
 <translation id="1924727005275031552">Жаңа</translation>
 <translation id="1927439846988093361">Шаш күтімі</translation>
 <translation id="1935353813610900265">Тарихтан жасанды интеллектінің көмегімен іздеу жөнінде пікір жіберіңіз</translation>
@@ -974,6 +972,7 @@
 <translation id="2688186765492306706">500 x 760 мм</translation>
 <translation id="2688969097326701645">Иә, жалғастырамын</translation>
 <translation id="2690699652723742414">Соңғы 30 күн</translation>
+<translation id="2691385045260836588">Моделі</translation>
 <translation id="2691924980723297736">Қауіпсіздік туралы ескерту</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> көмекшісінен сұрау</translation>
 <translation id="2699273987028089219">Ішкі мәзір бар. Қосымша опцияларға өту үшін <ph name="SHORTCUT" /> пайдаланыңыз.</translation>
@@ -1528,6 +1527,7 @@
 <translation id="3664782872746246217">Кілтсөздер:</translation>
 <translation id="3665100783276035932">Көп сайт ойдағыдай жұмыс істеуі керек.</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Толық ақпарат<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">Нөмір</translation>
 <translation id="3670229581627177274">Bluetooth функциясын қосу</translation>
 <translation id="3671117652518853176">Өшірілген кезде, қауіпсіздік мақсатында сізден кейде растау сұралуы мүмкін.</translation>
 <translation id="3671540257457995106">Өлшемін өзгертуге рұқсат берілсін бе?</translation>
@@ -1542,7 +1542,6 @@
 <translation id="3681007416295224113">Сертификат ақпараты</translation>
 <translation id="3681421644246505351">Chrome браузерді қолдану тарихы бойынша қызықты тақырыптарды көрсетеді.</translation>
 <translation id="3682094733650754138">Мекенжайды толтыру опциясы таңдалды</translation>
-<translation id="3687493962714153124">Жасанды интеллект көмегімен автотолтыру функциясын реттеу</translation>
 <translation id="3687920599421452763">Микроавтобустар мен минивэндер</translation>
 <translation id="3693327506115126094">Сіз екеніңізді растау әдісін таңдаңыз</translation>
 <translation id="3698353241727597930">Әкімші <ph name="FILES" /> кәсіпорын басқаратын <ph name="CLOUD_STORAGE" /> жадында сақталатындай етіп конфигурациялады. Бұл файлдарды жойсаңыз, олар бақылануы, талдануы және сақталуы мүмкін.</translation>
@@ -1695,6 +1694,7 @@
 <translation id="3950820424414687140">Кіру</translation>
 <translation id="3953505489397572035">Бұл – әдеттегі баға.</translation>
 <translation id="3958057596965527988">4 x 4 дюйм</translation>
+<translation id="3959969108528118741">Иесі</translation>
 <translation id="3961148744525529027">Төлем өңдегіш парағы жартылай ашық.</translation>
 <translation id="3962859241508114581">Алдыңғы аудиотрек</translation>
 <translation id="3963721102035795474">Оқу құралы режимі</translation>
@@ -1920,7 +1920,6 @@
 <translation id="4312866146174492540">Блоктау (әдепкі)</translation>
 <translation id="4314815835985389558">Синхрондауды басқару</translation>
 <translation id="4316057107946726368">Ені бойынша туралау хабарын <ph name="MAX_CHAR_COUNT" /> таңбадан асырмай енгізіңіз. <ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /> таңба енгізілді.</translation>
-<translation id="431740489189220419">Ұсыныстар жүктеліп жатыр</translation>
 <translation id="4318213823155573975">Бас киім</translation>
 <translation id="4318312030194671742">Paint Preview шығармашылық қызметі</translation>
 <translation id="4318566738941496689">Құрылғыңыздың атауы және желі мекенжайыңыз</translation>
@@ -2327,6 +2326,7 @@
 <translation id="5087286274860437796">Сервердің сертификаты әзірше жарамайды.</translation>
 <translation id="5087580092889165836">Несие картасын қосу</translation>
 <translation id="5088142053160410913">Операторға жіберілетін хабарлама</translation>
+<translation id="5089810972385038852">Штат</translation>
 <translation id="5090647584136241764">Ұқсас өнімдері бар қойындыларды қосып, маңызды мәліметтерді салыстырыңыз.</translation>
 <translation id="5093232627742069661">Z тәрізді бүктеу</translation>
 <translation id="5094747076828555589">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификатына Chromium сенім артпайды. Бұған қате конфигурация немесе қаскүнемнің байланысты тоқтатуы себеп болуы мүмкін.</translation>
@@ -2465,6 +2465,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Әдепкі іздеу жүйесі интернеттен іздеуге мүмкіндік береді және Chromium функцияларының (мысалы, мекенжай жолағынан және веб-беттердегі суреттерден іздеу) жұмысын қамтамасыз етеді.<ph name="END_BOLD" /> Іздеу жүйесі қолдау көрсетпесе, функция қолжетімді болмауы мүмкін.</translation>
 <translation id="5323043727018853753">Ендірілген контент рұқсат етілген</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES" /></translation>
+<translation id="5327248766486351172">Аты</translation>
 <translation id="5329858041417644019">Браузеріңіз басқарылмайды</translation>
 <translation id="5331585574693522196">Әдепкі ретінде орнату</translation>
 <translation id="5332219387342487447">Жеткізу әдісі</translation>
@@ -2677,7 +2678,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates мәні сәйкес емес және DnsOverHttpsMode саясаты <ph name="SECURE_DNS_MODE_AUTOMATIC" /> немесе <ph name="SECURE_DNS_MODE_SECURE" /> мәніне орнатылмайынша, ол пайдаланылмайды.</translation>
 <translation id="5691848789297492617">Толығымен ашылған картаны сақтау.</translation>
 <translation id="5695542892312572833">Сатып алуды растау және аяқтау үшін Windows Hello пайдаланылсын ба?</translation>
-<translation id="5697827549745555938">Автотолтыру функциясының осы үлгіні толтыруға көмектесе алатын-алмайтынын білу үшін сіз сақтаған ақпарат пен осы бет Google-ға жіберіледі. Бұл функцияны жақсарту үшін деректерді тексерушілер қарауы мүмкін.</translation>
 <translation id="5699628521141772782">Сүт өнімдері және жұмыртқа</translation>
 <translation id="5700761515355162635">Үшінші тарап cookie файлдары рұқсат етілген</translation>
 <translation id="5701381305118179107">Ортаға</translation>
@@ -3106,6 +3106,7 @@
 <translation id="6440503408713884761">Еленбейді</translation>
 <translation id="6443406338865242315">қай кеңейтімдер мен плагиндерді орнатқаныңызды;</translation>
 <translation id="6444329331928531170">Зейнет</translation>
+<translation id="6445051938772793705">Ел</translation>
 <translation id="6446608382365791566">Қосымша ақпарат енгізу</translation>
 <translation id="6447842834002726250">Cookie файлдары</translation>
 <translation id="6448371595882710519">Деректерді басқару туралы толық ақпарат</translation>
@@ -3586,7 +3587,6 @@
 <translation id="7316521168101843192">Файл Microsoft OneDrive қызметіне сақталып жатыр.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Байланыс анықтамасы</translation>
-<translation id="7321111802407017850">Автоматты түрде толтыру үшін ақпаратыңызды сақтаңыз</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" бөлімін жасыру</translation>
 <translation id="733354035281974745">Құрылғының жергілікті аккаунтын қайта анықтау</translation>
 <translation id="7334320624316649418">&amp;Қайта ретке келтіруді қайталау</translation>

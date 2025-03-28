@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/svg/svg_path_query.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/core/svg/svg_point_tear_off.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -65,6 +66,10 @@ const SVGPathByteStream& SVGPathElement::PathByteStream() const {
 
 Path SVGPathElement::AsPath() const {
   return GetStylePath()->GetPath();
+}
+
+PathBuilder SVGPathElement::AsMutablePath() const {
+  return PathBuilder(AsPath());
 }
 
 float SVGPathElement::getTotalLength(ExceptionState& exception_state) {

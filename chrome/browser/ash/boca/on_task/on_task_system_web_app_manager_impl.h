@@ -35,6 +35,8 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
   SessionID GetActiveSystemWebAppWindowID() override;
   void SetPinStateForSystemWebAppWindow(bool pinned,
                                         SessionID window_id) override;
+  void SetPauseStateForSystemWebAppWindow(bool paused,
+                                          SessionID window_id) override;
   void SetWindowTrackerForSystemWebAppWindow(
       SessionID window_id,
       const std::vector<BocaWindowObserver*> observers) override;
@@ -58,6 +60,8 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
   LockedSessionWindowTracker* GetWindowTracker();
 
   void DisableCommandsForDevTools(SessionID window_id);
+
+  void EnableOrDisableCommandsForTabSwitch(SessionID window_id, bool enabled);
 
   raw_ptr<Profile> profile_;
 

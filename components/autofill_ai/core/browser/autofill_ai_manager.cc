@@ -4,6 +4,7 @@
 
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <ranges>
@@ -284,12 +285,10 @@ AutofillAiManager::AutofillAiManager(AutofillAiClient* client,
 
 AutofillAiManager::~AutofillAiManager() = default;
 
-void AutofillAiManager::OnSuggestionsShown(
-    const DenseSet<SuggestionType>& shown_suggestion_types,
-    const autofill::FormGlobalId& form_id) {
-  if (shown_suggestion_types.contains(SuggestionType::kFillAutofillAi)) {
-    logger_.OnFillingSuggestionsShown(form_id);
-  }
+void AutofillAiManager::OnSuggestionsShown(const autofill::FormStructure& form,
+                                           const autofill::AutofillField& field,
+                                           ukm::SourceId ukm_source_id) {
+  logger_.OnSuggestionsShown(form, field, ukm_source_id);
 }
 
 void AutofillAiManager::OnFormSeen(const FormStructure& form) {
@@ -312,13 +311,31 @@ void AutofillAiManager::OnFormSeen(const FormStructure& form) {
   logger_.OnFormHasDataToFill(form.global_id());
 }
 
-void AutofillAiManager::OnDidFillSuggestion(autofill::FormGlobalId form_id) {
-  logger_.OnDidFillSuggestion(form_id);
+void AutofillAiManager::OnDidFillSuggestion(
+    const autofill::FormStructure& form,
+    const autofill::AutofillField& field,
+    ukm::SourceId ukm_source_id) {
+  logger_.OnDidFillSuggestion(form, field, ukm_source_id);
 }
 
 void AutofillAiManager::OnEditedAutofilledField(
-    autofill::FormGlobalId form_id) {
-  logger_.OnDidCorrectFillingSuggestion(form_id);
+    const autofill::FormStructure& form,
+    const autofill::AutofillField& field,
+    ukm::SourceId ukm_source_id) {
+  logger_.OnEditedAutofilledField(form, field, ukm_source_id);
+}
+
+bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,
+                                        ukm::SourceId ukm_source_id) {
+  if (std::ranges::any_of(
+          form.fields(), [](const std::unique_ptr<AutofillField>& field) {
+            return field->GetAutofillAiServerTypePredictions() != std::nullopt;
+          })) {
+    logger_.RecordFormMetrics(
+        form, ukm_source_id, /*submission_state=*/true,
+        autofill::GetAutofillAiOptInStatus(client_->GetAutofillClient()));
+  }
+  return MaybeImportForm(form);
 }
 
 bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {

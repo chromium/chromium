@@ -107,6 +107,7 @@ namespace {
 class CSSAnimationProxy : public AnimationProxy {
  public:
   CSSAnimationProxy(AnimationTimeline* timeline,
+                    AnimationTrigger* trigger,
                     CSSAnimation* animation,
                     bool is_paused,
                     const std::optional<TimelineOffset>& range_start,
@@ -130,8 +131,11 @@ class CSSAnimationProxy : public AnimationProxy {
   }
 
  private:
+  static bool IdleTriggerAllowsVisualEffect(AnimationTrigger* trigger,
+                                            const Timing& timing);
   std::optional<AnimationTimeDelta> CalculateInheritedTime(
       AnimationTimeline* timeline,
+      AnimationTrigger* trigger,
       CSSAnimation* animation,
       const std::optional<TimelineOffset>& range_start,
       const std::optional<TimelineOffset>& range_end,
@@ -147,6 +151,7 @@ class CSSAnimationProxy : public AnimationProxy {
 
 CSSAnimationProxy::CSSAnimationProxy(
     AnimationTimeline* timeline,
+    AnimationTrigger* trigger,
     CSSAnimation* animation,
     bool is_paused,
     const std::optional<TimelineOffset>& range_start,
@@ -172,8 +177,9 @@ CSSAnimationProxy::CSSAnimationProxy(
       timeline ? timeline->CalculateIntrinsicIterationDuration(
                      adjusted_range_start, adjusted_range_end, timing)
                : AnimationTimeDelta();
-  inherited_time_ = CalculateInheritedTime(
-      timeline, animation, adjusted_range_start, adjusted_range_end, timing);
+  inherited_time_ =
+      CalculateInheritedTime(timeline, trigger, animation, adjusted_range_start,
+                             adjusted_range_end, timing);
 
   timeline_duration_ = timeline ? timeline->GetDuration() : std::nullopt;
   if (timeline && timeline->IsProgressBased() && timeline->CurrentTime()) {
@@ -187,6 +193,7 @@ CSSAnimationProxy::CSSAnimationProxy(
 
 std::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
     AnimationTimeline* timeline,
+    AnimationTrigger* trigger,
     CSSAnimation* animation,
     const std::optional<TimelineOffset>& range_start,
     const std::optional<TimelineOffset>& range_end,
@@ -213,6 +220,18 @@ std::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
           animation->TimeAsAnimationProgress(inherited_time.value());
     }
     previous_timeline = animation->TimelineInternal();
+  }
+
+  if (trigger) {
+    // If a trigger is present, we might need to prevent its animation's
+    // InertEffect from having visual effects. Ensure this by making
+    // sure the animation's InertEffect's local time is unresolved.
+    if (!animation ||
+        animation->GetTriggerState() == AnimationTriggerState::kIdle) {
+      if (!IdleTriggerAllowsVisualEffect(trigger, timing)) {
+        return std::nullopt;
+      }
+    }
   }
 
   bool range_changed =
@@ -301,6 +320,34 @@ std::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
   }
 
   return inherited_time;
+}
+
+// static
+bool CSSAnimationProxy::IdleTriggerAllowsVisualEffect(AnimationTrigger* trigger,
+                                                      const Timing& timing) {
+  AnimationTimeline* timeline = trigger->GetTimelineInternal();
+  if (!timeline || !timeline->IsProgressBased()) {
+    return true;
+  }
+
+  // If an animation will be acted on by a trigger, depending on its
+  // fill-mode, we might need to disable its visual effect before its trigger
+  // acts on it.
+  switch (timing.fill_mode) {
+    case Timing::FillMode::BOTH:
+      return true;
+    case Timing::FillMode::BACKWARDS:
+      return timing.direction == Timing::PlaybackDirection::NORMAL ||
+             timing.direction == Timing::PlaybackDirection::ALTERNATE_NORMAL;
+    case Timing::FillMode::FORWARDS:
+      return timing.direction == Timing::PlaybackDirection::REVERSE ||
+             timing.direction == Timing::PlaybackDirection::ALTERNATE_REVERSE;
+    case Timing::FillMode::NONE:
+    case Timing::FillMode::AUTO:
+      return false;
+  }
+
+  NOTREACHED();
 }
 
 class CSSTransitionProxy : public AnimationProxy {
@@ -1885,7 +1932,7 @@ void CSSAnimations::CalculateAnimationUpdate(
             trigger != existing_trigger) {
           DCHECK(!is_animation_style_change);
 
-          CSSAnimationProxy animation_proxy(timeline, animation,
+          CSSAnimationProxy animation_proxy(timeline, trigger, animation,
                                             !will_be_playing, range_start,
                                             range_end, timing);
           update.UpdateAnimation(
@@ -1911,9 +1958,9 @@ void CSSAnimations::CalculateAnimationUpdate(
                 ? ComputeTrigger(&animating_element, animation_data, i, update,
                                  /* existing_trigger */ nullptr)
                 : nullptr;
-        CSSAnimationProxy animation_proxy(timeline, /* animation */ nullptr,
-                                          is_paused, range_start, range_end,
-                                          timing);
+        CSSAnimationProxy animation_proxy(timeline, trigger,
+                                          /* animation */ nullptr, is_paused,
+                                          range_start, range_end, timing);
         update.StartAnimation(
             name, name_index, i,
             *MakeGarbageCollected<InertEffect>(

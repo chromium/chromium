@@ -11,6 +11,8 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -756,10 +758,10 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
 
       // Immediately switch tabs and discard the navigating tab.
       SelectTab(kTabStripElementId, 1), Do(base::BindLambdaForTesting([&]() {
-        // Note that because the active tab cannot be discarded, this line is
-        // guaranteed to discard the first tab.
-        g_browser_process->GetTabManager()->DiscardTab(
-            mojom::LifecycleUnitDiscardReason::EXTERNAL);
+        auto* lifecycle_unit = resource_coordinator::TabLifecycleUnitSource::
+            GetTabLifecycleUnitExternal(
+                browser()->tab_strip_model()->GetWebContentsAt(0));
+        lifecycle_unit->DiscardTab(mojom::LifecycleUnitDiscardReason::EXTERNAL);
       })));
 
   // There should not be a crash.

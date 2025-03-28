@@ -2,97 +2,12 @@ This test documents all interface attributes and methods on the global window ob
 [INTERFACES]
 interface AI
     attribute @@toStringTag
-    getter languageDetector
-    getter languageModel
     method constructor
 interface AICreateMonitor : EventTarget
     attribute @@toStringTag
     getter ondownloadprogress
     method constructor
     setter ondownloadprogress
-interface AILanguageDetectorFactory
-    attribute @@toStringTag
-    method availability
-    method constructor
-    method create
-interface AILanguageModel : EventTarget
-    attribute @@toStringTag
-    getter inputQuota
-    getter inputUsage
-    getter onquotaoverflow
-    getter temperature
-    getter topK
-    method clone
-    method constructor
-    method destroy
-    method measureInputUsage
-    method prompt
-    method promptStreaming
-    setter onquotaoverflow
-interface AILanguageModelFactory
-    attribute @@toStringTag
-    method availability
-    method constructor
-    method create
-    method params
-interface AILanguageModelParams
-    attribute @@toStringTag
-    getter defaultTemperature
-    getter defaultTopK
-    getter maxTemperature
-    getter maxTopK
-    method constructor
-interface AIRewriter
-    static method availability
-    static method create
-    attribute @@toStringTag
-    getter expectedContextLanguages
-    getter expectedInputLanguages
-    getter format
-    getter inputQuota
-    getter length
-    getter outputLanguage
-    getter sharedContext
-    getter tone
-    method constructor
-    method destroy
-    method measureInputUsage
-    method rewrite
-    method rewriteStreaming
-interface AISummarizer
-    static method availability
-    static method create
-    attribute @@toStringTag
-    getter expectedContextLanguages
-    getter expectedInputLanguages
-    getter format
-    getter inputQuota
-    getter length
-    getter outputLanguage
-    getter sharedContext
-    getter type
-    method constructor
-    method destroy
-    method measureInputUsage
-    method summarize
-    method summarizeStreaming
-interface AIWriter
-    static method availability
-    static method create
-    attribute @@toStringTag
-    getter expectedContextLanguages
-    getter expectedInputLanguages
-    getter format
-    getter inputQuota
-    getter length
-    getter outputLanguage
-    getter sharedContext
-    getter tone
-    method constructor
-    method destroy
-    method measureInputUsage
-    method write
-    method writeStreaming
 interface AbortController
     attribute @@toStringTag
     getter signal
@@ -5564,12 +5479,44 @@ interface KeyframeEffect : AnimationEffect
     setter pseudoElement
     setter target
 interface LanguageDetector
+    static method availability
+    static method create
     attribute @@toStringTag
     getter inputQuota
     method constructor
     method destroy
     method detect
     method measureInputUsage
+interface LanguageModel : EventTarget
+    static method availability
+    static method create
+    static method params
+    attribute @@toStringTag
+    getter inputQuota
+    getter inputUsage
+    getter onquotaoverflow
+    getter temperature
+    getter topK
+    method clone
+    method constructor
+    method destroy
+    method measureInputUsage
+    method prompt
+    method promptStreaming
+    setter onquotaoverflow
+interface LanguageModelFactory
+    attribute @@toStringTag
+    method availability
+    method constructor
+    method create
+    method params
+interface LanguageModelParams
+    attribute @@toStringTag
+    getter defaultTemperature
+    getter defaultTopK
+    getter maxTemperature
+    getter maxTopK
+    method constructor
 interface LargestContentfulPaint : PerformanceEntry
     attribute @@toStringTag
     getter element
@@ -6373,10 +6320,8 @@ interface NavigateEvent : Event
     getter signal
     getter sourceElement
     getter userInitiated
-    method commit
     method constructor
     method intercept
-    method redirect
     method scroll
 interface Navigation : EventTarget
     attribute @@toStringTag
@@ -6432,6 +6377,10 @@ interface NavigationHistoryEntry : EventTarget
     method constructor
     method getState
     setter ondispose
+interface NavigationPrecommitController
+    attribute @@toStringTag
+    method constructor
+    method redirect
 interface NavigationPreloadManager
     attribute @@toStringTag
     method constructor
@@ -7726,6 +7675,23 @@ interface Response
     method formData
     method json
     method text
+interface Rewriter
+    static method availability
+    static method create
+    attribute @@toStringTag
+    getter expectedContextLanguages
+    getter expectedInputLanguages
+    getter format
+    getter inputQuota
+    getter length
+    getter outputLanguage
+    getter sharedContext
+    getter tone
+    method constructor
+    method destroy
+    method measureInputUsage
+    method rewrite
+    method rewriteStreaming
 interface SVGAElement : SVGGraphicsElement
     attribute @@toStringTag
     getter href
@@ -9324,6 +9290,23 @@ interface SubtleCrypto
     method unwrapKey
     method verify
     method wrapKey
+interface Summarizer
+    static method availability
+    static method create
+    attribute @@toStringTag
+    getter expectedContextLanguages
+    getter expectedInputLanguages
+    getter format
+    getter inputQuota
+    getter length
+    getter outputLanguage
+    getter sharedContext
+    getter type
+    method constructor
+    method destroy
+    method measureInputUsage
+    method summarize
+    method summarizeStreaming
 interface SuppressedError : Error
     attribute message
     attribute name
@@ -11449,6 +11432,23 @@ interface WritableStreamDefaultWriter
     method constructor
     method releaseLock
     method write
+interface Writer
+    static method availability
+    static method create
+    attribute @@toStringTag
+    getter expectedContextLanguages
+    getter expectedInputLanguages
+    getter format
+    getter inputQuota
+    getter length
+    getter outputLanguage
+    getter sharedContext
+    getter tone
+    method constructor
+    method destroy
+    method measureInputUsage
+    method write
+    method writeStreaming
 interface XMLDocument : Document
     attribute @@toStringTag
     method constructor

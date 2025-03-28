@@ -66,7 +66,8 @@ void IOSPasswordManagerDriver::SetPasswordFillData(
                      forSecurityOrigin:security_origin_];
 }
 
-void IOSPasswordManagerDriver::InformNoSavedCredentials() {
+void IOSPasswordManagerDriver::InformNoSavedCredentials(
+    bool should_show_popup_without_passwords) {
   // Allow using the proactive password generation bottom sheet from now on
   // since it is now known that there are no credentials saved for this page.
   // This signal won't work if the passwords are removed after the frame is

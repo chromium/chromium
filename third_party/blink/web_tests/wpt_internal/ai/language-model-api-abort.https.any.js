@@ -2,14 +2,14 @@
 // META: script=resources/workaround-for-382640509.js
 promise_test(async t => {
   await testAbortPromise(t, signal => {
-    return ai.languageModel.create({
+    return LanguageModel.create({
       signal: signal
     });
   });
 }, "Aborting AILanguageModelFactory.create().");
 
 promise_test(async t => {
-  const session = await ai.languageModel.create();
+  const session = await LanguageModel.create();
   await testAbortPromise(t, signal => {
     return session.clone({
       signal: signal
@@ -18,14 +18,14 @@ promise_test(async t => {
 }, "Aborting AILanguageModel.clone().");
 
 promise_test(async t => {
-  const session = await ai.languageModel.create();
+  const session = await LanguageModel.create();
   await testAbortPromise(t, signal => {
     return session.prompt(kTestPrompt, { signal: signal });
   });
 }, "Aborting AILanguageModel.prompt().");
 
 promise_test(async t => {
-  const session = await ai.languageModel.create();
+  const session = await LanguageModel.create();
   await testAbortReadableStream(t, signal => {
     return session.promptStreaming(
       kTestPrompt, { signal: signal }

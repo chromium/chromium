@@ -223,7 +223,6 @@
 <translation id="1363028406613469049">ඛණ්ඩය</translation>
 <translation id="1364822246244961190">මෙම ප්‍රතිපත්තිය නොසලකා හරිනු ලැබේ.</translation>
 <translation id="1368318639262510626">Dino ක්‍රීඩාව. පාළු භූ දර්ශනයක් හරහා දුවන පික්සිලේටඩ් ඩයිනෝසෝරයක් පතොක් සහ ටෙරෝඩැක්ටයිල් තල්ලු කරයි. ඔබට ශ්‍රව්‍ය ශබ්දයක් ඇසෙන විට, බාධක උඩින් පැනීමට ඉඩ යතුර ඔබන්න.</translation>
-<translation id="1369735141991626842">AI සමග ක්ෂේත්‍ර පුරවන්න</translation>
 <translation id="1374468813861204354">යෝජනා</translation>
 <translation id="1375198122581997741">අනුවාදය ගැන</translation>
 <translation id="1375293861397106342">සියලු විකල්ප නියමානුකූලව <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -539,7 +538,6 @@
 <translation id="1919526244108283799">මිමි 400 x 600</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{කිසිවක් නැත}=1{1 අඩවියක්}one{අඩවි #ක්}other{අඩවි #ක්}}</translation>
 <translation id="192095259937375524">මෙම පටිත්ත බෙදා ගන්න බොත්තම, සබැඳිය බෙදා ගැනීමෙන්, QR කේතයක් තැනීමෙන්, විකාශය කිරීමෙන්, සහ තවත් දේ මගින් මෙම පටිත්ත බෙදා ගැනීමට සක්‍රිය කරන්න</translation>
-<translation id="1921479021518565778">යෝජනා පූරණය කර ඇත</translation>
 <translation id="1924727005275031552">නව</translation>
 <translation id="1927439846988093361">හිසකෙස් රැකවරණය</translation>
 <translation id="1935353813610900265">AI බලගන්වන ඉතිහාස සෙවීම සඳහා ප්‍රතිපෝෂණය යවන්න</translation>
@@ -900,6 +898,7 @@
 <translation id="2539524384386349900">හඳුනාගන්න</translation>
 <translation id="2541219929084442027">ඔබ ඔබගේ සියලු අප්‍රකට ටැබ වැසූ පසු අප්‍රකට ටැබවල ඔබ බැලූ පිටු ඔබගේ බ්‍රවුසරයෙහි ඉතිහාසය, කුකී ගබඩාව හෝ සෙවීම් ඉතිහාසය අවට නොරැඳෙනු ඇත. ඔබ බාගත් ඕනෑම ගොනුවක් හෝ ඔබ සාදන පිටුසන් තබා ගනු ඇත.</translation>
 <translation id="2542106216580219892">රළ ක්‍රීඩා</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – පූර්ණ තිරයෙන් පිටවීමට, |<ph name="ACCELERATOR" />| ඔබා සිටින්න</translation>
 <translation id="2544546346215446551">ඔබගේ පරිපාලක විසින් ඔබගේ උපාංගය නැවත ආරම්භ කරන ලදි</translation>
 <translation id="2544644783021658368">තනි ලේඛනය</translation>
 <translation id="254524874071906077">Chrome පෙරනිමි බ්‍රව්සරය ලෙස සකසන්න</translation>
@@ -973,6 +972,7 @@
 <translation id="2688186765492306706">මිමි 500 x 760</translation>
 <translation id="2688969097326701645">ඔව්, දිගටම කරගෙන යන්න</translation>
 <translation id="2690699652723742414">පසුගිය දින 30</translation>
+<translation id="2691385045260836588">මාදිලිය</translation>
 <translation id="2691924980723297736">ආරක්‍ෂක අවවාදය</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> විමසන්න</translation>
 <translation id="2699273987028089219">උප මෙනුව තිබේ, අතිරේක විකල්ප වෙත සංචාලනය කිරීමට <ph name="SHORTCUT" /> භාවිතා කරන්න.</translation>
@@ -1528,6 +1528,7 @@
 <translation id="3664782872746246217">මූලපද:</translation>
 <translation id="3665100783276035932">බොහෝ අඩවි අපේක්ෂා කළ පරිදි ක්‍රියා කළ යුතු ය</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />තව දැන ගන්න<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">අංකය</translation>
 <translation id="3670229581627177274">බ්ලූටූත් ක්‍රියාත්මක කරන්න</translation>
 <translation id="3671117652518853176">ක්‍රියාවිරහිත කළ විට, ආරක්ෂක අරමුණු සඳහා සත්‍යාපනය කිරීමට ඔබෙන් ඉඳහිට අසනු ඇත</translation>
 <translation id="3671540257457995106">ප්‍රතිප්‍රමාණ කිරීමට ඉඩ දෙන්නද?</translation>
@@ -1542,7 +1543,6 @@
 <translation id="3681007416295224113">සහතික තොරතුරු</translation>
 <translation id="3681421644246505351">Chrome ඔබේ මෑත බ්‍රවුස් කිරීමේ ඉතිහාසය මත පදනම්ව උනන්දුවක් දක්වන මාතෘකා සටහන් කරයි.</translation>
 <translation id="3682094733650754138">ලිපින පිරවුම් විකල්පය තෝරා ඇත</translation>
-<translation id="3687493962714153124">AI සමග ස්වයං පිරවීම කළමනාකරණය කරන්න</translation>
 <translation id="3687920599421452763">වෑන් සහ කුඩාවෑන්</translation>
 <translation id="3693327506115126094">ඔබ ඒ ඔබ බව සත්‍යාපනය කරන ආකාරය තෝරා ගන්න</translation>
 <translation id="3698353241727597930">ඔබේ පරිපාලකයා ඔබේ ව්‍යවසාය කළමනා කරන <ph name="CLOUD_STORAGE" /> ආචයනය තුළ <ph name="FILES" /> සුරැකීමට වින්‍යාස කර ඇත. මෙම ගොනු නිරීක්‍ෂණ කිරීම, විගණන කිරීම, සහ ඔබ මේවා මකන විට රඳවා ගැනීම සිදු වේවි.</translation>
@@ -1695,6 +1695,7 @@
 <translation id="3950820424414687140">පුරන්න</translation>
 <translation id="3953505489397572035">මෙම මිල නියමානුකූලයි</translation>
 <translation id="3958057596965527988">අඟ 4 x 4</translation>
+<translation id="3959969108528118741">හිමිකරු</translation>
 <translation id="3961148744525529027">ගෙවීම් හසුරුවන පත්‍රය අඩක් විවෘතයි</translation>
 <translation id="3962859241508114581">පෙර ඛණ්ඩය</translation>
 <translation id="3963721102035795474">කියවීම් ප්‍රකාරය</translation>
@@ -1920,7 +1921,6 @@
 <translation id="4312866146174492540">අවහිර කරන්න (පෙරනිමි)</translation>
 <translation id="4314815835985389558">සමමුහුර්තය කළමනාකරණය</translation>
 <translation id="4316057107946726368">අවම වශයෙන් අනුලකුණු <ph name="MAX_CHAR_COUNT" />ක් සහිත සාධාරණීකරණ පණිවිඩයක් ඇතුළු කරන්න. අනුලකුණු <ph name="MAX_CHAR_COUNT" />න් <ph name="ACTUAL_CHAR_COUNT" />ක් භාවිතා කර ඇත.</translation>
-<translation id="431740489189220419">යෝජනා පැටවෙමින්</translation>
 <translation id="4318213823155573975">හිස් පළඳනා</translation>
 <translation id="4318312030194671742">තීන්ත පෙරදසුන් වර්ණයෝජක සේවාව</translation>
 <translation id="4318566738941496689">ඔබේ උපාංගයේ නම සහ ජාල ලිපිනය</translation>
@@ -2327,6 +2327,7 @@
 <translation id="5087286274860437796">මෙම අවස්ථාවේ සේවාදායකයේ සහතිකය වලංගු නැත.</translation>
 <translation id="5087580092889165836">කාඩ්පත එක් කරන්න</translation>
 <translation id="5088142053160410913">මෙහෙකරු වෙත පණිවුඩය</translation>
+<translation id="5089810972385038852">ජනපදය</translation>
 <translation id="5090647584136241764">ඔබට වැදගත් වන විස්තර පහසුවෙන් සංසන්දනය කිරීමට සමාන නිෂ්පාදන සහිත පටිති එක් කරන්න</translation>
 <translation id="5093232627742069661">Z-නැමීම</translation>
 <translation id="5094747076828555589">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කිරීමට නොහැකි විය; එහි ආරක්ෂණ සහතිකය Chromium මගින් විශ්වාස නොකරයි. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.</translation>
@@ -2465,6 +2466,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />ඔබේ පෙරනිමි සෙවීම් යන්ත්‍රය ඔබට වෙබය සෙවීමට ඉඩ දෙන අතර<ph name="END_BOLD" /> ලිපින තීරුවෙන් සහ වෙබ් පිටුවල රූපවලින් සෙවීම වැනි Chromium විශේෂාංග බලගන්වයි. ඔබේ සෙවීම් යන්ත්‍රය එයට සහාය නොදක්වන්නේ නම් විශේෂාංගයක් නොතිබිය හැක.</translation>
 <translation id="5323043727018853753">කාවද්දන ලද අන්තර්ගතයට ඉඩ දී ඇත</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" />න් <ph name="MATCH_POSITION" /></translation>
+<translation id="5327248766486351172">නම</translation>
 <translation id="5329858041417644019">ඔබේ බ්‍රවුසරය කළමනා නොකෙරේ</translation>
 <translation id="5331585574693522196">පෙරනිමි ලෙස සකසන්න</translation>
 <translation id="5332219387342487447">නැව්ගත කිරීමේ ක්‍රමය</translation>
@@ -2677,7 +2679,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates අගය අදාළ නැත, DnsOverHttpsMode ප්‍රතිපත්තිය <ph name="SECURE_DNS_MODE_AUTOMATIC" /> හෝ <ph name="SECURE_DNS_MODE_SECURE" /> ලෙස සකසන්නේ නම් මිස එය භාවිත නොකෙරේ.</translation>
 <translation id="5691848789297492617">කාඩ්පත සම්පූර්ණ උසින් විවෘත කර සුරකින්න.</translation>
 <translation id="5695542892312572833">ඔබගේ මිලදී ගැනීම සත්‍යාපනය කිරීමට සහ සම්පූර්ණ කිරීමට Windows Hello භාවිත කරන්නද?</translation>
-<translation id="5697827549745555938">ඔබ සුරකින ලද තොරතුරු සහ මෙම පිටුව ස්වයං පිරවීමට මෙම පෝරමය පිරවීමට උදවු කළ හැකි දැයි බැලීමට Google වෙත යවනු ලැබේ. මෙම විශේෂාංගය වැඩි දියුණු කිරීම සඳහා දත්ත මානව සමාලෝචකයින් විසින් දැකිය හැක.</translation>
 <translation id="5699628521141772782">කිරි සහ බිත්තර</translation>
 <translation id="5700761515355162635">තුන්වන පාර්ශ්ව කුකීස් ඉඩ දී ඇත</translation>
 <translation id="5701381305118179107">මධ්‍ය</translation>
@@ -3106,6 +3107,7 @@
 <translation id="6440503408713884761">නොතැකූ</translation>
 <translation id="6443406338865242315">ඔබ ස්ථාපන කර ඇති දිගු සහ පේනු මෘදුකාංග</translation>
 <translation id="6444329331928531170">විශ්‍රාම ගැනීම සහ විශ්‍රාම වැටුප්</translation>
+<translation id="6445051938772793705">රට</translation>
 <translation id="6446608382365791566">තවත් තොරතුරු එක් කරන්න</translation>
 <translation id="6447842834002726250">කුකීස්</translation>
 <translation id="6448371595882710519">දත්ත පාලන පිළිබඳව තව දැන ගන්න</translation>
@@ -3586,7 +3588,6 @@
 <translation id="7316521168101843192">Microsoft OneDrive වෙත ගොනුව සුරැකීම</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">සම්බන්ධතා උපකාරය</translation>
-<translation id="7321111802407017850">ස්වයං පිරවීම සඳහා ඔබේ තතු සුරකින්න</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" කොටස සඟවන්න</translation>
 <translation id="733354035281974745">උපාංග අභ්‍යන්තර ගිණුම් ප්‍රතික්‍ෂේපය</translation>
 <translation id="7334320624316649418">යළි ඇනවුම් කිරීම &amp;යළි කරන්න</translation>
@@ -3931,6 +3932,7 @@
 <translation id="7887885240995164102">පින්තූරය-තුළ-පින්තූරයට ඇතුළු වන්න</translation>
 <translation id="7888575728750733395">මුද්‍රණ විදහීමේ යෙදීම</translation>
 <translation id="7890748547282909375">තිර රුවක් සුරැකීමට Microsoft OneDrive වෙත පුරන්න</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – ඔබේ කර්සරය පෙන්වීමට, |<ph name="ACCELERATOR" />| | ඔබන්න</translation>
 <translation id="7892865709991296481">ගෙවීම් සැකසීම්</translation>
 <translation id="7894280532028510793">අක්ෂර වින්‍යාසය නිවැරදි නම්, <ph name="BEGIN_LINK" />ජාල දෝෂ නිර්ණ ධාවනය කිරීම උත්සාහ කරන්න<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">ලියුම් කවරය අඟල් 7 x 9</translation>
@@ -4622,6 +4624,7 @@
 <translation id="9155646082713385498">සඟරා</translation>
 <translation id="9157595877708044936">පිහිටුවමින්...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> තුළ සංවේදී අන්තර්ගතය අඩංගු වේවි}one{ගොනු <ph name="FILE_COUNT" />ක් තුළ සංවේදී අන්තර්ගතය අඩංගු වේවි}other{ගොනු <ph name="FILE_COUNT" />ක් තුළ සංවේදී අන්තර්ගතය අඩංගු වේවි}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – පූර්ණ තිරයෙන් පිටවීමට, |<ph name="ACCELERATOR" />| ඔබන්න</translation>
 <translation id="9165305804774426672">ඔබ පිවිසෙන අඩවිවලට ද අඩවියේ ඔබේ ක්‍රියාකාරකම් මත පදනම්ව ඔබ කැමති දේ තීරණය කළ හැක. උදාහරණයක් ලෙස, ඔබ දිගු දුර ධාවන සපත්තු අලෙවි කරන අඩවියකට පිවිසෙන්නේ නම්, ඔබ මැරතන් ධාවනය කිරීමට කැමති බව අඩවිය තීරණය කළ හැක.</translation>
 <translation id="9166851138617700776">අඩවි-යෝජිත දැන්වීම් සහ දැන්වීම් මැනීම පිළිබඳ වැඩිදුර</translation>
 <translation id="9167054383925257837">බ්‍රව්සරය සහ උපාංග OS තොරතුරු (බ්‍රවුසරය සහ OS අනුවාද වැනි)</translation>

@@ -7577,6 +7577,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_ERROR_TEXT" desc="The error text displayed in the overlay contextual searchbox ghost loader. It is meant to inform the user that they can still ask questions about the page even though suggestions were failed to be generated.">
         No suggested questions available
       </message>
+      <message name="IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_LOADING_HINT_PRIMARY_ALT" desc="The hint text displayed in the overlay contextual searchbox ghost loader. It is meant to inform the user that suggestions are still being generated.">
+        Generating suggestions…
+      </message>
       <message name="IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_NO_SUGGEST_TEXT" desc="The hint text displayed in the overlay contextual searchbox ghost loader. It is meant to inform the user that they can ask questions about the page.">
         Try asking things like “summarize this page” or your own question.
       </message>
@@ -10491,6 +10494,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_TUTORIAL_LENS_OVERLAY_CLICK_LENS" desc="The description of the 'select the Google Lens button' step in Lens overlay tutorial">
         Select the Google Lens button
+      </message>
+      <message name="IDS_TUTORIAL_LENS_OVERLAY_HOMEWORK_INTRO_HEADER" desc="Header for the intro of the Lens overlay homework tutorial">
+        Get homework help with Google Lens
+      </message>
+      <message name="IDS_TUTORIAL_LENS_OVERLAY_HOMEWORK_INTRO_BODY" desc="Description for the intro of the Lens overlay homework tutorial">
+        See a step-by-step explanation of any problem
+      </message>
+      <message name="IDS_TUTORIAL_LENS_OVERLAY_HOMEWORK_CLICK_LENS" desc="The description of the 'select Search with Google Lens' step in Lens overlay tutorial">
+        Select the Google Lens button, then click and drag over a problem
       </message>
       <message name="IDS_TUTORIAL_LENS_OVERLAY_SELECT" desc="The description of the 'click and drag to search' step in Lens overlay tutorial">
         Click and drag over images or highlight text to search
@@ -18401,11 +18413,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </if>
     <!-- Performance Intervention Strings-->
     <if expr="not is_android">
-        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V1" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
-        Performance issue alert
-        </message>
         <message name="IDS_PERFORMANCE_INTERVENTION_CLOSE_BUTTON_ACCNAME" desc="The accessibility text for the performance intervention close button that removes an item from the list of tabs to deactivate when clicked.">
-        Remove <ph name="SITE_NAME">$1<ex>Google</ex></ph> from list of tabs to make inactive
+          Remove <ph name="SITE_NAME">$1<ex>Google</ex></ph> from list of tabs to make inactive
         </message>
         <message name="IDS_PERFORMANCE_INTERVENTION_SINGLE_SUGGESTED_ROW_ACCNAME" desc="The accessibility text for a suggested tab in the performance intervention dialog when the user have removed all but one suggested tab.">
           You can make this tab inactive or refresh to see the full list again
@@ -18416,13 +18425,59 @@ Please help our engineers fix this problem. Tell us what happened right before y
           other {List box with {NUM_TABS} items}}
         </message>
       <if expr="use_titlecase">
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V1" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
+          Performance Issue Alert
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V1" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
+          {NUM_TABS, plural,
+          =1 {Fix the Tab Slowing Your Browser}
+          other {Fix the Tabs Slowing Your Browser}}
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V2" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
+          {NUM_TABS, plural,
+          =1 {Pause the Tab Slowing Your Browser}
+          other {Pause the Tabs Slowing Your Browser}}
+        </message>
         <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V1" desc="In Title Case: Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
-        Fix Now
+          Fix Now
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_UPDATED_V1" desc="In Title Case: Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
+          {NUM_TABS, plural,
+          =1 {Fix This Tab}
+          other {Fix These Tabs}}
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_UPDATED_V2" desc="In Title Case: Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
+          {NUM_TABS, plural,
+          =1 {Pause This Tab}
+          other {Pause These Tabs}}
         </message>
       </if>
       <if expr="not use_titlecase">
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V1" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
+          Performance issue alert
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V1" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
+          {NUM_TABS, plural,
+          =1 {Fix the tab slowing your browser}
+          other {Fix the tabs slowing your browser}}
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V2" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
+          {NUM_TABS, plural,
+          =1 {Pause the tab slowing your browser}
+          other {Pause the tabs slowing your browser}}
+        </message>
         <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V1" desc="Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
-        Fix now
+          Fix now
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_UPDATED_V1" desc="Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
+          {NUM_TABS, plural,
+          =1 {Fix this tab}
+          other {Fix these tabs}}
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_UPDATED_V2" desc="Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
+          {NUM_TABS, plural,
+          =1 {Pause this tab}
+          other {Pause these tabs}}
         </message>
       </if>
       <message name="IDS_PERFORMANCE_INTERVENTION_DISMISS_BUTTON" desc="Label on a dialog button that dismisses the dialog when clicked.">

@@ -113,6 +113,7 @@ enum AppMenuAction {
   MENU_ACTION_SAFETY_HUB_MANAGE_EXTENSIONS = 91,
   MENU_ACTION_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL = 92,
   MENU_ACTION_DECLUTTER_TABS = 93,
+  MENU_ACTION_OPEN_GLIC = 94,
   LIMIT_MENU_ACTION
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ui/enums.xml:WrenchMenuAction)

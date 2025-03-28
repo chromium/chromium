@@ -390,8 +390,8 @@ void SyncServiceAndroidBridge::GetAllNodes(
       base::BindOnce(&NativeGetAllNodesCallback, env, java_callback));
 }
 
-jint SyncServiceAndroidBridge::GetAuthError(JNIEnv* env) {
-  return native_sync_service_->GetAuthError().state();
+GoogleServiceAuthError SyncServiceAndroidBridge::GetAuthError(JNIEnv* env) {
+  return native_sync_service_->GetAuthError();
 }
 
 jboolean SyncServiceAndroidBridge::HasUnrecoverableError(JNIEnv* env) {

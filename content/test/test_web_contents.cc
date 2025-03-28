@@ -494,9 +494,7 @@ FrameTreeNodeId TestWebContents::AddPrerender(const GURL& url) {
   TestRenderFrameHost* rfhi = GetPrimaryMainFrame();
   return GetPrerenderHostRegistry()->CreateAndStartHost(PrerenderAttributes(
       url, PreloadingTriggerType::kSpeculationRule,
-      /*embedder_histogram_suffix=*/"",
-      blink::mojom::SpeculationTargetHint::kNoHint, Referrer(),
-      blink::mojom::SpeculationEagerness::kEager,
+      /*embedder_histogram_suffix=*/"", SpeculationRulesParams(), Referrer(),
       /*no_vary_search_hint=*/std::nullopt, rfhi, GetWeakPtr(),
       ui::PAGE_TRANSITION_LINK,
       /*should_warm_up_compositor=*/false,

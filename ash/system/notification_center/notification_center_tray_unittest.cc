@@ -318,17 +318,6 @@ TEST_P(NotificationCenterTrayTest, DoNotDisturbUpdatesPinnedIcons) {
   EXPECT_TRUE(test_api()->IsNotificationIconShown());
 }
 
-TEST_P(NotificationCenterTrayTest, NoPrivacyIndicatorsWhenVcEnabled) {
-  // No privacy indicators when `kVideoConference` is enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kFeatureManagementVideoConference);
-
-  auto notification_tray =
-      std::make_unique<NotificationCenterTray>(GetPrimaryShelf());
-  EXPECT_FALSE(notification_tray->privacy_indicators_view());
-}
-
 // Tests that the focus ring is visible and has proper size when the
 // notification center tray is focused.
 TEST_P(NotificationCenterTrayTest, FocusRing) {

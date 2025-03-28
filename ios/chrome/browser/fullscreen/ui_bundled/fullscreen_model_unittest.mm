@@ -326,3 +326,19 @@ TEST_F(FullscreenModelTest, ScrolledToTopAndBottom) {
   EXPECT_FALSE(model()->is_scrolled_to_top());
   EXPECT_TRUE(model()->is_scrolled_to_bottom());
 }
+
+// Tests that after scrolling down a lot to enter fullscreen, scrolling
+// partially up as part of the same drag event exits fullscreen.
+TEST_F(FullscreenModelTest, ScrollDownThenUp) {
+  model()->SetScrollViewIsDragging(true);
+  model()->SetScrollViewIsScrolling(true);
+  EXPECT_EQ(observer().progress(), 1.0);
+  model()->SetYContentOffset(model()->GetYContentOffset() + kToolbarHeight * 3);
+  EXPECT_EQ(observer().progress(), 0);
+  // Simulate a direction change in the swipe.
+  model()->SetYContentOffset(model()->GetYContentOffset() - 5);
+  model()->SetYContentOffset(model()->GetYContentOffset() - kToolbarHeight);
+  EXPECT_EQ(observer().progress(), 1.0);
+  model()->SetScrollViewIsDragging(false);
+  model()->SetScrollViewIsScrolling(false);
+}

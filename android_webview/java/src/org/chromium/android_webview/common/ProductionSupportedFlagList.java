@@ -457,10 +457,6 @@ public final class ProductionSupportedFlagList {
                 "If enabled, avoids calling the clock for every token in the HTML parser."),
         Flag.baseFeature(BaseFeatures.ALIGN_WAKE_UPS, "Align delayed wake ups at 125 Hz"),
         Flag.baseFeature(
-                BlinkFeatures.THREADED_SCROLL_PREVENT_RENDERING_STARVATION,
-                "Enable rendering starvation-prevention during threaded scrolling."
-                        + " See https://crbug.com/40833407."),
-        Flag.baseFeature(
                 BlinkFeatures.VIEW_TRANSITION_ON_NAVIGATION,
                 "Enables the experimental View Transitions API for navigations."
                         + " See https://github.com/WICG/view-transitions/blob/main/explainer.md."),
@@ -747,6 +743,9 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.INCREMENT_LOCAL_SURFACE_ID_FOR_MAINFRAME_SAME_DOC_NAVIGATION,
                 "When enabled, every mainframe same-doc navigation will increment the"
                         + " `viz::LocalSurfaceId` from the impl thread."),
+        Flag.baseFeature(
+                BaseFeatures.BACKGROUND_NOT_PERCEPTIBLE_BINDING,
+                "If enabled, not perceptible binding put processes to the background cpu cgroup"),
         Flag.baseFeature(
                 BaseFeatures.PARTITION_ALLOC_SCHEDULER_LOOP_QUARANTINE,
                 "Enables PartitionAlloc's FreeFlags::kSchedulerLoopQuarantine"),

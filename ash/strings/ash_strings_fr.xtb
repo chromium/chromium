@@ -551,6 +551,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="2872353916818027657">Changer de moniteur principal</translation>
 <translation id="2872961005593481000">Éteindre</translation>
 <translation id="2876338922445400217">Faire un zoom avant sur l'écran</translation>
+<translation id="2876760662374103627">Commande par le visage active</translation>
 <translation id="2878884018241093801">Aucun élément récent</translation>
 <translation id="2880541185262491188">Trop de tentatives de saisie de code infructueuses. Patientez <ph name="TIME_LEFT" /> et réessayez.</translation>
 <translation id="2883271196820422439">Réactiver les touches pour la souris</translation>
@@ -1516,6 +1517,7 @@ Aucun appareil connecté.</translation>
 <translation id="595202126637698455">Suivi des performances activé</translation>
 <translation id="5955304353782037793">application</translation>
 <translation id="5958529069007801266">Utilis. supervisé</translation>
+<translation id="596035801491797438">Désactiver la commande par le visage</translation>
 <translation id="5960410286721553511">Afficher les photos et contenus multimédias récents de votre téléphone</translation>
 <translation id="5965524703725988602">Activer/Désactiver le thème sombre. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Passer à la fenêtre suivante</translation>

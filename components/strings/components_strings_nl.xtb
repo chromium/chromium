@@ -223,7 +223,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1363028406613469049">Track</translation>
 <translation id="1364822246244961190">Dit beleid is geblokkeerd. De waarde ervan wordt genegeerd.</translation>
 <translation id="1368318639262510626">Dino-game. Een gepixeleerde dinosaurus ontwijkt cactussen en pterodactylussen terwijl deze door een verlaten landschap rent. Als je een audiosignaal hoort, druk je op de spatiebalk om over obstakels te springen.</translation>
-<translation id="1369735141991626842">Velden invullen met AI</translation>
 <translation id="1374468813861204354">suggesties</translation>
 <translation id="1375198122581997741">Over deze versie</translation>
 <translation id="1375293861397106342">Alle opties zijn meestal <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -539,7 +538,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1919526244108283799">400 x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Geen}=1{1 site}other{# sites}}</translation>
 <translation id="192095259937375524">Knop Dit tabblad delen. Activeer deze om dit tabblad te delen door bijvoorbeeld de link te delen, een QR-code te maken en te casten.</translation>
-<translation id="1921479021518565778">Suggesties geladen</translation>
 <translation id="1924727005275031552">Nieuw</translation>
 <translation id="1927439846988093361">Haarverzorging</translation>
 <translation id="1935353813610900265">Feedback sturen voor zoeken in geschiedenis, mogelijk gemaakt door AI</translation>
@@ -974,6 +972,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">Ja, doorgaan</translation>
 <translation id="2690699652723742414">Afgelopen 30 dagen</translation>
+<translation id="2691385045260836588">Model</translation>
 <translation id="2691924980723297736">Veiligheidswaarschuwing</translation>
 <translation id="2697248912349197812">Vragen aan <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Submenu beschikbaar, gebruik <ph name="SHORTCUT" /> om naar meer opties te gaan.</translation>
@@ -1524,6 +1523,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3664782872746246217">Zoekwoorden:</translation>
 <translation id="3665100783276035932">De meeste sites werken zoals verwacht</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Meer informatie<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">Nummer</translation>
 <translation id="3670229581627177274">Bluetooth aanzetten</translation>
 <translation id="3671117652518853176">Als je dit uitzet, kan je uit veiligheidsoverwegingen af en toe worden gevraagd om verificatie</translation>
 <translation id="3671540257457995106">Formaat aanpassen toestaan?</translation>
@@ -1538,7 +1538,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3681007416295224113">Certificaatgegevens</translation>
 <translation id="3681421644246505351">Chrome stelt interessante onderwerpen vast op basis van je recente browsegeschiedenis.</translation>
 <translation id="3682094733650754138">De optie Adres invullen is geselecteerd</translation>
-<translation id="3687493962714153124">Automatisch invullen met AI beheren</translation>
 <translation id="3687920599421452763">Bestelauto's en minibestelauto's</translation>
 <translation id="3693327506115126094">Kies hoe je wilt bevestigen dat jij het bent</translation>
 <translation id="3698353241727597930">Je beheerder heeft ingesteld dat <ph name="FILES" /> worden opgeslagen in je door het bedrijf beheerde <ph name="CLOUD_STORAGE" />-opslag. Deze bestanden kunnen worden gemonitord, gecontroleerd en bewaard als je ze verwijdert.</translation>
@@ -1691,6 +1690,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3950820424414687140">Inloggen</translation>
 <translation id="3953505489397572035">Deze prijs is gebruikelijk</translation>
 <translation id="3958057596965527988">4 x 4 inch</translation>
+<translation id="3959969108528118741">Eigenaar</translation>
 <translation id="3961148744525529027">Blad voor betalingshandler is half geopend</translation>
 <translation id="3962859241508114581">Vorig nummer</translation>
 <translation id="3963721102035795474">Lezermodus</translation>
@@ -1915,7 +1915,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4312866146174492540">Blokkeren (standaard)</translation>
 <translation id="4314815835985389558">Synchronisatie beheren</translation>
 <translation id="4316057107946726368">Voer een verantwoording in van maximaal <ph name="MAX_CHAR_COUNT" /> tekens. <ph name="ACTUAL_CHAR_COUNT" /> van <ph name="MAX_CHAR_COUNT" /> tekens gebruikt.</translation>
-<translation id="431740489189220419">Suggesties worden geladen</translation>
 <translation id="4318213823155573975">Hoofddeksels</translation>
 <translation id="4318312030194671742">Samenstellerservice voor Paint-voorbeelden</translation>
 <translation id="4318566738941496689">De naam en het netwerkadres van je apparaat</translation>
@@ -2322,6 +2321,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5087286274860437796">Het servercertificaat is momenteel niet geldig.</translation>
 <translation id="5087580092889165836">Kaart toevoegen</translation>
 <translation id="5088142053160410913">Bericht aan bediener</translation>
+<translation id="5089810972385038852">Staat</translation>
 <translation id="5090647584136241764">Voeg tabbladen met vergelijkbare producten toe om de details die voor jou belangrijk zijn makkelijk te vergelijken</translation>
 <translation id="5093232627742069661">Zigzagvouw</translation>
 <translation id="5094747076828555589">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server wordt niet vertrouwd door Chromium. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
@@ -2460,6 +2460,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Met je standaard zoekmachine kun je op internet zoeken en Chromium-functies gebruiken<ph name="END_BOLD" />, zoals zoeken via de adresbalk en vanuit afbeeldingen op webpagina's. Een functie is misschien niet beschikbaar als je zoekmachine deze niet ondersteunt.</translation>
 <translation id="5323043727018853753">Ingesloten content toegestaan</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> van <ph name="NUM_MATCHES" /></translation>
+<translation id="5327248766486351172">Naam</translation>
 <translation id="5329858041417644019">Je browser wordt niet beheerd.</translation>
 <translation id="5331585574693522196">Instellen als standaard</translation>
 <translation id="5332219387342487447">Verzendmethode</translation>
@@ -2672,7 +2673,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="569000877158168851">De waarde voor DnsOverHttpsTemplates is niet relevant en wordt niet gebruikt, tenzij het beleid DnsOverHttpsMode is ingesteld op <ph name="SECURE_DNS_MODE_AUTOMATIC" /> of <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Kaart opslaan is op volledige hoogte geopend.</translation>
 <translation id="5695542892312572833">Windows Hello gebruiken om je aankoop te verifiëren en af te ronden?</translation>
-<translation id="5697827549745555938">Informatie die je hebt opgeslagen en deze pagina worden naar Google gestuurd om te kijken of automatisch invullen kan helpen dit formulier in te vullen. Deze gegevens kunnen door menselijke reviewers worden bekeken om deze functie te verbeteren.</translation>
 <translation id="5699628521141772782">Zuivel en eieren</translation>
 <translation id="5700761515355162635">Cookies van derden toegestaan</translation>
 <translation id="5701381305118179107">Centreren</translation>
@@ -3100,6 +3100,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6440503408713884761">Genegeerd</translation>
 <translation id="6443406338865242315">Welke extensies en plug-ins je hebt geïnstalleerd</translation>
 <translation id="6444329331928531170">Pensioen en pensionering</translation>
+<translation id="6445051938772793705">Land</translation>
 <translation id="6446608382365791566">Meer informatie toevoegen</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6448371595882710519">Meer informatie over gegevensbeheer</translation>
@@ -3581,7 +3582,6 @@ Aanvullende informatie:
 <translation id="7316521168101843192">Bestand opslaan in Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Hulp bij verbinding maken</translation>
-<translation id="7321111802407017850">Je gegevens opslaan om automatisch in te vullen</translation>
 <translation id="7323804146520582233">Het gedeelte '<ph name="SECTION" />' verbergen</translation>
 <translation id="733354035281974745">Lokaal account op apparaat overschrijven</translation>
 <translation id="7334320624316649418">&amp;Opnieuw volgorde wijzigen</translation>

@@ -527,7 +527,8 @@ void AutocompleteResult::SortAndCull(
         }
       } else if (omnibox::IsSearchResultsPage(page_classification)) {
         sections.push_back(std::make_unique<DesktopSRPZpsSection>(
-            suggestion_groups_map_, max_suggestions, max_search_suggestions));
+            suggestion_groups_map_, max_suggestions, max_search_suggestions,
+            max_url_suggestions));
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         if (base::FeatureList::IsEnabled(
                 extensions_features::kExperimentalOmniboxLabs)) {
@@ -538,7 +539,8 @@ void AutocompleteResult::SortAndCull(
 #endif
       } else {
         sections.push_back(std::make_unique<DesktopWebZpsSection>(
-            suggestion_groups_map_, max_suggestions, max_url_suggestions));
+            suggestion_groups_map_, max_suggestions, max_search_suggestions,
+            max_url_suggestions));
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         if (base::FeatureList::IsEnabled(
                 extensions_features::kExperimentalOmniboxLabs)) {

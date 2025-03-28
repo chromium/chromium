@@ -75,7 +75,12 @@ class PrivacySandboxPromptHelperTest : public InProcessBrowserTest {
         .WillByDefault(testing::ReturnRef(*queue_manager_.get()));
   }
 
-  void TearDownOnMainThread() override { queue_manager_.reset(); }
+  // Reset queue manager after all browser-related processes have completed,
+  // including tear down.
+  void PostRunTestOnMainThread() override {
+    InProcessBrowserTest::PostRunTestOnMainThread();
+    queue_manager_.reset();
+  }
 
   // This setup happens before SetUpOnMainThread() as an initial startup.
   void SetUpInProcessBrowserTestFixture() override {
@@ -453,7 +458,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
 }
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
-                       DISABLED_MultipleBrowserWindows) {
+                       MultipleBrowserWindows) {
   // Check that if multiple browser windows are opened, and navigated to
   // appropriate tabs, two prompts are opened.
   base::HistogramTester histogram_tester;

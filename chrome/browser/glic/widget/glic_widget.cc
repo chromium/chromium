@@ -78,6 +78,9 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
   // window. See b/404947780.
   params.name = "GlicWidget";
   params.corner_radius = kCornerRadius;
+#if BUILDFLAG(IS_MAC)
+  params.animation_enabled = true;
+#endif
   auto delegate = std::make_unique<GlicWidgetDelegate>();
   params.delegate = delegate.release();
 

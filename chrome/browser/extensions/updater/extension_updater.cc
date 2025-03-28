@@ -41,7 +41,6 @@
 #include "components/update_client/update_query_params.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "crypto/sha2.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -81,9 +80,9 @@ bool g_should_immediately_update = false;
 
 // For sanity checking on update frequency - enforced in release mode only.
 #if defined(NDEBUG)
-const int kMinUpdateFrequencySeconds = 30;
+constexpr base::TimeDelta kMinUpdateFrequency = base::Seconds(30);
 #endif
-const int kMaxUpdateFrequencySeconds = 60 * 60 * 24 * 7;  // 7 days
+constexpr base::TimeDelta kMaxUpdateFrequency = base::Days(7);
 
 bool g_skip_scheduled_checks_for_tests = false;
 
@@ -173,24 +172,24 @@ ExtensionUpdater::ExtensionUpdater(Profile* profile)
       pending_extension_manager_(PendingExtensionManager::Get(profile)),
       external_install_manager_(ExternalInstallManager::Get(profile)) {}
 
-void ExtensionUpdater::Init(
+void ExtensionUpdater::InitAndEnable(
     ExtensionPrefs* extension_prefs,
     PrefService* prefs,
-    int frequency_seconds,
+    base::TimeDelta frequency,
     ExtensionCache* cache,
     const ExtensionDownloader::Factory& downloader_factory) {
+  enabled_ = true;
   downloader_factory_ = downloader_factory;
-  frequency_ = base::Seconds(frequency_seconds);
+  frequency_ = frequency;
   extension_prefs_ = extension_prefs;
   prefs_ = prefs;
   extension_cache_ = cache;
-  DCHECK_LE(frequency_seconds, kMaxUpdateFrequencySeconds);
+  DCHECK_LE(frequency_, kMaxUpdateFrequency);
 #if defined(NDEBUG)
   // In Release mode we enforce that update checks don't happen too often.
-  frequency_seconds = std::max(frequency_seconds, kMinUpdateFrequencySeconds);
+  frequency_ = std::max(frequency_, kMinUpdateFrequency);
 #endif
-  frequency_seconds = std::min(frequency_seconds, kMaxUpdateFrequencySeconds);
-  frequency_ = base::Seconds(frequency_seconds);
+  frequency_ = std::min(frequency_, kMaxUpdateFrequency);
   on_app_terminating_subscription_ =
       browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
           &ExtensionUpdater::OnAppTerminating, base::Unretained(this)));
@@ -214,6 +213,7 @@ void ExtensionUpdater::EnsureDownloaderCreated() {
 }
 
 void ExtensionUpdater::Start() {
+  CHECK(enabled_);
   DCHECK(!alive_);
   // If these are NULL, then that means we've been called after Stop()
   // has been called.
@@ -412,6 +412,7 @@ bool ExtensionUpdater::AddExtensionToDownloader(
 }
 
 void ExtensionUpdater::CheckNow(CheckParams params) {
+  CHECK(enabled_);
   if (params.ids.empty()) {
     // Checking all extensions. Cancel pending DoCheckSoon() call if there's
     // one, as it would be redundant.

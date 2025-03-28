@@ -14,6 +14,7 @@
 #include "components/collaboration/internal/metrics.h"
 #include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/collaboration/public/collaboration_service.h"
+#include "components/collaboration/public/collaboration_utils.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/logger.h"
 #include "components/data_sharing/public/logger_common.mojom.h"
@@ -526,7 +527,6 @@ class CheckingFlowRequirementsState : public ControllerState {
           controller->TransitionTo(StateId::kWaitingForSyncAndDataSharingGroup);
           return;
         }
-
         // If user is not part of the group, do a readgroup to ensure version
         // match.
         // TODO(haileywang): Do the version check in the preview data and do the
@@ -564,11 +564,6 @@ class CheckingFlowRequirementsState : public ControllerState {
     }
   }
 
-  void OnProcessingFinishedWithSuccess() override {
-    CHECK_EQ(controller->flow().type, FlowType::kJoin);
-    controller->TransitionTo(StateId::kAddingUserToGroup);
-  }
-
  private:
   // Called to process the outcome of data sharing read event.
   void ProcessGroupDataOrFailureOutcome(
@@ -578,11 +573,24 @@ class CheckingFlowRequirementsState : public ControllerState {
     if (!group_outcome.has_value()) {
       RecordJoinEvent(GetLogger(),
                       CollaborationServiceJoinEvent::kReadNewGroupFailed);
+      HandleError();
+      return;
     }
 
     RecordJoinEvent(GetLogger(),
                     CollaborationServiceJoinEvent::kReadNewGroupSuccess);
-    OnProcessingFinishedWithSuccess();
+
+    if (GetCurrentUserRoleForGroup(controller->identity_manager(),
+                                   group_outcome.value()) !=
+        data_sharing::MemberRole::kUnknown) {
+      RecordJoinEvent(
+          GetLogger(),
+          CollaborationServiceJoinEvent::kReadNewGroupUserIsAlreadyMember);
+      controller->TransitionTo(StateId::kWaitingForSyncAndDataSharingGroup);
+      return;
+    }
+
+    controller->TransitionTo(StateId::kAddingUserToGroup);
   }
 
   base::WeakPtrFactory<CheckingFlowRequirementsState> local_weak_ptr_factory_{
@@ -680,8 +688,21 @@ class WaitingForSyncAndDataSharingGroup
             CollaborationServiceJoinEvent::
                 kTimeoutWaitingForSyncAndDataSharingGroup),
         kTimeoutWaitingForDataSharingGroup);
-    tab_group_sync_observer_.Observe(controller->tab_group_sync_service());
-    data_sharing_observer_.Observe(controller->data_sharing_service());
+    const data_sharing::GroupId group_id =
+        controller->flow().join_token().group_id;
+
+    if (IsTabGroupInSync(group_id) && IsPeopleGroupInDataSharing(group_id)) {
+      OnProcessingFinishedWithSuccess();
+      return;
+    }
+
+    if (!IsTabGroupInSync(group_id)) {
+      tab_group_sync_observer_.Observe(controller->tab_group_sync_service());
+    }
+
+    if (!IsPeopleGroupInDataSharing(group_id)) {
+      data_sharing_observer_.Observe(controller->data_sharing_service());
+    }
   }
 
   // ControllerState implementation.
@@ -989,6 +1010,7 @@ CollaborationController::CollaborationController(
     data_sharing::DataSharingService* data_sharing_service,
     tab_groups::TabGroupSyncService* tab_group_sync_service,
     syncer::SyncService* sync_service,
+    signin::IdentityManager* identity_manager,
     std::unique_ptr<CollaborationControllerDelegate> delegate,
     FinishCallback finish_and_delete)
     : flow_(flow),
@@ -996,6 +1018,7 @@ CollaborationController::CollaborationController(
       data_sharing_service_(data_sharing_service),
       tab_group_sync_service_(tab_group_sync_service),
       sync_service_(sync_service),
+      identity_manager_(identity_manager),
       delegate_(std::move(delegate)),
       finish_and_delete_(std::move(finish_and_delete)) {
   current_state_ = std::make_unique<PendingState>(

@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// <if expr="enable_pdf_ink2">
+import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
+// </if>
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './elements/viewer_error_dialog.js';
 // <if expr="enable_ink">
@@ -70,6 +74,7 @@ import {PdfViewerBaseElement} from './pdf_viewer_base.js';
 import {PdfViewerPrivateProxyImpl} from './pdf_viewer_private_proxy.js';
 import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 import {hasCtrlModifier, hasCtrlModifierOnly, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
+// clang-format on
 
 /**
  * Keep in sync with the values for enum PDFPostMessageDataType in
@@ -321,9 +326,16 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // <if expr="enable_pdf_ink2">
     const mediaQuery = window.matchMedia('(min-width: 960px)');
     this.useSidePanelForInk_ = mediaQuery.matches;
-    this.tracker.add(
-        mediaQuery, 'change',
-        () => this.useSidePanelForInk_ = mediaQuery.matches);
+    this.tracker.add(mediaQuery, 'change', () => {
+      this.useSidePanelForInk_ = mediaQuery.matches;
+      // If we are in DRAW or TEXT annotation mode, record opening the
+      // UI that's opened by making the window narrower/wider.
+      if (this.annotationMode_ !== AnnotationMode.NONE) {
+        record(
+            this.useSidePanelForInk_ ? UserAction.OPEN_INK2_SIDE_PANEL :
+                                       UserAction.OPEN_INK2_BOTTOM_TOOLBAR);
+      }
+    });
     // </if> enable_pdf_ink2
   }
 
@@ -517,39 +529,71 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
   // </if>
 
+  // <if expr="enable_pdf_ink2">
+  private recordEnterExitAnnotationModeMetrics_(
+      newAnnotationMode: AnnotationMode) {
+    // Record exit metrics if annotation mode is being changed from one of
+    // the ink annotation modes.
+    switch (this.annotationMode_) {
+      case AnnotationMode.DRAW:
+        record(UserAction.EXIT_INK2_ANNOTATION_MODE);
+        break;
+      case AnnotationMode.TEXT:
+        record(UserAction.EXIT_INK2_TEXT_ANNOTATION_MODE);
+        break;
+      case AnnotationMode.NONE:
+        break;
+      default:
+        assertNotReached();
+    }
+    // Record enter metrics if annotation mode is being changed to one of
+    // the ink annotation modes.
+    switch (newAnnotationMode) {
+      case AnnotationMode.DRAW:
+        record(UserAction.ENTER_INK2_ANNOTATION_MODE);
+        break;
+      case AnnotationMode.TEXT:
+        record(UserAction.ENTER_INK2_TEXT_ANNOTATION_MODE);
+        break;
+      case AnnotationMode.NONE:
+        break;
+      default:
+        assertNotReached();
+    }
+  }
+  // </if>
+
   // <if expr="enable_ink or enable_pdf_ink2">
-  /** Handles the annotation mode being toggled on or off. */
+  // Handles the annotation mode being updated from the toolbar buttons.
   protected async onAnnotationModeUpdated_(e: CustomEvent<AnnotationMode>) {
-    const annotationMode = e.detail;
+    const newAnnotationMode = e.detail;
+    if (newAnnotationMode === this.annotationMode_) {
+      return;
+    }
+
     // <if expr="enable_pdf_ink2">
     if (this.pdfInk2Enabled_) {
+      if (this.annotationMode_ === AnnotationMode.NONE) {
+        record(
+            this.useSidePanelForInk_ ? UserAction.OPEN_INK2_SIDE_PANEL :
+                                       UserAction.OPEN_INK2_BOTTOM_TOOLBAR);
+      }
       if (this.restoreAnnotationMode_ === AnnotationMode.NONE) {
-        let action: UserAction;
-        switch (annotationMode) {
-          case AnnotationMode.DRAW:
-            action = UserAction.ENTER_INK2_ANNOTATION_MODE;
-            break;
-          case AnnotationMode.NONE:
-            action = UserAction.EXIT_INK2_ANNOTATION_MODE;
-            break;
-          default:
-            assertNotReached();
-        }
-        record(action);
+        this.recordEnterExitAnnotationModeMetrics_(newAnnotationMode);
       }
       this.pluginController_.setAnnotationMode(
-          annotationMode !== AnnotationMode.NONE);
-      if (annotationMode === AnnotationMode.DRAW &&
+          newAnnotationMode !== AnnotationMode.NONE);
+      if (newAnnotationMode === AnnotationMode.DRAW &&
           !Ink2Manager.getInstance().isInitializationStarted()) {
         await Ink2Manager.getInstance().initializeBrush();
       }
-      this.annotationMode_ = annotationMode;
+      this.annotationMode_ = newAnnotationMode;
       return;
     }
     // </if> enable_pdf_ink2
 
     // <if expr="enable_ink">
-    if (annotationMode === AnnotationMode.DRAW) {
+    if (newAnnotationMode === AnnotationMode.DRAW) {
       // Enter annotation mode.
       assert(this.pluginController_.isActive);
       assert(!this.inkController_.isActive);

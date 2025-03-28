@@ -185,7 +185,9 @@
                     "setSimulatedCentralState",
                     "simulatePreconnectedPeripheral",
                     "simulateAdvertisement",
-                    "simulateGATTOperationResponse"
+                    "simulateGATTOperationResponse",
+                    "addService",
+                    "removeService"
                 ]
             }
         ]

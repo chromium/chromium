@@ -94,7 +94,8 @@ CreateMutableProfileOAuthDelegate(
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   std::unique_ptr<TokenBindingHelper> token_binding_helper;
-  if (unexportable_key_service) {
+  if (unexportable_key_service &&
+      switches::IsChromeRefreshTokenBindingEnabled(signin_client->GetPrefs())) {
     token_binding_helper =
         std::make_unique<TokenBindingHelper>(*unexportable_key_service);
   }

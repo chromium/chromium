@@ -45,7 +45,13 @@
       identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     CoreAccountInfo accountInfo =
         identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-    activeAccountsTracker->MarkAccountAsActiveNow(accountInfo.gaia);
+    AccountInfo extendedInfo =
+        identityManager->FindExtendedAccountInfo(accountInfo);
+    signin::Tribool isManaged =
+        extendedInfo.hosted_domain.empty()
+            ? signin::Tribool::kUnknown
+            : signin::TriboolFromBool(extendedInfo.IsManaged());
+    activeAccountsTracker->MarkAccountAsActiveNow(accountInfo.gaia, isManaged);
   }
 }
 

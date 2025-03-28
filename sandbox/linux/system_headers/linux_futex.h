@@ -59,6 +59,10 @@
 #define FUTEX_CMP_REQUEUE_PI 12
 #endif
 
+#if !defined(FUTEX_LOCK_PI2)
+#define FUTEX_LOCK_PI2 13
+#endif
+
 #if !defined(FUTEX_PRIVATE_FLAG)
 #define FUTEX_PRIVATE_FLAG 128
 #endif

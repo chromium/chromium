@@ -85,7 +85,7 @@ bool GetScreenMagnifierEnabledFromPref() {
 }
 
 [[nodiscard]] bool AddRegularUser(const AccountId& account_id) {
-  return user_manager::TestHelper(*user_manager::UserManager::Get())
+  return user_manager::TestHelper(user_manager::UserManager::Get())
       .AddRegularUser(account_id);
 }
 

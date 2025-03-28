@@ -159,6 +159,9 @@ bool ClipboardOwnerWndProc(UINT message,
     break;
   case WM_CHANGECBCHAIN:
     break;
+  case WM_CLIPBOARDUPDATE:
+    ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+    break;
   default:
     return false;
   }
@@ -233,9 +236,19 @@ Clipboard* Clipboard::Create() {
 ClipboardWin::ClipboardWin() {
   if (base::CurrentUIThread::IsSet())
     clipboard_owner_ = std::make_unique<base::win::MessageWindow>();
+
+  if (base::FeatureList::IsEnabled(features::kClipboardChangeEvent)) {
+    ui::ClipboardMonitor::GetInstance()->SetNotifier(this);
+  }
 }
 
 ClipboardWin::~ClipboardWin() {
+  if (ui::ClipboardMonitor::GetInstance()->GetNotifier() == this) {
+    ui::ClipboardMonitor::GetInstance()->SetNotifier(nullptr);
+  }
+  if (monitoring_clipboard_changes_) {
+    StopNotifying();
+  }
 }
 
 void ClipboardWin::OnPreShutdown() {}
@@ -314,9 +327,15 @@ void ClipboardWin::Clear(ClipboardBuffer buffer) {
 
     ::EmptyClipboard();
   }
-  // This call must happen after `clipboard`'s destructor so that observers are
-  // notified after the seqno has changed.
-  ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  // When monitoring clipboard from OS, upon clipboard change, the platform
+  // sends WM_CLIPBOARDUPDATE message during which we already notify
+  // the ClipboardMonitor of the clipboard data change.
+  if (!monitoring_clipboard_changes_) {
+    // This call must happen after `clipboard`'s destructor so that observers
+    // are notified after the seqno has changed.
+    ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  }
 }
 
 std::vector<std::u16string> ClipboardWin::GetStandardFormats(
@@ -727,9 +746,15 @@ void ClipboardWin::WritePortableAndPlatformRepresentations(
       }
     }
   }
-  // This call must happen after `clipboard`'s destructor so that observers are
-  // notified after the seqno has changed.
-  ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  // When monitoring clipboard from OS, upon clipboard change, the platform
+  // sends WM_CLIPBOARDUPDATE message during which we already notify
+  // the ClipboardMonitor of the clipboard data change.
+  if (!monitoring_clipboard_changes_) {
+    // This call must happen after `clipboard`'s destructor so that observers
+    // are notified after the seqno has changed.
+    ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+  }
 }
 
 void ClipboardWin::WriteText(std::string_view text) {
@@ -998,6 +1023,16 @@ void ClipboardWin::WriteToClipboard(ClipboardFormatType format, HANDLE handle) {
               static_cast<unsigned long>(ERROR_CLIPBOARD_NOT_OPEN));
     ::GlobalFree(handle);
   }
+}
+
+void ClipboardWin::StartNotifying() {
+  ::AddClipboardFormatListener(GetClipboardWindow());
+  monitoring_clipboard_changes_ = true;
+}
+
+void ClipboardWin::StopNotifying() {
+  ::RemoveClipboardFormatListener(GetClipboardWindow());
+  monitoring_clipboard_changes_ = false;
 }
 
 HWND ClipboardWin::GetClipboardWindow() const {

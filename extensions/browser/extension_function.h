@@ -136,13 +136,13 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
                               ExtensionFunction,
                               content::BrowserThread::DeleteOnUIThread> {
  public:
-  enum ResponseType {
+  enum class ResponseType {
     // The function has succeeded.
-    SUCCEEDED,
+    kSucceeded,
     // The function has failed.
-    FAILED,
+    kFailed,
     // The input message is malformed.
-    BAD_MESSAGE
+    kBadMessage,
   };
 
   using ResponseCallback = base::OnceCallback<void(
@@ -402,7 +402,10 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   ResponseType* response_type() const { return response_type_.get(); }
 
-  bool did_respond() const { return did_respond_; }
+  // Whether this function has responded.
+  bool did_respond() const {
+    return response_type_ != nullptr || should_ignore_did_respond_for_testing;
+  }
 
   // Set the browser context which contains the extension that has originated
   // this function call. Only meant for testing; if unset, uses the
@@ -447,7 +450,10 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // sends a response. Typically, this shouldn't be used, even in testing. It's
   // only for when you want to test functionality that doesn't exercise the
   // Run() aspect of an extension function.
-  void ignore_did_respond_for_testing() { did_respond_ = true; }
+  void ignore_did_respond_for_testing() {
+    should_ignore_did_respond_for_testing = true;
+  }
+  bool should_ignore_did_respond_for_testing = false;
 
   void preserve_results_for_testing() { preserve_results_for_testing_ = true; }
 
@@ -695,10 +701,6 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   // The response type of the function, if the response has been sent.
   std::unique_ptr<ResponseType> response_type_;
-
-  // Whether this function has responded.
-  // TODO(devlin): Replace this with response_type_ != null.
-  bool did_respond_ = false;
 
   // If set to true, preserves |results_|, even after SendResponseImpl() was
   // called.

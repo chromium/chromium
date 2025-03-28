@@ -62,7 +62,7 @@ class SVGPreserveAspectRatio final
 
   SVGPreserveAspectRatio();
 
-  virtual SVGPreserveAspectRatio* Clone() const;
+  SVGPreserveAspectRatio* Clone() const;
 
   bool operator==(const SVGPreserveAspectRatio&) const;
   bool operator!=(const SVGPreserveAspectRatio& other) const {

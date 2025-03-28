@@ -2480,7 +2480,6 @@ data/accessibility/event/caret-browsing-enabled.html
 data/accessibility/event/caret-hide-expected-android.txt
 data/accessibility/event/caret-hide.html
 data/accessibility/event/caret-move-expected-android.txt
-data/accessibility/event/caret-move-expected-win.txt
 data/accessibility/event/caret-move-hidden-input-expected-android.txt
 data/accessibility/event/caret-move-hidden-input-expected-auralinux.txt
 data/accessibility/event/caret-move-hidden-input-expected-uia-win.txt
@@ -6672,6 +6671,8 @@ data/download/download-with-xfo-deny.html.mock-http-headers
 data/download/empty.bin
 data/download/empty.bin.mock-http-headers
 data/download/forms.mhtml
+data/download/gzip-content-with-content-disposition.gz
+data/download/gzip-content-with-content-disposition.gz.mock-http-headers
 data/download/gzip-content.gz
 data/download/gzip-content.gz.mock-http-headers
 data/download/hello.mhtml
@@ -8310,6 +8311,8 @@ data/sxg/test.example.org_long_cert_validity.sxg.mock-http-headers
 data/sxg/test.example.org_noext_test.sxg
 data/sxg/test.example.org_test.html.gz.sxg
 data/sxg/test.example.org_test.sxg
+data/sxg/test.example.org_test.sxg.gz
+data/sxg/test.example.org_test.sxg.gz.mock-http-headers
 data/sxg/test.example.org_test.sxg.mock-http-headers
 data/sxg/test.example.org_test_bad_mice.sxg
 data/sxg/test.example.org_test_bad_mice.sxg.mock-http-headers

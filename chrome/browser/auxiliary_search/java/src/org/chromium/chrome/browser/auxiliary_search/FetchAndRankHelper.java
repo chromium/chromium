@@ -11,7 +11,7 @@ import org.chromium.url.GURL;
 
 class FetchAndRankHelper {
     /**
-     * Helper to add new {@link AuxiliarySearchDataEntry} to list.
+     * Helper to create a new {@link AuxiliarySearchDataEntry} instance.
      *
      * @param type The type of the data source.
      * @param url The {@link GURL} of the entry.
@@ -20,7 +20,6 @@ class FetchAndRankHelper {
      * @param tabId The Tad ID of the entry if it is a local Tab, -1 otherwise.
      * @param appId The ID of the app which opens the URL if the entry is a CCT, null otherwise.
      * @param visitId A unique ID of the entry if it isn't a local Tab, -1 otherwise.
-     * @param entries The list of fetched entries.
      */
     @CalledByNative
     static AuxiliarySearchDataEntry addDataEntry(
@@ -31,7 +30,7 @@ class FetchAndRankHelper {
             int tabId,
             @Nullable String appId,
             int visitId) {
-        return AuxiliarySearchDataEntry.addDataEntry(
-                type, url, title, lastActiveTime, tabId, appId, visitId);
+        return new AuxiliarySearchDataEntry(
+                type, url, title, lastActiveTime, tabId, appId, visitId, /* score= */ 0);
     }
 }

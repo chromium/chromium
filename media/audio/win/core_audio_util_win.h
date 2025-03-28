@@ -120,13 +120,7 @@ class MEDIA_EXPORT CoreAudioUtil {
   // |device| is connected to.  This ID will be the same for all devices from
   // the same controller so it is useful for doing things like determining
   // whether a set of output and input devices belong to the same controller.
-  // The device enumerator is required as well as the device itself since
-  // looking at the device topology is required and we need to open up
-  // associated devices to determine the controller id.
-  // If the ID could not be determined for some reason, an empty string is
-  // returned.
-  static std::string GetAudioControllerID(IMMDevice* device,
-      IMMDeviceEnumerator* enumerator);
+  static std::string GetAudioControllerID(IMMDevice* device);
 
   // Accepts an id of an input device and finds a matching output device id.
   // If the associated hardware does not have an audio output device (e.g.

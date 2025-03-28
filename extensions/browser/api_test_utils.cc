@@ -45,8 +45,9 @@ void SendResponseHelper::OnResponse(ExtensionFunction::ResponseType response,
                                     base::Value::List results,
                                     const std::string& error,
                                     mojom::ExtraResponseDataPtr) {
-  ASSERT_NE(ExtensionFunction::BAD_MESSAGE, response);
-  response_ = std::make_unique<bool>(response == ExtensionFunction::SUCCEEDED);
+  ASSERT_NE(ExtensionFunction::ResponseType::kBadMessage, response);
+  response_ = std::make_unique<bool>(
+      response == ExtensionFunction::ResponseType::kSucceeded);
   run_loop_.Quit();
 }
 
@@ -165,7 +166,8 @@ std::string RunFunctionAndReturnError(scoped_refptr<ExtensionFunction> function,
   CHECK(results);
   EXPECT_TRUE(results->empty()) << "Did not expect a result";
   CHECK(function->response_type());
-  EXPECT_EQ(ExtensionFunction::FAILED, *function->response_type());
+  EXPECT_EQ(ExtensionFunction::ResponseType::kFailed,
+            *function->response_type());
   return function->GetError();
 }
 
@@ -179,14 +181,14 @@ base::expected<base::Value::List, std::string> RunFunctionAndReturnExpected(
   CHECK(function->response_type());
 
   switch (*function->response_type()) {
-    case ExtensionFunction::BAD_MESSAGE:
+    case ExtensionFunction::ResponseType::kBadMessage:
       // This case ASSERTs in `SendResponseHelper::OnResponse`.
       NOTREACHED();
 
-    case ExtensionFunction::FAILED:
+    case ExtensionFunction::ResponseType::kFailed:
       return base::unexpected(function->GetError());
 
-    case ExtensionFunction::SUCCEEDED:
+    case ExtensionFunction::ResponseType::kSucceeded:
       const base::Value::List* results = function->GetResultListForTest();
       CHECK(results);
       return results->Clone();

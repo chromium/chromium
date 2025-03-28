@@ -1347,7 +1347,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     return NO;
   }
 
-  return ShouldIndicateIdentityErrorInOverflowMenu(self.syncService);
+  return GetAccountErrorUIInfo(self.syncService) != nil;
 }
 
 // Updates the model to match the current page state.

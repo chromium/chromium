@@ -460,6 +460,8 @@ protocol::String ConvertToDevtoolsEnum(
       return SRIMessageSignatureErrorEnum::ValidationFailedSignatureMismatch;
     case SRIMessageSignatureError::kValidationFailedInvalidLength:
       return SRIMessageSignatureErrorEnum::ValidationFailedInvalidLength;
+    case SRIMessageSignatureError::kValidationFailedIntegrityMismatch:
+      return SRIMessageSignatureErrorEnum::ValidationFailedIntegrityMismatch;
   }
 }
 
@@ -513,6 +515,11 @@ void NetworkServiceDevToolsObserver::OnSRIMessageSignatureIssue(
             .SetError(ConvertToDevtoolsEnum(issue->error))
             .SetRequest(std::move(affected_request))
             .SetSignatureBase(issue->signature_base.value_or(""))
+            .SetIntegrityAssertions(
+                issue->integrity_assertions.has_value()
+                    ? std::make_unique<protocol::Array<protocol::String>>(
+                          std::move(issue->integrity_assertions.value()))
+                    : std::make_unique<protocol::Array<protocol::String>>())
             .Build();
     auto details =
         protocol::Audits::InspectorIssueDetails::Create()

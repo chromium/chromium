@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
-import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
@@ -54,6 +53,7 @@ import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.util.KeyboardNavigationListener;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -469,12 +469,12 @@ public class ToolbarTablet extends ToolbarLayout
     private void updateRippleBackground() {
         var toolbarIconRippleId =
                 isIncognitoBranded()
-                        ? R.drawable.toolbar_button_ripple_incognito
-                        : R.drawable.toolbar_button_ripple;
+                        ? R.drawable.default_icon_background_baseline
+                        : R.drawable.default_icon_background;
         var omniboxIconRippleId =
                 isIncognitoBranded()
-                        ? R.drawable.omnibox_button_ripple_incognito
-                        : R.drawable.omnibox_button_ripple;
+                        ? R.drawable.search_box_icon_background_baseline
+                        : R.drawable.search_box_icon_background;
 
         mHomeButton.setBackgroundResource(toolbarIconRippleId);
         mForwardButton.setBackgroundResource(toolbarIconRippleId);
@@ -648,8 +648,8 @@ public class ToolbarTablet extends ToolbarLayout
         if (buttonData.getButtonSpec().getShouldShowHoverHighlight()) {
             mOptionalButton.setBackgroundResource(
                     isIncognitoBranded()
-                            ? R.drawable.toolbar_button_ripple_incognito
-                            : R.drawable.toolbar_button_ripple);
+                            ? R.drawable.default_icon_background_baseline
+                            : R.drawable.default_icon_background);
         } else {
             TypedValue themeRes = new TypedValue();
             getContext()

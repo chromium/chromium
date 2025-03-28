@@ -201,16 +201,6 @@ TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, WriteToAbortedSinkFails) {
             static_cast<ExceptionCode>(DOMExceptionCode::kInvalidStateError));
 }
 
-TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, GetGmbManager) {
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform_;
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  auto* underlying_sink = CreateUnderlyingSink(script_state);
-  EXPECT_EQ(!!underlying_sink->gmb_manager(),
-            WebGraphicsContext3DVideoFramePool::
-                IsGpuMemoryBufferReadbackFromTextureEnabled());
-}
-
 TEST_F(MediaStreamVideoTrackUnderlyingSinkTest,
        DeltaTimestampDoesNotWriteCaptureBeginTime) {
   if (IsTooEarlyForTest()) {

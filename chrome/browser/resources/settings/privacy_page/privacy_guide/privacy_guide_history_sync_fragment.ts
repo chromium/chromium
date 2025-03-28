@@ -51,14 +51,6 @@ export class PrivacyGuideHistorySyncFragmentElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /** Virtual pref to drive the settings-toggle from syncPrefs. */
       historySyncVirtualPref_: {
         type: Object,
