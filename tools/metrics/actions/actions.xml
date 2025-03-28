@@ -4415,6 +4415,25 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Autofill.PaymentMethodsSettingsPage.ScanCardClicked">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <description>
+    Recorded when the user clicks the scan card button in the payment methods
+    settings card edit page.
+  </description>
+</action>
+
+<action name="Autofill.PaymentMethodsSettingsPage.ScannerCannotScan"
+    not_user_triggered="true">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <description>
+    Recorded when the user arrives on the payment methods settings card edit
+    page and the scanner for the scan card feature is not available.
+  </description>
+</action>
+
 <action name="Autofill_BrandingTapped">
   <owner>ginnyhuang@chromium.org</owner>
   <description>
