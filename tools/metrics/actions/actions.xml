@@ -12480,6 +12480,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="GlicOsEntrypoint.Settings.Toggle.Disabled">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged anytime glic OS launcher entrypoint (aka hotkey) is toggled off from
+    chrome://settings.
+  </description>
+</action>
+
+<action name="GlicOsEntrypoint.Settings.Toggle.Enabled">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged anytime glic OS launcher entrypoint (aka hotkey) is toggled on from
+    chrome://settings.
+  </description>
+</action>
+
 <action name="GlicResponse">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
