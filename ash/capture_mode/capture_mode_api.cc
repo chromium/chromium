@@ -5,16 +5,13 @@
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
 
 #include "ash/capture_mode/capture_mode_controller.h"
-#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/scanner/scanner_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "base/feature_list.h"
-#include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash {
@@ -45,11 +42,6 @@ bool CanShowSunfishUi() {
   auto* session_controller = shell->session_controller();
   if (!session_controller ||
       !session_controller->IsActiveUserSessionStarted()) {
-    return false;
-  }
-
-  auto* pref_service = capture_mode_util::GetActiveUserPrefService();
-  if (!pref_service || !pref_service->GetBoolean(prefs::kSunfishEnabled)) {
     return false;
   }
 

@@ -1077,6 +1077,7 @@ inline constexpr char kAutoEnrollmentPowerLimit[] = "AutoEnrollmentPowerLimit";
 // Deprecated 03/2025.
 inline constexpr char kDeviceRestrictionScheduleHighestSeenTime[] =
     "device_restriction_schedule_highest_seen_time";
+constexpr char kSunfishEnabled[] = "ash.capture_mode.sunfish_enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Register local state used only for migration (clearing or moving to a new
@@ -1503,6 +1504,11 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 03/2025.
   registry->RegisterBooleanPref(kPasswordChangeFlowNoticeAgreement, false);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 03/2025.
+  registry->RegisterBooleanPref(kSunfishEnabled, true);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -2767,6 +2773,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if !BUILDFLAG(IS_CHROMEOS)
   // Added 03/2025.
   profile_prefs->ClearPref(prefs::kChildAccountStatusKnown);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Added 03/2025.
+  profile_prefs->ClearPref(kSunfishEnabled);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
