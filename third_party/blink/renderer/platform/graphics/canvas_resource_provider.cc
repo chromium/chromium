@@ -884,7 +884,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     resource()->OnMemoryDump(pmd, path);
 
     std::string cached_path = path + "/cached";
-    for (const auto& canvas_resource : CanvasResources()) {
+    for (const auto& canvas_resource : canvas_resources_) {
       auto* resource_pointer = static_cast<CanvasResourceSharedImage*>(
           canvas_resource.resource.get());
       // In single buffered mode, `resource_` is not removed from
