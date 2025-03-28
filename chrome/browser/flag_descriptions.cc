@@ -8031,9 +8031,6 @@ const char kOidcAuthProfileManagementDescription[] =
 const char kGlicName[] = "Glic";
 const char kGlicDescription[] = "Enables glic";
 
-const char kGlicDetachedName[] = "Glic Detached Mode";
-const char kGlicDetachedDescription[] = "Enables glic detached mode";
-
 const char kGlicUserResizeName[] = "Glic User Resize";
 const char kGlicUserResizeDescription[] =
     "Enables resizing the glic panel by dragging";

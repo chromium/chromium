@@ -5041,14 +5041,6 @@
     "expiry_milestone": 137
   },
   {
-    "name": "glic-detached",
-    "owners": [
-      "andreaxg@google.com",
-      "//chrome/browser/glic/OWNERS"
-    ],
-    "expiry_milestone": 137
-  },
-  {
     "name": "glic-user-resize",
     "owners": [
       "iwells@chromium.org",

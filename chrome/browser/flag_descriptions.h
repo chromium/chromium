@@ -4742,9 +4742,6 @@ extern const char kOidcAuthProfileManagementDescription[];
 extern const char kGlicName[];
 extern const char kGlicDescription[];
 
-extern const char kGlicDetachedName[];
-extern const char kGlicDetachedDescription[];
-
 extern const char kGlicUserResizeName[];
 extern const char kGlicUserResizeDescription[];
 

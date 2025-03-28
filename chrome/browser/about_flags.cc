@@ -11627,9 +11627,6 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(ENABLE_GLIC)
     {"glic", flag_descriptions::kGlicName, flag_descriptions::kGlicDescription,
      kOsMac | kOsWin | kOsLinux, FEATURE_VALUE_TYPE(features::kGlic)},
-    {"glic-detached", flag_descriptions::kGlicDetachedName,
-     flag_descriptions::kGlicDetachedDescription, kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(features::kGlicDetached)},
     {"glic-user-resize", flag_descriptions::kGlicUserResizeName,
      flag_descriptions::kGlicUserResizeDescription, kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(features::kGlicUserResize)},
