@@ -89,7 +89,9 @@
               aria-label="[[i18n('autofillAiAccessibilityLabelMonthDropdown',
                   attributeInstanceItem.type.typeNameAsString)]]"
               on-change="onMonthSelectChange_">
-            <option value="">$i18n{autofillDropdownNoOptionSelected}</option>
+            <option value="">
+              $i18n{autofillAiMonthDropdownNoOptionSelected}
+            </option>
             <template is="dom-repeat" items="[[months_]]" as="month">
               <option value="[[month]]"
                   selected="[[isMonthSelected_(attributeInstanceItem, month)]]">
@@ -102,7 +104,9 @@
               aria-label="[[i18n('autofillAiAccessibilityLabelDayDropdown',
                   attributeInstanceItem.type.typeNameAsString)]]"
               on-change="onDaySelectChange_">
-            <option value="">$i18n{autofillDropdownNoOptionSelected}</option>
+            <option value="">
+              $i18n{autofillAiDayDropdownNoOptionSelected}
+            </option>
             <template is="dom-repeat" items="[[days_]]" as="day">
               <option value="[[day]]"
                   selected="[[isDaySelected_(attributeInstanceItem, day)]]">
@@ -117,7 +121,9 @@
               on-change="onYearSelectChange_">
             <!-- TODO(crbug.com/393318914): Add another option for the existing
                 year, if the existing year is out of bounds. -->
-            <option value="">$i18n{autofillDropdownNoOptionSelected}</option>
+            <option value="">
+              $i18n{autofillAiYearDropdownNoOptionSelected}
+            </option>
             <template is="dom-repeat" items="[[years_]]" as="year">
               <option value="[[year]]"
                   selected="[[isYearSelected_(attributeInstanceItem, year)]]">

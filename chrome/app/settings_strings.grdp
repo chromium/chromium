@@ -653,6 +653,15 @@
   <message name="IDS_SETTINGS_AUTOFILL_AI_ACCESSIBILITY_LABEL_YEAR_DROPDOWN" desc="The accessibility label on the year dropdown of a date field, to let users know the dropdown corresponds to the year.">
     <ph name="DROPDOWN_NAME">$1<ex>Expiration date</ex></ph> year
   </message>
+  <message name="IDS_SETTINGS_AUTOFILL_AI_MONTH_DROPDOWN_NO_OPTION_SELECTED" desc="The default option in a dropdown menu that serves both to suggest to the user that they select something and also allows them to not select anything (by leaving the default value chosen). For example, a month dropdown includes the values 'MM, Jan, Feb, Mar, etc.'. The user can choose to leave 'MM' selected — effectively not choosing a month at all.">
+    MM
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_AI_DAY_DROPDOWN_NO_OPTION_SELECTED" desc="The default option in a dropdown menu that serves both to suggest to the user that they select something and also allows them to not select anything (by leaving the default value chosen). For example, a day dropdown includes the values 'DD, 1, 2, 3, etc.'. The user can choose to leave 'DD' selected — effectively not choosing a day at all.">
+    DD
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_AI_YEAR_DROPDOWN_NO_OPTION_SELECTED" desc="The default option in a dropdown menu that serves both to suggest to the user that they select something and also allows them to not select anything (by leaving the default value chosen). For example, a year dropdown includes the values 'YYYY, 2025, 2024, 2023, etc.'. The user can choose to leave 'YYYY' selected — effectively not choosing a year at all.">
+    YYYY
+  </message>
   <message name="IDS_SETTINGS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_DATE_VALIDATION_ERROR" desc="An error message that appears beneath a date picker in the case that the user doesn't add a full date. For example, the user sees this error if they set the month but not the day or year, or choose an invalid date like February 30.">
     Check the date
   </message>

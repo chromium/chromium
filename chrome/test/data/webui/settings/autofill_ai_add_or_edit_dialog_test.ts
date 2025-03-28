@@ -502,9 +502,9 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
           assertEquals('', monthSelect.value);
           assertEquals('', daySelect.value);
           assertEquals('', yearSelect.value);
-          assertTrue(monthSelect.textContent!.includes('Select'));
-          assertTrue(daySelect.textContent!.includes('Select'));
-          assertTrue(yearSelect.textContent!.includes('Select'));
+          assertTrue(monthSelect.textContent!.includes('MM'));
+          assertTrue(daySelect.textContent!.includes('DD'));
+          assertTrue(yearSelect.textContent!.includes('YYYY'));
         } else {
           assertEquals(oldDate.month, monthSelect.value);
           assertEquals(oldDate.day, daySelect.value);
