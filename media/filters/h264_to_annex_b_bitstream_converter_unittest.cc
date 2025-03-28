@@ -371,26 +371,46 @@ TEST_F(H264ToAnnexBBitstreamConverterTest, FailureZeroSizedNAL) {
   EXPECT_EQ(out_size, 0U);
 }
 
-TEST_F(H264ToAnnexBBitstreamConverterTest, SuccessSizedTooBigNAL) {
+TEST_F(H264ToAnnexBBitstreamConverterTest, FailureNalUnitBreakage) {
+  // Initialize converter.
+  base::HeapArray<uint8_t> output;
   H264ToAnnexBBitstreamConverter converter;
 
-  std::vector<uint8_t> input(std::begin(kPacketDataOkWithFieldLen4),
-                             std::end(kPacketDataOkWithFieldLen4));
-
+  // Parse the headers.
   EXPECT_TRUE(converter.ParseConfiguration(kHeaderDataOkWithFieldLen4,
                                            sizeof(kHeaderDataOkWithFieldLen4),
                                            &avc_config_));
+  uint32_t config_size = converter.GetConfigSize(avc_config_);
+  EXPECT_GT(config_size, 0U);
 
-  input[0] = 255;
-  uint32_t expected_output_size = converter.CalculateNeededOutputBufferSize(
-      input.data(), input.size(), &avc_config_);
-  uint32_t out_size = expected_output_size;
-  std::vector<uint8_t> output(out_size);
+  // Go on with converting the headers.
+  output = base::HeapArray<uint8_t>::Uninit(config_size);
+  EXPECT_TRUE(output.data() != nullptr);
+  EXPECT_TRUE(converter.ConvertAVCDecoderConfigToByteStream(
+      avc_config_, output.data(), &config_size));
 
-  // First bytes encode NAL size, we want it to be too large.
-  EXPECT_TRUE(converter.ConvertNalUnitStreamToByteStream(
-      input.data(), input.size(), &avc_config_, output.data(), &out_size));
-  EXPECT_EQ(out_size, expected_output_size);
+  // Simulate NAL unit broken in middle by writing only some of the data.
+  uint8_t corrupted_nal_unit[sizeof(kPacketDataOkWithFieldLen4) - 100];
+  memcpy(corrupted_nal_unit, kPacketDataOkWithFieldLen4,
+         sizeof(kPacketDataOkWithFieldLen4) - 100);
+
+  // Calculate buffer size for actual NAL unit, should return 0 because of
+  // incomplete input buffer.
+  uint32_t output_size = converter.CalculateNeededOutputBufferSize(
+      corrupted_nal_unit, sizeof(corrupted_nal_unit), &avc_config_);
+  EXPECT_EQ(output_size, 0U);
+
+  // Ignore the error and try to go on with conversion simulating wrong usage.
+  output_size = sizeof(kPacketDataOkWithFieldLen4);
+  output = base::HeapArray<uint8_t>::Uninit(output_size);
+  EXPECT_TRUE(output.data() != nullptr);
+
+  uint32_t output_size_left_for_nal_unit = output_size;
+  // Do the conversion for actual NAL unit, expecting failure.
+  EXPECT_FALSE(converter.ConvertNalUnitStreamToByteStream(
+      corrupted_nal_unit, sizeof(corrupted_nal_unit), &avc_config_,
+      output.data(), &output_size_left_for_nal_unit));
+  EXPECT_EQ(output_size_left_for_nal_unit, 0U);
 }
 
 TEST_F(H264ToAnnexBBitstreamConverterTest, FailureTooSmallOutputBuffer) {
