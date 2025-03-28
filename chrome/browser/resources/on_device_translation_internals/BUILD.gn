@@ -22,5 +22,6 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
   ts_composite = true
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit_389737066.json"
   webui_context_type = "trusted"
 }

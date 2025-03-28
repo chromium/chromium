@@ -38,12 +38,12 @@ export class PrivateStateTokensListItemElement extends CrLitElement {
     };
   }
 
-  expanded: boolean = false;
-  issuerOrigin: string = '';
-  numTokens: number = 0;
-  redemptions: Redemption[] = [];
-  index: number = -1;
-  metadata: Metadata = nullMetadataObj;
+  accessor expanded: boolean = false;
+  accessor issuerOrigin: string = '';
+  accessor numTokens: number = 0;
+  accessor redemptions: Redemption[] = [];
+  accessor index: number = -1;
+  accessor metadata: Metadata = nullMetadataObj;
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.expanded = e.detail.value;

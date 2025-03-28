@@ -44,7 +44,7 @@ export class RelatedWebsiteSetsSidebarElement extends CrLitElement {
     };
   }
 
-  protected menuItems_: MenuItem[] = [
+  protected accessor menuItems_: MenuItem[] = [
     {
       icon: 'cr:settings_icon',
       name: 'Settings',

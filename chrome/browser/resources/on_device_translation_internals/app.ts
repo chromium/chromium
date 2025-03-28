@@ -27,7 +27,7 @@ export class OnDeviceTranslationInternalsAppElement extends CrLitElement {
 
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
   private onLanguagePackStatusListenerId_: number|null = null;
-  protected languagePackStatus_: LanguagePackInfo[] = [];
+  protected accessor languagePackStatus_: LanguagePackInfo[] = [];
 
   override connectedCallback() {
     super.connectedCallback();

@@ -68,13 +68,13 @@ export class AppElement extends AppElementBase {
     };
   }
 
-  protected choiceList_: SearchEngineChoice[] =
+  protected accessor choiceList_: SearchEngineChoice[] =
       JSON.parse(loadTimeData.getString('choiceList'));
-  protected selectedChoice_: number = -1;
-  protected isActionButtonDisabled_: boolean = false;
-  protected hasUserScrolledToTheBottom_: boolean = false;
-  protected showInfoDialog_: boolean = false;
-  protected actionButtonText_: string = '';
+  protected accessor selectedChoice_: number = -1;
+  protected accessor isActionButtonDisabled_: boolean = false;
+  protected accessor hasUserScrolledToTheBottom_: boolean = false;
+  protected accessor showInfoDialog_: boolean = false;
+  protected accessor actionButtonText_: string = '';
   protected showGuestCheckbox_: boolean =
       loadTimeData.getBoolean('showGuestCheckbox');
   protected saveGuestModeSearchEngineChoice_: boolean = false;
