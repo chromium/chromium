@@ -11,6 +11,7 @@
 #include "base/functional/overloaded.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -218,7 +219,7 @@ std::vector<Suggestion> UpdateSuggestionsFromDataList(
     }
     return suggestions;
   }
-
+  AutofillMetrics::LogDataListSuggestionsUpdated();
   // Add a separator if there are any other values.
   if (!suggestions.empty() &&
       suggestions[0].type != SuggestionType::kSeparator) {

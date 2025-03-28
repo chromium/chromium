@@ -163,6 +163,10 @@ void AutofillPopupControllerImpl::Show(
       !suggestions.empty() && IsStandaloneSuggestionType(suggestions[0].type)
           ? GetFillingProductFromSuggestionType(suggestions[0].type)
           : FillingProduct::kNone;
+  if (!suggestions.empty() &&
+      suggestions[0].type == SuggestionType::kDatalistEntry) {
+    AutofillMetrics::LogDataListSuggestionsShown();
+  }
   // Autofill popups should only be shown in focused windows because on Windows
   // the popup may overlap the focused window (see crbug.com/1239760).
   if (auto* rwhv = web_contents_->GetRenderWidgetHostView();

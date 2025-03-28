@@ -1215,6 +1215,7 @@ void AutofillExternalDelegate::InsertDataListValues(
     return;
   }
 
+  AutofillMetrics::LogDataListSuggestionsInserted();
   // Go through the list of autocomplete values and remove them if they are in
   // the list of datalist values.
   auto datalist_values = base::MakeFlatSet<std::u16string_view>(

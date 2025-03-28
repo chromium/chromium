@@ -2180,6 +2180,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
 </histogram>
 
+<histogram name="Autofill.DataList.Events" enum="AutofillDataListEvents"
+    expires_after="2025-08-24">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records different events about datalist suggestions and the parsing of data
+    list options. It is emitted at different times, including during parsing
+    (for the respective event), suggestion generation and popup being displayed
+  </summary>
+</histogram>
+
 <histogram name="Autofill.DataUtilization.ByPossibleType"
     enum="AutofillDataUtilizationByFieldType" expires_after="2025-08-24">
   <owner>battre@chromium.org</owner>
