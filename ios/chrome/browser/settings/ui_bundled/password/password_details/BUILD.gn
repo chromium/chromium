@@ -34,6 +34,7 @@ source_set("password_details") {
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
     "//ios/chrome/browser/passwords/model/metrics",
     "//ios/chrome/browser/settings/ui_bundled/password:common",
+    "//ios/chrome/browser/settings/ui_bundled/password:features",
     "//ios/chrome/browser/settings/ui_bundled/password/password_sharing",
     "//ios/chrome/browser/settings/ui_bundled/password/password_sharing:password_sharing_metrics",
     "//ios/chrome/browser/settings/ui_bundled/password/reauthentication",

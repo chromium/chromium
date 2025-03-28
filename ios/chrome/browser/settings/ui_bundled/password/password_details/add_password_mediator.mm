@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_details_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_mediator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_view_controller_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "net/base/apple/url_conversions.h"
 
 using base::SysNSStringToUTF16;
@@ -144,6 +145,12 @@ bool CheckForDuplicates(
   std::string signonRealm = password_manager::GetSignonRealm(self.URL);
   credential.username = SysNSStringToUTF16(username);
   credential.password = SysNSStringToUTF16(password);
+
+  if (password_manager::features::
+          IsSuggestStrongPasswordInAddPasswordEnabled()) {
+    base::UmaHistogramBoolean("PasswordManager.SavedPasswordIsGenerated",
+                              [password isEqualToString:_suggestedPassword]);
+  }
 
   credential.note = SysNSStringToUTF16(note);
   credential.stored_in = {
