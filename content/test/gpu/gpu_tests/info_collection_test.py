@@ -113,12 +113,12 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
 
     # Check expected and detected GPUs match
     if detected_vendor_id != expected_vendor_id:
-      self.fail('Vendor ID mismatch, expected %s but got %s.' %
-                (expected_vendor_id, detected_vendor_id))
+      self.fail(f'Vendor ID mismatch, expected {expected_vendor_id} but got '
+                f'{detected_vendor_id}.')
 
     if detected_device_id not in expected_device_ids:
-      self.fail('Device ID mismatch, expected %s but got %s.' %
-                (expected_device_ids, detected_device_id))
+      self.fail(f'Device ID mismatch, expected {expected_device_ids} but got '
+                f'{detected_device_id}.')
 
   def _RunDirectCompositionTest(self,
                                 test_args: InfoCollectionTestArgs) -> None:
@@ -140,8 +140,8 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
         detected = aux_attributes.get(field, 'NONE')
         if expected != detected:
           self.fail(
-              '%s mismatch, expected %s but got %s.' %
-              (field, self._ValueToStr(expected), self._ValueToStr(detected)))
+              f'{field} mismatch, expected {self._ValueToStr(expected)} but '
+              f'got {self._ValueToStr(detected)}.')
 
   def _RunDX12VulkanTest(self, _: InfoCollectionTestArgs) -> None:
     os_name = self.browser.platform.GetOSName()
@@ -164,8 +164,8 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
         detected = aux_attributes.get(field)
         if expected != detected:
           self.fail(
-              '%s mismatch, expected %s but got %s.' %
-              (field, self._ValueToStr(expected), self._ValueToStr(detected)))
+              f'{field} mismatch, expected {self._ValueToStr(expected)} but '
+              f'got {self._ValueToStr(detected)}.')
 
   def _RunAsanInfoTest(self, _: InfoCollectionTestArgs) -> None:
     gpu_info = self.browser.GetSystemInfo().gpu

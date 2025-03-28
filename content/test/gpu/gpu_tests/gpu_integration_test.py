@@ -1199,14 +1199,14 @@ class GpuIntegrationTest(
           gpu_device_id = gpu_helper.GetGpuDeviceId(gpu_info, ii)
           # The gpu device id tag will contain both the vendor and device id
           # separated by a '-'.
-          try:
+          if isinstance(gpu_device_id, int):
             # If the device id is an integer then it will be added as
             # a hexadecimal to the tag
-            gpu_device_tag = '%s-0x%x' % (gpu_vendor, gpu_device_id)
-          except TypeError:
+            gpu_device_tag = f'{gpu_vendor}-0x{gpu_device_id:x}'
+          else:
             # if the device id is not an integer it will be added as
             # a string to the tag.
-            gpu_device_tag = '%s-%s' % (gpu_vendor, gpu_device_id)
+            gpu_device_tag = f'{gpu_vendor}-{gpu_device_id}'
           if ii == 0 or gpu_vendor != 'intel':
             gpu_tags.extend([gpu_vendor, gpu_device_tag])
           # This acts as a way to add expectations for Intel GPUs without
