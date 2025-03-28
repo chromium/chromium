@@ -88,6 +88,17 @@ p {
   color: var(--cr-fallback-color-on-tonal-container);
 }
 
+.spinner {
+  --cr-spinner-size: 28px;
+  background-color: var(--cr-fallback-color-tonal-container);
+  mask-image: url(chrome://resources/images/throbber_small.svg);
+  mask-position: center center;
+  mask-repeat: no-repeat;
+  mask-size: var(--cr-spinner-size) var(--cr-spinner-size);
+  height: var(--cr-spinner-size);
+  width: var(--cr-spinner-size);
+}
+
 .panel[hidden] {
   display: none;
 }
