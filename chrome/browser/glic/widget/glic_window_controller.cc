@@ -73,7 +73,7 @@ constexpr int kFocusToggleAcceleratorModifiers =
     ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN;
 #else
 constexpr int kFocusToggleAcceleratorModifiers =
-    ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN;
+    ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN;
 #endif
 constexpr ui::KeyboardCode kFocusToggleAcceleratorKey = ui::VKEY_G;
 
@@ -519,6 +519,12 @@ void GlicWindowController::ToggleWhenNotAlwaysDetached(
     return;
   } else {
     Show(new_attached_browser, source);
+  }
+}
+
+void GlicWindowController::FocusIfOpen() {
+  if (IsShowing() && !IsActive()) {
+    GetGlicView()->web_view()->GetWebContents()->Focus();
   }
 }
 

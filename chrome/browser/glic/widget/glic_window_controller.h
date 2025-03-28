@@ -134,6 +134,8 @@ class GlicWindowController : public views::WidgetObserver,
                                    bool prevent_close,
                                    mojom::InvocationSource source);
 
+  void FocusIfOpen();
+
   // Attaches glic to the last focused Chrome window.
   void Attach();
 

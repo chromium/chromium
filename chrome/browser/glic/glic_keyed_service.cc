@@ -121,6 +121,10 @@ void GlicKeyedService::CloseUI() {
   SetContextAccessIndicator(false);
 }
 
+void GlicKeyedService::FocusUI() {
+  window_controller_->FocusIfOpen();
+}
+
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
   content::WebContents* top =
       guest_view::GuestViewBase::GetTopLevelWebContents(guest_contents);

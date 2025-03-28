@@ -69,6 +69,8 @@ class GlicKeyedService : public KeyedService {
   // manager.
   void CloseUI();
 
+  void FocusUI();
+
   GlicEnabling& enabling() { return *enabling_.get(); }
 
   GlicMetrics* metrics() { return metrics_.get(); }
