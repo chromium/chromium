@@ -154,8 +154,10 @@ class GlicWindowController : public views::WidgetObserver,
               base::TimeDelta duration,
               base::OnceClosure callback);
 
-  // Allows the user to manually resize the widget by dragging.
-  void ShouldEnableDragResize(bool enabled);
+  // Allows the user to manually resize the widget by dragging. If the widget
+  // hasn't been created yet, apply this setting when it is created. No effect
+  // if the widget doesn't exist or the feature flag is disabled.
+  void EnableDragResize(bool enabled);
 
   // Returns the current size of the glic window.
   gfx::Size GetSize();
@@ -466,6 +468,10 @@ class GlicWindowController : public views::WidgetObserver,
   // This member contains the last size that glic requested. This should be
   // reset every time glic is closed but is currently cached.
   std::optional<gfx::Size> glic_size_;
+
+  // Whether the widget should be user resizable, kept here in case it's
+  // specified before the widget is created.
+  bool user_resizable_ = true;
 
   // Used to monitor key and mouse events from native window.
   class WindowEventObserver;

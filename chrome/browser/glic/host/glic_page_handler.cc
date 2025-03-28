@@ -402,7 +402,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void EnableDragResize(bool enabled) override {
-    glic_service_->window_controller().ShouldEnableDragResize(enabled);
+    glic_service_->window_controller().EnableDragResize(enabled);
   }
 
   void GetContextFromFocusedTab(

@@ -150,7 +150,11 @@ export declare interface GlicBrowserHost {
   resizeWindow(width: number, height: number, options?: ResizeWindowOptions):
       Promise<void>;
 
-  /** Sets the state of the panel's user drag-to-resize capability. */
+  /**
+   * Set the state of the panel's user drag-to-resize capability, or if the
+   * panel hasn't been created yet, set whether it will be user resizable when
+   * it is created. No effect if the GlicUserResize feature flag is disabled.
+   */
   enableDragResize?(enabled: boolean): Promise<void>;
 
   /**
@@ -524,6 +528,13 @@ export declare interface OpenPanelInfo {
    * arguments will be used.
    */
   resizeParams?: {width: number, height: number, options?: ResizeWindowOptions};
+
+  /**
+   * Whether the panel should start out resizable by the user. The panel is
+   * resizable if this field is not provided. No effect if the GlicUserResize
+   * feature flag is disabled.
+   */
+  canUserResize?: boolean;
 }
 
 /** A panel can be in one of these three states. */

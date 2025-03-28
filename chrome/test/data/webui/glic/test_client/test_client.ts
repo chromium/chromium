@@ -91,7 +91,7 @@ interface PageElementTypes {
   contentSizingTest: HTMLElement;
   enableTestSizingMode: HTMLButtonElement;
   disableTestSizingMode: HTMLButtonElement;
-  enableDragResize: HTMLInputElement;
+  enableDragResizeCheckbox: HTMLInputElement;
   growHeight: HTMLButtonElement;
   resetHeight: HTMLButtonElement;
   dump: HTMLElement;
@@ -194,6 +194,8 @@ class WebClient implements GlicWebClient {
     } else {
       logMessage('getOsHotkeyState not available');
     }
+    $.enableDragResizeCheckbox.disabled =
+        browser.enableDragResize === undefined;
   }
 
   async notifyPanelWillOpen(panelOpeningData: PanelOpeningData&PanelState):
@@ -334,8 +336,8 @@ $.disableTestSizingMode.addEventListener('click', () => {
   updateSizingMode(false);
 });
 
-$.enableDragResize.addEventListener('change', () => {
-  getBrowser()!.enableDragResize!($.enableDragResize.checked);
+$.enableDragResizeCheckbox.addEventListener('change', () => {
+  getBrowser()!.enableDragResize!($.enableDragResizeCheckbox.checked);
 });
 
 $.growHeight.addEventListener('click', () => {
@@ -905,7 +907,6 @@ window.addEventListener('load', () => {
     $.osMicrophonePermissionResult.textContent =
         `OS Microphone Permission: ${permission}`;
   });
-  $.enableDragResize.disabled = getBrowser()!.enableDragResize !== undefined;
 });
 
 function readStream(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {

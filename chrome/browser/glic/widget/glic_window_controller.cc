@@ -802,6 +802,8 @@ void GlicWindowController::GlicLoaded(mojom::OpenPanelInfoPtr open_info) {
     Resize(*open_info->panelSize, open_info->resizeDuration, base::DoNothing());
   }
 
+  EnableDragResize(open_info->can_user_resize);
+
   glic_loaded_ = true;
   if (state_ == State::kWaitingForGlicToLoad) {
     ShowFinish();
@@ -1001,7 +1003,8 @@ void GlicWindowController::Resize(const gfx::Size& size,
   }
 }
 
-void GlicWindowController::ShouldEnableDragResize(bool enabled) {
+void GlicWindowController::EnableDragResize(bool enabled) {
+  user_resizable_ = enabled;
   if (!GetGlicWidget()) {
     return;
   }
@@ -1523,7 +1526,8 @@ void GlicWindowController::MaybeAdjustSizeForDisplay(bool animate) {
 std::unique_ptr<GlicWidget> GlicWindowController::CreateGlicWidget(
     const gfx::Rect& bounds) {
   return GlicWidget::Create(profile_, bounds,
-                            /*accelerator_delegate=*/GetWeakPtr());
+                            /*accelerator_delegate=*/GetWeakPtr(),
+                            user_resizable_);
 }
 
 void GlicWindowController::CreateContents() {
