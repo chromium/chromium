@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_WIN_TASKBAR_MANAGER_H_
 #define CHROME_BROWSER_WIN_TASKBAR_MANAGER_H_
 
+#include <string>
+
 #include "base/functional/callback_forward.h"
-#include "base/strings/cstring_view.h"
 
 namespace browser_util {
 
@@ -20,7 +21,7 @@ using PinResultCallback = base::OnceCallback<void(bool)>;
 // `callback` is called with true if pinning is supported, and the app is not
 // currently pinned to the taskbar, false otherwise. There must be a shortcut
 // with `app_user_model_id` in the start menu for pinning to be supported.
-void ShouldOfferToPin(base::wcstring_view app_user_model_id,
+void ShouldOfferToPin(const std::wstring& app_user_model_id,
                       PinResultCallback callback);
 
 // Pins a Chrome window to the taskbar. `app_user_model_id` is the AUMI for
@@ -29,7 +30,7 @@ void ShouldOfferToPin(base::wcstring_view app_user_model_id,
 // There must be a shortcut in the Start Menu folder with the same AUMI.
 // It uses the Windows TaskbarManager method `RequestPinCurrentAppAsync`, which
 // will confirm that the user wishes to pin the window to the taskbar.
-void PinAppToTaskbar(base::wcstring_view app_user_model_id,
+void PinAppToTaskbar(const std::wstring& app_user_model_id,
                      PinResultCallback callback);
 
 // These values are persisted to logs. Entries should not be renumbered and
