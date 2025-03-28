@@ -1,16 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.10.0-alpha04" type="baseline" client="" dependencies="true" name="" variant="all" version="8.10.0-alpha04">
-
-    <issue
-        id="MissingClass"
-        message="Class referenced in the manifest, `androidx.startup.InitializationProvider`, was not found in the project or the libraries"
-        errorLine1="    &lt;provider android:name=&quot;androidx.startup.InitializationProvider&quot; tools:node=&quot;remove&quot;/>"
-        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/components/cronet/android/cronet_test_instrumentation_apk__test_apk__lint/AndroidManifest.xml"
-            line="45"
-            column="29"/>
-    </issue>
+<issues format="6" by="lint 8.11.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.11.0-alpha03">
 
     <issue
         id="UnusedResources"
