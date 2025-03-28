@@ -231,16 +231,16 @@ TEST_P(AutofillAiFunnelMetricsTest, Logger) {
     test_api(manager()).logger().OnFormHasDataToFill(form->global_id());
   }
   if (user_saw_suggestions()) {
-    test_api(manager()).logger().OnFillingSuggestionsShown(
-        *form, *form->field(0), /*ukm_source_id=*/{});
+    test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(0),
+                                                    /*ukm_source_id=*/{});
   }
   if (user_filled_suggestion()) {
     test_api(manager()).logger().OnDidFillSuggestion(*form, *form->field(0),
                                                      /*ukm_source_id=*/{});
   }
   if (user_corrected_filling()) {
-    test_api(manager()).logger().OnDidCorrectFillingSuggestion(
-        *form, *form->field(0), /*ukm_source_id=*/{});
+    test_api(manager()).logger().OnEditedAutofilledField(*form, *form->field(0),
+                                                         /*ukm_source_id=*/{});
   }
 
   base::HistogramTester histogram_tester;

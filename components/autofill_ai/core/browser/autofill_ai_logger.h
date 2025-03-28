@@ -28,15 +28,15 @@ class AutofillAiLogger {
   void OnFormEligibilityAvailable(autofill::FormGlobalId form_id,
                                   bool is_eligible);
   void OnFormHasDataToFill(autofill::FormGlobalId form_id);
-  void OnFillingSuggestionsShown(const autofill::FormStructure& form,
-                                 const autofill::AutofillField& field,
-                                 ukm::SourceId ukm_source_id);
+  void OnSuggestionsShown(const autofill::FormStructure& form,
+                          const autofill::AutofillField& field,
+                          ukm::SourceId ukm_source_id);
   void OnDidFillSuggestion(const autofill::FormStructure& form,
                            const autofill::AutofillField& field,
                            ukm::SourceId ukm_source_id);
-  void OnDidCorrectFillingSuggestion(const autofill::FormStructure& form,
-                                     const autofill::AutofillField& field,
-                                     ukm::SourceId ukm_source_id);
+  void OnEditedAutofilledField(const autofill::FormStructure& form,
+                               const autofill::AutofillField& field,
+                               ukm::SourceId ukm_source_id);
 
   // Function that records the contents of `form_states` for `form` into
   // appropriate metrics. `submission_state` denotes whether the form was
@@ -60,13 +60,13 @@ class AutofillAiLogger {
     bool has_data_to_fill = false;
     // Given a form, records whether filling suggestions were actually shown
     // to the user.
-    bool did_show_filling_suggestions = false;
+    bool suggestions_shown = false;
     // Given a form, records whether the user chose to fill the form with a
     // filling suggestion.
     bool did_fill_suggestions = false;
     // Given a form, records whether the user corrected fields filled using
     // AutofillAi filling suggestions.
-    bool did_correct_filling = false;
+    bool edited_autofilled_field = false;
   };
   // Records the funnel state of each form. See the documentation of
   // `FunnelState` for more information about what is recorded.

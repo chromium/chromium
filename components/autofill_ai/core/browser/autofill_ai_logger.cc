@@ -46,11 +46,10 @@ void AutofillAiLogger::OnFormHasDataToFill(autofill::FormGlobalId form_id) {
   form_states_[form_id].has_data_to_fill = true;
 }
 
-void AutofillAiLogger::OnFillingSuggestionsShown(
-    const autofill::FormStructure& form,
-    const autofill::AutofillField& field,
-    ukm::SourceId ukm_source_id) {
-  form_states_[form.global_id()].did_show_filling_suggestions = true;
+void AutofillAiLogger::OnSuggestionsShown(const autofill::FormStructure& form,
+                                          const autofill::AutofillField& field,
+                                          ukm::SourceId ukm_source_id) {
+  form_states_[form.global_id()].suggestions_shown = true;
   ukm_logger_.LogFieldEvent(ukm_source_id, form, field,
                             AutofillAiUkmLogger::EventType::kSuggestionShown);
 }
@@ -63,11 +62,11 @@ void AutofillAiLogger::OnDidFillSuggestion(const autofill::FormStructure& form,
                             AutofillAiUkmLogger::EventType::kSuggestionFilled);
 }
 
-void AutofillAiLogger::OnDidCorrectFillingSuggestion(
+void AutofillAiLogger::OnEditedAutofilledField(
     const autofill::FormStructure& form,
     const autofill::AutofillField& field,
     ukm::SourceId ukm_source_id) {
-  form_states_[form.global_id()].did_correct_filling = true;
+  form_states_[form.global_id()].edited_autofilled_field = true;
   ukm_logger_.LogFieldEvent(
       ukm_source_id, form, field,
       AutofillAiUkmLogger::EventType::kEditedAutofilledValue);
@@ -80,9 +79,9 @@ void AutofillAiLogger::RecordFormMetrics(const autofill::FormStructure& form,
   FunnelState state = form_states_[form.global_id()];
   ukm_logger_.LogKeyMetrics(
       ukm_source_id, form, /*data_to_fill_available=*/state.has_data_to_fill,
-      /*suggestions_shown=*/state.did_show_filling_suggestions,
+      /*suggestions_shown=*/state.suggestions_shown,
       /*suggestion_filled=*/state.did_fill_suggestions,
-      /*edited_autofilled_field=*/state.did_correct_filling,
+      /*edited_autofilled_field=*/state.edited_autofilled_field,
       /*opt_in_status=*/opt_in_status);
 
   LogFunnelMetric("Eligibility", submission_state, state.is_eligible);
@@ -100,7 +99,7 @@ void AutofillAiLogger::RecordFormMetrics(const autofill::FormStructure& form,
     return;
   }
   LogFunnelMetric("CorrectionAfterFill", submission_state,
-                  state.did_correct_filling);
+                  state.edited_autofilled_field);
 }
 
 }  // namespace autofill_ai

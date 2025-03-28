@@ -288,7 +288,7 @@ AutofillAiManager::~AutofillAiManager() = default;
 void AutofillAiManager::OnSuggestionsShown(const autofill::FormStructure& form,
                                            const autofill::AutofillField& field,
                                            ukm::SourceId ukm_source_id) {
-  logger_.OnFillingSuggestionsShown(form, field, ukm_source_id);
+  logger_.OnSuggestionsShown(form, field, ukm_source_id);
 }
 
 void AutofillAiManager::OnFormSeen(const FormStructure& form) {
@@ -322,7 +322,7 @@ void AutofillAiManager::OnEditedAutofilledField(
     const autofill::FormStructure& form,
     const autofill::AutofillField& field,
     ukm::SourceId ukm_source_id) {
-  logger_.OnDidCorrectFillingSuggestion(form, field, ukm_source_id);
+  logger_.OnEditedAutofilledField(form, field, ukm_source_id);
 }
 
 bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,
