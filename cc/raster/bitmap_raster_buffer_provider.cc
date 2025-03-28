@@ -46,7 +46,8 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
   bool resource_has_previous_content =
       resource_content_id && resource_content_id == previous_content_id;
   return std::make_unique<ZeroCopyRasterBufferImpl>(
-      resource, shared_image_interface_, resource_has_previous_content);
+      resource, shared_image_interface_, resource_has_previous_content,
+      /*is_software=*/true);
 }
 
 void BitmapRasterBufferProvider::Flush() {}

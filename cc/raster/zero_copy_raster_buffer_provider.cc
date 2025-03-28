@@ -34,18 +34,28 @@ constexpr static auto kBufferUsage = gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
 
 ZeroCopyRasterBufferImpl::ZeroCopyRasterBufferImpl(
     const ResourcePool::InUsePoolResource& in_use_resource,
-    scoped_refptr<gpu::SharedImageInterface> sii)
-    : sii_(sii) {
+    scoped_refptr<gpu::SharedImageInterface> sii,
+    bool resource_has_previous_content,
+    bool is_software)
+    : sii_(sii),
+      resource_has_previous_content_(resource_has_previous_content),
+      is_software_(is_software) {
   if (!in_use_resource.backing()) {
-    auto backing = std::make_unique<ResourcePool::Backing>(
-        in_use_resource.size(), in_use_resource.format(),
-        in_use_resource.color_space());
-    // This RasterBufferProvider will modify the resource outside of the
-    // GL command stream. So resources should not become available for reuse
-    // until they are not in use by the gpu anymore, which a fence is used
-    // to determine.
-    backing->wait_on_fence_required = true;
-    in_use_resource.set_backing(std::move(backing));
+    if (is_software) {
+      in_use_resource.InstallSoftwareBacking(sii, "BitmapRasterBufferProvider");
+      in_use_resource.backing()->mailbox_sync_token =
+          sii->GenVerifiedSyncToken();
+    } else {
+      auto backing = std::make_unique<ResourcePool::Backing>(
+          in_use_resource.size(), in_use_resource.format(),
+          in_use_resource.color_space());
+      // This RasterBufferProvider will modify the resource outside of the
+      // GL command stream. So resources should not become available for reuse
+      // until they are not in use by the gpu anymore, which a fence is used
+      // to determine.
+      backing->wait_on_fence_required = true;
+      in_use_resource.set_backing(std::move(backing));
+    }
   }
   backing_ = in_use_resource.backing();
   if (!backing_->shared_image()) {
@@ -56,20 +66,6 @@ ZeroCopyRasterBufferImpl::ZeroCopyRasterBufferImpl(
     // raster.
     backing_->can_access_shared_image_on_compositor_thread = false;
   }
-}
-
-ZeroCopyRasterBufferImpl::ZeroCopyRasterBufferImpl(
-    const ResourcePool::InUsePoolResource& in_use_resource,
-    scoped_refptr<gpu::SharedImageInterface> sii,
-    bool resource_has_previous_content)
-    : resource_has_previous_content_(resource_has_previous_content),
-      is_software_(true) {
-  if (!in_use_resource.backing()) {
-    in_use_resource.InstallSoftwareBacking(sii, "BitmapRasterBufferProvider");
-
-    in_use_resource.backing()->mailbox_sync_token = sii->GenVerifiedSyncToken();
-  }
-  backing_ = in_use_resource.backing();
 }
 
 ZeroCopyRasterBufferImpl::~ZeroCopyRasterBufferImpl() {
@@ -183,8 +179,10 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
   return std::make_unique<ZeroCopyRasterBufferImpl>(
-      resource, base::WrapRefCounted(
-                    compositor_context_provider_->SharedImageInterface()));
+      resource,
+      base::WrapRefCounted(
+          compositor_context_provider_->SharedImageInterface()),
+      /*resource_has_previous_content=*/false, /*is_software=*/false);
 }
 
 void ZeroCopyRasterBufferProvider::Flush() {}
