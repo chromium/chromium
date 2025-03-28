@@ -3268,7 +3268,6 @@
     },
     {
       name: "PaymentApp",
-      depends_on: ["PaymentRequest"],
       public: true,
       status: "experimental",
       base_feature: "none",
