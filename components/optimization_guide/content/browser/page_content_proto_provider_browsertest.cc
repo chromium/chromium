@@ -8,6 +8,7 @@
 #include "base/test/test_future.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -18,6 +19,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/display/display_switches.h"
 
 namespace optimization_guide {
@@ -733,15 +735,39 @@ int TreeDepth(const optimization_guide::proto::ContentNode& node) {
 
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
                        MAYBE_DeepTree) {
+  // Listen for ukm metrics.
+  base::test::TestFuture<void> future;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  ukm_recorder.SetOnAddEntryCallback(
+      ukm::builders::OptimizationGuide_AIPageContentAgent::kEntryName,
+      future.GetRepeatingCallback());
+
   LoadPage(https_server()->GetURL("/deep.html"));
 
   // deep.html has a tree depth of 300.  Expect mojo encoding to trim to less
   // than mojo's kMaxRecursionDepth of 200.
   EXPECT_LT(TreeDepth(page_content().root_node()), 200);
+
+  // Ensure a ukm metric was recorded.
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::OptimizationGuide_AIPageContentAgent::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
+  EXPECT_EQ(
+      1, *ukm_recorder.GetEntryMetric(
+             entry, ukm::builders::OptimizationGuide_AIPageContentAgent::
+                        kNodeDepthLimitExceededName));
 }
 
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
-                       MAYBE_DeepSparseTree) {
+                       DeepSparseTree) {
+  // Listen for ukm metrics.
+  base::test::TestFuture<void> future;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  ukm_recorder.SetOnAddEntryCallback(
+      ukm::builders::OptimizationGuide_AIPageContentAgent::kEntryName,
+      future.GetRepeatingCallback());
+
   LoadPage(https_server()->GetURL("/deep_sparse.html"));
 
   // deep_sparse.html has a dom tree depth of 300. Every other DIV is one that
@@ -749,6 +775,11 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
   // is working properly, the limit should not be reached and the encoded depth
   // should be 152 (one for each unskipped div plus root and attributes).
   EXPECT_EQ(TreeDepth(page_content().root_node()), 152);
+
+  // Ensure that no ukm metric was recorded.
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::OptimizationGuide_AIPageContentAgent::kEntryName);
+  EXPECT_EQ(0u, entries.size());
 }
 
 }  // namespace

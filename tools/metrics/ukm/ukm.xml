@@ -16468,6 +16468,23 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="OptimizationGuide.AIPageContentAgent">
+  <owner>chrome-intelligence-core@google.com</owner>
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>abigailklein@chromium.org</owner>
+  <owner>gklassen@chromium.org</owner>
+  <summary>
+    Metrics related to page content extraction. Only recorded when depth limit
+    is exceeded.
+  </summary>
+  <metric name="NodeDepthLimitExceeded">
+    <summary>
+      Indicates that the node depth limit was exceeded while building
+      AnnotatedPageContent.
+    </summary>
+  </metric>
+</event>
+
 <event name="OptimizationGuide.AnnotatedPageContent">
   <owner>chrome-intelligence-core@google.com</owner>
   <owner>rajendrant@chromium.org</owner>
