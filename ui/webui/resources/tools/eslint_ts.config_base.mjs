@@ -36,5 +36,6 @@ export default {
 
     '@webui-eslint/lit-property-accessor': 'error',
     '@webui-eslint/polymer-property-declare': 'error',
+    '@webui-eslint/polymer-property-class-member': 'error',
   },
 };

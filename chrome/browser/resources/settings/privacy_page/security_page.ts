@@ -257,6 +257,9 @@ export class SettingsSecurityPageElement extends
   // </if>
 
   private enableSecurityKeysSubpage_: boolean;
+  // <if expr="is_win">
+  private enableSecurityKeysPhonesSubpage_: boolean;
+  // </if>
   focusConfig: FocusConfig;
   private showDisableSafebrowsingDialog_: boolean;
   private enableHashPrefixRealTimeLookups_: boolean;
