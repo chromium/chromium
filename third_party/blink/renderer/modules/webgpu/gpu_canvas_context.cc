@@ -172,17 +172,17 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage(FlushReason) {
     return SnapshotInternal(swap_texture_->GetHandle(), swap_buffers_->Size());
   }
 
-  // If there is no current texture, we need to get the information of the last
-  // texture reserved, that contains the last mailbox, create a new texture for
-  // it, and use it to create the resource provider.
-  auto mailbox_texture = swap_buffers_->GetLastWebGPUMailboxTexture();
-  if (!mailbox_texture) {
+  // If there is no current texture, return a snapshot of the front buffer if
+  // possible.
+  auto front_buffer_texture = GetFrontBufferMailboxTexture();
+  if (!front_buffer_texture) {
     return nullptr;
   }
 
-  return SnapshotInternal(mailbox_texture->GetTexture(),
-                          gfx::Size(mailbox_texture->GetTexture().GetWidth(),
-                                    mailbox_texture->GetTexture().GetHeight()));
+  return SnapshotInternal(
+      front_buffer_texture->GetTexture(),
+      gfx::Size(front_buffer_texture->GetTexture().GetWidth(),
+                front_buffer_texture->GetTexture().GetHeight()));
 }
 
 bool GPUCanvasContext::PaintRenderingResultsToCanvas(
