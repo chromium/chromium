@@ -556,6 +556,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2Save) {
   RunTestsInJsModule("ink2_save_test.js", "test.pdf");
 }
 
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2Manager) {
+  RunTestsInJsModule("ink2_manager_test.js", "test.pdf");
+}
+
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2BottomToolbar) {
   // The window must be smaller than 960px to show the bottom toolbar.
   GetActiveWebContents()->Resize({0, 0, 959, 100});
