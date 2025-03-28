@@ -2743,8 +2743,6 @@ TEST_F(
   // is_phishy field is false.
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(1);
 
-  // The verdict's is_phishing is false, but we will still send a ping because
-  // we have cached a forced ping.
   // Although the phishing detection done is set to TRIGGER_MODELS, it will
   // eventually switch to FORCE_REQUEST because the verdict cache manager
   // contains a suspicious RTLookupResponse.
@@ -2824,7 +2822,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       /*expected_no_info_reason=*/std::nullopt,
       /*returned_is_phishing=*/false,
       /*returned_intelligent_scan_verdict=*/
-      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL);
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_TELEMETRY);
   // Because the callback responds with the catch all verdict, we will not show
   // a warning.
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
@@ -2842,7 +2840,85 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       /*expected_request_type=*/ClientSideDetectionType::TRIGGER_MODELS,
       /*model_has_successful_response=*/std::nullopt,
       /*intelligent_scan_verdict=*/
-      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL);
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_TELEMETRY);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       CatchAllEnforcementScamExperimentVerdictDoesNotShowWarningDueToStudies) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection},
+              {kClientSideDetectionSendLlamaForcedTriggerInfo,
+               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
+               kClientSideDetectionShowScamVerdictWarning,
+               kClientSideDetectionShowLlamaScamVerdictWarning});
+  SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
+
+  // Now we run the callback to receive a server response. Because the callback
+  // responds with the catch all enforcement verdict, but the studies are
+  // disabled, we will NOT show a warning.
+  EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::
+          KEYBOARD_LOCK_REQUESTED,
+      /*model_has_successful_response=*/true,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       CatchAllEnforcementScamExperimentVerdictDoesShowWarning) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
+               kClientSideDetectionSendLlamaForcedTriggerInfo,
+               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
+               kClientSideDetectionShowScamVerdictWarning,
+               kClientSideDetectionShowLlamaScamVerdictWarning},
+              {});
+  SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
+
+  // Because the callback responds with the catch all enforcement verdict, we
+  // WILL show a warning.
+  EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(1);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::
+          KEYBOARD_LOCK_REQUESTED,
+      /*model_has_successful_response=*/true,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
 }
 
 }  // namespace safe_browsing
