@@ -41,6 +41,12 @@ bool IsMediaFoundationCameraUsageMonitoringEnabled() {
 
 namespace features {
 
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kTabCaptureInfobarLinks,
+             "TabCaptureInfobarLinks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if defined(WEBRTC_USE_PIPEWIRE)
 // Controls whether the PipeWire support for cameras is enabled on the
 // Wayland display server.

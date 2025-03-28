@@ -8738,6 +8738,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "tab-capture-infobar-links",
+    "owners": [ "tovep@chromium.org", "eladalon@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "tab-closure-method-refactor",
     "owners": [ "madhavpruthi@google.org", "ckitagawa@chromium.org" ],
     "expiry_milestone": 140

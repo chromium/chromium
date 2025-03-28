@@ -5443,6 +5443,12 @@ const char kSmartCardWebApiDescription[] =
     "Enable access to the Smart Card API. See "
     "https://github.com/WICG/web-smart-card#readme for more information.";
 
+const char kTabCaptureInfobarLinksName[] =
+    "Navigation links in the tab-sharing bar";
+const char kTabCaptureInfobarLinksDescription[] =
+    "Enables quick-navigation links to the captured and capturing tab in the "
+    "tab-sharing bar.";
+
 #if !BUILDFLAG(IS_ANDROID)
 const char kTranslateOpenSettingsName[] = "Translate Open Settings";
 const char kTranslateOpenSettingsDescription[] =

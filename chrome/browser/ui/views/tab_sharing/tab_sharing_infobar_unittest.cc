@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_test_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/test/browser_task_environment.h"
+#include "media/capture/capture_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"

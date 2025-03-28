@@ -10,10 +10,6 @@
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_status_message_view.h"
 
-namespace features {
-BASE_DECLARE_FEATURE(kTabCaptureInfobarLinks);
-}
-
 namespace views {
 class MdTextButton;
 }  // namespace views

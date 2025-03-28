@@ -16,6 +16,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/common/constants.h"
+#include "media/capture/capture_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
@@ -41,12 +42,6 @@ url::Origin GetOriginFromId(content::GlobalRenderFrameHostId rfh_id) {
 }
 
 }  // namespace
-
-namespace features {
-BASE_FEATURE(kTabCaptureInfobarLinks,
-             "TabCaptureInfobarLinks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-}  // namespace features
 
 TabSharingInfoBar::TabSharingInfoBar(
     std::unique_ptr<TabSharingInfoBarDelegate> delegate,

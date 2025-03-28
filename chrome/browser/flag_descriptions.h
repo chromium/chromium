@@ -3190,6 +3190,9 @@ extern const char kSCTAuditingDescription[];
 extern const char kSmartCardWebApiName[];
 extern const char kSmartCardWebApiDescription[];
 
+extern const char kTabCaptureInfobarLinksName[];
+extern const char kTabCaptureInfobarLinksDescription[];
+
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kTranslateOpenSettingsName[];
 extern const char kTranslateOpenSettingsDescription[];
