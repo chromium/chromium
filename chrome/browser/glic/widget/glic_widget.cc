@@ -49,6 +49,7 @@ GlicWidget::GlicWidget(ThemeService* theme_service, InitParams params)
     : views::Widget(std::move(params)) {
   if (UserResizeEnabled()) {
     minimum_widget_size_ = GetInitialSize();
+    OnSizeConstraintsChanged();
   }
   theme_service_observation_.Observe(theme_service);
 }
@@ -112,6 +113,7 @@ display::Display GlicWidget::GetDisplay() {
 void GlicWidget::SetMinimumSize(const gfx::Size& size) {
   minimum_widget_size_ = size;
   minimum_widget_size_.SetToMax(GetInitialSize());
+  OnSizeConstraintsChanged();
 }
 
 gfx::Size GlicWidget::GetMinimumSize() const {
