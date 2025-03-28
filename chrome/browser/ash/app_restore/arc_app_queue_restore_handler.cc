@@ -84,11 +84,7 @@ constexpr int kCpuUsageThreshold = 90;
 // |kCpuRestrictCoresCondition|.
 constexpr int kCpuRestrictCoresCondition = 2;
 
-constexpr char kRestoredArcAppResultHistogram[] = "Apps.RestoreArcAppsResult";
-
 constexpr char kArcGhostWindowLaunchHistogram[] = "Apps.ArcGhostWindowLaunch";
-
-constexpr char kRestoreArcAppStatesHistogram[] = "Apps.RestoreArcAppStates";
 
 constexpr char kGhostWindowPopToArcHistogram[] = "Arc.LaunchedWithGhostWindow";
 
@@ -526,14 +522,8 @@ bool ArcAppQueueRestoreHandler::HasRestoreData() {
 }
 
 bool ArcAppQueueRestoreHandler::CanLaunchApp() {
-  // Checks CPU usage limiting and memory pressure, make sure it can
-  // be recorded for UMA statistic data.
   bool is_under_cpu_usage_limiting = IsUnderCPUUsageLimiting();
-  if (is_under_cpu_usage_limiting)
-    was_cpu_usage_limited_ = true;
   bool is_under_memory_pressure = IsUnderMemoryPressure();
-  if (is_under_memory_pressure)
-    was_memory_pressured_ = true;
   bool is_root_window_controller_initialized =
       !RootWindowController::root_window_controllers().empty();
   return !is_under_cpu_usage_limiting && !is_under_memory_pressure &&
@@ -853,38 +843,6 @@ void ArcAppQueueRestoreHandler::RecordArcGhostWindowLaunch(
 }
 
 void ArcAppQueueRestoreHandler::RecordRestoreResult() {
-  bool isFinished = !HasRestoreData();
-
-  base::UmaHistogramEnumeration(
-      kRestoredArcAppResultHistogram,
-      isFinished ? RestoreResult::kFinish : RestoreResult::kNotFinish);
-
-  ArcRestoreState restore_state = ArcRestoreState::kFailedWithUnknown;
-  if (isFinished) {
-    if (was_cpu_usage_limited_ && was_memory_pressured_) {
-      restore_state =
-          ArcRestoreState::kSuccessWithMemoryPressureAndCPUUsageRateLimiting;
-    } else if (was_cpu_usage_limited_) {
-      restore_state = ArcRestoreState::kSuccessWithCPUUsageRateLimiting;
-    } else if (was_memory_pressured_) {
-      restore_state = ArcRestoreState::kSuccessWithMemoryPressure;
-    } else {
-      restore_state = ArcRestoreState::kSuccess;
-    }
-  } else {
-    if (was_cpu_usage_limited_ && was_memory_pressured_) {
-      restore_state =
-          ArcRestoreState::kFailedWithMemoryPressureAndCPUUsageRateLimiting;
-    } else if (was_cpu_usage_limited_) {
-      restore_state = ArcRestoreState::kFailedWithCPUUsageRateLimiting;
-    } else if (was_memory_pressured_) {
-      restore_state = ArcRestoreState::kFailedWithMemoryPressure;
-    }
-    // For other cases, mark the failed state as "unknown".
-  }
-
-  base::UmaHistogramEnumeration(kRestoreArcAppStatesHistogram, restore_state);
-
   if (window_handler_) {
     base::UmaHistogramCounts100(kGhostWindowPopToArcHistogram,
                                 window_handler_->ghost_window_pop_count());
