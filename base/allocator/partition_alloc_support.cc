@@ -638,7 +638,7 @@ void CheckDanglingRawPtrBufferEmpty() {
   g_stack_trace_buffer = DanglingRawPtrBuffer();
 #else
   bool errors = false;
-  for (auto entry : g_stack_trace_buffer) {
+  for (const auto& entry : g_stack_trace_buffer) {
     if (!entry) {
       continue;
     }

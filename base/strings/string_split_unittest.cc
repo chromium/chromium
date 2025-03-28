@@ -243,7 +243,7 @@ TEST(StringUtilTest, SplitString_Basics) {
   // Should split on any of the separators.
   r = SplitString("::,,;;", ",:;", KEEP_WHITESPACE, SPLIT_WANT_ALL);
   ASSERT_EQ(7u, r.size());
-  for (auto str : r) {
+  for (const auto& str : r) {
     ASSERT_TRUE(str.empty());
   }
 
