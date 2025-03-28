@@ -1014,10 +1014,11 @@ class Worker:
         }
 
     def start(self):
-        self._copier = BaselineCopier(self._connection.host)
         self._host = self._connection.host
         self._default_port = self._host.port_factory.get()
         self._default_port.set_option_default('manifest_update', False)
+        self._copier = BaselineCopier(self._connection.host,
+                                      self._default_port)
         self._fs = self._connection.host.filesystem
         self._baseline_loader = BaselineLoader(self._host, self._default_port)
 
