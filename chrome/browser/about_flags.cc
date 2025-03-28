@@ -12024,12 +12024,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableNewFopDisplayDesktop)},
 
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_CHROMEOS)
     {"enable-printing-margins-and-scale",
      flag_descriptions::kEnablePrintingMarginsAndScale,
      flag_descriptions::kEnablePrintingMarginsAndScaleDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(extensions_features::kApiPrintingMarginsAndScale)},
-#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+     FEATURE_VALUE_TYPE(printing::features::kApiPrintingMarginsAndScale)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     {"supervised-user-block-interstitial-v3",
      flag_descriptions::kSupervisedUserBlockInterstitialV3Name,

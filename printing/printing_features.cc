@@ -18,6 +18,12 @@ namespace printing::features {
 BASE_FEATURE(kAddPrinterViaPrintscanmgr,
              "AddPrinterViaPrintscanmgr",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls whether chrome.printing API uses margins and scale ticket items when
+// submitting a print job.
+BASE_FEATURE(kApiPrintingMarginsAndScale,
+             "ApiPrintingMarginsAndScale",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)

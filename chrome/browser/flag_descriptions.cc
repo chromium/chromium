@@ -1766,13 +1766,13 @@ const char kEnableProcessPerSiteUpToMainFrameThresholdDescription[] =
     "Proactively reuses same-site renderer processes to host multiple main "
     "frames, up to a certain threshold.";
 
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kEnablePrintingMarginsAndScale[] =
-    "Enable printing margins and scale support in chrome.Printing API.";
+    "Enable printing margins and scale support in chrome.printing API.";
 const char kEnablePrintingMarginsAndScaleDescription[] =
-    "Allows extensions to specify margins and scale in chrome.Printing API "
+    "Allows extensions to specify margins and scale in chrome.printing API "
     "based on supported values provided by the printer.";
-#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const char kBoundaryEventDispatchTracksNodeRemovalName[] =
     "Boundary Event Dispatch Tracks Node Removal";

@@ -994,10 +994,10 @@ extern const char kEnablePixelCanvasRecordingDescription[];
 extern const char kEnableProcessPerSiteUpToMainFrameThresholdName[];
 extern const char kEnableProcessPerSiteUpToMainFrameThresholdDescription[];
 
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kEnablePrintingMarginsAndScale[];
 extern const char kEnablePrintingMarginsAndScaleDescription[];
-#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 extern const char kEnableSearchCustomizableShortcutsInLauncherName[];
 extern const char kEnableSearchCustomizableShortcutsInLauncherDescription[];
