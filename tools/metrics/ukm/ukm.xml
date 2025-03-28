@@ -11395,6 +11395,36 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="HistoryApi">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <summary>
+    Records usage of the window.history API, capturing details about the
+    operation type, user activation, and ad-related information. Recorded when
+    window.history API is used.
+  </summary>
+  <metric name="FromAd" enum="Boolean">
+    <summary>
+      True if the history API is invoked when an ad script is in the JavaScript
+      stack, or if the invoking context is an ad iframe, as determined by
+      Chrome's ad tagging mechanisms.
+      (https://chromium.googlesource.com/chromium/src/+/lkgr/docs/ad_tagging.md)
+    </summary>
+  </metric>
+  <metric name="HasStickyUserActivation" enum="Boolean">
+    <summary>
+      Whether the invoking context has seen user activation.
+      (https://mustaqahmed.github.io/user-activation-v2)
+    </summary>
+  </metric>
+  <metric name="IsHistoryModifyingOperation" enum="Boolean">
+    <summary>
+      Whether the operation modifies the history state (i.e., back(), forward(),
+      go(), pushState(), replaceState()).
+    </summary>
+  </metric>
+</event>
+
 <event name="HistoryClusters" singular="True">
   <owner>chrome-memories@google.com</owner>
   <owner>mcrouse@chromium.org</owner>

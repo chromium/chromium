@@ -81,7 +81,7 @@ ScriptValue PopStateEvent::state(ScriptState* script_state,
     return ScriptValue(isolate, state_.GetAcrossWorld(script_state));
 
   if (history_ && history_->IsSameAsCurrentState(serialized_state_.get())) {
-    return history_->state(script_state, exception_state);
+    return history_->StateHelper(script_state, exception_state);
   }
 
   v8::Local<v8::Value> v8_state;

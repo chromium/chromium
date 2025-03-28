@@ -79,6 +79,8 @@ class CORE_EXPORT History final : public ScriptWrappable,
 
   bool IsSameAsCurrentState(SerializedScriptValue*) const;
 
+  ScriptValue StateHelper(ScriptState*, ExceptionState&);
+
   void Trace(Visitor*) const override;
 
  private:
