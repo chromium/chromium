@@ -122,7 +122,7 @@ Uri::Pim::~Pim() = default;
 
 Uri::Uri() : pim_(std::make_unique<Pim>()) {}
 
-Uri::Uri(const std::string& uri) : pim_(std::make_unique<Pim>()) {
+Uri::Uri(std::string_view uri) : pim_(std::make_unique<Pim>()) {
   // Omits leading and trailing whitespaces ( \r\n\t\f\v).
   const size_t prefix_size =
       uri.size() -
