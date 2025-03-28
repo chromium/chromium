@@ -113,6 +113,7 @@ class GPUCanvasContext : public CanvasRenderingContext,
   void SetNeedsCompositingUpdate() override;
 
  private:
+  scoped_refptr<WebGPUMailboxTexture> GetFrontBufferMailboxTexture();
   void DetachSwapBuffers();
   void ReplaceDrawingBuffer(bool destroy_swap_buffers);
   void InitializeAlphaModePipeline(wgpu::TextureFormat format);

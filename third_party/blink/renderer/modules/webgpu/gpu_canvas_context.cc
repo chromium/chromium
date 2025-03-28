@@ -213,27 +213,11 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
     // on Linux backings and enable the below codepath.
     return false;
 #else
-    auto front_buffer_si = swap_buffers_->GetFrontBufferSharedImage();
-    if (!front_buffer_si) {
+    // Create a WebGPU texture backed by the front buffer's SharedImage.
+    front_buffer_texture = GetFrontBufferMailboxTexture();
+    if (!front_buffer_texture) {
       return false;
     }
-    wgpu::TextureUsage front_buffer_usage =
-        wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
-    wgpu::DawnTextureInternalUsageDescriptor front_buffer_usage_desc = {{
-        .internalUsage = front_buffer_usage,
-    }};
-    wgpu::TextureDescriptor desc = {
-        .size = {base::checked_cast<uint32_t>(front_buffer_si->size().width()),
-                 base::checked_cast<uint32_t>(
-                     front_buffer_si->size().height())},
-        .format = swap_buffers_->TextureFormat(),
-    };
-    desc.nextInChain = &front_buffer_usage_desc;
-
-    // Create a WebGPU texture backed by the front buffer's SharedImage.
-    front_buffer_texture = WebGPUMailboxTexture::FromExistingSharedImage(
-        device_->GetDawnControlClient(), device_->GetHandle(), desc,
-        front_buffer_si, swap_buffers_->GetFrontBufferSyncToken());
 
     texture = front_buffer_texture->GetTexture();
 #endif
@@ -719,6 +703,29 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
                     WebFeature::kWebGPUCanvasContextGetCurrentTexture);
 
   return texture_.Get();
+}
+
+scoped_refptr<WebGPUMailboxTexture>
+GPUCanvasContext::GetFrontBufferMailboxTexture() {
+  auto front_buffer_si = swap_buffers_->GetFrontBufferSharedImage();
+  if (!front_buffer_si) {
+    return nullptr;
+  }
+  wgpu::TextureUsage front_buffer_usage =
+      wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
+  wgpu::DawnTextureInternalUsageDescriptor front_buffer_usage_desc = {{
+      .internalUsage = front_buffer_usage,
+  }};
+  wgpu::TextureDescriptor desc = {
+      .size = {base::checked_cast<uint32_t>(front_buffer_si->size().width()),
+               base::checked_cast<uint32_t>(front_buffer_si->size().height())},
+      .format = swap_buffers_->TextureFormat(),
+  };
+  desc.nextInChain = &front_buffer_usage_desc;
+
+  return WebGPUMailboxTexture::FromExistingSharedImage(
+      device_->GetDawnControlClient(), device_->GetHandle(), desc,
+      front_buffer_si, swap_buffers_->GetFrontBufferSyncToken());
 }
 
 void GPUCanvasContext::ReplaceDrawingBuffer(bool destroy_swap_buffers) {
