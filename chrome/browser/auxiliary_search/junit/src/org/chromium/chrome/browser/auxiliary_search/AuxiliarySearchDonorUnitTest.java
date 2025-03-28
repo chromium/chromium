@@ -46,6 +46,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchDonor.SearchQueryChecker;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.auxiliary_search.schema.CustomTabWebPage;
 import org.chromium.chrome.browser.auxiliary_search.schema.TopSiteWebPage;
@@ -486,10 +487,12 @@ public class AuxiliarySearchDonorUnitTest {
     @SmallTest
     public void testIterateSearchResults() {
         SearchResults searchresults = Mockito.mock(SearchResults.class);
+        SearchQueryChecker searchQueryChecker = Mockito.mock(SearchQueryChecker.class);
         List<SearchResult> page = new ArrayList<>();
         assertTrue(page.isEmpty());
 
-        mAuxiliarySearchDonor.iterateSearchResults(searchresults, page, mCallback);
+        mAuxiliarySearchDonor.iterateSearchResults(
+                searchresults, page, mCallback, searchQueryChecker);
         verify(mCallback).onResult(eq(false));
 
         SearchResult searchResult1 =
@@ -503,16 +506,22 @@ public class AuxiliarySearchDonorUnitTest {
                         GlobalSearchApplicationInfo.APPLICATION_TYPE_CONSUMER,
                         AuxiliarySearchDonor.SCHEMA_WEBPAGE);
 
+        when(searchQueryChecker.isSuccess(eq(searchResult1))).thenReturn(false);
         page.add(searchResult1);
-        mAuxiliarySearchDonor.iterateSearchResults(searchresults, page, mCallback);
+        mAuxiliarySearchDonor.iterateSearchResults(
+                searchresults, page, mCallback, searchQueryChecker);
         verify(mCallback, times(2)).onResult(eq(false));
 
+        when(searchQueryChecker.isSuccess(eq(searchResult2))).thenReturn(false);
         page.add(searchResult2);
-        mAuxiliarySearchDonor.iterateSearchResults(searchresults, page, mCallback);
+        mAuxiliarySearchDonor.iterateSearchResults(
+                searchresults, page, mCallback, searchQueryChecker);
         verify(mCallback, times(3)).onResult(eq(false));
 
+        when(searchQueryChecker.isSuccess(eq(searchResult3))).thenReturn(true);
         page.add(searchResult3);
-        mAuxiliarySearchDonor.iterateSearchResults(searchresults, page, mCallback);
+        mAuxiliarySearchDonor.iterateSearchResults(
+                searchresults, page, mCallback, searchQueryChecker);
         verify(mCallback).onResult(eq(true));
     }
 

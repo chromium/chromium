@@ -114,7 +114,7 @@ public class AuxiliarySearchControllerImplUnitTest {
                         .build();
         mAuxiliarySearchControllerImpl.onResumeWithNative();
 
-        verify(mAuxiliarySearchDonor).deleteAllTabs(mDeleteCallbackCaptor.capture());
+        verify(mAuxiliarySearchDonor).deleteAll(mDeleteCallbackCaptor.capture());
         mFakeTime.advanceMillis(timeDelta);
 
         mDeleteCallbackCaptor.getValue().onResult(true);
@@ -142,7 +142,7 @@ public class AuxiliarySearchControllerImplUnitTest {
                         mFaviconHelper);
         mAuxiliarySearchControllerImpl.onResumeWithNative();
 
-        verify(mAuxiliarySearchDonor).deleteAllTabs(any(Callback.class));
+        verify(mAuxiliarySearchDonor).deleteAll(any(Callback.class));
         assertFalse(mAuxiliarySearchControllerImpl.getHasDeletingTaskForTesting());
 
         AuxiliarySearchUtils.resetSharedPreferenceForTesting();

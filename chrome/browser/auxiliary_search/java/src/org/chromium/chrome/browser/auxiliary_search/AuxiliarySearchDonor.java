@@ -71,6 +71,16 @@ public class AuxiliarySearchDonor {
                 Class<?> schemaClass, String packageName, String sha256Certificate);
     }
 
+    /** A helper interface for iterating search results from the App Search. */
+    interface SearchQueryChecker {
+        /**
+         * Returns whether it is the sought result.
+         *
+         * @param searchResult The current search result page.
+         */
+        boolean isSuccess(SearchResult searchResult);
+    }
+
     @VisibleForTesting static final String SCHEMA = "builtin:GlobalSearchApplicationInfo";
     @VisibleForTesting static final String SCHEMA_WEBPAGE = "builtin:WebPage";
 
@@ -200,7 +210,7 @@ public class AuxiliarySearchDonor {
             if (mIsSchemaSet) {
                 // If WebPage schema has been set before while the device isn't capable for Tab
                 // donations, clean up now.
-                deleteAllTabs(null);
+                deleteAll(null);
                 closeSession();
             }
             return false;
@@ -520,14 +530,14 @@ public class AuxiliarySearchDonor {
     }
 
     /**
-     * Removes all tabs for auxiliary search based on namespace.
+     * Removes all documents for auxiliary search based on namespace.
      *
      * @param onDeleteCompleteCallback The callback to be called when the deletion is completed.
      * @return whether it is possible to delete donated Tabs.
      */
     @SuppressLint("CheckResult")
     @VisibleForTesting
-    public boolean deleteAllTabs(@Nullable Callback<Boolean> onDeleteCompleteCallback) {
+    public boolean deleteAll(@Nullable Callback<Boolean> onDeleteCompleteCallback) {
         if (mAppSearchSession == null) return false;
 
         SearchSpec spec = new SearchSpec.Builder().addFilterNamespaces(mNamespace).build();
@@ -568,7 +578,7 @@ public class AuxiliarySearchDonor {
             createSessionAndInit();
         } else {
             // When disabled, remove all shared Tabs and closes the session.
-            deleteAllTabs(onDeleteCompleteCallback);
+            deleteAll(onDeleteCompleteCallback);
             closeSession();
         }
     }
@@ -682,7 +692,7 @@ public class AuxiliarySearchDonor {
      *
      * @param callback The callback to be called after the query is completed.
      */
-    @SuppressLint("CheckResult")
+    @SuppressWarnings({"CheckResult", "UnsafeOptInUsageError", "RequiresFeature"})
     private void searchConsumerSchema(@NonNull Callback<Boolean> callback) {
         String supportedPackageName =
                 AuxiliarySearchControllerFactory.getInstance().getSupportedPackageName();
@@ -697,16 +707,40 @@ public class AuxiliarySearchDonor {
                         .addFilterPackageNames(supportedPackageName)
                         .build();
 
+        SearchQueryChecker searchQueryChecker =
+                searchResult -> {
+                    GenericDocument genericDocument = searchResult.getGenericDocument();
+                    try {
+                        GlobalSearchApplicationInfo info =
+                                genericDocument.toDocumentClass(GlobalSearchApplicationInfo.class);
+                        if (info.getApplicationType()
+                                        == GlobalSearchApplicationInfo.APPLICATION_TYPE_CONSUMER
+                                && info.getSchemaTypes().contains(SCHEMA_WEBPAGE)) {
+                            return true;
+                        }
+                    } catch (AppSearchException e) {
+                        Log.i(
+                                TAG,
+                                "Failed to convert GenericDocument to"
+                                        + " GlobalSearchApplicationInfo");
+                    }
+                    return false;
+                };
+
         Futures.transformAsync(
                 mGlobalSearchSession,
                 session ->
                         processSearchResults(
-                                session.search(/* queryExpression= */ "", searchSpec), callback),
+                                session.search(/* queryExpression= */ "", searchSpec),
+                                callback,
+                                searchQueryChecker),
                 AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private ListenableFuture<Void> processSearchResults(
-            @NonNull SearchResults searchResults, @NonNull Callback<Boolean> callback) {
+            @NonNull SearchResults searchResults,
+            @NonNull Callback<Boolean> callback,
+            SearchQueryChecker searchQueryChecker) {
         if (sSkipInitializationForTesting) {
             callback.onResult(false);
             return Futures.immediateVoidFuture();
@@ -714,16 +748,16 @@ public class AuxiliarySearchDonor {
 
         return Futures.transformAsync(
                 searchResults.getNextPageAsync(),
-                page -> iterateSearchResults(searchResults, page, callback),
+                page -> iterateSearchResults(searchResults, page, callback, searchQueryChecker),
                 AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @VisibleForTesting
-    @SuppressWarnings({"UnsafeOptInUsageError", "RequiresFeature"})
     ListenableFuture<Void> iterateSearchResults(
-            @NonNull SearchResults searchResults,
-            @NonNull List<SearchResult> page,
-            @NonNull Callback<Boolean> callback) {
+            SearchResults searchResults,
+            List<SearchResult> page,
+            Callback<Boolean> callback,
+            SearchQueryChecker searchQueryChecker) {
         if (page.isEmpty()) {
             searchResults.close();
             callback.onResult(false);
@@ -731,23 +765,14 @@ public class AuxiliarySearchDonor {
         }
 
         for (int i = 0; i < page.size(); i++) {
-            GenericDocument genericDocument = page.get(i).getGenericDocument();
-            try {
-                GlobalSearchApplicationInfo info =
-                        genericDocument.toDocumentClass(GlobalSearchApplicationInfo.class);
-                if (info.getApplicationType()
-                                == GlobalSearchApplicationInfo.APPLICATION_TYPE_CONSUMER
-                        && info.getSchemaTypes().contains(SCHEMA_WEBPAGE)) {
-                    callback.onResult(true);
-                    searchResults.close();
-                    return Futures.immediateVoidFuture();
-                }
-            } catch (AppSearchException e) {
-                Log.i(TAG, "Failed to convert GenericDocument to" + " GlobalSearchApplicationInfo");
+            if (searchQueryChecker.isSuccess(page.get(i))) {
+                callback.onResult(true);
+                searchResults.close();
+                return Futures.immediateVoidFuture();
             }
         }
 
-        return processSearchResults(searchResults, callback);
+        return processSearchResults(searchResults, callback, searchQueryChecker);
     }
 
     @SuppressLint("CheckResult")
