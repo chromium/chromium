@@ -2074,6 +2074,8 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="18" label="Third-party Launcher"/>
 </enum>
 
+<!-- LINT.IfChange(ClientSummarizedResultType) -->
+
 <enum name="ClientSummarizedResultType">
   <int value="0" label="URL"/>
   <int value="1" label="Search"/>
@@ -2082,6 +2084,8 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="4" label="OnDevice"/>
   <int value="5" label="Unknown"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/omnibox/browser/omnibox_metrics_provider.cc:ClientSummarizedResultType) -->
 
 <enum name="ColorCorrectionFilterTypes">
   <int value="0" label="Protanomaly"/>
@@ -21086,6 +21090,133 @@ Called by update_net_error_codes.py.-->
     the user landed in a dino page.
   </int>
 </enum>
+
+<!-- LINT.IfChange(OmniboxPageClassification) -->
+
+<enum name="OmniboxPageClassification">
+  <int value="0" label="InvalidSpec"/>
+  <int value="1" label="Ntp"/>
+  <int value="2" label="Blank"/>
+  <int value="3" label="HomePage"/>
+  <int value="4" label="Other"/>
+  <int value="5" label="ObsoleteInstantNtp (deprecated)"/>
+  <int value="6" label="SearchResultPageDoingSearchTermReplacement"/>
+  <int value="7" label="InstantNtpWithOmniboxAsStartingFocus"/>
+  <int value="8"
+      label="ObsoleteInstantNtpWithFakeboxAsStartingFocus (deprecated)"/>
+  <int value="9" label="SearchResultPageNoSearchTermReplacement"/>
+  <int value="10" label="AppHome"/>
+  <int value="11" label="AppSearch"/>
+  <int value="12" label="AppMaps"/>
+  <int value="13" label="SearchButtonAsStartingFocus"/>
+  <int value="14" label="ChromeosAppList"/>
+  <int value="15" label="NtpRealbox"/>
+  <int value="16" label="AndroidSearchWidget"/>
+  <int value="17" label="StartSurfaceHomepage (deprecated)"/>
+  <int value="18" label="StartSurfaceNewTab (deprecated)"/>
+  <int value="19" label="AndroidShortcutsWidget"/>
+  <int value="20" label="NtpZpsPrefetch"/>
+  <int value="21" label="Journeys"/>
+  <int value="22" label="SrpZpsPrefetch"/>
+  <int value="23" label="OtherZpsPrefetch"/>
+  <int value="24" label="ContextualSearchbox"/>
+  <int value="25" label="SearchSidePanelSearchbox"/>
+  <int value="26" label="LensSidePanelSearchbox"/>
+  <int value="27" label="SearchResultPageOnCct"/>
+  <int value="28" label="OtherOnCct"/>
+  <int value="29" label="AndroidHub"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/metrics_proto/omnibox_event.proto:PageClassification) -->
+
+<!-- LINT.IfChange(OmniboxProviderType) -->
+
+<enum name="OmniboxProviderType">
+  <int value="0" label="UnknownProvider"/>
+  <int value="1" label="HistoryUrl"/>
+  <int value="2" label="HistoryContents"/>
+  <int value="3" label="HistoryQuick"/>
+  <int value="4" label="Search"/>
+  <int value="5" label="Keyword"/>
+  <int value="6" label="Builtin"/>
+  <int value="7" label="Shortcuts"/>
+  <int value="8" label="ExtensionApps (deprecated)"/>
+  <int value="9" label="Contact (deprecated)"/>
+  <int value="10" label="Bookmark"/>
+  <int value="11" label="ZeroSuggest"/>
+  <int value="12" label="OnDevice"/>
+  <int value="13" label="OnDeviceChrome"/>
+  <int value="14" label="Clipboard"/>
+  <int value="15" label="PhysicalWeb (deprecated)"/>
+  <int value="16" label="Document"/>
+  <int value="17" label="OnDeviceHead"/>
+  <int value="18" label="ZeroSuggestLocalHistory"/>
+  <int value="19" label="QueryTile"/>
+  <int value="20" label="HistoryCluster"/>
+  <int value="21" label="HistoryFuzzy"/>
+  <int value="22" label="OpenTab"/>
+  <int value="23" label="TabSwitch"/>
+  <int value="24" label="Pedals"/>
+  <int value="25" label="FeaturedSearch"/>
+  <int value="26" label="HistoryEmbeddings"/>
+  <int value="27" label="Calculator"/>
+  <int value="28" label="CrossDeviceTab"/>
+  <int value="29" label="EnterpriseSearchAggregator"/>
+  <int value="30" label="UnscopedExtension"/>
+  <int value="31" label="RecentlyClosedTabs"/>
+  <int value="32" label="MostVisitedSites"/>
+  <int value="33" label="ContextualSearchProvider"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/metrics_proto/omnibox_event.proto:ProviderType) -->
+
+<!-- LINT.IfChange(OmniboxResultType) -->
+
+<enum name="OmniboxResultType">
+  <int value="0" label="UnknownResultType"/>
+  <int value="1" label="UrlWhatYouTyped"/>
+  <int value="2" label="HistoryUrl"/>
+  <int value="3" label="HistoryTitle"/>
+  <int value="4" label="HistoryBody (deprecated)"/>
+  <int value="5" label="HistoryKeyword"/>
+  <int value="6" label="Navsuggest"/>
+  <int value="7" label="SearchWhatYouTyped"/>
+  <int value="8" label="SearchHistory"/>
+  <int value="9" label="SearchSuggest"/>
+  <int value="10" label="SearchOtherEngine"/>
+  <int value="11" label="ExtensionApp (deprecated)"/>
+  <int value="12" label="Contact"/>
+  <int value="13" label="BookmarkTitle"/>
+  <int value="14" label="SearchSuggestEntity"/>
+  <int value="15" label="SearchSuggestTail"/>
+  <int value="16" label="SearchSuggestPersonalized"/>
+  <int value="17" label="SearchSuggestProfile"/>
+  <int value="18" label="AppResult"/>
+  <int value="19" label="App"/>
+  <int value="20" label="LegacyOnDevice"/>
+  <int value="21" label="NavsuggestPersonalized"/>
+  <int value="22" label="SearchSuggestAnswer (deprecated)"/>
+  <int value="23" label="Calculator"/>
+  <int value="24" label="ClipboardUrl"/>
+  <int value="25" label="PhysicalWeb (deprecated)"/>
+  <int value="26" label="PhysicalWebOverflow (deprecated)"/>
+  <int value="27" label="Document"/>
+  <int value="28" label="ClipboardText"/>
+  <int value="29" label="ClipboardImage"/>
+  <int value="30" label="TileSuggestion"/>
+  <int value="31" label="HistoryCluster"/>
+  <int value="32" label="OpenTab"/>
+  <int value="33" label="StarterPack"/>
+  <int value="34" label="TabSwitch"/>
+  <int value="35" label="Pedal"/>
+  <int value="36" label="HistoryEmbeddings"/>
+  <int value="37" label="FeaturedEnterpriseSearch"/>
+  <int value="38" label="NullResultMessage"/>
+  <int value="39" label="CrossDeviceTab"/>
+  <int value="40" label="HistoryEmbeddingsAnswer"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/metrics_proto/omnibox_event.proto:ResultType) -->
 
 <!-- LINT.IfChange(OmniboxSearchEngineType) -->
 

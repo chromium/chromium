@@ -12,10 +12,14 @@
 
 struct OmniboxLog;
 
-// These values are logged to UMA. Entries should not be renumbered and numeric
-// values should never be reused. Keep up to date with
-// ClientSummarizedResultType in //tools/metrics/histograms/enums.xml.
-enum class ClientSummarizedResultType {
+// High-level groupings for Omnibox Suggestion ResultTypes, indicating whether
+// the user Searched or Navigated from the omnibox.
+// These values are written to logs. New enum values can be added, but existing
+// enums must never be renumbered or deleted and reused.
+// Must be kept in sync with ClientSummarizedResultType in
+// //tools/metrics/histograms/enums.xml.
+// LINT.IfChange(ClientSummarizedResultType)
+enum class ClientSummarizedResultType : int {
   kUrl = 0,
   kSearch = 1,
   kApp = 2,
@@ -24,6 +28,9 @@ enum class ClientSummarizedResultType {
   kUnknown = 5,
   kMaxValue = kUnknown
 };
+// LINT.ThenChange(
+//     //tools/metrics/histograms/enums.xml:ClientSummarizedResultType
+// )
 
 // OmniboxMetricsProvider is responsible for filling out the |omnibox_event|
 // section of the UMA proto.
@@ -49,14 +56,15 @@ class OmniboxMetricsProvider : public metrics::MetricsProvider {
   // Called when a URL is opened from the Omnibox.
   void OnURLOpenedFromOmnibox(OmniboxLog* log);
 
-  // Records the input text, available choices, and selected entry when the
-  // user uses the Omnibox to open a URL.
-  void RecordOmniboxOpenedURL(const OmniboxLog& log);
+  // Records a set of metrics, e.g., the input text, available choices, and
+  // selected entry, in omnibox_event.proto to log via
+  // `metrics::MetricsProvider`.
+  void RecordOmniboxEvent(const OmniboxLog& log);
 
-  // Records the summary group of the selected Omnibox result. This is recorded
-  // on the client side in addition to being generated on the server side, such
-  // that it can be used by client side code that listens to UMA histograms.
-  void RecordOmniboxOpenedURLClientSummarizedResultType(const OmniboxLog& log);
+  // Records a set of UMA histograms, e.g., the selected result group, and UKM
+  // events from `log`. These client-side metrics are logged in addition to the
+  // ones logged on the server via `metrics::MetricsProvider`.
+  void RecordMetrics(const OmniboxLog& log);
 
   // Subscription for receiving Omnibox event callbacks.
   base::CallbackListSubscription subscription_;

@@ -88,6 +88,12 @@ struct OmniboxLog {
   // user was viewing before going somewhere with the omnibox.
   metrics::OmniboxEventProto::PageClassification current_page_classification;
 
+  // The amount of time since the user focused the omnibox. Recorded regardless
+  // of whether the omnibox popup is open. If a match is opened without
+  // triggering a focus event, e.g., when a user drags a URL to the omnibox to
+  // navigate, this elapsed time is set to -1 milliseconds.
+  base::TimeDelta elapsed_time_since_user_focused_omnibox;
+
   // The amount of time since the user first began modifying the text
   // in the omnibox.  If at some point after modifying the text, the
   // user reverts the modifications (thus seeing the current web

@@ -16144,11 +16144,11 @@ be describing additional metrics about the same event.
   <summary>
     Recorded when the user uses the omnibox to search or navigate.
   </summary>
-  <metric name="ResultType" enum="ClientSummarizedResultType">
+  <metric name="PageClassification" enum="OmniboxPageClassification">
     <summary>
-      A value that indicates if the user searched or navigated from the omnibox.
-      Used to understand which URLs most commonly lead to searches or
-      navigations from the omnibox.
+      The type of page the user was on when they used the omnibox. Corresponds
+      to the PageClassification enum in
+      //third_party/metrics_proto/omnibox_event.proto
     </summary>
     <aggregation>
       <history>
@@ -16157,6 +16157,70 @@ be describing additional metrics about the same event.
         </statistics>
       </history>
     </aggregation>
+  </metric>
+  <metric name="ProviderType" enum="OmniboxProviderType">
+    <summary>
+      The provider type the selected suggestion came from. Corresponds to the
+      ProviderType enum in //third_party/metrics_proto/omnibox_event.proto.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ResultType" enum="OmniboxResultType">
+    <summary>
+      The type of the suggestion the user selected in the omnibox. Corresponds
+      to the ResultType enum in //third_party/metrics_proto/omnibox_event.proto.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ResultTypeGroup" enum="ClientSummarizedResultType">
+    <summary>
+      A value that indicates if the user searched or navigated from the omnibox.
+      Corresponds to the ClientSummarizedResultType enum in
+      //components/omnibox/browser/omnibox_metrics_provider.h.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SelectedIndex">
+    <summary>
+      The index of the suggestion that the user selected in the omnibox popup.
+    </summary>
+  </metric>
+  <metric name="TimeSinceLastFocusMs">
+    <summary>
+      The amount of time, in milliseconds, since the user last focused the
+      omnibox until they searched or navigated from the omnibox. Bucketed into
+      exponential intervals with a standard bucket_spacing of 2.0.
+    </summary>
+  </metric>
+  <metric name="TypedLength">
+    <summary>
+      The number of characters the user typed, excluding autocompletion.
+    </summary>
+  </metric>
+  <metric name="TypingDurationMs">
+    <summary>
+      The amount of time, in milliseconds, since the user first began modifying
+      the text in the omnibox until they searched or navigated from the omnibox.
+      Bucketed into exponential intervals with a standard bucket_spacing of 2.0.
+    </summary>
   </metric>
 </event>
 
