@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -33,7 +34,6 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.Toast;
 
@@ -67,8 +67,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         GradientDrawable backgroundDrawable =
                 ToolbarPhone.createModernLocationBarBackground(getContext());
         backgroundDrawable.setTint(
-                ChromeColors.getSurfaceColor(
-                        getContext(), R.dimen.omnibox_suggestion_bg_elevation));
+                ContextCompat.getColor(getContext(), R.color.omnibox_suggestion_bg));
         backgroundDrawable.setCornerRadius(
                 getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_bg_round_corner_radius));

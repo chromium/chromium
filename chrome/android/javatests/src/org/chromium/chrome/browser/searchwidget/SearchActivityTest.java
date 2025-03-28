@@ -13,16 +13,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import static org.chromium.components.browser_ui.styles.ChromeColors.getSurfaceColor;
-
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.app.PendingIntent;
-import android.content.Context;
-import android.content.res.Resources;
 import android.view.KeyEvent;
 
+import androidx.core.content.ContextCompat;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -77,8 +74,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
-import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.widget.SurfaceColorDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -610,8 +605,7 @@ public class SearchActivityTest {
                                             .build());
                         });
         assertStatusAndNavigationBarColors(
-                searchActivity,
-                searchActivity.getColor(R.color.default_bg_color_dark_elev_3_baseline));
+                searchActivity, searchActivity.getColor(R.color.omnibox_dropdown_bg_incognito));
     }
 
     private void assertStatusAndNavigationBarColors(
@@ -633,26 +627,11 @@ public class SearchActivityTest {
     /**
      * Returns the expected background color for the omnibox in {@code searchActivity}.
      *
-     * <p>Note that we cannot just use {@link ChromeColors#getSurfaceColor(Context, int)}, because
-     * this will use {@link Resources#getDimension(int)} instead of {@link
-     * Resources#getDimensionPixelSize(int)}. We must use the latter to follow the implementation in
-     * {@link SurfaceColorDrawable}.
-     *
      * @param searchActivity The {@link SearchActivity} to use as the context.
      * @return The expected background color for the omnibox in {@code searchActivity}.
      */
     private int getExpectedOmniboxBackgroundColor(SearchActivity searchActivity) {
-        // We need to manually call getDimensionPixelSize to follow the implementation in
-        // https://source.chromium.org/chromium/chromium/src/+/main:components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/SurfaceColorDrawable.java;l=55;drc=a960942dabce805e77af8350c8b616f4f03eae64
-        //
-        // We also need to cast it to a float so that this integer is not treated as a dimension id.
-        return getSurfaceColor(
-                searchActivity,
-                (float)
-                        searchActivity
-                                .getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.omnibox_suggestion_dropdown_bg_elevation));
+        return ContextCompat.getColor(searchActivity, R.color.omnibox_suggestion_dropdown_bg);
     }
 
     private void assertColorsEqual(int expected, int actual) {

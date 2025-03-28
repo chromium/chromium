@@ -179,8 +179,8 @@ public class StatusBarColorController
 
         // TODO(b/41494931): Share code with LocationBarCoordinator's constructor.
         mActiveOmniboxDefaultColor =
-                ChromeColors.getSurfaceColor(
-                        context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+                ContextCompat.getColor(context, R.color.omnibox_suggestion_dropdown_bg);
+
         mIncognitoActiveOmniboxColor = context.getColor(R.color.omnibox_dropdown_bg_incognito);
         // TODO(b/41494931): Share code with ToolbarPhone#getToolbarDefaultColor().
         mStandardScrolledOmniboxColor =
