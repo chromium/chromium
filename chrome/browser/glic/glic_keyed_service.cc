@@ -79,11 +79,15 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
   // is shown for testing convenience.
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(::switches::kGlicAlwaysOpenFre)) {
-    profile_->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, false);
+    profile_->GetPrefs()->SetInteger(
+        prefs::kGlicCompletedFre,
+        static_cast<int>(prefs::FreStatus::kNotStarted));
   }
   // If automation is enabled do the opposite.
   if (command_line->HasSwitch(::switches::kGlicAutomation)) {
-    profile_->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
+    profile_->GetPrefs()->SetInteger(
+        prefs::kGlicCompletedFre,
+        static_cast<int>(prefs::FreStatus::kCompleted));
   }
 
   if (base::FeatureList::IsEnabled(features::kGlicActor)) {
