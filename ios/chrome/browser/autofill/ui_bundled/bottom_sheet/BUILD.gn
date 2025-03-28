@@ -44,6 +44,8 @@ source_set("bottom_sheet") {
     "save_card_bottom_sheet_coordinator.mm",
     "save_card_bottom_sheet_mediator.h",
     "save_card_bottom_sheet_mediator.mm",
+    "settings_autofill_edit_profile_bottom_sheet_handler.h",
+    "settings_autofill_edit_profile_bottom_sheet_handler.mm",
   ]
   deps = [
     ":bottom_sheet_ui",
