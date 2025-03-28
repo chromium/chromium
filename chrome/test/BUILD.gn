@@ -7956,6 +7956,7 @@ test("unit_tests") {
 
     deps += [
       "//chrome/browser/contextual_cueing:unit_tests",
+      "//chrome/browser/task_manager/common",
       "//chrome/browser/ui/bookmarks:unit_tests",
       "//chrome/browser/ui/safety_hub",
       "//chrome/browser/ui/startup:startup_tab",
