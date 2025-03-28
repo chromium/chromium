@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 #include "third_party/blink/renderer/core/frame/overlay_interstitial_ad_detector.h"
 #include "third_party/blink/renderer/core/frame/sticky_ad_detector.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/paint/layout_object_counter.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_request_forward.h"
@@ -122,7 +123,6 @@ class TransformState;
 class WebPluginContainerImpl;
 struct DraggableRegionValue;
 struct NaturalSizingInfo;
-struct PhysicalOffset;
 struct PhysicalRect;
 
 enum class PaintBenchmarkMode;
