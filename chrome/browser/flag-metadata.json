@@ -4476,6 +4476,11 @@
     "expiry_milestone": 150
   },
   {
+      "name": "explain-gemini-edit-menu",
+      "owners": ["prasanaa@google.com", "adamta@google.com", "bling-alchemy-eng@google.com"],
+      "expiry_milestone":150
+  },
+  {
     "name": "extension-disable-unsupported-developer-mode-extensions",
     "owners": [ "richche@google.com" ],
     "expiry_milestone": 143
