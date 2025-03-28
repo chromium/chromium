@@ -1287,7 +1287,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
   if (node->IsCollection()) {
     Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoCollectionInfo(
         env, obj, info, node->RowCount(), node->ColumnCount(),
-        node->IsHierarchical());
+        node->IsHierarchical(), node->GetSelectionMode());
   }
   if (node->IsCollectionItem() || node->IsTableHeader()) {
     Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoCollectionItemInfo(

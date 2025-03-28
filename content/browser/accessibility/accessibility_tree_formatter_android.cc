@@ -78,6 +78,7 @@ const char* const INT_ATTRIBUTES[] = {
     "range_current_value",
     "text_change_added_count",
     "text_change_removed_count",
+    "selection_mode",
 };
 
 const char* const ACTION_ATTRIBUTES[] = {
@@ -216,6 +217,7 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->Set("text_change_added_count", android_node->GetTextChangeAddedCount());
   dict->Set("text_change_removed_count",
             android_node->GetTextChangeRemovedCount());
+  dict->Set("selection_mode", android_node->GetSelectionMode());
 
   // Actions.
   dict->Set("action_expand", android_node->IsCollapsed());
