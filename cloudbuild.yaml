@@ -101,7 +101,6 @@ steps:
     args:
         - '-c'
         - |
-            export PATH="/workspace/depot_tools:$PATH"
             # Set EDITOR to a command that does nothing and exits successfully
             export EDITOR=/bin/true
             set -e
