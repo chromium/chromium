@@ -372,13 +372,9 @@ void OnDeviceModelServiceController::StartValidation() {
 
 void OnDeviceModelServiceController::FinishValidation(
     OnDeviceModelValidationResult result) {
-  if (!model_validator_) {
-    return;
-  }
-
+  DCHECK(model_validator_);
   base::UmaHistogramEnumeration(
       "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", result);
-
   model_validator_ = nullptr;
   access_controller_->OnValidationFinished(result);
 }
@@ -416,7 +412,6 @@ void OnDeviceModelServiceController::OnBaseModelDisconnected() {
   LOG(ERROR) << "Base model disconnected unexpectedly.";
   base_model_remote_.reset();
   access_controller_->OnDisconnectedFromRemote();
-  FinishValidation(OnDeviceModelValidationResult::kServiceCrash);
 }
 
 void OnDeviceModelServiceController::OnBaseModelRemoteIdle() {
