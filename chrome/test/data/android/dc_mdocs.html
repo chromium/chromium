@@ -23,7 +23,7 @@
         }]
       }
     });
-   const token = mdoc.data;
+   const token = mdoc.data.token;
    document.getElementById("log").textContent += `${token}`;
   }
 
@@ -59,7 +59,7 @@
           }
       }
     });
-   const token = response.data;
+   const token = response.data.token;
    document.getElementById("log").textContent += `${token}`;
   }
 

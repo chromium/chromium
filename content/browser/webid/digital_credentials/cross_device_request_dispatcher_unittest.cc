@@ -27,6 +27,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+using base::JSONReader;
 using testing::NiceMock;
 
 namespace content::digital_credentials::cross_device {
@@ -138,7 +139,8 @@ TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, ValidLegacyFormat) {
       device::cablev2::PayloadType::kJSON,
       R"({"response": {"digital": {"data": {"vp_token" : "token"}}}})");
   ASSERT_TRUE(result.has_value());
-  ASSERT_EQ(result.value()->data, R"({"vp_token":"token"})");
+  ASSERT_EQ(result.value()->data,
+            JSONReader::Read(R"({"vp_token":"token"})").value());
   EXPECT_FALSE(result.value()->protocol.has_value());
 }
 
@@ -206,7 +208,8 @@ TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, NewResponseFormat) {
            }
          })");
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value()->data, R"({"key":"value"})");
+  EXPECT_EQ(result.value()->data,
+            JSONReader::Read(R"({"key":"value"})").value());
   EXPECT_EQ(result.value()->protocol, "ProtocolInResponse");
 }
 
@@ -224,7 +227,8 @@ TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest,
            }
          })");
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value()->data, R"({"key":"value"})");
+  EXPECT_EQ(result.value()->data,
+            JSONReader::Read(R"({"key":"value"})").value());
   EXPECT_FALSE(result.value()->protocol.has_value());
 }
 
