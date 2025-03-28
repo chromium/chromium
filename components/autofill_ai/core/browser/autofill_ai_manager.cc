@@ -149,6 +149,9 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
   for (auto& [section, entity_to_attributes] :
        section_to_entity_types_attributes) {
     for (auto& [entity_name, attributes] : entity_to_attributes) {
+      if (attributes.empty()) {
+        continue;
+      }
       EntityInstance entity = EntityInstance(
           EntityType(entity_name),
           base::ToVector(
