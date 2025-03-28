@@ -16,6 +16,8 @@
 
 namespace trusted_vault {
 class SecureBoxKeyPair;
+
+enum class SecurityDomainId;
 }  // namespace trusted_vault
 
 namespace device::enclave {
@@ -36,10 +38,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ICloudRecoveryKey {
 
   // Creates, stores in iCloud Keychain, and returns an ICloudRecoveryKey.
   static void Create(CreateCallback callback,
+                     trusted_vault::SecurityDomainId security_domain_id,
                      std::string_view keychain_access_group);
 
   // Retrieves from iCloud Keychain all ICloudRecoveryKeys.
   static void Retrieve(RetrieveCallback callback,
+                       trusted_vault::SecurityDomainId security_domain_id,
                        std::string_view keychain_access_group);
 
   // Randomly generates an ICloudRecoveryKey that is not persisted to the
@@ -52,10 +56,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ICloudRecoveryKey {
  private:
   // Like |Create| but synchronous.
   static std::unique_ptr<ICloudRecoveryKey> CreateAndStoreKeySlowly(
+      trusted_vault::SecurityDomainId security_domain_id,
       std::string_view keychain_access_group);
 
   // Like |Retrieve| but synchronous.
   static std::vector<std::unique_ptr<ICloudRecoveryKey>> RetrieveKeysSlowly(
+      trusted_vault::SecurityDomainId security_domain_id,
       std::string_view keychain_access_group);
 
   explicit ICloudRecoveryKey(

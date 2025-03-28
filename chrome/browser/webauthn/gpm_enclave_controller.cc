@@ -687,6 +687,7 @@ void GPMEnclaveController::RecoverSecurityDomain() {
   device::enclave::ICloudRecoveryKey::Retrieve(
       base::BindOnce(&GPMEnclaveController::OnICloudKeysRetrievedForRecovery,
                      weak_ptr_factory_.GetWeakPtr()),
+      trusted_vault::SecurityDomainId::kPasskeys,
       kICloudKeychainRecoveryKeyAccessGroup);
 #else
   model_->SetStep(Step::kRecoverSecurityDomain);
@@ -699,6 +700,7 @@ void GPMEnclaveController::MaybeAddICloudRecoveryKey() {
   device::enclave::ICloudRecoveryKey::Retrieve(
       base::BindOnce(&GPMEnclaveController::OnICloudKeysRetrievedForEnrollment,
                      weak_ptr_factory_.GetWeakPtr()),
+      trusted_vault::SecurityDomainId::kPasskeys,
       kICloudKeychainRecoveryKeyAccessGroup);
 }
 
@@ -730,6 +732,7 @@ void GPMEnclaveController::OnICloudKeysRetrievedForEnrollment(
   device::enclave::ICloudRecoveryKey::Create(
       base::BindOnce(&GPMEnclaveController::EnrollICloudRecoveryKey,
                      weak_ptr_factory_.GetWeakPtr()),
+      trusted_vault::SecurityDomainId::kPasskeys,
       kICloudKeychainRecoveryKeyAccessGroup);
 }
 
