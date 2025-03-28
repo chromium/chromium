@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Resources for Scanner. -->
+  <include name="IDR_SCANNER_DISCLAIMER_ILLUSTRATION_PNG" file="../resources/internal/scanner_disclaimer_illustration.png" type="BINDATA" />
+</grit-part>

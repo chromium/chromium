@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
@@ -21,6 +20,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "build/branding_buildflags.h"
+#include "chromeos/ash/grit/ash_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,7 +60,7 @@ constexpr int kBetweenButtonsSpacing = 8;
 constexpr int kButtonHeight = 32;
 constexpr int kContainerBottomPadding = 28;
 constexpr int kContainerPadding = 32;
-constexpr int kImageHeight = 236;
+constexpr int kImageHeight = 260;
 constexpr int kImageWidth = 512;
 constexpr int kWidgetWidth = kImageWidth;
 constexpr int kRadius = 20;
@@ -181,6 +181,15 @@ views::Builder<views::StyledLabel> GetParagraphThreeBuilder(
       .SetID(DisclaimerViewId::kDisclaimerViewParagraphThreeId);
 }
 
+ui::ImageModel GetDisclaimerIllustration() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return ui::ImageModel::FromResourceId(
+      IDR_SCANNER_DISCLAIMER_ILLUSTRATION_PNG);
+#else
+  return ui::ImageModel();
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
 }  // namespace
 
 DisclaimerView::DisclaimerView(
@@ -196,9 +205,11 @@ DisclaimerView::DisclaimerView(
       cros_tokens::kCrosSysDialogContainer, kRadius));
   SetPaintToLayer();
   AddChildView(views::Builder<views::ImageView>()
-                   .SetImage(ui::ImageModel::FromResourceId(
-                       IDR_MAGIC_BOOST_DISCLAIMER_ILLUSTRATION))
+                   .SetImage(GetDisclaimerIllustration())
+                   .SetImageSize(kImagePreferredSize)
                    .SetPreferredSize(kImagePreferredSize)
+                   .SetBackground(views::CreateSolidBackground(
+                       cros_tokens::kCrosSysIlloColor12))
                    .Build());
 
   AddChildView(
