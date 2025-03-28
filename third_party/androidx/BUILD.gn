@@ -528,7 +528,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_credentials_credentials_java") {
-    aar_path = "../androidx/cipd/libs/androidx_credentials_credentials/credentials-1.5.0.aar"
+    aar_path = "../androidx/cipd/libs/androidx_credentials_credentials/credentials-1.6.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_credentials_credentials/androidx_credentials_credentials.info"
     enable_bytecode_checks = false
     deps = [
@@ -536,6 +536,7 @@ if (!limit_android_deps) {
       ":androidx_biometric_biometric_java",
       ":androidx_core_core_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -543,7 +544,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_credentials_credentials_play_services_auth_java") {
-    aar_path = "../androidx/cipd/libs/androidx_credentials_credentials_play_services_auth/credentials-play-services-auth-1.5.0.aar"
+    aar_path = "../androidx/cipd/libs/androidx_credentials_credentials_play_services_auth/credentials-play-services-auth-1.6.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_credentials_credentials_play_services_auth/androidx_credentials_credentials_play_services_auth.info"
     enable_bytecode_checks = false
     deps = [
@@ -2937,6 +2938,8 @@ if (!limit_android_deps) {
       ":androidx_lifecycle_lifecycle_viewmodel_savedstate_java",
       ":androidx_navigation_navigation_common_java",
       ":androidx_navigation_navigation_runtime_java",
+      ":androidx_savedstate_savedstate_compose_java",
+      ":androidx_savedstate_savedstate_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_serialization_core_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
@@ -3081,6 +3084,38 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_annotation_annotation_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_savedstate_savedstate_compose_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_savedstate_savedstate_compose_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt(
+      "androidx_savedstate_savedstate_compose_android_java") {
+    aar_path = "../androidx/cipd/libs/androidx_savedstate_savedstate_compose_android/savedstate-compose-android-1.3.0-SNAPSHOT.aar"
+    info_path = "../androidx/committed/libs/androidx_savedstate_savedstate_compose_android/androidx_savedstate_savedstate_compose_android.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_compose_runtime_runtime_java",
+      ":androidx_core_core_ktx_java",
+      ":androidx_savedstate_savedstate_java",
     ]
   }
 

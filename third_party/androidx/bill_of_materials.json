@@ -387,12 +387,12 @@
     {
         "name": "credentials",
         "group": "androidx.credentials",
-        "version": "1.5.0"
+        "version": "1.6.0-SNAPSHOT"
     },
     {
         "name": "credentials-play-services-auth",
         "group": "androidx.credentials",
-        "version": "1.5.0"
+        "version": "1.6.0-SNAPSHOT"
     },
     {
         "name": "cursoradapter",
@@ -850,6 +850,16 @@
         "version": "1.3.0-SNAPSHOT"
     },
     {
+        "name": "savedstate-compose",
+        "group": "androidx.savedstate",
+        "version": "1.3.0-SNAPSHOT"
+    },
+    {
+        "name": "savedstate-compose-android",
+        "group": "androidx.savedstate",
+        "version": "1.3.0-SNAPSHOT"
+    },
+    {
         "name": "savedstate-ktx",
         "group": "androidx.savedstate",
         "version": "1.3.0-SNAPSHOT"
@@ -1272,7 +1282,7 @@
     {
         "name": "kotlin-stdlib-jdk7",
         "group": "org.jetbrains.kotlin",
-        "version": "1.9.0"
+        "version": "1.8.20"
     },
     {
         "name": "kotlin-stdlib-jdk8",
