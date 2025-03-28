@@ -4547,6 +4547,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_BOOKMARK_PAGE_MOVED_LOCATION" desc="App-based message shown after user moves a bookmark to specify the location of a bookmark. [CHAR_LIMIT=32]">
         to <ph name="PRODUCT_NAME">%1$s<ex>Reading List</ex></ph>
       </message>
+      <message name="IDS_BOOKMARK_WIDGET_DESCRIPTION" desc="Description text for the bookmark widget">
+        Easily access your bookmarks
+      </message>
 
       <!-- Bookmark bar strings -->
       <message name="IDS_BOOKMARK_BAR_BUTTON_ICON_CONTENT_DESCRIPTION" desc="The content description for a bookmark bar button icon.">
@@ -5737,6 +5740,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_IPH_DOWNLOAD_INFOBAR_DOWNLOAD_CONTINUING_TEXT" desc="The in-product-help message on the download InfoBar to inform that download is still continuing.">
         Your download is still in progress
       </message>
+      <message name="IDS_SEARCH_WIDGET_DESCRIPTION" desc="Description text for the search widget">
+        Quickly start a search in Chrome
+      </message>
 
       <!-- Quick Action Search Widget -->
       <message name="IDS_QUICK_ACTION_SEARCH_WIDGET_SEARCH_BAR_HINT" desc="Hint text for to search box on the quick action search widget">
@@ -5754,10 +5760,16 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_QUICK_ACTION_SEARCH_WIDGET_MESSAGE_NO_GOOGLE_LENS" desc="Toast message shown when the user tries to use Google Lens which is disabled on the device.">
         Google Lens is not available on this device
       </message>
+      <message name="IDS_QUICK_ACTION_SEARCH_WIDGET_DESCRIPTION" desc="Description text for the quick action search widget">
+        Search using keyboard, voice, Incognito, or camera
+      </message>
 
       <!-- Dino Widget -->
       <message name="IDS_DINO_WIDGET_TEXT" desc="Text displayed on the Dino Widget. One medium-length or two short words max (area for about 10em)">
               Chrome Dino
+      </message>
+      <message name="IDS_DINO_WIDGET_DESCRIPTION" desc="Description text for the dino widget">
+        Jump into a fun Dino game
       </message>
 
       <!-- Launcher Shortcuts -->
