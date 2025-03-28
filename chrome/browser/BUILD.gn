@@ -4755,6 +4755,8 @@ static_library("browser") {
       "metrics/enrollment_status.h",
       "metrics/family_user_metrics_provider.cc",
       "metrics/family_user_metrics_provider.h",
+      "metrics/k12_age_classification_metrics_provider.cc",
+      "metrics/k12_age_classification_metrics_provider.h",
       "metrics/per_user_state_manager_chromeos.cc",
       "metrics/per_user_state_manager_chromeos.h",
       "metrics/perf/collection_params.cc",
