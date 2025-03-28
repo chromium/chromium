@@ -415,7 +415,7 @@ const CGFloat kSeparatorHeight = 0.5;
           tabResumptionItem.shopCardData.shopCardItemType ==
               ShopCardItemType::kPriceTrackableProductOnTab) {
         return l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_TITLE);
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_ALT_TITLE_2);
       }
       return l10n_util::GetNSString(IDS_IOS_TAB_RESUMPTION_TITLE);
     }
