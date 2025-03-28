@@ -24495,6 +24495,25 @@
             ]
         }
     ],
+    "UnoDesktopM0FollowUpPart2": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableImprovedGuestProfileMenu",
+                        "EnablePendingModePasswordsPromo",
+                        "EnableSnackbarInSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnoPhase2FastFollowsAndroid": [
         {
             "platforms": [
