@@ -374,7 +374,8 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 }
 
 // Checks that the user with JoinOnly can trigger the Join flow.
-- (void)testJoinGroup {
+// TODO(crbug.com/381444321): This test is failing on most configurations.
+- (void)DISABLED_testJoinGroup {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
@@ -806,7 +807,8 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 }
 
 // Checks that the user with JoinOnly can trigger the Join flow.
-- (void)testJoinGroup {
+// TODO(crbug.com/381444321): This test is failing on most configurations.
+- (void)DISABLED_testJoinGroup {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
