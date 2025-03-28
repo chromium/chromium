@@ -120,7 +120,6 @@ SelectBnplIssuerDialog::SelectBnplIssuerDialog(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kText));
-  SetTitle(controller_->GetTitle());
   SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::BoxLayout::Orientation::kVertical);
 
@@ -169,8 +168,7 @@ void SelectBnplIssuerDialog::AddedToWidget() {
   // Widget.
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAfterLabelView>(
-          // TODO(crbug.com/356443046): Move to resources and translate string.
-          u"Choose a pay over time provider",
+          controller_->GetTitle(),
           TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
 }
 
