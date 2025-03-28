@@ -27389,6 +27389,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarTabMenu.MoveTabToNewWindow">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User moved a tab to a new window via the tab context menu on tab strip on
+    Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabMenu.MoveTabToOtherWindow">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User moved a tab to another window via the tab context menu on tab strip on
+    Android.
+  </description>
+</action>
+
 <action name="MobileToolbarTabMenu.RemoveFromTabGroup">
   <owner>jhimawan@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
