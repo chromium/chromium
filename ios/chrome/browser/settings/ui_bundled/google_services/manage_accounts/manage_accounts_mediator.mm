@@ -177,10 +177,9 @@
   identityViewItem.userFullName = identity.userFullName;
   identityViewItem.gaiaID = identity.gaiaID;
   identityViewItem.managed = [self isIdentityKnownToBeManaged:identity];
-  IdentityAvatarSize avatarSize =
-      base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)
-          ? IdentityAvatarSize::Regular
-          : IdentityAvatarSize::TableViewIcon;
+  IdentityAvatarSize avatarSize = IsIdentityDiscAccountMenuEnabled()
+                                      ? IdentityAvatarSize::Regular
+                                      : IdentityAvatarSize::TableViewIcon;
   identityViewItem.avatar = [self identityAvatarWithSizeForIdentity:identity
                                                                size:avatarSize];
   identityViewItem.accessibilityIdentifier = identity.userEmail;

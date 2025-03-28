@@ -856,7 +856,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 }
 
 - (void)didAcceptManagedConfirmation:(BOOL)keepBrowsingDataSeparate {
-  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+  if (IsIdentityDiscAccountMenuEnabled()) {
     // Only show the dialog once per account.
     signin::GaiaIdHash gaiaIDHash =
         signin::GaiaIdHash::FromGaiaId(GaiaId(_identityToSignIn.gaiaID));

@@ -268,7 +268,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   self.identityDiscView.translatesAutoresizingMaskIntoConstraints = NO;
   CGFloat dimension =
       ntp_home::kIdentityAvatarDimension + 2 * ntp_home::kHeaderIconMargin;
-  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+  if (IsIdentityDiscAccountMenuEnabled()) {
     // Add extra margin to show the error badge if any.
     dimension += ntp_home::kHeaderIconMargin;
   }
