@@ -114,7 +114,7 @@ std::string UploadCardRequest::GetRequestContent() {
                                    true)
             .c_str());
   }
-  VLOG(3) << "savecard request body: " << request_content;
+  DVLOG(3) << "savecard request body: " << request_content;
   return request_content;
 }
 

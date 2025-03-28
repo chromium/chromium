@@ -68,7 +68,8 @@ std::string CreateBnplPaymentInstrumentRequest::GetRequestContent() {
   std::string request_content = base::StringPrintf(
       kCreateBnplPaymentInstrumentRequestFormat,
       base::EscapeUrlEncodedData(json_request, true).c_str());
-  VLOG(3) << "create bnpl payment instrument request body: " << request_content;
+  DVLOG(3) << "create bnpl payment instrument request body: "
+           << request_content;
   return request_content;
 }
 
