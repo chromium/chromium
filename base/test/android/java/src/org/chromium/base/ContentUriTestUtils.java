@@ -6,11 +6,15 @@ package org.chromium.base;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.provider.MediaStore;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
+
+import java.util.concurrent.CompletableFuture;
 
 /** Utilities for testing operations on content URI. */
 public class ContentUriTestUtils {
@@ -41,13 +45,39 @@ public class ContentUriTestUtils {
                     .toString();
         }
 
-        // Insert the content URI into MediaStore.
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.MediaColumns.DATA, path);
-        Uri uri =
-                ContextUtils.getApplicationContext()
-                        .getContentResolver()
-                        .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        return uri.toString();
+        try {
+            // Insert the content URI into MediaStore.
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.MediaColumns.DATA, path);
+            Uri uri =
+                    ContextUtils.getApplicationContext()
+                            .getContentResolver()
+                            .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            return uri.toString();
+        } catch (SQLException e) {
+            // Although we have already checked via a call to query() that the database does not
+            // contain the path to the image file, inserting the path to the database can still fail
+            // and the database will claim that the path being inserted already exists.
+            // This is a known issue and is documented in the following StackOverflow post:
+            // https://stackoverflow.com/questions/22184729/sqliteconstraintexception-thrown-when-trying-to-insert
+            CompletableFuture<Uri> future = new CompletableFuture();
+            MediaScannerConnection.scanFile(
+                    ContextUtils.getApplicationContext(),
+                    new String[] {path},
+                    null,
+                    new MediaScannerConnection.OnScanCompletedListener() {
+                        @Override
+                        public void onScanCompleted(String scannedPath, Uri scannedUri) {
+                            if (scannedPath.equals(path)) {
+                                future.complete(scannedUri);
+                            }
+                        }
+                    });
+            try {
+                return future.get().toString();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 }
