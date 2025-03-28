@@ -7842,6 +7842,24 @@
             ]
         }
     ],
+    "DesktopNtpOneGoogleBarAsyncBarParts": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NtpOneGoogleBarAsyncBarParts"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopNtpTabResumption": [
         {
             "platforms": [
