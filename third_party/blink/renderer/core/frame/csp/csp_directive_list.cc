@@ -325,13 +325,14 @@ bool AreAllMatchingIntegrityChecksPresent(
 
   // Check that all hashes present in the integrity metadata are allowed
   // by the relevant policy:
-  for (const IntegrityMetadataPair& hash : integrity_metadata.hashes) {
+  for (const IntegrityMetadata& hash : integrity_metadata.hashes) {
     // Convert the hash from integrity metadata format to CSP format.
     network::mojom::blink::CSPHashSourcePtr csp_hash =
         network::mojom::blink::CSPHashSource::New();
-    csp_hash->algorithm = hash.second;
-    if (!ParseBase64Digest(hash.first, csp_hash->value))
+    csp_hash->algorithm = hash.algorithm;
+    if (!ParseBase64Digest(hash.digest, csp_hash->value)) {
       return false;
+    }
     // All integrity hashes must be listed in the CSP.
     if (!CSPSourceListAllowHash(*directive, *csp_hash))
       return false;
@@ -339,12 +340,12 @@ bool AreAllMatchingIntegrityChecksPresent(
 
   // Now check that all public keys present in the integrity metadata are
   // allowed by the relevant policy:
-  for (const IntegrityMetadataPair& key : integrity_metadata.public_keys) {
+  for (const IntegrityMetadata& key : integrity_metadata.public_keys) {
     // Convert the hash from integrity metadata format to CSP format.
     network::mojom::blink::CSPHashSourcePtr csp_hash =
         network::mojom::blink::CSPHashSource::New();
-    csp_hash->algorithm = key.second;
-    if (!ParseBase64Digest(key.first, csp_hash->value)) {
+    csp_hash->algorithm = key.algorithm;
+    if (!ParseBase64Digest(key.digest, csp_hash->value)) {
       return false;
     }
     // All integrity hashes must be listed in the CSP.
