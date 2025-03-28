@@ -32,7 +32,7 @@
 #include "components/webdata/common/webdata_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
+#include "third_party/search_engines_data/resources/definitions/regional_settings.h"
 
 namespace {
 
@@ -400,9 +400,9 @@ TEST_F(TemplateURLServiceUtilLoadTest,
   prefs().SetInteger(country_codes::kCountryIDAtInstall,
                      kEeaCountryId.GetForTesting().Serialize());
   const size_t kEeaKeywordEnginesCount =
-      TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
-          kEeaCountryId.GetForTesting())
-          .size();
+      TemplateURLPrepopulateData::kRegionalSettings
+          .find(kEeaCountryId.GetForTesting())
+          ->second->search_engines.size();
 
   const KeywordTestMetadata kDefaultUpdatedState = {
       .data_version = kCurrentDataVersion,

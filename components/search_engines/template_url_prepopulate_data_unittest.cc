@@ -259,8 +259,8 @@ TEST_F(TemplateURLPrepopulateDataTest, EntriesPerCountryConsistency) {
 
     // Pulled straight from the country -> engine mapping.
     auto expected_urls = base::ToVector(
-        TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
-            country_id),
+        TemplateURLPrepopulateData::kRegionalSettings.find(country_id)
+            ->second->search_engines,
         &TemplateURLPrepopulateData::PrepopulatedEngine::search_url);
 
     EXPECT_THAT(actual_urls, testing::UnorderedElementsAreArray(expected_urls));
@@ -644,11 +644,10 @@ TEST_F(TemplateURLPrepopulateDataTest, FindGoogleAsFallback) {
   // Google is first in US, so confirm index 0.
   CountryId us_country_id("US");
   OverrideCountryId(us_country_id);
-  EXPECT_EQ(
-      TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
-          us_country_id)[0]
-          ->id,
-      TemplateURLPrepopulateData::google.id);
+  EXPECT_EQ(TemplateURLPrepopulateData::kRegionalSettings.find(us_country_id)
+                ->second->search_engines[0]
+                ->id,
+            TemplateURLPrepopulateData::google.id);
 
   fallback_url = prepopulate_data_resolver().GetFallbackSearch();
   EXPECT_EQ(fallback_url->prepopulate_id,
@@ -661,11 +660,10 @@ TEST_F(TemplateURLPrepopulateDataTest, FindGoogleAsFallback) {
   CountryId cn_country_id("CN");
   OverrideCountryId(cn_country_id);
   fallback_url = prepopulate_data_resolver().GetFallbackSearch();
-  EXPECT_NE(
-      TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
-          cn_country_id)[0]
-          ->id,
-      TemplateURLPrepopulateData::google.id);
+  EXPECT_NE(TemplateURLPrepopulateData::kRegionalSettings.find(cn_country_id)
+                ->second->search_engines[0]
+                ->id,
+            TemplateURLPrepopulateData::google.id);
   EXPECT_TRUE(fallback_url);
   EXPECT_EQ(fallback_url->prepopulate_id,
             TemplateURLPrepopulateData::google.id);
@@ -715,32 +713,6 @@ TEST_F(TemplateURLPrepopulateDataTest, GetLocalPrepopulatedEngines) {
               testing::IsEmpty());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-TEST_F(TemplateURLPrepopulateDataTest, GeneratedDataAgreesWithExistingData) {
-  // Confirmation check.
-  ASSERT_EQ(std::size(kAllCountryIds),
-            TemplateURLPrepopulateData::kRegionalSettings.size());
-
-  for (CountryId country_code : kAllCountryIds) {
-    const auto new_settings_iter =
-        TemplateURLPrepopulateData::kRegionalSettings.find(country_code);
-    ASSERT_NE(new_settings_iter,
-              TemplateURLPrepopulateData::kRegionalSettings.end());
-
-    const auto& new_settings = new_settings_iter->second;
-    const auto& old_settings =
-        TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
-            country_code);
-
-    auto old_engines_iter = old_settings.begin();
-    for (const auto& new_top_engine : new_settings->search_engines) {
-      ASSERT_EQ(new_top_engine, old_engines_iter->get());
-      ++old_engines_iter;
-    }
-
-    ASSERT_EQ(old_engines_iter, old_settings.end());
-  }
-}
 
 struct UpdateRequirementsTestParams {
   std::string test_case_name;
@@ -908,8 +880,8 @@ class TemplateURLPrepopulateDataListTest
     TemplateURLPrepopulateDataTest::SetUp();
     OverrideCountryId(country_id_);
     for (const auto& engine :
-         TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
-             country_id_)) {
+         TemplateURLPrepopulateData::kRegionalSettings.find(country_id_)
+             ->second->search_engines) {
       id_to_engine_[engine->id] = engine;
     }
   }
