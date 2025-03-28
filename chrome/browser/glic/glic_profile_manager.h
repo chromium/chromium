@@ -70,6 +70,8 @@ class GlicProfileManager {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  bool IsShowing() const;
+
   // Static in order to permit setting forced values before the manager is
   // constructed.
   static void ForceProfileForLaunchForTesting(Profile* profile);

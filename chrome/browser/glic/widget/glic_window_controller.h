@@ -204,6 +204,9 @@ class GlicWindowController : public views::WidgetObserver,
   // Virtual for testing.
   virtual bool IsShowing() const;
 
+  // Returns true if either the glic panel or the FRE are showing.
+  virtual bool IsPanelOrFreShowing() const;
+
   // Returns whether or not the glic window is currently attached to a browser.
   // Virtual for testing.
   virtual bool IsAttached() const;

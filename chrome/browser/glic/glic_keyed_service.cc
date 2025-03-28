@@ -71,6 +71,10 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
   metrics_->SetControllers(window_controller_.get(), &focused_tab_manager_);
 
+  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
+      FROM_HERE, base::BindRepeating(&GlicKeyedService::OnMemoryPressure,
+                                     weak_ptr_factory_.GetWeakPtr()));
+
   // If `--glic-always-open-fre` is present, unset this pref to ensure the FRE
   // is shown for testing convenience.
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -363,6 +367,17 @@ void GlicKeyedService::TryPreloadFre() {
 
 void GlicKeyedService::Reload() {
   window_controller().Reload();
+}
+
+void GlicKeyedService::OnMemoryPressure(
+    base::MemoryPressureListener::MemoryPressureLevel level) {
+  if (level == base::MemoryPressureListener::MemoryPressureLevel::
+                   MEMORY_PRESSURE_LEVEL_NONE ||
+      (this == GlicProfileManager::GetInstance()->GetLastActiveGlic())) {
+    return;
+  }
+
+  CloseUI();
 }
 
 base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {

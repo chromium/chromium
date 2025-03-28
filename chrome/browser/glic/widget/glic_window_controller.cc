@@ -1393,6 +1393,10 @@ bool GlicWindowController::IsShowing() const {
   return !(state_ == State::kClosed || state_ == State::kCloseAnimation);
 }
 
+bool GlicWindowController::IsPanelOrFreShowing() const {
+  return IsShowing() || fre_controller_->IsShowingDialog();
+}
+
 bool GlicWindowController::IsAttached() const {
   return attached_browser_ != nullptr;
 }
