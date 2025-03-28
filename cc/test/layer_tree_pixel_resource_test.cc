@@ -6,7 +6,6 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "cc/layers/layer.h"
-#include "cc/raster/bitmap_raster_buffer_provider.h"
 #include "cc/raster/gpu_raster_buffer_provider.h"
 #include "cc/raster/one_copy_raster_buffer_provider.h"
 #include "cc/raster/raster_buffer_provider.h"
@@ -77,7 +76,7 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
       EXPECT_FALSE(compositor_context_provider);
       EXPECT_TRUE(use_software_renderer());
 
-      return std::make_unique<BitmapRasterBufferProvider>(
+      return std::make_unique<ZeroCopyRasterBufferProvider>(
           host_impl->layer_tree_frame_sink());
     case TestRasterType::kGpu:
       EXPECT_TRUE(compositor_context_provider);
