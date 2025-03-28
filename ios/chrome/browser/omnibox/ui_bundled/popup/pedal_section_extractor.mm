@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_pedal.h"
@@ -53,14 +54,14 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
 }
 
 - (id<AutocompleteSuggestionGroup>)extractPedals:
-    (NSArray<id<AutocompleteSuggestion>>*)suggestions {
+    (NSArray<AutocompleteMatchFormatter*>*)suggestions {
   self.originalResult = suggestions;
   // Extract pedals
   NSMutableArray* extractedPedals = [[NSMutableArray alloc] init];
   for (NSUInteger i = 0; i < suggestions.count; i++) {
-    id<AutocompleteSuggestion> suggestion = suggestions[i];
-    if (suggestion.pedal != nil) {
-      [extractedPedals addObject:suggestion.pedal];
+    AutocompleteMatchFormatter* suggestion = suggestions[i];
+    if (suggestion.pedalData != nil) {
+      [extractedPedals addObject:suggestion.pedalData];
     }
   }
 

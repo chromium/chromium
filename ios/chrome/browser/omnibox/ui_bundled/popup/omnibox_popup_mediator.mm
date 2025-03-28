@@ -41,8 +41,6 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mediator+Testing.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_presenter.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_section_extractor.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_swift.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/suggest_action.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -67,8 +65,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 // FET reference.
 @property(nonatomic, assign) feature_engagement::Tracker* tracker;
-/// Extracts pedals from AutocompleSuggestions.
-@property(nonatomic, strong) PedalSectionExtractor* pedalSectionExtractor;
 /// Index of the group containing AutocompleteSuggestion, first group to be
 /// highlighted on down arrow key.
 @property(nonatomic, assign) NSInteger preselectedGroupIndex;
@@ -196,21 +192,18 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     [self logActionsInSuggestShownForCurrentResult];
   }
 
-  if ([suggestion isKindOfClass:[PedalSuggestionWrapper class]]) {
-    PedalSuggestionWrapper* pedalSuggestionWrapper =
-        (PedalSuggestionWrapper*)suggestion;
-    if (pedalSuggestionWrapper.innerPedal.action) {
-      base::UmaHistogramEnumeration(
-          "Omnibox.SuggestionUsed.Pedal",
-          (OmniboxPedalId)pedalSuggestionWrapper.innerPedal.type,
-          OmniboxPedalId::TOTAL_COUNT);
-      if ((OmniboxPedalId)pedalSuggestionWrapper.innerPedal.type ==
+  if (suggestion.pedal) {
+    if (suggestion.pedal.action) {
+      base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal",
+                                    (OmniboxPedalId)suggestion.pedal.type,
+                                    OmniboxPedalId::TOTAL_COUNT);
+      if ((OmniboxPedalId)suggestion.pedal.type ==
           OmniboxPedalId::MANAGE_PASSWORDS) {
         base::UmaHistogramEnumeration(
             "PasswordManager.ManagePasswordsReferrer",
             password_manager::ManagePasswordsReferrer::kOmniboxPedalSuggestion);
       }
-      pedalSuggestionWrapper.innerPedal.action();
+      suggestion.pedal.action();
     }
   } else if ([suggestion isKindOfClass:[AutocompleteMatchFormatter class]]) {
     AutocompleteMatchFormatter* autocompleteMatchFormatter =
@@ -409,9 +402,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
       continue;
     }
 
-    for (PedalSuggestionWrapper* pedalMatch in group.suggestions) {
+    for (id<AutocompleteSuggestion> pedalMatch in group.suggestions) {
       base::UmaHistogramEnumeration("Omnibox.PedalShown",
-                                    (OmniboxPedalId)pedalMatch.innerPedal.type,
+                                    (OmniboxPedalId)pedalMatch.pedal.type,
                                     OmniboxPedalId::TOTAL_COUNT);
     }
   }

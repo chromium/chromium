@@ -26,7 +26,6 @@
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
@@ -35,7 +34,6 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/image_retriever.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_pedal.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mediator+Testing.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_swift.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/suggest_action.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -49,29 +47,6 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/window_open_disposition.h"
 #import "url/gurl.h"
-
-// Fake pedal used for testing.
-@interface FakePedal : NSObject <OmniboxPedal, OmniboxIcon>
-
-@end
-
-@implementation FakePedal
-
-@synthesize title = _title;
-@synthesize subtitle = _subtitle;
-@synthesize action = _action;
-@synthesize iconType = _iconType;
-@synthesize imageURL = _imageURL;
-@synthesize iconImage = _iconImage;
-@synthesize iconImageTintColor = _iconImageTintColor;
-@synthesize backgroundImageTintColor = _backgroundImageTintColor;
-@synthesize borderColor = _borderColor;
-
-- (NSInteger)type {
-  return (NSInteger)OmniboxPedalId::CLEAR_BROWSING_DATA;
-}
-
-@end
 
 namespace {
 
@@ -96,12 +71,17 @@ id<AutocompleteSuggestion> SuggestionWithReviewsAction() {
   return suggestion;
 }
 
-PedalSuggestionWrapper* SuggestionWithClearBrowsingPedal() {
-  FakePedal* pedal = [[FakePedal alloc] init];
-  PedalSuggestionWrapper* suggestion =
-      [[PedalSuggestionWrapper alloc] initWithPedal:pedal];
-
-  return suggestion;
+id<OmniboxPedal> OmniboxPedal(OmniboxPedalId pedalId) {
+  return [[OmniboxPedalData alloc] initWithTitle:@""
+                                        subtitle:@""
+                               accessibilityHint:@""
+                                           image:[[UIImage alloc] init]
+                                  imageTintColor:nil
+                                 backgroundColor:nil
+                                imageBorderColor:nil
+                                            type:static_cast<int>(pedalId)
+                                          action:^{
+                                          }];
 }
 
 // Mock of ImageDataFetcher class.
@@ -149,20 +129,12 @@ TEST_F(OmniboxPopupMediatorTest, Init) {
 // Tests that the right "PasswordManager.ManagePasswordsReferrer" metric is
 // recorded when tapping the Manage Passwords suggestion.
 TEST_F(OmniboxPopupMediatorTest, SelectManagePasswordSuggestionMetricLogged) {
-  PedalSuggestionWrapper* pedal_suggestion_wrapper = [[PedalSuggestionWrapper
-      alloc]
-      initWithPedal:[[OmniboxPedalData alloc]
-                            initWithTitle:@""
-                                 subtitle:@""
-                        accessibilityHint:@""
-                                    image:[[UIImage alloc] init]
-                           imageTintColor:nil
-                          backgroundColor:nil
-                         imageBorderColor:nil
-                                     type:static_cast<int>(
-                                              OmniboxPedalId::MANAGE_PASSWORDS)
-                                   action:^{
-                                   }]];
+  id<OmniboxPedal> pedal = OmniboxPedal(OmniboxPedalId::MANAGE_PASSWORDS);
+  id mockSuggestionWithPedal =
+      [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
+  [[[mockSuggestionWithPedal stub] andReturn:pedal] pedal];
+  [[[mockSuggestionWithPedal stub] andReturn:nil] actionsInSuggest];
+
   base::HistogramTester histogram_tester;
 
   // Verify that bucker count is zero.
@@ -171,7 +143,7 @@ TEST_F(OmniboxPopupMediatorTest, SelectManagePasswordSuggestionMetricLogged) {
       password_manager::ManagePasswordsReferrer::kOmniboxPedalSuggestion, 0);
 
   [mediator_ autocompleteResultConsumer:mockResultConsumer_
-                    didSelectSuggestion:pedal_suggestion_wrapper
+                    didSelectSuggestion:mockSuggestionWithPedal
                                   inRow:0];
 
   // Bucket count should now be one.
@@ -238,7 +210,11 @@ TEST_F(OmniboxPopupMediatorTest, ActionInSuggestMetricLogged) {
 
 // Tests pedals shown logged.
 TEST_F(OmniboxPopupMediatorTest, PedalMetricLogged) {
-  id<AutocompleteSuggestion> match1 = SuggestionWithClearBrowsingPedal();
+  id<OmniboxPedal> pedal = OmniboxPedal(OmniboxPedalId::CLEAR_BROWSING_DATA);
+  id match1 = [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
+  [[[match1 stub] andReturn:pedal] pedal];
+  [[[match1 stub] andReturn:nil] actionsInSuggest];
+
   id<AutocompleteSuggestion> match2 = [[AutocompleteMatchFormatter alloc]
       initWithMatch:CreateSearchMatch(u"search 1")];
 
