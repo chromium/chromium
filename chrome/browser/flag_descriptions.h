@@ -4536,6 +4536,9 @@ extern const char kWaylandLinuxDrmSyncobjDescription[];
 extern const char kWaylandPerWindowScalingName[];
 extern const char kWaylandPerWindowScalingDescription[];
 
+extern const char kWaylandSessionManagementName[];
+extern const char kWaylandSessionManagementDescription[];
+
 extern const char kWaylandTextInputV3Name[];
 extern const char kWaylandTextInputV3Description[];
 
