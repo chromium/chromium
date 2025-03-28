@@ -1285,7 +1285,10 @@ void PrefetchService::Prefetch() {
   while ((std::tie(next_prefetch, prefetch_to_evict) =
               PopNextPrefetchContainer()) !=
          std::make_tuple(nullptr, nullptr)) {
-    StartSinglePrefetch(next_prefetch, prefetch_to_evict);
+    if (prefetch_to_evict) {
+      EvictPrefetch(std::move(prefetch_to_evict));
+    }
+    StartSinglePrefetch(next_prefetch);
   }
 }
 
@@ -1386,9 +1389,17 @@ void PrefetchService::OnCandidatesUpdated() {
   }
 }
 
+void PrefetchService::EvictPrefetch(
+    base::WeakPtr<PrefetchContainer> prefetch_container) {
+  CHECK(prefetch_container);
+
+  prefetch_container->SetPrefetchStatus(
+      PrefetchStatus::kPrefetchEvictedForNewerPrefetch);
+  ResetPrefetchContainer(std::move(prefetch_container));
+}
+
 void PrefetchService::StartSinglePrefetch(
-    base::WeakPtr<PrefetchContainer> prefetch_container,
-    base::WeakPtr<PrefetchContainer> prefetch_to_evict) {
+    base::WeakPtr<PrefetchContainer> prefetch_container) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(prefetch_container);
   CHECK_EQ(prefetch_container->GetLoadState(),
@@ -1416,12 +1427,6 @@ void PrefetchService::StartSinglePrefetch(
   prefetch_container->StartTimeoutTimerIfNeeded(
       base::BindOnce(&PrefetchService::OnPrefetchTimeout,
                      weak_method_factory_.GetWeakPtr(), prefetch_container));
-
-  if (prefetch_to_evict) {
-    prefetch_to_evict->SetPrefetchStatus(
-        PrefetchStatus::kPrefetchEvictedForNewerPrefetch);
-    ResetPrefetchContainer(prefetch_to_evict);
-  }
 
   active_prefetch_.emplace(prefetch_container->key());
 
