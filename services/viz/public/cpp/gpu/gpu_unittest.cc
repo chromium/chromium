@@ -47,11 +47,6 @@ class TestGpuImpl : public mojom::Gpu {
     receivers_.Add(this, std::move(receiver));
   }
 
-  // mojom::Gpu overrides:
-  void CreateClientGpuMemoryBufferFactory(
-      mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> receiver) override {
-  }
-
   void EstablishGpuChannel(EstablishGpuChannelCallback callback) override {
     if (close_binding_on_request_) {
       // Don't run |callback| and trigger a connection error on the other end.
