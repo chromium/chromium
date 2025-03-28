@@ -343,6 +343,38 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Tertiary Action Button"/>
 </enum>
 
+<!-- LINT.IfChange(IOSDefaultStatusAPIOutcomeType) -->
+
+<enum name="IOSDefaultStatusAPIOutcomeType">
+  <int value="1" label="Success"/>
+  <int value="2" label="Cooldown error"/>
+  <int value="3" label="Other error"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/default_browser/model/default_status/default_status_helper_types.h:DefaultStatusAPIOutcomeType) -->
+
+<!-- LINT.IfChange(IOSDefaultStatusHeuristicAssessment) -->
+
+<enum name="IOSDefaultStatusHeuristicAssessment">
+  <int value="0" label="True negative"/>
+  <int value="1" label="False negative"/>
+  <int value="2" label="True positive"/>
+  <int value="3" label="False positive"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/default_browser/model/default_status/default_status_helper_types.h:DefaultStatusHeuristicAssessment) -->
+
+<!-- LINT.IfChange(IOSDefaultStatusRetention) -->
+
+<enum name="IOSDefaultStatusRetention">
+  <int value="0" label="Became default"/>
+  <int value="1" label="Became non-default"/>
+  <int value="2" label="Remained default"/>
+  <int value="3" label="Remained non-default"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/default_browser/model/default_status/default_status_helper_types.h:DefaultStatusRetention) -->
+
 <enum name="IOSDeleteAllSavedCredentialsActions">
   <int value="0" label="User confirmed delete all saved credentials"/>
   <int value="1" label="User cancelled delete all saved credentials"/>

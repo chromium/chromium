@@ -1285,6 +1285,189 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.DefaultStatusAPI.CooldownError.DaysLeft" units="Days"
+    expires_after="2026-02-25">
+  <owner>gujen@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    The number of days remaining before the default status API can be called
+    again. The number of days is calculated from the time span between now and
+    the date of next availability provided in the error status.
+
+    Recorded once per failed API call. An API call is made three times per year
+    at browser startup. Only recorded if the error is recognized as a cooldown
+    error (i.e. the API was called too soon). Only recorded on iOS 18.4+.
+  </summary>
+</histogram>
+
+<histogram name="IOS.DefaultStatusAPI.DaysSinceLastSuccessfulCall" units="Days"
+    expires_after="2026-02-25">
+  <owner>gujen@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    The number of days since the last successful call to the default status
+    system API.
+
+    Recorded once per successful API call. An API call is made three times per
+    year at browser startup. If the call is not successful (i.e. there was an
+    error), this histogram is not recorded. Only recorded on iOS 18.4+. Only
+    recorded starting from the second successful API call for this client.
+  </summary>
+</histogram>
+
+<histogram name="IOS.DefaultStatusAPI.DefaultStatusRetention"
+    enum="IOSDefaultStatusRetention" expires_after="2026-02-25">
+  <owner>gujen@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Records the change in default status since the last successful call to the
+    default status system API for this client.
+
+    Recorded once per successful API call. An API call is made three times per
+    year at browser startup. If the call is not successful (i.e. there was an
+    error), this histogram is not recorded. Only recorded on iOS 18.4+. Only
+    recorded starting from the second successful API call for this client.
+  </summary>
+</histogram>
+
+<histogram name="IOS.DefaultStatusAPI.HeuristicAssessment{Days}"
+    enum="IOSDefaultStatusHeuristicAssessment" expires_after="2026-02-25">
+  <owner>gujen@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Records the difference between the system reported default status, and the
+    custom, heuristic-based default status (see IOS.IsDefaultBrowser,
+    IOS.IsDefaultBrowser21, and IOS.IsDefaultBrowser[NumberOfDays]).
+
+    A true positive means both the system API and the heuristic had a default
+    status of true. A false positive means the heuristic had a default status of
+    true, but the system API reported false. A true negative means both reported
+    false, and a false negative means the heuristic reported false while the
+    system reported true.
+
+    Recorded once per successful API call. An API call is made three times per
+    year at browser startup. If the call is not successful (i.e. there was an
+    error), this histogram is not recorded. Only recorded on iOS 18.4+.
+
+    This histogram variant is for the {Days}-day heuristic.
+  </summary>
+  <token key="Days">
+    <variant name="1"/>
+    <variant name="3"/>
+    <variant name="7"/>
+    <variant name="14"/>
+    <variant name="21"/>
+    <variant name="28"/>
+    <variant name="35"/>
+    <variant name="42"/>
+  </token>
+</histogram>
+
+<!-- TODO(crbug.com/401551080) Mark this "expires-never" after validating it works as intended. -->
+
+<histogram name="IOS.DefaultStatusAPI.IsDefaultBrowser" enum="Boolean"
+    expires_after="2026-02-25">
+  <owner>gujen@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Whether Chrome is the default browser or not according to the default status
+    system API.
+
+    Recorded once per successful API call. An API call is made three times per
+    year at browser startup. If the call is not successful (i.e. there was an
+    error), this histogram is not recorded. Only recorded on iOS 18.4+.
+  </summary>
+</histogram>
+
+<!-- LINT.IfChange(CohortNumber) -->
+
+<histogram name="IOS.DefaultStatusAPI.IsDefaultBrowser.Cohort{Number}"
+    enum="Boolean" expires_after="2026-02-25">
+  <owner>gujen@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Whether Chrome is the default browser or not according to the default status
+    system API. Works the same as IOS.DefaultStatusAPI.IsDefaultBrowser, except
+    this histogram has a variant for each cohort, and clients record only to the
+    histogram variant corresponding to the cohort they are assigned to. The
+    timeline of this histogram can be used to monitor cohort drift.
+
+    Recorded once per successful API call. An API call is made three times per
+    year at browser startup. If the call is not successful (i.e. there was an
+    error), this histogram is not recorded. Only recorded on iOS 18.4+.
+
+    This histogram variant is for cohort {Number}.
+  </summary>
+  <token key="Number">
+    <variant name="1" summary="1 (January, May and September)"/>
+    <variant name="2" summary="2 (February, June, October)"/>
+    <variant name="3" summary="3 (March, July, November)"/>
+    <variant name="4" summary="4 (April, August, December)"/>
+  </token>
+</histogram>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/default_browser/model/default_status/default_status_helper_constants.mm:kCohortCount) -->
+
+<!-- TODO(crbug.com/401551080) Mark this "expires-never" after validating it works as intended. -->
+
+<histogram name="IOS.DefaultStatusAPI.IsDefaultBrowser.StrictCohorts"
+    enum="Boolean" expires_after="2026-02-25">
+  <owner>gujen@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Whether Chrome is the default browser or not according to the default status
+    system API, but only for clients who made the API call during their assigned
+    cohort's reporting window. Clients are split into 4 cohorts, each with 3
+    assigned months in the year. Depending on usage frequency, it's possible
+    some clients miss their window. When this happens, the API call is still
+    made even if the client is outside their reporting window so that the API
+    call opportunity is not wasted. However, those results will only be recorded
+    to IOS.DefaultStatusAPI.IsDefaultBrowser, not to this histogram.
+
+    Recorded once per successful API call. An API call is made three times per
+    year at browser startup. If the call is not successful (i.e. there was an
+    error), this histogram is not recorded. Only recorded on iOS 18.4+.
+  </summary>
+</histogram>
+
+<histogram name="IOS.DefaultStatusAPI.OutcomeType"
+    enum="IOSDefaultStatusAPIOutcomeType" expires_after="2026-02-25">
+  <owner>gujen@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Whether a call to the default status system API successfully returned a
+    result or yielded an error. Errors are split into 2 buckets,
+    cooldown-related errors and all other errors.
+
+    Recorded once per API call. An API call is made three times per year at
+    browser startup. Only recorded on iOS 18.4+.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Desktop.{PromoType}.Shown"
     enum="DesktopIOSPromoImpression" expires_after="2025-08-05">
   <owner>nicolasmacbeth@google.com</owner>

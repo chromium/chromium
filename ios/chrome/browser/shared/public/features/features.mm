@@ -1353,3 +1353,11 @@ BASE_FEATURE(kNTPBackgroundCustomization,
 bool IsNTPBackgroundCustomizationEnabled() {
   return base::FeatureList::IsEnabled(kNTPBackgroundCustomization);
 }
+
+BASE_FEATURE(kRunDefaultStatusCheck,
+             "RunDefaultStatusCheck",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsRunDefaultStatusCheckEnabled() {
+  return base::FeatureList::IsEnabled(kRunDefaultStatusCheck);
+}

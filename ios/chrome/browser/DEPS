@@ -175,6 +175,7 @@ include_rules = [
   # Features should add explicit dependencies.
   "-ios/chrome/browser",
   "+ios/chrome/browser/profile/model",
+  "+ios/chrome/browser/default_browser/model",
 
   # Shared dependencies.
   "+ios/chrome/browser/shared/coordinator",

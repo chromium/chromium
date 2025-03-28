@@ -81,6 +81,7 @@
 #import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
+#import "ios/chrome/browser/default_browser/model/default_status/default_status_helper.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_app_agent.h"
@@ -217,6 +218,9 @@ NSString* const kMemoryExperimentation = @"BeginMemoryExperimentation";
 
 // Constant for deferred automatic download deletion.
 NSString* const kAutoDeletionFileRemoval = @"AutoDeletionFileRemoval";
+
+// Constant for deferred default browser status API check.
+NSString* const kDefaultBrowserStatusCheck = @"DefaultBrowserStatusCheck";
 
 // Adapted from chrome/browser/ui/browser_init.cc.
 void RegisterComponentsForUpdate() {
@@ -1429,6 +1433,7 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
   [self scheduleEnterpriseManagedDeviceCheck];
   [self scheduleMemoryExperimentation];
   [self scheduleAutoDeletionFileRemoval];
+  [self scheduleDefaultBrowserStatusCheck];
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
   [self scheduleDumpDocumentsStatistics];
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
@@ -1478,6 +1483,14 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
       enqueueBlockNamed:kAutoDeletionFileRemoval
                   block:^{
                     [startupTasks removeFilesScheduledForAutoDeletion];
+                  }];
+}
+
+- (void)scheduleDefaultBrowserStatusCheck {
+  [_appState.deferredRunner
+      enqueueBlockNamed:kDefaultBrowserStatusCheck
+                  block:^{
+                    default_status::TriggerDefaultStatusCheck();
                   }];
 }
 

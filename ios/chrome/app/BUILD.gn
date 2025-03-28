@@ -456,6 +456,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/crash_report/model/breadcrumbs",
     "//ios/chrome/browser/credential_provider/model:buildflags",
     "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/default_browser/model/default_status",
     "//ios/chrome/browser/device_orientation/ui_bundled",
     "//ios/chrome/browser/discover_feed/model:discover_feed_app_agent",
     "//ios/chrome/browser/download/model",
