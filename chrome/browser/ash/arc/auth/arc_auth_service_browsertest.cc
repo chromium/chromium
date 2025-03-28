@@ -358,7 +358,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
   void SetAccountAndProfile(const user_manager::UserType user_type) {
     const user_manager::User* user = nullptr;
     {
-      user_manager::TestHelper test_helper(*user_manager::UserManager::Get());
+      user_manager::TestHelper test_helper(user_manager::UserManager::Get());
       switch (user_type) {
         case user_manager::UserType::kChild:
           user = test_helper.AddChildUser(AccountId::FromUserEmailGaiaId(

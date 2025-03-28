@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/test/providers/google_one/test_google_one.h"
-
 #import <UIKit/UIKit.h>
+
+#import "ios/public/provider/chrome/browser/google_one/google_one_api.h"
 
 namespace {
 id<GoogleOneControllerFactory> g_google_one_controller_factory;
@@ -23,12 +23,9 @@ id<GoogleOneController> CreateGoogleOneController(
       createControllerWithConfiguration:configuration];
 }
 
-namespace test {
-
 void SetGoogleOneControllerFactory(id<GoogleOneControllerFactory> factory) {
   g_google_one_controller_factory = factory;
 }
 
-}  // namespace test
 }  // namespace provider
 }  // namespace ios

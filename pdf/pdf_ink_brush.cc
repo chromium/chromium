@@ -55,8 +55,6 @@ ink::Color GetInkColorFromSkColor(SkColor color) {
 }
 
 ink::Brush CreateInkBrush(PdfInkBrush::Type type, SkColor color, float size) {
-  CHECK(PdfInkBrush::IsToolSizeInRange(size));
-
   // TODO(crbug.com/353942923): Use real values here.
   ink::BrushTip tip;
   tip.corner_rounding = GetCornerRounding(type);

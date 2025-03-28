@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Щоб уникнути цього, перенесіть дані з облікового запису закладу освіти в особистий за допомогою додатка Перенесення контенту від Google.</translation>
 <translation id="1026212596705997935">Ця комбінація клавіш використовується для дії "<ph name="CONFLICT_ACCEL_NAME" />". Застосуйте нову комбінацію. Щоб замінити наявну комбінацію клавіш, натисніть її ще раз.</translation>
 <translation id="1030856839388844477">Скинути дані</translation>
+<translation id="1047095725494118091">Помилка завантаження. Повторіть спробу або перезапустіть пристрій <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоків: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">Доступна нова функція. Щоб дізнатися більше, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="1049663189809099096">пастельно-жовтий</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Завантаження заставки</translation>
 <translation id="1094693127011229778">IP-адреса недоступна</translation>
 <translation id="1100902271996134409">Створення зображень…</translation>
+<translation id="1107856713690040084">Аудіо на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Про Google Chrome</translation>
 <translation id="1118572504348554005">Ми можемо ділитися з нашими партнерами відгуками, надісланими через цю форму, щоб вирішувати проблеми, про які ви нас повідомляєте. Не вказуйте конфіденційну інформацію, як-от паролі.</translation>
 <translation id="1119403468619527527">Замало слів, щоб спростити текст</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Увімкнути темний режим</translation>
 <translation id="2164131940279488868">Щоб записувати звук, переконайтеся, що мікрофон підключено</translation>
 <translation id="2173302385160625112">Перевірте інтернет-з’єднання</translation>
+<translation id="2176909213844392588">Не вдалося завантажити модель транскрипції для такої мови: <ph name="LANGUAGE_NAME" />. Повторіть спробу або перезапустіть пристрій <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">Сталася помилка. Відкрийте додаток ще раз.</translation>
 <translation id="2189104374785738357">Змінити відомості про APN</translation>
 <translation id="2195732836444333448">Бракує ресурсів. Спробуйте пізніше.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Пристрій автоподачі документів (двосторонній)</translation>
 <translation id="3201315366910775591">Інші користувачі можуть оновлювати спільні альбоми</translation>
 <translation id="3211671540163313381">Панель керування для опції "Прив’язка клавіш"</translation>
+<translation id="3217462202230355157">Перевірте, чи підключено мікрофон, або перезапустіть пристрій <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Пошук сканерів</translation>
 <translation id="3226657629376379887">Меню дій для макета</translation>
 <translation id="3227186760713762082">Поділіть значення "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Ексклюзивно</translation>
 <translation id="3404249063913988450">Активувати заставку</translation>
 <translation id="3413935475507503304">Щоб оновити, натисніть "Далі".</translation>
+<translation id="3416709353545797224">Записуються всі звуки на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">просто неба</translation>
 <translation id="3428971106895559033">пастельний</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Переконайтеся, що сканер увімкнений і доступний у мережі або через пряме з'єднання</translation>
 <translation id="4159238217853743776">Частково</translation>
 <translation id="4159784952369912983">Пурпуровий</translation>
+<translation id="416219735020840807">Не вдалося завантажити модель транскрипції. Повторіть спробу або перезапустіть пристрій <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4170180284036919717">Як зробити фотографію</translation>
 <translation id="4170700058716978431">НЕ ПРОЙДЕНО</translation>
 <translation id="4171077696775491955">зменшити яскравість</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Заміна виділеного тексту запропонованим</translation>
 <translation id="5346687412805619883">Локальна мережа</translation>
 <translation id="5358174242040570474">Сталася помилка. Виберіть фоновий малюнок знову або ще раз відкрийте додаток.</translation>
+<translation id="5368228070728130240">Не вдалося завантажити модель для створення підсумку й назви. Повторіть спробу або перезапустіть пристрій <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">Мережа Wi-Fi ненадійна</translation>
 <translation id="5376354385557966694">Автоматичний світлий режим</translation>
 <translation id="5378184552853359930">Тип IP-адреси</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">невдалі перетворення DNS</translation>
 <translation id="6768237774506518020">велика частка збоїв під час перетворення DNS</translation>
 <translation id="6786747875388722282">Розширення</translation>
+<translation id="6789891265243243337">Якщо на пристрої <ph name="DEVICE_TYPE" /> увімкнено аудіо, Диктофон записуватиме всі звуки, які на ньому відтворюються</translation>
 <translation id="6791471867139427246">колір підсвічування клавіатури</translation>
 <translation id="6796229976413584781">Комбінацію клавіш видалено</translation>
 <translation id="6798678288485555829">Навігація текстом</translation>
@@ -1728,6 +1736,7 @@
 <translation id="8930622219860340959">Бездротове</translation>
 <translation id="8933650076320258356">Вибрано клавішу <ph name="KEYS" /> для такої дії: <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">IP-адреса клієнта</translation>
+<translation id="8938606491880817721">Помилка завантаження. Повторіть спробу або перезапустіть пристрій <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8944651180182756621">Колір панелі запуску</translation>
 <translation id="8945308580158685341">бджоли</translation>
 <translation id="894617464444543719">Це телефон.</translation>

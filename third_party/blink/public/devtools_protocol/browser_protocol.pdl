@@ -823,6 +823,7 @@ experimental domain Audits
       ValidationFailedSignatureExpired
       ValidationFailedInvalidLength
       ValidationFailedSignatureMismatch
+      ValidationFailedIntegrityMismatch
 
   # Details for issues around "Attribution Reporting API" usage.
   # Explainer: https://github.com/WICG/attribution-reporting-api
@@ -859,6 +860,7 @@ experimental domain Audits
     properties
       SRIMessageSignatureError error
       string signatureBase
+      array of string integrityAssertions
       AffectedRequest request
 
   type GenericIssueErrorType extends string
@@ -6640,6 +6642,8 @@ domain Network
       PortMismatch
       # The cookie's source scheme value does not match the request origin's scheme.
       SchemeMismatch
+      # Unpartitioned cookie access from an anonymous context was blocked.
+      AnonymousContext
 
   # Types of reasons why a cookie should have been blocked by 3PCD but is exempted for the request.
   experimental type CookieExemptionReason extends string
@@ -13302,6 +13306,21 @@ experimental domain BluetoothEmulation
       string address
       GATTOperationType type
       integer code
+
+  # Adds a service with |uuid| to the peripheral with |address|.
+  command addService
+    parameters
+      string address
+      string serviceUuid
+    returns
+      # An identifier that uniquely represents this service.
+      string id
+
+  # Removes the service respresented by |id| from the peripheral with |address|.
+  command removeService
+    parameters
+      string address
+      string id
 
   # Event for when a GATT operation of |type| to the peripheral with |address|
   # happened.

@@ -80,8 +80,7 @@ public final class AuxiliarySearchDonorTest {
 
     @After
     public void tearDown() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mAuxiliarySearchDonor.deleteAllTabs((result) -> {}));
+        ThreadUtils.runOnUiThreadBlocking(() -> mAuxiliarySearchDonor.deleteAll((result) -> {}));
     }
 
     @Test

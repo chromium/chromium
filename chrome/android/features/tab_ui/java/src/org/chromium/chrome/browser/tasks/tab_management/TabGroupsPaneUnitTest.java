@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -37,16 +40,20 @@ import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
@@ -64,10 +71,13 @@ import java.util.function.DoubleConsumer;
 /** Unit tests for {@link TabGroupsPane}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID, ChromeFeatureList.DATA_SHARING})
+@DisableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
 public class TabGroupsPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabModel mTabModel;
+    @Mock private TabCreator mTabCreator;
     @Mock private DoubleConsumer mOnToolbarAlphaChange;
     @Mock private ProfileProvider mProfileProvider;
     @Mock private Profile mProfile;
@@ -84,6 +94,7 @@ public class TabGroupsPaneUnitTest {
     @Mock ModalDialogManager mModalDialogManager;
     @Mock TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Mock EdgeToEdgeController mEdgeToEdgeController;
+    @Mock Tab mTab;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileSupplier =
             new OneshotSupplierImpl<>();
@@ -112,6 +123,8 @@ public class TabGroupsPaneUnitTest {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
         mTabGroupsPane =
                 new TabGroupsPane(
@@ -207,5 +220,32 @@ public class TabGroupsPaneUnitTest {
         mEdgeToEdgeSupplier.set(controller2);
         verify(controller2).registerAdjuster(notNull());
         verify(mEdgeToEdgeController).unregisterAdjuster(notNull());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    public void testNewTabGroupButtonDisabled() {
+        assertNull(mTabGroupsPane.getActionButtonDataSupplier().get());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    public void testNewTabGroupButtonEnabled() {
+        assertNotNull(mTabGroupsPane.getActionButtonDataSupplier().get());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
+    public void testNewTabGroupButton() {
+        when(mTabCreator.createNewTab(any(), anyInt(), any())).thenReturn(mTab);
+        FullButtonData actionButtonData = mTabGroupsPane.getActionButtonDataSupplier().get();
+        assertNotNull(actionButtonData);
+
+        Runnable onPressRunnable = actionButtonData.getOnPressRunnable();
+        assertNotNull(onPressRunnable);
+        onPressRunnable.run();
+
+        verify(mTabCreator).createNewTab(any(), anyInt(), any());
+        verify(mTabGroupModelFilter).createSingleTabGroup(mTab);
     }
 }

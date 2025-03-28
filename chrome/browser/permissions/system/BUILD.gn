@@ -48,7 +48,11 @@ source_set("system") {
       "//chrome/browser/web_applications:web_applications",
     ]
   } else if (is_win) {
-    sources += [ "system_permission_settings_win.cc" ]
+    sources += [
+      "system_media_source_win.cc",
+      "system_media_source_win.h",
+      "system_permission_settings_win.cc",
+    ]
     deps += [ "//chrome/browser:browser_public_dependencies" ]
   } else {
     sources += [ "system_permission_settings_default.cc" ]

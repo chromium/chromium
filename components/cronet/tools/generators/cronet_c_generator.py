@@ -1,7 +1,6 @@
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Generates C source files from an idl (mojom) Module."""
 
 import os
@@ -17,30 +16,30 @@ from mojom.generate.template_expander import UseJinja
 
 # pylint: disable=useless-object-inheritance,super-with-arguments
 
-
 _kind_to_cpp_type = {
-  mojom.BOOL:                  "bool",
-  mojom.INT8:                  "int8_t",
-  mojom.UINT8:                 "uint8_t",
-  mojom.INT16:                 "int16_t",
-  mojom.UINT16:                "uint16_t",
-  mojom.INT32:                 "int32_t",
-  mojom.UINT32:                "uint32_t",
-  mojom.FLOAT:                 "float",
-  mojom.INT64:                 "int64_t",
-  mojom.UINT64:                "uint64_t",
-  mojom.DOUBLE:                "double",
+    mojom.BOOL: "bool",
+    mojom.INT8: "int8_t",
+    mojom.UINT8: "uint8_t",
+    mojom.INT16: "int16_t",
+    mojom.UINT16: "uint16_t",
+    mojom.INT32: "int32_t",
+    mojom.UINT32: "uint32_t",
+    mojom.FLOAT: "float",
+    mojom.INT64: "int64_t",
+    mojom.UINT64: "uint64_t",
+    mojom.DOUBLE: "double",
 }
 
 _kind_to_cpp_literal_suffix = {
-  mojom.UINT8:        "U",
-  mojom.UINT16:       "U",
-  mojom.UINT32:       "U",
-  mojom.FLOAT:        "f",
-  mojom.UINT64:       "ULL",
+    mojom.UINT8: "U",
+    mojom.UINT16: "U",
+    mojom.UINT32: "U",
+    mojom.FLOAT: "f",
+    mojom.UINT64: "ULL",
 }
 
 ATTRIBUTE_ABSTRACT = "Abstract"
+
 
 class _NameFormatter(object):
   """A formatter for the names of kinds or values."""
@@ -49,8 +48,12 @@ class _NameFormatter(object):
     self._token = token
     self._variant = variant
 
-  def Format(self, separator, prefixed=False, internal=False,
-             include_variant=False, omit_namespace_for_module=None,
+  def Format(self,
+             separator,
+             prefixed=False,
+             internal=False,
+             include_variant=False,
+             omit_namespace_for_module=None,
              flatten_nested_kind=False):
     """Formats the name according to the given configuration.
 
@@ -75,13 +78,16 @@ class _NameFormatter(object):
     parts.extend(self._GetName(internal, flatten_nested_kind))
     return separator.join(parts)
 
-  def FormatForCpp(self, omit_namespace_for_module=None, internal=False,
+  def FormatForCpp(self,
+                   omit_namespace_for_module=None,
+                   internal=False,
                    flatten_nested_kind=False):
-    return self.Format(
-        "_", prefixed=True,
-        omit_namespace_for_module=omit_namespace_for_module,
-        internal=internal, include_variant=True,
-        flatten_nested_kind=flatten_nested_kind)
+    return self.Format("_",
+                       prefixed=True,
+                       omit_namespace_for_module=omit_namespace_for_module,
+                       internal=internal,
+                       include_variant=True,
+                       flatten_nested_kind=flatten_nested_kind)
 
   def FormatForMojom(self):
     return self.Format(".")
@@ -89,8 +95,8 @@ class _NameFormatter(object):
   def _MapKindName(self, token, internal):
     if not internal:
       return token.name
-    if (mojom.IsStructKind(token) or mojom.IsUnionKind(token) or
-        mojom.IsEnumKind(token)):
+    if (mojom.IsStructKind(token) or mojom.IsUnionKind(token)
+        or mojom.IsEnumKind(token)):
       return token.name + "_Data"
     return token.name
 
@@ -105,8 +111,8 @@ class _NameFormatter(object):
     if internal:
       name_parts.append("internal")
 
-    if (flatten_nested_kind and mojom.IsEnumKind(self._token) and
-        self._token.parent_kind):
+    if (flatten_nested_kind and mojom.IsEnumKind(self._token)
+        and self._token.parent_kind):
       name = "%s_%s" % (self._token.parent_kind.name,
                         self._MapKindName(self._token, internal))
       name_parts.append(name)
@@ -120,11 +126,11 @@ class _NameFormatter(object):
   def _ShouldIncludeNamespace(self, omit_namespace_for_module):
     return self._token.module
 
-
   # pylint: disable=inconsistent-return-statements
   def _GetNamespace(self):
     if self._token.module:
       return NamespaceToArray(self._token.module.namespace)
+
   # pylint: enable=inconsistent-return-statements
 
 
@@ -177,11 +183,13 @@ def ShouldInlineStruct(struct):
 def ShouldInlineUnion(union):
   return not any(
       mojom.IsReferenceKind(field.kind) and not mojom.IsStringKind(field.kind)
-           for field in union.fields)
+      for field in union.fields)
+
 
 def IsAbstract(kind):
   return kind.attributes.get(ATTRIBUTE_ABSTRACT, False) \
       if kind.attributes else False
+
 
 class StructConstructor(object):
   """Represents a constructor for a generated struct.
@@ -222,13 +230,13 @@ class Generator(generator.Generator):
     """
     used_typemaps = []
     seen_types = set()
+
     def IsBasicKind(kind):
-      return (mojom.IsIntegralKind(kind) or mojom.IsStringKind(kind) or
-              mojom.IsDoubleKind(kind) or mojom.IsFloatKind(kind) or
-              mojom.IsAnyHandleKind(kind) or
-              mojom.IsInterfaceKind(kind) or
-              mojom.IsInterfaceRequestKind(kind) or
-              mojom.IsAssociatedKind(kind))
+      return (mojom.IsIntegralKind(kind) or mojom.IsStringKind(kind)
+              or mojom.IsDoubleKind(kind) or mojom.IsFloatKind(kind)
+              or mojom.IsAnyHandleKind(kind) or mojom.IsInterfaceKind(kind)
+              or mojom.IsInterfaceRequestKind(kind)
+              or mojom.IsAssociatedKind(kind))
 
     def AddKind(kind):
       if IsBasicKind(kind):
@@ -269,9 +277,9 @@ class Generator(generator.Generator):
     for interface in self.module.interfaces:
       all_enums.extend(interface.enums)
 
-    types = set(self._GetFullMojomNameForKind(typename)
-                for typename in
-                self.module.structs + all_enums + self.module.unions)
+    types = set(
+        self._GetFullMojomNameForKind(typename)
+        for typename in self.module.structs + all_enums + self.module.unions)
     headers = set()
     for typename, typemap in self.typemap.items():
       if typename in types:
@@ -296,22 +304,22 @@ class Generator(generator.Generator):
       all_enums.extend(interface.enums)
 
     return {
-      "all_enums": all_enums,
-      "enums": self.module.enums,
-      "export_attribute": self.export_attribute,
-      "export_header": self.export_header,
-      "extra_public_headers": self._GetExtraPublicHeaders(),
-      "extra_traits_headers": self._GetExtraTraitsHeaders(),
-      "for_blink": self.for_blink,
-      "imports": self.module.imports,
-      "interfaces": self.module.interfaces,
-      "kinds": self.module.kinds,
-      "module": self.module,
-      "namespace": self.module.namespace,
-      "namespaces_as_array": NamespaceToArray(self.module.namespace),
-      "structs": self.module.structs,
-      "unions": self.module.unions,
-      "variant": self.variant,
+        "all_enums": all_enums,
+        "enums": self.module.enums,
+        "export_attribute": self.export_attribute,
+        "export_header": self.export_header,
+        "extra_public_headers": self._GetExtraPublicHeaders(),
+        "extra_traits_headers": self._GetExtraTraitsHeaders(),
+        "for_blink": self.for_blink,
+        "imports": self.module.imports,
+        "interfaces": self.module.interfaces,
+        "kinds": self.module.kinds,
+        "module": self.module,
+        "namespace": self.module.namespace,
+        "namespaces_as_array": NamespaceToArray(self.module.namespace),
+        "structs": self.module.structs,
+        "unions": self.module.unions,
+        "variant": self.variant,
     }
 
   @staticmethod
@@ -320,54 +328,55 @@ class Generator(generator.Generator):
 
   def GetFilters(self):
     cpp_filters = {
-      "all_enum_values": AllEnumValues,
-      "c_wrapper_type": self._GetCWrapperType,
-      "constant_value": self._ConstantValue,
-      "contains_handles_or_interfaces": mojom.ContainsHandlesOrInterfaces,
-      "contains_move_only_members": self._ContainsMoveOnlyMembers,
-      "cpp_wrapper_param_type": self._GetCppWrapperParamType,
-      "cpp_data_view_type": self._GetCppDataViewType,
-      "cpp_field_type": self._GetCppFieldType,
-      "cpp_union_field_type": self._GetCppUnionFieldType,
-      "cpp_pod_type": GetCppPodType,
-      "cpp_union_getter_return_type": self._GetUnionGetterReturnType,
-      "cpp_union_trait_getter_return_type": self._GetUnionTraitGetterReturnType,
-      "cpp_wrapper_type": self._GetCppWrapperType,
-      "default_value": self._DefaultValue,
-      "expression_to_text": self._ExpressionToText,
-      "format_constant_declaration": self._FormatConstantDeclaration,
-      "get_container_validate_params_ctor_args":
-          self._GetContainerValidateParamsCtorArgs,
-      "get_name_for_kind": self._GetNameForKind,
-      "get_pad": pack.GetPad,
-      "get_qualified_name_for_kind": self._GetQualifiedNameForKind,
-      "has_callbacks": mojom.HasCallbacks,
-      "has_sync_methods": mojom.HasSyncMethods,
-      "requires_context_for_data_view": RequiresContextForDataView,
-      "should_inline": ShouldInlineStruct,
-      "should_inline_union": ShouldInlineUnion,
-      "is_abstract": IsAbstract,
-      "is_array_kind": mojom.IsArrayKind,
-      "is_enum_kind": mojom.IsEnumKind,
-      "is_integral_kind": mojom.IsIntegralKind,
-      "is_native_only_kind": IsNativeOnlyKind,
-      "is_any_handle_kind": mojom.IsAnyHandleKind,
-      "is_any_interface_kind": mojom.IsAnyInterfaceKind,
-      "is_any_handle_or_interface_kind": mojom.IsAnyHandleOrInterfaceKind,
-      "is_associated_kind": mojom.IsAssociatedKind,
-      "is_hashable": self._IsHashableKind,
-      "is_map_kind": mojom.IsMapKind,
-      "is_nullable_kind": mojom.IsNullableKind,
-      "is_object_kind": mojom.IsObjectKind,
-      "is_reference_kind": mojom.IsReferenceKind,
-      "is_string_kind": mojom.IsStringKind,
-      "is_struct_kind": mojom.IsStructKind,
-      "is_typemapped_kind": self._IsTypemappedKind,
-      "is_union_kind": mojom.IsUnionKind,
-      "passes_associated_kinds": mojom.PassesAssociatedKinds,
-      "struct_constructors": self._GetStructConstructors,
-      "under_to_camel": generator.ToCamel,
-      "unmapped_type_for_serializer": self._GetUnmappedTypeForSerializer,
+        "all_enum_values": AllEnumValues,
+        "c_wrapper_type": self._GetCWrapperType,
+        "constant_value": self._ConstantValue,
+        "contains_handles_or_interfaces": mojom.ContainsHandlesOrInterfaces,
+        "contains_move_only_members": self._ContainsMoveOnlyMembers,
+        "cpp_wrapper_param_type": self._GetCppWrapperParamType,
+        "cpp_data_view_type": self._GetCppDataViewType,
+        "cpp_field_type": self._GetCppFieldType,
+        "cpp_union_field_type": self._GetCppUnionFieldType,
+        "cpp_pod_type": GetCppPodType,
+        "cpp_union_getter_return_type": self._GetUnionGetterReturnType,
+        "cpp_union_trait_getter_return_type":
+        self._GetUnionTraitGetterReturnType,
+        "cpp_wrapper_type": self._GetCppWrapperType,
+        "default_value": self._DefaultValue,
+        "expression_to_text": self._ExpressionToText,
+        "format_constant_declaration": self._FormatConstantDeclaration,
+        "get_container_validate_params_ctor_args":
+        self._GetContainerValidateParamsCtorArgs,
+        "get_name_for_kind": self._GetNameForKind,
+        "get_pad": pack.GetPad,
+        "get_qualified_name_for_kind": self._GetQualifiedNameForKind,
+        "has_callbacks": mojom.HasCallbacks,
+        "has_sync_methods": mojom.HasSyncMethods,
+        "requires_context_for_data_view": RequiresContextForDataView,
+        "should_inline": ShouldInlineStruct,
+        "should_inline_union": ShouldInlineUnion,
+        "is_abstract": IsAbstract,
+        "is_array_kind": mojom.IsArrayKind,
+        "is_enum_kind": mojom.IsEnumKind,
+        "is_integral_kind": mojom.IsIntegralKind,
+        "is_native_only_kind": IsNativeOnlyKind,
+        "is_any_handle_kind": mojom.IsAnyHandleKind,
+        "is_any_interface_kind": mojom.IsAnyInterfaceKind,
+        "is_any_handle_or_interface_kind": mojom.IsAnyHandleOrInterfaceKind,
+        "is_associated_kind": mojom.IsAssociatedKind,
+        "is_hashable": self._IsHashableKind,
+        "is_map_kind": mojom.IsMapKind,
+        "is_nullable_kind": mojom.IsNullableKind,
+        "is_object_kind": mojom.IsObjectKind,
+        "is_reference_kind": mojom.IsReferenceKind,
+        "is_string_kind": mojom.IsStringKind,
+        "is_struct_kind": mojom.IsStructKind,
+        "is_typemapped_kind": self._IsTypemappedKind,
+        "is_union_kind": mojom.IsUnionKind,
+        "passes_associated_kinds": mojom.PassesAssociatedKinds,
+        "struct_constructors": self._GetStructConstructors,
+        "under_to_camel": generator.ToCamel,
+        "unmapped_type_for_serializer": self._GetUnmappedTypeForSerializer,
     }
     return cpp_filters
 
@@ -461,19 +470,26 @@ class Generator(generator.Generator):
     expression = self._ExpressionToText(field.default, kind=field.kind)
     if mojom.IsEnumKind(field.kind) and self._IsTypemappedKind(field.kind):
       expression = "mojo::internal::ConvertEnumValue<%s, %s>(%s)" % (
-          self._GetNameForKind(field.kind), self._GetCppWrapperType(field.kind),
-          expression)
+          self._GetNameForKind(field.kind), self._GetCppWrapperType(
+              field.kind), expression)
     return expression
 
-  def _GetNameForKind(self, kind, internal=False, flatten_nested_kind=False,
+  def _GetNameForKind(self,
+                      kind,
+                      internal=False,
+                      flatten_nested_kind=False,
                       add_same_module_namespaces=False):
     return _NameFormatter(kind, self.variant).FormatForCpp(
-        internal=internal, flatten_nested_kind=flatten_nested_kind,
-        omit_namespace_for_module = (None if add_same_module_namespaces
-                                          else self.module))
+        internal=internal,
+        flatten_nested_kind=flatten_nested_kind,
+        omit_namespace_for_module=(None if add_same_module_namespaces else
+                                   self.module))
 
-  def _GetQualifiedNameForKind(self, kind, internal=False,
-                               flatten_nested_kind=False, include_variant=True):
+  def _GetQualifiedNameForKind(self,
+                               kind,
+                               internal=False,
+                               flatten_nested_kind=False,
+                               include_variant=True):
     return _NameFormatter(
         kind, self.variant if include_variant else None).FormatForCpp(
             internal=internal, flatten_nested_kind=flatten_nested_kind)
@@ -495,6 +511,7 @@ class Generator(generator.Generator):
       {bool} True if a value of this kind can be hashed.
     """
     checked = set()
+
     def Check(kind):
       if kind.spec in checked:
         return True
@@ -524,11 +541,12 @@ class Generator(generator.Generator):
       if mojom.IsMapKind(kind):
         return False
       return True
+
     return Check(kind)
 
   def _GetNativeTypeName(self, typemapped_kind):
-    return self.typemap[self._GetFullMojomNameForKind(typemapped_kind)][
-        "typename"]
+    return self.typemap[self._GetFullMojomNameForKind(
+        typemapped_kind)]["typename"]
 
   def _FormatConstantDeclaration(self, constant, nested=False):
     if mojom.IsStringKind(constant.kind):
@@ -537,19 +555,19 @@ class Generator(generator.Generator):
       return "%sextern const char %s[]" % \
           ((self.export_attribute + " ") if self.export_attribute else "",
            constant.name)
-    return "const %s %s_%s = %s" % (
-        GetCppPodType(constant.kind), self.module.namespace, constant.name,
-        self._ConstantValue(constant))
+    return "const %s %s_%s = %s" % (GetCppPodType(
+        constant.kind), self.module.namespace, constant.name,
+                                    self._ConstantValue(constant))
 
   def _GetCppWrapperType(self, kind, add_same_module_namespaces=False):
+
     def _AddOptional(type_name):
       return "std::optional<%s>" % type_name
 
     if self._IsTypemappedKind(kind):
       type_name = self._GetNativeTypeName(kind)
-      if (mojom.IsNullableKind(kind) and
-          not self.typemap[self._GetFullMojomNameForKind(kind)][
-             "nullable_is_same_type"]):
+      if (mojom.IsNullableKind(kind) and not self.typemap[
+          self._GetFullMojomNameForKind(kind)]["nullable_is_same_type"]):
         type_name = _AddOptional(type_name)
       return type_name
     if mojom.IsEnumKind(kind):
@@ -565,8 +583,8 @@ class Generator(generator.Generator):
       return pattern % self._GetCppWrapperType(
           kind.kind, add_same_module_namespaces=add_same_module_namespaces)
     if mojom.IsMapKind(kind):
-      pattern = ("WTF::HashMap<%s, %s>" if self.for_blink else
-                 "std::unordered_map<%s, %s>")
+      pattern = ("WTF::HashMap<%s, %s>"
+                 if self.for_blink else "std::unordered_map<%s, %s>")
       if mojom.IsNullableKind(kind):
         pattern = _AddOptional(pattern)
       return pattern % (
@@ -592,8 +610,8 @@ class Generator(generator.Generator):
       if self.for_blink:
         return "WTF::String"
       type_name = "std::string"
-      return (_AddOptional(type_name) if mojom.IsNullableKind(kind)
-                                      else type_name)
+      return (_AddOptional(type_name)
+              if mojom.IsNullableKind(kind) else type_name)
     if mojom.IsGenericHandleKind(kind):
       return "Cronet_RawDataPtr"
     if mojom.IsDataPipeConsumerKind(kind):
@@ -618,8 +636,8 @@ class Generator(generator.Generator):
     if mojom.IsArrayKind(kind):
       return self._IsMoveOnlyKind(kind.kind)
     if mojom.IsMapKind(kind):
-      return (self._IsMoveOnlyKind(kind.value_kind) or
-              self._IsMoveOnlyKind(kind.key_kind))
+      return (self._IsMoveOnlyKind(kind.value_kind)
+              or self._IsMoveOnlyKind(kind.key_kind))
     if mojom.IsAnyHandleOrInterfaceKind(kind):
       return True
     return False
@@ -627,12 +645,12 @@ class Generator(generator.Generator):
   def _IsCopyablePassByValue(self, kind):
     if not self._IsTypemappedKind(kind):
       return False
-    return self.typemap[self._GetFullMojomNameForKind(kind)][
-        "copyable_pass_by_value"]
+    return self.typemap[self._GetFullMojomNameForKind(
+        kind)]["copyable_pass_by_value"]
 
   def _ShouldPassParamByValue(self, kind):
-    return ((not mojom.IsReferenceKind(kind)) or self._IsMoveOnlyKind(kind) or
-        self._IsCopyablePassByValue(kind))
+    return ((not mojom.IsReferenceKind(kind)) or self._IsMoveOnlyKind(kind)
+            or self._IsCopyablePassByValue(kind))
 
   def _GetCWrapperType(self, kind):
     if mojom.IsStringKind(kind):
@@ -643,13 +661,13 @@ class Generator(generator.Generator):
 
   def _GetCppWrapperParamType(self, kind):
     cpp_wrapper_type = self._GetCppWrapperType(kind)
-    return (cpp_wrapper_type if self._ShouldPassParamByValue(kind)
-                             else "const %s&" % cpp_wrapper_type)
+    return (cpp_wrapper_type if self._ShouldPassParamByValue(kind) else
+            "const %s&" % cpp_wrapper_type)
 
   def _GetCppFieldType(self, kind):
     if mojom.IsStructKind(kind):
       return ("mojo::internal::Pointer<%s>" %
-          self._GetNameForKind(kind, internal=True))
+              self._GetNameForKind(kind, internal=True))
     if mojom.IsUnionKind(kind):
       return "%s" % self._GetNameForKind(kind, internal=True)
     if mojom.IsArrayKind(kind):
@@ -657,8 +675,8 @@ class Generator(generator.Generator):
               self._GetCppFieldType(kind.kind))
     if mojom.IsMapKind(kind):
       return ("mojo::internal::Pointer<mojo::internal::Map_Data<%s, %s>>" %
-              (self._GetCppFieldType(kind.key_kind),
-               self._GetCppFieldType(kind.value_kind)))
+              (self._GetCppFieldType(
+                  kind.key_kind), self._GetCppFieldType(kind.value_kind)))
     if mojom.IsInterfaceKind(kind):
       return "mojo::internal::Interface_Data"
     if mojom.IsInterfaceRequestKind(kind):
@@ -678,7 +696,7 @@ class Generator(generator.Generator):
   def _GetCppUnionFieldType(self, kind):
     if mojom.IsUnionKind(kind):
       return ("mojo::internal::Pointer<%s>" %
-                  self._GetNameForKind(kind, internal=True))
+              self._GetNameForKind(kind, internal=True))
     return self._GetCppFieldType(kind)
 
   def _GetUnionGetterReturnType(self, kind):
@@ -722,7 +740,7 @@ class Generator(generator.Generator):
         return "std::numeric_limits<float>::quiet_NaN()"
 
     if (kind is not None and mojom.IsFloatKind(kind)):
-      return token if token.isdigit() else token + "f";
+      return token if token.isdigit() else token + "f"
 
     return "%s%s" % (token, _kind_to_cpp_literal_suffix.get(kind, ""))
 
@@ -749,9 +767,11 @@ class Generator(generator.Generator):
       raise TypeError
     # Types that are neither copyable nor movable can't be passed to a struct
     # constructor so only generate a default constructor.
-    if any(self._IsTypemappedKind(field.kind) and self.typemap[
-        self._GetFullMojomNameForKind(field.kind)]["non_copyable_non_movable"]
-           for field in struct.fields):
+    if any(
+        self._IsTypemappedKind(field.kind)
+        and self.typemap[self._GetFullMojomNameForKind(
+            field.kind)]["non_copyable_non_movable"]
+        for field in struct.fields):
       return [StructConstructor(struct.fields, [])]
 
     param_counts = [0]
@@ -773,10 +793,10 @@ class Generator(generator.Generator):
     elif mojom.IsMapKind(kind):
       expected_num_elements = 0
       element_is_nullable = False
-      key_validate_params = self._GetNewContainerValidateParams(mojom.Array(
-          kind=kind.key_kind))
-      element_validate_params = self._GetNewContainerValidateParams(mojom.Array(
-          kind=kind.value_kind))
+      key_validate_params = self._GetNewContainerValidateParams(
+          mojom.Array(kind=kind.key_kind))
+      element_validate_params = self._GetNewContainerValidateParams(
+          mojom.Array(kind=kind.value_kind))
       enum_validate_func = "nullptr"
     else:  # mojom.IsArrayKind(kind)
       expected_num_elements = generator.ExpectedArraySize(kind) or 0
@@ -784,9 +804,8 @@ class Generator(generator.Generator):
       key_validate_params = "nullptr"
       element_validate_params = self._GetNewContainerValidateParams(kind.kind)
       if mojom.IsEnumKind(kind.kind):
-        enum_validate_func = ("%s::Validate" %
-            self._GetQualifiedNameForKind(kind.kind, internal=True,
-                                          flatten_nested_kind=True))
+        enum_validate_func = ("%s::Validate" % self._GetQualifiedNameForKind(
+            kind.kind, internal=True, flatten_nested_kind=True))
       else:
         enum_validate_func = "nullptr"
 
@@ -799,14 +818,15 @@ class Generator(generator.Generator):
     return "%d, %s" % (expected_num_elements, enum_validate_func)
 
   def _GetNewContainerValidateParams(self, kind):
-    if (not mojom.IsArrayKind(kind) and not mojom.IsMapKind(kind) and
-        not mojom.IsStringKind(kind)):
+    if (not mojom.IsArrayKind(kind) and not mojom.IsMapKind(kind)
+        and not mojom.IsStringKind(kind)):
       return "nullptr"
 
     return "new mojo::internal::ContainerValidateParams(%s)" % (
         self._GetContainerValidateParamsCtorArgs(kind))
 
   def _GetCppDataViewType(self, kind, qualified=False):
+
     def _GetName(input_kind):
       return _NameFormatter(input_kind, None).FormatForCpp(
           omit_namespace_for_module=(None if qualified else self.module),
@@ -817,12 +837,12 @@ class Generator(generator.Generator):
     if mojom.IsStructKind(kind) or mojom.IsUnionKind(kind):
       return "%sDataView" % _GetName(kind)
     if mojom.IsArrayKind(kind):
-      return "mojo::ArrayDataView<%s>" % (
-          self._GetCppDataViewType(kind.kind, qualified))
+      return "mojo::ArrayDataView<%s>" % (self._GetCppDataViewType(
+          kind.kind, qualified))
     if mojom.IsMapKind(kind):
-      return ("mojo::MapDataView<%s, %s>" % (
-          self._GetCppDataViewType(kind.key_kind, qualified),
-          self._GetCppDataViewType(kind.value_kind, qualified)))
+      return ("mojo::MapDataView<%s, %s>" %
+              (self._GetCppDataViewType(kind.key_kind, qualified),
+               self._GetCppDataViewType(kind.value_kind, qualified)))
     if mojom.IsStringKind(kind):
       return "mojo::StringDataView"
     if mojom.IsInterfaceKind(kind):

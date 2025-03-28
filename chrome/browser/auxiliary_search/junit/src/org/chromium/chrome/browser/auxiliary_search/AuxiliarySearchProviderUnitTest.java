@@ -227,6 +227,8 @@ public class AuxiliarySearchProviderUnitTest {
     public void testSaveAndReadDonationMetadataAsync_V2() {
         @MetaDataVersion int metaDataVersion = MetaDataVersion.MULTI_TYPE_V2;
         long now = TimeUtils.uptimeMillis();
+        // The entries include 2 elements, and the second one will be saved to the metadata file.
+        // This is because testSaveAndReadDonationMetadataAsyncImpl() sets the starting index to 1.
         List<AuxiliarySearchDataEntry> entries =
                 AuxiliarySearchTestHelper.createAuxiliarySearchDataEntries(now);
 
@@ -244,6 +246,34 @@ public class AuxiliarySearchProviderUnitTest {
                     assertEquals(now, entry.lastActiveTime);
                     assertNull(entry.appId);
                     assertEquals(Tab.INVALID_TAB_ID, entry.visitId);
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testSaveAndReadDonationMetadataAsync_V2_TopSite() {
+        @MetaDataVersion int metaDataVersion = MetaDataVersion.MULTI_TYPE_V2;
+        long now = TimeUtils.uptimeMillis();
+        // The entries include 2 elements, and the second one will be saved to the metadata file.
+        // This is because testSaveAndReadDonationMetadataAsyncImpl() sets the starting index to 1.
+        List<AuxiliarySearchDataEntry> entries =
+                AuxiliarySearchTestHelper.createAuxiliarySearchDataEntries_TopSite(now);
+
+        testSaveAndReadDonationMetadataAsyncImpl(
+                entries,
+                metaDataVersion,
+                (entryList) -> {
+                    assertEquals(1, entryList.size());
+
+                    AuxiliarySearchDataEntry entry = (AuxiliarySearchDataEntry) entryList.get(0);
+                    assertEquals(AuxiliarySearchEntryType.TOP_SITE, entry.type);
+                    assertEquals(Tab.INVALID_TAB_ID, entry.tabId);
+                    assertEquals(JUnitTestGURLs.URL_2, entry.url);
+                    assertEquals(AuxiliarySearchTestHelper.TITLE_2, entry.title);
+                    assertEquals(now, entry.lastActiveTime);
+                    assertNull(entry.appId);
+                    assertEquals(AuxiliarySearchTestHelper.VISIT_ID_2, entry.visitId);
+                    assertEquals(AuxiliarySearchTestHelper.SCORE_2, entry.score);
                 });
     }
 

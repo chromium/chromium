@@ -242,6 +242,8 @@ struct ShapeResult::RunInfo final
 
   // Collection of |HarfBuzzRunGlyphData| with optional glyph offset
   class GlyphDataCollection final {
+    DISALLOW_NEW();
+
    public:
     explicit GlyphDataCollection(unsigned num_glyphs)
         : data_(new HarfBuzzRunGlyphData[num_glyphs]), offsets_(num_glyphs) {}

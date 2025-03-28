@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">پیریفرل مہمان وضع میں تعاون یافتہ نہیں ہے</translation>
 <translation id="1270290102613614947">آن اسکرین کی بورڈ غیر فعال کر دیا گیا</translation>
 <translation id="1272079795634619415">روکیں</translation>
+<translation id="12741168609094094">تلاش کرنے، ٹیکسٹ کاپی کرنے اور مزید بہت کچھ کرنے کے لیے اپنی اسکرین پر کچھ بھی منتخب کریں</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> کو پاور دی جا رہی ہے</translation>
 <translation id="1275718070701477396">منتخب</translation>
 <translation id="1276975447697633661">فائل منتخب کریں پھر <ph name="KEY" /> دبائیں</translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">ہاٹ اسپاٹ آف ہے</translation>
 <translation id="1731815243805539470">گزشتہ صارف پر سوئچ کریں</translation>
 <translation id="1733996486177697563">گہری اور ہلکی تھیم کے درمیان سوئچ کریں۔ ڈیسک ٹاپ پر ٹچ کریں اور دبائے رکھیں پھر وال پیپر اور اسٹائل منتخب کریں۔</translation>
+<translation id="1735992454301033090">منتخب کردہ ایریا، منتقل کرنے کے لیے تیر والی کلیدوں کا استعمال کریں</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" بلوٹوتھ آلات کے لیے مرئی ہے۔</translation>
 <translation id="1737078180382804488">اپنے فون کی اطلاعات دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
 <translation id="174102739345480129">مارکر آف ہے۔</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> گزشتہ ہفتے</translation>
 <translation id="2687510499067466116">کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے</translation>
 <translation id="2689613560355655046">ڈیسک 8</translation>
+<translation id="2692092709110488417">فوکس کرنے اور منتخب کردہ علاقے کو منتقل کرنے کے لیے ٹیب دبائیں</translation>
 <translation id="2695305337569143674">ویب</translation>
 <translation id="2697697418792422688">کی بورڈ کی ترتیبات دکھائیں۔ <ph name="KEYBOARD_NAME" /> کو منتخب کیا گیا ہے۔</translation>
 <translation id="2699913284398121653">اپنے اسکول کے اکاؤنٹ ڈیٹا کو اپنے ذاتی اکاؤنٹ میں منتقل کرنے کیلئے، مواد کی منتقلی ایپ کا استعمال کریں</translation>
@@ -1033,6 +1036,7 @@
 <translation id="4412698727486357573">ہیلپ سینٹر</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> آف ہے۔</translation>
 <translation id="4417647906073317561">فوکس کی ترتیبات۔ توجہ مرکوز کرنے کے لیے ٹائمر، ٹاسک اور موسیقی سیٹ کریں۔</translation>
+<translation id="4418600384772451109">پینل بند کریں</translation>
 <translation id="4424159417645388645">ڈیسک 5</translation>
 <translation id="4426817706804363424">بہت خوب!</translation>
 <translation id="4430019312045809116">والیوم</translation>
@@ -2228,6 +2232,7 @@
 <translation id="8287009018010202411">پروڈکٹیوٹی</translation>
 <translation id="828708037801473432">آف</translation>
 <translation id="8297006494302853456">کمزور</translation>
+<translation id="8300451473979404345">منتخب کردہ ہینڈل، منتقل کرنے کے لیے تیر والی کلیدوں کا استعمال کریں</translation>
 <translation id="8308637677604853869">پچھلا مینیو</translation>
 <translation id="830868413617744215">بی ٹا</translation>
 <translation id="8314772463905284467">‏Caps Lock آن ہے</translation>
@@ -2288,6 +2293,7 @@
 <translation id="851458219935658693">موجودہ ڈیسک سے ونڈوز دکھائیں، ریڈیو بٹن کا انتخاب کیا گیا</translation>
 <translation id="851660987304951246">مواد کا فوری خلاصہ کرنے یا سوالات پوچھنے کے لیے پڑھنے میں میری مدد کریں کا استعمال کریں</translation>
 <translation id="8517041960877371778">ہو سکتا ہے کہ آپ کا <ph name="DEVICE_TYPE" /> آن ہونے کی صورت میں چارج نہ ہو۔</translation>
+<translation id="8519329096920173967">‏‫Google لینز کے ساتھ میری اسکرین تلاش کریں</translation>
 <translation id="8535393432370007982">رنگ کے لحاظ سے ترتیب کو کالعدم کریں</translation>
 <translation id="8536886494750559755">فوری اشتراک کی ترتیبات دکھائیں۔ <ph name="TIME_REMAINING" /> کی خاطر ہر ایک کیلئے مرئی</translation>
 <translation id="8539803091108018926">ٹیکسٹ کلپ بورڈ میں کاپی ہو گیا</translation>

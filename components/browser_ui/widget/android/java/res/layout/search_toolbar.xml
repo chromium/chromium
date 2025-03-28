@@ -35,7 +35,7 @@ found in the LICENSE file.
         android:layout_height="match_parent"
         android:paddingHorizontal="@dimen/clear_text_button_horizontal_padding"
         android:src="@drawable/btn_delete_24dp"
-        android:background="@drawable/search_box_button_ripple"
+        android:background="@drawable/search_box_icon_background"
         android:scaleType="center"
         android:contentDescription="@string/accessibility_toolbar_btn_delete_url"
         android:visibility="invisible"

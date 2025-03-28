@@ -44,6 +44,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.util.KeyboardNavigationListener;
 import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -337,6 +338,37 @@ public class SelectableListToolbar<E> extends Toolbar
         mNumberRollView = findViewById(R.id.selection_mode_number);
         mNumberRollView.setString(R.plurals.selected_items);
         mNumberRollView.setStringForZero(R.string.select_items);
+
+        // Set listener to be able to move focus out of toolbar view to adjacent views.
+        setOnKeyListener(
+                new KeyboardNavigationListener() {
+                    @Override
+                    protected boolean handleEnterKeyPress() {
+                        return SelectableListToolbar.this.handleEnterKeyPress();
+                    }
+
+                    @Override
+                    public @Nullable View getNextFocusBackward() {
+                        return SelectableListToolbar.this.getNextFocusBackward();
+                    }
+
+                    @Override
+                    public @Nullable View getNextFocusForward() {
+                        return SelectableListToolbar.this.getNextFocusForward();
+                    }
+                });
+    }
+
+    protected @Nullable View getNextFocusBackward() {
+        return null;
+    }
+
+    protected @Nullable View getNextFocusForward() {
+        return null;
+    }
+
+    protected boolean handleEnterKeyPress() {
+        return false;
     }
 
     @Override
@@ -435,11 +467,11 @@ public class SelectableListToolbar<E> extends Toolbar
             case NavigationButton.NONE:
                 break;
             case NavigationButton.SEARCH_BACK:
-                // Create a LayerDrawable to hold the search box button highlight background as well
+                // Create a LayerDrawable to hold the search box icon highlight background as well
                 // as the navigation icon drawable.
                 var navigationBackgroundDrawable =
                         AppCompatResources.getDrawable(
-                                getContext(), R.drawable.search_box_button_ripple);
+                                getContext(), R.drawable.search_box_icon_background);
                 var navigationLayerDrawable =
                         new LayerDrawable(
                                 new Drawable[] {

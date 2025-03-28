@@ -21,6 +21,8 @@ namespace media::cast {
 
 class CastEnvironment : public base::RefCountedThreadSafe<CastEnvironment> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // An enumeration of the cast threads.
   enum class ThreadId {
     // The main thread is where the cast system is configured and where timers
@@ -71,17 +73,15 @@ class CastEnvironment : public base::RefCountedThreadSafe<CastEnvironment> {
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       ThreadId identifier) const;
 
- protected:
-  virtual ~CastEnvironment();
+ private:
+  friend class base::RefCountedThreadSafe<CastEnvironment>;
+  ~CastEnvironment();
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_proxy_;
   scoped_refptr<base::SingleThreadTaskRunner> audio_thread_proxy_;
   scoped_refptr<base::SingleThreadTaskRunner> video_thread_proxy_;
   raw_ref<const base::TickClock> clock_;
   LogEventDispatcher logger_;
-
- private:
-  friend class base::RefCountedThreadSafe<CastEnvironment>;
 };
 
 }  // namespace media::cast

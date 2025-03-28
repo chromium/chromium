@@ -65,6 +65,15 @@ class COMPONENT_EXPORT(NETWORK_CPP) ContentDecodingInterceptor {
           void(network::mojom::URLLoaderClientEndpointsPtr& endpoints,
                mojo::ScopedDataPipeConsumerHandle& body)> swap_callback,
       scoped_refptr<base::SequencedTaskRunner> worker_task_runner);
+
+  // For testing purposes only. If set to true, the creation of the Mojo data
+  // pipe within this class's methods will be forced to fail, simulating an
+  // insufficient resources error (`net::ERR_INSUFFICIENT_RESOURCES`).
+  static void SetForceMojoCreateDataPipeFailureForTesting(bool value);
+
+ private:
+  // Backing flag for the test utility above. Defined in the .cc file.
+  static bool force_mojo_create_data_pipe_failure_for_testing_;
 };
 
 }  // namespace network

@@ -294,6 +294,10 @@
 #include "chrome/browser/preloading/preview/preview_manager.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/platform_session_manager.h"
+#endif
+
 using base::UserMetricsAction;
 using content::NavigationController;
 using content::NavigationEntry;
@@ -661,6 +665,19 @@ Browser::Browser(const CreateParams& params)
   features_ = BrowserWindowFeatures::CreateBrowserWindowFeatures();
   features_->Init(this);
 
+  SessionServiceBase* session_service =
+      GetAppropriateSessionServiceForSessionRestore(this);
+#if BUILDFLAG(IS_OZONE)
+  if (session_service && session_service->GetPlatformSessionId()) {
+    platform_session_data_ = ui::PlatformSessionWindowData{
+        .session_id = session_service->GetPlatformSessionId().value(),
+        .window_id = session_id_.id(),
+        .restore_id = params.restore_id > Browser::kDefaultRestoreId
+                          ? std::optional<int32_t>(params.restore_id)
+                          : std::nullopt};
+  }
+#endif  // BUILDFLAG(IS_OZONE)
+
   window_ = params.window ? params.window.get()
                           : CreateBrowserWindow(std::unique_ptr<Browser>(this),
                                                 params.user_gesture,
@@ -674,11 +691,8 @@ Browser::Browser(const CreateParams& params)
   extension_window_controller_ =
       std::make_unique<extensions::BrowserExtensionWindowController>(this);
 
-  SessionServiceBase* service =
-      GetAppropriateSessionServiceForSessionRestore(this);
-
-  if (service) {
-    service->WindowOpened(this);
+  if (session_service) {
+    session_service->WindowOpened(this);
   }
 
   exclusive_access_manager_ = std::make_unique<ExclusiveAccessManager>(
@@ -1188,6 +1202,14 @@ base::CallbackListSubscription Browser::RegisterBrowserDidClose(
 
 views::View* Browser::TopContainer() {
   return window_->GetTopContainer();
+}
+
+bool Browser::IsMinimized() const {
+  return window_->IsMinimized();
+}
+
+base::WeakPtr<BrowserWindowInterface> Browser::GetWeakPtr() {
+  return AsWeakPtr();
 }
 
 views::View* Browser::LensOverlayView() {

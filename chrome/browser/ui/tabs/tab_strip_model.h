@@ -34,6 +34,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/range/range.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #error This file should only be included on desktop.
@@ -272,8 +273,8 @@ class TabStripModel : public TabGroupController {
       const tab_groups::TabGroupId group_id);
 
   // Inserts a detached tab group into the tabstrip starting at `index`.
-  void InsertDetachedTabGroupAt(std::unique_ptr<DetachedTabGroup> group,
-                                int index);
+  gfx::Range InsertDetachedTabGroupAt(std::unique_ptr<DetachedTabGroup> group,
+                                      int index);
 
   // Closes the WebContents at the specified index. This causes the
   // WebContents to be destroyed, but it may not happen immediately.
@@ -804,7 +805,7 @@ class TabStripModel : public TabGroupController {
   std::unique_ptr<DetachedTabGroup> DetachTabGroupImpl(
       const tab_groups::TabGroupId& group);
 
-  void InsertDetachedTabGroupImpl(
+  gfx::Range InsertDetachedTabGroupImpl(
       std::unique_ptr<DetachedTabGroup> detached_group,
       int index);
 

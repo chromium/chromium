@@ -15,8 +15,6 @@ namespace blink {
 
 namespace {
 
-using MaxPositionSpan = MasonryRunningPositions::MaxPositionSpan;
-
 }  // namespace
 
 class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
@@ -187,7 +185,7 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildRanges) {
   // single track for the `5%`, then a range for the `repeat(3, ...)` which
   // spans 6 tracks. The last repeat creates a range of 3 tracks, but it's split
   // by the second item, creating one range of 1 track and another of 2 tracks.
-  // Finally, the second item spans a range of 3 track past the explicit grid.
+  // Finally, the second item spans a range of 3 tracks past the explicit grid.
   const Vector<wtf_size_t> expected_start_lines = {0, 2, 3, 9, 10, 12};
   const Vector<wtf_size_t> expected_track_counts = {2, 1, 6, 1, 2, 3};
 
@@ -445,8 +443,10 @@ TEST_F(MasonryLayoutAlgorithmTest, MaximizeAndStretchAutoTracks) {
 }
 
 TEST_F(MasonryLayoutAlgorithmTest, UpdateRunningPositionsForSpan) {
-  MasonryRunningPositions running_positions(/*size=*/4,
-                                            /*tie_threshold=*/LayoutUnit());
+  MasonryRunningPositions running_positions(
+      /*track_count=*/4,
+      /*initial_running_position=*/LayoutUnit(),
+      /*tie_threshold=*/LayoutUnit());
 
   Vector<LayoutUnit> expected_running_positions = {
       LayoutUnit(0), LayoutUnit(3), LayoutUnit(3), LayoutUnit(0)};
@@ -473,26 +473,39 @@ TEST_F(MasonryLayoutAlgorithmTest, GetFirstEligibleLine) {
       /*tie_threshold=*/LayoutUnit(0.5));
 
   SetAutoPlacementCursor(1, running_positions);
-  EXPECT_EQ(running_positions.GetFirstEligibleLine(/*span_size=*/2),
-            MaxPositionSpan(/*start_line=*/1, /*max_pos=*/LayoutUnit(3.5)));
+  LayoutUnit max_position;
+  EXPECT_EQ(
+      running_positions.GetFirstEligibleLine(/*span_size=*/2, max_position),
+      GridSpan::TranslatedDefiniteGridSpan(1, 3));
+  EXPECT_EQ(max_position, LayoutUnit(3.5));
 
-  EXPECT_EQ(running_positions.GetFirstEligibleLine(/*span_size=*/1),
-            MaxPositionSpan(/*start_line=*/3, /*max_pos=*/LayoutUnit(2.5)));
+  EXPECT_EQ(
+      running_positions.GetFirstEligibleLine(/*span_size=*/1, max_position),
+      GridSpan::TranslatedDefiniteGridSpan(3, 4));
+  EXPECT_EQ(max_position, LayoutUnit(2.5));
 
-  EXPECT_EQ(running_positions.GetFirstEligibleLine(/*span_size=*/4),
-            MaxPositionSpan(/*start_line=*/0, /*max_pos=*/LayoutUnit(3.5)));
+  EXPECT_EQ(
+      running_positions.GetFirstEligibleLine(/*span_size=*/4, max_position),
+      GridSpan::TranslatedDefiniteGridSpan(0, 4));
+  EXPECT_EQ(max_position, LayoutUnit(3.5));
 
   SetAutoPlacementCursor(2, running_positions);
-  EXPECT_EQ(running_positions.GetFirstEligibleLine(/*span_size=*/2),
-            MaxPositionSpan(/*start_line=*/2, /*max_pos=*/LayoutUnit(3.5)));
+  EXPECT_EQ(
+      running_positions.GetFirstEligibleLine(/*span_size=*/2, max_position),
+      GridSpan::TranslatedDefiniteGridSpan(2, 4));
+  EXPECT_EQ(max_position, LayoutUnit(3.5));
 
   SetAutoPlacementCursor(3, running_positions);
-  EXPECT_EQ(running_positions.GetFirstEligibleLine(/*span_size=*/2),
-            MaxPositionSpan(/*start_line=*/0, /*max_pos=*/LayoutUnit(3)));
+  EXPECT_EQ(
+      running_positions.GetFirstEligibleLine(/*span_size=*/2, max_position),
+      GridSpan::TranslatedDefiniteGridSpan(0, 2));
+  EXPECT_EQ(max_position, LayoutUnit(3));
 
   SetAutoPlacementCursor(4, running_positions);
-  EXPECT_EQ(running_positions.GetFirstEligibleLine(/*span_size=*/2),
-            MaxPositionSpan(/*start_line=*/0, /*max_pos=*/LayoutUnit(3)));
+  EXPECT_EQ(
+      running_positions.GetFirstEligibleLine(/*span_size=*/2, max_position),
+      GridSpan::TranslatedDefiniteGridSpan(0, 2));
+  EXPECT_EQ(max_position, LayoutUnit(3));
 }
 
 TEST_F(MasonryLayoutAlgorithmTest, GetMaxPositionsForAllTracks) {

@@ -77,6 +77,7 @@ public class SiteSettingsCategory {
         Type.TRACKING_PROTECTION,
         Type.FILE_EDITING,
         Type.JAVASCRIPT_OPTIMIZER,
+        Type.SERIAL_PORT,
         Type.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -117,9 +118,10 @@ public class SiteSettingsCategory {
         int HAND_TRACKING = 31;
         int FILE_EDITING = 32;
         int JAVASCRIPT_OPTIMIZER = 33;
+        int SERIAL_PORT = 34;
 
         /** Number of handled categories used for calculating array sizes. */
-        int NUM_ENTRIES = 34;
+        int NUM_ENTRIES = 35;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -252,6 +254,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER;
             case Type.SENSORS:
                 return ContentSettingsType.SENSORS;
+            case Type.SERIAL_PORT:
+                return ContentSettingsType.SERIAL_GUARD;
             case Type.STORAGE_ACCESS:
                 return ContentSettingsType.STORAGE_ACCESS;
             case Type.SOUND:
@@ -280,6 +284,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.USB_CHOOSER_DATA;
             case ContentSettingsType.BLUETOOTH_GUARD:
                 return ContentSettingsType.BLUETOOTH_CHOOSER_DATA;
+            case ContentSettingsType.SERIAL_GUARD:
+                return ContentSettingsType.SERIAL_CHOOSER_DATA;
             default:
                 return -1; // Conversion unavailable.
         }
@@ -339,6 +345,8 @@ public class SiteSettingsCategory {
                 return "protected_content";
             case Type.SENSORS:
                 return "sensors";
+            case Type.SERIAL_PORT:
+                return "serial_port";
             case Type.STORAGE_ACCESS:
                 return "storage_access";
             case Type.SOUND:

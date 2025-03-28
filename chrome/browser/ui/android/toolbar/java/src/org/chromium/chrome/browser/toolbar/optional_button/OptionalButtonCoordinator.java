@@ -180,8 +180,8 @@ public class OptionalButtonCoordinator {
         if (buttonData.getButtonSpec().getShouldShowHoverHighlight()) {
             mView.setBackgroundResource(
                     isIncognito
-                            ? R.drawable.toolbar_button_ripple_incognito
-                            : R.drawable.toolbar_button_ripple);
+                            ? R.drawable.default_icon_background_baseline
+                            : R.drawable.default_icon_background);
         } else {
             TypedValue themeRes = new TypedValue();
             mView.getContext()

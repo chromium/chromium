@@ -229,6 +229,10 @@ class Interceptor : public network::mojom::URLLoaderClient,
 };
 }  // namespace
 
+// static
+bool ContentDecodingInterceptor::
+    force_mojo_create_data_pipe_failure_for_testing_ = false;
+
 void ContentDecodingInterceptor::Intercept(
     const std::vector<net::SourceStreamType>& types,
     network::mojom::URLLoaderClientEndpointsPtr& endpoints,
@@ -280,7 +284,8 @@ void ContentDecodingInterceptor::Intercept(
   // side.
   std::move(swap_callback).Run(endpoints, pipe_consumer_handle);
 
-  if (mojo_result != MOJO_RESULT_OK) {
+  if (mojo_result != MOJO_RESULT_OK ||
+      force_mojo_create_data_pipe_failure_for_testing_) {
     mojo::Remote<network::mojom::URLLoaderClient> client(
         std::move(url_loader_client));
     client->OnComplete(
@@ -296,6 +301,12 @@ void ContentDecodingInterceptor::Intercept(
           std::move(pipe_producer_handle), std::move(endpoints->url_loader),
           std::move(endpoints->url_loader_client), std::move(url_loader_client),
           std::move(url_loader_receiver), worker_task_runner));
+}
+
+// static
+void ContentDecodingInterceptor::SetForceMojoCreateDataPipeFailureForTesting(
+    bool value) {
+  force_mojo_create_data_pipe_failure_for_testing_ = value;
 }
 
 }  // namespace network

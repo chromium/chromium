@@ -19,7 +19,6 @@ class Size;
 }  // namespace gfx
 
 namespace gpu {
-class GpuMemoryBufferManager;
 class ClientSharedImage;
 struct SyncToken;
 namespace raster {
@@ -41,13 +40,9 @@ class WebGraphicsContext3DProviderWrapper;
 // media::VideoFrame.
 class PLATFORM_EXPORT WebGraphicsContext3DVideoFramePool {
  public:
-  // This constructor is valid only on the main thread, as otherwise a
-  // GpuMemoryBufferManager must be provided.
+  // This constructor is valid only on the main thread.
   explicit WebGraphicsContext3DVideoFramePool(
       base::WeakPtr<WebGraphicsContext3DProviderWrapper> weak_context_provider);
-  WebGraphicsContext3DVideoFramePool(
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper> weak_context_provider,
-      gpu::GpuMemoryBufferManager* gmb_manager);
   ~WebGraphicsContext3DVideoFramePool();
 
   gpu::raster::RasterInterface* GetRasterInterface() const;

@@ -1575,7 +1575,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2081816110395725788">Chế độ rảnh khi thiết bị chạy bằng pin</translation>
 <translation id="2082187087049518845">Nhóm thẻ</translation>
 <translation id="2082510809738716738">Chọn một màu giao diện</translation>
-<translation id="208547068587548667">Đăng nhập vào <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Vui lòng thử lại</translation>
 <translation id="208634871997892083">VPN luôn bật</translation>
 <translation id="208654914566977272">Hành động được đề xuất khi tìm kiếm trên màn hình</translation>
@@ -2019,6 +2018,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2373666622366160481">Vừa với giấy</translation>
 <translation id="2375406435414127095">Kết nối với điện thoại của bạn</translation>
 <translation id="2376056713414548745">Đọc to</translation>
+<translation id="2376122016044804363">Xác nhận đã sao chép vào bảng nhớ tạm</translation>
 <translation id="2377667304966270281">Lỗi phần cứng</translation>
 <translation id="237828693408258535">Bạn muốn dịch trang này?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Có thể tiện ích này sắp không được hỗ trợ nữa}other{Có thể các tiện ích này sắp không được hỗ trợ nữa}}</translation>
@@ -3173,6 +3173,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3192586965067888278">Mô tả chi tiết về vấn đề. Ý kiến phản hồi sẽ được gửi tới Google để nhân viên đánh giá và có thể được dùng để cải thiện hoặc phát triển các sản phẩm và dịch vụ của Google.</translation>
 <translation id="3192947282887913208">Tệp âm thanh</translation>
 <translation id="3193695589337931419">Phần mềm tiện ích tín hiệu hệ thống</translation>
+<translation id="3194095220941877499">Hiện thông báo xác nhận khi bạn sao chép đường liên kết, hình ảnh hoặc video</translation>
 <translation id="3196912927885212665">Để thiết lập bằng điện thoại Android, bạn cần bật Bluetooth trên Chromebook</translation>
 <translation id="3197453258332670132">Khi bạn nhấp chuột phải hoặc nhấn và giữ, thông tin liên quan của văn bản bạn chọn sẽ xuất hiện</translation>
 <translation id="3199127022143353223">Máy chủ</translation>
@@ -4010,7 +4011,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3778740492972734840">Công cụ dành cho &amp;Nhà phát triển</translation>
 <translation id="3778868487658107119">Đặt câu hỏi cho Trợ lý. Yêu cầu Trợ lý làm mọi việc. Đó là Google của riêng bạn, luôn sẵn sàng trợ giúp bạn.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{nhật ký duyệt web của bạn trên # trang web}other{nhật ký duyệt web của bạn trên # trang web}}</translation>
-<translation id="3779244863011082655">Sử dụng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> khác</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> không thể kiểm tra mật khẩu để xem có bị rò rỉ dữ liệu hay không. Hãy thử lại sau.</translation>
 <translation id="3781742599892759500">Quyền truy cập vào micrô của Linux</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5514,6 +5514,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4848191975108266266">Lệnh "Ok Google" của Trợ lý Google</translation>
 <translation id="4849286518551984791">Giờ phối hợp quốc tế (UTC/GMT)</translation>
 <translation id="4849517651082200438">Không cài đặt</translation>
+<translation id="4849731766219625109">Sử dụng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> của bạn</translation>
 <translation id="485053257961878904">Không thể thiết lập tính năng đồng bộ hóa thông báo</translation>
 <translation id="4850548109381269495">Hãy kiểm tra kết nối Internet và bật Bluetooth trên cả hai thiết bị. Sau đó, hãy thử lại.</translation>
 <translation id="4850669014075537160">Cuộn</translation>
@@ -5702,6 +5703,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4979510648199782334">Quá trình thiết lập Microsoft 365 đã hoàn tất</translation>
 <translation id="4980805016576257426">Tiện ích này có chứa phần mềm độc hại.</translation>
 <translation id="4983159853748980742">Mật khẩu của bạn chưa được chia sẻ. Kiểm tra kết nối Internet và đảm bảo bạn đã đăng nhập vào Chrome. Sau đó, hãy thử lại.</translation>
+<translation id="498624032394115435">Bất cứ ai có đường liên kết này đều có thể chỉnh sửa tất cả các thẻ.</translation>
 <translation id="4986706507552097681">Bạn có thể chọn nội dung muốn đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="4986728572522335985">Thao tác này sẽ xóa toàn bộ dữ liệu trên khóa bảo mật, bao gồm cả mã PIN của khóa</translation>
 <translation id="4987944280765486504">Chromebook sẽ khởi động lại khi quá trình tải xuống hoàn tất và bạn có thể tiếp tục thiết lập sau đó.</translation>
@@ -8311,7 +8313,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6873571253135628430">Thay đổi quyền của trang web</translation>
 <translation id="6876155724392614295">Xe đạp</translation>
 <translation id="6876469544038980967">Không hữu ích</translation>
-<translation id="687838958001010630">Bất cứ ai có đường liên kết này đều có thể chỉnh sửa tất cả các thẻ</translation>
 <translation id="6878422606530379992">Được phép sử dụng cảm biến</translation>
 <translation id="6878862640969460273">Khổ ngang</translation>
 <translation id="6880587130513028875">Hình ảnh đã bị chặn trên trang này.</translation>

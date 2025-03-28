@@ -85,7 +85,7 @@ void SVGImageChromeClient::ResumeAnimation() {
   // suspended, schedule a new animation frame.
   if (!have_pending_animation)
     return;
-  ScheduleAnimation(nullptr);
+  ChromeClient::ScheduleAnimation(nullptr);
 }
 
 void SVGImageChromeClient::RestoreAnimationIfNeeded() {

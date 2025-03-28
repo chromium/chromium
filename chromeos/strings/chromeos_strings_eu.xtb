@@ -11,6 +11,7 @@
 <translation id="102432830749687801">Erabili Google-ren Eduki-transferentzia aplikazioa zure ikastetxeko kontuko datuak zure kontu pertsonalera eramateko, hura erabiltzeko baimena galdu baino lehen.</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />" funtziorako erabiltzen da lasterbidea. Sakatu beste lasterbide bat. Lehendik dagoen lasterbidea ordezteko, sakatu lasterbide hau berriro.</translation>
 <translation id="1030856839388844477">Berrezarri datu-erabilera</translation>
+<translation id="1047095725494118091">Ezin da deskargatu. Saiatu berriro edo berrabiarazi <ph name="DEVICE_TYPE" /> gailua.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> hari, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Eginbide berri bat eskuragarri dago. Erabili gora egiteko gezi-tekla informazio gehiago lortzeko.</translation>
 <translation id="1049663189809099096">hori argi</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">Pantaila-babeslea deskargatzen</translation>
 <translation id="1094693127011229778">IP helbidea ez dago erabilgarri</translation>
 <translation id="1100902271996134409">Irudiak sortzen…</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> audioa</translation>
 <translation id="1116694919640316211">Honi buruz</translation>
 <translation id="1118572504348554005">Salatzen dituzun akatsak eta bestelako arazoak konpontzeko, baliteke inprimaki honen bidez bidalitako oharrak gure bazkideekin partekatzea. Ez eman kontuzko informaziorik, hala nola pasahitzak.</translation>
 <translation id="1119403468619527527">Hitz gutxiegi daude sinplifikatzeko</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">Aktibatu modu iluna</translation>
 <translation id="2164131940279488868">Audioa grabatzen hasteko, ziurtatu mikrofono bat konektatuta dagoela</translation>
 <translation id="2173302385160625112">Egiaztatu Internetera konektatuta zaudela</translation>
+<translation id="2176909213844392588">Ezin da deskargatu <ph name="LANGUAGE_NAME" /> transkribatzeko eredua. Saiatu berriro edo berrabiarazi <ph name="DEVICE_TYPE" /> gailua.</translation>
 <translation id="2180197493692062006">Arazoren bat izan da. Ireki berriro aplikazioa.</translation>
 <translation id="2189104374785738357">Editatu APNaren xehetasunak</translation>
 <translation id="2195732836444333448">Zerbitzua lanpetuta dago. Itzuli hemendik gutxira.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">Dokumentu-elikatzailea (bi aldekoa)</translation>
 <translation id="3201315366910775591">Beste pertsona batzuek album partekatuak egunera ditzakete</translation>
 <translation id="3211671540163313381">Teklak esleitzeko norabide-kontrolagailua</translation>
+<translation id="3217462202230355157">Ziurtatu mikrofonoa konektatuta dagoela edo berrabiarazi <ph name="DEVICE_TYPE" /> gailua</translation>
 <translation id="3226405216343213872">Eskanerren bila</translation>
 <translation id="3226657629376379887">Diseinuaren ekintza-menua</translation>
 <translation id="3227186760713762082">Zatitu <ph name="CATEGORY_TEXT" /> balioa <ph name="CONVERSION_RATE" /> faktorearekin</translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">Esklusiboa</translation>
 <translation id="3404249063913988450">Gaitu pantaila-babeslea</translation>
 <translation id="3413935475507503304">Eguneratzeko, sakatu Hurrengoa.</translation>
+<translation id="3416709353545797224"><ph name="DEVICE_TYPE" /> gailuko audio guztia grabatzen</translation>
 <translation id="3428551088151258685">aire zabaleko</translation>
 <translation id="3428971106895559033">Pastel</translation>
 <translation id="3434107140712555581">% <ph name="BATTERY_PERCENTAGE" /></translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">Ziurtatu eskanerra piztuta dagoela eta sarearen edo konexio zuzenaren bidez erabilgarri dagoela</translation>
 <translation id="4159238217853743776">Partziala</translation>
 <translation id="4159784952369912983">Morea</translation>
+<translation id="416219735020840807">Ezin da deskargatu transkripzio-eredua. Saiatu berriro edo berrabiarazi <ph name="DEVICE_TYPE" /> gailua.</translation>
 <translation id="4170180284036919717">Atera argazki bat</translation>
 <translation id="4170700058716978431">EZ DA GAINDITU</translation>
 <translation id="4171077696775491955">txikitu distira</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">Hautatutako testua iradokizunarekin ordezten</translation>
 <translation id="5346687412805619883">Tokiko sarea</translation>
 <translation id="5358174242040570474">Arazoren bat izan da. Saiatu berriro horma-papera aukeratzen edo ireki berriro aplikazioa.</translation>
+<translation id="5368228070728130240">Ezin da deskargatu laburpenak eta izenak sortzeko eredua. Saiatu berriro edo berrabiarazi <ph name="DEVICE_TYPE" /> gailua.</translation>
 <translation id="5372659122375744710">Wifi-sarea ez da segurua</translation>
 <translation id="5376354385557966694">Gai argi automatikoa</translation>
 <translation id="5378184552853359930">IP mota</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">huts egin dute DNS bidezko ebazpenek</translation>
 <translation id="6768237774506518020">DNS bidezko ebazpenen hutsegite-tasa altua</translation>
 <translation id="6786747875388722282">Luzapenak</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" /> gailuaren audioa aktibatuta dagoenean, gailuan erreproduzitzen den audio guztia grabatzen du grabagailuak</translation>
 <translation id="6791471867139427246">teklatuaren argiaren kolorea</translation>
 <translation id="6796229976413584781">Ezabatu da lasterbidea</translation>
 <translation id="6798678288485555829">Testuetako nabigazioa</translation>
@@ -1728,6 +1736,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8930622219860340959">Hari gabekoa</translation>
 <translation id="8933650076320258356"><ph name="DIRECTION" /> funtziorako <ph name="KEYS" /> tekla dago hautatuta. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Bezeroaren IP helbidea</translation>
+<translation id="8938606491880817721">Ezin da deskargatu. Saiatu berriro edo berrabiarazi <ph name="DEVICE_TYPE" /> gailua.</translation>
 <translation id="8944651180182756621">Exekutatzeko tresnaren kolorea</translation>
 <translation id="8945308580158685341">erleak</translation>
 <translation id="894617464444543719">Gailua telefono bat da.</translation>

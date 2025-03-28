@@ -105,6 +105,7 @@ source_set("eg_app_support+eg2") {
     "//components/prefs",
     "//components/variations",
     "//components/variations:test_support",
+    "//components/variations/service",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/test/app:test_support",
   ]
@@ -129,6 +130,7 @@ source_set("eg2_tests") {
   sources = [
     "variations_safe_mode_egtest.mm",
     "variations_safe_mode_end_to_end_egtest.mm",
+    "variations_safe_mode_seedfile_egtest.mm",
   ]
   deps = [
     ":eg_test_support+eg2",

@@ -197,6 +197,12 @@ void TabGroupSyncServiceProxy::MakeTabGroupShared(
   NOTIMPLEMENTED();
 }
 
+void TabGroupSyncServiceProxy::MakeTabGroupSharedForTesting(
+    const LocalTabGroupID& local_group_id,
+    std::string_view collaboration_id) {
+  NOTIMPLEMENTED();
+}
+
 void TabGroupSyncServiceProxy::AboutToUnShareTabGroup(
     const LocalTabGroupID& local_group_id,
     base::OnceClosure on_complete_callback) {

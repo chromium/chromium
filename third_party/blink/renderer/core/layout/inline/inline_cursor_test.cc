@@ -420,8 +420,7 @@ TEST_F(InlineCursorTest, FirstLastLogicalLeafInTextAsDeepDescendants) {
 TEST_F(InlineCursorTest, MoveToEndOfLineWithNoCharsLtr) {
   SetBodyContent(
       "<textarea rows=\"3\" cols=\"50\">foo&#10;&#10;bar</textarea>");
-  const auto& textarea =
-      ToTextControl(*GetDocument().QuerySelector(AtomicString("textarea")));
+  const auto& textarea = ToTextControl(*QuerySelector("textarea"));
   const LayoutObject* textarea_layout =
       textarea.InnerEditorElement()->GetLayoutObject();
   const LayoutBlockFlow& block_flow = *To<LayoutBlockFlow>(textarea_layout);
@@ -442,8 +441,7 @@ TEST_F(InlineCursorTest, MoveToEndOfLineWithNoCharsRtl) {
   SetBodyContent(
       "<textarea rows=\"3\" cols=\"50\" "
       "dir=\"rtl\">foo&#10;&#10;bar</textarea>");
-  const auto& textarea =
-      ToTextControl(*GetDocument().QuerySelector(AtomicString("textarea")));
+  const auto& textarea = ToTextControl(*QuerySelector("textarea"));
   const LayoutObject* textarea_layout =
       textarea.InnerEditorElement()->GetLayoutObject();
   const LayoutBlockFlow& block_flow = *To<LayoutBlockFlow>(textarea_layout);

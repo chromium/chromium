@@ -18,6 +18,8 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.DelegateButtonData;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FadeHubLayoutAnimationFactory;
 import org.chromium.chrome.browser.hub.FullButtonData;
@@ -53,7 +55,7 @@ public class TabGroupsPane implements Pane {
     private final FrameLayout mRootView;
     private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonSupplier =
             new ObservableSupplierImpl<>();
-    private final ObservableSupplier<FullButtonData> mEmptyActionButtonSupplier =
+    private final ObservableSupplierImpl<FullButtonData> mActionButtonSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHairlineVisibilitySupplier =
             new ObservableSupplierImpl<>();
@@ -90,6 +92,22 @@ public class TabGroupsPane implements Pane {
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
+        if (ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) {
+            TabGroupCreationUiFlow flow =
+                    new TabGroupCreationUiFlow(
+                            context,
+                            modalDialogManagerSupplier,
+                            paneManagerSupplier,
+                            mTabGroupModelFilterSupplier::get,
+                            TabGroupCreationDialogManager::new);
+            mActionButtonSupplier.set(
+                    new DelegateButtonData(
+                            new ResourceButtonData(
+                                    R.string.button_new_tab,
+                                    R.string.button_new_tab,
+                                    R.drawable.new_tab_icon),
+                            flow::newTabGroupFlow));
+        }
         mReferenceButtonSupplier.set(
                 new ResourceButtonData(
                         R.string.accessibility_tab_groups,
@@ -160,7 +178,7 @@ public class TabGroupsPane implements Pane {
     @NonNull
     @Override
     public ObservableSupplier<FullButtonData> getActionButtonDataSupplier() {
-        return mEmptyActionButtonSupplier;
+        return mActionButtonSupplier;
     }
 
     @NonNull

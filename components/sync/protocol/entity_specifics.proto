@@ -18,6 +18,7 @@ import "components/sync/protocol/app_specifics.proto";
 import "components/sync/protocol/arc_package_specifics.proto";
 import "components/sync/protocol/autofill_specifics.proto";
 import "components/sync/protocol/autofill_offer_specifics.proto";
+import "components/sync/protocol/autofill_valuable_specifics.proto";
 import "components/sync/protocol/autofill_wallet_credential_specifics.proto";
 import "components/sync/protocol/autofill_wallet_usage_specifics.proto";
 import "components/sync/protocol/bookmark_specifics.proto";
@@ -62,7 +63,6 @@ import "components/sync/protocol/web_app_specifics.proto";
 import "components/sync/protocol/webauthn_credential_specifics.proto";
 import "components/sync/protocol/wifi_configuration_specifics.proto";
 import "components/sync/protocol/workspace_desk_specifics.proto";
-import "components/sync/protocol/autofill_loyalty_card_specifics.proto";
 import "components/sync/protocol/shared_tab_group_account_data_specifics.proto";
 
 message EntitySpecifics {
@@ -157,7 +157,7 @@ message EntitySpecifics {
     PlusAddressSpecifics plus_address = 1267844;
     CookieSpecifics cookie = 1281100;
     PlusAddressSettingSpecifics plus_address_setting = 1303742;
-    AutofillLoyaltyCardSpecifics autofill_loyalty_card = 1419865;
+    AutofillValuableSpecifics autofill_valuable = 1419865;
     SharedTabGroupAccountDataSpecifics shared_tab_group_account_data = 1429255;
     // When adding a new type, follow the docs below and keep this comment as
     // the last entry.

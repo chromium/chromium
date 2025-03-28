@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -106,7 +107,7 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
     @Override
     protected void showSelectionView(List<Integer> selectedItems, boolean wasSelectionEnabled) {
         super.showSelectionView(selectedItems, wasSelectionEnabled);
-        if (mBackgroundColor != 0) {
+        if (mBackgroundColor != Color.TRANSPARENT) {
             setBackgroundColor(mBackgroundColor);
         }
     }
@@ -137,10 +138,12 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
 
     /**
      * Update the toolbar background color.
+     *
      * @param backgroundColor The new color to use.
      */
     public void setToolbarBackgroundColor(@ColorInt int backgroundColor) {
         mBackgroundColor = backgroundColor;
+        setBackgroundColor(mBackgroundColor);
     }
 
     /**

@@ -16,6 +16,32 @@
 // ReadAnythingAppController for the Read Anything WebUI app.
 class ReadAloudAppModel {
  public:
+  // Enum for logging when speech is stopped and why.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ReadAloudStopSource)
+  enum class ReadAloudStopSource {
+    kButton = 0,
+    kKeyboardShortcut = 1,
+    kCloseReadingMode = 2,
+    kCloseTabOrWindow = 3,
+    kReloadPage = 4,
+    kChangePage = 5,
+    kEngineInterrupt = 6,
+    kEngineError = 7,
+    kFinishContent = 8,
+    kLockChromeosDevice = 9,
+    kUnexpectedUpdateContent = 10,
+
+    kMinValue = kButton,
+    kMaxValue = kUnexpectedUpdateContent,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingSpeechStopSource)
+
+  static constexpr char kSpeechStopSourceHistogramName[] =
+      "Accessibility.ReadAnything.SpeechStopSource";
+
   ReadAloudAppModel();
   ~ReadAloudAppModel();
   ReadAloudAppModel(const ReadAloudAppModel& other) = delete;
@@ -142,6 +168,8 @@ class ReadAloudAppModel {
   // Updates the session count for the given metric name using
   // SingleSampleMetric. These are then logged once on destruction.
   void IncrementMetric(const std::string& metric_name);
+
+  void LogSpeechStop(ReadAloudStopSource source);
 
  private:
   // Returns true if the node was previously spoken or we expect to speak it

@@ -9,7 +9,6 @@ import './ink_size_selector.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AnnotationBrushType} from '../constants.js';
-import {record, UserAction} from '../metrics.js';
 
 import {InkAnnotationBrushMixin} from './ink_annotation_brush_mixin.js';
 import {getCss} from './viewer_side_panel.css.js';
@@ -28,11 +27,6 @@ export class ViewerSidePanelElement extends ViewerSidePanelElementBase {
 
   override render() {
     return getHtml.bind(this)();
-  }
-
-  constructor() {
-    super();
-    record(UserAction.OPEN_INK2_SIDE_PANEL);
   }
 
   protected shouldShowBrushOptions_(): boolean {

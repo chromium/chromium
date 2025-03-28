@@ -14,8 +14,16 @@ interface ExternalBeginFrameController {
   // If force is set to true, the frame will either begin or fail immediately,
   // otherwise the frame will be deferred till one of the frame sinks indicates
   // it's interested in a frame.
+  // This is only used for headless on desktop and Android XR compositor.
+  [EnableIfNot=is_ios]
   IssueExternalBeginFrame(BeginFrameArgs args, bool force)
       => (BeginFrameAck ack);
+
+  // Issue a begin frame to the compositor. This is only used on iOS where begin
+  // frames originate in the browser process due to sandbox restrictions and we
+  // don't care about BeginFrameAcks for frame throttling unlike headless.
+  [EnableIf=is_ios]
+  IssueExternalBeginFrameNoAck(BeginFrameArgs args);
 };
 
 // Exposes a way to control when external BeginFrames are issued.

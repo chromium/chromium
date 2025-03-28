@@ -48,8 +48,9 @@ class PinTabStripButton : public views::LabelButton {
                     std::u16string_view text)
       : views::LabelButton(std::move(callback), text) {
     SetImageModel(views::Button::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(
-                      kOnTaskPodTabsIcon, cros_tokens::kCrosSysOnSurface));
+                  ui::ImageModel::FromVectorIcon(kOnTaskPodTabsIcon,
+                                                 cros_tokens::kCrosSysOnSurface,
+                                                 kLabelButtonIconSize));
     // Accessing protected member label() to set the font list.
     label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
         TypographyToken::kCrosButton2));
@@ -59,7 +60,9 @@ class PinTabStripButton : public views::LabelButton {
         kLabelButtonButtomPadding, kLabelButtonRightPadding)));
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
     SetImageLabelSpacing(kLabelButtonIconTextSpace);
-    SetPreferredSize(gfx::Size(kLabelButtonWidth, kLabelButtonHeight));
+    int labelButtonWidth = kLabelButtonIconSize + kLabelButtonIconTextSpace +
+                           GetPreferredSize().width();
+    SetPreferredSize(gfx::Size(labelButtonWidth, kLabelButtonHeight));
     SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemOnBase, kLabelButtonRadius));
   }

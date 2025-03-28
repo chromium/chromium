@@ -519,6 +519,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.NoVarySearch.LookupTime" units="microseconds"
+    expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The time spent executing net::NoVarySearchCache::Lookup(). This is recorded
+    once for every call to the function, so approximately once for every HTTP(S)
+    request.
+
+    This will be used to evaluate the need for optimization.
+
+    The histogram is not reported on Windows machines without high resolution
+    clocks.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.NoVarySearch.UseResult" enum="NoVarySearchUseResult"
     expires_after="2025-12-16">
   <owner>ricea@chromium.org</owner>

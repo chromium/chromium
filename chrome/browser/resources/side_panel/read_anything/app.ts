@@ -389,9 +389,10 @@ export class AppElement extends AppElementBase {
     setTimeout(() => chrome.readingMode.shouldShowUi(), 0);
 
     this.showLoading();
-    VoiceNotificationManager.getInstance().addListener(this.$.languageToast);
 
     if (this.isReadAloudEnabled_) {
+      VoiceNotificationManager.getInstance().addListener(this.$.languageToast);
+
       // Clear state. We don't do this in disconnectedCallback because that's
       // not always reliabled called.
       this.speech_.cancel();
@@ -713,6 +714,16 @@ export class AppElement extends AppElementBase {
     // Each time we rebuild the subtree, we should clear the node id of the
     // first text node.
     this.firstTextNodeSetForReadAloud = null;
+
+    // This shouldn't happen. If it does, there is likely a bug, so log it so
+    // we can monitor it.
+    if (this.speechPlayingState.isAudioCurrentlyPlaying) {
+      console.error(
+          'updateContent called while audio is currently playing. ',
+          'There may be a bug.');
+      this.logger_.logSpeechStopSource(
+          chrome.readingMode.unexpectedUpdateContentStopSource);
+    }
     this.speech_.cancel();
     this.clearReadAloudState();
     const container = this.$.container;
@@ -2022,6 +2033,8 @@ export class AppElement extends AppElementBase {
         // from opening another instance of reading mode), so we should
         // ensure speech state, including the play / pause button, is
         // updated.
+        this.logger_.logSpeechStopSource(
+            chrome.readingMode.engineInterruptStopSource);
         this.stopSpeech(PauseActionSource.ENGINE_INTERRUPT);
       }
       return;
@@ -2048,6 +2061,7 @@ export class AppElement extends AppElementBase {
       // speech rate, update the speech rate to the WebSpeech default of 1.
       chrome.readingMode.onSpeechRateChange(1);
       this.resetSpeechPostSettingChange_();
+      return;
     }
 
     // No appropriate voice is available for the language designated in
@@ -2077,6 +2091,7 @@ export class AppElement extends AppElementBase {
     // button state, and highlighting in order to give visual feedback that
     // something went wrong.
     // TODO: crbug.com/40927698 - Consider showing an error message.
+    this.logger_.logSpeechStopSource(chrome.readingMode.engineErrorStopSource);
     this.stopSpeech(PauseActionSource.DEFAULT);
   }
 
@@ -2330,6 +2345,8 @@ export class AppElement extends AppElementBase {
   }
 
   private onSpeechFinished() {
+    this.logger_.logSpeechStopSource(
+        chrome.readingMode.contentFinishedStopSource);
     this.clearReadAloudState();
 
     // Show links when speech finishes playing.
@@ -2838,6 +2855,10 @@ export class AppElement extends AppElementBase {
   protected onKeyDown_(e: KeyboardEvent) {
     if (e.key === 'k') {
       e.stopPropagation();
+      if (this.speechPlayingState.isSpeechActive) {
+        this.logger_.logSpeechStopSource(
+            chrome.readingMode.keyboardShortcutStopSource);
+      }
       this.onPlayPauseClick_();
     }
   }

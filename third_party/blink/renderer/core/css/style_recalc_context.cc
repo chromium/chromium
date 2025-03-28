@@ -33,7 +33,7 @@ StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
 
     const ComputedStyle* style = element->GetComputedStyle();
     if (style && !style->ScrollMarkerGroupNone() &&
-        style->IsScrollContainer()) {
+        (style->IsScrollContainer() || element->IsDocumentElement())) {
       result.has_scroller_ancestor_with_scroll_marker_group_property = true;
     }
 

@@ -15,7 +15,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -29,6 +28,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -148,7 +148,7 @@ class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
     PermissionsUpdater updater(profile());
     updater.InitializePermissions(&extension);
     updater.GrantActivePermissions(&extension);
-    service()->AddExtension(&extension);
+    registrar()->AddExtension(&extension);
   }
 
   // Adds the extension to the ExtensionService, and withheld any initial
@@ -158,7 +158,7 @@ class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
     updater.InitializePermissions(&extension);
     ScriptingPermissionsModifier(profile(), &extension)
         .SetWithholdHostPermissions(true);
-    service()->AddExtension(&extension);
+    registrar()->AddExtension(&extension);
   }
 
  protected:
@@ -240,7 +240,7 @@ TEST_F(PermissionsAPIUnitTest, ContainsAndGetAllWithRuntimeHostPermissions) {
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
   updater.GrantActivePermissions(extension.get());
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   auto contains_origin = [this, &extension](const char* origin) {
     SCOPED_TRACE(origin);
@@ -1004,7 +1004,7 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
        AddHostAccessRequest_NoHostPermissions) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension").AddAPIPermission("activeTab").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   // Open tab on any url.
   NavigateTo("http://www.example.com");
@@ -1076,7 +1076,7 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
           .SetManifestKey("optional_host_permissions",
                           base::Value::List().Append("*://*.optional.com/*"))
           .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   auto* permissions_manager = PermissionsManager::Get(profile());
 

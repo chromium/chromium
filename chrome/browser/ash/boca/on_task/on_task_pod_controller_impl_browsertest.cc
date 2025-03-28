@@ -70,7 +70,7 @@ class OnTaskPodControllerImplBrowserTestBase : public InProcessBrowserTest {
 
   ash::OnTaskPodControllerImpl* on_task_pod_controller() {
     return static_cast<ash::OnTaskPodControllerImpl*>(
-        window_tracker()->GetOnTaskPodControllerForTesting());
+        window_tracker()->on_task_pod_controller());
   }
 
   boca::OnTaskSystemWebAppManagerImpl* system_web_app_manager() {
@@ -520,6 +520,61 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
+                       DisablePinTabStripFunctionalityWhenPaused) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window. This is when the OnTask pod
+  // is set up.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  system_web_app_manager()->SetPinStateForSystemWebAppWindow(/*pinned=*/true,
+                                                             window_id);
+  system_web_app_manager()->SetPauseStateForSystemWebAppWindow(/*paused=*/true,
+                                                               window_id);
+  ASSERT_THAT(on_task_pod_controller(), NotNull());
+  EXPECT_FALSE(on_task_pod_controller()->CanToggleTabStripVisibility());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
+                       EnablePinTabStripFunctionalityWhenUnpaused) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window. This is when the OnTask pod
+  // is set up.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  system_web_app_manager()->SetPinStateForSystemWebAppWindow(/*pinned=*/true,
+                                                             window_id);
+  system_web_app_manager()->SetPauseStateForSystemWebAppWindow(/*paused=*/true,
+                                                               window_id);
+  ASSERT_THAT(on_task_pod_controller(), NotNull());
+  EXPECT_FALSE(on_task_pod_controller()->CanToggleTabStripVisibility());
+
+  system_web_app_manager()->SetPauseStateForSystemWebAppWindow(/*paused=*/false,
+                                                               window_id);
+  ASSERT_THAT(on_task_pod_controller(), NotNull());
+  EXPECT_TRUE(on_task_pod_controller()->CanToggleTabStripVisibility());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
                        ShowAndHideTabStripWhenTogglePinTabStripButton) {
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;
@@ -658,6 +713,71 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, SetPodSnapLocation) {
   EXPECT_EQ(on_task_pod_widget->GetWindowBoundsInScreen().origin(),
             gfx::Point(boca_app_browser_bounds.x() + kPodVerticalBorder,
                        boca_app_browser_bounds.y() +
+                           boca_app_browser_frame_header_height +
+                           kPodHorizontalBorder));
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
+                       RepositionPodWhenSnapLocationAndLocked) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window. This is when the OnTask pod
+  // is set up.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  ASSERT_THAT(on_task_pod_controller(), NotNull());
+
+  // Verify initial pod position.
+  ASSERT_EQ(on_task_pod_controller()->GetSnapLocationForTesting(),
+            OnTaskPodSnapLocation::kTopLeft);
+  views::Widget* const on_task_pod_widget =
+      on_task_pod_controller()->GetPodWidgetForTesting();
+  const gfx::Rect boca_app_browser_bounds =
+      on_task_pod_widget->parent()->GetWindowBoundsInScreen();
+  const int boca_app_browser_frame_header_height =
+      boca::GetFrameHeaderHeight(on_task_pod_widget->parent());
+  EXPECT_EQ(on_task_pod_widget->GetWindowBoundsInScreen().origin(),
+            gfx::Point(boca_app_browser_bounds.x() + kPodVerticalBorder,
+                       boca_app_browser_bounds.y() +
+                           boca_app_browser_frame_header_height +
+                           kPodHorizontalBorder));
+
+  // Update pod snap location and verify its new position.
+  on_task_pod_controller()->SetSnapLocation(OnTaskPodSnapLocation::kTopRight);
+  ASSERT_EQ(on_task_pod_controller()->GetSnapLocationForTesting(),
+            OnTaskPodSnapLocation::kTopRight);
+  EXPECT_EQ(on_task_pod_widget->GetWindowBoundsInScreen().origin(),
+            gfx::Point(boca_app_browser_bounds.right() -
+                           on_task_pod_widget->GetContentsView()
+                               ->GetPreferredSize()
+                               .width() -
+                           kPodVerticalBorder,
+                       boca_app_browser_bounds.y() +
+                           boca_app_browser_frame_header_height +
+                           kPodHorizontalBorder));
+
+  // Pin the window and verify the new position of the pod.
+  system_web_app_manager()->SetPinStateForSystemWebAppWindow(/*pinned=*/true,
+                                                             window_id);
+  ASSERT_THAT(on_task_pod_controller(), NotNull());
+  const gfx::Rect new_boca_app_browser_bounds =
+      on_task_pod_widget->parent()->GetWindowBoundsInScreen();
+  EXPECT_EQ(on_task_pod_widget->GetWindowBoundsInScreen().origin(),
+            gfx::Point(new_boca_app_browser_bounds.right() -
+                           on_task_pod_widget->GetContentsView()
+                               ->GetPreferredSize()
+                               .width() -
+                           kPodVerticalBorder,
+                       new_boca_app_browser_bounds.y() +
                            boca_app_browser_frame_header_height +
                            kPodHorizontalBorder));
 }

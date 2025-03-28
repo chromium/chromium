@@ -7,6 +7,16 @@
 
 #import "base/time/time.h"
 
+// Recorded for IOS.ReaderMode.Distiller.Result. Entries should not
+// be renumbered and numeric values should never be reused.
+// LINT.IfChange(ReaderModeDistillerResult)
+enum class ReaderModeDistillerResult {
+  kPageIsNotDistillable = 0,
+  kPageIsDistillable = 1,
+  kMaxValue = kPageIsDistillable,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeDistillerResult)
+
 // Recorded for IOS.ReaderMode.Heuristic.Result. Entries should not
 // be renumbered and numeric values should never be reused.
 // LINT.IfChange(ReaderModeHeuristicResult)

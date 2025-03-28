@@ -7,9 +7,10 @@
 
 #include <stdint.h>
 
+#include <atomic>
+
 #include "base/memory/raw_ptr.h"
 #include "base/sync_socket.h"
-#include "base/synchronization/atomic_flag.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "build/buildflag.h"
@@ -95,7 +96,7 @@ class MEDIA_EXPORT AudioDeviceThread : public base::PlatformThread::Delegate {
   void ThreadMain() final;
 
   // Set to true in destruction, but before closing the socket.
-  base::AtomicFlag in_shutdown_;
+  std::atomic<bool> in_shutdown_ = false;
 
   const raw_ptr<Callback> callback_;
   const char* thread_name_;

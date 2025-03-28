@@ -52,7 +52,8 @@ enum class CollaborationServiceJoinEvent {
   kDevicePolicyDisableSignin = 30,
   kManagedAccountSignin = 31,
   kAccountInfoNotReadyOnSignin = 32,
-  kMaxValue = kAccountInfoNotReadyOnSignin,
+  kReadNewGroupUserIsAlreadyMember = 33,
+  kMaxValue = kReadNewGroupUserIsAlreadyMember,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceJoinEvent)
 

@@ -139,9 +139,11 @@ TEST_F(GlicButtonControllerTest, GlicSettings) {
   EXPECT_FALSE(controller_delegate()->show_state());
 }
 
-// Test that when the glic window is detached, the button is shown regardless of
-// settings state.
-TEST_F(GlicButtonControllerTest, GlicDetachedOverridesSettings) {
+// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
+// kGlicAlwaysDetached is now default true. detached default true. Test that
+// when the glic window is detached, the button is shown regardless of settings
+// state.
+TEST_F(GlicButtonControllerTest, DISABLED_GlicDetachedOverridesSettings) {
   PrefService* prefs = profile()->GetPrefs();
   prefs->SetInteger(
       ::prefs::kGeminiSettings,
@@ -158,9 +160,11 @@ TEST_F(GlicButtonControllerTest, GlicDetachedOverridesSettings) {
   EXPECT_TRUE(controller_delegate()->show_state());
 }
 
-// Test the panel state of the glic window reflects the icon state
-// of the controller delegate.
-TEST_F(GlicButtonControllerTest, GlicWindowPanelState) {
+// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
+// kGlicAlwaysDetached is now default true. detached default true. Test the
+// panel state of the glic window reflects the icon state of the controller
+// delegate.
+TEST_F(GlicButtonControllerTest, DISABLED_GlicWindowPanelState) {
   mojom::PanelState panel_state;
 
   panel_state.kind = mojom::PanelState_Kind::kHidden;

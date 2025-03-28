@@ -1091,7 +1091,7 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
               : std::nullopt;
 
       std::optional<webrtc::SdpVideoFormat> sdp_video_format;
-      std::optional<String> scalability_mode;
+      String scalability_mode;
       media::VideoCodecProfile codec_profile =
           media::VIDEO_CODEC_PROFILE_UNKNOWN;
       int video_pixels = 0;
@@ -1099,10 +1099,9 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
       if (config->hasVideo()) {
         sdp_video_format =
             std::make_optional(ToSdpVideoFormat(config->video()));
-        scalability_mode =
-            config->video()->hasScalabilityMode()
-                ? std::make_optional(config->video()->scalabilityMode())
-                : std::nullopt;
+        if (config->video()->hasScalabilityMode()) {
+          scalability_mode = config->video()->scalabilityMode();
+        }
 
         // Additional information needed for lookup in WebrtcVideoPerfHistory.
         codec_profile =

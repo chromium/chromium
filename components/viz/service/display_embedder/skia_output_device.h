@@ -76,7 +76,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
     bool Draw(sk_sp<const GrDeferredDisplayList> ddl);
 
     // Graphite
-    bool Draw(std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
+    bool Draw(skgpu::graphite::Context* graphite_context,
+              std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
               base::OnceClosure on_finished);
 
     std::vector<GrBackendSemaphore> TakeEndPaintSemaphores() {
@@ -231,6 +232,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   virtual bool Draw(SkSurface* sk_surface,
                     sk_sp<const GrDeferredDisplayList> ddl);
   virtual bool Draw(
+      skgpu::graphite::Context* graphite_context,
       SkSurface* sk_surface,
       std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
       base::OnceClosure on_finished);
@@ -247,8 +249,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
       OutputSurfaceFrame frame,
       const std::optional<gfx::Rect>& damage_area = std::nullopt,
       std::vector<gpu::Mailbox> released_overlays = {});
-
-  const raw_ptr<skgpu::graphite::Context> graphite_context_;
 
   OutputSurface::Capabilities capabilities_;
 

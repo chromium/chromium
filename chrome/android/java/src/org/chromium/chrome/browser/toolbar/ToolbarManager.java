@@ -348,6 +348,8 @@ public class ToolbarManager
 
     private Tab mLastTab;
 
+    private @Nullable StripLayoutHelperManager mStripLayoutHelperManager;
+
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
 
@@ -1891,6 +1893,8 @@ public class ToolbarManager
         assert !mInitializedWithNative;
         assert mTabModelSelectorSupplier.get() != null;
 
+        mStripLayoutHelperManager = stripLayoutHelperManager;
+
         mTabModelSelector = mTabModelSelectorSupplier.get();
         Profile profile = mTabModelSelector.getModel(false).getProfile();
         assert profile != null;
@@ -2894,5 +2898,27 @@ public class ToolbarManager
     public static boolean isRightEdgeGoesForwardGestureNavEnabled() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
                 && ChromeFeatureList.sRightEdgeGoesForwardGestureNav.isEnabled();
+    }
+
+    /** Requests focus onto the toolbar. */
+    public void requestFocus() {
+        // TODO(crbug.com/360423850): Implement.
+        // mToolbar.requestFocus();
+    }
+
+    /**
+     * @return The {@link StripLayoutHelperManager} used by this {@link ToolbarManager}, or null
+     */
+    public @Nullable StripLayoutHelperManager getStripLayoutHelperManager() {
+        return mStripLayoutHelperManager;
+    }
+
+    /**
+     * @return Whether the toolbar contains keyboard focus.
+     */
+    public boolean containsKeyboardFocus() {
+        return false;
+        // TODO(crbug.com/360423850): Implement.
+        // return mToolbar.containsKeyboardFocus();
     }
 }

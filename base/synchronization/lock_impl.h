@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/stack_allocated.h"
 #include "base/synchronization/lock_subtle.h"
+#include "base/synchronization/synchronization_buildflags.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 
@@ -323,6 +324,15 @@ class [[nodiscard]] SCOPED_LOCKABLE BasicReleasableAutoLock {
 };
 
 }  // namespace internal
+
+#if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
+BASE_EXPORT bool ResetUsePriorityInheritanceMutexForTesting();
+
+// Check to see whether the current kernel supports priority inheritance
+// properly by adjusting process priorities to boost the futex owner.
+BASE_EXPORT bool KernelSupportsPriorityInheritanceFutex();
+#endif  // BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
+
 }  // namespace base
 
 #endif  // BASE_SYNCHRONIZATION_LOCK_IMPL_H_

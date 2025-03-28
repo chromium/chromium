@@ -422,8 +422,8 @@ ExtensionFunction::~ExtensionFunction() {
   if (!response_callback_.is_null()) {
     constexpr char kShouldCallMojoCallback[] = "Ignored did_respond()";
     std::move(response_callback_)
-        .Run(ResponseType::FAILED, base::Value::List(), kShouldCallMojoCallback,
-             nullptr);
+        .Run(ResponseType::kFailed, base::Value::List(),
+             kShouldCallMojoCallback, nullptr);
   }
 #endif  // DCHECK_IS_ON()
 }
@@ -701,12 +701,12 @@ void ExtensionFunction::SetTransferredBlobs(
 
 void ExtensionFunction::SendResponseImpl(bool success) {
   DCHECK(!response_callback_.is_null());
-  DCHECK(!did_respond_) << name_;
-  did_respond_ = true;
+  DCHECK(!did_respond()) << name_;
 
-  ResponseType response = success ? SUCCEEDED : FAILED;
+  ResponseType response =
+      success ? ResponseType::kSucceeded : ResponseType::kFailed;
   if (bad_message_) {
-    response = BAD_MESSAGE;
+    response = ResponseType::kBadMessage;
     LOG(ERROR) << "Bad extension message " << name_;
   }
   response_type_ = std::make_unique<ResponseType>(response);

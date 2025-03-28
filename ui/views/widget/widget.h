@@ -39,6 +39,10 @@
 #include "ui/views/window/client_view.h"
 #include "ui/views/window/non_client_view.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/platform_session_manager.h"
+#endif
+
 namespace base {
 class TimeDelta;
 }
@@ -517,6 +521,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // window should request the wayland compositor to send key events,
     // even if it matches with the compositor's keyboard shortcuts.
     bool inhibit_keyboard_shortcuts = false;
+
+    // Used by Ozone platforms that implement support for display server backed
+    // session management. E.g: Wayland with xdg-session-management protocol.
+    std::optional<ui::PlatformSessionWindowData> session_data;
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -524,6 +532,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // allows the Views tree to be broken up into distinct NSViews for use by
     // immersive fullscreen. Not for general use.
     bool is_overlay = false;
+
+    // If set to true, enable system default show and hide animations.
+    bool animation_enabled = false;
 #endif
   };
 

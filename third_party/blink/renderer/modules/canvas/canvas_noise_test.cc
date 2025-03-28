@@ -4,8 +4,11 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <initializer_list>
+#include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/fingerprinting_protection/canvas_noise_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_float16array_float32array_uint8clampedarray.h"
 #include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_helper.h"
@@ -48,6 +51,7 @@ class CanvasNoiseTest : public PageTestBase {
                                                    attributes));
     PutRandomPixels(context, canvas_element_->width(),
                     canvas_element_->height());
+    CanvasNoiseToken::Set(0x1234567890123456);
   }
 
   void TearDown() override {
@@ -82,6 +86,18 @@ class CanvasNoiseTest : public PageTestBase {
         ->SetCanvasInterventionsForceEnabled();
   }
 
+  base::span<uint8_t> GetNoisedPixelsWithData(ImageData* original_data,
+                                              ExecutionContext* ec) {
+    NonThrowableExceptionState exception_state;
+    Context2D()->putImageData(original_data, 0, 0, exception_state);
+    scoped_refptr<StaticBitmapImage> snapshot =
+        Context2D()->GetImage(FlushReason::kTesting);
+    EXPECT_TRUE(CanvasInterventionsHelper::MaybeNoiseSnapshot(
+        Context2D(), ec, snapshot, RasterMode::kGPU));
+    return GetPixels(Context2D(), CanvasElement().width(),
+                     CanvasElement().height());
+  }
+
   static base::span<uint8_t> GetPixels(BaseRenderingContext2D* context,
                                        size_t width,
                                        size_t height) {
@@ -105,7 +121,7 @@ class CanvasNoiseTest : public PageTestBase {
       if (diff > 0) {
         ++num_changed_pixel_values;
       }
-      if (diff > 3) {
+      if (diff > 6) {
         ++too_large_diffs;
       }
     }
@@ -228,6 +244,33 @@ TEST_F(CanvasNoiseTest, MaybeNoiseSnapshotDoesNotNoiseForCpuCanvas) {
   EXPECT_FALSE(CanvasInterventionsHelper::MaybeNoiseSnapshot(
       Context2D(), window, snapshot, RasterMode::kCPU));
   EXPECT_EQ(snapshot_copy, snapshot);
+}
+
+TEST_F(CanvasNoiseTest, MaybeNoiseSnapshotDifferentNoiseTokenNoiseDiffers) {
+  NonThrowableExceptionState exception_state;
+
+  auto* window = GetFrame().DomWindow();
+  window->GetRuntimeFeatureStateOverrideContext()
+      ->SetCanvasInterventionsForceEnabled();
+  DrawSomethingWithTrigger();
+
+  // Save a copy of the image data to reset.
+  ImageData* copy_image_data = Context2D()->getImageData(
+      0, 0, CanvasElement().width(), CanvasElement().height(), exception_state);
+  base::span<uint8_t> original_noised_pixels =
+      GetNoisedPixelsWithData(copy_image_data, window);
+
+  // Sanity check to ensure GetNoisedPixelsWithData performs the same noising
+  // pattern without changing the noise token.
+  EXPECT_EQ(original_noised_pixels,
+            GetNoisedPixelsWithData(copy_image_data, window));
+
+  // Now change the noise token.
+  CanvasNoiseToken::Set(0xdeadbeef);
+  base::span<uint8_t> updated_noised_pixels =
+      GetNoisedPixelsWithData(copy_image_data, window);
+
+  EXPECT_NE(original_noised_pixels, updated_noised_pixels);
 }
 
 TEST_F(CanvasNoiseTest, NoTriggerOnFillRect) {

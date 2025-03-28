@@ -1442,4 +1442,22 @@ Additional details:
   <message name="IDS_POLICY_SKYVAULT_DELETION_COMPLETED_MESSAGE" desc="The message for the notification informing the user that their local files were removed due to SkyVault policy.">
     From now on, save your files to cloud storage
   </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_BANNER" desc="The Files App banner displayed in local folders before local files are removed due to SkyVault policies.">
+    Local files will be deleted on <ph name="DATE_TIME">$1<ex>8/25/24 2:44:30 PM PST</ex></ph>. Make sure any critical business or personal data is stored externally.
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_UPLOAD_ERROR_NO_SPACE" desc="Error message logged along the affected file name in the SkyVault migration error log, indicating that the user needs to free up space before uploading files to OneDrive/Google Drive.">
+    Free up space in <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> before trying again
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_UPLOAD_ERROR_FILE_NOT_EXIST" desc="Error message logged along the affected file name in the SkyVault migration error log, indicating that the file wasn't moved because it no longer exists.">
+    This file wasn’t moved because it no longer exists
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_UPLOAD_ERROR_ODFS_SIGN_IN" desc="Error message logged along the affected file name in the SkyVault migration error log, indicating that the file wasn't moved because the user needs to authenticate with OneDrive.">
+    Sign in to your Microsoft account before trying again
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_UPLOAD_ERROR_NO_INTERNET" desc="Error message logged along the affected file name in the SkyVault migration error log, indicating that the file wasn't moved because of lost internet connection.">
+    Make sure you have stable internet connection before trying again
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_UPLOAD_ERROR_GENERIC" desc="A generic error message logged along the affected file name in the SkyVault migration error log.">
+   Something went wrong. Try again later.
+  </message>
 </grit-part>

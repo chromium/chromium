@@ -345,13 +345,15 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestions_Undo) {
       SuggestionType::kUndoOrClear, &Suggestion::type));
 }
 
+// In the case of a single suggestion, no label besides the entity name is
+// needed.
 TEST_F(AutofillAiSuggestionsTest,
-       LabelGeneration_SingleSuggestion_OneFieldFilled) {
+       LabelGeneration_SingleSuggestion_NoLabelAdded) {
   autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
 
-  FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  FieldType triggering_field_type = autofill::PASSPORT_NUMBER;
   std::unique_ptr<FormStructure> form =
-      CreateFormStructure({triggering_field_type});
+      CreateFormStructure({triggering_field_type, autofill::PASSPORT_NAME_TAG});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
       *form, form->fields()[0]->global_id(), {passport_entity}, kAppLocaleUS);
 
@@ -361,53 +363,18 @@ TEST_F(AutofillAiSuggestionsTest,
   EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport");
 }
 
-TEST_F(AutofillAiSuggestionsTest,
-       LabelGeneration_SingleSuggestion_TwoFieldsFilled) {
-  autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
-
-  FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
-  std::unique_ptr<FormStructure> form =
-      CreateFormStructure({triggering_field_type, autofill::PASSPORT_NUMBER});
-  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
-      *form, form->fields()[0]->global_id(), {passport_entity}, kAppLocaleUS);
-
-  ASSERT_EQ(CountFillingSuggestions(suggestions), 1u);
-  EXPECT_EQ(suggestions[0].labels.size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · 123");
-}
-
-// Note that in this test the passport country is used in the label, even though
-// the form also contains expiry date field. This is because country data
-// appears before expiry date in the disambiguation order for passport entities.
-TEST_F(AutofillAiSuggestionsTest,
-       LabelGeneration_SingleSuggestion_TwoFieldsFilled_UseFieldPriorityOrder) {
-  autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
-
-  FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
-  std::unique_ptr<FormStructure> form = CreateFormStructure(
-      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY,
-       autofill::PASSPORT_EXPIRATION_DATE});
-  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
-      *form, form->fields()[0]->global_id(), {passport_entity}, kAppLocaleUS);
-
-  ASSERT_EQ(CountFillingSuggestions(suggestions), 1u);
-  EXPECT_EQ(suggestions[0].labels.size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · Sweden");
-}
-
+// Note that because the main text is not part of the disambiguating fields, we
+// do not take into account (even though they are different).
 TEST_F(
     AutofillAiSuggestionsTest,
-    LabelGeneration_TwoSuggestions_PassportsWithDifferentCountries_AddDifferentiatingLabel) {
+    LabelGeneration_TwoSuggestions_MainTextIsNotDisambiguating_AddDifferentiatingLabel) {
   autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
-  autofill::EntityInstance passport_entity_b =
-      MakePassportWithRandomGuid({.country = u"Brazil"});
+  autofill::EntityInstance passport_entity_b = MakePassportWithRandomGuid(
+      {.name = u"Machado de Assis", .number = u"123"});
 
-  FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
-  std::unique_ptr<FormStructure> form = CreateFormStructure(
-      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY,
-       autofill::PASSPORT_NUMBER});
+  FieldType triggering_field_type = autofill::PASSPORT_NUMBER;
+  std::unique_ptr<FormStructure> form =
+      CreateFormStructure({triggering_field_type, autofill::PASSPORT_NAME_TAG});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
       *form, form->fields()[0]->global_id(),
       {passport_entity, passport_entity_b}, kAppLocaleUS);
@@ -415,11 +382,61 @@ TEST_F(
   ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
   EXPECT_EQ(suggestions[0].labels.size(), 1u);
   EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · Sweden");
+  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · Pippi Långstrump");
 
   EXPECT_EQ(suggestions[1].labels.size(), 1u);
   EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · Brazil");
+  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · Machado de Assis");
+}
+
+// Note that because the main text is part of the disambiguating fields, we take
+// it into account when differentiating suggestions.
+TEST_F(
+    AutofillAiSuggestionsTest,
+    LabelGeneration_TwoSuggestions_MainTextIsDisambiguating_DifferentMainText_DoNotAddDifferentiatingLabel) {
+  autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
+  autofill::EntityInstance passport_entity_b = MakePassportWithRandomGuid(
+      {.name = u"Machado de Assis", .number = u"123"});
+
+  FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  std::unique_ptr<FormStructure> form =
+      CreateFormStructure({triggering_field_type, autofill::PASSPORT_NUMBER});
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(),
+      {passport_entity, passport_entity_b}, kAppLocaleUS);
+
+  ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
+  EXPECT_EQ(suggestions[0].labels.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport");
+
+  EXPECT_EQ(suggestions[1].labels.size(), 1u);
+  EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport");
+}
+
+TEST_F(
+    AutofillAiSuggestionsTest,
+    LabelGeneration_TwoSuggestions_MainTextIsDisambiguating_SameMainText_AddDifferentiatingLabel) {
+  autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
+  autofill::EntityInstance passport_entity_b =
+      MakePassportWithRandomGuid({.number = u"54321"});
+
+  FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  std::unique_ptr<FormStructure> form =
+      CreateFormStructure({triggering_field_type, autofill::PASSPORT_NUMBER});
+  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
+      *form, form->fields()[0]->global_id(),
+      {passport_entity, passport_entity_b}, kAppLocaleUS);
+
+  ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
+  EXPECT_EQ(suggestions[0].labels.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · 123");
+
+  EXPECT_EQ(suggestions[1].labels.size(), 1u);
+  EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · 54321");
 }
 
 TEST_F(AutofillAiSuggestionsTest,
@@ -430,12 +447,12 @@ TEST_F(AutofillAiSuggestionsTest,
   autofill::EntityInstance passport_entity_c =
       MakePassportWithRandomGuid({.expiry_date = u"2018-12-31"});
 
-  FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  FieldType triggering_field_type = autofill::PASSPORT_NUMBER;
   // Note that `autofill::PASSPORT_ISSUING_COUNTRY` appears twice in the
   // form, yet due to deduping it only adds its equivalent label once.
   std::unique_ptr<FormStructure> form = CreateFormStructure(
       {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY,
-       autofill::PASSPORT_ISSUING_COUNTRY, autofill::PASSPORT_NUMBER,
+       autofill::PASSPORT_ISSUING_COUNTRY, autofill::PASSPORT_NAME_TAG,
        autofill::PASSPORT_EXPIRATION_DATE});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
       *form, form->fields()[0]->global_id(),
@@ -467,11 +484,11 @@ TEST_F(
   // Note that passport b can only fill the triggering name field and has no
   // country data label to add.
   autofill::EntityInstance passport_entity_b =
-      MakePassportWithRandomGuid({.name = u"Jack Sparrow", .country = nullptr});
+      MakePassportWithRandomGuid({.number = u"9876", .country = nullptr});
 
   autofill::EntityInstance passport_entity_c = MakePassportWithRandomGuid();
 
-  FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  FieldType triggering_field_type = autofill::PASSPORT_NUMBER;
   std::unique_ptr<FormStructure> form = CreateFormStructure(
       {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
@@ -487,7 +504,7 @@ TEST_F(
   // other label.
   EXPECT_EQ(suggestions[1].labels.size(), 1u);
   EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport");
+  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · Pippi Långstrump");
 
   EXPECT_EQ(suggestions[2].labels.size(), 1u);
   EXPECT_EQ(suggestions[2].labels[0].size(), 1u);
@@ -501,10 +518,10 @@ TEST_F(
   autofill::EntityInstance passport_entity_b =
       MakePassportWithRandomGuid({.expiry_date = u"2018-12-29"});
 
-  FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
+  FieldType triggering_field_type = autofill::PASSPORT_NUMBER;
   std::unique_ptr<FormStructure> form = CreateFormStructure(
       {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY,
-       autofill::PASSPORT_NUMBER, autofill::PASSPORT_EXPIRATION_DATE});
+       autofill::PASSPORT_NAME_TAG, autofill::PASSPORT_EXPIRATION_DATE});
   std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
       *form, form->fields()[0]->global_id(),
       {passport_entity, passport_entity_b}, kAppLocaleUS);
@@ -517,31 +534,6 @@ TEST_F(
   EXPECT_EQ(suggestions[1].labels.size(), 1u);
   EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
   EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · 2018-12-29");
-}
-
-TEST_F(
-    AutofillAiSuggestionsTest,
-    LabelGeneration_TwoSuggestions_DifferentMainText_NoDifferentiatingLabel) {
-  autofill::EntityInstance passport_entity = MakePassportWithRandomGuid();
-  autofill::EntityInstance passport_entity_b =
-      MakePassportWithRandomGuid({.name = u"Lebowski"});
-
-  FieldType triggering_field_type = autofill::PASSPORT_NAME_TAG;
-  std::unique_ptr<FormStructure> form = CreateFormStructure(
-      {triggering_field_type, autofill::PASSPORT_ISSUING_COUNTRY,
-       autofill::PASSPORT_NUMBER});
-  std::vector<autofill::Suggestion> suggestions = CreateFillingSuggestions(
-      *form, form->fields()[0]->global_id(),
-      {passport_entity, passport_entity_b}, kAppLocaleUS);
-
-  ASSERT_EQ(CountFillingSuggestions(suggestions), 2u);
-  EXPECT_EQ(suggestions[0].labels.size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value, u"Passport · Sweden");
-
-  EXPECT_EQ(suggestions[1].labels.size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[0][0].value, u"Passport · Sweden");
 }
 
 }  // namespace

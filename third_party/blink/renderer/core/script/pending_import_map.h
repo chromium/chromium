@@ -51,7 +51,7 @@ class CORE_EXPORT PendingImportMap final
   // once. |this| is invalidated after calling.
   void RegisterImportMap();
 
-  virtual void Trace(Visitor* visitor) const;
+  void Trace(Visitor* visitor) const;
 
  private:
   Member<ScriptElementBase> element_;

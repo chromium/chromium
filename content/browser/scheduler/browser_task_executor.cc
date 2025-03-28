@@ -199,6 +199,9 @@ void BrowserTaskExecutor::ResetForTesting() {
     RunAllPendingTasksOnThreadForTesting(BrowserThread::IO);
     delete g_browser_task_executor;
     g_browser_task_executor = nullptr;
+#if BUILDFLAG(IS_ANDROID)
+    base::PostTaskAndroid::ResetTaskRunnerForTesting();
+#endif
   }
 }
 

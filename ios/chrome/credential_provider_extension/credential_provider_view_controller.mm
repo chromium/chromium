@@ -241,7 +241,7 @@ enum class PasskeyCreationEligibility {
 
   __weak __typeof__(self) weakSelf = self;
   [self validateUserWithCompletion:^(BOOL userIsValid) {
-    // `reauthenticationModule` can't attempt reauth when no passscode is set.
+    // `reauthenticationModule` can't attempt reauth when no passcode is set.
     // This means a credential shouldn't be retrieved just yet.
     if (!weakSelf.reauthenticationModule.canAttemptReauth || !userIsValid) {
       [weakSelf exitWithErrorCode:ASExtensionErrorCodeUserInteractionRequired];
@@ -315,13 +315,13 @@ enum class PasskeyCreationEligibility {
       IsPasskeysM2Enabled()) {
     __weak __typeof__(self) weakSelf = self;
     auto completion = ^(NSArray<NSData*>* securityDomainSecrets) {
-      [weakSelf completeSecurityDomainSecretFetchForExtensionConfigutation];
+      [weakSelf completeSecurityDomainSecretFetchForExtensionConfiguration];
     };
 
     // Trigger a security domain secret fetch to know whether the user needs to
     // bootstrap (create/enter their GPM pin) to use passkeys on their device.
     // If bootstrapping is needed, then the fetching flow will take care of
-    // presenting the relevent UI. The `completion` will then take care of
+    // presenting the relevant UI. The `completion` will then take care of
     // dismissing the bootstrapping UI if it was presented. If it wasn't
     // presented, it means that the user was already bootstrapped. In this case,
     // `completion` will present the ConsentViewController.
@@ -565,6 +565,12 @@ enum class PasskeyCreationEligibility {
       AppGroupUserDefaultsCredentialProviderUserEmail(), /*default_value=*/@"");
 }
 
+// Returns whether the user is currently using multiple profile in Chrome.
+- (BOOL)isUsingMultiProfile {
+  return [app_group::GetGroupUserDefaults()
+      boolForKey:AppGroupUserDefaultsCredentialProviderMultiProfileSetting()];
+}
+
 #pragma mark - PasskeyKeychainProviderBridgeDelegate
 
 - (void)performUserVerificationIfNeeded:(ProceduralBlock)completion {
@@ -609,7 +615,7 @@ enum class PasskeyCreationEligibility {
 #pragma mark - PasskeyWelcomeScreenViewControllerDelegate
 
 - (void)passkeyWelcomeScreenViewControllerShouldBeDismissed:
-    (id)passkeyWelcomeScreenViewController {
+    (PasskeyWelcomeScreenViewController*)passkeyWelcomeScreenViewController {
   if (self.passkeyNavigationController.topViewController ==
       passkeyWelcomeScreenViewController) {
     [self.passkeyNavigationController popViewControllerAnimated:YES];
@@ -699,7 +705,7 @@ enum class PasskeyCreationEligibility {
   }
 
   if (passkeyRequestDetails.userVerificationRequired ||
-      !IsAutomaticPasskeyUpgradeEnabled()) {
+      !IsAutomaticPasskeyUpgradeEnabled() || [self isUsingMultiProfile]) {
     return PasskeyCreationEligibility::kCanCreateWithUserInteraction;
   }
 
@@ -1118,7 +1124,7 @@ enum class PasskeyCreationEligibility {
 
   ProceduralBlock action;
   // With the `kReauthenticate` purpose, the user will be asked to enter their
-  // Google Passowrd Manager PIN, so no need to also do a device
+  // Google Password Manager PIN, so no need to also do a device
   // reauthentication before showing the UI.
   if (purpose != PasskeyWelcomeScreenPurpose::kReauthenticate &&
       _userVerificationRequired) {
@@ -1180,7 +1186,7 @@ enum class PasskeyCreationEligibility {
 // as a credential provider in iOS Settings. Dismisses the
 // `passkeyNavigationController` if presented for passkey bootstrapping purposes
 // during the fetching process. Otherwise, presents the ConsentViewController.
-- (void)completeSecurityDomainSecretFetchForExtensionConfigutation {
+- (void)completeSecurityDomainSecretFetchForExtensionConfiguration {
   // If the `passkeyNavigationController` has a `visibleViewController`, it
   // means that the bootstrapping UI has been presented to the user through the
   // security domain secret fetch (see

@@ -131,12 +131,13 @@ class ExtensionUpdater : public KeyedService,
   ExtensionUpdater& operator=(const ExtensionUpdater&) = delete;
   ~ExtensionUpdater() override;
 
-  // Initializes the updater. Does not start it. Use Start() for that.
-  void Init(ExtensionPrefs* extension_prefs,
-            PrefService* prefs,
-            int frequency_seconds,
-            ExtensionCache* cache,
-            const ExtensionDownloader::Factory& downloader_factory);
+  // Initializes and enables the updater. Does not start it. Use Start() for
+  // that.
+  void InitAndEnable(ExtensionPrefs* extension_prefs,
+                     PrefService* prefs,
+                     base::TimeDelta frequency,
+                     ExtensionCache* cache,
+                     const ExtensionDownloader::Factory& downloader_factory);
 
   // KeyedService:
   void Shutdown() override;
@@ -193,6 +194,8 @@ class ExtensionUpdater : public KeyedService,
   // finishes (successfully or not).
   void SetCrxInstallerResultCallbackForTesting(
       ExtensionSystem::InstallUpdateCallback callback);
+
+  bool enabled() const { return enabled_; }
 
   // Exists because some tests are not able to use the private constructor for
   // testing.
@@ -344,6 +347,9 @@ class ExtensionUpdater : public KeyedService,
 
   // Called when the browser is terminating.
   void OnAppTerminating();
+
+  // Whether the updater is enabled (i.e. it's legal to call Start()).
+  bool enabled_ = false;
 
   // Whether Start() has been called but not Stop().
   bool alive_ = false;

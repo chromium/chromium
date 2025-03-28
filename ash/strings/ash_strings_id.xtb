@@ -91,6 +91,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1269405891096105529">Periferal tidak didukung dalam mode Tamu</translation>
 <translation id="1270290102613614947">Keyboard di layar dinonaktifkan</translation>
 <translation id="1272079795634619415">Berhenti</translation>
+<translation id="12741168609094094">Pilih apa pun di layar untuk menelusuri, menyalin teks, dan lainnya</translation>
 <translation id="1275285675049378717">Mengisi daya <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Dipilih</translation>
 <translation id="1276975447697633661">Pilih file, lalu tekan <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1720230731642245863">Hotspot nonaktif</translation>
 <translation id="1731815243805539470">Beralih ke pengguna sebelumnya</translation>
 <translation id="1733996486177697563">Berpindah-pindah antara tema gelap dan terang. Sentuh lama desktop, lalu pilih Wallpaper &amp; Gaya.</translation>
+<translation id="1735992454301033090">Area dipilih, gunakan tombol panah untuk memindahkan</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" dapat dilihat oleh perangkat Bluetooth.</translation>
 <translation id="1737078180382804488">Tutup penyiapan untuk melihat notifikasi ponsel Anda</translation>
 <translation id="174102739345480129">Penanda nonaktif.</translation>
@@ -494,6 +496,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> minggu lalu</translation>
 <translation id="2687510499067466116">Pintasan keyboard telah diubah</translation>
 <translation id="2689613560355655046">Desktop 8</translation>
+<translation id="2692092709110488417">Tekan tab untuk memfokuskan dan memindahkan area yang dipilih</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Tampilkan setelan keyboard. <ph name="KEYBOARD_NAME" /> dipilih.</translation>
 <translation id="2699913284398121653">Gunakan aplikasi Transfer konten untuk memindahkan data akun sekolah ke akun pribadi Anda</translation>
@@ -1033,6 +1036,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4412698727486357573">Pusat bantuan</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> nonaktif.</translation>
 <translation id="4417647906073317561">Setelan fokus. Setel timer, tugas, dan musik untuk mulai fokus.</translation>
+<translation id="4418600384772451109">Tutup Panel</translation>
 <translation id="4424159417645388645">Desktop 5</translation>
 <translation id="4426817706804363424">Anda hebat!</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -2229,6 +2233,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8287009018010202411">Produktivitas</translation>
 <translation id="828708037801473432">Nonaktif</translation>
 <translation id="8297006494302853456">Lemah</translation>
+<translation id="8300451473979404345">Tuas dipilih, gunakan tombol panah untuk memindahkan</translation>
 <translation id="8308637677604853869">Menu sebelumnya</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock aktif</translation>
@@ -2289,6 +2294,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="851458219935658693">Menampilkan jendela dari desktop saat ini, tombol pilihan dipilih</translation>
 <translation id="851660987304951246">Gunakan Bantu baca untuk mengajukan pertanyaan atau meringkas konten dengan cepat</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> Anda mungkin tidak diisi daya saat dinyalakan.</translation>
+<translation id="8519329096920173967">Telusuri layar saya dengan Google Lens</translation>
 <translation id="8535393432370007982">Urungkan tata urutan menurut warna</translation>
 <translation id="8536886494750559755">Tampilkan setelan Quick Share. Dapat dilihat oleh semua orang selama <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Teks disalin ke Papan Klip</translation>

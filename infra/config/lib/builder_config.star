@@ -84,92 +84,6 @@ _host_platform = enums.enum(
     MAC = "mac",
 )
 
-# TODO: crbug.com/404841037 - Once config_vars are removed recipe-side, the
-# builders should be updated to explicitly set these arguments and these
-# defaults should be removed
-_chromium_config_defaults_by_config_name = {
-    "arm_v6_builder_rel": {
-        "target_arch": _target_arch.INTEL,
-        "target_bits": 32,
-        "build_config": _build_config.RELEASE,
-    },
-    "arm64_builder": {
-        "target_arch": _target_arch.ARM,
-        "target_bits": 64,
-        "build_config": _build_config.DEBUG,
-    },
-    "arm64_builder_mb": {
-        "target_arch": _target_arch.ARM,
-        "target_bits": 64,
-        "build_config": _build_config.DEBUG,
-    },
-    "arm64_builder_rel": {
-        "target_arch": _target_arch.ARM,
-        "target_bits": 64,
-        "build_config": _build_config.RELEASE,
-    },
-    "arm64_builder_rel_mb": {
-        "target_arch": _target_arch.ARM,
-        "target_bits": 64,
-        "build_config": _build_config.RELEASE,
-    },
-    "base_config": {
-        "target_arch": _target_arch.ARM,
-        "target_bits": 32,
-        "build_config": _build_config.DEBUG,
-    },
-    "cast_builder": {
-        "target_arch": _target_arch.ARM,
-        "target_bits": 32,
-        "build_config": _build_config.DEBUG,
-    },
-    "clang_builder": {
-        "target_arch": _target_arch.ARM,
-        "target_bits": 32,
-        "build_config": _build_config.DEBUG,
-    },
-    "clang_builder_mb": {
-        "target_arch": _target_arch.ARM,
-        "target_bits": 32,
-        "build_config": _build_config.DEBUG,
-    },
-    "main_builder": {
-        "target_arch": _target_arch.ARM,
-        "target_bits": 32,
-        "build_config": _build_config.DEBUG,
-    },
-    "main_builder_mb": {
-        "target_arch": _target_arch.ARM,
-        "target_bits": 32,
-        "build_config": _build_config.DEBUG,
-    },
-    "main_builder_rel_mb": {
-        "target_arch": _target_arch.ARM,
-        "target_bits": 32,
-        "build_config": _build_config.RELEASE,
-    },
-    "x64_builder": {
-        "target_arch": _target_arch.INTEL,
-        "target_bits": 64,
-        "build_config": _build_config.DEBUG,
-    },
-    "x64_builder_mb": {
-        "target_arch": _target_arch.INTEL,
-        "target_bits": 64,
-        "build_config": _build_config.DEBUG,
-    },
-    "x86_builder": {
-        "target_arch": _target_arch.INTEL,
-        "target_bits": 32,
-        "build_config": _build_config.DEBUG,
-    },
-    "x86_builder_mb": {
-        "target_arch": _target_arch.INTEL,
-        "target_bits": 32,
-        "build_config": _build_config.DEBUG,
-    },
-}
-
 def _chromium_config(
         *,
         config,
@@ -221,14 +135,12 @@ def _chromium_config(
         fail("CrOS boards can only be specified for target platform '{}'"
             .format(_target_platform.CHROMEOS))
 
-    defaults = _chromium_config_defaults_by_config_name.get(config, {})
-
     return struct(
         config = config,
         apply_configs = args.listify(apply_configs),
-        build_config = build_config or defaults.get("build_config", None),
-        target_arch = target_arch or defaults.get("target_arch", None),
-        target_bits = target_bits or defaults.get("target_bits", None),
+        build_config = build_config,
+        target_arch = target_arch,
+        target_bits = target_bits,
         target_platform = target_platform,
         host_platform = host_platform,
         target_cros_boards = args.listify(target_cros_boards),

@@ -121,9 +121,11 @@ interface TranslationManagerCreateTranslatorClient {
 // service process to load appropriate language packages and create a
 // translator.
 struct TranslatorCreateOptions {
-  // This is `AITranslatorCreateOptions`'s `sourceLanguage` of Translator API.
+  // This is `TranslatorCreateOptions` dictionary's `sourceLanguage` of
+  // Translator API.
   TranslatorLanguageCode source_lang;
-  // This is `AITranslatorCreateOptions`'s `targetLanguage` of Translator API.
+  // This is `TranslatorCreateOptions` dictionary's `targetLanguage` of
+  // Translator API.
   TranslatorLanguageCode target_lang;
   // A remote to the `AICreateMonitor` that we can report download progress
   // events to.

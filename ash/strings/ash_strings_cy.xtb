@@ -91,6 +91,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1269405891096105529">Ni chefnogir y perifferol yn y modd Gwestai</translation>
 <translation id="1270290102613614947">Analluogwyd y bysellfwrdd ar y sgrîn</translation>
 <translation id="1272079795634619415">Stopio</translation>
+<translation id="12741168609094094">Dewiswch unrhyw beth ar eich sgrîn i chwilio, copïo testun, a rhagor</translation>
 <translation id="1275285675049378717">Wrthi'n pweru <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Wedi'i ddewis</translation>
 <translation id="1276975447697633661">Dewiswch y ffeil, a phwyswch <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1720230731642245863">Mae'r Boethfan wedi'i diffodd</translation>
 <translation id="1731815243805539470">Newid i ddefnyddiwr blaenorol</translation>
 <translation id="1733996486177697563">Newidiwch rhwng thema dywyll a thema olau. Cyffwrddwch a daliwch ar y bwrdd gwaith, yna dewiswch Papur wal ac arddull.</translation>
+<translation id="1735992454301033090">Ardal a ddewiswyd, defnyddiwch y bysellau saeth i symud</translation>
 <translation id="1736898441010944794">Mae "<ph name="NAME" />" yn weladwy i ddyfeisiau Bluetooth.</translation>
 <translation id="1737078180382804488">Diystyru gosod gweld hysbysiadau eich ffôn</translation>
 <translation id="174102739345480129">Mae'r marciwr wedi'i ddiffodd.</translation>
@@ -494,6 +496,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> yr wythnos ddiwethaf</translation>
 <translation id="2687510499067466116">Mae'r llwybr byr bysellfwrdd wedi newid</translation>
 <translation id="2689613560355655046">Desg 8</translation>
+<translation id="2692092709110488417">Pwyswch dab i ffocysu a symud yr ardal a ddewiswyd</translation>
 <translation id="2695305337569143674">y we</translation>
 <translation id="2697697418792422688">Dangos y gosodiadau bysellfwrdd. Mae <ph name="KEYBOARD_NAME" /> wedi'i ddewis.</translation>
 <translation id="2699913284398121653">Defnyddiwch yr ap Trosglwyddo Cynnwys i symud data eich cyfrif ysgol i'ch cyfrif personol</translation>
@@ -551,6 +554,7 @@ Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn <ph name="T
 <translation id="2872353916818027657">Newid y prif sgrîn</translation>
 <translation id="2872961005593481000">Diffodd</translation>
 <translation id="2876338922445400217">Chwyddo ar y sgrîn</translation>
+<translation id="2876760662374103627">Mae Rheoli ag wyneb yn weithredol</translation>
 <translation id="2878884018241093801">Dim eitemau diweddar</translation>
 <translation id="2880541185262491188">Gormod o geisiadau PIN. Arhoswch <ph name="TIME_LEFT" /> a rhowch gynnig arall arni</translation>
 <translation id="2883271196820422439">Parhau bysellau'r llygoden</translation>
@@ -1032,6 +1036,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4412698727486357573">Canolfan gymorth</translation>
 <translation id="4412944820643904175">Mae <ph name="FEATURE_NAME" /> wedi'i ddiffodd.</translation>
 <translation id="4417647906073317561">Gosodiadau ffocysu. Gosod amserydd, tasg a cherddoriaeth i ddechrau arni.</translation>
+<translation id="4418600384772451109">Cau'r Panel</translation>
 <translation id="4424159417645388645">Desg 5</translation>
 <translation id="4426817706804363424">Llongyfarchiadau!</translation>
 <translation id="4430019312045809116">Lefel y sain</translation>
@@ -1516,6 +1521,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="595202126637698455">Mae olrhain perfformiad wedi'i alluogi</translation>
 <translation id="5955304353782037793">ap</translation>
 <translation id="5958529069007801266">Defnyddiwr dan oruchwyliaeth</translation>
+<translation id="596035801491797438">Diffodd Rheoli ag wyneb</translation>
 <translation id="5960410286721553511">Gweld lluniau a chyfryngau diweddar eich ffôn</translation>
 <translation id="5965524703725988602">Toglo'r Thema dywyll <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Seiclo ymlaen drwy'r ffenestri</translation>
@@ -2227,6 +2233,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8287009018010202411">Cynhyrchiant</translation>
 <translation id="828708037801473432">Diffodd</translation>
 <translation id="8297006494302853456">Gwan</translation>
+<translation id="8300451473979404345">Handlen a ddewiswyd, defnyddiwch y bysellau saeth i symud</translation>
 <translation id="8308637677604853869">Dewislen flaenorol</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Mae Caps Lock wedi'i droi ymlaen</translation>
@@ -2287,6 +2294,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="851458219935658693">Dangos ffenestri o'r ddesg bresennol, botwm radio wedi'i ddewis</translation>
 <translation id="851660987304951246">Defnyddiwch Helpu fi i ddarllen i grynhoi cynnwys yn gyflym neu ofyn cwestiynau</translation>
 <translation id="8517041960877371778">Mae'n bosib na fydd eich <ph name="DEVICE_TYPE" /> yn gwefru tra bydd ymlaen.</translation>
+<translation id="8519329096920173967">Chwilio fy sgrîn gyda Google Lens</translation>
 <translation id="8535393432370007982">Dadwnued trefnu yn ôl lliw</translation>
 <translation id="8536886494750559755">Dangos gosodiadau Rhannu Cyflym. Yn weladwy i bawb am <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Testun wedi'i gopïo i'r Clipfwrdd</translation>

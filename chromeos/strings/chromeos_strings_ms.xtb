@@ -427,7 +427,7 @@
 <translation id="2873483161362553159">Navigasi penyemak imbas</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
 <translation id="2875812231449496375">Hidupkan tetapan ini untuk mendapatkan hasil terbaik dengan hiasan latar ini. Anda boleh mematikan tetapan ini pada bila-bila masa.</translation>
-<translation id="2878126681324394319">Muat turun model ringkasan dan ciptaan tajuk</translation>
+<translation id="2878126681324394319">Muat turun model penciptaan ringkasan dan tajuk</translation>
 <translation id="2878387241690264070">Dinyahcas <ph name="RATE" /> dalam masa <ph name="NUM_SECONDS" /> saat.</translation>
 <translation id="2880569433548999039">Penyelamat skrin aliran awan</translation>
 <translation id="2882230315487799269">Sesuaikan gesaan AI</translation>
@@ -501,7 +501,7 @@
 <translation id="3303855915957856445">Tiada hasil carian ditemui</translation>
 <translation id="3305294846493618482">lagi</translation>
 <translation id="3310640316857623290">Kependaman DNS ternyata melebihi ambang yang dibenarkan</translation>
-<translation id="3316495615885967552">Muat turun model ringkasan dan ciptaan nama selesai</translation>
+<translation id="3316495615885967552">Proses muat turun model penciptaan ringkasan dan tajuk selesai</translation>
 <translation id="3321030238473337787">Kelajuan main balik</translation>
 <translation id="3327613592010997943">Anda akan dapat menggunakan peranti lagi pada <ph name="DAY" /> pukul <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Ujian sedang berjalan</translation>
@@ -663,7 +663,7 @@
 <translation id="4093865285251893588">Imej profil</translation>
 <translation id="409427325554347132">Simpan butiran ujian</translation>
 <translation id="409469431304488632">Percubaan</translation>
-<translation id="4095155732125588500">Muat turun model ringkasan dan ciptaan tajuk sedang dijalankan</translation>
+<translation id="4095155732125588500">Proses muat turun model penciptaan ringkasan dan tajuk sedang berlangsung</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Pilih album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Pad sentuh USB</translation>
@@ -983,7 +983,7 @@
 <translation id="550600468576850160">padang rumput</translation>
 <translation id="551689408806449779">Peranti telah diputuskan sambungan. Cuba sambung semula untuk menguji</translation>
 <translation id="5519195206574732858">LTE</translation>
-<translation id="552644173505433109">Ketahui ringkasan dan ciptaan tajuk dengan lebih lanjut</translation>
+<translation id="552644173505433109">Ketahui penciptaan ringkasan dan tajuk dengan lebih lanjut</translation>
 <translation id="5527146180235316490">Pilihan mikrofon</translation>
 <translation id="5534900277405737921">Rupa bumi</translation>
 <translation id="554067135846762198">merjan dan perang</translation>
@@ -1601,7 +1601,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8308787307410010965">Tetapan kandungan laman</translation>
 <translation id="8312330582793120272">mainkan media</translation>
 <translation id="8318753676953949627">Tiada Imej</translation>
-<translation id="8319809980370328428">Merakam ringkasan dan ciptaan tajuk</translation>
+<translation id="8319809980370328428">Penciptaan ringkasan dan tajuk rakaman</translation>
 <translation id="8320910311642849813">hutan</translation>
 <translation id="8322464149031882595">Klik untuk maju</translation>
 <translation id="8329018942023753850">apl kalkulator</translation>

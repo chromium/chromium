@@ -5125,6 +5125,34 @@ std::optional<DebugReportLockout> DoGetDebugReportLockout(
   return std::nullopt;
 }
 
+void DoGetAllDebugReportCooldowns(
+    sql::Database& db,
+    std::optional<base::Time> ignore_before,
+    DebugReportLockoutAndCooldowns& debug_report_lockout_and_cooldowns) {
+  sql::Statement cooldowns(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "SELECT origin, starting_time, type "
+                            "FROM cooldown_debugging_only_report "
+                            "WHERE starting_time > ?"));
+  if (!cooldowns.is_valid()) {
+    DLOG(ERROR) << "GetAllDebugReportCooldowns SQL statement did not compile: "
+                << db.GetErrorMessage();
+    return;
+  }
+  cooldowns.BindTime(0, ignore_before.value_or(base::Time::Min()));
+
+  while (cooldowns.Step()) {
+    url::Origin origin = DeserializeOrigin(cooldowns.ColumnStringView(0));
+    debug_report_lockout_and_cooldowns
+        .debug_report_cooldown_map[std::move(origin)] = DebugReportCooldown(
+        cooldowns.ColumnTime(1),
+        static_cast<DebugReportCooldownType>(cooldowns.ColumnInt(2)));
+  }
+
+  // TODO(qingxinwu): When reading the table fails, treat it as there is an
+  // unexpired cooldown.
+}
+
 std::optional<DebugReportCooldown> DoGetDebugReportCooldownForOrigin(
     sql::Database& db,
     const url::Origin& origin,
@@ -6360,15 +6388,6 @@ std::vector<std::string> InterestGroupStorage::ClearOriginJoinedInterestGroups(
   return std::move(left_interest_groups.value());
 }
 
-std::optional<DebugReportLockout>
-InterestGroupStorage::GetDebugReportLockout() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!EnsureDBInitialized()) {
-    return std::nullopt;
-  }
-  return DoGetDebugReportLockout(*db_, GetSampleDebugReportStartingFrom());
-}
-
 std::optional<DebugReportLockoutAndCooldowns>
 InterestGroupStorage::GetDebugReportLockoutAndCooldowns(
     const base::flat_set<url::Origin>& origins) {
@@ -6385,6 +6404,24 @@ InterestGroupStorage::GetDebugReportLockoutAndCooldowns(
       DoGetDebugReportLockout(*db_, ignore_before);
   DoGetDebugReportCooldowns(*db_, origins, ignore_before,
                             debug_report_lockout_and_cooldowns);
+  return debug_report_lockout_and_cooldowns;
+}
+
+std::optional<DebugReportLockoutAndCooldowns>
+InterestGroupStorage::GetDebugReportLockoutAndAllCooldowns() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return std::nullopt;
+  }
+  DebugReportLockoutAndCooldowns debug_report_lockout_and_cooldowns;
+
+  // Ignore lockout and cooldowns whose start time is before
+  // kFledgeEnableFilteringDebugReportStartingFrom.
+  std::optional<base::Time> ignore_before = GetSampleDebugReportStartingFrom();
+  debug_report_lockout_and_cooldowns.lockout =
+      DoGetDebugReportLockout(*db_, ignore_before);
+  DoGetAllDebugReportCooldowns(*db_, ignore_before,
+                               debug_report_lockout_and_cooldowns);
   return debug_report_lockout_and_cooldowns;
 }
 

@@ -111,7 +111,6 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
       minPinLength_: Number,
       newDisplayName_: String,
       newUsername_: String,
-      userHandle_: String,
       userNameInputError_: String,
     };
   }

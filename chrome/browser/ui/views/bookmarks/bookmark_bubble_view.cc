@@ -504,7 +504,7 @@ void BookmarkBubbleView::HandleImageUrlResponse(const Profile* profile,
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
-              email: "chrome-desktop-ui-sea@google.com"
+              email: "top-chrome-desktop-ui@google.com"
             }
           }
           user_data {

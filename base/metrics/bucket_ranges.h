@@ -26,6 +26,7 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_base.h"
 
 namespace base {
@@ -35,6 +36,7 @@ class BASE_EXPORT BucketRanges {
   typedef std::vector<HistogramBase::Sample32> Ranges;
 
   explicit BucketRanges(size_t num_ranges);
+  explicit BucketRanges(base::span<const HistogramBase::Sample32> data);
 
   BucketRanges(const BucketRanges&) = delete;
   BucketRanges& operator=(const BucketRanges&) = delete;

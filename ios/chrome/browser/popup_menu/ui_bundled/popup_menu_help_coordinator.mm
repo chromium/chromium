@@ -270,7 +270,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   // toolbar to default browser settings cannot be highlighted.
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForProfile(self.profile);
-  if (syncService && ShouldIndicateIdentityErrorInOverflowMenu(syncService)) {
+  if (syncService && GetAccountErrorUIInfo(syncService) != nil) {
     return NO;
   }
 

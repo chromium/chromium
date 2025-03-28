@@ -37,6 +37,8 @@ class ManagedAccountPreconditionChecker : public syncer::SyncServiceObserver {
  private:
   // Called by the `managed_status_finder_` when it determines the account type.
   void AccountTypeDetermined();
+  syncer::DataTypeController::PreconditionState
+  GetPreconditionStateFromAccountManagedStatus() const;
 
   const raw_ref<syncer::SyncService> sync_service_;
   const raw_ref<signin::IdentityManager> identity_manager_;

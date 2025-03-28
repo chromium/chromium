@@ -6,14 +6,14 @@ const kTestInputString = 'hello';
 const kTestContextString = 'Hello world.';
 
 promise_test(async () => {
-  const writer = await AIWriter.create();
+  const writer = await Writer.create();
   const result =
       await writer.write(kTestInputString, {context: kTestContextString});
   assert_equals(typeof result, 'string');
-}, 'Simple AIWriter.write() call');
+}, 'Simple Writer.write() call');
 
 promise_test(async () => {
-  const writer = await AIWriter.create();
+  const writer = await Writer.create();
   const streamingResponse =
       writer.writeStreaming(kTestInputString, {context: kTestContextString});
   assert_equals(
@@ -24,10 +24,10 @@ promise_test(async () => {
     result += chunk;
   }
   assert_greater_than(result.length, 0);
-}, 'Simple AIWriter.writeStreaming() call');
+}, 'Simple Writer.writeStreaming() call');
 
 promise_test(async (t) => {
-  const writer = await AIWriter.create();
+  const writer = await Writer.create();
   const controller = new AbortController();
   const streamingResponse = writer.writeStreaming(kTestInputString, {
     signal: controller.signal,
@@ -36,4 +36,4 @@ promise_test(async (t) => {
   for await (const chunk of streamingResponse) {
   }
   controller.abort();
-}, 'Aborting AIWriter.writeStreaming() after finished reading');
+}, 'Aborting Writer.writeStreaming() after finished reading');

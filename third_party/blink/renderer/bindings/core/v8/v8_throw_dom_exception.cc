@@ -61,8 +61,9 @@ void V8ThrowDOMException::Throw(v8::Isolate* isolate,
 v8::Local<v8::Value> V8ThrowDOMException::AttachStackProperty(
     v8::Isolate* isolate,
     DOMException* dom_exception) {
-  if (isolate->IsExecutionTerminating())
+  if (isolate->IsExecutionTerminating() || !isolate->InContext()) {
     return v8::Local<v8::Value>();
+  }
 
   // We use the isolate's current context here because we are creating an
   // exception object.

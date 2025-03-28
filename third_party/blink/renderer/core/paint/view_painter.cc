@@ -341,6 +341,7 @@ void ViewPainter::PaintRootElementGroup(
       background_image_offset = PhysicalOffset(paint_rect.origin());
     } else {
       background_image_offset = -root_object->FirstFragment().PaintOffset();
+      background_image_offset += PhysicalOffset(paint_rect.origin());
     }
 
     if (box_fragment_.GetBoxType() == PhysicalFragment::kPageContainer) {

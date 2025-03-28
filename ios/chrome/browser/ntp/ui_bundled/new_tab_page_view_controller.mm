@@ -303,6 +303,13 @@ CGFloat SpaceBetweenModules() {
     [self setMinimumHeight];
   }
 
+  if (self.feedVisible &&
+      GetFeedSwipeIPHVariation() == FeedSwipeIPHVariation::kStaticInSecondRun &&
+      !IsFirstRun()) {
+    [self.helpHandler
+        presentInProductHelpWithType:InProductHelpType::kFeedSwipe];
+  }
+
   [self.helpHandler
       presentInProductHelpWithType:InProductHelpType::kDiscoverFeedMenu];
 

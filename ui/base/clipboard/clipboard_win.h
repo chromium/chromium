@@ -12,6 +12,7 @@
 #include <string_view>
 
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_change_notifier.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 
 namespace base {
@@ -22,13 +23,19 @@ class MessageWindow;
 
 namespace ui {
 
+class ClipboardChangeNotifier;
+
 // Documentation on the underlying Win32 API this ultimately abstracts is
 // available at
 // https://docs.microsoft.com/en-us/windows/win32/dataxchg/clipboard.
-class ClipboardWin : public Clipboard {
+class ClipboardWin : public Clipboard, public ClipboardChangeNotifier {
  public:
   ClipboardWin(const ClipboardWin&) = delete;
   ClipboardWin& operator=(const ClipboardWin&) = delete;
+
+  // ClipboardChangeNotifier overrides:
+  void StartNotifying() override;
+  void StopNotifying() override;
 
  private:
   friend class Clipboard;
@@ -126,6 +133,9 @@ class ClipboardWin : public Clipboard {
     DWORD sequence_number;
     ClipboardSequenceNumberToken token;
   } clipboard_sequence_;
+
+  // Whether the clipboard is being monitored for changes.
+  bool monitoring_clipboard_changes_ = false;
 };
 
 }  // namespace ui

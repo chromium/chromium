@@ -41,6 +41,7 @@
 #include <xdg-shell-client-protocol.h>
 #include <xdg-toplevel-drag-v1-client-protocol.h>
 #include <xdg-toplevel-icon-v1-client-protocol.h>
+#include <xx-session-management-v1-client-protocol.h>
 
 #include "base/logging.h"
 
@@ -208,6 +209,9 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_drag_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_icon_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_icon_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_wm_base)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(xx_toplevel_session_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(xx_session_manager_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(xx_session_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_management_output_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_management_surface_v1)

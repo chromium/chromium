@@ -237,6 +237,7 @@ void CloudExternalDataPolicyObserverTest::SetUp() {
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
           shared_url_loader_factory_);
 
   user_policy_provider_.SetDefaultReturns(
@@ -290,8 +291,9 @@ void CloudExternalDataPolicyObserverTest::SetDeviceLocalAccountAvatarPolicy(
       dm_protocol::kChromePublicAccountPolicyType);
   builder.policy_data().set_settings_entity_id(account_id);
   builder.policy_data().set_username(account_id);
-  if (!value.empty())
+  if (!value.empty()) {
     builder.payload().mutable_useravatarimage()->set_value(value);
+  }
   builder.Build();
   session_manager_client_.set_device_local_account_policy(account_id,
                                                           builder.GetBlob());
@@ -315,14 +317,14 @@ void CloudExternalDataPolicyObserverTest::RemoveDeviceLocalAccount(
       device_policy_->payload().mutable_device_local_accounts();
   std::vector<std::string> account_ids;
   for (int i = 0; i < accounts->account_size(); ++i) {
-    if (accounts->account(i).account_id() != account_id)
+    if (accounts->account(i).account_id() != account_id) {
       account_ids.push_back(accounts->account(i).account_id());
+    }
   }
   accounts->clear_account();
-  for (std::vector<std::string>::const_iterator it = account_ids.begin();
-       it != account_ids.end(); ++it) {
+  for (const auto& id : account_ids) {
     em::DeviceLocalAccountInfoProto* account = accounts->add_account();
-    account->set_account_id(*it);
+    account->set_account_id(id);
     account->set_type(
         em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_PUBLIC_SESSION);
   }

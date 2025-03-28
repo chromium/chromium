@@ -127,12 +127,4 @@ IOSContentBrowserClient::CreateDevToolsManagerDelegate() {
   return std::make_unique<content::DevToolsManagerDelegate>();
 }
 
-void IOSContentBrowserClient::AppendExtraCommandLineSwitches(
-    base::CommandLine* command_line,
-    int child_process_id) {
-  // Disable JIT for now.
-  command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
-                                  "--jitless");
-}
-
 }  // namespace web

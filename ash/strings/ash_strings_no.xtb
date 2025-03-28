@@ -91,6 +91,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1269405891096105529">Den eksterne enheten støttes ikke i Gjestemodus</translation>
 <translation id="1270290102613614947">Skjermtastaturet er deaktivert</translation>
 <translation id="1272079795634619415">Stopp</translation>
+<translation id="12741168609094094">Velg hva som helst på skjermen for å søke, kopiere tekst med mer</translation>
 <translation id="1275285675049378717">Gir strøm til <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Valgt</translation>
 <translation id="1276975447697633661">Velg en fil og trykk på <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1720230731642245863">Wifi-sonen er av</translation>
 <translation id="1731815243805539470">Bytt til forrige bruker</translation>
 <translation id="1733996486177697563">Bytt mellom mørkt og lyst tema. Trykk og hold på skrivebordet, og velg Bakgrunn og stil.</translation>
+<translation id="1735992454301033090">Du har valgt et område – bruk piltastene for å flytte det</translation>
 <translation id="1736898441010944794">«<ph name="NAME" />» er synlig for Bluetooth-enheter.</translation>
 <translation id="1737078180382804488">Lukk konfigurering av visning av varsler fra telefonen din</translation>
 <translation id="174102739345480129">Markøren er av.</translation>
@@ -494,6 +496,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> forrige uke</translation>
 <translation id="2687510499067466116">Hurtigtasten er endret</translation>
 <translation id="2689613560355655046">Skrivebord 8</translation>
+<translation id="2692092709110488417">Trykk på Tab for å fokusere på og flytte det valgte området</translation>
 <translation id="2695305337569143674">nett</translation>
 <translation id="2697697418792422688">Vis tastaturinnstillinger. <ph name="KEYBOARD_NAME" /> er valgt.</translation>
 <translation id="2699913284398121653">Bruk Innholdsoverføring-appen til å flytte dataene fra skolekontoen til den personlige kontoen din</translation>
@@ -1033,6 +1036,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4412698727486357573">Brukerstøtte</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> er av.</translation>
 <translation id="4417647906073317561">Innstillinger for fokus. Start en nedtelling, velg en oppgave og sett på musikk for å komme inn i en god flyt.</translation>
+<translation id="4418600384772451109">Lukk panelet</translation>
 <translation id="4424159417645388645">Skrivebord 5</translation>
 <translation id="4426817706804363424">Supert!</translation>
 <translation id="4430019312045809116">Volum</translation>
@@ -2229,6 +2233,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8287009018010202411">Produktivitet</translation>
 <translation id="828708037801473432">Av</translation>
 <translation id="8297006494302853456">Svakt</translation>
+<translation id="8300451473979404345">Du har valgt et håndtak – bruk piltastene for å flytte det</translation>
 <translation id="8308637677604853869">Forrige meny</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock er på</translation>
@@ -2289,6 +2294,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="851458219935658693">Vis vinduer fra det gjeldende skrivebordet – alternativknappen er valgt</translation>
 <translation id="851660987304951246">Bruk Hjelp meg å lese for å lage sammendrag av innhold eller stille spørsmål raskt</translation>
 <translation id="8517041960877371778">Det kan hende at din <ph name="DEVICE_TYPE" /> ikke lader når den er slått på.</translation>
+<translation id="8519329096920173967">Søk på skjermen med Google Lens</translation>
 <translation id="8535393432370007982">Angre sortering etter farge</translation>
 <translation id="8536886494750559755">Vis innstillinger for Quick Share. Synlig for alle i <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Teksten er kopiert til utklippstavlen</translation>

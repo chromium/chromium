@@ -53,7 +53,7 @@ namespace variations {
 struct StudyGroupNames;
 class SyntheticTrialRegistry;
 class VariationsSeed;
-}
+}  // namespace variations
 
 namespace variations {
 
@@ -261,6 +261,9 @@ class VariationsService
   // which are distinct from regular android chrome.
   void OverridePlatform(Study::Platform platform,
                         const std::string& osname_server_param_override);
+
+  // Returns the seed store. Exposed for testing.
+  VariationsSeedStore* GetSeedStoreForTesting();
 
  protected:
   // Gets the serial number of the most recent Finch seed. Virtual for testing.

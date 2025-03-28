@@ -31,7 +31,7 @@ MediaStreamComponent* CreateMediaStreamComponent(
 }
 
 FakeRTCRtpSenderImpl::FakeRTCRtpSenderImpl(
-    std::optional<String> track_id,
+    String track_id,
     Vector<String> stream_ids,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : track_id_(std::move(track_id)),
@@ -71,8 +71,9 @@ FakeRTCRtpSenderImpl::DtlsTransportInformation() {
 }
 
 MediaStreamComponent* FakeRTCRtpSenderImpl::Track() const {
-  return track_id_ ? CreateMediaStreamComponent(*track_id_, task_runner_)
-                   : nullptr;
+  return !track_id_.IsNull()
+             ? CreateMediaStreamComponent(track_id_, task_runner_)
+             : nullptr;
 }
 
 Vector<String> FakeRTCRtpSenderImpl::StreamIds() const {

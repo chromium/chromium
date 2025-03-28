@@ -1046,7 +1046,7 @@ BASE_FEATURE(kWebLockScreenApi,
 // SiteInstanceGroup as the initiator.
 BASE_FEATURE(kSiteInstanceGroupsForDataUrls,
              "SiteInstanceGroupsForDataUrls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, puts non-isolated sites in separate SiteInstances in a default
 // SiteInstanceGroup (per BrowsingInstance), rather than sharing a default

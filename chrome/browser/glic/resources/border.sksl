@@ -12,6 +12,7 @@ const float half_pixel = 0.5;
 uniform float u_time;
 uniform int u_dark;
 uniform float u_emphasis;
+uniform float u_progress;
 uniform float u_corner_radius;
 uniform float u_insets;
 uniform float2 u_resolution;

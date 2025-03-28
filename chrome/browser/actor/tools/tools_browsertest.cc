@@ -35,6 +35,8 @@ namespace actor {
 
 namespace {
 
+constexpr int64_t kNonExistantContentNodeId = 12345;
+
 class ActorToolsTest : public InProcessBrowserTest {
  public:
   ActorToolsTest() {
@@ -75,13 +77,16 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, BasicSmokeTest) {
   const GURL url = embedded_test_server()->GetURL("/simple.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  BrowserAction action = MakeClick(/*content_node_id=*/123);
+  // Use a random node id that doesn't exist.
+  BrowserAction action =
+      MakeClick(/*content_node_id=*/kNonExistantContentNodeId);
 
   TabInterface& tab = *active_tab();
 
-  TestFuture<bool> result_success;
-  actor_coordinator().Act(tab, action, result_success.GetCallback());
-  EXPECT_TRUE(result_success.Get());
+  TestFuture<bool> result_fail;
+  actor_coordinator().Act(tab, action, result_fail.GetCallback());
+  // The node id doesn't exist so the tool will return false.
+  EXPECT_FALSE(result_fail.Get());
 }
 
 // Basic test of the NavigateTool.

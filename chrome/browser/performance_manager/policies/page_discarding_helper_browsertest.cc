@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/browser/performance_manager/policies/freezing_opt_out_checker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
@@ -27,8 +28,12 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -133,6 +138,41 @@ class TabLifecycleUnitFreezeWaiter
 
   base::RunLoop run_loop_;
 };
+
+// Ensures that `browser` has `num_tabs` tabs.
+void EnsureTabsInBrowser(Browser* browser, int num_tabs) {
+  EXPECT_EQ(1, browser->tab_strip_model()->count());
+
+  for (int i = 0; i < num_tabs; ++i) {
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser, GURL("data:text/html;charset=utf-8,hello"),
+        i == 0 ? WindowOpenDisposition::CURRENT_TAB
+               : WindowOpenDisposition::NEW_BACKGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  }
+
+  EXPECT_EQ(num_tabs, browser->tab_strip_model()->count());
+}
+
+// Creates a browser with `num_tabs` tabs.
+Browser* CreateBrowserWithTabs(int num_tabs) {
+  Browser* current_browser = BrowserList::GetInstance()->GetLastActive();
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  chrome::NewWindow(current_browser);
+  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
+  Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
+  EXPECT_NE(new_browser, current_browser);
+
+  EnsureTabsInBrowser(new_browser, num_tabs);
+  return new_browser;
+}
+
+bool IsTabDiscarded(content::WebContents* web_contents) {
+  return resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+             web_contents)
+             ->GetTabState() == ::mojom::LifecycleUnitState::DISCARDED;
+}
 
 class PageDiscardingHelperBrowserTest
     : public InProcessBrowserTest,
@@ -257,6 +297,10 @@ class PageDiscardingHelperBrowserTest
         freezing_opt_out_checker.IsPageOptedOutOfFreezing(
             page_node->GetBrowserContextID(), page_node->GetMainFrameUrl()),
         expect_opted_out);
+  }
+
+  content::WebContents* GetWebContentsAt(int index) {
+    return browser()->tab_strip_model()->GetWebContentsAt(index);
   }
 
  private:
@@ -589,6 +633,54 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
           tab2->GetContents());
   EXPECT_EQ(::mojom::LifecycleUnitState::DISCARDED,
             lifecycle_unit->GetTabState());
+}
+
+IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
+                       DiscardTabsWithMinimizedWindow) {
+  // Minimize browser.
+  EnsureTabsInBrowser(browser(), 2);
+  browser()->window()->Minimize();
+
+  // Request to discard pages a few times.
+  auto* helper =
+      PageDiscardingHelper::GetFromGraph(PerformanceManager::GetGraph());
+  ASSERT_TRUE(helper);
+  for (int i = 0; i < 3; ++i) {
+    helper->DiscardAPage(DiscardReason::URGENT,
+                         /*minimum_time_in_background=*/base::TimeDelta());
+  }
+
+  // The active tab is the minimized window isn't discarded.
+  EXPECT_FALSE(IsTabDiscarded(GetWebContentsAt(0)));
+
+  // This non-active tab is discarded.
+  EXPECT_TRUE(IsTabDiscarded(GetWebContentsAt(1)));
+}
+
+IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
+                       DiscardTabsWithOccludedWindow) {
+  // This browser will be occluded.
+  EnsureTabsInBrowser(browser(), 2);
+  browser()->window()->SetBounds(gfx::Rect(10, 10, 10, 10));
+  // Create another browser which occludes the previous browser.
+  Browser* other_browser = CreateBrowserWithTabs(1);
+  EXPECT_NE(other_browser, browser());
+  other_browser->window()->SetBounds(gfx::Rect(0, 0, 100, 100));
+
+  // Request to discard pages a few times.
+  auto* helper =
+      PageDiscardingHelper::GetFromGraph(PerformanceManager::GetGraph());
+  ASSERT_TRUE(helper);
+  for (int i = 0; i < 3; ++i) {
+    helper->DiscardAPage(DiscardReason::URGENT,
+                         /*minimum_time_in_background=*/base::TimeDelta());
+  }
+
+  // The active tab is the occluded window isn't discarded.
+  EXPECT_FALSE(IsTabDiscarded(GetWebContentsAt(0)));
+
+  // This non-active tab is discarded.
+  EXPECT_TRUE(IsTabDiscarded(GetWebContentsAt(1)));
 }
 
 INSTANTIATE_TEST_SUITE_P(

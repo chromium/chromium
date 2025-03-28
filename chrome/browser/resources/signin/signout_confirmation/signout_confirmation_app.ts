@@ -57,7 +57,7 @@ export class SignoutConfirmationAppElement extends CrLitElement {
     };
   }
 
-  protected data_: SignoutConfirmationData = SAMPLE_DATA;
+  protected accessor data_: SignoutConfirmationData = SAMPLE_DATA;
 
   private eventTracker_: EventTracker = new EventTracker();
 

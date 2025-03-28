@@ -223,7 +223,6 @@
 <translation id="1363028406613469049">ติดตาม</translation>
 <translation id="1364822246244961190">นโยบายนี้ถูกล็อกอยู่ ระบบจะไม่สนใจค่าของนโยบายนี้</translation>
 <translation id="1368318639262510626">เกมไดโนเสาร์ ไดโนเสาร์ที่มีรูปร่างเป็นพิกเซลต้องคอยหลบหลีกต้นกระบองเพชรและนกยักษ์ดึกดำบรรพ์ขณะวิ่งผ่านภูมิประเทศที่รกร้าง เมื่อคุณได้ยินเสียงสัญญาณ ให้กดแป้น Space เพื่อกระโดดข้ามสิ่งกีดขวาง</translation>
-<translation id="1369735141991626842">กรอกข้อมูลในช่องด้วย AI</translation>
 <translation id="1374468813861204354">คำแนะนำ</translation>
 <translation id="1375198122581997741">เกี่ยวกับรุ่น</translation>
 <translation id="1375293861397106342">ราคาปกติของตัวเลือกทั้งหมดอยู่ที่ <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -539,7 +538,6 @@
 <translation id="1919526244108283799">400 x 600 มม.</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{ไม่มี}=1{เว็บไซต์ 1 แห่ง}other{เว็บไซต์ # แห่ง}}</translation>
 <translation id="192095259937375524">ปุ่มแชร์แท็บนี้ เปิดใช้งานเพื่อแชร์แท็บนี้โดยการแชร์ลิงก์ สร้างคิวอาร์โค้ด แคสต์ และอื่นๆ</translation>
-<translation id="1921479021518565778">โหลดคำแนะนำแล้ว</translation>
 <translation id="1924727005275031552">ใหม่</translation>
 <translation id="1927439846988093361">ผลิตภัณฑ์ดูแลเส้นผม</translation>
 <translation id="1935353813610900265">ส่งความคิดเห็นสำหรับการค้นหาประวัติการเข้าชมซึ่งทำงานด้วย AI</translation>
@@ -571,6 +569,7 @@
 <translation id="1975584088563498795">กล่องจดหมาย 10</translation>
 <translation id="1978555033938440688">เวอร์ชันของเฟิร์มแวร์</translation>
 <translation id="1979156660928743046">ข้อมูลสื่อ</translation>
+<translation id="1987486584747170374">ระบบจะส่งการค้นหาของคุณ ผลลัพธ์ที่ตรงที่สุด และเนื้อหาในหน้าไปยัง Google เจ้าหน้าที่ตรวจสอบจะไม่ใช้ข้อมูลดังกล่าวเพื่อปรับปรุง AI องค์กรของคุณอาจเปลี่ยนการตั้งค่าเหล่านี้ได้ทุกเมื่อ</translation>
 <translation id="1988881251331415125">หากการสะกดถูกต้อง ให้<ph name="BEGIN_LINK" />ลองเรียกใช้การวินิจฉัยการเชื่อมต่อ<ph name="END_LINK" /></translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> ต้องการจัดเก็บข้อมูลขนาดใหญ่อย่างถาวรในเครื่องคอมพิวเตอร์ของคุณ</translation>
@@ -766,6 +765,7 @@
 <translation id="2301098101308036335">เข้าชมเว็บไซต์ใดบ้างและเมื่อใด</translation>
 <translation id="230286397113210245">ปุ่มเปิดหน้าต่างที่ไม่ระบุตัวตน เปิดใช้งานเพื่อเปิดหน้าต่างใหม่ที่ไม่ระบุตัวตนสำหรับการท่องเว็บแบบส่วนตัว</translation>
 <translation id="2306124309679506798">อนุญาตประสบการณ์ที่สมจริงไหม</translation>
+<translation id="2307711332257985952">ที่อยู่บ้านและที่ทำงานของคุณพร้อมใช้งานใน Chrome แล้ว</translation>
 <translation id="2312234273148520048">เครื่องปรุงรสและน้ำสลัด</translation>
 <translation id="2316087952091171402">ไม่ถึง <ph name="UPPER_ESTIMATE" /> บางเว็บไซต์อาจโหลดช้ากว่าเดิมเมื่อคุณเข้าชมครั้งถัดไป</translation>
 <translation id="2316159751672436664">ปรับเปลี่ยนเครื่องมือช่วยเหลือพิเศษในแบบของคุณที่การตั้งค่า Chrome OS</translation>
@@ -974,6 +974,7 @@
 <translation id="2688186765492306706">500 x 760 มม.</translation>
 <translation id="2688969097326701645">ใช่ ดำเนินการต่อ</translation>
 <translation id="2690699652723742414">30 วันที่ผ่านมา</translation>
+<translation id="2691385045260836588">รุ่น</translation>
 <translation id="2691924980723297736">คำเตือนด้านความปลอดภัย</translation>
 <translation id="2697248912349197812">ถาม <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">มีเมนูย่อยให้ใช้งาน ใช้<ph name="SHORTCUT" />เพื่อไปยังตัวเลือกเพิ่มเติม</translation>
@@ -1180,6 +1181,7 @@
 <translation id="3102312643185441063">ออมทรัพย์</translation>
 <translation id="3103188521861412364">หุ้นและพันธบัตร</translation>
 <translation id="3103535543639438037">เปรียบเทียบผลิตภัณฑ์ที่คล้ายกันโดยแสดงอยู่ข้างกัน</translation>
+<translation id="3103993932858740905">เมื่อคุณจ่ายแบบผ่อนชำระ ระบบจะกรอกหมายเลขบัตรเสมือนแบบใช้ครั้งเดียว ซึ่งใช้สำหรับการซื้อครั้งนี้เท่านั้น</translation>
 <translation id="3105172416063519923">รหัสสินทรัพย์:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />ตรวจสอบการกำหนดค่า DNS ที่ปลอดภัย<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">ถาดกลาง</translation>
@@ -1528,6 +1530,7 @@
 <translation id="3664782872746246217">คีย์เวิร์ด:</translation>
 <translation id="3665100783276035932">เว็บไซต์ส่วนใหญ่ควรทำงานตามที่คาดไว้</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">หมายเลข</translation>
 <translation id="3670229581627177274">เปิดบลูทูธ</translation>
 <translation id="3671117652518853176">หากปิดการตั้งค่านี้ ระบบอาจขอให้คุณยืนยันเป็นครั้งคราวเพื่อความปลอดภัย</translation>
 <translation id="3671540257457995106">อนุญาตให้ปรับขนาดไหม</translation>
@@ -1542,7 +1545,6 @@
 <translation id="3681007416295224113">ข้อมูลในใบรับรอง</translation>
 <translation id="3681421644246505351">Chrome บันทึกหัวข้อที่คุณสนใจโดยพิจารณาจากประวัติการท่องเว็บล่าสุด</translation>
 <translation id="3682094733650754138">เลือกตัวเลือกกรอกที่อยู่แล้ว</translation>
-<translation id="3687493962714153124">จัดการการป้อนข้อความอัตโนมัติด้วย AI</translation>
 <translation id="3687920599421452763">รถตู้และรถมินิแวน</translation>
 <translation id="3693327506115126094">เลือกวิธียืนยันว่าเป็นคุณ</translation>
 <translation id="3698353241727597930">ผู้ดูแลระบบของคุณกำหนดค่าให้บันทึก <ph name="FILES" /> ในพื้นที่เก็บข้อมูล <ph name="CLOUD_STORAGE" /> ที่จัดการโดยองค์กร ไฟล์เหล่านี้อาจได้รับการดูแล ตรวจสอบ และเก็บรักษาไว้เมื่อคุณลบ</translation>
@@ -1696,6 +1698,7 @@
 <translation id="3950820424414687140">ลงชื่อเข้าใช้</translation>
 <translation id="3953505489397572035">ราคานี้เป็นราคาปกติ</translation>
 <translation id="3958057596965527988">4 x 4 นิ้ว</translation>
+<translation id="3959969108528118741">เจ้าของ</translation>
 <translation id="3961148744525529027">แผ่นงานของเครื่องจัดการการชำระเงินเปิดอยู่ครึ่งเดียว</translation>
 <translation id="3962859241508114581">แทร็กก่อนหน้า</translation>
 <translation id="3963721102035795474">โหมดนักอ่าน</translation>
@@ -1921,7 +1924,6 @@
 <translation id="4312866146174492540">บล็อก (ค่าเริ่มต้น)</translation>
 <translation id="4314815835985389558">จัดการการซิงค์</translation>
 <translation id="4316057107946726368">โปรดป้อนข้อความให้เหตุผลยาวไม่เกิน <ph name="MAX_CHAR_COUNT" /> อักขระ ใช้อักขระไป <ph name="ACTUAL_CHAR_COUNT" /> ตัวจาก <ph name="MAX_CHAR_COUNT" /> ตัว</translation>
-<translation id="431740489189220419">กำลังโหลดคำแนะนำ</translation>
 <translation id="4318213823155573975">หมวก</translation>
 <translation id="4318312030194671742">บริการจัดวางตัวอย่างภาพวาด</translation>
 <translation id="4318566738941496689">ชื่ออุปกรณ์และที่อยู่เครือข่ายของคุณ</translation>
@@ -2328,6 +2330,7 @@
 <translation id="5087286274860437796">ใบรับรองของเซิร์ฟเวอร์ไม่สามารถใช้ได้ในขณะนี้</translation>
 <translation id="5087580092889165836">เพิ่มบัตร</translation>
 <translation id="5088142053160410913">ข้อความถึงผู้ดำเนินการ</translation>
+<translation id="5089810972385038852">รัฐ</translation>
 <translation id="5090647584136241764">เพิ่มแท็บที่มีผลิตภัณฑ์ที่คล้ายกันเพื่อเปรียบเทียบรายละเอียดที่สำคัญสำหรับคุณได้อย่างง่ายดาย</translation>
 <translation id="5093232627742069661">พับแบบตัว Z</translation>
 <translation id="5094747076828555589">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะ Chromium ไม่เชื่อถือใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
@@ -2466,6 +2469,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />เครื่องมือค้นหาเริ่มต้นช่วยให้คุณค้นเว็บได้ รวมทั้งทำให้ฟีเจอร์ต่างๆ ของ Chromium ทำงานได้<ph name="END_BOLD" /> เช่น การค้นหาจากแถบที่อยู่และจากรูปภาพบนหน้าเว็บ ฟีเจอร์อาจไม่พร้อมใช้งาน หากเครื่องมือค้นหาของคุณไม่รองรับ</translation>
 <translation id="5323043727018853753">อนุญาตให้มีเนื้อหาที่ฝัง</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" /> <ph name="MATCH_POSITION" /> จาก <ph name="NUM_MATCHES" /></translation>
+<translation id="5327248766486351172">ชื่อ</translation>
 <translation id="5329858041417644019">เบราว์เซอร์ของคุณไม่มีการจัดการ</translation>
 <translation id="5331585574693522196">ตั้งเป็นค่าเริ่มต้น</translation>
 <translation id="5332219387342487447">วิธีการจัดส่ง</translation>
@@ -2679,7 +2683,6 @@
 <translation id="569000877158168851">ค่า DnsOverHttpsTemplates ไม่เกี่ยวข้องและจะไม่มีการนำไปใช้ นอกเสียจากจะมีการตั้งค่านโยบาย DnsOverHttpsMode เป็น <ph name="SECURE_DNS_MODE_AUTOMATIC" /> หรือ <ph name="SECURE_DNS_MODE_SECURE" /></translation>
 <translation id="5691848789297492617">ข้อความแจ้งให้บันทึกบัตรที่เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="5695542892312572833">ใช้ Windows Hello เพื่อยืนยันและทำการซื้อให้เสร็จใช่ไหม</translation>
-<translation id="5697827549745555938">ระบบจะส่งข้อมูลที่คุณได้บันทึกไว้และหน้านี้ไปยัง Google เพื่อดูว่าฟีเจอร์ป้อนข้อความอัตโนมัติสามารถช่วยกรอกแบบฟอร์มนี้ได้หรือไม่ เจ้าหน้าที่ตรวจสอบอาจเห็นข้อมูลดังกล่าวเพื่อนำไปใช้ปรับปรุงฟีเจอร์นี้</translation>
 <translation id="5699628521141772782">ผลิตภัณฑ์นมและไข่</translation>
 <translation id="5700761515355162635">อนุญาตคุกกี้ของบุคคลที่สามแล้ว</translation>
 <translation id="5701381305118179107">กึ่งกลาง</translation>
@@ -3108,6 +3111,7 @@
 <translation id="6440503408713884761">ละเว้น</translation>
 <translation id="6443406338865242315">ส่วนขยายและปลั๊กอินที่คุณติดตั้ง</translation>
 <translation id="6444329331928531170">การเกษียณอายุและบำนาญ</translation>
+<translation id="6445051938772793705">ประเทศ</translation>
 <translation id="6446608382365791566">เพิ่มข้อมูลเพิ่มเติม</translation>
 <translation id="6447842834002726250">คุกกี้</translation>
 <translation id="6448371595882710519">ดูข้อมูลเพิ่มเติมเกี่ยวกับการควบคุมข้อมูล</translation>
@@ -3589,7 +3593,6 @@
 <translation id="7316521168101843192">กำลังบันทึกไฟล์ไปยัง Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ความช่วยเหลือในการเชื่อมต่อ</translation>
-<translation id="7321111802407017850">บันทึกข้อมูลเพื่อป้อนข้อความอัตโนมัติ</translation>
 <translation id="7323804146520582233">ซ่อนส่วน "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">ลบล้างบัญชีภายในอุปกรณ์</translation>
 <translation id="7334320624316649418">&amp;ทำซ้ำการจัดลำดับใหม่</translation>

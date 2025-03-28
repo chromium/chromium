@@ -535,7 +535,7 @@ void HostResolverManagerTest::PopulateCache(const HostCache::Key& key,
       resolve_context_->host_cache(), key,
       HostCache::Entry(OK, std::move(endpoints), /*aliases=*/{},
                        HostCache::Entry::SOURCE_UNKNOWN),
-      base::Seconds(1));
+      kDefaultTtl);
 }
 
 const std::pair<const HostCache::Key, HostCache::Entry>*

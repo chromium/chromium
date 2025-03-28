@@ -582,7 +582,7 @@ export class SettingsSiteSettingsPageElement extends
       },
 
       unusedSitePermissionsHeader_: String,
-      unusedSitePermissionsSubeader_: String,
+      unusedSitePermissionsSubheader_: String,
     };
   }
 

@@ -142,9 +142,10 @@ public class AuxiliarySearchBridge {
             long lastActiveTime,
             int tabId,
             @Nullable String appId,
-            int visitId) {
-        return AuxiliarySearchDataEntry.addDataEntry(
-                type, url, title, lastActiveTime, tabId, appId, visitId);
+            int visitId,
+            int score) {
+        return new AuxiliarySearchDataEntry(
+                type, url, title, lastActiveTime, tabId, appId, visitId, score);
     }
 
     @CalledByNative

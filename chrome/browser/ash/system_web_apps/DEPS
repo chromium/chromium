@@ -74,7 +74,6 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_icon_generator.h",
   "+chrome/browser/web_applications/web_app_icon_manager.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
-  "+chrome/browser/web_applications/web_app_launch_queue.h",
   "+chrome/browser/web_applications/web_app_provider_factory.h",
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registrar.h",

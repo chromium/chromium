@@ -280,6 +280,9 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
     return;
   }
   auto params = on_device_model::mojom::LoadModelParams::New();
+  params->backend_type = features::ForceCpuBackendForOnDeviceModel()
+                             ? ml::ModelBackendType::kCpuBackend
+                             : ml::ModelBackendType::kGpuBackend;
   params->assets = std::move(assets);
   // TODO(crbug.com/302402959): Choose max_tokens based on device.
   params->max_tokens = features::GetOnDeviceModelMaxTokens();

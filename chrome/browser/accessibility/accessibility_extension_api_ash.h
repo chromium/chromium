@@ -11,6 +11,7 @@
 #include <optional>
 
 #include "chrome/common/extensions/api/accessibility_private.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "extensions/browser/extension_function.h"
 
 // API function that darkens or undarkens the screen.
@@ -291,12 +292,16 @@ class AccessibilityPrivateSetKeyboardListenerFunction
 // API function that enables or disables web content accessibility support.
 class AccessibilityPrivateSetNativeAccessibilityEnabledFunction
     : public ExtensionFunction {
-  ~AccessibilityPrivateSetNativeAccessibilityEnabledFunction() override =
-      default;
+ public:
+  AccessibilityPrivateSetNativeAccessibilityEnabledFunction();
+
+ private:
+  ~AccessibilityPrivateSetNativeAccessibilityEnabledFunction() override;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION(
       "accessibilityPrivate.setNativeAccessibilityEnabled",
       ACCESSIBILITY_PRIVATE_SETNATIVEACCESSIBILITYENABLED)
+  std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
 };
 
 // API function that sets native ChromeVox ARC support.

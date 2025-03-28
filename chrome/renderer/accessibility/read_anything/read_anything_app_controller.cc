@@ -595,6 +595,13 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   model_.SetActiveTreeId(tree_id);
   model_.SetUkmSourceId(ukm_source_id);
   model_.set_is_pdf(is_pdf);
+
+  if (IsReadAloudEnabled() && read_aloud_model_.speech_playing()) {
+    model_.SetUrlInformationCallback(
+        base::BindOnce(&ReadAnythingAppController::OnUrlInformationSet,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   // Delete all pending updates on the formerly active AXTree.
   // TODO(crbug.com/40802192): If distillation is in progress, cancel the
   // distillation request.
@@ -897,6 +904,19 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("sentenceHighlighting",
                    &ReadAnythingAppController::SentenceHighlighting)
       .SetProperty("noHighlighting", &ReadAnythingAppController::NoHighlighting)
+      .SetProperty("pauseButtonStopSource",
+                   &ReadAnythingAppController::PauseButtonStopSource)
+      .SetProperty("keyboardShortcutStopSource",
+                   &ReadAnythingAppController::KeyboardShortcutStopSource)
+      .SetProperty("engineInterruptStopSource",
+                   &ReadAnythingAppController::EngineInterruptStopSource)
+      .SetProperty("engineErrorStopSource",
+                   &ReadAnythingAppController::EngineErrorStopSource)
+      .SetProperty("contentFinishedStopSource",
+                   &ReadAnythingAppController::ContentFinishedStopSource)
+      .SetProperty(
+          "unexpectedUpdateContentStopSource",
+          &ReadAnythingAppController::UnexpectedUpdateContentStopSource)
       .SetProperty("speechRate", &ReadAnythingAppController::SpeechRate)
       .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
       .SetProperty("isReadAloudEnabled",
@@ -991,6 +1011,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::GetDisplayNameForLocale)
       .SetMethod("incrementMetricCount",
                  &ReadAnythingAppController::IncrementMetricCount)
+      .SetMethod("logSpeechStop", &ReadAnythingAppController::LogSpeechStop)
       .SetMethod("sendGetVoicePackInfoRequest",
                  &ReadAnythingAppController::SendGetVoicePackInfoRequest)
       .SetMethod("sendInstallVoicePackRequest",
@@ -1156,6 +1177,35 @@ int ReadAnythingAppController::SentenceHighlighting() const {
 
 int ReadAnythingAppController::NoHighlighting() const {
   return static_cast<int>(read_anything::mojom::HighlightGranularity::kOff);
+}
+
+int ReadAnythingAppController::PauseButtonStopSource() const {
+  return base::to_underlying(ReadAloudAppModel::ReadAloudStopSource::kButton);
+}
+
+int ReadAnythingAppController::KeyboardShortcutStopSource() const {
+  return base::to_underlying(
+      ReadAloudAppModel::ReadAloudStopSource::kKeyboardShortcut);
+}
+
+int ReadAnythingAppController::EngineInterruptStopSource() const {
+  return base::to_underlying(
+      ReadAloudAppModel::ReadAloudStopSource::kEngineInterrupt);
+}
+
+int ReadAnythingAppController::EngineErrorStopSource() const {
+  return base::to_underlying(
+      ReadAloudAppModel::ReadAloudStopSource::kEngineError);
+}
+
+int ReadAnythingAppController::ContentFinishedStopSource() const {
+  return base::to_underlying(
+      ReadAloudAppModel::ReadAloudStopSource::kFinishContent);
+}
+
+int ReadAnythingAppController::UnexpectedUpdateContentStopSource() const {
+  return base::to_underlying(
+      ReadAloudAppModel::ReadAloudStopSource::kUnexpectedUpdateContent);
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
@@ -1734,6 +1784,10 @@ void ReadAnythingAppController::SetLanguageCode(const std::string& code) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 void ReadAnythingAppController::OnDeviceLocked() {
+  if (IsReadAloudEnabled() && read_aloud_model_.speech_playing()) {
+    read_aloud_model_.LogSpeechStop(
+        ReadAloudAppModel::ReadAloudStopSource::kLockChromeosDevice);
+  }
   // Signal to the WebUI that the device has been locked. We'll only receive
   // this callback on ChromeOS.
   ExecuteJavaScript("chrome.readingMode.onLockScreen();");
@@ -1743,6 +1797,22 @@ void ReadAnythingAppController::OnTtsEngineInstalled() {
   ExecuteJavaScript("chrome.readingMode.onTtsEngineInstalled()");
 }
 #endif
+
+void ReadAnythingAppController::OnReadingModeHidden() {
+  model_.set_will_hide(true);
+  if (read_aloud_model_.speech_playing()) {
+    read_aloud_model_.LogSpeechStop(
+        ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode);
+  }
+}
+
+void ReadAnythingAppController::OnTabWillDetach() {
+  model_.set_will_hide(true);
+  if (read_aloud_model_.speech_playing()) {
+    read_aloud_model_.LogSpeechStop(
+        ReadAloudAppModel::ReadAloudStopSource::kCloseTabOrWindow);
+  }
+}
 
 void ReadAnythingAppController::SetDefaultLanguageCode(
     const std::string& code) {
@@ -1849,6 +1919,29 @@ ReadAnythingAppController::GetHighlightForCurrentSegmentIndex(int index,
 void ReadAnythingAppController::IncrementMetricCount(
     const std::string& metric) {
   read_aloud_model_.IncrementMetric(metric);
+}
+
+void ReadAnythingAppController::LogSpeechStop(int source) {
+  if (!IsReadAloudEnabled()) {
+    return;
+  }
+
+  // Don't log speech stopping if the reading mode panel is going to hide. That
+  // case is logged separately.
+  if (model_.will_hide()) {
+    return;
+  }
+
+  if (const auto maybe_enum =
+          ToEnum<ReadAloudAppModel::ReadAloudStopSource>(source)) {
+    read_aloud_model_.LogSpeechStop(maybe_enum.value());
+  }
+}
+
+void ReadAnythingAppController::OnUrlInformationSet() {
+  read_aloud_model_.LogSpeechStop(
+      model_.IsReload() ? ReadAloudAppModel::ReadAloudStopSource::kReloadPage
+                        : ReadAloudAppModel::ReadAloudStopSource::kChangePage);
 }
 
 void ReadAnythingAppController::OnScrolledToBottom() {

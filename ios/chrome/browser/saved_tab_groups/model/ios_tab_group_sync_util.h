@@ -26,6 +26,7 @@ class TabGroupSyncService;
 
 class Browser;
 class BrowserList;
+class ShareKitService;
 
 namespace tab_groups {
 namespace utils {
@@ -87,7 +88,8 @@ bool IsSaveableNavigation(web::NavigationContext* navigation_context);
 
 // Whether the given `tab_group` is shared or not.
 bool IsTabGroupShared(const TabGroup* tab_group,
-                      TabGroupSyncService* sync_service);
+                      TabGroupSyncService* sync_service,
+                      ShareKitService* share_kit_service);
 
 // Returns the `MemberRole` for the given `tab_group`. If
 // `tab_group_sync_service` or `collaboration_service` is nil, returns

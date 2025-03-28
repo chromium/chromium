@@ -116,9 +116,9 @@ NotShared<DOMFloat32Array> XRRigidTransform::matrix() {
 
   if (!matrix_array_ || !matrix_array_->Data()) {
     // A page may take the matrix_array_ value and detach it so matrix_array_ is
-    // a detached array buffer.  This breaks the inspector, so return null
-    // instead.
-    return NotShared<DOMFloat32Array>();
+    // a detached array buffer.  This breaks the inspector, so return an empty
+    // array instead.
+    return NotShared<DOMFloat32Array>(DOMFloat32Array::Create(0));
   }
 
   return matrix_array_;

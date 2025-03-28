@@ -198,8 +198,7 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
       modules.AppendASCII("libchrome_crashpad_handler.so");
 
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string library_path;
-  env->GetVar("LD_LIBRARY_PATH", &library_path);
+  std::string library_path = env->GetVar("LD_LIBRARY_PATH").value_or("");
   env->SetVar("LD_LIBRARY_PATH", library_path + ":" + modules.value());
 
   bool handler = client->StartHandlerAtCrash(

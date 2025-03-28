@@ -401,8 +401,6 @@ class GlicWindowController : public views::WidgetObserver,
   // When the attached browser is closed, this is invoked so we can clean up.
   void AttachedBrowserDidClose(BrowserWindowInterface* browser);
 
-  void ResetPresentationTimingState();
-
   // Returns true if a browser is occluded at point in screen coordinates.
   bool IsBrowserOccludedAtPoint(Browser* browser, gfx::Point point);
 
@@ -424,6 +422,12 @@ class GlicWindowController : public views::WidgetObserver,
 
   // Warms the web client and sets `contents_`.
   void CreateContents();
+
+  // Modifies `state_` to the given new state.
+  void SetWindowState(State new_state);
+
+  // Returns true of the window is showing and the content is loaded.
+  bool IsWindowOpenAndReady();
 
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
@@ -480,6 +484,7 @@ class GlicWindowController : public views::WidgetObserver,
 
   raw_ptr<GlicWebClientAccess> web_client_;
 
+  // Modified only by calling `SetWindowState`.
   State state_ = State::kClosed;
 
   // If State != kClosed, then the UI must either be associated with a browser
@@ -493,14 +498,6 @@ class GlicWindowController : public views::WidgetObserver,
 
   mojom::WebUiState webui_state_ = mojom::WebUiState::kUninitialized;
   base::ObserverList<WebUiStateObserver> webui_state_observers_;
-
-  // The following two variables are used together for recording metrics and are
-  // reset together after the panel show is finished.
-
-  // The timestamp when the glic window starts to be shown.
-  base::TimeTicks show_start_time_;
-  // Web client's operation modes.
-  mojom::WebClientMode starting_mode_;
 
   // The invocation source requesting the opening of the web client.
   std::optional<mojom::InvocationSource> opening_source_;

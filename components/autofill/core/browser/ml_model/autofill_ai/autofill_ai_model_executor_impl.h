@@ -29,8 +29,7 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
  public:
   AutofillAiModelExecutorImpl(
       AutofillAiModelCache* model_cache,
-      optimization_guide::OptimizationGuideModelExecutor* model_executor,
-      optimization_guide::ModelQualityLogsUploaderService* logs_uploader);
+      optimization_guide::OptimizationGuideModelExecutor* model_executor);
   ~AutofillAiModelExecutorImpl() override;
 
   // AutofillAiModelExecutor:
@@ -55,8 +54,6 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
 
   const raw_ref<optimization_guide::OptimizationGuideModelExecutor>
       model_executor_;
-  base::WeakPtr<optimization_guide::ModelQualityLogsUploaderService>
-      logs_uploader_;
 
   // Form signatures for which a query is currently ongoing. The goal is to
   // avoid multiple queries for the same form at the same time.

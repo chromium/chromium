@@ -8720,6 +8720,49 @@ TEST_F(RenderTextTest, BaselineWithLineHeight) {
   EXPECT_EQ(gfx::Vector2d(), current_selection_bounds.OffsetFromOrigin());
 }
 
+// Test multi-line wrapping selection bounds; see crbug.com/405532692.
+TEST_F(RenderTextTest, WordWrapperSubstringBoundsMultiline) {
+  RenderText* render_text = GetRenderText();
+  render_text->SetMultiline(true);
+  render_text->SetWordWrapBehavior(gfx::WRAP_LONG_WORDS);
+  const auto text_cases = std::to_array<const std::u16string_view>(
+      {kWeak, kLtr, u"Hello", kRtl, u"abc\n\ndef", u"这是一段中文长文本"});
+
+  for (auto text_case : text_cases) {
+    SCOPED_TRACE(base::StrCat({u"Testing text: ", text_case}));
+    render_text->SetDisplayRect(Rect(1000, 1000));
+    render_text->SetText(text_case);
+    // Get the length of the entire text.
+    const int whole_width = render_text->GetStringSize().width();
+
+    // Setting the width to trigger line wrapping
+    render_text->SetDisplayRect(Rect(whole_width / 2 + 1, 1000));
+    EXPECT_GT(test_api()->lines().size(), 1u);
+
+    Rect expected_total_bounds;
+    for (size_t i = 0; i < test_api()->lines().size(); i++) {
+      SCOPED_TRACE(base::StringPrintf("Testing bounds for line %" PRIuS "", i));
+      const internal::Line& line = test_api()->lines()[i];
+      size_t line_end = i < test_api()->lines().size() - 1
+                            ? test_api()->lines()[i + 1].display_text_index
+                            : render_text->GetDisplayText().size();
+      // SelectRange seems to change the result of GetLineOffset(i). SelectRange
+      // must be called first.
+      render_text->SelectRange(Range(line.display_text_index, line_end));
+
+      const Rect expected_line_bounds =
+          render_text->GetLineOffset(i) +
+          Rect(std::ceil(line.size.width()), std::ceil(line.size.height()));
+      EXPECT_EQ(expected_line_bounds, GetSelectionBoundsUnion());
+
+      expected_total_bounds.Union(expected_line_bounds);
+    }
+    // Test complete bounds.
+    render_text->SelectAll(false);
+    EXPECT_EQ(expected_total_bounds, GetSelectionBoundsUnion());
+  }
+}
+
 TEST_F(RenderTextTest, TeluguGraphemeBoundaries) {
   RenderText* render_text = GetRenderText();
   render_text->SetDisplayRect(Rect(50, 1000));

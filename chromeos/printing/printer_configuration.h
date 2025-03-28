@@ -76,7 +76,8 @@ struct COMPONENT_EXPORT(CHROMEOS_PRINTING) IppPrinterInfo {
   std::vector<std::string> printer_kind;
 };
 
-COMPONENT_EXPORT(CHROMEOS_PRINTING) std::string ToString(PrinterClass pclass);
+COMPONENT_EXPORT(CHROMEOS_PRINTING)
+std::string_view ToString(PrinterClass pclass);
 
 // This function checks if the given URI is a valid printer URI. |uri| is
 // considered to be a valid printer URI if it has one of the scheme listed in
@@ -210,7 +211,7 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
   Printer();
 
   // Constructs a printer object with the given |id|.
-  explicit Printer(const std::string& id);
+  explicit Printer(std::string id);
 
   // Copy constructor and assignment.
   Printer(const Printer& printer);
@@ -255,7 +256,7 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
   // to the object and false is returned. If |error_message| is not nullptr,
   // the error message is written there when the methods return false.
   bool SetUri(const Uri& uri, std::string* error_message = nullptr);
-  bool SetUri(const std::string& uri, std::string* error_message = nullptr);
+  bool SetUri(std::string_view uri, std::string* error_message = nullptr);
 
   const PpdReference& ppd_reference() const { return ppd_reference_; }
   PpdReference* mutable_ppd_reference() { return &ppd_reference_; }

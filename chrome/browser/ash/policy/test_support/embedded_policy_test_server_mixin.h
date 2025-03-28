@@ -128,6 +128,11 @@ class EmbeddedPolicyTestServerMixin : public InProcessBrowserTestMixin {
   // metadata.
   void SetMetricsLogSegment(
       enterprise_management::PolicyData::MetricsLogSegment segment);
+  // Sets age classification metric segment for the K12 user, this information
+  // is provided via policy metadata.
+  void SetK12AgeClassificationMetricsLogSegment(
+      enterprise_management::PolicyData::K12AgeClassificationMetricsLogSegment
+          segment);
 
   // Configures server to expect these PSM (private set membership) execution
   // values (i.e. `psm_execution_result` and `psm_determination_timestamp`) as

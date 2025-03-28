@@ -279,8 +279,9 @@ class IpProtectionProbabilisticRevealTokenDirectFetcherTest
         token->set_e(base::StrCat({"token", i_string, "-e", padding}));
       }
       response_proto.mutable_public_key()->set_y(public_key_bytes_);
-      response_proto.set_expiration_time_seconds(expiration_time_);
-      response_proto.set_next_epoch_start_time_seconds(next_epoch_start_time_);
+      response_proto.mutable_expiration_time()->set_seconds(expiration_time_);
+      response_proto.mutable_next_epoch_start_time()->set_seconds(
+          next_epoch_start_time_);
       response_proto.set_num_tokens_with_signal(num_tokens);
       response_proto.set_epoch_id(std::string(8, '0'));
     }
@@ -387,7 +388,7 @@ TEST_F(IpProtectionProbabilisticRevealTokenDirectFetcherTest,
           /*num_tokens=*/10);
   uint64_t expiration_time =
       (base::Time::Now() + base::Hours(1)).InSecondsFSinceUnixEpoch();
-  response_proto.set_expiration_time_seconds(expiration_time);
+  response_proto.mutable_expiration_time()->set_seconds(expiration_time);
   const std::string response_str = response_proto.SerializeAsString();
   SetResponse(response_str);
 
@@ -413,7 +414,7 @@ TEST_F(IpProtectionProbabilisticRevealTokenDirectFetcherTest,
           /*num_tokens=*/10);
   uint64_t expiration_time =
       (base::Time::Now() + base::Days(10)).InSecondsFSinceUnixEpoch();
-  response_proto.set_expiration_time_seconds(expiration_time);
+  response_proto.mutable_expiration_time()->set_seconds(expiration_time);
   const std::string response_str = response_proto.SerializeAsString();
   SetResponse(response_str);
 

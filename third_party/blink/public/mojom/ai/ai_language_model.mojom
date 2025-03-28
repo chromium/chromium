@@ -46,7 +46,7 @@ struct AILanguageModelInstanceInfo {
   AILanguageModelSamplingParams sampling_params;
 };
 
-// The role for a given prompt. See AILanguageModelPromptRole in IDL.
+// The role for a given prompt. See LanguageModelPromptRole in IDL.
 enum AILanguageModelPromptRole {
   kSystem = 0,
   kUser = 1,
@@ -61,14 +61,14 @@ enum AILanguageModelPromptType {
 };
 
 // The expected data type and languages specified with session creation.
-// See AILanguageModelExpectedInput in IDL.
+// See LanguageModelExpectedInput in IDL.
 struct AILanguageModelExpectedInput {
   AILanguageModelPromptType type;
   array<AILanguageCode>? languages;
 };
 
 // The supported prompt input content types. These each contain arbitrary data
-// provided via the JavaScript API. See AILanguageModelPromptContent in IDL.
+// provided via the JavaScript API. See LanguageModelPromptContent in IDL.
 union AILanguageModelPromptContent {
   // Text provided as input.
   string text;

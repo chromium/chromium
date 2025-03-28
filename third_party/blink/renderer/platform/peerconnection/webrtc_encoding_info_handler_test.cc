@@ -82,15 +82,15 @@ class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
   void VerifyEncodingInfo(
       const std::optional<webrtc::SdpAudioFormat> sdp_audio_format,
       const std::optional<webrtc::SdpVideoFormat> sdp_video_format,
-      const std::optional<String> video_scalability_mode,
+      const String video_scalability_mode,
       const CodecSupport support) {
     auto video_encoder_factory = std::make_unique<MockVideoEncoderFactory>();
     rtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory =
         blink::CreateWebrtcAudioEncoderFactory();
     if (sdp_video_format) {
       const std::optional<std::string> expected_scalability_mode =
-          video_scalability_mode
-              ? std::make_optional(video_scalability_mode->Utf8())
+          !video_scalability_mode.IsNull()
+              ? std::make_optional(video_scalability_mode.Utf8())
               : std::nullopt;
 
       ON_CALL(*video_encoder_factory, QueryCodecSupport)
@@ -126,14 +126,14 @@ class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
 TEST_F(WebrtcEncodingInfoHandlerTests, BasicAudio) {
   VerifyEncodingInfo(
       kAudioFormatOpus, /*sdp_video_format=*/std::nullopt,
-      /*video_scalability_mode=*/std::nullopt,
+      /*video_scalability_mode=*/String(),
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/true});
 }
 
 TEST_F(WebrtcEncodingInfoHandlerTests, UnsupportedAudio) {
   VerifyEncodingInfo(
       kAudioFormatFoo, /*sdp_video_format=*/std::nullopt,
-      /*video_scalability_mode=*/std::nullopt,
+      /*video_scalability_mode=*/String(),
       CodecSupport{/*is_supported=*/false, /*is_power_efficient=*/false});
 }
 
@@ -144,21 +144,21 @@ TEST_F(WebrtcEncodingInfoHandlerTests, UnsupportedAudio) {
 TEST_F(WebrtcEncodingInfoHandlerTests, BasicVideo) {
   VerifyEncodingInfo(
       /*sdp_audio_format=*/std::nullopt, kVideoFormatVp9,
-      /*video_scalability_mode=*/std::nullopt,
+      /*video_scalability_mode=*/String(),
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/false});
 }
 
 TEST_F(WebrtcEncodingInfoHandlerTests, BasicVideoPowerEfficient) {
   VerifyEncodingInfo(
       /*sdp_audio_format=*/std::nullopt, kVideoFormatVp9,
-      /*video_scalability_mode=*/std::nullopt,
+      /*video_scalability_mode=*/String(),
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/true});
 }
 
 TEST_F(WebrtcEncodingInfoHandlerTests, UnsupportedVideo) {
   VerifyEncodingInfo(
       /*sdp_audio_format=*/std::nullopt, kVideoFormatFoo,
-      /*video_scalability_mode=*/std::nullopt,
+      /*video_scalability_mode=*/String(),
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/false});
 }
 
@@ -171,14 +171,14 @@ TEST_F(WebrtcEncodingInfoHandlerTests, VideoWithScalabilityMode) {
 TEST_F(WebrtcEncodingInfoHandlerTests, SupportedAudioUnsupportedVideo) {
   VerifyEncodingInfo(
       kAudioFormatOpus, kVideoFormatFoo,
-      /*video_scalability_mode=*/std::nullopt,
+      /*video_scalability_mode=*/String(),
       CodecSupport{/*is_supported=*/false, /*is_power_efficient=*/false});
 }
 
 TEST_F(WebrtcEncodingInfoHandlerTests, SupportedVideoUnsupportedAudio) {
   VerifyEncodingInfo(
       kAudioFormatFoo, kVideoFormatVp9,
-      /*video_scalability_mode=*/std::nullopt,
+      /*video_scalability_mode=*/String(),
       CodecSupport{/*is_supported=*/false, /*is_power_efficient=*/false});
 }
 

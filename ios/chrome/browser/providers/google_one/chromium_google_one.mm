@@ -6,6 +6,10 @@
 
 #import "ios/public/provider/chrome/browser/google_one/google_one_api.h"
 
+namespace {
+id<GoogleOneControllerFactory> g_google_one_controller_factory;
+}
+
 @implementation GoogleOneConfiguration
 
 @end
@@ -15,7 +19,12 @@ namespace provider {
 
 id<GoogleOneController> CreateGoogleOneController(
     GoogleOneConfiguration* configuration) {
-  return nil;
+  return [g_google_one_controller_factory
+      createControllerWithConfiguration:configuration];
+}
+
+void SetGoogleOneControllerFactory(id<GoogleOneControllerFactory> factory) {
+  g_google_one_controller_factory = factory;
 }
 
 }  // namespace provider

@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
+import org.chromium.components.browser_ui.util.DrawableUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
@@ -117,6 +118,10 @@ public class StatusMediator
     private int mBlockingStatus3pcd;
     private int mLastTabId;
     private boolean mCurrentTabCrashed;
+    private Drawable mDefaultStatusBackground;
+    private Drawable mDefaultStatusBackgroundIncognito;
+    private Drawable mVerboseStatusBackground;
+    private Drawable mVerboseStatusBackgroundIncognito;
 
     /**
      * @param model The {@link PropertyModel} for this mediator.
@@ -147,6 +152,7 @@ public class StatusMediator
             @Nullable
                     Supplier<MerchantTrustSignalsCoordinator>
                             merchantTrustSignalsCoordinatorSupplier) {
+        initBackgroundDrawables(context);
         mModel = model;
         mLocationBarDataProvider = locationBarDataProvider;
         mTemplateUrlServiceSupplier = templateUrlServiceSupplier;
@@ -830,7 +836,7 @@ public class StatusMediator
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
     }
 
-    void setHoverHighlight(@DrawableRes int hoverHighlightResId) {
+    void setBackground() {
         applyStatusIconAndTooltipProperties(
                 mModel.get(StatusProperties.SHOW_STATUS_ICON),
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
@@ -897,21 +903,50 @@ public class StatusMediator
                         == PageClassification.ANDROID_HUB_VALUE;
         mModel.set(StatusProperties.SHOW_STATUS_ICON, showIcon);
         if (showIcon && !isHubSearch) {
-            var rippleId =
-                    mLocationBarDataProvider.isIncognitoBranded()
-                            ? R.drawable.status_view_ripple_incognito
-                            : R.drawable.status_view_ripple;
-            var verboseRippleId =
-                    mLocationBarDataProvider.isIncognitoBranded()
-                            ? R.drawable.status_view_verbose_ripple_incognito
-                            : R.drawable.status_view_verbose_ripple;
-            mModel.set(
-                    StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT,
-                    verboseStatusTextVisible ? verboseRippleId : rippleId);
+            Drawable background;
+            if (mLocationBarDataProvider.isIncognitoBranded()) {
+                background =
+                        verboseStatusTextVisible
+                                ? mVerboseStatusBackgroundIncognito
+                                : mDefaultStatusBackgroundIncognito;
+            } else {
+                background =
+                        verboseStatusTextVisible
+                                ? mVerboseStatusBackground
+                                : mDefaultStatusBackground;
+            }
+            mModel.set(StatusProperties.STATUS_VIEW_BACKGROUND, background);
             mModel.set(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT, R.string.accessibility_menu_info);
         } else {
             mModel.set(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT, Resources.ID_NULL);
-            mModel.set(StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT, Resources.ID_NULL);
+            mModel.set(StatusProperties.STATUS_VIEW_BACKGROUND, null);
         }
+    }
+
+    private void initBackgroundDrawables(Context context) {
+        int verboseStatusViewHeight =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.status_view_verbose_highlight_height);
+        int verboseStatusViewWidth =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.status_view_verbose_highlight_width);
+        mVerboseStatusBackground =
+                DrawableUtils.getSearchBoxIconBackground(
+                        context,
+                        /* isIncognito= */ false,
+                        verboseStatusViewHeight,
+                        verboseStatusViewWidth);
+        mVerboseStatusBackgroundIncognito =
+                DrawableUtils.getSearchBoxIconBackground(
+                        context,
+                        /* isIncognito= */ true,
+                        verboseStatusViewHeight,
+                        verboseStatusViewWidth);
+
+        int size = context.getResources().getDimensionPixelSize(R.dimen.small_icon_background_size);
+        mDefaultStatusBackground =
+                DrawableUtils.getIconBackground(context, /* isIncognito= */ false, size, size);
+        mDefaultStatusBackgroundIncognito =
+                DrawableUtils.getIconBackground(context, /* isIncognito= */ true, size, size);
     }
 }

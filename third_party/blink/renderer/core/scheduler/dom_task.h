@@ -36,7 +36,7 @@ class DOMTask final : public GarbageCollected<DOMTask> {
           base::TimeDelta delay,
           uint64_t task_id_for_tracing);
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
   void OnPendingPromiseSettled();
 

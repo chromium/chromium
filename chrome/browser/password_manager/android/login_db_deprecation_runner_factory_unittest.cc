@@ -35,24 +35,6 @@ TEST_F(LoginDbDeprecationRunnerFactoryTest, NullServiceIfMigrated) {
       LoginDbDeprecationRunnerFactory::GetForProfile(&testing_profile_));
 }
 
-TEST_F(LoginDbDeprecationRunnerFactoryTest, NullServiceIfEmptyDb) {
-  scoped_feature_list_.InitAndEnableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
-  PrefService* prefs = testing_profile_.GetPrefs();
-  prefs->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
-  prefs->SetBoolean(password_manager::prefs::kEmptyProfileStoreLoginDatabase,
-                    true);
-  prefs->SetBoolean(password_manager::prefs::kUpmUnmigratedPasswordsExported,
-                    false);
-  EXPECT_FALSE(
-      LoginDbDeprecationRunnerFactory::GetForProfile(&testing_profile_));
-  EXPECT_TRUE(prefs->GetBoolean(
-      password_manager::prefs::kUpmUnmigratedPasswordsExported));
-}
-
 TEST_F(LoginDbDeprecationRunnerFactoryTest, NullServiceIfFlagOff) {
   scoped_feature_list_.InitAndDisableFeature(
       password_manager::features::kLoginDbDeprecationAndroid);
@@ -61,14 +43,10 @@ TEST_F(LoginDbDeprecationRunnerFactoryTest, NullServiceIfFlagOff) {
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(
           password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
-  prefs->SetBoolean(password_manager::prefs::kEmptyProfileStoreLoginDatabase,
-                    false);
   prefs->SetBoolean(password_manager::prefs::kUpmUnmigratedPasswordsExported,
                     true);
   EXPECT_FALSE(
       LoginDbDeprecationRunnerFactory::GetForProfile(&testing_profile_));
-  EXPECT_FALSE(prefs->GetBoolean(
-      password_manager::prefs::kUpmUnmigratedPasswordsExported));
 }
 
 TEST_F(LoginDbDeprecationRunnerFactoryTest, NullIfAlreadyExported) {
@@ -94,7 +72,7 @@ TEST_F(LoginDbDeprecationRunnerFactoryTest,
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(
           password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
-  prefs->SetBoolean(password_manager::prefs::kEmptyProfileStoreLoginDatabase,
+  prefs->SetBoolean(password_manager::prefs::kUpmUnmigratedPasswordsExported,
                     false);
   EXPECT_TRUE(
       LoginDbDeprecationRunnerFactory::GetForProfile(&testing_profile_));
@@ -109,7 +87,7 @@ TEST_F(LoginDbDeprecationRunnerFactoryTest, NonNullServiceIfMigrationPending) {
       static_cast<int>(
           password_manager::prefs::UseUpmLocalAndSeparateStoresState::
               kOffAndMigrationPending));
-  prefs->SetBoolean(password_manager::prefs::kEmptyProfileStoreLoginDatabase,
+  prefs->SetBoolean(password_manager::prefs::kUpmUnmigratedPasswordsExported,
                     false);
   EXPECT_TRUE(
       LoginDbDeprecationRunnerFactory::GetForProfile(&testing_profile_));

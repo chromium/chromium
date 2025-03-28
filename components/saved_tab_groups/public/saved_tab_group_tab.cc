@@ -123,6 +123,13 @@ SavedTabGroupTabBuilder& SavedTabGroupTabBuilder::SetRedirectURLChain(
   return *this;
 }
 
+SavedTabGroupTabBuilder& SavedTabGroupTabBuilder::SetLastSeenTimestamp(
+    const base::Time& last_seen_time) {
+  last_seen_time_ = last_seen_time;
+  has_last_seen_time_ = true;
+  return *this;
+}
+
 SavedTabGroupTab SavedTabGroupTabBuilder::Build(
     const SavedTabGroupTab& tab) const {
   SavedTabGroupTab updated_tab(tab);
@@ -133,6 +140,9 @@ SavedTabGroupTab SavedTabGroupTabBuilder::Build(
   }
   if (has_redirect_url_chain_) {
     updated_tab.SetRedirectURLChain(redirect_url_chain_);
+  }
+  if (has_last_seen_time_) {
+    updated_tab.SetLastSeenTimeWindowsEpochMicros(last_seen_time_);
   }
 
   return updated_tab;

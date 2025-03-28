@@ -405,6 +405,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1264956950255940376">Zmrużenie lewego oka</translation>
 <translation id="1265094893042958831">Generuję sugestie dotyczące tej strony…</translation>
 <translation id="1265279736024499987">Twoje aplikacje i ustawienia będą synchronizować się na wszystkich urządzeniach z ChromeOS Flex, na których zalogujesz się na swoje konto Google. Opcje synchronizacji przeglądarki znajdziesz w <ph name="LINK_BEGIN" />ustawieniach Chrome<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Po zrobieniu zrzutu ekranu lub przeszukaniu ekranu wyświetl więcej działań, takich jak dodanie do Kalendarza czy utworzenie plików Dokumentów Google.</translation>
 <translation id="126710816202626562">Język tłumaczenia:</translation>
 <translation id="1267649802567297774">Wygenerowany obraz: <ph name="INDEX" />, temat: <ph name="SUBJECT" />, styl: <ph name="STYLE" />, nastrój: <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1565,9 +1566,9 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2081816110395725788">Nieaktywność podczas zasilania z baterii</translation>
 <translation id="2082187087049518845">Dodaj kartę do grupy</translation>
 <translation id="2082510809738716738">Wybierz kolor motywu</translation>
-<translation id="208547068587548667">Zaloguj się w usłudze <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Spróbuj ponownie</translation>
 <translation id="208634871997892083">Stały VPN</translation>
+<translation id="208654914566977272">Sugerowane działania podczas wyszukiwania na ekranie</translation>
 <translation id="2087822576218954668">Drukuj: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Rejestracja jest obsługiwana tylko po zainstalowaniu systemu operacyjnego <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">TrackPoint wbudowany</translation>
@@ -1994,6 +1995,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2373666622366160481">Dopasuj do papieru</translation>
 <translation id="2375406435414127095">Połącz ze swoim telefonem</translation>
 <translation id="2376056713414548745">Czytaj na głos</translation>
+<translation id="2376122016044804363">Powiadomienia o skopiowaniu do schowka</translation>
 <translation id="2377667304966270281">Poważne błędy</translation>
 <translation id="237828693408258535">Przetłumaczyć tę stronę?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{To rozszerzenie już wkrótce może nie być obsługiwane}few{Te rozszerzenia już wkrótce mogą nie być obsługiwane}many{Te rozszerzenia już wkrótce mogą nie być obsługiwane}other{Te rozszerzenia już wkrótce mogą nie być obsługiwane}}</translation>
@@ -3142,6 +3144,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3192586965067888278">Opisz szczegółowo problem. Opinia zostanie przesłana do Google do sprawdzenia przez weryfikatora i może zostać użyta do ulepszania lub rozwijania produktów i usług Google.</translation>
 <translation id="3192947282887913208">Pliki dźwiękowe</translation>
 <translation id="3193695589337931419">Narzędzia do zbierania sygnałów systemowych</translation>
+<translation id="3194095220941877499">Pokazuj potwierdzenie podczas kopiowania linków, obrazów lub filmów</translation>
 <translation id="3196912927885212665">Aby przeprowadzić konfigurację na telefonie z Androidem, na Chromebooku musisz włączyć Bluetooth</translation>
 <translation id="3197453258332670132">Gdy klikniesz prawym przyciskiem lub przytrzymasz zaznaczony na ekranie fragment, zobaczysz związane z nim informacje</translation>
 <translation id="3199127022143353223">Serwery</translation>
@@ -3977,7 +3980,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3778740492972734840">&amp;Narzędzia dla deweloperów</translation>
 <translation id="3778868487658107119">Zadawaj mu pytania i wydawaj polecenia. To Twój osobisty asystent, zawsze gotowy do pomocy.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{Twoja historia przeglądania # witryny}few{Twoja historia przeglądania # witryn}many{Twoja historia przeglądania # witryn}other{Twoja historia przeglądania # witryny}}</translation>
-<translation id="3779244863011082655">Użyj innego konta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> nie może sprawdzić Twoich haseł pod kątem naruszenia bezpieczeństwa danych. Spróbuj ponownie później.</translation>
 <translation id="3781742599892759500">Dostęp do mikrofonu dla Linuksa</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5480,6 +5482,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4848191975108266266">„OK Google” w Asystencie Google</translation>
 <translation id="4849286518551984791">Uniwersalny czas koordynowany (UTC/GMT)</translation>
 <translation id="4849517651082200438">Nie instaluj</translation>
+<translation id="4849731766219625109">Użyj konta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="485053257961878904">Nie udało się skonfigurować synchronizacji powiadomień</translation>
 <translation id="4850548109381269495">Na obu urządzeniach sprawdź połączenie z internetem i włącz Bluetooth. Następnie spróbuj ponownie.</translation>
 <translation id="4850669014075537160">Przewijanie</translation>
@@ -5668,6 +5671,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4979510648199782334">Konfiguracja Microsoft 365 została ukończona</translation>
 <translation id="4980805016576257426">To rozszerzenie zawiera złośliwe oprogramowanie.</translation>
 <translation id="4983159853748980742">Hasło nie zostało udostępnione. Sprawdź połączenie z internetem i upewnij się, że jesteś zalogowany(-a) w Chrome. Następnie spróbuj jeszcze raz.</translation>
+<translation id="498624032394115435">Każda osoba, która ma link, może edytować wszystkie karty.</translation>
 <translation id="4986706507552097681">W ustawieniach możesz wybrać, co chcesz synchronizować. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="4986728572522335985">Spowoduje to usunięcie z klucza bezpieczeństwa wszystkich danych, w tym kodu PIN</translation>
 <translation id="4987944280765486504">Po zakończeniu pobierania Chromebook uruchomi się ponownie i będzie można kontynuować konfigurację.</translation>
@@ -8277,7 +8281,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6873571253135628430">Zmień uprawnienia do witryny</translation>
 <translation id="6876155724392614295">Rower</translation>
 <translation id="6876469544038980967">Nieprzydatne</translation>
-<translation id="687838958001010630">Każda osoba, która ma link, może edytować wszystkie karty</translation>
 <translation id="6878422606530379992">Zezwolono na dostęp do czujników</translation>
 <translation id="6878862640969460273">Pozioma</translation>
 <translation id="6880587130513028875">Pokazywanie grafik na tej stronie zostało zablokowane.</translation>

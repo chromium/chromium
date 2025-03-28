@@ -699,8 +699,6 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // TODO: crbug.com/388287849 - Clear this pref.
   registry->RegisterBooleanPref(kCanShowDemoToolsNudge,
                                 /*default_value=*/true);
-  registry->RegisterBooleanPref(prefs::kSunfishEnabled,
-                                /*default_value=*/true);
   registry->RegisterBooleanPref(prefs::kScannerConsentDisclaimerAccepted,
                                 /*default_value=*/false);
   registry->RegisterBooleanPref(kCanShowSunfishRegionNudge,

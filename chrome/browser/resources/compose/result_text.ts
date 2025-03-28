@@ -46,6 +46,13 @@ export class ComposeResultTextElement extends PolymerElement {
       // The text to display.
       textInput: {
         type: Object,
+        value: () => {
+          return {
+            text: '',
+            isPartial: false,
+            streamingEnabled: false,
+          };
+        },
       },
 
       // Output properties.
@@ -54,6 +61,7 @@ export class ComposeResultTextElement extends PolymerElement {
       isOutputComplete: {
         type: Boolean,
         notify: true,
+        value: false,
       },
       // Is there any output to show.
       hasOutput: {
@@ -72,10 +80,12 @@ export class ComposeResultTextElement extends PolymerElement {
       displayedChunks_: {
         type: Object,
         readOnly: true,
+        value: () => [],
       },
       displayedFullText_: {
         type: String,
         readOnly: true,
+        value: '',
       },
     };
   }
@@ -84,15 +94,15 @@ export class ComposeResultTextElement extends PolymerElement {
     return ['updateInputs(textInput)'];
   }
 
-  textInput: TextInput = {text: '', isPartial: false, streamingEnabled: false};
-  isOutputComplete: boolean = false;
-  hasOutput: boolean;
+  declare textInput: TextInput;
+  declare isOutputComplete: boolean;
+  declare hasOutput: boolean;
+  declare private hasPartialOutput_: boolean;
+  declare private displayedChunks_: StreamChunk[];
+  declare private displayedFullText_: string;
 
   // Private regular properties.
   private wordStreamer_: WordStreamer;
-  private hasPartialOutput_: boolean;
-  private displayedChunks_: StreamChunk[] = [];
-  private displayedFullText_: string = '';
   private initialText_: string = '';
 
   constructor() {

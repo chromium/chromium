@@ -311,19 +311,4 @@ BASE_FEATURE(kWebAssemblyInliningCallIndirect,
              "WebAssemblyInliningCallIndirect",
              kFeatureDefaultStateControlledByV8);
 
-// Enable support for multiple memories according to the multi-memory proposal:
-// https://github.com/WebAssembly/multi-memory. See
-// https://chromestatus.com/feature/5106389887746048.
-BASE_FEATURE(kWebAssemblyMultipleMemories,
-             ("WebAssemblyMultipleMemories"),
-             kFeatureDefaultStateControlledByV8);
-
-BASE_FEATURE(kWebAssemblyTurboshaft,
-             ("WebAssemblyTurboshaft"),
-             kFeatureDefaultStateControlledByV8);
-
-BASE_FEATURE(kWebAssemblyTurboshaftInstructionSelection,
-             ("WebAssemblyTurboshaftInstructionSelection"),
-             kFeatureDefaultStateControlledByV8);
-
 }  // namespace features

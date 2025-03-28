@@ -125,16 +125,12 @@ WTF::String AXBlockFlowData::GetText(wtf_size_t item_index) const {
   wtf_size_t length = end_offset - start_offset;
 
   const String& full_text = fragment_items.Text(item.UsesFirstLineStyle());
-  const FragmentProperties& fragment_properties =
-      fragment_properties_[item_index];
 
   // If the text elided a trailing whitespace, we may need to reintroduce it.
   // Trailing whitespace is elided since not rendered; however, there may still
   // be required for a11y.
-  if (fragment_properties.line_index) {
-    const AXBlockFlowData::Line& line =
-        lines_[fragment_properties.line_index.value()];
-    if (IncludeTrailingWhitespace(full_text, end_offset, item, line)) {
+  if (const auto line = GetLine(item_index)) {
+    if (IncludeTrailingWhitespace(full_text, end_offset, item, line.value())) {
       length++;
     }
   }
@@ -150,6 +146,16 @@ WTF::String AXBlockFlowData::GetText(wtf_size_t item_index) const {
   }
 
   return StringView(full_text, start_offset, length).ToString();
+}
+
+std::optional<AXBlockFlowData::Line> AXBlockFlowData::GetLine(
+    wtf_size_t index) const {
+  for (const Line& line : lines_) {
+    if (index >= line.start_index && index < line.start_index + line.length) {
+      return line;
+    }
+  }
+  return std::nullopt;
 }
 
 AXBlockFlowData::Neighbor AXBlockFlowData::ComputeNeighborOnLine(
@@ -199,16 +205,10 @@ AXBlockFlowData::Neighbor AXBlockFlowData::ComputeNeighborOnLine(
   return FailureReason::kAtLineBoundary;
 }
 
-const AXBlockFlowData::FragmentProperties& AXBlockFlowData::GetProperties(
-    wtf_size_t index) const {
-  return fragment_properties_[index];
-}
-
 void AXBlockFlowData::Trace(Visitor* visitor) const {
   visitor->Trace(block_flow_container_);
   visitor->Trace(layout_fragment_map_);
   visitor->Trace(lines_);
-  visitor->Trace(fragment_properties_);
 }
 
 AXBlockFlowData::AXBlockFlowData(LayoutBlockFlow* layout_block_flow)
@@ -236,7 +236,6 @@ void AXBlockFlowData::ProcessLayoutBlock(LayoutBlockFlow* container) {
       if (fragment->Items()) {
         wtf_size_t next_starting_index =
             starting_fragment_index + fragment->Items()->Size();
-        fragment_properties_.resize(next_starting_index);
         ProcessBoxFragment(fragment, starting_fragment_index);
         starting_fragment_index = next_starting_index;
       }
@@ -253,7 +252,6 @@ void AXBlockFlowData::ProcessBoxFragment(const PhysicalBoxFragment* fragment,
   }
 
   wtf_size_t fragment_index = starting_fragment_index;
-  std::optional<wtf_size_t> previous_on_line;
 
   // Keep track of the current outermost line index, as ruby content may have
   // multiple nested lines within the flattened list. When checking if a
@@ -284,54 +282,25 @@ void AXBlockFlowData::ProcessBoxFragment(const PhysicalBoxFragment* fragment,
                      fragment_index)
             : false;
     if (it->Type() == FragmentItem::kLine) {
-      wtf_size_t length = it->DescendantsCount();
-      const InlineBreakToken* break_token = it->GetInlineBreakToken();
-      bool forced_break = break_token && break_token->IsForcedBreak();
-      std::optional<wtf_size_t> break_index;
-      if (break_token) {
-        break_index = break_token->StartTextOffset();
-      }
-      lines_.push_back<Line>({.start_index = fragment_index,
-                              .length = length,
-                              .forced_break = forced_break,
-                              .break_index = break_index});
       if (!on_current_line) {
         // We are moving to a new line that is not nested in the previous line.
+        wtf_size_t length = it->DescendantsCount();
+        const InlineBreakToken* break_token = it->GetInlineBreakToken();
+        bool forced_break = break_token && break_token->IsForcedBreak();
+        std::optional<wtf_size_t> break_index;
+        if (break_token) {
+          break_index = break_token->StartTextOffset();
+        }
+        lines_.push_back<Line>({.start_index = fragment_index,
+                                .length = length,
+                                .forced_break = forced_break,
+                                .break_index = break_index});
         current_outermost_line_index = lines_.size() - 1;
-        on_current_line = true;
       }
-
-      // There are no previous items on this new line, since it just started.
-      // Note that here it may be a outermost line or a nested one, it does not
-      // matter. A new line has just started and we don't want to make
-      // connections between the two.
-      previous_on_line = std::nullopt;
-    }
-
-    FragmentProperties& properties = fragment_properties_[fragment_index];
-    if (on_current_line) {
-      properties.line_index = lines_.size() - 1;
-    }
-
-    if (it->Type() == FragmentItem::kText ||
-        it->Type() == FragmentItem::kGeneratedText) {
-      if (previous_on_line) {
-        CHECK(properties.line_index ==
-              fragment_properties_[previous_on_line.value()].line_index);
-        properties.previous_on_line = previous_on_line;
-        fragment_properties_[previous_on_line.value()].next_on_line =
-            fragment_index;
-      }
-      previous_on_line = fragment_index;
     }
 
     // TODO(crbug.com/399204651): Implement navigating into separate PhysicalBox
     // fragments.
-    if (it->IsContainer() && it->BoxFragment()) {
-      /// A physical box exists for this item, meaning that the next and
-      /// previous for this particular item needs to be cleared.
-      previous_on_line = std::nullopt;
-    }
   }
 }
 

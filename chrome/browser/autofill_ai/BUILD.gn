@@ -9,6 +9,7 @@ static_library("util") {
   ]
 
   deps = [
+    "//chrome/browser/autofill:autofill",
     "//chrome/browser/profiles:profile",
     "//components/optimization_guide/core:core",
     "//components/signin/public/identity_manager:identity_manager",

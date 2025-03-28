@@ -518,6 +518,9 @@ bool HatsServiceDesktop::CanShowSurvey(const std::string& trigger) const {
     base::TimeDelta elapsed_time_since_last_check =
         base::Time::Now() - *last_survey_check_time;
     if (elapsed_time_since_last_check < kMinimumTimeBetweenSurveyChecks) {
+      UMA_HISTOGRAM_ENUMERATION(
+          kHatsShouldShowSurveyReasonHistogram,
+          ShouldShowSurveyReasons::kNoLastSurveyCheckTooRecent);
       return false;
     }
   }

@@ -68,10 +68,10 @@ void CheckObsoletePageClass(OEP::PageClassification classification) {
 
 bool SupportsMostVisitedSites(OEP::PageClassification classification) {
   if (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled) {
-    // This provider doesn't actually run on SRP_ZPS_PREFETCH page
-    // classification since it doesn't implement prefetching.
     return classification == OEP::OTHER_ON_CCT ||
-           classification == OEP::OTHER || IsSearchResultsPage(classification);
+           classification == OEP::OTHER ||
+           classification == OEP::OTHER_ZPS_PREFETCH ||
+           IsSearchResultsPage(classification);
   }
 
   return classification == OEP::OTHER ||

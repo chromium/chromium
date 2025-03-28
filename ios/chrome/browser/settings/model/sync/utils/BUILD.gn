@@ -38,7 +38,6 @@ source_set("identity_error_util") {
     "account_error_ui_info.mm",
     "identity_error_util.h",
     "identity_error_util.mm",
-    "sync_state.h",
   ]
   deps = [
     "//base",

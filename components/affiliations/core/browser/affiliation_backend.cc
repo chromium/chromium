@@ -419,7 +419,8 @@ bool AffiliationBackend::OnCanSendNetworkRequest() {
   // TODO(crbug.com/40858918): There is no need to request psl extension every
   // time, find a better way of caching it.
   fetcher_->StartRequest(requested_facet_uris,
-                         {.branding_info = true, .psl_extension_list = true});
+                         {.branding_info = true, .psl_extension_list = true},
+                         base::DoNothing());
   ReportStatistics(requested_facet_uris.size());
   return true;
 }

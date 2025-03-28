@@ -27,7 +27,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -630,32 +630,12 @@ bool IsOriginInDebugReportCooldownOrLockout(
     return false;
   }
 
-  if (IsInDebugReportLockout(debug_report_lockout_and_cooldowns->lockout,
-                             now)) {
-    return true;
-  }
-
-  const auto cooldown_it =
-      debug_report_lockout_and_cooldowns->debug_report_cooldown_map.find(
-          origin);
-  if (cooldown_it !=
-      debug_report_lockout_and_cooldowns->debug_report_cooldown_map.end()) {
-    std::optional<base::TimeDelta> duration =
-        ConvertDebugReportCooldownTypeToDuration(cooldown_it->second.type);
-    if (duration.has_value()) {
-      bool is_cooldown_before_filtering_starting =
-          cooldown_it->second.starting_time <
-          CeilToNearestNextHour(
-              blink::features::kFledgeEnableFilteringDebugReportStartingFrom
-                  .Get());
-      bool is_in_cooldown =
-          cooldown_it->second.starting_time + *duration >= now;
-      if (!is_cooldown_before_filtering_starting && is_in_cooldown) {
-        return true;
-      }
-    }
-  }
-  return false;
+  return IsInDebugReportLockout(debug_report_lockout_and_cooldowns->lockout,
+                                now) ||
+         IsInDebugReportCooldown(
+             origin,
+             debug_report_lockout_and_cooldowns->debug_report_cooldown_map,
+             now);
 }
 
 void UpdateDebugReportCooldown(
@@ -3588,8 +3568,8 @@ InterestGroupAuction::CreateReporter(
   if (winner->bid->bid_ad->ad_render_id) {
     ad_metadata.Set("adRenderId", winner->bid->bid_ad->ad_render_id.value());
   }
-  JSONStringValueSerializer serializer(&winning_bid_info.ad_metadata);
-  serializer.Serialize(base::Value(std::move(ad_metadata)));
+  winning_bid_info.ad_metadata =
+      base::WriteJson(ad_metadata).value_or(std::string());
 
   InterestGroupAuctionReporter::SellerWinningBidInfo
       top_level_seller_winning_bid_info;

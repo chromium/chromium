@@ -87,6 +87,7 @@
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/test/mock_trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 #include "content/public/browser/storage_partition.h"
@@ -1604,6 +1605,83 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   dialog_model()->OnGPMPinEntered(u"123456");
 
   std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
+}
+
+// Tests recovering from an LSKF when there is also a GPM PIN that cannot be
+// used for recovery. Regression test for crbug.com/402427390.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       MakeCredential_RecoverWithLSKFAndUnusablePIN) {
+  // First, register with a PIN.
+  {
+    trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+        registration_state_result;
+    registration_state_result.state = trusted_vault::
+        DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
+    SetMockVaultConnectionOnRequestDelegate(
+        std::move(registration_state_result));
+  }
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kEmpty);
+  dialog_model()->OnGPMCreatePasskey();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+
+  // Then, have the security domain service mark the PIN as unusable and recover
+  // from an LSKF.
+  security_domain_service_->MakePinMemberUnusable();
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
+      ->ClearRegistrationForTesting();
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  registration_state_result.key_version = kSecretVersion;
+  registration_state_result.gpm_pin_metadata = trusted_vault::GpmPinMetadata(
+      security_domain_service_->GetPinMemberPublicKey(),
+      /*pin_metadata=*/std::nullopt);
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kRecoverable);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
+      ->StoreKeys(kGaiaId,
+                  {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
+                                        std::end(kSecurityDomainSecret))},
+                  kSecretVersion);
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMPinEntered(u"123456");
+
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
 }
@@ -3230,7 +3308,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Enroll) {
       std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
       future;
   device::enclave::ICloudRecoveryKey::Retrieve(
-      future.GetCallback(), kICloudKeychainRecoveryKeyAccessGroup);
+      future.GetCallback(), trusted_vault::SecurityDomainId::kPasskeys,
+      kICloudKeychainRecoveryKeyAccessGroup);
   EXPECT_TRUE(future.Wait());
   std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
       recovery_keys = future.Take();
@@ -3252,7 +3331,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest,
   base::test::TestFuture<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
       future;
   device::enclave::ICloudRecoveryKey::Create(
-      future.GetCallback(), kICloudKeychainRecoveryKeyAccessGroup);
+      future.GetCallback(), trusted_vault::SecurityDomainId::kPasskeys,
+      kICloudKeychainRecoveryKeyAccessGroup);
   EXPECT_TRUE(future.Wait());
   std::unique_ptr<device::enclave::ICloudRecoveryKey> existing_icloud_key =
       future.Take();
@@ -3306,7 +3386,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest,
       std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
       list_future;
   device::enclave::ICloudRecoveryKey::Retrieve(
-      list_future.GetCallback(), kICloudKeychainRecoveryKeyAccessGroup);
+      list_future.GetCallback(), trusted_vault::SecurityDomainId::kPasskeys,
+      kICloudKeychainRecoveryKeyAccessGroup);
   EXPECT_TRUE(list_future.Wait());
   std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
       recovery_keys = list_future.Take();
@@ -3353,7 +3434,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, DISABLED_Recovery) {
         std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
         future;
     device::enclave::ICloudRecoveryKey::Retrieve(
-        future.GetCallback(), kICloudKeychainRecoveryKeyAccessGroup);
+        future.GetCallback(), trusted_vault::SecurityDomainId::kPasskeys,
+        kICloudKeychainRecoveryKeyAccessGroup);
     EXPECT_TRUE(future.Wait());
     ASSERT_EQ(future.Get().size(), 1u);
   }
@@ -3447,7 +3529,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, DISABLED_Recovery) {
         std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
         future;
     device::enclave::ICloudRecoveryKey::Retrieve(
-        future.GetCallback(), kICloudKeychainRecoveryKeyAccessGroup);
+        future.GetCallback(), trusted_vault::SecurityDomainId::kPasskeys,
+        kICloudKeychainRecoveryKeyAccessGroup);
     EXPECT_TRUE(future.Wait());
     ASSERT_EQ(future.Get().size(), 1u);
   }

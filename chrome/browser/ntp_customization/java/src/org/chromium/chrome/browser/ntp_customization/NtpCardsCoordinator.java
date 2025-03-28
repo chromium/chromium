@@ -5,26 +5,53 @@
 package org.chromium.chrome.browser.ntp_customization;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.NTP_CARDS_BACK_PRESS_HANDLER;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator for the NTP cards bottom sheet. */
 public class NtpCardsCoordinator {
-    public NtpCardsCoordinator(
-            Context context, BottomSheetDelegate delegate, PropertyModel propertyModel) {
+    private NtpCardsMediator mMediator;
+
+    public NtpCardsCoordinator(Context context, BottomSheetDelegate delegate) {
         View view =
                 LayoutInflater.from(context)
                         .inflate(R.layout.ntp_customization_ntp_cards_bottom_sheet, null, false);
         delegate.registerBottomSheetLayout(NTP_CARDS, view);
 
-        // TODO(crbug.com/397439004): NtpCardsCoordinator creates it own property model instead of
-        // sharing it with other coordinators
-        propertyModel.set(
-                NTP_CARDS_BACK_PRESS_HANDLER, v -> delegate.backPressOnCurrentBottomSheet());
+        // The containerPropertyModel is responsible for managing a BottomSheetDelegate which
+        // provides list content and event handlers to the list container view.
+        PropertyModel containerPropertyModel =
+                new PropertyModel(NtpCustomizationViewProperties.LIST_CONTAINER_KEYS);
+        PropertyModelChangeProcessor.create(
+                containerPropertyModel,
+                view.findViewById(R.id.ntp_cards_container),
+                BottomSheetListContainerViewBinder::bind);
+
+        // The bottomSheetPropertyModel is responsible for managing the back press handler of the
+        // back button in the bottom sheet.
+        PropertyModel bottomSheetPropertyModel =
+                new PropertyModel(NtpCustomizationViewProperties.BOTTOM_SHEET_KEYS);
+        PropertyModelChangeProcessor.create(
+                bottomSheetPropertyModel, view, BottomSheetViewBinder::bind);
+
+        mMediator =
+                new NtpCardsMediator(containerPropertyModel, bottomSheetPropertyModel, delegate);
+    }
+
+    public void destroy() {
+        mMediator.destroy();
+    }
+
+    NtpCardsMediator getMediatorForTesting() {
+        return mMediator;
+    }
+
+    void setMediatorForTesting(NtpCardsMediator mediator) {
+        mMediator = mediator;
     }
 }

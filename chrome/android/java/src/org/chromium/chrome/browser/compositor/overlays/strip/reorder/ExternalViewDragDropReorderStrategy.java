@@ -173,8 +173,8 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
     }
 
     /** Merges dropped tabs to interacting view's tab group, if one exists. */
-    void handleDrop(StripLayoutGroupTitle[] groupTitles, List<Integer> tabIds, int dropIndex) {
-        if (mInteractingViewDuringStop == null) return;
+    boolean handleDrop(StripLayoutGroupTitle[] groupTitles, List<Integer> tabIds, int dropIndex) {
+        if (mInteractingViewDuringStop == null) return false;
 
         StripLayoutTab interactingView = (StripLayoutTab) mInteractingViewDuringStop;
         Tab interactingTab = mModel.getTabById(interactingView.getTabId());
@@ -183,10 +183,10 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
         StripLayoutGroupTitle groupTitle =
                 StripLayoutUtils.findGroupTitle(groupTitles, interactingTab.getTabGroupId());
 
-        // 1. If hovered on tab is not part of group, no-op.
-        if (!mTabGroupModelFilter.isTabInTabGroup(interactingTab)) {
+        // 1. If hovered on tab is not part of group or is collapsed, no-op.
+        if (!mTabGroupModelFilter.isTabInTabGroup(interactingTab) || groupTitle.isCollapsed()) {
             mInteractingViewDuringStop = null;
-            return;
+            return false;
         }
 
         // 2. Merge all tabs in dragged tab group to hovered tab's group at drop index.
@@ -199,6 +199,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
         // 3. Animate bottom indicator. Done after merging the dragged tab group to group,
         // so that the calculated bottom indicator width will be correct.
         runOnDropAnimation(groupTitle);
+        return true;
     }
 
     private void runOnDropAnimation(StripLayoutGroupTitle groupTitle) {

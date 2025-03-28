@@ -23,6 +23,8 @@
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -146,6 +148,8 @@ class TabStripMediatorTest : public PlatformTest {
     tab_strip_handler_ = [[FakeTabStripHandler alloc] init];
 
     consumer_ = [[FakeTabStripConsumer alloc] init];
+
+    share_kit_service_ = ShareKitServiceFactory::GetForProfile(profile_.get());
   }
 
   ~TabStripMediatorTest() override { [mediator_ disconnect]; }
@@ -161,7 +165,8 @@ class TabStripMediatorTest : public PlatformTest {
                                tabGroupSyncService:tab_group_sync_service_.get()
                                        browserList:browser_list
                                   messagingService:&messaging_backend_
-                              collaborationService:nil];
+                              collaborationService:nil
+                                   shareKitService:share_kit_service_];
 
     mediator_.profile = profile_.get();
     mediator_.webStateList = web_state_list_;
@@ -212,6 +217,7 @@ class TabStripMediatorTest : public PlatformTest {
   raw_ptr<UrlLoadingBrowserAgent> loader_;
   FakeURLLoadingDelegate* url_loading_delegate_;
   collaboration::messaging::MockMessagingBackendService messaging_backend_;
+  raw_ptr<ShareKitService> share_kit_service_;
 };
 
 // Tests that the mediator correctly populates the consumer at startup and after

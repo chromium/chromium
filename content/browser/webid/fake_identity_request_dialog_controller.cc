@@ -23,7 +23,7 @@ FakeIdentityRequestDialogController::~FakeIdentityRequestDialogController() =
     default;
 
 bool FakeIdentityRequestDialogController::ShowAccountsDialog(
-    const std::string& rp_for_display,
+    content::RelyingPartyData rp_data,
     const std::vector<IdentityProviderDataPtr>& idp_list,
     const std::vector<IdentityRequestAccountPtr>& accounts,
     content::IdentityRequestAccount::SignInMode sign_in_mode,

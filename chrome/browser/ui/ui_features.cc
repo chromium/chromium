@@ -351,6 +351,8 @@ BASE_FEATURE(kInlineFullscreenPerfExperiment,
 BASE_FEATURE(kPageActionsMigration,
              "PageActionsMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kPageActionsMigrationEnableAll{
+    &kPageActionsMigration, "enable_all", false};
 const base::FeatureParam<bool> kPageActionsMigrationLensOverlay{
     &kPageActionsMigration, "lens_overlay", false};
 const base::FeatureParam<bool> kPageActionsMigrationMemorySaver{

@@ -300,6 +300,9 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             SystemNightModeMonitor.getInstance().addObserver(this);
             mBookmarkWidgeRemoteView =
                     new RemoteViews(mContext.getPackageName(), R.layout.bookmark_widget);
+            mBookmarkWidgeRemoteView.setOnClickPendingIntent(
+                    R.id.empty_message,
+                    BookmarkWidgetProxy.createBookmarkProxyLaunchIntent(context));
         }
 
         @UiThread

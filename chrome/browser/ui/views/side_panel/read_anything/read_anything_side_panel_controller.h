@@ -63,6 +63,7 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver,
    public:
     virtual void Activate(bool active) {}
     virtual void OnSidePanelControllerDestroyed() = 0;
+    virtual void OnTabWillDetach() = 0;
   };
   ReadAnythingSidePanelController(tabs::TabInterface* tab,
                                   SidePanelRegistry* side_panel_registry);

@@ -28,11 +28,39 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/types/expected.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "chrome/updater/certificate_tag.h"
+
+#if BUILDFLAG(IS_MAC)
+#include <sys/types.h>
+#include <sys/xattr.h>
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace updater::tagging {
 namespace {
+
+// Magic string used to identify the tag in the binary.
+constexpr uint8_t kTagMagicUtf8[] = {'G', 'a', 'c', 't', '2', '.',
+                                     '0', 'O', 'm', 'a', 'h', 'a'};
+
+// These constants are conceptually cross-platform, but only currently used
+// on Mac.
+#if BUILDFLAG(IS_MAC)
+// Maximum length for the string representation of a tag that can be written
+// into a binary. This is the amount of space that must be reserved in a binary
+// for dynamic tagging, in a file format where tags can only be patched in place
+// rather than inserted, immediately after the magic signature and size bytes.
+// Because binary tag format includes an explicit tag size, no null terminator
+// is included in this count.
+constexpr size_t kMaxTagStringBytes = 8192;
+
+// Maximum length for the binary representation of a tag, including its magic
+// signature and length bytes.
+constexpr size_t kMaxBinaryTagBytes =
+    kMaxTagStringBytes + 2 + sizeof(kTagMagicUtf8);
+#endif  // BUILDFLAG(IS_MAC)
 
 // The name of the bundle being installed. If not specified, the first app's
 // appname is used.
@@ -111,10 +139,6 @@ constexpr std::string_view kAppArgInstallerData = "installerdata";
 
 // Character that is disallowed from appearing in the tag.
 constexpr char kDisallowedCharInTag = '/';
-
-// Magic string used to identify the tag in the binary.
-constexpr uint8_t kTagMagicUtf8[] = {'G', 'a', 'c', 't', '2', '.',
-                                     '0', 'O', 'm', 'a', 'h', 'a'};
 
 std::optional<NeedsAdmin> ParseNeedsAdminEnum(std::string_view str) {
   if (base::EqualsCaseInsensitiveASCII("false", str)) {
@@ -781,6 +805,8 @@ std::ostream& operator<<(std::ostream& os, const ErrorCode& error_code) {
       return os << "ErrorCode::kGlobal_EnrollmentTokenValueIsInvalid";
     case ErrorCode::kRuntimeMode_NeedsAdminValueIsInvalid:
       return os << "ErrorCode::kRuntimeMode_NeedsAdminValueIsInvalid";
+    case ErrorCode::kTagNotFound:
+      return os << "ErrorCode::kTagNotFound";
   }
 }
 
@@ -972,5 +998,70 @@ bool BinaryWriteTag(const base::FilePath& in_file,
   }
   return true;
 }
+
+#if BUILDFLAG(IS_MAC)
+
+base::expected<TagArgs, ErrorCode> ReadTagFromApplicationInstanceXattr(
+    const base::FilePath& path) {
+  if (path.empty()) {
+    VLOG(0) << "no path in ReadTagFromApplicationInstanceXattr";
+    return base::unexpected(ErrorCode::kTagNotFound);
+  }
+
+  std::vector<uint8_t> raw_tag(kMaxBinaryTagBytes, 0);
+  ssize_t got_bytes =
+      getxattr(path.value().c_str(), "com.apple.application-instance",
+               raw_tag.data(), kMaxBinaryTagBytes, 0, 0);
+  // If a C API says it wrote past the end of a buffer, believe it.
+  CHECK(got_bytes <= static_cast<ssize_t>(kMaxBinaryTagBytes))
+      << "getxattr wrote " << got_bytes << " bytes into a "
+      << kMaxBinaryTagBytes << " byte buffer!";
+  if (got_bytes < 0) {
+    VPLOG(1) << "getxattr could not read com.apple.application-instance on "
+             << path;
+    return base::unexpected(ErrorCode::kTagNotFound);
+  }
+  std::vector<uint8_t>::iterator tag_data_begin = raw_tag.begin();
+  std::string tag_string = ReadTag(tag_data_begin, tag_data_begin + got_bytes);
+  if (tag_string.empty()) {
+    return base::unexpected(ErrorCode::kTagNotFound);
+  }
+  TagArgs value;
+  ErrorCode code = Parse(tag_string, {}, value);
+  if (code != ErrorCode::kSuccess) {
+    return base::unexpected(code);
+  }
+  return value;
+}
+
+bool WriteTagStringToApplicationInstanceXattr(const base::FilePath& path,
+                                              const std::string& tag_string) {
+  if (path.empty()) {
+    VLOG(0) << "no path provided when writing xattr tag";
+    return false;
+  }
+  if (tag_string.size() > kMaxTagStringBytes) {
+    VLOG(1) << "xattr tag too big, will be truncated when read";
+    // warning only; continue
+  }
+  if (tag_string.empty()) {
+    VLOG(1) << "writing empty xattr tag";
+    // warning only; continue
+  }
+  std::vector<uint8_t> tag_bytes = GetTagFromTagString(tag_string);
+  if (tag_bytes.empty()) {
+    VLOG(0) << "could not create xattr tag";
+    return false;
+  }
+  int result = setxattr(path.value().c_str(), "com.apple.application-instance",
+                        tag_bytes.data(), tag_bytes.size(), 0, 0);
+  if (result) {
+    VPLOG(0) << "setxattr failed on " << path;
+    return false;
+  }
+  return true;
+}
+
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace updater::tagging

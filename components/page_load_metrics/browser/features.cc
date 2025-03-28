@@ -12,4 +12,14 @@ namespace page_load_metrics::features {
 BASE_FEATURE(kSendContinuousInputEventsToObservers,
              "SendContinuousInputEventsToObservers",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBeaconLeakageLogging,
+             "BeaconLeakageLogging",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(std::string,
+                   kBeaconLeakageLoggingCategoryPrefix,
+                   &kBeaconLeakageLogging,
+                   "category_prefix",
+                   /*default_value=*/"");
 }  // namespace page_load_metrics::features

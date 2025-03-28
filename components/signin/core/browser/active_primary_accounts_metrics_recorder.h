@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
+#include "components/signin/public/identity_manager/tribool.h"
 
 class GaiaId;
 class PrefService;
@@ -31,7 +32,19 @@ class ActivePrimaryAccountsMetricsRecorder {
   // profile, and then with some frequency while the account is being used. (The
   // exact points in time or frequency with which this is called don't matter
   // much, as long as there's at least one update every 24 hours or so.)
-  void MarkAccountAsActiveNow(const GaiaId& gaia_id);
+  void MarkAccountAsActiveNow(const GaiaId& gaia_id,
+                              Tribool is_managed_account);
+
+  // Should be called when an account's managed-ness is determined, if it wasn't
+  // known yet at the time MarkAccountAsActiveNow() was called. (Duplicate calls
+  // are fine, and calls for not-recently-active accounts are no-ops.)
+  void MarkAccountAsManaged(const GaiaId& gaia_id, bool is_managed_account);
+
+#if BUILDFLAG(IS_IOS)
+  // Should be called when the user explicitly switches to a different account.
+  // Used to track the number of account switches per client.
+  void AccountWasSwitched();
+#endif  // BUILDFLAG(IS_IOS)
 
   // Returns the last know active-time for the given account. If the account has
   // never been marked as active, or it was too long ago so that the entry has

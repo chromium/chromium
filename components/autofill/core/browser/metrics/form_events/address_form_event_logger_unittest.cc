@@ -273,15 +273,16 @@ TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
 
   // Simulate that the autofill manager has seen this form on page load.
   SeeForm(form);
-  static constexpr DenseSet<SuggestionType> kShownSuggestionTypes = {
-      SuggestionType::kAddressEntryOnTyping, SuggestionType::kSeparator,
-      SuggestionType::kManageAddress};
+  std::vector<Suggestion> shown_suggestions = {
+      Suggestion(SuggestionType::kAddressEntryOnTyping),
+      Suggestion(SuggestionType::kSeparator),
+      Suggestion(SuggestionType::kManageAddress)};
 
   // See, accept and do not correct the first suggestion.
   autofill_client().SetAutofillSuggestions(BuildAutofillOnTypingSuggestions(
       {NAME_FULL}, /*profile_guid=*/profile.guid()));
-  autofill_manager().DidShowSuggestions(kShownSuggestionTypes, form,
-                                        form.fields()[0].global_id());
+  autofill_manager().DidShowSuggestions(shown_suggestions, form,
+                                        form.fields()[0].global_id(), {});
   const std::u16string filled_value = u"Jon snow";
   autofill_manager().OnDidFillAddressOnTypingSuggestion(
       form.fields()[0].global_id(), filled_value, NAME_FULL, profile.guid());
@@ -294,14 +295,14 @@ TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
   // Only see second suggestion.
   autofill_client().SetAutofillSuggestions(
       BuildAutofillOnTypingSuggestions({NAME_FIRST}, profile.guid()));
-  autofill_manager().DidShowSuggestions(kShownSuggestionTypes, form,
-                                        form.fields()[1].global_id());
+  autofill_manager().DidShowSuggestions(shown_suggestions, form,
+                                        form.fields()[1].global_id(), {});
 
   // See, accept and edit the third suggestion.
   autofill_client().SetAutofillSuggestions(
       BuildAutofillOnTypingSuggestions({NAME_FULL}, profile.guid()));
-  autofill_manager().DidShowSuggestions(kShownSuggestionTypes, form,
-                                        form.fields()[2].global_id());
+  autofill_manager().DidShowSuggestions(shown_suggestions, form,
+                                        form.fields()[2].global_id(), {});
   autofill_manager().OnDidFillAddressOnTypingSuggestion(
       form.fields()[2].global_id(), filled_value, NAME_FULL, profile.guid());
   form_fields = form.ExtractFields();

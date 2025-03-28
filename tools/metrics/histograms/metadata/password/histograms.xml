@@ -4550,6 +4550,30 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.UPM.{DialogType}.DownloadCsvFlowLastStep"
+    enum="DownloadCsvFlowStep" expires_after="2025-07-01">
+  <owner>ioanap@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records the last step in the flow allowing the user to download the
+    auto-exported CSV out of Chrome to a chosen location. A successful flow
+    looks as follows: a dialog is shown, the user selects to export passwords, a
+    reauthentication prompt is presented, the user selects the download
+    location, the CSV is copied from Chrome to the selected location. This
+    histogram is recorded when the flow ends, and it records the reason why the
+    flow ended. Recorded for the {DialogType}. Android only.
+  </summary>
+  <token key="DialogType">
+    <variant name="FullUpmSupportGms"
+        summary="dialog shown when Google Play Services offers full UPM
+                 support"/>
+    <variant name="NoGms"
+        summary="dialog shown when Google Play Services is unavailable"/>
+    <variant name="OldGms"
+        summary="dialog shown when Google Play Services is too old"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordManager.UPMUpdateSignInCredentialsSucces"
     enum="Boolean" expires_after="2025-08-24">
   <owner>izuzic@google.com</owner>

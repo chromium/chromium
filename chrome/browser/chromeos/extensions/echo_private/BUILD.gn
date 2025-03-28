@@ -26,7 +26,7 @@ static_library("echo_private") {
     "//chrome/common/extensions/api:api",
     "//chromeos/ash/components/report:utils",
     "//chromeos/ash/components/settings",
-    "//chromeos/crosapi/mojom",
+    "//chromeos/ash/components/system",
     "//components/prefs",
     "//content/public/browser",
     "//extensions/browser",

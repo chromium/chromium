@@ -72,8 +72,10 @@ class MockDigitalIdentityRequest : public mojom::DigitalIdentityRequest {
 
   void Create(blink::mojom::DigitalCredentialRequestPtr request,
               CreateCallback callback) override {
+    // Return a Value::String instead of a Dict because V8ValueConverterForTest
+    // doesn't support converting Dict.
     std::move(callback).Run(mojom::RequestDigitalIdentityStatus::kSuccess,
-                            "protocol", "token");
+                            "protocol", base::Value("token"));
   }
 
   void Abort() override {}
@@ -162,9 +164,11 @@ class DigitalIdentityCredentialTest : public PageTestBase {
     ON_CALL(mock_request_, Get)
         .WillByDefault(
             WithArg<2>([](mojom::DigitalIdentityRequest::GetCallback callback) {
+              // Return a Value::String instead of a Dict because
+              // V8ValueConverterForTest doesn't support converting Dict.
               std::move(callback).Run(
                   mojom::RequestDigitalIdentityStatus::kSuccess, "protocol",
-                  "token");
+                  base::Value("token"));
             }));
   }
 

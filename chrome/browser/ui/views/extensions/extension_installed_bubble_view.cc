@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -66,11 +67,11 @@ int GetRightColumnWidth() {
 
 std::unique_ptr<views::Label> CreateLabel(const std::u16string& text) {
   return views::Builder<views::Label>()
-    .SetText(text)
-    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-    .SetMultiLine(true)
-    .SizeToFit(GetRightColumnWidth())
-    .Build();
+      .SetText(text)
+      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+      .SetMultiLine(true)
+      .SizeToFit(GetRightColumnWidth())
+      .Build();
 }
 
 views::View* AnchorViewForBrowser(const ExtensionInstalledBubbleModel* model,
@@ -105,7 +106,7 @@ std::unique_ptr<views::View> CreateSigninPromoView(
       web_contents, signin_metrics::AccessPoint::kExtensionInstallBubble,
       syncer::LocalDataItemModel::DataId(extension_id));
 }
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -142,13 +143,6 @@ ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
       browser_(browser),
       model_(std::move(model)) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  if (model_->show_sign_in_promo()) {
-#if !BUILDFLAG(IS_CHROMEOS)
-    SetFootnoteView(CreateSigninPromoView(
-        browser->tab_strip_model()->GetActiveWebContents(),
-        model_->extension_id()));
-#endif
-  }
   SetIcon(ui::ImageModel::FromImageSkia(model_->MakeIconOfSize(kMaxIconSize)));
   SetShowIcon(true);
   SetShowCloseButton(true);
@@ -159,6 +153,23 @@ ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
   base::i18n::AdjustStringForLocaleDirection(&extension_name);
   SetTitle(l10n_util::GetStringFUTF16(IDS_EXTENSION_INSTALLED_HEADING,
                                       extension_name));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Add a sync or sign in promo in the footer if it should be shown.
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser->profile());
+  const extensions::Extension* extension =
+      registry->enabled_extensions().GetByID(model_->extension_id());
+
+  if (signin::ShouldShowExtensionSignInPromo(*browser->profile(), *extension) ||
+      (signin::ShouldShowExtensionSyncPromo(*browser->profile(), *extension) &&
+       !base::FeatureList::IsEnabled(
+           switches::kEnableExtensionsExplicitBrowserSignin))) {
+    SetFootnoteView(CreateSigninPromoView(
+        browser->tab_strip_model()->GetActiveWebContents(),
+        model_->extension_id()));
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 ExtensionInstalledBubbleView::~ExtensionInstalledBubbleView() = default;

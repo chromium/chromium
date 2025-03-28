@@ -67,6 +67,11 @@ extern const base::FeatureParam<int> kSearchEngineChoiceMaximumSkipCount{
     &kSearchEngineChoiceTrigger,
     /*name=*/"maximum_skip_count",
     /*default_value=*/10};
+
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_FEATURE(kIOSPromptSearchEngineChoiceAfterDeviceRestore,
+             "IOSPromptSearchEngineChoiceAfterDeviceRestore",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

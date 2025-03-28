@@ -403,6 +403,7 @@
 <translation id="1264956950255940376">இடது கண்ணைச் சுருக்குதல்</translation>
 <translation id="1265094893042958831">இந்தப் பக்கத்திற்கான பரிந்துரைகளை உருவாக்குகிறது…</translation>
 <translation id="1265279736024499987">நீங்கள் Google கணக்கின் மூலம் உள்நுழைந்துள்ள Chrome OS சாதனங்கள் அனைத்திலும் உங்கள் ஆப்ஸும் அமைப்புகளும் ஒத்திசைக்கப்படும். உலாவி ஒத்திசைவு விருப்பங்களுக்கு, <ph name="LINK_BEGIN" />Chrome அமைப்புகளுக்குச்<ph name="LINK_END" /> செல்லவும்.</translation>
+<translation id="1267081565119405990">ஸ்கிரீன்ஷாட் எடுத்த பிறகோ உங்கள் திரையில் தேடிய பிறகோ, கேலெண்டரில் சேர், Google டாக்ஸை உருவாக்கு போன்ற பல கூடுதல் செயல்களைக் காட்டு.</translation>
 <translation id="126710816202626562">மொழிபெயர்ப்பிற்கான மொழி:</translation>
 <translation id="1267649802567297774"><ph name="STYLE" /> ஸ்டைல் மற்றும் <ph name="MOOD" /> மனநிலையில் உருவாக்கப்பட்ட <ph name="SUBJECT" /> இன் <ph name="INDEX" />வது படம்.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1574,9 +1575,9 @@
 <translation id="2081816110395725788">பேட்டரியில் இயங்கும்போது செயலற்ற நிலை</translation>
 <translation id="2082187087049518845">பக்கக் குழு</translation>
 <translation id="2082510809738716738">தீமின் வண்ணத்தைத் தேர்வுசெய்யுங்கள்</translation>
-<translation id="208547068587548667"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> கணக்கில் உள்நுழை</translation>
 <translation id="208586643495776849">மீண்டும் முயலவும்</translation>
 <translation id="208634871997892083">VPNனை எப்போதும் இயக்கத்தில் வை</translation>
+<translation id="208654914566977272">உங்கள் திரையில் தேடும்போது பரிந்துரைக்கப்படும் செயல்கள்</translation>
 <translation id="2087822576218954668">அச்சிடு: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196"><ph name="DEVICE_OS" /> ஐ நிறுவிய பிறகுதான் பதிவுசெய்ய முடியும்.</translation>
 <translation id="2088564884469682888">உள்ளமைந்த டிராக்பாயிண்ட்</translation>
@@ -4008,7 +4009,6 @@
 <translation id="3778740492972734840">&amp;டெவெலப்பர் கருவிகள்</translation>
 <translation id="3778868487658107119">அதனிடம் கேள்விகளைக் கேட்கலாம். பணிகளைச் செய்யும்படி சொல்லலாம். இது உங்கள் தனிப்பட்ட Google, உங்களுக்கு உதவுவதற்காக எப்போதும் தயாராக இருக்கும்.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# தளத்தில் உள்ள உங்கள் பிரவுசிங் பதிவுகள்}other{# தளங்களில் உள்ள உங்கள் பிரவுசிங் பதிவுகள்}}</translation>
-<translation id="3779244863011082655">வேறொரு <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> கணக்கைப் பயன்படுத்து</translation>
 <translation id="3780542776224651912">உங்கள் கடவுச்சொற்களில் தரவு மீறல்கள் நடந்துள்ளனவா என <ph name="BRAND" /> ஆல் சரிபார்க்க முடியவில்லை. பிறகு மீண்டும் முயலவும்.</translation>
 <translation id="3781742599892759500">Linux மைக்ரோஃபோன் அணுகல்</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5512,6 +5512,7 @@
 <translation id="4848191975108266266">Google Assistant "Ok Google"</translation>
 <translation id="4849286518551984791">ஒருங்கிணைக்கப்பட்ட பொதுவான நேரம் (UTC/GMT)</translation>
 <translation id="4849517651082200438">நிறுவ வேண்டாம்</translation>
+<translation id="4849731766219625109">உங்கள் <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> கணக்கைப் பயன்படுத்துங்கள்</translation>
 <translation id="485053257961878904">அறிவிப்புகள் ஒத்திசைவை அமைக்க முடியவில்லை</translation>
 <translation id="4850548109381269495">இரண்டு சாதனங்களிலும் இணைய இணைப்பைச் சரிபார்த்துவிட்டு, புளூடூத்தை இயக்கவும். அதன்பிறகு முயலவும்.</translation>
 <translation id="4850669014075537160">ஸ்க்ரோலிங்</translation>
@@ -5700,6 +5701,7 @@
 <translation id="4979510648199782334">Microsoft 365 அமைக்கப்பட்டது</translation>
 <translation id="4980805016576257426">இந்த நீட்டிப்பில் மால்வேர் உள்ளது.</translation>
 <translation id="4983159853748980742">உங்கள் கடவுச்சொல் பகிரப்படவில்லை. இணைய இணைப்பைச் சரிபார்த்துவிட்டு, Chromeமில் உள்நுழைந்திருப்பதை உறுதிசெய்துகொள்ளவும். அதன்பிறகு முயலவும்.</translation>
+<translation id="498624032394115435">இணைப்பு உள்ள அனைவரும் எல்லாப் பக்கங்களையும் திருத்தலாம்.</translation>
 <translation id="4986706507552097681">எதையெல்லாம் ஒத்திசைக்க வேண்டும் என்பதை அமைப்புகளுக்குச் சென்று எப்போது வேண்டுமானாலும் தேர்வுசெய்யலாம். உங்கள் பதிவுகளின் அடிப்படையில் Search மற்றும் பிற சேவைகளை Google பிரத்தியேகமாக்கலாம்.</translation>
 <translation id="4986728572522335985">பாதுகாப்பு விசையில் சேமிக்கப்பட்டுள்ள பின் உட்பட அனைத்துத் தரவையும் இது நீக்கும்</translation>
 <translation id="4987944280765486504">பதிவிறக்கம் நிறைவடைந்ததும் Chromebook மீண்டும் தொடங்கும். அதன்பிறகு நீங்கள் அமைவைத் தொடங்கலாம்.</translation>
@@ -8310,7 +8312,6 @@
 <translation id="6873571253135628430">தளத்தின் அனுமதிகளை மாற்றும்</translation>
 <translation id="6876155724392614295">பைக்</translation>
 <translation id="6876469544038980967">உதவிகரமாக இல்லை</translation>
-<translation id="687838958001010630">இணைப்பு உள்ள அனைவரும் எல்லாப் பக்கங்களையும் திருத்தலாம்</translation>
 <translation id="6878422606530379992">சென்சார்கள் அனுமதிக்கப்பட்டுள்ளன</translation>
 <translation id="6878862640969460273">லேண்ட்ஸ்கேப்</translation>
 <translation id="6880587130513028875">இந்தப் பக்கத்தில், படங்கள் தடுக்கப்பட்டன.</translation>

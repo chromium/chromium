@@ -5,9 +5,9 @@
 #ifndef CRYPTO_KDF_H_
 #define CRYPTO_KDF_H_
 
+#include "base/containers/span.h"
 #include "crypto/crypto_export.h"
 #include "crypto/subtle_passkey.h"
-#include "crypto/symmetric_key.h"
 
 namespace crypto::kdf {
 

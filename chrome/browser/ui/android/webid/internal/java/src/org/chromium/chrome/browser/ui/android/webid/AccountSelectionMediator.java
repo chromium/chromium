@@ -714,7 +714,9 @@ class AccountSelectionMediator {
             List<Account> accounts,
             List<IdentityProviderData> idpDataList,
             boolean isAutoReauthn,
-            List<Account> newAccounts) {
+            List<Account> newAccounts,
+            Bitmap favicon) {
+        // TOOD(crbug.com/392142580): use the favicon where needed.
         mRpForDisplay = rpForDisplay;
         mAccounts = accounts;
         mIdpDataListForShowAccounts = idpDataList;

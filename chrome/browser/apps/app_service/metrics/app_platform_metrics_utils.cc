@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "chromeos/ui/base/app_types.h"
@@ -318,7 +319,7 @@ std::string GetInstallReason(InstallReason install_reason) {
 
 bool ShouldRecordAppKM(Profile* profile) {
   // Bypass AppKM App Sync check for Demo Mode devices to collect app metrics.
-  if (ash::DemoSession::IsDeviceInDemoMode()) {
+  if (ash::demo_mode::IsDeviceInDemoMode()) {
     return true;
   }
 

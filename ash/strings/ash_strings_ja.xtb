@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">ゲストモードでは周辺機器を使用できません</translation>
 <translation id="1270290102613614947">画面キーボードは無効です</translation>
 <translation id="1272079795634619415">停止</translation>
+<translation id="12741168609094094">画面上で選択して、検索、テキストのコピーなどを行います</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" />を充電中</translation>
 <translation id="1275718070701477396">選択中</translation>
 <translation id="1276975447697633661">ファイルを選択して <ph name="KEY" /> キーを押す</translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">アクセス ポイントはオフです</translation>
 <translation id="1731815243805539470">前のユーザーに切り替えます</translation>
 <translation id="1733996486177697563">ダークモードとライトモードを切り替えます。デスクトップを長押しして、[壁紙とスタイル] を選択します。</translation>
+<translation id="1735992454301033090">選択した領域、矢印キーを使用して移動します</translation>
 <translation id="1736898441010944794">Bluetooth デバイスに「<ph name="NAME" />」が表示されます。</translation>
 <translation id="1737078180382804488">スマートフォンの通知の表示の設定を行わない</translation>
 <translation id="174102739345480129">マーカーはオフになっています。</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806">先週の <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">キーボード ショートカットが変更されました</translation>
 <translation id="2689613560355655046">デスク 8</translation>
+<translation id="2692092709110488417">Tab キーを押して、選択した領域にフォーカスおよび移動します</translation>
 <translation id="2695305337569143674">ウェブ</translation>
 <translation id="2697697418792422688">キーボード設定を表示します。<ph name="KEYBOARD_NAME" /> が選択されています。</translation>
 <translation id="2699913284398121653">コンテンツ移行アプリを使用して、学校用アカウントのデータを個人アカウントに移動してください</translation>
@@ -1033,6 +1036,7 @@
 <translation id="4412698727486357573">ヘルプセンター</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> はオフになっています。</translation>
 <translation id="4417647906073317561">フォーカス モードの設定。タイマー、タスク、音楽を設定して、作業に集中できます。</translation>
+<translation id="4418600384772451109">パネルを閉じる</translation>
 <translation id="4424159417645388645">デスク 5</translation>
 <translation id="4426817706804363424">その調子です！</translation>
 <translation id="4430019312045809116">音量</translation>
@@ -2230,6 +2234,7 @@
 <translation id="8287009018010202411">仕事効率化</translation>
 <translation id="828708037801473432">オフ</translation>
 <translation id="8297006494302853456">弱い</translation>
+<translation id="8300451473979404345">選択したハンドル、矢印キーを使用して移動します</translation>
 <translation id="8308637677604853869">前のメニュー</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock がオンになっています</translation>
@@ -2290,6 +2295,7 @@
 <translation id="851458219935658693">現在のデスクのウィンドウを表示する、ラジオボタンが選択されています</translation>
 <translation id="851660987304951246">文書読解サポート機能を使って、コンテンツをすばやく要約したり、質問したりできます</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> は電源がオンのままでは充電できない可能性があります。</translation>
+<translation id="8519329096920173967">Google レンズで画面を検索</translation>
 <translation id="8535393432370007982">色による並べ替えを元に戻す</translation>
 <translation id="8536886494750559755">Quick Share の設定を表示します。<ph name="TIME_REMAINING" />間すべてのユーザーに公開</translation>
 <translation id="8539803091108018926">テキストをクリップボードにコピーしました</translation>

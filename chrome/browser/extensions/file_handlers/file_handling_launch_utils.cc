@@ -5,8 +5,8 @@
 #include "chrome/browser/extensions/file_handlers/file_handling_launch_utils.h"
 
 #include "chrome/browser/extensions/tab_helper.h"
-#include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "components/webapps/browser/launch_queue/launch_queue.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/web_file_handlers_info.h"
@@ -20,7 +20,7 @@ void EnqueueLaunchParamsInWebContents(content::WebContents* web_contents,
   CHECK(extensions::WebFileHandlers::SupportsWebFileHandlers(extension));
 
   // Enable LaunchQueue in Web file handlers.
-  web_app::WebAppLaunchParams launch_params;
+  webapps::LaunchParams launch_params;
   launch_params.started_new_navigation = true;
   launch_params.app_id = extension.id();
   launch_params.target_url = url;

@@ -302,7 +302,7 @@ class ProfileManagerTest : public testing::Test {
 
     // Add user for testing.
     {
-      user_manager::TestHelper test_helper(*user_manager);
+      user_manager::TestHelper test_helper(user_manager);
       if (account_id == user_manager::GuestAccountId()) {
         ASSERT_TRUE(test_helper.AddGuestUser());
       } else {
@@ -337,7 +337,7 @@ class ProfileManagerTest : public testing::Test {
         profile_helper->GetProfilePathByUserIdHash(user_id_hash);
 
     {
-      user_manager::TestHelper test_helper(*user_manager);
+      user_manager::TestHelper test_helper(user_manager);
       if (user_is_child) {
         CHECK(test_helper.AddChildUser(account_id));
       } else {
@@ -473,7 +473,7 @@ TEST_F(ProfileManagerTest, UserProfileLoading) {
       user_manager::TestHelper::GetFakeUsernameHash(account_id);
   auto* user_manager = user_manager::UserManager::Get();
   ASSERT_TRUE(
-      user_manager::TestHelper(*user_manager).AddRegularUser(account_id));
+      user_manager::TestHelper(user_manager).AddRegularUser(account_id));
   user_manager->UserLoggedIn(account_id, user_id_hash);
 
   // Sign-in profile should be returned at this stage. Otherwise, login code

@@ -145,11 +145,10 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
 
         if (isSearchEngineStatusIconVisible()) {
             setTooltipText(R.string.accessibility_menu_info);
-            setHoverHighlight(R.drawable.status_view_ripple);
         } else {
             setTooltipText(Resources.ID_NULL);
-            setHoverHighlight(Resources.ID_NULL);
         }
+        setBackground();
     }
 
     /** Signals that native initialization has completed. */
@@ -213,9 +212,9 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator.setTooltipText(tooltipTextResId);
     }
 
-    /** Set the hover highlight of the status view. */
-    public void setHoverHighlight(@DrawableRes int hoverHighlightResId) {
-        mMediator.setHoverHighlight(hoverHighlightResId);
+    /** Set the highlight background of the status view. */
+    public void setBackground() {
+        mMediator.setBackground();
     }
 
     /**

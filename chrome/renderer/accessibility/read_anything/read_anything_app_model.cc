@@ -66,37 +66,6 @@ const ui::AXNode* GetUnignoredParentForSelection(const ui::AXNode* node) {
   return parent == node ? nullptr : parent;
 }
 
-void SetTreeInfoUrlInformation(ReadAnythingAppModel::AXTreeInfo& tree_info) {
-  // If the url information has already been set for this tree, do nothing.
-  if (tree_info.is_url_information_set) {
-    return;
-  }
-
-  // If the tree manager is not the root manager, do nothing.
-  CHECK(tree_info.manager);
-  if (!tree_info.manager->IsRoot()) {
-    return;
-  }
-
-  // If the tree doesn't have a root, or the root doesn't have a url set, do
-  // nothing.
-  const ui::AXNode* const root = tree_info.manager->GetRoot();
-  if (!root || !root->HasStringAttribute(ax::mojom::StringAttribute::kUrl)) {
-    return;
-  }
-
-  // A Google Docs URL is in the form of "https://docs.google.com/document*" or
-  // "https://docs.sandbox.google.com/document*".
-  const GURL url(root->GetStringAttribute(ax::mojom::StringAttribute::kUrl));
-  tree_info.is_docs = url.SchemeIsHTTPOrHTTPS() &&
-                      (url.DomainIs("docs.google.com") ||
-                       url.DomainIs("docs.sandbox.google.com")) &&
-                      url.path().starts_with("/document") &&
-                      !url.ExtractFileName().empty();
-
-  tree_info.is_url_information_set = true;
-}
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // LINT.IfChange(ReadAnythingHeuristics)
@@ -428,6 +397,59 @@ bool ReadAnythingAppModel::ContainsTree(const ui::AXTreeID& tree_id) const {
   return base::Contains(tree_infos_, tree_id);
 }
 
+void ReadAnythingAppModel::SetUrlInformationCallback(
+    base::OnceCallback<void()> callback) {
+  // If the given tree already has its url information set, run the callback
+  // immediately.
+  if (tree_infos_.contains(active_tree_id_) &&
+      tree_infos_.at(active_tree_id_)->is_url_information_set) {
+    std::move(callback).Run();
+    return;
+  }
+
+  set_url_information_callback_ = std::move(callback);
+}
+
+void ReadAnythingAppModel::SetTreeInfoUrlInformation(
+    ReadAnythingAppModel::AXTreeInfo& tree_info) {
+  // If the url information has already been set for this tree, do nothing.
+  if (tree_info.is_url_information_set) {
+    return;
+  }
+
+  // If the tree manager is not the root manager, do nothing.
+  CHECK(tree_info.manager);
+  if (!tree_info.manager->IsRoot()) {
+    return;
+  }
+
+  // If the tree doesn't have a root, or the root doesn't have a url set, do
+  // nothing.
+  const ui::AXNode* const root = tree_info.manager->GetRoot();
+  if (!root || !root->HasStringAttribute(ax::mojom::StringAttribute::kUrl)) {
+    return;
+  }
+
+  // A Google Docs URL is in the form of "https://docs.google.com/document*" or
+  // "https://docs.sandbox.google.com/document*".
+  const GURL url(root->GetStringAttribute(ax::mojom::StringAttribute::kUrl));
+  tree_info.is_reload =
+      !previous_tree_url_.empty() && (previous_tree_url_ == url.GetContent());
+
+  tree_info.is_docs = url.SchemeIsHTTPOrHTTPS() &&
+                      (url.DomainIs("docs.google.com") ||
+                       url.DomainIs("docs.sandbox.google.com")) &&
+                      url.path().starts_with("/document") &&
+                      !url.ExtractFileName().empty();
+
+  tree_info.is_url_information_set = true;
+  previous_tree_url_ = url.GetContent();
+
+  if (!set_url_information_callback_.is_null()) {
+    std::move(set_url_information_callback_).Run();
+  }
+}
+
 bool ReadAnythingAppModel::IsDocs() const {
   // Sometimes during an initial page load, this may be called before the
   // tree has been initialized. If this happens, IsDocs should return false
@@ -437,6 +459,14 @@ bool ReadAnythingAppModel::IsDocs() const {
   }
 
   return tree_infos_.at(active_tree_id_)->is_docs;
+}
+
+bool ReadAnythingAppModel::IsReload() const {
+  if (!tree_infos_.contains(active_tree_id_)) {
+    return false;
+  }
+
+  return tree_infos_.at(active_tree_id_)->is_reload;
 }
 
 void ReadAnythingAppModel::AddPendingUpdates(const ui::AXTreeID& tree_id,
@@ -815,7 +845,14 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kTooltipClosed:
       case ax::mojom::Event::kTooltipOpened:
       case ax::mojom::Event::kTreeChanged:
+        if (!features::IsReadAnythingReadAloudEnabled()) {
+          break;
+        }
+        [[fallthrough]];
       case ax::mojom::Event::kValueChanged:
+        if (!features::IsReadAnythingReadAloudEnabled()) {
+          reset_draw_timer_ = true;
+        }
         break;
       case ax::mojom::Event::kAriaAttributeChangedDeprecated:
       case ax::mojom::Event::kMenuListValueChangedDeprecated:
@@ -879,8 +916,11 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       // After the user finishes typing something we wait for a timer and redraw
       // to capture the input.
       case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
-        reset_draw_timer_ = true;
-        break;
+        if (features::IsReadAnythingReadAloudEnabled()) {
+          reset_draw_timer_ = true;
+          break;
+        }
+        [[fallthrough]];
       // Audit these events e.g. to trigger distillation.
       case ui::AXEventGenerator::Event::NONE:
       case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:

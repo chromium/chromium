@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.recent_tabs.ui;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.ImageView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +17,7 @@ import org.chromium.chrome.browser.recent_tabs.ui.TabItemViewBinder.BindContext;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -74,6 +76,12 @@ public class RestoreTabsDetailScreenCoordinator {
                         }
                     }
                 });
+
+        if (LocalizationUtils.isLayoutRtl()) {
+            // Flip the image horizontally, so that the arrow points the right way for RTL.
+            ImageView backArrow = view.findViewById(R.id.restore_tabs_toolbar_back_image_button);
+            backArrow.setScaleX(-1);
+        }
 
         RestoreTabsDetailScreenViewBinder.ViewHolder viewHolder =
                 new RestoreTabsDetailScreenViewBinder.ViewHolder(view, mBindContext);

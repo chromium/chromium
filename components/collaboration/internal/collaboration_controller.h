@@ -15,6 +15,7 @@
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace syncer {
 class SyncService;
@@ -133,6 +134,7 @@ class CollaborationController {
       data_sharing::DataSharingService* data_sharing_service,
       tab_groups::TabGroupSyncService* tab_group_sync_service,
       syncer::SyncService* sync_service,
+      signin::IdentityManager* identity_manager,
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       FinishCallback finish_and_delete);
   ~CollaborationController();
@@ -150,6 +152,9 @@ class CollaborationController {
     return tab_group_sync_service_.get();
   }
   syncer::SyncService* sync_service() { return sync_service_.get(); }
+  signin::IdentityManager* identity_manager() {
+    return identity_manager_.get();
+  }
   CollaborationService* collaboration_service() {
     return collaboration_service_.get();
   }
@@ -315,6 +320,7 @@ class CollaborationController {
   const raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
   const raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
   const raw_ptr<syncer::SyncService> sync_service_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<CollaborationControllerDelegate> delegate_;
   FinishCallback finish_and_delete_;
   base::WeakPtrFactory<CollaborationController> weak_ptr_factory_{this};

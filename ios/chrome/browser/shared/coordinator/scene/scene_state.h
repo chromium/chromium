@@ -20,13 +20,6 @@
 @class SceneController;
 @class SceneState;
 
-// Enumeration controlling whether the propagation of the activationLevel
-// should be delayed until the Profile is ready (production) or not (test).
-enum class ActivationLevelPolicy {
-  kImmediate,
-  kDelayedIfProfileLoading,
-};
-
 // Scene agents are objects owned by a scene state and providing some
 // scene-scoped function. They can be driven by SceneStateObserver events.
 @protocol SceneAgent <NSObject>
@@ -43,11 +36,8 @@ enum class ActivationLevelPolicy {
 // TODO(b/326186137): This class should implement BrowserProviderInterface.
 @interface SceneState : NSObject <UIBlockerTarget>
 
+- (instancetype)initWithAppState:(AppState*)appState NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithAppState:(AppState*)appState;
-- (instancetype)initWithAppState:(AppState*)appState
-               propagationPolicy:(ActivationLevelPolicy)policy
-    NS_DESIGNATED_INITIALIZER;
 
 // The profile state for profile that owns this scene.
 @property(nonatomic, weak) ProfileState* profileState;

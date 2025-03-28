@@ -34,8 +34,10 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {BaseMixin} from '../base_mixin.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
+import type {Route} from '../router.js';
 import {Router} from '../router.js';
 
 import type {AccessibilityBrowserProxy} from './a11y_browser_proxy.js';
@@ -194,15 +196,17 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   private browserProxy_: AccessibilityBrowserProxy =
       AccessibilityBrowserProxyImpl.getInstance();
 
+  currentRoute: Route;
   // <if expr="not is_chromeos">
   languages: LanguagesModel;
   languageHelper: LanguageHelper;
 
   private enableLiveCaption_: boolean;
-
+  private numericUncheckedToastAlertValues_: ToastAlertLevel[];
   private isToastRefinementsEnabled_: boolean;
   // </if>
 
+  private focusConfig_: FocusConfig;
   private captionSettingsOpensExternally_: boolean;
   private hasScreenReader_: boolean;
   private showOverscrollHistoryNavigationToggle_: boolean;

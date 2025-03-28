@@ -93,22 +93,22 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     };
   }
 
-  profileState: ProfileState = createDummyProfileState();
-  private statistics_: Statistics = {
+  accessor profileState: ProfileState = createDummyProfileState();
+  private accessor statistics_: Statistics = {
     BrowsingHistory: 0,
     Passwords: 0,
     Bookmarks: 0,
     Autofill: 0,
   };
-  protected moreActionsButtonAriaLabel_: string = '';
-  protected profileStatistics_: ProfileStatistics[] = [
+  protected accessor moreActionsButtonAriaLabel_: string = '';
+  protected accessor profileStatistics_: ProfileStatistics[] = [
     ProfileStatistics.BROWSING_HISTORY,
     ProfileStatistics.PASSWORDS,
     ProfileStatistics.BOOKMARKS,
     ProfileStatistics.AUTOFILL,
   ];
-  protected removeWarningText_: string = '';
-  protected removeWarningTitle_: string = '';
+  protected accessor removeWarningText_: string = '';
+  protected accessor removeWarningTitle_: string = '';
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
 

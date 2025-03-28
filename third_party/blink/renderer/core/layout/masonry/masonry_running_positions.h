@@ -18,6 +18,32 @@ struct GridSpan;
 // used to calculate the next position that an item should be placed.
 class CORE_EXPORT MasonryRunningPositions {
  public:
+  MasonryRunningPositions(wtf_size_t track_count,
+                          LayoutUnit initial_running_position,
+                          LayoutUnit tie_threshold)
+      : running_positions_(track_count, initial_running_position),
+        tie_threshold_(tie_threshold) {}
+
+  // Return the first span within `tie_threshold_` of the minimum max-position
+  // that comes after the auto-placement cursor in masonry's flow.
+  GridSpan GetFirstEligibleLine(wtf_size_t span_size,
+                                LayoutUnit& max_position) const;
+
+  // Update all the running positions for the tracks within the given lines to
+  // have the inputted `running_position`.
+  void UpdateRunningPositionsForSpan(const GridSpan& span,
+                                     LayoutUnit running_position);
+
+  // Returns the max-position for a given span.
+  LayoutUnit GetMaxPositionForSpan(const GridSpan& span) const;
+
+  void UpdateAutoPlacementCursor(wtf_size_t line) {
+    auto_placement_cursor_ = line;
+  }
+
+ private:
+  friend class MasonryLayoutAlgorithmTest;
+
   // Struct to keep track of a span of tracks' start lines and their
   // max-positions, where the max-position of a span represents the maximum
   // running position of all tracks in a span. This will always be used in
@@ -31,21 +57,6 @@ class CORE_EXPORT MasonryRunningPositions {
     wtf_size_t start_line;
     LayoutUnit max_pos;
   };
-
-  MasonryRunningPositions(wtf_size_t size, LayoutUnit tie_threshold)
-      : running_positions_(size), tie_threshold_(tie_threshold) {}
-
-  // Return the first span within `tie_threshold_` of the minimum max-position
-  // that comes after the auto-placement cursor in masonry's flow.
-  MaxPositionSpan GetFirstEligibleLine(wtf_size_t span_size);
-
-  // Update all the running positions for the tracks within the given lines to
-  // have the inputted `running_position`.
-  void UpdateRunningPositionsForSpan(const GridSpan& span,
-                                     LayoutUnit running_position);
-
- private:
-  friend class MasonryLayoutAlgorithmTest;
 
   // For testing only.
   MasonryRunningPositions(const Vector<LayoutUnit>& running_positions,

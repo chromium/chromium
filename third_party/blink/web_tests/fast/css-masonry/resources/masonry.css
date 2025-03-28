@@ -18,3 +18,25 @@
     background: lightgreen;
     masonry-track-start: 3;
 }
+
+.auto-item {
+    padding: 10px;
+}
+
+.auto-item:nth-of-type(1) {
+  background: lightskyblue;
+}
+
+.auto-item:nth-of-type(2) {
+  background: lightcoral;
+}
+
+.auto-item:nth-of-type(3) {
+  background: lightgreen;
+}
+
+.two-track-spanner {
+    background: lightpink;
+    padding: 10px;
+    masonry-track: span 2;
+}

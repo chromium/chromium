@@ -663,7 +663,8 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
 
   if (cookie_observer_ && !on_cookies_accessed_result.empty()) {
     OnCookiesAccessed(mojom::CookieAccessDetails::New(
-        mojom::CookieAccessDetails::Type::kRead, url, isolated_top_frame_origin,
+        mojom::CookieAccessDetails::Type::kRead, url,
+        /*frame_origin=*/std::nullopt, isolated_top_frame_origin,
         site_for_cookies, std::move(on_cookies_accessed_result), std::nullopt,
         is_ad_tagged, cookie_setting_overrides));
   }
@@ -770,9 +771,9 @@ void RestrictedCookieManager::SetCanonicalCookie(
               net::CookieAccessResult(status)));
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kChange, url,
-          isolated_top_frame_origin, site_for_cookies,
-          std::move(result_with_access_result), std::nullopt, is_ad_tagged,
-          cookie_setting_overrides));
+          /*frame_origin=*/std::nullopt, isolated_top_frame_origin,
+          site_for_cookies, std::move(result_with_access_result), std::nullopt,
+          is_ad_tagged, cookie_setting_overrides));
     }
     std::move(callback).Run(false);
     return;
@@ -893,8 +894,9 @@ void RestrictedCookieManager::SetCanonicalCookieResult(
           mojom::CookieOrLine::NewCookie(cookie), access_result));
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kChange, url,
-          isolated_top_frame_origin, site_for_cookies, std::move(notify),
-          std::nullopt, is_ad_tagged, cookie_setting_overrides));
+          /*frame_origin=*/std::nullopt, isolated_top_frame_origin,
+          site_for_cookies, std::move(notify), std::nullopt, is_ad_tagged,
+          cookie_setting_overrides));
     }
   }
   std::move(user_callback).Run(access_result.status.IsInclude());
@@ -979,6 +981,7 @@ void RestrictedCookieManager::SetCookieFromString(
               net::CookieAccessResult(status)));
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kChange, url,
+          /*frame_origin=*/std::nullopt,
           isolation_info_.top_frame_origin().value_or(url::Origin()),
           site_for_cookies, std::move(result_with_access_result), std::nullopt,
           is_ad_tagged,

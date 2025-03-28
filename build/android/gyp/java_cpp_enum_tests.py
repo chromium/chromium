@@ -655,7 +655,7 @@ enum TerminationStatus {
       // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SigninAccessPoint
       enum class AccessPoint : int {
         ACCESS_POINT_DRIVE_FILE_PICKER_IOS = 0,
-        ACCESS_POINT_COLLABORATION_TAB_GROUP = 1,
+        ACCESS_POINT_COLLABORATION_SHARE_TAB_GROUP = 1,
         ACCESS_POINT_MAX,
       };
     """.split('\n')
@@ -668,8 +668,8 @@ enum TerminationStatus {
     self.assertEqual('int', definition.fixed_type)
     self.assertEqual(
         collections.OrderedDict([('DRIVE_FILE_PICKER_IOS', 0),
-                                 ('COLLABORATION_TAB_GROUP', 1), ('MAX', 2)]),
-        definition.entries)
+                                 ('COLLABORATION_SHARE_TAB_GROUP', 1),
+                                 ('MAX', 2)]), definition.entries)
 
   def testParseFixedTypeEnumWithMaxValue(self):
     test_data = """
@@ -677,8 +677,8 @@ enum TerminationStatus {
       // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SigninAccessPoint
       enum class AccessPoint : int {
         ACCESS_POINT_DRIVE_FILE_PICKER_IOS = 0,
-        ACCESS_POINT_COLLABORATION_TAB_GROUP = 1,
-        kMaxValue = ACCESS_POINT_COLLABORATION_TAB_GROUP,
+        ACCESS_POINT_COLLABORATION_SHARE_TAB_GROUP = 1,
+        kMaxValue = ACCESS_POINT_COLLABORATION_SHARE_TAB_GROUP,
       };
     """.split('\n')
     definitions = HeaderParser(test_data).ParseDefinitions()
@@ -690,9 +690,9 @@ enum TerminationStatus {
     self.assertEqual('int', definition.fixed_type)
     self.assertEqual(
         collections.OrderedDict([('DRIVE_FILE_PICKER_IOS', '0'),
-                                 ('COLLABORATION_TAB_GROUP', '1'),
-                                 ('MAX_VALUE', 'COLLABORATION_TAB_GROUP')]),
-        definition.entries)
+                                 ('COLLABORATION_SHARE_TAB_GROUP', '1'),
+                                 ('MAX_VALUE', 'COLLABORATION_SHARE_TAB_GROUP')
+                                 ]), definition.entries)
 
   def testParseFixedTypeEnumClass(self):
     test_data = """

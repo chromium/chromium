@@ -11,7 +11,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 
 namespace blink {
@@ -26,7 +25,7 @@ struct BLINK_COMMON_EXPORT AcceleratedImageInfo {
   gfx::Size size;
   viz::SharedImageFormat format;
   SkAlphaType alpha_type;
-  sk_sp<SkColorSpace> sk_color_space;
+  gfx::ColorSpace color_space;
   base::OnceCallback<void(const gpu::SyncToken& sync_token)> release_callback;
 };
 

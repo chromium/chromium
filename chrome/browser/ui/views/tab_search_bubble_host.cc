@@ -255,8 +255,8 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
     observer.OnBubbleInitializing();
   }
 
-  // Close the Tab Search IPH if it is showing.
   if (auto* const browser = GetBrowser()) {
+    // Close the Tab Search IPH if it is showing.
     browser->window()->NotifyFeaturePromoFeatureUsed(
         feature_engagement::kIPHTabSearchFeature,
         FeaturePromoFeatureUsedAction::kClosePromoIfPresent);

@@ -142,7 +142,7 @@ export class AllSitesElement extends AllSitesElementBase {
       /**
        * All possible sort methods.
        */
-      sortMethods_: {
+      sortMethodEnum_: {
         type: Object,
         value: SortMethod,
         readOnly: true,
@@ -150,8 +150,7 @@ export class AllSitesElement extends AllSitesElementBase {
 
       isRelatedWebsiteSetsV2UiEnabled_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('isRelatedWebsiteSetsV2UiEnabled'),
+        value: () => loadTimeData.getBoolean('isRelatedWebsiteSetsV2UiEnabled'),
       },
 
       /**
@@ -196,9 +195,10 @@ export class AllSitesElement extends AllSitesElementBase {
 
   siteGroupMap: Map<string, SiteGroup>;
   private filteredList_: SiteGroup[];
-  subpageRoute: Route;
+  override subpageRoute: Route;
   filter: string;
   private selectedItem_: SelectedItem|null;
+  private lastFocused_: HTMLElement|null;
   private listBlurred_: boolean;
   private actionMenuModel_: ActionMenuModel|null;
   private clearAllData_: boolean;

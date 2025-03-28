@@ -3629,8 +3629,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecJs(root_frame_host(),
                      "navigation.addEventListener('navigate',"
                      "  e => { e.intercept({"
-                     "    commit: 'after-transition',"
-                     "    handler: () => new Promise(r => setTimeout(r, 100))"
+                     "    precommitHandler: async() => {"
+                     "      await new Promise(r => setTimeout(r, 100));"
+                     "    }"
                      "  }); "
                      "  setTimeout(() => navigation.navigate('#allowed'), 0);"
                      "}, { once: true });"));
@@ -3662,8 +3663,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecJs(root_frame_host(),
                      "navigation.addEventListener('navigate',"
                      "  e => { e.intercept({"
-                     "    commit: 'after-transition',"
-                     "    handler: () => Promise.reject()"
+                     "    precommitHandler: () => Promise.reject()"
                      "  }); "
                      "});"));
   GURL blocked_url(

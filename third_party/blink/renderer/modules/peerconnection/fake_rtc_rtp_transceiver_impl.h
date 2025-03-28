@@ -29,7 +29,7 @@ MediaStreamComponent* CreateMediaStreamComponent(
 
 class FakeRTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
  public:
-  FakeRTCRtpSenderImpl(std::optional<String> track_id,
+  FakeRTCRtpSenderImpl(String track_id,
                        Vector<String> stream_ids,
                        scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   FakeRTCRtpSenderImpl(const FakeRTCRtpSenderImpl&);
@@ -53,7 +53,7 @@ class FakeRTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
   void SetStreams(const Vector<String>& stream_ids) override;
 
  private:
-  std::optional<String> track_id_;
+  String track_id_;
   Vector<String> stream_ids_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };

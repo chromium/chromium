@@ -485,9 +485,6 @@ SessionStore::SessionStore(
       DVLOG(1) << "Associating local tab " << specifics.tab().tab_id()
                << " with node " << specifics.tab_node_id();
 
-      // TODO(mastiz): Move call to ReassociateLocalTab() into
-      // UpdateTrackerWithSpecifics(), possibly merge with OnTabNodeSeen(). Also
-      // consider merging this branch with processing of foreign tabs above.
       session_tracker_.ReassociateLocalTab(
           specifics.tab_node_id(),
           SessionID::FromSerializedValue(specifics.tab().tab_id()));

@@ -265,6 +265,8 @@ void CategorizedWorkerPoolJob::Run(base::span<const TaskCategory> categories,
     }
     TRACE_EVENT(
         "toplevel", "TaskGraphRunner::RunTask",
+        perfetto::TerminatingFlow::Global(
+            prioritized_task->task->trace_task_id()),
         [&](perfetto::EventContext ctx) {
           ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
               ->set_chrome_raster_task()

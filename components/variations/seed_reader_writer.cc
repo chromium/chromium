@@ -138,7 +138,7 @@ void SeedReaderWriter::ClearSeed() {
     // seed files, attempt to delete the seed file for clients with
     // Local-State-based seeds. If a client switches experiment groups or
     // channels, their device could have a seed file with stale seed data.
-    if (seed_writer_ && base::PathExists(seed_writer_->path())) {
+    if (seed_writer_) {
       DeleteSeedFile();
     }
   }

@@ -40,6 +40,8 @@ enum class InProductHelpType : NSInteger {
   kLensOverlayEntrypoint,
   /// Help bubble to point the user to "Settings" in the overflow menu.
   kSettingsInOverflowMenu,
+  /// Help bubble for swiping on the feed.
+  kFeedSwipe,
 };
 
 /// Commands to control the display of in-product help UI ("bubbles").

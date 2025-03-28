@@ -509,6 +509,12 @@ class WebStateList {
   // there is no active WebState.
   void OnActiveWebStateChanged();
 
+  // Returns true if a web state insertion is necessary to prevent an
+  // undesirable state. For instance, this function returns true when detaching
+  // the last tab of a shared group, as it avoids accidental group deletion by
+  // inserting a web state.
+  bool ShouldInsertWebState(DetachParams params, const TabGroup* group);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The WebStateList delegate.

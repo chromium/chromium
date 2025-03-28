@@ -14,6 +14,8 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/types/expected.h"
+#include "build/build_config.h"
 
 namespace updater::tagging {
 namespace internal {
@@ -198,6 +200,10 @@ enum class ErrorCode {
 
   // The enrollment token must be a GUID.
   kGlobal_EnrollmentTokenValueIsInvalid,
+
+  // No tag was found when attempting to extract one from a binary or other
+  // potentially-tagged content.
+  kTagNotFound,
 };
 
 std::ostream& operator<<(std::ostream&, const ErrorCode&);
@@ -217,7 +223,7 @@ std::ostream& operator<<(std::ostream&, const ErrorCode&);
 // global parameters and have the following constraints on the value:
 // - bundlename        Must not contain only whitespace.
 // - iid               Can be any string.
-// - brand             Can be any string.
+// - brand             Can be any string; usually 4 uppercase alphabetic chars.
 // - client            Can be any string.
 // - omahaexperiments  Must not contain only whitespace.
 // - referral          Can be any string.
@@ -233,22 +239,23 @@ std::ostream& operator<<(std::ostream&, const ErrorCode&);
 // before any other app attribute to specify the "current" app. Other app
 // attributes will then affect the parameters of the most recently specified app
 // ID. For example, if the tag is
-// "appid=App1&brand=BrandForApp1&appid=App2&ap=ApForApp2&iid=GlobalInstallId",
+// "appid=App1&ap=ApApp1&brand=GBRN&appid=App2&ap=ApApp2&iid=GlobalInstallId",
 // the resulting tag will look like:
 //   TagArgs {
 //     iid = GlobalInstallId
+//     brand = GBRN
 //     apps = [
 //       AppArgs {
 //         appid = App1
-//         brand = BrandForApp1
+//         ap = ApApp1
 //       }
 //       AppArgs {
 //         appid = App2
-//         ap = ApForApp2
+//         ap = ApApp2
 //       }
 //     ]
 //   }
-// These attributes has the following constraints on the value:
+// These attributes have the following constraints on the value:
 // - appid             Can be any ASCII string. Case-insensitive.
 // - ap                Can be any string.
 // - experiments       Must not contain only whitespace.
@@ -268,10 +275,6 @@ std::ostream& operator<<(std::ostream&, const ErrorCode&);
 ErrorCode Parse(std::string_view tag,
                 std::optional<std::string_view> app_installer_data_args,
                 TagArgs& args);
-
-std::string ReadTag(std::vector<uint8_t>::const_iterator begin,
-                    std::vector<uint8_t>::const_iterator end);
-std::vector<uint8_t> GetTagFromTagString(const std::string& tag_string);
 
 // Utilities for reading and writing tags to Windows PE and MSI files.
 //
@@ -306,12 +309,47 @@ std::vector<uint8_t> GetTagFromTagString(const std::string& tag_string);
 std::string BinaryReadTagString(const base::FilePath& file);
 std::optional<tagging::TagArgs> BinaryReadTag(const base::FilePath& file);
 
+// ReadTag extracts the tag string from a region of binary data. This string
+// does not include the magic signature or tag length itself. If no tag can
+// be found, this returns the empty string.
+std::string ReadTag(std::vector<uint8_t>::const_iterator begin,
+                    std::vector<uint8_t>::const_iterator end);
+
+// GetTagFromTagString creates binary tag data from a specified tag string by
+// prefixing it with the signature and length.
+std::vector<uint8_t> GetTagFromTagString(const std::string& tag_string);
+
 // Tags `file` with `tag_string` and writes the result to `file` by default, or
 // to `out_file` if `out_file` is provided.
 bool BinaryWriteTag(const base::FilePath& in_file,
                     const std::string& tag_string,
                     int padded_length,
                     base::FilePath out_file);
+
+#if BUILDFLAG(IS_MAC)
+
+// Reads the `com.apple.application-instance` extended attribute from the item
+// at `path`, parsing it as a complete metainstaller tag, including the
+// "Gact2.0Omaha" magic number prefix.
+//
+// If the file exists, has this specific extended attribute, this process can
+// read that attribute, and this process can parse a complete metainstaller
+// tag out of it, this returns the parsed `tagging::TagArgs`. If any of the
+// prerequisites before tag content parsing fail, this returns the "no tag"
+// error code. If tag parsing fails, this returns the error code from tag
+// parsing.
+base::expected<TagArgs, ErrorCode> ReadTagFromApplicationInstanceXattr(
+    const base::FilePath& path);
+
+// Overwrites the `com.apple.application-instance` extended attribute on the
+// item at `path` with a formatted binary tag containing the provided string,
+// prefixed with the "Gact2.0Omaha" signature and size, as described above.
+// It does not check the validity of the string as a tag. Returns `true` on
+// success, `false` on failure.
+bool WriteTagStringToApplicationInstanceXattr(const base::FilePath& path,
+                                              const std::string& tag_string);
+
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace updater::tagging
 

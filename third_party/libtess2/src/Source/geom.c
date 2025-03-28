@@ -86,7 +86,8 @@ TESSreal tesedgeSign( TESSvertex *u, TESSvertex *v, TESSvertex *w )
 	gapR = w->s - v->s;
 
 	if( gapL + gapR > 0 ) {
-		return (v->t - w->t) * gapL + (v->t - u->t) * gapR;
+		TESSreal result = (v->t - w->t) * gapL + (v->t - u->t) * gapR;
+		return isnan(result) ? 0 : result;
 	}
 	/* vertical line */
 	return 0;
@@ -169,7 +170,7 @@ int tesvertCCW( TESSvertex *u, TESSvertex *v, TESSvertex *w )
 */
 #define RealInterpolate(a,x,b,y)			\
 	(a = (a < 0) ? 0 : a, b = (b < 0) ? 0 : b,		\
-	((a <= b) ? ((b == 0) ? ((x+y) / 2)			\
+	((a <= b) ? ((b == 0) ? (x / 2 + y / 2)			\
 	: (x + (y-x) * (a/(a+b))))	\
 	: (y + (x-y) * (b/(a+b)))))
 
@@ -222,7 +223,7 @@ void tesedgeIntersect( TESSvertex *o1, TESSvertex *d1,
 
 	if( ! VertLeq( o2, d1 )) {
 		/* Technically, no intersection -- do our best */
-		v->s = (o2->s + d1->s) / 2;
+		v->s = o2->s / 2 + d1->s / 2;
 	} else if( VertLeq( d1, d2 )) {
 		/* Interpolate between o2 and d1 */
 		z1 = EdgeEval( o1, o2, d1 );
@@ -245,7 +246,7 @@ void tesedgeIntersect( TESSvertex *o1, TESSvertex *d1,
 
 	if( ! TransLeq( o2, d1 )) {
 		/* Technically, no intersection -- do our best */
-		v->t = (o2->t + d1->t) / 2;
+		v->t = o2->t / 2 + d1->t / 2;
 	} else if( TransLeq( d1, d2 )) {
 		/* Interpolate between o2 and d1 */
 		z1 = TransEval( o1, o2, d1 );

@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_reason.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
@@ -1104,7 +1105,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
       FullscreenController::FromBrowser(browser);
 
   if (animated) {
-    fullscreenController->ExitFullscreen();
+    fullscreenController->ExitFullscreen(FullscreenExitReason::kForcedByCode);
   } else {
     fullscreenController->ExitFullscreenWithoutAnimation();
   }

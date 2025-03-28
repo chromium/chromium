@@ -54,10 +54,10 @@ export class ExtensionsSectionElement extends CrLitElement {
     };
   }
 
-  accountExtensions: ExtensionInfo[] = [];
-  protected title_: string = '';
-  protected tooltip_: string = '';
-  protected expanded_: boolean = false;
+  accessor accountExtensions: ExtensionInfo[] = [];
+  protected accessor title_: string = '';
+  protected accessor tooltip_: string = '';
+  protected accessor expanded_: boolean = false;
 
   // Animation variables used to update the main view height based on the
   // collapse animation duration. Initialized to 0 and gets their values in

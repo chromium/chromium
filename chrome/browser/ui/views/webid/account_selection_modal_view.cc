@@ -379,6 +379,7 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateAccountRows(
 void AccountSelectionModalView::ShowMultiAccountPicker(
     const std::vector<IdentityRequestAccountPtr>& accounts,
     const std::vector<IdentityProviderDataPtr>& idp_list,
+    const gfx::Image& rp_icon,
     bool show_back_button) {
   DCHECK(!show_back_button);
   CHECK_EQ(idp_list.size(), 1u);
@@ -394,7 +395,10 @@ void AccountSelectionModalView::ShowAccounts(
       accounts[0]->identity_provider->idp_metadata;
   // If `brand_decoded_icon` is empty, a globe icon is shown instead.
   if (!idp_metadata.brand_decoded_icon.IsEmpty()) {
-    idp_brand_icon_->CropAndSetImage(idp_metadata.brand_decoded_icon);
+    if (idp_brand_icon_->SetBrandIconImage(idp_metadata.brand_decoded_icon,
+                                           /*should_circle_crop=*/true)) {
+      OnIdpBrandIconSet();
+    }
   } else {
     idp_brand_icon_->SetImage(ui::ImageModel::FromVectorIcon(
         kWebidGlobeIcon, ui::kColorIconSecondary, kModalIdpIconSize));
@@ -576,23 +580,17 @@ void AccountSelectionModalView::ShowErrorDialog(
   AddChildView(std::move(button_container));
 }
 
-void AccountSelectionModalView::OnIdpBrandIconFetched() {
-  if (!idp_brand_icon_) {
-    return;
-  }
+void AccountSelectionModalView::OnIdpBrandIconSet() {
   header_icon_spinner_->Stop();
-  header_icon_spinner_->SetVisible(/*visible=*/false);
-  idp_brand_icon_->SetVisible(/*visible=*/true);
+  header_icon_spinner_->SetVisible(false);
+  idp_brand_icon_->SetVisible(true);
 }
 
-void AccountSelectionModalView::OnCombinedIconsFetched() {
-  if (!combined_icons_) {
-    return;
-  }
+void AccountSelectionModalView::OnCombinedIconsSet() {
   header_icon_spinner_->Stop();
-  header_icon_spinner_->SetVisible(/*visible=*/false);
-  idp_brand_icon_->SetVisible(/*visible=*/false);
-  combined_icons_->SetVisible(/*visible=*/true);
+  header_icon_spinner_->SetVisible(false);
+  idp_brand_icon_->SetVisible(false);
+  combined_icons_->SetVisible(true);
 }
 
 void AccountSelectionModalView::ShowRequestPermissionDialog(
@@ -608,12 +606,20 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
   if (!idp_brand_icon.IsEmpty() && !rp_brand_icon.IsEmpty()) {
     combined_icons_ =
         header_icon_view_->AddChildView(CreateCombinedIconsView());
-    combined_icons_idp_brand_icon_->CropAndSetImage(idp_brand_icon);
-    combined_icons_rp_brand_icon_->CropAndSetImage(rp_brand_icon);
+    bool idp_icon_set = combined_icons_idp_brand_icon_->SetBrandIconImage(
+        idp_brand_icon, /*should_circle_crop=*/true);
+    bool rp_icon_set = combined_icons_rp_brand_icon_->SetBrandIconImage(
+        rp_brand_icon, /*should_circle_crop=*/true);
+    if (idp_icon_set && rp_icon_set) {
+      OnCombinedIconsSet();
+    }
   } else {
     // If `idp_brand_icon` is empty, a globe icon is shown instead.
     if (!idp_brand_icon.IsEmpty()) {
-      idp_brand_icon_->CropAndSetImage(idp_brand_icon);
+      if (idp_brand_icon_->SetBrandIconImage(idp_brand_icon,
+                                             /*should_circle_crop=*/true)) {
+        OnIdpBrandIconSet();
+      }
     } else {
       idp_brand_icon_->SetImage(ui::ImageModel::FromVectorIcon(
           kWebidGlobeIcon, ui::kColorIconSecondary, kModalIdpIconSize));
@@ -734,18 +740,9 @@ AccountSelectionModalView::CreateSpinnerIconView() {
 
 std::unique_ptr<views::BoxLayoutView>
 AccountSelectionModalView::CreateIdpIconView() {
-  constexpr int kNumIconsInIdpIconView = 1;
-  base::RepeatingClosure on_image_set = BarrierClosure(
-      kNumIconsInIdpIconView,
-      base::BindOnce(&AccountSelectionModalView::OnIdpBrandIconFetched,
-                     weak_ptr_factory_.GetWeakPtr()));
-
   // Create IDP brand icon image view.
-  std::unique_ptr<BrandIconImageView> idp_brand_icon_image_view =
-      std::make_unique<BrandIconImageView>(
-          kModalIdpIconSize, /*should_circle_crop=*/true, on_image_set);
-  idp_brand_icon_image_view->SetImageSize(
-      gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
+  auto idp_brand_icon_image_view =
+      std::make_unique<BrandIconImageView>(kModalIdpIconSize);
   idp_brand_icon_image_view->SetVisible(/*visible=*/false);
 
   // Put IDP icon into a BoxLayout container so that it can be stacked on top of
@@ -762,19 +759,10 @@ AccountSelectionModalView::CreateIdpIconView() {
 
 std::unique_ptr<views::BoxLayoutView>
 AccountSelectionModalView::CreateCombinedIconsView() {
-  constexpr int kNumIconsInCombinedIconsView = 2;
-  base::RepeatingClosure on_image_set = BarrierClosure(
-      kNumIconsInCombinedIconsView,
-      base::BindOnce(&AccountSelectionModalView::OnCombinedIconsFetched,
-                     weak_ptr_factory_.GetWeakPtr()));
-
   // Create IDP brand icon image view.
-  std::unique_ptr<BrandIconImageView> idp_brand_icon_image_view =
-      std::make_unique<BrandIconImageView>(
-          kModalCombinedIconSize, /*should_circle_crop=*/true, on_image_set);
+  auto idp_brand_icon_image_view =
+      std::make_unique<BrandIconImageView>(kModalCombinedIconSize);
   combined_icons_idp_brand_icon_ = idp_brand_icon_image_view.get();
-  idp_brand_icon_image_view->SetImageSize(
-      gfx::Size(kModalCombinedIconSize, kModalCombinedIconSize));
   idp_brand_icon_image_view->SetVisible(/*visible=*/true);
 
   // Create arrow icon image view.
@@ -784,12 +772,9 @@ AccountSelectionModalView::CreateCombinedIconsView() {
       kWebidArrowIcon, ui::kColorIconSecondary, kModalCombinedIconSize));
 
   // Create RP brand icon image view.
-  std::unique_ptr<BrandIconImageView> rp_brand_icon_image_view =
-      std::make_unique<BrandIconImageView>(
-          kModalCombinedIconSize, /*should_circle_crop=*/true, on_image_set);
+  auto rp_brand_icon_image_view =
+      std::make_unique<BrandIconImageView>(kModalCombinedIconSize);
   combined_icons_rp_brand_icon_ = rp_brand_icon_image_view.get();
-  rp_brand_icon_image_view->SetImageSize(
-      gfx::Size(kModalCombinedIconSize, kModalCombinedIconSize));
   rp_brand_icon_image_view->SetVisible(/*visible=*/true);
 
   // Put IDP icon, arrow icon and RP icon into a BoxLayout container, in that

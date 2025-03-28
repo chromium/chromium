@@ -102,6 +102,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -1368,9 +1369,7 @@ class ArcPlayStoreAppTest : public ArcDefaultAppTest {
         manifest, extensions::Extension::NO_FLAGS, arc::kPlayStoreAppId,
         &error);
 
-    extensions::ExtensionService* extension_service =
-        extensions::ExtensionSystem::Get(profile_.get())->extension_service();
-    extension_service->AddExtension(arc_support_host_.get());
+    registrar()->AddExtension(arc_support_host_.get());
   }
 
   void SendPlayStoreApp() {

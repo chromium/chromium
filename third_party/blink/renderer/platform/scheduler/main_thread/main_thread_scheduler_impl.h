@@ -97,11 +97,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
  public:
   // Duration after which rendering is considered starved, in which case the
   // compositor task queues will have an increased priority until the next
-  // BeginMainFrame. This excludes `UseCase::kCompositorGesture` (see
-  // `kThreadedScrollPreventRenderingStarvation). Note that the elevated
-  // priority is lower than that of render-blocking tasks, and a separate higher
-  // threshold is used to prevent starvation by those tasks (see
-  // `kRenderBlockingStarvationThreshold`).
+  // BeginMainFrame. Note that the elevated priority is lower than that of
+  // render-blocking tasks, and a separate higher threshold is used to prevent
+  // starvation by those tasks (see `kRenderBlockingStarvationThreshold`).
   static constexpr base::TimeDelta kDefaultRenderingStarvationThreshold =
       base::Milliseconds(100);
 
@@ -148,10 +146,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // base::SequencedTaskRunner::GetCurrentDefault() returns the current active
     // per-ASG task runner instead of the per-thread task runner.
     bool mbi_override_task_runner_handle;
-
-    // If ThreadedScrollPreventRenderingStarvation is enabled, this controls the
-    // rendering anti-starvation threshold during UseCase::kCompositorGesture.
-    base::TimeDelta compositor_gesture_rendering_starvation_threshold;
 
     // The policy to use for discrete input-based task deferral. If
     // `features::kDeferRendererTasksAfterInput` is enabled, this is set to the

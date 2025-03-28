@@ -86,6 +86,8 @@ class FrameResources {
 class InternalRefCountedPool
     : public base::RefCountedThreadSafe<InternalRefCountedPool> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   explicit InternalRefCountedPool(
       std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool::Context> context,
       VideoPixelFormat format);

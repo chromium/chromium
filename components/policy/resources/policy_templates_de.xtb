@@ -995,6 +995,11 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="1675391557079742340">Verwendung der <ph name="ZSTANDARD_SHORTNAME" />-Inhaltscodierung im „Accept-Encoding“-Header aktivieren</translation>
+<translation id="167550754083555945">Cloud-Berichterstellungsrichtlinien konfigurieren.
+
+Wenn die Richtlinie „<ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" />“ für verwaltete Geräte deaktiviert oder nicht konfiguriert ist, werden diese Richtlinien auf Browserebene ignoriert. Auf anderen Plattformen als <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie nur in Browsern unterstützt, die für <ph name="PRODUCT_NAME" /> mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert sind.
+
+Wenn die Richtlinie „<ph name="CLOUD_PROFILE_REPORTING_ENABLED_POLICY_NAME" />“ für verwaltete Profile deaktiviert oder nicht konfiguriert ist, werden diese Richtlinien auf Profilebene ignoriert.</translation>
 <translation id="1678137412645922426">Die Richtlinie legt die Verwendung von <ph name="AES_KL_NAME" /> für die Verschlüsselung des Nutzerdatenspeichers fest, wenn diese unterstützt wird</translation>
 <translation id="1682063842123336408">Für die Installation von <ph name="PLUGIN_VM_NAME" /> erforderlicher freier Speicherplatz (in GB).
 
@@ -2812,6 +2817,15 @@ Hinweis: Ausführliche Beispiele findest du in den Chromium-Projekten unter http
 <translation id="305106159605171619">Verringerung des User-Agents ist deaktiviert und wurde nicht durch Feld- oder Ursprungstests aktiviert.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">Verwendung von Chrome for Testing nicht zulassen</translation>
+<translation id="3060608694980129910">Mit dieser Richtlinie wird festgelegt, ob in <ph name="PRODUCT_NAME" /> Cloud-Berichte zu Sicherheitssignalen für ein bestimmtes verwaltetes Profil erstellt werden.
+
+Wenn diese Richtlinie aktiviert ist, werden Sicherheitssignale zum Gerät, Browser und Profil an den Geräteverwaltungsserver gesendet.
+
+Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden keine Sicherheitssignale erhoben und hochgeladen.
+
+Der Bericht enthält Status- und Nutzungsinformationen zum Profil, darunter die Betriebssystemversion, die Browserversion, die installierten Erweiterungen und alle angewandten Richtlinien.
+
+Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.</translation>
 <translation id="3063302084011279315">Screencast deaktivieren</translation>
 <translation id="3063307261083019730">Seiten mit dem Header „<ph name="CACHE_CONTROL_NO_STORE_NAME" />“ dürfen nicht im Back-Forward-Cache gespeichert werden.</translation>
 <translation id="3064530882228745118">CNAME-Suche bei der Kerberos-Authentifizierung verwenden</translation>
@@ -5601,6 +5615,7 @@ Falls die Richtlinie nicht konfiguriert oder deaktiviert ist, können Cookies un
 <translation id="5152787786897382519">Sowohl in Chromium als auch in Google Chrome gibt es Richtliniengruppen, die in Abhängigkeit voneinander die Steuerung einer Funktion ermöglichen. Diese Richtliniensätze werden durch die folgenden Richtliniengruppen repräsentiert. Aufgrund der Tatsache, dass Richtlinien mehrere Quellen haben können, werden nur Werte, die aus der Quelle mit der höchsten Priorität stammen, angewendet. Werte aus einer Quelle mit niedrigerer Priorität in derselben Gruppe werden ignoriert. Die Hierarchie wird unter <ph name="POLICY_PRIORITY_DOC_URL" /> definiert.</translation>
 <translation id="5153187201534281749">Symbol für experimentelle Browserfunktionen auf der Symbolleiste</translation>
 <translation id="5159674159887919923">Keine zusätzlichen Hardwaredaten unter ChromeOS Flex senden</translation>
+<translation id="5162571264806471078">Cloud-Berichterstellung von Sicherheitssignalen in verwalteten Profilen aktivieren</translation>
 <translation id="5162982931329320509">Liste der Domains, die über DNS-over-HTTPS aufgelöst werden sollen. Domains, die nicht in der Liste enthalten sind, werden nicht über DNS-over-HTTPS aufgelöst. Diese Richtlinie wird ignoriert, wenn der sichere DNS-Modus deaktiviert ist (immer Nur-Text-DNS verwenden).
 
 Wenn die Liste leer oder nicht konfiguriert ist, werden alle Domains nach Möglichkeit über DNS-over-HTTPS aufgelöst. Das ist das gleiche Verhalten wie bei einer Liste mit eingeschlossenen Domains mit dem Wert [„*“].
@@ -5713,11 +5728,6 @@ Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bild
       Wenn die Richtlinie nicht konfiguriert ist, gilt der standardmäßige Zeitraum von 604.800.000 Millisekunden (eine Woche).</translation>
 <translation id="5212810195096589189">Berechtigung für VM-Befehlszeile festlegen</translation>
 <translation id="5213038356678567351">Websites, die unter keinen Umständen einen Browserwechsel auslösen sollten.</translation>
-<translation id="5216520638921067085">Gibt das Mindestalter für einen Release an, bei dessen Überschreitung die Benachrichtigungen zum Neustart aufdringlicher werden. Das Alter wird ab dem Zeitpunkt berechnet, zu dem die aktuell ausgeführte Version zuletzt an Clients ausgeliefert wurde.
-
-Wenn eine neue Version aussteht, ein Browser oder ein Gerät neu gestartet werden muss und die aktuelle Version länger als die in dieser Einstellung angegebene Anzahl von Tagen veraltet ist, wird die Richtlinie „<ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />“ überschrieben und auf 2 Stunden gesetzt. Wenn die Richtlinie „<ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" />“ auf 1 (erforderlich) festgelegt ist, müssen Nutzer am Ende des Zeitraums einen Neustart durchführen.
-
-Wenn die Richtlinie nicht konfiguriert ist oder das Alter des Release nicht ermittelt werden kann, wird die Richtlinie „<ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />“ für alle Updates verwendet.</translation>
 <translation id="5216815237712190041">Du kannst ein Hintergrundbild auf Geräteebene konfigurieren, das auf dem Anmeldebildschirm angezeigt wird, wenn sich noch kein Nutzer auf dem Gerät angemeldet hat. Zum Festlegen der Richtlinie muss die URL, über die das Chrome OS-Gerät das Hintergrundbild herunterladen kann, sowie ein kryptografischer Hash angegeben werden, um die Integrität des Downloads zu verifizieren. Das Bild muss im JPEG-Format vorliegen und darf nicht größer als 16 MB sein. Der Zugriff auf die URL muss ohne Authentifizierung möglich sein. Das Hintergrundbild wird heruntergeladen und im Cache gespeichert. Immer, wenn sich die URL oder der Hash ändert, wird es noch einmal heruntergeladen.
 
       Ist die Richtlinie für den Gerätehintergrund konfiguriert, lädt das Chrome OS-Gerät das Hintergrundbild herunter und zeigt es auf dem Anmeldebildschirm an, wenn sich noch kein Nutzer auf dem Gerät angemeldet hat. Sobald sich der Nutzer anmeldet, wird seine Hintergrundrichtlinie wirksam.
@@ -6299,6 +6309,7 @@ Hinweis: Diese Richtlinie gilt nicht für den Inkognito- oder Gastmodus.</transl
       Beachte, dass diese Einstellung nicht empfohlen wird, da hierdurch die "nameConstraints"-Erweiterung umgangen werden kann. Diese Erweiterung beschränkt die Hostnamen, für die ein bestimmtes Zertifikat autorisiert werden kann.
 
       Wenn diese Richtlinie nicht konfiguriert oder auf "false" eingestellt ist, werden Serverzertifikate ohne "subjectAlternativeName"-Erweiterung, die entweder einen DNS-Namen oder eine IP-Adresse enthalten, als nicht vertrauenswürdig eingestuft.</translation>
+<translation id="5576376485226897323">Cloud-Berichterstellung zu Nutzersicherheitssignalen deaktivieren</translation>
 <translation id="5576377426850850084">NTLM-Authentifizierung verwenden</translation>
 <translation id="5577475143148445339">Enthält die Anzahl der Tage sowie den Prozentanteil der Geräte, die aktualisiert werden sollen, wenn diese Tage verstrichen sind.</translation>
 <translation id="5582429816116769246">Mit dieser Richtlinie kannst du festlegen, ob Nutzer auf Drucker außerhalb des Unternehmens zugreifen dürfen.
@@ -6574,6 +6585,7 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, sind Glanceables 
       Wenn die Richtlinie auf "false" gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
       Ist sie auf "true" gesetzt, werden VPD-Informationen zum Gerät ausgegeben.
       Vital Product Data (VPD) sind Informationen zum Gerät selbst (z. B. Teile- und Seriennummern) und zur Konfiguration des Geräts.</translation>
+<translation id="5760861224093391268">Eigene Authentifizierung beim Erheben von Nutzersicherheitssignalen deaktivieren</translation>
 <translation id="5762969307102447459">Autofill für Adressdaten deaktivieren</translation>
 <translation id="5765780083710877561">Beschreibung:</translation>
 <translation id="5766438888216077649">Für Links, die <ph name="BLANK_PAGE_NAME" /> zum Ziel haben, sollte <ph name="WINDOW_OPENER_PROPERTY" /> nicht aktiviert werden</translation>
@@ -6752,6 +6764,15 @@ Wenn die Richtlinie deaktiviert ist, werden im Konzentrationsmodus keine Klänge
 <translation id="5893303508158298667">Wenn „<ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" />“ aktiviert ist, kann es Remote-Clients durch Aktivieren oder Nichtkonfigurieren von „<ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" />“ ermöglicht werden, über Relayserver eine Verbindung zu diesem Computer herzustellen, falls keine direkte Verbindung verfügbar ist, z. B. aufgrund von Firewallbeschränkungen.
 
       Ist diese Richtlinie deaktiviert, wird dadurch nicht der Remote-Zugriff deaktiviert. Stattdessen werden nur Verbindungen desselben Netzwerks zugelassen (nicht NAT-Traversal oder Relay).</translation>
+<translation id="5895049442553435093">Mit dieser Richtlinie wird die Verwendung einer eigenen Nutzerauthentifizierung durch <ph name="PRODUCT_NAME" /> gesteuert, wenn Nutzersicherheitssignale für ein bestimmtes verwaltetes Profil gemeldet werden.
+
+Wenn diese Richtlinie aktiviert ist, wird beim Hochladen von Sicherheitssignalen die eigene Authentifizierung verwendet.
+
+Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, wird beim Hochladen von Sicherheitssignalen die eigene Authentifizierung nicht verwendet.
+
+Berichte zu Sicherheitssignalen von Nutzern werden nur hochgeladen, wenn „<ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME" />“ aktiviert ist.
+
+Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.</translation>
 <translation id="5895569286536062756">„Vorlesen“ auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="5895861015839311441">Meldet Telemetriedaten zur App-Nutzung für verknüpfte Nutzer.
 
@@ -8882,6 +8903,7 @@ Jetzt werden Leerzeichen in allen Daten-URLs beibehalten, unabhängig vom Medien
 Wenn diese Richtlinie nicht konfiguriert oder auf „true“ gesetzt ist, ist das neue Verhalten aktiviert.
 
 Wenn diese Richtlinie auf „false“ gesetzt ist, ist das alte Verhalten aktiviert.</translation>
+<translation id="7366637365754181686">Cloud-Berichterstellung zu Nutzersicherheitssignalen aktivieren</translation>
 <translation id="7366948865469126526">Einheitenumrechnung über „Schnellinfo“ deaktivieren</translation>
 <translation id="7367734504783638685">Synchronisierung von Passwörtern zwischen SSO-Drittanbietern und Chrome-Geräten</translation>
 <translation id="7372831798009983116">Bedienungshilfe "Automatisch klicken" aktivieren</translation>
@@ -10742,6 +10764,7 @@ Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cl
 <translation id="8807728576820212213">Lens-Integration aktivieren</translation>
 <translation id="8809082103104823938">GIF-Unterstützung in der Emoji-Auswahl</translation>
 <translation id="8812091410765157924">Nur geöffneten Pop-ups mit dem Ziel <ph name="BLANK_PAGE_NAME" /> erlauben, mit der Seite zu interagieren, auf der das Pop-up geöffnet wurde, sofern die Seite einer solchen Interaktion ausdrücklich zustimmt</translation>
+<translation id="8812631362927615118">Eigene Authentifizierung beim Erheben von Nutzersicherheitssignalen aktivieren</translation>
 <translation id="8816370949847593408">Chrome-Apps dürfen unter Umständen nicht ausgeführt werden, je nach dem Status des Einstellungs-Roll-outs.</translation>
 <translation id="8818768076343557335">Netzwerkaktionen in allen Netzwerken außer Mobilfunknetzen vorhersagen.
           (Eingestellt in 50, entfernt in 52. Wird nach 52 der Wert 1 konfiguriert, wird er als 0 – "Netzwerkaktionen über alle Netzwerkverbindungen vervollständigen" behandelt.)</translation>

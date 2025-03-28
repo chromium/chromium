@@ -299,6 +299,8 @@ class SignedExchangeRequestHandlerBrowserTest
       WaitUntilSXGIsCached(url);
   }
 
+  void RunSimpleTest(std::string_view sxg_path);
+
  private:
   class CacheObserver : public PrefetchedSignedExchangeCache::TestObserver {
    public:
@@ -342,13 +344,14 @@ class SignedExchangeRequestHandlerBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Simple) {
+void SignedExchangeRequestHandlerBrowserTest::RunSimpleTest(
+    std::string_view sxg_path) {
   InstallMockCert();
   InstallMockCertChainInterceptor();
 
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/sxg/test.example.org_test.sxg");
+  GURL url = embedded_test_server()->GetURL(sxg_path);
 
   MaybeTriggerPrefetchSXG(url, true);
 
@@ -406,6 +409,14 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Simple) {
     histogram_tester_.ExpectTotalCount("PrefetchedSignedExchangeCache.Count",
                                        1);
   }
+}
+
+IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Simple) {
+  RunSimpleTest("/sxg/test.example.org_test.sxg");
+}
+
+IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Compressed) {
+  RunSimpleTest("/sxg/test.example.org_test.sxg.gz");
 }
 
 IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, VariantMatch) {

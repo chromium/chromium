@@ -155,7 +155,7 @@ class FamilyLinkSettingsState {
   // Sets the Advanced Setting toggles (Permissions, Extensions, Cookies) to
   // their default values.
   static FamilyLinkSettingsState SetAdvancedSettingsDefault();
-  // LINT.ThenChange(/ios/chrome/browser/ui/settings/supervised_user_family_link_app_interface.mm:TestFamilyLinkFamilyLinkSettingsStateHelper)
+  // LINT.ThenChange(/ios/chrome/browser/settings/ui_bundled/supervised_user_family_link_app_interface.mm)
   // After issuing, Permissions, Extensions and Cookies toggles are set to the
   // given values, if such a value is provided on the input list.
   static FamilyLinkSettingsState AdvancedSettingsToggles(

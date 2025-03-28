@@ -165,6 +165,7 @@ include_rules = [
   "+components/find_in_page",
   "+components/fingerprinting_protection_filter/browser",
   "+components/fingerprinting_protection_filter/common",
+  "+components/fingerprinting_protection_filter/interventions/browser",
   "+components/fingerprinting_protection_filter/mojom",
   "+components/gcm_driver",
   "+components/global_media_controls",

@@ -4425,7 +4425,7 @@ enum WebFeature {
   kOBSOLETE_V8LanguageDetector_Detect_Method = 5047,
   kOBSOLETE_V8Translation_CanDetect_Method = 5048,
   kOBSOLETE_V8Translation_CreateDetector_Method = 5049,
-  kV8AI_Summarizer_AttributeGetter = 5050,
+  kOBSOLETE_V8AI_Summarizer_AttributeGetter = 5050,
   kOBSOLETE_V8AISummarizer_Summarize_Method = 5051,
   kOBSOLETE_V8AISummarizer_SummarizeStreaming_Method = 5052,
   kOBSOLETE_V8AISummarizer_Destroy_Method = 5053,
@@ -4437,12 +4437,12 @@ enum WebFeature {
   kSharedStorageWriteFromSellerReportResult = 5059,
   kOBSOLETE_CSSInsetAreaProperty = 5060,
   kStructuredCloneMethod = 5061,
-  kV8AI_Writer_AttributeGetter = 5062,
+  kOBSOLETE_V8AI_Writer_AttributeGetter = 5062,
   kOBSOLETE_V8AIWriterFactory_Create_Method = 5063,
   kOBSOLETE_V8AIWriter_Write_Method = 5064,
   kOBSOLETE_V8AIWriter_WriteStreaming_Method = 5065,
   kOBSOLETE_V8AIWriter_Destroy_Method = 5066,
-  kV8AI_Rewriter_AttributeGetter = 5067,
+  kOBSOLETE_V8AI_Rewriter_AttributeGetter = 5067,
   kOBSOLETE_V8AIRewriterFactory_Create_Method = 5068,
   kOBSOLETE_V8AIRewriter_Rewrite_Method = 5069,
   kOBSOLETE_V8AIRewriter_RewriteStreaming_Method = 5070,
@@ -4842,6 +4842,7 @@ enum WebFeature {
   kSummarizer_OutputLanguage = 5456,
   kSummarizer_SharedContext = 5457,
   kSummarizer_Type = 5458,
+  kCrossOriginSameSiteCookieAccessViaStorageAccessAPI = 5459,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

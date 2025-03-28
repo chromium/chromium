@@ -25,6 +25,10 @@
 #include "components/sync/service/sync_prefs.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_sync_util.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
@@ -54,7 +58,7 @@ syncer::DataType GetDataTypeFromSignInPromoType(SignInPromoType type) {
     case SignInPromoType::kBookmark:
       return syncer::BOOKMARKS;
     case SignInPromoType::kExtension:
-      NOTREACHED();
+      return syncer::EXTENSIONS;
   }
 }
 
@@ -208,6 +212,57 @@ bool ShouldShowSyncPromo(Profile& profile) {
 #endif
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+bool ShouldShowExtensionSyncPromo(Profile& profile,
+                                  const extensions::Extension& extension) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Don't show the promo if it does not pass the sync base checks.
+  if (!signin::ShouldShowSyncPromo(profile)) {
+    return false;
+  }
+
+  if (!extensions::sync_util::ShouldSync(&profile, &extension)) {
+    return false;
+  }
+
+  // `ShouldShowSyncPromo()` does not check if extensions are syncing in
+  // transport mode. That's why `IsSyncingExtensionsEnabled()` is added so the
+  // sign in promo is not shown in that case.
+  if (extensions::sync_util::IsSyncingExtensionsEnabled(&profile)) {
+    return false;
+  }
+
+  // The promo is not shown to users that have explicitly signed in through the
+  // browser (even if extensions are not syncing).
+  if (profile.GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin)) {
+    return false;
+  }
+
+  return true;
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+}
+
+bool ShouldShowExtensionSignInPromo(Profile& profile,
+                                    const extensions::Extension& extension) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (!base::FeatureList::IsEnabled(
+          switches::kEnableExtensionsExplicitBrowserSignin)) {
+    return false;
+  }
+
+  if (!ShouldShowExtensionSyncPromo(profile, extension)) {
+    return false;
+  }
+
+  return ShouldShowSignInPromoCommon(profile, SignInPromoType::kExtension);
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 bool ShouldShowPasswordSignInPromo(Profile& profile) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

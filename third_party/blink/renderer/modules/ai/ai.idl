@@ -4,20 +4,11 @@
 
 // https://github.com/webmachinelearning/prompt-api
 
+// TODO(crbug.com/381969447): remove this and use AIInterfaceProxy
+// for LanguageModel instead.
 [
   Exposed=(Window,Worker),
   SecureContext,
   RuntimeEnabled=BuiltInAIAPI
 ]
-interface AI {
-  [
-    Measure,
-    RuntimeEnabled=AIPromptAPI
-  ]
-  readonly attribute AILanguageModelFactory languageModel;
-
-  [
-    RuntimeEnabled=LanguageDetectionAPI
-  ]
-  readonly attribute AILanguageDetectorFactory languageDetector;
-};
+interface AI {};

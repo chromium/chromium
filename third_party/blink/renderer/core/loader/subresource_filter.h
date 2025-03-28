@@ -43,7 +43,7 @@ class CORE_EXPORT SubresourceFilter final
   bool IsAdResource(const KURL& resource_url,
                     network::mojom::RequestDestination);
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
  private:
   void ReportLoad(const KURL& resource_url,

@@ -334,10 +334,6 @@ std::optional<gfx::PointF> Path::CurrentPoint() const {
   return std::nullopt;
 }
 
-void Path::SetWindRule(const WindRule rule) {
-  path_.setFillType(WebCoreWindRuleToSkFillType(rule));
-}
-
 void Path::MoveTo(const gfx::PointF& point) {
   path_.moveTo(gfx::PointFToSkPoint(point));
 }

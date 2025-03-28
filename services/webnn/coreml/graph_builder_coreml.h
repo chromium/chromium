@@ -288,6 +288,12 @@ class GraphBuilderCoreml {
       uint64_t output_operand_id,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForClamp(
+      uint64_t input_operand_id,
+      uint64_t output_operand_id,
+      float min_value,
+      float max_value,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForClamp(
       const mojom::Clamp& operation,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForConcat(
@@ -321,8 +327,12 @@ class GraphBuilderCoreml {
   AddOperationForDequantizeLinearEmulate(
       const mojom::DequantizeLinear& operation,
       CoreML::Specification::MILSpec::Block& block);
-  // Expand for given `repetition` on `axis` for blockwise (de)quantization.
-  [[nodiscard]] base::expected<uint64_t, mojom::ErrorPtr> ExpandForBlockwise(
+  [[nodiscard]] base::expected<std::pair<uint64_t, uint64_t>, mojom::ErrorPtr>
+  ExpandForBlockwise(uint64_t input_operand_id,
+                     uint64_t scale_operand_id,
+                     uint64_t zero_point_operand_id,
+                     CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<uint64_t, mojom::ErrorPtr> ExpandDimForBlockwise(
       uint64_t input_operand_id,
       size_t repetition_axis,
       int32_t repetitions,
@@ -463,6 +473,10 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForQuantizeLinear(const mojom::QuantizeLinear& operation,
                                 CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddOperationForQuantizeLinearEmulate(
+      const mojom::QuantizeLinear& operation,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForReduce(
       const mojom::Reduce& operation,
       CoreML::Specification::MILSpec::Block& block);
@@ -478,6 +492,10 @@ class GraphBuilderCoreml {
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForReverse(
       const mojom::Reverse& operation,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForRound(
+      uint64_t input_operand_id,
+      uint64_t output_operand_id,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForScatterElements(const mojom::ScatterElements& operation,

@@ -138,9 +138,15 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: String,
         value: CrFeedbackOption.UNSPECIFIED,
       },
+      hasPartialOutput_: {
+        type: Boolean,
+      },
       input_: {
         type: String,
         observer: 'onInputChanged_',
+      },
+      inputParams_: {
+        type: Object,
       },
       isEditingSubmittedInput_: {
         type: Boolean,
@@ -188,6 +194,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: Number,
         value: InputMode.kUnset,
       },
+      selectedModifier_: {
+        type: String,
+      },
       polishChipIcon_: {
         type: String,
         value: 'cr:check',
@@ -202,6 +211,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: String,
         value: 'compose:formalize',
         reflectToAttribute: true,
+      },
+      textSelected_: {
+        type: Boolean,
       },
       showMainAppDialog_: {
         type: Boolean,
@@ -228,11 +240,19 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: String,
         computed: 'getResponseText_(response_, partialResponse_)',
       },
+      showFirstRunDialog_: {
+        type: Boolean,
+      },
+      showMSBBDialog_: {
+        type: Boolean,
+      },
       outputComplete_: {
         type: Boolean,
+        value: true,
       },
       hasOutput_: {
         type: Boolean,
+        value: false,
       },
       displayedText_: {
         type: String,
@@ -280,50 +300,52 @@ export class ComposeAppElement extends ComposeAppElementBase {
     ];
   }
 
-  enableAnimations: boolean;
-  enableUpfrontInputModes: boolean;
+  declare enableAnimations: boolean;
+  declare enableUpfrontInputModes: boolean;
 
   private animator_: ComposeAppAnimator;
   private apiProxy_: ComposeApiProxy = ComposeApiProxyImpl.getInstance();
   private eventTracker_: EventTracker = new EventTracker();
   private router_: ComposeUntrustedDialogCallbackRouter =
       this.apiProxy_.getRouter();
-  private showFirstRunDialog_: boolean;
-  private showMainAppDialog_: boolean;
-  private showMSBBDialog_: boolean;
+  declare private hasPartialOutput_: boolean;
+  declare private showFirstRunDialog_: boolean;
+  declare private showMainAppDialog_: boolean;
+  declare private showMSBBDialog_: boolean;
   private shouldShowMSBBDialog_: boolean;
-  private editedInput_: string;
-  private feedbackState_: CrFeedbackOption;
-  private input_: string;
-  private inputParams_: ConfigurableParams;
-  private isEditingSubmittedInput_: boolean;
-  private isEditingResultText_: boolean;
-  private isEditSubmitEnabled_: boolean;
-  private isSubmitEnabled_: boolean;
-  private loading_: boolean;
-  private loadingIndicatorShown_: boolean;
-  private response_: ComposeResponse|null;
-  private partialResponse_: PartialComposeResponse|undefined;
-  private showInputModes_: boolean;
+  declare private editedInput_: string;
+  declare private feedbackState_: CrFeedbackOption;
+  declare private input_: string;
+  declare private inputParams_: ConfigurableParams;
+  declare private isEditingSubmittedInput_: boolean;
+  declare private isEditingResultText_: boolean;
+  declare private isEditSubmitEnabled_: boolean;
+  declare private isSubmitEnabled_: boolean;
+  declare private loading_: boolean;
+  declare private loadingIndicatorShown_: boolean;
+  declare private response_: ComposeResponse|null;
+  declare private partialResponse_: PartialComposeResponse|undefined;
+  declare private showInputModes_: boolean;
   private saveAppStateDebouncer_: Debouncer;
   private scrollCheckDebouncer_: Debouncer;
   private updateResultCompleteDebouncer_: Debouncer;
-  private selectedInputMode_: InputMode;
-  private polishChipIcon_: string;
-  private elaborateChipIcon_: string;
-  private formalizeChipIcon_: string;
-  private textSelected_: boolean;
-  private submitted_: boolean;
-  private undoEnabled_: boolean;
-  private redoEnabled_: boolean;
-  private feedbackEnabled_: boolean;
+  declare private selectedInputMode_: InputMode;
+  declare private selectedModifier_: string;
+  declare private polishChipIcon_: string;
+  declare private elaborateChipIcon_: string;
+  declare private formalizeChipIcon_: string;
+  declare private textSelected_: boolean;
+  declare private submitted_: boolean;
+  declare private undoEnabled_: boolean;
+  declare private redoEnabled_: boolean;
+  declare private feedbackEnabled_: boolean;
   private userHasModifiedState_: boolean = false;
   private lastTriggerElement_: TriggerElement;
-  private outputComplete_: boolean = true;
-  private hasOutput_: boolean = false;
-  private displayedText_: string;
-  private modifierOptions_: ModifierOption[];
-  private responseText_: string;
+  declare private outputComplete_: boolean;
+  declare private hasOutput_: boolean;
+  declare private displayedText_: string;
+  declare private modifierOptions_: ModifierOption[];
+  declare private responseText_: string;
   private userResponseText_: string|undefined;
 
   constructor() {

@@ -37,6 +37,8 @@ export class ExtensionApprovalsTemplate extends PolymerElement {
     };
   }
 
+  screenTitle: string;
+  screenSubtitle: string;
   extensionIconSrc: string;
   extensionName: string;
   extensionPermissions: Permission[];

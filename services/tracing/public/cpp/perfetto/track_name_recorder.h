@@ -46,6 +46,8 @@ class COMPONENT_EXPORT(TRACING_CPP) TrackNameRecorder
   void UpdateProcessLabel(int label_id, const std::string& current_label);
   void RemoveProcessLabel(int label_id);
 
+  void SetRecordHostAppPackageName(bool record_host_app_package_name);
+
  private:
   friend class base::NoDestructor<TrackNameRecorder>;
   using ChromeProcessDescriptor =
@@ -66,6 +68,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TrackNameRecorder
   }
 
   int64_t process_start_timestamp_;
+  bool record_host_app_package_name_{false};
 
   // This lock protects `process_labels_` member accesses from arbitrary
   // threads.

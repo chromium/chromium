@@ -206,10 +206,10 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
         @"First step of the passkey enrollment instructions"),
     NSLocalizedString(
         @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_INSTRUCTIONS_STEP_2",
-        @"First step of the passkey enrollment instructions"),
+        @"Second step of the passkey enrollment instructions"),
     NSLocalizedString(
         @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_INSTRUCTIONS_STEP_3",
-        @"First step of the passkey enrollment instructions"),
+        @"Third step of the passkey enrollment instructions"),
   ];
 
   InstructionView* instructionView =
@@ -234,7 +234,7 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
   CHECK(_userEmail);
   NSString* stringWithPlaceholder = NSLocalizedString(
       @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_FOOTER_MESSAGE",
-      @"Footer messsage shown at the bottom of the screen-specific view.");
+      @"Footer message shown at the bottom of the screen-specific view.");
   footerMessage.text =
       [stringWithPlaceholder stringByReplacingOccurrencesOfString:@"$1"
                                                        withString:_userEmail];

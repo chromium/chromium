@@ -46,15 +46,6 @@ enum InfobarSyncError : uint8_t {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncErrorInfobarTypes)
 
-// Returns true if the identity error info bar should be used instead of the
-// Sync error info bar. Returns false for the case where Sync-the-feature is
-// enabled, because GetAccountErrorUIInfo() is guaranteed to return nil.
-bool UseIdentityErrorInfobar(syncer::SyncService* sync_service) {
-  DCHECK(sync_service);
-
-  return GetAccountErrorUIInfo(sync_service) != nil;
-}
-
 // Gets the the title of the identity error info bar for the given `error`.
 std::u16string GetIdentityErrorInfoBarTitle(
     syncer::SyncService::UserActionableError error) {
@@ -169,7 +160,7 @@ std::u16string GetSyncErrorInfoBarTitleForProfile(ProfileIOS* profile) {
       SyncServiceFactory::GetForProfile(profile);
   DCHECK(sync_service);
 
-  if (UseIdentityErrorInfobar(sync_service)) {
+  if (GetAccountErrorUIInfo(sync_service) != nil) {
     return GetIdentityErrorInfoBarTitle(sync_service->GetUserActionableError());
   } else {
     // There is no title in Sync error info bar.
@@ -184,7 +175,7 @@ NSString* GetSyncErrorMessageForProfile(ProfileIOS* profile) {
   const syncer::SyncService::UserActionableError error =
       syncService->GetUserActionableError();
 
-  if (UseIdentityErrorInfobar(syncService)) {
+  if (GetAccountErrorUIInfo(syncService) != nil) {
     return GetIdentityErrorInfoBarMessage(error);
   }
 
@@ -216,7 +207,7 @@ NSString* GetSyncErrorButtonTitleForProfile(ProfileIOS* profile) {
   const syncer::SyncService::UserActionableError error =
       syncService->GetUserActionableError();
 
-  if (UseIdentityErrorInfobar(syncService)) {
+  if (GetAccountErrorUIInfo(syncService) != nil) {
     return GetIdentityErrorInfoBarButtonLabel(error);
   }
 
@@ -270,7 +261,7 @@ bool DisplaySyncErrors(ProfileIOS* profile,
     return false;
   }
 
-  if (!UseIdentityErrorInfobar(syncService)) {
+  if (GetAccountErrorUIInfo(syncService) == nil) {
     // If the identity error info bar isn't used, fallback to the Sync error
     // info bar.
 

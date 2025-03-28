@@ -315,6 +315,14 @@ void CustomizeChromeUI::AttachedTabStateUpdated(
   }
 }
 
+void CustomizeChromeUI::UpdateThemeEditable(bool is_theme_editable) {
+  if (customize_chrome_page_handler_) {
+    customize_chrome_page_handler_->UpdateThemeEditable(is_theme_editable);
+  } else {
+    is_theme_editable_ = is_theme_editable;
+  }
+}
+
 base::WeakPtr<CustomizeChromeUI> CustomizeChromeUI::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
@@ -405,6 +413,11 @@ void CustomizeChromeUI::CreatePageHandler(
     customize_chrome_page_handler_->AttachedTabStateUpdated(
         is_source_tab_first_party_ntp_.value());
     is_source_tab_first_party_ntp_.reset();
+  }
+  if (is_theme_editable_.has_value()) {
+    customize_chrome_page_handler_->UpdateThemeEditable(
+        is_theme_editable_.value());
+    is_theme_editable_.reset();
   }
 }
 

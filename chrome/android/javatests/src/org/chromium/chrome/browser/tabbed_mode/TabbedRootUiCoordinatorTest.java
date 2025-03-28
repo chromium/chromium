@@ -36,6 +36,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -75,6 +76,7 @@ public class TabbedRootUiCoordinatorTest {
                     doReturn(false).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
                 });
 
+        BookmarkBarUtils.setSettingEnabledForTesting(true);
         TabbedRootUiCoordinator.setDisableTopControlsAnimationsForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
         mTabbedRootUiCoordinator =

@@ -284,6 +284,14 @@ OmniboxUrlSuggestionsOnFocus::OmniboxUrlSuggestionsOnFocus() {
                                "OnFocusMostVisitedDirectlyQueryHistoryService",
                                true)
           .Get();
+  prefetch_most_visited_sites =
+      base::FeatureParam<bool>(&kOmniboxUrlSuggestionsOnFocus,
+                               "OnFocusPrefetchMostVisitedSites", true)
+          .Get();
+  prefetch_most_visited_sites_delay_ms =
+      base::FeatureParam<int>(&kOmniboxUrlSuggestionsOnFocus,
+                              "OnFocusPrefetchDelay", 300)
+          .Get();
 }
 
 OmniboxUrlSuggestionsOnFocus::OmniboxUrlSuggestionsOnFocus(
@@ -293,6 +301,10 @@ OmniboxUrlSuggestionsOnFocus& OmniboxUrlSuggestionsOnFocus::operator=(
     const OmniboxUrlSuggestionsOnFocus&) = default;
 
 OmniboxUrlSuggestionsOnFocus::~OmniboxUrlSuggestionsOnFocus() = default;
+
+bool OmniboxUrlSuggestionsOnFocus::MostVisitedPrefetchingEnabled() const {
+  return enabled && prefetch_most_visited_sites;
+}
 
 BASE_FEATURE(HappinessTrackingSurveyForOmniboxOnFocusZps::
                  kHappinessTrackingSurveyForOmniboxOnFocusZps,

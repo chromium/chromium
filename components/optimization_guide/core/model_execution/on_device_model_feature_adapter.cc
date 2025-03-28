@@ -26,11 +26,11 @@
 namespace optimization_guide {
 
 OnDeviceModelFeatureAdapter::OnDeviceModelFeatureAdapter(
-    proto::OnDeviceModelExecutionFeatureConfig&& config)
-    : config_(config),
-      redactor_(Redactor::FromProto(config.output_config().redact_rules())),
+    proto::OnDeviceModelExecutionFeatureConfig config)
+    : config_(std::move(config)),
+      redactor_(Redactor::FromProto(config_.output_config().redact_rules())),
       response_streaming_mode_(
-          config.output_config().response_streaming_mode()),
+          config_.output_config().response_streaming_mode()),
       parser_(
           ResponseParserRegistry::Get().CreateParser(config_.output_config())) {
   // Set limits values in `token_limits_`.

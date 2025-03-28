@@ -80,10 +80,6 @@ GlicButton::~GlicButton() = default;
 void GlicButton::SetShowState(bool show) {
   show_state_ = show;
 
-  // Don't update visibility while the nudge is showing.
-  if (is_showing_nudge_) {
-    return;
-  }
   SetVisible(show_state_);
 
   PreferredSizeChanged();
@@ -94,6 +90,11 @@ void GlicButton::SetIcon(const gfx::VectorIcon& icon) {
 }
 
 void GlicButton::SetIsShowingNudge(bool is_showing) {
+  if (is_showing) {
+    SetCloseButtonFocusBehavior(FocusBehavior::ALWAYS);
+  } else {
+    SetCloseButtonFocusBehavior(FocusBehavior::NEVER);
+  }
   is_showing_nudge_ = is_showing;
   PreferredSizeChanged();
 }

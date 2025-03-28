@@ -9,6 +9,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "components/favicon/content/content_favicon_driver.h"
+#include "components/favicon/core/favicon_driver.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
@@ -41,7 +43,7 @@ int IdentityDialogController::GetBrandIconIdealSize(
 }
 
 bool IdentityDialogController::ShowAccountsDialog(
-    const std::string& rp_for_display,
+    content::RelyingPartyData rp_data,
     const std::vector<IdentityProviderDataPtr>& identity_provider_data,
     const std::vector<IdentityRequestAccountPtr>& accounts,
     content::IdentityRequestAccount::SignInMode sign_in_mode,
@@ -59,7 +61,12 @@ bool IdentityDialogController::ShowAccountsDialog(
   if (!TrySetAccountView()) {
     return false;
   }
-  return account_view_->Show(rp_for_display, identity_provider_data, accounts,
+  favicon::FaviconDriver* favicon_driver =
+      favicon::ContentFaviconDriver::FromWebContents(rp_web_contents_);
+  if (favicon_driver) {
+    rp_data.rp_icon = favicon_driver->GetFavicon();
+  }
+  return account_view_->Show(rp_data, identity_provider_data, accounts,
                              sign_in_mode, rp_mode, new_accounts);
 }
 

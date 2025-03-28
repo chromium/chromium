@@ -447,11 +447,15 @@ LoadModelResult OnDeviceModelExecutor::Init(
   ChromeMLModelData data;
   std::string weights_path_str = assets.weights_path.AsUTF8Unsafe();
   std::string sp_model_path_str = assets.sp_model_path.AsUTF8Unsafe();
-  if (params->backend_type == ml::ModelBackendType::kGpuBackend) {
-    data.weights_file = assets.weights.TakePlatformFile();
-  } else {
-    data.model_path = weights_path_str.data();
-    data.sentencepiece_model_path = sp_model_path_str.data();
+  switch (params->backend_type) {
+    case ModelBackendType::kGpuBackend:
+    case ModelBackendType::kCpuBackend:
+      data.weights_file = assets.weights.TakePlatformFile();
+      break;
+    case ModelBackendType::kApuBackend:
+      data.model_path = weights_path_str.data();
+      data.sentencepiece_model_path = sp_model_path_str.data();
+      break;
   }
   ChromeMLModelDescriptor descriptor = {
       .backend_type = params->backend_type,

@@ -411,7 +411,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   passwordCell.textField.text = password;
   self.passwordText = password;
   // Move voiceover focus to the save button so the user knows that something
-  // has happend and the save button is now enabled.
+  // has happened and the save button is now enabled.
   UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
                                   self.navigationItem.rightBarButtonItem);
   [self updateSaveButtonState];

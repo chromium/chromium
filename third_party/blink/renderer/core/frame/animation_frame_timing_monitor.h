@@ -47,7 +47,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   ~AnimationFrameTimingMonitor() override = default;
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
   void Shutdown();
 

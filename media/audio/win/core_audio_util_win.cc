@@ -5,9 +5,9 @@
 #include "media/audio/win/core_audio_util_win.h"
 
 #include <objbase.h>
-
 #include <comdef.h>
-#include <devicetopology.h>
+#include <initguid.h>  // It should be before `devpkey.h`
+#include <devpkey.h>
 #include <functiondiscoverykeys_devpkey.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -22,12 +22,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_propvariant.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -772,49 +774,23 @@ HRESULT CoreAudioUtil::GetDeviceName(IMMDevice* device, AudioDeviceName* name) {
   return hr;
 }
 
-std::string CoreAudioUtil::GetAudioControllerID(IMMDevice* device,
-    IMMDeviceEnumerator* enumerator) {
-  // Fetching the controller device id could be as simple as fetching the value
-  // of the "{B3F8FA53-0004-438E-9003-51A46E139BFC},2" property in the property
-  // store of the |device|, but that key isn't defined in any header and
-  // according to MS should not be relied upon.
-  // So, instead, we go deeper, look at the device topology and fetch the
-  // PKEY_Device_InstanceId of the associated physical audio device.
-  ComPtr<IDeviceTopology> topology;
-  ComPtr<IConnector> connector;
-  ScopedCoMem<WCHAR> filter_id;
-  if (FAILED(device->Activate(__uuidof(IDeviceTopology), CLSCTX_ALL, NULL,
-                              &topology)) ||
-      // For our purposes checking the first connected device should be enough
-      // and if there are cases where there are more than one device connected
-      // we're not sure how to handle that anyway. So we pass 0.
-      FAILED(topology->GetConnector(0, &connector)) ||
-      FAILED(connector->GetDeviceIdConnectedTo(&filter_id))) {
-    DLOG(ERROR) << "Failed to get the device identifier of the audio device";
-    return std::string();
-  }
-
-  // Now look at the properties of the connected device node and fetch the
-  // instance id (PKEY_Device_InstanceId) of the device node that uniquely
-  // identifies the controller.
-  ComPtr<IMMDevice> device_node;
+std::string CoreAudioUtil::GetAudioControllerID(IMMDevice* device) {
+  // Windows uses device container to represent the same physical device
+  // regardless of the number of devices nodes. The container id is a GUID
+  // and can be retrieved by using the `DEVPKEY_Device_ContainerId`.
+  // https://learn.microsoft.com/en-us/windows-hardware/drivers/install/devpkey-device-containerid.
   ComPtr<IPropertyStore> properties;
   base::win::ScopedPropVariant instance_id;
-  if (FAILED(enumerator->GetDevice(filter_id, &device_node)) ||
-      FAILED(device_node->OpenPropertyStore(STGM_READ, &properties)) ||
-      FAILED(properties->GetValue(PKEY_Device_InstanceId,
+  if (FAILED(device->OpenPropertyStore(STGM_READ, &properties)) ||
+      FAILED(properties->GetValue((REFPROPERTYKEY)DEVPKEY_Device_ContainerId,
                                   instance_id.Receive())) ||
-      instance_id.get().vt != VT_LPWSTR) {
+      instance_id.get().vt != VT_CLSID) {
     DLOG(ERROR) << "Failed to get instance id of the audio device node";
     return std::string();
   }
 
-  std::string controller_id;
-  base::WideToUTF8(instance_id.get().pwszVal,
-                   UNSAFE_TODO(wcslen(instance_id.get().pwszVal)),
-                   &controller_id);
-
-  return controller_id;
+  return base::SysWideToUTF8(
+      base::win::WStringFromGUID(*instance_id.get().puuid));
 }
 
 std::string CoreAudioUtil::GetMatchingOutputDeviceID(
@@ -838,14 +814,13 @@ std::string CoreAudioUtil::GetMatchingOutputDeviceID(
     return std::string();
 
   // See if we can get id of the associated controller.
-  ComPtr<IMMDeviceEnumerator> enumerator(CreateDeviceEnumerator());
-  std::string controller_id(
-      GetAudioControllerID(input_device.Get(), enumerator.Get()));
+  std::string controller_id(GetAudioControllerID(input_device.Get()));
   if (controller_id.empty())
     return std::string();
 
   // Now enumerate the available (and active) output devices and see if any of
   // them is associated with the same controller.
+  ComPtr<IMMDeviceEnumerator> enumerator(CreateDeviceEnumerator());
   ComPtr<IMMDeviceCollection> collection;
   enumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &collection);
   if (!collection.Get())
@@ -856,8 +831,7 @@ std::string CoreAudioUtil::GetMatchingOutputDeviceID(
   ComPtr<IMMDevice> output_device;
   for (UINT i = 0; i < count; ++i) {
     collection->Item(i, &output_device);
-    std::string output_controller_id(
-        GetAudioControllerID(output_device.Get(), enumerator.Get()));
+    std::string output_controller_id(GetAudioControllerID(output_device.Get()));
     if (output_controller_id == controller_id)
       break;
     output_device = nullptr;

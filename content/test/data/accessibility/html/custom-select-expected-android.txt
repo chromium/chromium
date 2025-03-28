@@ -4,8 +4,8 @@ android.webkit.WebView focusable focused
 ++++++android.view.View invisible
 ++++++++android.view.View invisible
 ++++++++++android.view.View invisible
-++++++++++++android.view.View clickable focusable invisible name='EUR Euro'
-++++++++++++android.view.View clickable focusable invisible name='GBP Great British Pound'
-++++++++++++android.view.View clickable focusable selected interesting name='USD United States Dollar'
-++++++++++++android.view.View clickable focusable invisible name='JPY Japanese Yen'
-++++++++++++android.view.View clickable focusable invisible name='BTC Bitcoin'
+++++++++++++android.view.View clickable focusable invisible name='EUR Euro' selection_mode=1
+++++++++++++android.view.View clickable focusable invisible name='GBP Great British Pound' selection_mode=1
+++++++++++++android.view.View clickable focusable selected interesting name='USD United States Dollar' selection_mode=1
+++++++++++++android.view.View clickable focusable invisible name='JPY Japanese Yen' selection_mode=1
+++++++++++++android.view.View clickable focusable invisible name='BTC Bitcoin' selection_mode=1

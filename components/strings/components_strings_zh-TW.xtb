@@ -223,7 +223,6 @@
 <translation id="1363028406613469049">追蹤</translation>
 <translation id="1364822246244961190">這項政策遭到封鎖，系統會忽略其設定值。</translation>
 <translation id="1368318639262510626">在這款恐龍遊戲中，你要協助在荒野中奔馳的像素風恐龍閃避仙人掌和翼手龍。聽見提示音效時，按下空白鍵即可躍過障礙物。</translation>
-<translation id="1369735141991626842">使用 AI 填寫欄位</translation>
 <translation id="1374468813861204354">建議</translation>
 <translation id="1375198122581997741">關於版本</translation>
 <translation id="1375293861397106342">所有選項一般介於 <ph name="LOW_PRICE" /> 到 <ph name="HIGH_PRICE" /> 之間</translation>
@@ -538,7 +537,6 @@
 <translation id="1919526244108283799">400 x 600 公釐</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{無}=1{1 個網站}other{# 個網站}}</translation>
 <translation id="192095259937375524">「分享此分頁」按鈕，啟動後即可利用分享連結、建立 QR code、投放等功能分享這個分頁</translation>
-<translation id="1921479021518565778">已載入建議</translation>
 <translation id="1924727005275031552">新地址</translation>
 <translation id="1927439846988093361">頭髮保養</translation>
 <translation id="1935353813610900265">針對採用 AI 技術的搜尋記錄功能提供意見</translation>
@@ -973,6 +971,7 @@
 <translation id="2688186765492306706">500 x 760 公釐</translation>
 <translation id="2688969097326701645">是，請繼續</translation>
 <translation id="2690699652723742414">過去 30 天</translation>
+<translation id="2691385045260836588">型號</translation>
 <translation id="2691924980723297736">安全警告</translation>
 <translation id="2697248912349197812">問問 <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">有可用的子選單，請使用<ph name="SHORTCUT" />前往其他選項。</translation>
@@ -1527,6 +1526,7 @@
 <translation id="3664782872746246217">關鍵字：</translation>
 <translation id="3665100783276035932">大多數網站應該都能正常運作</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />瞭解詳情<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">號碼</translation>
 <translation id="3670229581627177274">開啟藍牙功能</translation>
 <translation id="3671117652518853176">在關閉狀態下，系統基於安全考量，可能會偶爾要求你進行驗證</translation>
 <translation id="3671540257457995106">要允許調整大小嗎？</translation>
@@ -1541,7 +1541,6 @@
 <translation id="3681007416295224113">憑證資訊</translation>
 <translation id="3681421644246505351">Chrome 會根據你近期的瀏覽記錄，記下你感興趣的主題。</translation>
 <translation id="3682094733650754138">已選取「填入地址」選項</translation>
-<translation id="3687493962714153124">使用 AI 管理自動填入功能</translation>
 <translation id="3687920599421452763">貨車與小貨車</translation>
 <translation id="3693327506115126094">選擇身分驗證方式</translation>
 <translation id="3698353241727597930">系統管理員已將<ph name="FILES" />的儲存位置設為由貴公司管理的 <ph name="CLOUD_STORAGE" />。即使你刪除這些檔案，貴公司仍可能會監控、稽核及保留這些檔案。</translation>
@@ -1694,6 +1693,7 @@
 <translation id="3950820424414687140">登入</translation>
 <translation id="3953505489397572035">這個價格符合一般行情</translation>
 <translation id="3958057596965527988">4 x 4 吋</translation>
+<translation id="3959969108528118741">擁有者</translation>
 <translation id="3961148744525529027">已在畫面下半部顯示付款處理常式工作表</translation>
 <translation id="3962859241508114581">上一首曲目</translation>
 <translation id="3963721102035795474">閱讀器模式</translation>
@@ -1919,7 +1919,6 @@
 <translation id="4312866146174492540">封鎖 (預設)</translation>
 <translation id="4314815835985389558">管理同步資料</translation>
 <translation id="4316057107946726368">請輸入原因訊息 (最多 <ph name="MAX_CHAR_COUNT" /> 個半形字元)。已輸入 <ph name="ACTUAL_CHAR_COUNT" /> 個半形字元 (上限：<ph name="MAX_CHAR_COUNT" /> 個半形字元)。</translation>
-<translation id="431740489189220419">正在載入建議</translation>
 <translation id="4318213823155573975">頭飾</translation>
 <translation id="4318312030194671742">繪製預覽合成器服務</translation>
 <translation id="4318566738941496689">你的裝置名稱和網路位址</translation>
@@ -2326,6 +2325,7 @@
 <translation id="5087286274860437796">伺服器憑證目前無效。</translation>
 <translation id="5087580092889165836">新增信用卡</translation>
 <translation id="5088142053160410913">給操作員的訊息</translation>
+<translation id="5089810972385038852">州</translation>
 <translation id="5090647584136241764">新增含有類似產品的分頁，輕鬆比較重要的詳細資料</translation>
 <translation id="5093232627742069661">彈簧二摺</translation>
 <translation id="5094747076828555589">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得 Chromium 的信任。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
@@ -2464,6 +2464,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />預設搜尋引擎可提供網路搜尋服務並支援 Chromium 功能<ph name="END_BOLD" />，例如使用網址列和網頁上的圖片進行搜尋。請注意，功能可用與否取決於搜尋引擎是否支援該功能。</translation>
 <translation id="5323043727018853753">允許內嵌的內容</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />，<ph name="NUM_MATCHES" /> 之 <ph name="MATCH_POSITION" /></translation>
+<translation id="5327248766486351172">名稱</translation>
 <translation id="5329858041417644019">你的瀏覽器未受管理</translation>
 <translation id="5331585574693522196">設為預設</translation>
 <translation id="5332219387342487447">運送方式</translation>
@@ -2676,7 +2677,6 @@
 <translation id="569000877158168851">除非 DnsOverHttpsMode 政策設為 <ph name="SECURE_DNS_MODE_AUTOMATIC" /> 或 <ph name="SECURE_DNS_MODE_SECURE" />，否則 DnsOverHttpsTemplates 的值不具關聯性，系統也不會使用該值。</translation>
 <translation id="5691848789297492617">儲存內容資訊卡功能表已完整開啟。</translation>
 <translation id="5695542892312572833">要使用 Windows Hello 驗證並完成購物嗎？</translation>
-<translation id="5697827549745555938">系統會將你儲存的資訊和這個頁面傳送給 Google，看看自動填入功能可否協助填寫這份表單。這些資料也可能由人工審查員查看，以提升這項功能。</translation>
 <translation id="5699628521141772782">奶製品與雞蛋</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
 <translation id="5701381305118179107">置中</translation>
@@ -3105,6 +3105,7 @@
 <translation id="6440503408713884761">已忽略</translation>
 <translation id="6443406338865242315">你安裝的擴充功能和外掛程式</translation>
 <translation id="6444329331928531170">退休規劃與退休金</translation>
+<translation id="6445051938772793705">國家/地區</translation>
 <translation id="6446608382365791566">新增詳細資訊</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6448371595882710519">進一步瞭解資料控制選項</translation>
@@ -3586,7 +3587,6 @@
 <translation id="7316521168101843192">正在將檔案儲存至 Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">連線說明</translation>
-<translation id="7321111802407017850">儲存資訊以便自動填入</translation>
 <translation id="7323804146520582233">隱藏「<ph name="SECTION" />」部分</translation>
 <translation id="733354035281974745">裝置本機帳戶覆寫</translation>
 <translation id="7334320624316649418">重做重新排序(&amp;R)</translation>

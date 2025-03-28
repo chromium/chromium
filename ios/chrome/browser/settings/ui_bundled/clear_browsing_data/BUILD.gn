@@ -199,6 +199,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/browsing_data/core",
     "//components/browsing_data/core:cookie_or_cache_deletion_choice",
+    "//components/data_sharing/public:features",
     "//components/signin/internal/identity_manager:capabilities",
     "//components/signin/public/base",
     "//components/strings",

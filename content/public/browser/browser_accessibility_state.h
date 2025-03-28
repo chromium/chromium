@@ -104,9 +104,6 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // to this state.
   virtual ui::AssistiveTech ActiveAssistiveTech() const = 0;
 
-  // Returns true if the browser should be customized for accessibility.
-  virtual bool IsAccessibleBrowser() = 0;
-
   // Update BrowserAccessibilityState with the current status of performance
   // filtering.
   virtual void SetPerformanceFilteringAllowed(bool allowed) = 0;

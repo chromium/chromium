@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
+#include "base/synchronization/lock_impl.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "sandbox/linux/seccomp-bpf-helpers/baseline_policy.h"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -32,10 +32,13 @@
 #include <tuple>
 
 #include "base/clang_profiling_buildflags.h"
+#include "base/features.h"
 #include "base/files/scoped_file.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "sandbox/linux/seccomp-bpf-helpers/baseline_policy.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/seccomp-bpf/bpf_tests.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
@@ -365,31 +368,67 @@ BPF_TEST_C(BaselinePolicy, FutexEINVAL, BaselinePolicy) {
   }
 }
 #else
-BPF_DEATH_TEST_C(BaselinePolicy,
-                 FutexWithRequeuePriorityInheritence,
-                 DEATH_SEGV_MESSAGE(GetFutexErrorMessageContentForTests()),
-                 BaselinePolicy) {
-  syscall(__NR_futex, nullptr, FUTEX_CMP_REQUEUE_PI, 0, nullptr, nullptr, 0);
-  _exit(1);
-}
 
-BPF_DEATH_TEST_C(BaselinePolicy,
-                 FutexWithRequeuePriorityInheritencePrivate,
-                 DEATH_SEGV_MESSAGE(GetFutexErrorMessageContentForTests()),
-                 BaselinePolicy) {
-  syscall(__NR_futex, nullptr, FUTEX_CMP_REQUEUE_PI_PRIVATE, 0, nullptr,
-          nullptr, 0);
-  _exit(1);
-}
+#define TEST_BASELINE_PI_FUTEX(op)                            \
+  _TEST_BASELINE_PI_FUTEX(BaselinePolicy, Futex_##op) {       \
+    syscall(__NR_futex, nullptr, op, 0, nullptr, nullptr, 0); \
+    _exit(1);                                                 \
+  }
 
-BPF_DEATH_TEST_C(BaselinePolicy,
-                 FutexWithUnlockPIPrivate,
-                 DEATH_SEGV_MESSAGE(GetFutexErrorMessageContentForTests()),
-                 BaselinePolicy) {
-  syscall(__NR_futex, nullptr, FUTEX_UNLOCK_PI_PRIVATE, 0, nullptr, nullptr, 0);
-  _exit(1);
+#if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
+// PI futexes are only allowed by the sandbox on kernels >= 6.1 and if the
+// kUsePriorityInheritanceMutex is enabled. In order to test this,
+// |_TEST_BASELINE_PI_FUTEX| generates a test which has two parts:
+//  - The first part of the test enables the feature and performs the futex
+//    syscall in a child process with the provided futex operation. Then it
+//    asserts that the syscall succeed only if the kernel version is at
+//    least 6.1.
+//  - The second part of the test disables the feature and performs the futex
+//    syscall in a child process with the provided futex operation. Then it
+//    asserts that the syscall always crashes the process.
+#define _TEST_BASELINE_PI_FUTEX(test_case_name, test_name)          \
+  void BPF_TEST_PI_FUTEX_##test_name();                             \
+  TEST(test_case_name, DISABLE_ON_TSAN(test_name)) {                \
+    __TEST_BASELINE_PI_FUTEX(BPF_TEST_PI_FUTEX_##test_name, true);  \
+    __TEST_BASELINE_PI_FUTEX(BPF_TEST_PI_FUTEX_##test_name, false); \
+  }                                                                 \
+  void BPF_TEST_PI_FUTEX_##test_name()
+
+#define __TEST_BASELINE_PI_FUTEX(test_name, use_pi_mutex)                 \
+  {                                                                       \
+    base::test::ScopedFeatureList feature_;                               \
+    feature_.InitWithFeatureState(                                        \
+        base::features::kUsePriorityInheritanceMutex, use_pi_mutex);      \
+    sandbox::SandboxBPFTestRunner bpf_test_runner(                        \
+        new BPFTesterSimpleDelegate<BaselinePolicy>(test_name));          \
+    sandbox::UnitTests::RunTestInProcess(                                 \
+        &bpf_test_runner, PIFutexDeath,                                   \
+        static_cast<const void*>(GetFutexErrorMessageContentForTests())); \
+  }
+
+void PIFutexDeath(int status, const std::string& msg, const void* aux) {
+  if (base::KernelSupportsPriorityInheritanceFutex() &&
+      base::FeatureList::IsEnabled(
+          base::features::kUsePriorityInheritanceMutex)) {
+    sandbox::UnitTests::DeathSuccess(status, msg, nullptr);
+  } else {
+    sandbox::UnitTests::DeathSEGVMessage(status, msg, aux);
+  }
 }
-#endif  // defined(LIBC_GLIBC) && !BUILDFLAG(IS_CHROMEOS)
+#else
+#define _TEST_BASELINE_PI_FUTEX(test_case_name, test_name)                    \
+  BPF_DEATH_TEST_C(BaselinePolicy, test_name,                                 \
+                   DEATH_SEGV_MESSAGE(GetFutexErrorMessageContentForTests()), \
+                   BaselinePolicy)
+#endif
+
+TEST_BASELINE_PI_FUTEX(FUTEX_LOCK_PI)
+TEST_BASELINE_PI_FUTEX(FUTEX_LOCK_PI2)
+TEST_BASELINE_PI_FUTEX(FUTEX_TRYLOCK_PI)
+TEST_BASELINE_PI_FUTEX(FUTEX_WAIT_REQUEUE_PI)
+TEST_BASELINE_PI_FUTEX(FUTEX_CMP_REQUEUE_PI)
+TEST_BASELINE_PI_FUTEX(FUTEX_UNLOCK_PI_PRIVATE)
+#endif
 
 BPF_TEST_C(BaselinePolicy, PrctlDumpable, BaselinePolicy) {
   const int is_dumpable = prctl(PR_GET_DUMPABLE, 0, 0, 0, 0);

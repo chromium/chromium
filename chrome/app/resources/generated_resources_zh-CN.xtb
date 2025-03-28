@@ -1558,7 +1558,6 @@
 <translation id="2081816110395725788">使用电池时让电源闲置</translation>
 <translation id="2082187087049518845">为标签页建组</translation>
 <translation id="2082510809738716738">选择一种主题背景颜色</translation>
-<translation id="208547068587548667">登录 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">请重试</translation>
 <translation id="208634871997892083">始终开启的 VPN</translation>
 <translation id="208654914566977272">在搜索屏幕时显示操作建议</translation>
@@ -1999,6 +1998,7 @@
 <translation id="2373666622366160481">适合纸张大小</translation>
 <translation id="2375406435414127095">连接到您的手机</translation>
 <translation id="2376056713414548745">大声朗读</translation>
+<translation id="2376122016044804363">已复制到剪贴板的确认消息</translation>
 <translation id="2377667304966270281">硬故障数</translation>
 <translation id="237828693408258535">翻译此页？</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{此扩展程序可能很快将不再受支持}other{这些扩展程序可能很快将不再受支持}}</translation>
@@ -3150,6 +3150,7 @@
 <translation id="3192586965067888278">详细描述问题。反馈将发送给 Google 进行人工审核，并可能会用于改进或开发 Google 产品和服务。</translation>
 <translation id="3192947282887913208">音频文件</translation>
 <translation id="3193695589337931419">系统信号实用程序</translation>
+<translation id="3194095220941877499">复制链接、图片或视频时显示确认消息</translation>
 <translation id="3196912927885212665">您需要开启 Chromebook 的蓝牙，才能使用 Android 手机进行设置</translation>
 <translation id="3197453258332670132">只要您右键点击或长按所选文字，系统就会显示与其相关的信息</translation>
 <translation id="3199127022143353223">服务器</translation>
@@ -3987,7 +3988,6 @@
 <translation id="3778740492972734840">开发者工具(&amp;D)</translation>
 <translation id="3778868487658107119">您可以向它询问各种问题，指示它处理各种事务。它是专门为您配置的 Google 助手，随时为您提供帮助。</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# 个网站上的浏览记录}other{# 个网站上的浏览记录}}</translation>
-<translation id="3779244863011082655">使用其他 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 账号</translation>
 <translation id="3780542776224651912"><ph name="BRAND" />无法检查您的密码是否遭遇了数据泄露。请稍后重试。</translation>
 <translation id="3781742599892759500">Linux 麦克风使用权限</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5489,6 +5489,7 @@
 <translation id="4848191975108266266">Google 助理“Ok Google”</translation>
 <translation id="4849286518551984791">协调世界时 (UTC/GMT)</translation>
 <translation id="4849517651082200438">不安装</translation>
+<translation id="4849731766219625109">使用您的 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 账号</translation>
 <translation id="485053257961878904">无法设置通知同步</translation>
 <translation id="4850548109381269495">在这两台设备上，检查您的互联网连接并开启蓝牙。然后，再试一次。</translation>
 <translation id="4850669014075537160">滚动</translation>
@@ -5623,7 +5624,7 @@
 <translation id="4938052313977274277">速度</translation>
 <translation id="4939805055470675027">无法连接到<ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">有 <ph name="PRINTER_COUNT" /> 台可保存的打印机。</translation>
-<translation id="4940448324259979830">该账号由 <ph name="PROFILE_NAME" /> 管理</translation>
+<translation id="4940448324259979830">这个账号由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="4940845626435830013">预留磁盘空间大小</translation>
 <translation id="4941246025622441835">将设备登记到企业管理目录下时使用此设备前提条件：</translation>
 <translation id="4941627891654116707">字号</translation>
@@ -5677,6 +5678,7 @@
 <translation id="4979510648199782334">Microsoft 365 设置完毕</translation>
 <translation id="4980805016576257426">此扩展程序包含恶意软件。</translation>
 <translation id="4983159853748980742">未能分享密码。请检查互联网连接，确保您已登录 Chrome。然后，再试一次。</translation>
+<translation id="498624032394115435">知道链接的任何人都能修改所有标签页。</translation>
 <translation id="4986706507552097681">您随时可在“设置”中选择要同步的内容。Google 可能会根据您的历史记录在 Google 搜索和其他服务中为您提供个性化的体验。</translation>
 <translation id="4986728572522335985">安全密钥上的所有数据（包括它的 PIN 码）都会被删除</translation>
 <translation id="4987944280765486504">下载完成后，您的 Chromebook 将重启，您可以继续进行设置。</translation>
@@ -8282,7 +8284,6 @@
 <translation id="6873571253135628430">更改网站权限</translation>
 <translation id="6876155724392614295">自行车</translation>
 <translation id="6876469544038980967">没用</translation>
-<translation id="687838958001010630">知道链接的任何人都能修改所有标签页</translation>
 <translation id="6878422606530379992">已获准使用传感器</translation>
 <translation id="6878862640969460273">横向</translation>
 <translation id="6880587130513028875">已拦截此网页上的图片。</translation>
@@ -8350,7 +8351,7 @@
 <translation id="6922763095098248079">您的设备由贵单位管理。管理员可访问此设备上任意个人资料中的数据。</translation>
 <translation id="6923633482430812883">装载共享时出错。请检查您要连接的文件服务器是否支持 SMBv2 或更高版本。</translation>
 <translation id="6924109527536857168">需要同步</translation>
-<translation id="6925127338315966709">您正要向此浏览器添加一份受管理的个人资料。您的管理员可控制该个人资料，且可访问其中的数据。书签、历史记录、密码及其他设置可以同步到您的账号中，并由您的管理员管理。</translation>
+<translation id="6925127338315966709">您正要在此浏览器中添加一份受管理的个人资料。您的管理员可控制该个人资料，且可访问其中的数据。书签、历史记录、密码及其他设置可以同步到您的账号中，并由您的管理员管理。</translation>
 <translation id="6928650056523249512">自动撤消未使用的网站的权限</translation>
 <translation id="6929126689972602640">学校账号不支持家长控制功能。如果您想添加学校账号，让孩子能够访问 Google 课堂及其他网站以在家中完成学校作业，请先使用孩子的个人账号登录。您可于需要时再在设置中添加学校账号。</translation>
 <translation id="6929760895658557216">Okay Google</translation>

@@ -413,18 +413,25 @@ TEST_P(ProjectorClientImplUnitTest, FallbackReasonMetric) {
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+// TODO: dorianbrandon - Remove finch flag from disabled list. The finch
+// flag currently sets the experiment to true for all languages. This isn't a
+// problem since all ChromeOS languages are covered but it affects the
+// structure of the language disabled test.
 INSTANTIATE_TEST_SUITE_P(
     ProjectorClientTestScenarios,
     ProjectorClientImplUnitTest,
     ::testing::Values(
-        ProjectorClientTestScenario({features::kOnDeviceSpeechRecognition}, {}),
+        ProjectorClientTestScenario(
+            {features::kOnDeviceSpeechRecognition},
+            {features::kInternalServerSideSpeechRecognitionUSMModelFinch}),
         ProjectorClientTestScenario(
             {features::kOnDeviceSpeechRecognition,
              features::kForceEnableServerSideSpeechRecognition},
-            {}),
+            {features::kInternalServerSideSpeechRecognitionUSMModelFinch}),
         ProjectorClientTestScenario(
             {features::kInternalServerSideSpeechRecognition,
              features::kOnDeviceSpeechRecognition},
-            {features::kForceEnableServerSideSpeechRecognition})));
+            {features::kForceEnableServerSideSpeechRecognition,
+             features::kInternalServerSideSpeechRecognitionUSMModelFinch})));
 
 }  // namespace ash

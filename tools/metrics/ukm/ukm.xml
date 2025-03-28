@@ -3406,8 +3406,150 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="AutofillAi.FieldEvent">
+  <owner>jihadghanna@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <summary>
+    Records when a user edits a value that was filled by an Autofill AI
+    suggestion.
+  </summary>
+  <metric name="AiFieldType">
+    <summary>
+      The server AI type of the field as classified by autofill's ML model.
+    </summary>
+  </metric>
+  <metric name="EventType">
+    <summary>
+      Type of the event being recorded, see `AutofillAiUkmLogger::EventType` for
+      more details.
+    </summary>
+  </metric>
+  <metric name="FieldSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a form control (e.g.
+      a HTML input element). This should be globally unique and suitable for
+      distinguishing fields. Two different users would have different values.
+      For the same user, the same field in the same form in two different tabs
+      would have two different values.
+    </summary>
+  </metric>
+  <metric name="FieldSignature">
+    <summary>
+      The signature of the field (mod 1021). This is the hash identifier used to
+      denote this field for query and voting purposes. See
+      components/autofill/core/common/signatures.cc for more details.
+    </summary>
+  </metric>
+  <metric name="FieldType">
+    <summary>
+      The type of the field as classified by autofill.
+    </summary>
+  </metric>
+  <metric name="FormatStringSource">
+    <summary>
+      The source of the format string of the field, see `FormatStringSource` in
+      components/autofill/core/browser/autofill_field.h for more info.
+    </summary>
+  </metric>
+  <metric name="FormSessionEventOrder">
+    <summary>
+      The order of the event in the sequence of event sharing the same
+      FormSessionIdentifier.
+    </summary>
+  </metric>
+  <metric name="FormSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a HTML form in a
+      specific renderer. This should be globally unique and suitable for
+      counting distinct forms. Two different users would have different values.
+      A single user loading the same form in two different tabs would have two
+      different values. This is used to link the fields to a form in
+      AutofillAi.KeyMetrics.
+    </summary>
+  </metric>
+  <metric name="FormSignature">
+    <summary>
+      The signature of the form (mod 1021). This is the hash identifier used to
+      denote this form for query and voting purposes. See
+      components/autofill/core/common/signatures.cc for more details.
+    </summary>
+  </metric>
+</event>
+
+<event name="AutofillAi.KeyMetrics">
+  <owner>jihadghanna@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <summary>
+    These metrics are a clone of Autofill's UMA key metrics to measure Autofill
+    quality. They are recorded on navigation if a form was submitted before,
+    only if the submitted form had Autofill AI prediction.
+  </summary>
+  <metric name="FillingAcceptance">
+    <summary>
+      Has value 1 if user accepted the suggestion to fill values on a submitted
+      form, 0 otherwise. This is counted as 1 if the user accepted such a
+      suggestion at any time, regardless whether other suggestions were ignored
+      or whether the accepted suggestion was reverted afterwards. Only recorded
+      if suggestions were shown to the user.
+    </summary>
+  </metric>
+  <metric name="FillingAssistance">
+    <summary>
+      Has value 1 if the user filled any fields via Autofill on a submitted
+      form, 0 otherwise.
+
+      If the user reverts the filling, the form is still counted as filled.
+
+      This metric is different from FillingAcceptance in the sense that the
+      latter is only recorded if the user has actually seen a prompt to fill
+      data.
+    </summary>
+  </metric>
+  <metric name="FillingCorrectness">
+    <summary>
+      Has value 1 for submitted and autofilled forms if user edited at least one
+      filled value before submitting the form, 0 otherwise. Only recorded if any
+      suggestion was filled.
+    </summary>
+  </metric>
+  <metric name="FillingReadiness">
+    <summary>
+      Has value 1 for submitted forms when Chromium had any address or payments
+      data to fill, 0 otherwise.
+
+      It does not matter whether the user actually requested to fill the data.
+      It does not matter either whether the data available for filling
+      corresponded to the submitted data.
+    </summary>
+  </metric>
+  <metric name="FormSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a HTML form in a
+      specific renderer. This should be globally unique and suitable for
+      counting distinct forms. Two different users would have different values.
+      A single user loading the same form in two different tabs would have two
+      different values. This is used to link the fields to a form in
+      AutofillAi.FieldInfo.
+    </summary>
+  </metric>
+  <metric name="FormSignature">
+    <summary>
+      The signature of the form (mod 1021). This is the hash identifier used to
+      denote this form for query and voting purposes. See
+      components/autofill/core/common/signatures.cc for more details.
+    </summary>
+  </metric>
+  <metric name="OptInStatus">
+    <summary>
+      Has value 1 if the user is opted in into Autofill AI suggestions and
+      filling and 0 otherwise.
+    </summary>
+  </metric>
+</event>
+
 <event name="BackForwardCacheDisabledForRenderFrameHostReason">
-  <owner>altimin@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <summary>
     Recorded at a history commit for each reason passed to
@@ -3432,7 +3574,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="BackForwardCacheDisallowActivationReason">
-  <owner>altimin@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
@@ -3773,6 +3914,14 @@ be describing additional metrics about the same event.
       If there are multiple accounts, record the user as sign-in if IdP claims
       at least one of the accounts is sign-in. If an IdP does not share the
       user's sign-in state, record the state stored in the browser.
+    </summary>
+  </metric>
+  <metric name="IdentityProvidersCount">
+    <summary>
+      Records the count of identity providers right before fetching endpoints
+      with multi IDP flag enabled. It counts distinct providers including the
+      ones a user is not signed in to. Recorded at most once per API call before
+      the browser starts fetching from the IdPs.
     </summary>
   </metric>
   <metric name="LoginHint.NumMatchingAccounts" enum="FedCmNumAccounts">
@@ -11290,7 +11439,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="HistoryNavigation" singular="True">
-  <owner>altimin@chromium.org</owner>
   <owner>arthursonzogni@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <summary>
@@ -11903,6 +12051,99 @@ be describing additional metrics about the same event.
     <summary>
       The parcel carrier for the parcel number detected. As a privacy measure,
       80% of the time when the event occurs, a random enum value is assigned.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="IOS.ReaderMode.Distiller.Latency" singular="true">
+  <owner>fernandex@google.com</owner>
+  <owner>qpubert@google.com</owner>
+  <summary>
+    Recorded for a subset of page loads (default: 1/1000 page loads). Records
+    the latency of running the DOMDistiller distillation to evaluate its
+    performance.
+  </summary>
+  <metric name="Latency">
+    <summary>
+      Records duration in milliseconds from when the page distillation is
+      triggered to when the JavaScript distillation code completes.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="IOS.ReaderMode.Distiller.Result" singular="true">
+  <owner>fernandex@google.com</owner>
+  <owner>qpubert@google.com</owner>
+  <summary>
+    Recorded for a subset of page loads (default: 1/1000 page loads). Records
+    the result of running the DOMDistiller distillation to evaluate its
+    performance.
+  </summary>
+  <metric name="Result" enum="ReaderModeDistillerResult">
+    <summary>
+      Records the page distillation result i.e. distillable or not distillable.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="IOS.ReaderMode.Heuristic.Latency" singular="true">
+  <owner>fernandex@google.com</owner>
+  <owner>qpubert@google.com</owner>
+  <summary>
+    Recorded for a subset of page loads (default: 1/1000 page loads) if the
+    latency data is available. Records the latency of running the DOMDistiller
+    heuristic to evaluate its performance.
+  </summary>
+  <metric name="Latency">
+    <summary>
+      Records duration in milliseconds from when the heuristic JavaScript is
+      executed to when all required feature values for the model are collected.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="IOS.ReaderMode.Heuristic.Result" singular="true">
+  <owner>fernandex@google.com</owner>
+  <owner>qpubert@google.com</owner>
+  <summary>
+    Recorded for a subset of page loads (default: 1/1000 page loads). Describes
+    the result of running the DOMDistiller heuristic to evaluate its
+    performance.
+  </summary>
+  <metric name="Result" enum="ReaderModeHeuristicResult">
+    <summary>
+      Records the page distillation heuritic result i.e. kMalformedResponse,
+      kReaderModeEligible, kReaderModeNotEligibleContentOnly,
+      kReaderModeNotEligibleContentLength,
+      kReaderModeNotEligibleContentAndLength.
     </summary>
     <aggregation>
       <history>
@@ -16555,7 +16796,6 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="IsCrossProcessNavigation">
-    <owner>altimin@chromium.org</owner>
     <owner>arthursonzogni@chromium.org</owner>
     <summary>
       Whether the navigation resulted in the main frame being hosted in a
@@ -16701,7 +16941,6 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="MainDocumentSequenceNumber">
-    <owner>altimin@chromium.org</owner>
     <owner>arthursonzogni@chromium.org</owner>
     <summary>
       An id for the main frame's document associated with the current
@@ -16816,7 +17055,6 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="NavigationEntryOffset">
-    <owner>altimin@chromium.org</owner>
     <owner>arthursonzogni@chromium.org</owner>
     <summary>
       Difference between the last committed navigation entry index before and
@@ -23082,7 +23320,7 @@ be describing additional metrics about the same event.
 
 <event name="TabStripOrganization">
   <owner>dpenning@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Collects information about UKMSourceIDs group affiliation in a tab strip
     when group organization actions are taken up to 30 SourceIDs.
@@ -23971,7 +24209,6 @@ be describing additional metrics about the same event.
 
 <event name="UserPerceivedPageVisit" singular="True">
   <owner>djw@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
   <summary>
     Metrics related to a page visit as a user perceives it, regardless of how
     the page was visited. More metrics may be associated with a particular page

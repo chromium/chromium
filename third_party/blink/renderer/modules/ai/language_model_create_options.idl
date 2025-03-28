@@ -1,0 +1,55 @@
+// Copyright 2025 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/webmachinelearning/prompt-api
+
+// The argument to the prompt() method and others like it
+typedef (LanguageModelPrompt or sequence<LanguageModelPrompt>) LanguageModelPromptInput;
+
+// Prompt lines
+typedef (
+  DOMString                   // interpreted as { role: "user", type: "text", content: providedValue }
+  or LanguageModelPromptDict  // canonical form
+) LanguageModelPrompt;
+
+// Prompt content inside the lines
+dictionary LanguageModelPromptDict {
+  LanguageModelPromptRole role = "user";
+  LanguageModelPromptType type = "text";
+  required LanguageModelPromptContent content;
+};
+
+enum LanguageModelPromptRole { "system", "user", "assistant" };
+
+enum LanguageModelPromptType { "text", "image", "audio" };
+
+typedef (
+  ImageBitmapSource
+  or AudioBuffer
+  or HTMLAudioElement
+  or BufferSource
+  or DOMString
+) LanguageModelPromptContent;
+
+dictionary LanguageModelCreateCoreOptions {
+  // Note: these two have custom out-of-range handling behavior, not in the IDL layer.
+  // They are unrestricted double so as to allow +Infinity without failing.
+  unrestricted double topK;
+  unrestricted double temperature;
+
+  // The expected input types and languages for the session.
+  sequence<LanguageModelExpectedInput> expectedInputs;
+};
+
+dictionary LanguageModelCreateOptions : LanguageModelCreateCoreOptions {
+  AbortSignal signal;
+  AICreateMonitorCallback monitor;
+  DOMString systemPrompt;
+  sequence<LanguageModelPrompt> initialPrompts;
+};
+
+dictionary LanguageModelExpectedInput {
+  required LanguageModelPromptType type;
+  sequence<DOMString> languages;
+};

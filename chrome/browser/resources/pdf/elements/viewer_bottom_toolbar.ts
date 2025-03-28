@@ -12,7 +12,6 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AnnotationBrushType} from '../constants.js';
-import {record, UserAction} from '../metrics.js';
 import {blendHighlighterColorValue, colorToHex} from '../pdf_viewer_utils.js';
 
 import {InkAnnotationBrushMixin} from './ink_annotation_brush_mixin.js';
@@ -50,11 +49,6 @@ export class ViewerBottomToolbarElement extends ViewerBottomToolbarElementBase {
   }
 
   strings?: {[key: string]: string};
-
-  constructor() {
-    super();
-    record(UserAction.OPEN_INK2_BOTTOM_TOOLBAR);
-  }
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);

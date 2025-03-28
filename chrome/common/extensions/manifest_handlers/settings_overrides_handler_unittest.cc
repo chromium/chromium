@@ -5,9 +5,11 @@
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <string_view>
 
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -122,17 +124,12 @@ scoped_refptr<Extension> CreateExtension(const base::Value::Dict& manifest,
 
 scoped_refptr<Extension> CreateExtension(std::string_view manifest,
                                          std::string* error) {
-  JSONStringValueDeserializer json(manifest);
-  std::unique_ptr<base::Value> root(json.Deserialize(nullptr, error));
+  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(manifest);
   if (!root) {
-    ADD_FAILURE() << "Could not deserialize manifest";
-    return nullptr;
-  }
-  if (!root->is_dict()) {
     ADD_FAILURE() << "Manifest isn't a Dictionary";
     return nullptr;
   }
-  return CreateExtension(root->GetDict(), error);
+  return CreateExtension(*root, error);
 }
 
 scoped_refptr<Extension> CreateExtensionWithSearchProvider(

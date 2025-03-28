@@ -104,6 +104,11 @@ BASE_FEATURE(kPartialLowEndModeOnMidRangeDevices,
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
+// Enable not perceptible binding without cpu priority boosting.
+BASE_FEATURE(kBackgroundNotPerceptibleBinding,
+             "BackgroundNotPerceptibleBinding",
+             FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether to report frame metrics to the Android.FrameTimeline.* histograms.
 BASE_FEATURE(kCollectAndroidFrameTimelineMetrics,
              "CollectAndroidFrameTimelineMetrics",

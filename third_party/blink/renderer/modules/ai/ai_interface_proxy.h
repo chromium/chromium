@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/language_detection/language_detection_model.h"
 
 namespace blink {
 
@@ -19,6 +20,12 @@ class AIInterfaceProxy final : public GarbageCollected<AIInterfaceProxy>,
                                public Supplement<ExecutionContext> {
  public:
   static const char kSupplementName[];
+
+  using GetLanguageDetectionModelStatusCallback = base::OnceCallback<void(
+      language_detection::mojom::blink::LanguageDetectionModelStatus)>;
+
+  using GetLanguageDetectionModelCallback = base::OnceCallback<void(
+      base::expected<LanguageDetectionModel*, DetectLanguageError>)>;
 
   explicit AIInterfaceProxy(ExecutionContext* execution_context);
   ~AIInterfaceProxy();
@@ -35,9 +42,13 @@ class AIInterfaceProxy final : public GarbageCollected<AIInterfaceProxy>,
   static HeapMojoRemote<mojom::blink::TranslationManager>&
   GetTranslationManagerRemote(ExecutionContext* execution_context);
 
-  static HeapMojoRemote<
-      language_detection::mojom::blink::ContentLanguageDetectionDriver>&
-  GetLanguageDetectionDriverRemote(ExecutionContext* execution_context);
+  static void GetLanguageDetectionModelStatus(
+      ExecutionContext* execution_context,
+      GetLanguageDetectionModelStatusCallback callback);
+
+  static void GetLanguageDetectionModel(
+      ExecutionContext* execution_context,
+      GetLanguageDetectionModelCallback callback);
 
   static HeapMojoRemote<mojom::blink::AIManager>& GetAIManagerRemote(
       ExecutionContext* execution_context);
@@ -50,7 +61,11 @@ class AIInterfaceProxy final : public GarbageCollected<AIInterfaceProxy>,
 
   HeapMojoRemote<
       language_detection::mojom::blink::ContentLanguageDetectionDriver>&
-  GetLanguageDetectionDriverRemoteImpl(ExecutionContext* execution_context);
+  GetLanguageDetectionDriverRemote(ExecutionContext* execution_context);
+
+  void GetLanguageDetectionModelImpl(
+      ExecutionContext* execution_context,
+      GetLanguageDetectionModelCallback callback);
 
   HeapMojoRemote<mojom::blink::AIManager>& GetAIManagerRemoteImpl(
       ExecutionContext* execution_context);
@@ -63,6 +78,10 @@ class AIInterfaceProxy final : public GarbageCollected<AIInterfaceProxy>,
   HeapMojoRemote<
       language_detection::mojom::blink::ContentLanguageDetectionDriver>
       language_detection_driver_{nullptr};
+
+  // TODO(crbug.com/406770758): Consider updating ownership of
+  // `language_detection_model_` to the `LanguageDetectorCreate` class.
+  Member<LanguageDetectionModel> language_detection_model_;
 
   HeapMojoRemote<mojom::blink::AIManager> ai_manager_remote_{nullptr};
 };

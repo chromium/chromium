@@ -1805,6 +1805,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Fullscreen.TransitionReason.{Toggle}"
+    enum="FullscreenModeTransitionReason" expires_after="2025-10-31">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>prasanaa@google.com</owner>
+  <summary>The action that leads to {Toggle} fullscreen.</summary>
+  <token key="Toggle">
+    <variant name="Enter" summary="enter"/>
+    <variant name="Exit" summary="exit"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.GoogleOne.Outcome.{EntryPoint}" enum="GoogleOneOutcome"
     expires_after="2026-03-12">
   <owner>olivierrobin@chromium.org</owner>

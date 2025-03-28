@@ -14,7 +14,6 @@ include_rules = [
   "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h",
   "+ios/chrome/browser/start_surface/ui_bundled",
-  "+ios/chrome/browser/ui/whats_new/whats_new_util.h",
   "+ios/chrome/browser/toolbar/ui_bundled/public",
   "+ios/chrome/browser/push_notification/ui_bundled",
   "+ios/chrome/browser/ntp/model/set_up_list_item_type.h",

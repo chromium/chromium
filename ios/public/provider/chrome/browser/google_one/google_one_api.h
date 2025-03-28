@@ -68,8 +68,21 @@ enum class GoogleOneOutcome {
 
 @end
 
+// A protocol to replace the Google One providers in tests.
+@protocol GoogleOneControllerFactory
+
+// Create a GoogleOneController.
+- (id<GoogleOneController>)createControllerWithConfiguration:
+    (GoogleOneConfiguration*)configuration;
+
+@end
+
 namespace ios::provider {
 
+// Override the GoogleOne controller creator for tests.
+void SetGoogleOneControllerFactory(id<GoogleOneControllerFactory> factory);
+
+// Creates an instance of GoogleOneController.
 id<GoogleOneController> CreateGoogleOneController(
     GoogleOneConfiguration* configuration);
 

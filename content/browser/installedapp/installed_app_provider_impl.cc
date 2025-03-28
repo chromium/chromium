@@ -75,11 +75,14 @@ void InstalledAppProviderImpl::FilterInstalledApps(
   if (add_saved_related_applications) {
     WebContents* web_contents =
         WebContents::FromRenderFrameHost(&render_frame_host());
-    std::vector<blink::mojom::RelatedApplicationPtr> saved_related_apps =
-        web_contents->GetDelegate()->GetSavedRelatedApplications(web_contents);
-    related_apps.insert(related_apps.end(),
-                        std::make_move_iterator(saved_related_apps.begin()),
-                        std::make_move_iterator(saved_related_apps.end()));
+    WebContentsDelegate* delegate = web_contents->GetDelegate();
+    if (delegate) {
+      std::vector<blink::mojom::RelatedApplicationPtr> saved_related_apps =
+          delegate->GetSavedRelatedApplications(web_contents);
+      related_apps.insert(related_apps.end(),
+                          std::make_move_iterator(saved_related_apps.begin()),
+                          std::make_move_iterator(saved_related_apps.end()));
+    }
   }
 
   if (related_apps.size() > kMaxNumberOfQueriedApps) {

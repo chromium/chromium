@@ -195,25 +195,25 @@ class DesktopSecondaryNTPZpsSection : public ZpsSection {
 // - up to `max_suggestions` suggestions total.
 //  - up to `search_limit` previous search related suggestions.
 //  - up to `search_limit` personalized suggestions.
-//  - up to `max_suggestions` most visited tiles suggestions
-// We allow max_suggestions in order to backfill search suggestions.
+//  - up to `url_limit` most visited tiles suggestions
 class DesktopSRPZpsSection : public ZpsSection {
  public:
   explicit DesktopSRPZpsSection(omnibox::GroupConfigMap& group_configs,
                                 size_t max_suggestions,
-                                size_t search_limit);
+                                size_t search_limit,
+                                size_t url_limit);
 };
 
 // Section expressing the Desktop ZPS limits and grouping for the Web.
 // - up to `max_suggestions` suggestions total.
 //  - up to `url_limit` most visited tiles suggestions.
-//  - up to `max_suggestions` page related suggestions.
-//  - up to `max_suggestions` personalized suggestions.
-// We allow max_suggestions to backfill url suggestions.
+//  - up to `search_limit` page related suggestions.
+//  - up to `search_limit` personalized suggestions.
 class DesktopWebZpsSection : public ZpsSection {
  public:
   explicit DesktopWebZpsSection(omnibox::GroupConfigMap& group_configs,
                                 size_t max_suggestions,
+                                size_t search_limit,
                                 size_t url_limit);
 };
 

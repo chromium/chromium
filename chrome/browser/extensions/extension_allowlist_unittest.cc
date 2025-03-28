@@ -16,6 +16,8 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
@@ -698,7 +700,7 @@ TEST_F(ExtensionAllowlistUnitTest, NoEnforcementOnPolicyForceInstall) {
           .SetPath(data_dir().AppendASCII("good.crx"))
           .SetLocation(mojom::ManifestLocation::kExternalPolicyDownload)
           .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   {
     ManagementPrefUpdater pref(profile_->GetTestingPrefService());
@@ -764,7 +766,7 @@ TEST_F(ExtensionAllowlistWithFeatureDisabledUnitTest,
           .SetPath(data_dir().AppendASCII("good.crx"))
           .SetLocation(mojom::ManifestLocation::kExternalPrefDownload)
           .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   {
     ManagementPrefUpdater pref(profile_->GetTestingPrefService());
@@ -798,7 +800,7 @@ TEST_F(ExtensionAllowlistWithFeatureDisabledUnitTest,
           .SetPath(data_dir().AppendASCII("good.crx"))
           .SetLocation(mojom::ManifestLocation::kInternal)
           .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   {
     ManagementPrefUpdater pref(profile_->GetTestingPrefService());

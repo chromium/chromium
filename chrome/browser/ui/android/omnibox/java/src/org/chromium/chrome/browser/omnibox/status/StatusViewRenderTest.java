@@ -44,6 +44,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ToolbarUnitTestUtils;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
+import org.chromium.components.browser_ui.util.DrawableUtils;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -78,6 +79,7 @@ public class StatusViewRenderTest {
     private StatusView mStatusView;
     private PropertyModel mStatusModel;
     private LocationBarModel mLocationBarModel;
+    private Drawable mBackground;
 
     @BeforeClass
     public static void setupSuite() {
@@ -122,6 +124,15 @@ public class StatusViewRenderTest {
                     // Increases visibility for manual parsing of diffs. Status view matches the
                     // parent height, so this white will stretch vertically.
                     mStatusView.setBackgroundColor(Color.WHITE);
+
+                    int size =
+                            mStatusView
+                                    .getContext()
+                                    .getResources()
+                                    .getDimensionPixelSize(R.dimen.small_icon_background_size);
+                    mBackground =
+                            DrawableUtils.getIconBackground(
+                                    mStatusView.getContext(), false, size, size);
                 });
     }
 
@@ -165,9 +176,7 @@ public class StatusViewRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
-                    mStatusModel.set(
-                            StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT,
-                            R.drawable.status_view_ripple);
+                    mStatusModel.set(StatusProperties.STATUS_VIEW_BACKGROUND, mBackground);
                     mStatusModel.set(
                             StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
                             R.string.accessibility_menu_info);
@@ -195,9 +204,7 @@ public class StatusViewRenderTest {
                             new PermissionIconResource(locationIcon, false);
                     statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
                     mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
-                    mStatusModel.set(
-                            StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT,
-                            R.drawable.status_view_ripple);
+                    mStatusModel.set(StatusProperties.STATUS_VIEW_BACKGROUND, mBackground);
                     mStatusModel.set(
                             StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
                             R.string.accessibility_menu_info);
@@ -222,9 +229,7 @@ public class StatusViewRenderTest {
                             new PermissionIconResource(storeIconDrawable, false);
                     statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
                     mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
-                    mStatusModel.set(
-                            StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT,
-                            R.drawable.status_view_ripple);
+                    mStatusModel.set(StatusProperties.STATUS_VIEW_BACKGROUND, mBackground);
                     mStatusModel.set(
                             StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
                             R.string.accessibility_menu_info);

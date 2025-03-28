@@ -16,6 +16,7 @@
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/prefs/pref_service.h"
 #import "components/reading_list/features/reading_list_switches.h"
+#import "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/account_pref_utils.h"
@@ -56,6 +57,14 @@
 using signin_ui::SigninCompletionCallback;
 
 namespace {
+
+// Returns a reference to the global used by tests to force the
+// next policy fetch to terminate with this policy value if set.
+std::optional<policy::ProfileSeparationDataMigrationSettings>&
+GetForcedPolicyResponseForNextFetchRequestForTesting() {
+  static std::optional<policy::ProfileSeparationDataMigrationSettings> instance;
+  return instance;
+}
 
 // The states of the sign-in flow state machine.
 enum class AuthenticationState {
@@ -580,6 +589,21 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     [self continueFlow];
     return;
   }
+
+  auto& optionalForcedPolicy =
+      GetForcedPolicyResponseForNextFetchRequestForTesting();
+  if (optionalForcedPolicy.has_value()) {
+    auto policy = optionalForcedPolicy.value();
+    optionalForcedPolicy = std::nullopt;
+
+    __weak __typeof(self) weakSelf = self;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSelf didFetchProfileSeparationPolicies:policy];
+        }));
+    return;
+  }
+
   ProfileIOS* profile = [self originalProfile];
   [_performer fetchProfileSeparationPolicies:profile
                                  forIdentity:_identityToSignIn];
@@ -691,7 +715,14 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 - (void)handOverToAuthenticationFlowInProfileStep {
   CHECK(_browserForAuthenticationFlowInProfile);
   BOOL isManagedIdentity = _identityToSignInHostedDomain.length > 0;
+  // If `_wasPrimaryAccountManaged` is unset, then this was a signin, not an
+  // account switch.
   if (_wasPrimaryAccountManaged.has_value()) {
+    if (signin::ActivePrimaryAccountsMetricsRecorder* metricsRecorder =
+            GetApplicationContext()
+                ->GetActivePrimaryAccountsMetricsRecorder()) {
+      metricsRecorder->AccountWasSwitched();
+    }
     RecordAccountSwitchTypeMetric(_wasPrimaryAccountManaged.value(),
                                   isManagedIdentity);
   }
@@ -825,7 +856,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 }
 
 - (void)didAcceptManagedConfirmation:(BOOL)keepBrowsingDataSeparate {
-  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+  if (IsIdentityDiscAccountMenuEnabled()) {
     // Only show the dialog once per account.
     signin::GaiaIdHash gaiaIDHash =
         signin::GaiaIdHash::FromGaiaId(GaiaId(_identityToSignIn.gaiaID));
@@ -890,6 +921,15 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
 - (PrefService*)prefs {
   return [self originalProfile]->GetPrefs();
+}
+
++ (void)forcePolicyResponseForNextRequestForTesting:
+    (policy::ProfileSeparationDataMigrationSettings)
+        profileSeparationDataMigrationSettings {
+  auto& optionalForcedPolicy =
+      GetForcedPolicyResponseForNextFetchRequestForTesting();
+  CHECK(!optionalForcedPolicy.has_value());
+  optionalForcedPolicy = profileSeparationDataMigrationSettings;
 }
 
 @end

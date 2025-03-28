@@ -89,7 +89,9 @@
               aria-label="[[i18n('autofillAiAccessibilityLabelMonthDropdown',
                   attributeInstanceItem.type.typeNameAsString)]]"
               on-change="onMonthSelectChange_">
-            <option value="">$i18n{autofillDropdownNoOptionSelected}</option>
+            <option value="">
+              $i18n{autofillAiMonthDropdownNoOptionSelected}
+            </option>
             <template is="dom-repeat" items="[[months_]]" as="month">
               <option value="[[month]]"
                   selected="[[isMonthSelected_(attributeInstanceItem, month)]]">
@@ -102,7 +104,9 @@
               aria-label="[[i18n('autofillAiAccessibilityLabelDayDropdown',
                   attributeInstanceItem.type.typeNameAsString)]]"
               on-change="onDaySelectChange_">
-            <option value="">$i18n{autofillDropdownNoOptionSelected}</option>
+            <option value="">
+              $i18n{autofillAiDayDropdownNoOptionSelected}
+            </option>
             <template is="dom-repeat" items="[[days_]]" as="day">
               <option value="[[day]]"
                   selected="[[isDaySelected_(attributeInstanceItem, day)]]">
@@ -115,9 +119,28 @@
               aria-label="[[i18n('autofillAiAccessibilityLabelYearDropdown',
                   attributeInstanceItem.type.typeNameAsString)]]"
               on-change="onYearSelectChange_">
-            <!-- TODO(crbug.com/393318914): Add another option for the existing
-                year, if the existing year is out of bounds. -->
-            <option value="">$i18n{autofillDropdownNoOptionSelected}</option>
+            <option value="">
+              $i18n{autofillAiYearDropdownNoOptionSelected}
+            </option>
+            <!-- isExistingYearOutOfBounds_ and getExistingYear_ purposefully
+                 don't have attributeInstanceItem.* as an argument. If the user
+                 selects another year, the return value of these functions
+                 should not change. -->
+            <template is="dom-if" if="[[isExistingYearOutOfBounds_(
+                attributeInstanceItem, years_)]]">
+              <option value="[[getExistingYear_(attributeInstanceItem)]]"
+                  selected="true">
+                [[getExistingYear_(attributeInstanceItem)]]
+              </option>
+            </template>
+            <!-- TODO(crbug.com/403312087): Use an <hr> element instead. Resolve
+                 this TODO only when an <hr> element is also used for the
+                 country selector, for consistency. -->
+            <!-- This separator follows the same pattern as the one for
+                 the country selector. -->
+            <option value="SEPARATOR" disabled>
+              ------
+            </option>
             <template is="dom-repeat" items="[[years_]]" as="year">
               <option value="[[year]]"
                   selected="[[isYearSelected_(attributeInstanceItem, year)]]">

@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/core/style/geometry_box_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
-#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
@@ -124,27 +123,6 @@ PhysicalBoxStrut ReferenceBoxBorderBoxOutsets(
     case GeometryBox::kViewBox:
       return PhysicalBoxStrut();
   }
-}
-
-ContouredRect RoundedReferenceBox(GeometryBox geometry_box,
-                                  const LayoutObject& object) {
-  if (object.IsSVGChild()) {
-    return ContouredRect(
-        FloatRoundedRect(ClipPathClipper::LocalReferenceBox(object)));
-  }
-
-  const auto& box = To<LayoutBoxModelObject>(object);
-  PhysicalRect border_box_rect = BorderBoxRect(box);
-  ContouredRect contoured_border_box_rect =
-      ContouredBorderGeometry::ContouredBorder(box.StyleRef(), border_box_rect);
-  if (geometry_box == GeometryBox::kMarginBox) {
-    contoured_border_box_rect.OutsetForMarginOrShadow(
-        gfx::OutsetsF(ReferenceBoxBorderBoxOutsets(geometry_box, box)));
-  } else {
-    contoured_border_box_rect.Outset(
-        gfx::OutsetsF(ReferenceBoxBorderBoxOutsets(geometry_box, box)));
-  }
-  return contoured_border_box_rect;
 }
 
 // Should the paint offset be applied to clip-path geometry for
@@ -273,6 +251,27 @@ gfx::RectF CalcLocalReferenceBox(
 
 }  // namespace
 
+ContouredRect ClipPathClipper::RoundedReferenceBox(GeometryBox geometry_box,
+                                                   const LayoutObject& object) {
+  if (object.IsSVGChild()) {
+    return ContouredRect(
+        FloatRoundedRect(ClipPathClipper::LocalReferenceBox(object)));
+  }
+
+  const auto& box = To<LayoutBoxModelObject>(object);
+  PhysicalRect border_box_rect = BorderBoxRect(box);
+  ContouredRect contoured_border_box_rect =
+      ContouredBorderGeometry::ContouredBorder(box.StyleRef(), border_box_rect);
+  if (geometry_box == GeometryBox::kMarginBox) {
+    contoured_border_box_rect.OutsetForMarginOrShadow(
+        gfx::OutsetsF(ReferenceBoxBorderBoxOutsets(geometry_box, box)));
+  } else {
+    contoured_border_box_rect.Outset(
+        gfx::OutsetsF(ReferenceBoxBorderBoxOutsets(geometry_box, box)));
+  }
+  return contoured_border_box_rect;
+}
+
 Animation* ClipPathClipper::GetClipPathAnimation(
     const LayoutObject& layout_object) {
   ClipPathPaintImageGenerator* generator =
@@ -375,7 +374,9 @@ void ClipPathClipper::FallbackClipPathAnimationIfNecessary(
   // fragmented. We also shouldn't composite in the case of will-change:
   // contents.
   if (is_in_block_fragmentation ||
-      layout_object.StyleRef().SubtreeWillChangeContents()) {
+      layout_object.StyleRef().SubtreeWillChangeContents() ||
+      (layout_object.StyleRef().HasClipPath() &&
+       IsA<ReferenceClipPathOperation>(layout_object.StyleRef().ClipPath()))) {
     SetCompositeClipPathStatus(layout_object.GetNode(),
                                CompositedPaintStatus::kNotComposited);
   }
@@ -546,7 +547,7 @@ static AffineTransform MaskToContentTransform(
   return mask_to_content;
 }
 
-static std::optional<Path> PathBasedClipInternal(
+std::optional<Path> ClipPathClipper::PathBasedClipInternal(
     const LayoutObject& clip_path_owner,
     const gfx::RectF& reference_box,
     const LayoutObject& reference_box_object) {

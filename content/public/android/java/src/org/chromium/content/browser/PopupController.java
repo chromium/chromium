@@ -10,9 +10,8 @@ import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
-import org.chromium.content.browser.webcontents.WebContentsImpl;
-import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContents.UserDataFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +32,8 @@ public class PopupController implements UserData {
     private final List<HideablePopup> mHideablePopups = new ArrayList<>();
 
     public static @Nullable PopupController fromWebContents(WebContents webContents) {
-        return ((WebContentsImpl) webContents)
-                .getOrSetUserData(PopupController.class, UserDataFactoryLazyHolder.INSTANCE);
+        return webContents.getOrSetUserData(
+                PopupController.class, UserDataFactoryLazyHolder.INSTANCE);
     }
 
     private PopupController(WebContents webContents) {}

@@ -82,6 +82,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Renderer"/>
 </variants>
 
+<variants name="VizCodePathName">
+  <variant name="Aggregate"/>
+  <variant name="DrawAndSwap"/>
+</variants>
+
 <histogram name="Compositing.Browser.LayersUpdateTime" units="microseconds"
     expires_after="2025-09-14">
   <owner>pdr@chromium.org</owner>
@@ -604,6 +609,20 @@ chromium-metrics-reviews@google.com.
     swap chain can be used as a rough approximation for input latency. Recorded
     before the swap executes. Refer to Display::DrawAndSwap for details.
   </summary>
+</histogram>
+
+<histogram name="Compositing.Display.VizCodePath.{VizCodePathName}"
+    enum="Boolean" expires_after="2025-08-01">
+  <owner>harthuang@google.com</owner>
+  <owner>fangzhoug@chromium.org</owner>
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Track usage of different code paths in Viz display compositor. We want to
+    monitor code paths and see if some code paths will not be executed each
+    frame.
+  </summary>
+  <token key="VizCodePathName" variants="VizCodePathName"/>
 </histogram>
 
 <histogram name="Compositing.Display.VizDependencyResolvedToGpuStartedDrawUs"

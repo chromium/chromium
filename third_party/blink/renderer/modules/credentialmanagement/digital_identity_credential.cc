@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
@@ -95,11 +96,30 @@ String ValidateAndStringifyObject(
   return output;
 }
 
+// Converts a base::Value to a ScriptObject.
+// Returns an empty ScriptObject on failure.
+ScriptObject ValueToScriptObject(ScriptState* script_state,
+                                 std::optional<base::Value> response) {
+  if (!response.has_value()) {
+    return ScriptObject();
+  }
+  std::unique_ptr<WebV8ValueConverter> converter =
+      Platform::Current()->CreateWebV8ValueConverter();
+  ScriptState::Scope script_state_scope(script_state);
+  v8::Local<v8::Value> v8_response =
+      converter->ToV8Value(response.value(), script_state->GetContext());
+  if (v8_response.IsEmpty() || !v8_response->IsObject()) {
+    // Parsed value is not an object.
+    return ScriptObject();
+  }
+  return ScriptObject(script_state->GetIsolate(), v8_response);
+}
+
 void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
                        std::unique_ptr<ScopedAbortState> scoped_abort_state,
                        RequestDigitalIdentityStatus status,
                        const WTF::String& protocol,
-                       const WTF::String& token) {
+                       std::optional<base::Value> token) {
   switch (status) {
     case RequestDigitalIdentityStatus::kErrorTooManyRequests: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -146,8 +166,9 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
       UseCounter::Count(resolver->GetExecutionContext(),
                         WebFeature::kIdentityDigitalCredentialsSuccess);
 
-      DigitalCredential* credential =
-          DigitalCredential::Create(protocol, token);
+      DigitalCredential* credential = DigitalCredential::Create(
+          protocol,
+          ValueToScriptObject(resolver->GetScriptState(), std::move(token)));
       resolver->Resolve(credential);
       return;
     }

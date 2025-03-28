@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/svg/svg_polygon_element.h"
 
 #include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 
 namespace blink {
 
@@ -28,9 +29,11 @@ SVGPolygonElement::SVGPolygonElement(Document& document)
     : SVGPolyElement(svg_names::kPolygonTag, document) {}
 
 Path SVGPolygonElement::AsPath() const {
-  Path path = AsPathFromPoints();
-  path.CloseSubpath();
-  return path;
+  return AsPathFromPoints().Close().Finalize();
+}
+
+PathBuilder SVGPolygonElement::AsMutablePath() const {
+  return AsPathFromPoints().Close();
 }
 
 }  // namespace blink

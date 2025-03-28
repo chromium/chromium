@@ -21,7 +21,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
-#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/forms_classifications.pb.h"
@@ -46,10 +45,8 @@ using ::testing::IsEmpty;
 class AutofillAiModelExecutorImplTest : public testing::Test {
  public:
   void SetUp() override {
-    logs_uploader_ = std::make_unique<
-        optimization_guide::TestModelQualityLogsUploaderService>(&local_state_);
-    engine_ = std::make_unique<AutofillAiModelExecutorImpl>(
-        &model_cache_, &model_executor_, logs_uploader_.get());
+    engine_ = std::make_unique<AutofillAiModelExecutorImpl>(&model_cache_,
+                                                            &model_executor_);
   }
 
   AutofillAiModelExecutor* engine() { return engine_.get(); }
@@ -63,12 +60,9 @@ class AutofillAiModelExecutorImplTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_env_;
-  TestingPrefServiceSimple local_state_;
   MockAutofillAiModelCache model_cache_;
   testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
       model_executor_;
-  std::unique_ptr<optimization_guide::TestModelQualityLogsUploaderService>
-      logs_uploader_;
   std::unique_ptr<AutofillAiModelExecutor> engine_;
 };
 

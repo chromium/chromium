@@ -165,7 +165,7 @@ using signin_metrics::PromoAction;
     // to be closed, see `MainControllerAuthenticationServiceDelegate::
     //    ClearBrowsingDataForSignedinPeriod`.
     NSString* clearDataMessage =
-        base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)
+        IsIdentityDiscAccountMenuEnabled()
             ? l10n_util::GetNSString(
                   IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLOSES_TABS_AND_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT)
             : l10n_util::GetNSString(

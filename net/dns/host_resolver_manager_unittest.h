@@ -31,6 +31,7 @@ class MockHostResolverProc;
 class HostResolverManagerTest : public TestWithTaskEnvironment {
  public:
   static const int kDefaultPort = 80;
+  static inline constexpr base::TimeDelta kDefaultTtl = base::Seconds(1);
 
   explicit HostResolverManagerTest(
       base::test::TaskEnvironment::TimeSource time_source =

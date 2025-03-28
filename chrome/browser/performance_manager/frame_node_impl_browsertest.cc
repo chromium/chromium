@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_P(ParameterizedFrameNodeImplBrowserTest,
   base::RunLoop run_loop;
   PassToPMGraph(std::make_unique<ViewportIntersectionStateChangedObserver>(
       std::move(frame_node_matcher),
-      performance_manager::features::kRenderedOutOfViewIsNotVisible.Get(),
+      !performance_manager::features::kRenderedOutOfViewIsNotVisible.Get(),
       run_loop.QuitClosure()));
   //
   // Navigate.

@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/win/com_init_util.h"
 #include "base/win/win_util.h"
+#include "chrome/installer/util/install_service_work_item.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 
@@ -75,7 +76,14 @@ WindowsSystemTracingClientImpl::Host::CreateSession() {
   Microsoft::WRL::ComPtr<ISystemTraceSession> trace_session;
   HRESULT hresult = ::CoCreateInstance(
       clsid_, /*pUnkOuter=*/nullptr, CLSCTX_LOCAL_SERVER, iid_, &trace_session);
-  RecordLaunchResult(LaunchStage::kCoCreateInstance, hresult);
+  // Do not record failure to create the instance if the service isn't
+  // registered. This is expected for per-machine beta and stable installs for
+  // which the user has not manually registered the service via
+  // chrome://traces-internals/scenarios.
+  if (hresult != REGDB_E_CLASSNOTREG ||
+      installer::InstallServiceWorkItem::IsComServiceInstalled(clsid_)) {
+    RecordLaunchResult(LaunchStage::kCoCreateInstance, hresult);
+  }
   if (FAILED(hresult)) {
     return base::unexpected(hresult);
   }
