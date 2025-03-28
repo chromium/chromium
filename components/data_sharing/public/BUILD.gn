@@ -84,6 +84,7 @@ source_set("data_type_controller") {
     "//components/signin/public/identity_manager",
     "//components/sync/base",
     "//components/sync/service",
+    "//ui/base",
   ]
 }
 

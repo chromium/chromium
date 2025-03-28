@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageActionController.ActionTypeShown2"
     enum="PageActionIconType" expires_after="2025-08-10">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The type of Page Action currently shown. Logged once per ephemeral page
     action the first time it becomes visible on a given page. Tab switches will
@@ -280,7 +280,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageActionController.Icon.CTR2" enum="PageActionCTREvent"
     expires_after="2025-08-10">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records events related to overall ephemeral page action icon click through
     rate (CTR) calculation.
@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageActionController.Icon.NumberActionsShownWhenClicked"
     units="actions" expires_after="2025-08-10">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The number of ephemeral Page Actions currently shown. Measured each time a
     page action icon is clicked.
@@ -306,7 +306,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageActionController.NumberActionsShown2" units="actions"
     expires_after="2025-08-10">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     The number of ephemeral Page Actions currently shown. Measured each time a
     new page is loaded, and then again when each new page action appears on the
@@ -317,7 +317,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageActionController.PagesWithActionsShown2"
     enum="PageActionPageEvent" expires_after="2025-08-10">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records events related to percentage of pages with actions calculation.
 
@@ -336,7 +336,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageActionController.{PageActionType}.Icon.CTR2"
     enum="PageActionCTREvent" expires_after="2025-08-10">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records events related to {PageActionType} page action icon click through
     rate (CTR) calculation.
@@ -428,7 +428,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.BackForwardCache.Event"
     enum="PageLoadBackForwardCacheEvent" expires_after="2025-08-31">
-  <owner>altimin@chromium.org</owner>
   <owner>bmcquade@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <summary>
@@ -3409,7 +3408,6 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="never">
 <!-- expires-never: used in server pipeline to derive additional metrics -->
 
-  <owner>altimin@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -3434,7 +3432,6 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="never">
 <!-- expires-never: used in server pipeline to derive additional metrics -->
 
-  <owner>altimin@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -3964,7 +3961,6 @@ chromium-metrics-reviews@google.com.
     units="scorex10" expires_after="never">
 <!-- expires-never: used in server pipeline to derive additional metrics -->
 
-  <owner>altimin@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -3996,7 +3992,6 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame.AfterBackForwardCacheRestore"
     units="scorex10" expires_after="2022-01-02">
-  <owner>altimin@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -4329,7 +4324,6 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PageLoad.PaintTiming.NavigationToFirstPaint.AfterBackForwardCacheRestore"
     units="ms" expires_after="2025-11-30">
-  <owner>altimin@chromium.org</owner>
   <owner>djw@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4369,7 +4363,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="never">
 <!-- expires-never: used in server pipeline to derive additional metrics -->
 
-  <owner>altimin@chromium.org</owner>
+  <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>

@@ -203,8 +203,8 @@ UIContextMenuConfiguration* CreateUIContextMenuConfiguration(
       shareKitService && shareKitService->IsSupported();
 
   SharingState sharingState = SharingState::kNotShared;
-  if (tab_groups::utils::IsTabGroupShared(tabGroupItem.tabGroup,
-                                          tabGroupSyncService)) {
+  if (tab_groups::utils::IsTabGroupShared(
+          tabGroupItem.tabGroup, tabGroupSyncService, shareKitService)) {
     collaboration::CollaborationService* collaborationService =
         collaboration::CollaborationServiceFactory::GetForProfile(_profile);
     data_sharing::MemberRole userRole = tab_groups::utils::GetUserRoleForGroup(

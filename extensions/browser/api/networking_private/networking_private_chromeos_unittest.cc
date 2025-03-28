@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -320,14 +321,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     if (!ui_data_json) {
       return std::nullopt;
     }
-
-    JSONStringValueDeserializer deserializer(*ui_data_json);
-    auto deserialized = deserializer.Deserialize(nullptr, nullptr);
-
-    if (!deserialized || !deserialized->is_dict()) {
-      return std::nullopt;
-    }
-    return std::move(*deserialized).TakeDict();
+    return base::JSONReader::ReadDict(*ui_data_json);
   }
 
   bool GetUserSettingStringData(const std::string& guid,

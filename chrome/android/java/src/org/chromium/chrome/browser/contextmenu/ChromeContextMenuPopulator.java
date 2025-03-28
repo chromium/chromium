@@ -176,6 +176,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Action.OPEN_IN_NEW_TAB_IN_GROUP,
             Action.SAVE_PAGE,
             Action.SHARE_PAGE,
+            Action.PRINT_PAGE,
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
@@ -222,7 +223,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int OPEN_IN_NEW_WINDOW = 40;
             int SAVE_PAGE = 41;
             int SHARE_PAGE = 42;
-            int NUM_ENTRIES = 43;
+            int PRINT_PAGE = 43;
+            int NUM_ENTRIES = 44;
         }
     }
 
@@ -302,6 +304,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             }
             if (enableShareFromContextMenu()) {
                 pageGroup.add(createShareListItem(Item.SHARE_PAGE, Item.DIRECT_SHARE_LINK));
+            }
+            if (mItemDelegate.isPrintSupported()) {
+                pageGroup.add(createListItem(Item.PRINT_PAGE));
             }
             groupedItems.add(new Pair<>(R.string.contextmenu_page_title, pageGroup));
         }
@@ -654,6 +659,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                             linkShareParams,
                             new ChromeShareExtras.Builder().setSaveLastUsed(true).build(),
                             ShareOrigin.CONTEXT_MENU);
+        } else if (itemId == R.id.contextmenu_print_page) {
+            recordContextMenuSelection(ContextMenuUma.Action.PRINT_PAGE);
+            mItemDelegate.startPrint();
         } else if (itemId == R.id.contextmenu_share_link) {
             recordContextMenuSelection(ContextMenuUma.Action.SHARE_LINK);
             // TODO(crbug.com/40549331): Migrate ShareParams to GURL.

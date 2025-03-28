@@ -1346,11 +1346,12 @@ void ExpectAppCommandPing(UpdaterScope scope,
                           int errorcode,
                           int eventresult,
                           int event_type,
-                          const base::Version& version) {
+                          const base::Version& version,
+                          const base::Version& updater_version) {
   test_server->ExpectOnce(
       {
           request::GetPathMatcher(test_server->update_path()),
-          request::GetUpdaterUserAgentMatcher(),
+          request::GetUpdaterUserAgentMatcher(updater_version),
           request::GetContentMatcher({base::StringPrintf(
               R"(.*"appid":"%s","enabled":true,"events?":\[{)"
               R"("appcommandid":"%s","errorcode":%d,"eventresult":%d,)"

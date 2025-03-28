@@ -22,6 +22,10 @@ constexpr char kActiveAccountsPrefName[] = "signin.active_accounts";
 constexpr char kActiveAccountsManagedPrefName[] =
     "signin.active_accounts_managed";
 constexpr char kTimerPrefName[] = "signin.active_accounts_last_emitted";
+#if BUILDFLAG(IS_IOS)
+constexpr char kAccountSwitchTimestampsPrefName[] =
+    "signin.account_switch_timestamps";
+#endif  // BUILDFLAG(IS_IOS)
 
 constexpr std::array<std::string_view, 4>
     kUnconditionalNumberOfActiveAccountsHistograms = {
@@ -416,6 +420,125 @@ TEST_F(ActivePrimaryAccountsMetricsRecorderTest, CleansUpExpiredEntries) {
   EXPECT_EQ(local_state_.GetDict(kActiveAccountsPrefName).size(), 1u);
   EXPECT_EQ(local_state_.GetDict(kActiveAccountsManagedPrefName).size(), 1u);
 }
+
+#if BUILDFLAG(IS_IOS)
+
+TEST_F(ActivePrimaryAccountsMetricsRecorderTest,
+       RecordsNumberOfAccountSwitches) {
+  // The metrics were previously recorded, and the next emission is (24-13)==11
+  // hours away.
+  local_state_.SetTime(kTimerPrefName, base::Time::Now() - base::Hours(13));
+  ActivePrimaryAccountsMetricsRecorder tracker(local_state_);
+
+  task_environment_.FastForwardBy(base::Days(1));
+  tracker.AccountWasSwitched();
+  task_environment_.FastForwardBy(base::Days(1));
+  tracker.AccountWasSwitched();
+  task_environment_.FastForwardBy(base::Days(4));
+
+  ASSERT_EQ(local_state_.GetList(kAccountSwitchTimestampsPrefName).size(), 2u);
+
+  task_environment_.FastForwardBy(base::Hours(12));
+  // The user switched from "first_gaia" to "second_gaia" 5.5 days ago, and to
+  // "third_gaia" 4.5 days ago. The next metrics emission is 23 hours away.
+
+  {
+    base::HistogramTester histograms;
+
+    task_environment_.FastForwardBy(base::Days(1));
+    // The first account switch is now 6.5 days ago, and the second 5.5 days
+    // ago.
+    histograms.ExpectUniqueSample("Signin.IOSNumberOfAccountSwitches.Last7Days",
+                                  /*sample=*/2, /*expected_bucket_count=*/1);
+    histograms.ExpectUniqueSample(
+        "Signin.IOSNumberOfAccountSwitches.Last28Days",
+        /*sample=*/2, /*expected_bucket_count=*/1);
+
+    EXPECT_EQ(local_state_.GetList(kAccountSwitchTimestampsPrefName).size(),
+              2u);
+  }
+
+  {
+    base::HistogramTester histograms;
+
+    task_environment_.FastForwardBy(base::Days(1));
+    // The first account switch is now 7.5 days ago, and the second 6.5 days
+    // ago.
+    histograms.ExpectUniqueSample("Signin.IOSNumberOfAccountSwitches.Last7Days",
+                                  /*sample=*/1, /*expected_bucket_count=*/1);
+    histograms.ExpectUniqueSample(
+        "Signin.IOSNumberOfAccountSwitches.Last28Days",
+        /*sample=*/2, /*expected_bucket_count=*/1);
+
+    EXPECT_EQ(local_state_.GetList(kAccountSwitchTimestampsPrefName).size(),
+              2u);
+  }
+
+  task_environment_.FastForwardBy(base::Days(20));
+  // The first account switch is now 27.5 days ago, and the second 26.5 days
+  // ago.
+
+  {
+    base::HistogramTester histograms;
+
+    task_environment_.FastForwardBy(base::Days(1));
+    // The first account switch is now 28.5 days ago, and the second 27.5 days
+    // ago.
+    histograms.ExpectUniqueSample("Signin.IOSNumberOfAccountSwitches.Last7Days",
+                                  /*sample=*/0, /*expected_bucket_count=*/1);
+    histograms.ExpectUniqueSample(
+        "Signin.IOSNumberOfAccountSwitches.Last28Days",
+        /*sample=*/1, /*expected_bucket_count=*/1);
+
+    EXPECT_EQ(local_state_.GetList(kAccountSwitchTimestampsPrefName).size(),
+              1u);
+  }
+
+  tracker.AccountWasSwitched();
+  {
+    base::HistogramTester histograms;
+
+    task_environment_.FastForwardBy(base::Days(1));
+    // The original two account switches are out of the 28-day window now, and
+    // only the one recent switch should be recorded.
+    histograms.ExpectUniqueSample("Signin.IOSNumberOfAccountSwitches.Last7Days",
+                                  /*sample=*/1, /*expected_bucket_count=*/1);
+    histograms.ExpectUniqueSample(
+        "Signin.IOSNumberOfAccountSwitches.Last28Days",
+        /*sample=*/1, /*expected_bucket_count=*/1);
+
+    EXPECT_EQ(local_state_.GetList(kAccountSwitchTimestampsPrefName).size(),
+              1u);
+  }
+}
+
+TEST_F(ActivePrimaryAccountsMetricsRecorderTest,
+       LimitsTrackedNumberOfSwitches) {
+  ActivePrimaryAccountsMetricsRecorder tracker(local_state_);
+
+  // A reasonable number of switches should be tracked accurately in the pref.
+  constexpr size_t kSmallNumberOfSwitches = 10;
+  for (size_t i = 0; i < kSmallNumberOfSwitches; i++) {
+    task_environment_.FastForwardBy(base::Seconds(1));
+    tracker.AccountWasSwitched();
+  }
+  EXPECT_EQ(local_state_.GetList(kAccountSwitchTimestampsPrefName).size(),
+            kSmallNumberOfSwitches);
+
+  // A very large number of switches should not be tracked in the pref anymore
+  // - there should be a limit.
+  constexpr size_t kLargeNumberOfSwitches = 200;
+  for (size_t i = 0; i < kLargeNumberOfSwitches; i++) {
+    task_environment_.FastForwardBy(base::Seconds(1));
+    tracker.AccountWasSwitched();
+  }
+  EXPECT_GT(local_state_.GetList(kAccountSwitchTimestampsPrefName).size(),
+            kSmallNumberOfSwitches);
+  EXPECT_LT(local_state_.GetList(kAccountSwitchTimestampsPrefName).size(),
+            kLargeNumberOfSwitches);
+}
+
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace
 

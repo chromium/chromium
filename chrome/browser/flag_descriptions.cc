@@ -314,6 +314,16 @@ const char kCssGamutMappingName[] = "CSS Gamut Mapping";
 const char kCssGamutMappingDescription[] =
     "Enable experimental CSS gamut mapping implementation.";
 
+const char kCssMasonryLayoutName[] = "CSS Masonry Layout";
+const char kCssMasonryLayoutDescription[] =
+    "Enable experimental CSS Masonry Layout implementation. Simple layouts "
+    "with masonry in the block direction are supported. Subgrid, "
+    "fragmentation, and out-of-flow items are not supported yet. The syntax to "
+    "use CSS Masonry is `display: masonry` and masonry-specific properties "
+    "must be used (i.e. `masonry-template-tracks`, `masonry-track-start`, "
+    "`masonry-track-end`). More details on masonry syntax can be found at "
+    "https://tabatkins.github.io/specs/css-masonry/#masonry-model.";
+
 const char kCssTextBoxTrimName[] = "CSS text-box-trim";
 const char kCssTextBoxTrimDescription[] =
     "Enable experimental CSS text-box-trim property.";
@@ -1539,6 +1549,12 @@ const char kEnableIsolatedWebAppManagedGuestSessionInstallDescription[] =
     "into a managed guest session.";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+const char kEnableIsolatedWebAppAllowlistName[] =
+    "Enable an allowlist for Isolated Web Apps";
+const char kEnableIsolatedWebAppAllowlistDescription[] =
+    "Enables an allowlist for Isolated Web Apps, restricting installation and "
+    "updates to only those apps that are allowlisted.";
+
 const char kEnableIsolatedWebAppDevModeName[] =
     "Enable Isolated Web App Developer Mode";
 const char kEnableIsolatedWebAppDevModeDescription[] =
@@ -1750,13 +1766,13 @@ const char kEnableProcessPerSiteUpToMainFrameThresholdDescription[] =
     "Proactively reuses same-site renderer processes to host multiple main "
     "frames, up to a certain threshold.";
 
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kEnablePrintingMarginsAndScale[] =
-    "Enable printing margins and scale support in chrome.Printing API.";
+    "Enable printing margins and scale support in chrome.printing API.";
 const char kEnablePrintingMarginsAndScaleDescription[] =
-    "Allows extensions to specify margins and scale in chrome.Printing API "
+    "Allows extensions to specify margins and scale in chrome.printing API "
     "based on supported values provided by the printer.";
-#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const char kBoundaryEventDispatchTracksNodeRemovalName[] =
     "Boundary Event Dispatch Tracks Node Removal";
@@ -7699,6 +7715,10 @@ const char kWaylandLinuxDrmSyncobjDescription[] =
 const char kWaylandPerWindowScalingName[] = "Wayland per-window scaling";
 const char kWaylandPerWindowScalingDescription[] =
     "Enable Wayland's per-window scaling experimental support.";
+
+const char kWaylandSessionManagementName[] = "Wayland session management";
+const char kWaylandSessionManagementDescription[] =
+    "Enable Wayland's xx/xdg-session-management-v1 experimental support.";
 
 const char kWaylandTextInputV3Name[] = "Wayland text-input-v3";
 const char kWaylandTextInputV3Description[] =

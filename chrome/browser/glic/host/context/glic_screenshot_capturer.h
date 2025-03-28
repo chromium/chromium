@@ -45,6 +45,9 @@ class GlicScreenshotCapturer : public webrtc::DesktopCapturer::Callback {
   // Callback triggered when user selects a source to capture.
   void OnSourceSelected(const std::string& err, content::DesktopMediaID id);
 
+  // Called to start the actual screen capture.
+  void OnCaptureStarted(content::DesktopMediaID id);
+
   // webrtc::DesktopCapturer::Callback:
   void OnCaptureResult(webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame) override;

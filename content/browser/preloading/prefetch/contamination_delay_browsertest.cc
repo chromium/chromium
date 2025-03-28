@@ -220,8 +220,17 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, IgnoresIfExempt) {
                                BrowsingContextGroupSwapType::kProactiveSwap));
 }
 
+#ifndef NDEBUG
+// TODO(http://crbug.com/404944178): This test is flaky on debug builds.
+// https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fcontent%2Ftest%3Acontent_browsertests%2FContaminationDelayBrowserTest.IgnoresIfExempt_BrowserInitiated
+#define MAYBE_IgnoresIfExempt_BrowserInitiated \
+  DISABLED_IgnoresIfExempt_BrowserInitiated
+#else
+#define MAYBE_IgnoresIfExempt_BrowserInitiated \
+  IgnoresIfExempt_BrowserInitiated
+#endif
 IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest,
-                       IgnoresIfExempt_BrowserInitiated) {
+                       MAYBE_IgnoresIfExempt_BrowserInitiated) {
   url::Origin referring_origin = url::Origin::Create(
       embedded_test_server()->GetURL("referrer.localhost", "/title1.html"));
   GURL prefetch_url =

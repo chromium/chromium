@@ -142,13 +142,24 @@ IN_PROC_BROWSER_TEST_P(EnterpriseBadgingTest, CanShowEnterpriseBadging) {
 }
 
 IN_PROC_BROWSER_TEST_P(EnterpriseBadgingTest,
-                       CanNotShowEnterpriseBadgingForOTRProfile) {
+                       CanNotShowEnterpriseBadgingForPrimaryOTRProfile) {
   Browser* incognito_browser = Browser::Create(Browser::CreateParams(
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
       true));
   // Profile badging should always return false in incognito.
   EXPECT_FALSE(CanShowEnterpriseBadgingForAvatar(incognito_browser->profile()));
   EXPECT_FALSE(CanShowEnterpriseBadgingForMenu(incognito_browser->profile()));
+}
+
+IN_PROC_BROWSER_TEST_P(EnterpriseBadgingTest,
+                       CanNotShowEnterpriseBadgingForNonPrimaryOTRProfile) {
+  browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  Profile* secondary_incognito = browser()->profile()->GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUnique("Test:NonPrimaryOTRProfile"),
+      /*create_if_needed=*/true);
+  // Profile badging should always return false in incognito.
+  EXPECT_FALSE(CanShowEnterpriseBadgingForAvatar(secondary_incognito));
+  EXPECT_FALSE(CanShowEnterpriseBadgingForMenu(secondary_incognito));
 }
 
 INSTANTIATE_TEST_SUITE_P(,

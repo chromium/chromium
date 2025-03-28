@@ -26,7 +26,6 @@
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
-#include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -118,8 +117,8 @@ class SharedTabGroupInteractiveUiTest : public InteractiveBrowserTest {
                      std::string collaboration_id,
                      data_sharing::MemberRole member_role,
                      bool should_sign_in) {
-    TabGroupSyncServiceImpl* service = static_cast<TabGroupSyncServiceImpl*>(
-        TabGroupSyncServiceFactory::GetForProfile(browser()->profile()));
+    TabGroupSyncService* service =
+        TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
     service->MakeTabGroupSharedForTesting(group_id, collaboration_id);
 
     // Additional Properties.

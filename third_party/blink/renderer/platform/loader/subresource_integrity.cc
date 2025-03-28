@@ -230,7 +230,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
 }
 
 bool SubresourceIntegrity::CheckHashesImpl(
-    const WTF::Vector<IntegrityMetadataPair>& hashes,
+    const WTF::Vector<IntegrityMetadata>& hashes,
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
     const FeatureContext* feature_context,
@@ -268,13 +268,13 @@ bool SubresourceIntegrity::CheckHashesImpl(
   // Then we loop through the asserted hashes, ignoring any that don't use
   // the strongest algorithm asserted:
   for (const IntegrityMetadata& metadata : hashes) {
-    if (metadata.Algorithm() != strongest_algorithm) {
+    if (metadata.algorithm != strongest_algorithm) {
       continue;
     }
 
     // And finally decode the metadata's digest for comparison.
     Vector<char> decoded_metadata;
-    Base64Decode(metadata.Digest(), decoded_metadata);
+    Base64Decode(metadata.digest, decoded_metadata);
     DigestValue expected_value;
     expected_value.AppendSpan(base::as_byte_span(decoded_metadata));
 
@@ -311,14 +311,14 @@ bool SubresourceIntegrity::CheckHashesImpl(
 }
 
 bool SubresourceIntegrity::CheckSignaturesImpl(
-    const WTF::Vector<IntegrityMetadataPair>& integrity_pairs,
+    const WTF::Vector<IntegrityMetadata>& integrity_list,
     const KURL& resource_url,
     const String& raw_headers,
     IntegrityReport& integrity_report) {
   // This implements steps 6 and 8.3 of
   // https://wicg.github.io/signature-based-sri/#matching.
   //
-  if (integrity_pairs.empty()) {
+  if (integrity_list.empty()) {
     return true;
   }
 
@@ -344,7 +344,7 @@ bool SubresourceIntegrity::CheckSignaturesImpl(
 
   // This would be caught below, but we'll exit early for unsigned resources
   // so we can provide a better error message in the console.
-  if (signatures.empty() && !integrity_pairs.empty()) {
+  if (signatures.empty() && !integrity_list.empty()) {
     integrity_report.AddConsoleErrorMessage(
         "Subresource Integrity: The resource at `" +
         resource_url.ElidedString() +
@@ -353,8 +353,8 @@ bool SubresourceIntegrity::CheckSignaturesImpl(
     return false;
   }
 
-  for (const IntegrityMetadata& metadata : integrity_pairs) {
-    String public_key = metadata.Digest();
+  for (const IntegrityMetadata& metadata : integrity_list) {
+    String public_key = metadata.digest;
     for (const auto& signature : signatures) {
       if (signature->keyid == public_key) {
         return true;
@@ -370,7 +370,7 @@ bool SubresourceIntegrity::CheckSignaturesImpl(
 }
 
 IntegrityAlgorithm SubresourceIntegrity::FindBestAlgorithm(
-    const WTF::Vector<IntegrityMetadataPair>& metadata_pairs) {
+    const WTF::Vector<IntegrityMetadata>& metadata_list) {
   // Find the "strongest" algorithm in the set. (This relies on
   // IntegrityAlgorithm declaration order matching the "strongest" order, so
   // make the compiler check this assumption first.)
@@ -380,12 +380,13 @@ IntegrityAlgorithm SubresourceIntegrity::FindBestAlgorithm(
                 "of the integrity algorithms.");
 
   // metadata_set is non-empty, so we are guaranteed to always have a result.
-  DCHECK(!metadata_pairs.empty());
+  DCHECK(!metadata_list.empty());
   return std::max_element(
-             metadata_pairs.begin(), metadata_pairs.end(),
-             [](const IntegrityMetadataPair& a,
-                const IntegrityMetadataPair& b) { return a.second < b.second; })
-      ->second;
+             metadata_list.begin(), metadata_list.end(),
+             [](const IntegrityMetadata& a, const IntegrityMetadata& b) {
+               return a.algorithm < b.algorithm;
+             })
+      ->algorithm;
 }
 
 SubresourceIntegrity::AlgorithmParseResult
@@ -529,7 +530,7 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
       }
     }
 
-    IntegrityMetadata integrity_metadata(digest, algorithm);
+    IntegrityMetadata integrity_metadata(std::move(digest), algorithm);
     if (integrity_report) {
       if (IsHashingAlgorithm(algorithm)) {
         integrity_report->AddUseCount(WebFeature::kSRIHashAssertion);
@@ -537,7 +538,7 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
         integrity_report->AddUseCount(WebFeature::kSRIPublicKeyAssertion);
       }
     }
-    metadata_set.Insert(std::move(integrity_metadata.ToPair()));
+    metadata_set.Insert(std::move(integrity_metadata));
   }
 }
 
@@ -588,7 +589,7 @@ bool SubresourceIntegrity::VerifyInlineIntegrity(
 
     for (const auto& key : integrity_metadata.public_keys) {
       Vector<char> decoded_key;
-      if (!Base64Decode(key.first, decoded_key) || decoded_key.size() != 32u) {
+      if (!Base64Decode(key.digest, decoded_key) || decoded_key.size() != 32u) {
         // TODO(391907163): Log an error for invalid public key digests.
         continue;
       }

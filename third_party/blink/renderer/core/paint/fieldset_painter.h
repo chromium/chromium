@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FIELDSET_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FIELDSET_PAINTER_H_
 
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -13,7 +14,6 @@ class BoxDecorationData;
 class PhysicalBoxFragment;
 struct FieldsetPaintInfo;
 struct PaintInfo;
-struct PhysicalOffset;
 struct PhysicalRect;
 
 class FieldsetPainter {

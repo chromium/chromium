@@ -92,8 +92,8 @@ static bool GetDeviceNamesWinImpl(EDataFlow data_flow,
       }
 
       // Append suffix to USB and Bluetooth devices.
-      std::string controller_id = CoreAudioUtil::GetAudioControllerID(
-          audio_device.Get(), enumerator.Get());
+      std::string controller_id =
+          CoreAudioUtil::GetAudioControllerID(audio_device.Get());
       std::string suffix = GetDeviceSuffixWin(controller_id);
       if (!suffix.empty())
         device.device_name += suffix;

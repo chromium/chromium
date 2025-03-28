@@ -90,6 +90,11 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Returns the top container view.
   virtual views::View* TopContainer() = 0;
 
+  // Returns true if the window is minimized.
+  virtual bool IsMinimized() const = 0;
+
+  virtual base::WeakPtr<BrowserWindowInterface> GetWeakPtr() = 0;
+
   // Returns the view that houses the Lens overlay.
   virtual views::View* LensOverlayView() = 0;
 

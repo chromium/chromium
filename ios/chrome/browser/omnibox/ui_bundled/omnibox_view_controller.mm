@@ -374,10 +374,6 @@ using base::UserMetricsAction;
 
 - (void)performKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
   if ([self.popupKeyboardDelegate canPerformKeyboardAction:keyboardAction]) {
-    if (keyboardAction == OmniboxKeyboardActionUpArrow ||
-        keyboardAction == OmniboxKeyboardActionDownArrow) {
-      [self.textField exitPreEditState];
-    }
     [self.popupKeyboardDelegate performKeyboardAction:keyboardAction];
   } else if ([self.textField canPerformKeyboardAction:keyboardAction]) {
     [self.textField performKeyboardAction:keyboardAction];

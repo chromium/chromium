@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 
 @implementation OmniboxTextController {
@@ -133,6 +134,17 @@
   if (_omniboxViewIOS) {
     _omniboxViewIOS->OnDeleteBackward();
   }
+}
+
+#pragma mark - Omnibox popup event
+
+- (void)previewSuggestion:(id<AutocompleteSuggestion>)suggestion {
+  OmniboxTextFieldIOS* textModel = self.textField;
+  NSAttributedString* previewText = suggestion.omniboxPreviewText;
+
+  [textModel exitPreEditState];
+  [textModel setAdditionalText:nil];
+  [textModel setText:previewText userTextLength:previewText.length];
 }
 
 @end

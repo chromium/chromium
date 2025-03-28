@@ -6,6 +6,8 @@
 
 #include <algorithm>
 #include <ostream>
+#include <sstream>
+#include <string>
 
 #include "base/debug/crash_logging.h"
 #include "base/strings/strcat.h"
@@ -50,23 +52,20 @@ std::string SerializeOptionalUrlsWithMetadata(
     return "std::nullopt";
   }
 
-  std::vector<std::string> urls_str_vector = {"{ "};
+  bool comma = false;
+  std::ostringstream ss;
+  ss << "[ ";
   for (const auto& url_with_metadata : *urls_with_metadata) {
-    urls_str_vector.push_back("{url: ");
-    urls_str_vector.push_back(url_with_metadata.url);
-    urls_str_vector.push_back(", reporting_metadata: { ");
-    for (const auto& metadata_pair : url_with_metadata.reporting_metadata) {
-      urls_str_vector.push_back("{");
-      urls_str_vector.push_back(metadata_pair.first);
-      urls_str_vector.push_back(" : ");
-      urls_str_vector.push_back(metadata_pair.second);
-      urls_str_vector.push_back("} ");
+    if (comma) {
+      ss << ", ";
+    } else {
+      comma = true;
     }
-    urls_str_vector.push_back("}} ");
+    ss << url_with_metadata;
   }
-  urls_str_vector.push_back("}");
+  ss << " ]";
 
-  return base::StrCat(urls_str_vector);
+  return ss.str();
 }
 
 std::string MaybeTruncateSerializedData(
@@ -103,8 +102,28 @@ SharedStorageEventParams::SharedStorageUrlSpecWithMetadata::operator=(
     const SharedStorageUrlSpecWithMetadata&) = default;
 
 bool SharedStorageEventParams::SharedStorageUrlSpecWithMetadata::operator==(
-    const SharedStorageUrlSpecWithMetadata& other) const {
-  return url == other.url && reporting_metadata == other.reporting_metadata;
+    const SharedStorageUrlSpecWithMetadata& other) const = default;
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const SharedStorageEventParams::SharedStorageUrlSpecWithMetadata&
+        url_with_metadata) {
+  bool comma = false;
+  os << "{ URL: '" << url_with_metadata.url << "', Reporting Metadata: {";
+  for (const auto& metadata_pair : url_with_metadata.reporting_metadata) {
+    if (comma) {
+      os << ",";
+    } else {
+      comma = true;
+    }
+    os << " '" << metadata_pair.first << "': '" << metadata_pair.second << "'";
+  }
+  if (!url_with_metadata.reporting_metadata.empty()) {
+    os << " ";
+  }
+  os << "} }";
+
+  return os;
 }
 
 SharedStorageEventParams::SharedStorageEventParams(
@@ -143,7 +162,7 @@ SharedStorageEventParams SharedStorageEventParams::CreateForAddModule(
     const GURL& script_source_url,
     int worklet_id) {
   return SharedStorageEventParams::CreateForWorkletCreation(
-      script_source_url, std::nullopt, worklet_id);
+      script_source_url, /*data_origin=*/std::nullopt, worklet_id);
 }
 
 // static
@@ -161,7 +180,8 @@ SharedStorageEventParams SharedStorageEventParams::CreateForRun(
     const blink::CloneableMessage& serialized_data,
     int worklet_id) {
   return SharedStorageEventParams::CreateForWorkletOperation(
-      operation_name, serialized_data, std::nullopt, worklet_id);
+      operation_name, serialized_data,
+      /*urls_with_metadata=*/std::nullopt, worklet_id);
 }
 
 // static
@@ -191,7 +211,8 @@ SharedStorageEventParams SharedStorageEventParams::CreateForAppend(
     const std::string& value,
     std::optional<int> worklet_id) {
   return SharedStorageEventParams::CreateForModifierMethod(
-      key, value, std::nullopt, worklet_id);
+      key, value,
+      /*ignore_if_present=*/std::nullopt, worklet_id);
 }
 
 // static
@@ -199,14 +220,18 @@ SharedStorageEventParams SharedStorageEventParams::CreateForGetOrDelete(
     const std::string& key,
     std::optional<int> worklet_id) {
   return SharedStorageEventParams::CreateForModifierMethod(
-      key, std::nullopt, std::nullopt, worklet_id);
+      key,
+      /*value=*/std::nullopt,
+      /*ignore_if_present=*/std::nullopt, worklet_id);
 }
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateWithWorkletId(
     int worklet_id) {
   return SharedStorageEventParams::CreateForModifierMethod(
-      std::nullopt, std::nullopt, std::nullopt, worklet_id);
+      /*key=*/std::nullopt,
+      /*value=*/std::nullopt,
+      /*ignore_if_present=*/std::nullopt, worklet_id);
 }
 
 // static
@@ -219,10 +244,14 @@ SharedStorageEventParams SharedStorageEventParams::CreateForWorkletCreation(
     const GURL& script_source_url,
     std::optional<std::string> data_origin,
     int worklet_id) {
-  return SharedStorageEventParams(script_source_url.spec(),
-                                  std::move(data_origin), std::nullopt,
-                                  std::nullopt, std::nullopt, std::nullopt,
-                                  std::nullopt, std::nullopt, worklet_id);
+  return SharedStorageEventParams(
+      script_source_url.spec(), std::move(data_origin),
+      /*operation_name=*/std::nullopt,
+      /*serialized_data=*/std::nullopt,
+      /*urls_with_metadata=*/std::nullopt,
+      /*key=*/std::nullopt,
+      /*value=*/std::nullopt,
+      /*ignore_if_present=*/std::nullopt, worklet_id);
 }
 
 // static
@@ -232,10 +261,14 @@ SharedStorageEventParams SharedStorageEventParams::CreateForWorkletOperation(
     std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
         urls_with_metadata,
     int worklet_id) {
-  return SharedStorageEventParams(std::nullopt, std::nullopt, operation_name,
+  return SharedStorageEventParams(/*script_source_url=*/std::nullopt,
+                                  /*data_origin=*/std::nullopt, operation_name,
                                   MaybeTruncateSerializedData(serialized_data),
-                                  std::move(urls_with_metadata), std::nullopt,
-                                  std::nullopt, std::nullopt, worklet_id);
+                                  std::move(urls_with_metadata),
+                                  /*key=*/std::nullopt,
+                                  /*value=*/std::nullopt,
+                                  /*ignore_if_present=*/std::nullopt,
+                                  worklet_id);
 }
 
 // static
@@ -245,8 +278,12 @@ SharedStorageEventParams SharedStorageEventParams::CreateForModifierMethod(
     std::optional<bool> ignore_if_present,
     std::optional<int> worklet_id) {
   return SharedStorageEventParams(
-      std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
-      std::move(key), std::move(value), ignore_if_present, worklet_id);
+      /*script_source_url=*/std::nullopt,
+      /*data_origin=*/std::nullopt,
+      /*operation_name=*/std::nullopt,
+      /*serialized_data*/ std::nullopt,
+      /*urls_with_metadata=*/std::nullopt, std::move(key), std::move(value),
+      ignore_if_present, worklet_id);
 }
 
 // Note that for `serialized_data`, we only match its presence or absence.

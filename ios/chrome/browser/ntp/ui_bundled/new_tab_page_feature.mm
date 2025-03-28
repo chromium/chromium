@@ -156,6 +156,13 @@ double GetDeprecateFeedHeaderParameterValueAsDouble(
                                                    param_name, default_value);
 }
 
+bool IsIdentityDiscAccountMenuEnabled() {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    return true;
+  }
+  return base::FeatureList::IsEnabled(kIdentityDiscAccountMenu);
+}
+
 bool IdentityDiscAccountMenuEnabledWithoutEllipsis() {
   if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
     return base::GetFieldTrialParamByFeatureAsBool(

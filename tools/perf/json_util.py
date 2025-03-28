@@ -43,24 +43,30 @@ def is_public_builder(builder_name: str) -> bool:
 def gcs_buckets_from_builder_name(
     builder_name: str,
     master_name: str,
-    experiment_only: bool=False) -> List[str]:
+    experiment_only: bool=False,
+    public_copy_to_experiment: bool=False) -> List[str]:
   """Returns the GCS buckets to upload the json to.
 
   Args:
     builder_name: The builder name.
     master_name: The master name.
     experiment_only: Whether the json is to uoload for experiment only.
+    public_copy_to_experiment: Whether to copy the public data to experiment.
   Returns:
     The GCS buckets to upload the json to.
   """
   if experiment_only:
     # Hardcoded for a/b testing to achieve data parity.
-    return ["chrome-perf-experiment-non-public"]
+    return [json_constants.EXPERIMENT_GCS_BUCKET]
   if not builder_name or not master_name:
     return []
   is_public = is_public_builder(builder_name)
   for _, value in json_constants.REPOSITORY_PROPERTY_MAP.items():
     if master_name in value["masters"]:
+      if public_copy_to_experiment and is_public:
+        return [value["public_bucket_name"],
+                value["internal_bucket_name"],
+                json_constants.EXPERIMENT_GCS_BUCKET]
       if is_public:
         return [value["public_bucket_name"], value["internal_bucket_name"]]
       return [value["internal_bucket_name"]]

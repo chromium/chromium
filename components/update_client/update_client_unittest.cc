@@ -1902,8 +1902,9 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
       EXPECT_EQ(9, ping_data[0].error_code);  // GENERIC_ERROR.
 
       // Expect that the download ping carries the pipeline id.
-      EXPECT_EQ(nonterminal_ping_data().size(), 1u);
-      EXPECT_EQ(nonterminal_ping_data()[0].pipeline_id, "pipe1");
+      EXPECT_EQ(nonterminal_ping_data().size(), 2u);
+      EXPECT_EQ(nonterminal_ping_data()[0].pipeline_id, "pipe1");  // Download
+      EXPECT_EQ(nonterminal_ping_data()[1].pipeline_id, "pipe1");  // crx3
     }
   };
 
@@ -4419,14 +4420,13 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
 
    protected:
     ~MockPingManager() override {
-      EXPECT_EQ(3u, events().size());
+      EXPECT_EQ(4u, events().size());
 
       /*
-      "<event eventtype="14" eventresult="1" downloader="unknown" "
-      "url="http://localhost/download/runaction_test_win.crx3"
-      "downloaded=1843 "
-      "total=1843 download_time_ms="1000" previousversion="0.0" "
-      "nextversion="1.0"/>"
+      "<event eventtype="14" eventresult="1" downloader="unknown"
+      url="http://localhost/download/runaction_test_win.crx3"
+      downloaded=1843 total=1843 download_time_ms="1000"
+      previousversion="0.0" nextversion="1.0"/>
       */
       const base::Value::Dict& event0 = events()[0];
       EXPECT_EQ(14, event0.FindInt("eventtype"));
@@ -4440,19 +4440,27 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
       EXPECT_EQ("0.0", CHECK_DEREF(event0.FindString("previousversion")));
       EXPECT_EQ("1.0", CHECK_DEREF(event0.FindString("nextversion")));
 
-      // "<event eventtype="42" eventresult="1" errorcode="1877345072"/>"
+      // <event eventtype="63" eventresult="1" previousversion="0.0"
+      // nextversion="1.0"/>
       const base::Value::Dict& event1 = events()[1];
-      EXPECT_EQ(42, event1.FindInt("eventtype"));
+      EXPECT_EQ(63, event1.FindInt("eventtype"));
       EXPECT_EQ(1, event1.FindInt("eventresult"));
-      EXPECT_EQ(1877345072, event1.FindInt("errorcode"));
+      EXPECT_EQ("0.0", CHECK_DEREF(event1.FindString("previousversion")));
+      EXPECT_EQ("1.0", CHECK_DEREF(event1.FindString("nextversion")));
 
-      // "<event eventtype=\"2\" eventresult=\"1\" previousversion=\"0.0\" "
-      // "nextversion=\"1.0\"/>",
+      // <event eventtype="42" eventresult="1" errorcode="1877345072"/>
       const base::Value::Dict& event2 = events()[2];
-      EXPECT_EQ(2, event2.FindInt("eventtype"));
-      EXPECT_EQ(1, event1.FindInt("eventresult"));
-      EXPECT_EQ("0.0", CHECK_DEREF(event0.FindString("previousversion")));
-      EXPECT_EQ("1.0", CHECK_DEREF(event0.FindString("nextversion")));
+      EXPECT_EQ(42, event2.FindInt("eventtype"));
+      EXPECT_EQ(1, event2.FindInt("eventresult"));
+      EXPECT_EQ(1877345072, event2.FindInt("errorcode"));
+
+      // <event eventtype="2" eventresult="1" previousversion="0.0"
+      // nextversion="1.0"/>
+      const base::Value::Dict& event3 = events()[3];
+      EXPECT_EQ(2, event3.FindInt("eventtype"));
+      EXPECT_EQ(1, event3.FindInt("eventresult"));
+      EXPECT_EQ("0.0", CHECK_DEREF(event3.FindString("previousversion")));
+      EXPECT_EQ("1.0", CHECK_DEREF(event3.FindString("nextversion")));
     }
   };
 

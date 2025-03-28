@@ -82,6 +82,19 @@ suite('PlayPause', () => {
         await metrics.whenCalled('incrementMetricCount'));
   });
 
+  test('on click logs speech stop pause source', async () => {
+    toolbar.isReadAloudPlayable = true;
+    await microtasksFinished();
+    toolbar.isSpeechActive = false;
+    playPauseButton.click();
+
+    toolbar.isSpeechActive = true;
+    playPauseButton.click();
+    assertEquals(
+        chrome.readingMode.pauseButtonStopSource,
+        await metrics.whenCalled('recordSpeechStopSource'));
+  });
+
   test('when playing', async () => {
     toolbar.isSpeechActive = true;
     await microtasksFinished();

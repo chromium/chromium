@@ -71,7 +71,7 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
     const AccountId account_id = AccountId::FromUserEmailGaiaId(
         kFakePrimaryUsername,
         signin::GetTestGaiaIdForEmail(kFakePrimaryUsername));
-    ASSERT_TRUE(user_manager::TestHelper(*user_manager::UserManager::Get())
+    ASSERT_TRUE(user_manager::TestHelper(user_manager::UserManager::Get())
                     .AddRegularUser(account_id));
     session_manager::SessionManager::Get()->CreateSession(
         account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),

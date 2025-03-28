@@ -5,7 +5,7 @@ promise_test(async t => {
   await ensureLanguageModel();
 
   // Start a new session.
-  const session = await ai.languageModel.create();
+  const session = await LanguageModel.create();
   const promptString = await getPromptExceedingAvailableTokens(session);
   await promise_rejects_dom(t, "QuotaExceededError", session.prompt(promptString));
 });

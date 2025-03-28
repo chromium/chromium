@@ -50,6 +50,7 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list,
+      const gfx::Image& rp_icon,
       bool show_back_button) override;
 
   void ShowVerifyingSheet(const IdentityRequestAccountPtr& account,
@@ -130,13 +131,13 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // that order, horizontally.
   std::unique_ptr<views::BoxLayoutView> CreateCombinedIconsView();
 
-  // Hides `header_icon_spinner_` and shows `idp_brand_icon_` upon successful
-  // IDP icon fetch.
-  void OnIdpBrandIconFetched();
+  // Hides `header_icon_spinner_` and shows `idp_brand_icon_` upon successfully
+  // setting the IDP icon.
+  void OnIdpBrandIconSet();
 
   // Hides `header_icon_spinner_`, `idp_brand_icon_` and shows `combined_icons_`
-  // upon successful IDP and RP icon fetches.
-  void OnCombinedIconsFetched();
+  // upon successfully setting the IDP and RP icons.
+  void OnCombinedIconsSet();
 
   // Removes all child views and dangling pointers and adjust header with
   // progress bar and body label if needed.

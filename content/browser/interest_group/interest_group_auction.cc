@@ -630,32 +630,12 @@ bool IsOriginInDebugReportCooldownOrLockout(
     return false;
   }
 
-  if (IsInDebugReportLockout(debug_report_lockout_and_cooldowns->lockout,
-                             now)) {
-    return true;
-  }
-
-  const auto cooldown_it =
-      debug_report_lockout_and_cooldowns->debug_report_cooldown_map.find(
-          origin);
-  if (cooldown_it !=
-      debug_report_lockout_and_cooldowns->debug_report_cooldown_map.end()) {
-    std::optional<base::TimeDelta> duration =
-        ConvertDebugReportCooldownTypeToDuration(cooldown_it->second.type);
-    if (duration.has_value()) {
-      bool is_cooldown_before_filtering_starting =
-          cooldown_it->second.starting_time <
-          CeilToNearestNextHour(
-              blink::features::kFledgeEnableFilteringDebugReportStartingFrom
-                  .Get());
-      bool is_in_cooldown =
-          cooldown_it->second.starting_time + *duration >= now;
-      if (!is_cooldown_before_filtering_starting && is_in_cooldown) {
-        return true;
-      }
-    }
-  }
-  return false;
+  return IsInDebugReportLockout(debug_report_lockout_and_cooldowns->lockout,
+                                now) ||
+         IsInDebugReportCooldown(
+             origin,
+             debug_report_lockout_and_cooldowns->debug_report_cooldown_map,
+             now);
 }
 
 void UpdateDebugReportCooldown(

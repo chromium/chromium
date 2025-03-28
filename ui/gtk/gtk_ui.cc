@@ -673,6 +673,11 @@ int GtkUi::GetCursorThemeSize() {
   gint size = 0;
   g_object_get(gtk_settings_get_default(), "gtk-cursor-theme-size", &size,
                nullptr);
+  if (GtkCheckVersion(4)) {
+    // GTK4 supports per-monitor scaling, so the gtk-cursor-theme-size is not
+    // premultiplied by the scale factor.
+    size *= display_config().primary_scale;
+  }
   return size;
 }
 
@@ -1037,6 +1042,8 @@ void GtkUi::UpdateDeviceScaleFactor() {
   }
   set_default_font_settings(std::nullopt);
   default_font_render_params_.reset();
+  // On GTK4, the cursor theme size depends on the display scale factor.
+  OnCursorThemeSizeChanged(gtk_settings_get_default(), nullptr);
 }
 
 }  // namespace gtk

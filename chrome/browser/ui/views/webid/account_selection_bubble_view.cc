@@ -204,8 +204,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kTopBottomPadding));
-  header_view_ =
-      AddChildView(CreateHeaderView(/*has_idp_icon=*/idp_title.has_value()));
+  header_view_ = AddChildView(CreateHeaderView());
 }
 
 AccountSelectionBubbleView::~AccountSelectionBubbleView() = default;
@@ -213,20 +212,19 @@ AccountSelectionBubbleView::~AccountSelectionBubbleView() = default;
 void AccountSelectionBubbleView::ShowMultiAccountPicker(
     const std::vector<IdentityRequestAccountPtr>& accounts,
     const std::vector<IdentityProviderDataPtr>& idp_list,
+    const gfx::Image& rp_icon,
     bool show_back_button) {
-  // If there are multiple IDPs, then the content::IdentityProviderMetadata
-  // passed will be unused since there will be no `header_icon_view_`.
-  // Therefore, it is fine to pass the first one into UpdateHeader().
-  DCHECK(idp_list.size() == 1u || !header_icon_view_);
-  std::u16string title =
-      GetTitle(rp_for_display_,
-               idp_list.size() > 1u
-                   ? std::nullopt
+  bool is_multi_idp = idp_list.size() > 1u;
+  std::u16string title = GetTitle(
+      rp_for_display_,
+      is_multi_idp ? std::nullopt
                    : std::make_optional<std::u16string>(
                          base::UTF8ToUTF16(idp_list[0]->idp_for_display)),
-               rp_context_);
-  UpdateHeader(idp_list[0]->idp_metadata.brand_decoded_icon, title,
-               show_back_button);
+      rp_context_);
+  UpdateHeader(
+      is_multi_idp ? rp_icon : idp_list[0]->idp_metadata.brand_decoded_icon,
+      title, show_back_button,
+      /*should_circle_crop_header_icon=*/!is_multi_idp);
 
   RemoveNonHeaderChildViews();
   AddSeparatorAndMultipleAccountChooser(accounts, idp_list);
@@ -239,7 +237,8 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
     const std::u16string& title) {
   UpdateHeader(account->identity_provider->idp_metadata.brand_decoded_icon,
                title,
-               /*show_back_button=*/false);
+               /*show_back_button=*/false,
+               /*should_circle_crop_header_icon=*/true);
 
   RemoveNonHeaderChildViews();
   views::ProgressBar* const progress_bar =
@@ -269,7 +268,8 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
                base::UTF8ToUTF16(account->identity_provider->idp_for_display),
                rp_context_);
   UpdateHeader(account->identity_provider->idp_metadata.brand_decoded_icon,
-               title, show_back_button);
+               title, show_back_button,
+               /*should_circle_crop_header_icon=*/true);
 
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
@@ -283,7 +283,8 @@ void AccountSelectionBubbleView::ShowFailureDialog(
     const content::IdentityProviderMetadata& idp_metadata) {
   UpdateHeader(idp_metadata.brand_decoded_icon,
                GetTitle(rp_for_display_, idp_for_display, rp_context_),
-               /*show_back_button=*/false);
+               /*show_back_button=*/false,
+               /*should_circle_crop_header_icon=*/true);
 
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
@@ -328,7 +329,8 @@ void AccountSelectionBubbleView::ShowErrorDialog(
   std::u16string title =
       GetTitle(rp_for_display_, idp_for_display, rp_context_);
   UpdateHeader(idp_metadata.brand_decoded_icon, title,
-               /*show_back_button=*/false);
+               /*show_back_button=*/false,
+               /*should_circle_crop_header_icon=*/true);
 
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
@@ -459,8 +461,7 @@ gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
   return bubble_bounds;
 }
 
-std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
-    bool has_idp_icon) {
+std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView() {
   auto header = std::make_unique<views::View>();
   // Do not use a top margin as it has already been set in the bubble.
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -468,14 +469,10 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
           0, kLeftRightPadding, kVerticalSpacing, kLeftRightPadding));
 
   // Add the space for the icon.
-  if (has_idp_icon) {
-    auto image_view = std::make_unique<BrandIconImageView>(
-        kBubbleIdpIconSize, /*should_circle_crop=*/true);
-    image_view->SetImageSize(gfx::Size(kBubbleIdpIconSize, kBubbleIdpIconSize));
-    image_view->SetProperty(views::kMarginsKey,
-                            gfx::Insets().set_right(kLeftRightPadding));
-    header_icon_view_ = header->AddChildView(std::move(image_view));
-  }
+  auto image_view = std::make_unique<BrandIconImageView>(kBubbleIdpIconSize);
+  image_view->SetProperty(views::kMarginsKey,
+                          gfx::Insets().set_right(kLeftRightPadding));
+  header_icon_view_ = header->AddChildView(std::move(image_view));
 
   back_button_ =
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
@@ -487,15 +484,13 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
   back_button_->SetVisible(false);
 
   int back_button_right_margin = kLeftRightPadding;
-  if (header_icon_view_) {
-    // Set the right margin of the back button so that the back button and
-    // the IDP brand icon have the same width. This ensures that the header
-    // title does not shift when the user navigates to the consent screen.
-    back_button_right_margin =
-        std::max(0, back_button_right_margin +
-                        header_icon_view_->GetPreferredSize().width() -
-                        back_button_->GetPreferredSize().width());
-  }
+  // Set the right margin of the back button so that the back button and
+  // the IDP brand icon have the same width. This ensures that the header
+  // title does not shift when the user navigates to the consent screen.
+  back_button_right_margin =
+      std::max(0, back_button_right_margin +
+                      header_icon_view_->GetPreferredSize().width() -
+                      back_button_->GetPreferredSize().width());
   back_button_->SetProperty(views::kMarginsKey,
                             gfx::Insets().set_right(back_button_right_margin));
 
@@ -681,11 +676,10 @@ void AccountSelectionBubbleView::AddAccounts(
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateMultiIdpLoginRow(
     const std::u16string& idp_for_display,
     const IdentityProviderDataPtr& idp_data) {
-  auto image_view = std::make_unique<BrandIconImageView>(
-      kMultiIdpIconSize, /*should_circle_crop=*/true);
-  image_view->SetImageSize(gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
+  auto image_view = std::make_unique<BrandIconImageView>(kMultiIdpIconSize);
   image_view->SetVisible(!idp_data->idp_metadata.brand_decoded_icon.IsEmpty());
-  image_view->CropAndSetImage(idp_data->idp_metadata.brand_decoded_icon);
+  image_view->SetBrandIconImage(idp_data->idp_metadata.brand_decoded_icon,
+                                /*should_circle_crop=*/true);
 
   auto button = std::make_unique<HoverButton>(
       base::BindRepeating(&FedCmAccountSelectionView::OnLoginToIdP,
@@ -724,21 +718,22 @@ AccountSelectionBubbleView::CreateSingleIdpUseOtherAccountButton(
   return button;
 }
 
-void AccountSelectionBubbleView::UpdateHeader(const gfx::Image& idp_image,
-                                              const std::u16string& title,
-                                              bool show_back_button) {
+void AccountSelectionBubbleView::UpdateHeader(
+    const gfx::Image& idp_image,
+    const std::u16string& title,
+    bool show_back_button,
+    bool should_circle_crop_header_icon) {
   back_button_->SetVisible(show_back_button);
-  if (header_icon_view_) {
-    // The back button takes the place of the brand icon, if it is shown. By
-    // default, we show placeholder brand icon prior to brand icon being fetched
-    // so that header text wrapping does not change when brand icon is fetched.
-    // Therefore, we need to hide the brand icon if the image is empty.
-    if (show_back_button || idp_image.IsEmpty()) {
-      header_icon_view_->SetVisible(false);
-    } else {
-      header_icon_view_->CropAndSetImage(idp_image);
-      header_icon_view_->SetVisible(true);
-    }
+  // The back button takes the place of the brand icon, if it is shown. By
+  // default, we show placeholder brand icon prior to brand icon being fetched
+  // so that header text wrapping does not change when brand icon is fetched.
+  // Therefore, we need to hide the brand icon if the image is empty.
+  if (show_back_button || idp_image.IsEmpty()) {
+    header_icon_view_->SetVisible(false);
+  } else {
+    header_icon_view_->SetBrandIconImage(idp_image,
+                                         should_circle_crop_header_icon);
+    header_icon_view_->SetVisible(true);
   }
   if (title.compare(title_) != 0) {
     title_ = title;

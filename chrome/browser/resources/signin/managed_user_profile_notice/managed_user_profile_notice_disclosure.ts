@@ -41,11 +41,12 @@ export class ManagedUserProfileNoticeDisclosureElement extends
     };
   }
 
-  showEnterpriseBadge: boolean = false;
-  pictureUrl: string = '';
+  accessor showEnterpriseBadge: boolean = false;
+  accessor pictureUrl: string = '';
 
-  protected isOidcDialog_: boolean = loadTimeData.getBoolean('isOidcDialog');
-  protected disclosureTitle_: string = '';
+  protected accessor isOidcDialog_: boolean =
+      loadTimeData.getBoolean('isOidcDialog');
+  protected accessor disclosureTitle_: string = '';
 
   override firstUpdated() {
     const titleElement = this.shadowRoot.querySelector<HTMLElement>('.title');

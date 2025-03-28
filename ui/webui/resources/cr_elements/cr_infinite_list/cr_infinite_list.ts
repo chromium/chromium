@@ -68,7 +68,7 @@ export class CrInfiniteListElement<T = object> extends CrLitElement {
   accessor scrollTarget: HTMLElement = this;
   accessor usingDefaultScrollTarget: boolean = true;
   accessor items: T[] = [];
-  accessor itemSize: number = 100;
+  accessor itemSize: number|undefined = undefined;
   // Unlike cr-lazy-list, cr-infinite-list provides a tabindex parameter for
   // clients as is provided by iron-list. Like iron-list, cr-infinite-list will
   // pass 0 for this parameter if the list item should be keyboard focusable,

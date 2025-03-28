@@ -26,8 +26,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImplJni;
 import org.chromium.content_public.browser.NavigationController;
-import org.chromium.ui.MotionEventUtils;
 import org.chromium.ui.base.EventForwarder;
+import org.chromium.ui.util.MotionEventUtils;
 
 /** Unit tests for {@link ContentUiEventHandler} */
 @RunWith(BaseRobolectricTestRunner.class)

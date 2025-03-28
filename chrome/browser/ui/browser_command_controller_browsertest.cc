@@ -64,7 +64,10 @@
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #endif
 
@@ -716,6 +719,26 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
 
   EXPECT_FALSE(
       chrome::IsCommandEnabled(guest_browser.get(), IDC_GLIC_TOGGLE_PIN));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
+                       ThreeDotMenuItemEnabledInRegularProfile) {
+  ASSERT_TRUE(browser()->profile()->IsRegularProfile());
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_OPEN_GLIC));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
+                       ExecuteGlicThreeDotMenuItem) {
+  // Bypass glic eligibility check.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
+  // Bypass fre.
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  profile_prefs->SetBoolean(glic::prefs::kGlicCompletedFre, true);
+
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_OPEN_GLIC));
+  ASSERT_TRUE(
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
+          ->IsWindowShowing());
 }
 #endif
 

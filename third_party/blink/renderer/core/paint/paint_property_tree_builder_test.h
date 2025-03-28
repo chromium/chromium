@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_PROPERTY_TREE_BUILDER_TEST_H_
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -15,7 +16,6 @@ class ClipPaintPropertyNode;
 class GeometryMapperTransformCache;
 class ScrollPaintPropertyNode;
 class TransformPaintPropertyNode;
-struct PhysicalOffset;
 
 class PaintPropertyTreeBuilderTest : public PaintControllerPaintTest {
  public:

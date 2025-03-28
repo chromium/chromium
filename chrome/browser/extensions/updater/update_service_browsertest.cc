@@ -213,18 +213,18 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, TwoUpdateCheckErrors) {
       InstallExtension(crx_path2, 1, ManifestLocation::kExternalPolicyDownload);
   ASSERT_TRUE(extension1 && extension2);
 
-  extensions::ExtensionUpdater::CheckParams params;
-
   base::RunLoop run_loop1;
-  params.ids = {extension1->id(), extension2->id()};
-  params.callback = run_loop1.QuitClosure();
-  extension_updater()->CheckNow(std::move(params));
+  extensions::ExtensionUpdater::CheckParams params1;
+  params1.ids = {extension1->id(), extension2->id()};
+  params1.callback = run_loop1.QuitClosure();
+  extension_updater()->CheckNow(std::move(params1));
   run_loop1.Run();
 
   base::RunLoop run_loop2;
-  params.ids = {extension1->id()};
-  params.callback = run_loop2.QuitClosure();
-  extension_updater()->CheckNow(std::move(params));
+  extensions::ExtensionUpdater::CheckParams params2;
+  params2.ids = {extension1->id()};
+  params2.callback = run_loop2.QuitClosure();
+  extension_updater()->CheckNow(std::move(params2));
   run_loop2.Run();
 
   ASSERT_EQ(2, update_interceptor_->GetCount())

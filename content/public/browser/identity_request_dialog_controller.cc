@@ -43,6 +43,11 @@ IdentityProviderData::IdentityProviderData(
 
 IdentityProviderData::~IdentityProviderData() = default;
 
+RelyingPartyData::RelyingPartyData(const std::string& rp_for_display)
+    : rp_for_display(rp_for_display) {}
+RelyingPartyData::RelyingPartyData(const RelyingPartyData& other) = default;
+RelyingPartyData::~RelyingPartyData() = default;
+
 int IdentityRequestDialogController::GetBrandIconIdealSize(
     blink::mojom::RpMode rp_mode) {
   return 0;
@@ -58,7 +63,7 @@ void IdentityRequestDialogController::SetIsInterceptionEnabled(bool enabled) {
 }
 
 bool IdentityRequestDialogController::ShowAccountsDialog(
-    const std::string& rp_for_display,
+    content::RelyingPartyData rp_data,
     const std::vector<scoped_refptr<content::IdentityProviderData>>& idp_list,
     const std::vector<scoped_refptr<content::IdentityRequestAccount>>& accounts,
     content::IdentityRequestAccount::SignInMode sign_in_mode,

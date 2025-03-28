@@ -839,7 +839,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
       // exceptions.
       dummy_stream->cancel(script_state,
                            ScriptValue(isolate, v8::Undefined(isolate)),
-                           IGNORE_EXCEPTION);
+                           IgnoreException(isolate));
       resolver_->Reject(e);
     }
 

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Property flex value 'calc(10 + (sign(20cqw - 10px) * 5)) calc(10 + (sign(20cqw - 10px) * 5)) 1px'
-  assert_true: 'calc(10 + (sign(20cqw - 10px) * 5)) calc(10 + (sign(20cqw - 10px) * 5)) 1px' is a supported value for flex. expected true got false
-[FAIL] Property flex value 'calc(-1) calc(-1) 0'
-  assert_true: 'calc(-1) calc(-1) 0' is a supported value for flex. expected true got false
-Harness: the test ran to completion.
-

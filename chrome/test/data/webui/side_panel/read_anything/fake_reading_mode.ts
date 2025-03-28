@@ -48,6 +48,14 @@ export class FakeReadingMode {
   sentenceHighlighting: number = 3;
   noHighlighting: number = 4;
 
+  // Enum values for speech stop sources.
+  pauseButtonStopSource: number = 30;
+  keyboardShortcutStopSource: number = 31;
+  engineInterruptStopSource: number = 32;
+  engineErrorStopSource: number = 33;
+  contentFinishedStopSource: number = 34;
+  unexpectedUpdateContentStopSource: number = 35;
+
   // Whether the WebUI toolbar feature flag is enabled.
   isWebUIToolbarVisible: boolean = true;
 
@@ -225,6 +233,9 @@ export class FakeReadingMode {
 
   // Called when a tracked count-based metric is incremented.
   incrementMetricCount(_metric: string) {}
+
+  // Log when speech stops and why.
+  logSpeechStop(_source: number) {}
 
   // Called when the highlight granularity is changed via the webui toolbar.
   turnedHighlightOn() {

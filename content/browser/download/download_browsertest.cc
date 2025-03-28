@@ -4419,6 +4419,33 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, DuplicateContentDisposition) {
             downloads[0]->GetTargetFilePath().BaseName().value());
 }
 
+IN_PROC_BROWSER_TEST_F(DownloadContentTest,
+                       CompressedResponseWithContentDisposition) {
+  // gzip-content-with-content-disposition.gz is served with Content-Disposition
+  // headers, and `Content-Encoding: gzip`.
+  NavigateToURLAndWaitForDownload(
+      shell(),
+      embedded_test_server()->GetURL(
+          "/download/gzip-content-with-content-disposition.gz"),
+      download::DownloadItem::COMPLETE);
+
+  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+  DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
+  ASSERT_EQ(1u, downloads.size());
+
+  EXPECT_EQ(FILE_PATH_LITERAL("hello.txt"),
+            downloads[0]->GetTargetFilePath().BaseName().value());
+
+  // Verify the file is downloaded correctly.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string downloaded_content;
+    ASSERT_TRUE(base::ReadFileToString(downloads[0]->GetTargetFilePath(),
+                                       &downloaded_content));
+    EXPECT_EQ(downloaded_content, "Hello World!\n");
+  }
+}
+
 // Test that the network isolation key is populated for:
 // (1) <a download> triggered download request that doesn't go through the
 // navigation path

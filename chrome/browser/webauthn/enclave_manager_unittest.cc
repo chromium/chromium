@@ -1272,6 +1272,7 @@ TEST_F(EnclaveManagerTest, EpochChanged) {
 
 TEST_F(EnclaveManagerTest, PINChanged) {
   ASSERT_TRUE(Register());
+  constexpr std::string_view kNewWrappedPin = "dummy wrapped pin >= 29 chars";
 
   BoolFuture setup_future;
   manager_.SetupWithPIN("123456", setup_future.GetCallback());
@@ -1281,7 +1282,7 @@ TEST_F(EnclaveManagerTest, PINChanged) {
   const webauthn_pb::EnclaveLocalState::User& user =
       manager_.local_state_for_testing().users().begin()->second;
   webauthn_pb::EnclaveLocalState::WrappedPIN wrapped_pin = user.wrapped_pin();
-  wrapped_pin.set_generation(wrapped_pin.generation() + 1);
+  wrapped_pin.set_wrapped_pin(kNewWrappedPin);
 
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult state;
   state.state = trusted_vault::
@@ -1299,7 +1300,7 @@ TEST_F(EnclaveManagerTest, PINChanged) {
   EXPECT_TRUE(manager_.is_ready());
   const webauthn_pb::EnclaveLocalState::User& updated_user =
       manager_.local_state_for_testing().users().begin()->second;
-  EXPECT_EQ(updated_user.wrapped_pin().generation(), wrapped_pin.generation());
+  EXPECT_EQ(updated_user.wrapped_pin().wrapped_pin(), kNewWrappedPin);
 }
 
 TEST_F(EnclaveManagerTest, SigningFails) {

@@ -138,15 +138,15 @@ export class PrintPreviewDestinationDialogCrosElement extends
 
       showManagePrinters: Boolean,
 
-      noPrinters_: {
+      printerSetupInfoMessageTypeEnum_: {
         type: Number,
-        value: PrinterSetupInfoMessageType.NO_PRINTERS,
+        value: PrinterSetupInfoMessageType,
         readOnly: true,
       },
 
-      destinationDialogCrosInitiator_: {
+      printerSetupInfoInitiatorEnum_: {
         type: Number,
-        value: PrinterSetupInfoInitiator.DESTINATION_DIALOG_CROS,
+        value: PrinterSetupInfoInitiator,
         readOnly: true,
       },
 

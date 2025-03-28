@@ -19,6 +19,7 @@
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
+#include "ui/ozone/platform/wayland/host/xdg_session_manager.h"
 
 class SkBitmap;
 
@@ -63,6 +64,7 @@ class WaylandZwpPointerGestures;
 class WaylandZwpRelativePointerManager;
 class XdgActivation;
 class XdgForeignWrapper;
+class XdgSessionManager;
 class ZwpIdleInhibitManager;
 class ZwpPrimarySelectionDeviceManager;
 
@@ -261,6 +263,8 @@ class WaylandConnection {
     return single_pixel_buffer_.get();
   }
 
+  XdgSessionManager* session_manager() { return session_manager_.get(); }
+
   // Returns whether protocols that support setting window geometry are
   // available.
   bool SupportsSetWindowGeometry() const;
@@ -308,6 +312,8 @@ class WaylandConnection {
 
   bool UseImplicitSyncInterop() const;
 
+  bool SupportsSessionManagement() const;
+
   // Returns a sync callback, which is invoked when the server has processed all
   // pending events prior to this sync point.
   struct wl_callback* GetSyncCallback();
@@ -342,6 +348,7 @@ class WaylandConnection {
   friend class WaylandCursorShape;
   friend class XdgActivation;
   friend class XdgForeignWrapper;
+  friend class XdgSessionManager;
   friend class ZwpIdleInhibitManager;
   friend class ZwpPrimarySelectionDeviceManager;
 
@@ -486,6 +493,8 @@ class WaylandConnection {
 
   std::unique_ptr<WaylandDataDragController> data_drag_controller_;
   std::unique_ptr<WaylandWindowDragController> window_drag_controller_;
+
+  std::unique_ptr<XdgSessionManager> session_manager_;
 
   // Describes the clock domain that wp_presentation timestamps are in.
   uint32_t presentation_clk_id_ = CLOCK_MONOTONIC;

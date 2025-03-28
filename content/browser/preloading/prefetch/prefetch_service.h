@@ -330,10 +330,14 @@ class CONTENT_EXPORT PrefetchService {
   // or equal to zero, the prefetch is kept indefinitely.
   void OnPrefetchTimeout(base::WeakPtr<PrefetchContainer> prefetch);
 
-  // Starts the given |prefetch_container|. If |prefetch_to_evict| is specified,
-  // it is evicted immediately before starting |prefetch_container|.
-  void StartSinglePrefetch(base::WeakPtr<PrefetchContainer> prefetch_container,
-                           base::WeakPtr<PrefetchContainer> prefetch_to_evict);
+  // Evict `prefetch_container` before starting a new prefetch.
+  //
+  // Precondition: `prefetch_container` must be valid.
+  void EvictPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
+  // Starts the given |prefetch_container|.
+  //
+  // Precondition: `prefetch_container` must be valid.
+  void StartSinglePrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Creates a new URL loader and starts a network request for
   // |prefetch_container|. |MakePrefetchRequest| must have been previously
@@ -439,6 +443,10 @@ class CONTENT_EXPORT PrefetchService {
   // consideration should be taken if updating the underlying implementation (or
   // its dependencies).
   bool IsPrefetchStale(base::WeakPtr<PrefetchContainer> prefetch_container);
+
+  // Returns if the `prefetch_container` is in active set.
+  bool IsPrefetchContainerInActiveSet(
+      const PrefetchContainer& prefetch_container);
 
   void DumpPrefetchesForDebug() const;
 

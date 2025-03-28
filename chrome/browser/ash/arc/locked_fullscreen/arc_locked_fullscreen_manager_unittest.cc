@@ -79,8 +79,8 @@ class ArcLockedFullscreenManagerTest
 
     const AccountId account_id(
         AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kUserGaiaId)));
-    ASSERT_TRUE(
-        user_manager::TestHelper(*user_manager_).AddRegularUser(account_id));
+    ASSERT_TRUE(user_manager::TestHelper(user_manager_.get())
+                    .AddRegularUser(account_id));
     const std::string user_id_hash =
         user_manager::TestHelper::GetFakeUsernameHash(account_id);
     user_manager_->UserLoggedIn(account_id, user_id_hash);

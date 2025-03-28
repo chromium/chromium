@@ -83,8 +83,8 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
     private void updateBackgroundHighlight(@BrandedColorScheme int brandedThemeColor) {
         final @DrawableRes int backgroundRes =
                 brandedThemeColor == BrandedColorScheme.INCOGNITO
-                        ? R.drawable.toolbar_button_ripple_incognito
-                        : R.drawable.toolbar_button_ripple;
+                        ? R.drawable.default_icon_background_baseline
+                        : R.drawable.default_icon_background;
         mModel.set(BackButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE, backgroundRes);
     }
 

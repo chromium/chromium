@@ -1082,6 +1082,7 @@ void NativeWidgetMac::PopulateCreateWindowParams(
   if (widget_params.is_overlay) {
     params->window_class = remote_cocoa::mojom::WindowClass::kOverlay;
   }
+  params->animation_enabled = widget_params.animation_enabled;
 }
 
 NativeWidgetMacNSWindow* NativeWidgetMac::CreateNSWindow(

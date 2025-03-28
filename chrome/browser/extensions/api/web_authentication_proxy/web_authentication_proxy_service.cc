@@ -5,10 +5,12 @@
 #include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_service.h"
 
 #include <limits>
+#include <optional>
+#include <string>
 #include <variant>
 
 #include "base/functional/overloaded.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
@@ -538,9 +540,9 @@ WebAuthenticationProxyService::SignalCreateRequest(
   request.request_id = request_id;
 
   base::Value options_value = webauthn::ToValue(options_ptr);
-  std::string request_json;
-  JSONStringValueSerializer serializer(&request.request_details_json);
-  CHECK(serializer.Serialize(options_value));
+  std::optional<std::string> request_json = base::WriteJson(options_value);
+  CHECK(request_json);
+  request.request_details_json = *std::move(request_json);
 
   event_router_->DispatchEventToExtension(
       proxy_extension->id(),
@@ -568,9 +570,9 @@ WebAuthenticationProxyService::SignalGetRequest(
   request.request_id = request_id;
 
   base::Value options_value = webauthn::ToValue(options_ptr);
-  std::string request_json;
-  JSONStringValueSerializer serializer(&request.request_details_json);
-  CHECK(serializer.Serialize(options_value));
+  std::optional<std::string> request_json = base::WriteJson(options_value);
+  CHECK(request_json);
+  request.request_details_json = *std::move(request_json);
 
   event_router_->DispatchEventToExtension(
       proxy_extension->id(),

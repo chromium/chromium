@@ -6,7 +6,7 @@ promise_test(async t => {
   await ensureLanguageModel();
 
   // Start a new session.
-  const session = await ai.languageModel.create();
+  const session = await LanguageModel.create();
   // Test the streaming prompt API.
   const streamingResponse =
     session.promptStreaming(kTestPrompt);

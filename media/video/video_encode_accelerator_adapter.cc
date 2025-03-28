@@ -158,6 +158,8 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
 class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
     : public base::RefCountedThreadSafe<GpuMemoryBufferVideoFramePool> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   GpuMemoryBufferVideoFramePool(GpuVideoAcceleratorFactories* gpu_factories,
                                 const gfx::Size& coded_size)
       : gpu_factories_(gpu_factories), coded_size_(coded_size) {}
@@ -240,6 +242,8 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
 class VideoEncodeAcceleratorAdapter::ReadOnlyRegionPool
     : public base::RefCountedThreadSafe<ReadOnlyRegionPool> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   struct Handle {
     using ReuseBufferCallback =
         base::OnceCallback<void(std::unique_ptr<base::MappedReadOnlyRegion>)>;

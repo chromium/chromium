@@ -485,8 +485,7 @@ void ExternalCacheImpl::MaybeScheduleNextCacheCheck() {
 
   // Jitter the frequency by +/- 20% like it's done in ExtensionUpdater.
   const double jitter_factor = base::RandDouble() * 0.4 + 0.8;
-  base::TimeDelta delay =
-      base::Seconds(extensions::kDefaultUpdateFrequencySeconds);
+  base::TimeDelta delay = extensions::kDefaultUpdateFrequency;
   delay *= jitter_factor;
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostDelayedTask(

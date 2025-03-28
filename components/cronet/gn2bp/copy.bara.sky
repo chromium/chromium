@@ -65,14 +65,12 @@ origin_files = glob([
     "net/third_party/uri_template/**",
     "third_party/abseil-cpp/**",
     "third_party/android_ndk/sources/android/cpufeatures/**",
-    "third_party/llvm-libc/**",
     # See https://chromium-review.googlesource.com/c/chromium/src/+/4885470
     # Note: Only used for tests.
     "third_party/anonymous_tokens/**",
     "third_party/ashmem/**",
     # Note: Only used for tests.
     "third_party/apache-portable-runtime/**",
-    "third_party/boringssl/**",
     "third_party/brotli/**",
     # Note: Only used for tests.
     "third_party/ced/**",
@@ -85,7 +83,6 @@ origin_files = glob([
     "third_party/googletest/**",
     "third_party/icu/**",
     "third_party/jni_zero/**",
-    "third_party/libc++/**",
     "third_party/libc++abi/**",
     # Note: Only used for tests.
     "third_party/libxml/**",
@@ -104,6 +101,25 @@ origin_files = glob([
     # "third_party/zlib/**",
     "url/third_party/mozilla/**",
     "third_party/simdutf/**",
+  ]) + glob([
+    "third_party/libc++/**",
+  ]) - glob([
+    # This is not used, and contains a huge number of files (~10k) that slows
+    # down imports and checkouts.
+    "third_party/libc++/src/test/**",
+  ]) + glob([
+    "third_party/llvm-libc/**",
+  ]) - glob([
+    # This is not used, and contains a large number of files that slows down
+    # imports and checkouts.
+    "third_party/llvm-libc/src/test/**"
+  ]) + glob([
+    "third_party/boringssl/**",
+  ]) - glob([
+    # This is not used, and contains a large number of files that slows down
+    # imports and checkouts.
+    "third_party/boringssl/src/fuzz/**",
+    "third_party/boringssl/src/pki/testdata/**",
   ]) + glob([
     # Note: Only used for tests.
     "third_party/quic_trace/**"

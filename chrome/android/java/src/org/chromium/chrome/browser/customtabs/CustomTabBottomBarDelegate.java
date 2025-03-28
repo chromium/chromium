@@ -80,6 +80,7 @@ public class CustomTabBottomBarDelegate
     private final BrowserServicesIntentDataProvider mDataProvider;
     private final Supplier<Tab> mTabProvider;
     private final CustomTabNightModeStateController mNightModeStateController;
+    private final int mShadowHeightPx;
 
     private CustomTabBottomBarView mBottomBarView;
     @Nullable private View mBottomBarContentView;
@@ -130,6 +131,9 @@ public class CustomTabBottomBarDelegate
         Callback<ViewportInsets> insetObserver = this::onViewportInsetChange;
         // TODO(REVIEW): Is it ok this doesn't remove itself?
         mWindowAndroid.getApplicationBottomInsetSupplier().addObserver(insetObserver);
+        mShadowHeightPx =
+                activity.getResources()
+                        .getDimensionPixelSize(R.dimen.custom_tabs_bottom_bar_shadow_height);
     }
 
     /** Makes the bottom bar area to show, if any. */
@@ -580,7 +584,11 @@ public class CustomTabBottomBarDelegate
 
     private void setBottomControlsHeight(int height) {
         int minHeight = mBrowserControlsSizer.getBottomControlsMinHeight();
-        mBrowserControlsSizer.setBottomControlsHeight(minHeight + height, minHeight);
+
+        // Make the bottom controls height smaller by the shadow height so that
+        // the shadow is displayed over the bottom of the WebContents.
+        mBrowserControlsSizer.setBottomControlsHeight(
+                minHeight + height - mShadowHeightPx, minHeight);
     }
 
     // SwipeGestureListener.SwipeHandler methods

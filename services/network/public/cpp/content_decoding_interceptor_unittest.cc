@@ -496,4 +496,58 @@ TEST_F(ContentDecodingInterceptorTest, OnTransferSizeUpdated) {
   run_loop.Run();
 }
 
+// Verifies the behavior when the interceptor fails to create its internal Mojo
+// data pipe, simulating a resource exhaustion scenario.
+TEST_F(ContentDecodingInterceptorTest, CreateDataPipeFailure) {
+  ContentDecodingInterceptor::SetForceMojoCreateDataPipeFailureForTesting(true);
+
+  const std::string_view file_name = kBrotliTestFile;
+  const std::vector<net::SourceStreamType> types = {
+      net::SourceStreamType::kBrotli};
+
+  const std::string test_data = ReadTestData(file_name);
+  const std::string expected_data = ReadTestData(kOriginalTestFile);
+
+  mojo::ScopedDataPipeProducerHandle source_producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  CreatePipe(test_data.size(), source_producer, consumer);
+
+  mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver;
+  mojo::Remote<network::mojom::URLLoaderClient> url_loader_client_remote;
+  auto endpoints = network::mojom::URLLoaderClientEndpoints::New(
+      url_loader_receiver.InitWithNewPipeAndPassRemote(),
+      url_loader_client_remote.BindNewPipeAndPassReceiver());
+
+  ContentDecodingInterceptor::Intercept(
+      types, endpoints, consumer,
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_BLOCKING}));
+
+  // The data write operation should fail.
+  EXPECT_EQ(source_producer->WriteAllData(base::as_byte_span(test_data)),
+            MOJO_RESULT_FAILED_PRECONDITION);
+  // Finish the data.
+  source_producer.reset();
+
+  // Send OnComplete with OK.
+  url_loader_client_remote->OnComplete(
+      network::URLLoaderCompletionStatus(net::OK));
+
+  base::RunLoop run_loop;
+  testing::NiceMock<network::MockURLLoaderClient> client;
+  EXPECT_CALL(client, OnComplete)
+      .WillOnce([&](::network::URLLoaderCompletionStatus st) {
+        // OnComplete must be caled with ERR_INSUFFICIENT_RESOURCES.
+        EXPECT_EQ(st.error_code, net::ERR_INSUFFICIENT_RESOURCES);
+        EXPECT_EQ(st.decoded_body_length, 0u);
+        run_loop.Quit();
+      });
+  mojo::Receiver<network::mojom::URLLoaderClient> client_receiver(
+      &client, std::move(endpoints->url_loader_client));
+  run_loop.Run();
+
+  ContentDecodingInterceptor::SetForceMojoCreateDataPipeFailureForTesting(
+      false);
+}
+
 }  // namespace network

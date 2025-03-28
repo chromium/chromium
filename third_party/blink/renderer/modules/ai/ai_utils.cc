@@ -7,113 +7,113 @@
 #include <algorithm>
 #include <iterator>
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_core_options.h"
+
 namespace blink {
 
 namespace {
 
-mojom::blink::AISummarizerType ToMojoSummarizerType(V8AISummarizerType type) {
+mojom::blink::AISummarizerType ToMojoSummarizerType(V8SummarizerType type) {
   switch (type.AsEnum()) {
-    case V8AISummarizerType::Enum::kTlDr:
+    case V8SummarizerType::Enum::kTlDr:
       return mojom::blink::AISummarizerType::kTLDR;
-    case V8AISummarizerType::Enum::kKeyPoints:
+    case V8SummarizerType::Enum::kKeyPoints:
       return mojom::blink::AISummarizerType::kKeyPoints;
-    case V8AISummarizerType::Enum::kTeaser:
+    case V8SummarizerType::Enum::kTeaser:
       return mojom::blink::AISummarizerType::kTeaser;
-    case V8AISummarizerType::Enum::kHeadline:
+    case V8SummarizerType::Enum::kHeadline:
       return mojom::blink::AISummarizerType::kHeadline;
   }
 }
 
 mojom::blink::AISummarizerFormat ToMojoSummarizerFormat(
-    V8AISummarizerFormat format) {
+    V8SummarizerFormat format) {
   switch (format.AsEnum()) {
-    case V8AISummarizerFormat::Enum::kPlainText:
+    case V8SummarizerFormat::Enum::kPlainText:
       return mojom::blink::AISummarizerFormat::kPlainText;
-    case V8AISummarizerFormat::Enum::kMarkdown:
+    case V8SummarizerFormat::Enum::kMarkdown:
       return mojom::blink::AISummarizerFormat::kMarkDown;
   }
 }
 
 mojom::blink::AISummarizerLength ToMojoSummarizerLength(
-    V8AISummarizerLength length) {
+    V8SummarizerLength length) {
   switch (length.AsEnum()) {
-    case V8AISummarizerLength::Enum::kShort:
+    case V8SummarizerLength::Enum::kShort:
       return mojom::blink::AISummarizerLength::kShort;
-    case V8AISummarizerLength::Enum::kMedium:
+    case V8SummarizerLength::Enum::kMedium:
       return mojom::blink::AISummarizerLength::kMedium;
-    case V8AISummarizerLength::Enum::kLong:
+    case V8SummarizerLength::Enum::kLong:
       return mojom::blink::AISummarizerLength::kLong;
   }
 }
 
-mojom::blink::AIWriterTone ToMojoAIWriterTone(V8AIWriterTone tone) {
+mojom::blink::AIWriterTone ToMojoWriterTone(V8WriterTone tone) {
   switch (tone.AsEnum()) {
-    case V8AIWriterTone::Enum::kFormal:
+    case V8WriterTone::Enum::kFormal:
       return mojom::blink::AIWriterTone::kFormal;
-    case V8AIWriterTone::Enum::kNeutral:
+    case V8WriterTone::Enum::kNeutral:
       return mojom::blink::AIWriterTone::kNeutral;
-    case V8AIWriterTone::Enum::kCasual:
+    case V8WriterTone::Enum::kCasual:
       return mojom::blink::AIWriterTone::kCasual;
   }
 }
 
-mojom::blink::AIWriterFormat ToMojoAIWriterFormat(V8AIWriterFormat format) {
+mojom::blink::AIWriterFormat ToMojoWriterFormat(V8WriterFormat format) {
   switch (format.AsEnum()) {
-    case V8AIWriterFormat::Enum::kPlainText:
+    case V8WriterFormat::Enum::kPlainText:
       return mojom::blink::AIWriterFormat::kPlainText;
-    case V8AIWriterFormat::Enum::kMarkdown:
+    case V8WriterFormat::Enum::kMarkdown:
       return mojom::blink::AIWriterFormat::kMarkdown;
   }
 }
 
-mojom::blink::AIWriterLength ToMojoAIWriterLength(V8AIWriterLength length) {
+mojom::blink::AIWriterLength ToMojoWriterLength(V8WriterLength length) {
   switch (length.AsEnum()) {
-    case V8AIWriterLength::Enum::kShort:
+    case V8WriterLength::Enum::kShort:
       return mojom::blink::AIWriterLength::kShort;
-    case V8AIWriterLength::Enum::kMedium:
+    case V8WriterLength::Enum::kMedium:
       return mojom::blink::AIWriterLength::kMedium;
-    case V8AIWriterLength::Enum::kLong:
+    case V8WriterLength::Enum::kLong:
       return mojom::blink::AIWriterLength::kLong;
   }
 }
 
-mojom::blink::AIRewriterTone ToMojoAIRewriterTone(V8AIRewriterTone tone) {
+mojom::blink::AIRewriterTone ToMojoRewriterTone(V8RewriterTone tone) {
   switch (tone.AsEnum()) {
-    case V8AIRewriterTone::Enum::kAsIs:
+    case V8RewriterTone::Enum::kAsIs:
       return mojom::blink::AIRewriterTone::kAsIs;
-    case V8AIRewriterTone::Enum::kMoreFormal:
+    case V8RewriterTone::Enum::kMoreFormal:
       return mojom::blink::AIRewriterTone::kMoreFormal;
-    case V8AIRewriterTone::Enum::kMoreCasual:
+    case V8RewriterTone::Enum::kMoreCasual:
       return mojom::blink::AIRewriterTone::kMoreCasual;
   }
 }
 
-mojom::blink::AIRewriterFormat ToMojoAIRewriterFormat(
-    V8AIRewriterFormat format) {
+mojom::blink::AIRewriterFormat ToMojoRewriterFormat(V8RewriterFormat format) {
   switch (format.AsEnum()) {
-    case V8AIRewriterFormat::Enum::kAsIs:
+    case V8RewriterFormat::Enum::kAsIs:
       return mojom::blink::AIRewriterFormat::kAsIs;
-    case V8AIRewriterFormat::Enum::kPlainText:
+    case V8RewriterFormat::Enum::kPlainText:
       return mojom::blink::AIRewriterFormat::kPlainText;
-    case V8AIRewriterFormat::Enum::kMarkdown:
+    case V8RewriterFormat::Enum::kMarkdown:
       return mojom::blink::AIRewriterFormat::kMarkdown;
   }
 }
 
-mojom::blink::AIRewriterLength ToMojoAIRewriterLength(
-    V8AIRewriterLength length) {
+mojom::blink::AIRewriterLength ToMojoRewriterLength(V8RewriterLength length) {
   switch (length.AsEnum()) {
-    case V8AIRewriterLength::Enum::kAsIs:
+    case V8RewriterLength::Enum::kAsIs:
       return mojom::blink::AIRewriterLength::kAsIs;
-    case V8AIRewriterLength::Enum::kShorter:
+    case V8RewriterLength::Enum::kShorter:
       return mojom::blink::AIRewriterLength::kShorter;
-    case V8AIRewriterLength::Enum::kLonger:
+    case V8RewriterLength::Enum::kLonger:
       return mojom::blink::AIRewriterLength::kLonger;
   }
 }
 
 mojom::blink::AISummarizerCreateOptionsPtr ToMojoSummarizerCreateOptionsImpl(
-    const AISummarizerCreateCoreOptions* options,
+    const SummarizerCreateCoreOptions* options,
     const String& shared_context) {
   return mojom::blink::AISummarizerCreateOptions::New(
       shared_context, ToMojoSummarizerType(options->type()),
@@ -126,12 +126,12 @@ mojom::blink::AISummarizerCreateOptionsPtr ToMojoSummarizerCreateOptionsImpl(
 }
 
 mojom::blink::AIWriterCreateOptionsPtr ToMojoWriterCreateOptionsImpl(
-    const AIWriterCreateCoreOptions* options,
+    const WriterCreateCoreOptions* options,
     const String& shared_context) {
   return mojom::blink::AIWriterCreateOptions::New(
-      shared_context, ToMojoAIWriterTone(options->tone()),
-      ToMojoAIWriterFormat(options->format()),
-      ToMojoAIWriterLength(options->length()),
+      shared_context, ToMojoWriterTone(options->tone()),
+      ToMojoWriterFormat(options->format()),
+      ToMojoWriterLength(options->length()),
       ToMojoLanguageCodes(options->getExpectedInputLanguagesOr({})),
       ToMojoLanguageCodes(options->getExpectedContextLanguagesOr({})),
       mojom::blink::AILanguageCode::New(
@@ -139,12 +139,12 @@ mojom::blink::AIWriterCreateOptionsPtr ToMojoWriterCreateOptionsImpl(
 }
 
 mojom::blink::AIRewriterCreateOptionsPtr ToMojoRewriterCreateOptionsImpl(
-    const AIRewriterCreateCoreOptions* options,
+    const RewriterCreateCoreOptions* options,
     const String& shared_context) {
   return mojom::blink::AIRewriterCreateOptions::New(
-      shared_context, ToMojoAIRewriterTone(options->tone()),
-      ToMojoAIRewriterFormat(options->format()),
-      ToMojoAIRewriterLength(options->length()),
+      shared_context, ToMojoRewriterTone(options->tone()),
+      ToMojoRewriterFormat(options->format()),
+      ToMojoRewriterLength(options->length()),
       ToMojoLanguageCodes(options->getExpectedInputLanguagesOr({})),
       ToMojoLanguageCodes(options->getExpectedContextLanguagesOr({})),
       mojom::blink::AILanguageCode::New(
@@ -167,7 +167,7 @@ Vector<mojom::blink::AILanguageCodePtr> ToMojoLanguageCodes(
 
 base::expected<mojom::blink::AILanguageModelSamplingParamsPtr,
                SamplingParamsOptionError>
-ResolveSamplingParamsOption(const AILanguageModelCreateCoreOptions* options) {
+ResolveSamplingParamsOption(const LanguageModelCreateCoreOptions* options) {
   if (!options || (!options->hasTopK() && !options->hasTemperature())) {
     return nullptr;
   }
@@ -194,32 +194,35 @@ ResolveSamplingParamsOption(const AILanguageModelCreateCoreOptions* options) {
 }
 
 mojom::blink::AISummarizerCreateOptionsPtr ToMojoSummarizerCreateOptions(
-    const AISummarizerCreateOptions* options) {
+    const SummarizerCreateOptions* options) {
   return ToMojoSummarizerCreateOptionsImpl(
       options, options->getSharedContextOr(g_empty_string));
 }
 
 mojom::blink::AISummarizerCreateOptionsPtr ToMojoSummarizerCreateOptions(
-    const AISummarizerCreateCoreOptions* core_options) {
+    const SummarizerCreateCoreOptions* core_options) {
   return ToMojoSummarizerCreateOptionsImpl(core_options, g_empty_string);
 }
 
 mojom::blink::AIWriterCreateOptionsPtr ToMojoWriterCreateOptions(
-    const AIWriterCreateOptions* options) {
+    const WriterCreateOptions* options) {
   return ToMojoWriterCreateOptionsImpl(
       options, options->getSharedContextOr(g_empty_string));
 }
+
 mojom::blink::AIWriterCreateOptionsPtr ToMojoWriterCreateOptions(
-    const AIWriterCreateCoreOptions* core_options) {
+    const WriterCreateCoreOptions* core_options) {
   return ToMojoWriterCreateOptionsImpl(core_options, g_empty_string);
 }
+
 mojom::blink::AIRewriterCreateOptionsPtr ToMojoRewriterCreateOptions(
-    const AIRewriterCreateOptions* options) {
+    const RewriterCreateOptions* options) {
   return ToMojoRewriterCreateOptionsImpl(
       options, options->getSharedContextOr(g_empty_string));
 }
+
 mojom::blink::AIRewriterCreateOptionsPtr ToMojoRewriterCreateOptions(
-    const AIRewriterCreateCoreOptions* core_options) {
+    const RewriterCreateCoreOptions* core_options) {
   return ToMojoRewriterCreateOptionsImpl(core_options, g_empty_string);
 }
 

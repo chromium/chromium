@@ -39,7 +39,7 @@ inline constexpr int kLabelButtonLeftPadding = 12;
 inline constexpr int kLabelButtonButtomPadding = 0;
 inline constexpr int kLabelButtonRightPadding = 16;
 inline constexpr int kLabelButtonHeight = 32;
-inline constexpr int kLabelButtonWidth = 120;
+inline constexpr int kLabelButtonIconSize = 24;
 inline constexpr int kLabelButtonIconTextSpace = 8;
 
 // OnTaskPodView contains the shortcut buttons that are part of the OnTask pod.

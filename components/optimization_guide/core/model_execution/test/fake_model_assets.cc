@@ -72,6 +72,11 @@ FakeAdaptationAsset::FakeAdaptationAsset(FakeAdaptationAsset::Content&& content)
 }
 FakeAdaptationAsset::~FakeAdaptationAsset() = default;
 
+void FakeAdaptationAsset::SendTo(
+    OnDeviceModelServiceController& controller) const {
+  controller.MaybeUpdateModelAdaptation(feature(), metadata());
+}
+
 FakeLanguageModelAsset::FakeLanguageModelAsset() {
   CHECK(temp_dir_.CreateUniqueTempDir());
   auto model_path = temp_dir_.GetPath().Append(kWeightsFile);

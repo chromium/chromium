@@ -215,9 +215,12 @@ class PLATFORM_EXPORT CanvasResourceProvider
     NOTREACHED();
   }
 
+  // CanvasResourceProviderSharedImage overrides these methods as part of
+  // implementing resource recycling.
   virtual void OnResourceReturnedFromCompositor(
       scoped_refptr<CanvasResource>&&) {}
-  void SetResourceRecyclingEnabled(bool);
+  virtual void SetResourceRecyclingEnabled(bool) {}
+
   void ClearRecycledResources();
 
   SkSurface* GetSkSurface() const;
@@ -420,7 +423,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   WTF::Vector<UnusedResource> canvas_resources_;
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
-  bool resource_recycling_enabled_ = true;
   base::OneShotTimer unused_resources_reclaim_timer_;
 
  private:

@@ -534,6 +534,9 @@ BASE_FEATURE(kTabGroupIndicator,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTabGroupIndicatorEnabled() {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    return true;
+  }
   return IsTabGroupInGridEnabled() &&
          base::FeatureList::IsEnabled(kTabGroupIndicator);
 }
@@ -1041,7 +1044,7 @@ bool IsBlueDotOnToolsMenuButtoneEnabled() {
 
 BASE_FEATURE(kUseAccountListFromIdentityManager,
              "UseAccountListFromIdentityManager",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsUseAccountListFromIdentityManagerEnabled() {
   return base::FeatureList::IsEnabled(kUseAccountListFromIdentityManager);

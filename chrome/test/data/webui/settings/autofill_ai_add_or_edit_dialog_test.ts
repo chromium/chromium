@@ -502,9 +502,9 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
           assertEquals('', monthSelect.value);
           assertEquals('', daySelect.value);
           assertEquals('', yearSelect.value);
-          assertTrue(monthSelect.textContent!.includes('Select'));
-          assertTrue(daySelect.textContent!.includes('Select'));
-          assertTrue(yearSelect.textContent!.includes('Select'));
+          assertTrue(monthSelect.textContent!.includes('MM'));
+          assertTrue(daySelect.textContent!.includes('DD'));
+          assertTrue(yearSelect.textContent!.includes('YYYY'));
         } else {
           assertEquals(oldDate.month, monthSelect.value);
           assertEquals(oldDate.day, daySelect.value);
@@ -542,6 +542,34 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
 
         assertDeepEquals(expectedEntityInstance, dialogConfirmedEvent.detail);
       }));
+
+  test('testEditEntityInstanceExistingYearOutOfBounds', async function() {
+    // Set up the test.
+    (testDateAttributeInstance.value as DateValue).year = '1800';
+    testEntityInstance.attributeInstances.push(testDateAttributeInstance);
+    dialog.entityInstance = structuredClone(testEntityInstance);
+    document.body.appendChild(dialog);
+    await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
+    await flushTasks();
+
+    // Retrieve the year selector.
+    const yearSelect =
+        dialog.shadowRoot!.querySelector<HTMLSelectElement>('#year-select');
+    assertTrue(!!yearSelect);
+
+    // Check that the out of bounds year is pre-selected.
+    assertEquals('1800', yearSelect.value);
+    // Simulate that changing to a year that is in bounds works.
+    simulateSelectChange(yearSelect, '2000');
+    await flushTasks();
+    assertEquals('2000', yearSelect.value);
+
+    // Simulate that changing back to the already existing year (that is out of
+    // bounds) works.
+    simulateSelectChange(yearSelect, '1800');
+    await flushTasks();
+    assertEquals('1800', yearSelect.value);
+  });
 
   test('testAddOrEditEntityInstanceCountryValidationError', async function() {
     testEntityInstance.attributeInstances.push(testCountryAttributeInstance);

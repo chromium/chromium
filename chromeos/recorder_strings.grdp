@@ -45,7 +45,7 @@
     Good suggestion
   </message>
   <message desc="Disclaimer under generative AI features." name="IDS_RECORDER_GEN_AI_DISCLAIMER_TEXT">
-    Generative AI is experimental and content may be inaccurate, misleading, or offensive.
+    Generative AI can make mistakes, including about people, so double-check it.
   </message>
   <message desc="Status message for screen reader to update that the summary and title creation model fails to download. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_GEN_AI_DOWNLOAD_ERROR_STATUS_MESSAGE">
     Can't download model for summary and title creation. Try again or restart your <ph name="DEVICE_TYPE">[deviceType]</ph>.

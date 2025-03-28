@@ -35,6 +35,8 @@ double SyncMixingGraphInput::ProvideInput(
 
   glitch_info_accumulator_.Add(glitch_info);
 
+  // TODO(crbug.com/406867864): Consider removing the unnecessary FIFO if the
+  // render call can directly handle all buffer size variations.
   if (!fifo_ && audio_bus->frames() != params_.frames_per_buffer()) {
     fifo_ = std::make_unique<media::AudioPullFifo>(
         params_.channels(), params_.frames_per_buffer(),

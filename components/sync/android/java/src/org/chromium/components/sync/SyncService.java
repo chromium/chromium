@@ -13,7 +13,7 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -63,7 +63,7 @@ public interface SyncService {
     // codebase. See ConsentLevel::kSync documentation for details.
     public boolean isSyncFeatureActive();
 
-    public @GoogleServiceAuthError.State int getAuthError();
+    public GoogleServiceAuthError getAuthError();
 
     /**
      * Checks whether Sync is disabled by enterprise policy (through prefs) or account policy

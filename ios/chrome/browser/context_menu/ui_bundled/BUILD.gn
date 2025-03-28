@@ -135,6 +135,7 @@ source_set("eg2_tests") {
     ":constants",
     "//base",
     "//base/test:test_support",
+    "//components/data_sharing/public:features",
     "//components/strings",
     "//components/url_formatter",
     "//ios/chrome/app/strings",

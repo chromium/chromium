@@ -681,11 +681,18 @@ int main(int argc, char* const argv[]) {
   }
 
   if (!sdk_version) {
-    float sdk = 0;
+    NSString* highest_sdk = @"0";
+
     for (NSDictionary* runtime in Runtimes(simctl_list, platform_type)) {
-      sdk = fmax(sdk, [runtime[@"version"] floatValue]);
+      NSString* runtime_version = runtime[@"version"];
+      if (!highest_sdk ||
+          [runtime_version compare:highest_sdk
+                           options:NSNumericSearch] == NSOrderedDescending) {
+        highest_sdk = runtime_version;
+      }
     }
-    sdk_version = [NSString stringWithFormat:@"%0.1f", sdk];
+
+    sdk_version = highest_sdk;
   }
 
   NSRange range;

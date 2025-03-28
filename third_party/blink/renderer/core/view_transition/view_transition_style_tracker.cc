@@ -1091,9 +1091,8 @@ void ViewTransitionStyleTracker::SetCaptureRectsFromCompositor(
     // This rect no longer matters.
     element_data->cached_captured_rect_in_layout_space.reset();
 
-    if (auto* pseudo_element =
-            document_->documentElement()->GetStyledPseudoElement(
-                PseudoId::kPseudoIdViewTransitionOld, entry.key)) {
+    if (auto* pseudo_element = OriginatingElement()->GetStyledPseudoElement(
+            PseudoId::kPseudoIdViewTransitionOld, entry.key)) {
       static_cast<ViewTransitionContentElement*>(pseudo_element)
           ->SetIntrinsicSize(rect_from_compositor,
                              element_data->GetReferenceRect(
@@ -1431,16 +1430,17 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
 bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
   DCHECK_GE(document_->Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
-  // Abort if the document element is not there.
-  if (!document_->documentElement()) {
+  // Abort if the originating element is not there.
+  Element* scope = OriginatingElement();
+  if (!scope) {
     return false;
   }
 
-  if (!document_->documentElement()->GetLayoutObject()) {
+  if (!scope->GetLayoutObject()) {
     // If we have any view transition elements, while having no
-    // documentElement->GetLayoutObject(), we should abort. Target elements are
+    // scope->GetLayoutObject(), we should abort. Target elements are
     // only set on the current phase of the animation, so it means that the
-    // documentElement's layout object disappeared in this phase.
+    // scope's layout object disappeared in this phase.
     for (auto& entry : element_data_map_) {
       auto& element_data = entry.value;
       if (element_data->target_element) {
@@ -1450,8 +1450,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     return true;
   }
 
-  DCHECK(document_->documentElement() &&
-         document_->documentElement()->GetLayoutObject());
+  DCHECK(scope && scope->GetLayoutObject());
   // We don't support changing device pixel ratio, because it's uncommon and
   // textures may have already been captured at a different size.
   if (device_pixel_ratio_ != DevicePixelRatioFromDocument(*document_)) {
@@ -1488,7 +1487,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     if (!element_data->target_element)
       continue;
 
-    DCHECK(document_->documentElement());
+    DCHECK(scope);
     auto* layout_object = element_data->target_element->GetLayoutObject();
     if (!layout_object) {
       return false;
@@ -1556,10 +1555,9 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     PseudoId live_content_element = HasLiveNewContent()
                                         ? kPseudoIdViewTransitionNew
                                         : kPseudoIdViewTransitionOld;
-    DCHECK(document_->documentElement());
+    DCHECK(scope);
     if (auto* pseudo_element =
-            document_->documentElement()->GetStyledPseudoElement(
-                live_content_element, entry.key)) {
+            scope->GetStyledPseudoElement(live_content_element, entry.key)) {
       // A pseudo element of type |tansition*content| must be created using
       // ViewTransitionContentElement.
       bool use_cached_data = false;

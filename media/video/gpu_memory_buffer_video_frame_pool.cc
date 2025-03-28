@@ -31,6 +31,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
@@ -78,6 +79,8 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
           GpuMemoryBufferVideoFramePool::PoolImpl>,
       public base::trace_event::MemoryDumpProvider {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // |media_task_runner| is the media task runner associated with the
   // GL context provided by |gpu_factories|
   // |worker_task_runner| is a task runner used to asynchronously copy
@@ -1319,8 +1322,9 @@ GpuMemoryBufferVideoFramePool::GpuMemoryBufferVideoFramePool(
     const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
     const scoped_refptr<base::TaskRunner>& worker_task_runner,
     GpuVideoAcceleratorFactories* gpu_factories)
-    : pool_impl_(
-          new PoolImpl(media_task_runner, worker_task_runner, gpu_factories)) {
+    : pool_impl_(base::MakeRefCounted<PoolImpl>(media_task_runner,
+                                                worker_task_runner,
+                                                gpu_factories)) {
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
           pool_impl_.get(), "GpuMemoryBufferVideoFramePool", media_task_runner,

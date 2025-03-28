@@ -182,11 +182,6 @@ include_rules = [
   "+ios/chrome/browser/shared/ui",
   "+ios/chrome/browser/shared/public",
 
-  # ios/chrome/browser should not depend on ios/chrome/browser/ui except
-  # on commands.
-  "-ios/chrome/browser/ui",
-  "-ios/common/ui",
-  "+ios/chrome/browser/ui/commands",
   "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
 
   # For tests.
@@ -202,17 +197,12 @@ include_rules = [
 
   # Temporary, remove when upstream updated
   "+ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h",
-  "+ios/chrome/browser/ui/page_info/features.h",
-  "+ios/chrome/browser/ui/page_info/page_info_app_interface.h",
 ]
 
 specific_include_rules = {
   ".*test\.mm": [
     "+components/signin/internal/identity_manager/account_capabilities_constants.h",
     "+components/previous_session_info/previous_session_info_private.h",
-    # TODO(crbug.com/40820398): browser should not depend on UI, this is a
-    # blanket exception for tests.
-    "+ios/chrome/browser/ui",
     # Use ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h instead
     "-ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_app_interface.h",
     # use ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h instead

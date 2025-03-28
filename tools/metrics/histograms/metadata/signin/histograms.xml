@@ -1865,6 +1865,22 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.IOSNumberOfAccountSwitches.{TimeRange}"
+    units="switches" expires_after="2026-03-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    The number of times the user switched accounts in the {TimeRange}. Emitted
+    no more than once every 24 hours, as soon as Chrome detects that more than
+    24 hours passed from the last recording. Recorded only on iOS.
+  </summary>
+  <token key="TimeRange">
+    <variant name="Last7Days" summary="last 7 days"/>
+    <variant name="Last28Days" summary="last 28 days"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.IOSNumberOfDeviceAccounts" units="accounts"
     expires_after="2025-08-24">
   <owner>jlebel@chromium.org</owner>

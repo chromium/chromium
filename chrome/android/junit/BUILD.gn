@@ -664,6 +664,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/customtabs/content/EngagementSignalsHandlerUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/content/EngagementSignalsInitialScrollObserverUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/content/RealtimeEngagementSignalObserverUnitTest.java",
+      "src/org/chromium/chrome/browser/customtabs/content/WebAppLaunchHandlerTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/ImmersiveModeControllerTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/TabInteractionRecorderUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/CustomTabMinimizationManagerUnitTest.java",

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] SMIL: Interpolate attribute <orient> with underlying [50] from add [90deg] to add [auto] at (0) is [140]
-  assert_equals: expected "140 " but got "90 "
-[FAIL] SMIL: Interpolate attribute <orient> with underlying [50] from add [90deg] to add [auto] at (0.2) is [140]
-  assert_equals: expected "140 " but got "90 "
-Harness: the test ran to completion.
-

@@ -73,7 +73,7 @@ class ShapeValue final : public GarbageCollected<ShapeValue> {
 
   bool operator==(const ShapeValue& other) const;
 
-  virtual void Trace(Visitor* visitor) const {
+  void Trace(Visitor* visitor) const {
     visitor->Trace(shape_);
     visitor->Trace(image_);
   }

@@ -893,6 +893,14 @@ class AutofillMetrics {
 
   static void LogAutofillPopupVisibleDuration(FillingProduct filling_product,
                                               base::TimeDelta duration);
+
+  // TODO(crbug.com/316143236): Remove all datalist related metrics once
+  // debugging is complete.
+  static void LogDataListSuggestionsShown();
+
+  static void LogDataListSuggestionsUpdated();
+
+  static void LogDataListSuggestionsInserted();
 };
 
 #if defined(UNIT_TEST)

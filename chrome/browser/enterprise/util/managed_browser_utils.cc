@@ -269,7 +269,7 @@ bool IsEnterpriseBadgingEnabledForToolbar(Profile* profile) {
 }
 
 bool CanShowEnterpriseBadgingForMenu(Profile* profile) {
-  if (profile->IsIncognitoProfile() || profile->IsGuestSession()) {
+  if (profile->IsGuestSession() || profile->IsOffTheRecord()) {
     return false;
   }
   if (!UserAcceptedAccountManagement(profile) && !profile->IsChild()) {
@@ -293,7 +293,7 @@ bool CanShowEnterpriseBadgingForMenu(Profile* profile) {
 }
 
 bool CanShowEnterpriseBadgingForAvatar(Profile* profile) {
-  if (profile->IsIncognitoProfile() || profile->IsGuestSession()) {
+  if (profile->IsGuestSession() || profile->IsOffTheRecord()) {
     return false;
   }
   if (!UserAcceptedAccountManagement(profile)) {

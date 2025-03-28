@@ -3776,6 +3776,11 @@ ChromeContentBrowserClient::GetSystemNetworkContext() {
 }
 
 std::string ChromeContentBrowserClient::GetGeolocationApiKey() {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (ash::features::IsCrosSeparateGeoApiKeyEnabled()) {
+    return google_apis::GetCrosChromeGeoAPIKey();
+  }
+#endif
   return google_apis::GetAPIKey();
 }
 

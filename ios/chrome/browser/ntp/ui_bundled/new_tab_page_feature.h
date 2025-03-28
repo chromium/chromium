@@ -136,6 +136,9 @@ double GetDeprecateFeedHeaderParameterValueAsDouble(
     const std::string& param_name,
     double default_value);
 
+// YES if the account particle disc on the NTP should open the account menu.
+bool IsIdentityDiscAccountMenuEnabled();
+
 // YES if the account menu is enabled without the three-dot menu.
 bool IdentityDiscAccountMenuEnabledWithoutEllipsis();
 

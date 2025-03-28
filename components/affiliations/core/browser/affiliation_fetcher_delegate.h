@@ -25,6 +25,7 @@ class AffiliationFetcherDelegate {
     Result& operator=(const Result& other);
     Result& operator=(Result&& other);
     ~Result();
+    bool operator==(const Result& other) const = default;
 
     std::vector<AffiliatedFacets> affiliations;
     std::vector<GroupedFacets> groupings;

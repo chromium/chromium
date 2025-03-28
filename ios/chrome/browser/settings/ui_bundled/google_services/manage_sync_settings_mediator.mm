@@ -498,6 +498,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   item.text =
       GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_GOOGLE_ACCOUNT_ITEM);
   item.textColor = [UIColor colorNamed:kBlueColor];
+  item.accessibilityTraits |= UIAccessibilityTraitButton;
   [model addItem:item
       toSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
 
@@ -507,6 +508,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     item.text =
         GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_STORAGE_ITEM);
     item.textColor = [UIColor colorNamed:kBlueColor];
+    item.accessibilityTraits |= UIAccessibilityTraitButton;
     [model addItem:item
         toSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
   }
@@ -515,6 +517,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   item = [[TableViewTextItem alloc] initWithType:ManageAccountsItemType];
   item.text = GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM);
   item.textColor = [UIColor colorNamed:kBlueColor];
+  item.accessibilityTraits |= UIAccessibilityTraitButton;
   [model addItem:item
       toSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
 
@@ -525,6 +528,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     item = [[TableViewTextItem alloc] initWithType:SignOutItemType];
     item.text = GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM);
     item.textColor = [UIColor colorNamed:kBlueColor];
+    item.accessibilityTraits |= UIAccessibilityTraitButton;
     [model addItem:item
         toSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
 

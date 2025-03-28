@@ -28,23 +28,6 @@ export class ReportingHistoryElement extends PolymerElement {
   private browserProxy: EnterpriseReportingBrowserProxy =
       EnterpriseReportingBrowserProxy.getInstance();
 
-  // Filtering options for the table.
-  private static allEvents: string = 'All events';
-  private static allButUploads: string = 'All events except uploads';
-  private filterOptions: string[] = [
-    ReportingHistoryElement.allEvents,
-    ReportingHistoryElement.allButUploads,
-    'QueueAction',
-    'Enqueue',
-    'Flush',
-    'Confirm',
-    'Upload',
-    'BlockedRecord',
-    'BlockedDestinations',
-  ];
-  private selectedOption: string = ReportingHistoryElement.allEvents;
-  private currentHistory: ErpHistoryData;
-
   static get is() {
     return 'reporting-history-element' as const;
   }
@@ -69,6 +52,22 @@ export class ReportingHistoryElement extends PolymerElement {
     };
   }
 
+  // Filtering options for the table.
+  private static allEvents: string = 'All events';
+  private static allButUploads: string = 'All events except uploads';
+  private filterOptions: string[] = [
+    ReportingHistoryElement.allEvents,
+    ReportingHistoryElement.allButUploads,
+    'QueueAction',
+    'Enqueue',
+    'Flush',
+    'Confirm',
+    'Upload',
+    'BlockedRecord',
+    'BlockedDestinations',
+  ];
+  private selectedOption: string = ReportingHistoryElement.allEvents;
+  private currentHistory: ErpHistoryData;
   private loggingState: boolean;
 
   loggingStateToString(checked: boolean) {

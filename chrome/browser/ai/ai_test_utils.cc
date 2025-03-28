@@ -5,6 +5,7 @@
 #include "chrome/browser/ai/ai_test_utils.h"
 
 #include "chrome/browser/ai/ai_manager.h"
+#include "chrome/browser/ai/ai_summarizer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 

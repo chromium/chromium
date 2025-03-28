@@ -490,6 +490,10 @@ const char kFeedSwipeInProductHelpName[] = "Enable Feed Swipe IPH";
 const char kFeedSwipeInProductHelpDescription[] =
     "Presents an in-product help on the NTP to promote swiping on the Feed";
 
+const char kFeedbackIncludeVariationsName[] = "Feedback include variations";
+const char kFeedbackIncludeVariationsDescription[] =
+    "In Chrome feedback report, include commandline variations.";
+
 const char kForceStartupSigninPromoName[] = "Display the startup sign-in promo";
 const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "
@@ -1037,6 +1041,11 @@ const char kOptimizationGuidePushNotificationClientDescription[] =
     "Enables the client that handles incoming push notifications on behalf of "
     "the optimization guide.";
 
+const char kPageActionMenuName[] = "Page Action Menu";
+const char kPageActionMenuDescription[] =
+    "When enabled, the entry point for the Page Action Menu becomes available "
+    "for actions relating to the web page.";
+
 const char kPageContentAnnotationsName[] = "Page content annotations";
 const char kPageContentAnnotationsDescription[] =
     "Enables page content to be annotated on-device.";
@@ -1115,23 +1124,15 @@ const char kNotificationSettingsMenuItemDescription[] =
     "Displays the menu item for the notification controls inside the chrome "
     "settings UI.";
 
+const char kReaderModeDistillerName[] = "Enables Reader Mode distillation";
+const char kReaderModeDistillerDescription[] =
+    "Enables Reader Mode distillation on the current web page.";
+
 const char kReaderModeDistillerHeuristicName[] =
     "Reader Mode distillation trigger heuristic";
 const char kReaderModeDistillerHeuristicDescription[] =
     "Enables Reader Mode distillation heuristic that triggers Reader Mode UI "
     "entry point if available";
-
-const char kReaderModeDistillerHeuristicSamplingName[] =
-    "Reader Mode distiller heuristic sampling";
-const char kReaderModeDistillerHeuristicSamplingDescription[] =
-    "The probability that the Reader Mode heuristic will run on a given page "
-    "load, used for sampling the heuristic on user page loads.";
-
-const char kReaderModeDistillerHeuristicPageLoadDelayName[] =
-    "Reader Mode distiller heuristic page load delay";
-const char kReaderModeDistillerHeuristicPageLoadDelayDescription[] =
-    "The delay (in duration string format) between the page load and the "
-    "heuristic to determine the eligibility of the page for Reader Mode.";
 
 const char kRefactorToolbarsSizeName[] = "Refactor toolbars size";
 const char kRefactorToolbarsSizeDescription[] =

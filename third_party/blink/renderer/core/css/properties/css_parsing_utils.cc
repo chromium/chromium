@@ -685,14 +685,15 @@ bool ConsumePerspective(CSSParserTokenStream& stream,
     parsed_value = ConsumeIdent<CSSValueID::kNone>(stream);
   }
   if (!parsed_value && use_legacy_parsing) {
-    double perspective;
-    if (!ConsumeNumberRaw_DO_NOT_USE(stream, context, perspective) ||
-        perspective < 0) {
-      return false;
+    if (const CSSPrimitiveValue* number_value = ConsumeNumber(
+            stream, context, CSSPrimitiveValue::ValueRange::kNonNegative)) {
+      std::optional<double> number = number_value->GetValueIfKnown();
+      if (number.has_value()) {
+        context.Count(WebFeature::kUnitlessPerspectiveInTransformProperty);
+        parsed_value = CSSNumericLiteralValue::Create(
+            number.value(), CSSPrimitiveValue::UnitType::kPixels);
+      }
     }
-    context.Count(WebFeature::kUnitlessPerspectiveInTransformProperty);
-    parsed_value = CSSNumericLiteralValue::Create(
-        perspective, CSSPrimitiveValue::UnitType::kPixels);
   }
   if (!parsed_value) {
     return false;

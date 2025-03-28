@@ -95,6 +95,20 @@ gfx::RectF ObjectBoundsForPropagation(const LayoutObject& object) {
   return bounds;
 }
 
+bool ShouldForceLayoutChild(const SVGLayoutInfo& layout_info,
+                            const LayoutObject& child) {
+  if (layout_info.force_layout) {
+    return true;
+  }
+  if (layout_info.scale_factor_changed) {
+    return true;
+  }
+  if (layout_info.viewport_changed && child.HasViewportDependence()) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 // static
@@ -118,32 +132,8 @@ SVGLayoutResult SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
 
   for (LayoutObject* child = children_.FirstChild(); child;
        child = child->NextSibling()) {
-    bool force_child_layout = layout_info.force_layout;
-
-    if (layout_info.scale_factor_changed) {
-      // If the screen scaling factor changed we need to update the text
-      // metrics (note: this also happens for layoutSizeChanged=true).
-      if (auto* text = DynamicTo<LayoutSVGText>(child)) {
-        text->SetNeedsTextMetricsUpdate();
-      }
-      force_child_layout = true;
-    }
-
-    if (layout_info.viewport_changed && child->HasViewportDependence()) {
-      if (auto* shape = DynamicTo<LayoutSVGShape>(*child)) {
-        shape->SetNeedsShapeUpdate();
-      } else if (auto* text = DynamicTo<LayoutSVGText>(*child)) {
-        text->SetNeedsTextMetricsUpdate();
-      } else if (auto* container =
-                     DynamicTo<LayoutSVGTransformableContainer>(*child)) {
-        container->SetNeedsTransformUpdate();
-      }
-
-      force_child_layout = true;
-    }
-
     DCHECK(!child->IsSVGRoot());
-    if (force_child_layout) {
+    if (ShouldForceLayoutChild(layout_info, *child)) {
       child->SetNeedsLayout(layout_invalidation_reason::kSvgChanged,
                             kMarkOnlyThis);
     }

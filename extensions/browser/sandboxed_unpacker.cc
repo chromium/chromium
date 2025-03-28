@@ -7,7 +7,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <set>
+#include <string>
 #include <string_view>
 #include <tuple>
 #include <utility>
@@ -19,7 +21,8 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
@@ -1045,10 +1048,9 @@ std::optional<base::Value::Dict> SandboxedUnpacker::RewriteManifestFile(
     }
   }
 
-  std::string manifest_json;
-  JSONStringValueSerializer serializer(&manifest_json);
-  serializer.set_pretty_print(true);
-  if (!serializer.Serialize(final_manifest)) {
+  std::optional<std::string> manifest_json = base::WriteJsonWithOptions(
+      final_manifest, base::JSONWriter::OPTIONS_PRETTY_PRINT);
+  if (!manifest_json) {
     // Error serializing manifest.json.
     ReportFailure(
         SandboxedUnpackerFailureReason::ERROR_SERIALIZING_MANIFEST_JSON,
@@ -1058,7 +1060,7 @@ std::optional<base::Value::Dict> SandboxedUnpacker::RewriteManifestFile(
   }
 
   base::FilePath manifest_path = extension_root_.Append(kManifestFilename);
-  if (!base::WriteFile(manifest_path, manifest_json)) {
+  if (!base::WriteFile(manifest_path, *manifest_json)) {
     // Error saving manifest.json.
     ReportFailure(
         SandboxedUnpackerFailureReason::ERROR_SAVING_MANIFEST_JSON,

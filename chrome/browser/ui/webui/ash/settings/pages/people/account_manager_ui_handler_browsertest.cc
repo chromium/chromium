@@ -179,7 +179,7 @@ class AccountManagerUIHandlerTest
         GetDeviceAccountInfo().email, GaiaId(GetDeviceAccountInfo().id));
     const user_manager::User* user;
     {
-      user_manager::TestHelper test_helper(*user_manager::UserManager::Get());
+      user_manager::TestHelper test_helper(user_manager::UserManager::Get());
       if (GetDeviceAccountInfo().user_type == user_manager::UserType::kChild) {
         user = test_helper.AddChildUser(account_id);
       } else {

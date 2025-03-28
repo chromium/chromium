@@ -2942,7 +2942,7 @@ bool EnclaveManager::ConsiderSecurityDomainState(
         !CheckPINInvariants(*wrapped_pin).has_value()) {
       if (metadata.public_key.has_value() &&
           (!user_->has_wrapped_pin() ||
-           user_->wrapped_pin().generation() != wrapped_pin->generation())) {
+           user_->wrapped_pin().wrapped_pin() != wrapped_pin->wrapped_pin())) {
         std::unique_ptr<PendingAction> action =
             std::make_unique<PendingAction>();
         action->callback = std::move(callback);

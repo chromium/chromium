@@ -3808,13 +3808,25 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="DomDistiller.Time.TimeToProvideResultToAccumulator" units="ms"
+    expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records the amount of time it takes for the reader mode signal to make it to
+    SignalAccumulator. Recorded when the distillation result is passed to CPA.
+    Only recorded on Android.
+  </summary>
+</histogram>
+
 <histogram name="DomDistiller.Time.ViewingReaderModePage" units="ms"
     expires_after="2025-08-24">
   <owner>mdjones@chromium.org</owner>
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
-    Records the amount of time a user spent on a Reader Mode Page.
+    Records the amount of time a user spent on a Reader Mode Page. Recorded when
+    the user exits reader mode. Only recorded on Android.
   </summary>
 </histogram>
 

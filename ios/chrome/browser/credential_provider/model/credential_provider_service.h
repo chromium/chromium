@@ -176,6 +176,9 @@ class CredentialProviderService
   MemoryCredentialStore* GetCredentialStore(
       password_manager::PasswordStoreInterface* store) const;
 
+  // Returns whether multiple profiles are currently fully initialized.
+  bool IsUsingMultiProfile() const;
+
   // The pref service.
   const raw_ptr<PrefService> prefs_;
 

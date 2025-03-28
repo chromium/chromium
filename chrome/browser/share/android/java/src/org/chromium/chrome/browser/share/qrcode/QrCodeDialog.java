@@ -19,6 +19,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.qrcode.share_tab.QrCodeShareCoordinator;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.ChromeImageButton;
@@ -52,7 +53,8 @@ public class QrCodeDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         initTabs();
-        return new FullscreenAlertDialog.Builder(getActivity())
+        return new FullscreenAlertDialog.Builder(
+                        getActivity(), EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled())
                 .setView(getDialogView(getActivity()))
                 .create();
     }

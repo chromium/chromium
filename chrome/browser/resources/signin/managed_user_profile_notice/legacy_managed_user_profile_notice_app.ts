@@ -96,18 +96,20 @@ export class LegacyManagedUserProfileNoticeAppElement extends
     };
   }
 
-  protected showEnterpriseBadge_: boolean = false;
-  protected pictureUrl_: string = '';
-  protected title_: string = '';
-  protected subtitle_: string = '';
-  protected enterpriseInfo_: string = '';
-  protected isModalDialog_: boolean = loadTimeData.getBoolean('isModalDialog');
-  protected showLinkDataCheckbox_: boolean =
+  protected accessor showEnterpriseBadge_: boolean = false;
+  protected accessor pictureUrl_: string = '';
+  protected accessor title_: string = '';
+  protected accessor subtitle_: string = '';
+  protected accessor enterpriseInfo_: string = '';
+  protected accessor isModalDialog_: boolean =
+      loadTimeData.getBoolean('isModalDialog');
+  protected accessor showLinkDataCheckbox_: boolean =
       loadTimeData.getBoolean('showLinkDataCheckbox');
-  protected useLegacyUi_: boolean = !loadTimeData.getBoolean('useUpdatedUi');
-  protected proceedLabel_: string = '';
-  protected disableProceedButton_: boolean = false;
-  protected linkData_: boolean = false;
+  protected accessor useLegacyUi_: boolean =
+      !loadTimeData.getBoolean('useUpdatedUi');
+  protected accessor proceedLabel_: string = '';
+  protected accessor disableProceedButton_: boolean = false;
+  protected accessor linkData_: boolean = false;
   private defaultProceedLabel_: string = '';
   private managedUserProfileNoticeBrowserProxy_:
       ManagedUserProfileNoticeBrowserProxy =

@@ -20,6 +20,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 
@@ -78,6 +79,10 @@ class ReadAnythingAppModel {
     // content from the annotated canvas elements, not the main tree. Only root
     // AXTrees have this set.
     bool is_docs = false;
+
+    // Whether the latest tree is a reload of the previous tree. If false, the
+    // latest tree is a new page.
+    bool is_reload = false;
 
     // TODO(41496290): Include any information that is associated with a
     // particular AXTree, namely is_pdf. Right now, this is set every time the
@@ -201,6 +206,9 @@ class ReadAnythingAppModel {
     requires_tree_lang_ = requires_tree_lang;
   }
 
+  bool will_hide() const { return will_hide_; }
+  void set_will_hide(bool will_hide) { will_hide_ = will_hide; }
+
   const std::vector<ui::AXNodeID>& content_node_ids() const {
     return content_node_ids_;
   }
@@ -225,8 +233,10 @@ class ReadAnythingAppModel {
 
   int GetNumSelections() const;
   void SetNumSelections(int num_selections);
-
+  void SetTreeInfoUrlInformation(AXTreeInfo& tree_info);
+  void SetUrlInformationCallback(base::OnceCallback<void()> callback);
   bool IsDocs() const;
+  bool IsReload() const;
 
   ui::AXNode* GetAXNode(const ui::AXNodeID& ax_node_id) const;
 
@@ -356,6 +366,10 @@ class ReadAnythingAppModel {
   // child).
   ui::AXTreeID active_tree_id_ = ui::AXTreeIDUnknown();
 
+  // For determining whether the latest tree is a reload or new page.
+  std::string previous_tree_url_;
+  base::OnceCallback<void()> set_url_information_callback_;
+
   // PDFs are handled differently than regular webpages. That is because they
   // are stored in a different web contents and the actual PDF text is inside an
   // iframe. In order to get tree information from the PDF web contents, we need
@@ -444,6 +458,8 @@ class ReadAnythingAppModel {
   // asynchronously from the language determination so we need to keep track of
   // that here.
   bool requires_tree_lang_ = false;
+
+  bool will_hide_ = false;
 
   // List of observers of model state changes.
   base::ObserverList<ModelObserver, /*check_empty=*/true> observers_;

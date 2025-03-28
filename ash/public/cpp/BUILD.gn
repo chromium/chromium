@@ -205,6 +205,7 @@ component("cpp") {
     "lobster/lobster_enums.h",
     "lobster/lobster_feedback_preview.cc",
     "lobster/lobster_feedback_preview.h",
+    "lobster/lobster_image_candidate.cc",
     "lobster/lobster_image_candidate.h",
     "lobster/lobster_image_download_response.h",
     "lobster/lobster_metrics_state_enums.h",

@@ -173,7 +173,9 @@ void DecoderBufferTranscryptor::DecryptPendingBuffer() {
       buffer->set_timestamp(superframe->timestamp());
       buffer->set_duration(superframe->duration());
       buffer->set_is_key_frame(superframe->is_key_frame());
-      buffer->set_side_data(superframe->side_data()->Clone());
+      if (superframe->side_data()) {
+        buffer->set_side_data(superframe->side_data()->Clone());
+      }
       if (frames.back().decrypt_config) {
         buffer->set_decrypt_config(std::move(frames.back().decrypt_config));
       }

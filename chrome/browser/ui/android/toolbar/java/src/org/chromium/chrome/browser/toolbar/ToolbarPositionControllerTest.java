@@ -385,6 +385,16 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @Config(qualifiers = "sw400dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR + ":default_to_top/false")
+    public void testDefaultBottom() {
+        assertControlsAtBottom();
+
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
+        assertControlsAtTop();
+    }
+
+    @Test
+    @Config(qualifiers = "sw400dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testUpdatePositionChangesWithPref() {
         assertControlsAtTop();

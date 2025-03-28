@@ -186,10 +186,11 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
                                    fakeIdentity.userEmail)]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          chrome_test_util::ButtonWithAccessibilityLabel(
-              l10n_util::GetNSString(IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE))]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(
+                                l10n_util::GetNSString(
+                                    IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE)),
+                            grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -267,10 +268,12 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
         selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
                                      fakeIdentity.userEmail)]
         performAction:grey_tap()];
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ButtonWithAccessibilityLabel(
-                       l10n_util::GetNSString(
-                           IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE))]
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(
+                           l10n_util::GetNSString(
+                               IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE)),
+                       grey_sufficientlyVisible(), nil)]
         performAction:grey_tap()];
     [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                             kFakeAccountDetailsViewIdentifier)]

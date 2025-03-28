@@ -1510,7 +1510,7 @@ TEST_F(WebFrameWidgetSimTest, PropagateScaleToRemoteFrames) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreEmptyBeforeFocus) {
+TEST_F(WebFrameWidgetSimTest, TestCursorAnchorInfoIsEmptyBeforeFocus) {
   WebView().ResizeVisualViewport(gfx::Size(1000, 1000));
   auto* widget = WebView().MainFrameViewWidget();
   SimRequest request("https://example.com/test.html", "text/html");
@@ -1545,8 +1545,9 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreEmptyBeforeFocus) {
       *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreenForTesting();
-  EXPECT_EQ(0U, actual.size());
+  mojom::blink::InputCursorAnchorInfoPtr& actual =
+      widget->GetLastCursorAnchorInfoForTesting();
+  EXPECT_TRUE(actual.is_null());
 }
 
 TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterFocusChange) {
@@ -1593,7 +1594,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterFocusChange) {
   first->Focus();
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
   Vector<gfx::Rect> expected(Vector({gfx::Rect(0, 0, 40, 10)}));
-  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreenForTesting();
+  Vector<gfx::Rect> actual =
+      widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds;
   EXPECT_EQ(expected.size(), actual.size());
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected.at(i), actual.at(i));
@@ -1606,7 +1608,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterFocusChange) {
       second->GetBoundingClientRect()->ToEnclosingRect().origin();
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
   expected = Vector({gfx::Rect(origin.x(), origin.y(), 90, 10)});
-  actual = widget->GetVisibleLineBoundsOnScreenForTesting();
+  actual = widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds;
   EXPECT_EQ(expected.size(), actual.size());
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected.at(i), actual.at(i));
@@ -1769,7 +1771,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterLayoutChange) {
   first->Focus();
   first->SetValue("hello world");
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  Vector<gfx::Rect> expected = widget->GetVisibleLineBoundsOnScreenForTesting();
+  Vector<gfx::Rect> expected =
+      widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds;
   // Offset each line bound by 200 pixels downwards (for after layout shift).
   for (auto& i : expected) {
     i.Offset(0, 200);
@@ -1779,7 +1782,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterLayoutChange) {
       .getElementById(AtomicString("d"))
       ->setAttribute(html_names::kStyleAttr, AtomicString("height: 200px"));
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreenForTesting();
+  Vector<gfx::Rect> actual =
+      widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds;
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected.at(i), actual.at(i));
   }
@@ -1832,7 +1836,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterPageScroll) {
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
 
   Vector<gfx::Rect> expected;
-  for (auto& i : widget->GetVisibleLineBoundsOnScreenForTesting()) {
+  for (auto& i :
+       widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds) {
     gfx::Rect bound(i.origin(), i.size());
     bound.Offset(0, -50);
     expected.push_back(bound);
@@ -1845,7 +1850,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterPageScroll) {
 
   // As line bounds are calculated in document coordinates, a document scroll
   // should not have any effect. Assert that they are the same as before.
-  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreenForTesting();
+  Vector<gfx::Rect> actual =
+      widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds;
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected.at(i).ToString(), actual.at(i).ToString());
   }
@@ -1903,7 +1909,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterElementScroll) {
   Vector<gfx::Rect> expected;
 
   // Offset each line bound by 50 pixels upwards (for after a scroll down).
-  for (auto& i : widget->GetVisibleLineBoundsOnScreenForTesting()) {
+  for (auto& i :
+       widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds) {
     gfx::Rect bound(i.origin(), i.size());
     bound.Offset(0, -50);
     expected.push_back(bound);
@@ -1913,7 +1920,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterElementScroll) {
   GetDocument().FocusedElement()->scrollBy(0, 50);
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
 
-  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreenForTesting();
+  Vector<gfx::Rect> actual =
+      widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds;
   EXPECT_EQ(expected.size(), actual.size());
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected.at(i), actual.at(i));
@@ -1967,18 +1975,22 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterCommit) {
   for (wtf_size_t i = 0; i < text.length(); ++i) {
     first->SetValue(first->Value() + text[i]);
     widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-    EXPECT_EQ(1U, widget->GetVisibleLineBoundsOnScreenForTesting().size());
-    EXPECT_EQ(gfx::Rect(origin.x(), origin.y(), 10 * (i + 1), 10),
-              widget->GetVisibleLineBoundsOnScreenForTesting().at(0));
+    EXPECT_EQ(1U, widget->GetLastCursorAnchorInfoForTesting()
+                      ->visible_line_bounds.size());
+    EXPECT_EQ(
+        gfx::Rect(origin.x(), origin.y(), 10 * (i + 1), 10),
+        widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds.at(0));
   }
   first->SetValue(first->Value() + "\n");
   String new_text = "goodbye world";
   for (wtf_size_t i = 0; i < new_text.length(); ++i) {
     first->SetValue(first->Value() + new_text[i]);
     widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-    EXPECT_EQ(2U, widget->GetVisibleLineBoundsOnScreenForTesting().size());
-    EXPECT_EQ(gfx::Rect(origin.x(), origin.y() + 10, 10 * (i + 1), 10),
-              widget->GetVisibleLineBoundsOnScreenForTesting().at(1));
+    EXPECT_EQ(2U, widget->GetLastCursorAnchorInfoForTesting()
+                      ->visible_line_bounds.size());
+    EXPECT_EQ(
+        gfx::Rect(origin.x(), origin.y() + 10, 10 * (i + 1), 10),
+        widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds.at(1));
   }
 }
 
@@ -2031,9 +2043,11 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterDelete) {
   for (wtf_size_t i = last_line.length() - 1; i > 0; --i) {
     widget->FocusedWebLocalFrameInWidget()->DeleteSurroundingText(1, 0);
     widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-    EXPECT_EQ(2U, widget->GetVisibleLineBoundsOnScreenForTesting().size());
-    EXPECT_EQ(gfx::Rect(origin.x(), origin.y() + 10, 10 * i, 10),
-              widget->GetVisibleLineBoundsOnScreenForTesting().at(1));
+    EXPECT_EQ(2U, widget->GetLastCursorAnchorInfoForTesting()
+                      ->visible_line_bounds.size());
+    EXPECT_EQ(
+        gfx::Rect(origin.x(), origin.y() + 10, 10 * i, 10),
+        widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds.at(1));
   }
 
   // Remove the last character on the second line.
@@ -2041,26 +2055,34 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterDelete) {
   // line bound.
   widget->FocusedWebLocalFrameInWidget()->DeleteSurroundingText(1, 0);
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  EXPECT_EQ(1U, widget->GetVisibleLineBoundsOnScreenForTesting().size());
+  EXPECT_EQ(
+      1U,
+      widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds.size());
 
   // Remove the new line character.
   widget->FocusedWebLocalFrameInWidget()->DeleteSurroundingText(1, 0);
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  EXPECT_EQ(1U, widget->GetVisibleLineBoundsOnScreenForTesting().size());
+  EXPECT_EQ(
+      1U,
+      widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds.size());
 
   String first_line = "hello world";
   for (wtf_size_t i = first_line.length() - 1; i > 0; --i) {
     widget->FocusedWebLocalFrameInWidget()->DeleteSurroundingText(1, 0);
     widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-    EXPECT_EQ(1U, widget->GetVisibleLineBoundsOnScreenForTesting().size());
-    EXPECT_EQ(gfx::Rect(origin.x(), origin.y(), 10 * i, 10),
-              widget->GetVisibleLineBoundsOnScreenForTesting().at(0));
+    EXPECT_EQ(1U, widget->GetLastCursorAnchorInfoForTesting()
+                      ->visible_line_bounds.size());
+    EXPECT_EQ(
+        gfx::Rect(origin.x(), origin.y(), 10 * i, 10),
+        widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds.at(0));
   }
 
   // Remove last character
   widget->FocusedWebLocalFrameInWidget()->DeleteSurroundingText(1, 0);
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  EXPECT_EQ(0U, widget->GetVisibleLineBoundsOnScreenForTesting().size());
+  EXPECT_EQ(
+      0U,
+      widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds.size());
 }
 
 TEST_F(WebFrameWidgetSimTest, TestLineBoundsInFrame) {
@@ -2120,7 +2142,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsInFrame) {
   Compositor().BeginFrame();
 
   Vector<gfx::Rect> expected(Vector({gfx::Rect(0, /* 123+42= */ 165, 40, 10)}));
-  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreenForTesting();
+  Vector<gfx::Rect> actual =
+      widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds;
   EXPECT_EQ(expected.size(), actual.size());
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected.at(i), actual.at(i));
@@ -2192,7 +2215,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsWithDifferentZoom) {
   Vector<gfx::Rect> expected(
       Vector({gfx::Rect(0, /* 70*1.2+40*1.2*1.5= */ 156, /* 40*1.2*1.5= */ 72,
                         /* 10*1.2*1.5= */ 18)}));
-  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreenForTesting();
+  Vector<gfx::Rect> actual =
+      widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds;
   EXPECT_EQ(expected.size(), actual.size());
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected.at(i), actual.at(i));
@@ -2261,7 +2285,8 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreClippedInSubframe) {
   // The expected height is 10 * 11 = 110 but this should be clipped as to the
   // screen height of 200px - 100px for the top of the bound.
   Vector<gfx::Rect> expected(Vector({gfx::Rect(0, 100, 200, 100)}));
-  Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreenForTesting();
+  Vector<gfx::Rect> actual =
+      widget->GetLastCursorAnchorInfoForTesting()->visible_line_bounds;
   EXPECT_EQ(expected.size(), actual.size());
   for (wtf_size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected.at(i), actual.at(i));

@@ -86,7 +86,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Browser.Actions.PinnedActionsCount" units="actions"
     expires_after="2025-08-10">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records the number of actions that are currently pinned to the toolbar. This
     is emitted every time the user pins or unpins an action to the toolbar.
@@ -1848,13 +1848,13 @@ chromium-metrics-reviews@google.com.
 <histogram name="SidePanel.ComboboxMenuShown" enum="Boolean"
     expires_after="2024-09-22">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>Records true when the side panel combobox is opened.</summary>
 </histogram>
 
 <histogram name="SidePanel.OpenDuration" units="ms" expires_after="2025-09-14">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records how long the side panel was open for (capped at 1 hour) starting
     when the side panel is triggered to be opened. Note this might be different
@@ -1866,7 +1866,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="SidePanel.OpenOrChangeEntryTrigger"
     enum="SidePanelOpenTrigger" expires_after="2025-09-07">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Logs the UI location from which the side panel is triggered to be opened or
     to change the entry shown. Recorded when the side panel is shown or the
@@ -1877,7 +1877,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="SidePanel.OpenTrigger" enum="SidePanelOpenTrigger"
     expires_after="2025-09-14">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Logs the UI location from which the side panel is triggered to be opened.
     Recorded when the side panel is shown and a trigger is provided.
@@ -1886,7 +1886,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SidePanel.ResizedWidth" units="px" expires_after="2025-08-03">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records the width of the side panel contents after the side panel was
     resized.
@@ -1896,7 +1896,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="SidePanel.ResizedWidthPercentage" units="% of window width"
     expires_after="2025-08-03">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records the width of the side panel contents as a percentage of the browser
     window width after the side panel was resized.
@@ -1906,7 +1906,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="SidePanel.TimeOfLongestAnimationStep" units="ms"
     expires_after="2025-08-24">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records elapsed time between animation steps for the longest step in a side
     panel open or close animation.
@@ -1916,7 +1916,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="SidePanel.{SidePanelEntry}.ResizedWidth" units="px"
     expires_after="2025-08-24">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records the width of the side panel contents after the side panel was
     resized, while the {SidePanelEntry} side panel entry was displayed.
@@ -1927,7 +1927,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="SidePanel.{SidePanelEntry}.ResizedWidthPercentage"
     units="% of window width" expires_after="2025-06-01">
   <owner>emshack@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records the width of the side panel contents as a percentage of the browser
     window width after the side panel was resized, while the {SidePanelEntry}
@@ -1939,7 +1939,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="SidePanel.{SidePanelEntry}.ShownDuration" units="ms"
     expires_after="2025-09-14">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records how long the {SidePanelEntry} side panel entry was open for (capped
     at 1 hour). This is recorded in SidePanelEntry::OnEntryHidden when the entry
@@ -1951,7 +1951,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="SidePanel.{SidePanelEntry}.ShowTriggered"
     enum="SidePanelOpenTrigger" expires_after="2025-09-14">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records how a side panel entry is triggered to be shown. (i.e. by toolbar
     button, by commbobox selection). This is recorded when a new side panel
@@ -1964,7 +1964,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="SidePanel.{SidePanelEntry}.TimeFromEntryTriggerToShown"
     units="ms" expires_after="2025-08-24">
   <owner>corising@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records elapsed time between when the {SidePanelEntry} side panel entry
     triggered to be shown and when it was shown.

@@ -127,15 +127,15 @@ export class PrintPreviewPreviewAreaElement extends
       },
 
       // <if expr="is_chromeos">
-      printerOffline_: {
+      printerSetupInfoMessageTypeEnum_: {
         type: Number,
-        value: PrinterSetupInfoMessageType.PRINTER_OFFLINE,
+        value: PrinterSetupInfoMessageType,
         readOnly: true,
       },
 
-      previewAreaInitiator_: {
+      printerSetupInfoInitiatorEnum_: {
         type: Number,
-        value: PrinterSetupInfoInitiator.PREVIEW_AREA,
+        value: PrinterSetupInfoInitiator,
         readOnly: true,
       },
       // </if>

@@ -10,6 +10,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.Browser;
 import android.view.LayoutInflater;
@@ -197,9 +198,10 @@ public class AccountSelectionCoordinator
             List<Account> accounts,
             List<IdentityProviderData> idpDataList,
             boolean isAutoReauthn,
-            List<Account> newAccounts) {
+            List<Account> newAccounts,
+            Bitmap favicon) {
         return mMediator.showAccounts(
-                rpEtldPlusOne, accounts, idpDataList, isAutoReauthn, newAccounts);
+                rpEtldPlusOne, accounts, idpDataList, isAutoReauthn, newAccounts, favicon);
     }
 
     @Override

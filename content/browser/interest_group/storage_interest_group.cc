@@ -32,15 +32,4 @@ DebugReportLockoutAndCooldowns::DebugReportLockoutAndCooldowns(
     DebugReportLockoutAndCooldowns&&) = default;
 DebugReportLockoutAndCooldowns::~DebugReportLockoutAndCooldowns() = default;
 
-std::optional<base::TimeDelta> ConvertDebugReportCooldownTypeToDuration(
-    DebugReportCooldownType type) {
-  switch (type) {
-    case DebugReportCooldownType::kShortCooldown:
-      return blink::features::kFledgeDebugReportShortCooldown.Get();
-    case DebugReportCooldownType::kRestrictedCooldown:
-      return blink::features::kFledgeDebugReportRestrictedCooldown.Get();
-  }
-  return std::nullopt;
-}
-
 }  // namespace content

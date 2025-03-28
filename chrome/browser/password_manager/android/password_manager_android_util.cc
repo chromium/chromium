@@ -390,6 +390,36 @@ void RecordLocalUpmActivationMetrics(PrefService* pref_service,
                                      : UseUpmLocalAndSeparateStoresState::kOff);
 }
 
+void InitializeUpmUnmigratedPasswordsExportPref(
+    PrefService* prefs,
+    const base::FilePath& login_db_directory) {
+  // The umigrated passwords export pref should only be set for users who aren't
+  // already part of UPM.
+  if (password_manager::UsesSplitStoresAndUPMForLocal(prefs)) {
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kLoginDbDeprecationAndroid)) {
+    // Reset the pref if the flag is off, to ensure that if a client switches
+    // from the "Enabled" to the "Disabled" group, they redo the export once
+    // the feature is eventually enabled for them.
+    prefs->SetBoolean(password_manager::prefs::kUpmUnmigratedPasswordsExported,
+                      false);
+    return;
+  }
+
+  // If there are no passwords saved, there is nothing to export prior to
+  // deprecation, so mark the export as done already.
+  if (prefs->GetBoolean(
+          password_manager::prefs::kEmptyProfileStoreLoginDatabase) ||
+      !base::PathExists(login_db_directory.Append(
+          password_manager::kLoginDataForProfileFileName))) {
+    prefs->SetBoolean(password_manager::prefs::kUpmUnmigratedPasswordsExported,
+                      true);
+  }
+}
+
 }  // namespace
 
 bool IsPasswordManagerAvailable(
@@ -480,6 +510,11 @@ void SetUsesSplitStoresAndUPMForLocal(
     PrefService* pref_service,
     const base::FilePath& login_db_directory,
     std::unique_ptr<PasswordManagerUtilBridgeInterface> util_bridge) {
+  // For fresh installs in particular, it's important to do this before
+  // the backend creation, so that the Android backends are directly wired
+  // without requiring another restart.
+  password_manager_android_util::InitializeUpmUnmigratedPasswordsExportPref(
+      pref_service, login_db_directory);
   if (base::FeatureList::IsEnabled(
           password_manager::features::kLoginDbDeprecationAndroid)) {
     // If the login DB is being deprecated, only record metrics and do not

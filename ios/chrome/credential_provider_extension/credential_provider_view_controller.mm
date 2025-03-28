@@ -565,6 +565,12 @@ enum class PasskeyCreationEligibility {
       AppGroupUserDefaultsCredentialProviderUserEmail(), /*default_value=*/@"");
 }
 
+// Returns whether the user is currently using multiple profile in Chrome.
+- (BOOL)isUsingMultiProfile {
+  return [app_group::GetGroupUserDefaults()
+      boolForKey:AppGroupUserDefaultsCredentialProviderMultiProfileSetting()];
+}
+
 #pragma mark - PasskeyKeychainProviderBridgeDelegate
 
 - (void)performUserVerificationIfNeeded:(ProceduralBlock)completion {
@@ -699,7 +705,7 @@ enum class PasskeyCreationEligibility {
   }
 
   if (passkeyRequestDetails.userVerificationRequired ||
-      !IsAutomaticPasskeyUpgradeEnabled()) {
+      !IsAutomaticPasskeyUpgradeEnabled() || [self isUsingMultiProfile]) {
     return PasskeyCreationEligibility::kCanCreateWithUserInteraction;
   }
 

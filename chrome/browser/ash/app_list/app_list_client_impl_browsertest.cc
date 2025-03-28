@@ -1295,7 +1295,7 @@ class AppListClientNewUserTest : public InProcessBrowserTest,
     ash::ProfileHelper::SetProfileToUserForTestingEnabled(true);
     account_id_ =
         AccountId::FromUserEmailGaiaId("test@test-user", GaiaId("gaia-id"));
-    auto* user = user_manager::TestHelper(*user_manager::UserManager::Get())
+    auto* user = user_manager::TestHelper(user_manager::UserManager::Get())
                      .AddRegularUser(account_id_);
     ASSERT_TRUE(user);
     session_manager::SessionManager::Get()->CreateSession(

@@ -2836,6 +2836,13 @@ const FeatureEntry::FeatureVariation
              kAndroidAppIntegrationMultiDataSource_UseSchemaV1AndSkipDeviceCheck),
          nullptr}};
 
+const FeatureEntry::FeatureParam kAndroidBottomToolbar_DefaultToBottom[] = {
+    {"default_to_top", "false"}};
+
+const FeatureEntry::FeatureVariation kAndroidBottomToolbarVariations[] = {
+    {"default to bottom", kAndroidBottomToolbar_DefaultToBottom,
+     std::size(kAndroidBottomToolbar_DefaultToBottom), nullptr}};
+
 const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_20[] = {
     {chrome::android::kAuxiliarySearchMaxBookmarksCountParam.name, "20"},
     {chrome::android::kAuxiliarySearchMaxTabsCountParam.name, "20"}};
@@ -5423,6 +5430,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableIsolatedWebAppUnmanagedInstallDescription,
      kOsCrOS, FEATURE_VALUE_TYPE(features::kIsolatedWebAppUnmanagedInstall)},
 #endif
+    {"enable-isolated-web-app-allowlist",
+     flag_descriptions::kEnableIsolatedWebAppAllowlistName,
+     flag_descriptions::kEnableIsolatedWebAppAllowlistDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kIsolatedWebAppAllowlist)},
     {"enable-isolated-web-app-dev-mode",
      flag_descriptions::kEnableIsolatedWebAppDevModeName,
      flag_descriptions::kEnableIsolatedWebAppDevModeDescription, kOsDesktop,
@@ -5690,6 +5701,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWaylandLinuxDrmSyncobjName,
      flag_descriptions::kWaylandLinuxDrmSyncobjDescription, kOsLinux,
      FEATURE_VALUE_TYPE(features::kWaylandLinuxDrmSyncobj)},
+
+    {"wayland-session-management",
+     flag_descriptions::kWaylandSessionManagementName,
+     flag_descriptions::kWaylandSessionManagementDescription, kOsLinux,
+     FEATURE_VALUE_TYPE(features::kWaylandSessionManagement)},
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_VR)
@@ -6466,7 +6482,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"android-bottom-toolbar", flag_descriptions::kAndroidBottomToolbarName,
      flag_descriptions::kAndroidBottomToolbarDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidBottomToolbar)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidBottomToolbar,
+                                    kAndroidBottomToolbarVariations,
+                                    "AndroidBottomToolbar")},
 
     {"auxiliary-search-donation",
      flag_descriptions::kAuxiliarySearchDonationName,
@@ -10947,6 +10965,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCssTextBoxTrimDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCSSTextBoxTrim)},
 
+    {"css-masonry-layout", flag_descriptions::kCssMasonryLayoutName,
+     flag_descriptions::kCssMasonryLayoutDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kCSSMasonryLayout)},
+
     {"storage-access-headers", flag_descriptions::kStorageAccessHeadersName,
      flag_descriptions::kStorageAccessHeadersDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kStorageAccessHeaders)},
@@ -12002,12 +12024,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableNewFopDisplayDesktop)},
 
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_CHROMEOS)
     {"enable-printing-margins-and-scale",
      flag_descriptions::kEnablePrintingMarginsAndScale,
      flag_descriptions::kEnablePrintingMarginsAndScaleDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(extensions_features::kApiPrintingMarginsAndScale)},
-#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+     FEATURE_VALUE_TYPE(printing::features::kApiPrintingMarginsAndScale)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     {"supervised-user-block-interstitial-v3",
      flag_descriptions::kSupervisedUserBlockInterstitialV3Name,

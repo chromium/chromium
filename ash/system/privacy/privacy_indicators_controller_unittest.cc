@@ -22,7 +22,6 @@
 #include "ash/system/notification_center/views/notification_list_view.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/unified/unified_system_tray.h"
-#include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "base/command_line.h"
@@ -799,58 +798,6 @@ TEST_P(PrivacyIndicatorsControllerTest, UpdateUsageStageInLockScreen) {
   EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
       notification_id));
   EXPECT_FALSE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
-}
-
-// Tests enabling `kVideoConference`.
-class PrivacyIndicatorsControllerVideoConferenceTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
- public:
-  PrivacyIndicatorsControllerVideoConferenceTest()
-      : scoped_feature_list_(features::kFeatureManagementVideoConference) {}
-  PrivacyIndicatorsControllerVideoConferenceTest(
-      const PrivacyIndicatorsControllerVideoConferenceTest&) = delete;
-  PrivacyIndicatorsControllerVideoConferenceTest& operator=(
-      const PrivacyIndicatorsControllerVideoConferenceTest&) = delete;
-  ~PrivacyIndicatorsControllerVideoConferenceTest() override = default;
-
-  // AshTestBase:
-  void SetUp() override {
-    // Instantiates a fake controller (the real one is created in
-    // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
-    // ash unit tests).
-    controller_ = std::make_unique<FakeVideoConferenceTrayController>();
-
-    AshTestBase::SetUp();
-  }
-
-  void TearDown() override {
-    AshTestBase::TearDown();
-    controller_.reset();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<FakeVideoConferenceTrayController> controller_;
-};
-
-// Make sure that when `kVideoConference` is enabled, the privacy indicators
-// view and the controller is not created.
-TEST_F(PrivacyIndicatorsControllerVideoConferenceTest, ObjectsCreation) {
-  EXPECT_FALSE(PrivacyIndicatorsController::Get());
-
-  for (auto* root_window_controller :
-       Shell::Get()->GetAllRootWindowControllers()) {
-    DCHECK(root_window_controller);
-    auto* status_area_widget = root_window_controller->GetStatusAreaWidget();
-    DCHECK(status_area_widget);
-
-    auto* privacy_indicators_view =
-        status_area_widget->notification_center_tray()
-            ->privacy_indicators_view();
-
-    EXPECT_FALSE(privacy_indicators_view);
-  }
 }
 
 }  // namespace ash

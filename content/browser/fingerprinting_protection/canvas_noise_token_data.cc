@@ -23,17 +23,18 @@ const void* const kBrowserContextCanvasNoiseTokenKey =
 // static
 uint64_t CanvasNoiseTokenData::GetToken(BrowserContext* context) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kCanvasInterventions));
-  return CanvasNoiseTokenData::GetOrCreateForBrowserContext(context);
-}
 
-// static
-uint64_t CanvasNoiseTokenData::GetOrCreateForBrowserContext(
-    BrowserContext* context) {
   CanvasNoiseTokenData* data = static_cast<CanvasNoiseTokenData*>(
       context->GetUserData(&kBrowserContextCanvasNoiseTokenKey));
   if (data != nullptr) {
     return data->session_token_;
   }
+  return CanvasNoiseTokenData::SetNewToken(context);
+}
+
+// static
+uint64_t CanvasNoiseTokenData::SetNewToken(BrowserContext* context) {
+  CHECK(base::FeatureList::IsEnabled(blink::features::kCanvasInterventions));
 
   auto new_data = std::make_unique<CanvasNoiseTokenData>();
   uint64_t token = new_data->session_token_;

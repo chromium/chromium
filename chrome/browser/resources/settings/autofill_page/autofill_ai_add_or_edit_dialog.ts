@@ -331,6 +331,17 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   }
 
 
+
+  private isExistingYearOutOfBounds_(
+      attributeInstance: AttributeInstance, years: string[]): boolean {
+    const year = this.getExistingYear_(attributeInstance);
+    return year.length > 0 && !years.includes(year);
+  }
+
+  private getExistingYear_(attributeInstance: AttributeInstance): string {
+    return (attributeInstance.value as DateValue).year;
+  }
+
   /**
    * Returns true if the date is invalid. A date is invalid either if it is
    * incomplete (i.e. only some of the month, day, year selectors are empty), or

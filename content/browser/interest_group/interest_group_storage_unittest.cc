@@ -1456,9 +1456,6 @@ TEST_F(InterestGroupStorageTest, RecordsDebugReportLockoutAndCooldown) {
   EXPECT_FALSE(cooldowns->lockout.has_value());
   EXPECT_TRUE(cooldowns->debug_report_cooldown_map.empty());
 
-  std::optional<DebugReportLockout> lockout = storage->GetDebugReportLockout();
-  ASSERT_FALSE(lockout.has_value());
-
   base::Time time = base::Time::Now();
   base::Time expected_time = base::Time::FromDeltaSinceWindowsEpoch(
       time.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
@@ -1471,11 +1468,6 @@ TEST_F(InterestGroupStorageTest, RecordsDebugReportLockoutAndCooldown) {
   EXPECT_EQ(blink::features::kFledgeDebugReportLockout.Get(),
             cooldowns->lockout->duration);
   EXPECT_TRUE(cooldowns->debug_report_cooldown_map.empty());
-  lockout = storage->GetDebugReportLockout();
-  ASSERT_TRUE(lockout.has_value());
-  EXPECT_EQ(expected_time, lockout->starting_time);
-  EXPECT_EQ(blink::features::kFledgeDebugReportLockout.Get(),
-            lockout->duration);
 
   storage->RecordDebugReportCooldown(test_origin, time,
                                      DebugReportCooldownType::kShortCooldown);
@@ -1541,22 +1533,28 @@ TEST_F(InterestGroupStorageTest, SetDebugReportLockoutUntilIGExpires) {
                                  .Build(),
                              kOrigin.GetURL());
 
-  std::optional<DebugReportLockout> lockout = storage->GetDebugReportLockout();
-  ASSERT_FALSE(lockout.has_value());
+  std::optional<DebugReportLockoutAndCooldowns> lockout_and_cooldowns =
+      storage->GetDebugReportLockoutAndAllCooldowns();
+  ASSERT_TRUE(lockout_and_cooldowns.has_value());
+  ASSERT_FALSE(lockout_and_cooldowns->lockout.has_value());
 
   storage->SetDebugReportLockoutUntilIGExpires();
-  lockout = storage->GetDebugReportLockout();
-  ASSERT_TRUE(lockout.has_value());
+  lockout_and_cooldowns = storage->GetDebugReportLockoutAndAllCooldowns();
+  ASSERT_TRUE(lockout_and_cooldowns.has_value());
+  ASSERT_TRUE(lockout_and_cooldowns->lockout.has_value());
   base::Time expected_starting_time = base::Time::FromDeltaSinceWindowsEpoch(
       start.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
-  EXPECT_EQ(expected_starting_time, lockout->starting_time);
-  EXPECT_EQ(even_later - expected_starting_time, lockout->duration);
+  EXPECT_EQ(expected_starting_time,
+            lockout_and_cooldowns->lockout->starting_time);
+  EXPECT_EQ(even_later - expected_starting_time,
+            lockout_and_cooldowns->lockout->duration);
 
   // All IGs joined before has already expired.
   task_environment().FastForwardBy(base::Days(3));
   storage->SetDebugReportLockoutUntilIGExpires();
-  lockout = storage->GetDebugReportLockout();
-  ASSERT_FALSE(lockout.has_value());
+  lockout_and_cooldowns = storage->GetDebugReportLockoutAndAllCooldowns();
+  ASSERT_TRUE(lockout_and_cooldowns.has_value());
+  ASSERT_FALSE(lockout_and_cooldowns->lockout.has_value());
 }
 
 TEST_F(InterestGroupStorageTest, DeleteExpiredDebugReportCooldown) {
@@ -4352,10 +4350,13 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV31) {
       base::Time::Now().ToDeltaSinceWindowsEpoch().CeilToMultiple(
           base::Hours(1)));
   storage->RecordDebugReportLockout(now_nearest_next_hour, base::Days(90));
-  std::optional<DebugReportLockout> lockout = storage->GetDebugReportLockout();
-  ASSERT_TRUE(lockout.has_value());
-  EXPECT_EQ(now_nearest_next_hour, lockout->starting_time);
-  EXPECT_EQ(base::Days(90), lockout->duration);
+  std::optional<DebugReportLockoutAndCooldowns> lockout_and_cooldowns =
+      storage->GetDebugReportLockoutAndAllCooldowns();
+  ASSERT_TRUE(lockout_and_cooldowns.has_value());
+  ASSERT_TRUE(lockout_and_cooldowns->lockout.has_value());
+  EXPECT_EQ(now_nearest_next_hour,
+            lockout_and_cooldowns->lockout->starting_time);
+  EXPECT_EQ(base::Days(90), lockout_and_cooldowns->lockout->duration);
 }
 
 TEST_F(InterestGroupStorageTest, MultiVersionUpgradeTest) {

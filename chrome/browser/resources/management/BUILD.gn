@@ -18,6 +18,7 @@ build_webui("build") {
   css_files = [ "management_ui.css" ]
   icons_html_files = [ "icons.html" ]
   html_to_wrapper_template = "detect"
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit_389737066.json"
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",

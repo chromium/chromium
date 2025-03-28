@@ -58,14 +58,13 @@ void CheckAndResolveInputMethodIDs(
 
 // Checks whether each language is supported, replacing locales with variants
 // if they are available. Must be called on a thread that allows IO.
-std::string CheckAndResolveLocales(const std::string& languages) {
+std::string CheckAndResolveLocales(const std::string& app_locale,
+                                   const std::string& languages) {
   if (languages.empty()) {
     return languages;
   }
   std::vector<std::string> values = base::SplitString(
       languages, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-
-  const std::string app_locale = g_browser_process->GetApplicationLocale();
 
   std::vector<std::string> accept_language_codes;
   l10n_util::GetAcceptLanguagesForLocale(app_locale, &accept_language_codes);
@@ -224,12 +223,13 @@ void InputMethodSyncer::MergeSyncedPrefs() {
       prefs::kLanguageEnabledImes));
 
   // Remove unsupported locales before updating the local languages preference.
+  const std::string& app_locale = g_browser_process->GetApplicationLocale();
   std::string languages(AddSupportedInputMethodValues(
       preferred_languages_.GetValue(), preferred_languages_syncable,
       language::prefs::kPreferredLanguages));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&CheckAndResolveLocales, languages),
+      base::BindOnce(&CheckAndResolveLocales, app_locale, languages),
       base::BindOnce(&InputMethodSyncer::FinishMerge,
                      weak_factory_.GetWeakPtr()));
 }

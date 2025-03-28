@@ -23,7 +23,7 @@ class EmbeddedPermissionPromptViewDelegate {
   virtual void Acknowledge() = 0;
   virtual void StopAllowing() = 0;
   virtual void ShowSystemSettings() = 0;
-  virtual void SystemPermissionsAllowed() = 0;
+  virtual void SystemPermissionsNoLongerDenied() = 0;
 
   // Return a weak pointer of `PermissionPrompt::Delegate` which is implemented
   // in `components` layer

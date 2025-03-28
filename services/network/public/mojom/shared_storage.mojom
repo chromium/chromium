@@ -65,3 +65,10 @@ struct SharedStorageModifierMethodWithOptions {
   // resource with name `with_lock`. `with_lock` shouldn't start with '-'.
   LockName? with_lock;
 };
+
+// Represents the batchUpdate()'s `methods` argument in the Shared Storage
+// API. It will be validated during serialization.
+// https://wicg.github.io/shared-storage/#batch-update
+struct SharedStorageBatchUpdateMethodsArgument {
+  array<SharedStorageModifierMethodWithOptions> data;
+};

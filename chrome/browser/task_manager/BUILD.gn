@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//components/nacl/features.gni")
 
 if (is_android) {
@@ -58,7 +59,7 @@ source_set("task_manager") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
-    "//chrome/browser/task_manager/common:common",
+    "//chrome/common:buildflags",
     "//components/favicon/core",
     "//components/nacl/common:buildflags",
     "//components/sessions:session_id",
@@ -174,6 +175,7 @@ source_set("impl") {
     "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/task_manager",
+    "//chrome/browser/task_manager/common",
     "//chrome/browser/ui:url_identity",
     "//chrome/common",
     "//chrome/common:constants",
@@ -248,6 +250,9 @@ source_set("impl") {
       "providers/web_contents/guest_task.cc",
       "providers/web_contents/guest_task_mparch.cc",
     ]
+  }
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
   }
 }
 

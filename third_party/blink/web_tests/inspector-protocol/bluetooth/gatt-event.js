@@ -5,41 +5,30 @@
   await dp.Page.enable();
   await dp.Runtime.enable();
 
-  // Set up Bluetooth emulation with a preconnected peripheral.
-  await bp.BluetoothEmulation.enable({state: 'powered-on', leSupported: true});
-  await bp.BluetoothEmulation.simulatePreconnectedPeripheral({
-    address: '09:09:09:09:09:09',
-    name: 'Some Device',
-    manufacturerData: [],
-    knownServiceUuids: [],
+  const BluetoothHelper =
+      await testRunner.loadScript('resources/bluetooth-helper.js')
+  const helper = new BluetoothHelper(testRunner, dp, session);
+  await helper.setupPreconnectedPeripheral();
+  await helper.requestDevice({
+    acceptAllDevices: true,
+    optionalServices: [BluetoothHelper.HEART_RATE_SERVICE_UUID]
   });
-
-  // Prepare device request prompt handling.
-  await dp.DeviceAccess.enable();
-  const deviceRequestPromptedPromise =
-      dp.DeviceAccess.onceDeviceRequestPrompted().then(
-          ({params: {id, devices}}) => {
-            const deviceId = devices[0].id;
-            return dp.DeviceAccess.selectPrompt({id, deviceId});
-          })
 
   // Prepare GATT operation handling.
   bp.BluetoothEmulation.onGattOperationReceived(({params: {address, type}}) => {
     testRunner.log(
         `GATT operation received: address: ${address}, type: ${type}`);
     return bp.BluetoothEmulation.simulateGATTOperationResponse(
-        {address: address, type: type, code: 0});
+        {address: address, type: type, code: BluetoothHelper.HCI_SUCCESS});
   });
 
   // Start the test.
   const gattConnectedPromise =
       session.evaluateAsyncWithUserGesture(async () => {
-        const device = await navigator.bluetooth.requestDevice(
-            {acceptAllDevices: true, optionalServices: ['heart_rate']});
-        const server = await device.gatt.connect();
+        const devices = await navigator.bluetooth.getDevices();
+        const server = await devices[0].gatt.connect();
         return server.connected;
       });
-  await deviceRequestPromptedPromise;
   const gattConnected = await gattConnectedPromise;
   testRunner.log(`GATT connect result: ${gattConnected}`);
 

@@ -5,6 +5,7 @@
 #include "ash/constants/ash_features.h"
 
 #include "ash/constants/ash_switches.h"
+#include "ash_features.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/branding_buildflags.h"
@@ -581,7 +582,7 @@ BASE_FEATURE(kDemoModeWallpaperUpdate,
 // sign in is enable. No-op if demo mode sign in is disabled.
 BASE_FEATURE(kDemoModeSignInFileCleanup,
              "DemoModeSignInFileCleanup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Toggle different display features based on user setting and power state
 BASE_FEATURE(kDisplayPerformanceMode,
@@ -1777,6 +1778,11 @@ BASE_FEATURE(kLobsterDisabledByInvalidIME,
              "LobsterDisabledByInvalidIME",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls lobster availability on managed accounts.
+BASE_FEATURE(kLobsterForManagedUsers,
+             "LobsterForManagedUsers",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables lobster entry point in quick insert zero state.
 BASE_FEATURE(kLobsterQuickInsertZeroState,
              "LobsterQuickInsertZeroState",
@@ -2625,6 +2631,11 @@ BASE_FEATURE(kSeaPenTextInput,
              "SeaPenTextInput",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables sea pen text input translation feature.
+BASE_FEATURE(kSeaPenTextInputTranslation,
+             "SeaPenTextInputTranslation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables sea pen feature for ChromeOS demo mode.
 BASE_FEATURE(kSeaPenDemoMode,
              "SeaPenDemoMode",
@@ -2633,7 +2644,7 @@ BASE_FEATURE(kSeaPenDemoMode,
 // Enables sea pen prompt rewrite feature.
 BASE_FEATURE(kSeaPenQueryRewrite,
              "SeaPenQueryRewrite",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables sea pen feature with next templates.
 BASE_FEATURE(kSeaPenUseExptTemplate,
@@ -4023,6 +4034,10 @@ bool IsLobsterAlwaysShowDisclaimerForTesting() {
   return base::FeatureList::IsEnabled(kLobsterAlwaysShowDisclaimerForTesting);
 }
 
+bool IsLobsterEnabledForManagedUsers() {
+  return base::FeatureList::IsEnabled(kLobsterForManagedUsers);
+}
+
 bool IsLockScreenHideSensitiveNotificationsSupported() {
   return base::FeatureList::IsEnabled(
       kLockScreenHideSensitiveNotificationsSupport);
@@ -4435,6 +4450,11 @@ bool IsSeaPenEnabled() {
 
 bool IsSeaPenTextInputEnabled() {
   return IsSeaPenEnabled() && base::FeatureList::IsEnabled(kSeaPenTextInput);
+}
+
+bool IsSeaPenTextInputTranslationEnabled() {
+  return IsSeaPenTextInputEnabled() &&
+         base::FeatureList::IsEnabled(kSeaPenTextInputTranslation);
 }
 
 bool IsSeaPenUseExptTemplateEnabled() {

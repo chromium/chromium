@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] e.style['flex'] = "1 2 calc(0)" should not set the property value
-  assert_equals: expected "" but got "1 2 0px"
-[FAIL] e.style['flex'] = "1 2 calc(3 - 3)" should not set the property value
-  assert_equals: expected "" but got "1 2 0px"
-Harness: the test ran to completion.
-

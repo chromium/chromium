@@ -107,7 +107,8 @@ int AwPrefetchManager::StartPrefetchRequest(
             pf_url,
             GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
             expected_no_vary_search, additional_headers,
-            std::move(request_status_listener), base::Seconds(ttl_in_sec_));
+            std::move(request_status_listener), base::Seconds(ttl_in_sec_),
+            /*should_append_variations_header=*/false);
 
     if (prefetch_handle) {
       return AddPrefetchHandle(std::move(prefetch_handle));

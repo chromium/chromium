@@ -1806,6 +1806,11 @@
     "expiry_milestone": 126
   },
   {
+    "name": "css-masonry-layout",
+    "owners": ["ethavar@microsoft.com", "celestepan@microsoft.com"],
+    "expiry_milestone": 142
+  },
+  {
     "name": "css-safe-area-max-inset",
     "owners": ["skobes@chromium.org"],
     "expiry_milestone": 137
@@ -3372,6 +3377,11 @@
     "name": "enable-isolated-sandboxed-iframes",
     "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
     "expiry_milestone": 145
+  },
+  {
+    "name": "enable-isolated-web-app-allowlist",
+    "owners": [ "rferens@google.com", "iwa-team@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "enable-isolated-web-app-dev-mode",
@@ -7038,6 +7048,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "page-action-menu",
+    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "page-content-annotations",
     "owners": [ "sophiechang@chromium.org", "mcrouse@chromium.org", "chrome-intelligence-core@google.com"],
     "expiry_milestone": 130
@@ -7723,17 +7738,12 @@
     "expiry_milestone": 145
   },
   {
-    "name": "reader-mode-distiller-heuristic-delay-string",
+    "name": "reader-mode-distiller-enabled",
     "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
     "expiry_milestone": 145
   },
   {
     "name": "reader-mode-distiller-heuristic-enabled",
-    "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "reader-mode-distiller-heuristic-sampling",
     "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
     "expiry_milestone": 145
   },
@@ -8101,17 +8111,17 @@
   },
   {
     "name": "scrollable-tabstrip",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "tbergquist@chromium.org" ],
+    "owners": [ "top-chrome-desktop-ui@google.com", "tbergquist@chromium.org" ],
     "expiry_milestone": 145
   },
   {
     "name": "scrollable-tabstrip-overflow",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning@chromium.org" ],
+    "owners": [ "top-chrome-desktop-ui@google.com", "dpenning@chromium.org" ],
     "expiry_milestone": 145
   },
   {
     "name": "scrollable-tabstrip-with-dragging",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "shibalik@chromium.org" ],
+    "owners": [ "top-chrome-desktop-ui@google.com", "shibalik@chromium.org" ],
     "expiry_milestone": 145
   },
   {
@@ -8460,7 +8470,7 @@
   {
     "name": "split-tabstrip",
     "owners": [
-      "chrome-desktop-ui-sea@google.com",
+      "top-chrome-desktop-ui@google.com",
       "tbergquist@chromium.org"
     ],
     "expiry_milestone": 115
@@ -8760,12 +8770,12 @@
   },
   {
     "name": "tab-group-sync-service-desktop-migration",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "dljames@chromium.org", "dpenning@chromium.org" ],
+    "owners": [ "top-chrome-desktop-ui@google.com", "dljames@chromium.org", "dpenning@chromium.org" ],
     "expiry_milestone": 140
   },
   {
     "name": "tab-groups-defer-remote-navigations",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning@chromium.org", "dljames@chromium.org" ],
+    "owners": [ "top-chrome-desktop-ui@google.com", "dpenning@chromium.org", "dljames@chromium.org" ],
     "expiry_milestone": 150
   },
   {
@@ -8775,7 +8785,7 @@
   },
   {
     "name": "tab-groups-save-v2",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning@chromium.org", "dljames@chromium.org" ],
+    "owners": [ "top-chrome-desktop-ui@google.com", "dpenning@chromium.org", "dljames@chromium.org" ],
     "expiry_milestone": 150
   },
   {
@@ -8795,12 +8805,12 @@
   },
   {
     "name": "tab-scrolling-button-position",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning@chromium.org" ],
+    "owners": [ "top-chrome-desktop-ui@google.com", "dpenning@chromium.org" ],
     "expiry_milestone": 130
   },
   {
     "name": "tab-search-position-setting",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning@chromium.org" ],
+    "owners": [ "top-chrome-desktop-ui@google.com", "dpenning@chromium.org" ],
     "expiry_milestone": 137
   },
   {
@@ -8845,7 +8855,7 @@
   },
   {
     "name": "tabstrip-combo-button",
-    "owners": [ "emshack@chromium.org", "chrome-desktop-ui-sea@google.com" ],
+    "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
     "expiry_milestone": 150
   },
   {
@@ -8925,7 +8935,7 @@
   },
   {
     "name" : "toolbar-pinning",
-    "owners": [ "corising@chromium.org", "tbergquist@chromium.org", "chrome-desktop-ui-sea@chromium.org" ],
+    "owners": [ "corising@chromium.org", "tbergquist@chromium.org", "top-chrome-desktop-ui@chromium.org" ],
     "expiry_milestone" : 135
   },
   {
@@ -8938,7 +8948,7 @@
   },
   {
     "name": "top-chrome-touch-ui",
-    "owners": [ "pbos@chromium.org", "chrome-desktop-ui-sea@google.com" ],
+    "owners": [ "pbos@chromium.org", "top-chrome-desktop-ui@google.com" ],
     // This flag is used to easily swap into touch-mode for UI development where
     // the UI differs significantly between touch/non-touch modes. This is
     // exposed in chrome://flags to allow QA and UXers to verify touch-related
@@ -9472,6 +9482,11 @@
     "name": "wayland-per-window-scaling",
     "owners": [ "nickdiego@igalia.com", "fangzhoug@chromium.org", "thomasanderson@chromium.org"],
     "expiry_milestone": 138
+  },
+  {
+    "name": "wayland-session-management",
+    "owners": [ "nickdiego@igalia.com", "fangzhoug@chromium.org", "thomasanderson@chromium.org"],
+    "expiry_milestone": 146
   },
   {
     "name": "wayland-text-input-v3",

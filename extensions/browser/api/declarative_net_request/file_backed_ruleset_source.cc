@@ -5,7 +5,9 @@
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 
 #include <memory>
+#include <optional>
 #include <set>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -15,7 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -427,9 +429,12 @@ bool FileBackedRulesetSource::SerializeRulesToJSON(
   base::Value::List rules_value =
       json_schema_compiler::util::CreateValueFromArray(rules);
 
-  JSONStringValueSerializer serializer(json);
-  serializer.set_pretty_print(false);
-  return serializer.Serialize(rules_value);
+  std::optional<std::string> json_string = base::WriteJson(rules_value);
+  if (!json_string) {
+    return false;
+  }
+  *json = std::move(*json_string);
+  return true;
 }
 
 LoadRulesetResult FileBackedRulesetSource::CreateVerifiedMatcher(

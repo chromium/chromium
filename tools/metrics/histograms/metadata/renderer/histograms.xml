@@ -633,7 +633,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="RendererScheduler.RendererMainThreadLoad6" units="%"
     expires_after="2025-08-17">
   <owner>lizeb@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
   <summary>
     Renderer main thread load (percentage of time spent in tasks), reported in
     one second chunks.

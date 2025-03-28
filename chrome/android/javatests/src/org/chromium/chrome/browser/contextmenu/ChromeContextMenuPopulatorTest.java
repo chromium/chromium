@@ -149,8 +149,14 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     private void initializePopulatorOnDesktop(@ContextMenuMode int mode, ContextMenuParams params) {
+        initializePopulatorOnDesktop(mode, params, true);
+    }
+
+    private void initializePopulatorOnDesktop(
+            @ContextMenuMode int mode, ContextMenuParams params, boolean supportPrint) {
         initializePopulator(mode, params);
         doReturn(true).when(mPopulator).shouldShowEmptySpaceContextMenu();
+        doReturn(supportPrint).when(mItemDelegate).isPrintSupported();
     }
 
     private void checkMenuOptions(List<Integer> disabled, int[]... groups) {
@@ -1489,7 +1495,9 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         /* additionalNavigationParams= */ null);
 
-        int[] expected = {R.id.contextmenu_save_page, R.id.contextmenu_share_page};
+        int[] expected = {
+            R.id.contextmenu_save_page, R.id.contextmenu_share_page, R.id.contextmenu_print_page
+        };
 
         initializePopulatorOnDesktop(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         checkMenuOptions(expected);
@@ -1569,7 +1577,9 @@ public class ChromeContextMenuPopulatorTest {
                         /* additionalNavigationParams= */ null);
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
 
-        int[] expected = {R.id.contextmenu_save_page, R.id.contextmenu_share_page};
+        int[] expected = {
+            R.id.contextmenu_save_page, R.id.contextmenu_share_page, R.id.contextmenu_print_page
+        };
         List<Integer> expected_disabled = Arrays.asList(R.id.contextmenu_save_page);
 
         initializePopulatorOnDesktop(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
@@ -1584,5 +1594,48 @@ public class ChromeContextMenuPopulatorTest {
         initializePopulatorOnDesktop(
                 ChromeContextMenuPopulator.ContextMenuMode.NETWORK_BOUND_TAB, params);
         checkMenuOptions(expected_disabled, expected);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testPagePrintNotSupported() {
+        FirstRunStatus.setFirstRunFlowComplete(true);
+        ContextMenuParams params =
+                new ContextMenuParams(
+                        0,
+                        ContextMenuDataMediaType.NONE,
+                        new GURL(PAGE_URL),
+                        GURL.emptyGURL(),
+                        "",
+                        GURL.emptyGURL(),
+                        GURL.emptyGURL(),
+                        "",
+                        null,
+                        false,
+                        0,
+                        0,
+                        MenuSourceType.TOUCH,
+                        false,
+                        false,
+                        /* additionalNavigationParams= */ null);
+
+        int[] expected = {R.id.contextmenu_save_page, R.id.contextmenu_share_page};
+
+        initializePopulatorOnDesktop(
+                ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params, false);
+        checkMenuOptions(expected);
+
+        initializePopulatorOnDesktop(
+                ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params, false);
+        checkMenuOptions(expected);
+
+        initializePopulatorOnDesktop(
+                ChromeContextMenuPopulator.ContextMenuMode.WEB_APP, params, false);
+        checkMenuOptions(expected);
+
+        initializePopulatorOnDesktop(
+                ChromeContextMenuPopulator.ContextMenuMode.NETWORK_BOUND_TAB, params, false);
+        checkMenuOptions(expected);
     }
 }

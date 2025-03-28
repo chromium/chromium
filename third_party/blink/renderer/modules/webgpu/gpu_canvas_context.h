@@ -29,7 +29,8 @@ class V8UnionHTMLCanvasElementOrOffscreenCanvas;
 
 // A GPUCanvasContext does little by itself and basically just binds a canvas
 // and a GPUSwapChain together and forwards calls from one to the other.
-class GPUCanvasContext : public CanvasRenderingContext,
+class GPUCanvasContext : public ScriptWrappable,
+                         public CanvasRenderingContext,
                          public WebGPUSwapBufferProvider::Client {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -113,6 +114,7 @@ class GPUCanvasContext : public CanvasRenderingContext,
   void SetNeedsCompositingUpdate() override;
 
  private:
+  scoped_refptr<WebGPUMailboxTexture> GetFrontBufferMailboxTexture();
   void DetachSwapBuffers();
   void ReplaceDrawingBuffer(bool destroy_swap_buffers);
   void InitializeAlphaModePipeline(wgpu::TextureFormat format);

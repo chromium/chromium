@@ -256,8 +256,7 @@ ExtensionService::ExtensionService(
   if (autoupdate_enabled) {
     // Initialize and enable the ExtensionUpdater.
     updater_->InitAndEnable(
-        extension_prefs, profile->GetPrefs(),
-        base::Seconds(kDefaultUpdateFrequencySeconds),
+        extension_prefs, profile->GetPrefs(), kDefaultUpdateFrequency,
         ExtensionsBrowserClient::Get()->GetExtensionCache(),
         base::BindRepeating(ChromeExtensionDownloaderFactory::CreateForProfile,
                             profile));

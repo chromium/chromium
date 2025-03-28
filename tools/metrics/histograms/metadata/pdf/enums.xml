@@ -128,6 +128,10 @@ chromium-metrics-reviews@google.com.
   <int value="98" label="OpenInk2BottomToolbar"/>
   <int value="99" label="SaveSearchifiedFirst"/>
   <int value="100" label="SaveSearchified"/>
+  <int value="101" label="EnterInk2TextAnnotationModeFirst"/>
+  <int value="102" label="EnterInk2TextAnnotationMode"/>
+  <int value="103" label="ExitInk2TextAnnotationModeFirst"/>
+  <int value="104" label="ExitInk2TextAnnotationMode"/>
 </enum>
 
 <enum name="ChromePDFViewerLoadStatus">

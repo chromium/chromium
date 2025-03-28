@@ -115,10 +115,13 @@ TEST_F(LobsterPageHandlerTest,
   std::vector<LobsterImageCandidate> image_candidates = {
       LobsterImageCandidate(/*id=*/0, /*image_bytes=*/kRawBytes1.data(),
                             /*seed=*/20,
-                            /*query=*/"a nice strawberry"),
-      LobsterImageCandidate(/*id=*/1, /*image_bytes=*/kRawBytes2.data(),
-                            /*seed=*/21,
-                            /*query=*/"a nice strawberry")};
+                            /*user_query=*/"a nice strawberry",
+                            /*rewritten_query=*/"rewritten: a nice strawberry"),
+      LobsterImageCandidate(
+          /*id=*/1, /*image_bytes=*/kRawBytes2.data(),
+          /*seed=*/21,
+          /*user_query=*/"a nice strawberry",
+          /*rewritten_query=*/"rewritten: a nice strawberry")};
   FakeLobsterSession session(std::move(image_candidates),
                              /*commit_or_download_status=*/true,
                              /*feedback_submission_status=*/true);

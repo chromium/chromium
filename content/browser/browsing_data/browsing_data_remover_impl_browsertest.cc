@@ -17,6 +17,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/browsing_data/shared_storage_clear_site_data_tester.h"
+#include "content/browser/fingerprinting_protection/canvas_noise_token_data.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
@@ -1201,6 +1202,49 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrefetchHoldbackBrowserTest,
   histogram_tester().ExpectUniqueSample(
       "Preloading.Prefetch.PrefetchStatus",
       PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved, 1);
+}
+
+class BrowsingDataRemoverCanvasNoiseTokenBrowserTest
+    : public CookiesBrowsingDataRemoverImplBrowserTest {
+ private:
+  base::test::ScopedFeatureList features_{
+      blink::features::kCanvasInterventions};
+};
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverCanvasNoiseTokenBrowserTest,
+                       CanvasNoiseTokenRegeneratesOnCookieRemoval) {
+  // Set a cookie.
+  GURL url = ssl_server().GetURL("/browsing_data/site_data.html");
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  content::BrowserContext* browser_context =
+      shell()->web_contents()->GetBrowserContext();
+  content::WebContents* tab = shell()->web_contents();
+
+  uint64_t original_token = tab->GetMutableRendererPrefs()->canvas_noise_token;
+  EXPECT_EQ(original_token,
+            content::CanvasNoiseTokenData::GetToken(browser_context));
+
+  constexpr uint64_t kRemoveMask =
+      content::BrowsingDataRemover::DATA_TYPE_COOKIES;
+  content::BrowsingDataRemover* remover =
+      browser_context->GetBrowsingDataRemover();
+  content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
+  remover->RemoveAndReply(
+      base::Time(),       // delete_begin
+      base::Time::Max(),  // delete_end
+      kRemoveMask, content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+      &completion_observer);
+
+  completion_observer.BlockUntilCompletion();
+
+  // Next navigation should update the token.
+  ASSERT_TRUE(NavigateToURL(tab, url));
+
+  uint64_t updated_token = tab->GetMutableRendererPrefs()->canvas_noise_token;
+  EXPECT_EQ(updated_token,
+            content::CanvasNoiseTokenData::GetToken(browser_context));
+  EXPECT_NE(updated_token, original_token);
 }
 
 }  // namespace content

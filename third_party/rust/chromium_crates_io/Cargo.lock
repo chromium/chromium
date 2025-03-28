@@ -128,6 +128,7 @@ dependencies = [
  "skrifa",
  "small_ctor",
  "static_assertions",
+ "subtle",
  "syn",
  "temporal_capi",
  "tinyvec",
@@ -1169,6 +1170,11 @@ dependencies = [
 [[package]]
 name = "strsim"
 version = "0.11.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "subtle"
+version = "2.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]

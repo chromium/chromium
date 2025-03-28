@@ -122,6 +122,17 @@ source_set("signin") {
       "//chrome/browser/ui/webui",
     ]
   }
+
+  if (is_win || is_mac || is_linux) {
+    sources += [
+      "history_sync_optin/history_sync_optin_handler.h",
+      "history_sync_optin/history_sync_optin_ui.h",
+    ]
+    public_deps += [
+      "history_sync_optin:mojo_bindings",
+      "//ui/webui",
+    ]
+  }
 }
 
 source_set("signin_impl") {
@@ -183,6 +194,16 @@ source_set("signin_impl") {
       "//components/signin/core/browser",
       "//components/unified_consent",
       "//ui/webui",
+    ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    sources += [
+      "history_sync_optin/history_sync_optin_handler.cc",
+      "history_sync_optin/history_sync_optin_ui.cc",
+    ]
+    deps += [
+      "//chrome/browser/resources/signin/history_sync_optin:resources_grit",
     ]
   }
 }

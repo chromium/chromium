@@ -76,6 +76,12 @@ package = "serde_json_lenient"
 version = "0.2"
 features = ["unbounded_depth", "float_roundtrip"]
 
+# Tweak required to transitive dependency to avoids some use of unsafe,
+# at the cost of requiring the nightly compiler.
+[dependencies.subtle]
+version = "2.6.1"
+features = ["core_hint_black_box"]
+
 [dependencies.syn]
 version = "2"
 features = ["full"]

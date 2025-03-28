@@ -60,7 +60,8 @@ class ContentPasswordManagerDriver final
   int GetId() const override;
   void SetPasswordFillData(
       const autofill::PasswordFormFillData& form_data) override;
-  void InformNoSavedCredentials() override;
+  void InformNoSavedCredentials(
+      bool should_show_popup_without_passwords) override;
   void FormEligibleForGenerationFound(
       const autofill::PasswordFormGenerationData& form) override;
   void GeneratedPasswordAccepted(const std::u16string& password) override;

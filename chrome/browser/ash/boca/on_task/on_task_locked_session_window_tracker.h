@@ -95,7 +95,7 @@ class LockedSessionWindowTracker : public KeyedService,
       std::unique_ptr<ash::boca::OnTaskNotificationsManager>
           notification_manager);
 
-  ash::OnTaskPodController* GetOnTaskPodControllerForTesting();
+  ash::OnTaskPodController* on_task_pod_controller();
 
   OnTaskBlocklist* on_task_blocklist();
   Browser* browser();

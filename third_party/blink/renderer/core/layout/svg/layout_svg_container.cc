@@ -53,6 +53,12 @@ SVGLayoutResult LayoutSVGContainer::UpdateSVGLayout(
     const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
+  if (layout_info.viewport_changed && HasViewportDependence() &&
+      IsSVGTransformableContainer()) {
+    // TODO: This will be called if any descendant has a viewport dependency,
+    // not just if this container has one.
+    SetNeedsTransformUpdate();
+  }
 
   SVGTransformChange transform_change = SVGTransformChange::kNone;
   // Update the local transform in subclasses.

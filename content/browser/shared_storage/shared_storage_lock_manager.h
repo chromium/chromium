@@ -186,6 +186,13 @@ class CONTENT_EXPORT SharedStorageLockManager
                    const std::string& lock_name,
                    LockGrantedCallback lock_granted_callback);
 
+  void NotifySharedStorageAccessed(
+      const network::mojom::SharedStorageModifierMethodPtr& method,
+      const url::Origin& shared_storage_origin,
+      AccessScope scope,
+      FrameTreeNodeId main_frame_id,
+      std::optional<int> worklet_id);
+
   // `storage_partition_` indirectly owns `this`, and thus outlives `this`.
   raw_ref<StoragePartitionImpl> storage_partition_;
 

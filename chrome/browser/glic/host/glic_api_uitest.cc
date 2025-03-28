@@ -139,7 +139,7 @@ class GlicApiTestWithOneTab : public GlicApiTest {
         InProcessBrowserTest::embedded_test_server()->GetURL("/glic/test.html");
     RunTestSequence(InstrumentTab(kFirstTab),
                     NavigateWebContents(kFirstTab, page_url),
-                    OpenGlicWindow(GlicWindowMode::kAttached,
+                    OpenGlicWindow(GlicWindowMode::kDetached,
                                    GlicInstrumentMode::kHostAndContents));
   }
 };
@@ -202,20 +202,26 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testClosePanel) {
   RunTestSequence(WaitForHide(kGlicViewElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTest, testAttachPanel) {
+// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
+// kGlicAlwaysDetached is now default true.
+IN_PROC_BROWSER_TEST_F(GlicApiTest, DISABLED_testAttachPanel) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
   RunTestSequence(CheckControllerWidgetMode(GlicWindowMode::kAttached));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTest, testUnsubscribeFromObservable) {
+// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
+// kGlicAlwaysDetached is now default true.
+IN_PROC_BROWSER_TEST_F(GlicApiTest, DISABLED_testUnsubscribeFromObservable) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testDetachPanel) {
+// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
+// kGlicAlwaysDetached is now default true.
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, DISABLED_testDetachPanel) {
   ExecuteJsTest();
   RunTestSequence(CheckControllerWidgetMode(GlicWindowMode::kDetached));
 }
@@ -243,7 +249,9 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testPanelActive) {
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTest, testCanAttachPanel) {
+// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
+// kGlicAlwaysDetached is now default true.
+IN_PROC_BROWSER_TEST_F(GlicApiTest, DISABLED_testCanAttachPanel) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();

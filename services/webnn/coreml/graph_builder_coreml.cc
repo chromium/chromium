@@ -152,6 +152,7 @@ constexpr char kOpQuantizeLinearTypeName[] = "quantize";
 constexpr char kOpReluTypeName[] = "relu";
 constexpr char kOpReshapeTypeName[] = "reshape";
 constexpr char kOpReverseTypeName[] = "reverse";
+constexpr char kOpRoundTypeName[] = "round";
 constexpr char kOpScatterElementsTypeName[] = "scatter_along_axis";
 constexpr char kOpScatterNDTypeName[] = "scatter_nd";
 constexpr char kOpSigmoidTypeName[] = "sigmoid";
@@ -1322,7 +1323,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        {kFloatsAndInt32, kMaxRank},
        /*quantize_linear_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*quantize_linear_zero_point=*/
-       {DataTypeConstraint::kInts8, SupportedRanks::UpTo(1)},
+       {kInts8Ints32, kMaxRank},
        /*reduce_l1_input=*/
        {kFloatsAndInt32, kMaxRank},
        /*reduce_l2_input=*/
@@ -2153,30 +2154,41 @@ GraphBuilderCoreml::AddOperationForCast(
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForClamp(
-    const mojom::Clamp& operation,
+    uint64_t input_operand_id,
+    uint64_t output_operand_id,
+    float min_value,
+    float max_value,
     CoreML::Specification::MILSpec::Block& block) {
-  const OperandInfo& input_operand_info =
-      GetOperandInfo(operation.input_operand_id);
+  const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
   CHECK(context_properties_.data_type_limits.clamp_input.data_types.Has(
       MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpClipTypeName);
 
-  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
-                                      operation.input_operand_id));
+  RETURN_IF_ERROR(
+      SetInputFromOperand(*op->mutable_inputs(), kOpParamX, input_operand_id));
 
   SetInputsWithValues(
       *op->mutable_inputs(),
       {
-          {kOpParamAlpha, CreateFloatValue(input_operand_info.mil_data_type,
-                                           operation.min_value)},
-          {kOpParamBeta, CreateFloatValue(input_operand_info.mil_data_type,
-                                          operation.max_value)},
+          {kOpParamAlpha,
+           CreateFloatValue(input_operand_info.mil_data_type, min_value)},
+          {kOpParamBeta,
+           CreateFloatValue(input_operand_info.mil_data_type, max_value)},
       });
 
-  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  PopulateNamedValueType(output_operand_id, *op->add_outputs());
   return base::ok();
+}
+
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForClamp(
+    const mojom::Clamp& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  return AddOperationForClamp(operation.input_operand_id,
+                              operation.output_operand_id, operation.min_value,
+                              operation.max_value, block);
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
@@ -2442,7 +2454,7 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
                             : base::span<const uint32_t>{}));
 
   // An "axis" must be specified if "scale" is a vector.
-  if (!scale_dimensions.empty()) {
+  if (scale_vector_size > 1) {
     SetInputWithValue(
         *op->mutable_inputs(), kOpParamAxis,
         CreateScalarImmediateValue(base::checked_cast<int32_t>(axis)));
@@ -2602,8 +2614,6 @@ GraphBuilderCoreml::AddOperationForDequantizeLinearEmulate(
       GetOperandInfo(operation.zero_point_operand_id);
 
   // cast(zero_point, scale_type)
-  base::span<const uint32_t> scale_dimensions = scale_operand_info.dimensions;
-  base::span<const uint32_t> input_dimensions = input_operand_info.dimensions;
   uint64_t scale_operand_id = operation.scale_operand_id;
   uint64_t zero_point_operand_id = operation.zero_point_operand_id;
   ASSIGN_OR_RETURN(
@@ -2613,33 +2623,12 @@ GraphBuilderCoreml::AddOperationForDequantizeLinearEmulate(
   RETURN_IF_ERROR(AddOperationForCast(operation.zero_point_operand_id,
                                       zero_point_operand_id, block));
 
-  // When zero_point and scale on a dimension is not
-  // input_dimension or 1, this is a blockwise dequantization, the zero_point
-  // and scale need to be expanded.
-  for (size_t i = 0; i < scale_dimensions.size(); ++i) {
-    uint32_t scale_vector_size = scale_dimensions[i];
-    size_t current_axis = input_dimensions.size() + i - scale_dimensions.size();
-    if (scale_vector_size != 1 &&
-        scale_vector_size != input_dimensions[current_axis]) {
-      // For blockwise dequantization we need to expand the shape by 1 during
-      // `ExpandForBlockwise`, so the original shape needs to be <=4.
-      if (scale_dimensions.size() > 4) {
-        return NewNotSupportedError(
-            "Unsupported rank for dequantizeLinear argument scale. It should "
-            "be between 0 and 4 for blockwise dequantization.");
-      }
-      CHECK_EQ(input_dimensions[current_axis] % scale_vector_size, 0u);
-      const int32_t repetitions =
-          input_dimensions[current_axis] / scale_vector_size;
-      uint64_t prev_scale = scale_operand_id;
-      ASSIGN_OR_RETURN(scale_operand_id,
-                       ExpandForBlockwise(prev_scale, i, repetitions, block));
-      uint64_t prev_zero_point = zero_point_operand_id;
-      ASSIGN_OR_RETURN(
-          zero_point_operand_id,
-          ExpandForBlockwise(prev_zero_point, i, repetitions, block));
-    }
-  }
+  ASSIGN_OR_RETURN(
+      auto result,
+      ExpandForBlockwise(operation.input_operand_id, scale_operand_id,
+                         zero_point_operand_id, block));
+
+  std::tie(scale_operand_id, zero_point_operand_id) = result;
 
   // `output = (input - zeroPoint) * scale`.
   ASSIGN_OR_RETURN(uint64_t casted_input,
@@ -2661,8 +2650,52 @@ GraphBuilderCoreml::AddOperationForDequantizeLinearEmulate(
   return base::ok();
 }
 
-[[nodiscard]] base::expected<uint64_t, mojom::ErrorPtr>
+[[nodiscard]] base::expected<std::pair<uint64_t, uint64_t>, mojom::ErrorPtr>
 GraphBuilderCoreml::ExpandForBlockwise(
+    uint64_t input_operand_id,
+    uint64_t scale_operand_id,
+    uint64_t zero_point_operand_id,
+    CoreML::Specification::MILSpec::Block& block) {
+  base::span<const uint32_t> input_dimensions =
+      GetOperandInfo(input_operand_id).dimensions;
+  base::span<const uint32_t> scale_dimensions =
+      GetOperandInfo(scale_operand_id).dimensions;
+  CHECK_LE(scale_dimensions.size(), input_dimensions.size());
+
+  // When zero_point and scale on a dimension is not
+  // input_dimension or 1, this is a blockwise dequantization, the zero_point
+  // and scale need to be expanded.
+  for (size_t i = 0; i < scale_dimensions.size(); ++i) {
+    uint32_t scale_vector_size = scale_dimensions[i];
+    size_t current_axis = input_dimensions.size() + i - scale_dimensions.size();
+
+    if (scale_vector_size != 1 &&
+        scale_vector_size != input_dimensions[current_axis]) {
+      // For blockwise dequantization we need to expand the shape by 1 during
+      // `ExpandDimForBlockwise`, so the original shape needs to be <=4.
+      if (scale_dimensions.size() > 4) {
+        return NewNotSupportedError(
+            "Unsupported rank for scale. It should "
+            "be between 0 and 4 for blockwise (de)quantization.");
+      }
+      CHECK_EQ(input_dimensions[current_axis] % scale_vector_size, 0u);
+      const int32_t repetitions =
+          input_dimensions[current_axis] / scale_vector_size;
+      uint64_t prev_scale = scale_operand_id;
+      ASSIGN_OR_RETURN(
+          scale_operand_id,
+          ExpandDimForBlockwise(prev_scale, i, repetitions, block));
+      uint64_t prev_zero_point = zero_point_operand_id;
+      ASSIGN_OR_RETURN(
+          zero_point_operand_id,
+          ExpandDimForBlockwise(prev_zero_point, i, repetitions, block));
+    }
+  }
+  return std::make_pair(scale_operand_id, zero_point_operand_id);
+}
+
+[[nodiscard]] base::expected<uint64_t, mojom::ErrorPtr>
+GraphBuilderCoreml::ExpandDimForBlockwise(
     uint64_t input_operand_id,
     size_t repetition_axis,
     int32_t repetitions,
@@ -4762,28 +4795,34 @@ GraphBuilderCoreml::AddOperationForQuantizeLinear(
             .data_types.Has(zero_point_operand_data_type));
 
   // TODO(crbug.com/338529226): These params must all be constant tensors.
-  if (!constant_operands_->contains(operation.zero_point_operand_id)) {
-    return NewNotSupportedError(
-        "Unsupported options to quantizeLinear. 'zero_point' must be "
-        "constant.");
-  }
-
-  if (!constant_operands_->contains(operation.scale_operand_id)) {
-    return NewNotSupportedError(
-        "Unsupported options to quantizeLinear. 'scale' must be constant.");
+  if (!constant_operands_->contains(operation.zero_point_operand_id) ||
+      !constant_operands_->contains(operation.scale_operand_id)) {
+    return AddOperationForQuantizeLinearEmulate(operation, block);
   }
 
   const CoreML::Specification::MILSpec::DataType output_mil_data_type =
       GetOperandInfo(operation.output_operand_id).mil_data_type;
   CHECK_EQ(zero_point_operand_info.mil_data_type, output_mil_data_type);
 
-  if (scale_operand_info.dimensions.size() == 1 &&
-      scale_operand_info.dimensions[0] !=
-          input_operand_info
-              .dimensions[input_operand_info.dimensions.size() - 1]) {
-    return NewNotSupportedError(
-        "Unsupported options to quantizeLinear. The size of 'scale' must be "
-        "equal to the size of the input's last dimension.");
+  base::span<const uint32_t> input_dimensions = input_operand_info.dimensions;
+  base::span<const uint32_t> scale_dimensions = scale_operand_info.dimensions;
+  CHECK_LE(scale_dimensions.size(), input_dimensions.size());
+  uint32_t scale_vector_size = 0;
+  size_t axis = 0;
+  bool has_matching_dimension = false;
+  for (size_t i = 0; i < scale_dimensions.size(); ++i) {
+    size_t current_axis = input_dimensions.size() + i - scale_dimensions.size();
+    if (scale_dimensions[i] != 1) {
+      // Only allow at most one matching dimension, otherwise emulate.
+      if (scale_dimensions[i] != input_dimensions[current_axis] ||
+          has_matching_dimension) {
+        return AddOperationForQuantizeLinearEmulate(operation, block);
+      } else {
+        axis = current_axis;
+        scale_vector_size = scale_dimensions[i];
+        has_matching_dimension = true;
+      }
+    }
   }
 
   uint64_t input_operand_id = operation.input_operand_id;
@@ -4802,17 +4841,23 @@ GraphBuilderCoreml::AddOperationForQuantizeLinear(
   RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kParamInput,
                                       input_operand_id));
 
-  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamZeroPoint,
-                                      operation.zero_point_operand_id));
+  // If scale and zero_point shape is [1], pass as scalar instead because if
+  // it's a vector, CoreML requires the size to match with input_shape[axis].
+  RETURN_IF_ERROR(SetInputFromConstantOperand(
+      *op->mutable_inputs(), kOpParamZeroPoint, operation.zero_point_operand_id,
+      scale_vector_size > 1 ? base::span<const uint32_t>{scale_vector_size}
+                            : base::span<const uint32_t>{}));
 
-  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamScale,
-                                      operation.scale_operand_id));
+  RETURN_IF_ERROR(SetInputFromConstantOperand(
+      *op->mutable_inputs(), kOpParamScale, operation.scale_operand_id,
+      scale_vector_size > 1 ? base::span<const uint32_t>{scale_vector_size}
+                            : base::span<const uint32_t>{}));
 
   // An "axis" must be specified if "scale" is a vector.
-  if (!scale_operand_info.dimensions.empty()) {
-    SetInputWithValue(*op->mutable_inputs(), kOpParamAxis,
-                      CreateScalarImmediateValue(base::checked_cast<int32_t>(
-                          input_operand_info.dimensions.size() - 1)));
+  if (scale_vector_size > 1) {
+    SetInputWithValue(
+        *op->mutable_inputs(), kOpParamAxis,
+        CreateScalarImmediateValue(base::checked_cast<int32_t>(axis)));
   }
 
   static constexpr char kParamOutputDataType[] = "output_dtype";
@@ -4830,6 +4875,87 @@ GraphBuilderCoreml::AddOperationForQuantizeLinear(
     PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   }
   return base::ok();
+}
+
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForQuantizeLinearEmulate(
+    const mojom::QuantizeLinear& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  const OperandInfo& scale_operand_info =
+      GetOperandInfo(operation.scale_operand_id);
+  const OperandInfo& zero_point_operand_info =
+      GetOperandInfo(operation.zero_point_operand_id);
+
+  uint64_t scale_operand_id = operation.scale_operand_id;
+  uint64_t zero_point_operand_id = operation.zero_point_operand_id;
+  ASSIGN_OR_RETURN(
+      zero_point_operand_id,
+      GenerateInternalOperandInfo(scale_operand_info.mil_data_type,
+                                  zero_point_operand_info.dimensions));
+  RETURN_IF_ERROR(AddOperationForCast(operation.zero_point_operand_id,
+                                      zero_point_operand_id, block));
+
+  ASSIGN_OR_RETURN(
+      auto result,
+      ExpandForBlockwise(operation.input_operand_id, scale_operand_id,
+                         zero_point_operand_id, block));
+
+  std::tie(scale_operand_id, zero_point_operand_id) = result;
+
+  // `cast(clamp(round(input / scale) + zeroPoint, min, max))`.
+  ASSIGN_OR_RETURN(uint64_t input_div_scale,
+                   GenerateInternalOperandInfo(input_operand_info.mil_data_type,
+                                               input_operand_info.dimensions));
+  RETURN_IF_ERROR(AddOperationForElementwiseBinary(
+      operation.input_operand_id, scale_operand_id, input_div_scale,
+      mojom::ElementWiseBinary::Kind::kDiv, block));
+
+  ASSIGN_OR_RETURN(uint64_t input_div_scale_rounded,
+                   GenerateInternalOperandInfo(input_operand_info.mil_data_type,
+                                               input_operand_info.dimensions));
+  RETURN_IF_ERROR(
+      AddOperationForRound(input_div_scale, input_div_scale_rounded, block));
+  ASSIGN_OR_RETURN(uint64_t plus_zero_point,
+                   GenerateInternalOperandInfo(input_operand_info.mil_data_type,
+                                               input_operand_info.dimensions));
+  RETURN_IF_ERROR(AddOperationForElementwiseBinary(
+      input_div_scale_rounded, zero_point_operand_id, plus_zero_point,
+      mojom::ElementWiseBinary::Kind::kAdd, block));
+  ASSIGN_OR_RETURN(uint64_t result_clamped,
+                   GenerateInternalOperandInfo(input_operand_info.mil_data_type,
+                                               input_operand_info.dimensions));
+  float min_value;
+  float max_value;
+  switch (MILDataTypeToOperandType(zero_point_operand_info.mil_data_type)) {
+    case OperandDataType::kInt8: {
+      min_value = -128.0f;
+      max_value = 127.0f;
+      break;
+    }
+    case OperandDataType::kUint8: {
+      min_value = 0.0f;
+      max_value = 255.0f;
+      break;
+    }
+    case OperandDataType::kInt32: {
+      min_value = -2147483648.0f;
+      max_value = 2147483647.0f;
+      break;
+    }
+    case OperandDataType::kUint32: {
+      min_value = 0.0f;
+      max_value = 4294967295.0f;
+      break;
+    }
+    default:
+      NOTREACHED() << "Unsupported data type for quantizeLinear.";
+  }
+  RETURN_IF_ERROR(AddOperationForClamp(plus_zero_point, result_clamped,
+                                       min_value, max_value, block));
+  return AddOperationForCast(result_clamped, operation.output_operand_id,
+                             block);
 }
 
 base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
@@ -5059,6 +5185,25 @@ GraphBuilderCoreml::AddOperationForReverse(
       *op->mutable_inputs(), kOpParamAxes,
       Create1DTensorImmediateValue<int32_t>(Ui32ToI32(operation.axes)));
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForRound(
+    uint64_t input_operand_id,
+    uint64_t output_operand_id,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
+
+  CHECK(DataTypeConstraint::kFloat16To32.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpRoundTypeName);
+  RETURN_IF_ERROR(
+      SetInputFromOperand(*op->mutable_inputs(), kOpParamX, input_operand_id));
+
+  PopulateNamedValueType(output_operand_id, *op->add_outputs());
   return base::ok();
 }
 

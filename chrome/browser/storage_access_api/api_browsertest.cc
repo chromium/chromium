@@ -869,6 +869,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                        ThirdPartyCookiesIFrameRequestsAccess_CrossSiteIframe) {
   SetBlockThirdPartyCookies(true);
+  base::HistogramTester histogram_tester;
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
@@ -881,6 +882,12 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), CookieBundle("cross-site=b.test"));
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::
+          kCrossOriginSameSiteCookieAccessViaStorageAccessAPI,
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
@@ -989,6 +996,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                        ThirdPartyCookiesIFrameRequestsAccess_CrossOriginFetch) {
   SetBlockThirdPartyCookies(true);
+  base::HistogramTester histogram_tester;
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostBSubdomain));
@@ -1003,6 +1011,12 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 
   EXPECT_EQ(CookiesFromFetch(GetFrame(), kHostBSubdomain2),
             "cross-site=b.test");
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::
+          kCrossOriginSameSiteCookieAccessViaStorageAccessAPI,
+      1);
 }
 
 // Validate that in a A(B(B)) frame tree, the middle B iframe can obtain access,

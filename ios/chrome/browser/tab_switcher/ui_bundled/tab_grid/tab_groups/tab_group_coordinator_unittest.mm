@@ -9,7 +9,10 @@
 #import "components/data_sharing/public/features.h"
 #import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "components/tab_groups/tab_group_id.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -51,10 +54,21 @@ std::unique_ptr<KeyedService> CreateFakeTabGroupSyncService(
   return std::make_unique<tab_groups::FakeTabGroupSyncService>();
 }
 
+// Creates a test ShareKitService.
+std::unique_ptr<KeyedService> BuildTestShareKitService(
+    web::BrowserState* context) {
+  ProfileIOS* profile = static_cast<ProfileIOS*>(context);
+  data_sharing::DataSharingService* data_sharing_service =
+      data_sharing::DataSharingServiceFactory::GetForProfile(profile);
+
+  return std::make_unique<TestShareKitService>(data_sharing_service, nullptr,
+                                               nullptr);
+}
+
 class TabGroupCoordinatorTest : public PlatformTest {
  protected:
   TabGroupCoordinatorTest() {
-    feature_list_.InitWithFeatures({kTabGroupsIPad}, {});
+    feature_list_.InitWithFeatures({kTabGroupsIPad, kTabGroupSync}, {});
   }
 
   void SetUp() override {
@@ -69,6 +83,8 @@ class TabGroupCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         base::BindRepeating(&CreateFakeTabGroupSyncService));
+    builder.AddTestingFactory(ShareKitServiceFactory::GetInstance(),
+                              base::BindRepeating(&BuildTestShareKitService));
     profile_ = std::move(builder).Build();
 
     tab_group_sync_service_ = static_cast<tab_groups::FakeTabGroupSyncService*>(

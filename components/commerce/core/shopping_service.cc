@@ -1654,7 +1654,8 @@ std::vector<DiscountInfo> ShoppingService::OptGuideResultToDiscountInfos(
         continue;
       }
 
-      if (discount.has_type()) {
+      if (discount.has_type() &&
+          discount.type() != commerce::Discount::TYPE_UNSPECIFIED) {
         info.type = DiscountType(discount.type());
       } else {
         continue;

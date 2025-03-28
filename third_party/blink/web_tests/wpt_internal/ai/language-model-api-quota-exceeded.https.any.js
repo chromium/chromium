@@ -6,7 +6,7 @@ promise_test(async t => {
   await ensureLanguageModel();
 
   // Start a new session to get the max tokens.
-  const session = await ai.languageModel.create();
+  const session = await LanguageModel.create();
   const inputQuota = session.inputQuota;
   // Keep doubling the system prompt until it exceeds the maxTokens.
   let systemPrompt = "hello ";
@@ -14,6 +14,6 @@ promise_test(async t => {
     systemPrompt += systemPrompt;
   }
 
-  const promise = ai.languageModel.create({ systemPrompt: systemPrompt });
+  const promise = LanguageModel.create({ systemPrompt: systemPrompt });
   await promise_rejects_dom(t, "QuotaExceededError", promise);
 }, "QuotaExceededError should be thrown if the system prompt is too large.");

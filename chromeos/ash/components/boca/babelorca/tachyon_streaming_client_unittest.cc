@@ -40,8 +40,9 @@ using RequestDataPtr = std::unique_ptr<RequestDataWrapper>;
 constexpr char kOAuthToken[] = "oauth-token";
 constexpr char kUrl[] = "https://test.com";
 constexpr char kUmaName[] = "TestStreaming";
-constexpr char kUmaPath[] =
+constexpr char kResponseUma[] =
     "Ash.Boca.Babelorca.TestStreaming.HttpResponseCodeOrNetError";
+constexpr char kStreamEndReasonUma[] = "Ash.Boca.Babelorca.StreamEndReason";
 
 class FakeTachonParsingService : public mojom::TachyonParsingService {
  public:
@@ -155,7 +156,13 @@ TEST_F(TachyonStreamingClientTest, SuccessfulRequestNoDataStreamed) {
   EXPECT_TRUE(on_message_future_.IsEmpty());
   EXPECT_FALSE(auth_failure_future_.IsReady());
   EXPECT_EQ(
-      uma_recorder_.GetBucketCount(kUmaPath, net::HttpStatusCode::HTTP_OK), 1);
+      uma_recorder_.GetBucketCount(kResponseUma, net::HttpStatusCode::HTTP_OK),
+      1);
+  EXPECT_EQ(
+      uma_recorder_.GetBucketCount(
+          kStreamEndReasonUma,
+          TachyonStreamingClient::StreamEndReason::kConnectionClosedSuccess),
+      1);
 }
 
 TEST_F(TachyonStreamingClientTest, HttpErrorNoDataStreamed) {
@@ -173,8 +180,13 @@ TEST_F(TachyonStreamingClientTest, HttpErrorNoDataStreamed) {
   EXPECT_TRUE(on_message_future_.IsEmpty());
   EXPECT_FALSE(auth_failure_future_.IsReady());
   EXPECT_EQ(uma_recorder_.GetBucketCount(
-                kUmaPath, net::HttpStatusCode::HTTP_PRECONDITION_FAILED),
+                kResponseUma, net::HttpStatusCode::HTTP_PRECONDITION_FAILED),
             1);
+  EXPECT_EQ(
+      uma_recorder_.GetBucketCount(
+          kStreamEndReasonUma,
+          TachyonStreamingClient::StreamEndReason::kConnectionClosedError),
+      1);
 }
 
 TEST_F(TachyonStreamingClientTest, AuthErrorNoDataStreamed) {
@@ -191,8 +203,13 @@ TEST_F(TachyonStreamingClientTest, AuthErrorNoDataStreamed) {
   EXPECT_FALSE(auth_request_data->response_cb.is_null());
   EXPECT_TRUE(on_message_future_.IsEmpty());
   EXPECT_EQ(uma_recorder_.GetBucketCount(
-                kUmaPath, net::HttpStatusCode::HTTP_UNAUTHORIZED),
+                kResponseUma, net::HttpStatusCode::HTTP_UNAUTHORIZED),
             1);
+  EXPECT_EQ(
+      uma_recorder_.GetBucketCount(
+          kStreamEndReasonUma,
+          TachyonStreamingClient::StreamEndReason::kConnectionClosedError),
+      1);
 }
 
 TEST_F(TachyonStreamingClientTest, TimeoutAfterStartRequest) {
@@ -203,6 +220,10 @@ TEST_F(TachyonStreamingClientTest, TimeoutAfterStartRequest) {
 
   TachyonResponse result = result_future_.Take();
   EXPECT_EQ(result.status(), TachyonResponse::Status::kTimeout);
+  EXPECT_EQ(uma_recorder_.GetBucketCount(
+                kStreamEndReasonUma,
+                TachyonStreamingClient::StreamEndReason::kTimeout),
+            1);
 }
 
 TEST_F(TachyonStreamingClientTest, TimeoutAfterDataReceived) {
@@ -304,6 +325,11 @@ TEST_F(TachyonStreamingClientTest, DataStreamedSuccessClosed) {
   EXPECT_FALSE(on_message_future_.IsEmpty());
   on_message_future_.Take();
   EXPECT_TRUE(on_message_future_.IsEmpty());
+  EXPECT_EQ(
+      uma_recorder_.GetBucketCount(
+          kStreamEndReasonUma,
+          TachyonStreamingClient::StreamEndReason::kConnectionClosedSuccess),
+      1);
 }
 
 TEST_F(TachyonStreamingClientTest, DataStreamedParsingError) {
@@ -329,6 +355,10 @@ TEST_F(TachyonStreamingClientTest, DataStreamedParsingError) {
   EXPECT_FALSE(on_message_future_.IsEmpty());
   on_message_future_.Take();
   EXPECT_TRUE(on_message_future_.IsEmpty());
+  EXPECT_EQ(uma_recorder_.GetBucketCount(
+                kStreamEndReasonUma,
+                TachyonStreamingClient::StreamEndReason::kParseError),
+            1);
 }
 
 TEST_F(TachyonStreamingClientTest, DataStreamedAuthErrorClosed) {
@@ -345,6 +375,11 @@ TEST_F(TachyonStreamingClientTest, DataStreamedAuthErrorClosed) {
   EXPECT_FALSE(result_future_.IsReady());
   EXPECT_FALSE(resume_future_.IsReady());
   EXPECT_TRUE(on_message_future_.IsEmpty());
+  EXPECT_EQ(
+      uma_recorder_.GetBucketCount(
+          kStreamEndReasonUma,
+          TachyonStreamingClient::StreamEndReason::kConnectionClosedError),
+      1);
 }
 
 TEST_F(TachyonStreamingClientTest, ParsingServiceDisconnected) {
@@ -362,6 +397,11 @@ TEST_F(TachyonStreamingClientTest, ParsingServiceDisconnected) {
   task_environment_.FastForwardBy(base::Minutes(1));
 
   EXPECT_EQ(result.status(), TachyonResponse::Status::kInternalError);
+  EXPECT_EQ(
+      uma_recorder_.GetBucketCount(
+          kStreamEndReasonUma,
+          TachyonStreamingClient::StreamEndReason::kParsingServiceDisconnected),
+      1);
 }
 
 TEST_F(TachyonStreamingClientTest, UseSingleParsingServicePerConnection) {

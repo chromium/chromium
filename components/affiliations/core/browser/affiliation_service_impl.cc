@@ -127,7 +127,8 @@ struct AffiliationServiceImpl::FetchInfo {
       facets_to_request.push_back(top_level_domain);
     }
 
-    fetcher->StartRequest(facets_to_request, kChangePasswordUrlRequestInfo);
+    fetcher->StartRequest(facets_to_request, kChangePasswordUrlRequestInfo,
+                          base::DoNothing());
   }
 
   FetchInfo(FetchInfo&& other) = default;

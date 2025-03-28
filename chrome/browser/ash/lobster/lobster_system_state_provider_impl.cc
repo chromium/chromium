@@ -20,7 +20,6 @@
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "lobster_system_state_provider_impl.h"
 #include "net/base/network_change_notifier.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -116,14 +115,16 @@ specialized_features::FeatureAccessConfig CreateFeatureAccessConfig() {
 
 LobsterSystemStateProviderImpl::LobsterSystemStateProviderImpl(
     PrefService* pref,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    bool is_in_demo_mode)
     : pref_(pref),
       access_checker_(CreateFeatureAccessConfig(),
                       pref_,
                       identity_manager,
                       /*variations_service_callback=*/base::BindRepeating([]() {
                         return g_browser_process->variations_service();
-                      })) {}
+                      })),
+      is_in_demo_mode_(is_in_demo_mode) {}
 
 LobsterSystemStateProviderImpl::~LobsterSystemStateProviderImpl() = default;
 
@@ -159,10 +160,11 @@ ash::LobsterSystemState LobsterSystemStateProviderImpl::GetSystemState(
     system_state.failed_checks.Put(ash::LobsterSystemCheck::kInvalidRegion);
   }
 
-  // Performs account capabilities check
-  if (access_checker_failure_set.Has(
-          specialized_features::FeatureAccessFailure::
-              kAccountCapabilitiesCheckFailed)) {
+  // TODO: b:406915099 - Migrate demo mode check into the shared feature checker module.
+  // Performs account capabilities check in non-demo mode only
+  if (!is_in_demo_mode_ && access_checker_failure_set.Has(
+                               specialized_features::FeatureAccessFailure::
+                                   kAccountCapabilitiesCheckFailed)) {
     system_state.status = ash::LobsterStatus::kBlocked;
     system_state.failed_checks.Put(
         ash::LobsterSystemCheck::kInvalidAccountCapabilities);
@@ -180,6 +182,12 @@ ash::LobsterSystemState LobsterSystemStateProviderImpl::GetSystemState(
   if (!IsInputTypeAllowed(text_input_context.text_input_type)) {
     system_state.status = ash::LobsterStatus::kBlocked;
     system_state.failed_checks.Put(ash::LobsterSystemCheck::kInvalidInputField);
+  }
+
+  if (!ash::features::IsLobsterEnabledForManagedUsers() &&
+      pref_->IsManagedPreference(
+          ash::prefs::kLobsterEnterprisePolicySettings)) {
+    system_state.status = ash::LobsterStatus::kBlocked;
   }
 
   if (pref_->GetInteger(ash::prefs::kLobsterEnterprisePolicySettings) ==

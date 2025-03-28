@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/highlight_pseudo_marker.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/text_offset_range.h"
@@ -36,7 +37,6 @@ class TextDecorationPainter;
 class TextPainter;
 struct LayoutSelectionStatus;
 struct PaintInfo;
-struct PhysicalOffset;
 struct TextFragmentPaintInfo;
 
 using HighlightLayer = HighlightOverlay::HighlightLayer;

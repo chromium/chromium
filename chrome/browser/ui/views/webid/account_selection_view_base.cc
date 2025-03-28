@@ -191,33 +191,31 @@ void AccountHoverButtonSecondaryView::SetDisabledOpacity() {
       kArrowIconSize));
 }
 
-BrandIconImageView::BrandIconImageView(int image_size,
-                                       bool should_circle_crop,
-                                       base::RepeatingClosure on_image_set)
-    : image_size_(image_size),
-      should_circle_crop_(should_circle_crop),
-      on_image_set_(std::move(on_image_set)) {}
+BrandIconImageView::BrandIconImageView(int image_size)
+    : image_size_(image_size) {
+  SetImageSize(gfx::Size(image_size_, image_size_));
+}
 
 BrandIconImageView::~BrandIconImageView() = default;
 
-void BrandIconImageView::CropAndSetImage(const gfx::Image& image) {
-  if (image.Width() != image.Height() ||
+bool BrandIconImageView::SetBrandIconImage(const gfx::Image& image,
+                                           bool should_circle_crop) {
+  if (image.Width() != image.Height()) {
+    return false;
+  }
+  if (should_circle_crop &&
       image.Width() < (image_size_ / kMaskableWebIconSafeZoneRatio)) {
-    return;
+    return false;
   }
   const gfx::ImageSkia& original_image = image.AsImageSkia();
   gfx::ImageSkia cropped_idp_image =
-      should_circle_crop_
+      should_circle_crop
           ? CreateCircleCroppedImage(original_image, image_size_)
           : gfx::ImageSkiaOperations::CreateResizedImage(
                 original_image, skia::ImageOperations::RESIZE_BEST,
                 gfx::Size(image_size_, image_size_));
   SetImage(ui::ImageModel::FromImageSkia(cropped_idp_image));
-
-  if (!on_image_set_) {
-    return;
-  }
-  std::move(on_image_set_).Run();
+  return true;
 }
 
 BEGIN_METADATA(BrandIconImageView)
@@ -406,12 +404,15 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   auto row = std::make_unique<views::View>();
   row->SetProperty(views::kElementIdentifierKey,
                    kFedCmAccountChooserDialogAccountElementId);
-  row->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets::VH(
-          /*vertical=*/kVerticalSpacing + additional_vertical_padding,
-          /*horizontal=*/is_modal_dialog ? kModalHorizontalSpacing : 0),
-      kLeftRightPadding));
+  std::unique_ptr<views::BoxLayout> box_layout(
+      std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          gfx::Insets::VH(
+              /*vertical=*/kVerticalSpacing + additional_vertical_padding,
+              /*horizontal=*/is_modal_dialog ? kModalHorizontalSpacing : 0),
+          kLeftRightPadding));
+  box_layout->set_cross_axis_alignment(views::LayoutAlignment::kCenter);
+  row->SetLayoutManager(std::move(box_layout));
   row->AddChildView(std::move(account_image_view));
   views::View* const text_column =
       row->AddChildView(std::make_unique<views::View>());
@@ -426,12 +427,14 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   account_name->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   // Add account identifier.
-  views::Label* const account_identifier =
-      text_column->AddChildView(std::make_unique<views::Label>(
-          base::UTF8ToUTF16(account->display_identifier),
-          views::style::CONTEXT_DIALOG_BODY_TEXT, account_identifier_style));
-  account_identifier->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_LEFT);
+  if (!account->display_identifier.empty()) {
+    views::Label* const account_identifier =
+        text_column->AddChildView(std::make_unique<views::Label>(
+            base::UTF8ToUTF16(account->display_identifier),
+            views::style::CONTEXT_DIALOG_BODY_TEXT, account_identifier_style));
+    account_identifier->SetHorizontalAlignment(
+        gfx::HorizontalAlignment::ALIGN_LEFT);
+  }
 
   return row;
 }

@@ -19,6 +19,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/btm/btm_service_impl.h"
 #include "content/browser/btm/btm_utils.h"
+#include "content/browser/renderer_host/cookie_access_observers.h"
 #include "content/public/browser/btm_redirect_info.h"
 #include "content/public/browser/btm_service.h"
 #include "content/public/browser/cookie_access_details.h"
@@ -383,6 +384,38 @@ class TpcBlockingBrowserClient : public ContentBrowserClient,
  private:
   bool block_3pcs_ = false;
   content_settings::HostIndexedContentSettings tpc_content_settings_;
+};
+
+// Class used to pause cookie access notifications. The class works by unbinding
+// existing CookieAccessObserver receivers and storing new ones without binding
+// them.
+class PausedCookieAccessObservers : public CookieAccessObservers {
+ public:
+  explicit PausedCookieAccessObservers(NotifyCookiesAccessedCallback callback);
+  ~PausedCookieAccessObservers() override;
+
+  // CookieAccessObservers
+  void Add(mojo::PendingReceiver<network::mojom::CookieAccessObserver> receiver,
+           CookieAccessDetails::Source source) override;
+  std::vector<mojo::PendingReceiver<network::mojom::CookieAccessObserver>>
+  TakeReceivers() override;
+
+ private:
+  // Holds existing and new receivers.
+  std::vector<
+      std::pair<mojo::PendingReceiver<network::mojom::CookieAccessObserver>,
+                CookieAccessDetails::Source>>
+      pending_receivers_;
+};
+
+// Class used to pause all cookie access notifications in a WebContents.
+class CookieAccessInterceptor : public WebContentsObserver {
+ public:
+  explicit CookieAccessInterceptor(WebContents& web_contents);
+  ~CookieAccessInterceptor() override;
+
+  // WebContentsObserver
+  void DidStartNavigation(NavigationHandle* navigation_handle) override;
 };
 
 }  // namespace content

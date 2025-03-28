@@ -55,7 +55,7 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               SetPasswordFillData,
               (const PasswordFormFillData&),
               (override));
-  MOCK_METHOD(void, InformNoSavedCredentials, (), (override));
+  MOCK_METHOD(void, InformNoSavedCredentials, (bool), (override));
 };
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {

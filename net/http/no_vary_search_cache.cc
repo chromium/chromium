@@ -342,6 +342,7 @@ NoVarySearchCache::~NoVarySearchCache() {
 
 std::optional<NoVarySearchCache::LookupResult> NoVarySearchCache::Lookup(
     const HttpRequestInfo& request) {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("HttpCache.NoVarySearch.LookupTime");
   const GURL& url = request.url;
   if (!URLIsAcceptable(url)) {
     return std::nullopt;

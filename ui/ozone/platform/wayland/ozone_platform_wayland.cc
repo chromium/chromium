@@ -58,6 +58,7 @@
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_menu_utils.h"
+#include "ui/ozone/public/platform_session_manager.h"
 #include "ui/ozone/public/stub_input_controller.h"
 #include "ui/ozone/public/system_input_injector.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -404,6 +405,10 @@ class OzonePlatformWayland : public OzonePlatform,
                SupportsForTest::kNotSet) ||
           (override_supports_per_window_scaling_for_test ==
            SupportsForTest::kYes);
+      properties.supports_session_management =
+          connection_->SupportsSessionManagement();
+
+      GetSessionManager();
 
       if (surface_factory_) {
         DCHECK(has_initialized_gpu());
@@ -490,6 +495,10 @@ class OzonePlatformWayland : public OzonePlatform,
       case PlatformKeyboardHookTypes::kMedia:
         return nullptr;
     }
+  }
+
+  PlatformSessionManager* GetSessionManager() override {
+    return connection_->session_manager();
   }
 
   // OSExchangeDataProviderFactoryOzone:

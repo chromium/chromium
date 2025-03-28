@@ -202,8 +202,9 @@ class AutofillMetricsBaseTest {
       const FormData& form,
       size_t field_index = 0,
       SuggestionType suggestion_type = SuggestionType::kAddressEntry) {
+    Suggestion suggestion(suggestion_type);
     autofill_manager().DidShowSuggestions(
-        {suggestion_type}, form, form.fields()[field_index].global_id());
+        {suggestion}, form, form.fields()[field_index].global_id(), {});
   }
 
   void FillTestProfile(const FormData& form, size_t field_index = 0) {

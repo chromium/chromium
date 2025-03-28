@@ -1350,15 +1350,12 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"autofillAiToggleSubLabel", IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL},
       {"autofillAiWhenOnSavedInfo",
        IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_SAVED_INFO},
-      {"autofillAiUseToFill", IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_USE_TO_FILL},
-      {"autofillAiNewFeature",
-       IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_NEW_FEATURE},
+      {"autofillAiWhenOnUseToFill",
+       IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_USE_TO_FILL},
       {"autofillAiToConsiderDataUsage",
        IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE},
       {"autofillAiToConsiderDataStorage",
        IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_STORAGE},
-      {"autofillAiToConsiderDataImprovement",
-       IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_IMPROVEMENT},
       {"autofillAiEntityInstancesHeader",
        IDS_SETTINGS_AUTOFILL_AI_ENTITY_INSTANCES_HEADER},
       {"autofillAiEntityInstancesNone",
@@ -1375,6 +1372,12 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_AUTOFILL_AI_ACCESSIBILITY_LABEL_DAY_DROPDOWN},
       {"autofillAiAccessibilityLabelYearDropdown",
        IDS_SETTINGS_AUTOFILL_AI_ACCESSIBILITY_LABEL_YEAR_DROPDOWN},
+      {"autofillAiMonthDropdownNoOptionSelected",
+       IDS_SETTINGS_AUTOFILL_AI_MONTH_DROPDOWN_NO_OPTION_SELECTED},
+      {"autofillAiDayDropdownNoOptionSelected",
+       IDS_SETTINGS_AUTOFILL_AI_DAY_DROPDOWN_NO_OPTION_SELECTED},
+      {"autofillAiYearDropdownNoOptionSelected",
+       IDS_SETTINGS_AUTOFILL_AI_YEAR_DROPDOWN_NO_OPTION_SELECTED},
       {"autofillAiAddOrEditDialogDateValidationError",
        IDS_SETTINGS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_DATE_VALIDATION_ERROR},
       {"autofillAiAddOrEditDialogValidationError",
@@ -1469,10 +1472,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddString(
       "plusAddressManagementUrl",
       plus_addresses::features::kPlusAddressManagementUrl.Get());
-
-  html_source->AddBoolean("autofillAiFeatureEnabled",
-                          base::FeatureList::IsEnabled(
-                              autofill::features::kAutofillAiWithDataSchema));
 
   auto* autofill_client =
       autofill::ContentAutofillClient::FromWebContents(web_contents);

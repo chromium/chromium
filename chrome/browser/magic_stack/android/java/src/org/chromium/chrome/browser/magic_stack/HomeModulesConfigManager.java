@@ -119,7 +119,7 @@ public class HomeModulesConfigManager {
      * @param moduleType {@link ModuleType} needed to be notified to the listeners.
      * @param enabled True is the module type is enabled.
      */
-    void setPrefModuleTypeEnabled(@ModuleType int moduleType, boolean enabled) {
+    public void setPrefModuleTypeEnabled(@ModuleType int moduleType, boolean enabled) {
         mSharedPreferencesManager.writeBoolean(getSettingsPreferenceKey(moduleType), enabled);
         notifyModuleTypeUpdated(moduleType, enabled);
     }

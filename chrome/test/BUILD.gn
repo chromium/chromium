@@ -1656,6 +1656,7 @@ if (is_android) {
       ":test_support_java",
       ":test_support_jni_headers",
       ":test_support_ui_android",
+      "//base",
       "//chrome:chrome_android_core",
       "//chrome/android:delegate_public_impl_java",
       "//chrome/browser/autofill",
@@ -3548,6 +3549,7 @@ if (!is_android) {
         "//chrome/browser/glic:glic",
         "//chrome/browser/glic:impl",
         "//chrome/browser/glic:test_support",
+        "//chrome/renderer/actor:browser_tests",
       ]
     }
 
@@ -7955,6 +7957,7 @@ test("unit_tests") {
 
     deps += [
       "//chrome/browser/contextual_cueing:unit_tests",
+      "//chrome/browser/task_manager/common",
       "//chrome/browser/ui/bookmarks:unit_tests",
       "//chrome/browser/ui/safety_hub",
       "//chrome/browser/ui/startup:startup_tab",
@@ -10795,6 +10798,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/webui/downloads/downloads_page_interactive_uitest.cc",
       "../browser/ui/webui/settings/performance_settings_interactive_uitest.cc",
       "../browser/ui/webui/settings/settings_interactive_uitest.cc",
+      "../browser/ui/webui/side_panel/customize_chrome/customize_chrome_interactive_uitest.cc",
       "../browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_interactive_uitest.cc",
       "../browser/webapps/web_app_offline_browsertest.cc",
       "../browser/webauthn/chrome_webauthn_autofill_interactive_uitest.cc",

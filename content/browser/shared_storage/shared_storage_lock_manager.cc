@@ -194,7 +194,8 @@ void SharedStorageLockManager::OnReadyToHandleUpdate(
     std::optional<int> legacy_batch_update_id,
     mojo::AssociatedRemote<blink::mojom::LockHandle> lock_handle,
     mojo::Remote<blink::mojom::LockManager> lock_manager) {
-  AccessMethod access_method = GetAccessMethod(method);
+  NotifySharedStorageAccessed(method, shared_storage_origin, scope,
+                              main_frame_id, worklet_id);
 
   switch (method->which()) {
     case network::mojom::SharedStorageModifierMethod::Tag::kSetMethod: {
@@ -205,15 +206,6 @@ void SharedStorageLockManager::OnReadyToHandleUpdate(
           set_method->ignore_if_present
               ? storage::SharedStorageDatabase::SetBehavior::kIgnoreIfPresent
               : storage::SharedStorageDatabase::SetBehavior::kDefault;
-
-      storage_partition_->GetSharedStorageRuntimeManager()
-          ->NotifySharedStorageAccessed(
-              scope, access_method, main_frame_id,
-              shared_storage_origin.Serialize(),
-              SharedStorageEventParams::CreateForSet(
-                  base::UTF16ToUTF8(set_method->key),
-                  base::UTF16ToUTF8(set_method->value),
-                  set_method->ignore_if_present, worklet_id));
 
       auto completed_callback = base::BindOnce(
           [](SharedStorageUpdateCallback callback, OperationResult result) {
@@ -237,14 +229,6 @@ void SharedStorageLockManager::OnReadyToHandleUpdate(
       network::mojom::SharedStorageAppendMethodPtr& append_method =
           method->get_append_method();
 
-      storage_partition_->GetSharedStorageRuntimeManager()
-          ->NotifySharedStorageAccessed(
-              scope, access_method, main_frame_id,
-              shared_storage_origin.Serialize(),
-              SharedStorageEventParams::CreateForAppend(
-                  base::UTF16ToUTF8(append_method->key),
-                  base::UTF16ToUTF8(append_method->value), worklet_id));
-
       auto completed_callback = base::BindOnce(
           [](SharedStorageUpdateCallback callback, OperationResult result) {
             if (result != OperationResult::kSet) {
@@ -266,13 +250,6 @@ void SharedStorageLockManager::OnReadyToHandleUpdate(
       network::mojom::SharedStorageDeleteMethodPtr& delete_method =
           method->get_delete_method();
 
-      storage_partition_->GetSharedStorageRuntimeManager()
-          ->NotifySharedStorageAccessed(
-              scope, access_method, main_frame_id,
-              shared_storage_origin.Serialize(),
-              SharedStorageEventParams::CreateForGetOrDelete(
-                  base::UTF16ToUTF8(delete_method->key), worklet_id));
-
       auto completed_callback = base::BindOnce(
           [](SharedStorageUpdateCallback callback, OperationResult result) {
             if (result != OperationResult::kSuccess) {
@@ -291,14 +268,6 @@ void SharedStorageLockManager::OnReadyToHandleUpdate(
       break;
     }
     case network::mojom::SharedStorageModifierMethod::Tag::kClearMethod: {
-      storage_partition_->GetSharedStorageRuntimeManager()
-          ->NotifySharedStorageAccessed(
-              scope, access_method, main_frame_id,
-              shared_storage_origin.Serialize(),
-              worklet_id
-                  ? SharedStorageEventParams::CreateWithWorkletId(*worklet_id)
-                  : SharedStorageEventParams::CreateDefault());
-
       auto completed_callback = base::BindOnce(
           [](SharedStorageUpdateCallback callback, OperationResult result) {
             if (result != OperationResult::kSuccess) {
@@ -369,6 +338,12 @@ void SharedStorageLockManager::OnReadyToHandleBatchUpdate(
 
   if (base::FeatureList::IsEnabled(
           network::features::kSharedStorageTransactionalBatchUpdate)) {
+    for (auto& method_with_options : methods_with_options) {
+      auto& method = method_with_options->method;
+      NotifySharedStorageAccessed(method, shared_storage_origin, scope,
+                                  main_frame_id, worklet_id);
+    }
+
     auto completed_callback = base::BindOnce(
         [](SharedStorageUpdateCallback callback,
            BatchUpdateResult batch_update_result) {
@@ -476,6 +451,67 @@ void SharedStorageLockManager::RequestLock(
                                      blink::mojom::LockMode::EXCLUSIVE,
                                      blink::mojom::LockManager::WaitMode::WAIT,
                                      std::move(lock_request_remote));
+}
+
+void SharedStorageLockManager::NotifySharedStorageAccessed(
+    const network::mojom::SharedStorageModifierMethodPtr& method,
+    const url::Origin& shared_storage_origin,
+    AccessScope scope,
+    FrameTreeNodeId main_frame_id,
+    std::optional<int> worklet_id) {
+  AccessMethod access_method = GetAccessMethod(method);
+
+  switch (method->which()) {
+    case network::mojom::SharedStorageModifierMethod::Tag::kSetMethod: {
+      network::mojom::SharedStorageSetMethodPtr& set_method =
+          method->get_set_method();
+
+      storage_partition_->GetSharedStorageRuntimeManager()
+          ->NotifySharedStorageAccessed(
+              scope, access_method, main_frame_id,
+              shared_storage_origin.Serialize(),
+              SharedStorageEventParams::CreateForSet(
+                  base::UTF16ToUTF8(set_method->key),
+                  base::UTF16ToUTF8(set_method->value),
+                  set_method->ignore_if_present, worklet_id));
+      break;
+    }
+    case network::mojom::SharedStorageModifierMethod::Tag::kAppendMethod: {
+      network::mojom::SharedStorageAppendMethodPtr& append_method =
+          method->get_append_method();
+
+      storage_partition_->GetSharedStorageRuntimeManager()
+          ->NotifySharedStorageAccessed(
+              scope, access_method, main_frame_id,
+              shared_storage_origin.Serialize(),
+              SharedStorageEventParams::CreateForAppend(
+                  base::UTF16ToUTF8(append_method->key),
+                  base::UTF16ToUTF8(append_method->value), worklet_id));
+      break;
+    }
+    case network::mojom::SharedStorageModifierMethod::Tag::kDeleteMethod: {
+      network::mojom::SharedStorageDeleteMethodPtr& delete_method =
+          method->get_delete_method();
+
+      storage_partition_->GetSharedStorageRuntimeManager()
+          ->NotifySharedStorageAccessed(
+              scope, access_method, main_frame_id,
+              shared_storage_origin.Serialize(),
+              SharedStorageEventParams::CreateForGetOrDelete(
+                  base::UTF16ToUTF8(delete_method->key), worklet_id));
+      break;
+    }
+    case network::mojom::SharedStorageModifierMethod::Tag::kClearMethod: {
+      storage_partition_->GetSharedStorageRuntimeManager()
+          ->NotifySharedStorageAccessed(
+              scope, access_method, main_frame_id,
+              shared_storage_origin.Serialize(),
+              worklet_id
+                  ? SharedStorageEventParams::CreateWithWorkletId(*worklet_id)
+                  : SharedStorageEventParams::CreateDefault());
+      break;
+    }
+  }
 }
 
 }  // namespace content

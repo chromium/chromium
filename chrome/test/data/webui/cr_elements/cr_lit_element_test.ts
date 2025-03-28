@@ -558,11 +558,19 @@ suite('CrLitElement accessor', function() {
 
     static override get properties() {
       return {
+        // Disable @webui-eslint/polymer-property-class-member since the code
+        // below simulates TypeScript's JS output when class properties are
+        // replaced with getter/setter pairs.
+
+        /* eslint-disable-next-line @webui-eslint/polymer-property-class-member
+         */
         propReflected: {
           type: String,
           reflect: true,
         },
 
+        /* eslint-disable-next-line @webui-eslint/polymer-property-class-member
+         */
         propNonReflected: {type: String},
       };
     }

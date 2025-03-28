@@ -105,8 +105,9 @@ def CheckNoDisallowedJS(input_api, output_api):
 
 def CheckNoNewPolymer(input_api, output_api):
   IGNORE_FILES = [
-    # This file is needed for testing Polymer specific ESLint rules in
+    # These files are needed for testing Polymer specific ESLint rules in
     # ui/webui/resources/tools/webui_eslint_plugin.js.
+    'ui/webui/resources/tools/tests/eslint_ts/with_webui_plugin_polymer_property_class_member_violations.ts',
     'ui/webui/resources/tools/tests/eslint_ts/with_webui_plugin_polymer_violations.ts',
   ]
 

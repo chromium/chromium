@@ -125,7 +125,9 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionSucceeds) {
+// TODO(https://crbug.com/402086021): Enable test after using real nodeId in
+// proto.
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, DISABLED_ActionSucceeds) {
   std::string encodedProto =
       EncodeActionProto(actor::MakeClick(kContentNodeId));
   RunTestSequence(InstrumentTab(kActiveTabId),

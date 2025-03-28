@@ -39,6 +39,7 @@
 #include "content/browser/btm/btm_storage.h"
 #include "content/browser/btm/btm_test_utils.h"
 #include "content/browser/btm/btm_utils.h"
+#include "content/browser/fingerprinting_protection/canvas_noise_token_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -2293,6 +2294,25 @@ TEST_F(BrowsingDataRemoverImplDipsTest, RemoveBtmEventsByType) {
     EXPECT_FALSE(state_val3->site_storage_times.has_value());
     EXPECT_TRUE(state_val3->user_activation_times.has_value());
   }
+}
+
+TEST_F(BrowsingDataRemoverImplTest,
+       RemoveBrowsingHistoryRegeneratesNoiseToken) {
+  base::test::ScopedFeatureList features(blink::features::kCanvasInterventions);
+  uint64_t original_token =
+      content::CanvasNoiseTokenData::GetToken(GetBrowserContext());
+
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+                                false);
+
+  EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_COOKIES, GetRemovalMask());
+  EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+            GetOriginTypeMask());
+
+  uint64_t updated_token =
+      content::CanvasNoiseTokenData::GetToken(GetBrowserContext());
+  EXPECT_NE(original_token, updated_token);
 }
 
 }  // namespace content

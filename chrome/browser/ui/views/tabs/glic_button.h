@@ -42,7 +42,9 @@ class GlicButton : public TabStripNudgeButton,
   void SetShowState(bool show) override;
   void SetIcon(const gfx::VectorIcon& icon) override;
 
-  void SetIsShowingNudge(bool is_showing);
+  // TabStripNudgeButton:
+  void SetIsShowingNudge(bool is_showing) override;
+
   void SetDropToAttachIndicator(bool indicate);
 
   // GetBoundsInScreen() gives a rect with some padding that extends beyond the
@@ -95,10 +97,6 @@ class GlicButton : public TabStripNudgeButton,
   // Represents the show state of the button. Visibility of the button
   // is reflected by the show state except when the nudge is showing.
   bool show_state_ = true;
-
-  // Represents if a nudge is currently showing. The button is not visible
-  // while the nudge is showing.
-  bool is_showing_nudge_ = false;
 
   // Callback which is invoked when the button is hovered (i.e., the user is
   // more likely to interact with it soon).

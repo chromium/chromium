@@ -24,7 +24,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/one_shot_event.h"
@@ -504,14 +503,13 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
       const std::string& json_data) {
     // We also parse the file into a dictionary to compare what we get back
     // from the provider.
-    JSONStringValueDeserializer deserializer(json_data);
-    auto json_value = deserializer.Deserialize(nullptr, nullptr);
-
-    if (!json_value || !json_value->is_dict()) {
+    std::optional<base::Value::Dict> json_value =
+        base::JSONReader::ReadDict(json_data);
+    if (!json_value) {
       ADD_FAILURE() << "Unable to deserialize json data";
       return std::nullopt;
     }
-    return std::move(*json_value).TakeDict();
+    return json_value;
   }
 
  private:

@@ -1946,13 +1946,9 @@ void RTCPeerConnectionHandler::OnIceCandidate(const String& sdp,
     return;
   }
   TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::OnIceCandidateImpl");
-  std::optional<String> url_or_null;
-  if (!url.empty()) {
-    url_or_null = url;
-  }
   // This line can cause garbage collection.
   auto* platform_candidate = MakeGarbageCollected<RTCIceCandidatePlatform>(
-      sdp, sdp_mid, sdp_mline_index, usernameFragment, url_or_null);
+      sdp, sdp_mid, sdp_mline_index, usernameFragment, url);
   if (peer_connection_tracker_) {
     peer_connection_tracker_->TrackAddIceCandidate(
         this, platform_candidate, PeerConnectionTracker::kSourceLocal, true);

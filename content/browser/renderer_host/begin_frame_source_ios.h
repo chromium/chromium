@@ -39,13 +39,13 @@ class BeginFrameSourceIOS
   void SetPreferredInterval(base::TimeDelta interval) override;
 
  private:
-  void BeginFrameAck(const viz::BeginFrameAck&);
+  const raw_ptr<ui::Compositor> compositor_;
 
-  raw_ptr<ui::Compositor> compositor_;
   viz::ExternalBeginFrameSourceIOS begin_frame_source_;
+
   viz::BeginFrameArgs last_used_begin_frame_args_;
-  bool send_begin_frame_ = true;
-  bool added_observer_ = false;
+  bool observing_begin_frame_source_ = false;
+
   mojo::AssociatedReceiverSet<viz::mojom::ExternalBeginFrameControllerClient>
       receivers_;
 

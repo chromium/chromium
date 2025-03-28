@@ -55,11 +55,6 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       showCrostiniStorage_: {
         type: Boolean,
         value: false,

@@ -572,6 +572,18 @@ if (is_android) {
       "//third_party/junit:junit",
     ]
   }
+
+  android_library("keyboard_focus_java") {
+    sources = [
+      "android/java/src/org/chromium/ui/accessibility/KeyboardFocusRow.java",
+      "android/java/src/org/chromium/ui/accessibility/KeyboardFocusUtil.java",
+    ]
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_jvm_java",
+    ]
+  }
 }
 
 test("accessibility_perftests") {

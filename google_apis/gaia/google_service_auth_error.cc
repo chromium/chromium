@@ -13,6 +13,10 @@
 #include "base/strings/stringprintf.h"
 #include "net/base/net_errors.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "google_apis/gaia/android/jni_headers/GoogleServiceAuthError_jni.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace {
 const char* InvalidCredentialsReasonToString(
     GoogleServiceAuthError::InvalidGaiaCredentialsReason reason) {
@@ -265,3 +269,30 @@ bool GoogleServiceAuthError::IsTransientError() const {
       return false;
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// static
+GoogleServiceAuthError GoogleServiceAuthError::FromJavaObject(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_auth_error) {
+  CHECK(j_auth_error);
+  GoogleServiceAuthError::State state =
+      static_cast<GoogleServiceAuthError::State>(
+          Java_GoogleServiceAuthError_getState(env, j_auth_error));
+  if (state == GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR) {
+    // Android doesn't provide reasons for this type of errors and only creates
+    // them for enterprise policy enforced scopes. So we hardcode the value
+    // here.
+    return GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+        GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+            kAdminPolicyEnforced);
+  } else {
+    return GoogleServiceAuthError(state);
+  }
+}
+
+jni_zero::ScopedJavaLocalRef<jobject> GoogleServiceAuthError::ToJavaObject(
+    JNIEnv* env) const {
+  return Java_GoogleServiceAuthError_Constructor(env, state_);
+}
+#endif  // BUILDFLAG(IS_ANDROID)

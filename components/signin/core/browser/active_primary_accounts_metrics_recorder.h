@@ -40,6 +40,12 @@ class ActivePrimaryAccountsMetricsRecorder {
   // are fine, and calls for not-recently-active accounts are no-ops.)
   void MarkAccountAsManaged(const GaiaId& gaia_id, bool is_managed_account);
 
+#if BUILDFLAG(IS_IOS)
+  // Should be called when the user explicitly switches to a different account.
+  // Used to track the number of account switches per client.
+  void AccountWasSwitched();
+#endif  // BUILDFLAG(IS_IOS)
+
   // Returns the last know active-time for the given account. If the account has
   // never been marked as active, or it was too long ago so that the entry has
   // expired, returns nullopt.

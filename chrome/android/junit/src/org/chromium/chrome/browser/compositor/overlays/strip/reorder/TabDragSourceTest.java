@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.text.format.DateUtils;
@@ -100,6 +101,7 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DropDataAndroid;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.ToastManager;
+import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -705,14 +707,18 @@ public class TabDragSourceTest {
         doTestDropInStripDestination(
                 /* isInDesktopWindow= */ false,
                 /* isGroupDrag= */ false,
-                /* isGroupShared= */ false);
+                /* isGroupShared= */ false,
+                /* mhtmlTabTitle= */ null);
     }
 
     /** Test for Tab Group Drag {@link #ONDRAG_TEST_CASES} - Scenario D.1 */
     @Test
     public void test_onDrag_dropInStrip_destination_tabGroup() {
         doTestDropInStripDestination(
-                /* isInDesktopWindow= */ true, /* isGroupDrag= */ true, /* isGroupShared= */ false);
+                /* isInDesktopWindow= */ true,
+                /* isGroupDrag= */ true,
+                /* isGroupShared= */ false,
+                /* mhtmlTabTitle= */ null);
     }
 
     /** Test for Shared Tab Group Drag {@link #ONDRAG_TEST_CASES} - Scenario D.1 */
@@ -720,7 +726,32 @@ public class TabDragSourceTest {
     public void test_onDrag_dropInStrip_destination_sharedTabGroup() {
         setupTabGroup(/* isGroupShared= */ true);
         doTestDropInStripDestination(
-                /* isInDesktopWindow= */ true, /* isGroupDrag= */ true, /* isGroupShared= */ true);
+                /* isInDesktopWindow= */ true,
+                /* isGroupDrag= */ true,
+                /* isGroupShared= */ true,
+                /* mhtmlTabTitle= */ null);
+    }
+
+    /** Test for Tab Group Drag {@link #ONDRAG_TEST_CASES} - Scenario D.1 */
+    @Test
+    public void test_onDrag_dropInStrip_hasMhtmlTab_destination_tabGroup() {
+        String url = "file:///example.mhtml";
+        Uri uri = Uri.parse(url);
+        GURL gurl = new GURL(uri.toString());
+        String mhtmlTabTitle = "mhtmlTab";
+        doReturn(gurl).when(mGroupedTab1).getUrl();
+        doReturn(mhtmlTabTitle).when(mGroupedTab1).getTitle();
+        mTabGroupMetadata =
+                TabGroupMetadataExtractor.extractTabGroupMetadata(
+                        mTabGroupBeingDragged,
+                        /* sourceWindowIndex= */ -1,
+                        mGroupedTab1.getId(),
+                        /* isGroupShared= */ false);
+        doTestDropInStripDestination(
+                /* isInDesktopWindow= */ false,
+                /* isGroupDrag= */ true,
+                /* isGroupShared= */ false,
+                /* mhtmlTabTitle= */ mhtmlTabTitle);
     }
 
     /** Test for Desktop Window {@link #ONDRAG_TEST_CASES} - Scenario D.1 */
@@ -729,7 +760,8 @@ public class TabDragSourceTest {
         doTestDropInStripDestination(
                 /* isInDesktopWindow= */ true,
                 /* isGroupDrag= */ false,
-                /* isGroupShared= */ false);
+                /* isGroupShared= */ false,
+                /* mhtmlTabTitle= */ null);
     }
 
     /** Test for Tab Drag {@link #ONDRAG_TEST_CASES} - Scenario D.2 */
@@ -1078,13 +1110,7 @@ public class TabDragSourceTest {
                 .dragExit(mSourceInstance)
                 .end(false);
 
-        assertNotNull(ShadowToast.getLatestToast());
-        TextView textView = (TextView) ShadowToast.getLatestToast().getView();
-        String actualText = textView == null ? "" : textView.getText().toString();
-        assertEquals(
-                "Text for toast shown does not match.",
-                ContextUtils.getApplicationContext().getString(R.string.max_number_of_windows),
-                actualText);
+        verifyToast(ContextUtils.getApplicationContext().getString(R.string.max_number_of_windows));
         if (!isGroupDrag) {
             histogramExpectation.assertExpected();
         }
@@ -1125,7 +1151,10 @@ public class TabDragSourceTest {
     }
 
     private void doTestDropInStripDestination(
-            boolean isInDesktopWindow, boolean isGroupDrag, boolean isGroupShared) {
+            boolean isInDesktopWindow,
+            boolean isGroupDrag,
+            boolean isGroupShared,
+            String mhtmlTabTitle) {
         HistogramWatcher.Builder builder =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -1148,8 +1177,19 @@ public class TabDragSourceTest {
 
         when(mDestStripLayoutHelper.getTabIndexForTabDrop(anyFloat())).thenReturn(TAB_INDEX);
 
-        // Verify view moved to window.
+        // Invoke drop.
         invokeDropInDestinationStrip(/* dragEndRes= */ true, isGroupDrag, isGroupShared);
+
+        // Verify - drop failed and toast is shown for group that has mhtml tab.
+        if (mhtmlTabTitle != null) {
+            verifyViewNotMovedToWindow(isGroupDrag);
+            verifyToast(
+                    ContextUtils.getApplicationContext()
+                            .getString(R.string.tab_cannot_be_moved, mhtmlTabTitle));
+            return;
+        }
+
+        // Verify view moved to window.
         verifyViewMovedToWindow(isGroupDrag, TAB_INDEX);
 
         // Verify reorder mode cleared.
@@ -1178,14 +1218,10 @@ public class TabDragSourceTest {
         verifyViewMovedToWindow(isGroupDrag, /* index= */ 5);
 
         // Verify toast.
-        assertNotNull(ShadowToast.getLatestToast());
-        TextView textView = (TextView) ShadowToast.getLatestToast().getView();
-        String actualText = textView == null ? "" : textView.getText().toString();
-        assertEquals(
-                "Text for toast shown does not match.",
+        verifyToast(
                 ContextUtils.getApplicationContext()
-                        .getString(R.string.tab_dropped_different_model),
-                actualText);
+                        .getString(R.string.tab_dropped_different_model));
+        assertNotNull(ShadowToast.getLatestToast());
     }
 
     private void doTestDropInDestinationToolbarContainer(boolean isGroupDrag) {
@@ -1612,5 +1648,12 @@ public class TabDragSourceTest {
             // Verify tab is moved.
             verify(mDestMultiInstanceManager, times(1)).moveTabToWindow(any(), any(), eq(index));
         }
+    }
+
+    private void verifyToast(String expectedText) {
+        assertNotNull(ShadowToast.getLatestToast());
+        TextView textView = (TextView) ShadowToast.getLatestToast().getView();
+        String actualText = textView == null ? "" : textView.getText().toString();
+        assertEquals("Text for toast shown does not match.", expectedText, actualText);
     }
 }

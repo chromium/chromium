@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -45,11 +46,17 @@ public interface Player {
         /** Returns the supplier for the current language's selected voice. */
         ObservableSupplier<String> getVoiceIdSupplier();
 
+        /** Whether the mode selection is enabled. */
+        ObservableSupplier<Boolean> getPlaybackModeSelectionEnabled();
+
         /**
          * Called when the user selects a voice in the voice settings menu. Saves the new choice for
          * the given language and continues playback from the same position.
          */
         void setVoiceOverrideAndApplyToPlayback(PlaybackVoice voice);
+
+        /** Called when the user selects a different playback mode. */
+        void setPlaybackModeAndApplyToPlayback(PlaybackMode mode);
 
         /**
          * Play a short example of the specified voice.

@@ -35,6 +35,7 @@
 #include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/task_manager/sampling/task_group.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
+#include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
 #include "chrome/common/pref_names.h"
@@ -403,6 +404,32 @@ TaskManagerTableModel::TaskManagerTableModel(
 
 TaskManagerTableModel::~TaskManagerTableModel() {
   StopUpdating();
+
+  if (!base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
+    return;
+  }
+
+  // A tab switch isn't performed when the table model closes, so we need to
+  // collect the remaining elapsed time in the current tab.
+  UpdateOldTabTime(/*old_category=*/display_category_);
+
+  // Record these manually instead of using a loop so that if the enums change
+  // this will fail to compile.
+  task_manager::RecordTabSwitchEvent(CategoryRecord::kTabsAndExtensions,
+                                     tabs_and_ex_total_time_);
+
+  // Note: system_total_time_ is used for both since there is no functional
+  // difference between browser & system (they are essentially the same tab).
+  // Instead, the data is routed to the platform appropriate bucket.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  task_manager::RecordTabSwitchEvent(CategoryRecord::kBrowser,
+                                     system_total_time_);
+#elif BUILDFLAG(IS_CHROMEOS)
+  task_manager::RecordTabSwitchEvent(CategoryRecord::kSystem,
+                                     system_total_time_);
+#endif
+
+  task_manager::RecordTabSwitchEvent(CategoryRecord::kAll, all_total_time_);
 }
 
 size_t TaskManagerTableModel::RowCount() {
@@ -1273,11 +1300,54 @@ void TaskManagerTableModel::UpdateMatchedProcessSetById(TaskId task_id) {
   }
 }
 
+void TaskManagerTableModel::UpdateOldTabTime(DisplayCategory old_category) {
+  // Add the elapsed time in the old category to the total time spent in this
+  // session.
+  const auto end_time = base::TimeTicks::Now();
+  switch (old_category) {
+    case DisplayCategory::kTabsAndExtensions:
+      tabs_and_ex_total_time_ += (end_time - tabs_and_ex_start_time_);
+      break;
+    case DisplayCategory::kSystem:
+      system_total_time_ += (end_time - system_start_time_);
+      break;
+    case DisplayCategory::kAll:
+      all_total_time_ += (end_time - all_start_time_);
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
+void TaskManagerTableModel::StartNewTabTime(DisplayCategory new_category) {
+  // Reset the start time for the new category.
+  const auto end_time = base::TimeTicks::Now();
+  switch (new_category) {
+    case DisplayCategory::kTabsAndExtensions:
+      tabs_and_ex_start_time_ = end_time;
+      break;
+    case DisplayCategory::kSystem:
+      system_start_time_ = end_time;
+      break;
+    case DisplayCategory::kAll:
+      all_start_time_ = end_time;
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
 bool TaskManagerTableModel::UpdateModel(const DisplayCategory display_category,
                                         std::u16string_view search_term) {
   if (search_terms_ == search_term && display_category_ == display_category) {
     // Early return if no real change happens.
     return false;
+  }
+
+  // If there is a category switch, log the time spent. Used for UMA metrics.
+  if (display_category_ != display_category) {
+    UpdateOldTabTime(display_category_);
+    StartNewTabTime(display_category);
   }
 
   search_terms_ = std::u16string(search_term);

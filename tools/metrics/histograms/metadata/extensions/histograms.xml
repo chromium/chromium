@@ -3826,8 +3826,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   <summary>
     The number of converted user scripts loaded at profile open.
 
-
-
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles
     (profiles where people can install extensions, specifically profiles that
@@ -3872,8 +3870,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     The manifest version of each loaded extension.
-
-
 
     Histogram is in the process of being removed in favor of its incremented
     version that emits only on profile open for &quot;user&quot; profiles

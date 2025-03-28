@@ -182,9 +182,11 @@ class BrowserAutofillManager : public AutofillManager {
                             const FormFieldData& trigger_field);
   // Virtual for testing
   virtual void DidShowSuggestions(
-      DenseSet<SuggestionType> shown_suggestion_types,
+      base::span<const Suggestion> suggestions,
       const FormData& form,
-      const FieldGlobalId& field_id);
+      const FieldGlobalId& field_id,
+      AutofillExternalDelegate::UpdateSuggestionsCallback
+          update_suggestions_callback);
 
   // Fills or previews the profile form.
   // Assumes the form and field are valid.

@@ -15,7 +15,7 @@ class WeakIdentifierMapTest : public ::testing::Test {
  public:
   class TestClass final : public GarbageCollected<TestClass> {
    public:
-    virtual void Trace(Visitor*) const {}
+    void Trace(Visitor*) const {}
   };
 
   using TestMap = WeakIdentifierMap<TestClass>;

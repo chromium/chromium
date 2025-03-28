@@ -43,6 +43,9 @@ class CreditCard;
 class AutofillExternalDelegate : public AutofillSuggestionDelegate {
  public:
   class ScopedSuggestionSelectionShortcut;
+  using UpdateSuggestionsCallback =
+      base::RepeatingCallback<void(std::vector<Suggestion>,
+                                   AutofillSuggestionTriggerSource)>;
 
   // Creates an AutofillExternalDelegate for the specified
   // BrowserAutofillManager and AutofillDriver.

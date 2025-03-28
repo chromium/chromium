@@ -50,6 +50,7 @@ if (ios_enable_credential_provider_extension) {
       "//ios/chrome/browser/favicon/model",
       "//ios/chrome/browser/infobars/model",
       "//ios/chrome/browser/passwords/model",
+      "//ios/chrome/browser/shared/model/application_context",
       "//ios/chrome/browser/shared/model/browser",
       "//ios/chrome/browser/shared/model/profile",
       "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",

@@ -213,6 +213,9 @@ extern const char kCrosSwitcherDescription[];
 extern const char kCssGamutMappingName[];
 extern const char kCssGamutMappingDescription[];
 
+extern const char kCssMasonryLayoutName[];
+extern const char kCssMasonryLayoutDescription[];
+
 extern const char kCssTextBoxTrimName[];
 extern const char kCssTextBoxTrimDescription[];
 
@@ -935,6 +938,9 @@ extern const char kEnableIsolatedWebAppManagedGuestSessionInstallName[];
 extern const char kEnableIsolatedWebAppManagedGuestSessionInstallDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+extern const char kEnableIsolatedWebAppAllowlistName[];
+extern const char kEnableIsolatedWebAppAllowlistDescription[];
+
 extern const char kEnableIsolatedWebAppDevModeName[];
 extern const char kEnableIsolatedWebAppDevModeDescription[];
 
@@ -988,10 +994,10 @@ extern const char kEnablePixelCanvasRecordingDescription[];
 extern const char kEnableProcessPerSiteUpToMainFrameThresholdName[];
 extern const char kEnableProcessPerSiteUpToMainFrameThresholdDescription[];
 
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kEnablePrintingMarginsAndScale[];
 extern const char kEnablePrintingMarginsAndScaleDescription[];
-#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 extern const char kEnableSearchCustomizableShortcutsInLauncherName[];
 extern const char kEnableSearchCustomizableShortcutsInLauncherDescription[];
@@ -4529,6 +4535,9 @@ extern const char kWaylandLinuxDrmSyncobjDescription[];
 
 extern const char kWaylandPerWindowScalingName[];
 extern const char kWaylandPerWindowScalingDescription[];
+
+extern const char kWaylandSessionManagementName[];
+extern const char kWaylandSessionManagementDescription[];
 
 extern const char kWaylandTextInputV3Name[];
 extern const char kWaylandTextInputV3Description[];

@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/autofill_ai/autofill_ai_util.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -581,12 +582,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       optimization_guide::features::IsAiSettingsPageRefreshEnabled();
 
   if (ai_settings_refresh_enabled) {
-    const bool show_ai_settings_for_testing =
-        optimization_guide::features::kShowAiSettingsForTesting.Get();
-
-    html_source->AddBoolean("showAiSettingsForTesting",
-                            show_ai_settings_for_testing);
-
     const bool use_is_setting_visible = base::FeatureList::IsEnabled(
         optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi);
 
@@ -609,10 +604,19 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
          // TODO(crbug.com/391131625): Update accordingly to enterprise
          // requirements.
          PasswordChangeServiceFactory::GetForProfile(profile) &&
-         PasswordChangeServiceFactory::GetForProfile(profile)
-             ->IsPasswordChangeAvailable()},
+             PasswordChangeServiceFactory::GetForProfile(profile)
+                 ->IsPasswordChangeAvailable()},
+        // The code checks only once, when setting is loaded, whether the
+        // Autofill Ai section should be shown.
+        // The code cannot dynamically check whether the Autofill Ai section
+        // should be shown, because otherwise the user could reach weird states,
+        // such as navigating to the Ai Page when the Ai Page has 0 entries.
+        {"showAutofillAiControl", autofill_ai::CanShowAutofillAiPageInSettings(
+                                      profile, web_ui->GetWebContents())},
     };
 
+    const bool show_ai_settings_for_testing =
+        optimization_guide::features::kShowAiSettingsForTesting.Get();
     bool show_ai_page = show_ai_settings_for_testing;
     for (auto [name, visible] : optimization_guide_features) {
       html_source->AddBoolean(name, visible || show_ai_settings_for_testing);
