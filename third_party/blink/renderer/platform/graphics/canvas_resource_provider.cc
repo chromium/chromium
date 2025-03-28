@@ -781,6 +781,13 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     }
   }
 
+  void SetResourceRecyclingEnabled(bool value) override {
+    resource_recycling_enabled_ = value;
+    if (!resource_recycling_enabled_) {
+      ClearRecycledResources();
+    }
+  }
+
   void RecycleResource(scoped_refptr<CanvasResource>&& resource) {
     // We don't want to keep an arbitrary large number of canvases.
     if (canvas_resources_.size() >
@@ -893,6 +900,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   // recycling.
   static constexpr int kMaxRecycledCanvasResources = 3;
 
+  bool resource_recycling_enabled_ = true;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
   const bool is_accelerated_;
@@ -1949,12 +1957,6 @@ cc::ImageDecodeCache* CanvasResourceProvider::ImageDecodeCacheF16() {
         kRGBA_F16_SkColorType);
   }
   return &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
-}
-
-void CanvasResourceProvider::SetResourceRecyclingEnabled(bool value) {
-  resource_recycling_enabled_ = value;
-  if (!resource_recycling_enabled_)
-    ClearRecycledResources();
 }
 
 void CanvasResourceProvider::ClearRecycledResources() {
