@@ -150,7 +150,15 @@ public class AuxiliarySearchDonorUnitTest {
         when(tab.getId()).thenReturn(id);
 
         testBuildDocumentImplAndVerify(
-                tab, type, url.getSpec(), title, lastAccessTimeStamp, id, documentTtl, counts);
+                tab,
+                type,
+                url.getSpec(),
+                title,
+                lastAccessTimeStamp,
+                id,
+                documentTtl,
+                /* score= */ 0,
+                counts);
         assertEquals(1, counts[type]);
     }
 
@@ -174,7 +182,15 @@ public class AuxiliarySearchDonorUnitTest {
         AuxiliarySearchEntry entry = builder.build();
 
         testBuildDocumentImplAndVerify(
-                entry, type, url, title, lastAccessTimeStamp, id, documentTtl, counts);
+                entry,
+                type,
+                url,
+                title,
+                lastAccessTimeStamp,
+                id,
+                documentTtl,
+                /* score= */ 0,
+                counts);
         assertEquals(1, counts[type]);
     }
 
@@ -192,28 +208,51 @@ public class AuxiliarySearchDonorUnitTest {
         int type = AuxiliarySearchEntryType.TAB;
         AuxiliarySearchDataEntry entry =
                 new AuxiliarySearchDataEntry(
-                        AuxiliarySearchEntryType.TAB,
+                        type,
                         url,
                         title,
                         lastAccessTimeStamp,
                         id,
                         /* appId= */ null,
-                        -1);
+                        /* visitId= */ -1,
+                        /* score= */ 0);
 
         int visitId = 100;
         int type2 = AuxiliarySearchEntryType.CUSTOM_TAB;
         AuxiliarySearchDataEntry entry2 =
                 new AuxiliarySearchDataEntry(
-                        AuxiliarySearchEntryType.CUSTOM_TAB,
+                        type2,
                         url,
                         title,
                         lastAccessTimeStamp,
                         Tab.INVALID_TAB_ID,
                         /* appId= */ null,
-                        visitId);
+                        visitId,
+                        /* score= */ 0);
+
+        int visitId3 = 101;
+        int type3 = AuxiliarySearchEntryType.TOP_SITE;
+        AuxiliarySearchDataEntry entry3 =
+                new AuxiliarySearchDataEntry(
+                        type3,
+                        url,
+                        title,
+                        lastAccessTimeStamp,
+                        Tab.INVALID_TAB_ID,
+                        /* appId= */ null,
+                        visitId3,
+                        AuxiliarySearchTestHelper.SCORE_1);
 
         testBuildDocumentImplAndVerify(
-                entry, type, url.getSpec(), title, lastAccessTimeStamp, id, tabDocumentTtl, counts);
+                entry,
+                type,
+                url.getSpec(),
+                title,
+                lastAccessTimeStamp,
+                id,
+                tabDocumentTtl,
+                /* score= */ 0,
+                counts);
         testBuildDocumentImplAndVerify(
                 entry2,
                 type2,
@@ -222,9 +261,21 @@ public class AuxiliarySearchDonorUnitTest {
                 lastAccessTimeStamp,
                 visitId,
                 historyDocumentTtl,
+                /* score= */ 0,
+                counts);
+        testBuildDocumentImplAndVerify(
+                entry3,
+                type3,
+                url.getSpec(),
+                title,
+                lastAccessTimeStamp,
+                visitId3,
+                historyDocumentTtl,
+                AuxiliarySearchTestHelper.SCORE_1,
                 counts);
         assertEquals(1, counts[type]);
         assertEquals(1, counts[type2]);
+        assertEquals(1, counts[type3]);
     }
 
     private <T> void testBuildDocumentImplAndVerify(
@@ -235,6 +286,7 @@ public class AuxiliarySearchDonorUnitTest {
             long lastAccessTimeStamp,
             int id,
             long documentTtlMs,
+            int score,
             int[] counts) {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Config.RGB_565);
         String documentId = AuxiliarySearchDonor.getDocumentId(type, id);
@@ -246,6 +298,7 @@ public class AuxiliarySearchDonorUnitTest {
         assertEquals(title, webPage.getName());
         assertEquals(lastAccessTimeStamp, webPage.getCreationTimestampMillis());
         assertEquals(documentTtlMs, webPage.getDocumentTtlMillis());
+        assertEquals(score, webPage.getDocumentScore());
         assertTrue(
                 Arrays.equals(
                         AuxiliarySearchUtils.bitmapToBytes(bitmap),

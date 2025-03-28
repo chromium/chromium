@@ -381,6 +381,7 @@ public class AuxiliarySearchDonor {
                     tab.getTitle(),
                     tab.getTimestampMillis(),
                     getTabDocumentTtlMs(),
+                    /* score= */ 0,
                     favicon);
         }
 
@@ -398,6 +399,7 @@ public class AuxiliarySearchDonor {
                     auxiliarySearchEntry.getTitle(),
                     auxiliarySearchEntry.getLastAccessTimestamp(),
                     getTabDocumentTtlMs(),
+                    /* score= */ 0,
                     favicon);
         }
 
@@ -417,6 +419,7 @@ public class AuxiliarySearchDonor {
                 dataEntry.title,
                 dataEntry.lastActiveTime,
                 isTab ? getTabDocumentTtlMs() : getHistoryDocumentTtlMs(),
+                dataEntry.score,
                 favicon);
     }
 
@@ -427,6 +430,7 @@ public class AuxiliarySearchDonor {
             String title,
             long lastAccessTimestamp,
             long documentTtlMs,
+            int score,
             @Nullable Bitmap favicon) {
         byte[] faviconBytes = null;
         if (favicon != null) {
@@ -436,7 +440,8 @@ public class AuxiliarySearchDonor {
         builder.setUrl(url)
                 .setName(title)
                 .setCreationTimestampMillis(lastAccessTimestamp)
-                .setDocumentTtlMillis(documentTtlMs);
+                .setDocumentTtlMillis(documentTtlMs)
+                .setDocumentScore(score);
 
         if (faviconBytes != null) {
             ImageObject faviconImage =

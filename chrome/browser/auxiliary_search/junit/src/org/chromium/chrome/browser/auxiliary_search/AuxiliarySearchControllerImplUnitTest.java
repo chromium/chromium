@@ -450,7 +450,8 @@ public class AuxiliarySearchControllerImplUnitTest {
                         /* lastActiveTime= */ now - 2,
                         /* tabId= */ TAB_ID_1,
                         /* appId= */ null,
-                        /* visitId= */ -1);
+                        /* visitId= */ -1,
+                        /* score= */ 0);
         mDataEntry2 =
                 new AuxiliarySearchDataEntry(
                         /* type= */ AuxiliarySearchEntryType.TAB,
@@ -459,7 +460,8 @@ public class AuxiliarySearchControllerImplUnitTest {
                         /* lastActiveTime= */ now - 1,
                         /* tabId= */ TAB_ID_2,
                         /* appId= */ null,
-                        /* visitId= */ -1);
+                        /* visitId= */ -1,
+                        /* score= */ 0);
 
         List<AuxiliarySearchDataEntry> entries = new ArrayList<>();
         entries.add(mDataEntry1);
