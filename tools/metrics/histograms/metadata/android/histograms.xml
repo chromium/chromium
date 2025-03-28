@@ -1837,20 +1837,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.ExplicitViewIntentFinishedNewTabbedActivity"
-    enum="Boolean" expires_after="2025-03-30">
-  <owner>aishwaryarj@google.com</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Recorded during an atypical situation where a VIEW intent from an external
-    app not routed via ChromeLauncherActivity, attempts to launch a new
-    ChromeTabbedActivity, when multi-instance is supported. The histogram
-    records true when the new activity is finished and the intent is launched in
-    an existing ChromeTabbedActivity instead, false when we fail to find an
-    existing ChromeTabbedActivity to launch such an intent in.
-  </summary>
-</histogram>
-
 <histogram
     name="Android.FamilyLinkUser.LocalWebApprovalParentAuthenticationError"
     units="Status error codes raised in GMS Core" expires_after="2024-02-11">
