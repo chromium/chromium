@@ -1616,14 +1616,15 @@ enum class ToolbarKind {
 // Starts independent mediators owned by this coordinator.
 - (void)startIndependentMediators {
   // Cache frequently repeated property values to curb generated code bloat.
-
   BrowserViewController* browserViewController = self.viewController;
 
   DCHECK(self.browserContainerCoordinator.viewController);
   self.tabEventsMediator = [[TabEventsMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
             ntpCoordinator:_NTPCoordinator
-                   profile:self.profile
+                   tracker:feature_engagement::TrackerFactory::GetForProfile(
+                               self.profile)
+                 incognito:self.profile->IsOffTheRecord()
            loadingNotifier:_urlLoadingNotifierBrowserAgent];
   self.tabEventsMediator.toolbarSnapshotProvider = _toolbarCoordinator;
   self.tabEventsMediator.consumer = browserViewController;
