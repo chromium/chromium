@@ -532,6 +532,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // allows the Views tree to be broken up into distinct NSViews for use by
     // immersive fullscreen. Not for general use.
     bool is_overlay = false;
+
+    // If set to true, enable system default show and hide animations.
+    bool animation_enabled = false;
 #endif
   };
 
