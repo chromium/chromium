@@ -594,9 +594,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   // completed.
   bool IsReadyToScoreAd(const ScoreAdTask& task) const;
 
-  // If the task is ready other than waiting for the JS script, avoid eager
-  // compilation so that we can get started on scoring this ad.
-  void DisableEagerJsCompilationIfOnlyWaitingOnJs(const ScoreAdTask& task);
+  // We only want to eagerly compile JS if we've received a scoreAd task (to
+  // avoid eager compilation if an auction will be aborted).
+  void SetEagerJsCompilation(bool eagerly_compile_js);
 
   // Checks if the script has been loaded successfully, the
   // DirectFromSellerSignals loads have finished and the TrustedSignals load has

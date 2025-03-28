@@ -821,9 +821,11 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // completed.
   bool IsReadyToGenerateBid(const GenerateBidTask& task) const;
 
-  // If the task is ready other than waiting for the JS script, avoid eager
-  // compilation so that we can get started on generating this bid.
-  void DisableEagerJsCompilationIfOnlyWaitingOnJs(const GenerateBidTask& task);
+  // We only want to eagerly compile JS if we've received promises (to avoid
+  // eager compilation if an auction will be aborted) and we're not waiting on
+  // the Javascript script only (so that we can start generating the bid as soon
+  // as we get the script).
+  void SetEagerJsCompilation(bool eagerly_compile_js);
 
   // Checks if IsReadyToGenerateBid(). If so, calls generateBid(), and invokes
   // the task callback with the resulting bid, if any.
