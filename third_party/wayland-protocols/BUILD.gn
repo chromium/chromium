@@ -223,3 +223,9 @@ wayland_protocol("xdg_toplevel_drag_protocol") {
 wayland_protocol("xdg_toplevel_icon_protocol") {
   sources = [ "src/staging/xdg-toplevel-icon/xdg-toplevel-icon-v1.xml" ]
 }
+
+# Experimental session management protocol shipped in Mutter 47/48.
+# Will be replaced by upstream's version once it lands.
+wayland_protocol("xx_session_management_protocol") {
+  sources = [ "unstable/session-management/xx-session-management-v1.xml" ]
+}

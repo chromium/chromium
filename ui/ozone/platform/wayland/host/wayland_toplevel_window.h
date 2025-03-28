@@ -14,6 +14,9 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/xdg_session.h"
+#include "ui/ozone/platform/wayland/host/xdg_session_manager.h"
+#include "ui/ozone/public/platform_session_manager.h"
 #include "ui/platform_window/extensions/system_modal_extension.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/extensions/workspace_extension.h"
@@ -176,6 +179,10 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Sets decoration mode for a window.
   void OnDecorationModeChanged();
 
+  // Issues session management requests, if needed, at mapping- and
+  // configure-time stages of the toplevel window initialization.
+  void UpdateSessionStateIfNeeded();
+
   // Wrappers around shell surface.
   std::unique_ptr<ShellToplevelWrapper> shell_toplevel_;
 
@@ -226,6 +233,10 @@ class WaylandToplevelWindow : public WaylandWindow,
   raw_ptr<WorkspaceExtensionDelegate> workspace_extension_delegate_ = nullptr;
 
   gfx::ImageSkia initial_icon_;
+
+  std::optional<PlatformSessionWindowData> session_data_;
+  base::WeakPtr<XdgSession> session_;
+  std::unique_ptr<XdgToplevelSession> toplevel_session_;
 
   base::WeakPtrFactory<WaylandToplevelWindow> weak_ptr_factory_{this};
 };
