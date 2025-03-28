@@ -1226,7 +1226,7 @@ void PrefetchService::OnGotEligibilityForRedirect(
   // If the redirect is not eligible and the prefetch is not a decoy, then stop
   // the prefetch.
   if (!eligible && !prefetch_container->IsDecoy()) {
-    DCHECK(active_prefetch_ == prefetch_container->key());
+    CHECK(IsPrefetchContainerInActiveSet(*prefetch_container));
     active_prefetch_ = std::nullopt;
     streaming_url_loader->HandleRedirect(
         PrefetchRedirectStatus::kFail, redirect_info, std::move(redirect_head));
@@ -1546,7 +1546,7 @@ void PrefetchService::OnPrefetchRedirect(
     return;
   }
 
-  DCHECK(active_prefetch_ == prefetch_container->key());
+  CHECK(IsPrefetchContainerInActiveSet(*prefetch_container));
 
   // Update the prefetch's referrer in case a redirect requires a change in
   // network context and a new request needs to be started.
@@ -1570,7 +1570,7 @@ void PrefetchService::OnPrefetchRedirect(
   }
 
   if (failure) {
-    DCHECK(active_prefetch_ == prefetch_container->key());
+    CHECK(IsPrefetchContainerInActiveSet(*prefetch_container));
     active_prefetch_ = std::nullopt;
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchFailedInvalidRedirect);
@@ -1684,7 +1684,7 @@ void PrefetchService::OnPrefetchResponseCompleted(
     return;
   }
 
-  DCHECK(active_prefetch_ == prefetch_container->key());
+  CHECK(IsPrefetchContainerInActiveSet(*prefetch_container));
   active_prefetch_ = std::nullopt;
 
   prefetch_container->OnPrefetchComplete(completion_status);
@@ -1741,6 +1741,11 @@ void PrefetchService::OnGotIsolatedCookiesForCopy(
         ->SetCanonicalCookie(cookie.cookie, current_url, options,
                              base::BindOnce(&CookieSetHelper, barrier));
   }
+}
+
+bool PrefetchService::IsPrefetchContainerInActiveSet(
+    const PrefetchContainer& prefetch_container) {
+  return active_prefetch_ == prefetch_container.key();
 }
 
 void PrefetchService::DumpPrefetchesForDebug() const {

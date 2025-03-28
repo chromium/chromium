@@ -444,6 +444,10 @@ class CONTENT_EXPORT PrefetchService {
   // its dependencies).
   bool IsPrefetchStale(base::WeakPtr<PrefetchContainer> prefetch_container);
 
+  // Returns if the `prefetch_container` is in active set.
+  bool IsPrefetchContainerInActiveSet(
+      const PrefetchContainer& prefetch_container);
+
   void DumpPrefetchesForDebug() const;
 
   raw_ptr<BrowserContext> browser_context_;
