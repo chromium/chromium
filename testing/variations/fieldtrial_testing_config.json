@@ -24546,21 +24546,6 @@
             ]
         }
     ],
-    "UseAccountListFromIdentityManager": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseAccountListFromIdentityManager"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseAdHocSigningForWebAppShims": [
         {
             "platforms": [
