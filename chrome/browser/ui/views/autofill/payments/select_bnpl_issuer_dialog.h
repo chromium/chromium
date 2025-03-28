@@ -29,6 +29,8 @@ class BnplDialogFootnote;
 class SelectBnplIssuerDialog : public views::DialogDelegateView {
   METADATA_HEADER(SelectBnplIssuerDialog, views::DialogDelegateView)
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kThrobberId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBnplIssuerView);
   explicit SelectBnplIssuerDialog(
       base::WeakPtr<SelectBnplIssuerDialogController> controller,
       content::WebContents* web_contents);
@@ -41,9 +43,7 @@ class SelectBnplIssuerDialog : public views::DialogDelegateView {
   }
 
   void DisplayThrobber();
-
-  // DialogDelegateView:
-  bool Accept() override;
+  bool OnCancelled();
 
   // View:
   void AddedToWidget() override;

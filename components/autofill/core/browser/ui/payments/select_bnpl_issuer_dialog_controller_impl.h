@@ -39,9 +39,9 @@ class SelectBnplIssuerDialogControllerImpl
   }
 
   // SelectBnplIssuerDialogController:
-  void OnAccepted(const std::string& issuer_id) override;
-  void OnCancel() override;
-  void OnDialogClosed() override;
+  void OnIssuerSelected(const std::string& issuer_id) override;
+  void OnUserCancelled() override;
+  void Dismiss() override;
   const std::vector<BnplIssuerContext>& GetIssuerContexts() const override;
   const std::string& GetAppLocale() const override;
   TextWithLink GetLinkText() const override;
