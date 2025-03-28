@@ -25,6 +25,7 @@ import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -54,6 +55,7 @@ import java.util.List;
         reason =
                 "The tests can't be batched because the functionality under test is set up during"
                         + " Chrome start up.")
+@DisableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
 public class PasswordsPreferenceAccessLossTest {
     @ClassRule
     public static SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =
