@@ -1677,7 +1677,7 @@ message ScrollMetrics {
 //
 // All data comes from MotionEvent getters so read these for more context:
 // https://developer.android.com/reference/android/view/MotionEvent
-// Next id: 9
+// Next id: 10
 message EventForwarder {
   // The events getHistorySize().
   optional int32 history_size = 1;
@@ -1696,6 +1696,24 @@ message EventForwarder {
   optional bool has_x_movement = 6;
   // Determine if the previous forwarded event changed y coordinate.
   optional bool has_y_movement = 7;
+
+  // The enum comes from Android NDK header: `android/input.h`.
+  enum AMotionEventAction {
+    AMOTION_EVENT_ACTION_DOWN = 0;
+    AMOTION_EVENT_ACTION_UP = 1;
+    AMOTION_EVENT_ACTION_MOVE = 2;
+    AMOTION_EVENT_ACTION_CANCEL = 3;
+    AMOTION_EVENT_ACTION_OUTSIDE = 4;
+    AMOTION_EVENT_ACTION_POINTER_DOWN = 5;
+    AMOTION_EVENT_ACTION_POINTER_UP = 6;
+    AMOTION_EVENT_ACTION_HOVER_MOVE = 7;
+    AMOTION_EVENT_ACTION_SCROLL = 8;
+    AMOTION_EVENT_ACTION_HOVER_ENTER = 9;
+    AMOTION_EVENT_ACTION_HOVER_EXIT = 10;
+    AMOTION_EVENT_ACTION_BUTTON_PRESS = 11;
+    AMOTION_EVENT_ACTION_BUTTON_RELEASE = 12;
+  }
+  optional AMotionEventAction action = 9;
 }
 
 // TouchDispositionGestureFilter is a class on android that detects and forwards
