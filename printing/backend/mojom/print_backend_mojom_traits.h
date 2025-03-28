@@ -250,6 +250,14 @@ struct StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
       const printing::PrinterSemanticCapsAndDefaults& p) {
     return p.advanced_capabilities;
   }
+  static const std::vector<printing::mojom::PrintScalingType>&
+  print_scaling_types(const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.print_scaling_types;
+  }
+  static printing::mojom::PrintScalingType print_scaling_type_default(
+      const printing::PrinterSemanticCapsAndDefaults& p) {
+    return p.print_scaling_type_default;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
