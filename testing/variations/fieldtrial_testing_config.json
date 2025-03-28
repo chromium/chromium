@@ -12630,9 +12630,9 @@
             ],
             "experiments": [
                 {
-                    "name": "BelowOmniboxWithButtons",
+                    "name": "Enabled",
                     "params": {
-                        "tab-group-indicator-below-omnibox": "true",
+                        "tab-group-indicator-below-omnibox": "false",
                         "tab-group-indicator-buttons": "true",
                         "tab-group-indicator-visible": "true"
                     },
