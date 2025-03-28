@@ -1134,8 +1134,8 @@ class BrowserAutofillManagerTest : public testing::Test {
   void DidShowSuggestions(const FormData& form,
                           size_t field_index = 0,
                           SuggestionType type = SuggestionType::kAddressEntry) {
-    manager().DidShowSuggestions({type}, form,
-                                 form.fields()[field_index].global_id());
+    manager().DidShowSuggestions({Suggestion(type)}, form,
+                                 form.fields()[field_index].global_id(), {});
   }
 
   void TryToShowTouchToFill(const FormData& form,
@@ -5583,8 +5583,8 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
-  manager().DidShowSuggestions({SuggestionType::kAutocompleteEntry}, form,
-                               form.fields().back().global_id());
+  manager().DidShowSuggestions({Suggestion(SuggestionType::kAutocompleteEntry)},
+                               form, form.fields().back().global_id(), {});
   // No Autofill logs.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
   EXPECT_THAT(histograms,
@@ -6197,8 +6197,8 @@ TEST_F(BrowserAutofillManagerTest,
 
   EXPECT_CALL(cc_access_manager(), PrepareToFetchCreditCard)
       .Times(IsCreditCardFidoAuthenticationEnabled() ? 1 : 0);
-  manager().DidShowSuggestions({SuggestionType::kCreditCardEntry}, form,
-                               form.fields()[0].global_id());
+  manager().DidShowSuggestions({Suggestion(SuggestionType::kCreditCardEntry)},
+                               form, form.fields()[0].global_id(), {});
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -6207,8 +6207,8 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   EXPECT_CALL(cc_access_manager(), PrepareToFetchCreditCard).Times(0);
-  manager().DidShowSuggestions({SuggestionType::kAddressEntry}, form,
-                               form.fields()[0].global_id());
+  manager().DidShowSuggestions({Suggestion(SuggestionType::kAddressEntry)},
+                               form, form.fields()[0].global_id(), {});
 }
 
 TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {
