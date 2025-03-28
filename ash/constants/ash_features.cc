@@ -582,7 +582,7 @@ BASE_FEATURE(kDemoModeWallpaperUpdate,
 // sign in is enable. No-op if demo mode sign in is disabled.
 BASE_FEATURE(kDemoModeSignInFileCleanup,
              "DemoModeSignInFileCleanup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Toggle different display features based on user setting and power state
 BASE_FEATURE(kDisplayPerformanceMode,
