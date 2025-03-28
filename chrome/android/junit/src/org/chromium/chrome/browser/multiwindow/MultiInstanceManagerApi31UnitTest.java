@@ -1061,7 +1061,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         int instanceId = pair.first;
         mMultiInstanceManager.createInstance(instanceId, activity);
-        mMultiInstanceManager.initialize(instanceId, activity.getTaskId());
+        MultiInstanceManagerApi31.updateTaskMap(instanceId, activity.getTaskId());
 
         // Store minimal data to get the instance recognized.
         MultiInstanceManagerApi31.writeUrl(instanceId, "url" + instanceId);
