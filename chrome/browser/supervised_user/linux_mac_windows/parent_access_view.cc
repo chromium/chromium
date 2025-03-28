@@ -153,6 +153,8 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
   dialog_delegate->SetShowCloseButton(
       /*show_close_button=*/true);
   dialog_delegate->SetOwnedByWidget(/*delete_self=*/true);
+  dialog_delegate->SetAccessibleTitle(
+      l10n_util::GetStringUTF16(IDS_PARENT_WEBSITE_APPROVAL_DIALOG_A11Y_NAME));
 
   // Obtain the default, platform-appropriate, corner radius value computed by
   // the delegate. This needs to be set in the ParentAccessView's inner
