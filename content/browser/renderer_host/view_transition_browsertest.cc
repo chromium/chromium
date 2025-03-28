@@ -402,12 +402,13 @@ class ViewTransitionCaptureTest
       public ::testing::WithParamInterface<std::string> {
  public:
   ViewTransitionCaptureTest() {
-    EnablePixelOutput();
+    EnablePixelOutput(1.f);
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {viz::mojom::EnableVizTestApis,
          features::kViewTransitionCaptureAndDisplay},
-        /*disabled_features=*/{});
+        /*disabled_features=*/
+        {blink::features::kPaintHolding});
   }
 
   void SetUpOnMainThread() override {
@@ -445,11 +446,14 @@ IN_PROC_BROWSER_TEST_P(ViewTransitionCaptureTest,
                        ViewTransitionNoArtifactDuringCapture) {
   GURL test_url(embedded_test_server()->GetURL(GetParam()));
   auto* web_contents = shell()->web_contents();
-  web_contents->Resize({0, 0, 20, 20});
   ASSERT_TRUE(NavigateToURL(web_contents, test_url));
+  shell()->ResizeWebContentForTests(gfx::Size(20, 20));
+
   ASSERT_EQ(EvalJs(web_contents, JsReplace(R"(
             new Promise(resolve => {
-              requestAnimationFrame(() => resolve("ok"));
+              requestAnimationFrame(() => {
+                requestAnimationFrame(() => resolve("ok"));
+              });
             }))")),
             "ok");
   WaitForCopyableViewInWebContents(shell()->web_contents());
