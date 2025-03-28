@@ -638,6 +638,12 @@ const char kIOSProactivePasswordGenerationBottomSheetDescription[] =
     "Enables the display of the proactive password generation bottom sheet on "
     "IOS.";
 
+const char kIOSPromptSearchEngineChoiceAfterDeviceRestoreName[] =
+    "Prompt the search engine choice after device restore";
+const char kIOSPromptSearchEngineChoiceAfterDeviceRestoreDescription[] =
+    "The dialog is triggered when opening Chrome if there is no external "
+    "intent.";
+
 const char kIOSQuickDeleteName[] = "Quick Delete for iOS";
 const char kIOSQuickDeleteDescription[] =
     "Enables a new way for users to more easily delete their browsing data in "

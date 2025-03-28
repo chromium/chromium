@@ -5546,6 +5546,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "ios-prompt-search-engine-choice-after-device-restore",
+    "owners": ["jlebel@google.com", "dgn@google.com", "chrome-waffle-eng@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "ios-provides-app-notification-settings",
     "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
     "expiry_milestone": 141
