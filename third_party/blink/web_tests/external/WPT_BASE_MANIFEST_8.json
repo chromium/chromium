@@ -367349,7 +367349,7 @@
       []
      ],
      "cursor-calc-hotspot-expected.txt": [
-      "e8447703684fb8e1a012985b49a81941f0f59f7e",
+      "ace5c5c846b86cd7d7ede525c3b3f518a97bbd3c",
       []
      ],
      "historical": {
@@ -387840,8 +387840,16 @@
         "17e520a810ac3a158a711dcee6354b5fd71a8150",
         []
        ],
+       "history_pushstate_too_many_calls.optional-expected.txt": [
+        "3096e9d821ef0dc724c77e00ee0bb5330b482dfc",
+        []
+       ],
        "history_pushstate_url_rewriting-expected.txt": [
         "282f94e01c96b83357a94a7f7382bf0bf0360456",
+        []
+       ],
+       "history_replacestate_too_many_calls.optional-expected.txt": [
+        "235961e2f9048faf28bf0219926e461130a9dcb4",
         []
        ],
        "joint_session_history": {
@@ -522021,7 +522029,7 @@
       ]
      ],
      "cursor-calc-hotspot.html": [
-      "84f9ca35b79878972d61e132857640a9f5e86fa7",
+      "825d9571271c06d96302faa46edcf0f2e5a4cda9",
       [
        null,
        {}
@@ -599380,6 +599388,13 @@
          {}
         ]
        ],
+       "history_pushstate_too_many_calls.optional.html": [
+        "4242ab488ca2cbe4b4433b1fa251bd8eb303cecf",
+        [
+         null,
+         {}
+        ]
+       ],
        "history_pushstate_url.html": [
         "cfbca35bfdfb6e29682f52d09577e6b081801f14",
         [
@@ -599410,6 +599425,13 @@
        ],
        "history_replacestate_nooptionalparam.html": [
         "838467d782776af5d8c982ce0d11bdf9c9e9dc6a",
+        [
+         null,
+         {}
+        ]
+       ],
+       "history_replacestate_too_many_calls.optional.html": [
+        "d412983270c42fd37cf832119567013982456121",
         [
          null,
          {}
