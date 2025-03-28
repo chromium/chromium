@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_LANGUAGE_MODEL_PARAMS_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_LANGUAGE_MODEL_PARAMS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_LANGUAGE_MODEL_PARAMS_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_LANGUAGE_MODEL_PARAMS_H_
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
 
-class AILanguageModelParams final : public ScriptWrappable {
+class LanguageModelParams final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  AILanguageModelParams(uint64_t default_top_k,
-                        uint64_t max_top_k,
-                        float default_temperature,
-                        float max_temperature);
+  LanguageModelParams(uint64_t default_top_k,
+                      uint64_t max_top_k,
+                      float default_temperature,
+                      float max_temperature);
 
   void Trace(Visitor* visitor) const override;
 
@@ -35,4 +35,4 @@ class AILanguageModelParams final : public ScriptWrappable {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_LANGUAGE_MODEL_PARAMS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_LANGUAGE_MODEL_PARAMS_H_

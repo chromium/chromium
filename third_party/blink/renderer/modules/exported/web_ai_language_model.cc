@@ -6,17 +6,17 @@
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
-#include "third_party/blink/renderer/modules/ai/ai_language_model_factory.h"
 #include "third_party/blink/renderer/modules/ai/dom_ai.h"
+#include "third_party/blink/renderer/modules/ai/language_model_factory.h"
 
 namespace blink {
 
 // static
-v8::Local<v8::Value> WebAILanguageModel::GetAILanguageModelFactory(
+v8::Local<v8::Value> WebAILanguageModel::GetLanguageModelFactory(
     v8::Local<v8::Context> v8_context,
     v8::Isolate* isolate) {
   ExecutionContext* execution_context = ExecutionContext::From(v8_context);
-  AILanguageModelFactory* language_model =
+  LanguageModelFactory* language_model =
       DOMAI::ai(*execution_context)->languageModel();
   return language_model->ToV8(ScriptState::From(isolate, v8_context));
 }

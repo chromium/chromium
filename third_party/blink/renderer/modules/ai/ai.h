@@ -14,7 +14,8 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
-class AILanguageModelFactory;
+
+class LanguageModelFactory;
 
 // The class is the entry point of all the built-in AI APIs. It provides the
 // getters for the factories of different functionalities.
@@ -27,8 +28,8 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
 
   void Trace(Visitor* visitor) const override;
 
-  // model_manager.idl implementation.
-  AILanguageModelFactory* languageModel();
+  // ai.idl implementation.
+  LanguageModelFactory* languageModel();
 
   HeapMojoRemote<mojom::blink::AIManager>& GetAIRemote();
 
@@ -37,7 +38,7 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AIManager> ai_remote_;
-  Member<AILanguageModelFactory> ai_language_model_factory_;
+  Member<LanguageModelFactory> language_model_factory_;
 };
 
 }  // namespace blink

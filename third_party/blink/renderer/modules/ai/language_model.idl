@@ -4,11 +4,11 @@
 
 // https://github.com/webmachinelearning/prompt-api
 
-dictionary AILanguageModelCloneOptions {
+dictionary LanguageModelCloneOptions {
   AbortSignal signal;
 };
 
-dictionary AILanguageModelPromptOptions {
+dictionary LanguageModelPromptOptions {
   AbortSignal signal;
 };
 
@@ -17,15 +17,37 @@ dictionary AILanguageModelPromptOptions {
   SecureContext,
   RuntimeEnabled=AIPromptAPI
 ]
-interface AILanguageModel : EventTarget {
+interface LanguageModel : EventTarget {
+  [
+    MeasureAs=LanguageModel_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<LanguageModel> create(
+    optional LanguageModelCreateOptions options = {}
+  );
+  [
+    MeasureAs=LanguageModel_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<AIAvailability> availability(
+    optional LanguageModelCreateCoreOptions options = {}
+  );
+  [
+    MeasureAs=LanguageModel_Params,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<LanguageModelParams?> params();
   [
     MeasureAs=LanguageModel_Prompt,
     CallWith=ScriptState,
     RaisesException
   ]
   Promise<DOMString> prompt(
-    AILanguageModelPromptInput input,
-    optional AILanguageModelPromptOptions options = {}
+    LanguageModelPromptInput input,
+    optional LanguageModelPromptOptions options = {}
   );
   [
     MeasureAs=LanguageModel_PromptStreaming,
@@ -33,8 +55,8 @@ interface AILanguageModel : EventTarget {
     RaisesException
   ]
   ReadableStream promptStreaming(
-    AILanguageModelPromptInput input,
-    optional AILanguageModelPromptOptions options = {}
+    LanguageModelPromptInput input,
+    optional LanguageModelPromptOptions options = {}
   );
 
   [
@@ -43,8 +65,8 @@ interface AILanguageModel : EventTarget {
     RaisesException
   ]
   Promise<double> measureInputUsage(
-    AILanguageModelPromptInput input,
-    optional AILanguageModelPromptOptions options = {}
+    LanguageModelPromptInput input,
+    optional LanguageModelPromptOptions options = {}
   );
 
   [MeasureAs=LanguageModel_InputUsage]
@@ -64,7 +86,7 @@ interface AILanguageModel : EventTarget {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AILanguageModel> clone(optional AILanguageModelCloneOptions options = {});
+  Promise<LanguageModel> clone(optional LanguageModelCloneOptions options = {});
   [
     MeasureAs=LanguageModel_Destroy,
     CallWith=ScriptState,

@@ -7,9 +7,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_create_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/modules/ai/ai_language_model_factory.h"
+#include "third_party/blink/renderer/modules/ai/language_model_factory.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -23,7 +23,7 @@ void AI::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(ai_remote_);
-  visitor->Trace(ai_language_model_factory_);
+  visitor->Trace(language_model_factory_);
 }
 
 HeapMojoRemote<mojom::blink::AIManager>& AI::GetAIRemote() {
@@ -40,12 +40,11 @@ scoped_refptr<base::SequencedTaskRunner> AI::GetTaskRunner() {
   return task_runner_;
 }
 
-AILanguageModelFactory* AI::languageModel() {
-  if (!ai_language_model_factory_) {
-    ai_language_model_factory_ =
-        MakeGarbageCollected<AILanguageModelFactory>(this);
+LanguageModelFactory* AI::languageModel() {
+  if (!language_model_factory_) {
+    language_model_factory_ = MakeGarbageCollected<LanguageModelFactory>(this);
   }
-  return ai_language_model_factory_.Get();
+  return language_model_factory_.Get();
 }
 
 

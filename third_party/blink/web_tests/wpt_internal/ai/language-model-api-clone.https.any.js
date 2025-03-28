@@ -6,7 +6,7 @@ promise_test(async () => {
   await ensureLanguageModel();
 
   // Start a new session and test it.
-  const session = await ai.languageModel.create();
+  const session = await LanguageModel.create();
   let result = await testSession(session);
   assert_true(result.success, result.error);
 

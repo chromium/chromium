@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <iterator>
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_core_options.h"
+
 namespace blink {
 
 namespace {
@@ -165,7 +167,7 @@ Vector<mojom::blink::AILanguageCodePtr> ToMojoLanguageCodes(
 
 base::expected<mojom::blink::AILanguageModelSamplingParamsPtr,
                SamplingParamsOptionError>
-ResolveSamplingParamsOption(const AILanguageModelCreateCoreOptions* options) {
+ResolveSamplingParamsOption(const LanguageModelCreateCoreOptions* options) {
   if (!options || (!options->hasTopK() && !options->hasTemperature())) {
     return nullptr;
   }
@@ -207,15 +209,18 @@ mojom::blink::AIWriterCreateOptionsPtr ToMojoWriterCreateOptions(
   return ToMojoWriterCreateOptionsImpl(
       options, options->getSharedContextOr(g_empty_string));
 }
+
 mojom::blink::AIWriterCreateOptionsPtr ToMojoWriterCreateOptions(
     const WriterCreateCoreOptions* core_options) {
   return ToMojoWriterCreateOptionsImpl(core_options, g_empty_string);
 }
+
 mojom::blink::AIRewriterCreateOptionsPtr ToMojoRewriterCreateOptions(
     const RewriterCreateOptions* options) {
   return ToMojoRewriterCreateOptionsImpl(
       options, options->getSharedContextOr(g_empty_string));
 }
+
 mojom::blink::AIRewriterCreateOptionsPtr ToMojoRewriterCreateOptions(
     const RewriterCreateCoreOptions* core_options) {
   return ToMojoRewriterCreateOptionsImpl(core_options, g_empty_string);

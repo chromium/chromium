@@ -11,12 +11,13 @@
 #include "third_party/blink/public/mojom/ai/ai_rewriter.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_summarizer.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_writer.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_create_core_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rewriter_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_summarizer_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_writer_create_options.h"
 
 namespace blink {
+
+class LanguageModelCreateCoreOptions;
 
 static constexpr uint64_t kNormalizedDownloadProgressMax = 0x10000;
 
@@ -34,7 +35,7 @@ enum class SamplingParamsOptionError {
 // otherwise.
 MODULES_EXPORT base::expected<mojom::blink::AILanguageModelSamplingParamsPtr,
                               SamplingParamsOptionError>
-ResolveSamplingParamsOption(const AILanguageModelCreateCoreOptions* options);
+ResolveSamplingParamsOption(const LanguageModelCreateCoreOptions* options);
 
 mojom::blink::AISummarizerCreateOptionsPtr ToMojoSummarizerCreateOptions(
     const SummarizerCreateOptions* options);

@@ -6,40 +6,12 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] [INTERFACES]
 [Worker] interface AI
 [Worker]     attribute @@toStringTag
-[Worker]     getter languageModel
 [Worker]     method constructor
 [Worker] interface AICreateMonitor : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter ondownloadprogress
 [Worker]     method constructor
 [Worker]     setter ondownloadprogress
-[Worker] interface AILanguageModel : EventTarget
-[Worker]     attribute @@toStringTag
-[Worker]     getter inputQuota
-[Worker]     getter inputUsage
-[Worker]     getter onquotaoverflow
-[Worker]     getter temperature
-[Worker]     getter topK
-[Worker]     method clone
-[Worker]     method constructor
-[Worker]     method destroy
-[Worker]     method measureInputUsage
-[Worker]     method prompt
-[Worker]     method promptStreaming
-[Worker]     setter onquotaoverflow
-[Worker] interface AILanguageModelFactory
-[Worker]     attribute @@toStringTag
-[Worker]     method availability
-[Worker]     method constructor
-[Worker]     method create
-[Worker]     method params
-[Worker] interface AILanguageModelParams
-[Worker]     attribute @@toStringTag
-[Worker]     getter defaultTemperature
-[Worker]     getter defaultTopK
-[Worker]     getter maxTemperature
-[Worker]     getter maxTopK
-[Worker]     method constructor
 [Worker] interface AbortController
 [Worker]     attribute @@toStringTag
 [Worker]     getter signal
@@ -1268,6 +1240,36 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method destroy
 [Worker]     method detect
 [Worker]     method measureInputUsage
+[Worker] interface LanguageModel : EventTarget
+[Worker]     static method availability
+[Worker]     static method create
+[Worker]     static method params
+[Worker]     attribute @@toStringTag
+[Worker]     getter inputQuota
+[Worker]     getter inputUsage
+[Worker]     getter onquotaoverflow
+[Worker]     getter temperature
+[Worker]     getter topK
+[Worker]     method clone
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method measureInputUsage
+[Worker]     method prompt
+[Worker]     method promptStreaming
+[Worker]     setter onquotaoverflow
+[Worker] interface LanguageModelFactory
+[Worker]     attribute @@toStringTag
+[Worker]     method availability
+[Worker]     method constructor
+[Worker]     method create
+[Worker]     method params
+[Worker] interface LanguageModelParams
+[Worker]     attribute @@toStringTag
+[Worker]     getter defaultTemperature
+[Worker]     getter defaultTopK
+[Worker]     getter maxTemperature
+[Worker]     getter maxTopK
+[Worker]     method constructor
 [Worker] interface Lock
 [Worker]     attribute @@toStringTag
 [Worker]     getter mode

@@ -46,7 +46,7 @@ const testPromptAPI = async () => {
   }
 
   try {
-    const availability = await ai.languageModel.availability();
+    const availability = await LanguageModel.availability();
     if (availability === "no") {
       return {
         success: false,
@@ -57,7 +57,7 @@ const testPromptAPI = async () => {
     isDownloadProgressEventTriggered = false;
     let isWaitingForModelDownload = availability === "after-download";
 
-    const session = await ai.languageModel.create({
+    const session = await LanguageModel.create({
       topK: 3,
       temperature: 0.8,
       systemPrompt: "Let's talk in English.",
@@ -193,9 +193,9 @@ const getPromptExceedingAvailableTokens = async session => {
 
 const ensureLanguageModel = async () => {
   // Make sure the prompt api is enabled.
-  assert_true(!!ai);
+  assert_true(!!LanguageModel);
   // Make sure the session could be created.
-  const availability = await ai.languageModel.availability();
+  const availability = await LanguageModel.availability();
   // TODO(crbug.com/376789810): make it a PRECONDITION_FAILED if the model is
   // not ready.
   assert_not_equals(availability, 'unavailable');
