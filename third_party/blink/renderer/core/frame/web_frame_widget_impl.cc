@@ -4218,23 +4218,12 @@ Vector<gfx::Rect> WebFrameWidgetImpl::CalculateVisibleLineBoundsOnScreen() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-Vector<gfx::Rect>&
-WebFrameWidgetImpl::GetVisibleLineBoundsOnScreenForTesting() {
-  return input_visible_line_bounds_;
+mojom::blink::InputCursorAnchorInfoPtr&
+WebFrameWidgetImpl::GetLastCursorAnchorInfoForTesting() {
+  return last_cursor_anchor_info_;
 }
 
-void WebFrameWidgetImpl::UpdateLineBounds() {
-#if BUILDFLAG(IS_ANDROID)
-  Vector<gfx::Rect> line_bounds = CalculateVisibleLineBoundsOnScreen();
-  if (line_bounds == input_visible_line_bounds_) {
-    return;
-  }
-  input_visible_line_bounds_.swap(line_bounds);
-  UpdateCursorAnchorInfo();
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
-void WebFrameWidgetImpl::UpdateCursorAnchorInfo() {
+void WebFrameWidgetImpl::UpdateCursorAnchorInfo(bool update_requested) {
 #if BUILDFLAG(IS_ANDROID)
   Element* focused_element = FocusedElement();
   if (!focused_element) {
@@ -4248,6 +4237,7 @@ void WebFrameWidgetImpl::UpdateCursorAnchorInfo() {
 
   Vector<gfx::Rect> character_bounds;
   GetCompositionCharacterBoundsInWindow(&character_bounds);
+  Vector<gfx::Rect> line_bounds = CalculateVisibleLineBoundsOnScreen();
 
   gfx::RectF editor_bounds =
       gfx::RectF(LocalRootImpl()->GetFrameView()->FrameToScreen(
@@ -4270,7 +4260,14 @@ void WebFrameWidgetImpl::UpdateCursorAnchorInfo() {
   mojom::blink::InputCursorAnchorInfoPtr cursor_anchor_info =
       mojom::blink::InputCursorAnchorInfo::New(
           character_bounds, std::move(editor_bounds_info),
-          std::move(text_appearance_info), input_visible_line_bounds_);
+          std::move(text_appearance_info), line_bounds, update_requested);
+
+  if (!update_requested && last_cursor_anchor_info_ == cursor_anchor_info) {
+    return;
+  }
+
+  last_cursor_anchor_info_ = cursor_anchor_info.Clone();
+
   // Since the IME pushes this endpoint to the renderer, it may not be bound
   // yet.
   if (ime_render_widget_host_) {
