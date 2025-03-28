@@ -26,6 +26,8 @@
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_image_fetcher.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
@@ -106,10 +108,13 @@ class OmniboxPopupMediatorTest : public PlatformTest {
     mockResultConsumer_ =
         OCMProtocolMock(@protocol(AutocompleteResultConsumer));
 
-    mediator_ = [[OmniboxPopupMediator alloc]
-                 initWithFetcher:std::move(mock_image_data_fetcher)
-                   faviconLoader:nil
-                         tracker:&tracker];
+    omnibox_image_fetcher_ = [[OmniboxImageFetcher alloc]
+        initWithFaviconLoader:nil
+                 imageFetcher:std::move(mock_image_data_fetcher)];
+
+    mediator_ =
+        [[OmniboxPopupMediator alloc] initWithTracker:&tracker
+                                  omniboxImageFetcher:omnibox_image_fetcher_];
     mediator_.consumer = mockResultConsumer_;
   }
 
@@ -118,6 +123,7 @@ class OmniboxPopupMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   OmniboxPopupMediator* mediator_;
+  OmniboxImageFetcher* omnibox_image_fetcher_;
   id mockResultConsumer_;
 };
 
