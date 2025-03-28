@@ -738,17 +738,11 @@ void DevToolsWindow::OpenExternalFrontend(
                      type == DevToolsAgentHost::kTypeSharedStorageWorklet;
 
     FrontendType frontend_type =
-        is_worker ? kFrontendRemoteWorker : kFrontendRemote;
+        is_worker ? kFrontendRemoteWorker
+                  : (type == "tab" ? kFrontendRemoteTab : kFrontendRemote);
     std::string effective_frontend_url =
         use_bundled_frontend ? kFallbackFrontendURL
                              : DevToolsUI::GetProxyURL(frontend_url).spec();
-    if (type == "tab") {
-      if (effective_frontend_url.find("?") == std::string::npos) {
-        effective_frontend_url += "?targetType=tab";
-      } else {
-        effective_frontend_url += "&targetType=tab";
-      }
-    }
     window =
         Create(profile, nullptr, frontend_type, effective_frontend_url, false,
                std::string(), std::string(), agent_host->IsAttached(),
@@ -1255,9 +1249,10 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
       valid_frontend + ((valid_frontend.find("?") == std::string::npos)
                             ? "?remoteFrontend=true"
                             : "&remoteFrontend=true");
+  std::string tab_target = "&targetType=tab";
   switch (frontend_type) {
     case kFrontendDefault:
-      url = kDefaultFrontendURL + remote_base + "&targetType=tab";
+      url = kDefaultFrontendURL + remote_base + tab_target;
       if (can_dock)
         url += "&can_dock=true";
       if (!panel.empty())
@@ -1278,6 +1273,9 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
     case kFrontendRemoteWorker:
       // isSharedWorker is here for backwards compatibility only.
       url = remote_frontend + "&isSharedWorker=true";
+      break;
+    case kFrontendRemoteTab:
+      url = remote_frontend + tab_target;
       break;
   }
 
