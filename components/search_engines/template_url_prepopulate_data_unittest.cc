@@ -733,14 +733,8 @@ TEST_F(TemplateURLPrepopulateDataTest, GeneratedDataAgreesWithExistingData) {
             country_code);
 
     auto old_engines_iter = old_settings.begin();
-    for (const auto& new_top_engine : new_settings->search_engines.top) {
+    for (const auto& new_top_engine : new_settings->search_engines) {
       ASSERT_EQ(new_top_engine, old_engines_iter->get());
-      ++old_engines_iter;
-    }
-
-    for (const auto& new_remaining_engine :
-         new_settings->search_engines.remaining) {
-      ASSERT_EQ(new_remaining_engine, old_engines_iter->get());
       ++old_engines_iter;
     }
 
