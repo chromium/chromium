@@ -36,18 +36,16 @@ GamepadHapticEffectType EffectTypeFromEnum(
   NOTREACHED();
 }
 
-V8GamepadHapticsResult ResultToV8(GamepadHapticsResult result) {
+V8GamepadHapticsResult::Enum ResultToV8(GamepadHapticsResult result) {
   switch (result) {
     case GamepadHapticsResult::GamepadHapticsResultComplete:
-      return V8GamepadHapticsResult(V8GamepadHapticsResult::Enum::kComplete);
+      return V8GamepadHapticsResult::Enum::kComplete;
     case GamepadHapticsResult::GamepadHapticsResultPreempted:
-      return V8GamepadHapticsResult(V8GamepadHapticsResult::Enum::kPreempted);
+      return V8GamepadHapticsResult::Enum::kPreempted;
     case GamepadHapticsResult::GamepadHapticsResultInvalidParameter:
-      return V8GamepadHapticsResult(
-          V8GamepadHapticsResult::Enum::kInvalidParameter);
+      return V8GamepadHapticsResult::Enum::kInvalidParameter;
     case GamepadHapticsResult::GamepadHapticsResultNotSupported:
-      return V8GamepadHapticsResult(
-          V8GamepadHapticsResult::Enum::kNotSupported);
+      return V8GamepadHapticsResult::Enum::kNotSupported;
     default:
       NOTREACHED();
   }
