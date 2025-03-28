@@ -858,6 +858,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_IOS_RECENT_TABS_OTHER_DEVICES_SYNC_IS_OFF_MESSAGE" desc="To use the Other Devices section of the Recent Tabs view, a user must be signed in and activate Tabs synchronization on multiple devices. This message is shown in this section when the user is signed in, but Tabs synchronization is turned off.">
           To see your tabs from wherever you use Chrome, turn on sync
       </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_ALERT_MESSAGE" desc="Message body for the alert explaining why notifications are needed for the Tab Reminders feature. [iOS only]">
+        To receive Tab Reminders from Chrome, turn on notifications in your iOS Settings.
+      </message>
       <message name="IDS_IOS_REMOVE_ACCOUNT_CONFIRMATION_MESSAGE" desc="Dialog message to emphasize the effects of removing an account.">
       This account and any unsaved data will be removed from Chrome and other Google apps on this device.
       </message>

@@ -4943,6 +4943,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_RECENT_TABS_SYNC_IN_PROGRESS" desc="Section header subtitle label while loading tabs in other devices. [Length: 30em] [iOS only]">
         Syncing…
       </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_ALERT_GO_TO_SETTINGS_BUTTON" desc="Button text on the notification permission alert that takes the user to the iOS Settings app. [iOS only]">
+        Go to Settings…
+      </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_ALERT_NO_THANKS_BUTTON" desc="Button text on the notification permission alert to dismiss the alert without going to settings. [iOS only]">
+        No, Thanks
+      </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_ALERT_TITLE" desc="Title for the alert asking the user to turn on notifications to use the Tab Reminders feature. [iOS only]">
+        Turn on notifications?
+      </message>
       <message name="IDS_IOS_REMINDER_NOTIFICATIONS_CANCEL_BUTTON" desc="Button text to cancel setting a reminder in the reminder notifications half sheet. [iOS only]">
         Cancel
       </message>
@@ -4955,6 +4964,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_REMINDER_NOTIFICATIONS_HIDE_SET_A_REMINDER" desc="Text for the context menu item to hide the 'Set a Reminder' overflow menu action. [iOS only]">
         Hide Set a Reminder
       </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_IPH_BUBBLE_MESSAGE" desc="Text for a bubble IPH informing the user about the tab reminder feature. [iOS only]">
+        You can set a tab reminder to check out this site again in the future
+      </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_REMOVE_REMINDER_ACTION" desc="Text for an action (e.g., in a context menu or alert) to remove a previously set reminder. [iOS only]">
+        Remove Reminder
+      </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_SETTINGS_TABS_DESCRIPTION" desc="Description text explaining what the 'Tabs' notification setting controls (reminders and tabs from other devices). [iOS only]">
+        Receive updates for reminders you set, and tabs from other devices
+      </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_SETTINGS_TABS_TITLE" desc="Title for the 'Tabs' section within iOS notification settings, which includes reminders. [iOS only]">
+        Tabs
+      </message>
       <message name="IDS_IOS_REMINDER_NOTIFICATIONS_SET_A_REMINDER" desc="Text for the 'Set a Reminder' overflow menu action. [iOS only]">
         Set a Reminder
       </message>
@@ -4963,6 +4984,24 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_REMINDER_NOTIFICATIONS_SHEET_TITLE" desc="Title shown at the top of the half sheet where users can set a reminder for the current webpage. [iOS only]">
         Set a reminder
+      </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_SNACKBAR_MESSAGE" desc="Text shown in a snackbar confirming that a reminder has been set for a specific date and time. It includes placeholders for the time ($1) and date ($2). [iOS only]">
+        Reminder set for <ph name="TIME">$1<ex>8:00 PM</ex></ph>, <ph name="DATE">$2<ex>Oct 31, 2024</ex></ph>
+      </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_SNACKBAR_REMOVED_MESSAGE" desc="Text shown in a snackbar confirming that a previously set reminder has been removed. [iOS only]">
+        Reminder removed
+      </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_SNACKBAR_UNDO_BUTTON" desc="Button text on the confirmation snackbar allowing the user to undo setting the reminder. [iOS only]">
+        Undo
+      </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_SWIPE_ACTION_DELETE" desc="Text for the swipe action on items (e.g., in Bookmarks or Reading List) to delete that item. Used alongside the 'Remind' action. [iOS only]">
+        Delete
+      </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_SWIPE_ACTION_REMIND" desc="Text for the swipe action on items (e.g., in Bookmarks or Reading List) to set a reminder for that item. [iOS only]">
+        Remind
+      </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_TAB_LONG_PRESS_IPH" desc="Text for a bubble IPH informing the user that they can touch and hold a tab to set a reminder. [iOS only]">
+        You can touch and hold this tab to set a reminder to revisit later
       </message>
       <message name="IDS_IOS_REMINDER_NOTIFICATIONS_TIME_LABEL" desc="Label for the time field in the reminder notifications date/time picker. [iOS only]">
         Time
