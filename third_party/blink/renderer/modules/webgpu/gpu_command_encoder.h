@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -43,15 +44,54 @@ class GPUCommandEncoder : public DawnObject<wgpu::CommandEncoder> {
   GPUComputePassEncoder* beginComputePass(
       const GPUComputePassDescriptor* descriptor,
       ExceptionState& exception_state);
-  void copyBufferToBuffer(DawnObject<wgpu::Buffer>* src,
-                          uint64_t src_offset,
-                          DawnObject<wgpu::Buffer>* dst,
-                          uint64_t dst_offset,
-                          uint64_t size) {
-    DCHECK(src);
-    DCHECK(dst);
-    GetHandle().CopyBufferToBuffer(src->GetHandle(), src_offset,
-                                   dst->GetHandle(), dst_offset, size);
+  void copyBufferToBuffer(DawnObject<wgpu::Buffer>* source,
+                          DawnObject<wgpu::Buffer>* destination,
+                          ExceptionState& exception_state) {
+    if (!RuntimeEnabledFeatures::WebGPUExperimentalFeaturesEnabled()) {
+      exception_state.ThrowTypeError("Offsets and size are required.");
+      return;
+    }
+    copyBufferToBuffer(source, 0, destination, 0, exception_state);
+  }
+  void copyBufferToBuffer(DawnObject<wgpu::Buffer>* source,
+                          DawnObject<wgpu::Buffer>* destination,
+                          uint64_t size,
+                          ExceptionState& exception_state) {
+    if (!RuntimeEnabledFeatures::WebGPUExperimentalFeaturesEnabled()) {
+      exception_state.ThrowTypeError("Offsets are required.");
+      return;
+    }
+    copyBufferToBuffer(source, 0, destination, 0, size, exception_state);
+  }
+  void copyBufferToBuffer(DawnObject<wgpu::Buffer>* source,
+                          uint64_t source_offset,
+                          DawnObject<wgpu::Buffer>* destination,
+                          uint64_t destination_offset,
+                          ExceptionState& exception_state) {
+    if (!RuntimeEnabledFeatures::WebGPUExperimentalFeaturesEnabled()) {
+      exception_state.ThrowTypeError("Size is required.");
+      return;
+    }
+    DCHECK(source);
+    // Underflow in the size calculation is acceptable because a GPU validation
+    // error will be fired if the resulting size is a very large positive
+    // integer. The offset is validated to be less than the buffer size before
+    // we compute the remaining size in the buffer.
+    copyBufferToBuffer(source, source_offset, destination, destination_offset,
+                       source->GetHandle().GetSize() - source_offset,
+                       exception_state);
+  }
+  void copyBufferToBuffer(DawnObject<wgpu::Buffer>* source,
+                          uint64_t source_offset,
+                          DawnObject<wgpu::Buffer>* destination,
+                          uint64_t destination_offset,
+                          uint64_t size,
+                          ExceptionState& exception_state) {
+    DCHECK(source);
+    DCHECK(destination);
+    GetHandle().CopyBufferToBuffer(source->GetHandle(), source_offset,
+                                   destination->GetHandle(), destination_offset,
+                                   size);
   }
   void copyBufferToTexture(GPUTexelCopyBufferInfo* source,
                            GPUTexelCopyTextureInfo* destination,
