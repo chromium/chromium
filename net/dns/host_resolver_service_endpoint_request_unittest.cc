@@ -340,6 +340,11 @@ class HostResolverServiceEndpointRequestTest
     PopulateCache(key, std::move(endpoints));
   }
 
+  void AdvanceTickClockToExpirePopulatedCacheEntries() {
+    // PopulateCache() uses kDefaultTtl for TTL.
+    FastForwardBy(kDefaultTtl);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 
@@ -1217,7 +1222,7 @@ TEST_F(HostResolverServiceEndpointRequestTest, StaleOnlyAllowedAsIntermediate) {
   std::vector<IPEndPoint> stale_endpoints = {stale_endpoint1, stale_endpoint2};
 
   PopulateCacheForUrl("https://4slow_ok", stale_endpoints);
-  MakeCacheStale();
+  AdvanceTickClockToExpirePopulatedCacheEntries();
 
   ResolveHostParameters parameters;
   parameters.cache_usage = HostResolver::ResolveHostParameters::CacheUsage::
@@ -1251,7 +1256,7 @@ TEST_F(HostResolverServiceEndpointRequestTest, StaleAllowed) {
   std::vector<IPEndPoint> stale_endpoints = {stale_endpoint1, stale_endpoint2};
 
   PopulateCacheForUrl("https://4slow_ok", stale_endpoints);
-  MakeCacheStale();
+  AdvanceTickClockToExpirePopulatedCacheEntries();
 
   ResolveHostParameters parameters;
   parameters.cache_usage =
@@ -1302,7 +1307,7 @@ TEST_F(HostResolverServiceEndpointRequestTest, StaleAllowedLocalOnly) {
   std::vector<IPEndPoint> stale_endpoints = {stale_endpoint1, stale_endpoint2};
 
   PopulateCacheForUrl("https://ok", stale_endpoints);
-  MakeCacheStale();
+  AdvanceTickClockToExpirePopulatedCacheEntries();
 
   ResolveHostParameters parameters;
   parameters.cache_usage =
@@ -1326,7 +1331,7 @@ TEST_F(HostResolverServiceEndpointRequestTest,
   std::vector<IPEndPoint> stale_endpoints = {stale_endpoint1, stale_endpoint2};
 
   PopulateCacheForUrl("https://ok", stale_endpoints);
-  MakeCacheStale();
+  AdvanceTickClockToExpirePopulatedCacheEntries();
 
   ResolveHostParameters parameters;
   parameters.cache_usage = HostResolver::ResolveHostParameters::CacheUsage::
@@ -1349,7 +1354,7 @@ TEST_F(HostResolverServiceEndpointRequestTest, AllowStaleWhileRefreshing) {
   std::vector<IPEndPoint> stale_endpoints = {stale_endpoint1, stale_endpoint2};
 
   PopulateCacheForUrl("https://ok", stale_endpoints);
-  MakeCacheStale();
+  AdvanceTickClockToExpirePopulatedCacheEntries();
 
   ResolveHostParameters parameters;
   parameters.cache_usage = HostResolver::ResolveHostParameters::CacheUsage::
@@ -1389,7 +1394,7 @@ TEST_F(HostResolverServiceEndpointRequestTest,
   std::vector<IPEndPoint> stale_endpoints = {stale_endpoint1, stale_endpoint2};
 
   PopulateCacheForUrl("https://4slow_ok", stale_endpoints);
-  MakeCacheStale();
+  AdvanceTickClockToExpirePopulatedCacheEntries();
 
   ResolveHostParameters parameters;
   parameters.cache_usage = HostResolver::ResolveHostParameters::CacheUsage::
@@ -1442,7 +1447,7 @@ TEST_F(HostResolverServiceEndpointRequestTest,
   std::vector<IPEndPoint> stale_endpoints = {stale_endpoint1, stale_endpoint2};
 
   PopulateCacheForUrl("https://6slow_ok", stale_endpoints);
-  MakeCacheStale();
+  AdvanceTickClockToExpirePopulatedCacheEntries();
 
   ResolveHostParameters parameters;
   parameters.cache_usage = HostResolver::ResolveHostParameters::CacheUsage::
@@ -1489,7 +1494,7 @@ TEST_F(HostResolverServiceEndpointRequestTest, StaleAllowedHostsFresh) {
   SetDnsRules(std::move(rules));
 
   PopulateCacheForUrl("https://ok", {stale_endpoint});
-  MakeCacheStale();
+  AdvanceTickClockToExpirePopulatedCacheEntries();
 
   ResolveHostParameters parameters;
   parameters.cache_usage =
@@ -1522,7 +1527,7 @@ TEST_F(HostResolverServiceEndpointRequestTest,
   SetDnsRules(std::move(rules));
 
   PopulateCacheForUrl("https://ok", {stale_endpoint}, /*secure=*/true);
-  MakeCacheStale();
+  AdvanceTickClockToExpirePopulatedCacheEntries();
   PopulateCacheForUrl("https://ok", {fresh_endpoint}, /*secure=*/false);
 
   mock_dns_client_->set_preset_endpoint(
