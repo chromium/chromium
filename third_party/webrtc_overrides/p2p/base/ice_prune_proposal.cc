@@ -1,8 +1,9 @@
 #include "third_party/webrtc_overrides/p2p/base/ice_prune_proposal.h"
 
-#include <algorithm>
-#include <iterator>
+#include <string>
 
+#include "third_party/webrtc/api/array_view.h"
+#include "third_party/webrtc/p2p/base/connection.h"
 #include "third_party/webrtc/rtc_base/strings/string_builder.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_connection.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_proposal.h"

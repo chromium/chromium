@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_WEBRTC_OVERRIDES_RTC_BASE_FAKE_SOCKET_SERVER_H_
 #define THIRD_PARTY_WEBRTC_OVERRIDES_RTC_BASE_FAKE_SOCKET_SERVER_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <map>
 
-#include "base/notreached.h"
-
+#include "base/notimplemented.h"
 #include "third_party/webrtc/rtc_base/socket.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
 #include "third_party/webrtc/rtc_base/socket_factory.h"

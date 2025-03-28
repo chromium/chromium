@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_ICE_CONNECTION_H_
 #define THIRD_PARTY_WEBRTC_OVERRIDES_P2P_BASE_ICE_CONNECTION_H_
 
+#include <cstdint>
 #include <ostream>
 #include <string>
 #include <vector>
