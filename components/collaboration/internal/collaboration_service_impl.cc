@@ -23,7 +23,6 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
-#include "ui/base/device_form_factor.h"
 
 namespace collaboration {
 
@@ -288,11 +287,6 @@ CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
   // Check if device policy allow signin.
   if (!profile_prefs_->GetBoolean(prefs::kSigninAllowed)) {
     return CollaborationStatus::kDisabledForPolicy;
-  }
-
-  // Disable for automotive users.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_AUTOMOTIVE) {
-    return CollaborationStatus::kDisabled;
   }
 
   // TODO(haileywang): Support collaboration status updates.
