@@ -7,6 +7,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "content/browser/serial/serial_test_utils.h"
 #include "content/public/browser/content_browser_client.h"
@@ -20,6 +21,7 @@
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "device/base/features.h"
 #include "services/device/public/cpp/test/fake_serial_port_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,6 +49,13 @@ class SerialTestShellContentBrowserClient
 
 class SerialTest : public ContentBrowserTest {
  public:
+#if BUILDFLAG(IS_ANDROID)
+  SerialTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        device::features::kBluetoothRfcommAndroid);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
@@ -65,6 +74,10 @@ class SerialTest : public ContentBrowserTest {
  private:
   std::unique_ptr<SerialTestShellContentBrowserClient> test_client_;
   device::FakeSerialPortManager port_manager_;
+
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace
