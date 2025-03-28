@@ -411,7 +411,7 @@
    "ai": {
     "language_detection": {
      "availability-detached-crash.tentative.https.html": [
-      "8dd685d990ad0c2e2524ab134da7284dbe79d010",
+      "5f76d59eb3540048bc0586f2a1ac5b3b313a147e",
       [
        null,
        {}
@@ -254549,7 +254549,7 @@
       ]
      ],
      "pseudo-with-classes-mismatch-ident.html": [
-      "107f388b388f42a51c311198cd911b54008a21d7",
+      "493127b86b3d159c9d137704d991ab878568ba4d",
       [
        null,
        [
@@ -254562,7 +254562,7 @@
       ]
      ],
      "pseudo-with-classes-mismatch-partial.html": [
-      "ddb9b2535f26aa77e6c485e99043dd9496ef3dab",
+      "d4a6e0a4f15d358492d95bbca7807cda814072e3",
       [
        null,
        [
@@ -254575,7 +254575,7 @@
       ]
      ],
      "pseudo-with-classes-mismatch-wildcard.html": [
-      "1e27dc2c05ce97b54f4b362f6d21b94bf6e32d61",
+      "bdf5116144767b8214e3d775158b16be993008f6",
       [
        null,
        [
@@ -254601,7 +254601,7 @@
       ]
      ],
      "pseudo-with-classes-new-with-class-old-without.html": [
-      "225ed1cb7f32194b67808207f899fc1034d33171",
+      "5adb88f143f8f7f307838f83652a3885d4f4424b",
       [
        null,
        [
@@ -254614,7 +254614,7 @@
       ]
      ],
      "pseudo-with-classes-old-with-class-new-without.html": [
-      "f9ef100ef7edf9f279594af18cb970ea7b1dab80",
+      "17d03f8fcfc58443f60a20143c13036624a7b90b",
       [
        null,
        [
@@ -376367,6 +376367,10 @@
       []
      ]
     },
+    "fetch-verify-authenticated.https.html": [
+     "d9e3df9f5c6e6030ed642dc302d600a3c974f110",
+     []
+    ],
     "helper.js": [
      "58b7a5fe7a2da56b9c6555f6e21510abd1c81473",
      []
@@ -408219,7 +408223,7 @@
     ]
    },
    "lint.ignore": [
-    "8df85b016fe85482344b9d5cbe76f1e15a8d8827",
+    "c8b98fb5890027a93dc73bf94023e26bdc4a7211",
     []
    ],
    "loading": {
@@ -411441,14 +411445,6 @@
      "3516e9555e60a6cb1b038d978eb7b36a8f34d79a",
      []
     ],
-    "commit-behavior": {
-     "resources": {
-      "after-transition-commit-helpers.js": [
-       "2be6a03bac8d6a4526e36d70f1b7a7a9d4badc3b",
-       []
-      ]
-     }
-    },
     "focus-reset": {
      "resources": {
       "helpers.mjs": [
@@ -411601,6 +411597,14 @@
       ],
       "notify-top-early.html": [
        "0dd796f609c0659bd489e10cb02ac4816a88960b",
+       []
+      ]
+     }
+    },
+    "precommit-handler": {
+     "resources": {
+      "precommitHandler-helpers.js": [
+       "1338617681feb373a47052a7f605f44d3eca2a16",
        []
       ]
      }
@@ -424211,6 +424215,10 @@
      "42d1f1e0dca27b10186d1fa5adde6a7b914b0513",
      []
     ],
+    "should-sink-type-mismatch-violation-be-blocked-by-csp-003.html.headers": [
+     "b48df2b0ccc70404c91bc6e0311b62f70db5573d",
+     []
+    ],
     "should-trusted-type-policy-creation-be-blocked-by-csp-002-expected.txt": [
      "894439787e788546b8e446810fee8491a9635da8",
      []
@@ -424352,12 +424360,24 @@
       "45053d43e362e223e0ce5e6dffb4da09c0ce3f34",
       []
      ],
-     "should-sink-type-mismatch-violation-be-blocked-by-csp-002-worker.js": [
-      "dc3eb004c384b578f1217575626ba5725018f15e",
+     "should-sink-type-mismatch-violation-be-blocked-by-csp-002-worker-location.js": [
+      "ff0e26bbc3a9a44c3d79d41714852b5f280d39f1",
       []
      ],
-     "should-sink-type-mismatch-violation-be-blocked-by-csp-002-worker.js.headers": [
+     "should-sink-type-mismatch-violation-be-blocked-by-csp-002-worker-location.js.headers": [
+      "b48df2b0ccc70404c91bc6e0311b62f70db5573d",
+      []
+     ],
+     "should-sink-type-mismatch-violation-be-blocked-by-csp-002-worker-multiple-violations.js": [
+      "4979b7fc51ef34fb26a278ca93537e002dd3bd49",
+      []
+     ],
+     "should-sink-type-mismatch-violation-be-blocked-by-csp-002-worker-multiple-violations.js.headers": [
       "c17d57d19ae4ef9d3e584d10fc39065823cb2f73",
+      []
+     ],
+     "should-sink-type-mismatch-violation-be-blocked-by-csp-location.js": [
+      "8568b960aa3a7124c37036a9b47b8162b6bce3df",
       []
      ],
      "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker-allow-duplicates-tt-policy-name.js": [
@@ -462005,7 +462025,7 @@
    "ai": {
     "language_detection": {
      "detector.https.tentative.any.js": [
-      "f28b3ebf2b48b8a129eef4ee293ca229126a9e60",
+      "d54d0110be05b65c4f97270e53f797bdcff3f50a",
       [
        "ai/language_detection/detector.https.tentative.any.html",
        {
@@ -476543,6 +476563,13 @@
        {}
       ]
      ],
+     "containertiming-text-itself.html": [
+      "bead4d1724b10b8d664eec62222bbcfc41da2d17",
+      [
+       null,
+       {}
+      ]
+     ],
      "containertiming-two-overlapping-imgs.html": [
       "1a36c6f253211c3838b2586feff6660b6b53a379",
       [
@@ -476552,6 +476579,13 @@
      ],
      "containertiming-with-child-img.html": [
       "03f0e113902d0d4117a38870dfd22defe99c4653",
+      [
+       null,
+       {}
+      ]
+     ],
+     "containertiming-with-child-text.html": [
+      "1efc189c34e42eb616f56f4e0c259e5be55a079c",
       [
        null,
        {}
@@ -532089,6 +532123,13 @@
       {}
      ]
     ],
+    "fetch-no-credentials.https.html": [
+     "4cac685727ad29cd96be041753623cbc4fdd1be6",
+     [
+      null,
+      {}
+     ]
+    ],
     "include-site.https.html": [
      "6eaf522c73ba6d6378c60f8460fb3497cd8df424",
      [
@@ -536683,6 +536724,13 @@
         {}
        ]
       ],
+      "focus-preserve.html": [
+       "a00e8b77880697a51d4418fc15637b1dcef6914b",
+       [
+        null,
+        {}
+       ]
+      ],
       "focus-within.html": [
        "18d8c93b9982dd96a14c5548257292ad7b76c315",
        [
@@ -536847,15 +536895,6 @@
         {}
        ]
       ],
-      "tentative": {
-       "focus-preserve.html": [
-        "a00e8b77880697a51d4418fc15637b1dcef6914b",
-        [
-         null,
-         {}
-        ]
-       ]
-      },
       "throws-exception.html": [
        "34123c72dfd1bf8617f716cf755bd4d9e34e0272",
        [
@@ -667603,113 +667642,6 @@
     ]
    },
    "navigation-api": {
-    "commit-behavior": {
-     "after-transition-new-navigation-before-commit.html": [
-      "2d09d40dc952f5f333f08ecc99cde7ae4adcd521",
-      [
-       null,
-       {}
-      ]
-     ],
-     "after-transition-push.html": [
-      "34bdcf7cac733c78b1eeec4bbb1c3a5cc64dd045",
-      [
-       null,
-       {}
-      ]
-     ],
-     "after-transition-redirect-explicit-commit.html": [
-      "7fa356760870c4d519e9d53f92bbebe6b4849a79",
-      [
-       null,
-       {}
-      ]
-     ],
-     "after-transition-redirect-push.html": [
-      "79b46ea475087c0ba16783899d2af93addc5b033",
-      [
-       null,
-       {}
-      ]
-     ],
-     "after-transition-redirect-replace.html": [
-      "e31f5884a2762630abfc2974c3a2dbcd3871b4d3",
-      [
-       null,
-       {}
-      ]
-     ],
-     "after-transition-reload.html": [
-      "203150eb0516f2eea57f9e398f5bb50a972f0569",
-      [
-       null,
-       {}
-      ]
-     ],
-     "after-transition-replace.html": [
-      "2fd48736a34368b6f16eca126f59f5f77243dd57",
-      [
-       null,
-       {}
-      ]
-     ],
-     "after-transition-traversal-commit-new-navigation-before-commit.html": [
-      "9e74e10676de5db44655b80851ef8b0e1383986c",
-      [
-       null,
-       {}
-      ]
-     ],
-     "after-transition-traversal-window-stop-before-commit.html": [
-      "282f806f4d38626c7afa08bdbf4f2eaf7704f385",
-      [
-       null,
-       {}
-      ]
-     ],
-     "after-transition-traverse.html": [
-      "d348a218ac4a4b7efa0c54ac8e50b51783b1253a",
-      [
-       null,
-       {}
-      ]
-     ],
-     "after-transition-uncancelable.html": [
-      "45bde9f0900b6835f754cfa09129c63dfd1f4e7b",
-      [
-       null,
-       {}
-      ]
-     ],
-     "after-transition-window-stop-before-commit.html": [
-      "0f5e57d5b665e5d83fcaf7fc5b21e03b32fdc108",
-      [
-       null,
-       {}
-      ]
-     ],
-     "commit-throws.html": [
-      "54abdbfd0fb19f68a9b87a183581d7a5462b2134",
-      [
-       null,
-       {}
-      ]
-     ],
-     "multiple-intercept.html": [
-      "848af6a65d8954accaa0c9882224ba07d76f7958",
-      [
-       null,
-       {}
-      ]
-     ],
-     "redirect-throws.html": [
-      "4bb6f9660711e853d35d9aef41eab04cf80a1a18",
-      [
-       null,
-       {}
-      ]
-     ]
-    },
     "currententrychange-event": {
      "anchor-click.html": [
       "ce8fc69f5d4486c990284adfa5e4608af8fd198e",
@@ -669976,28 +669908,6 @@
        {}
       ]
      ],
-     "navigate-commit-after-transition-intercept-with-redirect.html": [
-      "1d7c47b5e73f7306fbf68a21233caae8310f123e",
-      [
-       "navigation-api/ordering-and-transition/navigate-commit-after-transition-intercept-with-redirect.html?currententrychange",
-       {}
-      ],
-      [
-       "navigation-api/ordering-and-transition/navigate-commit-after-transition-intercept-with-redirect.html?no-currententrychange",
-       {}
-      ]
-     ],
-     "navigate-commit-after-transition-intercept.html": [
-      "16c8796d6f45ce94f594280339596464e60b49cf",
-      [
-       "navigation-api/ordering-and-transition/navigate-commit-after-transition-intercept.html?currententrychange",
-       {}
-      ],
-      [
-       "navigation-api/ordering-and-transition/navigate-commit-after-transition-intercept.html?no-currententrychange",
-       {}
-      ]
-     ],
      "navigate-cross-document-double.html": [
       "262809a0ad7216685cb0915c44bf1b6d591e123f",
       [
@@ -670031,6 +669941,28 @@
       ],
       [
        "navigation-api/ordering-and-transition/navigate-in-transition-finished.html?no-currententrychange",
+       {}
+      ]
+     ],
+     "navigate-intercept-precommitHandler-redirect.html": [
+      "90cf813d0587c2c6bf3c299360890060255ed275",
+      [
+       "navigation-api/ordering-and-transition/navigate-intercept-precommitHandler-redirect.html?currententrychange",
+       {}
+      ],
+      [
+       "navigation-api/ordering-and-transition/navigate-intercept-precommitHandler-redirect.html?no-currententrychange",
+       {}
+      ]
+     ],
+     "navigate-intercept-precommitHandler.html": [
+      "27e317cfc6759c8efc01ba40648a315304744e63",
+      [
+       "navigation-api/ordering-and-transition/navigate-intercept-precommitHandler.html?currententrychange",
+       {}
+      ],
+      [
+       "navigation-api/ordering-and-transition/navigate-intercept-precommitHandler.html?no-currententrychange",
        {}
       ]
      ],
@@ -670226,6 +670158,99 @@
       ]
      ]
     },
+    "precommit-handler": {
+     "multiple-intercept.html": [
+      "b7fd9109bd56334b985212595e8f34f7c550ee6d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "precommitHandler-new-navigation-before-commit.html": [
+      "89e9895534f4583d3bf19b2c3d756c5cf58da487",
+      [
+       null,
+       {}
+      ]
+     ],
+     "precommitHandler-push.html": [
+      "41856ed6c433e586b683e9fd1d0e4ca0c0e277cd",
+      [
+       null,
+       {}
+      ]
+     ],
+     "precommitHandler-redirect-push.html": [
+      "de75198d9754a5510adb449f5845fa5daa7ea63b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "precommitHandler-redirect-replace.html": [
+      "049909fefdead4c6a72b94d2a05423523733c50f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "precommitHandler-redirect-throws.html": [
+      "353daa1a48bc9dac85453d32f56ec35bc6b59ddb",
+      [
+       null,
+       {}
+      ]
+     ],
+     "precommitHandler-reload.html": [
+      "0fd5da33e4cf85566350f066ad9a60baa16171a3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "precommitHandler-replace.html": [
+      "7c28c99af1e15c06dba2acdf4d3e6ce1381c18e4",
+      [
+       null,
+       {}
+      ]
+     ],
+     "precommitHandler-traversal-commit-new-navigation-before-commit.html": [
+      "226f332e421687bf92430f9009b329e751adc7c0",
+      [
+       null,
+       {}
+      ]
+     ],
+     "precommitHandler-traversal-window-stop-before-commit.html": [
+      "c45f8268f2a31a7440f74c8ed7336694bcfabea9",
+      [
+       null,
+       {}
+      ]
+     ],
+     "precommitHandler-traverse.html": [
+      "f152129ce264b79bc7407f5308559701ef97210e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "precommitHandler-uncancelable.html": [
+      "af320b4e32c920947212cc8edce1be23c7520221",
+      [
+       null,
+       {}
+      ]
+     ],
+     "precommitHandler-window-stop-before-commit.html": [
+      "857a21ed3a97dd695d553818b5d067fec6666534",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "scroll-behavior": {
      "after-transition-basic.html": [
       "8ee4cc395b6722affc8ac657ee35d7cb41761b9d",
@@ -670318,15 +670343,15 @@
        {}
       ]
      ],
-     "manual-scroll-before-after-transition-commit.html": [
-      "3b32e72bb1118f4c81ad1da31d927dc1a2abe2a8",
+     "manual-scroll-fragment-does-not-exist.html": [
+      "1ca582787e2e27ae63fec6170ed658b7f1453b65",
       [
        null,
        {}
       ]
      ],
-     "manual-scroll-fragment-does-not-exist.html": [
-      "1ca582787e2e27ae63fec6170ed658b7f1453b65",
+     "manual-scroll-in-precommit-handler.html": [
+      "3f92b5276a31c89613e2c78bf7445e9a8e7c17da",
       [
        null,
        {}
@@ -705263,15 +705288,6 @@
       }
      ]
     ],
-    "navigation-api-after-transition-commit.tentative.html": [
-     "ae17db7d59f4c5cf2bf01af2b7224fa6aa8232df",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
     "navigation-api-back.tentative.html": [
      "cb96d9caf95ba7987adb065a150b2182ec784b9a",
      [
@@ -705292,6 +705308,15 @@
     ],
     "navigation-api-hash.tentative.html": [
      "e20578ea79ed7a6564a2d960cc1148b520c55ef2",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "navigation-api-precommit.tentative.html": [
+     "b5d6077e13d7ef56ccdb9559d446c64e5a3edd02",
      [
       null,
       {
@@ -726734,7 +726759,16 @@
      ]
     ],
     "should-sink-type-mismatch-violation-be-blocked-by-csp-002-worker.html": [
-     "9a7b237f11a5c436141f8f658b1d21b816ceadff",
+     "55e4c57bdebe994fbe938d2e34d121e34d1e77bf",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "should-sink-type-mismatch-violation-be-blocked-by-csp-003.html": [
+     "d5bbf704443874717812c08080a7e61b835f45a5",
      [
       null,
       {

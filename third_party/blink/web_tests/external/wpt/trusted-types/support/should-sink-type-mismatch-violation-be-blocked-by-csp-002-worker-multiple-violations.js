@@ -5,10 +5,10 @@ importScripts(testSetupPolicy.createScriptURL("/resources/testharness.js"));
 importScripts(testSetupPolicy.createScriptURL("csp-violations.js"));
 
 // For CSP applying to this file, please refer to
-// should-sink-type-mismatch-violation-be-blocked-by-csp-002-worker.js.headers
+// should-sink-type-mismatch-violation-be-blocked-by-csp-002-worker-multiple-violations.js.headers
 
 promise_test(async () => {
-  let {violations, exception} = await trusted_type_violations_and_exception_for(_ => setTimeout("unsafe"));
+  let {violations, exception} = await trusted_type_violations_and_exception_for(_ => setTimeout(";;;;;"));
 
   // An exception is thrown for the violated enforced policies.
   assert_true(exception instanceof TypeError, "TypeError is thrown");
@@ -30,6 +30,6 @@ promise_test(async () => {
   assert_equals(sorted_violations[4].disposition, "report");
   assert_equals(sorted_violations[5].policy, "require-trusted-types-for 'invalid' 'script'");
   assert_equals(sorted_violations[5].disposition, "report");
-}, "Checking reported violations for setTimeout('unsafe') from DedicatedWorker");
+}, "Checking reported violations for setTimeout(';;;;;') from DedicatedWorker");
 
 done();
