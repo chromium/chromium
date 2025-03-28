@@ -513,9 +513,9 @@ vars = {
   # and whatever else without interference from each other.
   'betocore_revision': '89563fec14c756482afa08b016eeba9087c8d1e3',
   # Three lines of non-changing comments so that
-  # the commit queue can handle CLs rolling tsproxy
+  # the commit queue can handle CLs rolling webpagereplay
   # and whatever else without interference from each other.
-  'webpagereplay_revision': 'd812e180206934eb3b7ae411d82d61bc21c22f70',
+  'webpagereplay_revision': '2c5049abfc2cf36ece82f7f84ebdcb786659eaf7',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling llvm-libc
   # and whatever else without interference from each other.
