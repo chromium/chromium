@@ -817,6 +817,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Password export confirmed by the user"/>
 </enum>
 
+<enum name="PasswordFillingReauthPromoShown">
+  <int value="0" label="Not shown"/>
+  <int value="1" label="Shown among other suggestions"/>
+  <int value="2" label="Shown alone"/>
+</enum>
+
 <enum name="PasswordFormHadUsernameField">
   <int value="0" label="No username field"/>
   <int value="1" label="Username match"/>

@@ -2873,6 +2873,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordFilling.ReauthPromo"
+    enum="PasswordFillingReauthPromoShown" expires_after="2026-03-28">
+  <owner>droger@chromium.org</owner>
+  <owner>mlbipin@google.com</owner>
+  <summary>
+    Logs whether the reauth promo is shown as part of password filling
+    suggestions. Recorded when some suggestions are shown.
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.PasswordGenerationBottomSheet.InteractionResult"
     enum="PasswordManager.PasswordGenerationBottomSheet.InteractionResult"
