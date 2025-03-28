@@ -164,12 +164,15 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicSkippedOnNewNavigation) {
 // Tests that histograms related to distillation results are recorded after the
 // JavaScript execution.
 TEST_F(ReaderModeTabHelperTest, TriggerDistillerJs) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      kEnableReaderModeDistillerHeuristic,
-      {
-          {kReaderModeDistillerPageLoadProbabilityName, "1.0"},
-          {kReaderModeDistillerPageLoadDelayDurationStringName, "0"},
-      });
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kEnableReaderModeDistillerHeuristic,
+        {
+            {kReaderModeDistillerPageLoadProbabilityName, "1.0"},
+            {kReaderModeDistillerPageLoadDelayDurationStringName, "0"},
+        }},
+       {kEnableReaderModeDistiller, {}}},
+      /*disabled_features=*/{});
 
   auto test_web_state = std::make_unique<web::FakeWebState>();
   auto frames_manager = std::make_unique<web::FakeWebFramesManager>();

@@ -1385,24 +1385,13 @@ const FeatureEntry::FeatureVariation kFeedSwipeInProductHelpVariations[] = {
 
 constexpr flags_ui::FeatureEntry::FeatureParam
     kReaderModeDistillerPageLoadHeuristicAlwaysEnabledParam[] = {
-        {kReaderModeDistillerPageLoadProbabilityName, "1"}};
-const FeatureEntry::FeatureVariation
-    kReaderModePageLoadHeuristicSamplingOptions[] = {
-        {"on all page loads",
-         kReaderModeDistillerPageLoadHeuristicAlwaysEnabledParam,
-         std::size(kReaderModeDistillerPageLoadHeuristicAlwaysEnabledParam),
-         nullptr},
-};
-
-constexpr flags_ui::FeatureEntry::FeatureParam
-    kReaderModeDistillerHeuristicPageLoadDelayDisabledParam[] = {
+        {kReaderModeDistillerPageLoadProbabilityName, "1"},
         {kReaderModeDistillerPageLoadDelayDurationStringName, "0"}};
-const FeatureEntry::FeatureVariation
-    kReaderModeDistillerHeuristicPageLoadDelayOptions[] = {
-        {"with no delay",
-         kReaderModeDistillerHeuristicPageLoadDelayDisabledParam,
-         std::size(kReaderModeDistillerHeuristicPageLoadDelayDisabledParam),
-         nullptr},
+const FeatureEntry::FeatureVariation kReaderModeDistillerHeuristicOptions[] = {
+    {"no sampling with no delay",
+     kReaderModeDistillerPageLoadHeuristicAlwaysEnabledParam,
+     std::size(kReaderModeDistillerPageLoadHeuristicAlwaysEnabledParam),
+     nullptr},
 };
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
@@ -2579,25 +2568,17 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableSupportForHomeAndWork)},
-    {"reader-mode-distiller-heuristic-delay-string",
-     flag_descriptions::kReaderModeDistillerHeuristicPageLoadDelayName,
-     flag_descriptions::kReaderModeDistillerHeuristicPageLoadDelayDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         kEnableReaderModeDistillerHeuristic,
-         kReaderModeDistillerHeuristicPageLoadDelayOptions,
-         "ReaderModeHeuristicPageLoadDelay")},
     {"reader-mode-distiller-heuristic-enabled",
      flag_descriptions::kReaderModeDistillerHeuristicName,
      flag_descriptions::kReaderModeDistillerHeuristicDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableReaderModeDistillerHeuristic)},
-    {"reader-mode-distiller-heuristic-sampling",
-     flag_descriptions::kReaderModeDistillerHeuristicSamplingName,
-     flag_descriptions::kReaderModeDistillerHeuristicSamplingDescription,
      flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableReaderModeDistillerHeuristic,
-                                    kReaderModePageLoadHeuristicSamplingOptions,
+                                    kReaderModeDistillerHeuristicOptions,
                                     "ReaderModeHeuristicSampling")},
+    {"reader-mode-distiller-enabled",
+     flag_descriptions::kReaderModeDistillerName,
+     flag_descriptions::kReaderModeDistillerDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableReaderModeDistiller)},
     {"lens-overlay-navigation-history",
      flag_descriptions::kLensOverlayNavigationHistoryName,
      flag_descriptions::kLensOverlayNavigationHistoryDescription,

@@ -123,6 +123,10 @@ void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
     ReaderModeHeuristicResult result) {
   UMA_HISTOGRAM_ENUMERATION(kReaderModeHeuristicResultHistogram, result);
 
+  if (!base::FeatureList::IsEnabled(kEnableReaderModeDistiller)) {
+    return;
+  }
+
   // Gets the instance of the WebFramesManager from `web_state_` that can
   // execute the DOM distiller JavaScript in the isolated content world.
   web::WebFramesManager* web_frames_manager =

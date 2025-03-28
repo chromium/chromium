@@ -7738,17 +7738,12 @@
     "expiry_milestone": 145
   },
   {
-    "name": "reader-mode-distiller-heuristic-delay-string",
+    "name": "reader-mode-distiller-enabled",
     "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
     "expiry_milestone": 145
   },
   {
     "name": "reader-mode-distiller-heuristic-enabled",
-    "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "reader-mode-distiller-heuristic-sampling",
     "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
     "expiry_milestone": 145
   },
