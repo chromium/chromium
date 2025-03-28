@@ -1238,6 +1238,8 @@ static_library("browser") {
     "privacy/privacy_metrics_service.h",
     "privacy/privacy_metrics_service_factory.cc",
     "privacy/privacy_metrics_service_factory.h",
+    "privacy_sandbox/notice/framework_features.cc",
+    "privacy_sandbox/notice/framework_features.h",
     "privacy_sandbox/notice/notice_framework.cc",
     "privacy_sandbox/notice/notice_framework.h",
     "privacy_sandbox/notice/notice_framework_factory.cc",
