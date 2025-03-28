@@ -4690,6 +4690,13 @@
        null,
        {}
       ]
+     ],
+     "ruby-inlinize-fieldset-crash.html": [
+      "5454362077c4e01c6edd6f19f7fe7801b86a4b1b",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "css-scoping": {
@@ -369365,7 +369372,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "e1df1b8c670205931df252d4956287277f97700d",
+      "cbdc654b1d6280d3eeb3d49e440b69c71eb00463",
       []
      ],
      "animating-new-content-ref.html": [
@@ -369673,6 +369680,10 @@
       []
      ],
      "navigation": {
+      "WEB_FEATURES.yml": [
+       "1b95bc2b45bbeb5535d60c0786f7f4794ab16620",
+       []
+      ],
       "at-rule-opt-in-auto-ref.html": [
        "be8cc501cf09a01105a8f0c89d8e47b91dd66c01",
        []
@@ -370074,6 +370085,12 @@
       "23852cf6a7cae7868ee19a52315be1f20c47ac84",
       []
      ],
+     "parsing": {
+      "WEB_FEATURES.yml": [
+       "e011b34e2a06d5edbbdde0cf541fb86f00803644",
+       []
+      ]
+     },
      "pseudo-element-overflow-hidden-ref.html": [
       "02bcb5bb49c09ba151b10751ad31b9ebba91bdef",
       []
@@ -766119,7 +766136,7 @@
       ]
      ],
      "quantizeLinear.https.any.js": [
-      "c25bdbaac60fca0525e8cbcf080c1319a5ab0c26",
+      "5c4989fdf31f2c94d028cd8a74fe935c49f09986",
       [
        "webnn/conformance_tests/quantizeLinear.https.any.html?cpu",
        {
