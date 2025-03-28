@@ -528,6 +528,13 @@ template("chrome_extra_paks") {
       ]
     }
 
+    if (is_win || is_mac || is_linux) {
+      sources +=
+          [ "$root_gen_dir/chrome/signin_history_sync_optin_resources.pak" ]
+      deps +=
+          [ "//chrome/browser/resources/signin/history_sync_optin:resources" ]
+    }
+
     if (enable_dice_support) {
       sources += [
         "$root_gen_dir/chrome/batch_upload_resources.pak",

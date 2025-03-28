@@ -59,7 +59,10 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/webui/app_settings/web_app_settings_ui.h"
 #include "chrome/browser/ui/webui/on_device_translation_internals/on_device_translation_internals_ui.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin.mojom.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
+#include "components/signin/public/base/signin_switches.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -460,6 +463,11 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       on_device_translation_internals::mojom::PageHandlerFactory,
       OnDeviceTranslationInternalsUI>(map);
+
+  if (base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin)) {
+    RegisterWebUIControllerInterfaceBinder<
+        history_sync_optin::mojom::PageHandlerFactory, HistorySyncOptinUI>(map);
+  }
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
