@@ -29,7 +29,8 @@ class V8UnionHTMLCanvasElementOrOffscreenCanvas;
 
 // A GPUCanvasContext does little by itself and basically just binds a canvas
 // and a GPUSwapChain together and forwards calls from one to the other.
-class GPUCanvasContext : public CanvasRenderingContext,
+class GPUCanvasContext : public ScriptWrappable,
+                         public CanvasRenderingContext,
                          public WebGPUSwapBufferProvider::Client {
   DEFINE_WRAPPERTYPEINFO();
 

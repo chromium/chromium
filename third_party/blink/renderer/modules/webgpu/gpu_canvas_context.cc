@@ -90,6 +90,7 @@ void GPUCanvasContext::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
   visitor->Trace(texture_);
   visitor->Trace(swap_texture_);
+  ScriptWrappable::Trace(visitor);
   CanvasRenderingContext::Trace(visitor);
 }
 

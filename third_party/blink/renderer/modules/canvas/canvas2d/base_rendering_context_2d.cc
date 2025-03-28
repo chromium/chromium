@@ -114,8 +114,11 @@ const char BaseRenderingContext2D::kInheritString[] = "inherit";
 const base::TimeDelta kTryRestoreContextInterval = base::Milliseconds(500);
 
 BaseRenderingContext2D::BaseRenderingContext2D(
+    CanvasRenderingContextHost* canvas,
+    const CanvasContextCreationAttributesCore& attrs,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : dispatch_context_lost_event_timer_(
+    : CanvasRenderingContext(canvas, attrs, CanvasRenderingAPI::k2D),
+      dispatch_context_lost_event_timer_(
           task_runner,
           this,
           &BaseRenderingContext2D::DispatchContextLostEvent),
@@ -725,6 +728,7 @@ void BaseRenderingContext2D::Trace(Visitor* visitor) const {
   visitor->Trace(try_restore_context_event_timer_);
   visitor->Trace(webgpu_access_texture_);
   visitor->Trace(placed_elements_);
+  CanvasRenderingContext::Trace(visitor);
   Canvas2DRecorderContext::Trace(visitor);
 }
 
@@ -1563,6 +1567,10 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
 
   WillDraw(SkIRect::MakeXYWH(0, 0, Width(), Height()),
            CanvasPerformanceMonitor::DrawType::kOther);
+}
+
+int BaseRenderingContext2D::LayerCount() const {
+  return Canvas2DRecorderContext::LayerCount();
 }
 
 }  // namespace blink

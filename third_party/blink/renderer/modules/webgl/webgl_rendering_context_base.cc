@@ -8875,6 +8875,7 @@ void WebGLRenderingContextBase::Trace(Visitor* visitor) const {
   visitor->Trace(make_xr_compatible_resolver_);
   visitor->Trace(program_completion_query_list_);
   visitor->Trace(program_completion_query_map_);
+  ScriptWrappable::Trace(visitor);
   CanvasRenderingContext::Trace(visitor);
 }
 

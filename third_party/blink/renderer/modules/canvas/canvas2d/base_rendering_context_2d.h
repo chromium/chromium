@@ -46,6 +46,7 @@ class Vector2d;
 namespace blink {
 
 class Canvas2dGPUTransferOption;
+class CanvasContextCreationAttributesCore;
 class ExceptionState;
 class GPUTexture;
 class ImageData;
@@ -62,7 +63,8 @@ class V8CanvasFontKerning;
 class V8CanvasFontVariantCaps;
 class V8GPUTextureFormat;
 
-class MODULES_EXPORT BaseRenderingContext2D : public Canvas2DRecorderContext {
+class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
+                                              public Canvas2DRecorderContext {
  public:
   static constexpr unsigned kFallbackToCPUAfterReadbacks = 2;
 
@@ -190,6 +192,11 @@ class MODULES_EXPORT BaseRenderingContext2D : public Canvas2DRecorderContext {
                          double y,
                          const TextClusterOptions* cluster_options);
 
+  int LayerCount() const final;
+  bool isContextLost() const final {
+    return context_lost_mode_ != kNotLostContext;
+  }
+
   void Trace(Visitor*) const override;
 
   HeapTaskRunnerTimer<BaseRenderingContext2D>
@@ -201,6 +208,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public Canvas2DRecorderContext {
 
  protected:
   explicit BaseRenderingContext2D(
+      CanvasRenderingContextHost* canvas,
+      const CanvasContextCreationAttributesCore& attrs,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   virtual UniqueFontSelector* GetFontSelector() const;
@@ -217,11 +226,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public Canvas2DRecorderContext {
                            int y) {
     NOTREACHED();
   }
-  virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) {
-    NOTREACHED();
-  }
-
-  virtual void FinalizeFrame(FlushReason) {}
 
   virtual void DispatchContextLostEvent(TimerBase*);
   virtual void DispatchContextRestoredEvent(TimerBase*);
