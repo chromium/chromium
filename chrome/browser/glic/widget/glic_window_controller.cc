@@ -524,6 +524,7 @@ void GlicWindowController::ToggleWhenNotAlwaysDetached(
 
 void GlicWindowController::FocusIfOpen() {
   if (IsShowing() && !IsActive()) {
+    GetGlicWidget()->Activate();
     GetGlicView()->web_view()->GetWebContents()->Focus();
   }
 }
