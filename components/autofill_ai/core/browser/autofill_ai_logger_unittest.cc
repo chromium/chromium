@@ -26,6 +26,7 @@
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager_test_api.h"
 #include "components/autofill_ai/core/browser/mock_autofill_ai_client.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -115,11 +116,9 @@ class BaseAutofillAiTest : public testing::Test {
 // 0) A form was loaded
 // 1) The form was detected eligible for AutofillAi.
 // 2) The user had data stored to fill the loaded form.
-// 3) The user saw prediction improvements entry-point suggestions.
-// 4) The user started loading filling suggestions.
-// 5) The user saw filling suggestions.
-// 6) The user accepted a filling suggestion.
-// 7) The user corrected the filled suggestion.
+// 3) The user saw filling suggestions.
+// 4) The user accepted a filling suggestion.
+// 5) The user corrected the filled suggestion.
 class AutofillAiFunnelMetricsTest
     : public BaseAutofillAiTest,
       public testing::WithParamInterface<std::tuple<bool, int>> {
@@ -130,10 +129,8 @@ class AutofillAiFunnelMetricsTest
   bool is_form_eligible() { return std::get<1>(GetParam()) > 0; }
   bool user_has_data() { return std::get<1>(GetParam()) > 1; }
   bool user_saw_suggestions() { return std::get<1>(GetParam()) > 2; }
-  bool user_triggered_manual_fallbacks() { return std::get<1>(GetParam()) > 3; }
-  bool user_saw_filling_suggestions() { return std::get<1>(GetParam()) > 4; }
-  bool user_filled_suggestion() { return std::get<1>(GetParam()) > 5; }
-  bool user_corrected_filling() { return std::get<1>(GetParam()) > 6; }
+  bool user_filled_suggestion() { return std::get<1>(GetParam()) > 3; }
+  bool user_corrected_filling() { return std::get<1>(GetParam()) > 4; }
 
   void ExpectCorrectFunnelRecording(
       const base::HistogramTester& histogram_tester) {
@@ -217,42 +214,37 @@ class AutofillAiFunnelMetricsTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    AutofillAiTest,
-    AutofillAiFunnelMetricsTest,
-    testing::Combine(testing::Bool(), testing::Values(0, 1, 2, 3, 4, 5, 6, 7)));
+INSTANTIATE_TEST_SUITE_P(AutofillAiTest,
+                         AutofillAiFunnelMetricsTest,
+                         testing::Combine(testing::Bool(),
+                                          testing::Values(0, 1, 2, 3, 4, 5)));
 
 // Tests that appropriate calls in `AutofillAiLogger`
 // result in correct metric logging.
 TEST_P(AutofillAiFunnelMetricsTest, Logger) {
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
 
-  test_api(manager()).logger().OnFormEligibilityAvailable(form.global_id(),
+  test_api(manager()).logger().OnFormEligibilityAvailable(form->global_id(),
                                                           is_form_eligible());
 
   if (user_has_data()) {
-    test_api(manager()).logger().OnFormHasDataToFill(form.global_id());
+    test_api(manager()).logger().OnFormHasDataToFill(form->global_id());
   }
-  if (user_triggered_manual_fallbacks()) {
-    test_api(manager()).logger().OnTriggeredFillingSuggestions(
-        form.global_id());
-  }
-  if (user_saw_filling_suggestions()) {
-    test_api(manager()).logger().OnFillingSuggestionsShown(form.global_id());
+  if (user_saw_suggestions()) {
+    test_api(manager()).logger().OnFillingSuggestionsShown(
+        *form, *form->field(0), /*ukm_source_id=*/{});
   }
   if (user_filled_suggestion()) {
-    test_api(manager()).logger().OnDidFillSuggestion(form.global_id());
+    test_api(manager()).logger().OnDidFillSuggestion(*form, *form->field(0),
+                                                     /*ukm_source_id=*/{});
   }
   if (user_corrected_filling()) {
     test_api(manager()).logger().OnDidCorrectFillingSuggestion(
-        form.global_id());
+        *form, *form->field(0), /*ukm_source_id=*/{});
   }
 
   base::HistogramTester histogram_tester;
-  test_api(manager()).logger().RecordMetricsForForm(form.global_id(),
+  test_api(manager()).logger().RecordMetricsForForm(form->global_id(),
                                                     submitted());
   ExpectCorrectFunnelRecording(histogram_tester);
 }
@@ -269,15 +261,15 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
   }
   manager().OnFormSeen(*form);
 
-  if (user_saw_filling_suggestions()) {
-    manager().OnSuggestionsShown({autofill::SuggestionType::kFillAutofillAi},
-                                 form->global_id());
+  if (user_saw_suggestions()) {
+    manager().OnSuggestionsShown(*form, *form->field(0), /*ukm_source_id=*/{});
   }
   if (user_filled_suggestion()) {
-    manager().OnDidFillSuggestion(form->global_id());
+    manager().OnDidFillSuggestion(*form, *form->field(0), /*ukm_source_id=*/{});
   }
   if (user_corrected_filling()) {
-    manager().OnEditedAutofilledField(form->global_id());
+    manager().OnEditedAutofilledField(*form, *form->field(0),
+                                      /*ukm_source_id=*/{});
   }
 
   base::HistogramTester histogram_tester;

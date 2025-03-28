@@ -1008,7 +1008,8 @@ void BrowserAutofillManager::OnTextFieldValueChangedImpl(
     if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
         delegate &&
         autofill_field->filling_product() == FillingProduct::kAutofillAi) {
-      delegate->OnEditedAutofilledField(form.global_id());
+      delegate->OnEditedAutofilledField(*form_structure, *autofill_field,
+                                        driver().GetPageUkmSourceId());
     }
   } else {
     if (logger) {
@@ -1913,7 +1914,8 @@ void BrowserAutofillManager::OnSelectControlSelectionChangedImpl(
     if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
         delegate &&
         autofill_field->filling_product() == FillingProduct::kAutofillAi) {
-      delegate->OnEditedAutofilledField(form.global_id());
+      delegate->OnEditedAutofilledField(*form_structure, *autofill_field,
+                                        driver().GetPageUkmSourceId());
     }
   }
   // Note that compared to `BAM::OnTextFieldValueChangedImpl()` this function
@@ -1976,16 +1978,22 @@ void BrowserAutofillManager::DidShowSuggestions(
         base::UserMetricsAction("PlusAddresses.AddressFillSuggestionShown"));
   }
 
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  const bool has_cached_form_and_field = GetCachedFormAndField(
+      form.global_id(), field_id, &form_structure, &autofill_field);
+
   if (AutofillAiDelegate* autofill_ai_delegate =
           client().GetAutofillAiDelegate();
-      autofill_ai_delegate &&
+      autofill_ai_delegate && has_cached_form_and_field &&
       std::ranges::any_of(shown_suggestion_types,
                           [](const SuggestionType& type) {
                             return GetFillingProductFromSuggestionType(type) ==
                                    FillingProduct::kAutofillAi;
                           })) {
-    autofill_ai_delegate->OnSuggestionsShown(shown_suggestion_types,
-                                             form.global_id());
+    autofill_ai_delegate->OnSuggestionsShown(CHECK_DEREF(form_structure),
+                                             CHECK_DEREF(autofill_field),
+                                             driver().GetPageUkmSourceId());
   }
 
   // Notify the BNPL manager about suggestion shown if the current shown
@@ -2056,11 +2064,6 @@ void BrowserAutofillManager::DidShowSuggestions(
           AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId)) {
     return;
   }
-
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  const bool has_cached_form_and_field = GetCachedFormAndField(
-      form.global_id(), field_id, &form_structure, &autofill_field);
 
   if (!has_cached_form_and_field) {
     return;
@@ -2408,7 +2411,9 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
                        [&](const EntityInstance*) {
                          if (AutofillAiDelegate* delegate =
                                  client().GetAutofillAiDelegate()) {
-                           delegate->OnDidFillSuggestion(form.global_id());
+                           delegate->OnDidFillSuggestion(
+                               form_structure, trigger_autofill_field,
+                               driver().GetPageUkmSourceId());
                          }
                        }},
       filling_payload);

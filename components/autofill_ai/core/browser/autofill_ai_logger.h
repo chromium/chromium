@@ -7,7 +7,12 @@
 
 #include <map>
 
+#include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/autofill_ai/core/browser/autofill_ai_client.h"
+#include "components/autofill_ai/core/browser/autofill_ai_ukm_logger.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill_ai {
 
@@ -15,7 +20,7 @@ namespace autofill_ai {
 // interactions with forms.
 class AutofillAiLogger {
  public:
-  AutofillAiLogger();
+  explicit AutofillAiLogger(AutofillAiClient* client);
   AutofillAiLogger(const AutofillAiLogger&) = delete;
   AutofillAiLogger& operator=(const AutofillAiLogger&) = delete;
   ~AutofillAiLogger();
@@ -23,10 +28,15 @@ class AutofillAiLogger {
   void OnFormEligibilityAvailable(autofill::FormGlobalId form_id,
                                   bool is_eligible);
   void OnFormHasDataToFill(autofill::FormGlobalId form_id);
-  void OnTriggeredFillingSuggestions(autofill::FormGlobalId form_id);
-  void OnFillingSuggestionsShown(autofill::FormGlobalId form_id);
-  void OnDidFillSuggestion(autofill::FormGlobalId form_id);
-  void OnDidCorrectFillingSuggestion(autofill::FormGlobalId form_id);
+  void OnFillingSuggestionsShown(const autofill::FormStructure& form,
+                                 const autofill::AutofillField& field,
+                                 ukm::SourceId ukm_source_id);
+  void OnDidFillSuggestion(const autofill::FormStructure& form,
+                           const autofill::AutofillField& field,
+                           ukm::SourceId ukm_source_id);
+  void OnDidCorrectFillingSuggestion(const autofill::FormStructure& form,
+                                     const autofill::AutofillField& field,
+                                     ukm::SourceId ukm_source_id);
 
   // Function that records the contents of `form_states` for `form_id` into
   // appropriate metrics. `submission_state` denotes whether the form was
@@ -46,10 +56,6 @@ class AutofillAiLogger {
     // Given a form, records whether there's data available to fill this form.
     // Whether or not this data is used for filling is irrelevant.
     bool has_data_to_fill = false;
-    // Given a form, records whether the user triggered AutofillAi
-    // suggestions via manua fallback, which started loading filling
-    // suggestions.
-    bool did_start_loading_suggestions = false;
     // Given a form, records whether filling suggestions were actually shown
     // to the user.
     bool did_show_filling_suggestions = false;
@@ -63,6 +69,8 @@ class AutofillAiLogger {
   // Records the funnel state of each form. See the documentation of
   // `FunnelState` for more information about what is recorded.
   std::map<autofill::FormGlobalId, FunnelState> form_states_;
+
+  AutofillAiUkmLogger ukm_logger_;
 };
 
 }  // namespace autofill_ai

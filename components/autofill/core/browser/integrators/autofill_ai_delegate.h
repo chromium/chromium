@@ -9,9 +9,11 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill {
 
+class AutofillField;
 class FormStructure;
 struct Suggestion;
 
@@ -43,12 +45,18 @@ class AutofillAiDelegate {
 
   // TODO(crbug.com/389629573): The "On*" methods below are used only for
   // logging purposes. Explore different approaches.
-  virtual void OnSuggestionsShown(
-      const DenseSet<SuggestionType>& shown_suggestion_types,
-      const FormGlobalId& form_id) = 0;
+
+  //
+  virtual void OnSuggestionsShown(const FormStructure& form,
+                                  const AutofillField& field,
+                                  ukm::SourceId ukm_source_id) = 0;
   virtual void OnFormSeen(const FormStructure& form) = 0;
-  virtual void OnDidFillSuggestion(FormGlobalId form_id) = 0;
-  virtual void OnEditedAutofilledField(FormGlobalId form_id) = 0;
+  virtual void OnDidFillSuggestion(const FormStructure& form,
+                                   const AutofillField& field,
+                                   ukm::SourceId ukm_source_id) = 0;
+  virtual void OnEditedAutofilledField(const FormStructure& form,
+                                       const AutofillField& field,
+                                       ukm::SourceId ukm_source_id) = 0;
 };
 
 }  // namespace autofill

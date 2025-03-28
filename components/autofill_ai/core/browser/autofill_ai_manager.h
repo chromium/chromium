@@ -48,12 +48,16 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   bool MaybeImportForm(const autofill::FormStructure& form) override;
   bool ShouldDisplayIph(autofill::FormGlobalId form,
                         autofill::FieldGlobalId field) const override;
-  void OnSuggestionsShown(const autofill::DenseSet<autofill::SuggestionType>&
-                              shown_suggestion_types,
-                          const autofill::FormGlobalId& form_id) override;
+  void OnSuggestionsShown(const autofill::FormStructure& form,
+                          const autofill::AutofillField& field,
+                          ukm::SourceId ukm_source_id) override;
   void OnFormSeen(const autofill::FormStructure& form) override;
-  void OnDidFillSuggestion(autofill::FormGlobalId form_id) override;
-  void OnEditedAutofilledField(autofill::FormGlobalId form_id) override;
+  void OnDidFillSuggestion(const autofill::FormStructure& form,
+                           const autofill::AutofillField& field,
+                           ukm::SourceId ukm_source_id) override;
+  void OnEditedAutofilledField(const autofill::FormStructure& form,
+                               const autofill::AutofillField& field,
+                               ukm::SourceId ukm_source_id) override;
 
   base::WeakPtr<AutofillAiManager> GetWeakPtr();
 
@@ -84,14 +88,14 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
       const base::Uuid& entity_uuid,
       AutofillAiClient::SaveOrUpdatePromptResult result);
 
-  // Logger that records various Autofill AI metrics.
-  AutofillAiLogger logger_;
-
   autofill::LogManager* GetCurrentLogManager();
 
   // A raw reference to the client, which owns `this` and therefore outlives
   // it.
   const raw_ref<AutofillAiClient> client_;
+
+  // Logger that records various Autofill AI metrics.
+  AutofillAiLogger logger_{&*client_};
 
   // A strike database for save prompts keyed by (entity_type_name, host).
   std::unique_ptr<autofill::AutofillAiSaveStrikeDatabaseByHost>

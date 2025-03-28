@@ -31,11 +31,17 @@ class MockAutofillAiDelegate : public AutofillAiDelegate {
               (const override));
   MOCK_METHOD(void,
               OnSuggestionsShown,
-              (const DenseSet<SuggestionType>&, const FormGlobalId&),
+              (const FormStructure&, const AutofillField&, ukm::SourceId),
               (override));
   MOCK_METHOD(void, OnFormSeen, (const FormStructure&), (override));
-  MOCK_METHOD(void, OnDidFillSuggestion, (FormGlobalId), (override));
-  MOCK_METHOD(void, OnEditedAutofilledField, (FormGlobalId), (override));
+  MOCK_METHOD(void,
+              OnDidFillSuggestion,
+              (const FormStructure&, const AutofillField&, ukm::SourceId),
+              (override));
+  MOCK_METHOD(void,
+              OnEditedAutofilledField,
+              (const FormStructure&, const AutofillField&, ukm::SourceId),
+              (override));
 };
 
 }  // namespace autofill

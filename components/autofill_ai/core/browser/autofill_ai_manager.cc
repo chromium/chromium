@@ -284,12 +284,10 @@ AutofillAiManager::AutofillAiManager(AutofillAiClient* client,
 
 AutofillAiManager::~AutofillAiManager() = default;
 
-void AutofillAiManager::OnSuggestionsShown(
-    const DenseSet<SuggestionType>& shown_suggestion_types,
-    const autofill::FormGlobalId& form_id) {
-  if (shown_suggestion_types.contains(SuggestionType::kFillAutofillAi)) {
-    logger_.OnFillingSuggestionsShown(form_id);
-  }
+void AutofillAiManager::OnSuggestionsShown(const autofill::FormStructure& form,
+                                           const autofill::AutofillField& field,
+                                           ukm::SourceId ukm_source_id) {
+  logger_.OnFillingSuggestionsShown(form, field, ukm_source_id);
 }
 
 void AutofillAiManager::OnFormSeen(const FormStructure& form) {
@@ -312,13 +310,18 @@ void AutofillAiManager::OnFormSeen(const FormStructure& form) {
   logger_.OnFormHasDataToFill(form.global_id());
 }
 
-void AutofillAiManager::OnDidFillSuggestion(autofill::FormGlobalId form_id) {
-  logger_.OnDidFillSuggestion(form_id);
+void AutofillAiManager::OnDidFillSuggestion(
+    const autofill::FormStructure& form,
+    const autofill::AutofillField& field,
+    ukm::SourceId ukm_source_id) {
+  logger_.OnDidFillSuggestion(form, field, ukm_source_id);
 }
 
 void AutofillAiManager::OnEditedAutofilledField(
-    autofill::FormGlobalId form_id) {
-  logger_.OnDidCorrectFillingSuggestion(form_id);
+    const autofill::FormStructure& form,
+    const autofill::AutofillField& field,
+    ukm::SourceId ukm_source_id) {
+  logger_.OnDidCorrectFillingSuggestion(form, field, ukm_source_id);
 }
 
 bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {
