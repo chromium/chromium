@@ -58,6 +58,8 @@ class PLATFORM_EXPORT LayoutPoint {
   // instead.
   LayoutPoint(double, double) = delete;
 
+  bool operator==(const LayoutPoint&) const = default;
+
   constexpr LayoutUnit X() const { return x_; }
   constexpr LayoutUnit Y() const { return y_; }
 
@@ -66,15 +68,6 @@ class PLATFORM_EXPORT LayoutPoint {
  private:
   LayoutUnit x_, y_;
 };
-
-ALWAYS_INLINE constexpr bool operator==(const LayoutPoint& a,
-                                        const LayoutPoint& b) {
-  return a.X() == b.X() && a.Y() == b.Y();
-}
-
-constexpr bool operator!=(const LayoutPoint& a, const LayoutPoint& b) {
-  return !(a == b);
-}
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const LayoutPoint&);
 
