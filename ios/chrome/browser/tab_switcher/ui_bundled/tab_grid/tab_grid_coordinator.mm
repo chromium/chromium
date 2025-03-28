@@ -422,6 +422,24 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // incognito (crbug.com/1136882).
   TabGridPage currentActivePage = self.baseViewController.activePage;
 
+  // We force the entire window into dark mode to ensure that we will have
+  // the context menu on dark. However, this action causes an unintended switch
+  // to dark mode when deleting tab data while the user interface style is set
+  // to light. To mitigate this problem, we need to override all VC back to
+  // light when the UserInterfaceStyle on the device is set to light.
+  UIWindow* window = [sceneState window];
+  if (window.screen.traitCollection.userInterfaceStyle ==
+      UIUserInterfaceStyleLight) {
+    UIViewController* presentedViewController =
+        self.baseViewController.presentedViewController;
+
+    while (presentedViewController) {
+      presentedViewController.overrideUserInterfaceStyle =
+          UIUserInterfaceStyleLight;
+      presentedViewController = presentedViewController.presentedViewController;
+    }
+  }
+
   // Show "Bring Android Tabs" prompt if the user is an Android switcher and has
   // open tabs from their previous Android device.
   // Note: if the coordinator is already created, the prompt should have already
