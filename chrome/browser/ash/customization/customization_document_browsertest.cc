@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/base/locale_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -240,7 +241,8 @@ IN_PROC_BROWSER_TEST_P(CustomizationVPDTest, GetUILanguageList) {
       << "', locales=" << Print(locales);
 
   auto ui_language_list =
-      GetUILanguageList(nullptr, "", input_method::InputMethodManager::Get());
+      GetUILanguageList(g_browser_process->GetApplicationLocale(), nullptr, "",
+                        input_method::InputMethodManager::Get());
   EXPECT_GE(ui_language_list.size(), locales.size())
       << "Test failed for initial_locale='" << GetParam() << "'";
 
