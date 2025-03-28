@@ -84,6 +84,11 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchServiceWorkerNoFetchHandlerFix);
 // requests triggered by embedders. See crbug.com/353628437 to track this issue.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchNetworkPriorityForEmbedders);
 
+// Enabling this will bupm net::RequestPriority once after the running prefetch
+// starts to be served.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kPrefetchBumpNetworkPriorityAfterBeingServed);
+
 // Allow prefetching ServiceWorker-controlled URLs.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchServiceWorker);
 
