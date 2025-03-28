@@ -134,9 +134,15 @@ enum FirstRunStage {
   kSearchEngineChoiceScreenCompletionWithoutSelection = 23,
   // The FRE is interrupted due to a Chrome shutdown.
   kFirstRunInterrupted = 24,
+  // The Best Features screens are shown.
+  kBestFeaturesExperienceStart = 25,
+  // The Best Features screens are completed by exiting through the main screen.
+  kBestFeaturesExperienceCompletionThroughMainScreen = 26,
+  // The Best Features screens are completed by exiting through a detail screen.
+  kBestFeaturesExperienceCompletionThroughDetailScreen = 27,
   // Max value of the first run experience stages.
   // kMaxValue should share the value of the highest enumerator.
-  kMaxValue = kFirstRunInterrupted,
+  kMaxValue = kBestFeaturesExperienceCompletionThroughDetailScreen,
 };
 
 }  // namespace first_run

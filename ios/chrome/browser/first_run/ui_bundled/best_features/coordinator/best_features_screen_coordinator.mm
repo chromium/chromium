@@ -4,14 +4,18 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/coordinator/best_features_screen_coordinator.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/coordinator/best_features_screen_detail_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/coordinator/best_features_screen_mediator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_delegate.h"
+#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_view_controller.h"
+#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/metrics_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
@@ -36,6 +40,8 @@
   BestFeaturesViewController* _viewController;
   // The BestFeaturesScreenDetail coordinator.
   BestFeaturesScreenDetailCoordinator* _detailScreenCoordinator;
+  // Whether the user has tapped one of the Best Feature items.
+  BOOL _itemTapped;
 }
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -70,6 +76,9 @@
       return;
     }
   }
+
+  base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                first_run::kBestFeaturesExperienceStart);
 
   segmentation_platform::SegmentationPlatformService* segmentationService =
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
@@ -116,17 +125,26 @@
 #pragma mark - PromoStyleViewController
 
 - (void)didTapPrimaryActionButton {
+  if (!_itemTapped) {
+    base::UmaHistogramEnumeration(
+        kActionOnBestFeaturesMainScreenHistogram,
+        BestFeaturesMainScreenActionType::kContinueWithoutInteracting);
+  }
+  base::UmaHistogramEnumeration(
+      first_run::kFirstRunStageHistogram,
+      first_run::kBestFeaturesExperienceCompletionThroughMainScreen);
   [_delegate screenWillFinishPresenting];
 }
 
 #pragma mark - BestFeaturesDelegate
 
 - (void)didTapBestFeaturesItem:(BestFeaturesItem*)item {
+  _itemTapped = YES;
   _detailScreenCoordinator = [[BestFeaturesScreenDetailCoordinator alloc]
       initWithBaseNavigationViewController:_baseNavigationController
                                    browser:self.browser
                           bestFeaturesItem:item];
-
+  [self logItemSelection:item.type];
   _detailScreenCoordinator.delegate = _delegate;
   [_detailScreenCoordinator start];
 }
@@ -145,6 +163,41 @@
   BOOL animated = self.baseNavigationController.topViewController != nil;
   [self.baseNavigationController setViewControllers:@[ _viewController ]
                                            animated:animated];
+}
+
+// Logs when user selects a Best features item row.
+- (void)logItemSelection:(BestFeaturesItemType)itemType {
+  using enum BestFeaturesItemType;
+  using enum BestFeaturesMainScreenActionType;
+  BestFeaturesMainScreenActionType enumValue;
+  switch (itemType) {
+    case kLensSearch:
+      enumValue = kLensItemTapped;
+      break;
+    case kEnhancedSafeBrowsing:
+      enumValue = kEnhancedSafeBrowsingItemTapped;
+      break;
+    case kLockedIncognitoTabs:
+      enumValue = kLockedIncognitoTabsItemTapped;
+      break;
+    case kSaveAndAutofillPasswords:
+      enumValue = kSharePasswordsItemTapped;
+      break;
+    case kTabGroups:
+      enumValue = kTabGroupsTapped;
+      break;
+    case kPriceTrackingAndInsights:
+      enumValue = kPriceTrackingTapped;
+      break;
+    case kAutofillPasswordsInOtherApps:
+      enumValue = kSaveAutofillPasswordsItemTapped;
+      break;
+    case kSharePasswordsWithFamily:
+      enumValue = kSharePasswordsItemTapped;
+      break;
+  }
+  base::UmaHistogramEnumeration(kActionOnBestFeaturesMainScreenHistogram,
+                                enumValue);
 }
 
 @end

@@ -14,6 +14,8 @@ source_set("ui") {
     "best_features_view_controller.mm",
     "feature_highlight_screenshot_view_controller.h",
     "feature_highlight_screenshot_view_controller.mm",
+    "metrics_util.h",
+    "metrics_util.mm",
   ]
   deps = [
     "//base",
