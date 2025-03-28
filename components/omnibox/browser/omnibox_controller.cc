@@ -79,6 +79,9 @@ void OmniboxController::StartZeroSuggestPrefetch() {
   TRACE_EVENT0("omnibox", "OmniboxController::StartZeroSuggestPrefetch");
   auto page_classification =
       client_->GetPageClassification(/*is_prefetch=*/true);
+
+  // TODO(crbug.com/406826913): Remove this check from OmniboxController and
+  // fix associated tests.
   if (!OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabledInContext(
           page_classification)) {
     return;

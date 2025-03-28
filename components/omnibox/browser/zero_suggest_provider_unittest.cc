@@ -2011,7 +2011,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenNTPOnFocus) {
   }
 }
 
-TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenSRP) {
+TEST_F(ZeroSuggestProviderTest, TestCacheStateWithSRPPrefetchDisabled) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
@@ -2037,7 +2037,11 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenSRP) {
     // Set up the pref to cache the response from the previous run.
     omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
         prefs, input.current_url().spec(), json_response);
-    provider_->StartPrefetch(input);
+    // Call RunZeroSuggestPrefetch() instead of StartPrefetch() since the latter
+    // won't work when kZeroSuggestPrefetchingOnSRP is disabled.
+    provider_->RunZeroSuggestPrefetch(
+        input,
+        provider_->GetResultTypeAndEligibility(client_.get(), input).first);
     EXPECT_TRUE(provider_->done());
 
     // Expect the results to be empty.
@@ -2075,7 +2079,8 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenSRP) {
     // matches were not updated.
     EXPECT_FALSE(provider_did_notify_);
 
-    // Expect the same empty results after the response has been handled.
+    // Expect the same empty results after the response has been handled since
+    // response should not have been read from cache.
     ASSERT_EQ(0U, provider_->matches().size());
 
     // Expect the response to not have been stored in the prefs.
@@ -2146,7 +2151,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenSRP) {
   }
 }
 
-TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenWeb) {
+TEST_F(ZeroSuggestProviderTest, TestCacheStateWithWebPrefetchDisabled) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
@@ -2172,7 +2177,11 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenWeb) {
     // Set up the pref to cache the response from the previous run.
     omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
         prefs, input.current_url().spec(), json_response);
-    provider_->StartPrefetch(input);
+    // Call RunZeroSuggestPrefetch() instead of StartPrefetch() since the latter
+    // won't work when kZeroSuggestPrefetchingOnWeb is disabled.
+    provider_->RunZeroSuggestPrefetch(
+        input,
+        provider_->GetResultTypeAndEligibility(client_.get(), input).first);
     EXPECT_TRUE(provider_->done());
 
     // Expect the results to be empty.
@@ -2210,7 +2219,8 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenWeb) {
     // matches were not updated.
     EXPECT_FALSE(provider_did_notify_);
 
-    // Expect the same empty results after the response has been handled.
+    // Expect the same empty results after the response has been handled since
+    // response should not have been read from the cache.
     ASSERT_EQ(0U, provider_->matches().size());
 
     // Expect the response to not have been stored in the prefs.
