@@ -57,12 +57,6 @@ CreateAdaptatonMetadataFromModelExecutionConfig(
     return base::unexpected(OnDeviceModelAdaptationAvailability::
                                 kAdaptationModelExecutionConfigInvalid);
   }
-  if (config.output_config().has_redact_rules() &&
-      config.output_config().response_streaming_mode() ==
-          proto::ResponseStreamingMode::STREAMING_MODE_CHUNK_BY_CHUNK) {
-    return base::unexpected(OnDeviceModelAdaptationAvailability::
-                                kAdaptationModelExecutionConfigInvalid);
-  }
   return base::ok(OnDeviceModelAdaptationMetadata::New(
       asset_paths.get(), version,
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config))));
