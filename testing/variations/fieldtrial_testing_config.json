@@ -11672,10 +11672,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_WithThrottling_20250121",
+                    "name": "Enabled_XhrPatch_20250320",
                     "enable_features": [
                         "AutofillAcrossIframesIos",
-                        "AutofillAcrossIframesIosThrottling"
+                        "AutofillAcrossIframesIosThrottling",
+                        "AutofillFixXhrForXframe"
                     ],
                     "disable_features": [
                         "AutofillAcrossIframesIosTriggerFormExtraction"
