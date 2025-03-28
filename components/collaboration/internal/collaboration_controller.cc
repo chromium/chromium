@@ -303,16 +303,21 @@ class AuthenticatingState : public ControllerState,
       : ControllerState(id, controller) {}
 
   void OnEnter(const ErrorInfo& error) override {
-    if (FlowType::kJoin == controller->flow().type) {
-      RecordJoinEvent(GetLogger(), CollaborationServiceJoinEvent::kNotSignedIn);
-    } else if (FlowType::kShareOrManage == controller->flow().type) {
-      RecordShareOrManageEvent(
-          GetLogger(), CollaborationServiceShareOrManageEvent::kNotSignedIn);
+    FlowType flow_type = controller->flow().type;
+    switch (flow_type) {
+      case FlowType::kJoin:
+        RecordJoinEvent(GetLogger(),
+                        CollaborationServiceJoinEvent::kNotSignedIn);
+        break;
+      case FlowType::kShareOrManage:
+        RecordShareOrManageEvent(
+            GetLogger(), CollaborationServiceShareOrManageEvent::kNotSignedIn);
+        break;
     }
 
     controller->delegate()->ShowAuthenticationUi(
-        base::BindOnce(&AuthenticatingState::ProcessOutcome,
-                       local_weak_ptr_factory_.GetWeakPtr()));
+        flow_type, base::BindOnce(&AuthenticatingState::ProcessOutcome,
+                                  local_weak_ptr_factory_.GetWeakPtr()));
   }
 
   void ProcessOutcome(Outcome outcome) override {
