@@ -265,6 +265,10 @@ bool HashAffiliationFetcher::ParseResponse(
 void HashAffiliationFetcher::OnSimpleLoaderComplete(
     std::unique_ptr<std::string> response_body) {
   CHECK(result_callback_);
+  // Temporarily create a local copy of the callback to make sure we can run it
+  // even if this fetcher is destroyed in OnFetch[Succeeded|Failed].
+  // This will be removed after the delegate logic is also removed.
+  auto callback_local_copy = std::move(result_callback_);
   FetchResult fetch_result;
   fetch_result.network_status = simple_url_loader_->NetError();
   base::TimeDelta fetch_time = fetch_timer_.Elapsed();
@@ -290,7 +294,7 @@ void HashAffiliationFetcher::OnSimpleLoaderComplete(
         "PasswordManager.AffiliationFetcher.FetchErrorCode",
         -simple_url_loader_->NetError());
     delegate_->OnFetchFailed(this);
-    std::move(result_callback_).Run(std::move(fetch_result));
+    std::move(callback_local_copy).Run(std::move(fetch_result));
     return;
   }
 
@@ -301,12 +305,12 @@ void HashAffiliationFetcher::OnSimpleLoaderComplete(
     fetch_result.data = result_data;
     delegate_->OnFetchSucceeded(
         this, std::make_unique<ParsedFetchResponse>(result_data));
-    std::move(result_callback_).Run(std::move(fetch_result));
+    std::move(callback_local_copy).Run(std::move(fetch_result));
   } else {
     LogFetchResult(AffiliationFetchOutcome::kMalformed, fetch_time,
                    response_body->size());
     delegate_->OnMalformedResponse(this);
-    std::move(result_callback_).Run(std::move(fetch_result));
+    std::move(callback_local_copy).Run(std::move(fetch_result));
   }
 }
 
