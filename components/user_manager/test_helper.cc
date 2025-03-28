@@ -4,6 +4,7 @@
 
 #include "components/user_manager/test_helper.h"
 
+#include "base/check_deref.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/account_id/account_id.h"
@@ -91,8 +92,8 @@ std::string TestHelper::GetFakeUsernameHash(const AccountId& account_id) {
       cryptohome::CreateAccountIdentifierFromAccountId(account_id));
 }
 
-TestHelper::TestHelper(UserManager& user_manager)
-    : user_manager_(user_manager) {}
+TestHelper::TestHelper(UserManager* user_manager)
+    : user_manager_(CHECK_DEREF(user_manager)) {}
 
 TestHelper::~TestHelper() = default;
 

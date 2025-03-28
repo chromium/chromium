@@ -341,7 +341,7 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
       fake_user_manager->AddPublicAccountUser(AccountId::FromUserEmailGaiaId(
           "user3@test.com", GaiaId("1234567890-3")))));
   EXPECT_FALSE(IsArcAllowedForUser(
-      user_manager::TestHelper(*fake_user_manager)
+      user_manager::TestHelper(fake_user_manager.Get())
           .AddKioskAppUser("user4@kiosk-apps.device-local.localhost")));
   EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddGaiaUser(
       AccountId::FromUserEmailGaiaId("user5@test.com", GaiaId("1234567890-5")),

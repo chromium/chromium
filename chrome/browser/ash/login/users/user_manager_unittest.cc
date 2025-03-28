@@ -488,7 +488,7 @@ TEST_F(UserManagerTest, DoNotSaveKioskAccountsToKRegularUsersPref) {
       kKioskAccountId,
       user_manager::TestHelper::GetFakeUsernameHash(kKioskAccountId));
   ResetUserManager();
-  ASSERT_TRUE(user_manager::TestHelper(*user_manager::UserManager::Get())
+  ASSERT_TRUE(user_manager::TestHelper(user_manager::UserManager::Get())
                   .AddRegularUser(kAccountId0));
   user_manager::UserManager::Get()->UserLoggedIn(
       kAccountId0, user_manager::TestHelper::GetFakeUsernameHash(kAccountId0));
@@ -512,8 +512,8 @@ TEST_F(UserManagerTest, DoNotSaveKioskAccountsToKRegularUsersPref) {
 
 TEST_F(UserManagerTest, RemoveUser) {
   // Create owner account and login in.
-  ASSERT_TRUE(
-      user_manager::TestHelper(*user_manager_).AddRegularUser(kOwnerAccountId));
+  ASSERT_TRUE(user_manager::TestHelper(user_manager_.get())
+                  .AddRegularUser(kOwnerAccountId));
   user_manager_->UserLoggedIn(
       kOwnerAccountId,
       user_manager::TestHelper::GetFakeUsernameHash(kOwnerAccountId));
@@ -522,8 +522,8 @@ TEST_F(UserManagerTest, RemoveUser) {
   ResetUserManager();
 
   // Create non-owner account  and login in.
-  ASSERT_TRUE(
-      user_manager::TestHelper(*user_manager_).AddRegularUser(kAccountId0));
+  ASSERT_TRUE(user_manager::TestHelper(user_manager_.get())
+                  .AddRegularUser(kAccountId0));
   user_manager_->UserLoggedIn(
       kAccountId0, user_manager::TestHelper::GetFakeUsernameHash(kAccountId0));
   // Log-in owner account.
@@ -578,18 +578,18 @@ TEST_F(UserManagerTest, RemoveUser) {
 }
 
 TEST_F(UserManagerTest, RemoveRegularUsersExceptOwnerFromList) {
-  ASSERT_TRUE(user_manager::TestHelper(*user_manager::UserManager::Get())
+  ASSERT_TRUE(user_manager::TestHelper(user_manager::UserManager::Get())
                   .AddRegularUser(kOwnerAccountId));
   user_manager::UserManager::Get()->UserLoggedIn(
       kOwnerAccountId,
       user_manager::TestHelper::GetFakeUsernameHash(kOwnerAccountId));
   ResetUserManager();
-  ASSERT_TRUE(user_manager::TestHelper(*user_manager::UserManager::Get())
+  ASSERT_TRUE(user_manager::TestHelper(user_manager::UserManager::Get())
                   .AddRegularUser(kAccountId0));
   user_manager::UserManager::Get()->UserLoggedIn(
       kAccountId0, user_manager::TestHelper::GetFakeUsernameHash(kAccountId0));
   ResetUserManager();
-  ASSERT_TRUE(user_manager::TestHelper(*user_manager::UserManager::Get())
+  ASSERT_TRUE(user_manager::TestHelper(user_manager::UserManager::Get())
                   .AddRegularUser(kAccountId1));
   user_manager::UserManager::Get()->UserLoggedIn(
       kAccountId1, user_manager::TestHelper::GetFakeUsernameHash(kAccountId1));
@@ -627,13 +627,13 @@ TEST_F(UserManagerTest, RegularUserLoggedInAsEphemeral) {
       /* owner= */ kOwnerAccountId.GetUserEmail());
   RetrieveTrustedDevicePolicies();
 
-  ASSERT_TRUE(user_manager::TestHelper(*user_manager::UserManager::Get())
+  ASSERT_TRUE(user_manager::TestHelper(user_manager::UserManager::Get())
                   .AddRegularUser(kOwnerAccountId));
   user_manager::UserManager::Get()->UserLoggedIn(
       kOwnerAccountId,
       user_manager::TestHelper::GetFakeUsernameHash(kOwnerAccountId));
   ResetUserManager();
-  ASSERT_TRUE(user_manager::TestHelper(*user_manager::UserManager::Get())
+  ASSERT_TRUE(user_manager::TestHelper(user_manager::UserManager::Get())
                   .AddRegularUser(kAccountId0));
   user_manager::UserManager::Get()->UserLoggedIn(
       kAccountId0, user_manager::TestHelper::GetFakeUsernameHash(kAccountId0));
@@ -647,7 +647,7 @@ TEST_F(UserManagerTest, RegularUserLoggedInAsEphemeral) {
 
 TEST_F(UserManagerTest, ScreenLockAvailability) {
   // Log in the user and create the profile.
-  ASSERT_TRUE(user_manager::TestHelper(*user_manager::UserManager::Get())
+  ASSERT_TRUE(user_manager::TestHelper(user_manager::UserManager::Get())
                   .AddRegularUser(kOwnerAccountId));
   user_manager::UserManager::Get()->UserLoggedIn(
       kOwnerAccountId,
@@ -676,7 +676,7 @@ TEST_F(UserManagerTest, ScreenLockAvailability) {
 }
 
 TEST_F(UserManagerTest, ProfileRequiresPolicyUnknown) {
-  ASSERT_TRUE(user_manager::TestHelper(*user_manager::UserManager::Get())
+  ASSERT_TRUE(user_manager::TestHelper(user_manager::UserManager::Get())
                   .AddRegularUser(kOwnerAccountId));
   user_manager::UserManager::Get()->UserLoggedIn(
       kOwnerAccountId,
@@ -747,8 +747,8 @@ TEST_F(UserManagerTest,
 // callback.
 TEST_F(UserManagerTest, ProfilePrefs) {
   // Simulates login.
-  ASSERT_TRUE(
-      user_manager::TestHelper(*user_manager_).AddRegularUser(kAccountId0));
+  ASSERT_TRUE(user_manager::TestHelper(user_manager_.get())
+                  .AddRegularUser(kAccountId0));
   user_manager_->UserLoggedIn(
       kAccountId0, user_manager::TestHelper::GetFakeUsernameHash(kAccountId0));
 

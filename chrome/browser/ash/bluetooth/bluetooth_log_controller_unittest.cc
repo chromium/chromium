@@ -74,7 +74,7 @@ TEST_F(BluetoothLogControllerTest, NonRegularUser) {
   auto* upstart_client = FakeUpstartClient::Get();
   upstart_client->StartRecordingUpstartOperations();
 
-  auto* user = user_manager::TestHelper(user_manager())
+  auto* user = user_manager::TestHelper(&user_manager())
                    .AddKioskAppUser("test@kiosk-apps.device-local.localhost");
   // TODO(b/278643115): use UserManager::UserLoggedIn() to notify observer.
   controller().OnUserLoggedIn(*user);

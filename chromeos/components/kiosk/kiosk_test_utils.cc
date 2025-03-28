@@ -18,7 +18,7 @@ void SetUpFakeKioskSession(std::string_view email) {
       << "UserManager instance needs to be set up to start Kiosk session.";
 
   auto* user_manager = user_manager::UserManager::Get();
-  auto* user = user_manager::TestHelper(*user_manager).AddKioskAppUser(email);
+  auto* user = user_manager::TestHelper(user_manager).AddKioskAppUser(email);
   CHECK_EQ(user_manager->GetLoggedInUsers().size(), 0u);
   user_manager->UserLoggedIn(
       user->GetAccountId(),
