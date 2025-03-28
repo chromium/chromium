@@ -60,7 +60,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     private final boolean mShowShareItem;
     private final List<Pair<String, PendingIntent>> mMenuEntries = new ArrayList<>();
 
-    @Nullable private final String mUrlToLoad;
+    private final String mUrlToLoad;
     private final String mSendersPackageName;
 
     /** Whether this CustomTabActivity was explicitly started by another Chrome Activity. */
@@ -72,7 +72,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     public IncognitoCustomTabIntentDataProvider(Intent intent, Context context, int colorScheme) {
         assert intent != null;
         mIntent = intent;
-        mUrlToLoad = resolveUrlToLoad(intent);
+        mUrlToLoad = IntentHandler.getUrlFromIntent(intent);
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         mSession = token != null ? new SessionHolder<>(token) : null;
         mSendersPackageName = getClientPackageNameFromSessionOrCallingActivity(intent, mSession);
@@ -231,10 +231,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         return isTrusted;
     }
 
-    private String resolveUrlToLoad(Intent intent) {
-        return IntentHandler.getUrlFromIntent(intent);
-    }
-
     public String getSendersPackageName() {
         return mSendersPackageName;
     }
@@ -284,7 +280,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     }
 
     @Override
-    public @Nullable String getUrlToLoad() {
+    public String getUrlToLoad() {
         return mUrlToLoad;
     }
 
