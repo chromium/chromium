@@ -183,11 +183,15 @@ class TrustedSignalsFetcherTest : public testing::Test {
       "000000000000000000000000000000000000000000";
 
   TrustedSignalsFetcherTest() {
-    base::FieldTrialParams params;
-    params["LocalNetworkAccessChecksWarn"] = "false";
-    feature_list_.InitAndEnableFeatureWithParameters(
-        network::features::kLocalNetworkAccessChecks, params);
-
+    base::FieldTrialParams lna_checks_params;
+    lna_checks_params["LocalNetworkAccessChecksWarn"] = "false";
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{network::features::kLocalNetworkAccessChecks, lna_checks_params},
+         // Enable `kProtectedAudienceCorsSafelistKVv2Signals` by default, so
+         // behavior matches the eventual expected behavior.
+         {network::features::kProtectedAudienceCorsSafelistKVv2Signals, {}}},
+        /*disabled_features=*/{});
     embedded_test_server_.SetSSLConfig(
         net::EmbeddedTestServer::CERT_TEST_NAMES);
     embedded_test_server_.AddDefaultHandlers();
@@ -222,12 +226,17 @@ class TrustedSignalsFetcherTest : public testing::Test {
         })");
   }
 
-  void SetCrossOrigin() {
+  // Sets `script_origin_` to be cross origin to be cross-origin to the trusted
+  // signals URL. Additional, sets whether a CORS preflight request is expected
+  // to be observed, which should depend on whether the
+  // `kProtectedAudienceCorsSafelistKVv2Signals` Feature is enabled.
+  void SetCrossOrigin(bool cors_preflight_expected = false) {
     base::AutoLock auto_lock(lock_);
     // No requests are made to this origin, so doesn't need to come from the
     // EmbeddedTestServer.
     script_origin_ = url::Origin::Create(GURL("https://other-origin.test/"));
     script_origin_is_same_origin_ = false;
+    cors_preflight_expected_ = cors_preflight_expected;
   }
 
   url::Origin GetScriptOrigin() {
@@ -457,6 +466,9 @@ class TrustedSignalsFetcherTest : public testing::Test {
 
     if (request.relative_url == kTrustedBiddingSignalsPath ||
         request.relative_url == kTrustedScoringSignalsPath) {
+      EXPECT_EQ(
+          cors_preflight_expected_,
+          request.method_string == net::HttpRequestHeaders::kOptionsMethod);
       EXPECT_FALSE(request_body_.has_value());
 
       EXPECT_EQ(request.headers.find("Cookie"), request.headers.end());
@@ -481,19 +493,19 @@ class TrustedSignalsFetcherTest : public testing::Test {
 
         // If haven't see the options request yet, expect to see it before the
         // actual request.
-        if (!seen_options_request_) {
+        if (cors_preflight_expected_) {
           if (request.method_string !=
               net::HttpRequestHeaders::kOptionsMethod) {
             ADD_FAILURE() << "Options method expected but got "
                           << request.method_string;
             return nullptr;
           }
+          cors_preflight_expected_ = false;
           EXPECT_THAT(request.headers,
                       testing::Contains(std::pair(
                           "Access-Control-Request-Headers", "content-type")));
           response->AddCustomHeader("Access-Control-Allow-Headers",
                                     "Content-Type");
-          seen_options_request_ = true;
           EXPECT_FALSE(request.has_content);
           response->set_code(net::HttpStatusCode::HTTP_NO_CONTENT);
           return response;
@@ -614,9 +626,9 @@ class TrustedSignalsFetcherTest : public testing::Test {
   network::mojom::IPAddressSpace ip_address_space_ =
       network::mojom::IPAddressSpace::kLocal;
 
-  // Set to true once an OPTIONS request is observed. Only one options request
-  // is expected.
-  bool seen_options_request_ GUARDED_BY(lock_) = false;
+  // Whether an OPTIONS request is expected. When true, set to false once an
+  // options request is observed.
+  bool cors_preflight_expected_ GUARDED_BY(lock_) = false;
 
   // If false, don't expect a request for signals to be handled.
   bool expect_url_not_requested_ = false;
@@ -2345,25 +2357,43 @@ TEST_F(TrustedSignalsFetcherTest,
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCrossOrigin) {
-  SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
-      R"({
-        "compressionGroups": [
-          {
-            "compressionGroupId": 0,
-            "content": "content"
-          }
-        ]
-      })"));
-  SetCrossOrigin();
-  auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
-  auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
-  TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
-  expected_result.try_emplace(
-      0, CreateCompressionGroupResult(
-             auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
-             "content", base::Milliseconds(0)));
-  ValidateFetchResult(result, expected_result);
-  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
+  // Test cross-origin requests both in the case
+  // `kProtectedAudienceCorsSafelistKVv2Signals` is disabled and when it's
+  // enabled. In only the first case should there be a CORS preflight.
+  for (bool add_content_type_to_cors_safelist : {false, true}) {
+    SCOPED_TRACE(add_content_type_to_cors_safelist);
+
+    base::test::ScopedFeatureList feature_list;
+    if (add_content_type_to_cors_safelist) {
+      feature_list.InitAndEnableFeature(
+          network::features::kProtectedAudienceCorsSafelistKVv2Signals);
+    } else {
+      feature_list.InitAndDisableFeature(
+          network::features::kProtectedAudienceCorsSafelistKVv2Signals);
+    }
+
+    SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
+        R"({
+          "compressionGroups": [
+            {
+              "compressionGroupId": 0,
+              "content": "content"
+            }
+          ]
+        })"));
+    SetCrossOrigin(
+        /*cors_preflight_expected=*/!add_content_type_to_cors_safelist);
+    auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
+    auto result =
+        RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
+    TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
+    expected_result.try_emplace(
+        0, CreateCompressionGroupResult(
+               auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
+               "content", base::Milliseconds(0)));
+    ValidateFetchResult(result, expected_result);
+    ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
+  }
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCrossOriginLNAFailure) {
@@ -2385,14 +2415,11 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCrossOriginLNAFailure) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ASSERT_FALSE(result.has_value());
-  // Error reported is net::ERR_FAILED and not
-  // net::BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS because after the initial
-  // request is made a CORS preflight request is made and fails with the latter
-  // error. This error code isn't propagated to the initial request, which then
-  // reports back the generic ERR_FAILED.
-  EXPECT_EQ(result.error(),
-            base::StringPrintf("Failed to load %s error = net::ERR_FAILED.",
-                               TrustedBiddingSignalsUrl().spec().c_str()));
+  EXPECT_EQ(
+      result.error(),
+      base::StringPrintf("Failed to load %s error = "
+                         "net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS.",
+                         TrustedBiddingSignalsUrl().spec().c_str()));
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCrossOriginNotLNASuccess) {
@@ -2469,14 +2496,11 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsCrossOriginLNAFailure) {
   auto scoring_signals_request = CreateBasicScoringSignalsRequest();
   auto result = RequestScoringSignalsAndWaitForResult(scoring_signals_request);
   ASSERT_FALSE(result.has_value());
-  // Error reported is net::ERR_FAILED and not
-  // net::BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS because after the initial
-  // request is made a CORS preflight request is made and fails with the latter
-  // error. This error code isn't propagated to the initial request, which then
-  // reports back the generic ERR_FAILED.
-  EXPECT_EQ(result.error(),
-            base::StringPrintf("Failed to load %s error = net::ERR_FAILED.",
-                               TrustedScoringSignalsUrl().spec().c_str()));
+  EXPECT_EQ(
+      result.error(),
+      base::StringPrintf("Failed to load %s error = "
+                         "net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS.",
+                         TrustedScoringSignalsUrl().spec().c_str()));
 }
 
 TEST_F(TrustedSignalsFetcherTest, ScoringSignalsCrossOriginNotLNASuccess) {

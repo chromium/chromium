@@ -309,6 +309,11 @@ BASE_DECLARE_FEATURE(kGetCookiesOnSet);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kPopulatePermissionsPolicyOnRequest);
 
+// Enables CORS safelisting the Protected Audience Trusted Key-Value
+// Content-Type.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kProtectedAudienceCorsSafelistKVv2Signals);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_
