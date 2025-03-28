@@ -49,7 +49,15 @@ void TopContainerBackground::PaintThemeAlignedImage(
   // relative of the origin of BrowserView.
   pos.Offset(0, ThemeProperties::kFrameHeightAboveTabs);
 
-  const gfx::Rect bounds = view->GetLocalBounds();
+  // Make sure the the background will cover the entire clip path region.
+  // TODO(crbug.com/41344902): Remove the clip code and just use local bounds
+  // once the pixel canvas is enabled on all aura platforms.
+  SkPath clip_path = view->clip_path();
+  SkRect rect = clip_path.getBounds();
+  const gfx::Rect bounds =
+      !clip_path.isEmpty()
+          ? gfx::Rect(rect.x(), rect.y(), rect.width(), rect.height())
+          : view->GetLocalBounds();
   canvas->TileImageInt(*image, pos.x(), pos.y(), bounds.x(), bounds.y(),
                        bounds.width(), bounds.height(), 1.0f,
                        SkTileMode::kRepeat, SkTileMode::kMirror);
