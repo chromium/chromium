@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/ios/block_types.h"
+#include "ios/chrome/app/change_profile_continuation.h"
 
 @class ActionSheetCoordinator;
 @class AlertCoordinator;
@@ -137,5 +138,9 @@ ActionSheetCoordinator* GetLeavingPrimaryAccountConfirmationDialog(
     SignedInUserState signed_in_user_state,
     bool account_profile_switch,
     LeavingPrimaryAccountConfirmationDialogCompletion completion);
+
+// A block providing a continuation.
+using ChangeProfileContinuationProvider =
+    base::RepeatingCallback<ChangeProfileContinuation()>;
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_AUTHENTICATION_UI_UTIL_H_
