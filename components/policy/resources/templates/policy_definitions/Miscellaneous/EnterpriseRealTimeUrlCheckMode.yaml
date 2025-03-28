@@ -31,10 +31,10 @@ schema:
   - 1
   type: integer
 future_on:
-- android
 - ios
 supported_on:
 - chrome.*:86-
 - chrome_os:86-
+- android:136-
 tags: []
 type: int-enum

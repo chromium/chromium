@@ -52,10 +52,10 @@ schema:
     type: object
   type: array
 future_on:
-- android
 - ios
 supported_on:
 - chrome.*:84-
 - chrome_os:84-
+- android:136-
 tags: []
 type: dict
