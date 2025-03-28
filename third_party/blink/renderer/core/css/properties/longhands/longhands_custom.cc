@@ -7812,15 +7812,16 @@ const CSSValue* Perspective::ParseSingleValue(
       stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
   bool use_legacy_parsing = localContext.UseAliasParsing();
   if (!parsed_value && use_legacy_parsing) {
-    double perspective;
-    if (!css_parsing_utils::ConsumeNumberRaw_DO_NOT_USE(stream, context,
-                                                        perspective) ||
-        perspective < 0.0) {
-      return nullptr;
+    if (const CSSPrimitiveValue* number_value =
+            css_parsing_utils::ConsumeNumber(
+                stream, context, CSSPrimitiveValue::ValueRange::kNonNegative)) {
+      std::optional<double> number = number_value->GetValueIfKnown();
+      if (number.has_value()) {
+        context.Count(WebFeature::kUnitlessPerspectiveInPerspectiveProperty);
+        parsed_value = CSSNumericLiteralValue::Create(
+            number.value(), CSSPrimitiveValue::UnitType::kPixels);
+      }
     }
-    context.Count(WebFeature::kUnitlessPerspectiveInPerspectiveProperty);
-    parsed_value = CSSNumericLiteralValue::Create(
-        perspective, CSSPrimitiveValue::UnitType::kPixels);
   }
   return parsed_value;
 }
