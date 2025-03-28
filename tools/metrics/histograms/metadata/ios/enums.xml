@@ -1386,6 +1386,15 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Invalid"/>
 </enum>
 
+<!-- LINT.IfChange(ReaderModeDistillerResult) -->
+
+<enum name="ReaderModeDistillerResult">
+  <int value="0" label="Not distillable"/>
+  <int value="1" label="Distillable"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeDistillerResult) -->
+
 <!-- LINT.IfChange(ReaderModeHeuristicClassification) -->
 
 <enum name="ReaderModeHeuristicClassification">

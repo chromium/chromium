@@ -9,12 +9,15 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/scoped_mock_clock_override.h"
 #import "components/dom_distiller/core/extraction_utils.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
+#import "components/ukm/test_ukm_recorder.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -22,12 +25,19 @@
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
 #import "testing/platform_test.h"
 #import "third_party/dom_distiller_js/dom_distiller.pb.h"
 
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
+using IOS_ReaderMode_Distiller_Latency =
+    ukm::builders::IOS_ReaderMode_Distiller_Latency;
+using IOS_ReaderMode_Distiller_Result =
+    ukm::builders::IOS_ReaderMode_Distiller_Result;
+using IOS_ReaderMode_Heuristic_Result =
+    ukm::builders::IOS_ReaderMode_Heuristic_Result;
 
 class ReaderModeTabHelperTest : public PlatformTest {
  public:
@@ -50,7 +60,10 @@ class ReaderModeTabHelperTest : public PlatformTest {
         {ReaderModeJavaScriptFeature::GetInstance()});
 
     ReaderModeTabHelper::CreateForWebState(web_state_.get());
+    ukm::InitializeSourceUrlRecorderForWebState(web_state());
   }
+
+  void TearDown() override { test_ukm_recorder_.Purge(); }
 
   void WaitForMainFrame() {
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
@@ -71,6 +84,32 @@ class ReaderModeTabHelperTest : public PlatformTest {
     WaitForMainFrame();
   }
 
+  // Expects the recorded distiller latency UKM event entries to have
+  // `expected_count` elements.
+  void ExpectDistillerLatencyEntriesCount(size_t expected_count) {
+    EXPECT_EQ(
+        expected_count,
+        test_ukm_recorder_
+            .GetEntriesByName(IOS_ReaderMode_Distiller_Latency::kEntryName)
+            .size());
+  }
+  // Expects the recorded distiller result UKM event entries to have
+  // `expected_count` elements.
+  void ExpectDistillerResultEntriesCount(size_t expected_count) {
+    EXPECT_EQ(expected_count,
+              test_ukm_recorder_
+                  .GetEntriesByName(IOS_ReaderMode_Distiller_Result::kEntryName)
+                  .size());
+  }
+  // Expects the recorded heuristic result UKM event entries to have
+  // `expected_count` elements.
+  void ExpectHeuristicResultEntriesCount(size_t expected_count) {
+    EXPECT_EQ(expected_count,
+              test_ukm_recorder_
+                  .GetEntriesByName(IOS_ReaderMode_Heuristic_Result::kEntryName)
+                  .size());
+  }
+
  protected:
   web::WebState* web_state() { return web_state_.get(); }
 
@@ -81,6 +120,7 @@ class ReaderModeTabHelperTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<web::WebState> web_state_;
   base::HistogramTester histogram_tester_;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 };
 
 // Tests that the TabHelper that triggers Reader Mode heuristics records
@@ -94,9 +134,11 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicOnPageLoaded) {
       });
 
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
+  ExpectHeuristicResultEntriesCount(0u);
   LoadWebpage();
 
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 1);
+  ExpectHeuristicResultEntriesCount(1u);
 }
 
 // Tests that a misconfigured page load probability does not trigger a
@@ -110,9 +152,11 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicMisconfiguredProbabilityLow) {
       });
 
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
+  ExpectHeuristicResultEntriesCount(0u);
   LoadWebpage();
 
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
+  ExpectHeuristicResultEntriesCount(0u);
 }
 
 // Tests that a misconfigured page load probability does not trigger a
@@ -126,9 +170,11 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicMisconfiguredProbabilityHigh) {
       });
 
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
+  ExpectHeuristicResultEntriesCount(0u);
   LoadWebpage();
 
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
+  ExpectHeuristicResultEntriesCount(0u);
 }
 
 // Tests that multiple navigations before the trigger heuristic delay only
@@ -142,6 +188,7 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicSkippedOnNewNavigation) {
       });
 
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
+  ExpectHeuristicResultEntriesCount(0u);
   LoadWebpage();
   // Wait for asynchronous activity from page load to stop before advancing the
   // clock.
@@ -149,6 +196,7 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicSkippedOnNewNavigation) {
   task_environment_.AdvanceClock(base::Seconds(1));
 
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
+  ExpectHeuristicResultEntriesCount(0u);
 
   LoadWebpage();
   task_environment_.RunUntilIdle();
@@ -157,7 +205,11 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicSkippedOnNewNavigation) {
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     task_environment_.RunUntilIdle();
     return histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram)
-               .size() == 1;
+                   .size() == 1 &&
+           test_ukm_recorder_
+                   .GetEntriesByName(
+                       IOS_ReaderMode_Heuristic_Result::kEntryName)
+                   .size() == 1u;
   }));
 }
 
@@ -188,6 +240,13 @@ TEST_F(ReaderModeTabHelperTest, TriggerDistillerJs) {
   frames_manager_ptr->AddWebFrame(std::move(main_frame));
 
   ReaderModeTabHelper::CreateForWebState(test_web_state.get());
+  ukm::InitializeSourceUrlRecorderForWebState(test_web_state.get());
+
+  // Record committed navigation so the UKM URL recorder works.
+  web::FakeNavigationContext navigation_context;
+  navigation_context.SetHasCommitted(true);
+  test_web_state->OnNavigationStarted(&navigation_context);
+  test_web_state->OnNavigationFinished(&navigation_context);
 
   // Recreate DOM distiller script with empty result on execution.
   dom_distiller::proto::DomDistillerOptions options;
@@ -202,9 +261,12 @@ TEST_F(ReaderModeTabHelperTest, TriggerDistillerJs) {
   task_environment_.RunUntilIdle();
 
   histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 1);
+  ExpectHeuristicResultEntriesCount(1u);
   histogram_tester_.ExpectTotalCount(
       kReaderModeHeuristicClassificationHistogram, 1);
   histogram_tester_.ExpectTotalCount(kReaderModeDistillerLatencyHistogram, 1);
+  ExpectDistillerLatencyEntriesCount(1u);
+  ExpectDistillerResultEntriesCount(1u);
 }
 
 // TODO(crbug.com/399378832): Add tests for individual heuristic values that

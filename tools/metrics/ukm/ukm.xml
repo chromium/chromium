@@ -11919,6 +11919,99 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="IOS.ReaderMode.Distiller.Latency" singular="true">
+  <owner>fernandex@google.com</owner>
+  <owner>qpubert@google.com</owner>
+  <summary>
+    Recorded for a subset of page loads (default: 1/1000 page loads). Records
+    the latency of running the DOMDistiller distillation to evaluate its
+    performance.
+  </summary>
+  <metric name="Latency">
+    <summary>
+      Records duration in milliseconds from when the page distillation is
+      triggered to when the JavaScript distillation code completes.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="IOS.ReaderMode.Distiller.Result" singular="true">
+  <owner>fernandex@google.com</owner>
+  <owner>qpubert@google.com</owner>
+  <summary>
+    Recorded for a subset of page loads (default: 1/1000 page loads). Records
+    the result of running the DOMDistiller distillation to evaluate its
+    performance.
+  </summary>
+  <metric name="Result" enum="ReaderModeDistillerResult">
+    <summary>
+      Records the page distillation result i.e. distillable or not distillable.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="IOS.ReaderMode.Heuristic.Latency" singular="true">
+  <owner>fernandex@google.com</owner>
+  <owner>qpubert@google.com</owner>
+  <summary>
+    Recorded for a subset of page loads (default: 1/1000 page loads) if the
+    latency data is available. Records the latency of running the DOMDistiller
+    heuristic to evaluate its performance.
+  </summary>
+  <metric name="Latency">
+    <summary>
+      Records duration in milliseconds from when the heuristic JavaScript is
+      executed to when all required feature values for the model are collected.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="IOS.ReaderMode.Heuristic.Result" singular="true">
+  <owner>fernandex@google.com</owner>
+  <owner>qpubert@google.com</owner>
+  <summary>
+    Recorded for a subset of page loads (default: 1/1000 page loads). Describes
+    the result of running the DOMDistiller heuristic to evaluate its
+    performance.
+  </summary>
+  <metric name="Result" enum="ReaderModeHeuristicResult">
+    <summary>
+      Records the page distillation heuritic result i.e. kMalformedResponse,
+      kReaderModeEligible, kReaderModeNotEligibleContentOnly,
+      kReaderModeNotEligibleContentLength,
+      kReaderModeNotEligibleContentAndLength.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="IOS.RendererGone">
   <owner>olivierrobin@chromium.org</owner>
   <summary>
