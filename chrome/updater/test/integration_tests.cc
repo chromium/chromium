@@ -4440,25 +4440,6 @@ TEST_F(IntegrationTest, MarshalInterface) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, LegacyProcessLauncher) {
-  if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
-    GTEST_SKIP() << "Process launcher is only registered for system installs.";
-  }
-  ScopedServer test_server(test_commands_);
-
-  ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
-
-  // `ExpectLegacyProcessLauncherSucceeds` runs the process launcher once with
-  // usagestats enabled, and twice without, so only a single ping is expected.
-  ASSERT_NO_FATAL_FAILURE(ExpectAppCommandPing(
-      &test_server, "{831EF4D0-B729-4F61-AA34-91526481799D}", "cmd", 5420, 1,
-      update_client::protocol_request::kEventAppCommandComplete, {}));
-  ASSERT_NO_FATAL_FAILURE(ExpectLegacyProcessLauncherSucceeds());
-
-  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
-}
-
 class IntegrationLegacyAppCommandWebTest
     : public ::testing::WithParamInterface<TestUpdaterVersion>,
       public IntegrationTest {
@@ -4571,6 +4552,43 @@ TEST_P(IntegrationLegacyAppCommandWebTest,
   parameters.Append("5432");
   ASSERT_NO_FATAL_FAILURE(
       ExpectLegacyAppCommandWebSucceeds(kAppId, "command1", parameters, 5432));
+}
+
+class IntegrationLegacyProcessLauncherTest
+    : public IntegrationLegacyAppCommandWebTest {
+ protected:
+  void SetUp() override {
+    // `IProcessLauncher::LaunchCmdElevated` takes a `ULONG_PTR` process handle,
+    // which does not marshal correctly cross-architecture. So these tests will
+    // crash if for instance the tests are compiled for `x86`, and run against a
+    // lower version that is `x64`. So these tests skips the cross-arch versions
+    // for now, and will be enabled at a later date if/when the cross-arch
+    // marshaling is fixed for the `IProcessLauncher*` interfaces.
+    if (GetParam().version != base::Version(kUpdaterVersion)) {
+      GTEST_SKIP();
+    }
+
+    if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
+      GTEST_SKIP()
+          << "Process launcher is only registered for system installs.";
+    }
+
+    IntegrationLegacyAppCommandWebTest::SetUp();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(IntegrationLegacyProcessLauncherTestCases,
+                         IntegrationLegacyProcessLauncherTest,
+                         ::testing::ValuesIn(GetRealUpdaterVersions()));
+
+TEST_P(IntegrationLegacyProcessLauncherTest, Test) {
+  // `ExpectLegacyProcessLauncherSucceeds` runs the process launcher once with
+  // usagestats enabled, and twice without, so only a single ping is expected.
+  ASSERT_NO_FATAL_FAILURE(ExpectAppCommandPing(
+      test_server_.get(), "{831EF4D0-B729-4F61-AA34-91526481799D}", "cmd", 5420,
+      1, update_client::protocol_request::kEventAppCommandComplete, {},
+      GetParam().version));
+  ASSERT_NO_FATAL_FAILURE(ExpectLegacyProcessLauncherSucceeds());
 }
 
 TEST_F(IntegrationTest, LegacyPolicyStatus) {
