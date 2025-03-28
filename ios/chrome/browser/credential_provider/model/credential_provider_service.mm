@@ -7,6 +7,7 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 
 #import "base/check.h"
+#import "base/check_is_test.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/strcat.h"
@@ -30,6 +31,10 @@
 #import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -510,6 +515,35 @@ void CredentialProviderService::RemoveCredentials(
   }
 }
 
+bool CredentialProviderService::IsUsingMultiProfile() const {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    return false;
+  }
+
+  ProfileManagerIOS* profile_manager =
+      GetApplicationContext()->GetProfileManager();
+  ProfileAttributesStorageIOS* storage =
+      profile_manager ? profile_manager->GetProfileAttributesStorage()
+                      : nullptr;
+  if (!storage) {
+    // ProfileManagerIOS nor ProfileAttributesStorageIOS should never be null,
+    // except in tests.
+    CHECK_IS_TEST();
+    return false;
+  }
+
+  int number_of_fully_initialized_profiles = 0;
+  storage->IterateOverProfileAttributes(base::BindRepeating(
+      [](int& number_of_fully_initialized_profiles,
+         const ProfileAttributesIOS& attr) {
+        if (attr.IsFullyInitialized()) {
+          ++number_of_fully_initialized_profiles;
+        }
+      },
+      std::ref(number_of_fully_initialized_profiles)));
+  return number_of_fully_initialized_profiles > 1;
+}
+
 void CredentialProviderService::UpdateAccountId() {
   CoreAccountInfo account =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
@@ -525,6 +559,10 @@ void CredentialProviderService::UpdateAccountId() {
   [app_group::GetGroupUserDefaults()
       setObject:is_valid_account ? account_id : nil
          forKey:AppGroupUserDefaultsCredentialProviderUserID()];
+
+  [app_group::GetGroupUserDefaults()
+      setObject:[NSNumber numberWithBool:IsUsingMultiProfile()]
+         forKey:AppGroupUserDefaultsCredentialProviderMultiProfileSetting()];
 }
 
 void CredentialProviderService::UpdateUserEmail() {
