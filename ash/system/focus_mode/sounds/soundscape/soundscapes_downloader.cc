@@ -24,7 +24,7 @@ namespace ash {
 
 namespace {
 
-constexpr size_t kMaxDownloadBytes = 20 * 1024;
+constexpr size_t kMaxDownloadBytes = 50 * 1024;
 
 // Max number of retries for fetching the configuration.
 constexpr int kMaxRetries = 3;
@@ -33,7 +33,7 @@ SoundscapesDownloader::Urls ProductionConfiguration(const std::string& locale) {
   SoundscapesDownloader::Urls configuration;
   configuration.locale = locale;
   configuration.host = GURL("https://gstatic.com/chromeos-focusmode/");
-  configuration.config_path = "config.json";
+  configuration.config_path = "config_v2.json";
   return configuration;
 }
 
