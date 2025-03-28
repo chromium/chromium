@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/valuables/loyalty_card_data_type_controller.h"
+#include "components/autofill/core/browser/webdata/valuables/valuable_data_type_controller.h"
 
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
@@ -10,7 +10,7 @@
 
 namespace autofill {
 
-AutofillLoyaltyCardDataTypeController::AutofillLoyaltyCardDataTypeController(
+AutofillValuableDataTypeController::AutofillValuableDataTypeController(
     syncer::DataType type,
     std::unique_ptr<syncer::ProxyDataTypeControllerDelegate>
         delegate_for_full_sync_mode,
@@ -20,7 +20,7 @@ AutofillLoyaltyCardDataTypeController::AutofillLoyaltyCardDataTypeController(
                                  std::move(delegate_for_full_sync_mode),
                                  std::move(delegate_for_transport_mode)) {}
 
-void AutofillLoyaltyCardDataTypeController::LoadModels(
+void AutofillValuableDataTypeController::LoadModels(
     const syncer::ConfigureContext& configure_context,
     const ModelLoadCallback& model_load_callback) {
   DCHECK(CalledOnValidThread());
@@ -29,9 +29,8 @@ void AutofillLoyaltyCardDataTypeController::LoadModels(
   DataTypeController::LoadModels(overridden_context, model_load_callback);
 }
 
-void AutofillLoyaltyCardDataTypeController::Stop(
-    syncer::SyncStopMetadataFate fate,
-    StopCallback callback) {
+void AutofillValuableDataTypeController::Stop(syncer::SyncStopMetadataFate fate,
+                                              StopCallback callback) {
   DCHECK(CalledOnValidThread());
   // In transport-only mode, storage is scoped to the Gaia account. That means
   // it should be cleared if Sync is stopped for any reason (other than browser

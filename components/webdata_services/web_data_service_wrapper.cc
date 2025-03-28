@@ -27,7 +27,7 @@
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_usage_data_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
-#include "components/autofill/core/browser/webdata/valuables/loyalty_card_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/valuables/valuable_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -87,12 +87,12 @@ void InitWalletOfferSyncBridgeOnDBSequence(
 }
 
 #if !BUILDFLAG(IS_IOS)
-void InitLoyaltyCardSyncBridgeOnDBSequence(
+void InitValuableSyncBridgeOnDBSequence(
     scoped_refptr<base::SequencedTaskRunner> db_task_runner,
     const scoped_refptr<autofill::AutofillWebDataService>& autofill_web_data,
     autofill::AutofillWebDataBackend* autofill_backend) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
-  autofill::LoyaltyCardSyncBridge::CreateForWebDataServiceAndBackend(
+  autofill::ValuableSyncBridge::CreateForWebDataServiceAndBackend(
       autofill_backend, autofill_web_data.get());
 }
 
@@ -243,7 +243,7 @@ WebDataServiceWrapper::WebDataServiceWrapper(
 #if !BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
     account_autofill_web_data_->GetAutofillBackend(
-        base::BindOnce(&InitLoyaltyCardSyncBridgeOnDBSequence, db_task_runner,
+        base::BindOnce(&InitValuableSyncBridgeOnDBSequence, db_task_runner,
                        account_autofill_web_data_));
   }
   account_autofill_web_data_->GetAutofillBackend(

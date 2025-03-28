@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/valuables/loyalty_card_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/valuables/valuable_sync_bridge.h"
 
 #include <algorithm>
 #include <optional>
@@ -10,7 +10,7 @@
 #include "base/check.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/autofill/core/browser/webdata/valuables/loyalty_card_sync_util.h"
+#include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
@@ -25,10 +25,10 @@ namespace autofill {
 namespace {
 
 // The address of this variable is used as the user data key.
-static const int kAutofillLoyaltyCardSyncBridgeUserDataKey = 0;
+static const int kAutofillValuableSyncBridgeUserDataKey = 0;
 }  // namespace
 
-LoyaltyCardSyncBridge::LoyaltyCardSyncBridge(
+ValuableSyncBridge::ValuableSyncBridge(
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     AutofillWebDataBackend* backend)
     : DataTypeSyncBridge(std::move(change_processor)),
@@ -42,15 +42,15 @@ LoyaltyCardSyncBridge::LoyaltyCardSyncBridge(
   LoadMetadata();
 }
 
-LoyaltyCardSyncBridge::~LoyaltyCardSyncBridge() = default;
+ValuableSyncBridge::~ValuableSyncBridge() = default;
 
 // static
-void LoyaltyCardSyncBridge::CreateForWebDataServiceAndBackend(
+void ValuableSyncBridge::CreateForWebDataServiceAndBackend(
     AutofillWebDataBackend* web_data_backend,
     AutofillWebDataService* web_data_service) {
   web_data_service->GetDBUserData()->SetUserData(
-      &kAutofillLoyaltyCardSyncBridgeUserDataKey,
-      std::make_unique<LoyaltyCardSyncBridge>(
+      &kAutofillValuableSyncBridgeUserDataKey,
+      std::make_unique<ValuableSyncBridge>(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::AUTOFILL_LOYALTY_CARD,
               /*dump_stack=*/base::DoNothing()),
@@ -58,25 +58,25 @@ void LoyaltyCardSyncBridge::CreateForWebDataServiceAndBackend(
 }
 
 // static
-syncer::DataTypeSyncBridge* LoyaltyCardSyncBridge::FromWebDataService(
+syncer::DataTypeSyncBridge* ValuableSyncBridge::FromWebDataService(
     AutofillWebDataService* web_data_service) {
-  return static_cast<LoyaltyCardSyncBridge*>(
+  return static_cast<ValuableSyncBridge*>(
       web_data_service->GetDBUserData()->GetUserData(
-          &kAutofillLoyaltyCardSyncBridgeUserDataKey));
+          &kAutofillValuableSyncBridgeUserDataKey));
 }
 
-bool LoyaltyCardSyncBridge::SupportsIncrementalUpdates() const {
+bool ValuableSyncBridge::SupportsIncrementalUpdates() const {
   // This type does not support incremental updates server side.
   return false;
 }
 
-AutofillSyncMetadataTable* LoyaltyCardSyncBridge::GetSyncMetadataStore() {
+AutofillSyncMetadataTable* ValuableSyncBridge::GetSyncMetadataStore() {
   return AutofillSyncMetadataTable::FromWebDatabase(
       web_data_backend_->GetDatabase());
 }
 
 std::unique_ptr<syncer::MetadataChangeList>
-LoyaltyCardSyncBridge::CreateMetadataChangeList() {
+ValuableSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
       GetSyncMetadataStore(), syncer::AUTOFILL_LOYALTY_CARD,
@@ -84,7 +84,7 @@ LoyaltyCardSyncBridge::CreateMetadataChangeList() {
                           change_processor()->GetWeakPtr()));
 }
 
-std::optional<syncer::ModelError> LoyaltyCardSyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> ValuableSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
@@ -133,7 +133,7 @@ std::optional<syncer::ModelError> LoyaltyCardSyncBridge::MergeFullSyncData(
 }
 
 std::optional<syncer::ModelError>
-LoyaltyCardSyncBridge::ApplyIncrementalSyncChanges(
+ValuableSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   // This bridge does not support incremental updates, so whenever this is
@@ -143,7 +143,7 @@ LoyaltyCardSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-std::unique_ptr<syncer::MutableDataBatch> LoyaltyCardSyncBridge::GetData() {
+std::unique_ptr<syncer::MutableDataBatch> ValuableSyncBridge::GetData() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const LoyaltyCard& card : GetValuablesTable()->GetLoyaltyCards()) {
     const std::string& id = card.id().value();
@@ -152,37 +152,37 @@ std::unique_ptr<syncer::MutableDataBatch> LoyaltyCardSyncBridge::GetData() {
   return batch;
 }
 
-std::unique_ptr<syncer::DataBatch> LoyaltyCardSyncBridge::GetDataForCommit(
+std::unique_ptr<syncer::DataBatch> ValuableSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   // This type never commits to the server.
   NOTREACHED();
 }
 
 std::unique_ptr<syncer::DataBatch>
-LoyaltyCardSyncBridge::GetAllDataForDebugging() {
+ValuableSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetData();
 }
 
-bool LoyaltyCardSyncBridge::IsEntityDataValid(
+bool ValuableSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_autofill_valuable());
   return AreAutofillLoyaltyCardSpecificsValid(
       entity_data.specifics.autofill_valuable());
 }
 
-std::string LoyaltyCardSyncBridge::GetClientTag(
+std::string ValuableSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
   return GetStorageKey(entity_data);
 }
 
-std::string LoyaltyCardSyncBridge::GetStorageKey(
+std::string ValuableSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
   DCHECK(IsEntityDataValid(entity_data));
   return entity_data.specifics.autofill_valuable().id();
 }
 
-void LoyaltyCardSyncBridge::ApplyDisableSyncChanges(
+void ValuableSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
 
@@ -207,7 +207,7 @@ void LoyaltyCardSyncBridge::ApplyDisableSyncChanges(
 }
 
 sync_pb::EntitySpecifics
-LoyaltyCardSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+ValuableSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     const sync_pb::EntitySpecifics& entity_specifics) const {
   sync_pb::AutofillValuableSpecifics trimmed_autofill_valuable_specifics =
       TrimAutofillValuableSpecificsDataForCaching(
@@ -227,7 +227,7 @@ LoyaltyCardSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
 }
 
 // TODO(crbug.com/40253286): Consider moving this logic to processor.
-bool LoyaltyCardSyncBridge::SyncMetadataCacheContainsSupportedFields(
+bool ValuableSyncBridge::SyncMetadataCacheContainsSupportedFields(
     const syncer::EntityMetadataMap& metadata_map) const {
   for (const auto& metadata_entry : metadata_map) {
     // Serialize the cached specifics and parse them back to a proto. Any fields
@@ -251,7 +251,7 @@ bool LoyaltyCardSyncBridge::SyncMetadataCacheContainsSupportedFields(
   return false;
 }
 
-void LoyaltyCardSyncBridge::LoadMetadata() {
+void ValuableSyncBridge::LoadMetadata() {
   auto batch = std::make_unique<syncer::MetadataBatch>();
   if (!GetSyncMetadataStore()->GetAllSyncMetadata(syncer::AUTOFILL_LOYALTY_CARD,
                                                   batch.get())) {
@@ -273,7 +273,7 @@ void LoyaltyCardSyncBridge::LoadMetadata() {
   change_processor()->ModelReadyToSync(std::move(batch));
 }
 
-ValuablesTable* LoyaltyCardSyncBridge::GetValuablesTable() {
+ValuablesTable* ValuableSyncBridge::GetValuablesTable() {
   return ValuablesTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }
 

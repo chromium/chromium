@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_LOYALTY_CARD_SYNC_BRIDGE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_LOYALTY_CARD_SYNC_BRIDGE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_VALUABLE_SYNC_BRIDGE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_VALUABLE_SYNC_BRIDGE_H_
 
 #include <memory>
 #include <optional>
@@ -31,16 +31,16 @@ namespace autofill {
 
 class AutofillWebDataService;
 
-class LoyaltyCardSyncBridge : public base::SupportsUserData::Data,
-                              public syncer::DataTypeSyncBridge {
+class ValuableSyncBridge : public base::SupportsUserData::Data,
+                           public syncer::DataTypeSyncBridge {
  public:
-  LoyaltyCardSyncBridge(
+  ValuableSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       AutofillWebDataBackend* backend);
-  ~LoyaltyCardSyncBridge() override;
+  ~ValuableSyncBridge() override;
 
-  LoyaltyCardSyncBridge(const LoyaltyCardSyncBridge&) = delete;
-  LoyaltyCardSyncBridge& operator=(const LoyaltyCardSyncBridge&) = delete;
+  ValuableSyncBridge(const ValuableSyncBridge&) = delete;
+  ValuableSyncBridge& operator=(const ValuableSyncBridge&) = delete;
 
   static void CreateForWebDataServiceAndBackend(
       AutofillWebDataBackend* web_data_backend,
@@ -92,11 +92,11 @@ class LoyaltyCardSyncBridge : public base::SupportsUserData::Data,
   // constructed.
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // LoyaltyCardSyncBridge is owned by `web_data_backend_` through
+  // ValuableSyncBridge is owned by `web_data_backend_` through
   // SupportsUserData, so it's guaranteed to outlive `this`.
   const raw_ptr<AutofillWebDataBackend> web_data_backend_;
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_LOYALTY_CARD_SYNC_BRIDGE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_VALUABLE_SYNC_BRIDGE_H_

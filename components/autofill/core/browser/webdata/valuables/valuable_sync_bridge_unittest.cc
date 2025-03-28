@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/valuables/loyalty_card_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/valuables/valuable_sync_bridge.h"
 
 #include <memory>
 #include <string_view>
@@ -16,7 +16,7 @@
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
-#include "components/autofill/core/browser/webdata/valuables/loyalty_card_sync_util.h"
+#include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -58,7 +58,7 @@ std::vector<LoyaltyCard> ExtractLoyaltyCardsFromDataBatch(
 
 }  // namespace
 
-class LoyaltyCardSyncBridgeTest : public testing::Test {
+class ValuableSyncBridgeTest : public testing::Test {
  public:
   // Creates the `bridge()` and mocks its `ValuablesTable`.
   void SetUp() override {
@@ -68,7 +68,7 @@ class LoyaltyCardSyncBridgeTest : public testing::Test {
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
     ON_CALL(backend_, GetDatabase()).WillByDefault(Return(&db_));
 
-    bridge_ = std::make_unique<LoyaltyCardSyncBridge>(
+    bridge_ = std::make_unique<ValuableSyncBridge>(
         mock_processor_.CreateForwardingProcessor(), &backend_);
   }
 
@@ -108,7 +108,7 @@ class LoyaltyCardSyncBridgeTest : public testing::Test {
     return mock_processor_;
   }
 
-  LoyaltyCardSyncBridge& bridge() { return *bridge_; }
+  ValuableSyncBridge& bridge() { return *bridge_; }
 
  private:
   base::ScopedTempDir temp_dir_;
@@ -118,22 +118,21 @@ class LoyaltyCardSyncBridgeTest : public testing::Test {
   AutofillSyncMetadataTable sync_metadata_table_;
   WebDatabase db_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
-  std::unique_ptr<LoyaltyCardSyncBridge> bridge_;
+  std::unique_ptr<ValuableSyncBridge> bridge_;
 };
 
 // Tests that a failure in the database initialization reports an error and
 // doesn't cause a crash.
 // Regression test for crbug.com/1421663.
-TEST_F(LoyaltyCardSyncBridgeTest, InitializationFailure) {
+TEST_F(ValuableSyncBridgeTest, InitializationFailure) {
   // The database will be null if it failed to initialize.
   ON_CALL(backend(), GetDatabase()).WillByDefault(Return(nullptr));
   EXPECT_CALL(mock_processor(), ReportError);
   // The `bridge()` was already initialized during `SetUp()`. Recreate it.
-  LoyaltyCardSyncBridge(mock_processor().CreateForwardingProcessor(),
-                        &backend());
+  ValuableSyncBridge(mock_processor().CreateForwardingProcessor(), &backend());
 }
 
-TEST_F(LoyaltyCardSyncBridgeTest, IsEntityDataValid) {
+TEST_F(ValuableSyncBridgeTest, IsEntityDataValid) {
   // Valid case.
   std::unique_ptr<syncer::EntityData> entity =
       CreateEntityDataFromLoyaltyCard(TestLoyaltyCard(kId1));
@@ -143,27 +142,27 @@ TEST_F(LoyaltyCardSyncBridgeTest, IsEntityDataValid) {
   EXPECT_FALSE(bridge().IsEntityDataValid(*entity));
 }
 
-TEST_F(LoyaltyCardSyncBridgeTest, GetStorageKey) {
+TEST_F(ValuableSyncBridgeTest, GetStorageKey) {
   std::unique_ptr<syncer::EntityData> entity =
       CreateEntityDataFromLoyaltyCard(TestLoyaltyCard(kId1));
   ASSERT_TRUE(bridge().IsEntityDataValid(*entity));
   EXPECT_EQ(kId1, bridge().GetStorageKey(*entity));
 }
 
-TEST_F(LoyaltyCardSyncBridgeTest, GetClientTag) {
+TEST_F(ValuableSyncBridgeTest, GetClientTag) {
   std::unique_ptr<syncer::EntityData> entity =
       CreateEntityDataFromLoyaltyCard(TestLoyaltyCard(kId1));
   ASSERT_TRUE(bridge().IsEntityDataValid(*entity));
   EXPECT_EQ(kId1, bridge().GetClientTag(*entity));
 }
 
-TEST_F(LoyaltyCardSyncBridgeTest, SupportsIncrementalUpdates) {
+TEST_F(ValuableSyncBridgeTest, SupportsIncrementalUpdates) {
   ASSERT_FALSE(bridge().SupportsIncrementalUpdates());
 }
 
 // Tests that during the initial sync, `MergeFullSyncData()` incorporates remote
 // loyalty cards.
-TEST_F(LoyaltyCardSyncBridgeTest, MergeFullSyncData) {
+TEST_F(ValuableSyncBridgeTest, MergeFullSyncData) {
   const LoyaltyCard remote1 = TestLoyaltyCard(kId1);
   const LoyaltyCard remote2 = TestLoyaltyCard(kId2);
 
@@ -179,7 +178,7 @@ TEST_F(LoyaltyCardSyncBridgeTest, MergeFullSyncData) {
 }
 
 // Tests that `MergeFullSyncData()` replaces currently stored loyalty cards.
-TEST_F(LoyaltyCardSyncBridgeTest, MergeFullSyncData_ReplacePreviousData) {
+TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_ReplacePreviousData) {
   const LoyaltyCard remote1 = TestLoyaltyCard(kId1);
   const LoyaltyCard remote2 = TestLoyaltyCard(kId2);
 
@@ -195,11 +194,11 @@ TEST_F(LoyaltyCardSyncBridgeTest, MergeFullSyncData_ReplacePreviousData) {
   EXPECT_THAT(GetAllDataFromTable(), ElementsAre(remote2));
 }
 
-using LoyaltyCardSyncBridgeDeathTest = LoyaltyCardSyncBridgeTest;
+using ValuableSyncBridgeDeathTest = ValuableSyncBridgeTest;
 
 // Tests that entity changes passed to `ApplyIncrementalSyncChanges()`
 // are rejected.
-TEST_F(LoyaltyCardSyncBridgeDeathTest, ApplyIncrementalSyncChanges) {
+TEST_F(ValuableSyncBridgeDeathTest, ApplyIncrementalSyncChanges) {
   const LoyaltyCard remote1 = TestLoyaltyCard(kId1);
   const LoyaltyCard remote2 = TestLoyaltyCard(kId2);
 
@@ -230,12 +229,12 @@ TEST_F(LoyaltyCardSyncBridgeDeathTest, ApplyIncrementalSyncChanges) {
 }
 
 // Tests that `GetDataForCommit()` returns empty collection.
-TEST_F(LoyaltyCardSyncBridgeDeathTest, GetDataForCommit) {
+TEST_F(ValuableSyncBridgeDeathTest, GetDataForCommit) {
   EXPECT_DEATH_IF_SUPPORTED({ bridge().GetDataForCommit({}); }, ".*");
 }
 
 // Tests that `GetAllDataForDebugging()` returns all local data.
-TEST_F(LoyaltyCardSyncBridgeTest, GetAllDataForDebugging) {
+TEST_F(ValuableSyncBridgeTest, GetAllDataForDebugging) {
   const LoyaltyCard card1 = TestLoyaltyCard(kId1);
   const LoyaltyCard card2 = TestLoyaltyCard(kId2);
   AddLoyaltyCardsToTheTable({card1, card2});
@@ -247,7 +246,7 @@ TEST_F(LoyaltyCardSyncBridgeTest, GetAllDataForDebugging) {
 
 // Tests that `ApplyDisableSyncChanges()` clears all data in ValuablesTable when
 // the data type gets disabled.
-TEST_F(LoyaltyCardSyncBridgeTest, ApplyDisableSyncChanges) {
+TEST_F(ValuableSyncBridgeTest, ApplyDisableSyncChanges) {
   const LoyaltyCard card1 = TestLoyaltyCard(kId1);
   ASSERT_TRUE(StartSyncing({card1}));
   ASSERT_THAT(GetAllDataFromTable(), ElementsAre(card1));
@@ -263,7 +262,7 @@ TEST_F(LoyaltyCardSyncBridgeTest, ApplyDisableSyncChanges) {
 
 // Tests that trimming `AutofillValuableSpecifics` with only supported values
 // set results in a zero-length specifics.
-TEST_F(LoyaltyCardSyncBridgeTest,
+TEST_F(ValuableSyncBridgeTest,
        TrimAllSupportedFieldsFromRemoteSpecificsPreservesOnlySupportedFields) {
   sync_pb::EntitySpecifics specifics;
   sync_pb::AutofillValuableSpecifics* autofill_valuables_specifics =
@@ -283,7 +282,7 @@ TEST_F(LoyaltyCardSyncBridgeTest,
 
 // Tests that trimming `AutofillValuableSpecifics` with unsupported fields
 // will only preserve the unknown fields.
-TEST_F(LoyaltyCardSyncBridgeTest,
+TEST_F(ValuableSyncBridgeTest,
        TrimRemoteSpecificsReturnsEmptyProtoWhenAllFieldsAreSupported) {
   sync_pb::EntitySpecifics specifics_with_only_unknown_fields;
   *specifics_with_only_unknown_fields.mutable_autofill_valuable()

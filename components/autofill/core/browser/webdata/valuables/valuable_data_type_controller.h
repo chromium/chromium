@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_LOYALTY_CARD_DATA_TYPE_CONTROLLER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_LOYALTY_CARD_DATA_TYPE_CONTROLLER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_VALUABLE_DATA_TYPE_CONTROLLER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_VALUABLE_DATA_TYPE_CONTROLLER_H_
 
 #include "base/scoped_observation.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
@@ -14,10 +14,9 @@ namespace autofill {
 
 // A class that manages the startup and shutdown of Autofill Loyalty Cards.
 // This custom implementation clears the data on sync pause in kTransportMode.
-class AutofillLoyaltyCardDataTypeController
-    : public syncer::DataTypeController {
+class AutofillValuableDataTypeController : public syncer::DataTypeController {
  public:
-  AutofillLoyaltyCardDataTypeController(
+  AutofillValuableDataTypeController(
       syncer::DataType type,
       std::unique_ptr<syncer::ProxyDataTypeControllerDelegate>
           delegate_for_full_sync_mode,
@@ -33,4 +32,4 @@ class AutofillLoyaltyCardDataTypeController
 };
 
 }  // namespace autofill
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_LOYALTY_CARD_DATA_TYPE_CONTROLLER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_VALUABLE_DATA_TYPE_CONTROLLER_H_
