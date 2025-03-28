@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/common/channel_info.h"
 #include "components/performance_manager/public/features.h"
 
 using performance_manager::features::kPerformanceControlsPPMSurvey;
@@ -32,6 +33,8 @@ using performance_manager::features::
 using performance_manager::features::kPerformanceControlsPPMSurveySegmentName1;
 using performance_manager::features::kPerformanceControlsPPMSurveySegmentName2;
 using performance_manager::features::kPerformanceControlsPPMSurveySegmentName3;
+using performance_manager::features::
+    kPerformanceControlsPPMSurveyUniformSampleValue;
 
 PerformanceControlsHatsService::PerformanceControlsHatsService(Profile* profile)
     : profile_(profile),
@@ -89,13 +92,18 @@ void PerformanceControlsHatsService::OpenedNewTabPage() {
   auto launch_survey_if_enabled =
       [hats_service, battery_saver_mode, memory_saver_mode](
           const base::Feature& feature, const std::string& trigger,
+          const SurveyBitsData& extra_data = {},
           const SurveyStringData& string_data = {}) {
         if (base::FeatureList::IsEnabled(feature)) {
-          hats_service->LaunchSurvey(
-              trigger, base::DoNothing(), base::DoNothing(),
-              {{kMemorySaverPSDName, memory_saver_mode},
-               {kBatterySaverPSDName, battery_saver_mode}},
-              string_data);
+          SurveyBitsData bits_data = {
+              {kMemorySaverPSDName, memory_saver_mode},
+              {kBatterySaverPSDName, battery_saver_mode}};
+          for (const auto& [key, value] : extra_data) {
+            auto [_, inserted] = bits_data.try_emplace(key, value);
+            CHECK(inserted);
+          }
+          hats_service->LaunchSurvey(trigger, base::DoNothing(),
+                                     base::DoNothing(), bits_data, string_data);
         }
       };
 
@@ -107,9 +115,14 @@ void PerformanceControlsHatsService::OpenedNewTabPage() {
   // Survey to correlate UMA metrics with Poor Performance Moments.
   if (auto ppm_segment_name = GetPPMSurveySegmentName();
       !ppm_segment_name.empty() && MayLaunchPPMSurvey()) {
-    launch_survey_if_enabled(kPerformanceControlsPPMSurvey,
-                             kHatsSurveyTriggerPerformanceControlsPPM,
-                             {{kPerformanceSegmentPSDName, ppm_segment_name}});
+    const std::string channel =
+        chrome::GetChannelName(chrome::WithExtendedStable(false));
+    launch_survey_if_enabled(
+        kPerformanceControlsPPMSurvey, kHatsSurveyTriggerPerformanceControlsPPM,
+        {{kUniformSamplePSDName,
+          kPerformanceControlsPPMSurveyUniformSampleValue.Get()}},
+        {{kPerformanceSegmentPSDName, ppm_segment_name},
+         {kChannelPSDName, channel.empty() ? "stable" : channel}});
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

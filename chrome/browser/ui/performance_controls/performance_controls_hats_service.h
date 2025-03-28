@@ -21,8 +21,13 @@ class PerformanceControlsHatsService
       public performance_manager::user_tuning::BatterySaverModeManager::
           Observer {
  public:
+  // Names of Product Specific Data bit entries.
   static constexpr char kBatterySaverPSDName[] = "Battery Saver Mode Enabled";
   static constexpr char kMemorySaverPSDName[] = "Memory Saver Mode Enabled";
+  static constexpr char kUniformSamplePSDName[] = "Selected for Uniform Sample";
+
+  // Names of Product Specific Data string entries.
+  static constexpr char kChannelPSDName[] = "Channel";
   static constexpr char kPerformanceSegmentPSDName[] =
       "Performance Characteristics (OS and Total Memory)";
 

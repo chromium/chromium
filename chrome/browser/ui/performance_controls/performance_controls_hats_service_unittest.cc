@@ -33,14 +33,24 @@ namespace {
 using performance_manager::features::kPerformanceControlsPPMSurveyMaxDelay;
 using performance_manager::features::kPerformanceControlsPPMSurveyMinDelay;
 using ::testing::_;
-using ::testing::ContainerEq;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 const char* kBatterySaverPSDName =
     PerformanceControlsHatsService::kBatterySaverPSDName;
+const char* kChannelPSDName = PerformanceControlsHatsService::kChannelPSDName;
 const char* kMemorySaverPSDName =
     PerformanceControlsHatsService::kMemorySaverPSDName;
 const char* kPerformanceSegmentPSDName =
     PerformanceControlsHatsService::kPerformanceSegmentPSDName;
+const char* kUniformSamplePSDName =
+    PerformanceControlsHatsService::kUniformSamplePSDName;
+
+// GMock matcher for any expected "channel" string
+auto MatchesAnyChannel() {
+  // Channel can be "unknown" in some test configs.
+  return ::testing::AnyOf("canary", "dev", "beta", "stable", "unknown");
+}
 
 }  // namespace
 
@@ -269,7 +279,13 @@ TEST_F(PerformanceControlsHatsServicePPMTest, NoPPMSurveyBeforeDelay) {
 TEST_F(PerformanceControlsHatsServicePPMTest, LaunchesPPMSurveyAfterDelay) {
   EXPECT_CALL(
       *mock_hats_service(),
-      LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPPM, _, _, _, _));
+      LaunchSurvey(
+          kHatsSurveyTriggerPerformanceControlsPPM, _, _,
+          UnorderedElementsAre(Pair(kMemorySaverPSDName, _),
+                               Pair(kBatterySaverPSDName, _),
+                               Pair(kUniformSamplePSDName, true)),
+          UnorderedElementsAre(Pair(kPerformanceSegmentPSDName, _),
+                               Pair(kChannelPSDName, MatchesAnyChannel()))));
   task_env().FastForwardBy(
       performance_controls_hats_service()->delay_before_ppm_survey());
   performance_controls_hats_service()->OpenedNewTabPage();
@@ -314,10 +330,15 @@ class PerformanceControlsHatsServicePPM2SegmentTest
 };
 
 TEST_F(PerformanceControlsHatsServicePPM2SegmentTest, LowMemorySegment) {
-  EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPPM, _, _, _,
-                           ContainerEq(SurveyStringData{
-                               {kPerformanceSegmentPSDName, "Low Memory"}})));
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(
+          kHatsSurveyTriggerPerformanceControlsPPM, _, _,
+          UnorderedElementsAre(Pair(kMemorySaverPSDName, _),
+                               Pair(kBatterySaverPSDName, _),
+                               Pair(kUniformSamplePSDName, true)),
+          UnorderedElementsAre(Pair(kPerformanceSegmentPSDName, "Low Memory"),
+                               Pair(kChannelPSDName, MatchesAnyChannel()))));
   performance_controls_hats_service()->SetAmountOfPhysicalMemoryMBForTesting(
       8192);
   task_env().FastForwardBy(
@@ -326,10 +347,15 @@ TEST_F(PerformanceControlsHatsServicePPM2SegmentTest, LowMemorySegment) {
 }
 
 TEST_F(PerformanceControlsHatsServicePPM2SegmentTest, HighMemorySegment) {
-  EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPPM, _, _, _,
-                           ContainerEq(SurveyStringData{
-                               {kPerformanceSegmentPSDName, "High Memory"}})));
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(
+          kHatsSurveyTriggerPerformanceControlsPPM, _, _,
+          UnorderedElementsAre(Pair(kMemorySaverPSDName, _),
+                               Pair(kBatterySaverPSDName, _),
+                               Pair(kUniformSamplePSDName, true)),
+          UnorderedElementsAre(Pair(kPerformanceSegmentPSDName, "High Memory"),
+                               Pair(kChannelPSDName, MatchesAnyChannel()))));
   performance_controls_hats_service()->SetAmountOfPhysicalMemoryMBForTesting(
       12288);
   task_env().FastForwardBy(
@@ -355,10 +381,15 @@ class PerformanceControlsHatsServicePPM3SegmentTest
 };
 
 TEST_F(PerformanceControlsHatsServicePPM3SegmentTest, LowMemorySegment) {
-  EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPPM, _, _, _,
-                           ContainerEq(SurveyStringData{
-                               {kPerformanceSegmentPSDName, "Low Memory"}})));
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(
+          kHatsSurveyTriggerPerformanceControlsPPM, _, _,
+          UnorderedElementsAre(Pair(kMemorySaverPSDName, _),
+                               Pair(kBatterySaverPSDName, _),
+                               Pair(kUniformSamplePSDName, true)),
+          UnorderedElementsAre(Pair(kPerformanceSegmentPSDName, "Low Memory"),
+                               Pair(kChannelPSDName, MatchesAnyChannel()))));
   performance_controls_hats_service()->SetAmountOfPhysicalMemoryMBForTesting(
       4096);
   task_env().FastForwardBy(
@@ -369,9 +400,13 @@ TEST_F(PerformanceControlsHatsServicePPM3SegmentTest, LowMemorySegment) {
 TEST_F(PerformanceControlsHatsServicePPM3SegmentTest, MediumMemorySegment) {
   EXPECT_CALL(
       *mock_hats_service(),
-      LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPPM, _, _, _,
-                   ContainerEq(SurveyStringData{
-                       {kPerformanceSegmentPSDName, "Medium Memory"}})));
+      LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPPM, _, _,
+                   UnorderedElementsAre(Pair(kMemorySaverPSDName, _),
+                                        Pair(kBatterySaverPSDName, _),
+                                        Pair(kUniformSamplePSDName, true)),
+                   UnorderedElementsAre(
+                       Pair(kPerformanceSegmentPSDName, "Medium Memory"),
+                       Pair(kChannelPSDName, MatchesAnyChannel()))));
   performance_controls_hats_service()->SetAmountOfPhysicalMemoryMBForTesting(
       8192);
   task_env().FastForwardBy(
@@ -380,10 +415,15 @@ TEST_F(PerformanceControlsHatsServicePPM3SegmentTest, MediumMemorySegment) {
 }
 
 TEST_F(PerformanceControlsHatsServicePPM3SegmentTest, HighMemorySegment) {
-  EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPPM, _, _, _,
-                           ContainerEq(SurveyStringData{
-                               {kPerformanceSegmentPSDName, "High Memory"}})));
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(
+          kHatsSurveyTriggerPerformanceControlsPPM, _, _,
+          UnorderedElementsAre(Pair(kMemorySaverPSDName, _),
+                               Pair(kBatterySaverPSDName, _),
+                               Pair(kUniformSamplePSDName, true)),
+          UnorderedElementsAre(Pair(kPerformanceSegmentPSDName, "High Memory"),
+                               Pair(kChannelPSDName, MatchesAnyChannel()))));
   performance_controls_hats_service()->SetAmountOfPhysicalMemoryMBForTesting(
       16384);
   task_env().FastForwardBy(
@@ -396,6 +436,9 @@ class PerformanceControlsHatsServicePPMFinishedSegmentTest
  protected:
   base::FieldTrialParams GetFieldTrialParams() const override {
     return {
+        // uniform_sample should be disabled before a segment is finished, since
+        // the weight of each segment no longer reflects the general population.
+        {"ppm_survey_uniform_sample", "false"},
         // <= 4 GB
         {"ppm_survey_segment_name1", "Low Memory"},
         {"ppm_survey_segment_max_memory_gb1", "4"},
@@ -409,10 +452,15 @@ class PerformanceControlsHatsServicePPMFinishedSegmentTest
 };
 
 TEST_F(PerformanceControlsHatsServicePPMFinishedSegmentTest, LowMemorySegment) {
-  EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPPM, _, _, _,
-                           ContainerEq(SurveyStringData{
-                               {kPerformanceSegmentPSDName, "Low Memory"}})));
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(
+          kHatsSurveyTriggerPerformanceControlsPPM, _, _,
+          UnorderedElementsAre(Pair(kMemorySaverPSDName, _),
+                               Pair(kBatterySaverPSDName, _),
+                               Pair(kUniformSamplePSDName, false)),
+          UnorderedElementsAre(Pair(kPerformanceSegmentPSDName, "Low Memory"),
+                               Pair(kChannelPSDName, MatchesAnyChannel()))));
   performance_controls_hats_service()->SetAmountOfPhysicalMemoryMBForTesting(
       4096);
   task_env().FastForwardBy(
@@ -435,10 +483,15 @@ TEST_F(PerformanceControlsHatsServicePPMFinishedSegmentTest,
 
 TEST_F(PerformanceControlsHatsServicePPMFinishedSegmentTest,
        HighMemorySegment) {
-  EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPPM, _, _, _,
-                           ContainerEq(SurveyStringData{
-                               {kPerformanceSegmentPSDName, "High Memory"}})));
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(
+          kHatsSurveyTriggerPerformanceControlsPPM, _, _,
+          UnorderedElementsAre(Pair(kMemorySaverPSDName, _),
+                               Pair(kBatterySaverPSDName, _),
+                               Pair(kUniformSamplePSDName, false)),
+          UnorderedElementsAre(Pair(kPerformanceSegmentPSDName, "High Memory"),
+                               Pair(kChannelPSDName, MatchesAnyChannel()))));
   performance_controls_hats_service()->SetAmountOfPhysicalMemoryMBForTesting(
       16384);
   task_env().FastForwardBy(

@@ -490,8 +490,10 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerPerformanceControlsPPM,
       /*presupplied_trigger_id=*/std::nullopt,
       std::vector<std::string>{"Memory Saver Mode Enabled",
-                               "Battery Saver Mode Enabled"},
+                               "Battery Saver Mode Enabled",
+                               "Selected for Uniform Sample"},
       std::vector<std::string>{
+          "Channel",
           // Note memory is reported as a range, eg. "Windows, 4 to 8 GB".
           "Performance Characteristics (OS and Total Memory)"},
       /*log_responses_to_uma=*/true,
