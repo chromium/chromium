@@ -15,6 +15,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
@@ -32,6 +33,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
+#include "services/webnn/webnn_switches.h"
 #include "services/webnn/webnn_utils.h"
 #include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_generated.h"
 #include "third_party/tflite/src/tensorflow/compiler/mlir/lite/tools/optimize/reduced_precision_metadata.h"
@@ -1679,16 +1681,23 @@ auto GraphBuilderTflite::FinishAndTakeResult(
 }
 
 uint32_t GraphBuilderTflite::SerializeBuffer(base::span<const uint8_t> buffer) {
-  size_t offset = base::bits::AlignUp(buffer_data_.size(), kWeightsAlignment);
-  CHECK_GT(offset, 1u);
-  size_t padding = offset - buffer_data_.size();
-  std::fill_n(std::back_inserter(buffer_data_), padding, 0);
-  CHECK_EQ(buffer_data_.size() % kWeightsAlignment, 0u);
-
-  std::ranges::copy(buffer, std::back_inserter(buffer_data_));
   const auto buffer_index = base::checked_cast<uint32_t>(buffers_.size());
-  buffers_.emplace_back(
-      ::tflite::CreateBuffer(builder_, /*data=*/0, offset, buffer.size()));
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNTfliteDumpModel)) {
+    buffers_.emplace_back(::tflite::CreateBuffer(
+        builder_, builder_.CreateVector(buffer.data(), buffer.size())));
+  } else {
+    size_t offset = base::bits::AlignUp(buffer_data_.size(), kWeightsAlignment);
+    CHECK_GT(offset, 1u);
+    size_t padding = offset - buffer_data_.size();
+    std::fill_n(std::back_inserter(buffer_data_), padding, 0);
+    CHECK_EQ(buffer_data_.size() % kWeightsAlignment, 0u);
+
+    std::ranges::copy(buffer, std::back_inserter(buffer_data_));
+    buffers_.emplace_back(
+        ::tflite::CreateBuffer(builder_, /*data=*/0, offset, buffer.size()));
+  }
+
   // The index of buffer is referenced by tensors.
   return buffer_index;
 }
