@@ -395,7 +395,8 @@ PrefetchContainer::PrefetchContainer(
           WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host)
               ->GetOrCreateWebPreferences()
               .javascript_enabled,
-          PrefetchContainerDefaultTtlInPrefetchService()) {
+          PrefetchContainerDefaultTtlInPrefetchService(),
+          /*should_append_variations_header=*/true) {
   CHECK(prefetch_type_.IsRendererInitiated());
 }
 
@@ -430,7 +431,8 @@ PrefetchContainer::PrefetchContainer(
           /*Must be empty: additional_headers=*/{},
           /*request_status_listener=*/nullptr,
           referring_web_contents.GetOrCreateWebPreferences().javascript_enabled,
-          PrefetchContainerDefaultTtlInPrefetchService()) {
+          PrefetchContainerDefaultTtlInPrefetchService(),
+          /*should_append_variations_header=*/true) {
   CHECK(!prefetch_type_.IsRendererInitiated());
   CHECK(PrefetchBrowserInitiatedTriggersEnabled());
 }
@@ -446,7 +448,8 @@ PrefetchContainer::PrefetchContainer(
     base::WeakPtr<PreloadingAttempt> attempt,
     const net::HttpRequestHeaders& additional_headers,
     std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
-    base::TimeDelta ttl_in_sec)
+    base::TimeDelta ttl_in_sec,
+    bool should_append_variations_header)
     : PrefetchContainer(
           GlobalRenderFrameHostId(),
           referring_origin,
@@ -469,7 +472,8 @@ PrefetchContainer::PrefetchContainer(
           additional_headers,
           std::move(request_status_listener),
           javascript_enabled,
-          ttl_in_sec) {
+          ttl_in_sec,
+          should_append_variations_header) {
   CHECK(!prefetch_type_.IsRendererInitiated());
   CHECK(PrefetchBrowserInitiatedTriggersEnabled());
 }
@@ -493,7 +497,8 @@ PrefetchContainer::PrefetchContainer(
     const net::HttpRequestHeaders& additional_headers,
     std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
     bool is_javascript_enabled,
-    base::TimeDelta ttl_in_sec)
+    base::TimeDelta ttl_in_sec,
+    bool should_append_variations_header)
     : referring_render_frame_host_id_(referring_render_frame_host_id),
       referring_origin_(referring_origin),
       referring_url_hash_(referring_url_hash),
@@ -515,7 +520,8 @@ PrefetchContainer::PrefetchContainer(
       additional_headers_(additional_headers),
       request_status_listener_(std::move(request_status_listener)),
       is_javascript_enabled_(is_javascript_enabled),
-      ttl_in_sec_(ttl_in_sec) {
+      ttl_in_sec_(ttl_in_sec),
+      should_append_variations_header_(should_append_variations_header) {
   is_likely_ahead_of_prerender_ =
       CalculateIsLikelyAheadOfPrerender(*preload_pipeline_info_);
 
@@ -1791,7 +1797,9 @@ void PrefetchContainer::MakeResourceRequest(
   request->devtools_request_id = RequestId();
 
   AddClientHintsHeaders(origin, &request->headers);
-  AddXClientDataHeader(*request.get());
+  if (should_append_variations_header_) {
+    AddXClientDataHeader(*request.get());
+  }
 
   resource_request_ = std::move(request);
 }

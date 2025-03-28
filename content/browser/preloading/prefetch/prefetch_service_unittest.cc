@@ -468,7 +468,8 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
       base::TimeDelta ttl_in_sec = base::Seconds(/* 10 minutes */ 60 * 10)) {
     return browser_context()->StartBrowserPrefetchRequest(
         url, true, no_vary_search_data, additional_headers,
-        std::move(request_status_listener), ttl_in_sec);
+        std::move(request_status_listener), ttl_in_sec,
+        /*should_append_variations_header=*/true);
   }
 
   int RequestCount() { return test_url_loader_factory_.NumPending(); }
