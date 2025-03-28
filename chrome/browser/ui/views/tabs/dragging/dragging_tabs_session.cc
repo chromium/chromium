@@ -131,13 +131,9 @@ void DraggingTabsSession::MoveAttachedImpl(gfx::Point point_in_screen,
        threshold) ||
       (initial_move_ && !AreTabsConsecutive())) {
     TabStripModel* attached_model = attached_context_->GetTabStripModel();
-    int to_index = attached_context_->GetInsertionIndexForDraggedBounds(
+    const int to_index = attached_context_->GetInsertionIndexForDraggedBounds(
         GetDraggedViewTabStripBounds(dragged_view_point),
-        drag_data_.attached_views(), drag_data_.num_dragging_tabs(),
-        drag_data_.group_drag_data_.has_value()
-            ? std::make_optional<tab_groups::TabGroupId>(
-                  drag_data_.group_drag_data_.value().group)
-            : std::nullopt);
+        drag_data_.attached_views(), drag_data_.num_dragging_tabs());
 
     content::WebContents* last_contents =
         drag_data_.tab_drag_data_.back().contents;
