@@ -1470,6 +1470,13 @@ void CaptureModeSession::OnPerformCaptureForSearchEnded(
     CHECK(capture_region_overlay_controller_);
     capture_region_overlay_controller_->StartGlowAnimation(
         /*animation_delegate=*/this);
+    // TODO(crbug.com/400798746): If Scanner is not enabled, the glow animation
+    // should continue until OCR has completed. For now, just immediately pause
+    // the animation in order to avoid the animation continuing indefinitely.
+    ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+    if (!scanner_controller || !scanner_controller->CanStartSession()) {
+      capture_region_overlay_controller_->PauseGlowAnimation();
+    }
   }
 }
 
