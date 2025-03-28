@@ -379,8 +379,20 @@ void ArcAppQueueRestoreHandler::AddWindows(const std::string& app_id) {
 void ArcAppQueueRestoreHandler::PrepareLaunchApps() {
   is_shelf_ready_ = true;
 
-  // Explicit check if the root window controller initialized. b/321719023
-  if (RootWindowController::root_window_controllers().empty()) {
+  // Explicit check if the root window controller initialized.
+  // crbug.com/321719023
+  bool window_controller_ready =
+      !RootWindowController::root_window_controllers().empty();
+  if (window_controller_ready) {
+    // Expect the always on top controller exist.
+    for (const auto& controller :
+         RootWindowController::root_window_controllers()) {
+      if (!controller->always_on_top_controller()) {
+        window_controller_ready = false;
+      }
+    }
+  }
+  if (!window_controller_ready) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ArcAppQueueRestoreHandler::PrepareLaunchApps,
