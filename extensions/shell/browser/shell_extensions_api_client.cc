@@ -33,6 +33,7 @@ void ShellExtensionsAPIClient::AttachWebContentsHelpers(
   ShellExtensionWebContentsObserver::CreateForWebContents(web_contents);
 }
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 AppViewGuestDelegate* ShellExtensionsAPIClient::CreateAppViewGuestDelegate()
     const {
   return new ShellAppViewGuestDelegate();
@@ -42,6 +43,7 @@ WebViewGuestDelegate* ShellExtensionsAPIClient::CreateWebViewGuestDelegate(
     WebViewGuest* web_view_guest) const {
   return new ShellWebViewGuestDelegate();
 }
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 std::unique_ptr<VirtualKeyboardDelegate>
 ShellExtensionsAPIClient::CreateVirtualKeyboardDelegate(
