@@ -364,7 +364,8 @@ void PopupBaseView::NotifyAXSelection(views::View& selected_view) {
   DCHECK(kDerivedClasses.contains(selected_view.GetClassName()))
       << "If you add a new derived class from AutofillPopupRowView, add it "
          "here and to onSelection(evt) in "
-         "chrome/browser/resources/chromeos/accessibility/chromevox/background/"
+         "chrome/browser/resources/chromeos/accessibility/chromevox/mv2/"
+         "background/"
          "event/desktop_automation_handler.js to ensure that ChromeVox "
          "announces the item when selected. Missing class: "
       << selected_view.GetClassName();
