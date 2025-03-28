@@ -322,11 +322,13 @@ class ASH_EXPORT CaptureModeSession
   void OnLocatedEventReleased(const gfx::Point& location_in_root);
 
   // Updates the capture region and the capture region widgets depending on the
-  // value of |is_resizing|. |by_user| is true if the capture region is changed
-  // by user.
+  // value of `is_resizing`. `by_user` is true if the capture region is changed
+  // by user. `root_window_will_shutdown` is true if this update was a result of
+  // a root window being shutdown.
   void UpdateCaptureRegion(const gfx::Rect& new_capture_region,
                            bool is_resizing,
-                           bool by_user);
+                           bool by_user,
+                           bool root_window_will_shutdown);
 
   // Updates the dimensions label widget shown during a region capture session.
   // If not |is_resizing|, not a region capture session or the capture region is

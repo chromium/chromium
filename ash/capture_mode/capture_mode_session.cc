@@ -1397,7 +1397,8 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root,
 
   // Start with a new region when we switch displays.
   is_selecting_region_ = true;
-  UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/false, /*by_user=*/false);
+  UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/false, /*by_user=*/false,
+                      root_window_will_shutdown);
 
   UpdateRootWindowDimmers();
   MaybeReparentCameraPreviewWidget();
@@ -2868,7 +2869,8 @@ void CaptureModeSession::OnLocatedEventPressed(
     // If the point is outside the capture region and not on the capture bar or
     // settings menu, restart to the select phase.
     is_selecting_region_ = true;
-    UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/true, /*by_user=*/true);
+    UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/true, /*by_user=*/true,
+                        /*root_window_will_shutdown=*/false);
     num_capture_region_adjusted_ = 0;
     return;
   }
@@ -2902,7 +2904,8 @@ void CaptureModeSession::OnLocatedEventDragged(
     UpdateCaptureRegion(
         GetRectEnclosingPoints({initial_location_in_root_, location_in_root},
                                current_root_),
-        /*is_resizing=*/true, /*by_user=*/true);
+        /*is_resizing=*/true, /*by_user=*/true,
+        /*root_window_will_shutdown=*/false);
     return;
   }
 
@@ -2917,7 +2920,7 @@ void CaptureModeSession::OnLocatedEventDragged(
     new_capture_region.Offset(location_in_root - previous_location_in_root);
     new_capture_region.AdjustToFit(current_root_->bounds());
     UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false,
-                        /*by_user=*/true);
+                        /*by_user=*/true, /*root_window_will_shutdown=*/false);
     return;
   }
 
@@ -2942,7 +2945,8 @@ void CaptureModeSession::OnLocatedEventDragged(
   }
   points.push_back(resizing_point);
   UpdateCaptureRegion(GetRectEnclosingPoints(points, current_root_),
-                      /*is_resizing=*/true, /*by_user=*/true);
+                      /*is_resizing=*/true, /*by_user=*/true,
+                      /*root_window_will_shutdown=*/false);
   MaybeShowMagnifierGlassAtPoint(location_in_root);
 }
 
@@ -2995,7 +2999,8 @@ void CaptureModeSession::OnLocatedEventReleased(
 void CaptureModeSession::UpdateCaptureRegion(
     const gfx::Rect& new_capture_region,
     bool is_resizing,
-    bool by_user) {
+    bool by_user,
+    bool root_window_will_shutdown) {
   const gfx::Rect old_capture_region = controller_->user_capture_region();
   if (old_capture_region == new_capture_region)
     return;
@@ -3023,7 +3028,12 @@ void CaptureModeSession::UpdateCaptureRegion(
   ClearActionContainer();
   UpdateDimensionsLabelWidget(is_resizing);
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
-  focus_cycler_->OnFineTunePositionUpdated(/*notify_selection_event=*/false);
+  if (!root_window_will_shutdown) {
+    // This updates the virtual views used for a11y on the affordance circles.
+    // Those virtual views will be destroyed soon if `root_window_will_shutdown`
+    // is true.
+    focus_cycler_->OnFineTunePositionUpdated(/*notify_selection_event=*/false);
+  }
 
   // Start a timer to request default actions or perform search after a delay.
   // This is to prevent too many requests if the user needs to repeatedly adjust
@@ -3430,7 +3440,7 @@ void CaptureModeSession::SelectDefaultRegion() {
   default_capture_region.ClampToCenteredSize(gfx::ScaleToCeiledSize(
       default_capture_region.size(), kRegionDefaultRatio));
   UpdateCaptureRegion(default_capture_region, /*is_resizing=*/false,
-                      /*by_user=*/true);
+                      /*by_user=*/true, /*root_window_will_shutdown=*/false);
   capture_mode_util::TriggerAccessibilityAlert(
       IDS_ASH_SCREEN_CAPTURE_ALERT_DEFAULT_REGION_SELECTED);
 }
@@ -3514,7 +3524,7 @@ void CaptureModeSession::UpdateRegionForArrowKeys(ui::KeyboardCode key_code,
   }
 
   UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false,
-                      /*by_user=*/true);
+                      /*by_user=*/true, /*root_window_will_shutdown=*/false);
 }
 
 void CaptureModeSession::MaybeReparentCameraPreviewWidget() {
