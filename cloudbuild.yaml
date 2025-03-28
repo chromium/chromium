@@ -103,25 +103,30 @@ steps:
         - |
             set -e
             cd /workspace/hopium/src
-            mkdir -p out/Debug
-            touch out/Debug/args.gn
-            /workspace/depot_tools/gn args out/Debug <<EOF
-            is_component_build = false
-            is_debug = false
-            is_official_build = true
-            blink_symbol_level = 0
-            v8_symbol_level = 0
-            proprietary_codecs = true
-            ffmpeg_branding = "Chrome"
-            tsec_brand = true
-            tsec_full_rebrand = true
-            hopium_internal_url = "total"
-            tsec_notarize = true
-            treat_warnings_as_errors = false
-            enable_widevine = true
-            widevine_cdm = true
-            enable_media_foundation = true
+  
+            # Define args
+            GN_ARGS_MULTILINE=$(cat <<EOF
+            is_component_build=false
+            is_debug=false
+            is_official_build=true
+            blink_symbol_level=0
+            v8_symbol_level=0
+            proprietary_codecs=true
+            ffmpeg_branding="Chrome"
+            tsec_brand=true
+            tsec_full_rebrand=true
+            hopium_internal_url="total"
+            tsec_notarize=true
+            treat_warnings_as_errors=false
+            enable_widevine=true
+            widevine_cdm=true
+            enable_media_foundation=true
             EOF
+            )
+            GN_ARGS=$(echo "$GN_ARGS_MULTILINE" | tr '\n' ' ' | sed 's/^ *//;s/ *$//')
+  
+            mkdir -p out/Debug
+            /workspace/depot_tools/gn gen out/Debug --args="$GN_ARGS"
 
   - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.3'
     id: 'branding-script'
