@@ -189,7 +189,7 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
                identity:nil
-            accessPoint:signin_metrics::AccessPoint::kCollaborationTabGroup
+            accessPoint:signin_metrics::AccessPoint::kCollaborationShareTabGroup
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:completion_block];

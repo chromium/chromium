@@ -91,7 +91,7 @@ DialogText GetPromptDialogTextFromStatus(
 void ShowSignInAndSyncUi(Profile* profile) {
   signin_ui_util::EnableSyncFromSingleAccountPromo(
       profile, GetAccountInfoFromProfile(profile),
-      signin_metrics::AccessPoint::kCollaborationTabGroup);
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup);
 }
 
 }  // namespace
@@ -344,7 +344,7 @@ void CollaborationControllerDelegateDesktop::MaybeShowSignInAndSyncUi() {
     case collaboration::SigninStatus::kSignedInPaused:
       signin_ui_util::ShowReauthForAccount(
           profile, GetAccountInfoFromProfile(profile).email,
-          signin_metrics::AccessPoint::kCollaborationTabGroup);
+          signin_metrics::AccessPoint::kCollaborationShareTabGroup);
       break;
     case collaboration::SigninStatus::kSignedIn:
       switch (status.sync_status) {
