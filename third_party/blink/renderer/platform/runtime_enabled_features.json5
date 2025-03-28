@@ -3809,6 +3809,11 @@
       status: "stable",
     },
     {
+      // crbug.com/402200344
+      name: "RubyFieldsetCrashFix",
+      status: "stable",
+    },
+    {
       // crbug.com/329776386
       name: "RubyOverhangOverlapFix",
       status: "stable",
