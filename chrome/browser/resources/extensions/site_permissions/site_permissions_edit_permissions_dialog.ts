@@ -107,17 +107,17 @@ export class SitePermissionsEditPermissionsDialogElement extends
     };
   }
 
-  delegate: SiteSettingsDelegate = new DummySiteSettingsDelegate();
-  extensions: chrome.developerPrivate.ExtensionInfo[] = [];
-  originalSiteSet: chrome.developerPrivate.SiteSet =
+  accessor delegate: SiteSettingsDelegate = new DummySiteSettingsDelegate();
+  accessor extensions: chrome.developerPrivate.ExtensionInfo[] = [];
+  accessor originalSiteSet: chrome.developerPrivate.SiteSet =
       chrome.developerPrivate.SiteSet.USER_PERMITTED;
-  site: string = '';
-  protected siteSet_: chrome.developerPrivate.SiteSet =
+  accessor site: string = '';
+  protected accessor siteSet_: chrome.developerPrivate.SiteSet =
       chrome.developerPrivate.SiteSet.USER_PERMITTED;
   private extensionsIdToInfo_:
       Map<string, chrome.developerPrivate.ExtensionInfo> = new Map();
-  protected extensionSiteAccessData_: ExtensionSiteAccessInfo[] = [];
-  protected showPermittedOption_: boolean =
+  protected accessor extensionSiteAccessData_: ExtensionSiteAccessInfo[] = [];
+  protected accessor showPermittedOption_: boolean =
       loadTimeData.getBoolean('enableUserPermittedSites');
 
   // Tracks any unsaved changes to HostAccess for each extension made by

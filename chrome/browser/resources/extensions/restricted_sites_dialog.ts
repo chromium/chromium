@@ -42,7 +42,7 @@ export class ExtensionsRestrictedSitesDialogElement extends
     };
   }
 
-  firstRestrictedSite: string = '';
+  accessor firstRestrictedSite: string = '';
 
   isOpen(): boolean {
     return this.$.dialog.open;

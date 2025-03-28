@@ -94,12 +94,13 @@ export class ActivityLogStreamElement extends CrLitElement {
     };
   }
 
-  extensionId: string = '';
-  delegate: ActivityLogEventDelegate = new DummyActivityLogEventDelegate();
-  protected isStreamOn_: boolean = false;
-  private activityStream_: StreamItem[] = [];
-  protected filteredActivityStream_: StreamItem[] = [];
-  private lastSearch_: string = '';
+  accessor extensionId: string = '';
+  accessor delegate: ActivityLogEventDelegate =
+      new DummyActivityLogEventDelegate();
+  protected accessor isStreamOn_: boolean = false;
+  private accessor activityStream_: StreamItem[] = [];
+  protected accessor filteredActivityStream_: StreamItem[] = [];
+  private accessor lastSearch_: string = '';
   // Instance of |extensionActivityListener_| bound to |this|.
   private listenerInstance_:
       (type: chrome.activityLogPrivate.ExtensionActivity) => void = () => {};
