@@ -1302,6 +1302,13 @@ void TabStripModel::AddTab(std::unique_ptr<tabs::TabModel> tab,
     group = std::nullopt;
   }
 
+  // Move insertion index after the split group if it breaks contiguity.
+  if (InsertionIndexBreakSplitContiguity(index)) {
+    std::vector<std::pair<tabs::TabInterface*, int>> tabs_in_split =
+        GetTabsAndIndicesInSplit(GetTabAtIndex(index)->GetSplit().value());
+    index = tabs_in_split[tabs_in_split.size() - 1].second + 1;
+  }
+
   if (ui::PageTransitionTypeIncludingQualifiersIs(transition,
                                                   ui::PAGE_TRANSITION_TYPED) &&
       index == count()) {
@@ -1382,6 +1389,17 @@ void TabStripModel::MoveTabPrevious() {
 split_tabs::SplitTabData* TabStripModel::GetSplitData(
     split_tabs::SplitTabId split_id) {
   return split_tab_data_map_[split_id].get();
+}
+
+bool TabStripModel::IsIndexValid(int index) {
+  return index >= 0 && index < count();
+}
+
+bool TabStripModel::InsertionIndexBreakSplitContiguity(int index) {
+  return IsIndexValid(index - 1) && IsIndexValid(index) &&
+         GetTabAtIndex(index - 1)->IsSplit() &&
+         GetTabAtIndex(index - 1)->GetSplit() ==
+             GetTabAtIndex(index)->GetSplit();
 }
 
 void TabStripModel::UpdateSplitLayout(split_tabs::SplitTabId split_id,
@@ -3249,6 +3267,10 @@ void TabStripModel::InsertTabAtIndexImpl(
     bool pin,
     bool active) {
   tabs::TabModel* const tab_ptr = tab_model.get();
+
+  if (InsertionIndexBreakSplitContiguity(index)) {
+    RemoveSplitImpl(GetTabAtIndex(index)->GetSplit().value());
+  }
 
   tabs::TabInterface* old_active_tab = GetActiveTab();
   contents_data_->AddTabRecursive(std::move(tab_model), index, group, pin);
