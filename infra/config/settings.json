@@ -3,6 +3,7 @@
     "project_title": "Chromium M135",
     "ref": "refs/branch-heads/7049",
     "chrome_project": "chrome-m135",
+    "dawn_ref": "refs/heads/chromium/7049",
     "is_main": false,
     "platforms": {
         "android": {
