@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTestUti
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -461,7 +460,6 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     @DisabledTest(message = "crbug.com/397730179")
     public void testOpenArchivedTabFromHubSearch() {
         finishLoading();
@@ -506,7 +504,6 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testOpenArchivedTabFromHubSearch_Incognito() {
         finishLoading();
         mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(TEST_PATH));
