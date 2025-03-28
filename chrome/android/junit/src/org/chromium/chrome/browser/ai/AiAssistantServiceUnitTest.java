@@ -13,7 +13,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -44,6 +46,7 @@ import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Promise;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -59,12 +62,17 @@ import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.signin.AccountCapabilitiesConstants;
+import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 /** Unit tests for {@link AiAssistantService}. */
@@ -87,10 +95,12 @@ public class AiAssistantServiceUnitTest {
     @Mock SystemAiProvider mSystemAiProvider;
     @Mock SystemAiProviderFactory mSystemAiProviderFactory;
     @Mock private InnerTextBridge.Natives mInnerTextNatives;
+    @Mock private AccountManagerFacade mMockFacade;
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
     @Captor private ArgumentCaptor<LaunchRequest> mLaunchRequestCaptor;
 
     private final PausedExecutorService mPausedExecutorService = new PausedExecutorService();
+    private Promise<AccountCapabilities> mCapabilitiesPromise;
 
     @Before
     public void setUp() throws Exception {
@@ -99,8 +109,11 @@ public class AiAssistantServiceUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_CAT);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getMainFrame()).thenReturn(mRenderFrameHost);
-
+        when(mTab.getProfile()).thenReturn(mProfile);
         InnerTextBridgeJni.setInstanceForTesting(mInnerTextNatives);
+
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
     }
 
     @After
@@ -300,6 +313,8 @@ public class AiAssistantServiceUnitTest {
 
         var service = AiAssistantService.getInstance();
         initializeAiAssistantService(service);
+        fulfillAccountCapabilities(false);
+
         service.showAi(mContext, mTab);
 
         ShadowLooper.idleMainLooper();
@@ -308,6 +323,32 @@ public class AiAssistantServiceUnitTest {
         assertLaunchRequestIsForSummarizeUrl(
                 mLaunchRequestCaptor.getValue(), JUnitTestGURLs.URL_2.getSpec(), pageContents);
         assertLaunchRequestHasClientInfo(mLaunchRequestCaptor.getValue(), clientEmail);
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY
+                    + ":attach_client_info/true")
+    public void showAi_parentControlDisables() {
+        ServiceLoaderUtil.setInstanceForTesting(
+                SystemAiProviderFactory.class, mSystemAiProviderFactory);
+        setSystemAiProviderAsAvailable();
+        var pageContents = "Page contents for URL_2";
+        var clientEmail = "foo@bar.com";
+        setInnerTextExtractionResult(pageContents);
+        setClientEmail(clientEmail);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
+
+        var service = AiAssistantService.getInstance();
+        setSystemAiProviderAsAvailable();
+        initializeAiAssistantService(service);
+        fulfillAccountCapabilities(true);
+
+        service.showAi(mContext, mTab);
+
+        ShadowLooper.idleMainLooper();
+
+        verify(mSystemAiProvider, never()).launch(any(), any());
     }
 
     // Sets the result of calling the system provider, the result gets scheduled on
@@ -329,6 +370,15 @@ public class AiAssistantServiceUnitTest {
     private void initializeAiAssistantService(AiAssistantService service) {
         service.canShowAiForTab(mContext, mTab);
         mPausedExecutorService.runAll();
+    }
+
+    private void fulfillAccountCapabilities(boolean isParentSupervised) {
+        HashMap<String, Boolean> capabilities = new HashMap<>();
+        capabilities.put(
+                AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
+                isParentSupervised);
+        mCapabilitiesPromise.fulfill(new AccountCapabilities(capabilities));
+        ShadowLooper.idleMainLooper();
     }
 
     private void setSystemAiProviderAsUnavailable() {
@@ -354,11 +404,11 @@ public class AiAssistantServiceUnitTest {
     }
 
     private void setClientEmail(String email) {
-        when(mTab.getProfile()).thenReturn(mProfile);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mAccountInfo);
         when(mAccountInfo.getEmail()).thenReturn(email);
+        AccountManagerFacadeProvider.setInstanceForTests(mMockFacade);
+        mCapabilitiesPromise = new Promise<>();
+        doReturn(mCapabilitiesPromise).when(mMockFacade).getAccountCapabilities(mAccountInfo);
     }
 
     private void assertLaunchRequestIsForSummarizeUrl(

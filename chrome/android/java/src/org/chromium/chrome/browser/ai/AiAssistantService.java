@@ -10,12 +10,11 @@ import android.content.Intent;
 
 import androidx.annotation.IntDef;
 
-import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
@@ -42,14 +41,18 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.Tribool;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.time.Duration;
 import java.util.Optional;
 
-/**
+/*
  * Service to interact with an AI assistant, used to invoke an assistant UI to summarize web pages
  * and/or ask questions about it. System-specific integration is handled with the SystemAiProvider
  * interface, and if none is present it falls back to sending an ACTION_VOICE_COMMAND intent to
@@ -146,18 +149,12 @@ public class AiAssistantService {
 
         if (!isTabElegible(tab)) return;
 
-        Futures.addCallback(
-                requestAvailabilityFromService(context, tab.getProfile()),
-                new FutureCallback<@Nullable Boolean>() {
-                    @Override
-                    public void onSuccess(@Nullable Boolean result) {
-                        requestLaunch(context, tab);
-                    }
-
-                    @Override
-                    public void onFailure(Throwable t) {}
-                },
-                MoreExecutors.directExecutor());
+        refreshAvailability(
+                context,
+                tab.getProfile(),
+                () -> {
+                    requestLaunch(context, tab);
+                });
     }
 
     /**
@@ -175,10 +172,10 @@ public class AiAssistantService {
 
         if (!mIsInitialized) {
             // Request availability.
-            var initFuture = initialize(context, tab.getProfile());
+            var initialized = initialize(context, tab.getProfile());
             // If after requesting we are still not initialized that means that we queried the
             // system service, return false as it's an async process.
-            if (!initFuture.isDone()) {
+            if (!initialized) {
                 return false;
             }
         }
@@ -194,9 +191,16 @@ public class AiAssistantService {
         return false;
     }
 
-    private ListenableFuture<Boolean> initialize(Context context, Profile profile) {
+    /**
+     * Initializes the service.
+     *
+     * @param context Context used to query the system provider
+     * @param tab Tab used to get the profile
+     * @return True if the service is initialized, false otherwise.
+     */
+    private boolean initialize(Context context, Profile profile) {
         if (mIsInitializing) {
-            return Futures.immediateFuture(false);
+            return true;
         }
         mIsInitializing = true;
 
@@ -206,27 +210,42 @@ public class AiAssistantService {
             case PrefLoadingResult.LOADED -> {
                 mIsInitializing = false;
                 mIsInitialized = true;
-                return Futures.immediateFuture(true);
+                return true;
             }
             case PrefLoadingResult.NOT_AVAILABLE -> {
                 // Request availability from system provider if cache is empty.
-                return requestAvailabilityFromService(context, profile);
+                refreshAvailability(context, profile, () -> {});
+                return false;
             }
             case PrefLoadingResult.EXPIRED -> {
                 mIsInitializing = false;
                 mIsInitialized = true;
                 // If the cache is expired then use its results one last time, and query the
                 // provider to refresh the results in the background.
-                requestAvailabilityFromService(context, profile);
-                return Futures.immediateFuture(true);
+                refreshAvailability(context, profile, () -> {});
+                return true;
             }
             default -> throw new IllegalStateException(
                     "Invalid PrefLoadingResult value: " + loadingResult);
         }
     }
 
-    private ListenableFuture<Boolean> requestAvailabilityFromService(
-            Context context, Profile profile) {
+    private void refreshAvailability(
+            Context context, Profile profile, Runnable finishRefreshCallback) {
+        shouldEnableForAccount(
+                profile,
+                (shouldEnable) -> {
+                    if (shouldEnable) {
+                        requestAvailabilityFromService(context, profile, finishRefreshCallback);
+                    } else {
+                        onAvailabilityResponse(null);
+                        finishRefreshCallback.run();
+                    }
+                });
+    }
+
+    private void requestAvailabilityFromService(
+            Context context, Profile profile, Runnable finishRefreshCallback) {
         var availabilityRequestBuilder =
                 AvailabilityRequest.newBuilder()
                         .addRequestedCapabilities(Capability.ANALYZE_ATTACHMENT_CAPABILITY)
@@ -241,28 +260,22 @@ public class AiAssistantService {
 
         var availabilityFuture =
                 mSystemAiProvider.isAvailable(context, availabilityRequestBuilder.build());
-        var catchingFuture =
-                Futures.catching(
-                        availabilityFuture,
-                        Throwable.class,
-                        exception -> {
-                            Log.w(
-                                    TAG,
-                                    "Error getting system AI provider availability: ",
-                                    exception);
-                            return null;
-                        },
-                        MoreExecutors.directExecutor());
-        Function<AvailabilityResponse, Boolean> transformFunction =
-                result -> {
-                    onAvailabilityResponse(result);
-                    return true;
-                };
-        var transformedFuture =
-                Futures.transform(
-                        catchingFuture, transformFunction, MoreExecutors.directExecutor());
+        Futures.addCallback(
+                availabilityFuture,
+                new FutureCallback<AvailabilityResponse>() {
+                    @Override
+                    public void onSuccess(@Nullable AvailabilityResponse result) {
+                        onAvailabilityResponse(result);
+                        finishRefreshCallback.run();
+                    }
 
-        return transformedFuture;
+                    @Override
+                    public void onFailure(Throwable t) {
+                        onAvailabilityResponse(null);
+                        finishRefreshCallback.run();
+                    }
+                },
+                MoreExecutors.directExecutor());
     }
 
     private void onAvailabilityResponse(@Nullable AvailabilityResponse result) {
@@ -379,6 +392,28 @@ public class AiAssistantService {
         if (tab.getNativePage() instanceof PdfPage) return true;
 
         return UrlUtilities.isHttpOrHttps(tab.getUrl());
+    }
+
+    private void shouldEnableForAccount(Profile profile, Callback<Boolean> shouldEnable) {
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        if (identityManager == null) {
+            shouldEnable.onResult(false);
+            return;
+        }
+        CoreAccountInfo accountInfo = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        if (accountInfo == null) {
+            // Apply no account policy if no account is available, AI service can check its policy.
+            shouldEnable.onResult(true);
+            return;
+        }
+        AccountManagerFacadeProvider.getInstance()
+                .getAccountCapabilities(accountInfo)
+                .then(
+                        capabilities -> {
+                            shouldEnable.onResult(
+                                    capabilities.isSubjectToParentalControls() == Tribool.FALSE);
+                        });
     }
 
     private void onInnerTextReceived(
