@@ -270,6 +270,11 @@ class CONTENT_EXPORT PrefetchContainer {
   // prefetch exists.
   bool HasSpeculationRulesTags() { return speculation_rules_tags_.has_value(); }
 
+  // Returns the serialized string of speculation rules tags.
+  std::optional<std::string> GetSpeculationRulesTagsHeaderString() {
+    return speculation_rules_tags_->ConvertStringToHeaderString();
+  }
+
   // The type of this prefetch. Controls how the prefetch is handled.
   const PrefetchType& GetPrefetchType() const { return prefetch_type_; }
 
