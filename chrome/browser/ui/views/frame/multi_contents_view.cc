@@ -26,8 +26,7 @@ namespace {
 constexpr int kMinWebContentsWidth = 20;
 constexpr int kContentCornerRadius = 6;
 constexpr int kContentOutlineCornerRadius = 8;
-constexpr int kActiveContentOutlineThickness = 2;
-constexpr int kInactiveContentOutlineThickness = 1;
+constexpr int kContentOutlineThickness = 1;
 constexpr int kSplitViewContentInset = 8;
 constexpr int kSplitViewContentPadding = 4;
 }  // namespace
@@ -176,11 +175,9 @@ void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
   // Draw active/inactive outlines around the contents areas.
   const auto draw_contents_outline = [this, canvas](views::View* content_view) {
     const bool is_active = content_view == GetActiveContentsView();
-    const int thickness = is_active ? kActiveContentOutlineThickness
-                                    : kInactiveContentOutlineThickness;
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeWidth(thickness);
+    flags.setStrokeWidth(kContentOutlineThickness);
     const SkColor color =
         is_active ? GetColorProvider()->GetColor(
                         kColorMulitContentsViewActiveContentOutline)
@@ -189,7 +186,8 @@ void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
     flags.setColor(color);
     flags.setAntiAlias(true);
     gfx::RectF main_content_border_rect = gfx::RectF(content_view->bounds());
-    const float outset = kSplitViewContentPadding + (thickness / 2.0f);
+    const float outset =
+        kSplitViewContentPadding + (kContentOutlineThickness / 2.0f);
     main_content_border_rect.Outset(outset);
     canvas->DrawRoundRect(main_content_border_rect, kContentOutlineCornerRadius,
                           flags);
