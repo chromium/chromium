@@ -425,10 +425,10 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
     return;
   }
   // If floaty is focused or the source is the top button, close it
-  // If floaty is unfocused, focus it
+  // If floaty is unfocused and open, focus it
   if (IsActive() || source == mojom::InvocationSource::kTopChromeButton) {
     maybe_close();
-  } else {
+  } else if (state_ == State::kOpen) {
     // TODO(crbug.com/404601783): Bring focus to the textbox.
     GetGlicWidget()->Activate();
     GetGlicView()->web_view()->GetWebContents()->Focus();
