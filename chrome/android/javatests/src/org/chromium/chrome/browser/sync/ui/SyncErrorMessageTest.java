@@ -65,7 +65,8 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.io.IOException;
@@ -130,13 +131,15 @@ public class SyncErrorMessageTest {
 
         // Sign in.
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
+        mFakeSyncServiceImpl.setAuthError(
+                new GoogleServiceAuthError(GoogleServiceAuthErrorState.INVALID_GAIA_CREDENTIALS));
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
         verifyHasShownMessage();
         watchIdentityErrorMessageShownHistogram.assertExpected();
 
         // Resolving the error should dismiss the current message.
-        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.NONE);
+        mFakeSyncServiceImpl.setAuthError(
+                new GoogleServiceAuthError(GoogleServiceAuthErrorState.NONE));
         verifyHasDismissedMessage();
     }
 
@@ -310,7 +313,8 @@ public class SyncErrorMessageTest {
         // Sign in.
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mFakeSyncServiceImpl.setEngineInitialized(true);
-        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.NONE);
+        mFakeSyncServiceImpl.setAuthError(
+                new GoogleServiceAuthError(GoogleServiceAuthErrorState.NONE));
         mFakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(false);
         mFakeSyncServiceImpl.setRequiresClientUpgrade(false);
 
@@ -346,7 +350,8 @@ public class SyncErrorMessageTest {
         SyncErrorMessage.setMessageDispatcherForTesting(null);
         // Sign in.
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
+        mFakeSyncServiceImpl.setAuthError(
+                new GoogleServiceAuthError(GoogleServiceAuthErrorState.INVALID_GAIA_CREDENTIALS));
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
         ViewGroup view = mSyncTestRule.getActivity().findViewById(R.id.message_container);
         // Wait until the message ui is shown.

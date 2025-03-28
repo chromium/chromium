@@ -335,6 +335,7 @@ chrome_test_java_helper_deps = [
   "//content/public/common:common_java",
   "//content/public/test/android:content_java_test_support",
   "//content/public/test/android:content_transit_java",
+  "//google_apis/gaia/android:java",
   "//media/base/android:java_switches",
   "//media/base/android:media_java",
   "//mojo/public/java:bindings_java",

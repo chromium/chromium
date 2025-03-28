@@ -40,7 +40,8 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.ui.test.util.ViewUtils;
 
 /** Test suite for IdentityErrorCardPreference */
@@ -95,7 +96,8 @@ public class IdentityErrorCardPreferenceTest {
     @LargeTest
     @Feature("RenderTest")
     public void testIdentityErrorCardForAuthError() throws Exception {
-        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
+        mFakeSyncServiceImpl.setAuthError(
+                new GoogleServiceAuthError(GoogleServiceAuthErrorState.INVALID_GAIA_CREDENTIALS));
         mSigninTestRule.addTestAccountThenSignin();
 
         try (HistogramWatcher watchIdentityErrorCardShownHistogram =
@@ -248,7 +250,8 @@ public class IdentityErrorCardPreferenceTest {
     @Test
     @LargeTest
     public void testIdentityErrorCardNotShownForUnrecoverableErrors() throws Exception {
-        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.CONNECTION_FAILED);
+        mFakeSyncServiceImpl.setAuthError(
+                new GoogleServiceAuthError(GoogleServiceAuthErrorState.CONNECTION_FAILED));
         mSigninTestRule.addTestAccountThenSignin();
 
         mSettingsActivityTestRule.startSettingsActivity();
