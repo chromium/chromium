@@ -8451,9 +8451,6 @@ crbug.com/325441197 http/tests/devtools/elements/event-listeners-framework-with-
 crbug.com/336691003 [ Linux ] external/wpt/long-animation-frame/tentative/loaf-source-location-inline-classic-script.html [ Failure ]
 
 # Gardener 2024-05-01
-crbug.com/338109349 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/no-crash-view-transition-in-massive-iframe.html [ Failure ]
-crbug.com/338109349 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/no-crash-view-transition-in-massive-iframe.html [ Failure ]
-crbug.com/338109349 virtual/threaded/external/wpt/css/css-view-transitions/no-crash-view-transition-in-massive-iframe.html [ Failure ]
 crbug.com/333501264 virtual/fenced-frame-mparch/external/wpt/fenced-frame/setting-null-config-navigates-to-about-blank.https.html [ Failure Pass ]
 crbug.com/338124116 external/wpt/payment-request/payment-request-hasenrolledinstrument-method.tentative.https.html [ Failure Pass ]
 crbug.com/40181907 external/wpt/pointerevents/pointerevent_touch-action-pan-up-css_touch.html [ Failure Pass Timeout ]
