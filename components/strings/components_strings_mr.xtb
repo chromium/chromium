@@ -125,7 +125,7 @@
 <translation id="1209206284964581585">आतासाठी लपवा</translation>
 <translation id="121201262018556460">तुम्ही <ph name="DOMAIN" /> वर पोहोचण्याचा प्रयत्न केलात, परंतु सर्व्हरने एक कमकुवत की असलेले सर्टिफिकेट सादर केले. हल्लेखोराने गोपनीय की तोडलेली असू शकते आणि सर्व्हर हे तुम्हाला अपेक्षित असणारे सर्व्हर नसू शकते (तुम्ही कदाचित हल्लेखोराशी संवाद प्रस्थापित करत असाल).</translation>
 <translation id="1212527389003717329">डाउनलोड सुरू झाला आहे. तो पाहण्यासाठी, |<ph name="ACCELERATOR" />| प्रेस करून धरून ठेवा.</translation>
-<translation id="1219129156119358924">सिस्टम सुरक्षा</translation>
+<translation id="1219129156119358924">सिस्टीम सुरक्षा</translation>
 <translation id="1222060260947439312">उजवा ट्रे</translation>
 <translation id="1224330468394120478">A3x6</translation>
 <translation id="1225240795350945817">कार्ड नंबर:</translation>
@@ -440,7 +440,7 @@
 <translation id="1733631169686303142">ऑडिओ उपकरणे</translation>
 <translation id="1733762317901693627">साधारणपणे सुरक्षित असलेल्या साइटदेखील काहीवेळा हल्लेखोरांमुळे धोक्यात येऊ शकतात. तुम्हाला धोके माहीत असल्याची खात्री असेल, तरच <ph name="BEGIN_LINK" />या असुरक्षित साइट<ph name="END_LINK" /> ला भेट द्या.</translation>
 <translation id="1734864079702812349">Amex</translation>
-<translation id="1734878702283171397">सिस्टम प्रशासकाशी संपर्क साधण्याचा प्रयत्न करा.</translation>
+<translation id="1734878702283171397">सिस्टीम अ‍ॅडमिनशी संपर्क साधण्याचा प्रयत्न करा.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, एक्स्पायर होईल <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">काँप्युटर</translation>
 <translation id="1739422091279046802">स्क्रोल आणि झूम करणे</translation>
@@ -559,7 +559,7 @@
 <translation id="1956486093533522234">तुमचे डिव्हाइस शोधा, सुरक्षित करा किंवा मिटवा</translation>
 <translation id="1957274554973357626">लाइव्ह विनोदी कार्यक्रम</translation>
 <translation id="1958218078413065209">तुमचा सर्वोच्च स्कोअर <ph name="SCORE" /> आहे.</translation>
-<translation id="1959001866257244765">Google ला <ph name="BEGIN_WHITEPAPER_LINK" />तुम्ही भेट देत असलेल्या काही पेजच्या URL, मर्यादित सिस्टम माहिती आणि पेजवरील काही आशय<ph name="END_WHITEPAPER_LINK" /> पाठवून वेबवरील प्रत्येकासाठी सुरक्षिततेत सुधारणा करण्यात मदत करा. <ph name="BEGIN_PRIVACY_PAGE_LINK" />गोपनीयता धोरण<ph name="END_PRIVACY_PAGE_LINK" /></translation>
+<translation id="1959001866257244765">Google ला <ph name="BEGIN_WHITEPAPER_LINK" />तुम्ही भेट देत असलेल्या काही पेजच्या URL, मर्यादित सिस्टीम माहिती आणि पेजवरील काही आशय<ph name="END_WHITEPAPER_LINK" /> पाठवून वेबवरील प्रत्येकासाठी सुरक्षिततेत सुधारणा करण्यात मदत करा. <ph name="BEGIN_PRIVACY_PAGE_LINK" />गोपनीयता धोरण<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1959445535228047762">तुमचा मजकूर आणि पेजवरील आशय हे Google कडे पाठवले जातात आणि ते या वैशिष्‍ट्यामध्ये सुधारणा करण्यासाठी वापरले जाऊ शकतात.
   <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="196146181975453736">आणखी जलद पेमेंट करण्यासाठी एक वेळ सुरक्षा तपासणी पूर्ण करा</translation>
@@ -1365,7 +1365,7 @@
 <translation id="3415471717466570460">तुमचे शोध, सर्वोत्तम जुळण्या आणि त्यांचा पेजचा आशय Google कडे पाठवला जातो आणि या वैशिष्ट्यामध्ये सुधारणा करण्यासाठी मानवी परीक्षणकर्त्यांद्वारे पाहिला जाऊ शकतो. हे प्रायोगिक वैशिष्ट्य आहे आणि ते नेहमीच बरोबर असेल असे नाही.</translation>
 <translation id="3422248202833853650">मेमरी मोकळी करण्‍यासाठी अन्य प्रोग्राम मधून बाहर पडण्याचा प्रयत्न करा.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> सध्या आवाक्याबाहेर आहे.</translation>
-<translation id="3423742043356668186">सिस्टम निर्दिष्ट केली</translation>
+<translation id="3423742043356668186">सिस्टीम निर्दिष्ट केली</translation>
 <translation id="3427092606871434483">अनुमती द्या (डीफॉल्ट)</translation>
 <translation id="3427342743765426898">&amp;संपादित करा पुन्हा करा</translation>
 <translation id="342781501876943858">तुम्ही तुमच्या पासवर्डचा इतर साइटवर पुन्हा वापर केला असेल तर Chromium तुम्हाला तो रीसेट करण्याची शिफारस करतो.</translation>
@@ -2001,7 +2001,7 @@
 <translation id="4500587658229086076">असुरक्षित आशय</translation>
 <translation id="450602096898954067">या वैशिष्ट्यामध्ये सुधारणा करण्यासाठी प्रशिक्षित परीक्षणकर्ते डेटा पाहू शकतात</translation>
 <translation id="4506176782989081258">ऑथेंटिकेशन एरर: <ph name="VALIDATION_ERROR" /></translation>
-<translation id="4506599922270137252">सिस्टम प्रशासकाशी संपर्क साधणे</translation>
+<translation id="4506599922270137252">सिस्टीम अ‍ॅडमिनशी संपर्क साधणे</translation>
 <translation id="450710068430902550">ॲडमिनिस्ट्रेटर शेअर करत आहे</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Translate वापरून या पेजचे भाषांतर करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="4515275063822566619">कार्ड आणि पत्ते Chrome आणि आपल्या Google खात्याकडील (<ph name="ACCOUNT_EMAIL" />) आहेत. तुम्ही त्यांना <ph name="BEGIN_LINK" />सेटिंग्‍ज<ph name="END_LINK" /> मधून व्यवस्थापित करू शकता.</translation>
@@ -2456,7 +2456,7 @@
 <translation id="5332219387342487447">पाठविण्‍याची पद्धत</translation>
 <translation id="5332769172018416402">मेसेज पाठवून विचारा</translation>
 <translation id="533323551986281710">वाणिज्य तळाशी असलेली शीट संपूर्ण उंचीवर उघडली</translation>
-<translation id="5334013548165032829">तपशीलवार सिस्टम लॉग</translation>
+<translation id="5334013548165032829">तपशीलवार सिस्टीम लॉग</translation>
 <translation id="5340250774223869109">अ‍ॅप्लिकेशन ब्लॉक केले आहे</translation>
 <translation id="5342693890921195472">मिनिटांपूर्वी</translation>
 <translation id="534295439873310000">NFC डिव्हाइस</translation>
@@ -2542,7 +2542,7 @@
 <translation id="5490432419156082418">पत्ते आणि बरेच काही</translation>
 <translation id="5492298309214877701">कंपनी, संस्था किंवा शाळा इंट्रानेट वरील या साइटची URL बाह्य वेबसाइटसारखीच आहे.
     <ph name="LINE_BREAK" />
-    सिस्टम ॲडमिनिस्ट्रेटरशी संपर्क साधण्याचा प्रयत्न करा.</translation>
+    सिस्टीम अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधण्याचा प्रयत्न करा.</translation>
 <translation id="549333378215107354">आकार ३</translation>
 <translation id="5496804587179176046">सुरक्षा कोड सेव्ह करा, सध्या कोणतेही सुरक्षा कोड सेव्ह केलेले नाहीत</translation>
 <translation id="550365051221576010">सर्व फील्ड</translation>
@@ -4266,7 +4266,7 @@
 <translation id="8528479410903501741">IBAN सेव्ह करा</translation>
 <translation id="853246364274116957">ब्रॉडवे आणि संगीत थिएटर</translation>
 <translation id="8533411848724153701">Gemini</translation>
-<translation id="8533619373899488139">तुमच्या सिस्टम अ‍ॅडमिनिस्ट्रेटरद्वारे ब्लॉक केलेल्या URL आणि लागू केलेली इतर धोरणे पाहण्यासाठी &lt;strong&gt;chrome://policy&lt;/strong&gt; ला भेट द्या.</translation>
+<translation id="8533619373899488139">तुमच्या सिस्टीम अडमिनिस्ट्रेटरद्वारे ब्लॉक केलेल्या URL आणि लागू केलेली इतर धोरणे पाहण्यासाठी &lt;strong&gt;chrome://policy&lt;/strong&gt; ला भेट द्या.</translation>
 <translation id="8536234749087605613">एन्व्हलप (विंडो)</translation>
 <translation id="8539500321752640291">दोन परवानग्यांना अनुमती द्यायची का?</translation>
 <translation id="8541158209346794904">ब्लूटूथ डिव्‍हाइस</translation>

@@ -679,7 +679,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1465827627707997754">Fatia de pizza</translation>
 <translation id="1467005863208369884">Não é possível verificar o arquivo porque a Navegação segura está desativada</translation>
 <translation id="1467432559032391204">À esquerda</translation>
-<translation id="1468571364034902819">Não é possível usar esse perfil</translation>
+<translation id="1468571364034902819">Não é possível usar este perfil</translation>
 <translation id="1469702495092129863">Verifique o microfone</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Adicionar guia ao novo grupo}one{Adicionar guia ao novo grupo}other{Adicionar guias ao novo grupo}}</translation>
 <translation id="1470350905258700113">Usar este dispositivo</translation>
@@ -5353,7 +5353,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4744268813103118742">Acessar o site</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Ativar som do site}one{Ativar som do site}other{Ativar som dos sites}}</translation>
-<translation id="4745500401920035244">Seu administrador fez uma mudança no sistema inteiro que desativa alguns perfis antigos. Você não tem mais acesso a este perfil, mas ainda pode removê-lo.</translation>
+<translation id="4745500401920035244">Seu administrador fez uma mudança no sistema como um todo que desativa alguns perfis antigos. Você não tem mais acesso a esse perfil, mas ainda pode removê-lo.</translation>
 <translation id="474609389162964566">Acesse o Google Assistente usando o "Ok Google"</translation>
 <translation id="4746757725581505837">Você está prestes a excluir seus dados do <ph name="BRAND" /> salvos neste dispositivo</translation>
 <translation id="4748783296226936791">Os sites geralmente se conectam a dispositivos HID para recursos que usam teclados diferentes, controles de jogos e outros dispositivos</translation>

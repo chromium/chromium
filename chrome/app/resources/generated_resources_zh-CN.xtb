@@ -5609,7 +5609,7 @@
 <translation id="4938052313977274277">速度</translation>
 <translation id="4939805055470675027">无法连接到<ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">有 <ph name="PRINTER_COUNT" /> 台可保存的打印机。</translation>
-<translation id="4940448324259979830">该账号由 <ph name="PROFILE_NAME" /> 管理</translation>
+<translation id="4940448324259979830">这个账号由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="4940845626435830013">预留磁盘空间大小</translation>
 <translation id="4941246025622441835">将设备登记到企业管理目录下时使用此设备前提条件：</translation>
 <translation id="4941627891654116707">字号</translation>
@@ -8335,7 +8335,7 @@
 <translation id="6922763095098248079">您的设备由贵单位管理。管理员可访问此设备上任意个人资料中的数据。</translation>
 <translation id="6923633482430812883">装载共享时出错。请检查您要连接的文件服务器是否支持 SMBv2 或更高版本。</translation>
 <translation id="6924109527536857168">需要同步</translation>
-<translation id="6925127338315966709">您正要向此浏览器添加一份受管理的个人资料。您的管理员可控制该个人资料，且可访问其中的数据。书签、历史记录、密码及其他设置可以同步到您的账号中，并由您的管理员管理。</translation>
+<translation id="6925127338315966709">您正要在此浏览器中添加一份受管理的个人资料。您的管理员可控制该个人资料，且可访问其中的数据。书签、历史记录、密码及其他设置可以同步到您的账号中，并由您的管理员管理。</translation>
 <translation id="6928650056523249512">自动撤消未使用的网站的权限</translation>
 <translation id="6929126689972602640">学校账号不支持家长控制功能。如果您想添加学校账号，让孩子能够访问 Google 课堂及其他网站以在家中完成学校作业，请先使用孩子的个人账号登录。您可于需要时再在设置中添加学校账号。</translation>
 <translation id="6929760895658557216">Okay Google</translation>
