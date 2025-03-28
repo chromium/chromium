@@ -164,8 +164,8 @@ common_android_library_deps = [
 
 common_java_src_dir = "//chromecast/browser/android/apk/src"
 common_java_sources = [
-  "$common_java_src_dir/org/chromium/chromecast/shell/CastApplication.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowser.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserApplication.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserHelper.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserImpl.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserService.java",
