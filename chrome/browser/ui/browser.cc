@@ -1190,6 +1190,14 @@ views::View* Browser::TopContainer() {
   return window_->GetTopContainer();
 }
 
+bool Browser::IsMinimized() const {
+  return window_->IsMinimized();
+}
+
+base::WeakPtr<BrowserWindowInterface> Browser::GetWeakPtr() {
+  return AsWeakPtr();
+}
+
 views::View* Browser::LensOverlayView() {
   return window_->GetLensOverlayView();
 }

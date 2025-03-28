@@ -16,6 +16,8 @@
 
 namespace glic {
 
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTabId);
+
 class GlicPermissionEnforcementUiTest : public test::InteractiveGlicTest {
  public:
   GlicPermissionEnforcementUiTest()
@@ -78,6 +80,8 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
   browser()->profile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicTabContextEnabled, false);
   RunTestSequence(
+      InstrumentTab(kActiveTabId),
+      NavigateWebContents(kActiveTabId, embedded_test_server()->GetURL("/")),
       OpenGlicWindow(GlicWindowMode::kAttached,
                      GlicInstrumentMode::kHostAndContents),
       WaitForElementVisible(test::kGlicContentsElementId, {"body"}),
@@ -95,6 +99,8 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
   browser()->profile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicTabContextEnabled, true);
   RunTestSequence(
+      InstrumentTab(kActiveTabId),
+      NavigateWebContents(kActiveTabId, embedded_test_server()->GetURL("/")),
       OpenGlicWindow(GlicWindowMode::kAttached,
                      GlicInstrumentMode::kHostAndContents),
       WaitForElementVisible(test::kGlicContentsElementId, {"body"}),
