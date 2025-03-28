@@ -11,6 +11,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_config.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/shell/app/resource.h"
 #include "content/shell/browser/color_chooser/shell_color_chooser_ios.h"
 #include "content/shell/browser/shell.h"
@@ -108,6 +109,7 @@ static const char kAllTracingCategories[] = "*";
 @synthesize headerBackgroundView = _headerBackgroundView;
 @synthesize headerContentView = _headerContentView;
 @synthesize tracingHandler = _tracingHandler;
+std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
 
 + (UIColor*)backgroundColorDefault {
   return [UIColor colorWithRed:66.0 / 255.0
@@ -237,8 +239,9 @@ static const char kAllTracingCategories[] = "*";
 
   // Enable Accessibility if VoiceOver is already running.
   if (UIAccessibilityIsVoiceOverRunning()) {
-    content::BrowserAccessibilityState::GetInstance()
-        ->EnableProcessAccessibility();
+    _scoped_accessibility_mode =
+        content::BrowserAccessibilityState::GetInstance()
+            ->CreateScopedModeForProcess(ui::kAXModeComplete);
   }
 
   // Register for VoiceOver notifications.
@@ -422,10 +425,11 @@ static const char kAllTracingCategories[] = "*";
   content::BrowserAccessibilityState* accessibility_state =
       content::BrowserAccessibilityState::GetInstance();
   if (UIAccessibilityIsVoiceOverRunning()) {
-    accessibility_state->EnableProcessAccessibility();
+    _scoped_accessibility_mode =
+        accessibility_state->CreateScopedModeForProcess(ui::kAXModeComplete);
     accessibility_state->SetScreenReaderAppActive(true);
   } else {
-    accessibility_state->DisableProcessAccessibility();
+    _scoped_accessibility_mode.reset();
     accessibility_state->SetScreenReaderAppActive(false);
   }
 }

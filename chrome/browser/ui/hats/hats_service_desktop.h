@@ -105,7 +105,8 @@ class HatsServiceDesktop : public HatsService {
     kNoSurveyAlreadyInProgress = 14,
     kNoAnyLastSurveyTooRecent = 15,
     kNoRejectedByHatsService = 16,
-    kMaxValue = kNoRejectedByHatsService,
+    kNoLastSurveyCheckTooRecent = 17,
+    kMaxValue = kNoLastSurveyCheckTooRecent,
   };
 
   explicit HatsServiceDesktop(Profile* profile);

@@ -597,16 +597,18 @@ class IntegrationTest : public ::testing::Test {
                                target_url);
   }
 
-  void ExpectAppCommandPing(ScopedServer* test_server,
-                            const std::string& appid,
-                            const std::string& appcommandid,
-                            int errorcode,
-                            int eventresult,
-                            int event_type,
-                            const base::Version& version) {
+  void ExpectAppCommandPing(
+      ScopedServer* test_server,
+      const std::string& appid,
+      const std::string& appcommandid,
+      int errorcode,
+      int eventresult,
+      int event_type,
+      const base::Version& version,
+      const base::Version& updater_version = base::Version(kUpdaterVersion)) {
     test_commands_->ExpectAppCommandPing(test_server, appid, appcommandid,
                                          errorcode, eventresult, event_type,
-                                         version);
+                                         version, updater_version);
   }
 
   void ExpectUpdateSequence(
@@ -1715,6 +1717,58 @@ TEST_F(IntegrationTest, SetTagRoundTrip) {
 
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(IntegrationTest, XattrTagWriteRead) {
+  base::ScopedTempFile tag_me;
+  ASSERT_TRUE(tag_me.Create());
+  EXPECT_TRUE(tagging::WriteTagStringToApplicationInstanceXattr(
+      tag_me.path(),
+      "brand=TEST&iid=TestInstallId&appguid=org.chromium.test&ap=example"));
+
+  base::expected<tagging::TagArgs, tagging::ErrorCode> read_result =
+      tagging::ReadTagFromApplicationInstanceXattr(tag_me.path());
+  ASSERT_TRUE(read_result.has_value())
+      << "couldn't read tag: " << read_result.error();
+
+  EXPECT_EQ(read_result->brand_code, "TEST");
+  EXPECT_EQ(read_result->installation_id, "TestInstallId");
+
+  ASSERT_EQ(read_result->apps.size(), static_cast<size_t>(1));
+  const tagging::AppArgs& app_args = read_result->apps[0];
+  EXPECT_EQ(app_args.app_id, "org.chromium.test");
+  EXPECT_EQ(app_args.ap, "example");
+}
+
+TEST_F(IntegrationTest, NoTagXattrRead) {
+  base::ScopedTempFile dont_tag_me;
+  ASSERT_TRUE(dont_tag_me.Create());
+  base::expected<tagging::TagArgs, tagging::ErrorCode> read_result =
+      tagging::ReadTagFromApplicationInstanceXattr(dont_tag_me.path());
+  ASSERT_FALSE(read_result.has_value());
+  EXPECT_EQ(read_result.error(), tagging::ErrorCode::kTagNotFound);
+}
+
+TEST_F(IntegrationTest, EmptyTagXattrRead) {
+  base::ScopedTempFile tag_me;
+  ASSERT_TRUE(tag_me.Create());
+  EXPECT_TRUE(
+      tagging::WriteTagStringToApplicationInstanceXattr(tag_me.path(), ""));
+
+  base::expected<tagging::TagArgs, tagging::ErrorCode> read_result =
+      tagging::ReadTagFromApplicationInstanceXattr(tag_me.path());
+
+  ASSERT_FALSE(read_result.has_value());
+  EXPECT_EQ(read_result.error(), tagging::ErrorCode::kTagNotFound);
+}
+
+TEST_F(IntegrationTest, NoXattrReadPath) {
+  base::expected<tagging::TagArgs, tagging::ErrorCode> read_result =
+      tagging::ReadTagFromApplicationInstanceXattr({});
+  ASSERT_FALSE(read_result.has_value());
+  EXPECT_EQ(read_result.error(), tagging::ErrorCode::kTagNotFound);
+}
+#endif
 
 TEST_F(IntegrationTest, InstallId) {
   ScopedServer test_server(test_commands_);
@@ -4386,29 +4440,41 @@ TEST_F(IntegrationTest, MarshalInterface) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, LegacyProcessLauncher) {
-  if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
-    GTEST_SKIP() << "Process launcher is only registered for system installs.";
+class IntegrationLegacyAppCommandWebTest
+    : public ::testing::WithParamInterface<TestUpdaterVersion>,
+      public IntegrationTest {
+ protected:
+  void SetUp() override {
+    IntegrationTest::SetUp();
+    if (IsSkipped()) {
+      return;
+    }
+
+    test_server_ = std::make_unique<ScopedServer>(test_commands_);
+    ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetParam().updater_setup_path));
   }
-  ScopedServer test_server(test_commands_);
 
-  ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+  void TearDown() override {
+    if (IsSkipped()) {
+      return;
+    }
+    ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
 
-  // `ExpectLegacyProcessLauncherSucceeds` runs the process launcher once with
-  // usagestats enabled, and twice without, so only a single ping is expected.
-  ASSERT_NO_FATAL_FAILURE(ExpectAppCommandPing(
-      &test_server, "{831EF4D0-B729-4F61-AA34-91526481799D}", "cmd", 5420, 1,
-      update_client::protocol_request::kEventAppCommandComplete, {}));
-  ASSERT_NO_FATAL_FAILURE(ExpectLegacyProcessLauncherSucceeds());
+    // Cleanup by overinstalling the current version and uninstalling.
+    ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+    ASSERT_NO_FATAL_FAILURE(Uninstall());
 
-  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
-}
+    IntegrationTest::TearDown();
+  }
 
-TEST_F(IntegrationTest, LegacyAppCommandWeb_NoUsageStats_NoPing) {
-  ScopedServer test_server(test_commands_);
-  ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+  std::unique_ptr<ScopedServer> test_server_;
+};
 
+INSTANTIATE_TEST_SUITE_P(IntegrationLegacyAppCommandWebTestCases,
+                         IntegrationLegacyAppCommandWebTest,
+                         ::testing::ValuesIn(GetRealUpdaterVersions()));
+
+TEST_P(IntegrationLegacyAppCommandWebTest, NoUsageStats_NoPing) {
   const char kAppId[] = "test1";
   ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
 
@@ -4416,15 +4482,9 @@ TEST_F(IntegrationTest, LegacyAppCommandWeb_NoUsageStats_NoPing) {
   parameters.Append("5432");
   ASSERT_NO_FATAL_FAILURE(
       ExpectLegacyAppCommandWebSucceeds(kAppId, "command1", parameters, 5432));
-
-  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, LegacyAppCommandWeb_UsageStatsEnabled_ExpectPing) {
-  ScopedServer test_server(test_commands_);
-  ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
-
+TEST_P(IntegrationLegacyAppCommandWebTest, UsageStatsEnabled_ExpectPing) {
   const std::string kAppId("test");
   // Enable usagestats.
   InstallApp(kAppId, base::Version("0.1"));
@@ -4438,41 +4498,43 @@ TEST_F(IntegrationTest, LegacyAppCommandWeb_UsageStatsEnabled_ExpectPing) {
 
   base::Version v1("1");
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
-      &test_server, kAppId, "", UpdateService::Priority::kBackground,
-      base::Version("0.1"), v1));
+      test_server_.get(), kAppId, "", UpdateService::Priority::kBackground,
+      base::Version("0.1"), v1, {}, {}, GetParam().version));
 
   // Run wake to pick up the usage stats.
-  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0, GetParam().version));
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
 
   // The test runs the appcommand twice, so two pings of
   // `kEventAppCommandComplete`.
   for (int i = 0; i <= 1; ++i) {
     ASSERT_NO_FATAL_FAILURE(ExpectAppCommandPing(
-        &test_server, kAppId, "command1", 5432, 1,
-        update_client::protocol_request::kEventAppCommandComplete, v1));
+        test_server_.get(), kAppId, "command1", 5432, 1,
+        update_client::protocol_request::kEventAppCommandComplete, v1,
+        GetParam().version));
   }
 
   base::Value::List parameters;
   parameters.Append("5432");
   ASSERT_NO_FATAL_FAILURE(
       ExpectLegacyAppCommandWebSucceeds(kAppId, "command1", parameters, 5432));
-
-  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest,
-       LegacyAppCommandWeb_InstallUpdaterAndApp_UsageStatsEnabled_ExpectPings) {
-  ScopedServer test_server(test_commands_);
+TEST_P(IntegrationLegacyAppCommandWebTest,
+       InstallUpdaterAndApp_UsageStatsEnabled_ExpectPings) {
   const std::string kAppId("test");
   const base::Version v1("1");
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
-      &test_server, kAppId, "", UpdateService::Priority::kForeground,
-      base::Version({0, 0, 0, 0}), v1));
+      test_server_.get(), kAppId, "", UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), v1, {}, {}, GetParam().version));
 
-  ASSERT_NO_FATAL_FAILURE(
-      InstallUpdaterAndApp(kAppId, /*is_silent_install=*/true, "usagestats=1"));
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      kAppId, /*is_silent_install=*/true, "usagestats=1",
+      /*child_window_text_to_find=*/{}, /*always_launch_cmd=*/false,
+      /*verify_app_logo_loaded=*/false, /*expect_success=*/true,
+      /*wait_for_the_installer=*/true,
+      /*expected_exit_code=*/{},
+      /*additional_switches=*/{}, GetParam().updater_setup_path));
   ASSERT_TRUE(WaitForUpdaterExit());
 
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
@@ -4481,17 +4543,52 @@ TEST_F(IntegrationTest,
   // `kEventAppCommandComplete`.
   for (int i = 0; i <= 1; ++i) {
     ASSERT_NO_FATAL_FAILURE(ExpectAppCommandPing(
-        &test_server, kAppId, "command1", 5432, 1,
-        update_client::protocol_request::kEventAppCommandComplete, v1));
+        test_server_.get(), kAppId, "command1", 5432, 1,
+        update_client::protocol_request::kEventAppCommandComplete, v1,
+        GetParam().version));
   }
 
   base::Value::List parameters;
   parameters.Append("5432");
   ASSERT_NO_FATAL_FAILURE(
       ExpectLegacyAppCommandWebSucceeds(kAppId, "command1", parameters, 5432));
+}
 
-  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
+class IntegrationLegacyProcessLauncherTest
+    : public IntegrationLegacyAppCommandWebTest {
+ protected:
+  void SetUp() override {
+    // `IProcessLauncher::LaunchCmdElevated` takes a `ULONG_PTR` process handle,
+    // which does not marshal correctly cross-architecture. So these tests will
+    // crash if for instance the tests are compiled for `x86`, and run against a
+    // lower version that is `x64`. So these tests skips the cross-arch versions
+    // for now, and will be enabled at a later date if/when the cross-arch
+    // marshaling is fixed for the `IProcessLauncher*` interfaces.
+    if (GetParam().version != base::Version(kUpdaterVersion)) {
+      GTEST_SKIP();
+    }
+
+    if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
+      GTEST_SKIP()
+          << "Process launcher is only registered for system installs.";
+    }
+
+    IntegrationLegacyAppCommandWebTest::SetUp();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(IntegrationLegacyProcessLauncherTestCases,
+                         IntegrationLegacyProcessLauncherTest,
+                         ::testing::ValuesIn(GetRealUpdaterVersions()));
+
+TEST_P(IntegrationLegacyProcessLauncherTest, Test) {
+  // `ExpectLegacyProcessLauncherSucceeds` runs the process launcher once with
+  // usagestats enabled, and twice without, so only a single ping is expected.
+  ASSERT_NO_FATAL_FAILURE(ExpectAppCommandPing(
+      test_server_.get(), "{831EF4D0-B729-4F61-AA34-91526481799D}", "cmd", 5420,
+      1, update_client::protocol_request::kEventAppCommandComplete, {},
+      GetParam().version));
+  ASSERT_NO_FATAL_FAILURE(ExpectLegacyProcessLauncherSucceeds());
 }
 
 TEST_F(IntegrationTest, LegacyPolicyStatus) {

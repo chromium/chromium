@@ -28,7 +28,6 @@ namespace {
 struct Sequence {
   size_t offset = 0;
   size_t length = 0;
-  bool reverse = false;
 };
 
 // Returns a longest sequence of non-negative consecutive integers in `nums`.
@@ -117,7 +116,7 @@ std::optional<std::u16string> GetDaySelectControlValue(
     }
     // The user-invisible values must start at "0" or "1".
     if (28 <= value_seq.length && value_seq.length <= 31 &&
-        text_nums[text_seq.offset] <= 1) {
+        value_nums[value_seq.offset] <= 1) {
       return value_seq.offset + day - 1;
     }
     return -1;
@@ -162,7 +161,7 @@ std::optional<std::u16string> GetMonthSelectControlValue(
       return text_seq.offset + month - 1;
     }
     // The user-invisible values must be "1" to "12" or "0" to "11".
-    if (value_seq.length == 12 && text_nums[text_seq.offset] <= 1) {
+    if (value_seq.length == 12 && value_nums[value_seq.offset] <= 1) {
       return value_seq.offset + month - 1;
     }
     // If there are no numbers, perhaps the months are spelled out.

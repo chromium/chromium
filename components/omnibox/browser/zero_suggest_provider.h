@@ -103,6 +103,10 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   ~ZeroSuggestProvider() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ZeroSuggestProviderTest,
+                           TestCacheStateWithSRPPrefetchDisabled);
+  FRIEND_TEST_ALL_PREFIXES(ZeroSuggestProviderTest,
+                           TestCacheStateWithWebPrefetchDisabled);
   // BaseSearchProvider:
   bool ShouldAppendExtraParams(
       const SearchSuggestionParser::SuggestResult& result) const override;

@@ -88,34 +88,38 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
     kUseFallbackIfFontNotReady
   };
 
-  void DrawText(cc::PaintCanvas*,
-                const TextRun&,
-                const gfx::PointF&,
-                const cc::PaintFlags&,
-                DrawType = DrawType::kGlyphsOnly) const;
-  void DrawText(cc::PaintCanvas*,
-                const TextRun&,
-                const gfx::PointF&,
-                cc::NodeId node_id,
-                const cc::PaintFlags&,
-                DrawType = DrawType::kGlyphsOnly) const;
+  // Deprecated: Use PlainTextPainter.
+  void DeprecatedDrawText(cc::PaintCanvas*,
+                          const TextRun&,
+                          const gfx::PointF&,
+                          const cc::PaintFlags&,
+                          DrawType = DrawType::kGlyphsOnly) const;
+  // Deprecated: Use PlainTextPainter.
+  void DeprecatedDrawText(cc::PaintCanvas*,
+                          const TextRun&,
+                          const gfx::PointF&,
+                          cc::NodeId node_id,
+                          const cc::PaintFlags&,
+                          DrawType = DrawType::kGlyphsOnly) const;
   void DrawText(cc::PaintCanvas*,
                 const TextFragmentPaintInfo&,
                 const gfx::PointF&,
                 cc::NodeId node_id,
                 const cc::PaintFlags&,
                 DrawType = DrawType::kGlyphsOnly) const;
-  bool DrawBidiText(cc::PaintCanvas*,
-                    const TextRunPaintInfo&,
-                    const gfx::PointF&,
-                    CustomFontNotReadyAction,
-                    const cc::PaintFlags&,
-                    DrawType = DrawType::kGlyphsOnly) const;
-  void DrawEmphasisMarks(cc::PaintCanvas*,
-                         const TextRun&,
-                         const AtomicString& mark,
-                         const gfx::PointF&,
-                         const cc::PaintFlags&) const;
+  // Deprecated: Use PlainTextPainter.
+  bool DeprecatedDrawBidiText(cc::PaintCanvas*,
+                              const TextRunPaintInfo&,
+                              const gfx::PointF&,
+                              CustomFontNotReadyAction,
+                              const cc::PaintFlags&,
+                              DrawType = DrawType::kGlyphsOnly) const;
+  // Deprecated: Use a TextFragmentPaintInfo variant.
+  void DeprecatedDrawEmphasisMarks(cc::PaintCanvas*,
+                                   const TextRun&,
+                                   const AtomicString& mark,
+                                   const gfx::PointF&,
+                                   const cc::PaintFlags&) const;
   void DrawEmphasisMarks(cc::PaintCanvas*,
                          const TextFragmentPaintInfo&,
                          const AtomicString& mark,
@@ -143,21 +147,25 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
   // coordinates using (<text run x position>, <baseline position>) as the
   // origin. If the pointer is not null, glyph_bounds is expected to be
   // default-initialized.
-  float Width(const TextRun&, gfx::RectF* glyph_bounds = nullptr) const;
-  float SubRunWidth(const TextRun&,
-                    unsigned from,
-                    unsigned to,
-                    gfx::RectF* glyph_bounds = nullptr) const;
+  // Deprecated: Use PlainTextPainter.
+  float DeprecatedWidth(const TextRun&,
+                        gfx::RectF* glyph_bounds = nullptr) const;
+  float DeprecatedSubRunWidth(const TextRun&,
+                              unsigned from,
+                              unsigned to,
+                              gfx::RectF* glyph_bounds = nullptr) const;
 
-  int OffsetForPosition(const TextRun&,
-                        float position,
-                        IncludePartialGlyphsOption,
-                        BreakGlyphsOption) const;
-  gfx::RectF SelectionRectForText(const TextRun&,
-                                  const gfx::PointF&,
-                                  float height,
-                                  int from = 0,
-                                  int to = -1) const;
+  // Deprecated: Use PlainTextPainter.
+  int DeprecatedOffsetForPosition(const TextRun&,
+                                  float position,
+                                  IncludePartialGlyphsOption,
+                                  BreakGlyphsOption) const;
+  // Deprecated: Use PlainTextPainter.
+  gfx::RectF DeprecatedSelectionRectForText(const TextRun&,
+                                            const gfx::PointF&,
+                                            float height,
+                                            int from = 0,
+                                            int to = -1) const;
 
   // Metrics that we query the FontFallbackList for.
   float SpaceWidth() const {

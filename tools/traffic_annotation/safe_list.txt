@@ -137,7 +137,6 @@ missing_new_fields,chrome/browser/profile_resetter/brandcode_config_fetcher.cc
 missing_new_fields,chrome/browser/profile_resetter/reset_report_uploader.cc
 missing_new_fields,chrome/browser/profiles/profile_avatar_downloader.cc
 missing_new_fields,chrome/browser/renderer_context_menu/render_view_context_menu.cc
-missing_new_fields,chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.cc
 missing_new_fields,chrome/browser/safe_browsing/download_protection/check_client_download_request_base.cc
 missing_new_fields,chrome/browser/safe_browsing/download_protection/download_feedback.cc
 missing_new_fields,chrome/browser/safe_browsing/download_protection/ppapi_download_request.cc
@@ -224,6 +223,7 @@ missing_new_fields,components/safe_browsing/core/browser/db/v4_get_hash_protocol
 missing_new_fields,components/safe_browsing/core/browser/db/v4_update_protocol_manager.cc
 missing_new_fields,components/safe_browsing/core/browser/password_protection/password_protection_request.cc
 missing_new_fields,components/safe_browsing/core/browser/ping_manager.cc
+missing_new_fields,components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.cc
 missing_new_fields,components/safe_browsing/core/browser/realtime/url_lookup_service.cc
 missing_new_fields,components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.cc
 missing_new_fields,components/safety_check/update_check_helper.cc

@@ -77,11 +77,6 @@ BASE_FEATURE(kForceRemoveClosedTabGroupsOnStartup,
              "ForceRemoveClosedTabGroupsOnStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables sanitization of the tab title.
-BASE_FEATURE(kEnableTabTitleSanitization,
-             "EnableTabTitleSanitization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables checking for URLs before syncing them to remote devices.
 BASE_FEATURE(kEnableUrlRestriction,
              "EnableUrlRestriction",
@@ -126,7 +121,7 @@ bool ShouldForceRemoveClosedTabGroupsOnStartup() {
 }
 
 bool IsTabTitleSanitizationEnabled() {
-  return base::FeatureList::IsEnabled(kEnableTabTitleSanitization);
+  return data_sharing::features::IsDataSharingFunctionalityEnabled();
 }
 
 bool IsUrlRestrictionEnabled() {

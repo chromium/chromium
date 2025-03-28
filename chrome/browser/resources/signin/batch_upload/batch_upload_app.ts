@@ -62,19 +62,20 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
       BatchUploadBrowserProxyImpl.getInstance();
 
   // Account information displayed in the view.
-  protected accountInfo_: BatchUploadAccountInfo = createEmptyAccountInfo();
-  protected dialogSubtitle_: string = '';
+  protected accessor accountInfo_: BatchUploadAccountInfo =
+      createEmptyAccountInfo();
+  protected accessor dialogSubtitle_: string = '';
 
   // Stores the input coming from the browser initialized in
   // `initializeInputAndOutputData_()`.
-  protected dataSections_: DataContainer[] = [];
+  protected accessor dataSections_: DataContainer[] = [];
 
   // State of the section toggles, this is needed to control the save button
   // state.
   protected dataSectionsToggles_: boolean[] = [];
 
   // Whether save to account button is enabled or not.
-  protected isSaveEnabled_: boolean = true;
+  protected accessor isSaveEnabled_: boolean = true;
 
   // Observes the size of `dataSections` to know whether to show a border or not
   // if scrolling is possible.

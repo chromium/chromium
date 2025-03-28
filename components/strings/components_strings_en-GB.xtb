@@ -223,7 +223,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1363028406613469049">Track</translation>
 <translation id="1364822246244961190">This policy is blocked; its value will be ignored.</translation>
 <translation id="1368318639262510626">Dino game. A pixelated dinosaur dodges cacti and pterodactyls as it runs across a desolate landscape. When you hear an audio cue, press space to jump over obstacles.</translation>
-<translation id="1369735141991626842">Fill fields with AI</translation>
 <translation id="1374468813861204354">suggestions</translation>
 <translation id="1375198122581997741">About Version</translation>
 <translation id="1375293861397106342">All options typically <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -539,7 +538,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1919526244108283799">400 mm x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{None}=1{1 site}other{# sites}}</translation>
 <translation id="192095259937375524">Share this tab button, activate to share this tab by sharing the link, creating a QR code, casting and more</translation>
-<translation id="1921479021518565778">Suggestions loaded</translation>
 <translation id="1924727005275031552">New</translation>
 <translation id="1927439846988093361">Hair care</translation>
 <translation id="1935353813610900265">Send feedback for history search powered by AI</translation>
@@ -974,6 +972,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2688186765492306706">500 mm x 760 mm</translation>
 <translation id="2688969097326701645">Yes, continue</translation>
 <translation id="2690699652723742414">Last 30 days</translation>
+<translation id="2691385045260836588">Model</translation>
 <translation id="2691924980723297736">Safety warning</translation>
 <translation id="2697248912349197812">Ask <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Sub-menu available, use <ph name="SHORTCUT" /> to navigate to additional options.</translation>
@@ -1529,6 +1528,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3664782872746246217">Keywords:</translation>
 <translation id="3665100783276035932">Most sites should work as expected</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Learn more<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">Number</translation>
 <translation id="3670229581627177274">Turn on Bluetooth</translation>
 <translation id="3671117652518853176">When turned off, you may occasionally be asked to verify for security purposes</translation>
 <translation id="3671540257457995106">Allow resizing?</translation>
@@ -1543,7 +1543,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3681007416295224113">Certificate information</translation>
 <translation id="3681421644246505351">Chrome notes topics of interest based on your recent browsing history.</translation>
 <translation id="3682094733650754138">The fill address option was selected</translation>
-<translation id="3687493962714153124">Manage autofill with AI</translation>
 <translation id="3687920599421452763">Vans and minivans</translation>
 <translation id="3693327506115126094">Choose how you'll verify that it's you</translation>
 <translation id="3698353241727597930">Your administrator has configured to save <ph name="FILES" /> in your enterprise-managed <ph name="CLOUD_STORAGE" /> storage. These files may be monitored, audited and retained when you delete them.</translation>
@@ -1696,6 +1695,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3950820424414687140">Sign in</translation>
 <translation id="3953505489397572035">This price is typical</translation>
 <translation id="3958057596965527988">4.0 in x 4.0 in</translation>
+<translation id="3959969108528118741">Owner</translation>
 <translation id="3961148744525529027">Payment handler sheet is half-opened</translation>
 <translation id="3962859241508114581">Previous track</translation>
 <translation id="3963721102035795474">Reader Mode</translation>
@@ -1921,7 +1921,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4312866146174492540">Block (default)</translation>
 <translation id="4314815835985389558">Manage sync</translation>
 <translation id="4316057107946726368">Please enter a justification message containing no more than <ph name="MAX_CHAR_COUNT" /> characters. Used <ph name="ACTUAL_CHAR_COUNT" /> out of <ph name="MAX_CHAR_COUNT" /> characters.</translation>
-<translation id="431740489189220419">Loading suggestions</translation>
 <translation id="4318213823155573975">Headwear</translation>
 <translation id="4318312030194671742">Paint preview compositor service</translation>
 <translation id="4318566738941496689">Your device name and network address</translation>
@@ -2328,6 +2327,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5087286274860437796">Server's certificate is not valid at this time.</translation>
 <translation id="5087580092889165836">Add card</translation>
 <translation id="5088142053160410913">Message to operator</translation>
+<translation id="5089810972385038852">State</translation>
 <translation id="5090647584136241764">Add tabs with similar products to easily compare the details that matter to you</translation>
 <translation id="5093232627742069661">Z-fold</translation>
 <translation id="5094747076828555589">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not trusted by Chromium. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
@@ -2466,6 +2466,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Your default search engine lets you search the web and powers Chromium features<ph name="END_BOLD" /> like searching from the address bar and from images on web pages. A feature might not be available if your search engine doesn't support it.</translation>
 <translation id="5323043727018853753">Embedded content allowed</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> of <ph name="NUM_MATCHES" /></translation>
+<translation id="5327248766486351172">Name</translation>
 <translation id="5329858041417644019">Your browser is not managed</translation>
 <translation id="5331585574693522196">Set as default</translation>
 <translation id="5332219387342487447">Delivery method</translation>
@@ -2678,7 +2679,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="569000877158168851">The DnsOverHttpsTemplates value is not relevant, and will not be used, unless the DnsOverHttpsMode policy is set to either <ph name="SECURE_DNS_MODE_AUTOMATIC" /> or <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Save card opened at full height.</translation>
 <translation id="5695542892312572833">Use Windows Hello to verify and complete your purchase?</translation>
-<translation id="5697827549745555938">Info that you have saved and this page get sent to Google to see if autofill can help fill this form. This data may be seen by human reviewers to improve this feature.</translation>
 <translation id="5699628521141772782">Dairy and Eggs</translation>
 <translation id="5700761515355162635">Third-party cookies allowed</translation>
 <translation id="5701381305118179107">Centre</translation>
@@ -3107,6 +3107,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6440503408713884761">Ignored</translation>
 <translation id="6443406338865242315">Which extensions and plug-ins you have installed</translation>
 <translation id="6444329331928531170">Retirement and pension</translation>
+<translation id="6445051938772793705">Country</translation>
 <translation id="6446608382365791566">Add more information</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6448371595882710519">Learn more about data controls</translation>
@@ -3588,7 +3589,6 @@ Additional details:
 <translation id="7316521168101843192">Saving file to Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Connection help</translation>
-<translation id="7321111802407017850">Save your info to autofill</translation>
 <translation id="7323804146520582233">Hide the '<ph name="SECTION" />' section</translation>
 <translation id="733354035281974745">Device local account override</translation>
 <translation id="7334320624316649418">&amp;Redo reorder</translation>

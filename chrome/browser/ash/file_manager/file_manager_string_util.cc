@@ -1280,6 +1280,8 @@ void AddStringsForSkyVault(base::Value::Dict* dict) {
                 l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_BANNER),
                 l10n_util::GetStringUTF16(IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE),
                 /*offset=*/nullptr));
+  dict->Set("SKYVAULT_DELETION_BANNER",
+            l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_DELETION_BANNER));
   dict->Set("SKYVAULT_MISCONFIGURED_POLICY_MESSAGE",
             l10n_util::GetStringUTF16(
                 IDS_POLICY_SKYVAULT_MISCONFIGURED_POLICY_MESSAGE));

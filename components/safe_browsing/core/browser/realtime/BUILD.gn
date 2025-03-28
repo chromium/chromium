@@ -56,6 +56,36 @@ static_library("url_lookup_service") {
   ]
 }
 
+static_library("enterprise_url_lookup_service") {
+  sources = [
+    "chrome_enterprise_url_lookup_service.cc",
+    "chrome_enterprise_url_lookup_service.h",
+  ]
+
+  deps = [
+    ":policy_engine",
+    ":url_lookup_service_base",
+    "//base",
+    "//components/enterprise/common/proto:connectors_proto",
+    "//components/enterprise/connectors/core",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/browser:referring_app_info",
+    "//components/safe_browsing/core/browser:token_fetcher",
+    "//components/safe_browsing/core/browser:verdict_cache_manager",
+    "//components/safe_browsing/core/browser/sync",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:features",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/signin/public/identity_manager",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+}
+
 static_library("url_lookup_service_base") {
   sources = [
     "url_lookup_service_base.cc",

@@ -7,13 +7,14 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace media {
 
 // static
 SimpleCdmBuffer* SimpleCdmBuffer::Create(size_t capacity) {
-  DCHECK(capacity);
+  CHECK(capacity, base::NotFatalUntil::M140);
 
   // cdm::Buffer interface limits capacity to uint32.
   DCHECK_LE(capacity, std::numeric_limits<uint32_t>::max());
@@ -38,7 +39,7 @@ uint8_t* SimpleCdmBuffer::Data() {
 }
 
 void SimpleCdmBuffer::SetSize(uint32_t size) {
-  DCHECK(size <= Capacity());
+  CHECK(size <= Capacity(), base::NotFatalUntil::M140);
   size_ = size > Capacity() ? 0 : size;
 }
 

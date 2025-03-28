@@ -8,8 +8,13 @@ assert(enable_glic)
 
 source_set("actor") {
   sources = [
+    "click_tool.cc",
+    "click_tool.h",
+    "tool_base.h",
     "tool_executor.cc",
     "tool_executor.h",
+    "tool_utils.cc",
+    "tool_utils.h",
   ]
 
   public_deps = [
@@ -18,4 +23,17 @@ source_set("actor") {
   ]
 
   deps = [ "//chrome/common" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "tool_utils_browsertest.cc" ]
+  deps = [
+    ":actor",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
 }

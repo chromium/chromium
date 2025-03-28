@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/not_fatal_until.h"
 #include "media/base/media_util.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_reader.h"
@@ -30,7 +31,7 @@ constexpr auto kCencCommonSystemId =
 static bool ReadAllPsshBoxes(
     base::span<const uint8_t> input,
     std::vector<mp4::FullProtectionSystemSpecificHeader>* pssh_boxes) {
-  DCHECK(!input.empty());
+  CHECK(!input.empty(), base::NotFatalUntil::M140);
 
   // TODO(wolenetz): Questionable MediaLog usage, http://crbug.com/712310
   NullMediaLog media_log;

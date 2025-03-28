@@ -13,7 +13,6 @@
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-margin-start: 0;
   background-color: var(--viewer-side-background-color);
-  padding-top: 8px;
   width: 288px;
 }
 

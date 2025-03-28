@@ -6,9 +6,11 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_TOPLEVEL_WRAPPER_IMPL_H_
 
 #include <xdg-shell-client-protocol.h>
+
 #include <memory>
 
 #include "ui/ozone/platform/wayland/host/shell_toplevel_wrapper.h"
+#include "ui/ozone/platform/wayland/host/xdg_session_manager.h"
 
 namespace ui {
 
@@ -54,6 +56,8 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
 
  private:
   friend class WaylandWindowDragController;
+  friend class XdgSession;
+
   // xdg_toplevel_listener callbacks:
   static void OnToplevelConfigure(void* data,
                                   xdg_toplevel* toplevel,

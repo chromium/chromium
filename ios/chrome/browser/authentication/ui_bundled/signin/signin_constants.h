@@ -37,14 +37,6 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
 using SigninCoordinatorCompletionCallback =
     void (^)(SigninCoordinatorResult result, id<SystemIdentity> identity);
 
-// User's signed-in state as defined by AuthenticationService.
-// TODO(crbug.com/40066949): Revisit after phase 3 migration of syncing users.
-typedef NS_ENUM(NSUInteger, IdentitySigninState) {
-  IdentitySigninStateSignedOut,
-  IdentitySigninStateSignedInWithSyncDisabled,
-  IdentitySigninStateSignedInWithSyncEnabled,
-};
-
 // Name of accessibility identifier for the skip sign-in button.
 extern NSString* const kSkipSigninAccessibilityIdentifier;
 // Name of accessibility identifier for the add account button in the sign-in

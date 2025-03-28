@@ -539,6 +539,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/navigation_api/navigation_intercept_options.idl",
   "//third_party/blink/renderer/core/navigation_api/navigation_navigate_options.idl",
   "//third_party/blink/renderer/core/navigation_api/navigation_options.idl",
+  "//third_party/blink/renderer/core/navigation_api/navigation_precommit_controller.idl",
   "//third_party/blink/renderer/core/navigation_api/navigation_reload_options.idl",
   "//third_party/blink/renderer/core/navigation_api/navigation_result.idl",
   "//third_party/blink/renderer/core/navigation_api/navigation_transition.idl",

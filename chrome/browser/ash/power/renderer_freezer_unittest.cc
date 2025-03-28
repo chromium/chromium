@@ -24,6 +24,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/common/extension_builder.h"
@@ -317,9 +318,7 @@ TEST_F(RendererFreezerTestWithExtensions, DoesNotFreezeGcmExtensionRenderers) {
           .Build();
 
   // Now install it and give it a renderer.
-  extensions::ExtensionSystem::Get(profile_)
-      ->extension_service()
-      ->AddExtension(gcm_app.get());
+  extensions::ExtensionRegistrar::Get(profile_)->AddExtension(gcm_app.get());
   CreateRenderProcessForExtension(gcm_app.get());
 
   EXPECT_EQ(kSetShouldNotFreezeRenderer, test_delegate_->GetActions());
@@ -346,9 +345,8 @@ TEST_F(RendererFreezerTestWithExtensions, FreezesNonGcmExtensionRenderers) {
           .Build();
 
   // Now install it and give it a renderer.
-  extensions::ExtensionSystem::Get(profile_)
-      ->extension_service()
-      ->AddExtension(background_app.get());
+  extensions::ExtensionRegistrar::Get(profile_)->AddExtension(
+      background_app.get());
   CreateRenderProcessForExtension(background_app.get());
 
   EXPECT_EQ(kSetShouldFreezeRenderer, test_delegate_->GetActions());

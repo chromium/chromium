@@ -36,12 +36,30 @@ void ClipboardMonitor::NotifyClipboardDataRead() {
 
 void ClipboardMonitor::AddObserver(ClipboardObserver* observer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  bool should_start_notifying = false;
+  if (observers_.empty()) {
+    should_start_notifying = true;
+  }
   observers_.AddObserver(observer);
+  if (should_start_notifying && notifier_) {
+    notifier_.get()->StartNotifying();
+  }
 }
 
 void ClipboardMonitor::RemoveObserver(ClipboardObserver* observer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   observers_.RemoveObserver(observer);
+  if (observers_.empty() && notifier_) {
+    notifier_.get()->StopNotifying();
+  }
+}
+
+void ClipboardMonitor::SetNotifier(ClipboardChangeNotifier* source) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  notifier_ = source;
+  if (notifier_ && !observers_.empty()) {
+    notifier_.get()->StartNotifying();
+  }
 }
 
 }  // namespace ui

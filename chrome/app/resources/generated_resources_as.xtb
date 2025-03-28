@@ -404,6 +404,7 @@
 <translation id="1264956950255940376">বাওঁ চকুৰে কেৰাহিকৈ চাওক</translation>
 <translation id="1265094893042958831">এই পৃষ্ঠাখনৰ বাবে পৰামৰ্শসমূহ সৃষ্টি কৰি থকা হৈছে…</translation>
 <translation id="1265279736024499987">আপোনাৰ এপ্‌ আৰু ছেটিং আপুনি নিজৰ Google একাউণ্টটোৰে ছাইন ইন কৰি থোৱা আটাইবোৰ ChromeOS Flex ডিভাইচত ছিংক হ’ব। ব্ৰাউজাৰ ছিংক কৰাৰ বিকল্পসমূহৰ বাবে <ph name="LINK_BEGIN" />Chromeৰ ছেটিঙ<ph name="LINK_END" />লৈ যাওক।</translation>
+<translation id="1267081565119405990">স্ক্ৰীনশ্বট লোৱাৰ পাছত বা আপোনাৰ স্ক্ৰীনত সন্ধান কৰাৰ পাছে, Calendarত যোগ দিয়া, Google Docs সৃষ্টি কৰাৰ দৰে অধিক কাৰ্য দেখুৱাওক।</translation>
 <translation id="126710816202626562">অনুবাদৰ ভাষা:</translation>
 <translation id="1267649802567297774"><ph name="STYLE" /> শৈলীত <ph name="MOOD" /> মেজাজৰ <ph name="SUBJECT" />ৰ সৃষ্টি কৰা প্ৰতিচ্ছবি <ph name="INDEX" />।</translation>
 <translation id="126768002343224824">১৬x</translation>
@@ -1572,9 +1573,9 @@
 <translation id="2081816110395725788">বেটাৰী ব্যৱহাৰ কৰি থকাৰ সময়ত পাৱাৰ ব্যৱহাৰ নকৰাকৈ ৰাখক</translation>
 <translation id="2082187087049518845">টেবৰ গোট বনাওক</translation>
 <translation id="2082510809738716738">এটা থীমৰ ৰং বাছনি কৰক</translation>
-<translation id="208547068587548667"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ত ছাইন ইন কৰক</translation>
 <translation id="208586643495776849">অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক</translation>
 <translation id="208634871997892083">সদায় অন থকা ভিপিএন</translation>
+<translation id="208654914566977272">আপোনাৰ স্ক্ৰীনত সন্ধান কৰোঁতে পৰামৰ্শিত কাৰ্যসমূহ</translation>
 <translation id="2087822576218954668">প্ৰিণ্ট কৰক: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">আপুনি <ph name="DEVICE_OS" /> ইনষ্টল কৰাৰ পাছতহে পঞ্জীয়ন সমৰ্থন কৰে।</translation>
 <translation id="2088564884469682888">বিল্ট-ইন TrackPoint</translation>
@@ -2015,6 +2016,7 @@
 <translation id="2373666622366160481">কাগজৰ আকাৰ অনুসৰি খাপ খুৱাওক</translation>
 <translation id="2375406435414127095">আপোনাৰ ফ’ন সংযোগ কৰক</translation>
 <translation id="2376056713414548745">ডাঙৰকৈ পঢ়ক</translation>
+<translation id="2376122016044804363">ক্লিপব’ৰ্ডলৈ প্ৰতিলিপি কৰাৰ নিশ্চিতকৰণ</translation>
 <translation id="2377667304966270281">হার্ড ফল্ট</translation>
 <translation id="237828693408258535">এই পৃষ্ঠাটো অনুবাদ কৰিবনে?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশ্বনটো অতি সোনকালে আৰু সমৰ্থিত নহ’ব পাৰে}one{এই এক্সটেনশ্বনসমূহ অতি সোনকালে আৰু সমৰ্থিত নহ’ব পাৰে}other{এই এক্সটেনশ্বনসমূহ অতি সোনকালে আৰু সমৰ্থিত নহ’ব পাৰে}}</translation>
@@ -3168,6 +3170,7 @@
 <translation id="3192586965067888278">সমস্যাটোৰ সবিশেষ বৰ্ণনা কৰক। মানৱ পৰ্যালোচনাৰ বাবে Googleলৈ মতামত পঠিওৱা হ’ব আৰু সেয়া Googleৰ প্ৰ’ডাক্ট আৰু সেৱাসমূহৰ উন্নতি বা বিকাশৰ বাবে ব্যৱহাৰ কৰা হ’ব পাৰে।</translation>
 <translation id="3192947282887913208">অডিঅ’ ফাইল</translation>
 <translation id="3193695589337931419">ছিষ্টেমৰ ছিগনেলৰ উপযোগিতা</translation>
+<translation id="3194095220941877499">আপুনি লিংক, প্ৰতিচ্ছবি বা ভিডিঅ’ প্ৰতিলিপি কৰিলে নিশ্চিতকৰণ দেখুৱায়।</translation>
 <translation id="3196912927885212665">আপোনাৰ Android ফ’নৰ জৰিয়তে ছেট আপ কৰিবলৈ, আপোনাৰ Chromebookৰ ব্লুটুথ অন কৰিব লাগিব</translation>
 <translation id="3197453258332670132">এবাৰ ৰাইট-ক্লিক কৰি অথবা দীঘলীয়াকৈ টিপি, আপোনাৰ পৰৱৰ্তী পাঠৰ বাছনি সম্পৰ্কীয় তথ্য দেখুৱাওক</translation>
 <translation id="3199127022143353223">ছাৰ্ভাৰসমূহ</translation>
@@ -4005,7 +4008,6 @@
 <translation id="3778740492972734840">&amp;বিকাশকর্তাৰ সঁজুলি</translation>
 <translation id="3778868487658107119">ইয়াক প্ৰশ্ন সোধক। ইয়াক কাম কৰিবলৈ কওক। এয়া আপোনাৰ ব্যক্তিগত Google, যি সদায় আপোনাক সহায় কৰিবলৈ সাজু থাকে।</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{আপোনাৰ # টা ছাইটৰ ব্ৰাউজিঙৰ ইতিহাস}one{আপোনাৰ # টা ছাইটৰ ব্ৰাউজিঙৰ ইতিহাস}other{আপোনাৰ # টা ছাইটৰ ব্ৰাউজিঙৰ ইতিহাস}}</translation>
-<translation id="3779244863011082655">অন্য এটা <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> একাউণ্ট ব্যৱহাৰ কৰক</translation>
 <translation id="3780542776224651912"><ph name="BRAND" />এ ডাটা উলংঘনত আপোনাৰ পাছৱৰ্ডসমূহ ফাদিল হৈছে নেকি পৰীক্ষা কৰিব নোৱাৰে। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3781742599892759500">Linuxৰ মাইক্ৰ’ফ’নৰ এক্সেছ</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5506,6 +5508,7 @@
 <translation id="4848191975108266266">Google Assistant "Ok Google"</translation>
 <translation id="4849286518551984791">Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">ইনষ্টল নকৰিব</translation>
+<translation id="4849731766219625109">আপোনাৰ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> একাউণ্টটো ব্যৱহাৰ কৰক</translation>
 <translation id="485053257961878904">জাননী ছিংক কৰাৰ সুবিধাটো ছেট আপ কৰিব পৰা নগ’ল</translation>
 <translation id="4850548109381269495">দুয়োটা ডিভাইচতে, আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক আৰু ব্লুটুথ অন কৰক। তাৰ পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="4850669014075537160">স্ক্ৰ’লিং</translation>
@@ -5694,6 +5697,7 @@
 <translation id="4979510648199782334">Microsoft 365ৰ ছেটআপ সম্পূৰ্ণ হৈছে</translation>
 <translation id="4980805016576257426">এই এক্সটেনশ্বনটোত মালৱেৰ আছে</translation>
 <translation id="4983159853748980742">আপোনাৰ পাছৱৰ্ড শ্বেয়াৰ কৰা হোৱা নাই। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক আৰু আপুনি Chromeত ছাইন ইন হৈ থকাটো নিশ্চিত কৰক। তাৰ পাছত পুনৰ চেষ্টা কৰক।</translation>
+<translation id="498624032394115435">এই লিংকটো থকা যিকোনো লোকে আটাইবোৰ টেব সম্পাদনা কৰিব পাৰে।</translation>
 <translation id="4986706507552097681">আপুনি কি ছিংক কৰিব লাগে সেয়া ছেটিঙলৈ গৈ যেতিয়াই মন যায় তেতিয়াই বাছনি কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
 <translation id="4986728572522335985">এই কাৰ্যই সুৰক্ষা চাবিটোত ষ্ট’ৰ হৈ থকা ইয়াৰ পিনকে ধৰি সকলো ডেটা মচিব</translation>
 <translation id="4987944280765486504">ডাউনল’ড সম্পূৰ্ণ হ’লে আপোনাৰ Chromebook ৰিষ্টাৰ্ট হ’ব আৰু আপুনি ছেট আপ কৰি থাকিব পাৰিব।</translation>
@@ -8304,7 +8308,6 @@
 <translation id="6873571253135628430">ছাইটৰ অনুমতি সলনি কৰক</translation>
 <translation id="6876155724392614295">বাইক</translation>
 <translation id="6876469544038980967">সহায়ক নহয়</translation>
-<translation id="687838958001010630">লিংকটো থকা যিকোনো লোকে আটাইবোৰ টেব সম্পাদনা কৰিব পাৰে</translation>
 <translation id="6878422606530379992">ছেন্সৰসমূহ ব্যৱহাৰ কৰিবলৈ অনুমতি দিয়া হৈছে</translation>
 <translation id="6878862640969460273">লেণ্ডস্কে’প</translation>
 <translation id="6880587130513028875">এই পৃষ্ঠাত ছবিবোৰ অৱৰোধ কৰা আছে।</translation>

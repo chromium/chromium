@@ -210,7 +210,7 @@ void FetchAndRankHelper::OnRanked(URLVisitsMetadata url_visits_metadata,
                       ? base::android::ConvertUTF8ToJavaString(
                             env, *history_data.last_app_id)
                       : nullptr,
-                  base::Hash(aggregate.url_key)));
+                  std::abs(static_cast<int>(base::Hash(aggregate.url_key)))));
             }},
         fetcher_entry.second);
   }

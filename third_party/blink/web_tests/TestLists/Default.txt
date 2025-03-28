@@ -12,8 +12,6 @@ animations/animation-shorthand-overriding.html
 animations/stability/empty-keyframes.html
 animations/interpolation/border-image-slice-interpolation-stability.html
 animations/responsive/interpolation/offset-rotate-responsive.html
-animations/svg-attribute-composition/svg-bias-composition.html
-animations/svg-attribute-interpolation/svg-numOctaves-interpolation.html
 compositing/animation/animated-composited-inside-hidden.html
 compositing/animation/animation-compositing.html
 compositing/animation/computed-style-during-delay.html

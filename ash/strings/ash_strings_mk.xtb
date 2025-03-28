@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">Периферниот уред не е поддржан во режим на гостин</translation>
 <translation id="1270290102613614947">Тастатурата на екранот е оневозможена</translation>
 <translation id="1272079795634619415">Запри</translation>
+<translation id="12741168609094094">Изберете што било на екранот за да пребарате, да копирате текст и друго</translation>
 <translation id="1275285675049378717">Се напојува <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Избран</translation>
 <translation id="1276975447697633661">Изберете ја датотеката, а потоа притиснете <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">Точката на пристап е исклучена</translation>
 <translation id="1731815243805539470">Префрлете на претходниот корисник</translation>
 <translation id="1733996486177697563">Сменете на темна и светла тема. Допрете и задржете на работната површина, а потоа изберете „Тапети и стил“.</translation>
+<translation id="1735992454301033090">Избрана е област, користете ги копчињата со стрелки за да ја преместувате</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />“ е видлив за уреди со Bluetooth.</translation>
 <translation id="1737078180382804488">Отфрлете го поставувањето прегледување на известувањата на телефонот</translation>
 <translation id="174102739345480129">Означувачот е исклучен.</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> минатата седмица</translation>
 <translation id="2687510499067466116">Кратенката од тастатура е променета</translation>
 <translation id="2689613560355655046">Работна површина 8</translation>
+<translation id="2692092709110488417">Притиснете Tab за да ја фокусирате и да ја преместувате избраната област</translation>
 <translation id="2695305337569143674">веб</translation>
 <translation id="2697697418792422688">Прикажете ги поставките за тастатура. Избрано е <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Користете ја апликацијата „Префрлање содржини“ за да ги префрлите податоците од вашата училишна сметка во вашата лична сметка</translation>
@@ -1034,6 +1037,7 @@
 <translation id="4412698727486357573">Центар за помош</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> е исклучено.</translation>
 <translation id="4417647906073317561">Поставки за „Режим за концентрација“. Поставете тајмер, задача и музика за да влезете во текот.</translation>
+<translation id="4418600384772451109">Затвори ја таблата</translation>
 <translation id="4424159417645388645">Работна површина 5</translation>
 <translation id="4426817706804363424">Одлично!</translation>
 <translation id="4430019312045809116">Гласност</translation>
@@ -2230,6 +2234,7 @@
 <translation id="8287009018010202411">Продуктивност</translation>
 <translation id="828708037801473432">Исклучено</translation>
 <translation id="8297006494302853456">Слаб</translation>
+<translation id="8300451473979404345">Избрана е рачка, користете ги копчињата со стрелки за да ја преместувате</translation>
 <translation id="8308637677604853869">Претходно мени</translation>
 <translation id="830868413617744215">Бета</translation>
 <translation id="8314772463905284467">Вклучено е Caps Lock</translation>
@@ -2290,6 +2295,7 @@
 <translation id="851458219935658693">Прикажувај прозорци од тековната работна површина, избрано е тркалезно копче</translation>
 <translation id="851660987304951246">Користете „Помош при читање“ за брзо резимирање содржини или поставување прашања</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> може да не се полни додека е вклучен.</translation>
+<translation id="8519329096920173967">Пребарај го мојот екран со Google Lens</translation>
 <translation id="8535393432370007982">Поништете го редоследот на подредувањето по боја</translation>
 <translation id="8536886494750559755">Прикажувај ги поставките за „Брзо споделување“. Видливо за сите <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Текстот е копиран во привремената меморија.</translation>

@@ -182,11 +182,11 @@ cr-progress,
 }
 
 <if expr="enable_ink or enable_pdf_ink2">
-#annotate {
+.annotate-button {
   margin-inline-end: 4px;
 }
 
-:host([annotation-mode="draw"]) #annotate {
+.annotate-button.active {
   background-color: var(--active-button-bg);
   border-radius: 50%;
 }
@@ -199,11 +199,11 @@ cr-progress,
   margin-inline-start: 6px;
 }
 
-#annotate-controls #annotate {
+#annotate-controls .annotate-button {
   margin-inline: 0;
 }
 
-:host([annotation-mode="draw"]) #annotate-controls #annotate {
+#annotate-controls .annotate-button.active {
   --cr-icon-button-fill-color: var(--viewer-icon-ink-selected-fill-color);
 }
 

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
+#include "base/trace_event/trace_event.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -255,27 +256,26 @@ void MostVisitedSitesProvider::Start(const AutocompleteInput& input,
 
   done_ = false;
 
-  const TabMatcher& tab_matcher = client_->GetTabMatcher();
-
   // TODO(ender): Relocate this to StartPrefetch() when additional prefetch
   // contexts are available.
   auto url_suggestions_on_focus_config =
       omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get();
   if (url_suggestions_on_focus_config.enabled &&
       url_suggestions_on_focus_config.directly_query_history_service) {
-    // The requested results size is the maximum amount of suggestions
-    // that can be shown in the omnibox in addition to the number of blocked
-    // sites and open tabs. Add 1 to `GetOpenTabs` since it doesn't consider
-    // the currently active tab.
-    client_->GetHistoryService()->QueryMostVisitedURLs(
-        (tab_matcher.GetOpenTabs(&input).size() + 1) +
-            url_suggestions_on_focus_config.max_suggestions,
-        base::BindOnce(
-            &MostVisitedSitesProvider::OnMostVisitedUrlsFromHistoryAvailable,
-            request_weak_ptr_factory_.GetWeakPtr(), input),
-        &cancelable_task_tracker_,
-        url_suggestions_on_focus_config.most_visited_recency_factor,
-        url_suggestions_on_focus_config.most_visited_recency_window);
+    CHECK(url_suggestions_on_focus_config.MostVisitedPrefetchingEnabled() ||
+          cached_sites_.empty());
+    // If there are cached results, use them.
+    if (!cached_sites_.empty()) {
+      OnMostVisitedUrlsFromHistoryAvailable(input, cached_sites_);
+    }
+    // Queries the HistoryService for sites. If prefetching is enabled, this
+    // updates `cached_sites_`, otherwise this updates the provider's matches.
+    // Prefetching doesn't update the provider's matches since it is expected
+    // to only return synchronous results. `debouncer_` used base::Unretained
+    // since it does not live beyond the scope of MostVisitedSitesProvider.
+    debouncer_->RequestRun(base::BindOnce(
+        &MostVisitedSitesProvider::RequestSitesFromHistoryService,
+        base::Unretained(this), input));
   } else {
     // TopSites updates itself after a delay. To ensure up-to-date results,
     // force an update now.
@@ -286,11 +286,29 @@ void MostVisitedSitesProvider::Start(const AutocompleteInput& input,
   }
 }
 
+void MostVisitedSitesProvider::StartPrefetch(const AutocompleteInput& input) {
+  AutocompleteProvider::StartPrefetch(input);
+
+  TRACE_EVENT0("omnibox", "MostVisitedProvider::StartPrefetch");
+
+  if (!AllowMostVisitedSitesSuggestions(input)) {
+    return;
+  }
+
+  if (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get()
+          .MostVisitedPrefetchingEnabled()) {
+    debouncer_->RequestRun(base::BindOnce(
+        &MostVisitedSitesProvider::RequestSitesFromHistoryService,
+        base::Unretained(this), input));
+  }
+}
+
 void MostVisitedSitesProvider::Stop(bool clear_cached_results,
                                     bool due_to_user_inactivity) {
   AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
   request_weak_ptr_factory_.InvalidateWeakPtrs();
   cancelable_task_tracker_.TryCancelAll();
+  debouncer_->CancelRequest();
 }
 
 MostVisitedSitesProvider::MostVisitedSitesProvider(
@@ -300,6 +318,15 @@ MostVisitedSitesProvider::MostVisitedSitesProvider(
       device_form_factor_{ui::GetDeviceFormFactor()},
       client_{client} {
   AddListener(listener);
+
+  auto url_suggestions_on_focus_config =
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get();
+  int debounce_delay =
+      url_suggestions_on_focus_config.MostVisitedPrefetchingEnabled()
+          ? url_suggestions_on_focus_config.prefetch_most_visited_sites_delay_ms
+          : 0;
+  debouncer_ = std::make_unique<AutocompleteProviderDebouncer>(
+      /*from_last_run=*/true, debounce_delay);
 
   // TopSites updates itself after a delay. To ensure up-to-date results,
   // force an update now.
@@ -453,4 +480,36 @@ void MostVisitedSitesProvider::DeleteMatchElement(
   if (tiles_to_update.empty()) {
     matches_.clear();
   }
+}
+
+void MostVisitedSitesProvider::RequestSitesFromHistoryService(
+    const AutocompleteInput& input) {
+  auto url_suggestions_on_focus_config =
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get();
+  const TabMatcher& tab_matcher = client_->GetTabMatcher();
+
+  QueryMostVisitedURLsCallback callback =
+      url_suggestions_on_focus_config.MostVisitedPrefetchingEnabled()
+          ? base::BindOnce(&MostVisitedSitesProvider::UpdateCachedSites,
+                           request_weak_ptr_factory_.GetWeakPtr())
+          : base::BindOnce(&MostVisitedSitesProvider::
+                               OnMostVisitedUrlsFromHistoryAvailable,
+                           request_weak_ptr_factory_.GetWeakPtr(), input);
+
+  // The requested results size is the maximum amount of suggestions
+  // that can be shown in the omnibox in addition to the number of open tabs.
+  // Add 1 to `GetOpenTabs` since it doesn't consider the currently active tab.
+  size_t requested_result_size =
+      url_suggestions_on_focus_config.max_suggestions +
+      (tab_matcher.GetOpenTabs(&input).size() + 1);
+
+  client_->GetHistoryService()->QueryMostVisitedURLs(
+      requested_result_size, std::move(callback), &cancelable_task_tracker_,
+      url_suggestions_on_focus_config.most_visited_recency_factor,
+      url_suggestions_on_focus_config.most_visited_recency_window);
+}
+
+void MostVisitedSitesProvider::UpdateCachedSites(
+    history::MostVisitedURLList sites) {
+  cached_sites_ = std::move(sites);
 }

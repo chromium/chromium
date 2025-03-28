@@ -36,46 +36,48 @@ VALUE_DELIMITER = ","
 
 
 def get_license_type(license: str) -> LicenseType:
-  """Return the equivalent license type for the provided string license."""
-  if license in constants.RAW_LICENSE_TO_FORMATTED_DETAILS:
-    return constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][1]
-  raise None
+    """Return the equivalent license type for the provided string license."""
+    if license in constants.RAW_LICENSE_TO_FORMATTED_DETAILS:
+        return constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][1]
+    raise None
 
 
 def get_license_bp_name(license: str) -> str:
-  return constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][2]
+    return constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][2]
 
 
 def is_ignored_readme_chromium(path: str) -> bool:
-  return path in constants.IGNORED_README
+    return path in constants.IGNORED_README
 
 
 def get_most_restrictive_type(licenses: List[str]) -> LicenseType:
-  """Returns the most restrictive license according to the values of LicenseType."""
-  most_restrictive = LicenseType.UNKNOWN
-  for license in licenses:
-    if constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][
-      1].value > most_restrictive.value:
-      most_restrictive = constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][1]
-  return most_restrictive
+    """Returns the most restrictive license according to the values of LicenseType."""
+    most_restrictive = LicenseType.UNKNOWN
+    for license in licenses:
+        if constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][
+                1].value > most_restrictive.value:
+            most_restrictive = constants.RAW_LICENSE_TO_FORMATTED_DETAILS[
+                license][1]
+    return most_restrictive
 
 
 def get_license_file_format(license: str):
-  """Return a different representation of the license that is better suited
+    """Return a different representation of the license that is better suited
   for file names."""
-  if license in constants.RAW_LICENSE_TO_FORMATTED_DETAILS:
-    return constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][0]
-  raise None
+    if license in constants.RAW_LICENSE_TO_FORMATTED_DETAILS:
+        return constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][0]
+    raise None
 
 
 class InvalidMetadata(Exception):
-  """This exception is raised when metadata is invalid."""
-  pass
+    """This exception is raised when metadata is invalid."""
+    pass
 
 
 def parse_chromium_readme_file(readme_path: str,
-    post_process_operation: Callable = None) -> Metadata:
-  """Parses the metadata from the file.
+                               post_process_operation: Callable = None
+                               ) -> Metadata:
+    """Parses the metadata from the file.
 
   Args:
     readme_path: the path to a file from which to parse metadata.
@@ -89,68 +91,68 @@ def parse_chromium_readme_file(readme_path: str,
     could happen due to plenty of reasons (eg: unidentifiable license, license
     file path does not exist or duplicate fields).
   """
-  field_lookup = {name.lower(): name for name in KNOWN_FIELDS}
+    field_lookup = {name.lower(): name for name in KNOWN_FIELDS}
 
-  dependencies = []
-  metadata = {}
-  for line in Path(readme_path).read_text().split("\n"):
-    line = line.strip()
-    # Skip empty lines.
-    if not line:
-      continue
+    dependencies = []
+    metadata = {}
+    for line in Path(readme_path).read_text().split("\n"):
+        line = line.strip()
+        # Skip empty lines.
+        if not line:
+            continue
 
-    # Check if a new dependency will be described.
-    if re.match(PATTERN_DEPENDENCY_DIVIDER, line):
-      # Save the metadata for the previous dependency.
-      if metadata:
+        # Check if a new dependency will be described.
+        if re.match(PATTERN_DEPENDENCY_DIVIDER, line):
+            # Save the metadata for the previous dependency.
+            if metadata:
+                dependencies.append(metadata)
+            metadata = {}
+            continue
+
+        # Otherwise, try to parse the field name and field value.
+        parts = line.split(": ", 1)
+        if len(parts) == 2:
+            raw_field, value = parts
+            field = field_lookup.get(raw_field.lower())
+            if field:
+                if field in metadata:
+                    # Duplicate field for this dependency.
+                    raise InvalidMetadata(
+                        f"duplicate '{field}' in {readme_path}")
+                if field in MULTIVALUE_FIELDS:
+                    metadata[field] = [
+                        entry.strip() for entry in value.split(VALUE_DELIMITER)
+                    ]
+                else:
+                    metadata[field] = value
+
+        # The end of the file has been reached. Save the metadata for the
+        # last dependency, if available.
+    if metadata:
         dependencies.append(metadata)
-      metadata = {}
-      continue
 
-    # Otherwise, try to parse the field name and field value.
-    parts = line.split(": ", 1)
-    if len(parts) == 2:
-      raw_field, value = parts
-      field = field_lookup.get(raw_field.lower())
-      if field:
-        if field in metadata:
-          # Duplicate field for this dependency.
-          raise InvalidMetadata(f"duplicate '{field}' in {readme_path}")
-        if field in MULTIVALUE_FIELDS:
-          metadata[field] = [
-              entry.strip() for entry in value.split(VALUE_DELIMITER)
-          ]
-        else:
-          metadata[field] = value
+    if len(dependencies) == 0:
+        raise Exception(
+            f"Failed to parse any valid metadata from \"{readme_path}\"")
 
-    # The end of the file has been reached. Save the metadata for the
-    # last dependency, if available.
-  if metadata:
-    dependencies.append(metadata)
+    try:
+        if post_process_operation is None:
+            post_process_operation = constants.POST_PROCESS_OPERATION.get(
+                readme_path, lambda _metadata: _metadata)
+        metadata = Metadata(post_process_operation(dependencies[0]))
+    except MapperException:
+        raise Exception(f"Failed to post-process {readme_path}")
 
-  if len(dependencies) == 0:
-    raise Exception(
-        f"Failed to parse any valid metadata from \"{readme_path}\"")
-
-  try:
-    if post_process_operation is None:
-      post_process_operation = constants.POST_PROCESS_OPERATION.get(readme_path,
-                                                                    lambda
-                                                                        _metadata: _metadata)
-    metadata = Metadata(post_process_operation(dependencies[0]))
-  except MapperException:
-    raise Exception(f"Failed to post-process {readme_path}")
-
-  for license in metadata.get_licenses():
-    if not license in constants.RAW_LICENSE_TO_FORMATTED_DETAILS:
-      raise InvalidMetadata(
-          f"\"{readme_path}\" contains unidentified license \"{license}\"")
-  return metadata
+    for license in metadata.get_licenses():
+        if not license in constants.RAW_LICENSE_TO_FORMATTED_DETAILS:
+            raise InvalidMetadata(
+                f"\"{readme_path}\" contains unidentified license \"{license}\""
+            )
+    return metadata
 
 
-def resolve_license_path(readme_chromium_path: str,
-    license_path: str) -> str:
-  """
+def resolve_license_path(readme_chromium_path: str, license_path: str) -> str:
+    """
   Resolves the relative path from the repository root to the license file.
 
   :param readme_chromium_path: Relative path to the README.chromium starting
@@ -162,13 +164,13 @@ def resolve_license_path(readme_chromium_path: str,
   :return: The relative path from the repository root to the declared license
   file.
   """
-  if license_path.startswith("//"):
-    # This is an relative path that starts from the root of external/cronet
-    # repository, we should not use the directory path for resolution here.
-    # See https://source.chromium.org/chromium/chromium/src/+/main:third_party/rust/bytes/v1/README.chromium as
-    # an example of such case.
-    return license_path[2:]
-  # Relative path from the README.chromium, append the path from root of repo
-  # until the README.chromium so it becomes a relative path from the root of
-  # repo.
-  return os.path.join(readme_chromium_path, license_path)
+    if license_path.startswith("//"):
+        # This is an relative path that starts from the root of external/cronet
+        # repository, we should not use the directory path for resolution here.
+        # See https://source.chromium.org/chromium/chromium/src/+/main:third_party/rust/bytes/v1/README.chromium as
+        # an example of such case.
+        return license_path[2:]
+    # Relative path from the README.chromium, append the path from root of repo
+    # until the README.chromium so it becomes a relative path from the root of
+    # repo.
+    return os.path.join(readme_chromium_path, license_path)

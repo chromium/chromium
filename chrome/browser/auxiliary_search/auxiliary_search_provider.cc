@@ -142,6 +142,11 @@ void OnDataReady(JNIEnv* env,
   Java_AuxiliarySearchBridge_onDataReady(env, entries, j_callback);
 }
 
+// Converts the score to be an integer. Usually the score is between 0 and 1.0.
+int convertSiteSuggestionScore(double score) {
+  return std::max(0, static_cast<int>(score * 100));
+}
+
 }  // namespace
 
 AuxiliarySearchProvider::AuxiliarySearchProvider(
@@ -230,7 +235,9 @@ void AuxiliarySearchProvider::OnURLsAvailable(
         base::android::ConvertUTF16ToJavaString(env, tile.title),
         tile.last_visit_time.InMillisecondsSinceUnixEpoch(), kInvalidTabId,
         /* appId= */ nullptr,
-        base::Hash(tile.url.spec() + base::UTF16ToUTF8(tile.title))));
+        std::abs(static_cast<int>(
+            base::Hash(tile.url.spec() + base::UTF16ToUTF8(tile.title)))),
+        convertSiteSuggestionScore(tile.score)));
   }
 
   Java_AuxiliarySearchBridge_onMostVisitedSitesURLsAvailable(env, j_ref_,

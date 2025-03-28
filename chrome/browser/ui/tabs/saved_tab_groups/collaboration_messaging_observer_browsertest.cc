@@ -26,7 +26,6 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/data_sharing/public/features.h"
-#include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -407,9 +406,8 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   EXPECT_NE(observer(), nullptr);
 
   auto group_id = browser()->tab_strip_model()->AddToNewGroup({0});
-  tab_groups::TabGroupSyncServiceImpl* tab_group_service =
-      static_cast<tab_groups::TabGroupSyncServiceImpl*>(
-          TabGroupSyncServiceFactory::GetForProfile(browser()->profile()));
+  tab_groups::TabGroupSyncService* tab_group_service =
+      TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
   tab_group_service->MakeTabGroupSharedForTesting(group_id,
                                                   "fake_collaboration_id");
   base::MockCallback<SuccessCallback> cb;
@@ -445,9 +443,8 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   // Create a new group, get the sync tab group id, close it.
   AddTab(browser());
   auto group_id = browser()->tab_strip_model()->AddToNewGroup({0});
-  tab_groups::TabGroupSyncServiceImpl* tab_group_service =
-      static_cast<tab_groups::TabGroupSyncServiceImpl*>(
-          TabGroupSyncServiceFactory::GetForProfile(browser()->profile()));
+  tab_groups::TabGroupSyncService* tab_group_service =
+      TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
   auto sync_tab_group_id = tab_group_service->GetGroup(group_id)->saved_guid();
   tab_group_service->MakeTabGroupSharedForTesting(group_id,
                                                   "fake_collaboration_id");

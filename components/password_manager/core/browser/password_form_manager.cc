@@ -250,6 +250,20 @@ bool ShouldShowKeychainErrorBubble(
          PasswordStoreBackendErrorType::kKeychainError;
 }
 #endif
+
+void RecordSavingIsDisabled(PasswordManagerClient* client) {
+  if (password_manager_util::IsLoggingActive(client)) {
+    auto logger = std::make_unique<BrowserSavePasswordProgressLogger>(
+        client->GetCurrentLogManager());
+    logger->LogProvisionalSaveFailure(
+        PasswordManagerMetricsRecorder::SAVING_DISABLED);
+  }
+  if (client->GetMetricsRecorder()) {
+    client->GetMetricsRecorder()->RecordProvisionalSaveFailure(
+        PasswordManagerMetricsRecorder::SAVING_DISABLED);
+  }
+}
+
 }  // namespace
 
 PasswordFormManager::PasswordFormManager(
@@ -997,20 +1011,6 @@ void PasswordFormManager::CreatePendingCredentials() {
       IsCredentialAPISave());
 }
 
-void PasswordFormManager::RecordProvisionalSaveFailure(
-    PasswordManagerMetricsRecorder::ProvisionalSaveFailure failure,
-    const GURL& form_origin) {
-  std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
-  if (password_manager_util::IsLoggingActive(client_)) {
-    logger = std::make_unique<BrowserSavePasswordProgressLogger>(
-        client_->GetCurrentLogManager());
-  }
-  if (client_->GetMetricsRecorder()) {
-    client_->GetMetricsRecorder()->RecordProvisionalSaveFailure(
-        failure, form_origin, form_origin, logger.get());
-  }
-}
-
 bool PasswordFormManager::ProvisionallySave(
     const FormData& submitted_form,
     const PasswordManagerDriver* driver,
@@ -1030,8 +1030,7 @@ bool PasswordFormManager::ProvisionallySave(
   }
 
   if (!client_->IsSavingAndFillingEnabled(submitted_form.url())) {
-    RecordProvisionalSaveFailure(
-        PasswordManagerMetricsRecorder::SAVING_DISABLED, submitted_form.url());
+    RecordSavingIsDisabled(client_);
     is_saving_allowed_ = false;
   }
 

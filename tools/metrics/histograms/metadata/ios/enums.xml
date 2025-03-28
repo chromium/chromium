@@ -78,6 +78,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Apple Calendar"/>
 </enum>
 
+<!-- LINT.IfChange(FullscreenModeTransitionReason) -->
+
+<enum name="FullscreenModeTransitionReason">
+  <int value="0" label="UserControlled"/>
+  <int value="1" label="ForcedByCode"/>
+  <int value="2" label="UserInitiatedFinishedByCode"/>
+  <int value="3" label="UserTapped"/>
+  <int value="4" label="BottomReached"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h:FullscreenModeTransitionReason) -->
+
 <enum name="GeolocationAPI">
   <int value="0" label="Clear Watch"/>
   <int value="1" label="Get Current Position"/>
@@ -993,7 +1005,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Animated Promo Dismissed"/>
 </enum>
 
-<!-- LINT.ThenChange(//ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h:SegmentedDefaultBrowserPromoAction) -->
+<!-- LINT.ThenChange(//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/constants.h:SegmentedDefaultBrowserPromoAction) -->
 
 <enum name="IOSSessionMigration">
   <int value="0" label="No Migration"/>
@@ -1373,6 +1385,15 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Ephemeral"/>
   <int value="5" label="Invalid"/>
 </enum>
+
+<!-- LINT.IfChange(ReaderModeDistillerResult) -->
+
+<enum name="ReaderModeDistillerResult">
+  <int value="0" label="Not distillable"/>
+  <int value="1" label="Distillable"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeDistillerResult) -->
 
 <!-- LINT.IfChange(ReaderModeHeuristicClassification) -->
 

@@ -107,6 +107,9 @@
       <message name="IDS_PARENT_WEBSITE_APPROVAL_MANUAL_URL" desc="This text displayed as a subtitle in a bottom sheet asking a parent to allow or not allow a website. This informs the parent that this site was blocked due to a manual blocklist entry.">
       You previously blocked <ph name="BLOCKED_URL">$1<ex>example.com</ex></ph>
       </message>
+      <message name="IDS_PARENT_WEBSITE_APPROVAL_DIALOG_A11Y_NAME" desc="Name of the parent approval dialog announced by the screen readers">
+      Parent approval dialog
+      </message>
       <message name="IDS_PARENTAL_LOCAL_APPROVAL_DIALOG_GENERIC_ERROR_TITLE" desc="Title of the error dialog that is shown when a supervised user asks for local parental approval, but during the request something went wrong.">
       Something went wrong
       </message>

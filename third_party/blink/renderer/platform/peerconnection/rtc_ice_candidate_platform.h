@@ -50,12 +50,12 @@ class PLATFORM_EXPORT RTCIceCandidatePlatform final
                           std::optional<uint16_t> sdp_m_line_index);
 
   // Creates a new RTCIceCandidatePlatform using |candidate|, |sdp_mid|,
-  // |sdp_m_line_index|, |username_fragment| and optional |url|.
+  // |sdp_m_line_index|, |username_fragment| and |url|.
   RTCIceCandidatePlatform(String candidate,
                           String sdp_mid,
                           std::optional<uint16_t> sdp_m_line_index,
                           String username_fragment,
-                          std::optional<String> url);
+                          String url);
   RTCIceCandidatePlatform(const RTCIceCandidatePlatform&) = delete;
   RTCIceCandidatePlatform& operator=(const RTCIceCandidatePlatform&) = delete;
   ~RTCIceCandidatePlatform() = default;
@@ -72,12 +72,12 @@ class PLATFORM_EXPORT RTCIceCandidatePlatform final
   const String Protocol() const { return protocol_; }
   const std::optional<uint16_t>& Port() const { return port_; }
   const String& Type() const { return type_; }
-  const std::optional<String>& TcpType() const { return tcp_type_; }
+  const String& TcpType() const { return tcp_type_; }
   const String& RelatedAddress() const { return related_address_; }
   const std::optional<uint16_t>& RelatedPort() const { return related_port_; }
   const String& UsernameFragment() const { return username_fragment_; }
-  const std::optional<String>& RelayProtocol() const { return relay_protocol_; }
-  const std::optional<String>& Url() const { return url_; }
+  const String& RelayProtocol() const { return relay_protocol_; }
+  const String& Url() const { return url_; }
 
   void Trace(Visitor*) const {}
 
@@ -94,12 +94,12 @@ class PLATFORM_EXPORT RTCIceCandidatePlatform final
   String protocol_;
   std::optional<uint16_t> port_;
   String type_;
-  std::optional<String> tcp_type_;
+  String tcp_type_;
   String related_address_;
   std::optional<uint16_t> related_port_;
   String username_fragment_;
-  std::optional<String> url_;
-  std::optional<String> relay_protocol_;
+  String url_;
+  String relay_protocol_;
 };
 
 }  // namespace blink

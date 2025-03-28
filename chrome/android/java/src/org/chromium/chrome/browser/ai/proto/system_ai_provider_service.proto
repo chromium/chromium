@@ -11,6 +11,18 @@ package system_ai_provider_service.proto;
 
 message AvailabilityRequest {
   repeated Capability requested_capabilities = 1;
+  ClientInfo client_info = 2;
+}
+
+message ClientInfo {
+  // If the client app is currently running in work profile
+  bool is_work_profile = 1;
+  // Account(s) in the client app that are currently active.
+  repeated Account client_account = 2;
+}
+
+message Account {
+  string email = 1;
 }
 
 enum Capability {
@@ -45,6 +57,7 @@ message LaunchRequest {
     SummarizeUrl summarize_url = 1;
     AnalyzeAttachment analyze_attachment = 2;
   }
+  ClientInfo client_info = 3;
 }
 
 message SummarizeUrl {

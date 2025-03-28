@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
@@ -33,6 +34,7 @@
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync_bookmarks/switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/common/extension_builder.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -160,11 +162,26 @@ class ShowPromoTest : public testing::Test {
 
   TestingProfile* profile() { return profile_.get(); }
 
+  const extensions::Extension* CreateExtension(
+      extensions::mojom::ManifestLocation location =
+          extensions::mojom::ManifestLocation::kInternal) {
+    extension_ = extensions::ExtensionBuilder()
+                     .SetManifest(base::Value::Dict()
+                                      .Set("name", "test")
+                                      .Set("manifest_version", 2)
+                                      .Set("version", "1.0.0"))
+                     .SetLocation(location)
+                     .Build();
+
+    return extension_.get();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
+  scoped_refptr<const extensions::Extension> extension_;
 };
 
 TEST_F(ShowPromoTest, DoNotShowAddressSignInPromoWithoutImprovedBrowserSignin) {
@@ -196,6 +213,15 @@ TEST_F(ShowPromoTest, DoNotShowBookmarkSignInPromoWithoutMinimizeDeletion) {
   EXPECT_FALSE(ShouldShowBookmarkSignInPromo(*profile()));
 }
 
+TEST_F(ShowPromoTest, DoNotShowExtensionSignInPromoWithoutExplicitSignIn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{switches::kEnableExtensionsExplicitBrowserSignin});
+
+  EXPECT_FALSE(ShouldShowExtensionSignInPromo(*profile(), *CreateExtension()));
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 class ShowSyncPromoTest : public ShowPromoTest {
  protected:
@@ -223,6 +249,54 @@ TEST_F(ShowSyncPromoTest, ShouldShowSyncPromoSyncEnabled) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(ShowSyncPromoTest, ShowExtensionSyncPromoWithoutFeatureFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{switches::kEnableExtensionsExplicitBrowserSignin});
+
+  EXPECT_TRUE(ShouldShowExtensionSyncPromo(*profile(), *CreateExtension()));
+}
+
+TEST_F(ShowSyncPromoTest, DoNotShowExtensionSyncPromoWithSyncDisabled) {
+  DisableSync();
+  ASSERT_FALSE(ShouldShowSyncPromo(*profile()));
+
+  EXPECT_FALSE(ShouldShowExtensionSyncPromo(*profile(), *CreateExtension()));
+}
+
+TEST_F(ShowSyncPromoTest, DoNotShowExtensionSyncPromoWithUnpackedExtension) {
+  const extensions::Extension* unpacked_extension =
+      CreateExtension(extensions::mojom::ManifestLocation::kUnpacked);
+
+  // Unpacked extensions cannot be synced so the sync promo is not shown.
+  ASSERT_TRUE(unpacked_extension);
+  ASSERT_FALSE(
+      extensions::sync_util::ShouldSync(profile(), unpacked_extension));
+
+  EXPECT_FALSE(ShouldShowExtensionSyncPromo(*profile(), *unpacked_extension));
+}
+
+TEST_F(ShowSyncPromoTest,
+       DoNotShowExtensionSyncPromoWithSyncingExtensionsEnabled) {
+  ON_CALL(*sync_service()->GetMockUserSettings(), GetSelectedTypes())
+      .WillByDefault(testing::Return(syncer::UserSelectableTypeSet::All()));
+  ASSERT_TRUE(extensions::sync_util::IsSyncingExtensionsEnabled(profile()));
+
+  EXPECT_FALSE(ShouldShowExtensionSyncPromo(*profile(), *CreateExtension()));
+}
+
+TEST_F(ShowSyncPromoTest,
+       DoNotShowExtensionSyncPromoWithExplicitBrowserSigninPref) {
+  profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+  ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  EXPECT_FALSE(ShouldShowExtensionSyncPromo(*profile(), *CreateExtension()));
+}
+
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ShowSyncPromoTest, ShowPromoWithSignedInAccount) {
   MakePrimaryAccountAvailable(identity_manager(), "test@email.com",
@@ -242,11 +316,12 @@ class ShowSigninPromoTestWithFeatureFlags : public ShowPromoTest {
  public:
   void SetUp() override {
     ShowPromoTest::SetUp();
-    feature_list.InitWithFeatures(
+    feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {switches::kImprovedSigninUIOnDesktop,
          switches::kSyncEnableBookmarksInTransportMode,
-         switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload},
+         switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload,
+         switches::kEnableExtensionsExplicitBrowserSignin},
         /*disabled_features=*/{});
     ON_CALL(*sync_service(), GetDataTypesForTransportOnlyMode())
         .WillByDefault(testing::Return(syncer::DataTypeSet::All()));
@@ -264,7 +339,7 @@ class ShowSigninPromoTestWithFeatureFlags : public ShowPromoTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ShowSigninPromoTestWithFeatureFlags, ShowPromoWithNoAccount) {
@@ -352,6 +427,22 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
                                    "test_gaia");
 
   EXPECT_FALSE(ShouldShowBookmarkSignInPromo(*profile()));
+}
+
+TEST_F(ShowSigninPromoTestWithFeatureFlags, ShowExtensionsPromoWithNoAccount) {
+  EXPECT_TRUE(ShouldShowExtensionSignInPromo(*profile(), *CreateExtension()));
+}
+
+TEST_F(ShowSigninPromoTestWithFeatureFlags,
+       DoNotShowExtensionPromoWithUnpackedExtension) {
+  const extensions::Extension* unpacked_extension =
+      CreateExtension(extensions::mojom::ManifestLocation::kUnpacked);
+
+  // Unpacked extensions cannot be synced so the sign in promo is not shown.
+  ASSERT_TRUE(unpacked_extension);
+  ASSERT_FALSE(
+      extensions::sync_util::ShouldSync(profile(), unpacked_extension));
+  EXPECT_FALSE(ShouldShowExtensionSignInPromo(*profile(), *unpacked_extension));
 }
 
 TEST_F(ShowSigninPromoTestWithFeatureFlags,

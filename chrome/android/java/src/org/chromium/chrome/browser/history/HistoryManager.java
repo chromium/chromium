@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -242,16 +241,6 @@ public class HistoryManager
         // the toolbar to the neighboring delete button, and automatically to other items on the
         // HistoryPage such as the list of HistoryItem(s).
         mToolbar.setFocusable(true);
-        mToolbar.setNextFocusForwardId(R.id.clear_browsing_data_button);
-        mToolbar.setOnKeyListener(
-                (View view, int keyCode, KeyEvent event) -> {
-                    if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_DOWN)
-                            && event.getAction() == KeyEvent.ACTION_UP) {
-                        mToolbar.getMenu().performIdentifierAction(R.id.search_menu_id, 0);
-                        return true;
-                    }
-                    return false;
-                });
 
         // 4. Width constrain the SelectableListLayout.
         mSelectableListLayout.configureWideDisplayStyle();
@@ -398,6 +387,13 @@ public class HistoryManager
      */
     public ViewGroup getView() {
         return mRootView;
+    }
+
+    /**
+     * @return The view that shows the list content below toolbar.
+     */
+    View getListContentView() {
+        return mActivity.findViewById(R.id.list_content);
     }
 
     /**

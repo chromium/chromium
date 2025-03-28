@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_PROMO_UTIL_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_PROMO_UTIL_H_
 
+#include "build/build_config.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "extensions/buildflags/buildflags.h"
 
 class Profile;
 
@@ -17,12 +19,30 @@ namespace autofill {
 class AutofillProfile;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+namespace extensions {
+class Extension;
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 namespace signin {
 
 enum class SignInPromoType;
 
+#if !BUILDFLAG(IS_ANDROID)
 // Whether we should show the sync promo.
 bool ShouldShowSyncPromo(Profile& profile);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Whether we should show the sync promo after an extension was installed.
+bool ShouldShowExtensionSyncPromo(Profile& profile,
+                                  const extensions::Extension& extension);
+
+// Whether we should show the sign in promo after an extension was installed.
+bool ShouldShowExtensionSignInPromo(Profile& profile,
+                                    const extensions::Extension& extension);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Whether we should show the sign in promo after a password was saved.
 bool ShouldShowPasswordSignInPromo(Profile& profile);

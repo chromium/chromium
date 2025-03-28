@@ -108,7 +108,7 @@ Profile* BookmarksFunction::GetProfile() {
 
 void BookmarksFunction::OnResponded() {
   DCHECK(response_type());
-  if (*response_type() == ExtensionFunction::SUCCEEDED) {
+  if (*response_type() == ResponseType::kSucceeded) {
     BookmarksApiWatcher::GetForBrowserContext(browser_context())
         ->NotifyApiInvoked(this);
   }

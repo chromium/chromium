@@ -18,7 +18,7 @@
 namespace ash {
 namespace {
 
-const char kChromeVoxPanelRelativeUrl[] = "/chromevox/panel/panel.html";
+const char kChromeVoxPanelRelativeUrl[] = "/chromevox/mv2/panel/panel.html";
 const char kDisableSpokenFeedbackURLFragment[] = "close";
 const char kFocusURLFragment[] = "focus";
 const char kFullscreenURLFragment[] = "fullscreen";

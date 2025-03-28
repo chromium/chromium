@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util_test_util.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
@@ -97,7 +98,9 @@ TEST_F(L10nUtilTest, GetUILanguageList) {
   SetInputMethods1();
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
-  auto list(GetUILanguageList(nullptr, std::string(), &input_manager_));
+  auto list(GetUILanguageList(
+      TestingBrowserProcess::GetGlobal()->GetApplicationLocale(), nullptr,
+      std::string(), &input_manager_));
 
   VerifyOnlyUILanguages(list);
 }
@@ -151,7 +154,9 @@ TEST_F(L10nUtilTest, GetUILanguageListMulti) {
   SetInputMethods2();
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
-  auto list(GetUILanguageList(nullptr, std::string(), &input_manager_));
+  auto list(GetUILanguageList(
+      TestingBrowserProcess::GetGlobal()->GetApplicationLocale(), nullptr,
+      std::string(), &input_manager_));
 
   VerifyOnlyUILanguages(list);
 
@@ -172,8 +177,9 @@ TEST_F(L10nUtilTest, GetUILanguageListWithMostRelevant) {
   most_relevant_language_codes.push_back("nonexistent");
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
-  auto list(GetUILanguageList(&most_relevant_language_codes, std::string(),
-                              &input_manager_));
+  auto list(GetUILanguageList(
+      TestingBrowserProcess::GetGlobal()->GetApplicationLocale(),
+      &most_relevant_language_codes, std::string(), &input_manager_));
 
   VerifyOnlyUILanguages(list);
 

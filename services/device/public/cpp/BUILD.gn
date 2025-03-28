@@ -23,6 +23,7 @@ component("device_features") {
   if (is_android) {
     sources += [ "device_feature_map.cc" ]
     deps += [
+      "//device/base",
       "//device/fido",
       "//services/device/public/java:device_feature_list_jni",
     ]

@@ -60,7 +60,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   explicit PaintTiming(Document&);
   PaintTiming(const PaintTiming&) = delete;
   PaintTiming& operator=(const PaintTiming&) = delete;
-  virtual ~PaintTiming() = default;
+  ~PaintTiming() = default;
 
   static PaintTiming& From(Document&);
   static const PaintTiming* From(const Document&);

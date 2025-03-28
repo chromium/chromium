@@ -115,7 +115,6 @@ class SessionSyncBridge : public syncer::DataTypeSyncBridge,
     std::unique_ptr<LocalSessionEventHandlerImpl> local_session_event_handler;
   };
 
-  // TODO(mastiz): We should rather rename this to |syncing_state_|.
   // Non-empty while sync is active, i.e. started and not paused.
   std::optional<SyncingState> syncing_;
 

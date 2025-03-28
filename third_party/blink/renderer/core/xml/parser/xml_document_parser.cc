@@ -1043,19 +1043,18 @@ void XMLDocumentParser::StartElementNs(
   bool is_first_element = !saw_first_element_;
   saw_first_element_ = true;
 
+  v8::Isolate* isolate = document_->GetAgent().isolate();
   Vector<Attribute, kAttributePrealloc> prefixed_attributes;
   if (!HandleNamespaceAttributes(prefixed_attributes, namespaces,
-                                 IGNORE_EXCEPTION)) {
+                                 IgnoreException(isolate))) {
     StopParsing();
     return;
   }
 
-  v8::Isolate* isolate = document_->GetAgent().isolate();
   v8::TryCatch try_catch(isolate);
   if (!HandleElementAttributes(prefixed_attributes, attributes,
                                prefix_to_namespace_map_,
-                               parsing_fragment_ ? PassThroughException(isolate)
-                                                 : IGNORE_EXCEPTION)) {
+                               PassThroughException(isolate))) {
     StopParsing();
     if (parsing_fragment_) {
       DCHECK(try_catch.HasCaught());
@@ -1168,7 +1167,7 @@ void XMLDocumentParser::EndElementNs() {
   if (element->IsScriptElement() &&
       !ScriptingContentIsAllowed(GetParserContentPolicy())) {
     PopCurrentNode();
-    n->remove(IGNORE_EXCEPTION_FOR_TESTING);
+    n->remove(IgnoreException(document_->GetAgent().isolate()));
     return;
   }
 

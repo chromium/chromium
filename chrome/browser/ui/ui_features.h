@@ -225,6 +225,8 @@ BASE_DECLARE_FEATURE(kInlineFullscreenPerfExperiment);
 // Controls whether the new page actions framework should be displaying page
 // actions.
 BASE_DECLARE_FEATURE(kPageActionsMigration);
+// For development only, set this to enable all page actions.
+extern const base::FeatureParam<bool> kPageActionsMigrationEnableAll;
 // The following feature params indicate whether individual features should
 // have their page actions controlled using the new framework.
 extern const base::FeatureParam<bool> kPageActionsMigrationLensOverlay;

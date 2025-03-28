@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/drive/event_logger.h"
+#include "extensions/browser/extension_function.h"
 
 namespace extensions {
 
@@ -39,7 +40,7 @@ void LoggedExtensionFunction::OnResponded() {
   std::string request_id_str = request_uuid().AsLowercaseString();
   if (logger && log_on_completion_) {
     DCHECK(response_type());
-    bool success = *response_type() == SUCCEEDED;
+    bool success = *response_type() == ResponseType::kSucceeded;
     logger->Log(logging::LOGGING_INFO,
                 "%s[%s] %s. (elapsed time: %" PRId64 "ms)", name(),
                 request_id_str.c_str(), success ? "succeeded" : "failed",

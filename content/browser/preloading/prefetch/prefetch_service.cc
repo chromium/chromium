@@ -1226,7 +1226,7 @@ void PrefetchService::OnGotEligibilityForRedirect(
   // If the redirect is not eligible and the prefetch is not a decoy, then stop
   // the prefetch.
   if (!eligible && !prefetch_container->IsDecoy()) {
-    DCHECK(active_prefetch_ == prefetch_container->key());
+    CHECK(IsPrefetchContainerInActiveSet(*prefetch_container));
     active_prefetch_ = std::nullopt;
     streaming_url_loader->HandleRedirect(
         PrefetchRedirectStatus::kFail, redirect_info, std::move(redirect_head));
@@ -1285,7 +1285,10 @@ void PrefetchService::Prefetch() {
   while ((std::tie(next_prefetch, prefetch_to_evict) =
               PopNextPrefetchContainer()) !=
          std::make_tuple(nullptr, nullptr)) {
-    StartSinglePrefetch(next_prefetch, prefetch_to_evict);
+    if (prefetch_to_evict) {
+      EvictPrefetch(std::move(prefetch_to_evict));
+    }
+    StartSinglePrefetch(next_prefetch);
   }
 }
 
@@ -1386,9 +1389,17 @@ void PrefetchService::OnCandidatesUpdated() {
   }
 }
 
+void PrefetchService::EvictPrefetch(
+    base::WeakPtr<PrefetchContainer> prefetch_container) {
+  CHECK(prefetch_container);
+
+  prefetch_container->SetPrefetchStatus(
+      PrefetchStatus::kPrefetchEvictedForNewerPrefetch);
+  ResetPrefetchContainer(std::move(prefetch_container));
+}
+
 void PrefetchService::StartSinglePrefetch(
-    base::WeakPtr<PrefetchContainer> prefetch_container,
-    base::WeakPtr<PrefetchContainer> prefetch_to_evict) {
+    base::WeakPtr<PrefetchContainer> prefetch_container) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(prefetch_container);
   CHECK_EQ(prefetch_container->GetLoadState(),
@@ -1416,12 +1427,6 @@ void PrefetchService::StartSinglePrefetch(
   prefetch_container->StartTimeoutTimerIfNeeded(
       base::BindOnce(&PrefetchService::OnPrefetchTimeout,
                      weak_method_factory_.GetWeakPtr(), prefetch_container));
-
-  if (prefetch_to_evict) {
-    prefetch_to_evict->SetPrefetchStatus(
-        PrefetchStatus::kPrefetchEvictedForNewerPrefetch);
-    ResetPrefetchContainer(prefetch_to_evict);
-  }
 
   active_prefetch_.emplace(prefetch_container->key());
 
@@ -1541,7 +1546,7 @@ void PrefetchService::OnPrefetchRedirect(
     return;
   }
 
-  DCHECK(active_prefetch_ == prefetch_container->key());
+  CHECK(IsPrefetchContainerInActiveSet(*prefetch_container));
 
   // Update the prefetch's referrer in case a redirect requires a change in
   // network context and a new request needs to be started.
@@ -1565,7 +1570,7 @@ void PrefetchService::OnPrefetchRedirect(
   }
 
   if (failure) {
-    DCHECK(active_prefetch_ == prefetch_container->key());
+    CHECK(IsPrefetchContainerInActiveSet(*prefetch_container));
     active_prefetch_ = std::nullopt;
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchFailedInvalidRedirect);
@@ -1679,7 +1684,7 @@ void PrefetchService::OnPrefetchResponseCompleted(
     return;
   }
 
-  DCHECK(active_prefetch_ == prefetch_container->key());
+  CHECK(IsPrefetchContainerInActiveSet(*prefetch_container));
   active_prefetch_ = std::nullopt;
 
   prefetch_container->OnPrefetchComplete(completion_status);
@@ -1736,6 +1741,11 @@ void PrefetchService::OnGotIsolatedCookiesForCopy(
         ->SetCanonicalCookie(cookie.cookie, current_url, options,
                              base::BindOnce(&CookieSetHelper, barrier));
   }
+}
+
+bool PrefetchService::IsPrefetchContainerInActiveSet(
+    const PrefetchContainer& prefetch_container) {
+  return active_prefetch_ == prefetch_container.key();
 }
 
 void PrefetchService::DumpPrefetchesForDebug() const {

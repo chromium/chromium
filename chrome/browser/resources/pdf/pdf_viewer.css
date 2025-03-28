@@ -26,9 +26,10 @@ viewer-toolbar {
 }
 
 <if expr="enable_pdf_ink2">
-  viewer-side-panel {
-    border-inline-start: 1px solid var(--viewer-border-color);
-  }
+#side-panel {
+  border-inline-start: 1px solid var(--viewer-border-color);
+  padding-top: 8px;
+}
 </if>
 
 viewer-toolbar {

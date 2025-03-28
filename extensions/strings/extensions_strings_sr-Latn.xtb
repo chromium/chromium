@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Datoteka manifesta je nevažeća</translation>
 <translation id="7217838517480956708">Administrator ovog uređaja zahteva da dodatak <ph name="EXTENSION_NAME" /> bude instaliran. Ne možete da ga uklonite ili izmenite.</translation>
 <translation id="7612608473764576263">Ulazna vrednost za privatni ključ mora da bude važeći format (PEM kodirani RSA ključ u PKCS#8 formatu).</translation>
+<translation id="7876803335449432072">Učitavanje fajla <ph name="RELATIVE_PATH" /> za skriptu sadržaja nije uspelo. Opisi stilova za skriptu sadržaja mogu da se učitaju samo iz podržanih fajlova opisa stilova, kao što su .css fajlovi.</translation>
 <translation id="7939686037314084444">Dodatak se nije pravilno učitao. Možda neće moći da preusmerava mrežne zahteve.</translation>
 <translation id="7972881773422714442">Opcije: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Prednja</translation>
 <translation id="8047248493720652249">Ovaj dodatak nije uspeo da preuzetoj datoteci dâ naziv „<ph name="ATTEMPTED_FILENAME" />“ zato što je jedan drugi dodatak (<ph name="EXTENSION_NAME" />) odredio drugačiji naziv datoteke „<ph name="ACTUAL_FILENAME" />“.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> prodavca <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Datoteka manifesta nedostaje ili nije mogla da se čita</translation>
+<translation id="8621383749470166852">Učitavanje fajla <ph name="RELATIVE_PATH" /> za skriptu sadržaja nije uspelo. Skripte sadržaja mogu da se učitavaju samo iz podržanih JavaScript fajlova, kao što su .js fajlovi.</translation>
 <translation id="8636666366616799973">Paket je nevažeći. Detalji: „<ph name="ERROR_MESSAGE" />“.</translation>
 <translation id="8761756413268424715">„<ph name="APP_NAME" />“ zahteva pristup nekom od uređaja:</translation>
 <translation id="8885905466771744233">Privatni ključ za navedeni dodatak već postoji. Ponovo koristite taj ključ ili ga prvo izbrišite.</translation>

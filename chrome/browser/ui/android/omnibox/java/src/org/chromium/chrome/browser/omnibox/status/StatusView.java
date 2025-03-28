@@ -24,12 +24,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.TooltipCompat;
 
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -159,13 +157,13 @@ public class StatusView extends LinearLayout {
     }
 
     /**
-     * Set hover highlight resource id.
+     * Set the background to be used, for eg. on hover or on focus.
      *
-     * @param hoverHighlightResId background hover highlight resource id.
+     * @param background The background {@link Drawable}.
      */
-    public void setHoverHighlight(@DrawableRes int hoverHighlightResId) {
-        if (hoverHighlightResId != Resources.ID_NULL && isSearchEngineStatusIconVisible()) {
-            setBackground(AppCompatResources.getDrawable(getContext(), hoverHighlightResId));
+    public void maybeSetBackground(Drawable background) {
+        if (background != null && isSearchEngineStatusIconVisible()) {
+            setBackground(background);
         } else {
             setBackground(null);
         }

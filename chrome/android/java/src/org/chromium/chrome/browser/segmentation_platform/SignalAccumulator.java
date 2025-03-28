@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.segmentation_platform;
 
 import android.os.Handler;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController.ActionProvider;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -16,6 +17,10 @@ import java.util.List;
  * all the feature backends have responded or a time out has happened.
  */
 public class SignalAccumulator {
+    /** Histogram name that records how long it takes to get a reader mode result. */
+    public static final String READER_MODE_SIGNAL_TIME_HISTOGRAM =
+            "DomDistiller.Time.TimeToProvideResultToAccumulator";
+
     private static final long ACTION_PROVIDER_TIMEOUT_MS = 100;
 
     // List of signals to query. Modify hasAllSignals() when adding signals to this list.
@@ -36,6 +41,7 @@ public class SignalAccumulator {
     // The callback to be invoked at the end of getting all the signals or time out. After it is
     // run, the accumulator becomes invalid.
     private Runnable mCompletionCallback;
+    private long mGetSignalsStartMs;
 
     private final List<ActionProvider> mActionProviders;
     private final Tab mTab;
@@ -59,6 +65,7 @@ public class SignalAccumulator {
      */
     public void getSignals(Runnable callback) {
         mCompletionCallback = callback;
+        mGetSignalsStartMs = System.currentTimeMillis();
         for (ActionProvider actionProvider : mActionProviders) {
             actionProvider.getAction(mTab, this);
         }
@@ -102,6 +109,8 @@ public class SignalAccumulator {
     /** Called to set whether the page can be viewed in reader mode. */
     public void setHasReaderMode(Boolean hasReaderMode) {
         mHasReaderMode = hasReaderMode;
+        RecordHistogram.recordLongTimesHistogram(
+                READER_MODE_SIGNAL_TIME_HISTOGRAM, System.currentTimeMillis() - mGetSignalsStartMs);
     }
 
     /**

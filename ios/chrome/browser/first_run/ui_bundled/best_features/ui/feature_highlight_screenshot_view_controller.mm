@@ -232,10 +232,10 @@ NSString* const kFeatureHighlightScreenshotViewDarkAnimationId =
   switch (first_run::GetBestFeaturesScreenVariationType()) {
     case kGeneralScreenAfterDBPromo:
     case kGeneralScreenWithPasswordItemAfterDBPromo:
+    case kShoppingUsersWithFallbackAfterDBPromo:
     case kSignedInUsersOnlyAfterDBPromo:
       return YES;
     case kGeneralScreenBeforeDBPromo:
-    case kShoppingUsersWithFallbackBeforeDBPromo:
       return NO;
     case kAddressBarPromoInsteadOfBestFeaturesScreen:
     case kDisabled:

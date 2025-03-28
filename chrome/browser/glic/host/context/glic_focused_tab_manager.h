@@ -71,19 +71,58 @@ class GlicFocusedTabManager : public BrowserListObserver,
       FocusedTabChangedCallback callback);
 
  private:
+  // Internal state for tracking focused tab. If a "candidate" browser/tab
+  // exists, but not a corresponding "focused" browser/tab it means that one or
+  // more temporary state conditions precluded the candidate from becoming
+  // focused. If no candidate exists, it means that one or more permanent
+  // conditions precluded the browser/tab from even being considered a
+  // candidate.
+  // Note: We use WeakPtrs because at times we intentionally delay sending
+  // events for debouncing, but that means we know we might be holding a dead
+  // pointer.
+  struct FocusedTabState {
+    FocusedTabState();
+    ~FocusedTabState();
+    FocusedTabState(const FocusedTabState& src);
+    FocusedTabState& operator=(const FocusedTabState& src);
+
+    bool IsSame(const FocusedTabState& other) const;
+
+    base::WeakPtr<BrowserWindowInterface> candidate_browser;
+    base::WeakPtr<BrowserWindowInterface> focused_browser;
+    base::WeakPtr<content::WebContents> candidate_tab;
+    base::WeakPtr<content::WebContents> focused_tab;
+  };
+
+  // Returns whether `a` and `b` both point to the same object.
+  // Note that if both `a` and `b` are invalidated, this returns true, even if
+  // the object they once pointed to is different. For our purposes, this is OK.
+  template <typename T>
+  static bool IsWeakPtrSame(base::WeakPtr<T> a, base::WeakPtr<T> b) {
+    return std::make_pair(a.get(), a.WasInvalidated()) ==
+           std::make_pair(b.get(), b.WasInvalidated());
+  }
+
+  static FocusedTabData GetFocusedTabData(
+      const GlicFocusedTabManager::FocusedTabState& focused_state);
+
   // True if the immutable attributes of `browser` are valid for Glic focus.
   // Invalid browsers are never observed.
-  bool IsBrowserValid(Browser* browser);
+  bool IsBrowserValid(BrowserWindowInterface* browser_interface);
 
   // True if the mutable attributes of `browser` are valid for Glic focus.
   // Active browsers with invalid state are observed for state changes.
-  bool IsBrowserStateValid(Browser* browser);
+  bool IsBrowserStateValid(BrowserWindowInterface* browser_interface);
 
-  // Returns whether `web_contents` is considered a valid focus candidate.
-  bool IsValidCandidate(content::WebContents* web_contents);
+  // True if the immutable attributes of `web_contents` are valid for Glic
+  // focus.
+  bool IsTabValid(content::WebContents* web_contents);
 
-  // Returns whether `web_contents` is a valid candidate AND is valid for focus.
-  bool IsValidFocusable(content::WebContents* web_contents);
+  // True if the mutable attributes of `web_contents` are valid for Glic focus.
+  bool IsTabStateValid(content::WebContents* web_contents);
+
+  // Observes the active tab for `browser` if valid.
+  void MaybeObserveActiveTab(BrowserWindowInterface* browser_interface);
 
   // Updates focused tab if a new one is computed. Notifies if updated or if
   // `force_notify` is true (for any call within the duration of the optional
@@ -95,10 +134,14 @@ class GlicFocusedTabManager : public BrowserListObserver,
   void PerformMaybeUpdateFocusedTab(bool force_notify = false);
 
   // Computes the currently focused tab.
-  FocusedTabData ComputeFocusedTabData();
+  struct FocusedTabState ComputeFocusedTabState();
 
-  // Computes the currently focusable tab for a given browser.
-  FocusedTabData ComputeFocusableTabDataForBrowser(Browser* browser);
+  // Computes the current browser candidate for focus (if any).
+  BrowserWindowInterface* ComputeBrowserCandidate();
+
+  // Computes the current tab candidate for focus (if any) for a given browser.
+  content::WebContents* ComputeTabCandidate(
+      BrowserWindowInterface* browser_interface);
 
   // Calls all registered focused tab changed callbacks.
   void NotifyFocusedTabChanged();
@@ -132,6 +175,9 @@ class GlicFocusedTabManager : public BrowserListObserver,
 
   // The currently focused tab data.
   FocusedTabData focused_tab_data_;
+
+  // The last known focused tab state.
+  struct FocusedTabState focused_tab_state_;
 
   // Callback subscription for listening to changes to the Glic window
   // activation changes.

@@ -13,4 +13,10 @@ BASE_DECLARE_FEATURE(kEnhancedCalendar);
 // Returns true if enhanced calendar is enabled.
 bool IsEnhancedCalendarEnabled();
 
+// Feature flag controlling the page action menu.
+BASE_DECLARE_FEATURE(kPageActionMenu);
+
+// Returns true if the page action menu is enabled.
+bool IsPageActionMenuEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

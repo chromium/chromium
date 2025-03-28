@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -59,6 +60,13 @@ class Browser;
 //
 // Does noting if the sign-in flow is already done
 - (void)interrupt;
+
+// Forces the ProfileSeparationDataMigrationSettings value for the next request
+// made to fetch ProfileSeparationPolicies. This function is only for testing
+// purposes.
++ (void)forcePolicyResponseForNextRequestForTesting:
+    (policy::ProfileSeparationDataMigrationSettings)
+        profileSeparationDataMigrationSettings;
 
 // Identity to sign-in.
 @property(nonatomic, strong, readonly) id<SystemIdentity> identity;

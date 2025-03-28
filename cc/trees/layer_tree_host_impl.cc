@@ -81,7 +81,6 @@
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_worklet_job.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
-#include "cc/raster/bitmap_raster_buffer_provider.h"
 #include "cc/raster/gpu_raster_buffer_provider.h"
 #include "cc/raster/one_copy_raster_buffer_provider.h"
 #include "cc/raster/raster_buffer_provider.h"
@@ -4191,7 +4190,8 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
       layer_tree_frame_sink_->context_provider();
 
   if (!compositor_context_provider) {
-    return std::make_unique<BitmapRasterBufferProvider>(layer_tree_frame_sink_);
+    return std::make_unique<ZeroCopyRasterBufferProvider>(
+        layer_tree_frame_sink_);
   }
 
   const gpu::Capabilities& caps =

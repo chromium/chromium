@@ -11,6 +11,7 @@
 <translation id="102432830749687801">သင်၏ ကျောင်းအကောင့်ဒေတာကို သုံးခွင့်မဆုံးရှုံးမီ ကိုယ်ပိုင်အကောင့်သို့ ရွှေ့ရန် Google ၏ ‘အချက်အလက် လွှဲပြောင်းခြင်း’ အက်ပ်ကိုသုံးကြောင်း သေချာပါစေ။</translation>
 <translation id="1026212596705997935">ဖြတ်လမ်းလင့်ခ်ကို “<ph name="CONFLICT_ACCEL_NAME" />” အတွက် သုံးထားသည်။ ဖြတ်လမ်းလင့်ခ်အသစ်တစ်ခုကို နှိပ်ပါ။ ရှိပြီးသား ဖြတ်လမ်းလင့်ခ်ကို အစားထိုးရန် ဤဖြတ်လမ်းလင့်ခ်ကို ထပ်နှိပ်ပါ။</translation>
 <translation id="1030856839388844477">ဒေတာသုံးစွဲမှု ပြင်ဆင်သတ်မှတ်ရန်</translation>
+<translation id="1047095725494118091">ဒေါင်းလုဒ်လုပ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ (သို့) သင့် <ph name="DEVICE_TYPE" /> ကို ပြန်စပါ။</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (အတွဲ <ph name="THREAD_COUNT" /> ခု၊ <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ဝန်ဆောင်မှုအသစ် ရနိုင်သည်၊ ပိုမိုလေ့လာရန် အပေါ်ညွှန်မြားကို အသုံးပြုပါ။</translation>
 <translation id="1049663189809099096">အဝါဖျော့</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">စခရင်နားချိန်ပုံ ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="1094693127011229778">IP လိပ်စာ မရနိုင်ပါ</translation>
 <translation id="1100902271996134409">ပုံများကို ပြုလုပ်နေသည်…</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> အသံ</translation>
 <translation id="1116694919640316211">အကြောင်း</translation>
 <translation id="1118572504348554005">သင်အကြောင်းကြားသော ချွတ်ယွင်းမှုနှင့် အခြားပြဿနာများကို ရှာဖွေဖြေရှင်းရန် ဤဖောင်ဖြင့် ပေးပို့ထားသည့် အကြံပြုချက်ကို ကျွန်ုပ်တို့ပါတနာများနှင့် မျှဝေနိုင်ပါသည်။ စကားဝှက်ကဲ့သို့ သတိထားရမည့် အချက်အလက်များ မထည့်ပါနှင့်။</translation>
 <translation id="1119403468619527527">ရှင်းလင်းအောင်လုပ်ရန် စကားလုံး နည်းလွန်းသည်</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">အမှောင်မုဒ် ဖွင့်ရန်</translation>
 <translation id="2164131940279488868">အသံစဖမ်းရန်အတွက် မိုက်နှင့်ချိတ်ဆက်ထားကြောင်း သေချာပါစေ</translation>
 <translation id="2173302385160625112">သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
+<translation id="2176909213844392588"><ph name="LANGUAGE_NAME" /> စာသားမှတ်တမ်း မော်ဒယ်ကို ဒေါင်းလုဒ်လုပ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ (သို့) သင့် <ph name="DEVICE_TYPE" /> ကို ပြန်စပါ။</translation>
 <translation id="2180197493692062006">တစ်ခုခုမှားသွားသည်။ အက်ပ်ကို ပြန်ဖွင့်ကြည့်ပါ။</translation>
 <translation id="2189104374785738357">APN အသေးစိတ် ပြင်ခြင်း</translation>
 <translation id="2195732836444333448">လုပ်နိုင်စွမ်း ပြည့်နေပါပြီ။ မကြာမီ ပြန်လာပါ။</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">စာရွက်စာတမ်း ထည့်ရန်ဗန်း (နှစ်ဘက်သုံး)</translation>
 <translation id="3201315366910775591">မျှဝေထားသော အယ်လ်ဘမ်များကို အခြားလူများက အပ်ဒိတ်လုပ်နိုင်သည်</translation>
 <translation id="3211671540163313381">ကီးနေရာချသည့် D-pad</translation>
+<translation id="3217462202230355157">မိုက် ချိတ်ဆက်ထားကြောင်း သေချာအောင်လုပ်ပါ (သို့) သင့် <ph name="DEVICE_TYPE" /> ကို ပြန်စကြည့်ပါ</translation>
 <translation id="3226405216343213872">စကင်ဖတ်စက်များ ရှာနေသည်</translation>
 <translation id="3226657629376379887">အပြင်အဆင် လုပ်ဆောင်ချက် မီနူး</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> ကို <ph name="CONVERSION_RATE" /> နှင့်စားပါ</translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">အထူးသီးသန့်</translation>
 <translation id="3404249063913988450">စခရင်နားချိန်ပုံ ဖွင့်ရန်</translation>
 <translation id="3413935475507503304">ရှေ့ဆက်၍ အပ်ဒိတ်လုပ်ရန် ‘ရှေ့သို့’ ကို နှိပ်ပါ။</translation>
+<translation id="3416709353545797224"><ph name="DEVICE_TYPE" /> အသံအားလုံးကို ဖမ်းယူခြင်း</translation>
 <translation id="3428551088151258685">အိမ်ပြင်ပ</translation>
 <translation id="3428971106895559033">အရောင်ဖျော့</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">စကင်ဖတ်စက်ဖွင့်ထားပြီး သင့်ကွန်ရက် (သို့) တိုက်ရိုက်ချိတ်ဆက်မှုမှတစ်ဆင့် သုံးနိုင်ကြောင်း သေချာပါစေ</translation>
 <translation id="4159238217853743776">တစ်စိတ်တစ်ပိုင်း</translation>
 <translation id="4159784952369912983">ခရမ်း</translation>
+<translation id="416219735020840807">စာသားမှတ်တမ်း မော်ဒယ်ကို ဒေါင်းလုဒ်လုပ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ (သို့) သင့် <ph name="DEVICE_TYPE" /> ကို ပြန်စပါ။</translation>
 <translation id="4170180284036919717">ဓာတ်ပုံရိုက်ရန်</translation>
 <translation id="4170700058716978431">မအောင်မြင်ပါ</translation>
 <translation id="4171077696775491955">တောက်ပမှု လျှော့ရန်</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">ရွေးထားသောစာသားကို အကြံပြုချက်ဖြင့် အစားထိုးနေသည်</translation>
 <translation id="5346687412805619883">အိမ်တွင်းသုံးကွန်ရက်</translation>
 <translation id="5358174242040570474">တစ်ခုခုမှားသွားသည်။ နောက်ခံကို ထပ်မံရွေးချယ်ကြည့်ပါ သို့မဟုတ် အက်ပ်ကို ပြန်ဖွင့်ပါ။</translation>
+<translation id="5368228070728130240">အနှစ်ချုပ်နှင့် ခေါင်းစဉ်တပ်ခြင်းအတွက် မော်ဒယ်ကို ဒေါင်းလုဒ်လုပ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ (သို့) သင့် <ph name="DEVICE_TYPE" /> ကို ပြန်စပါ။</translation>
 <translation id="5372659122375744710">WiFi ကွန်ရက်က မလုံခြုံပါ</translation>
 <translation id="5376354385557966694">အလိုအလျောက် အလင်းမုဒ်</translation>
 <translation id="5378184552853359930">IP အမျိုးအစား</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">DNS ဖြေရှင်းချက်များ မအောင်မြင်ပါ</translation>
 <translation id="6768237774506518020">DNS ဖြေရှင်းချက် ကျရှုံးမှုနှုန်း မြင့်သည်</translation>
 <translation id="6786747875388722282">အိတ်စတန်းရှင်းများ</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" /> အသံဖွင့်ထားပါက Recorder သည် ဤစက်တွင်ဖွင့်ထားသော အသံအားလုံးကို ဖမ်းယူပါသည်</translation>
 <translation id="6791471867139427246">ကီးဘုတ်မီးအရောင်</translation>
 <translation id="6796229976413584781">ဖြတ်လမ်းလင့်ခ်ကို ဖျက်လိုက်ပါပြီ</translation>
 <translation id="6798678288485555829">စာသား လမ်းညွှန်မှု</translation>
@@ -1729,6 +1737,7 @@
 <translation id="8930622219860340959">ကြိုးမဲ့</translation>
 <translation id="8933650076320258356"><ph name="DIRECTION" /> အတွက် ရွေးထားသောကီးမှာ <ph name="KEYS" /> ဖြစ်သည်။ <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">ကလိုင်းယင့် အိုင်ပီ (IP) လိပ်စာ</translation>
+<translation id="8938606491880817721">ဒေါင်းလုဒ်လုပ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ (သို့) သင့် <ph name="DEVICE_TYPE" /> ကို ပြန်စပါ။</translation>
 <translation id="8944651180182756621">Launcher အရောင်</translation>
 <translation id="8945308580158685341">ပျား</translation>
 <translation id="894617464444543719">ကိရိယာသည် ဖုန်းဖြစ်သည်။</translation>

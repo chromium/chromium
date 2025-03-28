@@ -68,6 +68,14 @@ enum {
   kHasClickListenerAndIsControl = 300
 };
 
+// These are enums from
+// android.view.accessibility.AccessibilityNodeInfo.CollectionInfo in Java:
+enum {
+  ANDROID_VIEW_ACCESSIBILITY_SELECTION_MODE_NONE = 0,
+  ANDROID_VIEW_ACCESSIBILITY_SELECTION_MODE_SINGLE = 1,
+  ANDROID_VIEW_ACCESSIBILITY_SELECTION_MODE_MULTIPLE = 2,
+};
+
 }  // namespace
 
 namespace ui {
@@ -1425,6 +1433,18 @@ int BrowserAccessibilityAndroid::GetSelectedItemCount() const {
   }
 
   return selected_count;
+}
+
+int BrowserAccessibilityAndroid::GetSelectionMode() const {
+  if (IsMultiselectable()) {
+    return ANDROID_VIEW_ACCESSIBILITY_SELECTION_MODE_MULTIPLE;
+  } else if (HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb) &&
+             (GetData().GetDefaultActionVerb() ==
+              ax::mojom::DefaultActionVerb::kSelect)) {
+    return ANDROID_VIEW_ACCESSIBILITY_SELECTION_MODE_SINGLE;
+  } else {
+    return ANDROID_VIEW_ACCESSIBILITY_SELECTION_MODE_NONE;
+  }
 }
 
 bool BrowserAccessibilityAndroid::CanScrollForward() const {

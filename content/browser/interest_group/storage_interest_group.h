@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_STORAGE_INTEREST_GROUP_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_STORAGE_INTEREST_GROUP_H_
 
+#include <map>
 #include <optional>
 #include <vector>
 
@@ -47,20 +48,6 @@ struct CONTENT_EXPORT StorageInterestGroup {
   base::Time last_k_anon_updated;
 };
 
-enum class DebugReportCooldownType {
-  kShortCooldown = 0,
-  kRestrictedCooldown = 1,
-
-  kMaxValue = kRestrictedCooldown,
-};
-
-struct CONTENT_EXPORT DebugReportCooldown {
-  base::Time starting_time;
-  DebugReportCooldownType type;
-
-  bool operator==(const DebugReportCooldown& other) const = default;
-};
-
 struct CONTENT_EXPORT DebugReportLockoutAndCooldowns {
   DebugReportLockoutAndCooldowns();
   DebugReportLockoutAndCooldowns(
@@ -76,13 +63,8 @@ struct CONTENT_EXPORT DebugReportLockoutAndCooldowns {
   std::optional<DebugReportLockout> lockout;
   // The key is an ad tech origin, and value is its cooldown of sending
   // forDebuggingOnly reports.
-  std::map<url::Origin, DebugReportCooldown> debug_report_cooldown_map = {};
+  std::map<url::Origin, DebugReportCooldown> debug_report_cooldown_map;
 };
-
-// Converts forDebuggingOnly API's cooldown type to its actual cooldown
-// duration.
-CONTENT_EXPORT std::optional<base::TimeDelta>
-ConvertDebugReportCooldownTypeToDuration(DebugReportCooldownType type);
 
 }  // namespace content
 

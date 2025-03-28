@@ -22,6 +22,10 @@ export enum SpeechControls {
 export class ReadAnythingLogger {
   private metrics: MetricsBrowserProxy = MetricsBrowserProxyImpl.getInstance();
 
+  logSpeechStopSource(source: number) {
+    this.metrics.recordSpeechStopSource(source);
+  }
+
   logSpeechError(errorCode: string) {
     let error: ReadAnythingSpeechError;
     switch (errorCode) {

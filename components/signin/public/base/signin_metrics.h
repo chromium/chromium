@@ -247,19 +247,21 @@ enum class AccessPoint : int {
   kCctAccountMismatchNotification = 71,
   // Access point for the Drive file picker on iOS.
   kDriveFilePickerIos = 72,
-  // Access point triggered when a user attempts to share or join a tab group
-  // without being signed in or synced.
-  kCollaborationTabGroup = 73,
+  // Access point triggered when a user attempts to share a tab group without
+  // being signed in or synced.
+  kCollaborationShareTabGroup = 73,
   // Glic launch button on the tab strip.
   kGlicLaunchButton = 74,
   // History sync promo shown on the History page. Should not be visible when
   // the use is not signed-in. Android only.
   kHistoryPage = 75,
-
+  // Access point triggered when a user attempts to join a tab group without
+  // being signed in or synced.
+  kCollaborationJoinTabGroup = 76,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kHistoryPage,  // This must be last.
+  kMaxValue = kCollaborationJoinTabGroup,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

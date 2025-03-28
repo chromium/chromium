@@ -23,6 +23,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FORMS_LAYOUT_TEXT_CONTROL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FORMS_LAYOUT_TEXT_CONTROL_H_
 
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+
 namespace blink {
 
 class ComputedStyle;
@@ -31,7 +33,6 @@ class HTMLElement;
 class HitTestLocation;
 class HitTestResult;
 class LayoutBox;
-struct PhysicalOffset;
 
 namespace layout_text_control {
 

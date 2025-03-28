@@ -8,6 +8,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_reclient": true,
       "use_remoteexec": true,
       "use_siso": true
     }
@@ -20,6 +21,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_reclient": true,
       "use_remoteexec": true,
       "use_siso": true
     }

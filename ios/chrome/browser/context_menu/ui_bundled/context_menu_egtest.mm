@@ -10,6 +10,7 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/data_sharing/public/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/constants.h"
@@ -301,6 +302,8 @@ void RelaunchApp() {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kShareInWebContextMenuIOS);
+  config.features_enabled.push_back(
+      data_sharing::features::kDataSharingFeature);
   config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
   return config;
 }

@@ -23,6 +23,7 @@ import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isChild} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import type {PrefsState} from '../common/types.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import type {SettingsUsersAddUserDialogElement} from '../os_people_page/add_user_dialog.js';
 import type {Route} from '../router.js';
@@ -89,6 +90,7 @@ export class SettingsManageUsersSubpageElement extends
     };
   }
 
+  prefs: PrefsState;
   private isOwner_: boolean;
   private isUserListManaged_: boolean;
   private isChild_: boolean;

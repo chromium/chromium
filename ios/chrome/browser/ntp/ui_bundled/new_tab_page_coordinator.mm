@@ -914,7 +914,7 @@
   if (![self isSignInAllowed]) {
     [handler showSettingsFromViewController:self.baseViewController];
   } else if (isSignedIn) {
-    if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+    if (IsIdentityDiscAccountMenuEnabled()) {
       _showAccountMenuInProgress = YES;
       __weak __typeof(self) weakSelf = self;
       [handler showAccountMenuWithAnchorView:identityDisc

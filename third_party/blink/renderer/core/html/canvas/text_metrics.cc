@@ -257,7 +257,7 @@ std::pair<float, gfx::RectF> TextMetrics::MeasureRuns(
         .x_position_ = xpos};
 
     gfx::RectF run_glyph_bounds;
-    float run_width = font_->Width(text_run, &run_glyph_bounds);
+    float run_width = font_->DeprecatedWidth(text_run, &run_glyph_bounds);
     runs_with_offset_.push_back(run_with_offset);
 
     // Accumulate the position and the glyph bounding box.

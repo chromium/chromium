@@ -83,7 +83,7 @@
   // Retrieve the user's segmentation status before presenting the view if the
   // "shopping" arm is enabled. Otherwise, present the view.
   if (variation == first_run::BestFeaturesScreenVariationType::
-                       kShoppingUsersWithFallbackBeforeDBPromo) {
+                       kShoppingUsersWithFallbackAfterDBPromo) {
     // Present a transparent view to block UI interaction until screen presents.
     // TODO(crbug.com/396480750): This is a temporary solution. If the feature
     // becomes a full launch candidate, consider more polished solutions, like a

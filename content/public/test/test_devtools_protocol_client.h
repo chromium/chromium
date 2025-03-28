@@ -73,14 +73,15 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
       const std::string& notification,
       const NotificationMatcher& matcher);
 
+  base::Value::Dict WaitForNotification(const std::string& notification,
+                                        bool allow_existing);
+
  protected:
   bool HasExistingNotification() const { return !notifications_.empty(); }
   bool HasExistingNotification(const std::string& notification) const;
   bool HasExistingNotificationMatching(
       base::FunctionRef<bool(const base::Value::Dict&)> pred) const;
 
-  base::Value::Dict WaitForNotification(const std::string& notification,
-                                        bool allow_existing);
 
   base::Value::Dict WaitForNotification(const std::string& notification) {
     return WaitForNotification(notification, false);

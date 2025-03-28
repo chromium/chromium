@@ -15,6 +15,7 @@ source_set("authentication_flow") {
     "//base",
     "//components/bookmarks/common",
     "//components/reading_list/features:flags",
+    "//components/signin/core/browser",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager:tribool",
     "//components/sync/base",

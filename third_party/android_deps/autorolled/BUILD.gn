@@ -43,10 +43,10 @@ template("define_autorolled_targets") {
     output_name = "com_google_guava_guava"
     enable_bytecode_checks = false
     deps = [
-      ":com_google_code_findbugs_jsr305_java",
-      ":com_google_errorprone_error_prone_annotations_java",
-      ":com_google_j2objc_j2objc_annotations_java",
-      ":org_checkerframework_checker_qual_java",
+      "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+      "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
+      "//third_party/android_deps:com_google_j2objc_j2objc_annotations_java",
+      "//third_party/android_deps:org_checkerframework_checker_qual_java",
     ]
 
     # Dep needed to fix:
@@ -87,8 +87,8 @@ template("define_autorolled_targets") {
     output_name = "org_ow2_asm_asm_commons"
     enable_bytecode_checks = false
     deps = [
-      ":org_ow2_asm_asm_java",
-      ":org_ow2_asm_asm_tree_java",
+      "//third_party/android_deps:org_ow2_asm_asm_java",
+      "//third_party/android_deps:org_ow2_asm_asm_tree_java",
     ]
   }
 
@@ -97,7 +97,7 @@ template("define_autorolled_targets") {
     jar_path = "autorolled/cipd/libs/org_ow2_asm_asm_tree/asm-tree-9.7.1.jar"
     output_name = "org_ow2_asm_asm_tree"
     enable_bytecode_checks = false
-    deps = [ ":org_ow2_asm_asm_java" ]
+    deps = [ "//third_party/android_deps:org_ow2_asm_asm_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -106,9 +106,9 @@ template("define_autorolled_targets") {
     output_name = "org_ow2_asm_asm_util"
     enable_bytecode_checks = false
     deps = [
-      ":org_ow2_asm_asm_analysis_java",
-      ":org_ow2_asm_asm_java",
-      ":org_ow2_asm_asm_tree_java",
+      "//third_party/android_deps:org_ow2_asm_asm_analysis_java",
+      "//third_party/android_deps:org_ow2_asm_asm_java",
+      "//third_party/android_deps:org_ow2_asm_asm_tree_java",
     ]
   }
 
@@ -136,7 +136,7 @@ template("define_autorolled_targets") {
       ":*",
       "//third_party/androidx:*",
     ]
-    deps = [ ":org_ow2_asm_asm_tree_java" ]
+    deps = [ "//third_party/android_deps:org_ow2_asm_asm_tree_java" ]
   }
   if (!limit_android_deps) {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -250,10 +250,10 @@ template("define_autorolled_targets") {
         info_path = "autorolled/committed/libs/com_google_android_gms_play_services_fido/com_google_android_gms_play_services_fido.info"
         enable_bytecode_checks = false
         deps = [
-          ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
           "$google_play_services_package:google_play_services_base_java",
           "$google_play_services_package:google_play_services_basement_java",
           "$google_play_services_package:google_play_services_tasks_java",
+          "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
           "//third_party/kotlin_stdlib:kotlin_stdlib_java",
         ]
       }
@@ -318,7 +318,7 @@ template("define_autorolled_targets") {
       enable_bytecode_checks = false
       testonly = true
       deps = [
-        ":com_squareup_okio_okio_java",
+        "//third_party/android_deps:com_squareup_okio_okio_java",
         "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       ]
     }
@@ -341,7 +341,7 @@ template("define_autorolled_targets") {
       requires_android = true
       enable_bytecode_checks = false
       deps = [
-        ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+        "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
         "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       ]
     }
@@ -383,21 +383,21 @@ template("define_autorolled_targets") {
       enable_bytecode_checks = false
       testonly = true
       deps = [
-        ":com_google_testparameterinjector_test_parameter_injector_java",
-        ":javax_annotation_javax_annotation_api_java",
-        ":javax_inject_javax_inject_java",
-        ":org_bouncycastle_bcprov_jdk18on_java",
-        ":org_conscrypt_conscrypt_openjdk_uber_java",
-        ":org_robolectric_annotations_java",
-        ":org_robolectric_junit_java",
-        ":org_robolectric_pluginapi_java",
-        ":org_robolectric_plugins_maven_dependency_resolver_java",
-        ":org_robolectric_resources_java",
-        ":org_robolectric_sandbox_java",
-        ":org_robolectric_shadows_framework_java",
-        ":org_robolectric_utils_java",
-        ":org_robolectric_utils_reflector_java",
-        ":org_yaml_snakeyaml_java",
+        "//third_party/android_deps:com_google_testparameterinjector_test_parameter_injector_java",
+        "//third_party/android_deps:javax_annotation_javax_annotation_api_java",
+        "//third_party/android_deps:javax_inject_javax_inject_java",
+        "//third_party/android_deps:org_bouncycastle_bcprov_jdk18on_java",
+        "//third_party/android_deps:org_conscrypt_conscrypt_openjdk_uber_java",
+        "//third_party/android_deps:org_robolectric_annotations_java",
+        "//third_party/android_deps:org_robolectric_junit_java",
+        "//third_party/android_deps:org_robolectric_pluginapi_java",
+        "//third_party/android_deps:org_robolectric_plugins_maven_dependency_resolver_java",
+        "//third_party/android_deps:org_robolectric_resources_java",
+        "//third_party/android_deps:org_robolectric_sandbox_java",
+        "//third_party/android_deps:org_robolectric_shadows_framework_java",
+        "//third_party/android_deps:org_robolectric_utils_java",
+        "//third_party/android_deps:org_robolectric_utils_reflector_java",
+        "//third_party/android_deps:org_yaml_snakeyaml_java",
         "//third_party/androidx:androidx_test_espresso_espresso_idling_resource_java",
         "//third_party/androidx:androidx_test_monitor_java",
       ]
@@ -453,7 +453,7 @@ template("define_autorolled_targets") {
       ]
       testonly = true
       deps = [
-        ":com_squareup_okio_okio_java",
+        "//third_party/android_deps:com_squareup_okio_okio_java",
         "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       ]
     }
@@ -466,7 +466,7 @@ template("define_autorolled_targets") {
         ":*",
         "//third_party/androidx:*",
       ]
-      deps = [ ":com_squareup_okio_okio_jvm_java" ]
+      deps = [ "//third_party/android_deps:com_squareup_okio_okio_jvm_java" ]
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -478,7 +478,9 @@ template("define_autorolled_targets") {
         "//third_party/androidx:*",
       ]
       testonly = true
-      deps = [ ":com_squareup_wire_wire_runtime_jvm_java" ]
+      deps = [
+        "//third_party/android_deps:com_squareup_wire_wire_runtime_jvm_java",
+      ]
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -537,7 +539,7 @@ template("define_autorolled_targets") {
         ":*",
         "//third_party/androidx:*",
       ]
-      deps = [ ":org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java" ]
+      deps = [ "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java" ]
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -549,7 +551,7 @@ template("define_autorolled_targets") {
         "//third_party/androidx:*",
       ]
       testonly = true
-      deps = [ ":org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm_java" ]
+      deps = [ "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm_java" ]
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -568,7 +570,7 @@ template("define_autorolled_targets") {
       ]
       testonly = true
       deps = [
-        ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+        "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
         "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       ]
     }
@@ -581,7 +583,7 @@ template("define_autorolled_targets") {
         ":*",
         "//third_party/androidx:*",
       ]
-      deps = [ ":org_jetbrains_kotlinx_kotlinx_serialization_core_jvm_java" ]
+      deps = [ "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_serialization_core_jvm_java" ]
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -615,11 +617,11 @@ template("define_autorolled_targets") {
       ]
       testonly = true
       deps = [
-        ":org_robolectric_annotations_java",
-        ":org_robolectric_pluginapi_java",
-        ":org_robolectric_sandbox_java",
-        ":org_robolectric_shadowapi_java",
-        ":org_robolectric_utils_reflector_java",
+        "//third_party/android_deps:org_robolectric_annotations_java",
+        "//third_party/android_deps:org_robolectric_pluginapi_java",
+        "//third_party/android_deps:org_robolectric_sandbox_java",
+        "//third_party/android_deps:org_robolectric_shadowapi_java",
+        "//third_party/android_deps:org_robolectric_utils_reflector_java",
       ]
     }
 
@@ -638,11 +640,11 @@ template("define_autorolled_targets") {
       ]
       testonly = true
       deps = [
-        ":org_robolectric_nativeruntime_dist_compat_java",
-        ":org_robolectric_shadowapi_java",
-        ":org_robolectric_utils_java",
-        ":org_robolectric_utils_reflector_java",
         "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:org_robolectric_nativeruntime_dist_compat_java",
+        "//third_party/android_deps:org_robolectric_shadowapi_java",
+        "//third_party/android_deps:org_robolectric_utils_java",
+        "//third_party/android_deps:org_robolectric_utils_reflector_java",
       ]
     }
 
@@ -678,8 +680,8 @@ template("define_autorolled_targets") {
       ]
       testonly = true
       deps = [
-        ":org_robolectric_annotations_java",
         "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:org_robolectric_annotations_java",
       ]
     }
 
@@ -698,10 +700,10 @@ template("define_autorolled_targets") {
       ]
       testonly = true
       deps = [
-        ":com_google_auto_value_auto_value_annotations_java",
-        ":org_robolectric_pluginapi_java",
-        ":org_robolectric_utils_java",
+        "//third_party/android_deps:com_google_auto_value_auto_value_annotations_java",
         "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:org_robolectric_pluginapi_java",
+        "//third_party/android_deps:org_robolectric_utils_java",
       ]
     }
 
@@ -721,11 +723,11 @@ template("define_autorolled_targets") {
       ]
       testonly = true
       deps = [
-        ":com_google_auto_value_auto_value_annotations_java",
-        ":org_robolectric_annotations_java",
-        ":org_robolectric_pluginapi_java",
-        ":org_robolectric_utils_java",
+        "//third_party/android_deps:com_google_auto_value_auto_value_annotations_java",
         "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:org_robolectric_annotations_java",
+        "//third_party/android_deps:org_robolectric_pluginapi_java",
+        "//third_party/android_deps:org_robolectric_utils_java",
       ]
     }
 
@@ -745,15 +747,15 @@ template("define_autorolled_targets") {
       ]
       testonly = true
       deps = [
-        ":javax_annotation_javax_annotation_api_java",
-        ":javax_inject_javax_inject_java",
-        ":org_ow2_asm_asm_commons_java",
-        ":org_ow2_asm_asm_java",
-        ":org_robolectric_annotations_java",
-        ":org_robolectric_shadowapi_java",
-        ":org_robolectric_utils_java",
-        ":org_robolectric_utils_reflector_java",
         "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:javax_annotation_javax_annotation_api_java",
+        "//third_party/android_deps:javax_inject_javax_inject_java",
+        "//third_party/android_deps:org_ow2_asm_asm_commons_java",
+        "//third_party/android_deps:org_ow2_asm_asm_java",
+        "//third_party/android_deps:org_robolectric_annotations_java",
+        "//third_party/android_deps:org_robolectric_shadowapi_java",
+        "//third_party/android_deps:org_robolectric_utils_java",
+        "//third_party/android_deps:org_robolectric_utils_reflector_java",
       ]
     }
 
@@ -773,8 +775,8 @@ template("define_autorolled_targets") {
       ]
       testonly = true
       deps = [
-        ":org_robolectric_annotations_java",
-        ":org_robolectric_utils_java",
+        "//third_party/android_deps:org_robolectric_annotations_java",
+        "//third_party/android_deps:org_robolectric_utils_java",
       ]
     }
 
@@ -793,15 +795,15 @@ template("define_autorolled_targets") {
       ]
       testonly = true
       deps = [
-        ":com_google_auto_value_auto_value_annotations_java",
-        ":org_robolectric_annotations_java",
-        ":org_robolectric_nativeruntime_java",
-        ":org_robolectric_pluginapi_java",
-        ":org_robolectric_resources_java",
-        ":org_robolectric_sandbox_java",
-        ":org_robolectric_shadowapi_java",
-        ":org_robolectric_utils_java",
-        ":org_robolectric_utils_reflector_java",
+        "//third_party/android_deps:com_google_auto_value_auto_value_annotations_java",
+        "//third_party/android_deps:org_robolectric_annotations_java",
+        "//third_party/android_deps:org_robolectric_nativeruntime_java",
+        "//third_party/android_deps:org_robolectric_pluginapi_java",
+        "//third_party/android_deps:org_robolectric_resources_java",
+        "//third_party/android_deps:org_robolectric_sandbox_java",
+        "//third_party/android_deps:org_robolectric_shadowapi_java",
+        "//third_party/android_deps:org_robolectric_utils_java",
+        "//third_party/android_deps:org_robolectric_utils_reflector_java",
         "//third_party/androidx:androidx_test_monitor_java",
         "//third_party/icu4j:icu4j_java",
         "//third_party/sqlite4java:sqlite4java_java",
@@ -823,10 +825,10 @@ template("define_autorolled_targets") {
       ]
       testonly = true
       deps = [
-        ":javax_annotation_javax_annotation_api_java",
-        ":javax_inject_javax_inject_java",
-        ":org_robolectric_annotations_java",
-        ":org_robolectric_pluginapi_java",
+        "//third_party/android_deps:javax_annotation_javax_annotation_api_java",
+        "//third_party/android_deps:javax_inject_javax_inject_java",
+        "//third_party/android_deps:org_robolectric_annotations_java",
+        "//third_party/android_deps:org_robolectric_pluginapi_java",
       ]
     }
 
@@ -845,10 +847,10 @@ template("define_autorolled_targets") {
       ]
       testonly = true
       deps = [
-        ":org_ow2_asm_asm_commons_java",
-        ":org_ow2_asm_asm_java",
-        ":org_ow2_asm_asm_util_java",
-        ":org_robolectric_utils_java",
+        "//third_party/android_deps:org_ow2_asm_asm_commons_java",
+        "//third_party/android_deps:org_ow2_asm_asm_java",
+        "//third_party/android_deps:org_ow2_asm_asm_util_java",
+        "//third_party/android_deps:org_robolectric_utils_java",
       ]
     }
 

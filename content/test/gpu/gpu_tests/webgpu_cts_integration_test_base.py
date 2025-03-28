@@ -108,6 +108,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   _use_fxc = False
   _os_name: str | None = None
   _worker_type: WorkerType | None = None
+  _force_unroll_const_eval_loops = False
 
   _build_dir: str | None = None
 
@@ -185,6 +186,11 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
               'all tests outside of workers. If a worker type is specified, '
               'then a subset of tests will be run in the specified worker '
               'type.'))
+    parser.add_argument(
+        '--force-unroll-const-eval-loops',
+        action='store_true',
+        default=False,
+        help='Force use of the unrollConstEvalLoops setting in JavaScript.')
 
   @classmethod
   def StartBrowser(cls) -> None:
@@ -275,6 +281,14 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     cls._use_webgpu_power_preference = options.use_webgpu_power_preference
     cls._use_fxc = options.use_fxc
     cls._worker_type = WorkerType(options.use_worker)
+    cls._force_unroll_const_eval_loops = options.force_unroll_const_eval_loops
+    # TODO(crbug.com/406301896): Remove this automatic application once the
+    # driver-level issue causing flakiness on Win/Intel/DXC is fixed.
+    if (not cls._force_unroll_const_eval_loops and not cls._use_fxc
+        and host_information.IsWindows() and host_information.IsIntelGpu()):
+      logging.warning(
+          'Forcing unrolling of const eval loops for crbug.com/406301896')
+      cls._force_unroll_const_eval_loops = True
 
   @classmethod
   def _ModifyBrowserEnvironment(cls) -> None:
@@ -601,6 +615,10 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     # Wait for the page to set up the websocket.
     response = cls.websocket_server.Receive(MESSAGE_TIMEOUT_CONNECTION_ACK)
     assert json.loads(response)['type'] == MESSAGE_TYPE_CONNECTION_ACK
+
+    if self._force_unroll_const_eval_loops:
+      self.tab.action_runner.ExecuteJavaScript(
+          'window.globalTestConfig.unrollConstEvalLoops = true')
 
     cls.page_loaded = True
     return True

@@ -337,13 +337,16 @@ public class StaticLayout extends Layout {
 
     private void requestFocus(Tab tab) {
         // TODO(crbug.com/40249125): Investigating guarded removal of this behavior (requesting
-        // focus on
-        // a tab) since it may no longer be relevant.
+        // focus on a tab) since it may no longer be relevant.
         // We will restrict avoidance of tab focus request only on tablet devices, since this is
         // known to cause regressions on phones - see crbug.com/1471887 for details.
         if (ChromeFeatureList.isEnabled(
                         ChromeFeatureList.AVOID_SELECTED_TAB_FOCUS_ON_LAYOUT_DONE_SHOWING)
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            return;
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.REMOVE_TAB_FOCUS_ON_SHOWING_AND_SELECT)) {
             return;
         }
 

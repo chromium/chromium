@@ -51,7 +51,9 @@ source_set("test_support") {
     "actor_test_util.cc",
     "actor_test_util.h",
   ]
-  deps = [ ":actor" ]
+
+  public_deps =
+      [ "//components/optimization_guide/proto:optimization_guide_proto" ]
 }
 
 source_set("unit_tests") {

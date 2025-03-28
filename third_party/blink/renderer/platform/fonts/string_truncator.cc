@@ -106,7 +106,7 @@ static float StringWidth(const Font& renderer,
     return PlainTextPainter::Shared().ComputeInlineSize(TextRun(characters),
                                                         renderer);
   }
-  return renderer.Width(TextRun(characters));
+  return renderer.DeprecatedWidth(TextRun(characters));
 }
 
 static String TruncateString(const String& string,

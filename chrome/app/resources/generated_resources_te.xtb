@@ -1573,7 +1573,6 @@
 <translation id="2081816110395725788">బ్యాటరీలో ఉన్నప్పుడు ఇన్‌యాక్టివ్ పవర్</translation>
 <translation id="2082187087049518845">గ్రూప్ ట్యాబ్</translation>
 <translation id="2082510809738716738">రూపం రంగును ఎంచుకోండి</translation>
-<translation id="208547068587548667"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌కి సైన్ ఇన్ చేయండి</translation>
 <translation id="208586643495776849">దయచేసి మళ్లీ ట్రై చేయండి</translation>
 <translation id="208634871997892083">ఎల్లప్పుడూ ఆన్‌లో ఉండే VPN</translation>
 <translation id="208654914566977272">మీ స్క్రీన్‌ను సెర్చ్ చేస్తున్నప్పుడు సూచించే చర్యలు</translation>
@@ -4010,7 +4009,6 @@
 <translation id="3778740492972734840">డెవలపర్ ఉపకరణాలు</translation>
 <translation id="3778868487658107119">దీనిని ప్రశ్నలు అడగండి. పనులు చేయమని చెప్పండి. ఇది మీ వ్యక్తిగతమైన Google, ఎల్లవేళలా సహాయం చేయడానికి సిద్ధంగా ఉంటుంది.</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# సైట్‌కు సంబంధించిన మీ బ్రౌజింగ్ హిస్టరీ}other{# సైట్‌లకు సంబంధించిన మీ బ్రౌజింగ్ హిస్టరీ}}</translation>
-<translation id="3779244863011082655">వేరే <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఖాతాను ఉపయోగించండి</translation>
 <translation id="3780542776224651912">మీ పాస్‌వర్డ్‌లు డేటా ఉల్లంఘనలలో బహిర్గతమయ్యాయో, లేదో <ph name="BRAND" /> చెక్ చేయలేదు. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3781742599892759500">Linux మైక్రోఫోన్ యాక్సెస్</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -5514,6 +5512,7 @@
 <translation id="4848191975108266266">Google Assistant "Ok Google"</translation>
 <translation id="4849286518551984791">నిర్దేశాంక విశ్వవ్యాప్త సమయం (UTC/GMT)</translation>
 <translation id="4849517651082200438">ఇన్‌స్టాల్ చేయ‌వ‌ద్దు</translation>
+<translation id="4849731766219625109">మీ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఖాతాను ఉపయోగించండి</translation>
 <translation id="485053257961878904">నోటిఫికేషన్‌లను సింక్ చేయడాన్ని సెటప్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="4850548109381269495">రెండు పరికరాల్లోనూ, మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేసి, బ్లూటూత్‌ను ఆన్ చేయండి. ఆపై, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="4850669014075537160">స్క్రోలింగ్</translation>
@@ -5702,6 +5701,7 @@
 <translation id="4979510648199782334">Microsoft 365 సెటప్ పూర్తయింది</translation>
 <translation id="4980805016576257426">ఈ ఎక్స్‌టెన్షన్‌లో మాల్వేర్ ఉంది.</translation>
 <translation id="4983159853748980742">మీ పాస్‌వర్డ్ షేర్ చేయబడలేదు. మీ ఇంటర్నెట్ కనెక్షన్‌ను తనిఖీ చేయండి, మీరు Chromeకి సైన్ ఇన్ చేసినట్లు నిర్ధారించుకోండి. ఆపై, మళ్లీ ట్రై చేయండి.</translation>
+<translation id="498624032394115435">లింక్ ఉన్న వారు ఎవరైనా అన్ని ట్యాబ్‌లను ఎడిట్ చేయగలరు.</translation>
 <translation id="4986706507552097681">ఏ సింక్ చేయాలనే దాన్ని, మీరు సెట్టింగ్‌లలో ఎప్పుడైనా ఎంచుకోవచ్చు. Google మీ హిస్టరీ ఆధారంగా సెర్చ్, ఇతర సర్వీస్‌లను వ్యక్తిగతీకరించవచ్చు.</translation>
 <translation id="4986728572522335985">ఇది 'సెక్యూరిటీ కీ'లోని మొత్తం డేటాను, అలాగే దాని పిన్‌ను తొలగిస్తుంది</translation>
 <translation id="4987944280765486504">డౌన్‌లోడ్ పూర్తయిన తర్వాత మీ Chromebook రీస్టార్ట్ అవుతుంది, అప్పుడు మీరు సెటప్‌ను కొనసాగించవచ్చు.</translation>
@@ -8310,7 +8310,6 @@
 <translation id="6873571253135628430">సైట్ అనుమతులను మార్చండి</translation>
 <translation id="6876155724392614295">బైక్</translation>
 <translation id="6876469544038980967">సహాయకరంగా లేదు</translation>
-<translation id="687838958001010630">లింక్ ఉన్న వారు ఎవరైనా అన్ని ట్యాబ్‌లను ఎడిట్ చేయగలరు</translation>
 <translation id="6878422606530379992">సెన్సార్‌లు అనుమతించబడ్డాయి</translation>
 <translation id="6878862640969460273">ల్యాండ్‌స్కేప్</translation>
 <translation id="6880587130513028875">ఈ పేజీపై చిత్రాలు నిరోధించబడ్డాయి.</translation>

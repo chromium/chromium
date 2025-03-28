@@ -12,6 +12,7 @@
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
 #include "third_party/blink/renderer/core/layout/style_variant.h"
@@ -36,7 +37,6 @@ class Node;
 class PhysicalBoxFragment;
 class ShapeResultView;
 struct LayoutSelectionStatus;
-struct PhysicalOffset;
 struct PhysicalRect;
 struct PhysicalSize;
 

@@ -91,11 +91,13 @@ GroupData::GroupData(GroupId group_id,
                      std::string display_name_param,
                      std::vector<GroupMember> members_param,
                      std::vector<GroupMember> former_members_param,
-                     std::string access_token)
+                     std::string access_token,
+                    GroupEnabledStatus enabled_status)
     : group_token(GroupToken(group_id, access_token)),
       display_name(std::move(display_name_param)),
       members(std::move(members_param)),
-      former_members(std::move(former_members_param)) {}
+      former_members(std::move(former_members_param)),
+      enabled_status(enabled_status) {}
 
 GroupData::GroupData(const GroupData&) = default;
 GroupData& GroupData::operator=(const GroupData&) = default;

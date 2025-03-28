@@ -446,6 +446,44 @@ void BrowserSavePasswordProgressLogger::LogPasswordRequirements(
   SendLog(s.str());
 }
 
+void BrowserSavePasswordProgressLogger::LogProvisionalSaveFailure(
+    PasswordManagerMetricsRecorder::ProvisionalSaveFailure failure,
+    std::optional<GURL> main_frame_url,
+    std::optional<GURL> form_origin) {
+  switch (failure) {
+    case PasswordManagerMetricsRecorder::SAVING_DISABLED:
+      LogMessage(STRING_SAVING_DISABLED);
+      break;
+    case PasswordManagerMetricsRecorder::EMPTY_PASSWORD:
+      LogMessage(SavePasswordProgressLogger::STRING_EMPTY_PASSWORD);
+      break;
+    case PasswordManagerMetricsRecorder::MATCHING_NOT_COMPLETE:
+      LogMessage(SavePasswordProgressLogger::STRING_MATCHING_NOT_COMPLETE);
+      break;
+    case PasswordManagerMetricsRecorder::NO_MATCHING_FORM:
+      LogMessage(SavePasswordProgressLogger::STRING_NO_MATCHING_FORM);
+      break;
+    case PasswordManagerMetricsRecorder::INVALID_FORM:
+      LogMessage(SavePasswordProgressLogger::STRING_INVALID_FORM);
+      break;
+    case PasswordManagerMetricsRecorder::SYNC_CREDENTIAL:
+      LogMessage(SavePasswordProgressLogger::STRING_SYNC_CREDENTIAL);
+      break;
+    case PasswordManagerMetricsRecorder::SAVING_ON_HTTP_AFTER_HTTPS:
+      CHECK(main_frame_url);
+      CHECK(form_origin);
+      LogSuccessiveOrigins(
+          SavePasswordProgressLogger::
+              STRING_BLOCK_PASSWORD_SAME_ORIGIN_INSECURE_SCHEME,
+          main_frame_url->DeprecatedGetOriginAsURL(),
+          form_origin->DeprecatedGetOriginAsURL());
+      break;
+    case PasswordManagerMetricsRecorder::MAX_FAILURE_VALUE:
+      NOTREACHED();
+  }
+  LogMessage(SavePasswordProgressLogger::STRING_DECISION_DROP);
+}
+
 void BrowserSavePasswordProgressLogger::SendLog(const std::string& log) {
   LOG_AF(*log_manager_) << autofill::Tag{"div"}
                         << autofill::Attrib{"class", "preserve-white-space"}

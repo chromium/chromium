@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_BOX_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_BOX_UTILS_H_
 
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
 namespace blink {
@@ -13,7 +14,6 @@ class BlockBreakToken;
 class LayoutBox;
 class LayoutPoint;
 class PhysicalBoxFragment;
-struct PhysicalOffset;
 
 // The inline-size of the first fragment.
 LayoutUnit BoxInlineSize(const LayoutBox& box);

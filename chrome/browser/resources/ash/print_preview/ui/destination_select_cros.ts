@@ -104,9 +104,13 @@ export class PrintPreviewDestinationSelectCrosElement extends
     };
   }
 
+  activeUser: string;
+  dark: boolean;
   destination: Destination;
   disabled: boolean;
+  driveDestinationKey: string;
   loaded: boolean;
+  noDestinations: boolean;
   pdfPrinterDisabled: boolean;
   recentDestinationList: Destination[];
   state: State;

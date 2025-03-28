@@ -42,7 +42,7 @@ test(function() {
   assertParsedValue('font-weight', 'calc(100 + 200)', 'calc(300)');
 }, 'Ensure using calc() for CSS numbers with + on font-weight does not crash or produce incorrect values.');
 test(function() {
-  assertParsedValue('flex', 'calc(1 + 2) calc(3 + 4)', '3 7 0%');
+  assertParsedValue('flex', 'calc(1 + 2) calc(3 + 4)', 'calc(3) calc(7) 0%');
 }, 'Ensure using calc() for CSS numbers with + on flex does not crash or produce incorrect values.');
 test(function() {
   assertParsedValue('-webkit-filter', 'saturate(calc(4 / 2))', 'saturate(calc(2))');

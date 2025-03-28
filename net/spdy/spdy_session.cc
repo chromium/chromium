@@ -1372,8 +1372,6 @@ void SpdySession::MaybeFinishGoingAway() {
 }
 
 base::Value::Dict SpdySession::GetInfoAsValue() const {
-  DCHECK(buffered_spdy_framer_.get());
-
   auto dict =
       base::Value::Dict()
           .Set("source_id", static_cast<int>(net_log_.source().id))
@@ -1389,10 +1387,14 @@ base::Value::Dict SpdySession::GetInfoAsValue() const {
                static_cast<int>(max_concurrent_streams_))
           .Set("streams_initiated_count", streams_initiated_count_)
           .Set("streams_abandoned_count", streams_abandoned_count_)
-          .Set("frames_received", buffered_spdy_framer_->frames_received())
+          .Set("frames_received", buffered_spdy_framer_.get()
+                                      ? buffered_spdy_framer_->frames_received()
+                                      : 0)
           .Set("send_window_size", session_send_window_size_)
           .Set("recv_window_size", session_recv_window_size_)
-          .Set("unacked_recv_window_bytes", session_unacked_recv_window_bytes_);
+          .Set("unacked_recv_window_bytes", session_unacked_recv_window_bytes_)
+          .Set("availability_state",
+               AvailabilityStateToString(availability_state_));
 
   if (!pooled_aliases_.empty()) {
     base::Value::List alias_list;
@@ -1533,6 +1535,19 @@ void SpdySession::EnableBrokenConnectionDetection(
 
 bool SpdySession::IsBrokenConnectionDetectionEnabled() const {
   return heartbeat_timer_.IsRunning();
+}
+
+// static
+std::string_view SpdySession::AvailabilityStateToString(
+    AvailabilityState state) {
+  switch (state) {
+    case STATE_AVAILABLE:
+      return "Available";
+    case STATE_GOING_AWAY:
+      return "GoingAway";
+    case STATE_DRAINING:
+      return "Draining";
+  }
 }
 
 void SpdySession::InitializeInternal(SpdySessionPool* pool) {

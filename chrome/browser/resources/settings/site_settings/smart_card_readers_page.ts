@@ -45,9 +45,9 @@ export class SettingsSmartCardReadersPageElement extends
 
   static get properties() {
     return {
-      contentSettingsType_: {
-        type: ContentSettingsTypes,
-        value: ContentSettingsTypes.SMART_CARD_READERS,
+      contentSettingsTypeEnum_: {
+        type: Object,
+        value: ContentSettingsTypes,
       },
       readersWithGrants_: {
         type: Array,

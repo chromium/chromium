@@ -50,7 +50,8 @@ using signin_metrics::AccessPoint;
   }
 
   switch (_accessPoint) {
-    case AccessPoint::kCollaborationTabGroup: {
+    case AccessPoint::kCollaborationShareTabGroup:
+    case AccessPoint::kCollaborationJoinTabGroup: {
       self.titleText = l10n_util::GetNSString(
           IDS_IOS_HISTORY_SYNC_GROUP_COLLABORATION_TITLE);
       self.subtitleText = l10n_util::GetNSString(

@@ -46,6 +46,45 @@ message LensOverlayObjectsRequest {
   reserved 2;
 }
 
+message LensOverlayUploadChunkRequest {
+  // Required. Chunks of the same payload should have the same request
+  // context.
+  LensOverlayRequestContext request_context = 1;
+
+  // Optional. Debug options for the request.
+  ChunkDebugOptions debug_options = 6;
+
+  // Required. The id of the chunk. This should start from 0 for the first
+  // chunk and go up to (total_chunks - 1) in sequential chunk order.
+  int64 chunk_id = 3;
+
+  // Required. The bytes of the payload chunk to upload.
+  bytes chunk_bytes = 4;
+}
+
+message LensOverlayUploadChunkResponse {
+  // Debug metadata from the upload chunk response.
+  ChunkDebugMetadata debug_metadata = 2;
+}
+
+message ChunkDebugOptions {
+  // Required in first chunk request of the payload. Optional afterwards.
+  // Total number of chunks that will be uploaded to Lens server for the given
+  // payload.
+  int64 total_chunks = 1;
+  // Optional. When true, Lens server will return a repeated list of remaining
+  // chunk ids that it expects to receive to complete the payload. Should only
+  // be used for debugging purposes.
+  bool query_chunks = 2;
+}
+
+message ChunkDebugMetadata {
+  // Only populated if ChunkDebugOptions.query_chunks is true in the
+  // UploadChunk request. List of chunk ids that Lens server is expecting to
+  // complete the payload. Should only be used for debugging purposes.
+  repeated int64 remaining_chunks = 1;
+}
+
 message LensOverlayObjectsResponse {
   // Overlay objects.
   repeated OverlayObject overlay_objects = 2;

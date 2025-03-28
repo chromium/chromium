@@ -172,6 +172,8 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   LoadState GetLoadState() const override;
   bool GetMimeType(std::string* mime_type) const override;
   bool GetCharset(std::string* charset) override;
+  void GetClientSideContentDecodingTypes(
+      std::vector<net::SourceStreamType>* types) const override;
   void GetResponseInfo(HttpResponseInfo* info) override;
   void GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
   void PopulateLoadTimingInternalInfo(
@@ -340,6 +342,9 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // is used to measure the total delay of Device Bound Session
   // Deferral.
   base::TimeTicks device_bound_session_first_deferral_;
+
+  // The content encoding types that need to be handled in the client side.
+  std::vector<net::SourceStreamType> client_side_content_decoding_types_;
 
   base::WeakPtrFactory<URLRequestHttpJob> weak_factory_{this};
 };

@@ -211,7 +211,8 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       const net::HttpRequestHeaders& additional_headers,
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
-      base::TimeDelta ttl_in_sec);
+      base::TimeDelta ttl_in_sec,
+      bool should_append_variations_header);
 
   // Updates the "Accept Language" header that the prefetch service delegate
   // will use.

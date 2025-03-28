@@ -5,64 +5,69 @@
 #include "components/autofill/core/browser/webdata/valuables/loyalty_card_sync_util.h"
 
 #include "base/uuid.h"
-#include "components/sync/protocol/autofill_loyalty_card_specifics.pb.h"
+#include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "url/gurl.h"
 
 namespace autofill {
 
-using sync_pb::AutofillLoyaltyCardSpecifics;
+using sync_pb::AutofillValuableSpecifics;
 
-AutofillLoyaltyCardSpecifics CreateSpecificsFromLoyaltyCard(
+AutofillValuableSpecifics CreateSpecificsFromLoyaltyCard(
     const LoyaltyCard& card) {
-  AutofillLoyaltyCardSpecifics specifics =
-      sync_pb::AutofillLoyaltyCardSpecifics();
+  AutofillValuableSpecifics specifics = sync_pb::AutofillValuableSpecifics();
   specifics.set_id(card.id().value());
-  specifics.set_merchant_name(card.merchant_name());
-  specifics.set_program_name(card.program_name());
-  specifics.set_program_logo(card.program_logo().possibly_invalid_spec());
-  specifics.set_loyalty_card_suffix(card.loyalty_card_suffix());
+  sync_pb::AutofillValuableSpecifics::LoyaltyCard* loyalty_card =
+      specifics.mutable_loyalty_card();
+  loyalty_card->set_merchant_name(card.merchant_name());
+  loyalty_card->set_program_name(card.program_name());
+  loyalty_card->set_program_logo(card.program_logo().possibly_invalid_spec());
+  loyalty_card->set_loyalty_card_suffix(card.loyalty_card_suffix());
   return specifics;
 }
 
-bool AreAutofillLoyaltyCardSpecificsValid(
-    const AutofillLoyaltyCardSpecifics& specifics) {
-  return !specifics.id().empty() && GURL(specifics.program_logo()).is_valid();
-}
-
 std::optional<LoyaltyCard> CreateAutofillLoyaltyCardFromSpecifics(
-    const AutofillLoyaltyCardSpecifics& specifics) {
+    const AutofillValuableSpecifics& specifics) {
   if (!AreAutofillLoyaltyCardSpecificsValid(specifics)) {
     return std::nullopt;
   }
-  return LoyaltyCard(ValuableId(specifics.id()), specifics.merchant_name(),
-                     specifics.program_name(), GURL(specifics.program_logo()),
-                     specifics.loyalty_card_suffix());
+  return LoyaltyCard(ValuableId(specifics.id()),
+                     specifics.loyalty_card().merchant_name(),
+                     specifics.loyalty_card().program_name(),
+                     GURL(specifics.loyalty_card().program_logo()),
+                     specifics.loyalty_card().loyalty_card_suffix());
 }
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(
     const LoyaltyCard& loyalty_card) {
-  AutofillLoyaltyCardSpecifics card_specifics =
+  AutofillValuableSpecifics card_specifics =
       CreateSpecificsFromLoyaltyCard(loyalty_card);
   std::unique_ptr<syncer::EntityData> entity_data =
       std::make_unique<syncer::EntityData>();
 
   entity_data->name = card_specifics.id();
-  AutofillLoyaltyCardSpecifics* specifics =
-      entity_data->specifics.mutable_autofill_loyalty_card();
+  AutofillValuableSpecifics* specifics =
+      entity_data->specifics.mutable_autofill_valuable();
   specifics->CopyFrom(card_specifics);
 
   return entity_data;
 }
 
-AutofillLoyaltyCardSpecifics TrimLoyaltyCardSpecificsDataForCaching(
-    const AutofillLoyaltyCardSpecifics& specifics) {
-  AutofillLoyaltyCardSpecifics trimmed_specifics =
-      AutofillLoyaltyCardSpecifics(specifics);
+bool AreAutofillLoyaltyCardSpecificsValid(
+    const AutofillValuableSpecifics& specifics) {
+  return !specifics.id().empty() && specifics.has_loyalty_card() &&
+         GURL(specifics.loyalty_card().program_logo()).is_valid();
+}
+
+AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
+    const AutofillValuableSpecifics& specifics) {
+  AutofillValuableSpecifics trimmed_specifics =
+      AutofillValuableSpecifics(specifics);
   trimmed_specifics.clear_id();
-  trimmed_specifics.clear_merchant_name();
-  trimmed_specifics.clear_program_name();
-  trimmed_specifics.clear_program_logo();
-  trimmed_specifics.clear_loyalty_card_suffix();
+  trimmed_specifics.mutable_loyalty_card()->clear_merchant_name();
+  trimmed_specifics.mutable_loyalty_card()->clear_program_name();
+  trimmed_specifics.mutable_loyalty_card()->clear_program_logo();
+  trimmed_specifics.mutable_loyalty_card()->clear_loyalty_card_suffix();
+  trimmed_specifics.clear_valuable_data();
   return trimmed_specifics;
 }
 }  // namespace autofill

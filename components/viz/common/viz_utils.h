@@ -5,12 +5,13 @@
 #ifndef COMPONENTS_VIZ_COMMON_VIZ_UTILS_H_
 #define COMPONENTS_VIZ_COMMON_VIZ_UTILS_H_
 
+#include <string>
+
 #include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "cc/paint/filter_operations.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/viz_common_export.h"
-
-#include "build/build_config.h"
 
 namespace gfx {
 class Rect;
@@ -85,5 +86,16 @@ VIZ_COMMON_EXPORT void SetCopyOutoutRequestResultSize(
     const gfx::Size& surface_size_in_pixels);
 
 }  // namespace viz
+
+#define VIZ_HIT_PATH(path_name)                                         \
+  do {                                                                  \
+    static bool init = false;                                           \
+    if (!init) {                                                        \
+      std::string name =                                                \
+          "Compositing.Display.VizCodePath." + std::string(#path_name); \
+      UMA_HISTOGRAM_BOOLEAN(name, true);                                \
+      init = true;                                                      \
+    }                                                                   \
+  } while (0)
 
 #endif  // COMPONENTS_VIZ_COMMON_VIZ_UTILS_H_

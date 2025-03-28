@@ -80,7 +80,8 @@ CompositorView::CompositorView(JNIEnv* env,
       content_width_(0),
       content_height_(0),
       overlay_video_mode_(false),
-      overlay_immersive_ar_mode_(false) {
+      overlay_immersive_ar_mode_(false),
+      overlay_xr_full_screen_mode_(false) {
   content::BrowserChildProcessObserver::Add(this);
   obj_.Reset(env, obj);
   compositor_.reset(content::Compositor::Create(this, window_android));

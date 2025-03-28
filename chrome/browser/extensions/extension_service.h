@@ -366,11 +366,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   Profile* profile() { return profile_; }
 
-  // Note that this may return NULL if autoupdate is not turned on.
-  // TODO(crbug.com/404943906): Remove this function and have callers use
-  // ExtensionUpdater::Get() instead.
-  ExtensionUpdater* updater() { return updater_; }
-
   ComponentLoader* component_loader() { return component_loader_.get(); }
 
   SharedModuleService* shared_module_service() {
@@ -527,7 +522,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // Signaled when all extensions are loaded.
   const raw_ptr<base::OneShotEvent> ready_;
 
-  // Our extension updater, if updates are turned on.
+  // Our extension updater. May be disabled if updates are turned off.
   raw_ptr<ExtensionUpdater> updater_ = nullptr;
 
   base::ScopedMultiSourceObservation<content::RenderProcessHost,

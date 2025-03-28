@@ -47,7 +47,7 @@ class CORE_EXPORT InspectedFrames final
   Iterator begin();
   Iterator end();
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
  private:
   Member<LocalFrame> root_;

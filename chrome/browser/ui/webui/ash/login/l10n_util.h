@@ -38,6 +38,7 @@ extern const char kMostRelevantLanguagesDivider[];
 // from initial_locale in VPD. If `selected` matches the locale code of any
 // entry in the resulting list, that entry will be marked as selected.
 base::Value::List GetUILanguageList(
+    const std::string& app_locale,
     const std::vector<std::string>* most_relevant_language_codes,
     const std::string& selected,
     input_method::InputMethodManager* input_method_manager);

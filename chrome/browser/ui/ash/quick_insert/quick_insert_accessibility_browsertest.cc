@@ -73,7 +73,7 @@ class QuickInsertAccessibilityBrowserTest : public InProcessBrowserTest {
     // Disable earcons which can be annoying in tests.
     sm_.Call([this]() {
       ImportJSModuleForChromeVox("ChromeVox",
-                                 "/chromevox/background/chromevox.js");
+                                 "/chromevox/mv2/background/chromevox.js");
       DisableEarcons();
     });
 

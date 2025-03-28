@@ -167,7 +167,7 @@ bool IOSChromeSyncedTabDelegate::ShouldSync(
     return false;  // This deliberately ignores a new pending entry.
   }
 
-  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+  if (IsIdentityDiscAccountMenuEnabled()) {
     // If fast account switching via the account particle disk on the NTP is
     // enabled, then for managed accounts, only sync tabs that have been updated
     // after the signin.

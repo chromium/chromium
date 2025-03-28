@@ -647,10 +647,10 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForTutorialPromo(
           feature_engagement::kIPHLensOverlayFeature,
-          kToolbarAppMenuButtonElementId, IDS_TUTORIAL_LENS_OVERLAY_INTRO_BODY,
-          kLensOverlayTutorialId)
+          kToolbarAppMenuButtonElementId,
+          IDS_TUTORIAL_LENS_OVERLAY_HOMEWORK_INTRO_BODY, kLensOverlayTutorialId)
           .SetBubbleIcon(kLightbulbOutlineIcon)
-          .SetBubbleTitleText(IDS_TUTORIAL_LENS_OVERLAY_INTRO_HEADER)
+          .SetBubbleTitleText(IDS_TUTORIAL_LENS_OVERLAY_HOMEWORK_INTRO_HEADER)
           .SetMetadata(131, "nguyenbryan@google.com",
                        "Triggered by certain URLs to start the Lens Overlay "
                        "tutorial.")));
@@ -1548,44 +1548,19 @@ void MaybeRegisterChromeTutorials(
 
             // Bubble step - Lens button
             TutorialDescription::BubbleStep(kLensOverlayPageActionIconElementId)
-                .SetBubbleBodyText(IDS_TUTORIAL_LENS_OVERLAY_CLICK_LENS)
+                .SetBubbleBodyText(
+                    IDS_TUTORIAL_LENS_OVERLAY_HOMEWORK_CLICK_LENS)
                 .SetBubbleArrow(HelpBubbleArrow::kTopRight),
 
             // Lens button hides when clicked
             HiddenStep::WaitForHidden(kLensOverlayPageActionIconElementId),
 
-            // Bubble step - coachmark
-            TutorialDescription::BubbleStep(kLensPreselectionBubbleElementId)
-                .SetBubbleBodyText(IDS_TUTORIAL_LENS_OVERLAY_SELECT)
-                .SetBubbleArrow(HelpBubbleArrow::kNone),
-
-            // Coachmark hides when user starts selecting
-            HiddenStep::WaitForHidden(kLensPreselectionBubbleElementId),
-
-            // Bubble step - Search box (WebUI context)
+            // Completion of the tutorial after side panel appears.
             TutorialDescription::BubbleStep(kLensSidePanelSearchBoxElementId)
-                .SetBubbleBodyText(IDS_TUTORIAL_LENS_OVERLAY_CLICK_SEARCH_BOX)
-                .SetBubbleArrow(HelpBubbleArrow::kTopCenter)
-                .InAnyContext(),
-
-            // Event step - Click the search box
-            TutorialDescription::EventStep(
-                kLensSidePanelSearchBoxFocusedEventId)
-                .InAnyContext(),
-
-            // Bubble step - Pin icon
-            TutorialDescription::BubbleStep(kSidePanelPinButtonElementId)
-                .SetBubbleBodyText(IDS_TUTORIAL_LENS_OVERLAY_CLICK_PIN_ICON)
-                .SetBubbleArrow(HelpBubbleArrow::kRightBottom),
-
-            // Wait for pin icon click
-            HiddenStep::WaitForActivated(kSidePanelPinButtonElementId),
-
-            // Completion of the tutorial.
-            TutorialDescription::BubbleStep(kPinnedActionToolbarButtonElementId)
                 .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
-                .SetBubbleBodyText(IDS_TUTORIAL_LENS_OVERLAY_SUCCESS_BODY)
-                .SetBubbleArrow(HelpBubbleArrow::kTopRight));
+                .SetBubbleBodyText(IDS_TUTORIAL_LENS_OVERLAY_CLICK_SEARCH_BOX)
+                .SetBubbleArrow(HelpBubbleArrow::kLeftTop)
+                .InAnyContext());
 
     lens_overlay_tutorial.metadata.additional_description =
         "Tutorial for the Lens Overlay.";

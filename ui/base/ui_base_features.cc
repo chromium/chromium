@@ -136,6 +136,11 @@ BASE_FEATURE(kWaylandTextInputV3,
 BASE_FEATURE(kWaylandUiScale,
              "WaylandUiScale",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether Wayland session management protocol is enabled.
+BASE_FEATURE(kWaylandSessionManagement,
+             "WaylandSessionManagement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_LINUX)

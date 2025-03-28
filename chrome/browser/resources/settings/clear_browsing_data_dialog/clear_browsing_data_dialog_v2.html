@@ -51,6 +51,9 @@
     show-on-attach ignore-popstate ignore-enter-key>
   <div slot="title">$i18n{clearBrowsingData}</div>
   <div slot="body">
+    <!-- TODO(crbug.com/397187800): Update counters on selected time period.-->
+    <settings-clear-browsing-data-time-picker prefs="{{prefs}}">
+    </settings-clear-browsing-data-time-picker>
     <div id="checkboxContainer">
       <settings-checkbox id="browsingCheckbox"
           pref="{{prefs.browser.clear_data.browsing_history}}" no-set-pref>

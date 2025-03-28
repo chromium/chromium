@@ -126,11 +126,11 @@ const CGFloat kTableViewSectionFooterHeight = 3;
   switch (first_run::GetBestFeaturesScreenVariationType()) {
     case kGeneralScreenAfterDBPromo:
     case kGeneralScreenWithPasswordItemAfterDBPromo:
+    case kShoppingUsersWithFallbackAfterDBPromo:
     case kSignedInUsersOnlyAfterDBPromo:
       return l10n_util::GetNSString(
           IDS_IOS_BEST_FEATURES_START_BROWSING_BUTTON);
     case kGeneralScreenBeforeDBPromo:
-    case kShoppingUsersWithFallbackBeforeDBPromo:
       return l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_CONTINUE_BUTTON);
     case kAddressBarPromoInsteadOfBestFeaturesScreen:
     case kDisabled:

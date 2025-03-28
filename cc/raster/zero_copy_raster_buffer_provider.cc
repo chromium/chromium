@@ -14,6 +14,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/resources/resource_pool.h"
+#include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/platform_color.h"
@@ -22,6 +23,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "url/gurl.h"
 
@@ -34,18 +36,29 @@ constexpr static auto kBufferUsage = gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
 
 ZeroCopyRasterBufferImpl::ZeroCopyRasterBufferImpl(
     const ResourcePool::InUsePoolResource& in_use_resource,
-    scoped_refptr<gpu::SharedImageInterface> sii)
-    : sii_(sii) {
+    scoped_refptr<gpu::SharedImageInterface> sii,
+    bool resource_has_previous_content,
+    bool is_software)
+    : sii_(sii),
+      resource_has_previous_content_(resource_has_previous_content),
+      is_software_(is_software) {
   if (!in_use_resource.backing()) {
-    auto backing = std::make_unique<ResourcePool::Backing>(
-        in_use_resource.size(), in_use_resource.format(),
-        in_use_resource.color_space());
-    // This RasterBufferProvider will modify the resource outside of the
-    // GL command stream. So resources should not become available for reuse
-    // until they are not in use by the gpu anymore, which a fence is used
-    // to determine.
-    backing->wait_on_fence_required = true;
-    in_use_resource.set_backing(std::move(backing));
+    if (is_software) {
+      in_use_resource.InstallSoftwareBacking(
+          sii, "ZeroCopyRasterBufferProviderSoftware");
+      in_use_resource.backing()->mailbox_sync_token =
+          sii->GenVerifiedSyncToken();
+    } else {
+      auto backing = std::make_unique<ResourcePool::Backing>(
+          in_use_resource.size(), in_use_resource.format(),
+          in_use_resource.color_space());
+      // This RasterBufferProvider will modify the resource outside of the
+      // GL command stream. So resources should not become available for reuse
+      // until they are not in use by the gpu anymore, which a fence is used
+      // to determine.
+      backing->wait_on_fence_required = true;
+      in_use_resource.set_backing(std::move(backing));
+    }
   }
   backing_ = in_use_resource.backing();
   if (!backing_->shared_image()) {
@@ -67,6 +80,11 @@ ZeroCopyRasterBufferImpl::~ZeroCopyRasterBufferImpl() {
   if (failed_to_map_shared_image_) {
     backing_->shared_image()->UpdateDestructionSyncToken(gpu::SyncToken());
     backing_->clear_shared_image();
+  }
+
+  if (is_software_) {
+    // The below work is specific to GPU compositing.
+    return;
   }
 
   // If it was not possible to allocate the SharedImage
@@ -98,8 +116,19 @@ void ZeroCopyRasterBufferImpl::Playback(
     const GURL& url) {
   TRACE_EVENT0("cc", "ZeroCopyRasterBuffer::Playback");
 
+  gfx::Rect playback_rect = raster_full_rect;
+  if (resource_has_previous_content_) {
+    playback_rect.Intersect(raster_dirty_rect);
+  }
+  DCHECK(!playback_rect.IsEmpty())
+      << "Why are we rastering a tile that's not dirty?";
+
   // Create a MappableSI if necessary.
-  if (!backing_->shared_image()) {
+  if (is_software_) {
+    // WHen used with the software compositor, the SharedImage is created in the
+    // constructor.
+    CHECK(backing_->shared_image());
+  } else if (!backing_->shared_image()) {
     gpu::SharedImageUsageSet usage =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     if (!backing_->CreateSharedImage(sii_.get(), usage, "ZeroCopyRasterTile",
@@ -122,11 +151,14 @@ void ZeroCopyRasterBufferImpl::Playback(
     return;
   }
 
-  // TODO(danakj): Implement partial raster with raster_dirty_rect.
+  size_t stride = is_software_ ? 0u : mapping->Stride(0);
+
+  // TODO(danakj): Implement partial raster with raster_dirty_rect for GPU
+  // compositing.
   RasterBufferProvider::PlaybackToMemory(
       mapping->GetMemoryForPlane(0).data(), backing_->format(),
-      backing_->size(), mapping->Stride(0), raster_source, raster_full_rect,
-      raster_full_rect, transform, backing_->color_space(), playback_settings);
+      backing_->size(), stride, raster_source, raster_full_rect, playback_rect,
+      transform, backing_->color_space(), playback_settings);
 }
 
 bool ZeroCopyRasterBufferImpl::SupportsBackgroundThreadPriority() const {
@@ -139,6 +171,14 @@ ZeroCopyRasterBufferProvider::ZeroCopyRasterBufferProvider(
     : compositor_context_provider_(compositor_context_provider),
       tile_format_(raster_caps.tile_format) {}
 
+ZeroCopyRasterBufferProvider::ZeroCopyRasterBufferProvider(
+    LayerTreeFrameSink* frame_sink)
+    : is_software_(true),
+      shared_image_interface_(frame_sink->shared_image_interface()) {
+  CHECK(shared_image_interface_)
+      << "SharedImageInterface is null in ZeroCopyRasterBufferProvider ctor!";
+}
+
 ZeroCopyRasterBufferProvider::~ZeroCopyRasterBufferProvider() = default;
 
 std::unique_ptr<RasterBuffer>
@@ -149,15 +189,25 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
+  if (is_software_) {
+    bool resource_has_previous_content =
+        resource_content_id && resource_content_id == previous_content_id;
+    return std::make_unique<ZeroCopyRasterBufferImpl>(
+        resource, shared_image_interface_, resource_has_previous_content,
+        /*is_software=*/true);
+  }
+
   return std::make_unique<ZeroCopyRasterBufferImpl>(
-      resource, base::WrapRefCounted(
-                    compositor_context_provider_->SharedImageInterface()));
+      resource,
+      base::WrapRefCounted(
+          compositor_context_provider_->SharedImageInterface()),
+      /*resource_has_previous_content=*/false, /*is_software=*/false);
 }
 
 void ZeroCopyRasterBufferProvider::Flush() {}
 
 viz::SharedImageFormat ZeroCopyRasterBufferProvider::GetFormat() const {
-  return tile_format_;
+  return (is_software_) ? viz::SinglePlaneFormat::kBGRA_8888 : tile_format_;
 }
 
 bool ZeroCopyRasterBufferProvider::IsResourcePremultiplied() const {
@@ -166,7 +216,7 @@ bool ZeroCopyRasterBufferProvider::IsResourcePremultiplied() const {
 
 bool ZeroCopyRasterBufferProvider::CanPartialRasterIntoProvidedResource()
     const {
-  return false;
+  return is_software_;
 }
 
 bool ZeroCopyRasterBufferProvider::IsResourceReadyToDraw(

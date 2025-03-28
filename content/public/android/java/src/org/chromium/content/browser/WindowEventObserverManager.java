@@ -11,8 +11,8 @@ import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
-import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContents.UserDataFactory;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
@@ -42,9 +42,8 @@ public final class WindowEventObserverManager implements DisplayAndroidObserver,
     }
 
     public static @Nullable WindowEventObserverManager maybeFrom(WebContents webContents) {
-        return ((WebContentsImpl) webContents)
-                .getOrSetUserData(
-                        WindowEventObserverManager.class, UserDataFactoryLazyHolder.INSTANCE);
+        return webContents.getOrSetUserData(
+                WindowEventObserverManager.class, UserDataFactoryLazyHolder.INSTANCE);
     }
 
     private WindowEventObserverManager(WebContents webContents) {

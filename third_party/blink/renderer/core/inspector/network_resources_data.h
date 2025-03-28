@@ -69,9 +69,7 @@ class XHRReplayData final : public GarbageCollected<XHRReplayData> {
   const HTTPHeaderMap& Headers() const { return headers_; }
   bool IncludeCredentials() const { return include_credentials_; }
 
-  virtual void Trace(Visitor* visitor) const {
-    visitor->Trace(execution_context_);
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(execution_context_); }
 
  private:
   WeakMember<ExecutionContext> execution_context_;

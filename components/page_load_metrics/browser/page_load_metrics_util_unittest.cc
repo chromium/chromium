@@ -4,9 +4,14 @@
 
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 
+#include <optional>
+
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/page_load_metrics/browser/fake_page_load_metrics_observer_delegate.h"
+#include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -244,6 +249,54 @@ TEST_F(PageLoadMetricsUtilTest, CorrectEventAsNavigationOrActivationOrigined) {
     timing.activation_start = std::nullopt;
     test_expectation_runner(test_case.event, test_case.expected_result);
   }
+}
+
+// A type to support parameterized testing for the category of the request.
+struct UrlCategoryTestCase {
+  std::string test_case;
+  std::string url_string;
+  std::optional<uint32_t> expected;
+};
+
+class GetCategoryIdFromUrlTest
+    : public testing::Test,
+      public testing::WithParamInterface<UrlCategoryTestCase> {
+ protected:
+  using FeaturesType = std::vector<base::test::FeatureRefAndParams>;
+
+  GetCategoryIdFromUrlTest() {
+    static const FeaturesType enabled_features = {
+        {features::kBeaconLeakageLogging,
+         {{"category_prefix", "test-prefix"}}}};
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+  }
+  ~GetCategoryIdFromUrlTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GetCategoryIdFromUrlTest,
+    testing::ValuesIn<UrlCategoryTestCase>({
+        {"EmptyCategory", "", std::nullopt},
+        {"InvalidCategory", "https://a.com?category=invalid-category",
+         std::nullopt},
+        {"ValidCategory0", "https://a.com?category=test-prefix0",
+         std::make_optional(0u)},
+        {"ValidCategory1", "https://a.com?param1=true&category=test-prefix1",
+         std::make_optional(1u)},
+        {"ValidCategory200", "https://a.com?category=test-prefix200",
+         std::make_optional(200u)},
+    }),
+    [](const testing::TestParamInfo<UrlCategoryTestCase>& info) {
+      return info.param.test_case;
+    });
+
+TEST_P(GetCategoryIdFromUrlTest, GetCategoryIdFromUrl) {
+  EXPECT_THAT(GetCategoryIdFromUrl(GURL(GetParam().url_string)),
+              testing::Eq(GetParam().expected));
 }
 
 }  // namespace page_load_metrics

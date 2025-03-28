@@ -68,9 +68,10 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.sync.DataType;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
 import java.util.Set;
 
@@ -262,7 +263,8 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
     public void testIdentityErrorCardActionForAuthError() throws Exception {
         final FakeSyncServiceImpl fakeSyncService =
                 (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
-        fakeSyncService.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
+        fakeSyncService.setAuthError(
+                new GoogleServiceAuthError(GoogleServiceAuthErrorState.INVALID_GAIA_CREDENTIALS));
 
         // Sign in and open settings.
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -280,7 +282,8 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         doAnswer(
                         invocation -> {
                             // Simulate re-auth by clearing the auth error.
-                            fakeSyncService.setAuthError(GoogleServiceAuthError.State.NONE);
+                            fakeSyncService.setAuthError(
+                                    new GoogleServiceAuthError(GoogleServiceAuthErrorState.NONE));
                             return null;
                         })
                 .when(fakeAccountManagerFacade)

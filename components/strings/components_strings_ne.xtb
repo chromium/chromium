@@ -223,7 +223,6 @@
 <translation id="1363028406613469049">ट्रयाक</translation>
 <translation id="1364822246244961190">यो नीतिलाई रोक लगाइएको छ, यसको मानलाई बेवास्ता गरिने छ।</translation>
 <translation id="1368318639262510626">Dino गेम। एउटा पिक्सेलेट डाइनोसर सिउँडी र टेरोडेक्टायल नामक पंक्षीबाट जोगिएर उजाड भूमितिर भाग्छ। तपाईंले कुनै अडियो सङ्केत सुनेपछि अवरोध पन्छाएर उफ्रिन स्पेस बार थिच्नुहोस्।</translation>
-<translation id="1369735141991626842">AI प्रयोग गरी फिल्डहरूमा जानकारी भर्नुहोस्</translation>
 <translation id="1374468813861204354">सुझावहरू</translation>
 <translation id="1375198122581997741">संस्करण बारे</translation>
 <translation id="1375293861397106342">सबै विकल्पहरू सामान्यतया <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -539,7 +538,6 @@
 <translation id="1919526244108283799">४०० x ६०० मिलिमिटर</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{कुनै पनि होइन}=1{१ साइट}other{# साइटहरू}}</translation>
 <translation id="192095259937375524">ट्याब सेयर गर्ने बटन, लिंक सेयर गरेर, QR कोड बनाएर, कास्ट गरेर वा अन्य तरिकाले यो ट्याब सेयर गर्न यो बटन थिच्नुहोस्</translation>
-<translation id="1921479021518565778">सुझावहरू लोड गरिएका छन्</translation>
 <translation id="1924727005275031552">नयाँ</translation>
 <translation id="1927439846988093361">कपालको हेरचाह</translation>
 <translation id="1935353813610900265">AI मा आधारित हिस्ट्री सर्चका सम्बन्धमा प्रतिक्रिया पठाउनुहोस्</translation>
@@ -974,6 +972,7 @@
 <translation id="2688186765492306706">५०० x ७६० मिलिमिटर</translation>
 <translation id="2688969097326701645">अँ, जारी राख्नुहोस्</translation>
 <translation id="2690699652723742414">विगत ३० दिनदेखिका</translation>
+<translation id="2691385045260836588">मोडेल</translation>
 <translation id="2691924980723297736">सुरक्षासम्बन्धी चेतावनी</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> लाई सोध्नुहोस्</translation>
 <translation id="2699273987028089219">सब मेनु उपलब्ध छ। अतिरिक्त विकल्पहरूमा जान <ph name="SHORTCUT" /> प्रयोग गर्नुहोस्।</translation>
@@ -1526,6 +1525,7 @@
 <translation id="3664782872746246217">किवर्डहरू:</translation>
 <translation id="3665100783276035932">अधिकांश साइटहरूले गर्नु पर्ने जसरी नै काम गर्छन्</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />थप जान्नुहोस्<ph name="LINK_END1" /></translation>
+<translation id="3670030362669914947">अङ्क</translation>
 <translation id="3670229581627177274">ब्लुटुथलाई अन गर्नुहोस्</translation>
 <translation id="3671117652518853176">यो सेटिङ अफ गरिएका अवस्थामा सुरक्षासम्बन्धी प्रयोजनहरूका लागि तपाईंलाई बेला बेलामा पुष्टि गर्न लगाइन सक्छ</translation>
 <translation id="3671540257457995106">आकार बदल्न दिने हो?</translation>
@@ -1540,7 +1540,6 @@
 <translation id="3681007416295224113">प्रमाणपत्र जानकारी</translation>
 <translation id="3681421644246505351">Chrome ले तपाईंको हालसालैको ब्राउजिङ हिस्ट्रीका आधारमा तपाईंका रुचिका विषयहरू थाहा पाउँछ।</translation>
 <translation id="3682094733650754138">ठेगाना भर्ने विकल्प छनौट गरिएको थियो</translation>
-<translation id="3687493962714153124">AI प्रयोग गरी जानकारी स्वतः भर्ने सुविधा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3687920599421452763">भ्यान तथा मिनिभ्यानहरू</translation>
 <translation id="3693327506115126094">यो कार्य गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्ने तरिका छनौट गर्नुहोस्</translation>
 <translation id="3698353241727597930">तपाईंका एड्मिनले <ph name="FILES" /> इन्टरप्राइजले व्यवस्थापन गर्ने <ph name="CLOUD_STORAGE" /> भण्डारणमा सेभ गर्ने सेटिङ लागू गर्नुभएको छ। यी फाइलहरूको निरीक्षण तथा जाँच गरिन सक्छ र तपाईंले यी फाइलहरू मेटाएपछि पनि यिनलाई सेभ गरेर राखिन सक्छ।</translation>
@@ -1693,6 +1692,7 @@
 <translation id="3950820424414687140">साइन इन गर्नुहोस्</translation>
 <translation id="3953505489397572035">यो प्रचलित मूल्य हो</translation>
 <translation id="3958057596965527988">४ x ४ इन्च</translation>
+<translation id="3959969108528118741">मालिक</translation>
 <translation id="3961148744525529027">भुक्तानी ह्यान्ड्लरसम्बन्धी पाना आधा खुला छ</translation>
 <translation id="3962859241508114581">अघिल्लो ट्र्याक</translation>
 <translation id="3963721102035795474">पाठक मोड:</translation>
@@ -1919,7 +1919,6 @@
 <translation id="4312866146174492540">रोक लगाउनुहोस् (डिफल्ट मान)</translation>
 <translation id="4314815835985389558">सिंक व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4316057107946726368">कृपया बढीमा <ph name="MAX_CHAR_COUNT" /> वर्ण प्रयोग गरी कारण हाल्नुहोस्। <ph name="MAX_CHAR_COUNT" /> मध्ये <ph name="ACTUAL_CHAR_COUNT" /> वटा वर्ण प्रयोग गरिएको छ।</translation>
-<translation id="431740489189220419">सुझावहरू लोड हुँदै छन्</translation>
 <translation id="4318213823155573975">टाउकोको पहिरन</translation>
 <translation id="4318312030194671742">पेन्टसम्बन्धी पूर्वावलोकनको कम्पोजिटर सेवा</translation>
 <translation id="4318566738941496689">तपाईंको डिभाइसको नाम र नेटवर्कको ठेगाना</translation>
@@ -2326,6 +2325,7 @@
 <translation id="5087286274860437796">यो समयमा सर्भरको प्रमाणपत्र मान्य छैन।</translation>
 <translation id="5087580092889165836">कार्ड हाल्नुहोस्</translation>
 <translation id="5088142053160410913">अपरेटरलाई पठाइएको सन्देश</translation>
+<translation id="5089810972385038852">राज्य</translation>
 <translation id="5090647584136241764">आफूले चाहेका विवरणहरूको सजिलै तुलना गर्न मिल्दाजुल्दा उत्पादनहरू समावेश गरिएका ट्याबहरू हाल्नुहोस्</translation>
 <translation id="5093232627742069661">जेड फोल्ड</translation>
 <translation id="5094747076828555589">यो सर्भर हो भनेर प्रमाणित गर्न सकेन <ph name="DOMAIN" />; यसको सुरक्षा प्रमाणपत्रलाई Chromium ले विश्वास गरेन। यो एक गलत कन्फिगुरेसन वा तपाईंको जडान अवरोध गर्न खोज्ने आक्रमणकारीको हुनसक्छ।</translation>
@@ -2464,6 +2464,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />तपाईं डिफल्ट सर्च इन्जिन प्रयोग गरेर वेबमार्फत सामग्री खोज्न र Chrome का सुविधाहरू<ph name="END_BOLD" /> (जस्तै, एड्रेस बारमार्फत र वेबपेजहरूमा उपलब्ध फोटोहरू प्रयोग गरी सामग्री खोज्ने सुविधा) प्रयोग गर्न सक्नुहुन्छ। डिफल्ट सर्च इन्जिनमा कुनै सुविधा प्रयोग गर्न मिल्दैन भने सो सुविधा उपलब्ध नहुन सक्छ।</translation>
 <translation id="5323043727018853753">इम्बेड गरिएको सामग्री प्रयोग गर्न पाइन्छ</translation>
 <translation id="5323105697514565458"><ph name="NUM_MATCHES" /> मध्ये <ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /></translation>
+<translation id="5327248766486351172">नाम</translation>
 <translation id="5329858041417644019">तपाईंको ब्राउजरको व्यवस्थापन गरिएको छैन</translation>
 <translation id="5331585574693522196">डिफल्टका रूपमा सेट गर्नुहोस्</translation>
 <translation id="5332219387342487447">ढुवानीको विधि</translation>
@@ -2676,7 +2677,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates को यो मान सान्दर्भिक नभएकाले DnsOverHttpsMode नीति सेट गरेर <ph name="SECURE_DNS_MODE_AUTOMATIC" /> वा <ph name="SECURE_DNS_MODE_SECURE" /> नबनाइँदासम्म यसको प्रयोग गरिने छैन।</translation>
 <translation id="5691848789297492617">कार्ड सेभ गर्ने प्रम्प्ट पूरै स्क्रिनमा खोलिएको छ।</translation>
 <translation id="5695542892312572833">आफ्नो खरिद पुष्टि तथा पूरा गर्न Windows Hello प्रयोग गर्ने हो?</translation>
-<translation id="5697827549745555938">अटोफिलले यो फाराम भर्न मद्दत गर्न सक्छ कि सक्दैन भन्ने पत्ता लगाउन तपाईंले सेभ गर्नुभएको जानकारी र यो पेज Google मा पठाइन्छ। समीक्षकहरू यो सुविधाको गुणस्तर सुधार गर्ने प्रयोजनका लागि यो जानकारी हेर्न सक्छन्।</translation>
 <translation id="5699628521141772782">डेरी र अण्डा</translation>
 <translation id="5700761515355162635">तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="5701381305118179107">केन्द्र</translation>
@@ -3105,6 +3105,7 @@
 <translation id="6440503408713884761">उपेक्षित</translation>
 <translation id="6443406338865242315">तपाईंले स्थापना गर्नुभएका विस्तार र प्लगइनहरू</translation>
 <translation id="6444329331928531170">सेवानिवृत्ति तथा पेन्सन</translation>
+<translation id="6445051938772793705">देश</translation>
 <translation id="6446608382365791566">थप जानकारी थप्नुहोस्</translation>
 <translation id="6447842834002726250">कुकीहरू</translation>
 <translation id="6448371595882710519">डेटा कन्ट्रोलहरूका बारेमा थप जान्नुहोस्</translation>
@@ -3585,7 +3586,6 @@
 <translation id="7316521168101843192">यो फाइल Microsoft OneDrive मा सेभ गरिँदै छ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">जडानसम्बन्धी मद्दत</translation>
-<translation id="7321111802407017850">यो जानकारी पछि अटोफिल गर्न यसलाई सेभ गर्नुहोस्</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" खण्ड लुकाउनुहोस्</translation>
 <translation id="733354035281974745">डिभाइसका स्थानीय खाताको ओभरराइड</translation>
 <translation id="7334320624316649418">क्रम परिवर्तन &amp;पुन: गर्नुहोस्</translation>

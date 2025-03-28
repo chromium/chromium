@@ -112,7 +112,7 @@ class CORE_EXPORT PerformanceMonitor final
   PerformanceMonitor& operator=(const PerformanceMonitor&) = delete;
   ~PerformanceMonitor() override;
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
  private:
   friend class PerformanceMonitorTest;

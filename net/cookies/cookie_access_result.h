@@ -34,13 +34,8 @@ struct NET_EXPORT CookieAccessResult {
 
   ~CookieAccessResult();
 
-  bool operator==(const CookieAccessResult& other) const {
-    return status == other.status &&
-           effective_same_site == other.effective_same_site &&
-           access_semantics == other.access_semantics &&
-           is_allowed_to_access_secure_cookies ==
-               other.is_allowed_to_access_secure_cookies;
-  }
+  friend bool operator==(const CookieAccessResult&,
+                         const CookieAccessResult&) = default;
 
   CookieInclusionStatus status;
   CookieEffectiveSameSite effective_same_site =
@@ -59,6 +54,7 @@ inline void PrintTo(const CookieAccessResult& car, std::ostream* os) {
   PrintTo(car.status, os);
   *os << " }, effective_same_site=" << static_cast<int>(car.effective_same_site)
       << ", access_semantics=" << static_cast<int>(car.access_semantics)
+      << ", scope_semantics=" << static_cast<int>(car.scope_semantics)
       << ", is_allowed_to_access_secure_cookies="
       << car.is_allowed_to_access_secure_cookies << " }";
 }

@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -40,7 +40,7 @@ namespace {
 // Tests the android_webview contents client bridge.
 class AwContentsClientBridgeTest : public Test {
  public:
-  AwContentsClientBridgeTest() {}
+  AwContentsClientBridgeTest() = default;
 
   // Callback method called when a cert is selected.
   void CertSelected(scoped_refptr<X509Certificate> cert,
@@ -125,11 +125,9 @@ void AwContentsClientBridgeTest::TestSignatureAlgorithms(
       std::make_unique<TestClientCertificateDelegate>(this));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, cert_selected_callbacks_);
-  ScopedJavaLocalRef<jobjectArray> key_types =
+  std::vector<std::string> key_types =
       Java_MockAwContentsClientBridge_getKeyTypes(env_, jbridge_);
-  std::vector<std::string> vec;
-  base::android::AppendJavaStringArrayToStringVector(env_, key_types, &vec);
-  EXPECT_EQ(expected_names, vec);
+  EXPECT_EQ(expected_names, key_types);
 }
 
 // Verify that ProvideClientCertificateResponse works properly when the client
@@ -142,8 +140,7 @@ TEST_F(AwContentsClientBridgeTest,
       cert_request_info_.get(),
       base::WrapUnique(new TestClientCertificateDelegate(this)));
   bridge_->ProvideClientCertificateResponse(
-      env_, jbridge_,
-      Java_MockAwContentsClientBridge_getRequestId(env_, jbridge_),
+      env_, Java_MockAwContentsClientBridge_getRequestId(env_, jbridge_),
       Java_MockAwContentsClientBridge_createTestCertChain(env_, jbridge_),
       nullptr);
   base::RunLoop().RunUntilIdle();
@@ -162,8 +159,7 @@ TEST_F(AwContentsClientBridgeTest,
       cert_request_info_.get(),
       base::WrapUnique(new TestClientCertificateDelegate(this)));
   int requestId = Java_MockAwContentsClientBridge_getRequestId(env_, jbridge_);
-  bridge_->ProvideClientCertificateResponse(env_, jbridge_, requestId, nullptr,
-                                            nullptr);
+  bridge_->ProvideClientCertificateResponse(env_, requestId, nullptr, nullptr);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(nullptr, selected_cert_.get());
   EXPECT_EQ(nullptr, selected_key_.get());

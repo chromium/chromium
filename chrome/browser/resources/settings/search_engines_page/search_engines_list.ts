@@ -72,9 +72,6 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
       collapsedEngines:
           {type: Array, computed: 'computeCollapsedEngines_(engines)'},
 
-      /** Used to fix scrolling glitch when list is not top most element. */
-      scrollOffset: Number,
-
       lastFocused_: Object,
 
       listBlurred_: Boolean,

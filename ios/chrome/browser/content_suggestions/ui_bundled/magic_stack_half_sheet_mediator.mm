@@ -78,28 +78,28 @@
 }
 
 - (void)disconnect {
+  [_mostVisitedSitesEnabled stop];
+  [_mostVisitedSitesEnabled setObserver:nil];
+  _mostVisitedSitesEnabled = nil;
+
+  [_setUpListDisabled stop];
+  [_setUpListDisabled setObserver:nil];
+  _setUpListDisabled = nil;
+
+  [_safetyCheckDisabled stop];
+  [_safetyCheckDisabled setObserver:nil];
+  _safetyCheckDisabled = nil;
+
+  [_tabResumptionDisabled stop];
+  [_tabResumptionDisabled setObserver:nil];
+  _tabResumptionDisabled = nil;
+
+  [_parcelTrackingDisabled stop];
+  [_parcelTrackingDisabled setObserver:nil];
+  _parcelTrackingDisabled = nil;
+
   _localState = nil;
   _profilePrefs = nil;
-  if (_mostVisitedSitesEnabled) {
-    [_mostVisitedSitesEnabled setObserver:nil];
-    _mostVisitedSitesEnabled = nil;
-  }
-  if (_setUpListDisabled) {
-    [_setUpListDisabled setObserver:nil];
-    _setUpListDisabled = nil;
-  }
-  if (_safetyCheckDisabled) {
-    [_safetyCheckDisabled setObserver:nil];
-    _safetyCheckDisabled = nil;
-  }
-  if (_tabResumptionDisabled) {
-    [_tabResumptionDisabled setObserver:nil];
-    _tabResumptionDisabled = nil;
-  }
-  if (_parcelTrackingDisabled) {
-    [_parcelTrackingDisabled setObserver:nil];
-    _parcelTrackingDisabled = nil;
-  }
 }
 
 - (void)setConsumer:(id<MagicStackHalfSheetConsumer>)consumer {

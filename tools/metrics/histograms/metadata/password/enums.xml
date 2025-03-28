@@ -346,6 +346,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Skipped"/>
 </enum>
 
+<enum name="DownloadCsvFlowStep">
+  <int value="0" label="Dialog dismissed"/>
+  <int value="1" label="No screen lock"/>
+  <int value="2" label="Reauthentication failed"/>
+  <int value="3" label="Download location not selected"/>
+  <int value="4" label="Source CSV could not be found"/>
+  <int value="5" label="CSV copying failed"/>
+  <int value="6" label="Success"/>
+</enum>
+
 <enum name="EditsInGeneratedPasswordMask">
   <int value="0" label="No changes (not reported)"/>
   <int value="1" label="Length"/>

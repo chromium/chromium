@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "media/base/media_switches.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/cdm/cdm_helpers.h"
@@ -297,7 +298,9 @@ class CdmWrapperImpl : public CdmWrapper {
     void operator()(CdmInterface* cdm) const { cdm->Destroy(); }
   };
 
-  explicit CdmWrapperImpl(CdmInterface* cdm) : cdm_(cdm) { DCHECK(cdm_); }
+  explicit CdmWrapperImpl(CdmInterface* cdm) : cdm_(cdm) {
+    CHECK(cdm_, base::NotFatalUntil::M140);
+  }
 
   std::unique_ptr<CdmInterface, CdmDeleter> cdm_;
 };

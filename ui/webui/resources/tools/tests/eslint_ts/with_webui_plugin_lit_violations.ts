@@ -4,6 +4,8 @@
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+// Test file for @webui-eslint/lit-property-accessor
+
 export class SomeElement extends CrLitElement {
   static override get properties() {
     return {

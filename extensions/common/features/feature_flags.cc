@@ -24,7 +24,6 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::kApiContentSettingsClipboard,
     &extensions_features::kApiEnterpriseKioskInput,
     &extensions_features::kApiPermissionsHostAccessRequests,
-    &extensions_features::kApiPrintingMarginsAndScale,
     &extensions_features::kApiUserScriptsExecute,
     &extensions_features::kApiUserScriptsMultipleWorlds,
     &extensions_features::kApiOdfsConfigPrivate,
@@ -33,6 +32,7 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::kTelemetryExtensionPendingApprovalApi,
     &extensions_features::
         kApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered,
+    &extensions_features::kWebstoreInstallerUserGestureKillSwitch,
 };
 
 constinit base::span<const base::Feature*> g_feature_flags_test_override;

@@ -632,10 +632,14 @@ public class AccessibilityNodeInfoBuilder {
 
     @CalledByNative
     protected void setAccessibilityNodeInfoCollectionInfo(
-            AccessibilityNodeInfoCompat node, int rowCount, int columnCount, boolean hierarchical) {
+            AccessibilityNodeInfoCompat node,
+            int rowCount,
+            int columnCount,
+            boolean hierarchical,
+            int selectionMode) {
         node.setCollectionInfo(
                 AccessibilityNodeInfoCompat.CollectionInfoCompat.obtain(
-                        rowCount, columnCount, hierarchical));
+                        rowCount, columnCount, hierarchical, selectionMode));
     }
 
     @CalledByNative

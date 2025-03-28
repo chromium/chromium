@@ -237,7 +237,9 @@ void LobsterSessionImpl::DownloadCandidate(int candidate_id,
   }
 
   client_->InflateCandidate(
-      candidate->seed, candidate->query,
+      candidate->seed,
+      ash::features::IsLobsterUseRewrittenQuery() ? candidate->rewritten_query
+                                                  : candidate->user_query,
       base::BindOnce(
           [](LobsterClient* lobster_client,
              LobsterImageDownloadActuator* actuator,
@@ -252,7 +254,7 @@ void LobsterSessionImpl::DownloadCandidate(int candidate_id,
 
             const LobsterImageCandidate& image_candidate = (*result)[0];
             actuator->WriteImageToPath(
-                download_dir, image_candidate.query, image_candidate.id,
+                download_dir, image_candidate.user_query, image_candidate.id,
                 image_candidate.image_bytes,
                 base::BindOnce(
                     [](StatusCallback status_callback,
@@ -304,7 +306,9 @@ void LobsterSessionImpl::CommitAsInsert(int candidate_id,
   }
 
   client_->InflateCandidate(
-      candidate->seed, candidate->query,
+      candidate->seed,
+      ash::features::IsLobsterUseRewrittenQuery() ? candidate->rewritten_query
+                                                  : candidate->user_query,
       base::BindOnce(
           [](LobsterClient* lobster_client, StatusCallback status_callback,
              const LobsterResult& result) {
@@ -352,7 +356,9 @@ void LobsterSessionImpl::CommitAsDownload(int candidate_id,
   }
 
   client_->InflateCandidate(
-      candidate->seed, candidate->query,
+      candidate->seed,
+      ash::features::IsLobsterUseRewrittenQuery() ? candidate->rewritten_query
+                                                  : candidate->user_query,
       base::BindOnce(
           [](LobsterClient* lobster_client,
              LobsterImageDownloadActuator* actuator,
@@ -367,7 +373,7 @@ void LobsterSessionImpl::CommitAsDownload(int candidate_id,
 
             const LobsterImageCandidate& image_candidate = (*result)[0];
             actuator->WriteImageToPath(
-                download_dir, image_candidate.query, image_candidate.id,
+                download_dir, image_candidate.user_query, image_candidate.id,
                 image_candidate.image_bytes,
                 base::BindOnce(
                     [](LobsterClient* lobster_client,
@@ -409,7 +415,7 @@ void LobsterSessionImpl::PreviewFeedback(
   }
 
   std::move(callback).Run(LobsterFeedbackPreview(
-      {{"Query and image", candidate->query}}, candidate->image_bytes));
+      {{"Query and image", candidate->user_query}}, candidate->image_bytes));
 }
 
 bool LobsterSessionImpl::SubmitFeedback(int candidate_id,
@@ -422,7 +428,7 @@ bool LobsterSessionImpl::SubmitFeedback(int candidate_id,
   // Submit feedback along with the preview image.
   // TODO: b/362403784 - add the proper version.
   std::string feedback_description = BuildFeedbackDescription(
-      candidate->query, /*model_version=*/"dummy_version", description);
+      candidate->user_query, /*model_version=*/"dummy_version", description);
 
   return Shell::Get()->shell_delegate()->SendSpecializedFeatureFeedback(
       client_->GetAccountId(), feedback::kLobsterFeedbackProductId,

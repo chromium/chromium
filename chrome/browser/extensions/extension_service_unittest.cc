@@ -24,7 +24,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/one_shot_event.h"
@@ -504,14 +503,13 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
       const std::string& json_data) {
     // We also parse the file into a dictionary to compare what we get back
     // from the provider.
-    JSONStringValueDeserializer deserializer(json_data);
-    auto json_value = deserializer.Deserialize(nullptr, nullptr);
-
-    if (!json_value || !json_value->is_dict()) {
+    std::optional<base::Value::Dict> json_value =
+        base::JSONReader::ReadDict(json_data);
+    if (!json_value) {
       ADD_FAILURE() << "Unable to deserialize json data";
       return std::nullopt;
     }
-    return std::move(*json_value).TakeDict();
+    return json_value;
   }
 
  private:
@@ -3234,9 +3232,8 @@ TEST_F(ExtensionServiceTest, UpdateExtensionDuringShutdown) {
 
   // Simulate shutdown.
   ExtensionUpdater updater(profile());
-  updater.Init(prefs(), prefs()->pref_service(),
-               /*frequency_seconds=*/600, /*cache=*/nullptr,
-               ExtensionDownloader::Factory());
+  updater.InitAndEnable(prefs(), prefs()->pref_service(), base::Minutes(10),
+                        /*cache=*/nullptr, ExtensionDownloader::Factory());
   updater.set_browser_terminating_for_test(true);
 
   // Update should fail and extension should not be updated.
@@ -8544,10 +8541,10 @@ TEST_P(ExternalExtensionPriorityTest, PolicyForegroundFetch) {
 
   ExtensionDownloaderTestHelper helper;
   NullExtensionCache extension_cache;
-  service()->updater()->SetExtensionDownloaderForTesting(
-      helper.CreateDownloader());
-  service()->updater()->SetExtensionCacheForTesting(&extension_cache);
-  service()->updater()->Start();
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
+  updater->SetExtensionDownloaderForTesting(helper.CreateDownloader());
+  updater->SetExtensionCacheForTesting(&extension_cache);
+  updater->Start();
 
   GURL update_url(extension_urls::kChromeWebstoreUpdateURL);
   external_provider_manager()->OnExternalExtensionUpdateUrlFound(
@@ -8575,7 +8572,7 @@ TEST_P(ExternalExtensionPriorityTest, PolicyForegroundFetch) {
                                  "X-Goog-Update-Interactivity"));
 
   // Destroy updater's downloader as it uses |helper|.
-  service()->updater()->SetExtensionDownloaderForTesting(nullptr);
+  updater->SetExtensionDownloaderForTesting(nullptr);
 }
 
 INSTANTIATE_TEST_SUITE_P(

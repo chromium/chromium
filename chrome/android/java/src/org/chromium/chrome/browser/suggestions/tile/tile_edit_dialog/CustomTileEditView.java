@@ -25,7 +25,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
 
-/** The View of the Most Visited Tile Edit Dialog. */
+/** The View of the Custom Tile Edit Dialog. */
 @NullMarked
 class CustomTileEditView extends FrameLayout
         implements ModalDialogProperties.Controller, MediatorToView {
@@ -46,6 +46,7 @@ class CustomTileEditView extends FrameLayout
         mDialogModel = createDialogModel();
     }
 
+    // FrameLayout override.
     @Override
     @Initializer
     public void onFinishInflate() {
@@ -59,6 +60,17 @@ class CustomTileEditView extends FrameLayout
                         mMediatorDelegate.onUrlTextChanged(s.toString());
                     }
                 });
+    }
+
+    /**
+     * Sets the delegate for handling user interactions.
+     *
+     * @param mediatorDelegate The delegate to set interaction events to.
+     */
+    @Initializer
+    void setMediatorDelegate(ViewToMediator mediatorDelegate) {
+        assert mMediatorDelegate == null;
+        mMediatorDelegate = mediatorDelegate;
     }
 
     // ModalDialogProperties.Controller implementation.
@@ -113,17 +125,6 @@ class CustomTileEditView extends FrameLayout
     @Override
     public void focusOnUrl() {
         mUrlField.requestFocus();
-    }
-
-    /**
-     * Sets the delegate for handling user interactions.
-     *
-     * @param mediatorDelegate The delegate to set interaction events to.
-     */
-    @Initializer
-    void setMediatorDelegate(ViewToMediator mediatorDelegate) {
-        assert mMediatorDelegate == null;
-        mMediatorDelegate = mediatorDelegate;
     }
 
     PropertyModel getDialogModel() {

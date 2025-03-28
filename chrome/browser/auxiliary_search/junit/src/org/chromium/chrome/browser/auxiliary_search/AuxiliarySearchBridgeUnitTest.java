@@ -204,17 +204,19 @@ public final class AuxiliarySearchBridgeUnitTest {
                         /* lastActiveTime= */ TimeUtils.uptimeMillis(),
                         /* tabId= */ TAB_ID_1,
                         /* appId= */ null,
-                        /* visitId= */ -1);
+                        /* visitId= */ -1,
+                        /* score= */ 0);
 
         entryList.add(
-                AuxiliarySearchDataEntry.addDataEntry(
+                new AuxiliarySearchDataEntry(
                         mDataEntry1.type,
                         mDataEntry1.url,
                         mDataEntry1.title,
                         mDataEntry1.lastActiveTime,
                         mDataEntry1.tabId,
                         mDataEntry1.appId,
-                        mDataEntry1.visitId));
+                        mDataEntry1.visitId,
+                        mDataEntry1.score));
         return entryList;
     }
 }

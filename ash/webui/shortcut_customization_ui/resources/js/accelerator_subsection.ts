@@ -61,10 +61,10 @@ export class AcceleratorSubsectionElement extends
         observer: AcceleratorSubsectionElement.prototype.onCategoryUpdated,
       },
 
-      acceleratorContainer: {
+      accelRowDataArray: {
         type: Array,
-        value: [],
-      },
+        value: () => [],
+      }
     };
   }
 
@@ -76,11 +76,6 @@ export class AcceleratorSubsectionElement extends
       AcceleratorLookupManager.getInstance();
 
   updateSubsection(): void {
-    // Force the rendered list to reset, Polymer's dom-repeat does not perform
-    // a deep check on objects so it won't detect changes to same size length
-    // array of objects.
-    this.set('acceleratorContainer', []);
-    this.$.list.render();
     this.onCategoryUpdated();
   }
 

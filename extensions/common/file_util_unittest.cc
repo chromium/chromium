@@ -8,13 +8,13 @@
 
 #include <array>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_string_value_serializer.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -69,15 +69,13 @@ scoped_refptr<Extension> LoadExtensionManifest(
     ManifestLocation location,
     int extra_flags,
     std::string* error) {
-  JSONStringValueDeserializer deserializer(manifest_value);
-  std::unique_ptr<base::Value> result =
-      deserializer.Deserialize(nullptr, error);
-  if (!result.get()) {
+  std::optional<base::Value::Dict> result =
+      base::JSONReader::ReadDict(manifest_value);
+  if (!result) {
     return nullptr;
   }
-  CHECK_EQ(base::Value::Type::DICT, result->type());
-  return LoadExtensionManifest(std::move(*result).TakeDict(), manifest_dir,
-                               location, extra_flags, error);
+  return LoadExtensionManifest(std::move(*result), manifest_dir, location,
+                               extra_flags, error);
 }
 
 void RunUnderscoreDirectoriesTest(

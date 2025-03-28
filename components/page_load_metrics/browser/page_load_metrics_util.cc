@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <string_view>
 
+#include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/common/page_visit_final_status.h"
+#include "net/base/url_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -101,6 +103,25 @@ bool QueryContainsComponentHelper(std::string_view query,
     return true;
   }
   return false;
+}
+
+// The category URL param name.
+constexpr char kUrlCategoryParamName[] = "category";
+
+// Returns the category ID given a string if it matches the configured pattern.
+std::optional<uint32_t> GetCategoryId(const std::string& category) {
+  auto category_prefix = features::kBeaconLeakageLoggingCategoryPrefix.Get();
+  if (category_prefix.empty() || !category.starts_with(category_prefix)) {
+    return std::nullopt;
+  }
+
+  uint32_t category_id;
+  if (!base::StringToUint(category.substr(category_prefix.size()),
+                          &category_id)) {
+    return std::nullopt;
+  }
+
+  return category_id;
 }
 
 }  // namespace
@@ -329,6 +350,14 @@ PageVisitFinalStatus RecordPageVisitFinalStatusForTiming(
   pageVisitBuilder.SetPageVisitFinalStatus(static_cast<int>(page_visit_status));
   pageVisitBuilder.Record(ukm::UkmRecorder::Get());
   return page_visit_status;
+}
+
+std::optional<uint32_t> GetCategoryIdFromUrl(const GURL& url) {
+  std::string category;
+  if (net::GetValueForKeyInQuery(url, kUrlCategoryParamName, &category)) {
+    return GetCategoryId(category);
+  }
+  return std::nullopt;
 }
 
 }  // namespace page_load_metrics

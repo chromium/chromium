@@ -27,6 +27,7 @@
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -130,9 +131,6 @@ class ExtensionCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
   }
 
   void InstallUserExtension(const std::string& extension_id) {
-    extensions::ExtensionService* extension_service =
-        extensions::ExtensionSystem::Get(GetActiveUserProfile())
-            ->extension_service();
     base::Value::Dict manifest(base::Value::Dict()
                                    .Set("name", "Foo")
                                    .Set("description", "Bar")
@@ -146,7 +144,8 @@ class ExtensionCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
             .SetID(extension_id)
             .SetManifest(std::move(manifest))
             .Build();
-    extension_service->AddExtension(extension.get());
+    extensions::ExtensionRegistrar::Get(GetActiveUserProfile())
+        ->AddExtension(extension.get());
     observer->WaitForExtensionReady();
   }
 

@@ -11,12 +11,13 @@
 #include "third_party/blink/public/mojom/ai/ai_rewriter.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_summarizer.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_writer.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_create_core_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_rewriter_create_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer_create_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_writer_create_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rewriter_create_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_summarizer_create_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_writer_create_options.h"
 
 namespace blink {
+
+class LanguageModelCreateCoreOptions;
 
 static constexpr uint64_t kNormalizedDownloadProgressMax = 0x10000;
 
@@ -34,20 +35,20 @@ enum class SamplingParamsOptionError {
 // otherwise.
 MODULES_EXPORT base::expected<mojom::blink::AILanguageModelSamplingParamsPtr,
                               SamplingParamsOptionError>
-ResolveSamplingParamsOption(const AILanguageModelCreateCoreOptions* options);
+ResolveSamplingParamsOption(const LanguageModelCreateCoreOptions* options);
 
 mojom::blink::AISummarizerCreateOptionsPtr ToMojoSummarizerCreateOptions(
-    const AISummarizerCreateOptions* options);
+    const SummarizerCreateOptions* options);
 mojom::blink::AISummarizerCreateOptionsPtr ToMojoSummarizerCreateOptions(
-    const AISummarizerCreateCoreOptions* core_options);
+    const SummarizerCreateCoreOptions* core_options);
 mojom::blink::AIWriterCreateOptionsPtr ToMojoWriterCreateOptions(
-    const AIWriterCreateOptions* options);
+    const WriterCreateOptions* options);
 mojom::blink::AIWriterCreateOptionsPtr ToMojoWriterCreateOptions(
-    const AIWriterCreateCoreOptions* core_options);
+    const WriterCreateCoreOptions* core_options);
 mojom::blink::AIRewriterCreateOptionsPtr ToMojoRewriterCreateOptions(
-    const AIRewriterCreateOptions* options);
+    const RewriterCreateOptions* options);
 mojom::blink::AIRewriterCreateOptionsPtr ToMojoRewriterCreateOptions(
-    const AIRewriterCreateCoreOptions* core_options);
+    const RewriterCreateCoreOptions* core_options);
 
 }  // namespace blink
 

@@ -144,9 +144,6 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
       const MetadataFilterPredicate& metadata_filter_predicate);
   MetadataFilterPredicate GetMetadataFilterPredicate() const;
 
-  void SetRecordHostAppPackageName(bool record_host_app_package_name);
-  bool ShouldRecordHostAppPackageName() const;
-
   // Flush all collected events to the given output callback. The callback will
   // be called one or more times either synchronously or asynchronously from
   // the current thread with IPC-bite-size chunks. The string format is
@@ -242,7 +239,6 @@ class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
   // Set when asynchronous Flush is in progress.
   ArgumentFilterPredicate argument_filter_predicate_;
   MetadataFilterPredicate metadata_filter_predicate_;
-  bool record_host_app_package_name_{false};
 
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
   perfetto::TraceConfig perfetto_config_;

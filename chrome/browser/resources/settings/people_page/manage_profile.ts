@@ -116,6 +116,7 @@ export class SettingsManageProfileElement extends
   availableIcons: AvatarIcon[];
   syncStatus: SyncStatus|null;
   private isProfileShortcutSettingVisible_: boolean;
+  private hasEnterpriseLabel_: boolean;
   private pattern_: string;
   private browserProxy_: ManageProfileBrowserProxy =
       ManageProfileBrowserProxyImpl.getInstance();

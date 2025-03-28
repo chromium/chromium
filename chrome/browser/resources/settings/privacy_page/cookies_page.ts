@@ -83,7 +83,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         value: ThirdPartyCookieBlockingSetting,
       },
 
-      contentSetting_: {
+      contentSettingEnum_: {
         type: Object,
         value: ContentSetting,
       },

@@ -88,7 +88,7 @@ public class BackButtonMediatorTest {
         assertEquals(
                 "Background ripple effect should be default",
                 mModel.get(BackButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE),
-                org.chromium.chrome.browser.toolbar.R.drawable.toolbar_button_ripple);
+                org.chromium.chrome.browser.toolbar.R.drawable.default_icon_background);
     }
 
     @Test
@@ -99,7 +99,7 @@ public class BackButtonMediatorTest {
         assertEquals(
                 "Background ripple effect should be default",
                 mModel.get(BackButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE),
-                org.chromium.chrome.browser.toolbar.R.drawable.toolbar_button_ripple);
+                org.chromium.chrome.browser.toolbar.R.drawable.default_icon_background);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class BackButtonMediatorTest {
         assertEquals(
                 "Background ripple effect should be default",
                 mModel.get(BackButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE),
-                org.chromium.chrome.browser.toolbar.R.drawable.toolbar_button_ripple);
+                org.chromium.chrome.browser.toolbar.R.drawable.default_icon_background);
     }
 
     @Test
@@ -121,7 +121,7 @@ public class BackButtonMediatorTest {
         assertEquals(
                 "Background ripple effect should be incognito",
                 mModel.get(BackButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE),
-                org.chromium.chrome.browser.toolbar.R.drawable.toolbar_button_ripple_incognito);
+                org.chromium.chrome.browser.toolbar.R.drawable.default_icon_background_baseline);
     }
 
     @Test

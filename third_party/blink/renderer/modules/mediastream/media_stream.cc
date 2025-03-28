@@ -299,7 +299,8 @@ MediaStreamTrackVector MediaStream::getTracks() {
   return tracks;
 }
 
-void MediaStream::addTrack(MediaStreamTrack* track,
+void MediaStream::addTrack(v8::Isolate* isolate,
+                           MediaStreamTrack* track,
                            ExceptionState& exception_state) {
   if (!track) {
     exception_state.ThrowDOMException(
@@ -331,11 +332,12 @@ void MediaStream::addTrack(MediaStreamTrack* track,
     // If processing by the observer failed, it is most likely because it was
     // not necessary and it became a no-op. The exception can be suppressed,
     // there is nothing to do.
-    observer->OnStreamAddTrack(this, track, IGNORE_EXCEPTION);
+    observer->OnStreamAddTrack(this, track, IgnoreException(isolate));
   }
 }
 
-void MediaStream::removeTrack(MediaStreamTrack* track,
+void MediaStream::removeTrack(v8::Isolate* isolate,
+                              MediaStreamTrack* track,
                               ExceptionState& exception_state) {
   if (!track) {
     exception_state.ThrowDOMException(
@@ -372,7 +374,7 @@ void MediaStream::removeTrack(MediaStreamTrack* track,
     // If processing by the observer failed, it is most likely because it was
     // not necessary and it became a no-op. The exception can be suppressed,
     // there is nothing to do.
-    observer->OnStreamRemoveTrack(this, track, IGNORE_EXCEPTION);
+    observer->OnStreamRemoveTrack(this, track, IgnoreException(isolate));
   }
 }
 

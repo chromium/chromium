@@ -17,8 +17,8 @@ source_set("observing_scene_agent") {
   frameworks = [ "UIKit.framework" ]
 
   public_deps = [
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
+    ":scene_state_header",
+    ":scene_state_observer",
   ]
 }
 
@@ -228,8 +228,8 @@ source_set("scene_util_test_support") {
   ]
   frameworks = [ "UIKit.framework" ]
   deps = [
+    ":scene_state_header",
     "//ios/chrome/app/application_delegate:app_state",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
   ]
 }
 
@@ -240,7 +240,9 @@ source_set("unit_tests") {
     "scene_util_unittest.mm",
   ]
   deps = [
+    ":scene",
     ":scene_state_header",
+    ":scene_testing",
     ":scene_util",
     ":scene_util_test_support",
     "//base/test:test_support",
@@ -259,8 +261,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/sessions/model:test_support",
-    "//ios/chrome/browser/shared/coordinator/scene",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_testing",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",

@@ -87,7 +87,7 @@ public class TabArchiverImpl implements TabArchiver {
     @Override
     public void doArchivePass(TabModelSelector selectorToArchive) {
         ThreadUtils.assertOnUiThread();
-        assert mTabArchiveSettings.getArchiveEnabled();
+        if (!mTabArchiveSettings.getArchiveEnabled()) return;
         long startTimeMs = mClock.currentTimeMillis();
 
         // Wait for the declutter pass to complete, then do follow-up tasks.

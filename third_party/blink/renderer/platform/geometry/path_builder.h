@@ -107,6 +107,7 @@ class PLATFORM_EXPORT PathBuilder {
 
   PathBuilder& SetWindRule(WindRule);
   PathBuilder& Translate(const gfx::Vector2dF& offset);
+  PathBuilder& Transform(const AffineTransform&);
 
  private:
   // TODO(crbug.com/378688986): switch to SkPathBuilder when ready.

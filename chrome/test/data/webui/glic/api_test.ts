@@ -203,6 +203,8 @@ class ApiTests extends ApiTestFixtureBase {
   async testPanelActive() {
     assertTrue(!!this.host.panelActive);
     const activeSequence = observeSequence(this.host.panelActive());
+    assertTrue(!!this.host.closePanel);
+    await this.host.closePanel();
     assertTrue(await activeSequence.next());
     await this.advanceToNextStep();
     assertFalse(await activeSequence.next());

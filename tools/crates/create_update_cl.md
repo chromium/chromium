@@ -246,7 +246,7 @@ Examples of a few specific situations that may lead to script failure:
         ```
         $ git checkout rust-crates-update--last-successful-update
         $ git checkout -b fix-patches-for-foo
-        $ git git branch --set-upstream-to=rust-crates-update--last-successful-update
+        $ git branch --set-upstream-to=rust-crates-update--last-successful-update
         ```
     - Fix the patches and upload as a temporary / throw-away CL
       (this CL can't be landed on its own - it needs to be combined
@@ -260,8 +260,9 @@ Examples of a few specific situations that may lead to script failure:
       as-is / on its own - it needs to be combined with the fixed patches
       in the step below) with `--upstream-branch` parameter:
         ```
-        $ tools/crates/create_update_cl.py auto -- name-of-failed-crate \
-            --upstream-branch=fix-patches-for-foo
+        $ tools/crates/create_update_cl.py auto \
+            --upstream-branch=fix-patches-for-foo \
+            -- name-of-failed-crate
         ```
     - Combine the branches:
         ```

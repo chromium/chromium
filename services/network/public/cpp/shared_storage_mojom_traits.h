@@ -45,6 +45,23 @@ struct COMPONENT_EXPORT(NETWORK_CPP_SHARED_STORAGE)
   static const std::string& data(const std::string& input) { return input; }
 };
 
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_SHARED_STORAGE) StructTraits<
+    network::mojom::SharedStorageBatchUpdateMethodsArgumentDataView,
+    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>> {
+  static bool Read(
+      network::mojom::SharedStorageBatchUpdateMethodsArgumentDataView data,
+      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>*
+          out_value);
+
+  static const std::vector<
+      network::mojom::SharedStorageModifierMethodWithOptionsPtr>&
+  data(const std::vector<
+       network::mojom::SharedStorageModifierMethodWithOptionsPtr>& input) {
+    return input;
+  }
+};
+
 }  // namespace mojo
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_SHARED_STORAGE_MOJOM_TRAITS_H_

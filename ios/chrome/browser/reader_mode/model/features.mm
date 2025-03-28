@@ -12,6 +12,10 @@ BASE_FEATURE(kEnableReaderModeDistillerHeuristic,
              "EnableReaderModeDistillerHeuristic",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableReaderModeDistiller,
+             "EnableReaderModeDistiller",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kReaderModeDistillerPageLoadProbabilityName[] =
     "reader-mode-distiller-page-load-probability";
 

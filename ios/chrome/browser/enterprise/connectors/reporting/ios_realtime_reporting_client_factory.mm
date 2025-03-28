@@ -13,6 +13,17 @@
 
 namespace enterprise_connectors {
 
+namespace {
+
+std::unique_ptr<KeyedService> BuildRealtimeReportingClient(
+    web::BrowserState* browser_state) {
+  auto* profile = ProfileIOS::FromBrowserState(browser_state);
+  DCHECK(profile);
+  return std::make_unique<IOSRealtimeReportingClient>(profile);
+}
+
+}  // namespace
+
 // static
 IOSRealtimeReportingClientFactory*
 IOSRealtimeReportingClientFactory::GetInstance() {
@@ -25,6 +36,12 @@ IOSRealtimeReportingClient* IOSRealtimeReportingClientFactory::GetForProfile(
     ProfileIOS* profile) {
   return GetInstance()->GetServiceForProfileAs<IOSRealtimeReportingClient>(
       profile, /*create=*/true);
+}
+
+// static
+BrowserStateKeyedServiceFactory::TestingFactory
+IOSRealtimeReportingClientFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildRealtimeReportingClient);
 }
 
 IOSRealtimeReportingClientFactory::IOSRealtimeReportingClientFactory()

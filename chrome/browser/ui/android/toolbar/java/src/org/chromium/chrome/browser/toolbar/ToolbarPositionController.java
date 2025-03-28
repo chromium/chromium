@@ -17,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -31,6 +30,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -253,9 +253,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     /** Returns true if toolbar is user-configured to show on top. */
     private static boolean isToolbarConfiguredToShowOnTop() {
         if (sToolbarShouldShowOnTop == null) {
-            sToolbarShouldShowOnTop =
-                    ContextUtils.getAppSharedPreferences()
-                            .getBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
+            sToolbarShouldShowOnTop = AddressBarPreference.isToolbarConfiguredToShowOnTop();
         }
         return sToolbarShouldShowOnTop;
     }

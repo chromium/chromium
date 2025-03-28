@@ -1774,6 +1774,7 @@ void CrostiniManager::SetUpBaguetteUser(
   request.set_vm_name(vm_name);
   request.set_owner_id(owner_id_);
   request.set_username(username);
+  request.add_group_names("audio");
   request.add_group_names("cdrom");
   request.add_group_names("dialout");
   request.add_group_names("floppy");

@@ -2,7 +2,6 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/authentication/ui_bundled",
-  "+ios/chrome/browser/ui/legacy_bookmarks",
   "+ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h",
   "+ios/chrome/browser/keyboard/ui_bundled",
   "+ios/chrome/browser/incognito_reauth/ui_bundled",

@@ -7,13 +7,14 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/not_fatal_until.h"
 #include "media/base/content_decryption_module.h"
 
 namespace media {
 
 CdmContextRefImpl::CdmContextRefImpl(scoped_refptr<ContentDecryptionModule> cdm)
     : cdm_(std::move(cdm)) {
-  DCHECK(cdm_);
+  CHECK(cdm_, base::NotFatalUntil::M140);
 }
 
 CdmContextRefImpl::~CdmContextRefImpl() {

@@ -539,6 +539,22 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
 
   base::AutoReset<bool> processing_changes(&processing_syncer_changes_, true);
 
+  // Browser color scheme can be set alongside other themes, including extension
+  // theme.
+  if (use_new_fields && has_all_theme_attributes) {
+    DVLOG(1) << "Applying browser color scheme";
+    theme_service_->SetBrowserColorScheme(
+        ProtoEnumToBrowserColorScheme(new_specs.browser_color_scheme()));
+
+    // Prior to the ThemeSpecifics migration (crbug.com/356148174),
+    // 'browser_color_scheme' was absent. Post-migration, it's always set. If
+    // this field exists, a newer theme has been synced, making reading the
+    // syncing theme prefs pointless.
+    profile_->GetPrefs()->SetBoolean(
+        prefs::kShouldReadIncomingSyncingThemePrefs, false);
+    pref_service_syncable_observer_.reset();
+  }
+
   if (new_specs.use_custom_theme()) {
     string id(new_specs.custom_theme_id());
     GURL update_url(new_specs.custom_theme_update_url());
@@ -639,25 +655,6 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
       // committed by an old client.
       DVLOG(1) << "Removing custom NTP background";
       prefs->ClearPref(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse);
-    }
-
-    // Browser color scheme can be set alongside other (non-extension) themes.
-    if (new_specs.has_browser_color_scheme()) {
-      DVLOG(1) << "Applying browser color scheme";
-      theme_service_->SetBrowserColorScheme(
-          ProtoEnumToBrowserColorScheme(new_specs.browser_color_scheme()));
-
-      // Before the migration of syncing theme prefs to ThemeSpecifics (see
-      // crbug.com/356148174), the specifics will never have
-      // `browser_color_scheme` field. However, this field is always populated
-      // after the migration. If ThemeSpecifics includes this field, it means
-      // another client has already uploaded the latest theme with the new
-      // fields. Thus, there's no point in reading the syncing theme prefs
-      // anymore.
-      if (prefs) {
-        prefs->SetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs, false);
-        pref_service_syncable_observer_.reset();
-      }
     }
   }
   return ThemeSyncState::kApplied;

@@ -160,13 +160,17 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
 
   // Records whether the shortcut enablement state transitioned from disabled to
   // enabled or vice versa.
+  // TODO(crbug.com/406848612): Record these in the browser process instead.
   private recordShortcutEnablement() {
-    if (!!this.shortcutInput_ && !this.removedShortcut_) {
+    if (this.shortcutInput_ && !this.removedShortcut_) {
       this.metricsBrowserProxy_.recordAction(
           'GlicOsEntrypoint.Settings.ShortcutEnabled');
     } else if (!this.shortcutInput_ && this.removedShortcut_) {
       this.metricsBrowserProxy_.recordAction(
           'GlicOsEntrypoint.Settings.ShortcutDisabled');
+    } else {
+      this.metricsBrowserProxy_.recordAction(
+          'GlicOsEntrypoint.Settings.ShortcutEdited');
     }
   }
 

@@ -4,13 +4,17 @@
 
 #include "chrome/renderer/actor/tool_executor.h"
 
+#include <cstdint>
+#include <memory>
+
 #include "base/functional/callback.h"
+#include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/renderer/actor/click_tool.h"
 #include "content/public/renderer/render_frame.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 using content::RenderFrame;
-using mojo::PendingReceiver;
 
 namespace actor {
 
@@ -25,8 +29,28 @@ ToolExecutor::~ToolExecutor() = default;
 
 void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
                               ToolExecutorCallback callback) {
-  // TODO(crbug.com/402731599): Implement tools.
-  std::move(callback).Run(true);
+  CHECK(!tool_);
+  switch (request->action->which()) {
+    case actor::mojom::ToolAction::Tag::kClick: {
+      // Check the mojom we received is in good shape.
+      CHECK(request->action->get_click());
+      tool_ = std::make_unique<ClickTool>(
+          std::move(request->action->get_click()), frame_);
+      break;
+    }
+  }
+  // It's safe to use base::Unretained as tool_ is owned by this object and
+  // tool_ has its own weak factory to manage the callback.
+  tool_->Execute(base::BindOnce(&ToolExecutor::ToolFinished,
+                                base::Unretained(this), std::move(callback)));
+}
+
+void ToolExecutor::ToolFinished(ToolExecutorCallback callback,
+                                bool tool_status) {
+  CHECK(tool_);
+  // Release current tool so we can accept a new tool invocation.
+  tool_.reset();
+  std::move(callback).Run(tool_status);
 }
 
 }  // namespace actor

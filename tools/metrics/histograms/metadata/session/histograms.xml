@@ -113,7 +113,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Session.TimeSpentInFocusMode" units="s" expires_after="M80">
   <owner>yiningwang@google.com</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Time spent in focus mode browser. This is recorded when the focus mode
     window closes. This metric is only recorded on Win/Mac/Linux/ChromeOS.
@@ -446,7 +446,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Session.TotalDuration.TouchMode" units="times"
     expires_after="2024-01-14">
   <owner>collinbaker@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Time spent in touch mode in each session (as defined by
     DesktopSessionDurationTracker). Samples correspond one-to-one with

@@ -33,7 +33,6 @@
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
-#include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -270,9 +269,9 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
       "&" + std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
       fake_tab_group_title);
 
-  auto* tab_group_service = static_cast<TabGroupSyncServiceImpl*>(
+  TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser()->profile()));
+          browser()->profile());
 
   std::optional<tab_groups::SavedTabGroup> group =
       tab_group_service->GetGroup(group_id);

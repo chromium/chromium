@@ -245,7 +245,7 @@ TEST_F(CoreAudioUtilWinTest, GetAudioControllerID) {
       ComPtr<IMMDevice> device;
       collection->Item(j, &device);
       std::string controller_id(
-          CoreAudioUtil::GetAudioControllerID(device.Get(), enumerator.Get()));
+          CoreAudioUtil::GetAudioControllerID(device.Get()));
       EXPECT_FALSE(controller_id.empty());
     }
   }

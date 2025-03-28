@@ -26,6 +26,15 @@ import java.util.Objects;
 
 /** Manager of the observers that trigger a modal dialog on new tab group creation. */
 public class TabGroupCreationDialogManager {
+    /** Represents a factory for creating an instance of {@link TabGroupCreationDialogManager}. */
+    @FunctionalInterface
+    public interface TabGroupCreationDialogManagerFactory {
+        TabGroupCreationDialogManager create(
+                @NonNull Context context,
+                @NonNull ModalDialogManager modalDialogManager,
+                @Nullable Runnable onTabGroupCreation);
+    }
+
     private class TabGroupCreationDialogController implements ModalDialogProperties.Controller {
         private final int mRootId;
         private final TabGroupModelFilter mTabGroupModelFilter;

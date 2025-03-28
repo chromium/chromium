@@ -38,8 +38,8 @@ class DiscardsMainElement extends PolymerElement {
     };
   }
 
-  selected: number;
-  tabs: string[];
+  declare selected: number;
+  declare tabs: string[];
 
   override ready() {
     super.ready();

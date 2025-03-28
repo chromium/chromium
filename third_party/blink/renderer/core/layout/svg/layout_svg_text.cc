@@ -217,6 +217,11 @@ void LayoutSVGText::Paint(const PaintInfo& paint_info) const {
 SVGLayoutResult LayoutSVGText::UpdateSVGLayout(
     const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
+  // If the screen scaling factor changed we need to update the text
+  // metrics. Ditto for a viewport change (see below).
+  if (layout_info.scale_factor_changed || layout_info.viewport_changed) {
+    SetNeedsTextMetricsUpdate();
+  }
 
   // If the root layout size changed (eg. window size changes), or the screen
   // scale factor has changed, then recompute the on-screen font size. Since

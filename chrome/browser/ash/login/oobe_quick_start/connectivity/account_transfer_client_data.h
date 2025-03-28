@@ -8,7 +8,7 @@
 #include <string>
 
 #include "chromeos/ash/components/quick_start/types.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "url/origin.h"
 
 namespace ash::quick_start {
@@ -30,7 +30,7 @@ class AccountTransferClientData {
   ~AccountTransferClientData();
 
   std::string CreateJson();
-  std::array<uint8_t, crypto::kSHA256Length> CreateHash();
+  std::array<uint8_t, crypto::hash::kSha256Size> CreateHash();
 
   Base64UrlString GetChallengeBase64URLString();
 

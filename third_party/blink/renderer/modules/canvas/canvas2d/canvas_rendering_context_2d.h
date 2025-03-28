@@ -94,7 +94,7 @@ enum class FlushReason;
 enum class PredefinedColorSpace;
 
 class MODULES_EXPORT CanvasRenderingContext2D final
-    : public CanvasRenderingContext,
+    : public ScriptWrappable,
       public BaseRenderingContext2D,
       public SVGResourceClient {
   DEFINE_WRAPPERTYPEINFO();
@@ -128,10 +128,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     return static_cast<HTMLCanvasElement*>(Host());
   }
   V8RenderingContext* AsV8RenderingContext() final;
-
-  bool isContextLost() const final {
-    return context_lost_mode_ != kNotLostContext;
-  }
 
   bool ShouldAntialias() const;
   void SetShouldAntialias(bool) override;
@@ -244,8 +240,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   bool IdentifiabilityEncounteredPartiallyDigestedImage() const override {
     return identifiability_study_helper_.encountered_partially_digested_image();
   }
-
-  int LayerCount() const override;
 
   bool ShouldTriggerIntervention() const override {
     return HasTriggerForIntervention();

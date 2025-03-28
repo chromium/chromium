@@ -193,6 +193,51 @@ TEST_F(ManageSyncSettingsMediatorTest,
   }
 }
 
+// Tests the signout section items when manage storage is enabled.
+TEST_F(ManageSyncSettingsMediatorTest,
+       CheckSignOutSectionItemsForSignedInNotSyncingAccountWithStorage) {
+  feature_list_.InitAndEnableFeature(kIOSManageAccountStorage);
+  CreateManageSyncSettingsMediator();
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+
+  // Loads the Sync page.
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // Get section items.
+  NSArray* items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
+
+  ASSERT_GE([items count], 3u);
+  EXPECT_EQ(ManageGoogleAccountItemType,
+            base::apple::ObjCCastStrict<TableViewItem>(items[0]).type);
+  EXPECT_EQ(ManageAccountStorageType,
+            base::apple::ObjCCastStrict<TableViewItem>(items[1]).type);
+  EXPECT_EQ(ManageAccountsItemType,
+            base::apple::ObjCCastStrict<TableViewItem>(items[2]).type);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_GOOGLE_ACCOUNT_ITEM),
+              base::apple::ObjCCastStrict<TableViewTextItem>(items[0]).text);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_STORAGE_ITEM),
+              base::apple::ObjCCastStrict<TableViewTextItem>(items[1]).text);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM),
+              base::apple::ObjCCastStrict<TableViewTextItem>(items[2]).text);
+
+  // The "Sign out" item only exists in this section if
+  // kSeparateProfilesForManagedAccounts is disabled.
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    ASSERT_EQ([items count], 4u);
+    EXPECT_EQ(SignOutItemType,
+              base::apple::ObjCCastStrict<TableViewItem>(items[3]).type);
+    EXPECT_NSEQ(
+        l10n_util::GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM),
+        base::apple::ObjCCastStrict<TableViewTextItem>(items[3]).text);
+  } else {
+    ASSERT_EQ([items count], 3u);
+  }
+}
+
 // Tests that Sync errors display as a text button at the top of the page for a
 // signed in account.
 TEST_F(ManageSyncSettingsMediatorTest, TestSyncErrorsForSignedInAccount) {

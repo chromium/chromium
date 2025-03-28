@@ -223,7 +223,8 @@ bool PlatformAppBrowserTest::RunGetWindowFunctionForExtension(
   function->set_extension(extension);
   utils::RunFunction(function.get(), base::StringPrintf("[%u]", window_id),
                      browser()->profile(), api_test_utils::FunctionMode::kNone);
-  return *function->response_type() == ExtensionFunction::SUCCEEDED;
+  return *function->response_type() ==
+         ExtensionFunction::ResponseType::kSucceeded;
 }
 
 size_t PlatformAppBrowserTest::GetAppWindowCount() {

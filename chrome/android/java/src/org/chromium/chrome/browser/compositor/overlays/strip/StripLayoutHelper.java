@@ -118,11 +118,11 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.ui.MotionEventUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
@@ -2666,6 +2666,7 @@ public class StripLayoutHelper
             mTabCreator.launchNtp();
         }
         mIsStripScrollInProgress = false;
+        resetDelayedReorderState();
     }
 
     /** Handle view click * */
@@ -4516,9 +4517,25 @@ public class StripLayoutHelper
         }
     }
 
-    public void maybeMergeToGroupOnDrop(List<Integer> tabIds, int index) {
-        // TODO(crbug.com/405166521) Expand collapsed tabs when merged to group.
-        mReorderDelegate.handleDropForExternalView(mStripGroupTitles, tabIds, index);
+    /**
+     * Handles merging a group of tabs into an existing tab group on drop and expands them if the
+     * dropped group was collapsed.
+     *
+     * @param tabIds The list of tab IDs to merge into an existing group.
+     * @param index The index to insert the tabs.
+     * @param isCollapsed Whether the dropped group was collapsed before the drop.
+     */
+    public void maybeMergeToGroupOnDrop(List<Integer> tabIds, int index, boolean isCollapsed) {
+        boolean mergeToGroup =
+                mReorderDelegate.handleDropForExternalView(mStripGroupTitles, tabIds, index);
+
+        // Expand strip tabs if needed.
+        if (mergeToGroup && isCollapsed) {
+            // Selects the first tab in the collapsed group. For expanded groups, the correct tab
+            // should be selected during tab creation.
+            TabModelUtils.setIndex(mModel, index);
+            resizeTabStrip(/* animate= */ true, /* delay= */ false, /* deferAnimations= */ false);
+        }
     }
 
     public void stopReorderMode() {

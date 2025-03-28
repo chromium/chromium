@@ -5,12 +5,15 @@
 #include "ui/views/controls/button/toggle_button.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -101,18 +104,26 @@ class ToggleButton::ThumbView : public View {
                        : gfx::Insets();
   }
 
-  void SetThumbColor(bool is_on, SkColor thumb_color) {
+  void SetThumbColor(bool is_on, ui::ColorVariant thumb_color) {
     (is_on ? thumb_on_color_ : thumb_off_color_) = thumb_color;
-  }
-
-  std::optional<SkColor> GetThumbColor(bool is_on) const {
-    return (is_on ? thumb_on_color_ : thumb_off_color_).GetSkColor();
   }
 
  private:
   static constexpr int kShadowOffsetX = 0;
   static constexpr int kShadowOffsetY = 1;
   static constexpr int kShadowBlur = 2;
+
+  ui::ColorVariant GetThumbColor(bool is_on) const {
+    if (is_on) {
+      return thumb_on_color_.value_or(
+          GetEnabled() ? ui::kColorToggleButtonThumbOn
+                       : ui::kColorToggleButtonThumbOnDisabled);
+    }
+
+    return thumb_off_color_.value_or(
+        GetEnabled() ? ui::kColorToggleButtonThumbOff
+                     : ui::kColorToggleButtonThumbOffDisabled);
+  }
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override {
@@ -129,9 +140,9 @@ class ToggleButton::ThumbView : public View {
     }
     thumb_flags.setAntiAlias(true);
     const SkColor thumb_on_color =
-        thumb_on_color_.ConvertToSkColor(color_provider);
+        GetThumbColor(/*is_on=*/true).ConvertToSkColor(color_provider);
     const SkColor thumb_off_color =
-        thumb_off_color_.ConvertToSkColor(color_provider);
+        GetThumbColor(/*is_on=*/false).ConvertToSkColor(color_provider);
     SkColor thumb_color =
         color_utils::AlphaBlend(thumb_on_color, thumb_off_color, color_ratio_);
     if (is_hovered_ && is_on_) {
@@ -156,25 +167,12 @@ class ToggleButton::ThumbView : public View {
                        thumb_flags);
   }
 
-  void OnEnabledStateChanged() {
-    // If using default color ID, update it according to the enabled state.
-    if (thumb_on_color_.GetColorId()) {
-      thumb_on_color_ = GetEnabled() ? ui::kColorToggleButtonThumbOn
-                                     : ui::kColorToggleButtonThumbOnDisabled;
-    }
-
-    if (thumb_off_color_.GetColorId()) {
-      thumb_off_color_ = GetEnabled() ? ui::kColorToggleButtonThumbOff
-                                      : ui::kColorToggleButtonThumbOffDisabled;
-    }
-  }
-
   // Indicate if the thumb has shadow.
   const bool has_shadow_;
 
   // Colors used for the thumb.
-  ui::ColorVariant thumb_on_color_ = ui::kColorToggleButtonThumbOn;
-  ui::ColorVariant thumb_off_color_ = ui::kColorToggleButtonThumbOff;
+  std::optional<ui::ColorVariant> thumb_on_color_;
+  std::optional<ui::ColorVariant> thumb_off_color_;
 
   bool is_on_ = false;
   bool is_hovered_ = false;
@@ -183,12 +181,6 @@ class ToggleButton::ThumbView : public View {
   float color_ratio_ = 0.0f;
   // Color ratio between 0 and 1 that controls the thumb hover color.
   float hover_ratio_ = 0.0f;
-
-  // Callback when the enabled state changes.
-  base::CallbackListSubscription enabled_state_changed_subscription_{
-      AddEnabledChangedCallback(
-          base::BindRepeating(&ThumbView::OnEnabledStateChanged,
-                              base::Unretained(this)))};
 };
 
 ToggleButton::ToggleButton(PressedCallback callback)
@@ -300,36 +292,20 @@ bool ToggleButton::GetIsOn() const {
   return slide_animation_.IsShowing();
 }
 
-void ToggleButton::SetThumbOnColor(SkColor thumb_on_color) {
-  thumb_view_->SetThumbColor(true /* is_on */, thumb_on_color);
+void ToggleButton::SetThumbOnColor(ui::ColorVariant thumb_on_color) {
+  thumb_view_->SetThumbColor(/*is_on=*/true, thumb_on_color);
 }
 
-std::optional<SkColor> ToggleButton::GetThumbOnColor() const {
-  return thumb_view_->GetThumbColor(true);
+void ToggleButton::SetThumbOffColor(ui::ColorVariant thumb_off_color) {
+  thumb_view_->SetThumbColor(/*is_on=*/false, thumb_off_color);
 }
 
-void ToggleButton::SetThumbOffColor(SkColor thumb_off_color) {
-  thumb_view_->SetThumbColor(false /* is_on */, thumb_off_color);
-}
-
-std::optional<SkColor> ToggleButton::GetThumbOffColor() const {
-  return thumb_view_->GetThumbColor(false);
-}
-
-void ToggleButton::SetTrackOnColor(SkColor track_on_color) {
+void ToggleButton::SetTrackOnColor(ui::ColorVariant track_on_color) {
   track_on_color_ = track_on_color;
 }
 
-std::optional<SkColor> ToggleButton::GetTrackOnColor() const {
-  return track_on_color_.GetSkColor();
-}
-
-void ToggleButton::SetTrackOffColor(SkColor track_off_color) {
+void ToggleButton::SetTrackOffColor(ui::ColorVariant track_off_color) {
   track_off_color_ = track_off_color;
-}
-
-std::optional<SkColor> ToggleButton::GetTrackOffColor() const {
-  return track_off_color_.GetSkColor();
 }
 
 void ToggleButton::SetInnerBorderEnabled(bool enabled) {
@@ -407,16 +383,20 @@ void ToggleButton::UpdateThumb() {
     InkDrop::Get(this)->GetInkDrop()->SetHovered(
         !slide_animation_.is_animating());
   }
-  if (FocusRing::Get(this)) {
-    // Updating the thumb changes the result of GetFocusRingPath(), make sure
-    // the focus ring gets updated to match this new state.
-    FocusRing::Get(this)->InvalidateLayout();
-    FocusRing::Get(this)->SchedulePaint();
-  }
 }
 
 SkColor ToggleButton::GetTrackColor(bool is_on) const {
-  return (is_on ? track_on_color_ : track_off_color_)
+  const bool enabled = GetState() != ButtonState::STATE_DISABLED;
+  if (is_on) {
+    return track_on_color_
+        .value_or(enabled ? ui::kColorToggleButtonTrackOn
+                          : ui::kColorToggleButtonTrackOnDisabled)
+        .ConvertToSkColor(GetColorProvider());
+  }
+
+  return track_off_color_
+      .value_or(enabled ? ui::kColorToggleButtonTrackOff
+                        : ui::kColorToggleButtonTrackOffDisabled)
       .ConvertToSkColor(GetColorProvider());
 }
 
@@ -455,16 +435,6 @@ void ToggleButton::StateChanged(ButtonState old_state) {
 
   // Update default track color ID and propagate the enabled state to the thumb.
   const bool enabled = GetState() != ButtonState::STATE_DISABLED;
-  if (track_on_color_.GetColorId()) {
-    track_on_color_ = enabled ? ui::kColorToggleButtonTrackOn
-                              : ui::kColorToggleButtonTrackOnDisabled;
-  }
-
-  if (track_off_color_.GetColorId()) {
-    track_off_color_ = enabled ? ui::kColorToggleButtonTrackOff
-                               : ui::kColorToggleButtonTrackOffDisabled;
-  }
-
   thumb_view_->SetEnabled(enabled);
 
   // Update thumb bounds.

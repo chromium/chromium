@@ -49,11 +49,11 @@ std::optional<Value> ParseJsonHelper(std::string_view json,
   return std::move(*result);
 }
 
-bool CheckValue(const base::Value::Dict& dict,
+bool CheckValue(const Value::Dict& dict,
                 std::string_view template_key,
-                const base::Value& template_value,
+                const Value& template_value,
                 testing::MatchResultListener* listener) {
-  const base::Value* sub_value = dict.Find(template_key);
+  const Value* sub_value = dict.Find(template_key);
   if (!sub_value) {
     *listener << "\nDictionary does not have key '" << template_key << "'";
     return false;
@@ -73,7 +73,7 @@ namespace internal {
 
 DictionaryHasValueMatcher::DictionaryHasValueMatcher(
     std::string key,
-    const base::Value& expected_value)
+    const Value& expected_value)
     : key_(std::move(key)), expected_value_(expected_value.Clone()) {}
 
 DictionaryHasValueMatcher::DictionaryHasValueMatcher(std::string key,
@@ -93,7 +93,7 @@ DictionaryHasValueMatcher& DictionaryHasValueMatcher::operator=(
 DictionaryHasValueMatcher::~DictionaryHasValueMatcher() = default;
 
 bool DictionaryHasValueMatcher::MatchAndExplain(
-    const base::Value& value,
+    const Value& value,
     testing::MatchResultListener* listener) const {
   if (!value.is_dict()) {
     *listener << "Value is not a dictionary: " << FormatAsJSON(value);
@@ -103,7 +103,7 @@ bool DictionaryHasValueMatcher::MatchAndExplain(
 }
 
 bool DictionaryHasValueMatcher::MatchAndExplain(
-    const base::Value::Dict& dict,
+    const Value::Dict& dict,
     testing::MatchResultListener* listener) const {
   return CheckValue(dict, key_, expected_value_, listener);
 }
@@ -119,7 +119,7 @@ void DictionaryHasValueMatcher::DescribeNegationTo(std::ostream* os) const {
 }
 
 DictionaryHasValuesMatcher::DictionaryHasValuesMatcher(
-    const base::Value::Dict& template_value)
+    const Value::Dict& template_value)
     : template_value_(template_value.Clone()) {}
 
 DictionaryHasValuesMatcher::DictionaryHasValuesMatcher(
@@ -139,7 +139,7 @@ DictionaryHasValuesMatcher& DictionaryHasValuesMatcher::operator=(
 DictionaryHasValuesMatcher::~DictionaryHasValuesMatcher() = default;
 
 bool DictionaryHasValuesMatcher::MatchAndExplain(
-    const base::Value& value,
+    const Value& value,
     testing::MatchResultListener* listener) const {
   if (!value.is_dict()) {
     *listener << "Value is not a dictionary: " << FormatAsJSON(value);
@@ -149,7 +149,7 @@ bool DictionaryHasValuesMatcher::MatchAndExplain(
 }
 
 bool DictionaryHasValuesMatcher::MatchAndExplain(
-    const base::Value::Dict& dict,
+    const Value::Dict& dict,
     testing::MatchResultListener* listener) const {
   bool ok = true;
   for (auto [template_key, template_value] : template_value_) {
@@ -303,14 +303,14 @@ void IsSupersetOfValueMatcher::DescribeNegationTo(std::ostream* os) const {
 IsJsonMatcher::IsJsonMatcher(std::string_view json)
     : expected_value_(test::ParseJson(json)) {}
 
-IsJsonMatcher::IsJsonMatcher(const base::Value& value)
+IsJsonMatcher::IsJsonMatcher(const Value& value)
     : expected_value_(value.Clone()) {}
 
-IsJsonMatcher::IsJsonMatcher(const base::Value::Dict& value)
-    : expected_value_(base::Value(value.Clone())) {}
+IsJsonMatcher::IsJsonMatcher(const Value::Dict& value)
+    : expected_value_(Value(value.Clone())) {}
 
-IsJsonMatcher::IsJsonMatcher(const base::Value::List& value)
-    : expected_value_(base::Value(value.Clone())) {}
+IsJsonMatcher::IsJsonMatcher(const Value::List& value)
+    : expected_value_(Value(value.Clone())) {}
 
 IsJsonMatcher::IsJsonMatcher(Value&& value)
     : expected_value_(std::move(value)) {}
@@ -346,19 +346,19 @@ bool IsJsonMatcher::MatchAndExplain(
 }
 
 bool IsJsonMatcher::MatchAndExplain(
-    const base::Value& value,
+    const Value& value,
     testing::MatchResultListener* /* listener */) const {
   return expected_value_ == value;
 }
 
 bool IsJsonMatcher::MatchAndExplain(
-    const base::Value::Dict& dict,
+    const Value::Dict& dict,
     testing::MatchResultListener* /* listener */) const {
   return expected_value_.is_dict() && expected_value_.GetDict() == dict;
 }
 
 bool IsJsonMatcher::MatchAndExplain(
-    const base::Value::List& list,
+    const Value::List& list,
     testing::MatchResultListener* /* listener */) const {
   return expected_value_.is_list() && expected_value_.GetList() == list;
 }

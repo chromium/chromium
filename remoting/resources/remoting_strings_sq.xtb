@@ -40,6 +40,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="2758123043070977469">Ndodhi një gabim gjatë vërtetimit. Identifikohu sërish.</translation>
 <translation id="2803375539583399270">Fut kodin PIN</translation>
 <translation id="2919669478609886916">Aktualisht po e ndan këtë kompjuter me një përdorues tjetër. Dëshiron që të vazhdosh me ndarjen?</translation>
+<translation id="2929683002824598593">Ndaj pajisjen</translation>
 <translation id="2939145106548231838">Vërteto për të strehuar</translation>
 <translation id="3027681561976217984">Modaliteti "me prekje"</translation>
 <translation id="3106379468611574572">Kompjuteri në largësi nuk po i përgjigjet kërkesave për lidhje. Verifiko që është online dhe provo përsëri.</translation>
@@ -117,10 +118,12 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="6178645564515549384">Strehuesi origjinal i mesazheve për ndihmë në distancë</translation>
 <translation id="618120821413932081">Përditëso rezolucionin në largësi për përputhjen e dritares</translation>
 <translation id="6223301979382383752">Hap preferencat e "Regjistrimit të ekranit"</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> ka kërkuar qasje për të parë ekranin tënd dhe për të kontrolluar tastierën dhe miun tënd. Dëshiron ta ndash pajisjen tënde?</translation>
 <translation id="6284412385303060032">Strehuesi që ekzekutohet në ekranin logjik të panelit është mbyllur për të mbështetur modalitetin "perde" duke kaluar të një strehues që ekzekutohet në një sesion specifik përdoruesi.</translation>
 <translation id="6542902059648396432">Raporto një problem…</translation>
 <translation id="6583902294974160967">Mbështetja</translation>
 <translation id="6612717000975622067">Dërgo Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Nëse nuk ndërmerr veprim, pajisja jote do të fillojë të ndahet automatikisht pas # sekonde.}other{Nëse nuk ndërmerr veprim, pajisja jote do të fillojë të ndahet automatikisht pas # sekondash.}}</translation>
 <translation id="6654753848497929428">Ndaj</translation>
 <translation id="677755392401385740">Strehuesi u nis për përdoruesin: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Aplikacion ndihmës për të hapur një URL te klienti <ph name="PRODUCT_NAME" /></translation>

@@ -107,6 +107,10 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
     return ExternalProviderManager::Get(profile());
   }
 
+  ExtensionUpdater* extension_updater() {
+    return ExtensionUpdater::Get(profile());
+  }
+
   void InitService() {
 #if BUILDFLAG(IS_CHROMEOS)
     user_manager::ScopedUserManager scoped_user_manager(
@@ -114,7 +118,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 #endif
     InitializeExtensionServiceWithUpdaterAndPrefs();
 
-    service()->updater()->SetExtensionCacheForTesting(
+    extension_updater()->SetExtensionCacheForTesting(
         test_extension_cache_.get());
 
     // Don't install pre-installed apps. Some of the pre-installed apps are
@@ -179,7 +183,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
     params.prefs_content = "{}";
     params.autoupdate_enabled = true;
     InitializeExtensionService(std::move(params));
-    service_->updater()->Start();
+    extension_updater()->Start();
     content::RunAllTasksUntilIdle();
   }
 
@@ -200,7 +204,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 
   void TearDown() override {
     // Avoid dangling pointers.
-    service_->updater()->SetExtensionCacheForTesting(nullptr);
+    extension_updater()->SetExtensionCacheForTesting(nullptr);
     test_extension_cache_.reset();
     ExtensionServiceTestBase::TearDown();
   }

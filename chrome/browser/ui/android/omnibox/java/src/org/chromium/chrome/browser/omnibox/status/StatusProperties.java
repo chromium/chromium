@@ -271,8 +271,9 @@ public class StatusProperties {
     /** The StatusView tooltip text resource. */
     static final WritableIntPropertyKey STATUS_VIEW_TOOLTIP_TEXT = new WritableIntPropertyKey();
 
-    /** The StatusView hover highlight resource. */
-    static final WritableIntPropertyKey STATUS_VIEW_HOVER_HIGHLIGHT = new WritableIntPropertyKey();
+    /** The StatusView background drawable. */
+    static final WritableObjectPropertyKey<Drawable> STATUS_VIEW_BACKGROUND =
+            new WritableObjectPropertyKey<>();
 
     /** The x translation of the status view. */
     static final WritableFloatPropertyKey TRANSLATION_X = new WritableFloatPropertyKey();
@@ -314,7 +315,7 @@ public class StatusProperties {
                 STATUS_ICON_DESCRIPTION_RES,
                 STATUS_ICON_RESOURCE,
                 STATUS_VIEW_TOOLTIP_TEXT,
-                STATUS_VIEW_HOVER_HIGHLIGHT,
+                STATUS_VIEW_BACKGROUND,
                 TRANSLATION_X,
                 VERBOSE_STATUS_TEXT_COLOR,
                 VERBOSE_STATUS_TEXT_STRING_RES,

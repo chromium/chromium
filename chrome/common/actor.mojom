@@ -4,11 +4,39 @@
 
 module actor.mojom;
 
-// All information required to invoke a tool in the renderer.
-struct ToolInvocation {
+// This interface is meant to largely mirror the
+// BrowserAction::ActionInformation proto.
+
+// Tool-specific target.
+struct ToolTarget {
   // DOMNodeId for the node this invocation should be applied to.
   int32 dom_node_id;
+};
 
-  // TODO(crbug.com/6377727): Add details union which includes parameters
-  // for what type of tool to invoke and any details.
+// Information specific to a click action.
+struct ClickAction {
+    // Corresponds to ClickAction.ClickType
+  enum Type {
+    kLeft = 1,
+    kRight = 2,
+  };
+
+  // Corresponds to ClickAction.ClickCount
+  enum Count {
+    kSingle = 1,
+    kDouble = 2,
+  };
+  Type type;
+  Count count;
+  ToolTarget target;
+};
+
+// Union of tool-specific action.
+union ToolAction {
+  ClickAction click;
+};
+
+// All information required to invoke a tool in the renderer.
+struct ToolInvocation {
+  ToolAction action;
 };

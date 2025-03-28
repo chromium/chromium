@@ -8,16 +8,17 @@
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/common/fingerprinting_protection/canvas_noise_token.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/renderer/core/canvas_interventions/noise_hash.h"
 #include "third_party/blink/renderer/core/canvas_interventions/noise_helper.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/skia_span_util.h"
@@ -25,10 +26,6 @@
 namespace blink {
 
 namespace {
-
-// TODO(crbug.com/392627601): This value is a placeholder. Use the token that is
-// piped down from the browser.
-constexpr uint64_t kTokenForHash = 0x1234567890123456;
 
 // Returns true when all criteria to apply noising are met. Currently this
 // entails that
@@ -40,7 +37,6 @@ constexpr uint64_t kTokenForHash = 0x1234567890123456;
 bool ShouldApplyNoise(CanvasRenderingContext* rendering_context,
                       RasterMode raster_mode,
                       ExecutionContext* execution_context) {
-  // TODO(https://crbug.com/392627601): Ensure session seed is initialized.
   if (!rendering_context) {
     return false;
   }
@@ -59,26 +55,6 @@ bool ShouldApplyNoise(CanvasRenderingContext* rendering_context,
 }
 
 }  // namespace
-
-// static
-const char CanvasInterventionsHelper::kSupplementName[] =
-    "CanvasInterventionsHelper";
-
-CanvasInterventionsHelper::CanvasInterventionsHelper(ExecutionContext& context)
-    : Supplement<ExecutionContext>(context), execution_context_(context) {}
-
-// static
-// TODO(https://crbug.com/392627601): Pipe session seeds.
-CanvasInterventionsHelper* CanvasInterventionsHelper::Create(
-    ExecutionContext* context) {
-  CanvasInterventionsHelper* helper =
-      Supplement<ExecutionContext>::From<CanvasInterventionsHelper>(context);
-  if (!helper) {
-    helper = MakeGarbageCollected<CanvasInterventionsHelper>(*context);
-    Supplement<ExecutionContext>::ProvideTo(*context, helper);
-  }
-  return helper;
-}
 
 // static
 bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
@@ -116,19 +92,26 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
   base::span<uint8_t> modify_pixels =
       gfx::SkPixmapToWritableSpan(pixmap_to_noise);
 
-  // TODO(crbug.com/392627601): Use the token that is piped down from the
-  // browser.
-  auto token_hash =
-      NoiseHash(kTokenForHash, execution_context->GetSecurityOrigin()
-                                   ->GetOriginOrPrecursorOriginIfOpaque()
-                                   ->RegistrableDomain()
-                                   .Utf8());
+  auto token_hash = NoiseHash(CanvasNoiseToken::Get(),
+                              execution_context->GetSecurityOrigin()
+                                  ->GetOriginOrPrecursorOriginIfOpaque()
+                                  ->RegistrableDomain()
+                                  .Utf8());
   NoisePixels(token_hash, modify_pixels, pixmap_to_noise.width(),
               pixmap_to_noise.height());
 
   auto noised_image = bm.asImage();
   snapshot = blink::UnacceleratedStaticBitmapImage::Create(
       std::move(noised_image), snapshot->CurrentFrameOrientation());
+
+  execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kIntervention,
+      mojom::blink::ConsoleMessageLevel::kInfo,
+      "Noise was added to a canvas readback. If this has caused breakage, "
+      "please file a bug at https://issues.chromium.org/issues/"
+      "new?component=1456351&title=Canvas%20noise%20breakage. This "
+      "feature can be disabled through chrome://flags/#enable-canvas-noise"));
+
   return true;
 }
 }  // namespace blink

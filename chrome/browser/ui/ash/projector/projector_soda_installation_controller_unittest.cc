@@ -73,10 +73,12 @@ const char kNonEnglishLocale[] = "fr";
 class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
  public:
   ProjectorSodaInstallationControllerTest() {
+    // TODO: dorianbrandon - Remove finch flag from disabled list.
     scoped_feature_list_.InitWithFeatures(
         {features::kOnDeviceSpeechRecognition},
         {features::kInternalServerSideSpeechRecognition,
-         features::kForceEnableServerSideSpeechRecognition});
+         features::kForceEnableServerSideSpeechRecognition,
+         features::kInternalServerSideSpeechRecognitionUSMModelFinch});
   }
   ProjectorSodaInstallationControllerTest(
       const ProjectorSodaInstallationControllerTest&) = delete;

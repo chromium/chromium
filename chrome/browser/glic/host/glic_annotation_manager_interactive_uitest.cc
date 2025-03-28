@@ -390,7 +390,10 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, NoMatchFound) {
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        NavigationAfterScrollToRequest) {
   RunTestSequence(
-      InstrumentTab(kActiveTabId),                //
+      InstrumentTab(kActiveTabId),  //
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
       OpenGlicWindow(GlicWindowMode::kAttached),  //
       InsertFakeAnnotationService(),
       ScrollToAsync(ExactTextSelector("does not matter")),
@@ -406,7 +409,10 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        NewTabOpenedAfterScrollToRequest) {
   RunTestSequence(
-      InstrumentTab(kActiveTabId),                //
+      InstrumentTab(kActiveTabId),  //
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
       OpenGlicWindow(GlicWindowMode::kAttached),  //
       InsertFakeAnnotationService(),              //
       ScrollToAsync(ExactTextSelector("does not matter")),
@@ -416,9 +422,11 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
           glic::mojom::ScrollToErrorReason::kFocusedTabChangedOrNavigated));
 }
 
+// TODO (crbug.com/406528268): Delete or fix tests that are disabled because
+// kGlicAlwaysDetached is now default true.
 // Opens a new window while the GlicWindow is attached to the previous window.
 // This results in no tab being considered as focused by Glic.
-IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, NoFocusedTab) {
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, DISABLED_NoFocusedTab) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kAttached),  //
       InsertFakeAnnotationService(),              //
@@ -431,20 +439,26 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, NoFocusedTab) {
 // Sends a second scrollTo() request before the first request finishes
 // processing.
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, SecondScrollToRequest) {
-  RunTestSequence(InstrumentTab(kActiveTabId),
-                  OpenGlicWindow(GlicWindowMode::kAttached),
-                  InsertFakeAnnotationService(),
-                  ScrollToAsync(ExactTextSelector("Some text")),
-                  WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),
-                  ScrollToAsync(ExactTextSelector("Some text again")),
-                  WaitForScrollToError(
-                      glic::mojom::ScrollToErrorReason::kNewerScrollToCall));
+  RunTestSequence(
+      InstrumentTab(kActiveTabId),
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
+      OpenGlicWindow(GlicWindowMode::kAttached), InsertFakeAnnotationService(),
+      ScrollToAsync(ExactTextSelector("Some text")),
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),
+      ScrollToAsync(ExactTextSelector("Some text again")),
+      WaitForScrollToError(
+          glic::mojom::ScrollToErrorReason::kNewerScrollToCall));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
                        HighlightKeptAliveAfterScrollToRequestIsComplete) {
   RunTestSequence(
-      InstrumentTab(kActiveTabId),                //
+      InstrumentTab(kActiveTabId),  //
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
       OpenGlicWindow(GlicWindowMode::kAttached),  //
       InsertFakeAnnotationService(),              //
       ScrollToAsync(ExactTextSelector("does not matter")),
@@ -462,7 +476,10 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
   RunTestSequence(
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kActivateSurfaceIncompatibilityNotice),
-      InstrumentTab(kActiveTabId),                //
+      InstrumentTab(kActiveTabId),  //
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
       OpenGlicWindow(GlicWindowMode::kAttached),  //
       FocusWebContents(kGlicContentsElementId),   //
       InsertFakeAnnotationService(),              //

@@ -94,16 +94,23 @@ struct AccountInfo : public CoreAccountInfo {
   // one field was updated.
   bool UpdateWith(const AccountInfo& other);
 
-  // Helper functions returning whether the account is managed (hosted_domain
-  // is different from kNoHostedDomainFound). Returns false for gmail.com
-  // accounts and other non-managed accounts like yahoo.com. Returns false if
-  // hosted_domain is still unknown (empty), this information will become
-  // available asynchronously.
+  // Returns whether the given `hosted_domain` is managed (different from
+  // kNoHostedDomainFound). Returns false for gmail.com and other non-managed
+  // domains like yahoo.com.
+  // NOTE: Also returns false if `hosted_domain` is still unknown (empty). If
+  // you need to distinguish this case, check `hosted_domain.empty()` first!
+  // TODO(crbug.com/406436335): Change the return type to signin::Tribool.
   static bool IsManaged(const std::string& hosted_domain);
 
   // Returns true if the account has no hosted domain but is a dasher account.
   bool IsMemberOfFlexOrg() const;
 
+  // Returns whether the account is managed (`hosted_domain` is different from
+  // kNoHostedDomainFound). Returns false for gmail.com accounts and other
+  // non-managed accounts like yahoo.com.
+  // NOTE: Also returns false if `hosted_domain` is still unknown (empty). If
+  // you need to distinguish this case, check `hosted_domain.empty()` first!
+  // TODO(crbug.com/406436335): Change the return type to signin::Tribool.
   bool IsManaged() const;
 
   bool IsEduAccount() const;

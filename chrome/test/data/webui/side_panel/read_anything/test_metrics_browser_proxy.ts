@@ -22,6 +22,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordSpeechError',
       'recordSpeechPlaybackLength',
       'recordSpeechSettingsChange',
+      'recordSpeechStopSource',
       'recordTextSettingsChange',
       'recordTime',
       'recordVoiceSpeed',
@@ -67,6 +68,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordSpeechSettingsChange(settingsChange: ReadAloudSettingsChange) {
     this.methodCalled('recordSpeechSettingsChange', settingsChange);
+  }
+
+  recordSpeechStopSource(source: number) {
+    this.methodCalled('recordSpeechStopSource', source);
   }
 
   recordVoiceSpeed(index: number) {

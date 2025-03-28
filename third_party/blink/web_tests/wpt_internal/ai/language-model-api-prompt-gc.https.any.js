@@ -6,7 +6,7 @@ promise_test(async () => {
   await ensureLanguageModel();
 
   // Start a new session.
-  const session = await ai.languageModel.create();
+  const session = await LanguageModel.create();
   // Test the prompt API.
   const promptPromise = session.prompt(kTestPrompt);
   // Run GC.

@@ -1058,12 +1058,14 @@ class JsonUtilTest(unittest.TestCase):
           'win-11-perf',
           '',
           False,
+          False,
           [],
       ),
       (
           'empty_builder_name',
           '',
           'ChromiumPerf',
+          False,
           False,
           [],
       ),
@@ -1072,19 +1074,39 @@ class JsonUtilTest(unittest.TestCase):
           'win-10-perf',
           'ChromiumPerf',
           False,
+          False,
           ['chrome-perf-public', 'chrome-perf-non-public'],
+      ),
+      (
+          'public_builder_with_copy_to_experiment',
+          'win-10-perf',
+          'ChromiumPerf',
+          False,
+          True,
+          ['chrome-perf-public', 'chrome-perf-non-public',
+           'chrome-perf-experiment-non-public'],
       ),
       (
           'internal_builder',
           'win-11-perf',
           'ChromiumPerf',
           False,
+          False,
+          ['chrome-perf-non-public'],
+      ),
+      (
+          'internal_builder_with_copy_to_experiment',
+          'win-11-perf',
+          'ChromiumPerf',
+          False,
+          True,
           ['chrome-perf-non-public'],
       ),
       (
           'another_internal_builder',
           'android-pixel6-perf',
           'ChromiumPerf',
+          False,
           False,
           ['chrome-perf-non-public'],
       ),
@@ -1093,18 +1115,21 @@ class JsonUtilTest(unittest.TestCase):
           'win-11-perf',
           'ChromiumPerf',
           True,
+          False,
           ['chrome-perf-experiment-non-public'],
       ),
   ])
   def test_gcs_buckets_from_builder_name(
-      self, _, builder_name, master_name, experiment_only, expected):
+      self, _, builder_name, master_name, experiment_only,
+      copy_to_experiment, expected):
     with mock.patch('builtins.open', new_callable=mock.mock_open) as mock_open:
       mock_open.return_value.__enter__.return_value.read.return_value = (
           '{"public_perf_builders": ["win-10-perf"]}')
       got = json_util.gcs_buckets_from_builder_name(
           builder_name=builder_name,
           master_name=master_name,
-          experiment_only=experiment_only)
+          experiment_only=experiment_only,
+          public_copy_to_experiment=copy_to_experiment)
       self.assertEqual(got, expected)
 
   @parameterized.expand([

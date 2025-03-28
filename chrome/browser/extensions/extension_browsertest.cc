@@ -203,9 +203,9 @@ void ExtensionBrowserTest::SetUpOnMainThread() {
           ? std::make_unique<ChromeExtensionTestNotificationObserver>(browser())
           : std::make_unique<ChromeExtensionTestNotificationObserver>(
                 profile());
-  if (extension_service()->updater()) {
-    extension_service()->updater()->SetExtensionCacheForTesting(
-        test_extension_cache_.get());
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
+  if (updater->enabled()) {
+    updater->SetExtensionCacheForTesting(test_extension_cache_.get());
   }
 
   content::URLDataSource::Add(profile(),

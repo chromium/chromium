@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] RTCOutboundRtpStreamStats does not exist as early as have-local-offer
+  assert_false: outbound-rtp does not exist in have-local-offer expected false got true
+[FAIL] RTCInboundRtpStreamStats are created by packet reception
+  assert_false: inbound-rtp does not exist before packets are received expected false got true
+Harness: the test ran to completion.
+

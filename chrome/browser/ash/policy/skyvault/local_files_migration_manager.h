@@ -74,6 +74,10 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // Removes an observer.
   void RemoveObserver(Observer* observer);
 
+  // Returns the scheduled start time for local file migration or deletion.
+  // TODO(401176561): Remove if we'll switch to a pref instead.
+  base::Time GetMigrationStartTime() const;
+
   // Injects a mock MigrationNotificationManager for tests.
   void SetNotificationManagerForTesting(
       MigrationNotificationManager* notification_manager);

@@ -263,10 +263,17 @@ class ExtensionPolicyTest : public ExtensionPolicyTestBase {
 
   void SetUpOnMainThread() override {
     ExtensionPolicyTestBase::SetUpOnMainThread();
-    if (extension_service()->updater()) {
-      extension_service()->updater()->SetExtensionCacheForTesting(
+    if (extension_updater()->enabled()) {
+      extension_updater()->SetExtensionCacheForTesting(
           test_extension_cache_.get());
     }
+  }
+
+  void TearDownOnMainThread() override {
+    if (extension_updater()->enabled()) {
+      extension_updater()->SetExtensionCacheForTesting(nullptr);
+    }
+    ExtensionPolicyTestBase::TearDownOnMainThread();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -292,6 +299,10 @@ class ExtensionPolicyTest : public ExtensionPolicyTestBase {
 
   extensions::ExtensionRegistry* extension_registry() {
     return extensions::ExtensionRegistry::Get(browser()->profile());
+  }
+
+  extensions::ExtensionUpdater* extension_updater() {
+    return extensions::ExtensionUpdater::Get(browser()->profile());
   }
 
   web_app::WebAppProvider* web_app_provider() {
@@ -835,7 +846,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   PolicyMap policies;
 
   TestFuture<std::optional<CrxInstallError>> installer_done_future;
-  extension_service()->updater()->SetCrxInstallerResultCallbackForTesting(
+  extension_updater()->SetCrxInstallerResultCallbackForTesting(
       installer_done_future
           .GetCallback<const std::optional<CrxInstallError>&>());
 
@@ -876,7 +887,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   // installation fails due to version mismatch.
   extensions::ExtensionCache* cache =
       extensions::ExtensionsBrowserClient::Get()->GetExtensionCache();
-  extension_service()->updater()->SetExtensionCacheForTesting(cache);
+  extension_updater()->SetExtensionCacheForTesting(cache);
 
   base::FilePath extension_path(ui_test_utils::GetTestFilePath(
       base::FilePath(kTestExtensionsDir), base::FilePath(kGoodCrxName)));
@@ -916,7 +927,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   PolicyMap policies;
 
   TestFuture<std::optional<CrxInstallError>> installer_done_future;
-  extension_service()->updater()->SetCrxInstallerResultCallbackForTesting(
+  extension_updater()->SetCrxInstallerResultCallbackForTesting(
       installer_done_future
           .GetCallback<const std::optional<CrxInstallError>&>());
 
@@ -956,7 +967,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
   // Mark as enterprise managed.
   policy::ScopedDomainEnterpriseManagement scoped_domain;
   ExtensionRequestInterceptor interceptor;
-  extensions::ExtensionService* service = extension_service();
   extensions::ExtensionRegistry* registry = extension_registry();
   ASSERT_FALSE(registry->GetExtensionById(
       kGoodCrxId, extensions::ExtensionRegistry::EVERYTHING));
@@ -1041,7 +1051,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
       extensions::mojom::ViewType::kExtensionBackgroundPage);
 
   // Updating the force-installed extension.
-  extensions::ExtensionUpdater* updater = service->updater();
+  extensions::ExtensionUpdater* updater = extension_updater();
   extensions::ExtensionUpdater::CheckParams params;
   params.install_immediately = true;
   extensions::TestExtensionRegistryObserver update_observer(
@@ -1106,8 +1116,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, UpdateExtensionWithProdversionmin) {
 
   // Update the extension and verify the version according to "prodversionmin"
   // in the update manifest.
-  extensions::ExtensionService* service = extension_service();
-  extensions::ExtensionUpdater* updater = service->updater();
+  extensions::ExtensionUpdater* updater = extension_updater();
   extensions::ExtensionUpdater::CheckParams params;
   params.install_immediately = true;
   extensions::TestExtensionRegistryObserver update_observer(
@@ -1192,8 +1201,8 @@ class ExtensionPinningTest : public extensions::ExtensionBrowserTest {
       return nullptr;
     }
 
-    extensions::ExtensionService* service = extension_service();
-    extensions::ExtensionUpdater* updater = service->updater();
+    extensions::ExtensionUpdater* updater =
+        extensions::ExtensionUpdater::Get(browser()->profile());
     extensions::ExtensionUpdater::CheckParams params;
     params.install_immediately = true;
 
@@ -1721,7 +1730,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   GURL url =
       embedded_test_server()->GetURL("/extensions/good_v1_update_manifest.xml");
 
-  extension_service()->updater()->SetBackoffPolicyForTesting(
+  extension_updater()->SetBackoffPolicyForTesting(
       kDefaultBackOffPolicyForTesting);
 
   base::FilePath extension_path(ui_test_utils::GetTestFilePath(
@@ -1780,7 +1789,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelistOffline) {
           return true;
         }));
   }
-  extension_service()->updater()->SetBackoffPolicyForTesting(
+  extension_updater()->SetBackoffPolicyForTesting(
       kDefaultBackOffPolicyForTesting);
 
   base::FilePath extension_path(ui_test_utils::GetTestFilePath(
@@ -2019,7 +2028,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionMinimumVersionRequired) {
         return true;
       }));
 
-  extensions::ExtensionService* service = extension_service();
   extensions::ExtensionRegistry* registry = extension_registry();
   extensions::ExtensionPrefs* extension_prefs =
       extensions::ExtensionPrefs::Get(browser()->profile());
@@ -2059,7 +2067,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionMinimumVersionRequired) {
   EXPECT_TRUE(update_extension_count.IsOne());
   {
     extensions::TestExtensionRegistryObserver update_observer(registry);
-    service->updater()->CheckSoon();
+    extension_updater()->CheckSoon();
     update_observer.WaitForExtensionWillBeInstalled();
   }
   EXPECT_EQ(2, update_extension_count.SubtleRefCountForDebug());
@@ -2469,11 +2477,9 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
 
     profile2_ = CreateProfile(&profile2_policy_);
 
-    auto* service1 = CreateExtensionService(profile1_);
-    auto* service2 = CreateExtensionService(profile2_);
-    service1->updater()->SetExtensionCacheForTesting(
+    extensions::ExtensionUpdater::Get(profile1_)->SetExtensionCacheForTesting(
         test_extension_cache1_.get());
-    service2->updater()->SetExtensionCacheForTesting(
+    extensions::ExtensionUpdater::Get(profile1_)->SetExtensionCacheForTesting(
         test_extension_cache2_.get());
     registrar1_ = extensions::ExtensionRegistrar::Get(profile1_);
     registrar2_ = extensions::ExtensionRegistrar::Get(profile2_);
@@ -2539,13 +2545,6 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
         profile_manager->GenerateNextProfileDirectoryPath();
     // Create an additional profile.
     return &profiles::testing::CreateProfileSync(profile_manager, path_profile);
-  }
-
-  extensions::ExtensionService* CreateExtensionService(
-      content::BrowserContext* context) {
-    extensions::ExtensionSystem* system =
-        extensions::ExtensionSystem::Get(context);
-    return system->extension_service();
   }
 
   extensions::ExtensionRegistry* CreateExtensionRegistry(

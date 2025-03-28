@@ -971,6 +971,10 @@ void VariationsService::RecordSuccessfulFetch() {
   safe_seed_manager_.RecordSuccessfulFetch(field_trial_creator_.seed_store());
 }
 
+VariationsSeedStore* VariationsService::GetSeedStoreForTesting() {
+  return field_trial_creator_.seed_store();
+}
+
 std::unique_ptr<ClientFilterableState>
 VariationsService::GetClientFilterableStateForVersion() {
   const base::Version current_version(version_info::GetVersionNumber());

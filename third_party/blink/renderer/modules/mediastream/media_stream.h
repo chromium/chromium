@@ -114,8 +114,8 @@ class MODULES_EXPORT MediaStream final
   // Adds the track, this may cause "onactive" to fire but it won't cause
   // "onaddtrack" because the track was added explicitly by the JavaScript
   // application.
-  void addTrack(MediaStreamTrack*, ExceptionState&);
-  void removeTrack(MediaStreamTrack*, ExceptionState&);
+  void addTrack(v8::Isolate*, MediaStreamTrack*, ExceptionState&);
+  void removeTrack(v8::Isolate*, MediaStreamTrack*, ExceptionState&);
   MediaStreamTrack* getTrackById(String);
   MediaStream* clone(ScriptState*);
 

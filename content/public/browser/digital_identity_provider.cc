@@ -7,7 +7,7 @@
 namespace content {
 DigitalIdentityProvider::DigitalCredential::DigitalCredential(
     std::optional<std::string> protocol,
-    std::string data)
+    std::optional<base::Value> data)
     : protocol(std::move(protocol)), data(std::move(data)) {}
 DigitalIdentityProvider::DigitalCredential::DigitalCredential(
     DigitalCredential&& other) = default;

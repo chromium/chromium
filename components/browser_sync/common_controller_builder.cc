@@ -920,8 +920,6 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
             std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
                 delegate),
             sync_service, identity_manager_.value()));
-
-    // In CLs #5, #6, ..., implement the bridge and keep adding unit tests.
   }
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -26,6 +26,7 @@ android_library("sync_java") {
     "//base:base_java",
     "//base:service_loader_java",
     "//components/signin/public/android:java",
+    "//google_apis/gaia/android:java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",

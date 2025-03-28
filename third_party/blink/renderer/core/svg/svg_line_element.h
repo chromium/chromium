@@ -35,6 +35,7 @@ class SVGLineElement final : public SVGGeometryElement {
   explicit SVGLineElement(Document&);
 
   Path AsPath() const override;
+  PathBuilder AsMutablePath() const override;
 
   SVGAnimatedLength* x1() const { return x1_.Get(); }
   SVGAnimatedLength* y1() const { return y1_.Get(); }

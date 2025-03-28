@@ -109,8 +109,8 @@ constexpr int kEncodingQualityJpeg = 40;
 
 // Lens POST request parameters.
 constexpr char kQueryParamEntryPointName[] = "ep";
-constexpr char kQueryParamEntryPointValueLauncher[] = "63";
-constexpr char kQueryParamEntryPointValueScreenshot[] = "64";
+constexpr char kQueryParamEntryPointValueLauncher[] = "crosl";
+constexpr char kQueryParamEntryPointValueScreenshot[] = "crosrs";
 constexpr char kQueryParamSurfaceName[] = "s";
 constexpr char kQueryParamSurfaceValue[] = "43";
 constexpr char kQueryParamViewportWidthName[] = "vpw";

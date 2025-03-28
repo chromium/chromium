@@ -43,4 +43,20 @@ bool StructTraits<network::mojom::LockNameDataView, std::string>::Read(
   return !network::IsReservedLockName(*out_value);
 }
 
+// static
+bool StructTraits<
+    network::mojom::SharedStorageBatchUpdateMethodsArgumentDataView,
+    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>>::
+    Read(network::mojom::SharedStorageBatchUpdateMethodsArgumentDataView data,
+         std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>*
+             out_value) {
+  if (!data.ReadData(out_value)) {
+    return false;
+  }
+
+  // TODO(crbug.com/404568020): Add validation when we switch to disallow the
+  // 'withLock' option for methods within batchUpdate().
+  return true;
+}
+
 }  // namespace mojo

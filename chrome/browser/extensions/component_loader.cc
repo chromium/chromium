@@ -14,7 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/time/time.h"
@@ -214,16 +214,13 @@ void ComponentLoader::LoadAll() {
 
 std::optional<base::Value::Dict> ComponentLoader::ParseManifest(
     std::string_view manifest_contents) const {
-  JSONStringValueDeserializer deserializer(manifest_contents);
-  std::unique_ptr<base::Value> manifest =
-      deserializer.Deserialize(nullptr, nullptr);
-
-  if (!manifest.get() || !manifest->is_dict()) {
+  std::optional<base::Value::Dict> manifest =
+      base::JSONReader::ReadDict(manifest_contents);
+  if (!manifest) {
     LOG(ERROR) << "Failed to parse extension manifest.";
     return std::nullopt;
   }
-
-  return std::move(*manifest).TakeDict();
+  return manifest;
 }
 
 ExtensionId ComponentLoader::Add(int manifest_resource_id,

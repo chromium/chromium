@@ -38,6 +38,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_constraints.h"
 #include "ui/ozone/platform/wayland/host/xdg_activation.h"
+#include "ui/ozone/platform/wayland/host/xdg_session.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/platform_window_delegate.h"
@@ -78,6 +79,16 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
   TriggerStateChanges(GetPlatformWindowState());
   SetUpShellIntegration();
   OnDecorationModeChanged();
+
+  // If session management is supported and session data was passed in at
+  // construction time, with a valid `restore_id`, restoring this toplevel
+  // must be done now, before the first wl_surface commit. The remaining
+  // handling steps are done when the first xdg_surface.configure comes in
+  // (see HandleToplevelConfigure and UpdateSessionStateIfNeeded).
+  if (session_ && session_data_->restore_id) {
+    toplevel_session_ = session_->TrackToplevel(
+        this, session_data_->restore_id.value(), XdgSession::Action::kRestore);
+  }
 
   if (!initial_icon_.isNull()) {
     SetWindowIcons(gfx::ImageSkia(), initial_icon_);
@@ -141,6 +152,7 @@ void WaylandToplevelWindow::Hide() {
   if (gtk_surface1_)
     gtk_surface1_.reset();
 
+  toplevel_session_.reset();
   shell_toplevel_.reset();
   ClearInFlightRequestsSerial();
 
@@ -430,6 +442,7 @@ void WaylandToplevelWindow::HandleToplevelConfigure(
     int32_t height_dip,
     const WindowStates& window_states) {
   HandleToplevelConfigureWithOrigin(0, 0, width_dip, height_dip, window_states);
+  UpdateSessionStateIfNeeded();
 }
 
 void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
@@ -564,6 +577,21 @@ bool WaylandToplevelWindow::OnInitialize(
   if (properties.icon) {
     initial_icon_ = *properties.icon;
   }
+
+  if (!properties.session_id.empty()) {
+    session_data_ = PlatformSessionWindowData{
+        .session_id = properties.session_id,
+        .window_id = properties.session_window_new_id,
+        .restore_id = properties.session_window_restore_id,
+    };
+    if (auto* session_manager = connection()->session_manager()) {
+      session_ = session_manager->GetSession(session_data_->session_id);
+      if (session_) {
+        session_observer_.Observe(session_);
+      }
+    }
+  }
+
   return true;
 }
 
@@ -681,6 +709,12 @@ void WaylandToplevelWindow::DumpState(std::ostream& out) const {
   out << ", title=" << window_title_
       << ", is_active=" << ToBoolString(is_active_)
       << ", system_modal=" << ToBoolString(system_modal_);
+}
+
+void WaylandToplevelWindow::OnSessionDestroying() {
+  toplevel_session_.reset();
+  session_observer_.Reset();
+  session_ = nullptr;
 }
 
 void WaylandToplevelWindow::UpdateSystemModal() {
@@ -854,6 +888,27 @@ void WaylandToplevelWindow::UpdateWindowMask() {
                               : std::nullopt));
   root_surface()->set_input_region(input_region_px_ ? input_region_px_
                                                     : region);
+}
+
+void WaylandToplevelWindow::UpdateSessionStateIfNeeded() {
+  CHECK(shell_toplevel_);
+  if (!session_) {
+    return;
+  }
+  // If we're handling the first configure sequence and a `toplevel_session_`
+  // was instantiated at window creation (see CreateShellToplevel), it must be
+  // removed now, so the requested `new_id` can be associated to this window.
+  // Note that IsConfigured returns true only after the first ack_configure.
+  if (!shell_toplevel_->IsConfigured()) {
+    const auto& session_data = session_data_.value();
+    if (toplevel_session_) {
+      CHECK(session_data.restore_id.has_value());
+      toplevel_session_->Remove();
+    }
+    toplevel_session_ = session_->TrackToplevel(this, session_data.window_id,
+                                                XdgSession::Action::kAdd);
+    connection()->Flush();
+  }
 }
 
 }  // namespace ui

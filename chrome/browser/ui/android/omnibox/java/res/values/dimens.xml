@@ -121,8 +121,6 @@ found in the LICENSE file.
     <dimen name="omnibox_search_engine_logo_composed_size">24dp</dimen>
 
     <!-- Button highlight dimensions. -->
-    <dimen name="toolbar_button_highlight_size">40dp</dimen>
-    <dimen name="status_view_highlight_size">32dp</dimen>
     <dimen name="status_view_verbose_highlight_width">94dp</dimen>
     <dimen name="status_view_verbose_highlight_height">40dp</dimen>
     <dimen name="location_bar_status_icon_area_size">32dp</dimen>

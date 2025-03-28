@@ -92,7 +92,7 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   base::TimeDelta AssignMonotonicTimestamp(base::TimeDelta real_timestamp);
   base::TimeDelta RetrieveRealTimestamp(base::TimeDelta monotonic_timestamp);
 
-  bool ResetMediaCodec();
+  EncoderStatus ResetMediaCodec();
 
   void SetEncoderColorSpace();
 

@@ -162,7 +162,16 @@ bool ShouldBeInlinified(const Element* element) {
   if (!element) {
     return true;
   }
-  const Element* parent = element->ParentOrShadowHostElement();
+  const Element* parent;
+  if (RuntimeEnabledFeatures::RubyFieldsetCrashFixEnabled()) {
+    parent = FlatTreeTraversal::ParentElement(*element);
+    while (parent &&
+           parent->GetComputedStyle()->Display() == EDisplay::kContents) {
+      parent = FlatTreeTraversal::ParentElement(*parent);
+    }
+  } else {
+    parent = element->ParentOrShadowHostElement();
+  }
   return !IsA<HTMLFieldSetElement>(parent) && !IsA<HTMLMediaElement>(parent);
 }
 

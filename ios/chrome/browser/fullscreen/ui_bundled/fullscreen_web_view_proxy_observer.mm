@@ -58,7 +58,7 @@
   // Exit fullscreen when the status bar is tapped, but don't allow the scroll-
   // to-top animation to occur if the toolbars are fully collapsed.
   BOOL scrollToTop = !AreCGFloatsEqual(self.model->progress(), 0.0);
-  self.mediator->ExitFullscreen();
+  self.mediator->ExitFullscreen(FullscreenExitReason::kUserTapped);
   return scrollToTop;
 }
 

@@ -86,8 +86,8 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
     private void updateBackgroundHighlight(@BrandedColorScheme int brandedColorScheme) {
         final @DrawableRes int backgroundRes =
                 brandedColorScheme == BrandedColorScheme.INCOGNITO
-                        ? R.drawable.toolbar_button_ripple_incognito
-                        : R.drawable.toolbar_button_ripple;
+                        ? R.drawable.default_icon_background_baseline
+                        : R.drawable.default_icon_background;
         mModel.set(ReloadButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE, backgroundRes);
     }
 

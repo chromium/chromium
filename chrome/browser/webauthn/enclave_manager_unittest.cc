@@ -830,7 +830,8 @@ TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccount) {
   ASSERT_TRUE(manager_.has_pending_keys());
 
   BoolFuture add_future;
-  manager_.AddDeviceAndPINToAccount(pin, add_future.GetCallback());
+  manager_.AddDeviceAndPINToAccount(
+      pin, /*previous_pin_public_key=*/std::nullopt, add_future.GetCallback());
   EXPECT_TRUE(add_future.Wait());
   ASSERT_TRUE(manager_.is_ready());
   ASSERT_TRUE(manager_.has_wrapped_pin());
@@ -852,6 +853,39 @@ TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccount) {
               GetAssertionResponseExpectation());
 }
 
+TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccountWithPreviouslyInvalidPIN) {
+  // First, set up with a PIN.
+  security_domain_service_->pretend_there_are_members();
+  const std::string pin = "pin";
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  manager_.StoreKeys(gaia_id_, {key},
+                     /*last_key_version=*/kSecretVersion);
+  {
+    BoolFuture add_future;
+    manager_.AddDeviceAndPINToAccount(pin,
+                                      /*previous_pin_public_key=*/std::nullopt,
+                                      add_future.GetCallback());
+    ASSERT_TRUE(add_future.Wait());
+    ASSERT_TRUE(add_future.Get());
+  }
+  // Then, make the PIN unusable and reset the registration.
+  security_domain_service_->MakePinMemberUnusable();
+  manager_.ClearRegistrationForTesting();
+  manager_.StoreKeys(gaia_id_, {key},
+                     /*last_key_version=*/kSecretVersion);
+  {
+    // Verify that attempting to register with a PIN succeeds when the public
+    // key of the obsolete PIN is set.
+    BoolFuture add_future;
+    manager_.AddDeviceAndPINToAccount(
+        pin, security_domain_service_->GetPinMemberPublicKey(),
+        add_future.GetCallback());
+    ASSERT_TRUE(add_future.Wait());
+    EXPECT_TRUE(add_future.Get());
+  }
+}
+
 TEST_F(EnclaveManagerTest, ChangePIN) {
   security_domain_service_->pretend_there_are_members();
   const std::string pin = "pin";
@@ -864,7 +898,8 @@ TEST_F(EnclaveManagerTest, ChangePIN) {
   ASSERT_TRUE(manager_.has_pending_keys());
 
   BoolFuture add_future;
-  manager_.AddDeviceAndPINToAccount(pin, add_future.GetCallback());
+  manager_.AddDeviceAndPINToAccount(
+      pin, /*previous_pin_public_key=*/std::nullopt, add_future.GetCallback());
   EXPECT_TRUE(add_future.Wait());
   ASSERT_TRUE(manager_.is_ready());
   ASSERT_TRUE(manager_.has_wrapped_pin());
@@ -945,7 +980,8 @@ TEST_F(EnclaveManagerTest, AddPINToExistingAccountButTheresAlreadyOne) {
   ASSERT_TRUE(manager_.has_pending_keys());
 
   BoolFuture add_future;
-  manager_.AddDeviceAndPINToAccount(pin, add_future.GetCallback());
+  manager_.AddDeviceAndPINToAccount(
+      pin, /*previous_pin_public_key=*/std::nullopt, add_future.GetCallback());
   EXPECT_TRUE(add_future.Wait());
   ASSERT_TRUE(manager_.is_ready());
   const std::vector<uint8_t> security_domain_secret =
@@ -982,7 +1018,9 @@ TEST_F(EnclaveManagerTest, ChangePINWithTwoDevices) {
   LOG(INFO) << "Adding first manager";
   {
     BoolFuture add_future;
-    manager_.AddDeviceAndPINToAccount(pin, add_future.GetCallback());
+    manager_.AddDeviceAndPINToAccount(pin,
+                                      /*previous_pin_public_key=*/std::nullopt,
+                                      add_future.GetCallback());
     EXPECT_TRUE(add_future.Wait());
     ASSERT_TRUE(add_future.Get());
   }
@@ -1071,7 +1109,9 @@ TEST_F(EnclaveManagerTest, EnclaveForgetsClient_AddDeviceAndPINToAccount) {
   manager_.StoreKeys(gaia_id_, {std::move(key)},
                      /*last_key_version=*/417);
   BoolFuture add_future;
-  manager_.AddDeviceAndPINToAccount("1234", add_future.GetCallback());
+  manager_.AddDeviceAndPINToAccount("1234",
+                                    /*previous_pin_public_key=*/std::nullopt,
+                                    add_future.GetCallback());
   EXPECT_TRUE(add_future.Wait());
   EXPECT_FALSE(add_future.Get());
 }
@@ -1232,6 +1272,7 @@ TEST_F(EnclaveManagerTest, EpochChanged) {
 
 TEST_F(EnclaveManagerTest, PINChanged) {
   ASSERT_TRUE(Register());
+  constexpr std::string_view kNewWrappedPin = "dummy wrapped pin >= 29 chars";
 
   BoolFuture setup_future;
   manager_.SetupWithPIN("123456", setup_future.GetCallback());
@@ -1241,16 +1282,16 @@ TEST_F(EnclaveManagerTest, PINChanged) {
   const webauthn_pb::EnclaveLocalState::User& user =
       manager_.local_state_for_testing().users().begin()->second;
   webauthn_pb::EnclaveLocalState::WrappedPIN wrapped_pin = user.wrapped_pin();
-  wrapped_pin.set_generation(wrapped_pin.generation() + 1);
+  wrapped_pin.set_wrapped_pin(kNewWrappedPin);
 
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult state;
   state.state = trusted_vault::
       DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
   state.key_version = kSecretVersion;
   state.gpm_pin_metadata = trusted_vault::GpmPinMetadata(
-      user.pin_public_key(), trusted_vault::UsableRecoveryPinMetadata(
-                                 wrapped_pin.SerializeAsString(),
-                                 /*expiry=*/base::Time::FromTimeT(1)));
+      "new public key", trusted_vault::UsableRecoveryPinMetadata(
+                            wrapped_pin.SerializeAsString(),
+                            /*expiry=*/base::Time::FromTimeT(1)));
 
   BoolFuture update_future;
   EXPECT_TRUE(
@@ -1259,7 +1300,7 @@ TEST_F(EnclaveManagerTest, PINChanged) {
   EXPECT_TRUE(manager_.is_ready());
   const webauthn_pb::EnclaveLocalState::User& updated_user =
       manager_.local_state_for_testing().users().begin()->second;
-  EXPECT_EQ(updated_user.wrapped_pin().generation(), wrapped_pin.generation());
+  EXPECT_EQ(updated_user.wrapped_pin().wrapped_pin(), kNewWrappedPin);
 }
 
 TEST_F(EnclaveManagerTest, SigningFails) {

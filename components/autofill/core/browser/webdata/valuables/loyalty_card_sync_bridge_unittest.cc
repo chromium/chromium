@@ -21,7 +21,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/data_batch.h"
-#include "components/sync/protocol/autofill_loyalty_card_specifics.pb.h"
+#include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,7 +51,7 @@ std::vector<LoyaltyCard> ExtractLoyaltyCardsFromDataBatch(
   while (batch->HasNext()) {
     const syncer::KeyAndData& data_pair = batch->Next();
     loyalty_cards.push_back(*CreateAutofillLoyaltyCardFromSpecifics(
-        data_pair.second->specifics.autofill_loyalty_card()));
+        data_pair.second->specifics.autofill_valuable()));
   }
   return loyalty_cards;
 }
@@ -139,7 +139,7 @@ TEST_F(LoyaltyCardSyncBridgeTest, IsEntityDataValid) {
       CreateEntityDataFromLoyaltyCard(TestLoyaltyCard(kId1));
   EXPECT_TRUE(bridge().IsEntityDataValid(*entity));
   // Invalid case.
-  entity->specifics.mutable_autofill_loyalty_card()->set_id(kInvalidId);
+  entity->specifics.mutable_autofill_valuable()->set_id(kInvalidId);
   EXPECT_FALSE(bridge().IsEntityDataValid(*entity));
 }
 
@@ -261,17 +261,19 @@ TEST_F(LoyaltyCardSyncBridgeTest, ApplyDisableSyncChanges) {
   EXPECT_TRUE(GetAllDataFromTable().empty());
 }
 
-// Tests that trimming `AutofillLoyaltyCardSpecifics` with only supported values
+// Tests that trimming `AutofillValuableSpecifics` with only supported values
 // set results in a zero-length specifics.
 TEST_F(LoyaltyCardSyncBridgeTest,
        TrimAllSupportedFieldsFromRemoteSpecificsPreservesOnlySupportedFields) {
   sync_pb::EntitySpecifics specifics;
-  sync_pb::AutofillLoyaltyCardSpecifics* loyalty_card_specifics =
-      specifics.mutable_autofill_loyalty_card();
-  loyalty_card_specifics->mutable_program_name()->assign("program_name");
-  loyalty_card_specifics->mutable_program_logo()->assign("program_logo");
-  loyalty_card_specifics->mutable_merchant_name()->assign("merchant_name");
-  loyalty_card_specifics->mutable_loyalty_card_suffix()->assign("card_suffix");
+  sync_pb::AutofillValuableSpecifics* autofill_valuables_specifics =
+      specifics.mutable_autofill_valuable();
+  sync_pb::AutofillValuableSpecifics::LoyaltyCard* loyalty_card =
+      autofill_valuables_specifics->mutable_loyalty_card();
+  loyalty_card->mutable_program_name()->assign("program_name");
+  loyalty_card->mutable_program_logo()->assign("program_logo");
+  loyalty_card->mutable_merchant_name()->assign("merchant_name");
+  loyalty_card->mutable_loyalty_card_suffix()->assign("card_suffix");
 
   EXPECT_EQ(bridge()
                 .TrimAllSupportedFieldsFromRemoteSpecifics(specifics)
@@ -279,22 +281,25 @@ TEST_F(LoyaltyCardSyncBridgeTest,
             0u);
 }
 
-// Tests that trimming `AutofillLoyaltyCardSpecifics` with unsupported fields
+// Tests that trimming `AutofillValuableSpecifics` with unsupported fields
 // will only preserve the unknown fields.
 TEST_F(LoyaltyCardSyncBridgeTest,
        TrimRemoteSpecificsReturnsEmptyProtoWhenAllFieldsAreSupported) {
   sync_pb::EntitySpecifics specifics_with_only_unknown_fields;
-  *specifics_with_only_unknown_fields.mutable_autofill_loyalty_card()
+  *specifics_with_only_unknown_fields.mutable_autofill_valuable()
        ->mutable_unknown_fields() = "unsupported_fields";
 
   sync_pb::EntitySpecifics specifics_with_known_and_unknown_fields =
       specifics_with_only_unknown_fields;
-  sync_pb::AutofillLoyaltyCardSpecifics* loyalty_card_specifics =
-      specifics_with_known_and_unknown_fields.mutable_autofill_loyalty_card();
-  loyalty_card_specifics->mutable_program_name()->assign("program_name");
-  loyalty_card_specifics->mutable_program_logo()->assign("program_logo");
-  loyalty_card_specifics->mutable_merchant_name()->assign("merchant_name");
-  loyalty_card_specifics->mutable_loyalty_card_suffix()->assign("card_suffix");
+  sync_pb::AutofillValuableSpecifics* autofill_valuables_specifics =
+      specifics_with_known_and_unknown_fields.mutable_autofill_valuable();
+  sync_pb::AutofillValuableSpecifics::LoyaltyCard* loyalty_card =
+      autofill_valuables_specifics->mutable_loyalty_card();
+
+  loyalty_card->mutable_program_name()->assign("program_name");
+  loyalty_card->mutable_program_logo()->assign("program_logo");
+  loyalty_card->mutable_merchant_name()->assign("merchant_name");
+  loyalty_card->mutable_loyalty_card_suffix()->assign("card_suffix");
 
   EXPECT_EQ(bridge()
                 .TrimAllSupportedFieldsFromRemoteSpecifics(

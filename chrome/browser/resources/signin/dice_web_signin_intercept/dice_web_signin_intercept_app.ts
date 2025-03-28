@@ -49,7 +49,7 @@ export class DiceWebSigninInterceptAppElement extends
     };
   }
 
-  protected interceptionParameters_: InterceptionParameters = {
+  protected accessor interceptionParameters_: InterceptionParameters = {
     headerText: '',
     bodyTitle: '',
     bodyText: '',
@@ -66,7 +66,7 @@ export class DiceWebSigninInterceptAppElement extends
     interceptedProfileBadgeColor: '',
     primaryProfileBadgeColor: '',
   };
-  protected acceptButtonClicked_: boolean = false;
+  protected accessor acceptButtonClicked_: boolean = false;
   private diceWebSigninInterceptBrowserProxy_:
       DiceWebSigninInterceptBrowserProxy =
           DiceWebSigninInterceptBrowserProxyImpl.getInstance();

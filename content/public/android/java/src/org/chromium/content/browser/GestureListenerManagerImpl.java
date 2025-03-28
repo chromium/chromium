@@ -28,13 +28,13 @@ import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency;
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
-import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.ViewEventSink.InternalAccessDelegate;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContents.UserDataFactory;
 import org.chromium.ui.base.GestureEventType;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
@@ -90,14 +90,13 @@ public class GestureListenerManagerImpl
 
     /**
      * @param webContents {@link WebContents} object.
-     * @return {@link GestureListenerManager} object used for the give WebContents.
-     *         Creates one if not present.
+     * @return {@link GestureListenerManager} object used for the give WebContents. Creates one if
+     *     not present.
      */
     public static @Nullable GestureListenerManagerImpl fromWebContents(WebContents webContents) {
         if (sInstanceForTesting != null) return sInstanceForTesting;
-        return ((WebContentsImpl) webContents)
-                .getOrSetUserData(
-                        GestureListenerManagerImpl.class, UserDataFactoryLazyHolder.INSTANCE);
+        return webContents.getOrSetUserData(
+                GestureListenerManagerImpl.class, UserDataFactoryLazyHolder.INSTANCE);
     }
 
     // TODO(crbug.com/40850475): Mocking |#fromWebContents()| may be a better option, when

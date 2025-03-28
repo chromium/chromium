@@ -51,7 +51,6 @@ source_set("shopping_service") {
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/parcel_tracking:features",
-    "//ios/chrome/browser/parcel_tracking:opt_in_status",
     "//ios/chrome/browser/power_bookmarks/model",
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/shared/model/application_context",

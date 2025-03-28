@@ -146,6 +146,13 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   // Specifies whether the current window requests key-events that matches
   // system shortcuts.
   bool inhibit_keyboard_shortcuts = false;
+
+  // Session Management related properties. Analogue to ui::PlatformSessionData
+  // fields though as separate variables to avoid platform_window => ozone
+  // circular dependency.
+  std::string session_id;
+  int32_t session_window_new_id = 0;
+  std::optional<int32_t> session_window_restore_id;
 #endif
 
   bool enable_compositing_based_throttling = false;

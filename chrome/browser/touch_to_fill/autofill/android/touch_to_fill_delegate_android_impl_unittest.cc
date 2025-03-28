@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -146,9 +147,11 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               (override));
   MOCK_METHOD(void,
               DidShowSuggestions,
-              (DenseSet<SuggestionType> shown_suggestion_types,
+              (base::span<const Suggestion> suggestions,
                const FormData& form,
-               const FieldGlobalId& field_id),
+               const FieldGlobalId& field_id,
+               AutofillExternalDelegate::UpdateSuggestionsCallback
+                   update_suggestions_callback),
               (override));
   MOCK_METHOD(bool, CanShowAutofillUi, (), (const, override));
   MOCK_METHOD(AutofillField*,

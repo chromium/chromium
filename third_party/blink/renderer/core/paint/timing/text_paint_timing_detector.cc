@@ -119,7 +119,7 @@ bool TextPaintTimingDetector::ShouldWalkObject(
   // shadow element or has no elementtiming attribute, then we should not record
   // its text.
   if (!IsRecordingLargestTextPaint() &&
-      !TextElementTiming::NeededForElementTiming(*node)) {
+      !TextElementTiming::NeededForTiming(*node)) {
     return false;
   }
 
@@ -253,7 +253,7 @@ void LargestTextPaintManager::MaybeUpdateLargestIgnoredText(
     // queued for paint, we'll set the appropriate |frame_index_|.
     largest_ignored_text_ = MakeGarbageCollected<TextRecord>(
         *object.GetNode(), size, gfx::RectF(), frame_visual_rect,
-        root_visual_rect, 0u, false /* is_needed_for_element_timing */);
+        root_visual_rect, 0u, false /* is_needed_for_timing */);
   }
 }
 
@@ -276,8 +276,8 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
     }
   }
 
-  bool can_report_element_timing =
-      text_element_timing_ && text_element_timing_->CanReportElements();
+  bool can_report_timing =
+      text_element_timing_ ? text_element_timing_->CanReportElements() : false;
   HeapVector<Member<const LayoutObject>> keys_to_be_removed;
   for (const auto& [key, record] : texts_queued_for_paint_time_) {
     if (!record->paint_time.is_null() || record->frame_index_ > frame_index) {
@@ -285,7 +285,7 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
     }
     record->paint_time = timestamp;
     record->paint_timing_info = paint_timing_info;
-    if (can_report_element_timing && record->is_needed_for_element_timing_) {
+    if (can_report_timing && record->is_needed_for_timing_) {
       text_element_timing_->OnTextObjectPainted(*record, paint_timing_info);
     }
 
@@ -308,26 +308,25 @@ void TextPaintTimingDetector::MaybeRecordTextRecord(
   Node* node = object.GetNode();
   DCHECK(node);
 
-  bool is_needed_for_element_timing =
-      TextElementTiming::NeededForElementTiming(*node);
+  bool is_needed_for_timing = TextElementTiming::NeededForTiming(*node);
   // If the node is not required by LCP and not required by ElementTiming, we
   // can bail out early.
   if ((visual_size == 0u || !IsRecordingLargestTextPaint()) &&
-      !is_needed_for_element_timing) {
+      !is_needed_for_timing) {
     return;
   }
   TextRecord* record;
   if (visual_size == 0u) {
     record = MakeGarbageCollected<TextRecord>(
         *node, 0, gfx::RectF(), gfx::Rect(), gfx::RectF(), frame_index_,
-        is_needed_for_element_timing);
+        is_needed_for_timing);
   } else {
     record = MakeGarbageCollected<TextRecord>(
         *object.GetNode(), visual_size,
         TextElementTiming::ComputeIntersectionRect(
             object, frame_visual_rect, property_tree_state, frame_view_),
         frame_visual_rect, root_visual_rect, frame_index_,
-        is_needed_for_element_timing);
+        is_needed_for_timing);
   }
   QueueToMeasurePaintTime(object, record);
 }

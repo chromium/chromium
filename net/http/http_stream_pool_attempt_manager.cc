@@ -1339,6 +1339,7 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
           base::debug::Alias(&is_svcb_optional);
           base::debug::Alias(&connection_attempts_);
           base::debug::Alias(&endpoints);
+          base::debug::Alias(endpoints.data());
           DEBUG_ALIAS_FOR_GURL(url_buf, stream_key().destination().GetURL());
           NOTREACHED();
         }

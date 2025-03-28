@@ -29,7 +29,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -21639,9 +21638,8 @@ class InterestGroupBiddingAndAuctionServerBrowserTest
               base::Value::Dict outer;
               outer.Set("keys", std::move(keys));
 
-              std::string json_output;
-              JSONStringValueSerializer serializer(&json_output);
-              serializer.Serialize(outer);
+              std::string json_output =
+                  base::WriteJson(outer).value_or(std::string());
               URLLoaderInterceptor::WriteResponse(headers, json_output,
                                                   params->client.get());
               return true;
@@ -28147,7 +28145,7 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
   // successfully fetched.
   //
   // `add_access_control_allow_origin_header` controls whether the corresponding
-  // CORS headers is sent in response to an OPTIONS request.
+  // Access-Control-Allow-Origin header is included in responses.
   //
   // `signals_on_private_origin` controls whether the signals are servers from a
   // private origin or on another public one.
@@ -28181,6 +28179,9 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
                           "/trusted_kvv2_scoring_signals")) {
       return nullptr;
     }
+
+    // Only posts should be sent to the KVv2 serer - no GETs or OPTIONs.
+    EXPECT_EQ(request.method, net::test_server::METHOD_POST);
 
     const char kBiddingBase[] =
         R"([
@@ -28249,18 +28250,6 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
         ])";
 
     base::AutoLock auto_lock(lock_);
-
-    // Handle CORS preflight request.
-    if (request.method == net::test_server::METHOD_OPTIONS) {
-      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-      response->set_code(net::HTTP_OK);
-      response->AddCustomHeader("Access-Control-Allow-Origin",
-                                access_control_allow_origin_header_);
-      response->AddCustomHeader("Access-Control-Allow-Methods", "POST");
-      response->AddCustomHeader("Access-Control-Allow-Headers", "*");
-
-      return response;
-    }
 
     // Decrypt the request.
     auto response_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(

@@ -163,6 +163,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
 
   acceleratorInfo: StandardAcceleratorInfo;
   viewState: ViewState;
+  private modifiers: string[];
   statusMessage: string|TrustedHTML;
   hasError: boolean;
   recordedError: boolean;

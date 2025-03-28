@@ -28,12 +28,17 @@ void DiscountsMetricCollector::DiscountsBubbleCopyStatusOnBubbleClosed(
   base::UmaHistogramBoolean(
       "Commerce.Discounts.DiscountsBubbleCouponCodeIsCopied",
       is_copy_button_clicked);
+  if (!is_copy_button_clicked) {
+    return;
+  }
 
-  if (is_copy_button_clicked && commerce::kDiscountOnShoppyPage.Get()) {
+  if (commerce::kDiscountOnShoppyPage.Get()) {
     base::UmaHistogramEnumeration(
         "Commerce.Discounts.DiscountsBubble.TypeOnCopy",
         discounts[0].cluster_type);
   }
+  base::UmaHistogramEnumeration(
+      "Commerce.Discounts.DiscountsBubble.SourceTypeOnCopy", discounts[0].type);
 }
 
 void DiscountsMetricCollector::RecordDiscountsPageActionIconExpandState(
@@ -54,6 +59,8 @@ void DiscountsMetricCollector::RecordDiscountsPageActionIconExpandState(
         "Commerce.Discounts.PageActionIcon.TypeOnShown",
         discounts[0].cluster_type);
   }
+  base::UmaHistogramEnumeration(
+      "Commerce.Discounts.PageActionIcon.SourceTypeOnShown", discounts[0].type);
 }
 
 void DiscountsMetricCollector::RecordDiscountsPageActionIconClicked(
@@ -85,6 +92,8 @@ void DiscountsMetricCollector::RecordDiscountBubbleShown(
         "Commerce.Discounts.DiscountBubble.TypeOnShow",
         discounts[0].cluster_type);
   }
+  base::UmaHistogramEnumeration(
+      "Commerce.Discounts.DiscountBubble.SourceTypeOnShow", discounts[0].type);
 
   if (is_auto_shown) {
     base::RecordAction(base::UserMetricsAction(

@@ -1797,7 +1797,7 @@ void SystemWebAppAccessibilityTest::EnableChromeVox() {
   speech_monitor_.Call([this]() {
     extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
         browser()->profile(), extension_misc::kChromeVoxExtensionId, R"JS(
-        import('/chromevox/background/chromevox_state.js').then(
+        import('/chromevox/mv2/background/chromevox_state.js').then(
             module => module.ChromeVoxState.ready().then(() =>
                 window.domAutomationController.send('done')));
         )JS");

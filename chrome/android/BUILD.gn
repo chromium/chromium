@@ -369,7 +369,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/commerce/price_insights/android:java",
       "//chrome/browser/commerce/price_tracking/android:java",
       "//chrome/browser/commerce/price_tracking/android:price_tracking_bottom_sheet_java",
-      "//chrome/browser/commerce/price_tracking/android:price_tracking_state_java",
       "//chrome/browser/commerce/price_tracking/proto:proto_java",
       "//chrome/browser/commerce/subscriptions/android:subscriptions_java",
       "//chrome/browser/consent_auditor/android:java",
@@ -378,6 +377,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/creator/android:java",
       "//chrome/browser/data_sharing:factory_java",
       "//chrome/browser/data_sharing:instant_message_delegate_factory_java",
+      "//google_apis/gaia/android:java",
 
       # TODO(ssid): Decouple dependency on internal library.
       "//chrome/browser/autofill/android:third_party_provider_java",
@@ -760,6 +760,7 @@ if (current_toolchain == default_toolchain) {
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       "//third_party/metrics_proto:metrics_proto_java",
       "//ui/accessibility:ax_base_java",
+      "//ui/accessibility:keyboard_focus_java",
       "//ui/android:ui_java",
       "//ui/android:ui_no_recycler_view_java",
       "//ui/base/ime/mojom:mojom_java",

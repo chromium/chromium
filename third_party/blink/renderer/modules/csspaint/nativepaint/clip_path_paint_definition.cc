@@ -27,7 +27,9 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/geometry_box_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -489,11 +491,26 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
       // isn't backwards or both, we will need to ensure no items are clipped
       // during the delay. Use an 'infinite' clip rect to do this.
       if (element->GetLayoutObject()->StyleRef().HasClipPath()) {
-        ClipPathOperation* static_shape =
+        ClipPathOperation* static_op =
             element->GetLayoutObject()->StyleRef().ClipPath();
-        DCHECK_EQ(static_shape->GetType(), ClipPathOperation::kShape);
-        Path path = To<ShapeClipPathOperation>(static_shape)
-                        ->GetPath(reference_size, zoom);
+        Path path;
+        switch (static_op->GetType()) {
+          case ClipPathOperation::kShape:
+            path = To<ShapeClipPathOperation>(static_op)->GetPath(
+                reference_size, zoom);
+            break;
+          case ClipPathOperation::kGeometryBox:
+            path = ClipPathClipper::RoundedReferenceBox(
+                       To<GeometryBoxClipPathOperation>(static_op)
+                           ->GetGeometryBox(),
+                       *element->GetLayoutObject())
+                       .GetPath();
+            break;
+          case ClipPathOperation::kReference:
+            // Reference clip paths are implemented with mask images, and are
+            // not reducible to single SkPaths.
+            NOTREACHED();
+        }
         static_path = path.GetSkPath();
       } else {
         static_path = InfiniteClipPath();

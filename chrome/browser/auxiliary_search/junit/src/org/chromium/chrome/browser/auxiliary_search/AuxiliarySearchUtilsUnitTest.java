@@ -255,7 +255,8 @@ public class AuxiliarySearchUtilsUnitTest {
                         /* lastActiveTime= */ TimeUtils.uptimeMillis(),
                         /* tabId= */ 10,
                         /* appId= */ null,
-                        /* visitId= */ -1);
+                        /* visitId= */ -1,
+                        /* score= */ 0);
         assertEquals(
                 MetaDataVersion.MULTI_TYPE_V2, AuxiliarySearchUtils.getMetadataVersion(dataEntry));
     }

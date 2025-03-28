@@ -51,6 +51,7 @@ export class SettingsPrivacySandboxAdMeasurementSubpageElement extends
     };
   }
 
+  private shouldShowV2_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 

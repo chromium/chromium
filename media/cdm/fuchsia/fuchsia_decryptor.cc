@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/location.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_frame.h"
@@ -17,7 +18,7 @@ namespace media {
 
 FuchsiaDecryptor::FuchsiaDecryptor(FuchsiaCdmContext* cdm_context)
     : cdm_context_(cdm_context) {
-  DCHECK(cdm_context_);
+  CHECK(cdm_context_, base::NotFatalUntil::M140);
 }
 
 FuchsiaDecryptor::~FuchsiaDecryptor() {}

@@ -94,7 +94,7 @@ NSString* GetActionSheetCoordinatorMessage(
       // If `kIdentityDiscAccountMenu` is enabled, signing out may also cause
       // tabs to be closed, see `MainControllerAuthenticationServiceDelegate::
       //    ClearBrowsingDataForSignedinPeriod`.
-      return base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)
+      return IsIdentityDiscAccountMenuEnabled()
                  ? l10n_util::GetNSString(
                        IDS_IOS_SIGNOUT_CLOSES_TABS_AND_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT)
                  : l10n_util::GetNSString(
@@ -417,7 +417,7 @@ ActionSheetCoordinator* GetLeavingPrimaryAccountConfirmationDialog(
       break;
     }
     case SignedInUserState::kManagedAccountAndMigratedFromSyncing: {
-      if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+      if (IsIdentityDiscAccountMenuEnabled()) {
         actionSheetCoordinator.alertStyle = UIAlertControllerStyleAlert;
       }
       NSString* const clearFromDeviceTitle =

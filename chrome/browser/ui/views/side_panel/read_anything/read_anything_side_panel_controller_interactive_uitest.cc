@@ -25,6 +25,7 @@ class MockReadAnythingSidePanelControllerObserver
  public:
   MOCK_METHOD(void, Activate, (bool active), (override));
   MOCK_METHOD(void, OnSidePanelControllerDestroyed, (), (override));
+  MOCK_METHOD(void, OnTabWillDetach, (), (override));
 };
 
 class ReadAnythingSidePanelControllerTest : public InProcessBrowserTest {
@@ -89,6 +90,14 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerTest,
 
   EXPECT_CALL(side_panel_controller_observer_, Activate(false)).Times(1);
   side_panel_controller()->OnEntryHidden(entry);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerTest,
+                       TabWillDetach_NotfiyObservers) {
+  AddObserver(&side_panel_controller_observer_);
+
+  EXPECT_CALL(side_panel_controller_observer_, OnTabWillDetach()).Times(1);
+  browser()->GetActiveTabInterface()->Close();
 }
 
 class ReadAnythingCUJTest : public InteractiveFeaturePromoTest {

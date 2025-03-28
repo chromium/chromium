@@ -123,6 +123,10 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
   potential_activation_headers.RemoveHeader(blink::kPurposeHeaderName);
   prerender_headers.RemoveHeader(blink::kSecPurposeHeaderName);
   potential_activation_headers.RemoveHeader(blink::kSecPurposeHeaderName);
+  // Ditto for "Sec-Speculation-Tags".
+  prerender_headers.RemoveHeader(blink::kSecSpeculationTagsHeaderName);
+  CHECK(!potential_activation_headers.HasHeader(
+      blink::kSecSpeculationTagsHeaderName));
 
   prerender_headers.RemoveHeader("RTT");
   potential_activation_headers.RemoveHeader("RTT");
@@ -1416,8 +1420,8 @@ bool PrerenderHost::IsInitialNavigation(
 base::TimeDelta PrerenderHost::WaitUntilHeadTimeout() {
   int timeout_in_milliseconds = 0;
   if (IsSpeculationRuleType(attributes_.trigger_type)) {
-    CHECK(attributes_.eagerness.has_value());
-    switch (attributes_.eagerness.value()) {
+    CHECK(eagerness().has_value());
+    switch (eagerness().value()) {
       case blink::mojom::SpeculationEagerness::kEager:
         timeout_in_milliseconds =
             features::kPrerender2NoVarySearchWaitForHeadersTimeoutEagerPrerender
@@ -1607,6 +1611,32 @@ bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
 
   // Otherwise, abort this prerender.
   return true;
+}
+
+void PrerenderHost::AddAdditionalRequestHeaders(
+    net::HttpRequestHeaders& headers,
+    FrameTreeNode& navigating_frame_tree_node) {
+  // The given FrameTreeNode should be in the same prerendering FrameTree.
+  CHECK_EQ(&navigating_frame_tree_node.frame_tree(), &GetPrerenderFrameTree());
+
+  // Add the "Sec-Purpose: prefetch;prerender" header to prerender navigations
+  // including subframe navigations. Add "Purpose: prefetch" as well for
+  // compatibility concerns (See
+  // https://github.com/WICG/nav-speculation/issues/133).
+  headers.SetHeader(blink::kSecPurposeHeaderName,
+                    blink::kSecPurposePrefetchPrerenderHeaderValue);
+  headers.SetHeader(blink::kPurposeHeaderName,
+                    blink::kSecPurposePrefetchHeaderValue);
+
+  // Add the "Sec-Speculation-Tags" header to main frame initial prerender
+  // navigation.
+  // https://wicg.github.io/nav-speculation/prefetch.html#sec-speculation-tags-header
+  std::optional<SpeculationRulesTags> tags = attributes_.GetTags();
+  if (navigating_frame_tree_node.IsMainFrame() &&
+      !GetInitialNavigationId().has_value() && tags.has_value()) {
+    headers.SetHeader(blink::kSecSpeculationTagsHeaderName,
+                      tags->ConvertStringToHeaderString().value());
+  }
 }
 
 }  // namespace content

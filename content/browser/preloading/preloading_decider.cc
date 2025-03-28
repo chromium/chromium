@@ -526,11 +526,42 @@ void PreloadingDecider::OnLCPPredicted() {
   prerenderer_->OnLCPPredicted();
 }
 
+std::vector<std::optional<std::string>>
+PreloadingDecider::GetMergedSpeculationTagsFromSuitableCandidates(
+    const PreloadingDecider::SpeculationCandidateKey& lookup_key,
+    const PreloadingPredictor& enacting_predictor,
+    PreloadingConfidence confidence) {
+  std::vector<std::optional<std::string>> merged_tags;
+
+  auto it = on_standby_candidates_.find(lookup_key);
+  if (it == on_standby_candidates_.end()) {
+    return merged_tags;
+  }
+
+  for (const auto& candidate : it->second) {
+    if (!IsSuitableCandidate(candidate, enacting_predictor, confidence,
+                             lookup_key.second)) {
+      continue;
+    }
+
+    for (const auto& tag : candidate->tags) {
+      if (!base::Contains(merged_tags, tag)) {
+        merged_tags.push_back(tag);
+      }
+    }
+  }
+
+  return merged_tags;
+}
+
 bool PreloadingDecider::MaybePrefetch(
     const GURL& url,
     const PreloadingPredictor& enacting_predictor,
     PreloadingConfidence confidence) {
   SpeculationCandidateKey key{url, blink::mojom::SpeculationAction::kPrefetch};
+  std::vector<std::optional<std::string>> merged_tags =
+      GetMergedSpeculationTagsFromSuitableCandidates(key, enacting_predictor,
+                                                     confidence);
   std::optional<std::pair<PreloadingDecider::SpeculationCandidateKey,
                           blink::mojom::SpeculationCandidatePtr>>
       matched_candidate_pair =
@@ -540,6 +571,7 @@ bool PreloadingDecider::MaybePrefetch(
   }
 
   key = matched_candidate_pair.value().first;
+  matched_candidate_pair.value().second->tags = merged_tags;
   bool result = prefetcher_.MaybePrefetch(
       std::move(matched_candidate_pair.value().second), enacting_predictor);
 

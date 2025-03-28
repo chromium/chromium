@@ -33,7 +33,9 @@ public final class DeviceUtils {
 
     /**
      * @return A set of {@link InputDevice} source types of connected accessories including
-     *     keyboard, mouse, touchpad, trackball and stylus devices.
+     *     keyboard, mouse, touchpad, trackball. Note: stylus is not included since this can only be
+     *     detected during a MotionEvent. (See
+     *     https://developer.android.com/reference/android/view/InputDevice#SOURCE_STYLUS)
      */
     public static ArraySet<Integer> getConnectedDevices() {
         int[] deviceIds = InputDevice.getDeviceIds();
@@ -47,9 +49,6 @@ public final class DeviceUtils {
                 deviceSources.add(InputDevice.SOURCE_TOUCHPAD);
             } else if (isDeviceOfSourceType(deviceId, InputDevice.SOURCE_TRACKBALL)) {
                 deviceSources.add(InputDevice.SOURCE_TRACKBALL);
-            } else if (isDeviceOfSourceType(deviceId, InputDevice.SOURCE_STYLUS)
-                    || isDeviceOfSourceType(deviceId, InputDevice.SOURCE_BLUETOOTH_STYLUS)) {
-                deviceSources.add(InputDevice.SOURCE_STYLUS);
             }
         }
         return deviceSources;

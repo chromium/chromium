@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/masonry/masonry_running_positions.h"
 
 namespace blink {
 
@@ -28,48 +29,87 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   wtf_size_t start_offset;
   const auto track_collection = BuildGridAxisTracks(
       line_resolver, SizingConstraint::kLayout, start_offset);
-  const auto masonry_items =
-      BuildMasonryItems(line_resolver, track_collection, start_offset);
 
-  LayoutUnit intrinsic_block_size;
-  PlaceMasonryItems(masonry_items, track_collection, &intrinsic_block_size);
+  auto masonry_items =
+      Node().ConstructMasonryItems(line_resolver, start_offset);
+  PlaceMasonryItems(track_collection, masonry_items);
 
   // TODO(ethavar): Compute the actual block size for the fragment.
-  container_builder_.SetFragmentsTotalBlockSize(intrinsic_block_size);
+  container_builder_.SetFragmentsTotalBlockSize(intrinsic_block_size_);
   return container_builder_.ToBoxFragment();
 }
 
 void MasonryLayoutAlgorithm::PlaceMasonryItems(
-    const GridItems& masonry_items,
     const GridLayoutTrackCollection& track_collection,
-    LayoutUnit* intrinsic_block_size) {
-  DCHECK(intrinsic_block_size);
-
+    GridItems& masonry_items) {
+  const auto grid_axis_direction = track_collection.Direction();
+  const auto& border_scrollbar_padding = BorderScrollbarPadding();
   const auto& container_space = GetConstraintSpace();
   const auto container_writing_direction =
       container_space.GetWritingDirection();
 
-  for (const auto& masonry_item : masonry_items) {
-    const auto& item_node = masonry_item.node;
+  const bool is_for_columns = grid_axis_direction == kForColumns;
 
+  // Initialize data structure to keep track of running positions, where the
+  // initial running positions are set to border, scrollbar, and padding.
+  MasonryRunningPositions running_positions(
+      /*track_count=*/track_collection.EndLineOfImplicitGrid(),
+      /*initial_running_position=*/
+      is_for_columns ? border_scrollbar_padding.block_start
+                     : border_scrollbar_padding.inline_start,
+      CalculateTieThreshold(Style()));
+
+  for (auto& masonry_item : masonry_items) {
+    // Find the definite span that the masonry items should be placed in.
+    auto item_span = masonry_item.Span(grid_axis_direction);
+    LayoutUnit max_position;
+
+    // Determine final placement for remaining indefinite spans.
+    if (item_span.IsIndefinite()) {
+      item_span = running_positions.GetFirstEligibleLine(
+          item_span.IndefiniteSpanSize(), max_position);
+      masonry_item.resolved_position.SetSpan(item_span, grid_axis_direction);
+    } else {
+      max_position = running_positions.GetMaxPositionForSpan(item_span);
+    }
+
+    masonry_item.ComputeSetIndices(track_collection);
+    running_positions.UpdateAutoPlacementCursor(item_span.EndLine());
+
+    // This item is ultimately placed below the maximum running position among
+    // its spanned tracks.
     LogicalRect containing_rect;
+    is_for_columns ? containing_rect.offset.block_offset = max_position
+                   : containing_rect.offset.inline_offset = max_position;
+
     const auto space = CreateConstraintSpaceForLayout(
         masonry_item, track_collection, &containing_rect);
 
+    const auto& item_node = masonry_item.node;
     const auto* result = item_node.Layout(space);
     const auto& physical_fragment =
         To<PhysicalBoxFragment>(result->GetPhysicalFragment());
     const LogicalBoxFragment fragment(container_writing_direction,
                                       physical_fragment);
 
-    *intrinsic_block_size =
-        std::max(*intrinsic_block_size, fragment.BlockSize());
+    // Update `running_positions` of the tracks that the items spans to include
+    // the size of the item in the stacking axis.
+    const auto new_running_position =
+        max_position +
+        (is_for_columns ? fragment.BlockSize() : fragment.InlineSize());
+    running_positions.UpdateRunningPositionsForSpan(item_span,
+                                                    new_running_position);
+
+    intrinsic_block_size_ =
+        std::max(intrinsic_block_size_, new_running_position);
 
     container_builder_.AddResult(
         *result, containing_rect.offset,
         ComputeMarginsFor(space, item_node.Style(), container_space));
   }
-  *intrinsic_block_size += BorderScrollbarPadding().BlockSum();
+
+  intrinsic_block_size_ += is_for_columns ? border_scrollbar_padding.block_end
+                                          : border_scrollbar_padding.inline_end;
 }
 
 GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
@@ -191,27 +231,6 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
   return track_collection;
 }
 
-GridItems MasonryLayoutAlgorithm::BuildMasonryItems(
-    const GridLineResolver& line_resolver,
-    const GridLayoutTrackCollection& track_collection,
-    wtf_size_t start_offset) const {
-  auto masonry_items =
-      Node().ConstructMasonryItems(line_resolver, start_offset);
-
-  // TODO(celestepan): Implement placement algorithm here.
-
-  for (auto& masonry_item : masonry_items) {
-    if (masonry_item.Span(track_collection.Direction()).IsIndefinite()) {
-      // TODO(ethavar): Currently we need to skip over auto-placed items and
-      // force their indices to the first set in the track collection.
-      masonry_item.column_set_indices = masonry_item.row_set_indices = {0, 0};
-      continue;
-    }
-    masonry_item.ComputeSetIndices(track_collection);
-  }
-  return masonry_items;
-}
-
 wtf_size_t MasonryLayoutAlgorithm::ComputeAutomaticRepetitions() const {
   // TODO(ethavar): Compute the actual number of automatic repetitions.
   return 1;
@@ -250,13 +269,6 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForLayout(
       masonry_item.CalculateAvailableSize(track_collection, &start_offset);
 
   if (containing_rect) {
-    // TODO(ethavar): This is a placeholder since we need to compute the actual
-    // offset in the stacking axis via the placement algorithm.
-    is_for_columns ? containing_rect->offset.block_offset =
-                         BorderScrollbarPadding().block_start
-                   : containing_rect->offset.block_offset =
-                         BorderScrollbarPadding().inline_start;
-
     is_for_columns ? containing_rect->offset.inline_offset = start_offset
                    : containing_rect->offset.block_offset = start_offset;
     containing_rect->size = containing_size;
@@ -276,6 +288,12 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForMeasure(
 
   return CreateConstraintSpace(masonry_item, containing_size,
                                LayoutResultCacheSlot::kMeasure);
+}
+
+LayoutUnit MasonryLayoutAlgorithm::CalculateTieThreshold(
+    const ComputedStyle& style) const {
+  return style.MasonrySlack() ? LayoutUnit(style.MasonrySlack()->Pixels())
+                              : LayoutUnit();
 }
 
 }  // namespace blink

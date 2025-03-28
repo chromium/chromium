@@ -6,9 +6,12 @@ package org.chromium.chrome.browser.customtabs.content;
 
 import android.text.TextUtils;
 
+import androidx.browser.trusted.LaunchHandlerClientMode;
+
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristics;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -79,8 +82,23 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
         mNavigationController.navigate(params, intentDataProvider.getIntent());
     }
 
+    private WebAppLaunchParams handleLaunch(BrowserServicesIntentDataProvider intentDataProvider) {
+        String packageName = intentDataProvider.getClientPackageName();
+        return WebAppLaunchHandler.getLaunchParams(
+                LaunchHandlerClientMode.NAVIGATE_EXISTING,
+                intentDataProvider.getUrlToLoad(),
+                packageName);
+    }
+
     @Override
     public void handleNewIntent(BrowserServicesIntentDataProvider intentDataProvider) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER)) {
+            WebAppLaunchParams launchParams = handleLaunch(intentDataProvider);
+            if (!launchParams.startNewNavigation) {
+                return;
+            }
+        }
+
         String url = intentDataProvider.getUrlToLoad();
         if (TextUtils.isEmpty(url)) return;
         LoadUrlParams params = new LoadUrlParams(url);

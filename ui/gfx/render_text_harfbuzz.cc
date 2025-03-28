@@ -1483,11 +1483,19 @@ std::vector<Rect> RenderTextHarfBuzz::GetSubstringBounds(const Range& range) {
     // Only the last line can be empty.
     DCHECK(!line.segments.empty() ||
            (line_index == shaped_text->lines().size() - 1));
-    float line_start_x =
-        line.segments.empty()
-            ? 0
-            : run_list->runs()[line.segments[0].run]->preceding_run_widths;
+    if (line.segments.empty()) {
+      continue;
+    }
 
+    // The line start x is the x coordinate of the first grapheme in the line.
+    // This is the same as the x coordinate of the first segment in the line.
+    float line_start_x =
+        run_list->runs()[line.segments[0].run]
+            ->GetGraphemeSpanForCharRange(this, line.segments[0].char_range)
+            .start();
+    // If the first segment in the line is a newline segment, then the line
+    // start x is the x coordinate of the first non-newline segment in the
+    // line.
     if (line.segments.size() > 1 && IsNewlineSegment(line.segments[0]))
       line_start_x += line.segments[0].width();
 

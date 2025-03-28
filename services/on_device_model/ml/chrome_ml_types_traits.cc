@@ -120,6 +120,8 @@ EnumTraits<on_device_model::mojom::ModelBackendType,
       return on_device_model::mojom::ModelBackendType::kGpu;
     case ml::ModelBackendType::kApuBackend:
       return on_device_model::mojom::ModelBackendType::kApu;
+    case ml::ModelBackendType::kCpuBackend:
+      return on_device_model::mojom::ModelBackendType::kCpu;
   }
   NOTREACHED();
 }
@@ -135,6 +137,9 @@ bool EnumTraits<on_device_model::mojom::ModelBackendType,
       return true;
     case on_device_model::mojom::ModelBackendType::kApu:
       *output = ml::ModelBackendType::kApuBackend;
+      return true;
+    case on_device_model::mojom::ModelBackendType::kCpu:
+      *output = ml::ModelBackendType::kCpuBackend;
       return true;
   }
   return false;

@@ -27,6 +27,18 @@ TestDriveFileUploader::TestDriveFileUploader(id<SystemIdentity> identity)
   } else if (command_line_behavior ==
              kTestDriveFileUploaderCommandLineSwitchSucceed) {
     behavior_ = TestDriveFileUploaderBehavior::kSucceed;
+  } else if (command_line_behavior ==
+             kTestDriveFileUploaderCommandLineSwitchFullStorage) {
+    const int64_t usage_limit = 13'000'000'000;  // 15.0GB
+    const int64_t usage_total = 14'500'000'000;  // 14.5GB
+    const int64_t usage_drive = 14'000'000'000;  // 14.0GB
+    const int64_t usage_trash = 1'000'000'000;   //  1.0GB
+    SetStorageQuotaResult(
+        DriveStorageQuotaResult{.limit = usage_limit,
+                                .usage_in_drive = usage_drive,
+                                .usage_in_drive_trash = usage_trash,
+                                .usage = usage_total,
+                                .error = nil});
   }
 }
 
