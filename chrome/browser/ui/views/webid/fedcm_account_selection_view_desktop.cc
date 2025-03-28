@@ -18,8 +18,6 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/segmentation_platform/public/constants.h"
-#include "components/segmentation_platform/public/features.h"
 #include "components/tab_collections/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -59,13 +57,10 @@ using SheetType = AccountSelectionView::SheetType;
 
 FedCmAccountSelectionView::FedCmAccountSelectionView(
     AccountSelectionView::Delegate* delegate,
-    tabs::TabInterface* tab,
-    segmentation_platform::SegmentationPlatformService*
-        segmentation_platform_service)
+    tabs::TabInterface* tab)
     : AccountSelectionView(delegate),
       content::WebContentsObserver(delegate->GetWebContents()),
-      tab_(tab),
-      segmentation_platform_service_(segmentation_platform_service) {
+      tab_(tab) {
   tab_subscriptions_.push_back(tab_->RegisterDidActivate(
       base::BindRepeating(&FedCmAccountSelectionView::TabForegrounded,
                           weak_ptr_factory_.GetWeakPtr())));
@@ -492,25 +487,6 @@ void FedCmAccountSelectionView::CreateViewAndWidget(
   dialog_widget_ = CreateDialogWidget();
   dialog_widget_->MakeCloseSynchronous(base::BindOnce(
       &FedCmAccountSelectionView::OnUserClosedDialog, base::Unretained(this)));
-
-  // If widget mode, segmentation platform feature flag is enabled, make the
-  // call to segmentation platform service for a UI volume recommendation.
-  if (dialog_type_ != DialogType::BUBBLE ||
-      !base::FeatureList::IsEnabled(
-          segmentation_platform::features::kSegmentationPlatformFedCmUser)) {
-    return;
-  }
-  segmentation_platform::PredictionOptions prediction_options;
-  prediction_options.on_demand_execution = true;
-
-  CHECK(segmentation_platform_service_);
-  segmentation_platform_service_->GetClassificationResult(
-      segmentation_platform::kFedCmUserKey, prediction_options, nullptr,
-      base::BindOnce(&FedCmAccountSelectionView::OnClassificationResultReturned,
-                     weak_ptr_factory_.GetWeakPtr()));
-  // Assume that the user ignores the UI for now. This will be updated when
-  // the user closes the UI or proceeds with signing in.
-  user_action_state_ = FedCmAccountSelectionView::UserAction::kIgnored;
 }
 
 void FedCmAccountSelectionView::OnAccountsDisplayed() {
@@ -869,10 +845,6 @@ bool FedCmAccountSelectionView::NotifyDelegateOfAccountSelection(
 
 void FedCmAccountSelectionView::ShowVerifyingSheet(
     const IdentityRequestAccountPtr& account) {
-  if (user_action_state_) {
-    user_action_state_ = FedCmAccountSelectionView::UserAction::kSuccess;
-  }
-
   const std::u16string title =
       state_ == State::AUTO_REAUTHN
           ? l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_REAUTHN)
@@ -1115,26 +1087,6 @@ void FedCmAccountSelectionView::LogDialogDismissal(
           .Record(ukm::UkmRecorder::Get());
     }
   }
-
-  if (!user_action_state_ || !training_request_id_) {
-    return;
-  }
-
-  CHECK(segmentation_platform_service_);
-  if (dismiss_reason == DismissReason::kCloseButton) {
-    user_action_state_ = FedCmAccountSelectionView::UserAction::kClosed;
-  }
-
-  segmentation_platform::TrainingLabels training_labels;
-  base::UmaHistogramEnumeration("Blink.FedCm.SegmentationPlatform.UserAction",
-                                *user_action_state_);
-  training_labels.output_metric = std::make_pair(
-      "Blink.FedCm.SegmentationPlatform.UserAction",
-      static_cast<base::HistogramBase::Sample32>(*user_action_state_));
-  segmentation_platform_service_->CollectTrainingData(
-      segmentation_platform::proto::SegmentId::
-          OPTIMIZATION_TARGET_SEGMENTATION_FEDCM_USER,
-      *training_request_id_, source_id, training_labels, base::DoNothing());
 }
 
 void FedCmAccountSelectionView::CloseWidget(
@@ -1202,12 +1154,7 @@ void FedCmAccountSelectionView::UpdateDialogVisibilityAndPosition() {
 
   if (should_show_dialog) {
     UpdateDialogPosition();
-    // The segmentation platform service will call
-    // |UpdateDialogVisibilityAndPosition| again when the dialog is ready to
-    // show after accounting for the platform's UI volume recommendation.
-    bool waiting_for_segmentation =
-        segmentation_platform_service_ && !training_request_id_;
-    if (!dialog_widget_->IsVisible() && !waiting_for_segmentation) {
+    if (!dialog_widget_->IsVisible()) {
       ShowDialogWidget();
     }
     return;
@@ -1219,24 +1166,6 @@ void FedCmAccountSelectionView::UpdateDialogVisibilityAndPosition() {
 void FedCmAccountSelectionView::ResetDialogWidgetStateOnAnyShow() {
   accounts_widget_shown_callback_.Reset();
   hide_dialog_widget_after_idp_login_popup_ = false;
-}
-
-void FedCmAccountSelectionView::OnClassificationResultReturned(
-    const segmentation_platform::ClassificationResult& result) {
-  // TODO(crbug.com/403297749): Record how long it takes to get a classification
-  // result.
-  training_request_id_ = result.request_id;
-
-  // Default to showing loud UI if the prediction fails for any reason.
-  if (result.status != segmentation_platform::PredictionStatus::kSucceeded ||
-      result.ordered_labels[0] == "FedCmUserLoud") {
-    UpdateDialogVisibilityAndPosition();
-    return;
-  }
-
-  // TODO(crbug.com/380416872): Integrate with quiet UI. Until then, close the
-  // UI.
-  Close(/*notify_delegate=*/true);
 }
 
 }  // namespace webid
