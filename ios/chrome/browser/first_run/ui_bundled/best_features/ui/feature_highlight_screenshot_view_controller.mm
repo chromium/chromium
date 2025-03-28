@@ -66,7 +66,7 @@ NSString* const kFeatureHighlightScreenshotViewDarkAnimationId =
                        withAction:@selector(toggleDarkModeOnTraitChange)];
   }
 
-  [self.view setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
+  [self.view setBackgroundColor:[UIColor colorNamed:kSecondaryBackgroundColor]];
   self.accessibilityLabel =
       kFeatureHighlightScreenshotViewAccessibilityIdentifier;
 

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h"
 
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -337,8 +339,9 @@
       textProvider = @{
         @"Close Incognito tabs" : l10n_util::GetNSString(
             IDS_IOS_INCOGNITO_REAUTH_CLOSE_INCOGNITO_TABS),
-        @"Unlock with Face ID" :
-            l10n_util::GetNSString(IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON),
+        @"face_id" : l10n_util::GetNSStringF(
+            IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON,
+            base::SysNSStringToUTF16(BiometricAuthenticationTypeString())),
       };
       break;
     case BestFeaturesItemType::kSaveAndAutofillPasswords:
