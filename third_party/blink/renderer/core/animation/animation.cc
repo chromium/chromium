@@ -2105,8 +2105,12 @@ bool Animation::HasPendingActivity() const {
       finished_promise_ &&
       finished_promise_->GetState() == AnimationPromise::kPending;
 
+  // If an animation can still be played by its trigger, we should keep the
+  // animation alive.
+  bool can_be_triggered = CanBeTriggered();
+
   return pending_finished_event_ || pending_cancelled_event_ ||
-         pending_remove_event_ || has_pending_promise ||
+         pending_remove_event_ || has_pending_promise || can_be_triggered ||
          (!finished_ && HasEventListeners(event_type_names::kFinish));
 }
 
@@ -3601,4 +3605,22 @@ void Animation::CompositorAnimationHolder::Detach() {
   animation_ = nullptr;
   compositor_animation_.reset();
 }
+
+bool Animation::CanBeTriggered() const {
+  AnimationTrigger* trigger = GetTriggerInternal();
+  // This animation can be played by |trigger| if:
+  // 1. |trigger| has a progress-based timeline (only triggers with
+  //    scroll/view timelines are supported currently) AND,
+  // 2. Either:
+  //    a. |trigger| is still in the idle state, i.e. has never played this
+  //       animation OR,
+  //    b. |trigger| is of an animation-trigger-type which could play an
+  //       animation multiple times, i.e. 'alternate' or 'repeat' or 'state'.
+  return trigger && trigger->GetTimelineInternal() &&
+         trigger->GetTimelineInternal()->IsProgressBased() &&
+         (trigger->type() !=
+              AnimationTrigger::Type(AnimationTrigger::Type::Enum::kOnce) ||
+          trigger_data_.state == AnimationTriggerState::kIdle);
+}
+
 }  // namespace blink
