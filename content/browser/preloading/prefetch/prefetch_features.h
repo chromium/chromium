@@ -92,6 +92,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
 // Allow prefetching ServiceWorker-controlled URLs.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchServiceWorker);
 
+// If enabled, prefetch caches are cleared when browsing data removal. Please
+// see crbug.com/40262310 for more details.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchBrowsingDataRemoval);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_
