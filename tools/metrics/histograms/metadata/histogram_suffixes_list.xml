@@ -189,14 +189,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="AnimatedImage.NumOfFramesSkipped"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AttestationOps" separator=".">
-  <suffix name="ActivateAttestationKey" label=""/>
-  <suffix name="DecryptDatabase" label=""/>
-  <suffix name="EncryptDatabase" label=""/>
-  <suffix name="PrepareForEnrollment" label=""/>
-  <affected-histogram name="Hwsec.Attestation.Status"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AutofillAddressFormType" separator=".">
   <suffix name="AddressOnly" label="Form has address and maybe name fields"/>
   <suffix name="AddressPlusContact"
@@ -308,54 +300,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Autofill.UnmaskPrompt.TimeBeforeAbandonUnmasking"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="BlueZPerProfileResult" separator="."
-    ordering="prefix,2">
-  <suffix name="A2DPSink"
-      label="This metric records results for A2DP Sink profile."/>
-  <suffix name="AVRCP"
-      label="This metric records results for AVRCP Controller profile."/>
-  <suffix name="Battery"
-      label="This metric records results for Battery profile."/>
-  <suffix name="HFP" label="This metric records results for HFP profile."/>
-  <suffix name="HID" label="This metric records results for HID profile."/>
-  <suffix name="HOG" label="This metric records results for HOG profile."/>
-  <affected-histogram name="BlueZ.PerProfile.ConnectionResult"/>
-  <affected-histogram name="BlueZ.PerProfile.ProbingResult"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="CachedResourceType" separator=".">
-  <suffix name="Audio"
-      label="Showing cache patterns only for audio resources."/>
-  <suffix name="CSS" label="Showing cache patterns only for CSS resources."/>
-  <suffix name="CSSThirdParty"
-      label="Showing cache patterns only for CSS resources with a different
-             origin from the top level origin."/>
-  <suffix name="Font" label="Showing cache patterns only for font resources."/>
-  <suffix name="FontThirdParty"
-      label="Showing cache patterns only for font resources with a different
-             origin from the top level origin."/>
-  <suffix name="Image"
-      label="Showing cache patterns only for image resources."/>
-  <suffix name="JavaScript"
-      label="Showing cache patterns only for JavaScript resources."/>
-  <suffix name="JavaScriptThirdParty"
-      label="Showing cache patterns only for JavaScript resources with a
-             different origin from the top level origin."/>
-  <suffix name="MainFrameHTML"
-      label="Showing cache patterns only for main-frame HTML resources."/>
-  <suffix name="NonMainFrameHTML"
-      label="Showing cache patterns only for non-main-frame HTML resources."/>
-  <suffix name="NonTinyImage"
-      label="Showing cache patterns only for image resources with
-             content-length &gt;= 100 bytes."/>
-  <suffix name="TinyImage"
-      label="Showing cache patterns only for image resources with
-             content-length less than 100 bytes."/>
-  <suffix name="Video"
-      label="Showing cache patterns only for video resources."/>
-  <affected-histogram name="HttpCache.Pattern"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="CertificateTypeAlgorithms" separator=".">
   <owner>rsleevi@chromium.org</owner>
   <suffix name="DH" label="DH"/>
@@ -373,34 +317,12 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="CertificateType2.NonBR.Root"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="CertificateTypeBRValidity2" separator=".">
-  <suffix name="BR"
-      label="The *leaf* certificate of the chain expires after 2013-12-31 and
-             was issued on or after 2012-07-01, as judged by the notBefore,
-             meaning that it should be in scope for the Baseline
-             Requirement's key size requirements"/>
-  <suffix name="NonBR"
-      label="The *leaf* certificate of the chain expires on or before
-             2013-12-31 or was issued before 2012-07-01"/>
-  <affected-histogram name="CertificateType2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="CertificateTypeChainPosition" separator=".">
   <suffix name="Intermediate" label="Intermediate's SPKI"/>
   <suffix name="Leaf" label="Leaf's SPKI"/>
   <suffix name="Root" label="Root's SPKI"/>
   <affected-histogram name="CertificateType2.BR"/>
   <affected-histogram name="CertificateType2.NonBR"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="CertVerifyProcImpl" separator=".">
-  <suffix name="Android" label="CertVerifyProcAndroid"/>
-  <suffix name="Builtin" label="CertVerifyProcBuiltin"/>
-  <suffix name="IOS" label="CertVerifyProcIOS"/>
-  <suffix name="Mac" label="CertVerifyProcMac"/>
-  <suffix name="NSS" label="CertVerifyProcNSS"/>
-  <suffix name="Win" label="CertVerifyProcWin"/>
-  <affected-histogram name="Net.CertVerifier.NameNormalizationPrivateRoots"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ChromeOS_USBDeviceClass" separator=".">
@@ -436,23 +358,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="ChromeOS.USB.DeviceAttached"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ConnectionMigrationCause" separator=".">
-  <suffix name="ChangePortOnPathDegrading" label=""/>
-  <suffix name="NewNetworkConnectedPostPathDegrading" label=""/>
-  <suffix name="OnMigrateBackToDefaultNetwork" label=""/>
-  <suffix name="OnNetworkConnected" label=""/>
-  <suffix name="OnNetworkDisconnected" label=""/>
-  <suffix name="OnNetworkMadeDefault" label=""/>
-  <suffix name="OnPathDegrading" label=""/>
-  <suffix name="OnServerPreferredAddressAvailable" label=""/>
-  <suffix name="OnWriteError" label=""/>
-  <suffix name="Unknown" label=""/>
-  <affected-histogram name="Net.QuicSession.ConnectionMigration"/>
-  <affected-histogram
-      name="Net.QuicSession.HandshakeStatusOnConnectionMigration"/>
-  <affected-histogram name="Net.QuicSession.PathValidationSuccess"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ContentSetting" separator=".">
   <suffix name="Allow" label="Allow"/>
   <suffix name="AllowThirdParty" label="All third parties allowed on a domain"/>
@@ -481,20 +386,6 @@ chromium-metrics-reviews@google.com.
       name="ContentSettings.RegularProfile.Exceptions.subresource-filter"/>
   <affected-histogram
       name="ContentSettings.RegularProfile.Exceptions.tracking-protection"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ContentSuggestionCategory" separator=".">
-  <suffix name="Articles" label="Articles for you"/>
-  <suffix name="Bookmarks" label="Bookmarks"/>
-  <suffix name="Contextual" label="Contextual suggestions"/>
-  <suffix name="Downloads" label="Downloads"/>
-  <suffix name="Experimental" label="Experimental"/>
-  <suffix name="ForeignTabs" label="Open tabs on other devices"/>
-  <suffix name="PhysicalWeb" label="Physical Web pages"/>
-  <suffix name="ReadingList" label="Reading List entries"/>
-  <suffix name="RecentTabs" label="Recent (offline) tabs"/>
-  <affected-histogram name="NewTabPage.ContentSuggestions.Opened"/>
-  <affected-histogram name="NewTabPage.ContentSuggestions.Shown"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ContextMenuShoppingDomain" separator=".">
@@ -579,63 +470,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Cras.StreamRuntime.Output.LaCrOS"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DnsImpact2" separator="_">
-  <suffix name="disabled_prefetch"
-      label="DNS pre-resolving is disabled in these clients"/>
-  <suffix name="disabled_prefetch_4_connections"
-      label="DNS pre-resolving is disabled in these clients, and a maximum of
-             4 connections per host was allowed"/>
-  <suffix name="enabled_prefetch_4_connections"
-      label="a maximum of 4 connections per host was allowed in these clients"/>
-  <suffix name="parallel_4_prefetch"
-      label="DNS pre-resolving was only doing 4 concurrent speculative
-             resolutions in this test"/>
-  <affected-histogram name="Net.TCP_Connection_Latency"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="DohProviderId" separator="." ordering="prefix,4">
-  <suffix name="AlekBergNl" label="alekberg.net Amsterdam."/>
-  <suffix name="CleanBrowsingAdult" label="CleanBrowsing adult filter."/>
-  <suffix name="CleanBrowsingFamily" label="CleanBrowsing family filter."/>
-  <suffix name="CleanBrowsingSecure" label="CleanBrowsing secure filter."/>
-  <suffix name="Cloudflare" label="Cloudflare."/>
-  <suffix name="Comcast" label="Comcast."/>
-  <suffix name="Cox" label="Cox."/>
-  <suffix name="Cznic" label="CZ.NIC ODVR."/>
-  <suffix name="Dnssb" label="DNS.SB."/>
-  <suffix name="Google" label="Google."/>
-  <suffix name="GoogleDns64" label="Google DNS64."/>
-  <suffix name="Iij" label="Iij."/>
-  <suffix name="Levonet" label="Levonet s.r.o."/>
-  <suffix name="NextDns" label="NextDNS."/>
-  <suffix name="OpenDNS" label="OpenDNS standard service."/>
-  <suffix name="OpenDNSFamily" label="OpenDNS Family Shield service."/>
-  <suffix name="Other" label="No possible upgrade to a DoH provider."/>
-  <suffix name="Quad9Cdn" label="Quad9 cdn service."/>
-  <suffix name="Quad9Insecure" label="Quad9 insecure service."/>
-  <suffix name="Quad9Secure" label="Quad9 secure service."/>
-  <suffix name="Quickline" label="Quickline AS15600"/>
-  <suffix name="Spectrum1"
-      label="Charter Communications/Spectrum DoH endpoint1."/>
-  <suffix name="Spectrum2"
-      label="Charter Communications/Spectrum DoH endpoint2."/>
-  <affected-histogram name="Net.DNS.DnsTransaction.Insecure.FailureTime"/>
-  <affected-histogram name="Net.DNS.DnsTransaction.Insecure.SuccessTime"/>
-  <affected-histogram
-      name="Net.DNS.DnsTransaction.SecureNotValidated.FailureError"/>
-  <affected-histogram
-      name="Net.DNS.DnsTransaction.SecureNotValidated.FailureTime"/>
-  <affected-histogram
-      name="Net.DNS.DnsTransaction.SecureNotValidated.SuccessTime"/>
-  <affected-histogram
-      name="Net.DNS.DnsTransaction.SecureValidated.FailureError"/>
-  <affected-histogram
-      name="Net.DNS.DnsTransaction.SecureValidated.FailureTime"/>
-  <affected-histogram
-      name="Net.DNS.DnsTransaction.SecureValidated.SuccessTime"/>
-  <affected-histogram name="Net.DNS.ResolveContext.DohAutoupgrade.Status"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="DownloadSource" separator=".">
   <suffix name="ContextMenu" label="ContextMenu."/>
   <suffix name="DragAndDrop" label="DragAndDrop."/>
@@ -655,15 +489,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Download.NetworkConnectionType.StartNew"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="EncryptionLevel" separator=".">
-  <suffix name="0RTT" label="Packets sent at 0-RTT encryption only."/>
-  <suffix name="ForwardSecure"
-      label="Packets sent at Forward Secure encryption only."/>
-  <suffix name="Handshake" label="Packets sent at Handshake encryption only."/>
-  <suffix name="Initial" label="Packets sent at Initial encryption only."/>
-  <affected-histogram name="Net.QuicSession.SendPacketSize"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="FieldPredictionSubmissionEvents" separator=".">
   <suffix name="BasedOnAutocomplete"
       label="Quality metrics based on autocomplete attributes."/>
@@ -681,19 +506,6 @@ chromium-metrics-reviews@google.com.
       name="Autofill.FieldPredictionQuality.ByFieldType.Overall"/>
   <affected-histogram
       name="Autofill.FieldPredictionQuality.ByFieldType.Server"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="FirstUserActionType" separator="">
-  <suffix name="Continuation"
-      label="and performed an user action indicating that they were
-             continuing a task from the last time they used the app"/>
-  <suffix name="Expiration"
-      label="and did not perform any user actions that indicate either a new
-             task or a continued task before some timeout expired"/>
-  <suffix name="NewTask"
-      label="and performed an user action indicating that they were beginning
-             a new task from the last time they used the app"/>
-  <affected-histogram name="FirstUserAction.BackgroundTime"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="FirstUserActionTypeDevice" separator="">
@@ -721,37 +533,12 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="HttpCacheAccessToDoneCases" separator=".">
-  <suffix name="SentRequest" label="The request was sent over the network."/>
-  <suffix name="Used"
-      label="A cache entry was used without using the network."/>
-  <affected-histogram name="HttpCache.AccessToDone2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="HttpCacheBeforeSendCases" separator=".">
-  <suffix name="CantConditionalize"
-      label="A cached resource existed but no conditional request could be
-             written."/>
-  <suffix name="NotCached" label="There was no pre-existing disk cache entry."/>
-  <suffix name="Updated"
-      label="A cached resource existed and was updated over the network."/>
-  <suffix name="Validated"
-      label="A cached resource existed and was validated over the network."/>
-  <affected-histogram name="HttpCache.BeforeSend"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="IMEAutoCorrect" separator=".">
   <suffix name="AC0" label="The auto-correct level is 0"/>
   <suffix name="AC1" label="The auto-correct level is 1"/>
   <suffix name="AC2" label="The auto-correct level is 2"/>
   <affected-histogram name="InputMethod.Commit.Index.FR"/>
   <affected-histogram name="InputMethod.Commit.Index.US"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="IOMode" separator=".">
-  <suffix name="Asynchronous" label=""/>
-  <suffix name="Synchronous" label=""/>
-  <affected-histogram name="Net.QuicSession.PacketWriteTime"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="LeakDetectionDialogType" separator=".">
@@ -766,21 +553,6 @@ chromium-metrics-reviews@google.com.
              password"/>
   <affected-histogram
       name="PasswordManager.LeakDetection.DialogDismissalReason"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ManifestProperties" separator=".">
-  <suffix name="description" label=""/>
-  <suffix name="display" label=""/>
-  <suffix name="gcm_sender_id" label=""/>
-  <suffix name="icons" label=""/>
-  <suffix name="name" label=""/>
-  <suffix name="orientation" label=""/>
-  <suffix name="protocol_handlers" label=""/>
-  <suffix name="screenshots" label=""/>
-  <suffix name="share_target" label=""/>
-  <suffix name="short_name" label=""/>
-  <suffix name="start_url" label=""/>
-  <affected-histogram name="Manifest.HasProperty"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="MixedContentDownloadDownloadSecurity" separator=".">
@@ -814,13 +586,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Navigation.StartToCommit"/>
   <affected-histogram name="Navigation.StartToCommit.CrossProcess"/>
   <affected-histogram name="Navigation.StartToCommit.SameProcess"/>
-  <affected-histogram name="Navigation.TimeToReadyToCommit2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="NavigationProcessType" separator=".">
-  <suffix name="CrossProcess" label="Cross process navigation."/>
-  <suffix name="SameProcess" label="Same process navigation."/>
-  <affected-histogram name="Navigation.StartToCommit"/>
   <affected-histogram name="Navigation.TimeToReadyToCommit2"/>
 </histogram_suffixes>
 
@@ -861,43 +626,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="ResourceScheduler.RequestQueuingDuration"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Net_QuicSession_PacketReceived_CONNECTION_TYPE"
-    separator="_">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <suffix name="CONNECTION_2G" label="mobile 2G are tallied."/>
-  <suffix name="CONNECTION_3G" label="mobile 3G are tallied."/>
-  <suffix name="CONNECTION_4G" label="mobile 4G are tallied."/>
-  <suffix name="CONNECTION_BLUETOOTH"
-      label="Bluetooth are tallied, but this may include connections to a
-             mobile hotspot."/>
-  <suffix name="CONNECTION_ETHERNET"
-      label="ethernet are tallied, but this may include connections to a WiFi
-             bridge."/>
-  <suffix name="CONNECTION_NONE"
-      label="NO(?) network are tallied (should be empty)."/>
-  <suffix name="CONNECTION_UNKNOWN" label="WiFi are tallied."/>
-  <suffix name="CONNECTION_WIFI"
-      label="WiFi are tallied, but this may include connections to a mobile
-             hotspot. Also check similar histograms that end in WIFI_802.11*
-             for more details on some platforms."/>
-  <suffix name="CONNECTION_WIFI_802.11a" label="802.11a are tallied."/>
-  <suffix name="CONNECTION_WIFI_802.11b" label="802.11b are tallied."/>
-  <suffix name="CONNECTION_WIFI_802.11g" label="802.11g are tallied."/>
-  <suffix name="CONNECTION_WIFI_802.11n" label="802.11n are tallied."/>
-  <suffix name="CONNECTION_WIFI_ANCIENT"
-      label="802.11 that are no longer standard are tallied."/>
-  <affected-histogram name="Net.QuicSession.PacketLossRate"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="NetHttpContentLengthType" separator=".">
-  <suffix name="Http" label=""/>
-  <suffix name="Https" label=""/>
-  <suffix name="Video" label=""/>
-  <affected-histogram name="Net.HttpContentLengthV2"/>
-  <affected-histogram name="Net.HttpOriginalContentLengthV2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="NetHttpContentLengthType2" separator=".">
   <suffix name="BypassedDRP"
       label="Bytes of traffic that bypassed the Data Reduction Proxy"/>
@@ -935,131 +663,7 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.HttpOriginalContentLengthV2.Https.ViaDRP"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NetQuicDiskCacheBackend" separator=".">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <suffix name="DiskCache" label="DiskCache backend is using disk cache."/>
-  <suffix name="MemoryCache" label="DiskCache backend is using memory cache."/>
-  <suffix name="NoBackend" label="DiskCache didn't have a backend"/>
-  <suffix name="PropertiesBasedCache" label="Preferences based cache is used."/>
-  <suffix name="WaitForDataReady"
-      label="Tracks the last failure reason until WaitForDataReady or its
-             callback is executed. This is recorded when data is ready in
-             WaitForDataReady or when the callback is executed"/>
-  <affected-histogram name="Net.QuicDiskCache.FailureReason"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="NewTabPage_BackgroundService_RequestLatency"
-    separator=".">
-  <suffix name="Failure" label="Failed to fetch data from background service"/>
-  <suffix name="Success" label="Successfully fetched from background service"/>
-  <affected-histogram
-      name="NewTabPage.BackgroundService.Collections.RequestLatency"/>
-  <affected-histogram
-      name="NewTabPage.BackgroundService.Images.RequestLatency"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="NewTabPage_OneGoogleBar_RequestLatency" separator=".">
-  <suffix name="Failure" label="Failed to fetch OneGoogleBar"/>
-  <suffix name="Success" label="Successfully fetched OneGoogleBar"/>
-  <affected-histogram name="NewTabPage.OneGoogleBar.RequestLatency"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="NewTabPage_Promos_RequestLatency2" separator=".">
-  <suffix name="Failure" label="Failed to fetch middle-slot Promo data"/>
-  <suffix name="SuccessWithoutPromo"
-      label="Successfully fetched middle-slot Promo data which did not
-             contain a promo"/>
-  <suffix name="SuccessWithPromo"
-      label="Successfully fetched middle-slot Promo data which contained a
-             promo"/>
-  <affected-histogram name="NewTabPage.Promos.RequestLatency2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="NewTabPageIconTypes" separator=".">
-  <suffix name="IconsColor"
-      label="Icons using a fallback color (favicon resolution too low)."/>
-  <suffix name="IconsGray"
-      label="Icons using a gray color (no favicon available)."/>
-  <suffix name="IconsReal"
-      label="Icons using an actual icon published by the site."/>
-  <suffix name="Thumbnail"
-      label="Not an icon but a thumbnail/screenshot of the page."/>
-  <suffix name="ThumbnailFailed"
-      label="Default gray box in place of a thumbnail/screenshot."/>
-  <affected-histogram name="NewTabPage.MostVisited"/>
-  <affected-histogram name="NewTabPage.SuggestionsImpression"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="NewTabPageLogoShownFromCache" separator=".">
-  <suffix name="Fresh" label="Fresh logo from network."/>
-  <suffix name="FromCache" label="Logo from cache."/>
-  <affected-histogram name="NewTabPage.LogoShown"/>
-</histogram_suffixes>
-
 <!-- TODO(crbug.com/40829943): Migrate these histograms to use the patterned histograms instead. -->
-
-<histogram_suffixes name="NewTabPageModules" separator=".">
-  <suffix name="chrome_cart" label="Module ID for Chrome Cart"/>
-  <suffix name="drive" label="Module ID for Google Drive module"/>
-  <suffix name="dummy" label="Module ID for a dummy module"/>
-  <suffix name="dummy2" label="Module ID for another dummy module"/>
-  <suffix name="google_calendar" label="Module ID for Google Calendar"/>
-  <suffix name="history_clusters"
-      label="Module ID for History Clusters module"/>
-  <suffix name="shopping_tasks" label="Module ID for Shopping Tasks"/>
-  <suffix name="tab_resumption" label="Module ID for Tab Resumption"/>
-  <affected-histogram name="NewTabPage.Modules.Dismissed"/>
-  <affected-histogram name="NewTabPage.Modules.EnabledOnNTPLoad"/>
-  <affected-histogram name="NewTabPage.Modules.Impression"/>
-  <affected-histogram name="NewTabPage.Modules.ImpressionRatio"/>
-  <affected-histogram name="NewTabPage.Modules.LoadDuration"/>
-  <affected-histogram name="NewTabPage.Modules.Loaded"/>
-  <affected-histogram name="NewTabPage.Modules.Restored"/>
-  <affected-histogram name="NewTabPage.Modules.Usage"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="NewTabPageProviders" separator=".">
-  <suffix name="allowlist"
-      label="Installed allowlist entry point suggestions."/>
-  <suffix name="client" label="Suggestions coming from the client."/>
-  <suffix name="custom_links" label="User customized links."/>
-  <suffix name="explore" label="Explore sites related entry points."/>
-  <suffix name="homepage" label="The currently set home page."/>
-  <suffix name="popular_baked_in" label="Baked-in, popular suggestions."/>
-  <suffix name="popular_fetched"
-      label="Non-personalized, popular suggestions (fetched from the server)."/>
-  <suffix name="server" label="Suggestions coming from the server."/>
-  <affected-histogram name="NewTabPage.MostVisited"/>
-  <affected-histogram name="NewTabPage.SuggestionsImpression"/>
-  <affected-histogram name="NewTabPage.TileTitle"/>
-  <affected-histogram name="NewTabPage.TileTitleClicked"/>
-  <affected-histogram name="NewTabPage.TileType"/>
-  <affected-histogram name="NewTabPage.TileTypeClicked"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="NewTabPageTimings" separator=".">
-  <suffix name="FirstContentfulPaint" label="First contentful paint."/>
-  <suffix name="LargestContentfulPaint" label="Largest contentful paint."/>
-  <suffix name="MostVisited" label="Loaded client-side suggestions."/>
-  <suffix name="NewTab" label="NTP loaded on a new tab."/>
-  <suffix name="Startup" label="NTP loaded during browser startup."/>
-  <suffix name="WebUI3PNTP" label="Loaded 3P WebUI NTP."/>
-  <suffix name="WebUINTP" label="Loaded WebUI NTP."/>
-  <affected-histogram name="NewTabPage.LoadTime"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="NotificationSchedulerClientType" separator=".">
-  <suffix name="__Test__" label=""/>
-  <suffix name="ChromeUpdate" label=""/>
-  <suffix name="FeatureGuide" label="Deprecated"/>
-  <suffix name="Prefetch" label=""/>
-  <suffix name="ReadingList" label=""/>
-  <suffix name="Unknown" label=""/>
-  <suffix name="WebUI" label=""/>
-  <affected-histogram
-      name="Notifications.Scheduler.NotificationLifeCycleEvent"/>
-</histogram_suffixes>
 
 <histogram_suffixes name="OmniboxClipboardSuggestionType" separator=".">
   <suffix name="IMAGE" label="IMAGE from clipboard."/>
@@ -1726,27 +1330,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Platform.Meminfo"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PlatformNotifications" separator=".">
-  <suffix name="OnIPAddressChanged" label="When IP address change is detected"/>
-  <suffix name="OnMigrateBackToDefaultNetwork"
-      label="When connection attempts to migrate back to the default network"/>
-  <suffix name="OnNetworkConnected" label="When a new network is connected"/>
-  <suffix name="OnNetworkDisconnected"
-      label="When an exisiting network is disconnected"/>
-  <suffix name="OnNetworkMadeDefault"
-      label="When a network is made as new default"/>
-  <suffix name="OnNetworkSoonToDisconnect"
-      label="When an existing network is soon to be disconnected"/>
-  <affected-histogram
-      name="Net.QuicConnectivityMonitor.NumActiveDegradingSessions"/>
-  <affected-histogram
-      name="Net.QuicConnectivityMonitor.NumAllDegradedSessions"/>
-  <affected-histogram
-      name="Net.QuicConnectivityMonitor.PercentageActiveDegradingSessions"/>
-  <affected-histogram
-      name="Net.QuicConnectivityMonitor.PercentageAllDegradedSessions"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PNaClTranslatorTypes" separator=".">
   <suffix name="" label="All translator types"/>
   <suffix name="LLC" label="LLC-based translator"/>
@@ -1789,26 +1372,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Power.Mac.GPU1"/>
   <affected-histogram name="Power.Mac.GPUi"/>
   <affected-histogram name="Power.Mac.Total"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PreferenceChangeType" separator=".">
-  <suffix name="Changed" label="Preference value when changed by the user."/>
-  <suffix name="Started" label="Preference value upon startup."/>
-  <affected-histogram name="Mouse.ScrollAcceleration"/>
-  <affected-histogram name="Mouse.ScrollSensitivity"/>
-  <affected-histogram name="PointingStick.Acceleration"/>
-  <affected-histogram name="PointingStick.PointerSensitivity"/>
-  <affected-histogram name="PointingStick.PrimaryButtonRight"/>
-  <affected-histogram name="Touchpad.ScrollAcceleration"/>
-  <affected-histogram name="Touchpad.ScrollSensitivity"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Prefetch" separator="_">
-  <suffix name="ContentPrefetchPrefetchOff"
-      label="Prefetch is completely disabled."/>
-  <suffix name="ContentPrefetchPrefetchOn"
-      label="prefetch is enabled but prerender is disabled."/>
-  <affected-histogram name="Net.HttpTimeToFirstByte"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PrerenderSource" separator="_" ordering="prefix">
@@ -1867,39 +1430,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Profile.State.UnconsentedPrimaryAccountType"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ProgressiveScan" separator="_">
-  <suffix name="33Percent_4MinMax"
-      label="Progressive scan @ 33%, 4 frequency bins."/>
-  <suffix name="50Percent_4MinMax"
-      label="Progressive scan @ 50%, 4 frequency bins."/>
-  <suffix name="50Percent_8MinMax"
-      label="Progressive scan @ 50%, 8 frequency bins."/>
-  <suffix name="100Percent_1Min_4Max"
-      label="Progressive scan @ 100%, minimum 1/maximum 4 frequencies."/>
-  <suffix name="100Percent_1MinSeen_A"
-      label="Progressive scan @ all previously seen frequencies (A)."/>
-  <suffix name="100Percent_1MinSeen_B"
-      label="Progressive scan @ all previously seen frequencies (B)."/>
-  <suffix name="100Percent_8MinMax"
-      label="Progressive scan @ 100%, 8 frequency bins."/>
-  <suffix name="FullScan" label="Using WPA_supplicant to scan."/>
-  <affected-histogram name="Network.Shill.WiFi.ScanResult"/>
-  <affected-histogram name="Network.Shill.Wifi.TimeToConnect"/>
-  <affected-histogram name="Network.Shill.Wifi.TimeToJoin"/>
-  <affected-histogram name="Network.Shill.Wifi.TimeToScan"/>
-  <affected-histogram name="Network.Shill.Wifi.TimeToScanAndConnect"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="QueryTimeSuffix" separator=".">
-  <suffix name="0" label="N = 0"/>
-  <suffix name="1" label="N = 1"/>
-  <suffix name="2" label="N = 2"/>
-  <suffix name="3" label="N = 3"/>
-  <suffix name="4" label="N = 4"/>
-  <suffix name="5" label="N = 5"/>
-  <affected-histogram name="Omnibox.QueryTime2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="QuicConnectionType" separator="">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
@@ -1907,18 +1437,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.QuicSession.ConnectRandomPort"/>
   <affected-histogram
       name="Net.QuicSession.ConnectRandomPortRequiringConfirmation"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="QuicPortSelection" separator="">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <suffix name="RandomPort"
-      label="The operating system randomly selected a source port for the
-             connection."/>
-  <suffix name="SelectPort"
-      label="An effort was mode to (try to) consistently connect using the
-             same source port for the given server IP/port."/>
-  <affected-histogram name="Net.QuicSession.Connect"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="RasterTaskSchedulingDelayNoAtRasterDecodesType"
@@ -1945,50 +1463,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Oop" label="This metric is for only oop raster."/>
   <affected-histogram name="Renderer4.Browser.RasterTaskTotalDuration"/>
   <affected-histogram name="Renderer4.Renderer.RasterTaskTotalDuration"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ReadErrorSourceNetwork" separator=".">
-  <suffix name="AnyNetwork" label=""/>
-  <suffix name="CurrentNetwork"
-      label="This metric is for current network only."/>
-  <suffix name="OtherNetworks"
-      label="This metric is for old networks or networks to be migrated to
-             only."/>
-  <affected-histogram name="Net.QuicSession.ReadError"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ReferrerPolicySameOrigin" separator=".">
-  <suffix name="CrossOrigin" label="Cross-origin requests."/>
-  <suffix name="SameOrigin"
-      label="Same-origin requests (relative to the initiator, if present, and
-             otherwise the initial referrer URL)."/>
-  <affected-histogram name="Net.URLRequest.ReferrerHasInformativePath"/>
-  <affected-histogram name="Net.URLRequest.ReferrerPolicyForRequest"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="RendererThreadType" separator=".">
-  <suffix name="Compositor"
-      label="Measurement taken on the compositor thread."/>
-  <suffix name="Main" label="Measurement taken on the main/render thread."/>
-  <affected-histogram name="AnimatedImage.NumOfFramesSkipped"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="RoamSecurityType" separator=".">
-  <suffix name="EAP"
-      label="Records roams in a network using 802.1X authentication without
-             Fast Transition"/>
-  <suffix name="FTEAP"
-      label="Records roams in a network using 802.1X authentication with Fast
-             Transition"/>
-  <suffix name="FTPSK"
-      label="Records roams in a network using PSK authentication with Fast
-             Transition"/>
-  <suffix name="PSK"
-      label="Records roams in a network using PSK authentication without Fast
-             Transition"/>
-  <affected-histogram name="Network.Shill.WiFi.RoamComplete"/>
-  <affected-histogram name="Network.Shill.WiFi.RoamTime"/>
-  <affected-histogram name="Network.Shill.WiFi.SessionLength"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SafetyTip" separator=".">
@@ -2129,45 +1603,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Sharing.SendMessageResult.Windows"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ShillWiFiRememberedNetworkSecurityMode" separator=".">
-  <suffix name="802_1x" label="Network is secured with 802.1x"/>
-  <suffix name="none" label="Network is not secured"/>
-  <suffix name="psk" label="Network is security with WPA or WPA-2 (aka RSN)"/>
-  <suffix name="wep" label="Network employs WEP (Wired Equivalent Privacy)"/>
-  <affected-histogram name="Network.Shill.WiFi.RememberedSystemNetworkCount"/>
-  <affected-histogram name="Network.Shill.WiFi.RememberedUserNetworkCount"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Spellcheck_Windows_LocaleSupportType" separator=".">
-  <suffix name="Both"
-      label="This variation counts the number of locales that are supported
-             by both Hunspell and the OS spell checker."/>
-  <suffix name="HunspellOnly"
-      label="This variation counts the number of locales that are only
-             supported by Hunspell."/>
-  <suffix name="NativeOnly"
-      label="This variation counts the number of locales that are only
-             supported by the OS spell checker."/>
-  <suffix name="NoSupport"
-      label="This variation counts the number of locales that are not
-             supported by either Hunspell or the OS spell checker."/>
-  <affected-histogram name="Spellcheck.Windows.ChromeLocalesSupport2"/>
-  <affected-histogram name="Spellcheck.Windows.SpellcheckLocalesSupport2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Spellcheck_Windows_SpellcheckType" separator=".">
-  <suffix name="HunspellOnly"
-      label="This variation measures the duration when only Hunspell is used."/>
-  <suffix name="Hybrid"
-      label="This variation measures the duration when Hunspell is used for
-             some locales and the OS spell checker is used for others."/>
-  <suffix name="NativeOnly"
-      label="This variation measures the duration when only by the OS spell
-             checker is used."/>
-  <affected-histogram name="Spellcheck.Windows.SpellcheckRequestDuration"/>
-  <affected-histogram name="Spellcheck.Windows.SuggestionGatheringDuration"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="StartupTemperature" separator=".">
   <suffix name="ColdStartup"
       label="Startup was cold (mostly hard faults). Threshold updated Jan
@@ -2229,23 +1664,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="ThreadPool.UnnecessaryWakeup.ContentChild"/>
   <affected-histogram name="ThreadPool.UnnecessaryWakeup.GPU"/>
   <affected-histogram name="ThreadPool.UnnecessaryWakeup.Renderer"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="TotalTimeToHttpsGoogle" separator=".">
-  <suffix name="Secure.Quic"
-      label="Recorded for Google servers (https) only when QUIC is used."/>
-  <affected-histogram name="Net.HttpJob.TotalTime"/>
-  <affected-histogram name="Net.HttpJob.TotalTimeNotCached"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="TrustTokenOperationSuccess" separator=".">
-  <suffix name="Failure"
-      label="The operation or partial operation failed: for ServerTime, this
-             means that the subsequent Finalize part failed; for TotalTime,
-             it means that the operation failed during Finalize."/>
-  <suffix name="Success" label="The operation or partial operation succeeded."/>
-  <affected-histogram name="Net.TrustTokens.NetErrorForTrustTokenOperation"/>
-  <affected-histogram name="Net.TrustTokens.NetErrorForTrustTokenOperation"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="TrustTokenOperationType" separator=".">

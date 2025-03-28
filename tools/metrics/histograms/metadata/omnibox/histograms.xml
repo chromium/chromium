@@ -1715,7 +1715,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <token key="OmniboxProvider" variants="OmniboxProviders"/>
 </histogram>
 
-<histogram name="Omnibox.QueryTime2" units="ms" expires_after="2025-09-14">
+<histogram name="Omnibox.QueryTime2{QueryTimeSuffix}" units="ms"
+    expires_after="2025-09-14">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -1724,7 +1725,17 @@ Keep consistent with active providers. Doesn't need to include every provider in
     user has typed N characters (for 'Omnibox.QueryTime2.N') or any length input
     (for 'Omnibox.QueryTime2'). This measures the time it takes to start all
     autocomplete providers (but not wait for the asynchronous ones to finish).
+    {QueryTimeSuffix}
   </summary>
+  <token key="QueryTimeSuffix">
+    <variant name=""/>
+    <variant name=".0" summary="N = 0"/>
+    <variant name=".1" summary="N = 1"/>
+    <variant name=".2" summary="N = 2"/>
+    <variant name=".3" summary="N = 3"/>
+    <variant name=".4" summary="N = 4"/>
+    <variant name=".5" summary="N = 5"/>
+  </token>
 </histogram>
 
 <histogram name="Omnibox.ResumeJourneyShown" units="position"
