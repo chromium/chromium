@@ -52,6 +52,10 @@ using signin_metrics::PromoAction;
       RecordAction(UserMetricsAction("Signin_Interrupt_Signin"));
       break;
     }
+    case SigninCoordinatorProfileSwitch: {
+      RecordAction(UserMetricsAction("Signin_Switch_Profile"));
+      break;
+    }
     case SigninCoordinatorUINotAvailable: {
       RecordAction(UserMetricsAction("Signin_Abort_Signin_UINotAvailable"));
       break;

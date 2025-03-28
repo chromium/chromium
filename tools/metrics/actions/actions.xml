@@ -38563,6 +38563,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_BottomSheet_ClosedByProfileChange">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded when the sign-in bottom sheet is getting closed because the current
+    profile is being stopped. That is, the user is signing in a managed account
+    and #separate-profiles-for-managed-accounts is enabled. Recorded for iOS
+    only.
+  </description>
+</action>
+
 <action name="Signin_BottomSheet_ClosedBySignIn">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -40943,6 +40954,16 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user signs out and delete user data, from the Account list
     view. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_Switch_Profile">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@chromium.org</owner>
+  <description>
+    Recorded when the user tapped on a managed account and accepted to sign-in
+    it. That Recorder for iOS only and if
+    #separate-profiles-for-managed-accounts is enabled.
   </description>
 </action>
 

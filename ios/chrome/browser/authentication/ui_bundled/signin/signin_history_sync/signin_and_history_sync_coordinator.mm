@@ -132,6 +132,9 @@ enum class SignInHistorySyncStep {
     case SigninCoordinatorResultDisabled:
       _currentStep = [self nextStep];
       break;
+    case SigninCoordinatorProfileSwitch:
+      // TODO(crbug.com/375605572): Open the history sync dialog after the
+      // continuation.
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
       _currentStep = SignInHistorySyncStep::kCompleted;
