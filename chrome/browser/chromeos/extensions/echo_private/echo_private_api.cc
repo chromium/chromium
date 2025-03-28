@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/extensions/echo_private/echo_private_api.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -14,9 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/echo_private_ash.h"
 #include "chrome/browser/ash/notifications/echo_dialog_view.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/echo_private/echo_private_api_util.h"
@@ -33,6 +31,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/web_contents.h"
@@ -42,6 +41,29 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/aura/window.h"
+
+namespace {
+std::string GetRegistrationCode(std::string_view type) {
+  // Possible ECHO code type and corresponding key name in StatisticsProvider.
+  const std::string kCouponType = "COUPON_CODE";
+  const std::string kGroupType = "GROUP_CODE";
+
+  ash::system::StatisticsProvider* provider =
+      ash::system::StatisticsProvider::GetInstance();
+  std::string result;
+  if (type == kCouponType) {
+    const std::optional<std::string_view> offers_code =
+        provider->GetMachineStatistic(ash::system::kOffersCouponCodeKey);
+    result = std::string(offers_code.value());
+  } else if (type == kGroupType) {
+    const std::optional<std::string_view> offers_code =
+        provider->GetMachineStatistic(ash::system::kOffersGroupCodeKey);
+    result = std::string(offers_code.value());
+  }
+
+  return result;
+}
+}  // namespace
 
 namespace echo_api = extensions::api::echo_private;
 
@@ -57,33 +79,8 @@ EchoPrivateGetRegistrationCodeFunction::Run() {
       echo_api::GetRegistrationCode::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  // Possible ECHO code type and corresponding key name in StatisticsProvider.
-  const std::string kCouponType = "COUPON_CODE";
-  const std::string kGroupType = "GROUP_CODE";
-  std::optional<crosapi::mojom::RegistrationCodeType> type;
-  if (params->type == kCouponType) {
-    type = crosapi::mojom::RegistrationCodeType::kCoupon;
-  } else if (params->type == kGroupType) {
-    type = crosapi::mojom::RegistrationCodeType::kGroup;
-  }
-
-  if (!type) {
-    return RespondNow(ArgumentList(
-        echo_api::GetRegistrationCode::Results::Create(std::string())));
-  }
-
-  auto callback = base::BindOnce(
-      &EchoPrivateGetRegistrationCodeFunction::RespondWithResult, this);
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->echo_private_ash()
-      ->GetRegistrationCode(type.value(), std::move(callback));
-  return RespondLater();
-}
-
-void EchoPrivateGetRegistrationCodeFunction::RespondWithResult(
-    const std::string& result) {
-  Respond(WithArguments(result));
+  return RespondNow(ArgumentList(echo_api::GetRegistrationCode::Results::Create(
+      GetRegistrationCode(params->type))));
 }
 
 EchoPrivateSetOfferInfoFunction::EchoPrivateSetOfferInfoFunction() = default;

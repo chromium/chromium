@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_ECHO_PRIVATE_ECHO_PRIVATE_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_ECHO_PRIVATE_ECHO_PRIVATE_API_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/types/expected.h"
 #include "chrome/browser/ash/notifications/echo_dialog_listener.h"
@@ -24,7 +24,6 @@ class EchoPrivateGetRegistrationCodeFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void RespondWithResult(const std::string& result);
   DECLARE_EXTENSION_FUNCTION("echoPrivate.getRegistrationCode",
                              ECHOPRIVATE_GETREGISTRATIONCODE)
 };
