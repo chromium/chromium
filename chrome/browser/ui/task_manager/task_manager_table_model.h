@@ -13,6 +13,7 @@
 #include <unordered_set>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
@@ -142,6 +143,13 @@ class TaskManagerTableModel : public TaskManagerObserver,
   std::optional<size_t> GetRowForWebContents(
       content::WebContents* web_contents);
 
+  // Updates the total time spent in the provided category based on the current
+  // time (base::TimeTicks::Now()).
+  void UpdateOldTabTime(DisplayCategory old_category);
+
+  // Start the timer for the new category.
+  void StartNewTabTime(DisplayCategory new_category);
+
   // Updates task positions based on category and search filters. Returns true
   // if the model is changed.
   bool UpdateModel(const DisplayCategory display_category,
@@ -220,6 +228,15 @@ class TaskManagerTableModel : public TaskManagerObserver,
   // Contains the process IDs for tasks whose titles match the search
   // terms. Tasks linked to these processes should be kept.
   std::unordered_set<base::ProcessId> matched_process_set_;
+
+  // Stores the total time spent in the category for this Task Manager session.
+  base::TimeTicks tabs_and_ex_start_time_ = base::TimeTicks::Now();
+  base::TimeTicks system_start_time_ = base::TimeTicks::Now();
+  base::TimeTicks all_start_time_ = base::TimeTicks::Now();
+
+  base::TimeDelta tabs_and_ex_total_time_;
+  base::TimeDelta system_total_time_;
+  base::TimeDelta all_total_time_;
 };
 
 }  // namespace task_manager

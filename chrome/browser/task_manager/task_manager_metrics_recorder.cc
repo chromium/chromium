@@ -25,6 +25,21 @@ void RecordCloseEvent(const base::TimeTicks& start_time,
                                end_time - start_time);
 }
 
+void RecordTabSwitchEvent(CategoryRecord record,
+                          const base::TimeDelta& elapsed_time) {
+  static const std::array<std::string, 5> kCategoryToString = {
+      "Other", "TabsAndExtensions", "Browser", "System", "All"};
+
+  // Out of bounds check.
+  CHECK(static_cast<size_t>(record) < kCategoryToString.size());
+
+  const auto histogram_name = base::StringPrintf(
+      kClosedTabElapsedTimeHistogram,
+      kCategoryToString[static_cast<size_t>(record)].c_str());
+
+  base::UmaHistogramLongTimes100(histogram_name, elapsed_time);
+}
+
 void RecordEndProcessEvent(const base::TimeTicks& start_time,
                            const base::TimeTicks& end_time,
                            size_t end_process_count) {
