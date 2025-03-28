@@ -533,6 +533,57 @@ TEST_F(PasswordManagerAndroidUtilTest, TestRecordsUpmActivateIfAlreadyActive) {
       "PasswordManager.LocalUpmActivationStatus", kOn, 1);
 }
 
+TEST_F(PasswordManagerAndroidUtilTest,
+       InitUnmigratedExportUnchangedIfMigrated) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kLoginDbDeprecationAndroid};
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory(),
+                                   GetMockBridgeWithBackendPresent());
+  EXPECT_TRUE(pref_service()
+                  ->FindPreference(
+                      password_manager::prefs::kUpmUnmigratedPasswordsExported)
+                  ->IsDefaultValue());
+}
+
+TEST_F(PasswordManagerAndroidUtilTest, InitUnmigratedExportPrefTrueEmptyDb) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kLoginDbDeprecationAndroid};
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  pref_service()->SetBoolean(
+      password_manager::prefs::kEmptyProfileStoreLoginDatabase, true);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUpmUnmigratedPasswordsExported, false);
+  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory(),
+                                   GetMockBridgeWithBackendPresent());
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kUpmUnmigratedPasswordsExported));
+}
+
+TEST_F(PasswordManagerAndroidUtilTest, InitUnmigratedExportPrefFalseFlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kLoginDbDeprecationAndroid);
+  pref_service()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  pref_service()->SetBoolean(
+      password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUpmUnmigratedPasswordsExported, true);
+  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory(),
+                                   GetMockBridgeWithBackendPresent());
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      password_manager::prefs::kUpmUnmigratedPasswordsExported));
+}
+
 // Unit tests for the activation algorithm. No longer relevant after the login
 // db deprecation.
 class PasswordManagerUpmActivationTest : public PasswordManagerAndroidUtilTest {
