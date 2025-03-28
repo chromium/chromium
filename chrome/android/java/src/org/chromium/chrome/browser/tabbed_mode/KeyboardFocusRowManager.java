@@ -40,6 +40,28 @@ import java.util.List;
     private final TabObscuringHandler mTabObscuringHandler;
     private final Supplier</* Nullable */ ToolbarManager> mToolbarManagerSupplier;
 
+    /**
+     * Constructs a {@link KeyboardFocusRowManager}, which controls the keyboard focus location for
+     * tab strip, toolbar, bookmarks bar on Chrome for Android.
+     *
+     * <p>See {@link org.chromium.chrome.browser.KeyboardShortcuts.KeyboardShortcutsSemanticMeaning}
+     *
+     * @param bookmarkBarCoordinatorSupplier Supplies the {@link BookmarkBarCoordinator} (or null,
+     *     if the bookmarks bar is not visible) that will be used to get/set keyboard focus on the
+     *     bookmarks bar.
+     * @param compositorViewHolderSupplier Supplies the {@link CompositorViewHolder} that will be
+     *     used to request focus on the tab contents.
+     * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager} that will be used
+     *     to determine if an app modal dialog is showing (in which case the keyboard shortcuts
+     *     should not do anything).
+     * @param stripLayoutHelperManagerSupplier Supplies the {@link StripLayoutHelperManager} (or
+     *     null, if the tab strip is not visible) that will be used to get/set keyboard focus on the
+     *     tab strip.
+     * @param tabObscuringHandler The {@link TabObscuringHandler} that will be used to determine if
+     *     the toolbar is obscured (in which case the keyboard shortcuts should not do anything).
+     * @param toolbarManagerSupplier Supplies the {@link ToolbarManager} (or null, if the toolbar is
+     *     not visible) that will be used to get/set keyboard focus on the toolbar.
+     */
     KeyboardFocusRowManager(
             Supplier</* @Nullable */ BookmarkBarCoordinator> bookmarkBarCoordinatorSupplier,
             Supplier<CompositorViewHolder> compositorViewHolderSupplier,
