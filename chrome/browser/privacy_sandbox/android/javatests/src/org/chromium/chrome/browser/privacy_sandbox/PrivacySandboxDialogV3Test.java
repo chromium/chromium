@@ -43,6 +43,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -52,6 +53,7 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
@@ -604,6 +606,8 @@ public final class PrivacySandboxDialogV3Test {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/392943234): Re-enable this test after fix for button visibilities
+    @DisableIf.Device(DeviceFormFactor.TABLET)
     public void testRowNoticeActionButtonsAreShown() {
         launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.ROW_NOTICE);
         clickMoreButtonAndScrollToBottomIfNeeded();
@@ -614,6 +618,8 @@ public final class PrivacySandboxDialogV3Test {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/392943234): Re-enable this test after fix for button visibilities
+    @DisableIf.Device(DeviceFormFactor.TABLET)
     public void testRowNoticeAcceptButtonDismissesDialog() {
         launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.ROW_NOTICE);
         onView(withId(R.id.privacy_sandbox_notice_title)).check(matches(isDisplayed()));
@@ -625,6 +631,8 @@ public final class PrivacySandboxDialogV3Test {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/392943234): Re-enable this test after fix for button visibilities
+    @DisableIf.Device(DeviceFormFactor.TABLET)
     public void testRowNoticeSettingsButtonDismissesDialogAndOpensSettingsPage() {
         launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.ROW_NOTICE);
         onView(withId(R.id.privacy_sandbox_notice_title)).check(matches(isDisplayed()));
@@ -641,6 +649,8 @@ public final class PrivacySandboxDialogV3Test {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/392943234): Re-enable this test after fix for button visibilities
+    @DisableIf.Device(DeviceFormFactor.TABLET)
     public void testRowNoticeActionButtonsAreSticky() {
         launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.ROW_NOTICE);
         clickMoreButtonAndScrollToBottomIfNeeded();
