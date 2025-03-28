@@ -65,8 +65,12 @@ XdgSessionManager::XdgSessionManager(wl::Object<xx_session_manager_v1> manager,
 XdgSessionManager::~XdgSessionManager() = default;
 
 std::optional<std::string> XdgSessionManager::CreateSession() {
-  auto session = std::make_unique<XdgSession>(xx_session_manager_v1_get_session(
-      manager_.get(), XX_SESSION_MANAGER_V1_REASON_LAUNCH, nullptr));
+  auto session = std::make_unique<XdgSession>(
+      xx_session_manager_v1_get_session(
+          manager_.get(), XX_SESSION_MANAGER_V1_REASON_LAUNCH, nullptr),
+      this);
+  EnsureReady(*session);
+
   if (!session) {
     PLOG(ERROR) << "Failed to create a XDG Session";
     return std::nullopt;
@@ -83,7 +87,7 @@ std::optional<std::string> XdgSessionManager::RestoreSession(
     const std::string& session_id,
     RestoreReason reason) {
   CHECK(!session_id.empty());
-  if (auto existing_session = GetSession(session_id)) {
+  if (auto* existing_session = GetSession(session_id)) {
     return existing_session->id();
   }
 
@@ -94,7 +98,7 @@ std::optional<std::string> XdgSessionManager::RestoreSession(
   auto session = std::make_unique<XdgSession>(
       xx_session_manager_v1_get_session(manager_.get(), wl_reason,
                                         session_id.c_str()),
-      session_id);
+      this, session_id);
   EnsureReady(*session);
 
   // If, for some reason, the provided compositor fails to retrieve the session
@@ -108,10 +112,15 @@ std::optional<std::string> XdgSessionManager::RestoreSession(
   return result;
 }
 
-base::WeakPtr<XdgSession> XdgSessionManager::GetSession(
-    const std::string& session_id) const {
+XdgSession* XdgSessionManager::GetSession(const std::string& session_id) const {
   auto it = std::ranges::find(sessions_, session_id, &XdgSession::id);
-  return it != sessions_.end() ? it->get()->AsWeakPtr() : nullptr;
+  return it != sessions_.end() ? it->get() : nullptr;
+}
+
+void XdgSessionManager::DestroySession(XdgSession* session) {
+  auto [begin, end] = std::ranges::remove(sessions_, session,
+                                          &std::unique_ptr<XdgSession>::get);
+  sessions_.erase(begin, end);
 }
 
 void XdgSessionManager::EnsureReady(const XdgSession& session) {

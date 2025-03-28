@@ -5,12 +5,14 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_SESSION_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_SESSION_H_
 
-#include "base/memory/weak_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/observer_list.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace ui {
 
 class WaylandToplevelWindow;
+class XdgSessionManager;
 class XdgToplevelSession;
 
 class XdgSession {
@@ -27,8 +29,17 @@ class XdgSession {
     kInert,
   };
 
-  explicit XdgSession(struct xx_session_v1* session,
-                      const std::string& requested_id = {});
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnSessionDestroying() = 0;
+
+   protected:
+    ~Observer() override = default;
+  };
+
+  XdgSession(struct xx_session_v1* session,
+             XdgSessionManager* manager,
+             const std::string& requested_id = {});
   XdgSession(const XdgSession&) = delete;
   XdgSession& operator=(const XdgSession&) = delete;
   ~XdgSession();
@@ -41,7 +52,8 @@ class XdgSession {
       int32_t toplevel_id,
       Action action);
 
-  base::WeakPtr<XdgSession> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
  private:
   // xx_session_v1_listener callbacks:
@@ -55,7 +67,12 @@ class XdgSession {
   State state_ = State::kPending;
   std::string id_;
 
-  base::WeakPtrFactory<XdgSession> weak_factory_{this};
+  // XdgSessionManager instance is guaranteed to outlive sessions and sessions
+  // are always owned by a session manager, so it's safe to store this as a
+  // reference rather than a pointer.
+  const raw_ref<XdgSessionManager> manager_;
+
+  base::ObserverList<Observer> observers_;
 };
 
 class XdgToplevelSession {

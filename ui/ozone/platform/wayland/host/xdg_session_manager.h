@@ -14,6 +14,8 @@
 
 namespace ui {
 
+class XdgSession;
+
 class XdgSessionManager : public wl::GlobalObjectRegistrar<XdgSessionManager>,
                           public PlatformSessionManager {
  public:
@@ -36,9 +38,14 @@ class XdgSessionManager : public wl::GlobalObjectRegistrar<XdgSessionManager>,
   std::optional<std::string> RestoreSession(const std::string& session_id,
                                             RestoreReason reason) override;
 
-  base::WeakPtr<XdgSession> GetSession(const std::string& session_id) const;
+  XdgSession* GetSession(const std::string& session_id) const;
 
  private:
+  // XdgSession requests to destroy itself using this function when handling
+  // xdg_session.replaced event.
+  friend class XdgSession;
+  void DestroySession(XdgSession* session);
+
   // If needed, waits for either `created` or `recovered` from the server
   // to make sure it can proceed with further add or recover toplevel
   // operations.

@@ -11,11 +11,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/xdg_session.h"
-#include "ui/ozone/platform/wayland/host/xdg_session_manager.h"
 #include "ui/ozone/public/platform_session_manager.h"
 #include "ui/platform_window/extensions/system_modal_extension.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
@@ -38,7 +38,8 @@ class WaylandToplevelWindow : public WaylandWindow,
                               public WmMoveLoopHandler,
                               public WaylandToplevelExtension,
                               public WorkspaceExtension,
-                              public SystemModalExtension {
+                              public SystemModalExtension,
+                              public XdgSession::Observer {
  public:
   WaylandToplevelWindow(PlatformWindowDelegate* delegate,
                         WaylandConnection* connection);
@@ -142,6 +143,9 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   void DumpState(std::ostream& out) const override;
 
+  // XdgSession::Observer:
+  void OnSessionDestroying() override;
+
  private:
   // WaylandWindow protected overrides:
   // Calls UpdateWindowShape, set_input_region and set_opaque_region for this
@@ -235,7 +239,9 @@ class WaylandToplevelWindow : public WaylandWindow,
   gfx::ImageSkia initial_icon_;
 
   std::optional<PlatformSessionWindowData> session_data_;
-  base::WeakPtr<XdgSession> session_;
+  raw_ptr<XdgSession> session_;
+  base::ScopedObservation<XdgSession, XdgSession::Observer> session_observer_{
+      this};
   std::unique_ptr<XdgToplevelSession> toplevel_session_;
 
   base::WeakPtrFactory<WaylandToplevelWindow> weak_ptr_factory_{this};

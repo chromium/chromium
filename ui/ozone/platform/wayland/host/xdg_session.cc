@@ -9,18 +9,21 @@
 #include <memory>
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
+#include "ui/ozone/platform/wayland/host/xdg_session_manager.h"
 #include "ui/ozone/platform/wayland/host/xdg_toplevel_wrapper_impl.h"
 
 namespace ui {
 
 XdgSession::XdgSession(struct xx_session_v1* session,
+                       XdgSessionManager* manager,
                        const std::string& requested_id)
-    : session_(session), id_(requested_id) {
+    : session_(session), id_(requested_id), manager_(CHECK_DEREF(manager)) {
   static constexpr struct xx_session_v1_listener kSessionListener = {
       .created = OnCreated,
       .restored = OnRestored,
@@ -30,7 +33,9 @@ XdgSession::XdgSession(struct xx_session_v1* session,
   xx_session_v1_add_listener(session_.get(), &kSessionListener, this);
 }
 
-XdgSession::~XdgSession() = default;
+XdgSession::~XdgSession() {
+  observers_.Notify(&Observer::OnSessionDestroying);
+}
 
 std::unique_ptr<XdgToplevelSession> XdgSession::TrackToplevel(
     WaylandToplevelWindow* toplevel,
@@ -55,6 +60,14 @@ std::unique_ptr<XdgToplevelSession> XdgSession::TrackToplevel(
                                               action);
 }
 
+void XdgSession::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void XdgSession::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 // static
 void XdgSession::OnCreated(void* data,
                            struct xx_session_v1* xx_session_v1,
@@ -77,9 +90,12 @@ void XdgSession::OnRestored(void* data, struct xx_session_v1* xx_session_v1) {
 // static
 void XdgSession::OnReplaced(void* data, struct xx_session_v1* xx_session_v1) {
   auto* self = static_cast<XdgSession*>(data);
-  self->state_ = State::kInert;
   DVLOG(1) << "Replaced received for session_id=" << self->id_;
-  // TODO(crbug.com/352081012): Notify manager to destroy associated objects.
+  // Sessions are owned by a session manager, thus ask it to be destroyed.
+  // `observers_` are then notified about it (see XdgSession's dtor) and are
+  // responsible for clearing any related state.
+  self->state_ = State::kInert;
+  self->manager_->DestroySession(self);
 }
 
 XdgToplevelSession::XdgToplevelSession(

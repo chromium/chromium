@@ -586,6 +586,9 @@ bool WaylandToplevelWindow::OnInitialize(
     };
     if (auto* session_manager = connection()->session_manager()) {
       session_ = session_manager->GetSession(session_data_->session_id);
+      if (session_) {
+        session_observer_.Observe(session_);
+      }
     }
   }
 
@@ -706,6 +709,12 @@ void WaylandToplevelWindow::DumpState(std::ostream& out) const {
   out << ", title=" << window_title_
       << ", is_active=" << ToBoolString(is_active_)
       << ", system_modal=" << ToBoolString(system_modal_);
+}
+
+void WaylandToplevelWindow::OnSessionDestroying() {
+  toplevel_session_.reset();
+  session_observer_.Reset();
+  session_ = nullptr;
 }
 
 void WaylandToplevelWindow::UpdateSystemModal() {
