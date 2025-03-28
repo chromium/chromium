@@ -101,11 +101,14 @@ steps:
     args:
         - '-c'
         - |
+            export PATH="/workspace/depot_tools:$PATH"
+            # Set EDITOR to a command that does nothing and exits successfully
+            export EDITOR=/bin/true
             set -e
             cd /workspace/hopium/src
   
-            # Define args
-            GN_ARGS_MULTILINE=$$(cat <<EOF
+            mkdir -p out/Debug
+            gn args out/Debug <<EOF
             is_component_build=false
             is_debug=false
             is_official_build=true
@@ -122,11 +125,6 @@ steps:
             widevine_cdm=true
             enable_media_foundation=true
             EOF
-            )
-            GN_ARGS=$$(echo "$GN_ARGS_MULTILINE" | tr '\n' ' ' | sed 's/^ *//;s/ *$//')
-  
-            mkdir -p out/Debug
-            /workspace/depot_tools/gn gen out/Debug --args="$GN_ARGS"
 
   - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.3'
     id: 'branding-script'
