@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_type.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_coordinator.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_coordinator.h"
@@ -203,6 +204,7 @@
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
@@ -332,6 +334,7 @@ enum class ToolbarKind {
     MiniMapCommands,
     NetExportTabHelperDelegate,
     NewTabPageCommands,
+    NonModalSignInPromoCommands,
     OverscrollActionsControllerDelegate,
     PageInfoCommands,
     PageInfoPresentation,
@@ -587,6 +590,9 @@ enum class ToolbarKind {
 // The handler used to manage the infobar workflow for saving an address.
 @property(nonatomic, strong)
     InfobarAutofillEditProfileBottomSheetHandler* editProfileBottomSheetHandler;
+// The coordinator in charge of the non modal sign in promo.
+@property(nonatomic, strong)
+    NonModalSignInPromoCoordinator* nonModalSignInPromoCoordinator;
 
 @end
 
@@ -1024,6 +1030,7 @@ enum class ToolbarKind {
     @protocol(PromosManagerCommands),
     @protocol(FindInPageCommands),
     @protocol(NewTabPageCommands),
+    @protocol(NonModalSignInPromoCommands),
     @protocol(PageInfoCommands),
     @protocol(PasswordBreachCommands),
     @protocol(PasswordProtectionCommands),
@@ -1398,6 +1405,9 @@ enum class ToolbarKind {
 
   /* WhatsNewCoordinator is created and started by a BrowserCommand */
 
+  /* NonModalSignInPromoCoordinator is created and started by a BrowserCommand
+   */
+
   // TODO(crbug.com/40823248): Should start when the Sad Tab UI appears.
   self.sadTabCoordinator =
       [[SadTabCoordinator alloc] initWithBaseViewController:self.viewController
@@ -1597,6 +1607,9 @@ enum class ToolbarKind {
 
   [self.unitConversionCoordinator stop];
   self.unitConversionCoordinator = nil;
+
+  [self.nonModalSignInPromoCoordinator stop];
+  self.nonModalSignInPromoCoordinator = nil;
 
   [_addContactsCoordinator stop];
   _addContactsCoordinator = nil;
@@ -4084,6 +4097,24 @@ enum class ToolbarKind {
 - (void)hideGoogleOne {
   [_googleOneCoordinator stop];
   _googleOneCoordinator = nil;
+}
+
+#pragma mark - NonModalSignInPromoCommands
+
+- (void)showNonModalSignInPromoWithType:(SignInPromoType)promoType {
+  if (IsNonModalSignInPromoEnabled() && !self.nonModalSignInPromoCoordinator) {
+    self.nonModalSignInPromoCoordinator =
+        [[NonModalSignInPromoCoordinator alloc]
+            initWithBaseViewController:self.viewController
+                               browser:self.browser
+                             promoType:promoType];
+    [self.nonModalSignInPromoCoordinator start];
+  }
+}
+
+- (void)dismissNonModalSignInPromo {
+  [self.nonModalSignInPromoCoordinator stop];
+  self.nonModalSignInPromoCoordinator = nil;
 }
 
 @end
