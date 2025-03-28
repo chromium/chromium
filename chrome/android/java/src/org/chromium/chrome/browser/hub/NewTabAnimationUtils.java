@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.Rect;
 
 import androidx.annotation.ColorInt;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
@@ -29,8 +30,7 @@ public class NewTabAnimationUtils {
         // See crbug.com/1507124 for Surface Background Color.
         return isIncognito
                 ? ChromeColors.getPrimaryBackgroundColor(context, isIncognito)
-                : ChromeColors.getSurfaceColor(
-                        context, R.dimen.home_surface_background_color_elevation);
+                : ContextCompat.getColor(context, R.color.home_surface_background_color);
     }
 
     /**

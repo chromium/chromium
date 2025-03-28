@@ -42,6 +42,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.graphics.drawable.DrawableWrapperCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -304,8 +305,7 @@ public class ToolbarPhone extends ToolbarLayout
         mBackgroundHeightIncreaseWhenFocus =
                 OmniboxResourceProvider.getToolbarOnFocusHeightIncrease(context);
         mToolbarBackgroundColorForNtp =
-                ChromeColors.getSurfaceColor(
-                        getContext(), R.dimen.home_surface_background_color_elevation);
+                ContextCompat.getColor(getContext(), R.color.home_surface_background_color);
         float LocationBarBackgroundColorAlphaForNtp =
                 ResourcesCompat.getFloat(
                         getResources(), R.dimen.home_surface_search_box_background_alpha);

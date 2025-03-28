@@ -164,8 +164,7 @@ public class StatusBarColorControllerTest {
     public void testStatusBarColorNtp() {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         final @ColorInt int expectedColor =
-                ChromeColors.getSurfaceColor(
-                        activity, R.dimen.home_surface_background_color_elevation);
+                ContextCompat.getColor(activity, R.color.home_surface_background_color);
 
         sActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, false);
         NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
