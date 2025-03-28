@@ -95,6 +95,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE,
     FeatureConstants.REQUEST_DESKTOP_SITE_WINDOW_SETTING_FEATURE,
     FeatureConstants.IPH_MIC_TOOLBAR_FEATURE,
+    FeatureConstants.IPH_PDF_PAGE_DOWNLOAD,
     FeatureConstants.IPH_SHARE_SCREENSHOT_FEATURE,
     FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE,
     FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE,
@@ -367,4 +368,7 @@ public @interface FeatureConstants {
 
     /** An IPH feature to inform users about the gesture navigation in RTL mode. */
     String IPH_RTL_GESTURE_NAVIGATION = "IPH_RtlGestureNavigation";
+
+    /** An IPH feature to inform users about the pdf download option in the app menu. */
+    String IPH_PDF_PAGE_DOWNLOAD = "IPH_PdfPageDownload";
 }

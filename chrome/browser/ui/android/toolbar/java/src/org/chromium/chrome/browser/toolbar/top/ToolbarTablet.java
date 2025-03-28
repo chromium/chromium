@@ -80,8 +80,9 @@ public class ToolbarTablet extends ToolbarLayout
          *
          * @param context Context to pull resources from.
          * @param tab Tab containing the page to download.
+         * @param fromAppMenu Whether the download is started from the app menu.
          */
-        void downloadPage(Context context, Tab tab);
+        void downloadPage(Context context, Tab tab, boolean fromAppMenu);
     }
 
     private ImageButton mHomeButton;
@@ -322,7 +323,8 @@ public class ToolbarTablet extends ToolbarLayout
                 RecordUserAction.record("MobileToolbarToggleBookmark");
             }
         } else if (mSaveOfflineButton == v) {
-            mOfflineDownloader.downloadPage(getContext(), getToolbarDataProvider().getTab());
+            mOfflineDownloader.downloadPage(
+                    getContext(), getToolbarDataProvider().getTab(), /* fromAppMenu= */ false);
             RecordUserAction.record("MobileToolbarDownloadPage");
         }
     }

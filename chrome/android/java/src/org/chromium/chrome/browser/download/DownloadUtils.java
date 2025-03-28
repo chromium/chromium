@@ -261,10 +261,15 @@ public class DownloadUtils {
      *
      * @param context Context to pull resources from.
      * @param tab Tab triggering the download.
+     * @param fromAppMenu Whether the download is started from the app menu.
      */
-    public static void downloadOfflinePage(Context context, Tab tab) {
+    public static void downloadOfflinePage(Context context, Tab tab, boolean fromAppMenu) {
+        Tracker tracker = TrackerFactory.getTrackerForProfile(tab.getProfile());
         if (tab.isNativePage() && tab.getNativePage().isPdf()) {
             DownloadController.downloadUrl(tab.getUrl().getSpec(), tab);
+            if (fromAppMenu) {
+                tracker.notifyEvent(EventConstants.APP_MENU_PDF_PAGE_DOWNLOADED);
+            }
             return;
         }
         OfflinePageOrigin origin = new OfflinePageOrigin(context, tab);
@@ -283,7 +288,6 @@ public class DownloadUtils {
             // Otherwise, the download can be started immediately.
             OfflinePageDownloadBridge.startDownload(tab, origin);
         }
-        Tracker tracker = TrackerFactory.getTrackerForProfile(tab.getProfile());
         tracker.notifyEvent(EventConstants.DOWNLOAD_PAGE_STARTED);
     }
 

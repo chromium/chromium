@@ -1567,6 +1567,24 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHPdfPageDownloadFeature.name == feature->name) {
+    // A config that allows the pdf page download IPH to be shown to users.
+    // This will be triggered a maximum of 3 times (once per 2 weeks) with pdf
+    // opened, and if the user has not used the app menu to download pdf in a
+    // span of a year.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(LESS_THAN, 1);
+    config.used = EventConfig("app_menu_pdf_page_downloaded",
+                              Comparator(EQUAL, 0), 360, 360);
+    config.trigger = EventConfig("pdf_page_download_iph_trigger",
+                                 Comparator(LESS_THAN, 3), 360, 360);
+    config.event_configs.insert(EventConfig("pdf_page_download_iph_trigger",
+                                            Comparator(EQUAL, 0), 14, 14));
+    return config;
+  }
+
   if (kIPHRestoreTabsOnFREFeature.name == feature->name) {
     // A config that allows the restore tabs on FRE promo to be shown:
     // * If the user has gone through the FRE workflow.
