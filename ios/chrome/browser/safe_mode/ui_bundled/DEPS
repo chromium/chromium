@@ -1,5 +1,4 @@
 include_rules = [
   "+ios/chrome/browser/crash_report/model/crash_helper.h",
   "+ios/chrome/browser/crash_report/model/crash_loop_detection_util.h",
-  "+ios/chrome/browser/ui/fancy_ui/primary_action_button.h",
 ]

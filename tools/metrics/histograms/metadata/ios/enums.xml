@@ -1005,7 +1005,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Animated Promo Dismissed"/>
 </enum>
 
-<!-- LINT.ThenChange(//ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h:SegmentedDefaultBrowserPromoAction) -->
+<!-- LINT.ThenChange(//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/constants.h:SegmentedDefaultBrowserPromoAction) -->
 
 <enum name="IOSSessionMigration">
   <int value="0" label="No Migration"/>

@@ -1,6 +1,4 @@
 include_rules = [
-  "+ios/chrome/browser/ui",
-
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/bookmarks/ui_bundled/home",
   "+ios/chrome/browser/bring_android_tabs/model",

@@ -53,9 +53,6 @@ specific_include_rules = {
   "page_placeholder_tab_helper.h": [
     "+ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h",
   ],
-  "browser_about_rewriter.cc": [
-    "+ios/chrome/browser/ui/ui_feature_flags.h",
-  ],
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
   # TODO:(crbug.com/891834) Remove this exception.
   "browsing_egtest\.mm": [

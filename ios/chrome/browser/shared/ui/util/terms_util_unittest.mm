@@ -104,7 +104,8 @@ TEST_F(FileLocationsTest, TestTermsOfServiceForSupportedLanguages) {
   NSUInteger numberOfMissingFiles = [incorrectFallback count];
   EXPECT_EQ(numberOfMissingFiles, 0U);
   if (numberOfMissingFiles) {
-    NSLog(@"Add the following file%@ to ios/chrome/browser/ui/BUILD.gn",
+    NSLog(@"Add the following file%@ to "
+          @"components/resources/terms_resources.filelist",
           numberOfMissingFiles > 1 ? @"s" : @"");
     for (NSString* language in incorrectFallback) {
       NSLog(@"  terms_%@.html", language);
