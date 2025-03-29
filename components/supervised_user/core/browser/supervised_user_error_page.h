@@ -22,7 +22,8 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
                                FilteringBehaviorReason reason,
                                const std::string& app_locale,
                                bool already_sent_remote_request,
-                               bool is_main_frame);
+                               bool is_main_frame,
+                               std::optional<float> ios_font_size_multiplier);
 
 }  //  namespace supervised_user
 
