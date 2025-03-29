@@ -15,7 +15,7 @@
 <translation id="124228879633599436">Votre Chrome est obsolète. Mettez-le à jour pour vous protéger.</translation>
 <translation id="1333745675627230582">Jouer au jeu Chrome Dino</translation>
 <translation id="1352919863522755794">Le Gestionnaire de mots de passe de Google n'a pas pu vérifier vos mots de passe. Vérifiez votre connexion Internet.</translation>
-<translation id="1394995526009609883">Vous pouvez modifier vos sélections à tout moment dans les réglages Chrome.</translation>
+<translation id="1394995526009609883">Vous pouvez modifier vos sélections à tout moment dans les paramètres Chrome.</translation>
 <translation id="1407843355326180937">Connectez-vous à ce site et à Chrome pour accéder sur tous vos appareils à vos favoris et bien plus.</translation>
 <translation id="1426599484714342603">Profitez de la puissance de Chrome Shopping</translation>
 <translation id="1462727070346936664">Connectez-vous pour profiter pleinement de Chrome.</translation>
@@ -138,7 +138,7 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="484033449593719797">Non disponible dans la version bêta de Chrome</translation>
 <translation id="4840404732697892756">Le Gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome peut vous aider à suivre ce colis sur la page "Nouvel onglet".}one{Chrome peut vous aider à suivre ce colis sur la page "Nouvel onglet".}other{Chrome peut vous aider à suivre ces colis sur la page "Nouvel onglet".}}</translation>
-<translation id="4903674399067644695">Cette fiche vous propose des suggestions pour tirer le meilleur parti de Chrome.</translation>
+<translation id="4903674399067644695">Cette fiche vous propose des suggestions pour profiter pleinement de Chrome.</translation>
 <translation id="49200511069271369">Votre organisation (<ph name="DOMAIN" />) gère le compte auquel vous vous connectez et la manière dont Chrome peut être utilisé. Votre administrateur peut configurer ou limiter certaines fonctionnalités.</translation>
 <translation id="4925322001044117929">Utilisez Chrome sur iPad par défaut</translation>
 <translation id="498985224078955265">Pour envoyer cet onglet à un autre appareil, connectez-vous à Chrome sur les deux appareils.</translation>
@@ -239,7 +239,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="72119412072970160">Vous pouvez utiliser les mots de passe enregistrés dans le Gestionnaire de mots de passe de Google dans d'autres applis sur votre iPad.</translation>
 <translation id="7214019116829172458">Ouvrir un onglet de navigation privée Chrome</translation>
 <translation id="722167379782941918">Chrome recommande une protection renforcée</translation>
-<translation id="723787869754590019">Utiliser Chrome pour la saisie automatique</translation>
+<translation id="723787869754590019">Utilisez Chrome pour la saisie automatique</translation>
 <translation id="7261678641327190792">Chrome ne parvient pas à vérifier vos mots de passe</translation>
 <translation id="7272930098487145294">Pour enregistrer une image, appuyez sur "Paramètres" afin que Chrome puisse l'ajouter à vos photos</translation>
 <translation id="7275945473750112644">Votre compte étant géré par <ph name="HOSTED_DOMAIN" />, vos données Chrome seront effacées de cet appareil</translation>
