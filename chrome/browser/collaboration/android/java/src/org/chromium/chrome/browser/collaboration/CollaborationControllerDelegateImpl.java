@@ -552,9 +552,9 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                 mDataSharingTabManager.showManageSharing(
                         mActivity,
                         existingGroup.collaborationId,
-                        () -> {
+                        (outcome) -> {
                             CollaborationControllerDelegateImplJni.get()
-                                    .runResultCallback(Outcome.SUCCESS, resultCallback);
+                                    .runResultCallback(outcome, resultCallback);
                         });
 
         mCloseScreenRunnable =

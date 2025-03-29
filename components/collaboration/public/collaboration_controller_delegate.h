@@ -109,6 +109,7 @@ class CollaborationControllerDelegate {
     kSuccess = 0,
     kFailure = 1,
     kCancel = 2,
+    kDeleteOrLeaveGroup = 3,
   };
 
   CollaborationControllerDelegate() = default;
