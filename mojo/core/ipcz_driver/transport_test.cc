@@ -524,6 +524,15 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(InvalidHandleClient,
     EXPECT_EQ(result, IPCZ_RESULT_INVALID_ARGUMENT);
     TestMessage(kGotInvalid).Transmit(*transport);
   }
+  // GetCurrentThread() pseudo handle value.
+  {
+    TestMessage message = listener.WaitForNextMessage();
+    scoped_refptr<ObjectBase> object;
+    const IpczResult result = transport->DeserializeObject(
+        base::span(message.bytes), base::span(message.handles), object);
+    EXPECT_EQ(result, IPCZ_RESULT_INVALID_ARGUMENT);
+    TestMessage(kGotInvalid).Transmit(*transport);
+  }
 
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
@@ -579,10 +588,82 @@ TEST_F(MojoIpczTransportTest, InvalidHandle) {
       message.Transmit(*transport);
       EXPECT_EQ(kGotInvalid, listener.WaitForNextMessage().as_string());
     }
+    // Send pseudothread.
+    {
+      base::win::ScopedHandle handle(
+          ::CreateEvent(nullptr, FALSE, FALSE, nullptr));
+      auto wrapper = base::MakeRefCounted<WrappedPlatformHandle>(
+          PlatformHandle(std::move(handle)));
+      TestMessage message = SerializeObjectFor(*transport, std::move(wrapper));
+      // Nerf to nullptr.
+      uint8_t* handle_ptr =
+          base::span(message.bytes)
+              .subspan(Transport::FirstHandleOffsetForTesting(),
+                       sizeof(uint64_t))
+              .data();
+      *reinterpret_cast<uint64_t*>(handle_ptr) = 0xfffffffffffffffe;
+      message.Transmit(*transport);
+      EXPECT_EQ(kGotInvalid, listener.WaitForNextMessage().as_string());
+    }
 
     listener.WaitForDisconnect();
   });
 }
+
+constexpr std::string_view kFromUntrusted = "from untrusted";
+constexpr std::string_view kFromTrusted = "from trusted";
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(InvalidHandleUntrustedClient,
+                                  MojoIpczTransportTest,
+                                  h) {
+  scoped_refptr<Transport> transport = ReceiveTransport(h);
+
+  TransportListener listener(*transport);
+
+  // Send pseudothread.
+  {
+    EXPECT_EQ(kFromTrusted, listener.WaitForNextMessage().as_string());
+    base::win::ScopedHandle handle(
+        ::CreateEvent(nullptr, FALSE, FALSE, nullptr));
+    auto wrapper = base::MakeRefCounted<WrappedPlatformHandle>(
+        PlatformHandle(std::move(handle)));
+    TestMessage message = SerializeObjectFor(*transport, std::move(wrapper));
+    // Nerf to nullptr.
+    uint8_t* handle_ptr =
+        base::span(message.bytes)
+            .subspan(Transport::FirstHandleOffsetForTesting(), sizeof(uint64_t))
+            .data();
+    *reinterpret_cast<uint64_t*>(handle_ptr) = 0xfffffffffffffffe;
+    message.Transmit(*transport);
+  }
+
+  EXPECT_EQ(kGotInvalid, listener.WaitForNextMessage().as_string());
+  TestMessage(kFromUntrusted).Transmit(*transport);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+}
+
+TEST_F(MojoIpczTransportTest, InvalidHandleUntrusted) {
+  RunTestClientWithController(
+      "InvalidHandleUntrustedClient", [&](ClientController& c) {
+        scoped_refptr<Transport> transport =
+            CreateAndSendTransport(c.pipe(), c.process(), /*untrusted=*/true);
+
+        TransportListener listener(*transport);
+        TestMessage(kFromTrusted).Transmit(*transport);
+        // GetCurrentThread() pseudo handle value.
+        {
+          TestMessage message = listener.WaitForNextMessage();
+          scoped_refptr<ObjectBase> object;
+          const IpczResult result = transport->DeserializeObject(
+              base::span(message.bytes), base::span(message.handles), object);
+          EXPECT_EQ(result, IPCZ_RESULT_INVALID_ARGUMENT);
+          TestMessage(kGotInvalid).Transmit(*transport);
+        }
+
+        EXPECT_EQ(kFromUntrusted, listener.WaitForNextMessage().as_string());
+        listener.WaitForDisconnect();
+      });
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace

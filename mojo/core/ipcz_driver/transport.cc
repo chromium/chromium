@@ -192,7 +192,9 @@ std::optional<PlatformHandle> DecodeHandle(HandleData data,
   }
   // Do not decode sentinel values used by Windows (INVALID_HANDLE_VALUE &
   // GetCurrentThread()).
-  CHECK(!base::win::IsPseudoHandle(handle));
+  if (base::win::IsPseudoHandle(handle)) {
+    return std::nullopt;
+  }
 
   if (handle_owner == HandleOwner::kRecipient) {
     if (from_transport.destination_type() != Transport::kBroker &&
