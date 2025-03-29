@@ -52,6 +52,7 @@
 #include "ui/base/win/session_change_observer.h"
 #include "ui/base/win/touch_input.h"
 #include "ui/base/win/win_cursor.h"
+#include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/win/dpi.h"
 #include "ui/display/win/screen_win.h"
@@ -415,11 +416,11 @@ bool HWNDMessageHandler::handle_pen_events_in_client_area_ = true;
 // static
 std::unique_ptr<HWNDMessageHandler> HWNDMessageHandler::Create(
     HWNDMessageHandlerDelegate* delegate,
-    const std::string& debugging_id,
-    bool headless_mode) {
+    const std::string& debugging_id) {
   HWNDMessageHandler* message_handler =
-      headless_mode ? new HWNDMessageHandlerHeadless(delegate, debugging_id)
-                    : new HWNDMessageHandler(delegate, debugging_id);
+      display::Screen::GetScreen()->IsHeadless()
+          ? new HWNDMessageHandlerHeadless(delegate, debugging_id)
+          : new HWNDMessageHandler(delegate, debugging_id);
   return base::WrapUnique(message_handler);
 }
 
