@@ -21,7 +21,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginHorizontal="@dimen/account_selection_sheet_horizontal_margin"
-        android:layout_marginVertical="@dimen/account_selection_active_mode_sheet_drag_handlebar_padding"
+        android:layout_marginVertical="@dimen/account_selection_sheet_drag_handlebar_padding"
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/drag_handlebar" />
 

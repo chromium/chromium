@@ -689,6 +689,12 @@ class AccountSelectionViewBinder {
                     model.get(ItemProperties.SPINNER_ENABLED) ? View.VISIBLE : View.GONE);
             return;
         }
+        if (key == ItemProperties.DRAGBAR_HANDLE_VISIBLE) {
+            itemView = view.findViewById(R.id.drag_handlebar);
+            itemView.setVisibility(
+                    model.get(ItemProperties.DRAGBAR_HANDLE_VISIBLE) ? View.VISIBLE : View.GONE);
+            return;
+        }
         PropertyModel itemModel = model.get((WritableObjectPropertyKey<PropertyModel>) key);
         ViewBinder<PropertyModel, View, PropertyKey> itemBinder = null;
         if (key == ItemProperties.HEADER) {
