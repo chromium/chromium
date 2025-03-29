@@ -420,7 +420,7 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   base::span<const uint8_t> side_data = GetSideData(packet.get());
 
   std::unique_ptr<DecryptConfig> decrypt_config;
-  int data_offset = 0;
+  size_t data_offset = 0;
   if ((type() == DemuxerStream::AUDIO && audio_config_->is_encrypted()) ||
       (type() == DemuxerStream::VIDEO && video_config_->is_encrypted())) {
     if (!WebMCreateDecryptConfig(
@@ -468,8 +468,8 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
     // If a packet is returned by FFmpeg's av_parser_parse2() the packet will
     // reference inner memory of FFmpeg.  As such we should transfer the packet
     // into memory we control.
-    buffer = DecoderBuffer::CopyFrom(
-        AVPacketData(*packet).subspan(base::checked_cast<size_t>(data_offset)));
+    buffer =
+        DecoderBuffer::CopyFrom(AVPacketData(*packet).subspan(data_offset));
     if (side_data.size() > 0) {
       buffer->WritableSideData().alpha_data =
           base::HeapArray<uint8_t>::CopiedFrom(side_data);

@@ -1151,7 +1151,8 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
     // Skip using the ExternalMemoryAdapter if possible since it can have more
     // overhead in some applications. See https://crbug.com/353751208.
     if (frame_buf.empty() && heap_frame_buf.empty()) {
-      stream_buf = StreamParserBuffer::CopyFrom(buf, sample_size, is_keyframe,
+      auto buf_span = base::span(buf, base::checked_cast<size_t>(sample_size));
+      stream_buf = StreamParserBuffer::CopyFrom(buf_span, is_keyframe,
                                                 buffer_type, runs_->track_id());
     } else if (frame_buf.empty()) {
       stream_buf =
