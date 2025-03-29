@@ -733,6 +733,13 @@
        null,
        {}
       ]
+     ],
+     "viewport-overflow-hidden-invisible-anchor-crash.html": [
+      "b2fa5255b5e891b983944c76e741e9cc291ca30c",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "css-animations": {
@@ -145527,6 +145534,32 @@
         }
        ]
       ],
+      "gradient-infinity-001.html": [
+       "73b9ac1bd1bc466fa49a822df3d0ac157e19e4e7",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-infinity-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "gradient-infinity-002.html": [
+       "0f48249259022b475354680f211c32577f7daf45",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-infinity-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "gradient-longer-hue-hsl-001.html": [
        "ca5eb76c0f1be8971df228d75d34f2a8bc5f36d5",
        [
@@ -250326,7 +250359,7 @@
       ]
      ],
      "active-view-transition-on-non-root.html": [
-      "9870b15cca958d0e7c5080cebe24c463ad7a33ca",
+      "d8699d3a2c7c1410cb86bcc9e4fb2a2a0e561865",
       [
        null,
        [
@@ -250352,7 +250385,7 @@
       ]
      ],
      "active-view-transition-type-on-non-root.html": [
-      "f4225485b860b09fc0fca560fbc7f33c270dbf05",
+      "4569af04fff5462e57ed5f6e30de535b263a7b00",
       [
        null,
        [
@@ -253101,7 +253134,7 @@
        ]
       ],
       "nested-root-capture-with-clip.html": [
-       "eb728182865eb5388053b0039e22d9f75f5da8f6",
+       "a55997a3f638a3fb6a8b701fae1ff9683da494cd",
        [
         null,
         [
@@ -253121,7 +253154,7 @@
             ],
             [
              0,
-             400
+             500
             ]
            ]
           ]
@@ -254491,7 +254524,7 @@
       ]
      ],
      "pseudo-rendering-invalidation.html": [
-      "4d492c40d8761ddda3551448ce725cfbb5a82f4a",
+      "9624137e754eed3a46336fc8edb0d7edfc7182c4",
       [
        null,
        [
@@ -255426,6 +255459,19 @@
        [
         [
          "/css/css-view-transitions/view-transition-types-one-green-square-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "view-transition-types-matches-case-sensitive.html": [
+      "411c73c607a05734051921c858222373fe191b96",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/view-transition-types-matches-case-sensitive-ref.html",
          "=="
         ]
        ],
@@ -348507,6 +348553,14 @@
        "8b050646754406a6a03c510730574c9e24b93732",
        []
       ],
+      "gradient-infinity-001-ref.html": [
+       "b15e7fcae69e5d57109f08f6ba0f56e4ea0e69b2",
+       []
+      ],
+      "gradient-infinity-002-ref.html": [
+       "30857abd9a1532e4b9ff0e6f20ce54145e29b8a8",
+       []
+      ],
       "gradient-longer-hue-hsl-001-ref.html": [
        "c75fe98ec14697db74db28f7010a0599d1bc07d3",
        []
@@ -369930,7 +369984,7 @@
        []
       ],
       "nested-root-capture-with-clip-ref.html": [
-       "0e2c7d025431898870762711a18e38150448985a",
+       "40275ab555c378a367a52ec81d6788923a01002a",
        []
       ],
       "resources": {
@@ -370306,6 +370360,10 @@
      ],
      "view-transition-name-removed-mid-transition-ref.html": [
       "e86fa3f3e21e9a8df3a28ba9ca60332a4d1b6ab7",
+      []
+     ],
+     "view-transition-types-matches-case-sensitive-ref.html": [
+      "6a9af3f82862d0908ba9443c4adbf3b80c16f7f9",
       []
      ],
      "view-transition-types-matches-ref.html": [
@@ -384544,7 +384602,7 @@
      ],
      "resources": {
       "additional-bids.py": [
-       "8a947533307ac553a5a16ee05fbc5de2f99dfe30",
+       "89a47c0e0d0d3702a33bbc3e10f811d140e2fa61",
        []
       ],
       "authorize-server-response.py": [
@@ -384560,7 +384618,7 @@
        []
       ],
       "bidding-logic.sub.py": [
-       "8c0539d43c83a72b57498b0ec5c4f16d2fb26599",
+       "97d2d80343cdd0d94925143dece2b506ef3983ca",
        []
       ],
       "decision-logic.sub.py": [
@@ -384584,7 +384642,7 @@
        []
       ],
       "fledge_http_server_util.py": [
-       "179262d33926896588393971f61f1cc6dfc8546d",
+       "30889d92d4f7ba5793ac72ed7b0dd19d2a939511",
        []
       ],
       "incrementer.wasm": [
@@ -384592,7 +384650,7 @@
        []
       ],
       "permissions.py": [
-       "eed93c42756b75045dd38ccc4c085059d040bf66",
+       "f66e28bb27ba099b0fc171fec1af9edfd884caa2",
        []
       ],
       "real-time-report.py": [
@@ -384632,11 +384690,11 @@
        []
       ],
       "trusted-bidding-signals.py": [
-       "5a89e3b602565170c5e5eb3427eea71c36579dbe",
+       "e6e7d6605258ace5564986dfa1d550316e207e1b",
        []
       ],
       "trusted-scoring-signals.py": [
-       "934d2e9129d04a511b44540a6d326eff4d2b75f3",
+       "bfd23b124cbab6cf8f3e49ed690004c085248e70",
        []
       ],
       "update-url.py": [
@@ -392916,13 +392974,9 @@
       "bcc6f0734d580474a8bd25f25d4662f175cdc39b",
       []
      ],
-     "reporting-subresource-corp.tentative.https.html.headers": [
-      "bcc6f0734d580474a8bd25f25d4662f175cdc39b",
-      []
-     ],
      "resources": {
       "common.js": [
-       "df4bfcfc7d52ac006f84f4ca046cc64b4dd7a171",
+       "64c1f8df416eb09115d04b9f480a65353ab0a164",
        []
       ],
       "fetch-and-create-url.html": [
@@ -392943,6 +392997,10 @@
       ],
       "redirect_none_to_credentialless.py": [
        "34b4e9f8ea41fd1aed28b86715df31c1692b88aa",
+       []
+      ],
+      "report.py": [
+       "3b677a91fdda472e41fd6f1cb2ce9b8d22594b2d",
        []
       ],
       "reporting-empty-frame-multiple-headers.html.asis": [
@@ -628677,10 +628735,10 @@
      }
     },
     "document-isolation-policy": {
-     "credentialless-cache-storage.https.tentative.window.js": [
-      "cb4b174e945efaf14cff897d46661971bff964f8",
+     "credentialless-cache-storage-from-credentialless.https.tentative.window.js": [
+      "cae480526b8c2e38801e05edfbabc83dc1d62570",
       [
-       "html/document-isolation-policy/credentialless-cache-storage.https.tentative.window.html?dedicated_worker",
+       "html/document-isolation-policy/credentialless-cache-storage-from-credentialless.https.tentative.window.html?dedicated_worker",
        {
         "script_metadata": [
          [
@@ -628714,6 +628772,10 @@
          [
           "script",
           "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/service-workers/service-worker/resources/test-helpers.sub.js"
          ],
          [
           "script",
@@ -628724,7 +628786,7 @@
        }
       ],
       [
-       "html/document-isolation-policy/credentialless-cache-storage.https.tentative.window.html?document",
+       "html/document-isolation-policy/credentialless-cache-storage-from-credentialless.https.tentative.window.html?document",
        {
         "script_metadata": [
          [
@@ -628758,6 +628820,10 @@
          [
           "script",
           "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/service-workers/service-worker/resources/test-helpers.sub.js"
          ],
          [
           "script",
@@ -628768,7 +628834,7 @@
        }
       ],
       [
-       "html/document-isolation-policy/credentialless-cache-storage.https.tentative.window.html?service_worker",
+       "html/document-isolation-policy/credentialless-cache-storage-from-credentialless.https.tentative.window.html?service_worker",
        {
         "script_metadata": [
          [
@@ -628802,6 +628868,10 @@
          [
           "script",
           "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/service-workers/service-worker/resources/test-helpers.sub.js"
          ],
          [
           "script",
@@ -628812,7 +628882,7 @@
        }
       ],
       [
-       "html/document-isolation-policy/credentialless-cache-storage.https.tentative.window.html?shared_worker",
+       "html/document-isolation-policy/credentialless-cache-storage-from-credentialless.https.tentative.window.html?shared_worker",
        {
         "script_metadata": [
          [
@@ -628846,6 +628916,400 @@
          [
           "script",
           "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/service-workers/service-worker/resources/test-helpers.sub.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "credentialless-cache-storage-from-none.https.tentative.window.js": [
+      "e2478abeed21ec9db89273c5c9e9665cdb71d1ba",
+      [
+       "html/document-isolation-policy/credentialless-cache-storage-from-none.https.tentative.window.html?dedicated_worker",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?document"
+         ],
+         [
+          "variant",
+          "?dedicated_worker"
+         ],
+         [
+          "variant",
+          "?shared_worker"
+         ],
+         [
+          "variant",
+          "?service_worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/service-workers/service-worker/resources/test-helpers.sub.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/document-isolation-policy/credentialless-cache-storage-from-none.https.tentative.window.html?document",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?document"
+         ],
+         [
+          "variant",
+          "?dedicated_worker"
+         ],
+         [
+          "variant",
+          "?shared_worker"
+         ],
+         [
+          "variant",
+          "?service_worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/service-workers/service-worker/resources/test-helpers.sub.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/document-isolation-policy/credentialless-cache-storage-from-none.https.tentative.window.html?service_worker",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?document"
+         ],
+         [
+          "variant",
+          "?dedicated_worker"
+         ],
+         [
+          "variant",
+          "?shared_worker"
+         ],
+         [
+          "variant",
+          "?service_worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/service-workers/service-worker/resources/test-helpers.sub.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/document-isolation-policy/credentialless-cache-storage-from-none.https.tentative.window.html?shared_worker",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?document"
+         ],
+         [
+          "variant",
+          "?dedicated_worker"
+         ],
+         [
+          "variant",
+          "?shared_worker"
+         ],
+         [
+          "variant",
+          "?service_worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/service-workers/service-worker/resources/test-helpers.sub.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "credentialless-cache-storage-from-require-corp.https.tentative.window.js": [
+      "720fa6a987a164f95fd91200b574ca6569215c10",
+      [
+       "html/document-isolation-policy/credentialless-cache-storage-from-require-corp.https.tentative.window.html?dedicated_worker",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?document"
+         ],
+         [
+          "variant",
+          "?dedicated_worker"
+         ],
+         [
+          "variant",
+          "?shared_worker"
+         ],
+         [
+          "variant",
+          "?service_worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/service-workers/service-worker/resources/test-helpers.sub.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/document-isolation-policy/credentialless-cache-storage-from-require-corp.https.tentative.window.html?document",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?document"
+         ],
+         [
+          "variant",
+          "?dedicated_worker"
+         ],
+         [
+          "variant",
+          "?shared_worker"
+         ],
+         [
+          "variant",
+          "?service_worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/service-workers/service-worker/resources/test-helpers.sub.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/document-isolation-policy/credentialless-cache-storage-from-require-corp.https.tentative.window.html?service_worker",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?document"
+         ],
+         [
+          "variant",
+          "?dedicated_worker"
+         ],
+         [
+          "variant",
+          "?shared_worker"
+         ],
+         [
+          "variant",
+          "?service_worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/service-workers/service-worker/resources/test-helpers.sub.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/document-isolation-policy/credentialless-cache-storage-from-require-corp.https.tentative.window.html?shared_worker",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?document"
+         ],
+         [
+          "variant",
+          "?dedicated_worker"
+         ],
+         [
+          "variant",
+          "?shared_worker"
+         ],
+         [
+          "variant",
+          "?service_worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/service-workers/service-worker/resources/test-helpers.sub.js"
          ],
          [
           "script",
@@ -628909,7 +629373,7 @@
       ]
      ],
      "credentialless-dedicated-worker.https.tentative.window.js": [
-      "748130dfdc209bf9cfac158297e772a52851b48a",
+      "539ed0a6955ad06ed0571e7fcf130624e8ec86f4",
       [
        "html/document-isolation-policy/credentialless-dedicated-worker.https.tentative.window.html",
        {
@@ -628929,6 +629393,10 @@
          [
           "script",
           "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/service-workers/service-worker/resources/test-helpers.sub.js"
          ],
          [
           "script",
@@ -629647,7 +630115,7 @@
       ]
      ],
      "reporting-cache-storage-corp.tentative.https.html": [
-      "934c87b2abc674dbb4e2f179b793497686dccca7",
+      "0b7c12ac514c518c04aeee214939cdfffbf8aa5b",
       [
        null,
        {
@@ -629656,7 +630124,7 @@
       ]
      ],
      "reporting-subresource-corp.tentative.https.html": [
-      "6be3c35ad7ab749f52c4cd20d348bea21dfad448",
+      "013eb34d1065ee7bbe274af2b5409d47a37be0bf",
       [
        null,
        {
@@ -695789,7 +696257,7 @@
     ],
     "tentative": {
      "getdisplaymedia-captured-surface-resolution.https.html": [
-      "a1e7997ca69707d2e3c76924aa421c041d6d2926",
+      "6064bced90b870b6edc04435f6ee00aedd9c7177",
       [
        null,
        {
