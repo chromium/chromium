@@ -349,7 +349,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                 mActivity,
                 mDataSharingTabManager.getProfile(),
                 bottomSheetConfig,
-                SigninAccessPoint.COLLABORATION_TAB_GROUP);
+                SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP);
     }
 
     private Intent createFullscreenSigninIntent() {
@@ -368,7 +368,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                 mActivity,
                 mDataSharingTabManager.getProfile(),
                 fullscreenConfig,
-                SigninAccessPoint.COLLABORATION_TAB_GROUP);
+                SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP);
     }
 
     private void onSigninResult(int resultCode, long resultCallback) {
@@ -552,9 +552,9 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                 mDataSharingTabManager.showManageSharing(
                         mActivity,
                         existingGroup.collaborationId,
-                        () -> {
+                        (outcome) -> {
                             CollaborationControllerDelegateImplJni.get()
-                                    .runResultCallback(Outcome.SUCCESS, resultCallback);
+                                    .runResultCallback(outcome, resultCallback);
                         });
 
         mCloseScreenRunnable =

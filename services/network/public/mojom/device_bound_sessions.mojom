@@ -34,6 +34,9 @@ struct DeviceBoundSessionAccess {
 
   // Key of accessed session
   DeviceBoundSessionKey session_key;
+
+  // Bound cookie names. Only populated when `access_type` is `kTermination`.
+  array<string> cookies;
 };
 
 // LINT.ThenChange(//net/device_bound_sessions/session_access.h)

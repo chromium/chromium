@@ -525,7 +525,18 @@ public class MultiInstanceManager
         // Not implemented
     }
 
-    protected void moveTabToOtherWindow(Tab tab) {
+    /**
+     * If there's only one window currently, moves {@param tab} to a new window. Otherwise, opens a
+     * dialog to select which window to move {@param tab} to.
+     *
+     * @param tab The tab to move.
+     */
+    public void moveTabToOtherWindow(Tab tab) {
+        if (MultiWindowUtils.getInstanceCount() == 1) {
+            moveTabToNewWindow(tab);
+            return;
+        }
+
         Intent intent = mMultiWindowModeStateDispatcher.getOpenInOtherWindowIntent();
         if (intent == null) return;
 

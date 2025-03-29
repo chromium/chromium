@@ -503,6 +503,63 @@ void ExtractAdvancedCapabilities(const CupsOptionProvider& printer,
   attr_count += AddAttributes(printer, kIppDocumentAttributes, options);
   base::UmaHistogramCounts1000("Printing.CUPS.IppAttributesCount", attr_count);
 }
+
+// Convert string value to mojom::PrintScalingType
+mojom::PrintScalingType PrintScalingTypeFromString(
+    const std::string_view value) {
+  if (value == "auto") {
+    return mojom::PrintScalingType::kAuto;
+  }
+  if (value == "auto-fit") {
+    return mojom::PrintScalingType::kAutoFit;
+  }
+  if (value == "fill") {
+    return mojom::PrintScalingType::kFill;
+  }
+  if (value == "fit") {
+    return mojom::PrintScalingType::kFit;
+  }
+  if (value == "none") {
+    return mojom::PrintScalingType::kNone;
+  }
+
+  // Default to unknown for any unrecognized values.
+  return mojom::PrintScalingType::kUnknownPrintScalingType;
+}
+
+void ExtractPrintScaling(const CupsOptionProvider& printer,
+                         PrinterSemanticCapsAndDefaults* printer_info) {
+  printer_info->print_scaling_types.clear();
+  printer_info->print_scaling_type_default =
+      mojom::PrintScalingType::kUnknownPrintScalingType;
+
+  std::vector<std::string_view> values =
+      printer.GetSupportedOptionValueStrings(kIppPrintScaling);
+  for (const auto& value : values) {
+    auto type = PrintScalingTypeFromString(value);
+    if (type != mojom::PrintScalingType::kUnknownPrintScalingType) {
+      printer_info->print_scaling_types.emplace_back(type);
+    }
+  }
+
+  if (printer_info->print_scaling_types.empty()) {
+    return;
+  }
+
+  // Get default value
+  ipp_attribute_t* attr = printer.GetDefaultOptionValue(kIppPrintScaling);
+  if (const char* const name = ippGetString(attr, 0, nullptr)) {
+    printer_info->print_scaling_type_default = PrintScalingTypeFromString(name);
+  }
+
+  if (printer_info->print_scaling_type_default ==
+          mojom::PrintScalingType::kUnknownPrintScalingType &&
+      !printer_info->print_scaling_types.empty()) {
+    // If no default is provided, use the first value.
+    printer_info->print_scaling_type_default =
+        printer_info->print_scaling_types[0];
+  }
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
@@ -534,6 +591,7 @@ void CapsAndDefaultsFromPrinter(const CupsPrinter& printer,
 #if BUILDFLAG(IS_CHROMEOS)
   printer_info->pin_supported = PinSupported(printer);
   ExtractAdvancedCapabilities(printer, printer_info);
+  ExtractPrintScaling(printer, printer_info);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   ExtractCopies(printer, printer_info);

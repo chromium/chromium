@@ -169,6 +169,10 @@ class TestStoragePartition : public StoragePartition {
 
   network::mojom::DeviceBoundSessionManager* GetDeviceBoundSessionManager()
       override;
+  void set_device_bound_session_manager(
+      network::mojom::DeviceBoundSessionManager* device_bound_session_manager) {
+    device_bound_session_manager_ = device_bound_session_manager;
+  }
 
   void DeleteStaleSessionData() override {}
 
@@ -283,6 +287,8 @@ class TestStoragePartition : public StoragePartition {
   raw_ptr<SharedWorkerService> shared_worker_service_ = nullptr;
   mojo::Remote<storage::mojom::CacheStorageControl> cache_storage_control_;
   raw_ptr<GeneratedCodeCacheContext> generated_code_cache_context_ = nullptr;
+  raw_ptr<network::mojom::DeviceBoundSessionManager>
+      device_bound_session_manager_ = nullptr;
   raw_ptr<BrowsingTopicsSiteDataManager> browsing_topics_site_data_manager_ =
       nullptr;
   raw_ptr<PlatformNotificationContext> platform_notification_context_ = nullptr;

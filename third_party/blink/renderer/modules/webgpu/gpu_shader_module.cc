@@ -91,11 +91,7 @@ void GPUShaderModule::OnCompilationInfoCallback(
     switch (status) {
       case wgpu::CompilationInfoRequestStatus::Success:
         NOTREACHED();
-#ifdef WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
       case wgpu::CompilationInfoRequestStatus::CallbackCancelled:
-#else
-      case wgpu::CompilationInfoRequestStatus::InstanceDropped:
-#endif  // WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
         message = "Instance dropped error in getCompilationInfo";
         break;
     }

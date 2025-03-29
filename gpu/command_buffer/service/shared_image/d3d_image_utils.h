@@ -55,6 +55,8 @@ wgpu::SharedFence CreateDawnSharedFence(
     const wgpu::Device& device,
     scoped_refptr<gfx::D3DSharedFence> fence);
 
+std::string D3D11TextureDescToString(const D3D11_TEXTURE2D_DESC& desc);
+
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_D3D_IMAGE_UTILS_H_

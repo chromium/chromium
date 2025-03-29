@@ -4246,6 +4246,20 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load(self.GetHttpUrlForFile(
         '/chromedriver/log_long_unicode_string.html'))
 
+class ChromeDriverPdfTest(ChromeDriverBaseTestWithWebServer):
+  """ Regression test for crbug.com/396611138 """
+  def testPdfWindows(self):
+    driver = self.CreateDriver(
+        chrome_switches=[
+          'disable-features=PdfOopif'
+        ])
+    # Open an additional tab for PDF.
+    new_tab = driver.NewWindow(window_type='tab')
+    driver.SwitchToWindow(new_tab['handle'])
+    driver.Load(self.GetHttpUrlForFile('/download.pdf'))
+    window_handles = driver.GetWindowHandles()
+    self.assertEqual(len(window_handles), 2)
+
 class ChromeDriverBackgroundTest(ChromeDriverBaseTestWithWebServer):
   def setUp(self):
     self._driver1 = self.CreateDriver()
@@ -6458,11 +6472,32 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
           'disable-features=ExtensionManifestV2Disabled',
           'load-extension=' + crx_unpacked
         ])
-    time.sleep(0.5)
+    time.sleep(0.3)
     handles = driver.GetWindowHandles()
     self.assertEqual(len(handles), 2)
-
     for handle in handles:
+      driver.SwitchToWindow(handle)
+      if driver.GetCurrentUrl() == 'chrome://new-tab-page/':
+        return
+    self.fail("couldn't find extension-created window")
+
+  def testCanInspectExtensionTabs(self):
+    crx_unpacked = os.path.join(_TEST_DATA_DIR, 'extv3_new_tab')
+    # This test inspects an extension created new tab.
+    # Extension created regular windows/tabs, unlike background_page, is not
+    # considered an extension target.
+    driver = self.CreateDriver(
+        chrome_switches=[
+          'load-extension=' + crx_unpacked
+        ])
+
+    # Wait for extension window to be open.
+    self.WaitForCondition(lambda: len(driver.GetWindowHandles()) > 1)
+
+    handles = driver.GetWindowHandles()
+    self.assertEqual(len(handles), 2)
+    for handle in handles:
+      # Ensure each exposed window can be switched into
       driver.SwitchToWindow(handle)
       if driver.GetCurrentUrl() == 'chrome://new-tab-page/':
         return

@@ -76,7 +76,26 @@ mojo::StructPtr<bluetooth::mojom::ScanRecord> ToScanRecord(
   return out_record;
 }
 
-bluetooth::mojom::CentralState ToCentralState(const String& state_string) {
+mojo::StructPtr<bluetooth::mojom::CharacteristicProperties>
+ToCharacteristicProperties(
+    BluetoothEmulation::CharacteristicProperties* in_properties) {
+  mojo::StructPtr<bluetooth::mojom::CharacteristicProperties> out_properties =
+      bluetooth::mojom::CharacteristicProperties::New();
+  out_properties->broadcast = in_properties->GetBroadcast().value_or(false);
+  out_properties->read = in_properties->GetRead().value_or(false);
+  out_properties->write_without_response =
+      in_properties->GetWriteWithoutResponse().value_or(false);
+  out_properties->write = in_properties->GetWrite().value_or(false);
+  out_properties->notify = in_properties->GetNotify().value_or(false);
+  out_properties->indicate = in_properties->GetIndicate().value_or(false);
+  out_properties->authenticated_signed_writes =
+      in_properties->GetAuthenticatedSignedWrites().value_or(false);
+  out_properties->extended_properties =
+      in_properties->GetExtendedProperties().value_or(false);
+  return out_properties;
+}
+
+bluetooth::mojom::CentralState ToCentralState(const std::string& state_string) {
   if (state_string ==
       protocol::BluetoothEmulation::CentralStateEnum::PoweredOff) {
     return bluetooth::mojom::CentralState::POWERED_OFF;
@@ -127,7 +146,7 @@ void BluetoothEmulationHandler::Wire(UberDispatcher* dispatcher) {
   BluetoothEmulation::Dispatcher::wire(dispatcher, this);
 }
 
-Response BluetoothEmulationHandler::Enable(const String& in_state,
+Response BluetoothEmulationHandler::Enable(const std::string& in_state,
                                            bool in_le_supported) {
   if (emulation_enabled_) {
     return Response::ServerError("BluetoothEmulation already enabled");
@@ -144,6 +163,7 @@ Response BluetoothEmulationHandler::Enable(const String& in_state,
         base::MakeRefCounted<bluetooth::FakeCentral>(
             ToCentralState(in_state),
             fake_central_.BindNewPipeAndPassReceiver()));
+    fake_central_.reset_on_disconnect();
     // While there's a possibility the client might not be fully settled on the
     // fake central side upon return, this is acceptable. Client events are
     // expected to be delivered only after at least one peripheral has been
@@ -175,7 +195,7 @@ Response BluetoothEmulationHandler::Disable() {
 }
 
 void BluetoothEmulationHandler::SetSimulatedCentralState(
-    const String& in_state,
+    const std::string& in_state,
     std::unique_ptr<SetSimulatedCentralStateCallback> callback) {
   if (!is_enabled()) {
     std::move(callback)->sendFailure(
@@ -189,8 +209,8 @@ void BluetoothEmulationHandler::SetSimulatedCentralState(
 }
 
 void BluetoothEmulationHandler::SimulatePreconnectedPeripheral(
-    const String& in_address,
-    const String& in_name,
+    const std::string& in_address,
+    const std::string& in_name,
     std::unique_ptr<
         protocol::Array<protocol::BluetoothEmulation::ManufacturerData>>
         in_manufacturer_data,
@@ -226,8 +246,8 @@ void BluetoothEmulationHandler::SimulateAdvertisement(
 }
 
 void BluetoothEmulationHandler::SimulateGATTOperationResponse(
-    const String& in_address,
-    const String& in_type,
+    const std::string& in_address,
+    const std::string& in_type,
     int in_code,
     std::unique_ptr<SimulateGATTOperationResponseCallback> callback) {
   if (!is_enabled()) {
@@ -260,8 +280,8 @@ void BluetoothEmulationHandler::SimulateGATTOperationResponse(
 }
 
 void BluetoothEmulationHandler::AddService(
-    const String& in_address,
-    const String& in_uuid,
+    const std::string& in_address,
+    const std::string& in_serviceUuid,
     std::unique_ptr<AddServiceCallback> callback) {
   if (!is_enabled()) {
     std::move(callback)->sendFailure(
@@ -269,10 +289,10 @@ void BluetoothEmulationHandler::AddService(
     return;
   }
 
-  device::BluetoothUUID uuid(in_uuid);
+  device::BluetoothUUID uuid(in_serviceUuid);
   if (!uuid.IsValid()) {
     std::move(callback)->sendFailure(Response::InvalidParams(
-        base::StrCat({in_uuid, " is not a valid UUID"})));
+        base::StrCat({in_serviceUuid, " is not a valid UUID"})));
     return;
   }
 
@@ -290,13 +310,13 @@ void BluetoothEmulationHandler::AddService(
             std::move(callback)->sendSuccess(*identifier);
           },
           std::move(callback),
-          base::StrCat({"Failed to add service ", in_uuid, " to peripheral ",
-                        in_address})));
+          base::StrCat({"Failed to add service ", in_serviceUuid,
+                        " to peripheral ", in_address})));
 }
 
 void BluetoothEmulationHandler::RemoveService(
-    const String& in_address,
-    const String& in_id,
+    const std::string& in_address,
+    const std::string& in_serviceId,
     std::unique_ptr<RemoveServiceCallback> callback) {
   if (!is_enabled()) {
     std::move(callback)->sendFailure(
@@ -305,7 +325,7 @@ void BluetoothEmulationHandler::RemoveService(
   }
 
   fake_central_->RemoveFakeService(
-      in_id, in_address,
+      in_serviceId, in_address,
       base::BindOnce(
           [](std::unique_ptr<RemoveServiceCallback> callback,
              const std::string& error_message, bool success) {
@@ -317,8 +337,75 @@ void BluetoothEmulationHandler::RemoveService(
             std::move(callback)->sendSuccess();
           },
           std::move(callback),
-          base::StrCat({"Failed to remove service represented by ", in_id,
-                        " from peripheral ", in_address})));
+          base::StrCat({"Failed to remove service represented by ",
+                        in_serviceId, " from peripheral ", in_address})));
+}
+
+void BluetoothEmulationHandler::AddCharacteristic(
+    const std::string& in_address,
+    const std::string& in_serviceId,
+    const std::string& in_characteristicUuid,
+    std::unique_ptr<protocol::BluetoothEmulation::CharacteristicProperties>
+        in_properties,
+    std::unique_ptr<AddCharacteristicCallback> callback) {
+  if (!is_enabled()) {
+    std::move(callback)->sendFailure(
+        Response::ServerError("BluetoothEmulation not enabled"));
+    return;
+  }
+
+  device::BluetoothUUID uuid(in_characteristicUuid);
+  if (!uuid.IsValid()) {
+    std::move(callback)->sendFailure(Response::InvalidParams(
+        base::StrCat({in_characteristicUuid, " is not a valid UUID"})));
+    return;
+  }
+
+  fake_central_->AddFakeCharacteristic(
+      uuid, ToCharacteristicProperties(in_properties.get()), in_serviceId,
+      in_address,
+      base::BindOnce(
+          [](std::unique_ptr<AddCharacteristicCallback> callback,
+             const std::string& error_message,
+             const std::optional<std::string>& identifier) {
+            if (!identifier) {
+              std::move(callback)->sendFailure(
+                  Response::ServerError(error_message));
+              return;
+            }
+            std::move(callback)->sendSuccess(*identifier);
+          },
+          std::move(callback),
+          base::StrCat({"Failed to add characteristic ", in_characteristicUuid,
+                        " to service ", in_serviceId})));
+}
+
+void BluetoothEmulationHandler::RemoveCharacteristic(
+    const std::string& in_address,
+    const std::string& in_serviceId,
+    const std::string& in_characteristicId,
+    std::unique_ptr<RemoveCharacteristicCallback> callback) {
+  if (!is_enabled()) {
+    std::move(callback)->sendFailure(
+        Response::ServerError("BluetoothEmulation not enabled"));
+    return;
+  }
+
+  fake_central_->RemoveFakeCharacteristic(
+      in_characteristicId, in_serviceId, in_address,
+      base::BindOnce(
+          [](std::unique_ptr<RemoveCharacteristicCallback> callback,
+             const std::string& error_message, bool success) {
+            if (!success) {
+              std::move(callback)->sendFailure(
+                  Response::ServerError(error_message));
+              return;
+            }
+            std::move(callback)->sendSuccess();
+          },
+          std::move(callback),
+          base::StrCat({"Failed to remove characteristic represented by ",
+                        in_characteristicId, " from service ", in_serviceId})));
 }
 
 void BluetoothEmulationHandler::DispatchGATTOperationEvent(

@@ -214,6 +214,32 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Fetching Time Out Error"/>
 </enum>
 
+<!-- LINT.IfChange(IOSBestFeaturesDetailScreenActionType) -->
+
+<enum name="IOSBestFeaturesDetailScreenActionType">
+  <int value="0" label="Show me how"/>
+  <int value="1" label="Continue in FRE sequence"/>
+  <int value="2" label="Navigate back to main screen"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/first_run/ui_bundled/best_features/ui/metrics_util.h:BestFeaturesDetailScreenActionType) -->
+
+<!-- LINT.IfChange(IOSBestFeaturesMainScreenActionType) -->
+
+<enum name="IOSBestFeaturesMainScreenActionType">
+  <int value="0" label="Continue without interacting with items"/>
+  <int value="1" label="Lens Item Tapped"/>
+  <int value="2" label="Enhanced Safe Browsing Item Tapped"/>
+  <int value="3" label="Locked Incognito Tabs Item Tapped"/>
+  <int value="4" label="Save Autofill Passwords Item Tapped"/>
+  <int value="5" label="Tab Groups Tapped"/>
+  <int value="6" label="Price Tracking Tapped"/>
+  <int value="7" label="Passwords In Other Apps Item Tapped"/>
+  <int value="8" label="Share Passwords Item Tapped"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/first_run/ui_bundled/best_features/ui/metrics_util.h:BestFeaturesMainScreenActionType) -->
+
 <enum name="IOSBringAndroidTabsPromptActionType">
   <int value="0" label="Review tabs"/>
   <int value="1" label="Open tabs"/>
@@ -1385,6 +1411,17 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Ephemeral"/>
   <int value="5" label="Invalid"/>
 </enum>
+
+<!-- LINT.IfChange(ReaderModeAmpClassification) -->
+
+<enum name="ReaderModeAmpClassification">
+  <int value="0" label="Empty distill with AMP"/>
+  <int value="1" label="Populated distill with AMP"/>
+  <int value="2" label="Empty distill no AMP"/>
+  <int value="3" label="Populated distill no AMP"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeAmpClassification) -->
 
 <!-- LINT.IfChange(ReaderModeDistillerResult) -->
 

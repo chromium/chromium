@@ -7,10 +7,9 @@
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "base/metrics/histogram_macros.h"
-#import "base/strings/string_number_conversions.h"
-#import "base/strings/stringprintf.h"
 #import "components/grit/components_resources.h"
 #import "components/security_interstitials/core/common_string_util.h"
+#import "components/security_interstitials/core/utils.h"
 #import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #import "ios/components/ui_util/dynamic_type_util.h"
 #import "ios/web/common/features.h"
@@ -19,24 +18,6 @@
 #import "ui/base/webui/web_ui_util.h"
 
 namespace security_interstitials {
-
-namespace {
-// Adjusts the interstitial page's template parameter "fontsize" by system font
-// size multiplier.
-void AdjustFontSize(base::Value::Dict& load_time_data) {
-  std::string* value = load_time_data.FindString("fontsize");
-  DCHECK(value);
-  std::string old_size = *value;
-  // `old_size` should be in form of "75%".
-  DCHECK(old_size.size() > 1 && old_size.back() == '%');
-  double new_size = 75.0;
-  bool converted =
-      base::StringToDouble(old_size.substr(0, old_size.size() - 1), &new_size);
-  DCHECK(converted);
-  new_size *= ui_util::SystemSuggestedFontSizeMultiplier();
-  load_time_data.Set("fontsize", base::StringPrintf("%.0lf%%", new_size));
-}
-}  // namespace
 
 IOSSecurityInterstitialPage::IOSSecurityInterstitialPage(
     web::WebState* web_state,
@@ -55,7 +36,7 @@ std::string IOSSecurityInterstitialPage::GetHtmlContents() const {
   PopulateInterstitialStrings(load_time_data);
   webui::SetLoadTimeDataDefaults(client_->GetApplicationLocale(),
                                  &load_time_data);
-  AdjustFontSize(load_time_data);
+  AdjustFontSize(load_time_data, ui_util::SystemSuggestedFontSizeMultiplier());
   std::string html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_SECURITY_INTERSTITIAL_HTML);

@@ -37,11 +37,7 @@ class AITestUtils {
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
     BindNewPipeAndPassRemote();
 
-    MOCK_METHOD(void,
-                OnStreaming,
-                (const std::string& text,
-                 blink::mojom::ModelStreamingResponderAction action),
-                (override));
+    MOCK_METHOD(void, OnStreaming, (const std::string& text), (override));
     MOCK_METHOD(void,
                 OnError,
                 (blink::mojom::ModelStreamingResponseStatus status),

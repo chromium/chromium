@@ -29,8 +29,6 @@ OnDeviceModelFeatureAdapter::OnDeviceModelFeatureAdapter(
     proto::OnDeviceModelExecutionFeatureConfig config)
     : config_(std::move(config)),
       redactor_(Redactor::FromProto(config_.output_config().redact_rules())),
-      response_streaming_mode_(
-          config_.output_config().response_streaming_mode()),
       parser_(
           ResponseParserRegistry::Get().CreateParser(config_.output_config())) {
   // Set limits values in `token_limits_`.
@@ -108,8 +106,10 @@ RedactResult OnDeviceModelFeatureAdapter::Redact(
 
 bool OnDeviceModelFeatureAdapter::ShouldParseResponse(
     ResponseCompleteness completeness) const {
+  // Streaming responses are incompatible with redaction.
   return completeness == ResponseCompleteness::kComplete ||
-         !parser_->SuppressParsingIncompleteResponse();
+         (!parser_->SuppressParsingIncompleteResponse() &&
+          config_.output_config().redact_rules().rules().empty());
 }
 
 void OnDeviceModelFeatureAdapter::ParseResponse(
@@ -129,20 +129,8 @@ void OnDeviceModelFeatureAdapter::ParseResponse(
     return;
   }
 
-  switch (response_streaming_mode_) {
-    case proto::ResponseStreamingMode::STREAMING_MODE_CURRENT_RESPONSE: {
-      parser_->ParseAsync(redacted_response, std::move(callback));
-      break;
-    }
-
-    case proto::ResponseStreamingMode::STREAMING_MODE_CHUNK_BY_CHUNK: {
-      // The `redacted_response` is actually not redacted here because the
-      // redactor config and chunk-by-chunk mode are mutual exclusive.
-      parser_->ParseAsync(redacted_response.substr(previous_response_pos),
-                          std::move(callback));
-      break;
-    }
-  }
+  parser_->ParseAsync(redacted_response.substr(previous_response_pos),
+                      std::move(callback));
 }
 
 std::optional<proto::TextSafetyRequest>

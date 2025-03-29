@@ -70,6 +70,10 @@ static_library("browser") {
     sources += [ "linux/browser_utils_linux.cc" ]
   }
 
+  if (is_chromeos) {
+    sources += [ "chromeos/browser_utils_chromeos.cc" ]
+  }
+
   if (is_win || is_mac) {
     public += [
       "agent_signals_collector.h",

@@ -36,10 +36,7 @@ class ScopedMockTimezone {
   explicit ScopedMockTimezone(const std::string& timezone)
       : icu_timezone_(timezone.c_str()) {
     auto env = base::Environment::Create();
-    std::string old_timezone_value;
-    if (env->GetVar(kTZ, &old_timezone_value)) {
-      old_timezone_ = old_timezone_value;
-    }
+    old_timezone_ = env->GetVar(kTZ);
     CHECK(env->SetVar(kTZ, timezone));
     tzset();
   }

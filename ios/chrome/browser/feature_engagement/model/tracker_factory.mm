@@ -31,8 +31,21 @@ TrackerFactory::TrackerFactory()
 
 TrackerFactory::~TrackerFactory() = default;
 
+// static
+TrackerFactory::TestingFactory TrackerFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildServiceInstance);
+}
+
 std::unique_ptr<KeyedService> TrackerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return CreateFeatureEngagementTracker(ProfileIOS::FromBrowserState(context));
 }
+
+// static
+std::unique_ptr<KeyedService> TrackerFactory::BuildServiceInstance(
+    web::BrowserState* context) {
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  return feature_engagement::CreateFeatureEngagementTracker(profile);
+}
+
 }  // namespace feature_engagement

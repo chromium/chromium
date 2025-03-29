@@ -52,10 +52,8 @@ void EchoAILanguageModel::DoMockExecution(
     responder->OnQuotaOverflow();
   }
   current_tokens_ += input.size();
-  responder->OnStreaming(kResponsePrefix,
-                         blink::mojom::ModelStreamingResponderAction::kAppend);
-  responder->OnStreaming(input,
-                         blink::mojom::ModelStreamingResponderAction::kAppend);
+  responder->OnStreaming(kResponsePrefix);
+  responder->OnStreaming(input);
   responder->OnCompletion(
       blink::mojom::ModelExecutionContextInfo::New(current_tokens_));
 }

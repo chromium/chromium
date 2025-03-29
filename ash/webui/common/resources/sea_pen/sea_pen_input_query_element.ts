@@ -99,9 +99,15 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
         type: Boolean,
         value: false,
       },
+
+      autoplay_: {
+        type: Boolean,
+        value: false,
+      }
     };
   }
 
+  private autoplay_: boolean;
   private maxTextLength_: number;
   private textValue_: string;
   private seaPenQuery_: SeaPenQuery|null;
@@ -155,10 +161,6 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
         new ResizeObserver(() => this.animateContainerHeight());
 
     beforeNextRender(this, () => {
-      const inspireMeAnimation = this.getInspireMeAnimationElement_();
-      if (inspireMeAnimation) {
-        inspireMeAnimation.autoplay = false;
-      }
 
       this.innerContainerOriginalHeight_ = this.$.innerContainer.scrollHeight;
       this.$.innerContainer.style.height =

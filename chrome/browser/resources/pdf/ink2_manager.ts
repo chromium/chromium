@@ -5,12 +5,21 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
-import type {AnnotationBrush, Color} from './constants.js';
-import {AnnotationBrushType} from './constants.js';
+import type {AnnotationBrush, AnnotationText, Color, TextStyles} from './constants.js';
+import {AnnotationBrushType, TextAlignment} from './constants.js';
 import {PluginController} from './controller.js';
 
 export class Ink2Manager extends EventTarget {
   private brush_: AnnotationBrush = {type: AnnotationBrushType.PEN};
+  private text_: AnnotationText = {
+    font: 'Roboto',
+    size: 12,
+    color: {r: 0, g: 0, b: 0},
+    alignment: TextAlignment.LEFT,
+    styles:
+        {bold: false, italic: false, underline: false, strikethrough: false},
+  };
+
   private brushResolver_: PromiseResolver<void>|null = null;
   private pluginController_: PluginController = PluginController.getInstance();
 
@@ -25,6 +34,10 @@ export class Ink2Manager extends EventTarget {
   getCurrentBrush(): AnnotationBrush {
     assert(this.isInitializationComplete());
     return this.brush_;
+  }
+
+  getCurrentText(): AnnotationText {
+    return this.text_;
   }
 
   initializeBrush(): Promise<void> {
@@ -69,6 +82,55 @@ export class Ink2Manager extends EventTarget {
     this.setAnnotationBrushInPlugin_();
   }
 
+  setTextFont(font: string) {
+    if (this.text_.font === font) {
+      return;
+    }
+
+    this.text_.font = font;
+    this.updatedText_();
+  }
+
+  setTextSize(size: number) {
+    if (this.text_.size === size) {
+      return;
+    }
+
+    this.text_.size = size;
+    this.updatedText_();
+  }
+
+  setTextColor(color: Color) {
+    if (this.text_.color.r === color.r && this.text_.color.g === color.g &&
+        this.text_.color.b === color.b) {
+      return;
+    }
+
+    this.text_.color = color;
+    this.updatedText_();
+  }
+
+  setTextAlignment(alignment: TextAlignment) {
+    if (this.text_.alignment === alignment) {
+      return;
+    }
+
+    this.text_.alignment = alignment;
+    this.updatedText_();
+  }
+
+  setTextStyles(styles: TextStyles) {
+    if (this.text_.styles.bold === styles.bold &&
+        this.text_.styles.italic === styles.italic &&
+        this.text_.styles.underline === styles.underline &&
+        this.text_.styles.strikethrough === styles.strikethrough) {
+      return;
+    }
+
+    this.text_.styles = styles;
+    this.updatedText_();
+  }
+
   /**
    * Sets the current brush properties to the values in `brush`.
    */
@@ -86,6 +148,21 @@ export class Ink2Manager extends EventTarget {
 
   private fireBrushChanged_() {
     this.dispatchEvent(new CustomEvent('brush-changed', {detail: this.brush_}));
+  }
+
+  private updatedText_(): void {
+    this.setAnnotationTextInPlugin_();
+    this.fireTextChanged_();
+  }
+
+  private setAnnotationTextInPlugin_(): void {
+    // TODO (crbug.com/402547554): Replace this with a real call to the plugin,
+    // once the backend has been built.
+    console.info('Send plugin text information ' + JSON.stringify(this.text_));
+  }
+
+  private fireTextChanged_() {
+    this.dispatchEvent(new CustomEvent('text-changed', {detail: this.text_}));
   }
 
   static getInstance(): Ink2Manager {

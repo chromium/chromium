@@ -75,6 +75,9 @@ public class HubToolbarMediator {
             new ComponentCallbacks() {
                 @Override
                 public void onConfigurationChanged(@NonNull Configuration configuration) {
+                    Pane focusedPane = mPaneManager.getFocusedPaneSupplier().get();
+                    if (focusedPane == null) return;
+
                     // Only show the search box visuals in the tab switcher and incognito panes.
                     @PaneId
                     int focusedPaneId = mPaneManager.getFocusedPaneSupplier().get().getPaneId();

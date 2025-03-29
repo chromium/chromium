@@ -102,13 +102,24 @@ function initialize() {
 }
 
 function getCertificateMetadata(certInfo: CertificateInfo) {
-  if (certInfo.certMetadata === undefined) {
-    return;
-  }
-
   const modificationsTab =
       document.querySelector<HTMLElement>('#modifications-tab');
   assert(modificationsTab);
+
+  if (certInfo.certMetadata === undefined) {
+    // Remove the modifications tab if it is not needed. This prevents it from
+    // being selectable by keyboard navigation despite being hidden.
+    // This is a bit of a hack since cr_tab_box doesn't properly handle hidden
+    // or disabled attributes. Once the cert viewer is migrated to use the
+    // newer webui components, solve this in a better way. (See
+    // crbug.com/405143561 for more background.)
+    modificationsTab.remove();
+    const modifications = document.querySelector<HTMLElement>('#modifications');
+    assert(modifications);
+    modifications.remove();
+    return;
+  }
+
   modificationsTab.hidden = false;
 
   const modificationsPanel = document.querySelector('modifications-panel');

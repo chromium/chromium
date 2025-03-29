@@ -553,13 +553,13 @@ gfx::Size ScrollbarThemeAura::NinePatchTrackAndButtonsCanvasSize(
   const gfx::Size scrollbar_size = ScaleToCeiledSize(scrollbar.Size(), scale);
   if (scrollbar.Orientation() == kVerticalScrollbar) {
     return gfx::Size(
-        button_size.width(),
+        base::ClampFloor(button_size.width()),
         std::min(scrollbar_size.height(),
                  base::ClampCeil(button_size.height() * 2 + scale)));
   } else {
     return gfx::Size(std::min(scrollbar_size.width(),
                               base::ClampCeil(button_size.width() * 2 + scale)),
-                     button_size.height());
+                     base::ClampFloor(button_size.height()));
   }
 }
 

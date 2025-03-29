@@ -123,13 +123,12 @@ TEST(SoundscapeTypeTests, ParseConfiguration) {
       SoundscapeConfiguration::ParseConfiguration("fr-CA", kTestConfig);
   ASSERT_TRUE(config);
   EXPECT_THAT(config->playlists, testing::SizeIs(4));
-  EXPECT_THAT(
-      config->playlists,
-      testing::ElementsAre(
-          testing::Field(&SoundscapePlaylist::name, "Musique Classique"),
-          testing::Field(&SoundscapePlaylist::name, "Nature"),
-          testing::Field(&SoundscapePlaylist::name, "Flux"),
-          testing::Field(&SoundscapePlaylist::name, "Ambiance")));
+  EXPECT_THAT(config->playlists,
+              testing::ElementsAre(
+                  testing::Field(&SoundscapePlaylist::name, "Classique"),
+                  testing::Field(&SoundscapePlaylist::name, "Nature"),
+                  testing::Field(&SoundscapePlaylist::name, "Flux"),
+                  testing::Field(&SoundscapePlaylist::name, "Ambiance")));
 }
 
 TEST(SoundscapeTypeTests, ParseConfiguration_LangOnly) {
@@ -137,9 +136,21 @@ TEST(SoundscapeTypeTests, ParseConfiguration_LangOnly) {
       SoundscapeConfiguration::ParseConfiguration("fr", kTestConfig);
   ASSERT_TRUE(config);
   EXPECT_THAT(config->playlists, testing::SizeIs(4));
+  EXPECT_THAT(config->playlists, testing::Contains(testing::Field(
+                                     &SoundscapePlaylist::name, "Classique")));
+}
+
+TEST(SoundscapeTypeTests, ParseConfiguration_RTL) {
+  std::optional<SoundscapeConfiguration> config =
+      SoundscapeConfiguration::ParseConfiguration("he", kTestConfig);
+  ASSERT_TRUE(config);
+  EXPECT_THAT(config->playlists, testing::SizeIs(4));
   EXPECT_THAT(config->playlists,
-              testing::Contains(testing::Field(&SoundscapePlaylist::name,
-                                               "Musique Classique")));
+              testing::ElementsAre(
+                  testing::Field(&SoundscapePlaylist::name, "מוזיקה קלאסית"),
+                  testing::Field(&SoundscapePlaylist::name, "צלילי טבע"),
+                  testing::Field(&SoundscapePlaylist::name, "מוזיקה מרגיעה"),
+                  testing::Field(&SoundscapePlaylist::name, "מוזיקת אמביינט")));
 }
 
 TEST(SoundscapeTypeTests, ParseConfiguration_Empty) {

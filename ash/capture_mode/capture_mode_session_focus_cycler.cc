@@ -635,12 +635,18 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
     wm::ConvertPointToScreen(session_->current_root(), &point_of_interest);
     magnifier_utils::MaybeUpdateActiveMagnifierFocus(point_of_interest);
 
+    // If the root has changed, remove the old `ax_widget_` so we can create it
+    // and its virtual a11y views on the correct root.
+    if (ax_widget_ && ax_widget_->GetNativeWindow()->GetRootWindow() !=
+                          session_->current_root()) {
+      ax_virtual_views_.clear();
+      ax_widget_.reset();
+    }
+
     // Lazily create the widget that hosts the virtual a11y views and the
     // virtual a11y root.
-    // TODO(crbug.com/401066100): Support multidisplay.
     if (!ax_widget_ &&
-        Shell::Get()->accessibility_controller()->spoken_feedback().enabled() &&
-        Shell::GetAllRootWindows().size() == 1u) {
+        Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
       ax_widget_ = std::make_unique<views::Widget>();
       views::Widget::InitParams params(
           views::Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -649,8 +655,11 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
       // bounds will always match the root window bounds.
       params.delegate = new views::WidgetDelegate();
       params.delegate->SetCanMaximize(true);
+      params.delegate->RegisterWindowClosingCallback(
+          base::BindOnce(&CaptureModeSessionFocusCycler::OnAXWidgetClosing,
+                         weak_ptr_factory_.GetWeakPtr()));
       params.layer_type = ui::LAYER_NOT_DRAWN;
-      params.parent = Shell::GetContainer(Shell::GetPrimaryRootWindow(),
+      params.parent = Shell::GetContainer(session_->current_root(),
                                           kShellWindowId_WallpaperContainer);
       ax_widget_->Init(std::move(params));
       ax_widget_->ShowInactive();
@@ -1332,6 +1341,10 @@ void CaptureModeSessionFocusCycler::MaybeFocusHighlightableWindow(
                                 focusable_items_in_a_window;
     current_views[window_index]->PseudoFocus();
   }
+}
+
+void CaptureModeSessionFocusCycler::OnAXWidgetClosing() {
+  ax_virtual_views_.clear();
 }
 
 }  // namespace ash

@@ -54,8 +54,8 @@ export class ExtensionsSidebarElement extends ExtensionsSidebarElementBase {
     };
   }
 
-  enableEnhancedSiteControls: boolean = false;
-  protected selectedPath_: Page = Page.LIST;
+  accessor enableEnhancedSiteControls: boolean = false;
+  protected accessor selectedPath_: Page = Page.LIST;
 
   /**
    * The ID of the listener on |navigation|. Stored so that the

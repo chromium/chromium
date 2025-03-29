@@ -23,6 +23,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -314,8 +315,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             return ChromeColors.getPrimaryBackgroundColor(mRootView.getContext(), mIsIncognito);
         } else {
             // TODO(crbug.com/40948541): Consider not getting the color from home surface.
-            return ChromeColors.getSurfaceColor(
-                    mRootView.getContext(), R.dimen.home_surface_background_color_elevation);
+            return ContextCompat.getColor(
+                    mRootView.getContext(), R.color.home_surface_background_color);
         }
     }
 

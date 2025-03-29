@@ -170,7 +170,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     }
 
     @Override
-    protected void moveTabToOtherWindow(Tab tab) {
+    public void moveTabToOtherWindow(Tab tab) {
+        if (MultiWindowUtils.getInstanceCount() == 1) {
+            moveTabToNewWindow(tab);
+            return;
+        }
+
         TargetSelectorCoordinator.showDialog(
                 mActivity,
                 mModalDialogManagerSupplier.get(),

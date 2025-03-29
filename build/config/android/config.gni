@@ -87,10 +87,9 @@ if (is_android) {
     # "build_server" ensures that fast_local_dev_server.py is running and
     #     offloads analysis tasks to it to be run after the build completes.
     #     This is the recommended setting for local development.
+    android_static_analysis = "on"
     if (is_official_build) {
       android_static_analysis = "off"
-    } else {
-      android_static_analysis = "on"
     }
   }
 

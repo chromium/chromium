@@ -5,7 +5,11 @@
 // Language Detector API
 // https://github.com/webmachinelearning/translation-api
 
-dictionary LanguageDetectorCreateOptions {
+dictionary LanguageDetectorCreateCoreOptions {
+  sequence<DOMString> expectedInputLanguages;
+};
+
+dictionary LanguageDetectorCreateOptions : LanguageDetectorCreateCoreOptions {
   AbortSignal signal;
   AICreateMonitorCallback monitor;
 };
@@ -65,6 +69,8 @@ interface LanguageDetector {
   ]
   undefined destroy();
 
+  [MeasureAs=LanguageDetector_ExpectedInputLanguages]
+  readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
   [MeasureAs=LanguageDetector_InputQuota]
   readonly attribute unrestricted double inputQuota;
 };

@@ -484,7 +484,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
   // Every encrypted Block has a signal byte and IV prepended to it.
   // See: http://www.webmproject.org/docs/webm-encryption/
   std::unique_ptr<DecryptConfig> decrypt_config;
-  int data_offset = 0;
+  size_t data_offset = 0;
   if (!encryption_key_id.empty() &&
       !WebMCreateDecryptConfig(
           data, size,
@@ -497,9 +497,9 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
   // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
   // type with remapped bytestream track numbers and allow multiple tracks as
   // applicable. See https://crbug.com/341581.
-  auto buffer =
-      StreamParserBuffer::CopyFrom(data + data_offset, size - data_offset,
-                                   is_keyframe, buffer_type, track_num);
+  auto data_span = base::span(data, size).subspan(data_offset);
+  auto buffer = StreamParserBuffer::CopyFrom(data_span, is_keyframe,
+                                             buffer_type, track_num);
   if (additional_size) {
     buffer->WritableSideData().alpha_data =
         base::HeapArray<uint8_t>::CopiedFrom(

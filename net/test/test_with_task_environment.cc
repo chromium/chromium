@@ -16,19 +16,8 @@ namespace net {
 WithTaskEnvironment::WithTaskEnvironment(
     base::test::TaskEnvironment::TimeSource time_source)
     : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
-                        time_source) {
-  MaybeStartNetLog();
-}
+                        time_source) {}
 
 WithTaskEnvironment::~WithTaskEnvironment() = default;
-
-void WithTaskEnvironment::MaybeStartNetLog() {
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(TestNetLogManager::kLogNetLogSwitch)) {
-    net_log_manager_ = std::make_unique<TestNetLogManager>(
-        NetLog::Get(), NetLogCaptureMode::kEverything);
-  }
-}
 
 }  // namespace net

@@ -81,6 +81,7 @@ class OidcAuthenticationSigninInterceptor
       const ProfileManagementOidcTokens& oidc_tokens,
       const std::string& issuer_id,
       const std::string& subject_id,
+      const std::string& email,
       OidcInterceptionCallback oidc_callback);
 
   // KeyedService:

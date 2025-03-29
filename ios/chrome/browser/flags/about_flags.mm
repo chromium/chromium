@@ -56,6 +56,7 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "components/search_engines/search_engines_switches.h"
 #import "components/segmentation_platform/embedder/home_modules/constants.h"
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/features.h"
@@ -1394,6 +1395,17 @@ const FeatureEntry::FeatureVariation kReaderModeDistillerHeuristicOptions[] = {
      nullptr},
 };
 
+const FeatureEntry::FeatureParam kBeforeSearchExplainGeminiEditMenu[] = {
+    {kExplainGeminiEditMenuParams, "1"}};
+const FeatureEntry::FeatureParam kAfterSearchExplainGeminiEditMenu[] = {
+    {kExplainGeminiEditMenuParams, "2"}};
+
+const FeatureEntry::FeatureVariation kExplainGeminiEditMenuVariations[] = {
+    {"Before Search Gemini Edit Menu", kBeforeSearchExplainGeminiEditMenu,
+     std::size(kBeforeSearchExplainGeminiEditMenu), nullptr},
+    {"After Search Gemini Edit Menu", kAfterSearchExplainGeminiEditMenu,
+     std::size(kAfterSearchExplainGeminiEditMenu), nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1537,6 +1549,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSReactivationNotifications,
                                     kIOSReactivationNotificationsVariations,
                                     "IOSReactivationNotifications")},
+    {"ios-prompt-search-engine-choice-after-device-restore",
+     flag_descriptions::kIOSPromptSearchEngineChoiceAfterDeviceRestoreName,
+     flag_descriptions::
+         kIOSPromptSearchEngineChoiceAfterDeviceRestoreDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         switches::kIOSPromptSearchEngineChoiceAfterDeviceRestore)},
     {"ios-provides-app-notification-settings",
      flag_descriptions::kIOSProvidesAppNotificationSettingsName,
      flag_descriptions::kIOSProvidesAppNotificationSettingsDescription,
@@ -2590,6 +2609,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFeedbackIncludeVariationsName,
      flag_descriptions::kFeedbackIncludeVariationsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(variations::kFeedbackIncludeVariations)},
+    {"explain-gemini-edit-menu", flag_descriptions::kExplainGeminiEditMenuName,
+     flag_descriptions::kExplainGeminiEditMenuDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kExplainGeminiEditMenu,
+                                    kExplainGeminiEditMenuVariations,
+                                    "IOSExplainGeminiEditMenu")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

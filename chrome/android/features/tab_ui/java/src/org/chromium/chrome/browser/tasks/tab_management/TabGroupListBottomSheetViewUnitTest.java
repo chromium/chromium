@@ -130,7 +130,7 @@ public class TabGroupListBottomSheetViewUnitTest {
         // Because the bottom sheet also includes padding and the "Add to" header, using
         // CONTAINER_HEIGHT_FOR_TEST and ITEM_HEIGHT_FOR_TEST isn't sufficient to calculate the
         // ratio.
-        assertEquals(0.59d, mBottomSheetView.getFullHeightRatio(), /* delta= */ 0.01);
+        assertEquals(0.58d, mBottomSheetView.getFullHeightRatio(), /* delta= */ 0.01);
         assertEquals(0.5, mBottomSheetView.getHalfHeightRatio(), /* delta= */ 0.01);
     }
 

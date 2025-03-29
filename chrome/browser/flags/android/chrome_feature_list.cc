@@ -172,7 +172,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &history_clusters::internal::kOmniboxAction,
     &kAdaptiveButtonInTopToolbarCustomizationV2,
     &kAdaptiveButtonInTopToolbarPageSummary,
-    &kRedirectExplicitCTAIntentsToExistingActivity,
     &kAllowNewIncognitoTabIntents,
     &kAndroidAppIntegration,
     &kAndroidAppIntegrationV2,
@@ -1055,10 +1054,6 @@ BASE_FEATURE(kReadAloudIPHMenuButtonHighlightCCT,
 
 BASE_FEATURE(kRecordSuppressionMetrics,
              "RecordSuppressionMetrics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRedirectExplicitCTAIntentsToExistingActivity,
-             "RedirectExplicitCTAIntentsToExistingActivity",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReengagementNotification,

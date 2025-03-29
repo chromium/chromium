@@ -1560,6 +1560,26 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <token key="PSNoticeAction" variants="PSNoticeAction"/>
 </histogram>
 
+<histogram name="PrivacySandbox.Notice.NotHoldingHandle.InQueue" units="counts"
+    expires_after="2026-03-28">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the number of times a notice that tries to show is not holding the
+    handle, because it is waiting in the queue.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.Notice.NotHoldingHandle.NotInQueue"
+    units="counts" expires_after="2026-03-28">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the number of times a notice that tries to show is not holding the
+    handle, because it is not queued.
+  </summary>
+</histogram>
+
 <!-- DO NOT USE. To be deprecated soon, use PrivacySandbox.Notice.NoticeEvent.{PSNotice} instead. -->
 
 <histogram name="PrivacySandbox.Notice.NoticeAction.{PSNotice}"
@@ -1695,6 +1715,24 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     would any have been approved? Recorded for each individual aggregatable
     report request that fails in this way (but not each individual histogram
     contribution).
+
+    Only records if the aggregate error reporting feature is disabled.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.PrivateAggregation.Budgeter.LockHoldDuration"
+    units="ms" expires_after="2025-08-25">
+  <owner>alexmt@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the duration that the budgeter was locked. When the budgeter is
+    locked, new calls to it are queued instead of being executed immediately to
+    avoid changes between provisional and final budget calls (i.e. between calls
+    to `TestBudgetAndLock()` and `ConsumeBudget()`). Recorded every time the
+    lock is re-obtained (in `ConsumeBudget()`) or at destruction. Only recorded
+    if the aggregate error reporting feature is enabled (as locking does not
+    occur otherwise).
   </summary>
 </histogram>
 

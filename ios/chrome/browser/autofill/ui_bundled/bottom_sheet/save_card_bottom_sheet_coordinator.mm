@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
@@ -21,6 +22,9 @@
   // The mediator for save card bottomsheet created and owned by the
   // coordinator.
   SaveCardBottomSheetMediator* _mediator;
+
+  // The view controller to display save card bottomsheet.
+  SaveCardBottomSheetViewController* _viewController;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -41,9 +45,15 @@
 - (void)start {
   _mediator = [[SaveCardBottomSheetMediator alloc]
       initWithUIModel:std::move(_saveCardBottomSheetModel)];
+  _viewController = [[SaveCardBottomSheetViewController alloc] init];
+  [self.baseViewController presentViewController:_viewController
+                                        animated:YES
+                                      completion:nil];
 }
 
 - (void)stop {
+  [_viewController dismissViewControllerAnimated:YES completion:nil];
+  _viewController = nil;
   [_mediator disconnect];
   _mediator = nil;
 }

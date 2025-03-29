@@ -2108,6 +2108,10 @@ inline constexpr char kTaskManagerWindowPlacement[] =
 inline constexpr char kTaskManagerColumnVisibility[] =
     "task_manager.column_visibility";
 
+// The most recent stored tab in the task manager window to be restored on
+// startup.
+inline constexpr char kTaskManagerCategory[] = "task_manager.category";
+
 // A boolean indicating if ending processes are enabled or disabled by policy.
 inline constexpr char kTaskManagerEndProcessEnabled[] =
     "task_manager.end_process_enabled";

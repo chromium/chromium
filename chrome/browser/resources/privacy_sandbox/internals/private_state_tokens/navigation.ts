@@ -27,9 +27,9 @@ export class PrivateStateTokensNavigationElement extends CrLitElement {
     };
   }
 
-  data: ListItem[] = [];
+  accessor data: ListItem[] = [];
   protected metadata_: Metadata = nullMetadataObj;
-  protected itemToRender: ItemsToRender = ItemsToRender.ISSUER_LIST;
+  protected accessor itemToRender: ItemsToRender = ItemsToRender.ISSUER_LIST;
 }
 
 declare global {

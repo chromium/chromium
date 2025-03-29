@@ -56,16 +56,17 @@ export class AutoTabGroupsPageElement extends CrLitElement {
     };
   }
 
-  availableHeight: number = 0;
-  showBackButton: boolean = false;
+  accessor availableHeight: number = 0;
+  accessor showBackButton: boolean = false;
 
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
-  private state_: TabOrganizationState = TabOrganizationState.kInitializing;
-  protected session_: TabOrganizationSession|null = null;
-  protected showFRE_: boolean =
+  private accessor state_: TabOrganizationState =
+      TabOrganizationState.kInitializing;
+  protected accessor session_: TabOrganizationSession|null = null;
+  protected accessor showFRE_: boolean =
       loadTimeData.getBoolean('showTabOrganizationFRE');
-  protected modelStrategy_: TabOrganizationModelStrategy =
+  protected accessor modelStrategy_: TabOrganizationModelStrategy =
       TabOrganizationModelStrategy.kTopic;
   private documentVisibilityChangedListener_: () => void;
   private futureState_: TabOrganizationState|null = null;

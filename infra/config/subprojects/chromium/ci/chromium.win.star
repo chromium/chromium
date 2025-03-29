@@ -406,6 +406,7 @@ ci.builder(
         targets = [
             "chromium_win10_gtests",
             "chromium_win_rel_isolated_scripts_once",
+            "gtests_once",
         ],
         mixins = [
             "x86-64",

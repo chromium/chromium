@@ -1,10 +1,10 @@
 Name: Implementation of WebDriver BiDi standard
 Short Name: chromium-bidi
-URL: https://registry.npmjs.org/chromium-bidi/-/chromium-bidi-3.0.0.tgz
-Version: 3.0.0
-Date: 2025-03-12
-Revision: a1631f250c17dd350bf00bd9d42d498fbd9a3392
-SHA-512: 92997391147b9c29a1be14d009e47a8072e6c3586cc4a93f6dd6da8854181ca5240d12fed97d9968e51bc64925438b24c58e307bb89672cabd7fcedb283ad878
+URL: https://registry.npmjs.org/chromium-bidi/-/chromium-bidi-3.1.0.tgz
+Version: 3.1.0
+Date: 2025-03-28
+Revision: 5dcb48a127847bf3b2ce31e93c01d0d1ab9de457
+SHA-512: 27a64ca9bb43b6266591a2295bfa1e1c986e592c56289b08c88282446b39eb5f483cce23992dd3b25c22b3407849658966f145eb30a72eb46b712553901d8bd2
 License: Apache-2.0
 License File: LICENSE
 Shipped: yes
@@ -33,7 +33,7 @@ Local modifications are not allowed.
 The upstream is maintained by the Chromium developers.
 All the changes must be done there.
 
-The source code of the current revision can be found at the following url: https://github.com/GoogleChromeLabs/chromium-bidi/archive/a1631f250c17dd350bf00bd9d42d498fbd9a3392.zip
+The source code of the current revision can be found at the following url: https://github.com/GoogleChromeLabs/chromium-bidi/archive/5dcb48a127847bf3b2ce31e93c01d0d1ab9de457.zip
 
 -------------------- DEPENDENCY DIVIDER --------------------
 

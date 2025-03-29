@@ -4,7 +4,6 @@
 
 module viz.mojom;
 
-import "gpu/ipc/common/client_gmb_interface.mojom";
 import "gpu/ipc/common/device_perf_info.mojom";
 import "gpu/ipc/common/gpu_disk_cache_type.mojom";
 import "gpu/ipc/common/gpu_feature_info.mojom";
@@ -133,11 +132,6 @@ interface GpuService {
   // already been taken. Also see media/mojo/mojom/dcomp_surface_registry.mojom.
   [EnableIf=is_win]
   UnregisterDCOMPSurfaceHandle(mojo_base.mojom.UnguessableToken token);
-
-  // Binds the pending receiver.
-  BindClientGmbInterface(
-      pending_receiver<gpu.mojom.ClientGmbInterface> receiver,
-      int32 client_id);
 
   // Creates a VideoEncodeAcceleratorProvider and binds it to |vea_provider|.
   CreateVideoEncodeAcceleratorProvider(

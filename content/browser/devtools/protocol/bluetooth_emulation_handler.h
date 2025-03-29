@@ -62,11 +62,24 @@ class CONTENT_EXPORT BluetoothEmulationHandler
       std::unique_ptr<SimulateGATTOperationResponseCallback> callback) override;
 
   void AddService(const std::string& in_address,
-                  const std::string& in_uuid,
+                  const std::string& in_serviceUuid,
                   std::unique_ptr<AddServiceCallback> callback) override;
   void RemoveService(const std::string& in_address,
-                     const std::string& in_id,
+                     const std::string& in_serviceId,
                      std::unique_ptr<RemoveServiceCallback> callback) override;
+
+  void AddCharacteristic(
+      const std::string& in_address,
+      const std::string& in_serviceId,
+      const std::string& in_characteristicUuid,
+      std::unique_ptr<protocol::BluetoothEmulation::CharacteristicProperties>
+          in_properties,
+      std::unique_ptr<AddCharacteristicCallback> callback) override;
+  void RemoveCharacteristic(
+      const std::string& in_address,
+      const std::string& in_serviceId,
+      const std::string& in_characteristicId,
+      std::unique_ptr<RemoveCharacteristicCallback> callback) override;
 
   // bluetooth::mojom::FakeCentralClient
   void DispatchGATTOperationEvent(

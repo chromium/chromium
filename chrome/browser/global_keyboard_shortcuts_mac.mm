@@ -149,6 +149,10 @@ const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
       {true,  false, false, true,  kVK_DownArrow,         IDC_FOCUS_NEXT_PANE},
       {true,  false, false, true,  kVK_UpArrow,           IDC_FOCUS_PREVIOUS_PANE},
       {true,  true,  false, true,  kVK_ANSI_A,            IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY},
+
+#if BUILDFLAG(ENABLE_GLIC)
+      {true,  false,  true, false,  kVK_ANSI_G,            IDC_GLIC_TOGGLE_FOCUS},
+#endif
     });
     // clang-format on
 

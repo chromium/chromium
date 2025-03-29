@@ -61,6 +61,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
+#include "net/test/test_net_log_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/network_context.h"
@@ -1328,6 +1329,10 @@ class NetworkServiceTestWithService : public testing::Test {
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
   }
 
+  // Start dumping NetLog events forcibly for debugging. Expected to be called
+  // at the beginning of a test.
+  void ForceNetLog() { net_log_manager_.ForceStart(); }
+
   void Shutdown() { service_.reset(); }
 
   net::EmbeddedTestServer* test_server() { return &test_server_; }
@@ -1345,6 +1350,8 @@ class NetworkServiceTestWithService : public testing::Test {
   mojo::Remote<mojom::NetworkService> network_service_;
   mojo::Remote<mojom::NetworkContext> network_context_;
   mojo::Remote<mojom::URLLoader> loader_;
+
+  net::TestNetLogManager net_log_manager_;
 
   base::test::ScopedFeatureList scoped_features_;
 };

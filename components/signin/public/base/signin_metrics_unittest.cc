@@ -215,12 +215,14 @@ class SigninMetricsTest : public ::testing::Test {
         return "CctAccountMismatchNotification";
       case AccessPoint::kDriveFilePickerIos:
         return "DriveFilePickerIOS";
-      case AccessPoint::kCollaborationTabGroup:
-        return "ShareGroupCollaboration";
+      case AccessPoint::kCollaborationShareTabGroup:
+        return "CollaborationShareTabGroup";
       case AccessPoint::kGlicLaunchButton:
         return "GlicLaunchButton";
       case AccessPoint::kHistoryPage:
         return "HistoryPage";
+      case AccessPoint::kCollaborationJoinTabGroup:
+        return "CollaborationJoinTabGroup";
     }
   }
 };

@@ -46,7 +46,7 @@ public class BottomSheetListContainerView extends LinearLayout {
 
     /** Returns a {@link BottomSheetListItemView}. */
     @VisibleForTesting
-    View createListItemView() {
+    protected View createListItemView() {
         return LayoutInflater.from(mContext)
                 .inflate(R.layout.bottom_sheet_list_item_view, this, false);
     }

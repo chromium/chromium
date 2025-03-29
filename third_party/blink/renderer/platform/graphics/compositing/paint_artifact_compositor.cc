@@ -1094,6 +1094,13 @@ void PaintArtifactCompositor::Update(
       layers, layers_having_text);
   root_layer_->SetChildLayerList(std::move(layers));
 
+  // In rare cases, we can have painted anchored elements with unpainted
+  // anchor-position adjustment containers. Ensure compositor scroll and
+  // transform nodes to ensure correct positioning of such anchored elements.
+  property_tree_manager
+      .EnsureCompositorNodesForAnchorPositionAdjustmentContainers(
+          scroll_translation_nodes);
+
   // Mark the property trees as having been rebuilt.
   host->property_trees()->set_needs_rebuild(false);
   host->property_trees()->ResetCachedData();

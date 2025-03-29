@@ -124,9 +124,8 @@ SavedTabGroupTabBuilder& SavedTabGroupTabBuilder::SetRedirectURLChain(
 }
 
 SavedTabGroupTabBuilder& SavedTabGroupTabBuilder::SetLastSeenTimestamp(
-    const base::Time& last_seen_time) {
+    base::Time last_seen_time) {
   last_seen_time_ = last_seen_time;
-  has_last_seen_time_ = true;
   return *this;
 }
 
@@ -141,7 +140,7 @@ SavedTabGroupTab SavedTabGroupTabBuilder::Build(
   if (has_redirect_url_chain_) {
     updated_tab.SetRedirectURLChain(redirect_url_chain_);
   }
-  if (has_last_seen_time_) {
+  if (!last_seen_time_.is_null()) {
     updated_tab.SetLastSeenTimeWindowsEpochMicros(last_seen_time_);
   }
 

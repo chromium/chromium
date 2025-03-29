@@ -67,6 +67,9 @@ COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppClientStringVersion[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppClientType[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppClientVersion[];
 
+// printer attributes
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppPrintScaling[];
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace printing

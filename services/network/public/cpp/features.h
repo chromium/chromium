@@ -77,9 +77,6 @@ COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kOmitCorsClientCert);
 
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-BASE_DECLARE_FEATURE(kPervasivePayloadsList);
-
-COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kReduceAcceptLanguage);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kReduceAcceptLanguageHTTP);
@@ -308,6 +305,11 @@ BASE_DECLARE_FEATURE(kGetCookiesOnSet);
 // `PermissionsPolicy` on the request is nullopt, you need to set it somewhere.
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kPopulatePermissionsPolicyOnRequest);
+
+// Enables CORS safelisting the Protected Audience Trusted Key-Value
+// Content-Type.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kProtectedAudienceCorsSafelistKVv2Signals);
 
 }  // namespace network::features
 

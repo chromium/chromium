@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.facilitated_payments;
 
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_ICON;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_SUMMARY;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_NUMBER;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_PAYMENT_RAIL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_TRANSACTION_LIMIT;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_TYPE;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.ON_BANK_ACCOUNT_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ErrorScreenProperties.PRIMARY_BUTTON_CALLBACK;
@@ -330,7 +332,14 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     PropertyModel createBankAccountModel(Context context, BankAccount bankAccount) {
         return new PropertyModel.Builder(BankAccountProperties.NON_TRANSFORMING_KEYS)
                 .with(BANK_NAME, bankAccount.getBankName())
-                .with(BANK_ACCOUNT_SUMMARY, getBankAccountSummaryString(context, bankAccount))
+                .with(
+                        BANK_ACCOUNT_PAYMENT_RAIL,
+                        context.getString(R.string.settings_manage_other_financial_accounts_pix)
+                                + "  •")
+                .with(
+                        BANK_ACCOUNT_TYPE,
+                        getBankAccountTypeString(context, bankAccount.getAccountType()))
+                .with(BANK_ACCOUNT_NUMBER, bankAccount.getObfuscatedAccountNumber())
                 .with(BANK_ACCOUNT_TRANSACTION_LIMIT, getBankAccountTransactionLimit(context))
                 .with(ON_BANK_ACCOUNT_CLICK_ACTION, () -> this.onBankAccountSelected(bankAccount))
                 .with(
@@ -399,14 +408,6 @@ class FacilitatedPaymentsPaymentMethodsMediator {
             return EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM + "SingleUnboundEwallet";
         }
         return EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM + "MultipleEwallets";
-    }
-
-    @VisibleForTesting
-    static String getBankAccountSummaryString(Context context, BankAccount bankAccount) {
-        return context.getString(
-                R.string.settings_pix_bank_account_identifer,
-                getBankAccountTypeString(context, bankAccount.getAccountType()),
-                bankAccount.getAccountNumberSuffix());
     }
 
     static String getBankAccountTransactionLimit(Context context) {

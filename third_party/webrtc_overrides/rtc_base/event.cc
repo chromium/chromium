@@ -4,7 +4,9 @@
 
 #include "third_party/webrtc_overrides/rtc_base/event.h"
 
+#include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
+#include "third_party/webrtc/api/units/time_delta.h"
 
 namespace webrtc {
 

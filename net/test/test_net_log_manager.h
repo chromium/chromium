@@ -8,15 +8,15 @@
 #include <memory>
 #include <string_view>
 
+#include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 
 namespace net {
 
-class NetLog;
 class FileNetLogObserver;
 
 // Manages NetLogObserver for unit tests. When `--log-net-log` is specified
-// without a file path, it dumps NetLog events to VLOG. When `--log-net-log`
+// without a file path, it dumps NetLog events to LOG. When `--log-net-log`
 // is specified with a file path, it dumps NetLog events to the file using
 // FileNetLogObserver.
 class TestNetLogManager {
@@ -25,18 +25,25 @@ class TestNetLogManager {
   // can use the switch here.
   static constexpr const std::string_view kLogNetLogSwitch = "log-net-log";
 
-  TestNetLogManager(NetLog* net_log, NetLogCaptureMode capture_mode);
+  explicit TestNetLogManager(
+      NetLog* net_log = NetLog::Get(),
+      NetLogCaptureMode capture_mode = NetLogCaptureMode::kEverything);
 
   TestNetLogManager(const TestNetLogManager&) = delete;
   TestNetLogManager& operator=(const TestNetLogManager&) = delete;
 
   ~TestNetLogManager();
 
+  // Force starts logging if not already started.
+  void ForceStart();
+
  private:
-  class VlogNetLogObserver;
+  class LogNetLogObserver;
+
+  void Start(NetLog* net_log, NetLogCaptureMode capture_mode);
 
   std::unique_ptr<FileNetLogObserver> file_net_log_observer_;
-  std::unique_ptr<VlogNetLogObserver> vlog_net_log_observer_;
+  std::unique_ptr<LogNetLogObserver> log_net_log_observer_;
 };
 
 }  // namespace net

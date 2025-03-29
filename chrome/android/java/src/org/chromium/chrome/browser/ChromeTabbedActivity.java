@@ -343,9 +343,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     ChromeTabbedActivity2.class.getName(),
                     MAIN_LAUNCHER_ACTIVITY_NAME);
 
-    static final String HISTOGRAM_EXPLICIT_VIEW_INTENT_FINISHED_NEW_ACTIVITY =
-            "Android.ExplicitViewIntentFinishedNewTabbedActivity";
-
     private static final String TAG_MULTI_INSTANCE = "MultiInstance";
 
     static final String HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA =
@@ -3062,10 +3059,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             return false;
         }
 
-        if (!ChromeFeatureList.sRedirectExplicitCTAIntentsToExistingActivity.isEnabled()) {
-            return false;
-        }
-
         // Check if the intent creating a new ChromeTabbedActivity was a VIEW intent launched via
         // ChromeLauncherActivity, in which case continue to launch in the current activity.
         boolean isExplicitViewIntent =
@@ -3086,15 +3079,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
         // If there is no running ChromeTabbedActivity, continue to launch in the current activity.
         if (instanceId == INVALID_WINDOW_ID) {
-            RecordHistogram.recordBooleanHistogram(
-                    HISTOGRAM_EXPLICIT_VIEW_INTENT_FINISHED_NEW_ACTIVITY, false);
             return false;
         }
 
         intent.putExtra(IntentHandler.EXTRA_WINDOW_ID, instanceId);
         MultiWindowUtils.launchIntentInInstance(intent, instanceId);
-        RecordHistogram.recordBooleanHistogram(
-                HISTOGRAM_EXPLICIT_VIEW_INTENT_FINISHED_NEW_ACTIVITY, true);
         return true;
     }
 

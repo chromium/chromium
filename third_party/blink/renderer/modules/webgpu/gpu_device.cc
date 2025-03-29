@@ -445,12 +445,7 @@ void GPUDevice::OnCreateRenderPipelineAsyncCallback(
     }
 
     case wgpu::CreatePipelineAsyncStatus::InternalError:
-#ifdef WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
-    case wgpu::CreatePipelineAsyncStatus::CallbackCancelled:
-#else
-    case wgpu::CreatePipelineAsyncStatus::InstanceDropped:
-#endif  // WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
-    {
+    case wgpu::CreatePipelineAsyncStatus::CallbackCancelled: {
       resolver->Reject(GPUPipelineError::Create(
           script_state->GetIsolate(), StringFromASCIIAndUTF8(message),
           V8GPUPipelineErrorReason::Enum::kInternal));
@@ -482,12 +477,7 @@ void GPUDevice::OnCreateComputePipelineAsyncCallback(
     }
 
     case wgpu::CreatePipelineAsyncStatus::InternalError:
-#ifdef WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
-    case wgpu::CreatePipelineAsyncStatus::CallbackCancelled:
-#else
-    case wgpu::CreatePipelineAsyncStatus::InstanceDropped:
-#endif  // WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
-    {
+    case wgpu::CreatePipelineAsyncStatus::CallbackCancelled: {
       resolver->Reject(GPUPipelineError::Create(
           script_state->GetIsolate(), StringFromASCIIAndUTF8(message),
           V8GPUPipelineErrorReason::Enum::kInternal));
@@ -702,11 +692,7 @@ void GPUDevice::OnPopErrorScopeCallback(
     wgpu::ErrorType type,
     wgpu::StringView message) {
   switch (status) {
-#ifdef WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
     case wgpu::PopErrorScopeStatus::CallbackCancelled:
-#else
-    case wgpu::PopErrorScopeStatus::InstanceDropped:
-#endif  // WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
       resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
                                        "Instance dropped in popErrorScope");
       return;

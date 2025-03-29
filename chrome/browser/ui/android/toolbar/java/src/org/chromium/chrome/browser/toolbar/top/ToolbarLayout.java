@@ -900,4 +900,7 @@ public abstract class ToolbarLayout extends FrameLayout
             BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.HOME_BUTTON);
         }
     }
+
+    /** Requests keyboard focus on the toolbar row. */
+    public abstract void requestKeyboardFocus();
 }

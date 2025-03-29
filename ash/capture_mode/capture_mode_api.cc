@@ -45,6 +45,17 @@ bool CanShowSunfishUi() {
     return false;
   }
 
+  // Only allow signed-in regular and child users to use Sunfish features.
+  std::optional<user_manager::UserType> user_type =
+      session_controller->GetUserType();
+  // This can only be called while a user is logged in, so `user_type` should
+  // never be empty.
+  CHECK(user_type);
+  if (user_type != user_manager::UserType::kRegular &&
+      user_type != user_manager::UserType::kChild) {
+    return false;
+  }
+
   auto* controller = CaptureModeController::Get();
   if (!controller->ActiveUserDefaultSearchProviderIsGoogle()) {
     return false;

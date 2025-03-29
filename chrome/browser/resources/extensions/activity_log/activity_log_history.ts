@@ -215,11 +215,12 @@ export class ActivityLogHistoryElement extends CrLitElement {
     };
   }
 
-  extensionId: string = '';
-  delegate: ActivityLogDelegate = new DummyActivityLogDelegate();
-  protected activityData_: ActivityGroup[] = [];
-  private pageState_: ActivityLogPageState = ActivityLogPageState.LOADING;
-  private lastSearch_: string = '';
+  accessor extensionId: string = '';
+  accessor delegate: ActivityLogDelegate = new DummyActivityLogDelegate();
+  protected accessor activityData_: ActivityGroup[] = [];
+  private accessor pageState_: ActivityLogPageState =
+      ActivityLogPageState.LOADING;
+  private accessor lastSearch_: string = '';
 
   /**
    * A promise resolver for any external files waiting for the

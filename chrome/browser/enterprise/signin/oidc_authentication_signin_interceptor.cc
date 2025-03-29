@@ -53,6 +53,7 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/themes.mojom.h"
 
@@ -96,6 +97,7 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
     const ProfileManagementOidcTokens& oidc_tokens,
     const std::string& issuer_id,
     const std::string& subject_id,
+    const std::string& email,
     OidcInterceptionCallback oidc_callback) {
   RecordOidcInterceptionFunnelStep(
       OidcInterceptionFunnelStep::kEnrollmentStarted);
@@ -136,8 +138,16 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
   for (const auto* entry : g_browser_process->profile_manager()
                                ->GetProfileAttributesStorage()
                                .GetAllProfilesAttributes()) {
+    // Check for duplicate OIDC profile
     if (!entry->GetProfileManagementOidcTokens().id_token.empty() &&
         entry->GetProfileManagementId() == unique_user_identifier_) {
+      switch_to_entry_ = entry;
+      break;
+    }
+
+    // Check for existing GAIA profile that has the same email
+    if (!email.empty() &&
+        gaia::AreEmailsSame(email, base::UTF16ToUTF8(entry->GetUserName()))) {
       switch_to_entry_ = entry;
       break;
     }

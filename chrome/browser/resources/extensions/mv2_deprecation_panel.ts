@@ -81,14 +81,14 @@ export class ExtensionsMv2DeprecationPanelElement extends
     };
   }
 
-  extensions: chrome.developerPrivate.ExtensionInfo[] = [];
-  delegate?: ItemDelegate&Mv2DeprecationDelegate;
-  mv2ExperimentStage: Mv2ExperimentStage = Mv2ExperimentStage.NONE;
-  showTitle: boolean = false;
-  protected headerString_: string = '';
-  private subtitleString_: string = '';
-  private extensionWithActionMenuOpened_?:
-      chrome.developerPrivate.ExtensionInfo;
+  accessor extensions: chrome.developerPrivate.ExtensionInfo[] = [];
+  accessor delegate: ItemDelegate&Mv2DeprecationDelegate|undefined;
+  accessor mv2ExperimentStage: Mv2ExperimentStage = Mv2ExperimentStage.NONE;
+  accessor showTitle: boolean = false;
+  protected accessor headerString_: string = '';
+  private accessor subtitleString_: string = '';
+  private accessor extensionWithActionMenuOpened_:
+      chrome.developerPrivate.ExtensionInfo|undefined;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

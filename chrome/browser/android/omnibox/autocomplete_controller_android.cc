@@ -351,7 +351,8 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
       base::Milliseconds(elapsed_time_since_first_modified), completed_length,
       now - autocomplete_controller_->last_time_default_match_changed(),
       autocomplete_controller_->result(), match.destination_url,
-      profile_->IsOffTheRecord());
+      profile_->IsOffTheRecord(),
+      match.zero_prefix_suggestions_shown_in_session);
   autocomplete_controller_->AddProviderAndTriggeringLogs(&log);
 
   OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);

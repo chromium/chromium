@@ -278,6 +278,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool HasPriorityOverride() override;
   void ClearPriorityOverride() override;
 #endif
+  void SetHasSpareRendererPriority(bool has_spare_renderer_priority) override;
 #if BUILDFLAG(IS_ANDROID)
   ChildProcessImportance GetEffectiveImportance() override;
   base::android::ChildBindingState GetEffectiveChildBindingState() override;
@@ -1580,6 +1581,16 @@ class CONTENT_EXPORT RenderProcessHostImpl
   size_t outermost_main_frame_count_ = 0;
   // Maximum number of outermost main frames this process hosted concurrently.
   size_t max_outermost_main_frames_ = 0;
+
+  // Whether to consider the process as a spare renderer when
+  // calculating the priority.
+  // The attribute starts out as false and is set to true if this renderer
+  // process is launched as a spare process.  When the process is taken for
+  // navigation, the value will stay true until the priority is set in
+  // RenderWidgetHostImpl. For other renderer process allocations, the value
+  // will be set to false when the process is taken from the
+  // SpareRenderProcessHostManager.
+  bool has_spare_renderer_priority_ = false;
 
   // A WeakPtrFactory which is reset every time ResetIPC() or Cleanup() is run.
   // Used to vend WeakPtrs which are invalidated any time the RenderProcessHost

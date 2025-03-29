@@ -22,6 +22,7 @@
 #include "cc/animation/keyframe_effect.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/layers/layer_impl.h"
+#include "cc/layers/mirror_layer_impl.h"
 #include "cc/layers/solid_color_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/tile_display_layer_impl.h"
@@ -59,6 +60,9 @@ std::unique_ptr<cc::LayerImpl> CreateLayer(LayerContextImpl& context,
   switch (type) {
     case cc::mojom::LayerType::kLayer:
       return cc::LayerImpl::Create(&tree, id);
+
+    case cc::mojom::LayerType::kMirror:
+      return cc::MirrorLayerImpl::Create(&tree, id);
 
     case cc::mojom::LayerType::kSurface:
       // TODO(394137303): handle |update_submission_state_callback|.
@@ -196,6 +200,9 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   }
 
   node.surface_contents_scale = wire.surface_contents_scale;
+  node.subtree_capture_id = wire.subtree_capture_id;
+  node.subtree_size = wire.subtree_size;
+
   if (wire.blend_mode > static_cast<uint32_t>(SkBlendMode::kLastMode)) {
     return base::unexpected("Invalid blend_mode for effect node");
   }
@@ -357,6 +364,11 @@ base::expected<void, std::string> UpdateTransformTreeProperties(
   return base::ok();
 }
 
+void UpdateMirrorLayerExtra(const mojom::MirrorLayerExtraPtr& extra,
+                            cc::MirrorLayerImpl& layer) {
+  layer.SetMirroredLayerId(extra->mirrored_layer_id);
+}
+
 void UpdateSurfaceLayerExtra(const mojom::SurfaceLayerExtraPtr& extra,
                              cc::SurfaceLayerImpl& layer) {
   layer.SetRange(extra->surface_range, extra->deadline_in_frames);
@@ -424,6 +436,10 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
   layer.SetScrollTreeIndex(wire.scroll_tree_index);
 
   switch (wire.type) {
+    case cc::mojom::LayerType::kMirror:
+      UpdateMirrorLayerExtra(wire.layer_extra->get_mirror_layer_extra(),
+                             static_cast<cc::MirrorLayerImpl&>(layer));
+      break;
     case cc::mojom::LayerType::kSurface:
       UpdateSurfaceLayerExtra(wire.layer_extra->get_surface_layer_extra(),
                               static_cast<cc::SurfaceLayerImpl&>(layer));

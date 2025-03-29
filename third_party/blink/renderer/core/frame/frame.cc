@@ -641,6 +641,10 @@ void Frame::InsertAfter(Frame* new_child, Frame* previous_sibling) {
 base::OnceClosure Frame::ScheduleFormSubmission(
     FrameScheduler* scheduler,
     FormSubmission* form_submission) {
+  // Notify inspector about the imminent navigation synchronously,
+  // instead of in a later task, which might be deferred for a while.
+  // See https://crbug.com/350540984#comment32 for details.
+  form_submission->NotifyInspector();
   form_submit_navigation_task_ = PostCancellableTask(
       *scheduler->GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
       WTF::BindOnce(&FormSubmission::Navigate,

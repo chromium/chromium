@@ -52,18 +52,6 @@
 
 using content::Referrer;
 
-namespace {
-
-bool HasSeenRecurrentErrorInternal(content::WebContents* web_contents,
-                                   int cert_error) {
-  StatefulSSLHostStateDelegate* state =
-      StatefulSSLHostStateDelegateFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  return state->HasSeenRecurrentErrors(cert_error);
-}
-
-}  // namespace
-
 SSLErrorControllerClient::SSLErrorControllerClient(
     content::WebContents* web_contents,
     const net::SSLInfo& ssl_info,
@@ -135,8 +123,4 @@ void SSLErrorControllerClient::LaunchDateAndTimeSettings() {
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&security_interstitials::LaunchDateAndTimeSettings));
 #endif
-}
-
-bool SSLErrorControllerClient::HasSeenRecurrentError() {
-  return HasSeenRecurrentErrorInternal(web_contents(), cert_error_);
 }

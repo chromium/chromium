@@ -2902,8 +2902,7 @@ public class ToolbarManager
 
     /** Requests focus onto the toolbar. */
     public void requestFocus() {
-        // TODO(crbug.com/360423850): Implement.
-        // mToolbar.requestFocus();
+        mToolbar.requestFocus();
     }
 
     /**
@@ -2917,8 +2916,6 @@ public class ToolbarManager
      * @return Whether the toolbar contains keyboard focus.
      */
     public boolean containsKeyboardFocus() {
-        return false;
-        // TODO(crbug.com/360423850): Implement.
-        // return mToolbar.containsKeyboardFocus();
+        return mToolbar.containsKeyboardFocus();
     }
 }

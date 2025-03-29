@@ -696,7 +696,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
     private void setIncognitoColorScheme() {
         @ColorInt
-        int anchorViewBackgroundColor = getColor(R.color.default_bg_color_dark_elev_3_baseline);
+        int anchorViewBackgroundColor = getColor(R.color.omnibox_dropdown_bg_incognito);
         GradientDrawable anchorViewBackground = (GradientDrawable) mAnchorView.getBackground();
         anchorViewBackground.setColor(anchorViewBackgroundColor);
         GradientDrawable searchBoxBackground =

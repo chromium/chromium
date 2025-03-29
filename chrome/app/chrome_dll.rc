@@ -56,6 +56,7 @@ BEGIN
     VK_F3,          IDC_FIND_NEXT,              VIRTKEY
     "G",            IDC_FIND_PREVIOUS,          VIRTKEY, CONTROL, SHIFT
     VK_F3,          IDC_FIND_PREVIOUS,          VIRTKEY, SHIFT
+    "G",            IDC_GLIC_TOGGLE_FOCUS,      VIRTKEY, SHIFT, ALT
     "B",            IDC_FOCUS_BOOKMARKS,        VIRTKEY, SHIFT, ALT
     "A",            IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY,         VIRTKEY, SHIFT, ALT
     "D",            IDC_FOCUS_LOCATION,         VIRTKEY, ALT

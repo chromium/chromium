@@ -346,6 +346,7 @@ class TabResumptionMediatorProxy {
   _recentTabBrowserAgent = nullptr;
   _syncObserverModelBridge.reset();
   _identityManagerObserverBridge.reset();
+  [_tabResumptionDisabled stop];
   [_tabResumptionDisabled setObserver:nil];
   _tabResumptionDisabled = nil;
 }

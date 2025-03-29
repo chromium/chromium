@@ -170,6 +170,32 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
   // observing.
   void SetObserver(Observer* observer);
 
+  // Adds the specified entry to the cache as if by MaybeInsert(), evicting an
+  // older entry if the cache is full. The entry is treated as if newly used for
+  // the purposes of eviction. For use when replaying journalled entries. The
+  // arguments are expected to match a previous call to Observer::OnInsert()
+  // from a different instance of NoVarySearchCache, but with the same settings
+  // for cache partitioning. It can also be called with other valid arguments
+  // for testing. If a valid base URL cannot be extracted from
+  // `base_url_cache_key`, or `query` contains an invalid character, the call is
+  // ignored. This will never happen if the arguments are unchanged from a call
+  // to Observer::OnInsert() with the same partitioning. A valid base URL does
+  // not contain a query or a fragment. Observer methods are not called.
+  void ReplayInsert(std::string base_url_cache_key,
+                    HttpNoVarySearchData nvs_data,
+                    std::optional<std::string> query,
+                    base::Time update_time);
+
+  // Removes the specified entry from the cache as if by Erase(). For use when
+  // replaying journalled entries. The arguments are expected to match a
+  // previous call to Observer::OnErase from a different instance of
+  // NoVarySearchCache, with the same settings for cache partitioning
+  // base::Features. If `query` is not found the call silently
+  // does nothing. Observer methods are not called.
+  void ReplayErase(const std::string& base_url_cache_key,
+                   const HttpNoVarySearchData& nvs_data,
+                   const std::optional<std::string>& query);
+
   // Returns the size (number of stored original query strings) of the cache.
   size_t GetSizeForTesting() const;
 
@@ -233,6 +259,16 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
 
   // Erases `query_string` from the cache.
   void EraseQuery(QueryString* query_string);
+
+  // Inserts `query` or marks it as used in the cache. evicting an older entry
+  // if necessary to make space. `observer` is notified if set.
+  void DoInsert(const GURL& url,
+                const GURL& base_url,
+                std::string base_url_cache_key,
+                HttpNoVarySearchData nvs_data,
+                std::optional<std::string_view> query,
+                base::Time update_time,
+                Observer* observer);
 
   // Scans all the QueryStrings in `data_map` to find ones in the range
   // [delete_begin, delete_end) and appends them to `matches`. `data_map` is

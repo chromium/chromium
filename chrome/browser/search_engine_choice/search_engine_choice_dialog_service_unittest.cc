@@ -30,6 +30,7 @@
 #include "components/web_modal/test_web_contents_modal_dialog_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
+#include "third_party/search_engines_data/resources/definitions/regional_settings.h"
 #include "ui/gfx/native_widget_types.h"
 
 using ::country_codes::CountryId;
@@ -581,9 +582,8 @@ TEST_P(SearchEngineListCountryOverrideParametrizedTest,
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
   const CountryId kBelgiumCountryId("BE");
   size_t expected_search_engine_list_size =
-      TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
-          kBelgiumCountryId)
-          .size();
+      TemplateURLPrepopulateData::kRegionalSettings.find(kBelgiumCountryId)
+          ->second->search_engines.size();
   auto search_engine_list_override = GetParam().list_override;
 
   if (search_engine_list_override.has_value() &&

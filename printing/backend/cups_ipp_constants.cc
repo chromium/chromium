@@ -68,6 +68,9 @@ constexpr char kIppClientStringVersion[] = "client-string-version";
 constexpr char kIppClientType[] = "client-type";
 constexpr char kIppClientVersion[] = "client-version";
 
+// printer attributes
+constexpr char kIppPrintScaling[] = "print-scaling";  // PWG 5100.16
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace printing

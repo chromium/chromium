@@ -4476,6 +4476,11 @@
     "expiry_milestone": 150
   },
   {
+      "name": "explain-gemini-edit-menu",
+      "owners": ["prasanaa@google.com", "adamta@google.com", "bling-alchemy-eng@google.com"],
+      "expiry_milestone":150
+  },
+  {
     "name": "extension-disable-unsupported-developer-mode-extensions",
     "owners": [ "richche@google.com" ],
     "expiry_milestone": 143
@@ -5036,20 +5041,20 @@
     "expiry_milestone": 137
   },
   {
-    "name": "glic-detached",
-    "owners": [
-      "andreaxg@google.com",
-      "//chrome/browser/glic/OWNERS"
-    ],
-    "expiry_milestone": 137
-  },
-  {
     "name": "glic-user-resize",
     "owners": [
       "iwells@chromium.org",
       "//chrome/browser/glic/OWNERS"
     ],
     "expiry_milestone": 137
+  },
+  {
+    "name": "glic-zero-state-suggestions",
+    "owners": [
+      "zekunjiang@google.com",
+      "//chrome/browser/contextual_cueing/OWNERS"
+    ],
+    "expiry_milestone": 140
   },
   {
     "name": "global-media-controls-updated-ui",
@@ -5543,6 +5548,11 @@
       "tmartino@chromium.org",
       "bling-transactions@google.com"
     ],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "ios-prompt-search-engine-choice-after-device-restore",
+    "owners": ["jlebel@google.com", "dgn@google.com", "chrome-waffle-eng@google.com"],
     "expiry_milestone": 140
   },
   {
@@ -8718,6 +8728,11 @@
     "name": "system-voice-isolation-option",
     "owners": ["eddyhsu@chromium.org"],
     "expiry_milestone": 130
+  },
+  {
+    "name": "tab-capture-infobar-links",
+    "owners": [ "tovep@chromium.org", "eladalon@chromium.org" ],
+    "expiry_milestone": 150
   },
   {
     "name": "tab-closure-method-refactor",

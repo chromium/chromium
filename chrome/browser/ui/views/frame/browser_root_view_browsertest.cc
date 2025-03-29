@@ -56,23 +56,26 @@ class BrowserRootViewBrowserTest : public InProcessBrowserTest {
     browser_root_view()->OnMouseWheel(wheel_event);
   }
 
+  void WaitForDragStart(const ui::DropTargetEvent& event) {
+    base::RunLoop run_loop;
+    BrowserRootView* const root_view = browser_root_view();
+    root_view->SetOnFilteringCompleteClosureForTesting(run_loop.QuitClosure());
+    root_view->OnDragEntered(event);
+    run_loop.Run();
+  }
+
   void StartAndFinishDrag(const ui::OSExchangeData& data,
                           ui::mojom::DragOperation& out_drag_op) {
     ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
                               ui::DragDropTypes::DRAG_COPY);
-    BrowserRootView* root_view = browser_root_view();
-
-    base::RunLoop run_loop;
-    root_view->SetOnFilteringCompleteClosureForTesting(run_loop.QuitClosure());
-    root_view->OnDragEntered(event);
+    WaitForDragStart(event);
 
     // At this point, the drag information will have been set, and a background
     // task will have been posted to process the dragged URLs
     // (`GetURLMimeTypes()` -> `FilterURLs()`). Ensure that all background
     // processing is complete before checking the drag operation or invoking the
     // drag callback.
-    run_loop.Run();
-
+    BrowserRootView* const root_view = browser_root_view();
     EXPECT_NE(ui::DragDropTypes::DRAG_NONE, root_view->OnDragUpdated(event));
 
     auto drop_cb = root_view->GetDropCallback(event);
@@ -470,4 +473,33 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest,
   EXPECT_EQ(target_url, contents->GetLastCommittedURL());
   EXPECT_TRUE(observer.last_initiator_origin().has_value());
   EXPECT_EQ(initiator_origin, observer.last_initiator_origin().value());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, NavigateToUrlFromText) {
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  using BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex;
+
+  ui::OSExchangeData data;
+  data.SetString(u"chrome://settings/");
+  ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
+                            ui::DragDropTypes::DRAG_COPY);
+  WaitForDragStart(event);
+
+  EXPECT_EQ(ui::DragDropTypes::DRAG_COPY,
+            browser_root_view()->OnDragUpdated(event));
+}
+IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest,
+                       DoesNotNavigateToUrlFromRendererTaintedText) {
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  using BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex;
+
+  ui::OSExchangeData data;
+  data.SetString(u"chrome://settings/");
+  data.MarkRendererTaintedFromOrigin(url::Origin());
+  ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
+                            ui::DragDropTypes::DRAG_COPY);
+  WaitForDragStart(event);
+
+  EXPECT_EQ(ui::DragDropTypes::DRAG_NONE,
+            browser_root_view()->OnDragUpdated(event));
 }

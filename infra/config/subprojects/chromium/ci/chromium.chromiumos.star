@@ -820,6 +820,7 @@ ci.builder(
             "linux_chromeos_rel_cq",
             "linux_chromeos_isolated_scripts",
             "chromeos_annotation_scripts",
+            "gtests_once",
         ],
         additional_compile_targets = [
             "all",

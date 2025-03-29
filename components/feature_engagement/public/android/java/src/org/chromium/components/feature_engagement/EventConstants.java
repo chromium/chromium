@@ -223,6 +223,9 @@ public final class EventConstants {
     /** IPH dialog of RTL gesture navigation dialog is shown. */
     public static final String RTL_GESTURE_NAVIGATION_DIALOG_SHOW = "rtl_gesture_iph_show";
 
+    /** An app menu pdf page download event. */
+    public static final String APP_MENU_PDF_PAGE_DOWNLOADED = "app_menu_pdf_page_downloaded";
+
     /** Do not instantiate. */
     private EventConstants() {}
 }

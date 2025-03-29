@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp;
 import android.content.Context;
 import android.graphics.Color;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
@@ -29,7 +30,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -86,8 +86,7 @@ public class NewTabPageColorWithFeedV2Test {
 
         Context context = mActivityTestRule.getActivity();
         int expectedTextBoxBackground =
-                ChromeColors.getSurfaceColor(
-                        context, R.dimen.home_surface_background_color_elevation);
+                ContextCompat.getColor(context, R.color.home_surface_background_color);
         Assert.assertEquals(
                 expectedTextBoxBackground, mNtp.getToolbarTextBoxBackgroundColor(Color.BLACK));
 

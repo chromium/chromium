@@ -221,6 +221,22 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
         LOCKS_EXCLUDED(lock());
     void RecordSmapsRollupWithDelay(std::optional<debug::SmapsRollup>* target,
                                     base::TimeDelta delay);
+    std::string GetMetricName(std::string_view name) const;
+    std::string GetMetricName(std::string_view name,
+                              std::string_view suffix) const;
+    void RecordCompactionMetrics(const debug::SmapsRollup& value,
+                                 std::string_view suffix);
+    void RecordCompactionMetric(size_t value_bytes,
+                                std::string_view metric_name,
+                                std::string_view suffix);
+    void RecordCompactionDiffMetrics(const debug::SmapsRollup& before,
+                                     const debug::SmapsRollup& after,
+                                     std::string_view suffix);
+    void RecordCompactionDiffMetric(size_t before_value_bytes,
+                                    size_t after_value_bytes,
+                                    std::string_view name,
+                                    std::string_view suffix);
+
     // When the self compaction was first triggered. There is a delay between
     // this time and when we actually begin the compaction.
     base::TimeTicks compaction_triggered_at_;
@@ -243,11 +259,13 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   class CompactionState final {
    public:
     CompactionState(scoped_refptr<SequencedTaskRunner> task_runner,
-                    std::vector<debug::MappedMemoryRegion> regions,
                     base::TimeTicks triggered_at,
                     uint64_t max_bytes);
     ~CompactionState();
 
+    bool IsFeatureEnabled() const;
+    std::string GetMetricName(std::string_view name) const;
+    void MaybeReadProcMaps();
     scoped_refptr<CompactionMetric> MakeCompactionMetric() const;
 
     scoped_refptr<SequencedTaskRunner> task_runner_;

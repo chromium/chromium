@@ -63,9 +63,9 @@ OnDeviceModelAdaptationController::GetOrCreateModelRemote(
                        adaptation_assets),
         base::BindOnce(OnAdaptationAssetsLoaded, weak_ptr_factory_.GetWeakPtr(),
                        model_remote_.BindNewPipeAndPassReceiver()));
-    model_remote_.set_disconnect_handler(base::BindOnce(
-        &OnDeviceModelServiceController::OnModelAdaptationRemoteDisconnected,
-        controller_));
+    // Disconnects should only happen on a service crash, and we track those
+    // elsewhere.
+    model_remote_.reset_on_disconnect();
     model_remote_.reset_on_idle_timeout(
         features::GetOnDeviceModelIdleTimeout());
   }

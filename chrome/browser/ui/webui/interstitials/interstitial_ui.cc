@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/interstitials/interstitial_ui.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
@@ -734,5 +735,5 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
       allow_access_requests, first_custodian, second_custodian, reason,
       g_browser_process->GetApplicationLocale(),
       /*already_sent_remote_request=*/false,
-      /*is_main_frame=*/true);
+      /*is_main_frame=*/true, /*ios_font_size_multiplier=*/std::nullopt);
 }

@@ -180,7 +180,7 @@ public class CollaborationControllerDelegateImplUnitTest {
                         eq(mActivity),
                         eq(mProfile),
                         any(FullscreenSigninAndHistorySyncConfig.class),
-                        eq(SigninAccessPoint.COLLABORATION_TAB_GROUP));
+                        eq(SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP));
 
         mCollaborationControllerDelegateImpl.showAuthenticationUi(resultCallback);
         ArgumentCaptor<IntentCallback> intentCallbackCaptor =
@@ -250,7 +250,7 @@ public class CollaborationControllerDelegateImplUnitTest {
                         eq(mActivity),
                         eq(mProfile),
                         any(BottomSheetSigninAndHistorySyncConfig.class),
-                        eq(SigninAccessPoint.COLLABORATION_TAB_GROUP));
+                        eq(SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP));
 
         mCollaborationControllerDelegateImpl.showAuthenticationUi(resultCallback);
         ArgumentCaptor<IntentCallback> intentCallbackCaptor =
@@ -277,7 +277,7 @@ public class CollaborationControllerDelegateImplUnitTest {
                         eq(mActivity),
                         eq(mProfile),
                         any(FullscreenSigninAndHistorySyncConfig.class),
-                        eq(SigninAccessPoint.COLLABORATION_TAB_GROUP));
+                        eq(SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP));
         doReturn(requestCode)
                 .when(mWindowAndroid)
                 .showCancelableIntent(eq(intent), any(IntentCallback.class), eq(null));
@@ -390,12 +390,13 @@ public class CollaborationControllerDelegateImplUnitTest {
 
         doReturn(savedGroup).when(mDataSharingTabManager).getSavedTabGroupForEitherId(syncId, null);
         mCollaborationControllerDelegateImpl.showManageDialog(syncId, null, resultCallback);
-        ArgumentCaptor<Runnable> finishCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        ArgumentCaptor<Callback<@Outcome Integer>> outcomeCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
         verify(mDataSharingTabManager)
                 .showManageSharing(
-                        eq(mActivity), eq(collaborationId), finishCallbackCaptor.capture());
+                        eq(mActivity), eq(collaborationId), outcomeCallbackCaptor.capture());
 
-        finishCallbackCaptor.getValue().run();
+        outcomeCallbackCaptor.getValue().onResult(Outcome.SUCCESS);
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
     }

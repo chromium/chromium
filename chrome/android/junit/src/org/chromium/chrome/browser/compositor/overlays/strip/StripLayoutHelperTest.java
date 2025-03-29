@@ -100,6 +100,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -184,6 +185,7 @@ public class StripLayoutHelperTest {
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private TabContextMenuCoordinator mTabContextMenuCoordinator;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private Tab mTab;
     @Mock private TabCreator mTabCreator;
@@ -4497,6 +4499,7 @@ public class StripLayoutHelperTest {
                 mDataSharingTabManager,
                 () -> true,
                 mBottomSheetController,
+                mMultiInstanceManager,
                 () -> mShareDelegate);
     }
 

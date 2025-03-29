@@ -110,6 +110,19 @@ pub fn normalize_unix_path_separator(path: &Path) -> String {
         .join("/")
 }
 
+/// Returns the name of a directory where we want to vendor a third-party crate
+/// with the given `name` and `version`.
+///
+/// Note that this can be quite an arbitrary name, because `cargo` will
+/// discover available crates by reading all the nested `Cargo.toml`
+/// files (rather than based on directory names).  See also
+/// https://crbug.com/396397336#comment7 and adjacent comments.
+pub fn get_vendor_dir_for_package(name: &str, version: &semver::Version) -> String {
+    // TODO(https://crbug.com/396397336): Use instead:
+    // `crate::crates::Epoch::from_version(crate_version)`.
+    format!("{}-{}", name, version)
+}
+
 static RUST_THIRD_PARTY_DIR: &str = "third_party/rust";
 static RUST_SRC_LIBRARY_SUBDIR: &str = "library";
 static RUST_SRC_VENDOR_SUBDIR: &str = "library/vendor";

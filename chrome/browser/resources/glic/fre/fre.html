@@ -13,7 +13,8 @@
 <body>
   <section hidden class="dialog panel" id="errorPanel">
     <div class="header">
-      <cr-icon-button class="close-button" iron-icon="cr:close">
+      <cr-icon-button class="close-button" iron-icon="cr:close"
+          aria-label="$i18n{closeButtonLabel}">
       </cr-icon-button>
     </div>
     <div class="container">
@@ -29,7 +30,8 @@
   </section>
   <section hidden class="dialog panel" id="offlinePanel">
     <div class="header">
-      <cr-icon-button class="close-button" iron-icon="cr:close">
+      <cr-icon-button class="close-button" iron-icon="cr:close"
+          aria-label="$i18n{closeButtonLabel}">
       </cr-icon-button>
     </div>
     <div class="container">
@@ -37,6 +39,18 @@
         <div class="icon"><cr-icon icon="glic:offline"></cr-icon></div>
         <p class="headline">$i18n{offlineNoticeHeader}</p>
         <p>$i18n{offlineNoticeAction}</p>
+      </div>
+    </div>
+  </section>
+  <section hidden class="dialog panel" id="loadingPanel">
+    <div class="header">
+      <cr-icon-button class="close-button" iron-icon="cr:close"
+          aria-label="$i18n{closeButtonLabel}">
+      </cr-icon-button>
+    </div>
+    <div class="container">
+      <div class="notice">
+        <div id="spinner" class="spinner"></div>
       </div>
     </div>
   </section>

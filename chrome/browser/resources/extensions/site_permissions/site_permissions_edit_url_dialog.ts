@@ -82,12 +82,12 @@ export class SitePermissionsEditUrlDialogElement extends CrLitElement {
     };
   }
 
-  delegate: SiteSettingsDelegate = new DummySiteSettingsDelegate();
-  siteSet: chrome.developerPrivate.SiteSet =
+  accessor delegate: SiteSettingsDelegate = new DummySiteSettingsDelegate();
+  accessor siteSet: chrome.developerPrivate.SiteSet =
       chrome.developerPrivate.SiteSet.USER_PERMITTED;
-  siteToEdit: string|null = null;
-  protected site_: string = '';
-  protected inputValid_: boolean = true;
+  accessor siteToEdit: string|null = null;
+  protected accessor site_: string = '';
+  protected accessor inputValid_: boolean = true;
 
   override connectedCallback() {
     super.connectedCallback();

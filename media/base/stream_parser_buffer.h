@@ -135,11 +135,11 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
   static scoped_refptr<StreamParserBuffer> CreateEOSBuffer(
       std::optional<ConfigVariant> next_config = std::nullopt);
 
-  static scoped_refptr<StreamParserBuffer> CopyFrom(const uint8_t* data,
-                                                    int data_size,
-                                                    bool is_key_frame,
-                                                    Type type,
-                                                    TrackId track_id);
+  static scoped_refptr<StreamParserBuffer> CopyFrom(
+      base::span<const uint8_t> data,
+      bool is_key_frame,
+      Type type,
+      TrackId track_id);
   static scoped_refptr<StreamParserBuffer> FromExternalMemory(
       std::unique_ptr<ExternalMemory> external_memory,
       bool is_key_frame,
@@ -162,8 +162,7 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
                      Type type,
                      TrackId track_id);
   StreamParserBuffer(base::PassKey<StreamParserBuffer>,
-                     const uint8_t* data,
-                     int data_size,
+                     base::span<const uint8_t> data,
                      bool is_key_frame,
                      Type type,
                      TrackId track_id);

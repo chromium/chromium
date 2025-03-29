@@ -5,10 +5,9 @@
 #ifndef NET_TEST_TEST_WITH_TASK_ENVIRONMENT_H_
 #define NET_TEST_TEST_WITH_TASK_ENVIRONMENT_H_
 
-#include <memory>
-
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "net/test/test_net_log_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -16,8 +15,6 @@ class TickClock;
 }  // namespace base
 
 namespace net {
-
-class TestNetLogManager;
 
 // Inherit from this class if a TaskEnvironment is needed in a test.
 // Use in class hierachies where inheritance from ::testing::Test at the same
@@ -75,10 +72,8 @@ class WithTaskEnvironment {
   }
 
  private:
-  void MaybeStartNetLog();
-
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestNetLogManager> net_log_manager_;
+  TestNetLogManager net_log_manager_;
 };
 
 // Inherit from this class instead of ::testing::Test directly if a

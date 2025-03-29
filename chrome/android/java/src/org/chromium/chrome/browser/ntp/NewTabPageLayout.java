@@ -157,6 +157,10 @@ public class NewTabPageLayout extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
+        setBackgroundColor(
+                getResources()
+                        .getColor(R.color.home_surface_background_color, getContext().getTheme()));
+
         // TODO(crbug.com/347509698): Remove the log statements after fixing the bug.
         Log.i(TAG, "NewTabPageLayout.onFinishInflate before insertSiteSectionView");
 

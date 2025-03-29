@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "third_party/webrtc/api/array_view.h"
 #include "third_party/webrtc/p2p/base/ice_controller_interface.h"
 #include "third_party/webrtc/p2p/base/ice_switch_reason.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"

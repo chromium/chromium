@@ -167,11 +167,11 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
       y1 = int((location.y + size.height) * device_pixel_ratio)
       for x in range(x0, x1):
         for y in range(y0, y1):
-          if (x < 0 or y < 0 or x >= image_util.Width(screenshot)
-              or y >= image_util.Height(screenshot)):
-            self.fail(('Expected pixel location [%d, %d] is out of range on ' +
-                       '[%d, %d] image') % (x, y, image_util.Width(screenshot),
-                                            image_util.Height(screenshot)))
+          image_width = image_util.Width(screenshot)
+          image_height = image_util.Height(screenshot)
+          if x < 0 or y < 0 or x >= image_width or y >= image_height:
+            self.fail(f'Expected pixel location [{x}, {y}] is out of range on '
+                      f'[{image_width}, {image_height}] image')
 
           actual_color = image_util.GetPixelColor(screenshot, x, y)
           expected_color = rgba_color.RgbaColor(expectation.color.r,
@@ -179,10 +179,9 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
                                                 expectation.color.b,
                                                 expectation.color.a)
           if not actual_color.IsEqual(expected_color, tolerance):
-            self.fail('Expected pixel at %s (actual pixel (%s, %s)) to be %s '
-                      'but got [%s, %s, %s, %s]' %
-                      (location, x, y, expectation.color, actual_color.r,
-                       actual_color.g, actual_color.b, actual_color.a))
+            self.fail(f'Expected pixel at {location} (actual pixel ({x}, {y})) '
+                      f'to be {expectation.color} but got [{actual_color.r}, '
+                      f'{actual_color.g}, {actual_color.b}, {actual_color.a}]')
 
     expected_colors = test_case.expected_colors
 

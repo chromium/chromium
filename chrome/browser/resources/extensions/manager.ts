@@ -162,32 +162,35 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
     };
   }
 
-  canLoadUnpacked: boolean = false;
-  delegate: ServiceInterface = Service.getInstance();
-  inDevMode: boolean = loadTimeData.getBoolean('inDevMode');
-  isMv2DeprecationNoticeDismissed: boolean =
+  accessor canLoadUnpacked: boolean = false;
+  accessor delegate: ServiceInterface = Service.getInstance();
+  accessor inDevMode: boolean = loadTimeData.getBoolean('inDevMode');
+  accessor isMv2DeprecationNoticeDismissed: boolean =
       loadTimeData.getBoolean('MV2DeprecationNoticeDismissed');
-  showActivityLog: boolean = loadTimeData.getBoolean('showActivityLog');
-  enableEnhancedSiteControls: boolean =
+  accessor showActivityLog: boolean =
+      loadTimeData.getBoolean('showActivityLog');
+  accessor enableEnhancedSiteControls: boolean =
       loadTimeData.getBoolean('enableEnhancedSiteControls');
-  devModeControlledByPolicy: boolean = false;
-  protected isChildAccount_: boolean = false;
-  protected incognitoAvailable_: boolean = false;
-  filter: string = '';
-  protected errorPageItem_?: chrome.developerPrivate.ExtensionInfo;
-  protected detailViewItem_?: chrome.developerPrivate.ExtensionInfo;
-  protected activityLogItem_?: chrome.developerPrivate.ExtensionInfo|
-      ActivityLogExtensionPlaceholder;
-  protected extensions_: chrome.developerPrivate.ExtensionInfo[] = [];
-  protected apps_: chrome.developerPrivate.ExtensionInfo[] = [];
-  protected didInitPage_: boolean = false;
-  protected narrow_: boolean = false;
-  protected showDrawer_: boolean = false;
-  protected showLoadErrorDialog_: boolean = false;
-  protected showInstallWarningsDialog_: boolean = false;
-  protected installWarnings_: string[]|null = null;
-  protected showOptionsDialog_: boolean = false;
-  protected fromActivityLog_: boolean = false;
+  accessor devModeControlledByPolicy: boolean = false;
+  protected accessor isChildAccount_: boolean = false;
+  protected accessor incognitoAvailable_: boolean = false;
+  accessor filter: string = '';
+  protected accessor errorPageItem_: chrome.developerPrivate.ExtensionInfo|
+      undefined;
+  protected accessor detailViewItem_: chrome.developerPrivate.ExtensionInfo|
+      undefined;
+  protected accessor activityLogItem_: chrome.developerPrivate.ExtensionInfo|
+      ActivityLogExtensionPlaceholder|undefined;
+  protected accessor extensions_: chrome.developerPrivate.ExtensionInfo[] = [];
+  protected accessor apps_: chrome.developerPrivate.ExtensionInfo[] = [];
+  protected accessor didInitPage_: boolean = false;
+  protected accessor narrow_: boolean = false;
+  protected accessor showDrawer_: boolean = false;
+  protected accessor showLoadErrorDialog_: boolean = false;
+  protected accessor showInstallWarningsDialog_: boolean = false;
+  protected accessor installWarnings_: string[]|null = null;
+  protected accessor showOptionsDialog_: boolean = false;
+  protected accessor fromActivityLog_: boolean = false;
 
   /**
    * A promise resolver for any external files waiting for initPage_ to be

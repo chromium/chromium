@@ -244,16 +244,6 @@ external/wpt/css/CSS2/linebox/line-height-126.xht [ Skip ]
 [ Mac ] external/wpt/css/CSS2/linebox/vertical-align-baseline-004a.xht [ Skip ]
 [ Mac ] external/wpt/css/CSS2/linebox/vertical-align-baseline-005a.xht [ Skip ]
 
-# Ref tests that pass but causes 1px diff on images at direction boundaries.
-[ Win ] external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-002c.html [ Skip ]
-[ Mac ] external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-006a.html [ Skip ]
-[ Mac ] external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-006b.html [ Skip ]
-[ Mac ] external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-006c.html [ Skip ]
-[ Win ] external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-006c.html [ Skip ]
-[ Mac ] external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009a.html [ Skip ]
-[ Mac ] external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009b.html [ Skip ]
-[ Mac ] external/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009c.html [ Skip ]
-
 # On Linux bold emoji are already supported.
 crbug.com/551843 [ Linux ] virtual/text-antialias/fallback-traits-fixup.html [ Skip ]
 crbug.com/551843 [ Linux ] virtual/text-antialias/emoji-font-weight-mac.html [ Skip ]
@@ -308,11 +298,8 @@ external/wpt/encrypted-media/drm-mp4-onencrypted.https.html [ Skip ]
 external/wpt/encrypted-media/drm-mp4-playback-destroy-persistent-license.https.html [ Skip ]
 external/wpt/encrypted-media/drm-mp4-playback-persistent-license-events.https.html [ Skip ]
 external/wpt/encrypted-media/drm-mp4-playback-persistent-license.https.html [ Skip ]
-external/wpt/encrypted-media/drm-mp4-playback-persistent-usage-record-events.https.html [ Skip ]
-external/wpt/encrypted-media/drm-mp4-playback-persistent-usage-record.https.html [ Skip ]
 external/wpt/encrypted-media/drm-mp4-playback-retrieve-destroy-persistent-license.https.html [ Skip ]
 external/wpt/encrypted-media/drm-mp4-playback-retrieve-persistent-license.https.html [ Skip ]
-external/wpt/encrypted-media/drm-mp4-playback-retrieve-persistent-usage-record.https.html [ Skip ]
 external/wpt/encrypted-media/drm-mp4-playback-temporary-clear-encrypted.https.html [ Skip ]
 external/wpt/encrypted-media/drm-mp4-playback-temporary-encrypted-clear.https.html [ Skip ]
 external/wpt/encrypted-media/drm-mp4-playback-temporary-encrypted-clear-sources.https.html [ Skip ]
@@ -352,11 +339,8 @@ external/wpt/encrypted-media/drm-temporary-license-type.https.html [ Skip ]
 external/wpt/encrypted-media/clearkey-mp4-playback-destroy-persistent-license.https.html [ Skip ]
 external/wpt/encrypted-media/clearkey-mp4-playback-persistent-license-events.https.html [ Skip ]
 external/wpt/encrypted-media/clearkey-mp4-playback-persistent-license.https.html [ Skip ]
-external/wpt/encrypted-media/clearkey-mp4-playback-persistent-usage-record-events.https.html [ Skip ]
-external/wpt/encrypted-media/clearkey-mp4-playback-persistent-usage-record.https.html [ Skip ]
 external/wpt/encrypted-media/clearkey-mp4-playback-retrieve-destroy-persistent-license.https.html [ Skip ]
 external/wpt/encrypted-media/clearkey-mp4-playback-retrieve-persistent-license.https.html [ Skip ]
-external/wpt/encrypted-media/clearkey-mp4-playback-retrieve-persistent-usage-record.https.html [ Skip ]
 
 # content_shell doesn't support MP4 files by default.
 external/wpt/encrypted-media/clearkey-mp4-playback-temporary-clear-encrypted-segmented.https.html [ Skip ]
@@ -1839,6 +1823,8 @@ crbug.com/1430215 [ Mac ] external/wpt/dom/events/scrolling/overscroll-deltas.ht
 crbug.com/40241779 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/navigation/* [ Skip ]
 # View transitions cross document tests don't need to test wide gamut, since that's covered by same doc tests.
 crbug.com/40241779 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/navigation/* [ Skip ]
+# Scoped view transitions are incompatible with mpa serialization.
+crbug.com/40267386 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/scoped/* [ Skip ]
 
 # This test requests a screenshot capture inside the updateDOMCallback assuming
 # this will end the test. The ViewTransition API suppresses rendering while this

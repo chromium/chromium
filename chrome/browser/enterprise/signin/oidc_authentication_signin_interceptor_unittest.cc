@@ -575,9 +575,9 @@ class OidcAuthenticationSigninInterceptorTest
     }
 
     base::RunLoop run_loop;
-    interceptor_->MaybeInterceptOidcAuthentication(web_contents(), oidc_tokens,
-                                                   issuer_id, subject_id,
-                                                   run_loop.QuitClosure());
+    interceptor_->MaybeInterceptOidcAuthentication(
+        web_contents(), oidc_tokens, issuer_id, subject_id, std::string(),
+        run_loop.QuitClosure());
 
     if (fake_bubble_handle_) {
       fake_bubble_handle_->SimulateClick();

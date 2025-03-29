@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_STORAGE_H_
 
 #include <optional>
+#include <set>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -223,6 +224,40 @@ class CONTENT_EXPORT InterestGroupStorage {
   // expiration.
   std::pair<base::Time, std::string> GetBiddingAndAuctionServerKeys(
       const url::Origin& coordinator);
+
+  // Writes all of these keys to the cache, the first vector with
+  // `is_kanon = true`, and the second vector with `is_kanon = false`.
+  // On error, returns false; otherwise true. This function will overwrite any
+  // previously cached keys.
+  bool WriteHashedKAnonymityKeysToCache(
+      const std::vector<std::string>& positive_hashed_keys,
+      const std::vector<std::string>& negative_hashed_keys,
+      base::Time fetch_time);
+
+  struct CONTENT_EXPORT KAnonymityCacheResponse {
+    // Unexpired keys found in the cache that are k-anonymous.
+    std::vector<std::string> positive_hashed_keys_from_cache;
+
+    // Includes all keys not found in the cache.
+    std::vector<std::string> ids_to_query_from_server;
+
+    KAnonymityCacheResponse(
+        std::vector<std::string> _positive_hashed_keys_from_cache,
+        std::vector<std::string> _ids_to_query_from_server);
+    KAnonymityCacheResponse(const KAnonymityCacheResponse& other);
+    KAnonymityCacheResponse& operator=(const KAnonymityCacheResponse& other);
+    ~KAnonymityCacheResponse();
+  };
+
+  // Takes a vector of keys to lookup from the cache. Returns two vectors of
+  // keys: the first a vector that includes those unexpired keys for which it
+  // was found in the cache that that key is k-anonymous, the second a vector
+  // that includes all keys not found in the cache. On error, this returns a
+  // `KAnonymityCacheResponse` with empty `positive_hashed_keys_from_cache`
+  // and all `keys` in `ids_to_query_from_server`.
+  KAnonymityCacheResponse LoadPositiveHashedKAnonymityKeysFromCache(
+      const std::vector<std::string>& keys,
+      base::Time check_time);
 
   // Returns various resource limits, as configured by feature params.
   static size_t MaxOwnerRegularInterestGroups();

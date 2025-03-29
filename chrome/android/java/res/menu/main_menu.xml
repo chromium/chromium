@@ -108,10 +108,10 @@ found in the LICENSE file.
             android:title="@string/disable_price_tracking_menu_item"
             android:icon="@drawable/price_tracking_enabled_filled" />
         <item android:id="@+id/ai_web_menu_id"
-            android:title="@string/sharing_create_summary"
+            android:title="@string/menu_summarize_with_ai"
             android:icon="@drawable/summarize_auto"/>
         <item android:id="@+id/ai_pdf_menu_id"
-            android:title="@string/sharing_create_summary"
+            android:title="@string/menu_review_pdf_with_ai"
             android:icon="@drawable/summarize_auto"/>
         <item android:id="@+id/find_in_page_id"
             android:title="@string/menu_find_in_page"

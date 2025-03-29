@@ -18,7 +18,7 @@ OnDeviceModelValidator::OnDeviceModelValidator(
   // base::Unretained is safe since `this` owns the session.
   session_.set_disconnect_handler(base::BindOnce(
       &OnDeviceModelValidator::FinishValidation, base::Unretained(this),
-      OnDeviceModelValidationResult::kInterrupted));
+      OnDeviceModelValidationResult::kServiceCrash));
   ValidateNextPrompt();
 }
 
@@ -36,7 +36,7 @@ void OnDeviceModelValidator::ValidateNextPrompt() {
   // base::Unretained is safe since `this` owns the session.
   active_session_.set_disconnect_handler(base::BindOnce(
       &OnDeviceModelValidator::FinishValidation, base::Unretained(this),
-      OnDeviceModelValidationResult::kInterrupted));
+      OnDeviceModelValidationResult::kServiceCrash));
 
   current_response_ = "";
   auto append_options = on_device_model::mojom::AppendOptions::New();
@@ -73,6 +73,9 @@ void OnDeviceModelValidator::OnComplete(
 
 void OnDeviceModelValidator::FinishValidation(
     OnDeviceModelValidationResult result) {
+  // Reset sessions to avoid further callbacks.
+  active_session_.reset();
+  session_.reset();
   std::move(finish_callback_).Run(result);
 }
 

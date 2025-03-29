@@ -21,6 +21,7 @@ class TrackerFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static Tracker* GetForProfile(ProfileIOS* profile);
   static TrackerFactory* GetInstance();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<TrackerFactory>;
@@ -28,6 +29,10 @@ class TrackerFactory : public ProfileKeyedServiceFactoryIOS {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
+
+  // Static helper for GetDefaultFactory.
+  static std::unique_ptr<KeyedService> BuildServiceInstance(
+      web::BrowserState* context);
 
   TrackerFactory();
   ~TrackerFactory() override;

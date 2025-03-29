@@ -982,6 +982,7 @@ ci.thin_tester(
         targets = [
             "chromium_mac_gtests_no_nacl",
             "chromium_mac_rel_isolated_scripts",
+            "gtests_once",
         ],
         mixins = [
             "mac_14_x64",

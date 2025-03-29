@@ -372,6 +372,9 @@
      * limitations under the License.
      */
     class BidiNoOpParser {
+        parseDisableSimulationParameters(params) {
+            return params;
+        }
         parseHandleRequestDevicePromptParams(params) {
             return params;
         }
@@ -4283,6 +4286,8 @@
         }
         async #processCommand(command) {
             switch (command.method) {
+                case 'bluetooth.disableSimulation':
+                    return await this.#bluetoothProcessor.disableSimulation(this.#parser.parseDisableSimulationParameters(command.params));
                 case 'bluetooth.handleRequestDevicePrompt':
                     return await this.#bluetoothProcessor.handleRequestDevicePrompt(this.#parser.parseHandleRequestDevicePromptParams(command.params));
                 case 'bluetooth.simulateAdapter':
@@ -4342,6 +4347,8 @@
                 case 'cdp.sendCommand':
                     this.#logger?.(LogType.debugWarn, `Legacy '${command.method}' command is deprecated and will not supported soon. Use 'goog:${command.method}' instead.`);
                     return await this.#cdpProcessor.sendCommand(this.#parser.parseSendCommandParams(command.params));
+                case 'emulation.setGeolocationOverride':
+                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
                 case 'input.performActions':
                     return await this.#inputProcessor.performActions(this.#parser.parsePerformActionsParams(command.params));
                 case 'input.releaseActions':
@@ -4468,9 +4475,6 @@
             this.#browsingContextStorage = browsingContextStorage;
         }
         async simulateAdapter(params) {
-            if (params.type !== 'create') {
-                throw new UnsupportedOperationException(`Simulate type "${params.type}" is not supported. Only create type is supported`);
-            }
             if (params.state === undefined) {
                 throw new InvalidArgumentException(`Parameter "state" is required for creating a Bluetooth adapter`);
             }
@@ -4480,6 +4484,11 @@
                 state: params.state,
                 leSupported: params.leSupported ?? true,
             });
+            return {};
+        }
+        async disableSimulation(params) {
+            const context = this.#browsingContextStorage.getContext(params.context);
+            await context.cdpTarget.browserCdpClient.sendCommand('BluetoothEmulation.disable');
             return {};
         }
         async simulatePreconnectedPeripheral(params) {
@@ -5384,7 +5393,10 @@
             };
         }
         start() {
-            if (!this.#isInitial && !this.#started) {
+            if (
+            !this.#isInitial &&
+                !this.#started &&
+                !this.isFragmentNavigation) {
                 this.#eventManager.registerEvent({
                     type: 'event',
                     method: BrowsingContext$2.EventNames.NavigationStarted,
@@ -5434,7 +5446,7 @@
         #logger;
         #loaderIdToNavigationsMap = new Map();
         #browsingContextId;
-        #currentNavigation;
+        #lastCommittedNavigation;
         #pendingNavigation;
         #isInitialNavigation = true;
         constructor(url, browsingContextId, eventManager, logger) {
@@ -5442,19 +5454,19 @@
             this.#eventManager = eventManager;
             this.#logger = logger;
             this.#isInitialNavigation = true;
-            this.#currentNavigation = new NavigationState(url, browsingContextId, urlMatchesAboutBlank(url), this.#eventManager);
+            this.#lastCommittedNavigation = new NavigationState(url, browsingContextId, urlMatchesAboutBlank(url), this.#eventManager);
         }
         get currentNavigationId() {
-            if (this.#pendingNavigation?.loaderId !== undefined) {
+            if (this.#pendingNavigation?.isFragmentNavigation === false) {
                 return this.#pendingNavigation.navigationId;
             }
-            return this.#currentNavigation.navigationId;
+            return this.#lastCommittedNavigation.navigationId;
         }
         get isInitialNavigation() {
             return this.#isInitialNavigation;
         }
         get url() {
-            return this.#currentNavigation.url;
+            return this.#lastCommittedNavigation.url;
         }
         createPendingNavigation(url, canBeInitialNavigation = false) {
             this.#logger?.(LogType.debug, 'createCommandNavigation');
@@ -5469,11 +5481,11 @@
         }
         dispose() {
             this.#pendingNavigation?.fail('navigation canceled by context disposal');
-            this.#currentNavigation.fail('navigation canceled by context disposal');
+            this.#lastCommittedNavigation.fail('navigation canceled by context disposal');
         }
         onTargetInfoChanged(url) {
             this.#logger?.(LogType.debug, `onTargetInfoChanged ${url}`);
-            this.#currentNavigation.url = url;
+            this.#lastCommittedNavigation.url = url;
         }
         #getNavigationForFrameNavigated(url, loaderId) {
             if (this.#loaderIdToNavigationsMap.has(loaderId)) {
@@ -5487,9 +5499,9 @@
         }
         frameNavigated(url, loaderId, unreachableUrl) {
             this.#logger?.(LogType.debug, `frameNavigated ${url}`);
-            if (unreachableUrl !== undefined &&
-                !this.#loaderIdToNavigationsMap.has(loaderId)) {
-                const navigation = this.#pendingNavigation ??
+            if (unreachableUrl !== undefined) {
+                const navigation = this.#loaderIdToNavigationsMap.get(loaderId) ??
+                    this.#pendingNavigation ??
                     this.createPendingNavigation(unreachableUrl, true);
                 navigation.url = unreachableUrl;
                 navigation.start();
@@ -5497,37 +5509,32 @@
                 return;
             }
             const navigation = this.#getNavigationForFrameNavigated(url, loaderId);
-            if (navigation !== this.#currentNavigation) {
-                this.#currentNavigation.fail('navigation canceled by concurrent navigation');
+            if (navigation !== this.#lastCommittedNavigation) {
+                this.#lastCommittedNavigation.fail('navigation canceled by concurrent navigation');
             }
             navigation.url = url;
             navigation.loaderId = loaderId;
             this.#loaderIdToNavigationsMap.set(loaderId, navigation);
             navigation.start();
             navigation.frameNavigated();
-            this.#currentNavigation = navigation;
+            this.#lastCommittedNavigation = navigation;
             if (this.#pendingNavigation === navigation) {
                 this.#pendingNavigation = undefined;
             }
         }
         navigatedWithinDocument(url, navigationType) {
             this.#logger?.(LogType.debug, `navigatedWithinDocument ${url}, ${navigationType}`);
-            this.#currentNavigation.url = url;
+            this.#lastCommittedNavigation.url = url;
             if (navigationType !== 'fragment') {
                 return;
             }
-            const fragmentNavigation = this.#pendingNavigation !== undefined &&
-                this.#pendingNavigation.loaderId === undefined
+            const fragmentNavigation = this.#pendingNavigation?.isFragmentNavigation === true
                 ? this.#pendingNavigation
                 : new NavigationState(url, this.#browsingContextId, false, this.#eventManager);
             fragmentNavigation.fragmentNavigated();
             if (fragmentNavigation === this.#pendingNavigation) {
                 this.#pendingNavigation = undefined;
             }
-        }
-        frameRequestedNavigation(url) {
-            this.#logger?.(LogType.debug, `Page.frameRequestedNavigation ${url}`);
-            this.createPendingNavigation(url, true);
         }
         loadPageEvent(loaderId) {
             this.#logger?.(LogType.debug, 'loadPageEvent');
@@ -5545,34 +5552,32 @@
                 this.#loaderIdToNavigationsMap.set(loaderId, navigation);
             }
             navigation.isFragmentNavigation = loaderId === undefined;
-            if (loaderId === undefined || this.#currentNavigation === navigation) {
-                return;
-            }
-            this.#currentNavigation.fail('navigation canceled by concurrent navigation');
-            navigation.start();
-            this.#currentNavigation = navigation;
-            if (this.#pendingNavigation === navigation) {
+        }
+        frameStartedNavigating(url, loaderId, navigationType) {
+            this.#logger?.(LogType.debug, `frameStartedNavigating ${url}, ${loaderId}`);
+            if (this.#pendingNavigation &&
+                this.#pendingNavigation?.loaderId !== undefined &&
+                this.#pendingNavigation?.loaderId !== loaderId) {
+                this.#pendingNavigation?.fail('navigation canceled by concurrent navigation');
                 this.#pendingNavigation = undefined;
             }
-        }
-        frameStartedNavigating(url, loaderId) {
-            this.#logger?.(LogType.debug, `frameStartedNavigating ${url}, ${loaderId}`);
             if (this.#loaderIdToNavigationsMap.has(loaderId)) {
+                const existingNavigation = this.#loaderIdToNavigationsMap.get(loaderId);
+                existingNavigation.isFragmentNavigation =
+                    NavigationTracker.#isFragmentNavigation(navigationType);
+                this.#pendingNavigation = existingNavigation;
                 return;
             }
             const pendingNavigation = this.#pendingNavigation ?? this.createPendingNavigation(url, true);
-            pendingNavigation.url = url;
-            pendingNavigation.start();
-            pendingNavigation.loaderId = loaderId;
             this.#loaderIdToNavigationsMap.set(loaderId, pendingNavigation);
+            pendingNavigation.isFragmentNavigation =
+                NavigationTracker.#isFragmentNavigation(navigationType);
+            pendingNavigation.url = url;
+            pendingNavigation.loaderId = loaderId;
+            pendingNavigation.start();
         }
-        beforeunload() {
-            this.#logger?.(LogType.debug, `beforeunload`);
-            if (this.#pendingNavigation === undefined) {
-                this.#logger?.(LogType.debugError, `Unexpectedly no pending navigation on beforeunload`);
-                return;
-            }
-            this.#pendingNavigation.start();
+        static #isFragmentNavigation(navigationType) {
+            return ['historySameDocument', 'sameDocument'].includes(navigationType);
         }
         networkLoadingFailed(loaderId, errorText) {
             this.#loaderIdToNavigationsMap.get(loaderId)?.fail(errorText);
@@ -5777,7 +5782,7 @@
                 url: this.url,
                 userContext: this.userContext,
                 originalOpener: this.#originalOpener ?? null,
-                clientWindow: '',
+                clientWindow: `${this.cdpTarget.windowId}`,
                 children: maxDepth === null || maxDepth > 0
                     ? this.directChildren.map((c) => c.serializeToBidiValue(maxDepth === null ? maxDepth : maxDepth - 1, false))
                     : null,
@@ -5823,16 +5828,11 @@
                 this.#deleteAllChildren();
                 this.#documentChanged(params.frame.loaderId);
             });
-            this.#cdpTarget.on("frameStartedNavigating" , (params) => {
-                this.#logger?.(LogType.debugInfo, `Received ${"frameStartedNavigating" } event`, params);
-                const possibleFrameIds = [
-                    this.id,
-                    ...(this.cdpTarget.id === this.id ? [undefined] : []),
-                ];
-                if (!possibleFrameIds.includes(params.frameId)) {
+            this.#cdpTarget.cdpClient.on('Page.frameStartedNavigating', (params) => {
+                if (this.id !== params.frameId) {
                     return;
                 }
-                this.#navigationTracker.frameStartedNavigating(params.url, params.loaderId);
+                this.#navigationTracker.frameStartedNavigating(params.url, params.loaderId, params.navigationType);
             });
             this.#cdpTarget.cdpClient.on('Page.navigatedWithinDocument', (params) => {
                 if (this.id !== params.frameId) {
@@ -5850,12 +5850,6 @@
                     }, this.id);
                     return;
                 }
-            });
-            this.#cdpTarget.cdpClient.on('Page.frameRequestedNavigation', (params) => {
-                if (this.id !== params.frameId) {
-                    return;
-                }
-                this.#navigationTracker.frameRequestedNavigation(params.url);
             });
             this.#cdpTarget.cdpClient.on('Page.lifecycleEvent', (params) => {
                 if (this.id !== params.frameId) {
@@ -5981,9 +5975,6 @@
             });
             this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
                 const promptType = _a$5.#getPromptType(params.type);
-                if (params.type === 'beforeunload') {
-                    this.#navigationTracker.beforeunload();
-                }
                 this.#lastUserPromptType = promptType;
                 const promptHandler = this.#getPromptHandler(promptType);
                 this.#eventManager.registerEvent({
@@ -6007,6 +5998,22 @@
                         void this.handleUserPrompt(false);
                         break;
                 }
+            });
+            this.#cdpTarget.browserCdpClient.on('Browser.downloadWillBegin', (params) => {
+                if (this.id !== params.frameId) {
+                    return;
+                }
+                this.#eventManager.registerEvent({
+                    type: 'event',
+                    method: BrowsingContext$2.EventNames.DownloadWillBegin,
+                    params: {
+                        context: this.id,
+                        suggestedFilename: params.suggestedFilename,
+                        navigation: params.guid,
+                        timestamp: getTimestamp(),
+                        url: params.url,
+                    },
+                }, this.id);
             });
         }
         static #getPromptType(cdpType) {
@@ -7139,7 +7146,7 @@
     }
     _a$4 = LogManager;
 
-    class CdpTarget extends EventEmitter {
+    class CdpTarget {
         #id;
         #cdpClient;
         #browserCdpClient;
@@ -7153,6 +7160,7 @@
         #unblocked = new Deferred();
         #unhandledPromptBehavior;
         #logger;
+        #windowId;
         #deviceAccessEnabled = false;
         #cacheDisableState = false;
         #fetchDomainStages = {
@@ -7168,7 +7176,6 @@
             return cdpTarget;
         }
         constructor(targetId, cdpClient, browserCdpClient, parentCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, prerenderingDisabled, unhandledPromptBehavior, logger) {
-            super();
             this.#id = targetId;
             this.#cdpClient = cdpClient;
             this.#browserCdpClient = browserCdpClient;
@@ -7199,6 +7206,12 @@
         }
         get cdpSessionId() {
             return this.#cdpClient.sessionId;
+        }
+        get windowId() {
+            if (this.#windowId === undefined) {
+                this.#logger?.(LogType.debugError, 'Getting windowId before it was set, returning 0');
+            }
+            return this.#windowId ?? 0;
         }
         async #unblock() {
             try {
@@ -7235,6 +7248,7 @@
                         waitForDebuggerOnStart: true,
                         flatten: true,
                     }),
+                    this.#updateWindowId(),
                     this.#initAndEvaluatePreloadScripts(),
                     this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
                     this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
@@ -7376,15 +7390,6 @@
                 this.#cdpClient.isCloseError(err));
         }
         #setEventListeners() {
-            this.#cdpClient.on('Network.requestWillBeSent', (eventParams) => {
-                if (eventParams.loaderId === eventParams.requestId) {
-                    this.emit("frameStartedNavigating" , {
-                        loaderId: eventParams.loaderId,
-                        url: eventParams.request.url,
-                        frameId: eventParams.frameId,
-                    });
-                }
-            });
             this.#cdpClient.on('*', (event, params) => {
                 if (typeof event !== 'string') {
                     return;
@@ -7468,6 +7473,10 @@
             return this.#preloadScriptStorage
                 .find()
                 .flatMap((script) => script.channels);
+        }
+        async #updateWindowId() {
+            const { windowId } = await this.#browserCdpClient.sendCommand('Browser.getWindowForTarget', { targetId: this.id });
+            this.#windowId = windowId;
         }
         async #initAndEvaluatePreloadScripts() {
             await Promise.all(this.#preloadScriptStorage
@@ -9513,6 +9522,10 @@
             const [{ browserContextIds }, { targetInfos }] = await Promise.all([
                 browserCdpClient.sendCommand('Target.getBrowserContexts'),
                 browserCdpClient.sendCommand('Target.getTargets'),
+                browserCdpClient.sendCommand('Browser.setDownloadBehavior', {
+                    behavior: 'default',
+                    eventsEnabled: true,
+                }),
             ]);
             let defaultUserContextId = 'default';
             for (const info of targetInfos) {
@@ -13897,6 +13910,14 @@
                 .optional(),
         }));
     })(Bluetooth$1 || (Bluetooth$1 = {}));
+    z.lazy(() => z.union([
+        Bluetooth$1.HandleRequestDevicePromptSchema,
+        Bluetooth$1.SimulateAdapterSchema,
+        Bluetooth$1.DisableSimulationSchema,
+        Bluetooth$1.SimulatePreconnectedPeripheralSchema,
+        Bluetooth$1.SimulateAdvertisementSchema,
+        z.object({}),
+    ]));
     (function (Bluetooth) {
         Bluetooth.HandleRequestDevicePromptSchema = z.lazy(() => z.object({
             method: z.literal('bluetooth.handleRequestDevicePrompt'),
@@ -13934,9 +13955,19 @@
     (function (Bluetooth) {
         Bluetooth.SimulateAdapterParametersSchema = z.lazy(() => z.object({
             context: z.string(),
-            type: z.enum(['create', 'update', 'remove']),
             leSupported: z.boolean().optional(),
-            state: z.enum(['absent', 'powered-off', 'powered-on']).optional(),
+            state: z.enum(['absent', 'powered-off', 'powered-on']),
+        }));
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
+        Bluetooth.DisableSimulationSchema = z.lazy(() => z.object({
+            method: z.literal('bluetooth.disableSimulation'),
+            params: Bluetooth.DisableSimulationParametersSchema,
+        }));
+    })(Bluetooth$1 || (Bluetooth$1 = {}));
+    (function (Bluetooth) {
+        Bluetooth.DisableSimulationParametersSchema = z.lazy(() => z.object({
+            context: z.string(),
         }));
     })(Bluetooth$1 || (Bluetooth$1 = {}));
     (function (Bluetooth) {
@@ -14073,6 +14104,7 @@
     const CommandDataSchema = z.lazy(() => z.union([
         BrowserCommandSchema,
         BrowsingContextCommandSchema,
+        EmulationCommandSchema,
         InputCommandSchema,
         NetworkCommandSchema,
         ScriptCommandSchema,
@@ -14156,7 +14188,6 @@
             Session.ManualProxyConfigurationSchema,
             Session.PacProxyConfigurationSchema,
             Session.SystemProxyConfigurationSchema,
-            z.object({}),
         ]));
     })(Session$1 || (Session$1 = {}));
     const SessionResultSchema = z.lazy(() => z.union([
@@ -14348,7 +14379,6 @@
         Browser$1.GetUserContextsSchema,
         Browser$1.RemoveUserContextSchema,
         Browser$1.SetClientWindowStateSchema,
-        z.object({}),
     ]));
     z.lazy(() => z.union([
         Browser$1.CreateUserContextResultSchema,
@@ -14567,12 +14597,15 @@
         BrowsingContext.NavigationSchema = z.lazy(() => z.string());
     })(BrowsingContext$1 || (BrowsingContext$1 = {}));
     (function (BrowsingContext) {
-        BrowsingContext.NavigationInfoSchema = z.lazy(() => z.object({
+        BrowsingContext.BaseNavigationInfoSchema = z.lazy(() => z.object({
             context: BrowsingContext.BrowsingContextSchema,
             navigation: z.union([BrowsingContext.NavigationSchema, z.null()]),
             timestamp: JsUintSchema,
             url: z.string(),
         }));
+    })(BrowsingContext$1 || (BrowsingContext$1 = {}));
+    (function (BrowsingContext) {
+        BrowsingContext.NavigationInfoSchema = z.lazy(() => BrowsingContext.BaseNavigationInfoSchema);
     })(BrowsingContext$1 || (BrowsingContext$1 = {}));
     (function (BrowsingContext) {
         BrowsingContext.ReadinessStateSchema = z.lazy(() => z.enum(['none', 'interactive', 'complete']));
@@ -14879,8 +14912,15 @@
     (function (BrowsingContext) {
         BrowsingContext.DownloadWillBeginSchema = z.lazy(() => z.object({
             method: z.literal('browsingContext.downloadWillBegin'),
-            params: BrowsingContext.NavigationInfoSchema,
+            params: BrowsingContext.DownloadWillBeginParamsSchema,
         }));
+    })(BrowsingContext$1 || (BrowsingContext$1 = {}));
+    (function (BrowsingContext) {
+        BrowsingContext.DownloadWillBeginParamsSchema = z.lazy(() => z
+            .object({
+            suggestedFilename: z.string(),
+        })
+            .and(BrowsingContext.BaseNavigationInfoSchema));
     })(BrowsingContext$1 || (BrowsingContext$1 = {}));
     (function (BrowsingContext) {
         BrowsingContext.NavigationAbortedSchema = z.lazy(() => z.object({
@@ -14929,6 +14969,37 @@
             defaultValue: z.string().optional(),
         }));
     })(BrowsingContext$1 || (BrowsingContext$1 = {}));
+    const EmulationCommandSchema = z.lazy(() => Emulation.SetGeolocationOverrideSchema);
+    var Emulation;
+    (function (Emulation) {
+        Emulation.SetGeolocationOverrideSchema = z.lazy(() => z.object({
+            method: z.literal('emulation.setGeolocationOverride'),
+            params: Emulation.SetGeolocationOverrideParametersSchema,
+        }));
+    })(Emulation || (Emulation = {}));
+    (function (Emulation) {
+        Emulation.SetGeolocationOverrideParametersSchema = z.lazy(() => z.object({
+            coordinates: z.union([Emulation.GeolocationCoordinatesSchema, z.null()]),
+            contexts: z
+                .array(BrowsingContext$1.BrowsingContextSchema)
+                .min(1)
+                .optional(),
+            userContexts: z.array(Browser$1.UserContextSchema).min(1).optional(),
+        }));
+    })(Emulation || (Emulation = {}));
+    (function (Emulation) {
+        Emulation.GeolocationCoordinatesSchema = z.lazy(() => z.object({
+            latitude: z.number(),
+            longitude: z.number(),
+            accuracy: z.number().default(1).optional(),
+            altitude: z.union([z.number(), z.null().default(null)]).optional(),
+            altitudeAccuracy: z
+                .union([z.number(), z.null().default(null)])
+                .optional(),
+            heading: z.union([z.number(), z.null().default(null)]).optional(),
+            speed: z.union([z.number(), z.null().default(null)]).optional(),
+        }));
+    })(Emulation || (Emulation = {}));
     const NetworkCommandSchema = z.lazy(() => z.union([
         Network$1.AddInterceptSchema,
         Network$1.ContinueRequestSchema,
@@ -16647,6 +16718,10 @@
             return parseObject(params, Bluetooth$1.SimulateAdapterParametersSchema);
         }
         Bluetooth.parseSimulateAdapterParams = parseSimulateAdapterParams;
+        function parseDisableSimulationParameters(params) {
+            return parseObject(params, Bluetooth$1.DisableSimulationParametersSchema);
+        }
+        Bluetooth.parseDisableSimulationParameters = parseDisableSimulationParameters;
         function parseSimulateAdvertisementParams(params) {
             return parseObject(params, Bluetooth$1.SimulateAdvertisementParametersSchema);
         }
@@ -16670,6 +16745,9 @@
     })(WebModule || (WebModule = {}));
 
     class BidiParser {
+        parseDisableSimulationParameters(params) {
+            return Bluetooth.parseDisableSimulationParameters(params);
+        }
         parseHandleRequestDevicePromptParams(params) {
             return Bluetooth.parseHandleRequestDevicePromptParams(params);
         }

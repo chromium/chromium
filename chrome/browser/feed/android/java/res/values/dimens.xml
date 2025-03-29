@@ -68,9 +68,6 @@ found in the LICENSE file.
     <dimen name="feed_badge_hoffset">-1dp</dimen>
     <dimen name="feed_badge_voffset">-0.5dp</dimen>
 
-    <!-- Dynamic color dimensions. -->
-    <dimen name="feed_header_section_tab_bg_elevation_enabled">@dimen/default_elevation_2</dimen>
-
     <!-- Menu footer chip dimensions. -->
     <item name="menu_footer_chip_background_alpha" format="float" type="dimen">0.1</item>
 

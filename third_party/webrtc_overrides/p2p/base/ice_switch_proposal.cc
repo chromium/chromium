@@ -1,7 +1,10 @@
 #include "third_party/webrtc_overrides/p2p/base/ice_switch_proposal.h"
 
-#include "base/notreached.h"
+#include <optional>
+#include <string>
 
+#include "base/notreached.h"
+#include "third_party/webrtc/p2p/base/connection.h"
 #include "third_party/webrtc/p2p/base/ice_controller_interface.h"
 #include "third_party/webrtc/p2p/base/ice_switch_reason.h"
 #include "third_party/webrtc/rtc_base/strings/string_builder.h"

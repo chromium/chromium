@@ -4,10 +4,10 @@
 
 #include "third_party/webrtc_overrides/p2p/base/bridge_ice_controller.h"
 
-#include <algorithm>
-#include <iterator>
+#include <cstdint>
 #include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/algorithm/container.h"
 #include "third_party/webrtc/api/array_view.h"
 #include "third_party/webrtc/api/rtc_error.h"
 #include "third_party/webrtc/p2p/base/connection.h"

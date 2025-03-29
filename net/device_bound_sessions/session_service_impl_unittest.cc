@@ -301,6 +301,7 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnRegistration) {
   EXPECT_EQ(access.access_type, SessionAccess::AccessType::kCreation);
   EXPECT_EQ(access.session_key.site, SchemefulSite(kTestUrl));
   EXPECT_EQ(access.session_key.id.value(), kSessionId);
+  EXPECT_TRUE(access.cookies.empty());
 }
 
 TEST_F(SessionServiceImplTest, AccessObserverCalledOnDeferral) {
@@ -323,6 +324,7 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnDeferral) {
   EXPECT_EQ(access.access_type, SessionAccess::AccessType::kUpdate);
   EXPECT_EQ(access.session_key.site, SchemefulSite(kTestUrl));
   EXPECT_EQ(access.session_key.id.value(), kSessionId);
+  EXPECT_TRUE(access.cookies.empty());
 }
 
 TEST_F(SessionServiceImplTest, AccessObserverCalledOnSetChallenge) {
@@ -344,6 +346,7 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnSetChallenge) {
   EXPECT_EQ(access.access_type, SessionAccess::AccessType::kUpdate);
   EXPECT_EQ(access.session_key.site, SchemefulSite(kTestUrl));
   EXPECT_EQ(access.session_key.id.value(), kSessionId);
+  EXPECT_TRUE(access.cookies.empty());
 }
 
 TEST_F(SessionServiceImplTest, GetAllSessions) {
@@ -372,6 +375,7 @@ TEST_F(SessionServiceImplTest, DeleteSession) {
   EXPECT_EQ(access.access_type, SessionAccess::AccessType::kTermination);
   EXPECT_EQ(access.session_key.site, site);
   EXPECT_EQ(access.session_key.id, session_id);
+  EXPECT_EQ(access.cookies, std::vector<std::string>{"test_cookie"});
 }
 
 TEST_F(SessionServiceImplTest, DeleteAllSessionsByCreationTime) {
@@ -552,7 +556,8 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_FatalError) {
       ElementsAre(SessionAccess{SessionAccess::AccessType::kUpdate,
                                 SessionKey(site_1, Session::Id(kSessionId))},
                   SessionAccess{SessionAccess::AccessType::kTermination,
-                                SessionKey(site_1, Session::Id(kSessionId))}));
+                                SessionKey(site_1, Session::Id(kSessionId)),
+                                std::vector<std::string>{"test_cookie"}}));
 
   // Check the restart callback is called for successful fetcher.
   EXPECT_EQ(future_2.Take(), TestDeferCompletion::CallbackType::kContinue);
@@ -693,7 +698,8 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
       ElementsAre(SessionAccess{SessionAccess::AccessType::kUpdate,
                                 SessionKey(site, Session::Id(kSessionId))},
                   SessionAccess{SessionAccess::AccessType::kTermination,
-                                SessionKey(site, Session::Id(kSessionId))},
+                                SessionKey(site, Session::Id(kSessionId)),
+                                std::vector<std::string>{"test_cookie"}},
                   SessionAccess{SessionAccess::AccessType::kCreation,
                                 SessionKey(site, Session::Id(kSessionId2))}));
 
@@ -753,7 +759,8 @@ TEST_F(SessionServiceImplTest, RefreshWithInvalidParams) {
       ElementsAre(SessionAccess{SessionAccess::AccessType::kUpdate,
                                 SessionKey(site, Session::Id(kSessionId))},
                   SessionAccess{SessionAccess::AccessType::kTermination,
-                                SessionKey(site, Session::Id(kSessionId))}));
+                                SessionKey(site, Session::Id(kSessionId)),
+                                std::vector<std::string>{"test_cookie"}}));
   // Check the restart callback is called due to unsuccessful refresh.
   EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kContinue);
   ASSERT_FALSE(service().GetSession(site, Session::Id(kSessionId)));

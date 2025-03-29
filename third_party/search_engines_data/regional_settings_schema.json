@@ -18,30 +18,11 @@
   "schema": [
     {
       "field": "search_engines",
-      "type": "struct",
-      "optional": true,
-      "type_name": "RegionalSearchEngines",
-      "fields": [
-        {
-          // Top search engines identified for the region.
-          "field": "top",
-          "type": "array",
-          "contents": {
-            "type": "class",
-            "ctype": "PrepopulatedEngine *"
-          }
-        },
-        {
-          // Any additional engines to include on the choice screen.
-          "field": "remaining",
-          "type": "array",
-          "optional": true,
-          "contents": {
-            "type": "class",
-            "ctype": "PrepopulatedEngine *"
-          }
-        }
-      ]
+      "type": "array",
+      "contents": {
+        "type": "class",
+        "ctype": "PrepopulatedEngine *"
+      }
     }
   ]
 }
