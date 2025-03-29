@@ -173,9 +173,8 @@ void ContextualCueingService::OnNudgeActivity(
   if (activity == tabs::GlicNudgeActivity::kNudgeClicked &&
       base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
     ZeroStateSuggestionsPageData::CreateForPage(
-        web_contents->GetPrimaryPage(), url,
-        reinterpret_cast<const char*>(web_contents->GetTitle().c_str()),
-        optimization_guide_keyed_service_, base::DoNothing());
+        web_contents->GetPrimaryPage(), web_contents,
+        optimization_guide_keyed_service_, /*is_fre=*/false, base::DoNothing());
   }
 }
 
@@ -187,9 +186,8 @@ void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
 
   // Remote suggestions generation.
   ZeroStateSuggestionsPageData::CreateForPage(
-      web_contents->GetPrimaryPage(), web_contents->GetLastCommittedURL(),
-      reinterpret_cast<const char*>(web_contents->GetTitle().c_str()),
-      optimization_guide_keyed_service_,
+      web_contents->GetPrimaryPage(), web_contents,
+      optimization_guide_keyed_service_, is_fre,
       base::BindOnce(&ContextualCueingService::OnSuggestionsReceived,
                      GetWeakPtr(), web_contents, std::move(callback)));
 }
