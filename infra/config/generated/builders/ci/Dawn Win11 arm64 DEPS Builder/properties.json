@@ -72,6 +72,7 @@
     ]
   },
   "builder_group": "chromium.dawn",
+  "dawn_ref": "refs/heads/chromium/6998",
   "gardener_rotations": [
     "chrome_browser_release"
   ],

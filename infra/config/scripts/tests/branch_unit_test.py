@@ -68,6 +68,7 @@ class BranchUnitTest(unittest.TestCase):
                 "project_title": "Chromium MMM",
                 "ref": "refs/branch-heads/BBBB",
                 "chrome_project": "CHROME",
+                "dawn_ref": "refs/heads/chromium/BBBB",
                 "is_main": false,
                 "platforms": {
                     "android": {
