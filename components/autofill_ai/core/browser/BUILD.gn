@@ -28,6 +28,8 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//components/autofill/core/browser",
       "//components/autofill/core/common",
       "//components/keyed_service/core",
+      "//components/optimization_guide/core:core",
+      "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/strings",
       "//services/metrics/public/cpp:metrics_cpp",
       "//services/metrics/public/cpp:ukm_builders",
