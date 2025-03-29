@@ -8,6 +8,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -23,6 +24,8 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -43,7 +46,9 @@ import org.robolectric.android.util.concurrent.PausedExecutorService;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
+import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
@@ -70,6 +75,8 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.widget.ToastManager;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.HashMap;
@@ -77,14 +84,19 @@ import java.util.Optional;
 
 /** Unit tests for {@link AiAssistantService}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowToast.class})
 @LooperMode(Mode.PAUSED)
 @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY})
 public class AiAssistantServiceUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Context mContext;
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     @Mock private RenderFrameHost mRenderFrameHost;
     @Mock private WebContents mWebContents;
     @Mock private Tab mTab;
@@ -104,6 +116,7 @@ public class AiAssistantServiceUnitTest {
 
     @Before
     public void setUp() throws Exception {
+        ToastManager.resetForTesting();
         AiAssistantService.resetForTesting();
         when(mSystemAiProviderFactory.createSystemAiProvider()).thenReturn(mSystemAiProvider);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_CAT);
@@ -122,26 +135,34 @@ public class AiAssistantServiceUnitTest {
     }
 
     @Test
+    @EnableFeatures(
+            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY + ":intent_fallback/true")
     public void showAi_fallsBackToIntentWhenNoDownstreamImpl() {
+        var activityScenario = mActivityScenarioRule.getScenario();
         ServiceLoaderUtil.setInstanceForTesting(SystemAiProvider.class, null);
         var pageContents = "Page contents for one.com";
         setInnerTextExtractionResult(pageContents);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
 
         var service = AiAssistantService.getInstance();
-        initializeAiAssistantService(service);
 
-        service.canShowAiForTab(mContext, mTab);
-        service.showAi(mContext, mTab);
-        ShadowLooper.idleMainLooper();
+        activityScenario.onActivity(
+                activity -> {
+                    initializeAiAssistantService(activity, service);
+                    service.showAi(activity, mTab);
+                    ShadowLooper.idleMainLooper();
 
-        var launchRequest = assertVoiceActivityStartedWithLaunchRequest();
-        assertLaunchRequestIsForSummarizeUrl(
-                launchRequest, JUnitTestGURLs.URL_1.getSpec(), pageContents);
+                    var launchRequest = assertVoiceActivityStartedWithLaunchRequest();
+                    assertLaunchRequestIsForSummarizeUrl(
+                            launchRequest, JUnitTestGURLs.URL_1.getSpec(), pageContents);
+                });
     }
 
     @Test
+    @EnableFeatures(
+            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY + ":intent_fallback/true")
     public void showAi_fallsBackToIntentWhenDownstreamImplNotAvailable() {
+        var activityScenario = mActivityScenarioRule.getScenario();
         ServiceLoaderUtil.setInstanceForTesting(
                 SystemAiProviderFactory.class, mSystemAiProviderFactory);
         var pageContents = "Page contents for google.com/dog";
@@ -150,17 +171,24 @@ public class AiAssistantServiceUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_DOG);
 
         var service = AiAssistantService.getInstance();
-        initializeAiAssistantService(service);
-        service.showAi(mContext, mTab);
-        ShadowLooper.idleMainLooper();
 
-        var launchRequest = assertVoiceActivityStartedWithLaunchRequest();
-        assertLaunchRequestIsForSummarizeUrl(
-                launchRequest, JUnitTestGURLs.GOOGLE_URL_DOG.getSpec(), pageContents);
+        activityScenario.onActivity(
+                activity -> {
+                    initializeAiAssistantService(activity, service);
+                    service.showAi(activity, mTab);
+                    ShadowLooper.idleMainLooper();
+
+                    var launchRequest = assertVoiceActivityStartedWithLaunchRequest();
+                    assertLaunchRequestIsForSummarizeUrl(
+                            launchRequest, JUnitTestGURLs.GOOGLE_URL_DOG.getSpec(), pageContents);
+                });
     }
 
     @Test
+    @EnableFeatures(
+            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY + ":intent_fallback/true")
     public void showAi_fallsBackToIntentWhenDownstreamImplNotAvailable_pdfPage() {
+        var activityScenario = mActivityScenarioRule.getScenario();
         ServiceLoaderUtil.setInstanceForTesting(
                 SystemAiProviderFactory.class, mSystemAiProviderFactory);
         setSystemAiProviderAsUnavailable();
@@ -171,38 +199,107 @@ public class AiAssistantServiceUnitTest {
         when(mTab.getNativePage()).thenReturn(pdfPage);
 
         var service = AiAssistantService.getInstance();
-        initializeAiAssistantService(service);
-        service.showAi(mContext, mTab);
+        activityScenario.onActivity(
+                activity -> {
+                    initializeAiAssistantService(activity, service);
+                    service.showAi(activity, mTab);
 
-        var launchRequest = assertVoiceActivityStartedWithLaunchRequest();
-        assertLaunchRequestIsForAnalyzeAttachment(launchRequest, pdfUri);
+                    var launchRequest = assertVoiceActivityStartedWithLaunchRequest();
+                    assertLaunchRequestIsForAnalyzeAttachment(launchRequest, pdfUri);
+                });
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY
+                    + ":intent_fallback/false")
+    public void showAi_showsErrorWhenDownstreamImplNotAvailableAndFallbackDisabled() {
+        var activityScenario = mActivityScenarioRule.getScenario();
+        ServiceLoaderUtil.setInstanceForTesting(
+                SystemAiProviderFactory.class, mSystemAiProviderFactory);
+        var pageContents = "Page contents for google.com/dog";
+        setInnerTextExtractionResult(pageContents);
+        setSystemAiProviderAsUnavailable();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_DOG);
+
+        var service = AiAssistantService.getInstance();
+        activityScenario.onActivity(
+                activity -> {
+                    initializeAiAssistantService(activity, service);
+                    service.showAi(activity, mTab);
+                    ShadowLooper.idleMainLooper();
+                    // Assert no intent was sent.
+                    assertNull(ShadowApplication.getInstance().getNextStartedActivity());
+                    // Assert system provider wasn't called.
+                    verify(mSystemAiProvider, never()).launch(any(), any());
+                    // Toast should be shown instead.
+                    assertEquals(1, ShadowToast.shownToastCount());
+                });
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY
+                    + ":intent_fallback/false")
+    public void showAi_showsErrorWhenFeatureNotAvailableAndFallbackDisabled() {
+        var activityScenario = mActivityScenarioRule.getScenario();
+        ServiceLoaderUtil.setInstanceForTesting(
+                SystemAiProviderFactory.class, mSystemAiProviderFactory);
+        var pageContents = "Page contents for google.com/dog";
+        setInnerTextExtractionResult(pageContents);
+        // Set system provider as available, but only for analyzing attachments.
+        setSystemAiProviderAsAvailable(
+                /* canUseSummarizeUrl= */ false, /* canUseAnalyzeAttachment= */ true);
+        // Try to use the summarize URL feature.
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_DOG);
+
+        var service = AiAssistantService.getInstance();
+        activityScenario.onActivity(
+                activity -> {
+                    initializeAiAssistantService(activity, service);
+                    service.showAi(activity, mTab);
+                    ShadowLooper.idleMainLooper();
+                    // Assert no intent was sent.
+                    assertNull(ShadowApplication.getInstance().getNextStartedActivity());
+                    // Assert system provider wasn't called.
+                    verify(mSystemAiProvider, never()).launch(any(), any());
+                    // Toast should be shown instead.
+                    assertEquals(1, ShadowToast.shownToastCount());
+                });
     }
 
     @Test
     public void showAi_usesDownstreamImplWhenAvailable() {
+        var activityScenario = mActivityScenarioRule.getScenario();
         ServiceLoaderUtil.setInstanceForTesting(
                 SystemAiProviderFactory.class, mSystemAiProviderFactory);
-        setSystemAiProviderAsAvailable();
+        setSystemAiProviderAsAvailableWithAllFeatures();
         var pageContents = "Page contents for URL_2";
         setInnerTextExtractionResult(pageContents);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
 
         var service = AiAssistantService.getInstance();
-        initializeAiAssistantService(service);
-        service.showAi(mContext, mTab);
+        activityScenario.onActivity(
+                activity -> {
+                    initializeAiAssistantService(activity, service);
+                    service.showAi(activity, mTab);
 
-        ShadowLooper.idleMainLooper();
+                    ShadowLooper.idleMainLooper();
 
-        verify(mSystemAiProvider).launch(eq(mContext), mLaunchRequestCaptor.capture());
-        assertLaunchRequestIsForSummarizeUrl(
-                mLaunchRequestCaptor.getValue(), JUnitTestGURLs.URL_2.getSpec(), pageContents);
+                    verify(mSystemAiProvider).launch(eq(activity), mLaunchRequestCaptor.capture());
+                    assertLaunchRequestIsForSummarizeUrl(
+                            mLaunchRequestCaptor.getValue(),
+                            JUnitTestGURLs.URL_2.getSpec(),
+                            pageContents);
+                });
     }
 
     @Test
     public void showAi_usesAnalyzeDocumentForPdfs() {
+        var activityScenario = mActivityScenarioRule.getScenario();
         ServiceLoaderUtil.setInstanceForTesting(
                 SystemAiProviderFactory.class, mSystemAiProviderFactory);
-        setSystemAiProviderAsAvailable();
+        setSystemAiProviderAsAvailableWithAllFeatures();
         var pdfUri = "https://google.com/file.pdf";
         var pdfPage = mock(PdfPage.class);
         when(pdfPage.getUri()).thenReturn(Uri.parse(pdfUri));
@@ -210,91 +307,109 @@ public class AiAssistantServiceUnitTest {
         when(mTab.getNativePage()).thenReturn(pdfPage);
 
         var service = AiAssistantService.getInstance();
-        initializeAiAssistantService(service);
+        activityScenario.onActivity(
+                activity -> {
+                    initializeAiAssistantService(activity, service);
 
-        service.showAi(mContext, mTab);
-        // Simulate availability query response.
-        mPausedExecutorService.runAll();
+                    service.showAi(activity, mTab);
+                    // Simulate availability query response.
+                    mPausedExecutorService.runAll();
 
-        verify(mSystemAiProvider).launch(eq(mContext), mLaunchRequestCaptor.capture());
-        assertLaunchRequestIsForAnalyzeAttachment(mLaunchRequestCaptor.getValue(), pdfUri);
+                    verify(mSystemAiProvider).launch(eq(activity), mLaunchRequestCaptor.capture());
+                    assertLaunchRequestIsForAnalyzeAttachment(
+                            mLaunchRequestCaptor.getValue(), pdfUri);
+                });
     }
 
     @Test
     public void canShowAiForTab_initialCall() {
+        var activityScenario = mActivityScenarioRule.getScenario();
         ServiceLoaderUtil.setInstanceForTesting(
                 SystemAiProviderFactory.class, mSystemAiProviderFactory);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        setSystemAiProviderAsAvailable();
+        setSystemAiProviderAsAvailableWithAllFeatures();
 
         var service = AiAssistantService.getInstance();
+        activityScenario.onActivity(
+                activity -> {
+                    var result = service.canShowAiForTab(activity, mTab);
 
-        var result = service.canShowAiForTab(mContext, mTab);
-
-        assertFalse("AI service should not be available, as we just queried the provider", result);
-        // System provider should be queried on the first call.
-        verify(mSystemAiProvider).isAvailable(eq(mContext), any());
+                    assertFalse(
+                            "AI service should not be available, as we just queried the provider",
+                            result);
+                    // System provider should be queried on the first call.
+                    verify(mSystemAiProvider).isAvailable(eq(activity), any());
+                });
     }
 
     @Test
     public void canShowAiForTab_inMemoryCache() {
+        var activityScenario = mActivityScenarioRule.getScenario();
         ServiceLoaderUtil.setInstanceForTesting(
                 SystemAiProviderFactory.class, mSystemAiProviderFactory);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        setSystemAiProviderAsAvailable();
+        setSystemAiProviderAsAvailableWithAllFeatures();
 
         var service = AiAssistantService.getInstance();
+        activityScenario.onActivity(
+                activity -> {
+                    var firstAvailabilityResult = service.canShowAiForTab(activity, mTab);
 
-        var firstAvailabilityResult = service.canShowAiForTab(mContext, mTab);
+                    assertFalse(
+                            "AI service should not be available, as we just queried the provider",
+                            firstAvailabilityResult);
+                    // System provider should be queried on the first call.
+                    verify(mSystemAiProvider).isAvailable(eq(activity), any());
+                    // Simulate query response.
+                    mPausedExecutorService.runAll();
 
-        assertFalse(
-                "AI service should not be available, as we just queried the provider",
-                firstAvailabilityResult);
-        // System provider should be queried on the first call.
-        verify(mSystemAiProvider).isAvailable(eq(mContext), any());
-        // Simulate query response.
-        mPausedExecutorService.runAll();
+                    var secondAvailabilityResult = service.canShowAiForTab(activity, mTab);
 
-        var secondAvailabilityResult = service.canShowAiForTab(mContext, mTab);
+                    assertTrue(
+                            "AI service should now be available, as its response was cached in"
+                                    + " memory",
+                            secondAvailabilityResult);
 
-        assertTrue(
-                "AI service should now be available, as its response was cached in memory",
-                secondAvailabilityResult);
-
-        verifyNoMoreInteractions(mSystemAiProvider);
+                    verifyNoMoreInteractions(mSystemAiProvider);
+                });
     }
 
     @Test
     public void canShowAiForTab_preferenceCache() {
+        var activityScenario = mActivityScenarioRule.getScenario();
         ServiceLoaderUtil.setInstanceForTesting(
                 SystemAiProviderFactory.class, mSystemAiProviderFactory);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
 
-        var service = AiAssistantService.getInstance();
-        setSystemAiProviderAsAvailable();
+        setSystemAiProviderAsAvailableWithAllFeatures();
 
-        var firstAvailabilityResult = service.canShowAiForTab(mContext, mTab);
+        activityScenario.onActivity(
+                activity -> {
+                    var service = AiAssistantService.getInstance();
+                    var firstAvailabilityResult = service.canShowAiForTab(activity, mTab);
 
-        assertFalse(
-                "AI service should not be available, as we just queried the provider",
-                firstAvailabilityResult);
-        // System provider should be queried on the first call.
-        verify(mSystemAiProvider).isAvailable(eq(mContext), any());
-        // Simulate query response.
-        mPausedExecutorService.runAll();
+                    assertFalse(
+                            "AI service should not be available, as we just queried the provider",
+                            firstAvailabilityResult);
+                    // System provider should be queried on the first call.
+                    verify(mSystemAiProvider).isAvailable(eq(activity), any());
+                    // Simulate query response.
+                    mPausedExecutorService.runAll();
 
-        service = null;
-        AiAssistantService.resetForTesting();
+                    service = null;
+                    AiAssistantService.resetForTesting();
 
-        var newServiceInstance = AiAssistantService.getInstance();
+                    var newServiceInstance = AiAssistantService.getInstance();
 
-        var secondInstanceResult = newServiceInstance.canShowAiForTab(mContext, mTab);
+                    var secondInstanceResult = newServiceInstance.canShowAiForTab(activity, mTab);
 
-        assertTrue(
-                "AI service should now be available, as its response was cached in prefs",
-                secondInstanceResult);
+                    assertTrue(
+                            "AI service should now be available, as its response was cached in"
+                                    + " prefs",
+                            secondInstanceResult);
 
-        verifyNoMoreInteractions(mSystemAiProvider);
+                    verifyNoMoreInteractions(mSystemAiProvider);
+                });
     }
 
     @Test
@@ -302,27 +417,30 @@ public class AiAssistantServiceUnitTest {
             ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY
                     + ":attach_client_info/true")
     public void showAi_attachesAccountInfoWithFlag() {
+        var activityScenario = mActivityScenarioRule.getScenario();
         ServiceLoaderUtil.setInstanceForTesting(
                 SystemAiProviderFactory.class, mSystemAiProviderFactory);
-        setSystemAiProviderAsAvailable();
+        setSystemAiProviderAsAvailableWithAllFeatures();
         var pageContents = "Page contents for URL_2";
         var clientEmail = "foo@bar.com";
         setInnerTextExtractionResult(pageContents);
         setClientEmail(clientEmail);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
+        activityScenario.onActivity(
+                activity -> {
+                    var service = AiAssistantService.getInstance();
+                    initializeAiAssistantService(activity, service);
+                    fulfillAccountCapabilities(false);
+                    service.showAi(activity, mTab);
+                    ShadowLooper.idleMainLooper();
 
-        var service = AiAssistantService.getInstance();
-        initializeAiAssistantService(service);
-        fulfillAccountCapabilities(false);
-
-        service.showAi(mContext, mTab);
-
-        ShadowLooper.idleMainLooper();
-
-        verify(mSystemAiProvider).launch(eq(mContext), mLaunchRequestCaptor.capture());
-        assertLaunchRequestIsForSummarizeUrl(
-                mLaunchRequestCaptor.getValue(), JUnitTestGURLs.URL_2.getSpec(), pageContents);
-        assertLaunchRequestHasClientInfo(mLaunchRequestCaptor.getValue(), clientEmail);
+                    verify(mSystemAiProvider).launch(eq(activity), mLaunchRequestCaptor.capture());
+                    assertLaunchRequestIsForSummarizeUrl(
+                            mLaunchRequestCaptor.getValue(),
+                            JUnitTestGURLs.URL_2.getSpec(),
+                            pageContents);
+                    assertLaunchRequestHasClientInfo(mLaunchRequestCaptor.getValue(), clientEmail);
+                });
     }
 
     @Test
@@ -330,45 +448,61 @@ public class AiAssistantServiceUnitTest {
             ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY
                     + ":attach_client_info/true")
     public void showAi_parentControlDisables() {
+        var activityScenario = mActivityScenarioRule.getScenario();
+
         ServiceLoaderUtil.setInstanceForTesting(
                 SystemAiProviderFactory.class, mSystemAiProviderFactory);
-        setSystemAiProviderAsAvailable();
+        setSystemAiProviderAsAvailableWithAllFeatures();
         var pageContents = "Page contents for URL_2";
         var clientEmail = "foo@bar.com";
         setInnerTextExtractionResult(pageContents);
         setClientEmail(clientEmail);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
 
-        var service = AiAssistantService.getInstance();
-        setSystemAiProviderAsAvailable();
-        initializeAiAssistantService(service);
-        fulfillAccountCapabilities(true);
+        activityScenario.onActivity(
+                activity -> {
+                    var service = AiAssistantService.getInstance();
+                    initializeAiAssistantService(activity, service);
+                    fulfillAccountCapabilities(true);
 
-        service.showAi(mContext, mTab);
+                    service.showAi(activity, mTab);
 
-        ShadowLooper.idleMainLooper();
+                    ShadowLooper.idleMainLooper();
 
-        verify(mSystemAiProvider, never()).launch(any(), any());
+                    verify(mSystemAiProvider, never()).launch(any(), any());
+                });
+    }
+
+    private void setSystemAiProviderAsAvailableWithAllFeatures() {
+        setSystemAiProviderAsAvailable(
+                /* canUseSummarizeUrl= */ true, /* canUseAnalyzeAttachment= */ true);
     }
 
     // Sets the result of calling the system provider, the result gets scheduled on
     // mPausedExecutorService, so we need to call mPausedExecutorService.runAll() afterwards to
     // simulate the query response.
-    private void setSystemAiProviderAsAvailable() {
-        var serviceAvailableBuilder =
-                ServiceAvailable.newBuilder()
-                        .addSupportedCapabilities(Capability.ANALYZE_ATTACHMENT_CAPABILITY)
-                        .addSupportedCapabilities(Capability.SUMMARIZE_URL_CAPABILITY);
+    private void setSystemAiProviderAsAvailable(
+            boolean canUseSummarizeUrl, boolean canUseAnalyzeAttachment) {
+        var serviceAvailableBuilder = ServiceAvailable.newBuilder();
+
+        if (canUseAnalyzeAttachment) {
+            serviceAvailableBuilder.addSupportedCapabilities(
+                    Capability.ANALYZE_ATTACHMENT_CAPABILITY);
+        }
+        if (canUseSummarizeUrl) {
+            serviceAvailableBuilder.addSupportedCapabilities(Capability.SUMMARIZE_URL_CAPABILITY);
+        }
+
         var availabilityResponse =
                 AvailabilityResponse.newBuilder().setAvailable(serviceAvailableBuilder).build();
-        when(mSystemAiProvider.isAvailable(eq(mContext), any()))
+        when(mSystemAiProvider.isAvailable(any(), any()))
                 .thenReturn(
                         MoreExecutors.listeningDecorator(mPausedExecutorService)
                                 .submit(() -> availabilityResponse));
     }
 
-    private void initializeAiAssistantService(AiAssistantService service) {
-        service.canShowAiForTab(mContext, mTab);
+    private void initializeAiAssistantService(Context context, AiAssistantService service) {
+        service.canShowAiForTab(context, mTab);
         mPausedExecutorService.runAll();
     }
 
@@ -386,7 +520,7 @@ public class AiAssistantServiceUnitTest {
                 AvailabilityResponse.newBuilder()
                         .setNotAvailable(ServiceNotAvailable.getDefaultInstance())
                         .build();
-        when(mSystemAiProvider.isAvailable(eq(mContext), any()))
+        when(mSystemAiProvider.isAvailable(any(), any()))
                 .thenReturn(Futures.immediateFuture(availabilityResponse));
     }
 
@@ -438,9 +572,7 @@ public class AiAssistantServiceUnitTest {
     }
 
     private LaunchRequest assertVoiceActivityStartedWithLaunchRequest() {
-        verify(mContext).startActivity(mIntentCaptor.capture());
-
-        var startedIntent = mIntentCaptor.getValue();
+        var startedIntent = ShadowApplication.getInstance().getNextStartedActivity();
         var launchRequestBytes =
                 startedIntent.getByteArrayExtra(AiAssistantService.EXTRA_LAUNCH_REQUEST);
         assertEquals(Intent.ACTION_VOICE_COMMAND, startedIntent.getAction());

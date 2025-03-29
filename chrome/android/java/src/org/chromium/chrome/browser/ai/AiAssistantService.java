@@ -22,6 +22,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.Account;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.AnalyzeAttachment;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.AvailabilityRequest;
@@ -46,6 +47,7 @@ import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -62,8 +64,6 @@ import java.util.Optional;
 public class AiAssistantService {
 
     private static final String TAG = "AiAssistantService";
-    // TODO(402813682): Control this with experiment param.
-    private static final long AVAILABILITY_CHECK_CACHE_DURATION_MS = Duration.ofDays(1).toMillis();
     static final String EXTRA_LAUNCH_REQUEST =
             "org.chromium.chrome.browser.ai.proto.SystemAiProviderService.LaunchRequest";
 
@@ -293,8 +293,9 @@ public class AiAssistantService {
                             .getSupportedCapabilitiesList()
                             .contains(Capability.ANALYZE_ATTACHMENT_CAPABILITY);
         } else {
-            mIsSummarizeAvailable = true;
-            mIsAnalyzeAttachmentAvailable = true;
+            var shouldUseFallback = isIntentFallbackEnabled();
+            mIsSummarizeAvailable = shouldUseFallback;
+            mIsAnalyzeAttachmentAvailable = shouldUseFallback;
         }
 
         saveAvailabilityToPrefs();
@@ -317,7 +318,7 @@ public class AiAssistantService {
                 mSharedPreferencesManager.readLong(
                         ChromePreferenceKeys.AI_ASSISTANT_AVAILABILITY_CHECK_TIMESTAMP_MS);
         var timeSinceLastCheckMs = System.currentTimeMillis() - lastCheckTimestampMs;
-        if (timeSinceLastCheckMs >= AVAILABILITY_CHECK_CACHE_DURATION_MS) {
+        if (timeSinceLastCheckMs >= getAvailabilityCacheDurationMs()) {
             // If the cache is expired then delete its values from prefs, but keep them loaded in
             // memory.
             deleteAvailabilityFromPrefs();
@@ -326,6 +327,24 @@ public class AiAssistantService {
         }
 
         return PrefLoadingResult.LOADED;
+    }
+
+    private boolean isIntentFallbackEnabled() {
+        boolean intentFallback =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
+                        "intent_fallback",
+                        false);
+        return intentFallback;
+    }
+
+    private long getAvailabilityCacheDurationMs() {
+        var durationDays =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
+                        "availability_cache_duration_days",
+                        1);
+        return Duration.ofDays(durationDays).toMillis();
     }
 
     private void saveAvailabilityToPrefs() {
@@ -361,6 +380,18 @@ public class AiAssistantService {
     private void requestLaunch(Context context, Tab tab) {
         if (!isTabElegible(tab)) return;
 
+        if (!mIsSystemAiProviderAvailable && !isIntentFallbackEnabled()) {
+            ThreadUtils.postOnUiThread(
+                    () -> {
+                        Toast.makeText(
+                                        context,
+                                        R.string.ai_assistant_service_error_toast,
+                                        Toast.LENGTH_LONG)
+                                .show();
+                    });
+            return;
+        }
+
         if (isTabPdf(tab)
                 && tab.getNativePage() instanceof PdfPage pdfPage
                 && mIsAnalyzeAttachmentAvailable) {
@@ -382,6 +413,15 @@ public class AiAssistantService {
                                     onInnerTextReceived(
                                             context, tab, shouldUseSystemProvider, innerText);
                                 });
+                    });
+        } else {
+            ThreadUtils.postOnUiThread(
+                    () -> {
+                        Toast.makeText(
+                                        context,
+                                        R.string.ai_assistant_service_error_toast,
+                                        Toast.LENGTH_LONG)
+                                .show();
                     });
         }
     }
