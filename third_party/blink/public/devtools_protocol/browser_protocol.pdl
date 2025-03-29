@@ -13266,6 +13266,19 @@ experimental domain BluetoothEmulation
       integer rssi
       ScanRecord scanRecord
 
+  # Describes the properties of a characteristic. This follows Bluetooth Core
+  # Specification BT 4.2 Vol 3 Part G 3.3.1. Characteristic Properties.
+  type CharacteristicProperties extends object
+    properties
+      optional boolean broadcast
+      optional boolean read
+      optional boolean writeWithoutResponse
+      optional boolean write
+      optional boolean notify
+      optional boolean indicate
+      optional boolean authenticatedSignedWrites
+      optional boolean extendedProperties
+
   # Enable the BluetoothEmulation domain.
   command enable
     parameters
@@ -13307,20 +13320,41 @@ experimental domain BluetoothEmulation
       GATTOperationType type
       integer code
 
-  # Adds a service with |uuid| to the peripheral with |address|.
+  # Adds a service with |serviceUuid| to the peripheral with |address|.
   command addService
     parameters
       string address
       string serviceUuid
     returns
       # An identifier that uniquely represents this service.
-      string id
+      string serviceId
 
-  # Removes the service respresented by |id| from the peripheral with |address|.
+  # Removes the service respresented by |serviceId| from the peripheral with
+  # |address|.
   command removeService
     parameters
       string address
-      string id
+      string serviceId
+
+  # Adds a characteristic with |characteristicUuid| and |properties| to the
+  # service represented by |serviceId| in the peripheral with |address|.
+  command addCharacteristic
+    parameters
+      string address
+      string serviceId
+      string characteristicUuid
+      CharacteristicProperties properties
+    returns
+      # An identifier that uniquely represents this characteristic.
+      string characteristicId
+
+  # Removes the characteristic respresented by |characteristicId| from the
+  # service respresented by |serviceId| in the peripheral with |address|.
+  command removeCharacteristic
+    parameters
+      string address
+      string serviceId
+      string characteristicId
 
   # Event for when a GATT operation of |type| to the peripheral with |address|
   # happened.
