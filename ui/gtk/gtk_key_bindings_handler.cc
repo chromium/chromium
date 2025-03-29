@@ -84,7 +84,17 @@ constexpr auto kEmacsBindings =
 }  // namespace
 
 GtkKeyBindingsHandler::GtkKeyBindingsHandler() {
-  settings_ = TakeGObject(g_settings_new(kDesktopInterface));
+  // g_settings_new() will fatally fail if the schema does not exist, so
+  // use g_settings_schema_source_lookup() to check for it first.
+  auto* schema_source = g_settings_schema_source_get_default();
+  auto* schema =
+      g_settings_schema_source_lookup(schema_source, kDesktopInterface, true);
+  if (!schema) {
+    return;
+  }
+  settings_ = TakeGObject(g_settings_new_full(schema, nullptr, nullptr));
+  g_settings_schema_unref(schema);
+
   signal_ = ScopedGSignal(
       settings_, "changed",
       base::BindRepeating(&GtkKeyBindingsHandler::OnSettingsChanged,
