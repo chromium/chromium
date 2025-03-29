@@ -7438,54 +7438,6 @@ IN_PROC_BROWSER_TEST_F(SSLUIDynamicInterstitialTest, MismatchWhenOverridable) {
   }
 }
 
-class RecurrentInterstitialBrowserTest : public CertVerifierBrowserTest {
- public:
-  RecurrentInterstitialBrowserTest() : CertVerifierBrowserTest() {}
-
-  void SetUpOnMainThread() override {
-    CertVerifierBrowserTest::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
-  }
-};
-
-// Tests that a message is added to the interstitial when an error code recurs
-// multiple times.
-IN_PROC_BROWSER_TEST_F(RecurrentInterstitialBrowserTest,
-                       RecurrentInterstitial) {
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  ASSERT_TRUE(https_server.Start());
-  mock_cert_verifier()->set_default_result(
-      net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
-
-  StatefulSSLHostStateDelegate* state =
-      static_cast<StatefulSSLHostStateDelegate*>(
-          browser()->profile()->GetSSLHostStateDelegate());
-  state->ResetRecurrentErrorCountForTesting();
-
-  state->SetRecurrentInterstitialThresholdForTesting(2);
-
-  // Use different hostnames for the two test cases to avoid the clickthrough
-  // from one interfering with the other.
-  GURL url = https_server.GetURL("show_error_message.test", "/");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(tab));
-  ExpectInterstitialElementHidden(tab, "recurrent-error-message",
-                                  true /* expect_hidden */);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(tab));
-  ExpectInterstitialElementHidden(tab, "recurrent-error-message",
-                                  false /* expect_hidden */);
-
-  // Proceed through the interstitial and observe that the histogram is
-  // recorded correctly.
-  content::TestNavigationObserver nav_observer(tab, 1);
-  ASSERT_TRUE(
-      content::ExecJs(tab, "window.certificateErrorPageController.proceed();"));
-  nav_observer.Wait();
-}
-
 // Tests that mixed content is tracked by origin hostname, not by URL. This is
 // tested by checking that mixed content flags are set appropriately for
 // about:blank URLs (who inherit the origin of their opener).

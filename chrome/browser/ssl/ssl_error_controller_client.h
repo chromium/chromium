@@ -20,15 +20,6 @@ class SettingsPageHelper;
 class SSLErrorControllerClient
     : public security_interstitials::SecurityInterstitialControllerClient {
  public:
-  // Actions recorded on recurrent error interstitials. This enum is
-  // histogrammed, so do not add, reorder, or remove values. Exposed for
-  // testing.
-  enum class RecurrentErrorAction {
-    kShow,
-    kProceed,
-    kMaxValue = kProceed,
-  };
-
   SSLErrorControllerClient(
       content::WebContents* web_contents,
       const net::SSLInfo& ssl_info,
@@ -48,7 +39,6 @@ class SSLErrorControllerClient
   void Proceed() override;
   bool CanLaunchDateAndTimeSettings() override;
   void LaunchDateAndTimeSettings() override;
-  bool HasSeenRecurrentError() override;
 
  private:
   const net::SSLInfo ssl_info_;

@@ -16,8 +16,7 @@ std::unique_ptr<KeyedService> BuildStatefulSSLHostStateDelegate(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<StatefulSSLHostStateDelegate>(
-      profile, profile->GetPrefs(),
-      HostContentSettingsMapFactory::GetForProfile(profile));
+      profile, HostContentSettingsMapFactory::GetForProfile(profile));
 }
 
 }  // namespace
