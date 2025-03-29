@@ -6269,6 +6269,21 @@
             ]
         }
     ],
+    "ConchExpandTranscriptionLanguage": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ConchExpandTranscriptionLanguage"
+                    ]
+                }
+            ]
+        }
+    ],
     "ConditionalImageResize": [
         {
             "platforms": [
