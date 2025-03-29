@@ -187,6 +187,9 @@ std::optional<PlatformHandle> DecodeHandle(HandleData data,
                                            HandleOwner handle_owner,
                                            Transport& from_transport) {
   const HANDLE handle = DataToHandle(data);
+  if (handle == nullptr) {
+    return std::nullopt;
+  }
   // Do not decode sentinel values used by Windows (INVALID_HANDLE_VALUE &
   // GetCurrentThread()).
   CHECK(!base::win::IsPseudoHandle(handle));
