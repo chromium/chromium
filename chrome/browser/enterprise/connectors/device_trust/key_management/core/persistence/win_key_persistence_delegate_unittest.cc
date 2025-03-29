@@ -16,7 +16,7 @@
 #include "chrome/install_static/install_details.h"
 #include "chrome/installer/util/install_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -97,7 +97,7 @@ class WinKeyPersistenceDelegateTest : public testing::Test {
 
   std::unique_ptr<WinKeyPersistenceDelegate> persistence_delegate_;
   std::wstring key_path_;
-  crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
   registry_util::RegistryOverrideManager registry_override_manager_;
 };
 
