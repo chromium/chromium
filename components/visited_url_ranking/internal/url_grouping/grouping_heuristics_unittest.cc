@@ -276,38 +276,29 @@ TEST_F(GroupingHeuristicsTest,
   ASSERT_FALSE(suggestions.has_value());
 }
 
-TEST_F(GroupingHeuristicsTest, SimilarSourceHeuristic_LaunchType) {
+TEST_F(GroupingHeuristicsTest, SimilarSourceHeuristic_SameParentTabID) {
   std::vector<URLVisitAggregate> candidates = {};
 
-  // 5 tabs have the same launch type, but one of them is from different
-  // package, and one has different paretn tab ID, so 3 are grouped:
-
+  // 5 tabs but one of them is from different package, and one has different
+  // paretn tab ID, so 3 are grouped:
   candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
-  GetTabMetadata(candidates[0]).tab_android_launch_type = 4;
   GetTabMetadata(candidates[0]).parent_tab_id = 123;
 
   candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
   // Not used since package is set.
-  GetTabMetadata(candidates[1]).tab_android_launch_type = 4;
   GetTabMetadata(candidates[1]).launch_package_name = "package1";
   GetTabMetadata(candidates[1]).parent_tab_id = 123;
 
   candidates.push_back(CreateVisitForTab(base::Seconds(350), 113));
-  GetTabMetadata(candidates[2]).tab_android_launch_type = 4;
   GetTabMetadata(candidates[2]).parent_tab_id = 123;
 
   candidates.push_back(CreateVisitForTab(base::Seconds(800), 114));
-  GetTabMetadata(candidates[3]).tab_android_launch_type = 1;
-  GetTabMetadata(candidates[3]).parent_tab_id = 123;
-
-  candidates.push_back(CreateVisitForTab(base::Seconds(800), 115));
-  GetTabMetadata(candidates[4]).tab_android_launch_type = 4;
-  GetTabMetadata(candidates[4]).parent_tab_id = 123;
+  // Not used since parent id is different.
+  GetTabMetadata(candidates[3]).parent_tab_id = 456;
 
   // Not clustered since parent ID is different.
-  candidates.push_back(CreateVisitForTab(base::Seconds(800), 116));
-  GetTabMetadata(candidates[5]).tab_android_launch_type = 4;
-  GetTabMetadata(candidates[5]).parent_tab_id = 456;
+  candidates.push_back(CreateVisitForTab(base::Seconds(800), 115));
+  GetTabMetadata(candidates[4]).parent_tab_id = 123;
 
   std::optional<GroupSuggestions> suggestions = GetSuggestionsFor(
       std::move(candidates), GroupSuggestion::SuggestionReason::kSimilarSource);

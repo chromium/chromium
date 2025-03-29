@@ -155,21 +155,12 @@ class SimilarSourceHeuristic : public GroupingHeuristics::Heuristic {
         // Assign a cluster ID based on hash of the package name.
         result[i] = base::FastHash(tab_launch_package_name->str_val);
         continue;
-      } else if (tab_launch_type && tab_parent_id &&
-                 tab_parent_id->float_val != -1) {
-        // TODO(ssid): Reconsider grouping based on all launch types.
-
-        // Assign a cluster ID based on both launch type and parent tab ID.
-        // TODO(yuezhanggg): Simplify the serialization.
-        base::Value::Dict dict;
-        dict.Set("launch_type",
-                 base::NumberToString(tab_launch_type->float_val));
-        dict.Set("parent_id", base::NumberToString(tab_parent_id->float_val));
-        std::string json_string;
-        base::JSONWriter::Write(dict, &json_string);
-        result[i] = base::FastHash(json_string);
+      }
+      if (tab_parent_id) {
+        result[i] = tab_parent_id->float_val;
         continue;
       }
+      // TODO(ssid): Reconsider grouping based on launch types.
     }
     return result;
   }
