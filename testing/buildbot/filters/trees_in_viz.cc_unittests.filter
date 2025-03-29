@@ -78,12 +78,6 @@
 -LayerTreeHostTestDamageWithScale.RunMultiThread_DelegatingRenderer
 -LayerTreeHostTestDamageWithScale.RunSingleThread_DelegatingRenderer
 
-# TODO(crbug.com/402213513) Implement MirrorLayer support
--All/LayerTreeHostMirrorPixelTest.MirrorLayer/SkiaGL
--All/LayerTreeHostMirrorPixelTest.MirrorLayer/SkiaGraphiteDawn
--All/LayerTreeHostMirrorPixelTest.MirrorLayer/SkiaVulkan
--All/LayerTreeHostMirrorPixelTest.MirrorLayer/Software
-
 # TODO(crbug.com/388877791) Implement support for displaying scroll bar layers
 -All/LayerTreeHostOverlayScrollbarsPixelTest.NinePatchScrollbarScaledDown/SkiaGL
 -All/LayerTreeHostOverlayScrollbarsPixelTest.NinePatchScrollbarScaledDown/SkiaGraphiteDawn

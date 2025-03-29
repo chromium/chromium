@@ -22,6 +22,7 @@
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/keyframe_model.h"
 #include "cc/layers/layer_impl.h"
+#include "cc/layers/mirror_layer_impl.h"
 #include "cc/layers/picture_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/tiles/picture_layer_tiling.h"
@@ -439,6 +440,11 @@ void SerializePictureLayerTileUpdates(
   }
 }
 
+void SerializeMirrorLayerExtra(MirrorLayerImpl& layer,
+                               viz::mojom::MirrorLayerExtraPtr& extra) {
+  extra->mirrored_layer_id = layer.mirrored_layer_id();
+}
+
 void SerializeSurfaceLayerExtra(SurfaceLayerImpl& layer,
                                 viz::mojom::SurfaceLayerExtraPtr& extra) {
   extra->surface_range = layer.range();
@@ -475,6 +481,14 @@ void SerializeLayer(LayerImpl& layer,
   wire.effect_tree_index = layer.effect_tree_index();
   wire.scroll_tree_index = layer.scroll_tree_index();
   switch (layer.GetLayerType()) {
+    case mojom::LayerType::kMirror: {
+      auto mirror_layer_extra = viz::mojom::MirrorLayerExtra::New();
+      SerializeMirrorLayerExtra(static_cast<MirrorLayerImpl&>(layer),
+                                mirror_layer_extra);
+      wire.layer_extra = viz::mojom::LayerExtra::NewMirrorLayerExtra(
+          std::move(mirror_layer_extra));
+      break;
+    }
     case mojom::LayerType::kSurface: {
       auto surface_layer_extra = viz::mojom::SurfaceLayerExtra::New();
       SerializeSurfaceLayerExtra(static_cast<SurfaceLayerImpl&>(layer),

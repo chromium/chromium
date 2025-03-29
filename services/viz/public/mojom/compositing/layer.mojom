@@ -15,6 +15,12 @@ import "services/viz/public/mojom/compositing/copy_output_request.mojom";
 import "services/viz/public/mojom/compositing/resource_id.mojom";
 import "ui/gfx/mojom/transform.mojom";
 
+// Extra fields in a cc::MirrorLayerImpl that has been added to a tree or
+// modified in some interesting way since a prior tree update.
+struct MirrorLayerExtra {
+  int32 mirrored_layer_id;
+};
+
 // Extra fields in a cc::SurfaceLayerImpl that has been added to a tree or
 // modified in some interesting way since a prior tree update.
 struct SurfaceLayerExtra {
@@ -50,6 +56,8 @@ struct SurfaceLayerExtra {
 
 // Extra properties that are specific to a LayerImpl type.
 union LayerExtra {
+  // Extra properties that are specific to MirrorLayerImpl.
+  MirrorLayerExtra mirror_layer_extra;
   // Extra properties that are specific to SurfaceLayerImpl.
   SurfaceLayerExtra surface_layer_extra;
 };
