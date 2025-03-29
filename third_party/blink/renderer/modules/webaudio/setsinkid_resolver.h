@@ -27,9 +27,24 @@ class SetSinkIdResolver final : public GarbageCollected<SetSinkIdResolver> {
 
   void Start();
 
-  ScriptPromiseResolver<IDLUndefined>* Resolver();
+  // Resolves the promise and sets `resolver_` to nullptr.
+  void Resolve();
+
+  // Rejects the promise with a DOMException and sets `resolver_` to nullptr.
+  void Reject(DOMException* exception);
+
+  // Rejects the promise with a v8::Local<v8::Value> and sets `resolver_` to
+  // nullptr. Used when creating an exception with
+  // V8ThrowDOMException::CreateOrEmpty.
+  void Reject(v8::Local<v8::Value>);
+
+  ScriptPromise<IDLUndefined> GetPromise();
 
  private:
+  // Will decide whether to resolve or reject the promise based on `status`.
+  // After this method returns, `resolver_` is set to nullptr.
+  void HandleOutputDeviceStatus(media::OutputDeviceStatus status);
+
   // This callback function is passed to 'AudioDestinationNode::SetSinkId()'.
   // When the device status is okay, 'NotifySetSinkIdIsDone()' gets invoked.
   void OnSetSinkIdComplete(media::OutputDeviceStatus status);
