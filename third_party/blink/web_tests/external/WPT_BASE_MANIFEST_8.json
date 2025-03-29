@@ -585,6 +585,13 @@
        {}
       ]
      ],
+     "root-element-background-contain-hidden-crash.html": [
+      "da07de5bf5126d4d951f2522315991807eb09fcc",
+      [
+       null,
+       {}
+      ]
+     ],
      "root-element-filter-background-clip-text-crash.html": [
       "e12e4bb80f40e09e189f7f239486be246ea67ade",
       [
@@ -133151,6 +133158,190 @@
     },
     "css-gaps": {
      "tentative": {
+      "flex": {
+       "flex-gap-decorations-001.html": [
+        "0667693f38c77e814a09930461f91956af9e3c85",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "flex-gap-decorations-002.html": [
+        "632b690434c5f27af9b06721b4203d773097fba4",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/agnostic/gap-decorations-001-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "flex-gap-decorations-003.html": [
+        "effab7fee24a20936dd0cc487947693c8e87a72d",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/flex/flex-gap-decorations-003-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "flex-gap-decorations-004.html": [
+        "a5c0698e7fa3829cd515323dbb851cc55c30db7d",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/flex/flex-gap-decorations-004-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "flex-gap-decorations-005.html": [
+        "1688d447d50dbab028f0a8a82815f5661f921d53",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/flex/flex-gap-decorations-005-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "flex-gap-decorations-006.html": [
+        "3d7dbfd9fedb7513c77b7c5dce132935c8e52617",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/flex/flex-gap-decorations-006-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "flex-gap-decorations-007.html": [
+        "34853bb32062009381d7d868fcef8c99fdc9ffa8",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/flex/flex-gap-decorations-007-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "flex-gap-decorations-008.html": [
+        "bd4e73c158c1d329d7c747d69477d19c8ed6c3fd",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/flex/flex-gap-decorations-008-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "flex-gap-decorations-009.html": [
+        "6bb406c5b0155c7eb65d0117e388bad2272a6ac9",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/flex/flex-gap-decorations-009-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "flex-gap-decorations-010.html": [
+        "49f6ec962ada962ac2253b148f316df237bbf5e5",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/flex/flex-gap-decorations-010-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "flex-gap-decorations-011.html": [
+        "7b142e54ec7d0dade4d8e7b5b46a85c70ca6aa8e",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/flex/flex-gap-decorations-011-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "flex-gap-decorations-013.html": [
+        "1cdf1c2749660c9147dffc07f171f698d6a9fd2b",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/flex/flex-gap-decorations-013-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "flex-gap-decorations-014.html": [
+        "b7d19549e038ee8efad8d17065071cab00f6b7af",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/flex/flex-gap-decorations-014-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "flex-gap-decorations-015.html": [
+        "6cba13ba2163f3c55fd67ea9e90f41b1d8eff90a",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/flex/flex-gap-decorations-014-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ]
+      },
       "grid": {
        "grid-gap-decorations-001.html": [
         "5fe13a11bbfdb6086dfac68ef20412d6f8a87dc5",
@@ -133166,12 +133357,12 @@
         ]
        ],
        "grid-gap-decorations-002.html": [
-        "429798d0fe762589b451d4b05aa1be6cac4aed2e",
+        "dfc4198b078e6fde0a40c51fac907bd1ab249b58",
         [
          null,
          [
           [
-           "/css/css-gaps/tentative/grid/grid-gap-decorations-002-ref.html",
+           "/css/css-gaps/tentative/agnostic/gap-decorations-001-ref.html",
            "=="
           ]
          ],
@@ -346385,11 +346576,59 @@
     },
     "css-gaps": {
      "tentative": {
-      "grid": {
-       "grid-gap-decorations-002-ref.html": [
+      "agnostic": {
+       "gap-decorations-001-ref.html": [
         "f21be425243208a8fd5baa7ead43313ea88fb19a",
         []
+       ]
+      },
+      "flex": {
+       "flex-gap-decorations-003-ref.html": [
+        "03a815909f25638dfb8ad8aa1bebf6b95d95d000",
+        []
        ],
+       "flex-gap-decorations-004-ref.html": [
+        "a1f4e9d666ed9114092b277576d1057710a15db0",
+        []
+       ],
+       "flex-gap-decorations-005-ref.html": [
+        "020fdb1c8dbe0e5c8d5ca951a6b9cd204f65bd1d",
+        []
+       ],
+       "flex-gap-decorations-006-ref.html": [
+        "701d36f93bb45a41138496e0a1e7c02ba3174788",
+        []
+       ],
+       "flex-gap-decorations-007-ref.html": [
+        "8511c66acf4511670a0268f8bf170a883e2d3924",
+        []
+       ],
+       "flex-gap-decorations-008-ref.html": [
+        "8ca5749417f4eac98bbd9145f8a7cdd6bddc8cc0",
+        []
+       ],
+       "flex-gap-decorations-009-ref.html": [
+        "2071e3fce6029acd1f4d69099eb3642f04cad70a",
+        []
+       ],
+       "flex-gap-decorations-010-ref.html": [
+        "c20df7fcda147bacf350b661451b7a1dd108bcc1",
+        []
+       ],
+       "flex-gap-decorations-011-ref.html": [
+        "61d3e83dc2f64fea83fea38389413ee66ba4e5df",
+        []
+       ],
+       "flex-gap-decorations-013-ref.html": [
+        "3d999788023d13c8414796f6839ceafcd94803d5",
+        []
+       ],
+       "flex-gap-decorations-014-ref.html": [
+        "ab28707785e56b3ab9cdeb61dcf2e4d219dded41",
+        []
+       ]
+      },
+      "grid": {
        "grid-gap-decorations-003-ref.html": [
         "15fc305633d377c286ed9d8fefc6f86aef78c467",
         []
@@ -380245,7 +380484,7 @@
     ],
     "polyfill": {
      "cast-polyfill.js": [
-      "576e0ad04066d37670634b39fc128dc2ea905dae",
+      "0c6b47b5cd0b7f046fff931e65a70d83a2b7c6d7",
       []
      ],
      "chrome-polyfill.js": [
@@ -380253,7 +380492,7 @@
       []
      ],
      "clearkey-polyfill.js": [
-      "057ea3e0301fafebb1ee8f194bab61363dfd2c11",
+      "c21a4e8becf953a89023bb7e99941f0de3bb96f5",
       []
      ],
      "edge-keystatuses.js": [
@@ -380265,7 +380504,7 @@
       []
      ],
      "make-polyfill-tests.py": [
-      "97c6fc74e93ba0f89f34c75cab3d4fb6ad183626",
+      "7773cf9a21f93bc359c9d402941a32b95a7cd02d",
       []
      ]
     },
@@ -380365,7 +380604,7 @@
       []
      ],
      "playback-temporary-events.js": [
-      "d8dac4463df42bde9cc57745f822b95b5ef7d583",
+      "1d81cf2607156c5c239b264f6bec420da70f4d39",
       []
      ],
      "playback-temporary-expired.js": [
@@ -380475,7 +380714,7 @@
       []
      ],
      "drm-messagehandler.js": [
-      "b1565c12cb02e4a99caa9399f2d7714db22501f8",
+      "0af63be0686644d493c20d9939ccbc8b83f093e6",
       []
      ],
      "testmediasource.js": [
@@ -428699,22 +428938,6 @@
     ],
     "video-encoder-h26x-annexb.https.any_h265_annexb_software-expected.txt": [
      "6cdf9ac43b73d222c8ceeaa70efc95c4a760a5c7",
-     []
-    ],
-    "video-encoder-rescaling.https.any.worker_h264_annexb-expected.txt": [
-     "0cda5c9c02c522720b8d8484fce25cd44a074d74",
-     []
-    ],
-    "video-encoder-rescaling.https.any.worker_h264_avc-expected.txt": [
-     "0cda5c9c02c522720b8d8484fce25cd44a074d74",
-     []
-    ],
-    "video-encoder-rescaling.https.any_h264_annexb-expected.txt": [
-     "0cda5c9c02c522720b8d8484fce25cd44a074d74",
-     []
-    ],
-    "video-encoder-rescaling.https.any_h264_avc-expected.txt": [
-     "0cda5c9c02c522720b8d8484fce25cd44a074d74",
      []
     ],
     "video-encoder-utils.js": [
