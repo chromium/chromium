@@ -112,17 +112,17 @@ DatePartRange GetYearRange(base::span<const SelectOption> options) {
   {
     std::vector<int> nums = ExtractNumbers(options, &SelectOption::text);
     Sequence seq = GetLongestConsecutiveNonNegativeSequence(nums);
-    uint32_t value_offset = year_offset(nums, seq);
-    if (value_offset != 0 && !is_month_or_day()) {
-      return {seq.subspan(options), value_offset};
+    uint32_t first_value = year_offset(nums, seq);
+    if (first_value != 0 && !is_month_or_day()) {
+      return {seq.subspan(options), first_value};
     }
   }
   {
     std::vector<int> nums = ExtractNumbers(options, &SelectOption::value);
     Sequence seq = GetLongestConsecutiveNonNegativeSequence(nums);
-    uint32_t value_offset = year_offset(nums, seq);
-    if (value_offset != 0 && !is_month_or_day()) {
-      return {seq.subspan(options), value_offset};
+    uint32_t first_value = year_offset(nums, seq);
+    if (first_value != 0 && !is_month_or_day()) {
+      return {seq.subspan(options), first_value};
     }
   }
   return {};

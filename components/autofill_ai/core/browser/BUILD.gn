@@ -54,6 +54,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
   source_set("unit_tests") {
     testonly = true
     sources = [
+      "autofill_ai_import_utils_unittest.cc",
       "autofill_ai_logger_unittest.cc",
       "autofill_ai_manager_unittest.cc",
       "suggestion/autofill_ai_suggestions_unittest.cc",

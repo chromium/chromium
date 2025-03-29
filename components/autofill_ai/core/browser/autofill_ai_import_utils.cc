@@ -4,10 +4,15 @@
 
 #include "components/autofill_ai/core/browser/autofill_ai_import_utils.h"
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/filling/autofill_ai/select_date_matching.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -19,6 +24,7 @@ namespace {
 using autofill::AttributeInstance;
 using autofill::AttributeType;
 using autofill::AutofillField;
+using autofill::DatePartRange;
 using autofill::DenseSet;
 using autofill::EntityInstance;
 using autofill::EntityType;
@@ -39,6 +45,51 @@ bool AttributesMeetImportConstraints(EntityType entity_type,
                              });
 }
 
+struct ValueAndFormatString {
+  std::u16string value;
+  std::u16string format_string;
+};
+
+// Returns the value and format string of `field` for import by Autofill AI.
+ValueAndFormatString GetValueAndFormatString(const AutofillField& field) {
+  std::optional<FieldType> field_type =
+      field.GetAutofillAiServerTypePredictions();
+  if (!field_type) {
+    return {};
+  }
+
+  if (!IsDateFieldType(*field_type) || !field.IsSelectElement()) {
+    std::u16string value = field.value(autofill::ValueSemantics::kCurrent);
+    base::TrimWhitespace(value, base::TRIM_ALL, &value);
+    return {
+        .value = std::move(value),
+        .format_string = field.format_string() ? *field.format_string() : u""};
+  }
+
+  auto get_value = [&](DatePartRange range) {
+    const std::u16string& value =
+        field.value(autofill::ValueSemantics::kCurrent);
+    uint32_t index = 0;
+    while (index < range.options.size() &&
+           value != range.options[index].value) {
+      ++index;
+    }
+    if (index < range.options.size()) {
+      return base::NumberToString16(range.first_value + index);
+    }
+    return std::u16string();
+  };
+  std::u16string value;
+  if (!(value = get_value(GetYearRange(field.options()))).empty()) {
+    return {.value = std::move(value), .format_string = u"YYYY"};
+  } else if (!(value = get_value(GetMonthRange(field.options()))).empty()) {
+    return {.value = std::move(value), .format_string = u"M"};
+  } else if (!(value = get_value(GetDayRange(field.options()))).empty()) {
+    return {.value = std::move(value), .format_string = u"D"};
+  }
+  return {};
+}
+
 std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
     base::span<const std::unique_ptr<autofill::AutofillField>> fields,
     const std::string& app_locale) {
@@ -51,25 +102,23 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
     if (!field_type) {
       continue;
     }
-    std::optional<AttributeType> attribute_type =
-        AttributeType::FromFieldType(*field_type);
-    CHECK(attribute_type);
-    // TODO(crbug.com/389629676): Save data format.
-    std::u16string value = field->value(autofill::ValueSemantics::kCurrent);
-    base::TrimWhitespace(value, base::TRIM_ALL, &value);
-    if (value.empty()) {
+
+    ValueAndFormatString value = GetValueAndFormatString(*field);
+    if (value.value.empty()) {
       continue;
     }
+
+    std::optional<AttributeType> attribute_type =
+        AttributeType::FromFieldType(*field_type);
 
     std::map<AttributeType, AttributeInstance>& entity_attributes =
         section_to_entity_types_attributes[field->section()]
                                           [attribute_type->entity_type()];
     auto attribute_it =
         entity_attributes.try_emplace(*attribute_type, *attribute_type).first;
-    attribute_it->second.SetInfo(
-        field->Type().GetStorableType(), value, app_locale,
-        field->format_string() ? *field->format_string() : u"",
-        autofill::VerificationStatus::kObserved);
+    attribute_it->second.SetInfo(field->Type().GetStorableType(), value.value,
+                                 app_locale, value.format_string,
+                                 autofill::VerificationStatus::kObserved);
   }
 
   for (auto& [section, entities] : section_to_entity_types_attributes) {

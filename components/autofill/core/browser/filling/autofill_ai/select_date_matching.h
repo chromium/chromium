@@ -39,10 +39,10 @@ struct DatePartRange {
   // range represents the years 2025, 2026, ..., 2075, and `get_by_value(2026)`
   // returns the `options[1]`.
   base::optional_ref<const SelectOption> get_by_value(uint32_t value) const {
-    if (value < value_offset || value >= value_offset + options.size()) {
+    if (value < first_value || value >= first_value + options.size()) {
       return std::nullopt;
     }
-    return options[value - value_offset];
+    return options[value - first_value];
   }
 
   // A subspan of a field's options that has represents a sequence of years,
@@ -55,7 +55,7 @@ struct DatePartRange {
   // For year ranges, it is in YYYY format. That is, if `options.front()` is
   // `SelectOption{.text = u"2025"}` or `SelectOption{.text = u"25"}`, then
   // in both cases it is 2025.
-  uint32_t value_offset = std::numeric_limits<uint32_t>::max();
+  uint32_t first_value = std::numeric_limits<uint32_t>::max();
 };
 
 // Returns a subspan of `options` that represents years.
