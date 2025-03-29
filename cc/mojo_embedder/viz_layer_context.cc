@@ -152,6 +152,8 @@ void ComputePropertyTreeNodeUpdate(
       old_node->opacity == new_node.opacity &&
       old_node->render_surface_reason == new_node.render_surface_reason &&
       old_node->surface_contents_scale == new_node.surface_contents_scale &&
+      old_node->subtree_capture_id == new_node.subtree_capture_id &&
+      old_node->subtree_size == new_node.subtree_size &&
       old_node->blend_mode == new_node.blend_mode &&
       old_node->target_id == new_node.target_id &&
       old_node->has_copy_request == new_node.has_copy_request &&
@@ -174,6 +176,8 @@ void ComputePropertyTreeNodeUpdate(
   wire->has_render_surface =
       new_node.render_surface_reason != RenderSurfaceReason::kNone;
   wire->surface_contents_scale = new_node.surface_contents_scale;
+  wire->subtree_capture_id = new_node.subtree_capture_id;
+  wire->subtree_size = new_node.subtree_size;
   wire->blend_mode = base::checked_cast<uint32_t>(new_node.blend_mode);
   wire->target_id = new_node.target_id;
   wire->copy_output_requests = std::move(copy_requests);
