@@ -112,6 +112,8 @@ interface PageElementTypes {
   actionStatus: HTMLSpanElement;
   actionUpdatedContextResult: HTMLSpanElement;
   actionUpdatedScreenshotImg: HTMLImageElement;
+  macOsPermissionsFieldset: HTMLFieldSetElement;
+  attachmentControlsFieldset: HTMLFieldSetElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -152,7 +154,15 @@ class WebClient implements GlicWebClient {
     logMessage('initialize called');
     $.pageHeader!.classList.add('connected');
 
-
+    // Disable sections with unavailable functionality.
+    if (this.browser.openOsPermissionSettingsMenu === undefined) {
+      logMessage('OS permissions are disabled');
+      $.macOsPermissionsFieldset.disabled = true;
+    }
+    if (this.browser.attachPanel === undefined) {
+      logMessage('Attachment controls are disabled (detached-only mode)');
+      $.attachmentControlsFieldset.disabled = true;
+    }
 
     const ver = await browser.getChromeVersion();
     logMessage(`Chrome version: ${JSON.stringify(ver)}`);

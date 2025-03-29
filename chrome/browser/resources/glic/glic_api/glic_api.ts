@@ -248,6 +248,8 @@ export declare interface GlicBrowserHost {
   closePanel?(): Promise<void>;
 
   /**
+   * @deprecated The panel will only maintain the detached state.
+   *
    * Requests that the web client's panel be attached to a browser window.
    * If attachment fails, the panel's state will not be updated. getPanelState
    * can be used to monitor whether attachment is successful.
@@ -255,6 +257,8 @@ export declare interface GlicBrowserHost {
   attachPanel?(): void;
 
   /**
+   * @deprecated The panel will only maintain the detached state.
+   *
    * Requests that the web client's panel be detached from a browser window
    * (floats free).
    */
@@ -267,7 +271,11 @@ export declare interface GlicBrowserHost {
    */
   showProfilePicker?(): void;
 
-  /** Returns the state of the panel. */
+  /**
+   * @deprecated The panel will only maintain the detached state.
+   *
+   * Returns the state of the panel.
+   */
   getPanelState?(): ObservableValue<PanelState>;
 
   /**
@@ -281,6 +289,8 @@ export declare interface GlicBrowserHost {
   panelActive(): ObservableValue<boolean>;
 
   /**
+   * @deprecated The panel will only maintain the detached state.
+   *
    * Whether the panel can be attached. This is true if there is a browser
    * window suitable for attachment. This state is only meaningful when the
    * panel is in the detached state, and should be not be considered otherwise
@@ -414,8 +424,8 @@ export declare interface GlicBrowserHost {
   setSyntheticExperimentState?(trialName: string, groupName: string): void;
 
   /**
-   * Opens the OS permission settings menu for the given permission type.
-   * Supports `media` for microphone ad `geolocation` for location. This
+   * Opens the OS permission settings page for the given permission type.
+   * Supports `media` for microphone and `geolocation` for location. This
    * function is available when running on Mac.
    */
   openOsPermissionSettingsMenu?(permission: string): void;
@@ -537,7 +547,11 @@ export declare interface OpenPanelInfo {
   canUserResize?: boolean;
 }
 
-/** A panel can be in one of these three states. */
+/**
+ * @deprecated The panel will only maintain the detached state.
+ *
+ * A panel can be in one of these three states.
+ */
 export enum PanelStateKind {
   /** Not shown. This is the initial state. */
   HIDDEN = 0,
@@ -551,9 +565,15 @@ export enum PanelStateKind {
   ATTACHED = 2,
 }
 
-/** Information of how the panel is being presented/configured. */
+/**
+ * @deprecated The panel will only maintain the detached state.
+ *
+ * Information of how the panel is being presented/configured.
+ */
 export declare interface PanelState {
-  /** The panel's presentation kind/state. */
+  /**
+   * The panel's presentation kind/state.
+   */
   kind: PanelStateKind;
   /**
    * Present only when attached to a window, indicating which window it is
@@ -567,10 +587,14 @@ export declare interface PanelState {
  * information.
  */
 export declare interface PanelOpeningData {
-  /** The state of the panel as it's being opened. */
-  panelState: PanelState;
+  /**
+   * @deprecated The panel will only maintain the detached state.
+   *
+   * The state of the panel as it's being opened.
+   */
+  panelState?: PanelState;
   /** Indicates the entry point used to trigger the opening of the panel. */
-  invocationSource: InvocationSource;
+  invocationSource?: InvocationSource;
 }
 
 /** Entry points that can trigger the opening of the panel. */
