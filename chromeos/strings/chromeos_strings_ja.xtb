@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">プロキシ認証が必要です</translation>
 <translation id="4594021849294327751">文字起こしを行う</translation>
 <translation id="4594541568452132351">文字起こしの言語を選択してモデルをダウンロード</translation>
-<translation id="4607282946861182308">この画像を作成できません。別のプロンプトをお試しください。</translation>
 <translation id="4609350030397390689">キーボードの明るさを下げる</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />。印刷ジョブをキャンセルするには、Enter キーを押します。</translation>
 <translation id="463791356324567266">スキャンをキャンセルしています...</translation>
@@ -1659,6 +1658,7 @@
 <translation id="8543574988889671960">タブを再読み込み</translation>
 <translation id="8550364285433943656">キーボードのキーでプレイするにはゲーム操作のコントロールを設定します</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">生成 AI は間違った情報（人物に関する情報など）を表示することがあるため、生成された回答は再確認するようにしてください。</translation>
 <translation id="8575298406870537639">ご利用の携帯通信会社でのネットワーク接続にこのオプションが必要な場合があります。詳しくは携帯通信会社にお問い合わせください。</translation>
 <translation id="8576249514688522074">初期化が未完了</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> でバージョン <ph name="VERSION" /> へのファームウェアのインストールを完了するには、再起動が必要です。その際、コンピュータに再起動の画面が複数回表示されることがありますが、これは正常な動作です。</translation>
@@ -1673,7 +1673,6 @@
 <translation id="8655295600908251630">チャンネル</translation>
 <translation id="8655828773034788261">URL を共有:</translation>
 <translation id="8660881923941176839">ポンド</translation>
-<translation id="8670057600920888023">生成 AI は試験運用中のため、不正確または不適切な内容や、誤解を招く内容が出力される可能性があります。</translation>
 <translation id="8670574982334489519">右</translation>
 <translation id="8675354002693747642">事前共有キー</translation>
 <translation id="8677859815076891398">アルバムはありません。<ph name="LINK_BEGIN" />Google フォト<ph name="LINK_END" />でアルバムを作成してください。</translation>

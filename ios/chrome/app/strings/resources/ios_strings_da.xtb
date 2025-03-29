@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1190609913194133056">Underretningcenter</translation>
 <translation id="1201402288615127009">Næste</translation>
-<translation id="1202892408424955784">Produkter, du følger</translation>
 <translation id="1204075260022434100">{count,plural, =1{Bogmærket er gemt i "{title}" på din konto {email}}one{{count} bogmærke er gemt i "{title}" på din konto {email}}other{{count} bogmærker er gemt i "{title}" på din konto {email}}}</translation>
 <translation id="120431140543679678">Følg</translation>
 <translation id="1207493287814084192">17.30</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">nyt element</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> konti bruger den samme adgangskode</translation>
 <translation id="2059166748188874810">Kommune</translation>
-<translation id="2060114494785549741">Slet om 1 måned</translation>
 <translation id="2060638295449304809">Denne adresse gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Enhedstypevælger</translation>
 <translation id="2067852168641682340">Gem på denne konto hver gang</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Skjul kortet Overvåg pris</translation>
 <translation id="2216366330550244277">Gå til siden for et produkt</translation>
 <translation id="2220529011494928058">Rapportér et problem</translation>
-<translation id="2220887224562128152">Når der er planlagt sletning af en fil, kan den ikke gendannes.</translation>
 <translation id="2223461067862937305">Opret en QR-kode</translation>
 <translation id="2229345671837147090">Gitter for fjernstyrede faner</translation>
 <translation id="2230173723195178503">Websiden er indlæst</translation>
@@ -493,7 +490,6 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="3059270601560379555">Ny søgning</translation>
 <translation id="3064547930554042309">Administrer downloads</translation>
 <translation id="3072279342064724558">Adgangskoden findes allerede</translation>
-<translation id="3074862506644936708">Aktivér automatisk sletning</translation>
 <translation id="3076846064362030967">Du bliver ikke logget ud af din Google-konto. <ph name="BEGIN_LINK" />Andre former for aktivitet<ph name="END_LINK" /> kan blive gemt på din Google-konto, når du er logget ind. Du kan til enhver tid slette dem.
 
 
@@ -912,6 +908,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4896467949657706481">Fanerne er blevet lukket: Du er blevet logget ud</translation>
 <translation id="4913626501929406101">Du kan på sikker vis dele en kopi af din adgangskode med en anden i din familiegruppe. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Accepter</translation>
+<translation id="4930714375720679147">Aktivér</translation>
 <translation id="4932733599132424254">Dato</translation>
 <translation id="4936354130727646074">Flyt aldrig</translation>
 <translation id="4937410517508563815">Gem adgangskoder på kontoen</translation>
@@ -1147,7 +1144,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5899314093904173337">Du kan dele med folk i nærheden ved at få dem til at scanne denne QR-kode med deres kamera eller app til scanning af QR-koder</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} ny fane}one{{count} ny fane}other{{count} nye faner}}</translation>
 <translation id="5911030830365207728">Google Oversæt</translation>
-<translation id="5917913282764181683">Slet dine downloads automatisk</translation>
 <translation id="5922999516621365983">Træk fanen hertil for at fastgøre den.</translation>
 <translation id="5936006948844852401">Administrer lagerplads</translation>
 <translation id="5936065461722368675">Oversæt hele siden</translation>
@@ -1506,7 +1502,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="741204030948306876">Ja tak</translation>
 <translation id="7417689656810783109">Omdøb gruppe</translation>
 <translation id="7419565702166471774">Brug altid sikre forbindelser</translation>
-<translation id="742001653298797675">Planlæg sletning af dine downloads efter én måned, så du sparer plads på din telefon, og dit privatliv beskyttes.</translation>
 <translation id="7425053386765766120">Tilføj betalingsmetode…</translation>
 <translation id="7425346204213733349">Ændringer af dine bogmærker, din historik, dine adgangskoder og andre indstillinger synkroniseres ikke længere til din Google-konto. Dine eksisterende data er dog stadig gemt på din Google-konto.</translation>
 <translation id="742664698522525515">Vil du beholde gruppen?</translation>

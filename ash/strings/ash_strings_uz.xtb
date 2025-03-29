@@ -732,6 +732,7 @@ Bekor qilinsa, <ph name="TIMEOUT_SECONDS" />dan keyin sensorli panel qayta yoqil
 <translation id="346243998268439747">Masshtabni tiklash</translation>
 <translation id="3465223694362104965">Oxirgi kirishingizdan keyin bu qurilmaga boshqa klaviatura ulangan. Foydalanishdan oldin bu klaviatura ishonchliligini tekshiring.</translation>
 <translation id="3465356146291925647">Administrator boshqaruvida</translation>
+<translation id="3470502288861289375">Nusxa olinmoqda...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, keyin <ph name="KEY_TWO" /> yoki <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Ctrl + Shift + BO‘SHLIQ</translation>
 <translation id="3485319357743610354">Himoya: <ph name="SECURITY_STATUS" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi:<ph name="SIGNAL_STRENGTH" /></translation>

@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB device (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Recent download history</translation>
 <translation id="1004218526896219317">Site access</translation>
+<translation id="1005230401424685968">YYYY</translation>
 <translation id="1005274289863221750">Use your microphone and camera</translation>
 <translation id="1005333234656240382">Enable ADB debugging?</translation>
 <translation id="1005671386794704751">Rose</translation>
@@ -1377,6 +1378,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="193565226207940518">Support Tool</translation>
 <translation id="1935995810530254458">Copy anyway</translation>
 <translation id="1936157145127842922">Show in Folder</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Page added to reading list}other{Pages added to reading list}}</translation>
 <translation id="1936931585862840749">Use a number to indicate how many copies to print (1 to <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Cannot import container architecture type <ph name="ARCHITECTURE_CONTAINER" /> with this device which is <ph name="ARCHITECTURE_DEVICE" />. You can try restoring this container into a different device, or you can access the files inside this container image by opening in Files app.</translation>
 <translation id="1938351510777341717">External command</translation>
@@ -2018,6 +2020,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2373666622366160481">Fit to paper</translation>
 <translation id="2375406435414127095">Connect to your phone</translation>
 <translation id="2376056713414548745">Read aloud</translation>
+<translation id="2376122016044804363">Copied to clipboard confirmations</translation>
 <translation id="2377667304966270281">Hard Faults</translation>
 <translation id="237828693408258535">Translate this page?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{This extension may soon no longer be supported}other{These extensions may soon no longer be supported}}</translation>
@@ -3172,6 +3175,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3192586965067888278">Describe the issue in detail. Feedback will be sent to Google for human review and may be used for improving or developing Google products and services.</translation>
 <translation id="3192947282887913208">Audio Files</translation>
 <translation id="3193695589337931419">System signals utilities</translation>
+<translation id="3194095220941877499">Shows a confirmation when you copy links, images or videos</translation>
 <translation id="3196912927885212665">To set up with your Android phone, your Chromebook's Bluetooth needs to be on</translation>
 <translation id="3197453258332670132">With a right-click or long press, show related info for your text selection</translation>
 <translation id="3199127022143353223">Servers</translation>
@@ -3186,7 +3190,6 @@ You can manage this account’s settings by installing the Family Link app on yo
         <ph name="BREAK" />
         <ph name="BREAK" />
         You can manage settings from this card at any time or see more options in Customise Chrome.</translation>
-<translation id="3207437351138888228">When you fill a form, your info and the page that it comes from are sent to Google to generate suggestions</translation>
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3208584281581115441">Check now</translation>
 <translation id="3208703785962634733">Unconfirmed</translation>
@@ -3231,6 +3234,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3242289508736283383">App with 'kiosk_only' manifest attribute must be installed in Chrome OS kiosk mode</translation>
 <translation id="3243017971870859287">Read ChromeOS Flex device and component serial numbers</translation>
 <translation id="324366796737464147">Noise cancellation</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Continue muting sound</translation>
 <translation id="3247006341013237647">Organise tabs?</translation>
 <translation id="3247649647204519958">From here, you can see and manage extension permissions for the site you're on</translation>
@@ -6098,7 +6102,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5267572070504076962">Turn on Safe Browsing to get protection against dangerous sites</translation>
 <translation id="5269977353971873915">Print Failed</translation>
 <translation id="5271578170655641944">Remove Google Drive access?</translation>
-<translation id="5271782684896713035">This data may be seen by human reviewers to improve this feature.</translation>
 <translation id="5273806377963980154">Edit site URL</translation>
 <translation id="5275084684151588738">User dictionaries</translation>
 <translation id="5275338516105640560">Saved tab group button</translation>

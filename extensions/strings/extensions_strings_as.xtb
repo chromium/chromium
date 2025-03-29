@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">মেনিফেষ্ট ফাইলটো অমান্য</translation>
 <translation id="7217838517480956708">এই মেছিনৰ প্ৰশাসকৰ বাবে <ph name="EXTENSION_NAME" /> ইনষ্টল কৰি ৰখাটো আৱশ্যক। এইটো আঁতৰাব বা সংশোধন কৰিব নোৱাৰি।</translation>
 <translation id="7612608473764576263">ব্যক্তিগত কীৰ বাবে ইনপুট মান কোনো মান্য ফর্মেটৰ হ’বই লাগিব। (PKCS#8-যর্মেটৰ PEM-এনক’ড কৰা RSA কী)।</translation>
+<translation id="7876803335449432072">সমলৰ স্ক্ৰিপ্টৰ বাবে ফাইল '<ph name="RELATIVE_PATH" />' ল'ড কৰিব নোৱাৰি, সমলৰ স্ক্ৰিপ্টৰ শৈলী শ্বীটসমূহ .css ফাইলৰ দৰে সমৰ্থিত শৈলী শ্বীটৰ ফাইলৰ পৰাহে কেৱল ল'ড কৰিব পাৰি।</translation>
 <translation id="7939686037314084444">এই এক্সটেনশ্বনটো সঠিকভাবে ল’ড কৰিব পৰা নগ’ল। এই এক্সটেনশ্বনটো নেটৱৰ্ক সম্বন্ধীয় অনুৰোধ বাধা দিবলৈ সক্ষম নহ’বও পাৰে।</translation>
 <translation id="7972881773422714442">বিকল্প: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">ব্যৱহাৰকাৰীৰ ফালে মুখ কৰি থকা</translation>
 <translation id="8047248493720652249">এই এক্সটেনশ্বনটোৱে ডাউনল'ড হোৱা ফাইলটোৰ নাম "<ph name="ATTEMPTED_FILENAME" />" কৰিব নোৱাৰিলে কিয়নো অন্য এটা এক্সটেনশ্বন (<ph name="EXTENSION_NAME" />)এ সেইটোৰ কাৰণে এটা বেলেগ নাম "<ph name="ACTUAL_FILENAME" />" নির্ধাৰণ কৰিছে।</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" />ৰ <ph name="PRODUCT_NAME" /></translation>
 <translation id="8517576857589387417">ঘোষণা প্ৰদান কৰা ফাইলটো নাই বা সেইটো পঢ়িব নোৱাৰি</translation>
+<translation id="8621383749470166852">সমলৰ স্ক্ৰিপ্টৰ বাবে ফাইল '<ph name="RELATIVE_PATH" />' ল'ড কৰিব নোৱাৰি, সমলৰ স্ক্ৰিপ্টসমূহ .js ফাইলৰ দৰে সমৰ্থিত JavaScript ফাইলৰ পৰাহে কেৱল ল'ড কৰিব পাৰি।</translation>
 <translation id="8636666366616799973">পেকেজটো মান্য নহয়। সবিশেষ: ’<ph name="ERROR_MESSAGE" />’।</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />"এ আপোনাৰ ডিভাইচসমূহৰ মাজৰ এটা ডিভাইচত এক্সেছ অনুৰোধ কৰি আছে:</translation>
 <translation id="8885905466771744233">নিৰ্দিষ্ট কৰা এক্সটেনশ্বনৰ বাবে এটা ব্যক্তিগত চাবি ইতিমধ্যে আছেই। সেই চাবিটো পুনৰ ব্যৱহাৰ কৰক বা সেইটো প্ৰথমতে মচক।</translation>

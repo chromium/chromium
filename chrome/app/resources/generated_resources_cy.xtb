@@ -8,6 +8,7 @@
 <translation id="100323615638474026">Dyfais USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Hanes lawrlwytho diweddar</translation>
 <translation id="1004218526896219317">Mynediad gwefannau</translation>
+<translation id="1005230401424685968">BBBB</translation>
 <translation id="1005274289863221750">Defnyddio'ch meicroffon a'ch camera</translation>
 <translation id="1005333234656240382">Galluogi dadfygio ADB?</translation>
 <translation id="1005671386794704751">Rhosyn</translation>
@@ -1380,6 +1381,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="193565226207940518">Offeryn Cymorth</translation>
 <translation id="1935995810530254458">Copïo beth bynnag</translation>
 <translation id="1936157145127842922">Dangos mewn Ffolder</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Tudalen wedi'i hychwanegu at y rhestr ddarllen}zero{Tudalennau wedi'u hychwanegu at y rhestr ddarllen}two{Tudalennau wedi'u hychwanegu at y rhestr ddarllen}few{Tudalennau wedi'u hychwanegu at y rhestr ddarllen}many{Tudalennau wedi'u hychwanegu at y rhestr ddarllen}other{Tudalennau wedi'u hychwanegu at y rhestr ddarllen}}</translation>
 <translation id="1936931585862840749">Defnyddiwch rif i nodi faint o gopïau i'w hargraffu (1 i <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Methu â mewnforio math pensaernïaeth y cynhwysydd <ph name="ARCHITECTURE_CONTAINER" /> gyda'r ddyfais hon sy'n <ph name="ARCHITECTURE_DEVICE" />. Gallwch roi cynnig ar adfer y cynhwysydd hwn i ddyfais wahanol, neu gallwch gael mynediad at y ffeiliau y tu mewn i'r llun cynhwysydd hwn drwy ei agor yn ap Files.</translation>
 <translation id="1938351510777341717">Gorchymyn Allanol</translation>
@@ -3190,7 +3192,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
         <ph name="BREAK" />
         <ph name="BREAK" />
         Gallwch reoli gosodiadau y cerdyn hwn unrhyw bryd neu weld rhagor o ddewisiadau yn Customize Chrome.</translation>
-<translation id="3207437351138888228">Pan fyddwch yn llenwi ffurflen, mae'ch gwybodaeth a'r dudalen y daw ohoni yn cael eu hanfon at Google i gynhyrchu awgrymiadau</translation>
 <translation id="3207960819495026254">Wedi rhoi nod tudalen ar gyfer</translation>
 <translation id="3208584281581115441">Gwirio nawr</translation>
 <translation id="3208703785962634733">Heb ei gadarnhau</translation>
@@ -3235,6 +3236,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3242289508736283383">Rhaid gosod ap gyda'r briodwedd maniffest 'kiosk_only' ym modd Kiosk ChromeOS</translation>
 <translation id="3243017971870859287">Darllen rhifau cyfresol cydran a dyfais ChromeOS Flex</translation>
 <translation id="324366796737464147">Dileu sŵn</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Parhau i ddistewi'r sain</translation>
 <translation id="3247006341013237647">Trefnu tabiau?</translation>
 <translation id="3247649647204519958">O'r fan hon, gallwch weld a rheoli caniatâd estyniad ar gyfer y wefan rydych arni</translation>
@@ -6100,7 +6102,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5267572070504076962">Trowch Bori'n Ddiogel ymlaen i gael amddiffyniad rhag gwefannau peryglus</translation>
 <translation id="5269977353971873915">Wedi methu ag argraffu</translation>
 <translation id="5271578170655641944">Tynnu mynediad Google Drive?</translation>
-<translation id="5271782684896713035">Mae'n bosib y bydd adolygwyr dynol yn gweld data i wella'r nodwedd hon</translation>
 <translation id="5273806377963980154">Golygu URL gwefan</translation>
 <translation id="5275084684151588738">Geiriaduron Defnyddwyr</translation>
 <translation id="5275338516105640560">Botwm Grŵp Tabiau sydd wedi'i gadw</translation>

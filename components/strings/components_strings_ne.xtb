@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">प्रणालीको प्रशासकलाई सम्पर्क गर्ने प्रयास गर्नुहोस्।</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" /> मा म्याद सकिन्छ</translation>
 <translation id="1736420071277903564">कम्प्युटर</translation>
-<translation id="1739422091279046802">स्क्रोल तथा जुम गर्ने सेटिङ</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> हुँदा नीति अनिवार्य रूपमा तोकिएको हुनका साथै उक्त नीति एउटा मान्य स्ट्रिङ हुनु पर्छ।</translation>
 <translation id="1743393865165844832">ओछयान तथा बेड लिनन</translation>
 <translation id="1743892871127720056">तालिकाको शीर्षकको तुलना गर्नुहोस्, टेक्स्ट सम्पादन गर्नुहोस्</translation>
@@ -1566,6 +1565,7 @@
 <translation id="3715016660240337709">{0,plural, =1{फाइल अपलोड गर्न रोक लगाइएको छ}other{<ph name="FILE_COUNT" /> वटा फाइल अपलोड गर्न रोक लगाइएको छ}}</translation>
 <translation id="3715597595485130451">Wi-Fi मा कनेक्ट गर्नुहोस्</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />प्रोक्सी, फायरवाल र DNS को कन्फिगरेसनलाई जाँच गर्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">तपाईं डिभाइस अपडेट भइरहेका बेला १० मिनेटसम्म उक्त डिभाइस प्रयोग गर्न सक्नुहुन्न।</translation>
 <translation id="372429172604983730">यो त्रुटि उत्पन्न गराउन सक्ने एपहरूमा एन्टिभाइरस, फायरवाल र वेब-फिल्टर वा प्रोक्सी सफ्टवेयर पर्दछन्।</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Slides प्रयोग गरी तुरुन्तै नयाँ प्रेजेन्टेसन बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
@@ -2493,6 +2493,7 @@
 <translation id="5379618281582508161">यो पासवर्ड आफ्ना सबै डिभाइसमा प्राप्त गर्न आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="5380953781541843508">बढ्दो क्रममा</translation>
 <translation id="5381318171304904246">तपाईंले जारी राख्नुभयो भने तपाईंलाई तपाईंको बैंकको वेबसाइटमा लगिने छ। तपाईंले आफ्नो पहिचान पुष्टि गरेपछि तपाईंलाई खरिद पूरा गर्न स्वतः यहाँ फर्काइने छ।</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> ले ट्याब “<ph name="WEBSITE_TITLE" />” परिवर्तन गर्नुभएको छ</translation>
 <translation id="5383478552402031184">भुइँमा टायल लगाउने काम</translation>
 <translation id="5385857628869214740">हास्य</translation>
 <translation id="5385966243497224160">गैर HTTPS URL प्रिभ्यू गर्न सकिएन</translation>
@@ -2878,6 +2879,7 @@
 <translation id="6059925163896151826">USB सम्बन्धी यन्त्रहरू</translation>
 <translation id="6060009363608157444">अमान्य DnsOverHttps मोड।</translation>
 <translation id="6061154937977953833">कुस्ती</translation>
+<translation id="6062405040252994646">टुल</translation>
 <translation id="6062937464449575061">मूल्य ट्र्याक गर्न छाड्नुहोस्</translation>
 <translation id="6063415549109819824">घर कर्जा</translation>
 <translation id="6070432475334343308">एक वा सोभन्दा बढी फाइलहरू <ph name="CLOUD_PROVIDER" /> को <ph name="FOLDER_NAME" /> मा अपलोड गर्न सकिएन</translation>
@@ -3924,6 +3926,7 @@
 <translation id="787226752901403048">ट्याब समूह सेयर गर्न, तिनमा सामेल हुन र आइडियाहरूमा मिलेर काम गर्न Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="7877007680666472091">संरक्षित सामग्रीका ID</translation>
 <translation id="7878562273885520351">तपाईंको पासवर्ड जोखिममा पर्न सक्छ</translation>
+<translation id="7881044256965445977">तपाईंको स्थानीय नेटवर्कमा भएको जुनसुकै डिभाइस खोज्ने र त्यसमा कनेक्ट गर्ने</translation>
 <translation id="7882421473871500483">खैरो</translation>
 <translation id="7886897188117641322">विज्ञापनहरू पर्सनलाइज गर्न कुन कुन बृहत् विषयहरू प्रयोग गर्न दिने भन्ने कुरा छनौट गर्नुहोस्</translation>
 <translation id="7887683347370398519">तपाईँको CVC जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
@@ -4681,6 +4684,7 @@
 <translation id="94613679163347541"><ph name="CATEGORY" /> को तुलना गर्ने हो?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites प्रयोग गरी तुरुन्तै नयाँ साइट बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome ले आज फेरि कुकीहरू सीमित पार्ने छ}=1{Chrome ले भोलि फेरि कुकीहरू सीमित पार्ने छ}other{Chrome ले अबको # दिनमा फेरि कुकीहरू सीमित पार्ने छ}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> जना सदस्य "<ph name="GROUP_NAME" />" ट्याब समूहमा सामेल हुनुभएको छ</translation>
 <translation id="949314938206378263">तपाईंले यो साइटमा जाने अनुमति माग्नुभएको छ। तपाईंका अभिभावक Family Link मार्फत अनुमति दिन वा नदिन सक्छन्।</translation>
 <translation id="950736567201356821">सिरानमा तीन प्वाल</translation>
 <translation id="950926967802086924">पासकी • Google पासवर्ड म्यानेजर</translation>

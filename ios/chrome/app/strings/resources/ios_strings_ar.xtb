@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">إزالة</translation>
 <translation id="1190609913194133056">مركز الإشعارات</translation>
 <translation id="1201402288615127009">التالي</translation>
-<translation id="1202892408424955784">المنتجات التي يتم تتبُّع أسعارها</translation>
 <translation id="1204075260022434100">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}" ضِمن حسابك {email}}zero{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}two{تمّ حفظ إشارتَين مرجعيتَين ({count}) في "{title}" ضِمن حسابك {email}}few{تمّ حفظ {count} إشارات مرجعية في "{title}" ضِمن حسابك {email}}many{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}other{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}}</translation>
 <translation id="120431140543679678">متابعة</translation>
 <translation id="1207493287814084192">‫5:30 مساءً</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">عنصر جديد</translation>
 <translation id="2049727122989709386">‫<ph name="COUNT" /> حساب يستخدم كلمة المرور نفسها</translation>
 <translation id="2059166748188874810">بلدية</translation>
-<translation id="2060114494785549741">الحذف بعد شهر واحد</translation>
 <translation id="2060638295449304809">‏يتم حفظ هذا العنوان على هذا الجهاز فقط. ولاستخدامه على أجهزتك الأخرى، يمكنك حفظه في حسابك على Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="20638360198452347">مُحدِّد نوع الوحدة</translation>
 <translation id="2067852168641682340">الحفظ في هذا الحساب في كل مرة</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">إخفاء بطاقة "تتبُّع السعر"</translation>
 <translation id="2216366330550244277">الانتقال إلى صفحة المنتج</translation>
 <translation id="2220529011494928058">الإبلاغ عن مشكلة</translation>
-<translation id="2220887224562128152">بعد تحديد موعد لحذف ملف، لا يمكن استرداده.</translation>
 <translation id="2223461067862937305">إنشاء رمز استجابة سريعة</translation>
 <translation id="2229345671837147090">شبكة علامات التبويب البعيدة</translation>
 <translation id="2230173723195178503">تم تحميل الصفحة المطلوبة</translation>
@@ -384,7 +381,6 @@
 <translation id="2539748786028143624">تفعيل مستوى "الحماية المحسَّنة"…</translation>
 <translation id="2540111494300686866">إيقاف مربعات الحوار</translation>
 <translation id="2542268842667970959">إخفاء ميزة "تأكيد السلامة"</translation>
-<translation id="2543870349255816922">تعرض هذه البطاقة أي انخفاض في سعر منتجك المتتبَّع من أحد أجهزتك التي تمّت مزامنتها</translation>
 <translation id="2547458583188611426">المزامنة غير مفعَّلة. يجب إدخال عبارة المرور لبدء المزامنة.</translation>
 <translation id="2551153019974022505">خطأ في الحساب</translation>
 <translation id="2559843230610279254">مجموعة علامات تبويب تحمل اسم "<ph name="GROUP_TITLE" />"، وعدد علامات التبويب فيها <ph name="TABS_NUMBER" /></translation>
@@ -494,7 +490,6 @@
 <translation id="3059270601560379555">بحث جديد</translation>
 <translation id="3064547930554042309">إدارة عمليات التنزيل</translation>
 <translation id="3072279342064724558">سبق أن تم نقل كلمة المرور هذه</translation>
-<translation id="3074862506644936708">تفعيل ميزة "الحذف التلقائي"</translation>
 <translation id="3076846064362030967">‏لن يتم تسجيل خروجك من حساب Google. قد يتم حفظ <ph name="BEGIN_LINK" />بيانات الأنشطة الأخرى<ph name="END_LINK" /> في حسابك على Google عند تسجيل الدخول إليه. ويمكنك حذفها في أي وقت.
 
 
@@ -913,6 +908,7 @@
 <translation id="4896467949657706481">تم إغلاق علامات التبويب وتسجيل خروجك من الحساب</translation>
 <translation id="4913626501929406101">يمكنك مشاركة نسخة من كلمة المرور بأمان مع أي فرد في مجموعة عائلتك. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">قبول</translation>
+<translation id="4930714375720679147">تفعيل</translation>
 <translation id="4932733599132424254">التاريخ</translation>
 <translation id="4936354130727646074">عدم النقل مطلقًا</translation>
 <translation id="4937410517508563815">حفظ كلمات المرور في الحساب</translation>
@@ -1146,7 +1142,6 @@
 <translation id="5899314093904173337">يمكنك مشاركته مع المستخدمين القريبين من خلال السماح لهم بمسح رمز الاستجابة السريعة ضوئيًا باستخدام الكاميرا أو تطبيق ماسح رمز الاستجابة السريعة.</translation>
 <translation id="5902752768726620872">{count,plural, =1{تمت إضافة علامة تبويب ({count}) جديدة}zero{تمت إضافة {count} علامة تبويب جديدة}two{تمت إضافة علامتَي تبويب ({count}) جديدتان}few{تمت إضافة {count} علامات تبويب جديدة}many{تمت إضافة {count} علامة تبويب جديدة}other{تمت إضافة {count} علامة تبويب جديدة}}</translation>
 <translation id="5911030830365207728">‏الترجمة من Google</translation>
-<translation id="5917913282764181683">حذف عمليات التنزيل تلقائيًا</translation>
 <translation id="5922999516621365983">اسحب علامة التبويب هنا لتثبيتها.</translation>
 <translation id="5936006948844852401">إدارة مساحة التخزين</translation>
 <translation id="5936065461722368675">ترجمة الصفحة بأكملها</translation>
@@ -1505,7 +1500,6 @@
 <translation id="741204030948306876">نعم، أوافق</translation>
 <translation id="7417689656810783109">إعادة تسمية المجموعة</translation>
 <translation id="7419565702166471774">استخدام الاتصالات الآمنة دائمًا</translation>
-<translation id="742001653298797675">يمكنك تحديد موعد لحذف جميع عمليات التنزيل بعد شهر واحد لتوفير مساحة على هاتفك وحماية خصوصيتك.</translation>
 <translation id="7425053386765766120">إضافة طريقة دفع…</translation>
 <translation id="7425346204213733349">‏لن تتم بعد الآن مزامنة التغييرات التي تطرأ على الإشارات المرجعية والسجلّ وكلمات المرور وغيرها من الإعدادات مع حسابك على Google، ولكن ستظل بياناتك الحالية مخزّنة في حسابك على Google.</translation>
 <translation id="742664698522525515">هل المطلوب الاحتفاظ بمجموعة علامات التبويب؟</translation>

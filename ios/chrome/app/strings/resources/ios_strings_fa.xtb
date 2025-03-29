@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">حذف</translation>
 <translation id="1190609913194133056">مرکز اعلان</translation>
 <translation id="1201402288615127009">بعدی</translation>
-<translation id="1202892408424955784">محصولات پیگیری‌شده</translation>
 <translation id="1204075260022434100">{count,plural, =1{نشانک در پوشه «{title}» در حسابتان ({email}) ذخیره شد}one{‫{count} نشانک در پوشه «{title}» در حسابتان ({email}) ذخیره شد}other{‫{count} نشانک در پوشه «{title}» در حسابتان ({email}) ذخیره شد}}</translation>
 <translation id="120431140543679678">دنبال کردن</translation>
 <translation id="1207493287814084192">۵:۳۰ ب.ظ.</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">مورد جدید</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> حساب از گذرواژه یکسانی استفاده می‌کنند</translation>
 <translation id="2059166748188874810">شهرداری</translation>
-<translation id="2060114494785549741">حذف بعداز ۱ ماه</translation>
 <translation id="2060638295449304809">‏این نشانی فقط در این دستگاه ذخیره می‌شود. برای استفاده از آن در دیگر دستگاه‌هایتان، آن را در «حساب Google» خود (<ph name="USER_EMAIL" />) ذخیره کنید</translation>
 <translation id="20638360198452347">گزینشگر نوع واحد</translation>
 <translation id="2067852168641682340">هر بار در این حساب ذخیره شود</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">پنهان کردن کارت «ردگیری قیمت»</translation>
 <translation id="2216366330550244277">رفتن به صفحه محصول</translation>
 <translation id="2220529011494928058">گزارش یک مشکل</translation>
-<translation id="2220887224562128152">هنگامی که فایلی برای حذف زمان‌بندی شود، دیگر قابل‌بازیابی نخواهد بود.</translation>
 <translation id="2223461067862937305">ایجاد رمزینه پاسخ‌سریع</translation>
 <translation id="2229345671837147090">جدول برگه دور</translation>
 <translation id="2230173723195178503">صفحه وب بار شد</translation>
@@ -384,7 +381,6 @@
 <translation id="2539748786028143624">روشن کردن «محافظت بهبودیافته»…</translation>
 <translation id="2540111494300686866">جلوگیری از کادرهای گفتگو</translation>
 <translation id="2542268842667970959">پنهان کردن «کنترل ایمنی»</translation>
-<translation id="2543870349255816922">این کارت کاهش قیمت محصول ردیابی‌شده شما را از یکی از دستگاه‌های همگام‌سازی‌شده‌تان نشان می‌دهد</translation>
 <translation id="2547458583188611426">همگام‌سازی کار نمی‌کند. برای شروع همگام‌سازی، گذرعبارت را وارد کنید.</translation>
 <translation id="2551153019974022505">خطای حساب</translation>
 <translation id="2559843230610279254">گروه برگه، <ph name="GROUP_TITLE" />،‏ <ph name="TABS_NUMBER" /> برگه.</translation>
@@ -494,7 +490,6 @@
 <translation id="3059270601560379555">جستجوی جدید</translation>
 <translation id="3064547930554042309">مدیریت بارگیری‌ها</translation>
 <translation id="3072279342064724558">این گذرواژه ازقبل وجود دارد</translation>
-<translation id="3074862506644936708">فعال کردن حذف خودکار</translation>
 <translation id="3076846064362030967">‏از سیستم «حساب Google» خودتان خارج نمی‌شوید. وقتی به سیستم وارد شده باشید، ممکن است <ph name="BEGIN_LINK" />انواع دیگر فعالیت<ph name="END_LINK" /> در «حساب Google» شما ذخیره شوند. هر زمان خواستید می‌توانید آن‌ها را حذف کنید.
 
 
@@ -913,6 +908,7 @@
 <translation id="4896467949657706481">برگه‌ها بسته شد؛ از سیستم خارج شدید</translation>
 <translation id="4913626501929406101">می‌توانید نسخه‌ای از گذرواژه‌تان را به‌طور ایمن با فردی در گروه خانواده‌تان هم‌رسانی کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">می‌پذیرم</translation>
+<translation id="4930714375720679147">روشن کردن</translation>
 <translation id="4932733599132424254">تاریخ</translation>
 <translation id="4936354130727646074">هرگز منتقل نشود</translation>
 <translation id="4937410517508563815">ذخیره گذرواژه‌ها در حساب</translation>
@@ -1148,7 +1144,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5899314093904173337">‏برای هم‌رسانی کردن با افراد حاضر در اطراف، به‌آن‌ها اجازه دهید این رمزینه پاسخ‌سریع را با دوربین خود یا برنامه اسکنر QR اسکن کنند</translation>
 <translation id="5902752768726620872">{count,plural, =1{‫{count} برگه جدید}one{‫{count} برگه جدید}other{‫{count} برگه جدید}}</translation>
 <translation id="5911030830365207728">‏ترجمه Google</translation>
-<translation id="5917913282764181683">حذف خودکار بارگیری‌ها</translation>
 <translation id="5922999516621365983">برای سنجاق کردن برگه، آن را اینجا بکشید.</translation>
 <translation id="5936006948844852401">مدیریت کردن فضای ذخیره‌سازی</translation>
 <translation id="5936065461722368675">ترجمه کل صفحه</translation>
@@ -1507,7 +1502,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="741204030948306876">بله، موافقم</translation>
 <translation id="7417689656810783109">تغییر نام گروه</translation>
 <translation id="7419565702166471774">همیشه از اتصال‌های امن استفاده شود</translation>
-<translation id="742001653298797675">برای صرفه‌جویی در فضای ذخیره‌سازی تلفن و محافظت از حریم خصوصی‌تان، زمان‌بندی کنید که همه بارگیری‌ها بعداز یک ماه حذف شوند.</translation>
 <translation id="7425053386765766120">افزودن روش پرداخت…</translation>
 <translation id="7425346204213733349">‏تغییرات در نشانک‌ها، سابقه، گذرواژه و سایر تنظیمات دیگر با حساب Google شما همگام‌سازی نخواهند شد. با این حال، داده‌های موجودتان در حساب Google شما باقی خواهند ماند.</translation>
 <translation id="742664698522525515">گروه نگه داشته شود؟</translation>

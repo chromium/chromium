@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1190609913194133056">Ծանուցումների կենտրոն</translation>
 <translation id="1201402288615127009">Հաջորդը</translation>
-<translation id="1202892408424955784">Ապրանքներ, որոնց գներին հետևում եք</translation>
 <translation id="1204075260022434100">{count,plural, =1{Էջանիշը պահվեց {email} հաշվի «{title}» պանակում}one{{count} էջանիշ պահվեց {email} հաշվի «{title}» պանակում}other{{count} էջանիշ պահվեց {email} հաշվի «{title}» պանակում}}</translation>
 <translation id="120431140543679678">Հետևել</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">նոր տարր</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> հաշվում նույն գաղտնաբառն է օգտագործվում</translation>
 <translation id="2059166748188874810">Մունիցիպալիտետ</translation>
-<translation id="2060114494785549741">Ջնջել 1 ամսից</translation>
 <translation id="2060638295449304809">Այս հասցեն պահված է միայն այս սարքում։ Գաղտնաբառը ձեր մյուս սարքերում օգտագործելու համար պահեք այն ձեր Google հաշվում, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Միավորի տեսակի ընտրիչ</translation>
 <translation id="2067852168641682340">Ամեն անգամ պահել այս հաշվում</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Թաքցնել գների հետագծման քարտը</translation>
 <translation id="2216366330550244277">Անցեք ապրանքի էջ</translation>
 <translation id="2220529011494928058">Հաղորդել խնդրի մասին</translation>
-<translation id="2220887224562128152">Երբ պլանավորեք ջնջել ֆայլը, այն այլևս հնարավոր չի լինի վերականգնել։</translation>
 <translation id="2223461067862937305">Ստեղծել QR կոդ</translation>
 <translation id="2229345671837147090">Հեռակա ներդիրի ցանց</translation>
 <translation id="2230173723195178503">Կայքէջը բեռնվեց</translation>
@@ -493,7 +490,6 @@
 <translation id="3059270601560379555">Նոր որոնում</translation>
 <translation id="3064547930554042309">Ներբեռնումների կառավարում</translation>
 <translation id="3072279342064724558">Գաղտնաբառն արդեն գոյություն ունի</translation>
-<translation id="3074862506644936708">Միացնել ավտոմատ ջնջումը</translation>
 <translation id="3076846064362030967">Դուք դուրս չեք գա ձեր Google հաշվից։ <ph name="BEGIN_LINK" />Այլ գործողություններ<ph name="END_LINK" /> կարող են պահվել ձեր Google հաշվում, երբ դուք մուտք եք գործում։ Դրանք ցանկացած ժամանակ հնարավոր է ջնջել։
 
 
@@ -912,6 +908,7 @@
 <translation id="4896467949657706481">Ներդիրները փակվեցին, դուք դուրս եկաք հաշվից</translation>
 <translation id="4913626501929406101">Դուք կարող եք կիսվել ձեր գաղտնաբառի պատճենով ընտանեկան խմբի անդամի հետ։ Դա անվտանգ է։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Ընդունել</translation>
+<translation id="4930714375720679147">Միացնել</translation>
 <translation id="4932733599132424254">Ամսաթիվ</translation>
 <translation id="4936354130727646074">Երբեք չտեղափոխել</translation>
 <translation id="4937410517508563815">Պահել գաղտնաբառերը հաշվում</translation>
@@ -1147,7 +1144,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5899314093904173337">Մոտակայքում գտնվող մարդկանց հետ կիսվելու համար խնդրեք նրանց սկանավորել այս QR կոդը տեսախցիկի կամ QR սկաների հավելվածի միջոցով</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} նոր ներդիր}one{{count} նոր ներդիր}other{{count} նոր ներդիր}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
-<translation id="5917913282764181683">Ավտոմատ կերպով ջնջեք ձեր ներբեռնումները</translation>
 <translation id="5922999516621365983">Ներդիրն ամրացնելու համար քաշեք այն այստեղ։</translation>
 <translation id="5936006948844852401">Կառավարել պահոցը</translation>
 <translation id="5936065461722368675">Թարգմանել ամբողջ էջը</translation>
@@ -1506,7 +1502,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="741204030948306876">Լավ</translation>
 <translation id="7417689656810783109">Վերանվանել խումբը</translation>
 <translation id="7419565702166471774">Միշտ օգտագործել անվտանգ միացումներ</translation>
-<translation id="742001653298797675">Պլանավորեք ջնջել ձեր ներբեռնումները մեկ ամիս անց՝ հեռախոսում տարածք ազատելու և անձնական գաղտնիությունը պաշտպանելու համար։</translation>
 <translation id="7425053386765766120">Ավելացնել վճարման եղանակ…</translation>
 <translation id="7425346204213733349">Ձեր էջանիշների, այցելությունների պատմության, գաղտնաբառերի և այլ կարգավորումների փոփոխությունները չեն համաժամացվի ձեր Google հաշվի հետ: Այդուհանդերձ, ձեր առկա տվյալները կպահվեն ձեր Google հաշվում:</translation>
 <translation id="742664698522525515">Պահպանե՞լ խումբը</translation>

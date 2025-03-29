@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">काढून टाका</translation>
 <translation id="1190609913194133056">सूचना केंद्र</translation>
 <translation id="1201402288615127009">पुढील</translation>
-<translation id="1202892408424955784">माग ठेवलेली उत्पादने</translation>
 <translation id="1204075260022434100">{count,plural, =1{बुकमार्क तुमच्या {email} या खात्यामध्ये "{title}" मध्ये सेव्ह केला आहे}other{{count} बुकमार्क तुमच्या {email} या खात्यामध्ये "{title}" मध्ये सेव्ह केले आहेत}}</translation>
 <translation id="120431140543679678">फॉलो करा</translation>
 <translation id="1207493287814084192">संध्याकाळी ५:३० वाजता</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">नवीन आयटम</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> खाती हाच पासवर्ड वापरत आहेत</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
-<translation id="2060114494785549741">१ महिन्यात हटवा</translation>
 <translation id="2060638295449304809">हा पासवर्ड फक्त या डिव्हाइसवर सेव्ह केला आहे. तो तुमच्या इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या <ph name="USER_EMAIL" /> या Google खाते मध्ये सेव्ह करा</translation>
 <translation id="20638360198452347">युनिट प्रकार सिलेक्टर</translation>
 <translation id="2067852168641682340">प्रत्येक वेळी या खात्यामध्ये सेव्ह करा</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">किमतीचा माग ठेवण्याशी संबंधित कार्ड लपवा</translation>
 <translation id="2216366330550244277">उत्पादनाच्या पेजवर जा</translation>
 <translation id="2220529011494928058">समस्या नोंदवा</translation>
-<translation id="2220887224562128152">फाइल हटवण्यासाठी शेड्यूल केल्यानंतर, ती रिकव्‍हर केली जाऊ शकत नाही.</translation>
 <translation id="2223461067862937305">QR कोड तयार करा</translation>
 <translation id="2229345671837147090">टॅब ग्रिड काढून टाका</translation>
 <translation id="2230173723195178503">वेबपेज लोड केले</translation>
@@ -384,7 +381,6 @@
 <translation id="2539748786028143624">वर्धित संरक्षण सुरू करा…</translation>
 <translation id="2540111494300686866">डायलॉग सप्रेस करा</translation>
 <translation id="2542268842667970959">"सुरक्षितता तपासणी" हे लपवा</translation>
-<translation id="2543870349255816922">हे कार्ड तुमच्या सिंक केलेल्या डिव्हाइसपैकी एका डिव्हाइसवरून तुमच्या ट्रॅक केलेल्या उत्पादनाच्या किमतीतील घट दाखवते</translation>
 <translation id="2547458583188611426">सिंक काम करत नाही. सिंक सुरू करण्यासाठी तुमचा पासफ्रेझ एंटर करा.</translation>
 <translation id="2551153019974022505">खात्यासंबंधी एरर</translation>
 <translation id="2559843230610279254">टॅब गट, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> टॅब.</translation>
@@ -494,7 +490,6 @@
 <translation id="3059270601560379555">नवीन शोध</translation>
 <translation id="3064547930554042309">डाउनलोड व्यवस्थापित करणे</translation>
 <translation id="3072279342064724558">पासवर्ड आधीपासून अस्तित्वात आहे</translation>
-<translation id="3074862506644936708">ऑटोमॅटिक डिलीट सुरू करा</translation>
 <translation id="3076846064362030967">तुम्हाला तुमच्या Google खाते मधून साइन आउट केले जाणार नाही. तुम्ही साइन इन केलेले असते तेव्हा, तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK" />इतर प्रकारची ॲक्टिव्हिटी<ph name="END_LINK" /> सेव्ह केली जाऊ शकते. तुम्ही ती कधीही हटवू शकता.
 
 
@@ -913,6 +908,7 @@
 <translation id="4896467949657706481">टॅब बंद केले गेले होते; तुम्हाला साइन आउट केले गेले होते</translation>
 <translation id="4913626501929406101">तुम्ही तुमच्या पासवर्डची प्रत तुमच्या कुटुंब गटातील एखाद्या व्यक्तीशी सुरक्षितपणे शेअर करू शकता. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">स्वीकारा</translation>
+<translation id="4930714375720679147">सुरू करा</translation>
 <translation id="4932733599132424254">तारीख</translation>
 <translation id="4936354130727646074">कधीही हलवू नका</translation>
 <translation id="4937410517508563815">पासवर्ड खात्यामध्ये सेव्ह करा</translation>
@@ -1148,7 +1144,6 @@
 <translation id="5899314093904173337">जवळपासच्या लोकांसोबत शेअर करण्यासाठी, त्यांना त्यांचा कॅमेरा किंवा QR scanner अ‍ॅप वापरून हा QR कोड स्कॅन करू द्या</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} नवीन टॅब}other{{count} नवीन टॅब}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
-<translation id="5917913282764181683">तुमचे डाउनलोड आपोआप हटवा</translation>
 <translation id="5922999516621365983">पिन करण्यासाठी टॅब येथे ड्रॅग करा.</translation>
 <translation id="5936006948844852401">स्टोरेज व्यवस्थापित करा</translation>
 <translation id="5936065461722368675">पूर्ण पेजचे भाषांतर करा</translation>
@@ -1508,7 +1503,6 @@
 <translation id="741204030948306876">होय, मला मान्य आहे</translation>
 <translation id="7417689656810783109">गटाचे नाव बदला</translation>
 <translation id="7419565702166471774">नेहमी सुरक्षित कनेक्शन वापरा</translation>
-<translation id="742001653298797675">तुमच्या फोनवरील जागा वाचवण्यासाठी आणि तुमची गोपनीयता जपण्यासाठी तुमचे सर्व डाउनलोड एक महिन्यानंतर हटवण्यासाठी शेड्यूल करा.</translation>
 <translation id="7425053386765766120">पेमेंट पद्धत जोडा…</translation>
 <translation id="7425346204213733349">तुमचे बुकमार्क, इतिहास, पासवर्ड आणि अन्य सेटिंग्ज मधील बदल यापुढे आपल्या Google खात्यावर संकालित केले जाणार नाहीत. तथापि, तुमचा विद्यमान डेटा आपल्या Google खात्यामध्ये संचयित केलेला असेल.</translation>
 <translation id="742664698522525515">गट कायम ठेवायचा आहे का?</translation>

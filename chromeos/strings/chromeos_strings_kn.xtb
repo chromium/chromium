@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">ಪ್ರಾಕ್ಸಿ ದೃಢೀಕರಣ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="4594021849294327751">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="4594541568452132351">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್‌ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಮಾಡೆಲ್‌ ಅನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಿ</translation>
-<translation id="4607282946861182308">ಇದರ ಚಿತ್ರಗಳನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಬೇರೆ ಪ್ರಾಂಪ್ಟ್ ಬಳಸಿ ನೋಡಿ.</translation>
 <translation id="4609350030397390689">ಕೀಬೋರ್ಡ್ ಹೊಳಪನ್ನು ಕಡಿಮೆ ಮಾಡಿ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ರಲ್ಲಿ <ph name="PRINTED_PAGE_NUMBER" /> ಮುದ್ರಣ ಕಾರ್ಯವನ್ನು ರದ್ದುಮಾಡಲು enter ಒತ್ತಿರಿ.</translation>
 <translation id="463791356324567266">ಸ್ಕ್ಯಾನಿಂಗ್ ಮಾಡುವಿಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -1659,6 +1658,7 @@
 <translation id="8543574988889671960">ಟ್ಯಾಬ್ ಅನ್ನು ಪುನಃ ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="8550364285433943656">ಕೀಬೋರ್ಡ್‌ ಕೀಗಳೊಂದಿಗೆ ಆಡಲು ಗೇಮ್‌ ಆ್ಯಕ್ಷನ್‌ಗಳ ಮೇಲೆ ಕಂಟ್ರೋಲ್‌ಗಳನ್ನು ಇರಿಸಿ</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">ಜನರೇಟಿವ್ AI ಜನರ ಬಗ್ಗೆ ಸೇರಿದಂತೆ ತಪ್ಪಾದ ಮಾಹಿತಿಯನ್ನು ನೀಡಬಹುದು, ಆದ್ದರಿಂದ ಅದನ್ನು ಎರಡು ಬಾರಿ ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="8575298406870537639">ನಿಮ್ಮ ವಾಹಕವು ತಮ್ಮ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಈ ಆಯ್ಕೆಯ ಅಗತ್ಯವಿರಬಹುದು. ವಿವರಗಳಿಗಾಗಿ ನಿಮ್ಮ ವಾಹಕವನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="8576249514688522074">ಪ್ರಾರಂಭಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> ಫರ್ಮ್‌ವೇರ್‌ ಅನ್ನು <ph name="VERSION" /> ಗೆ ಅಪ್‌ಗ್ರೇಡ್‌ ಮಾಡಲು ರೀಬೂಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ. ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ ಹಲವಾರು ಬಾರಿ ರೀಬೂಟ್‌ ಆಗುವಂತೆ ಕಾಣಿಸಬಹುದು. ಈ ನಡವಳಿಕೆಯನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿದೆ.</translation>
@@ -1673,7 +1673,6 @@
 <translation id="8655295600908251630">ಚಾನಲ್</translation>
 <translation id="8655828773034788261">URL ಹಂಚಿಕೊಳ್ಳಿ:</translation>
 <translation id="8660881923941176839">ಪೌಂಡ್‌ಗಳು</translation>
-<translation id="8670057600920888023">ಜನರೇಟಿವ್ AI ಪ್ರಾಯೋಗಿಕವಾಗಿದ್ದು, ಅದರ ಕಂಟೆಂಟ್ ನಿಖರವಾಗಿಲ್ಲದಿರಬಹುದು, ದಾರಿತಪ್ಪಿಸುವಂತಿರಬಹುದು ಅಥವಾ ಆಕ್ಷೇಪಾರ್ಹವಾಗಿರಬಹುದು.</translation>
 <translation id="8670574982334489519">ಬಲ</translation>
 <translation id="8675354002693747642">ಪೂರ್ವ-ಹಂಚಿಕೆಯ ಕೀಲಿ</translation>
 <translation id="8677859815076891398">ಯಾವುದೇ ಆಲ್ಬಮ್‌ಗಳಿಲ್ಲ. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> ನಲ್ಲಿ ಆಲ್ಬಮ್ ಅನ್ನು ರಚಿಸಿ.</translation>

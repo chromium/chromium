@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Cal l'autenticació del servidor intermediari</translation>
 <translation id="4594021849294327751">Crea una transcripció</translation>
 <translation id="4594541568452132351">Selecciona l'idioma de transcripció i baixa el model</translation>
-<translation id="4607282946861182308">No es poden crear imatges d'això. Prova-ho amb una altra línia d'ordres.</translation>
 <translation id="4609350030397390689">Disminueix la brillantor del teclat</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prem Retorn per cancel·lar la tasca d'impressió.</translation>
 <translation id="463791356324567266">S'està cancel·lant l'escaneig...</translation>
@@ -1540,6 +1539,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8010765388850538088">Més informació sobre la IA generativa</translation>
 <translation id="8017679124341497925">S'ha editat la drecera</translation>
 <translation id="802154636333426148">Error de baixada</translation>
+<translation id="8027467664787098346">Més informació sobre el fons de pantalla seleccionat</translation>
 <translation id="8028993641010258682">Mida</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Activa el mode de color automàtic</translation>
@@ -1658,6 +1658,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8543574988889671960">Torna a carregar la pestanya</translation>
 <translation id="8550364285433943656">Col·loca els controls sobre les accions del joc per jugar amb les tecles del teclat</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">La IA generativa pot cometre errors, també sobre persones, així que comprova'n les respostes.</translation>
 <translation id="8575298406870537639">El teu operador pot requerir aquesta opció per connectar-te a la seva xarxa. Contacta-hi per obtenir-ne més informació.</translation>
 <translation id="8576249514688522074">No s'ha inicialitzat</translation>
 <translation id="8584654835905316966">Cal reiniciar l'ordinador per acabar d'instal·lar el microprogramari per a <ph name="DEVICE_NAME" /> amb la versió <ph name="VERSION" />. És possible que sembli que l'ordinador es reinicia diverses vegades. És el comportament previst.</translation>
@@ -1672,7 +1673,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Comparteix l'URL:</translation>
 <translation id="8660881923941176839">lliures</translation>
-<translation id="8670057600920888023">La IA generativa és experimental i el contingut pot ser imprecís, enganyós o ofensiu.</translation>
 <translation id="8670574982334489519">dret</translation>
 <translation id="8675354002693747642">Clau precompartida</translation>
 <translation id="8677859815076891398">No hi ha cap àlbum. Crea'n un a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>

@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB ကိရိယာ (<ph name="VENDOR_ID" />- <ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">မကြာသေးမီက ဒေါင်းလုဒ်မှတ်တမ်း</translation>
 <translation id="1004218526896219317">ဝင်ခွင့်ရသော ဝဘ်ဆိုက်</translation>
+<translation id="1005230401424685968">နှစ်</translation>
 <translation id="1005274289863221750">သင်၏ မိုက်ခရိုဖုန်း နှင့် ကင်မရာကို သုံးရန်</translation>
 <translation id="1005333234656240382">ADB အမှားရှာပြင်ခြင်းကို ဖွင့်လိုပါသလား။</translation>
 <translation id="1005671386794704751">နှင်းဆီရောင်</translation>
@@ -3188,7 +3189,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         ဤကတ်မှ ဆက်တင်များကို အချိန်မရွေး စီမံနိုင်သည် (သို့) ‘Chrome ကို စိတ်ကြိုက်လုပ်ခြင်း’ တွင် နောက်ထပ်ရွေးစရာများ ကြည့်နိုင်သည်။</translation>
-<translation id="3207437351138888228">ဖောင်ဖြည့်သည့်အခါ သင့်အချက်အလက်နှင့် ဖောင်ရရှိသည့် စာမျက်နှာတို့ကို အကြံပြုချက်များ ထုတ်လုပ်ရန်အတွက် Google သို့ ပို့သည်</translation>
 <translation id="3207960819495026254">ဘွတ်မက်လုပ်ပြီး၏</translation>
 <translation id="3208584281581115441">ယခု စစ်ကြည့်ရန်</translation>
 <translation id="3208703785962634733">အတည်မပြုသေး</translation>
@@ -3233,6 +3233,7 @@
 <translation id="3242289508736283383">'kiosk_only' မန်နီးဖက်စ်ရည်ညွှန်းချက်ပါသည့် အက်ပ်ကို ChromeOS kiosk မုဒ်တွင် ထည့်သွင်းရမည်</translation>
 <translation id="3243017971870859287">ChromeOS Flex စက်ပစ္စည်းနှင့် အစိတ်အပိုင်း နံပါတ်စဉ်များကို ဖတ်နိုင်သည်</translation>
 <translation id="324366796737464147">ဆူညံသံဖယ်ရှားခြင်း</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">အသံကို ဆက်လက်ပိတ်ထားရန်</translation>
 <translation id="3247006341013237647">တဘ်များ စီစဉ်မလား။</translation>
 <translation id="3247649647204519958">ဤနေရာမှနေ၍ သင်ကြည့်နေသောဝဘ်ဆိုက်အတွက် နောက်ဆက်တွဲခွင့်ပြုချက်များကို ကြည့်နိုင်၊ စီမံနိုင်သည်</translation>
@@ -6099,7 +6100,6 @@
 <translation id="5267572070504076962">အန္တရာယ်ရှိသည့် ဝဘ်ဆိုက်များရန်မှ အကာအကွယ် ရယူရန် ‘လုံခြုံစွာ ဖွင့်ကြည့်ခြင်း’ ကိုဖွင့်ပါ</translation>
 <translation id="5269977353971873915">ပရင်ထုတ်ရန် မအောင်မြင်ပါ</translation>
 <translation id="5271578170655641944">Google Drive အသုံးပြုမှု ဖယ်ရှားမလား။</translation>
-<translation id="5271782684896713035">ဤတူးလ် ပိုကောင်းစေရန်အတွက် ဒေတာကို ပြန်စစ်သည့် ပုဂ္ဂိုလ်များက မြင်နိုင်သည်</translation>
 <translation id="5273806377963980154">ဝဘ်ဆိုက် URL တည်းဖြတ်ရန်</translation>
 <translation id="5275084684151588738">အသုံးပြုသူ အဘိဓာန်များ</translation>
 <translation id="5275338516105640560">သိမ်းထားသည့် တဘ်အုပ်စု ခလုတ်</translation>

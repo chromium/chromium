@@ -91,6 +91,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1269405891096105529">Perifērā ierīce netiek atbalstīta viesa režīmā.</translation>
 <translation id="1270290102613614947">Ekrāna tastatūra atspējota</translation>
 <translation id="1272079795634619415">Apturēt</translation>
+<translation id="12741168609094094">Atlasiet jebkādu ekrānā redzamo saturu, lai meklētu, kopētu tekstu un veiktu citas darbības.</translation>
 <translation id="1275285675049378717">Savienojums, izmantojot <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Atlasīta</translation>
 <translation id="1276975447697633661">Atlasiet failu un pēc tam nospiediet <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1720230731642245863">Tīklājs ir izslēgts</translation>
 <translation id="1731815243805539470">Pāriet uz iepriekšējo lietotāju</translation>
 <translation id="1733996486177697563">Pārslēdzieties starp tumšo un gaišo motīvu. Pieskarieties un turiet darbvirsmā, pēc tam atlasiet “Fona tapete un stils”.</translation>
+<translation id="1735992454301033090">Atlasīts apgabals; izmantojiet bulttaustiņus, lai pārvietotu</translation>
 <translation id="1736898441010944794">Bluetooth ierīces var uztvert šo ierīci: <ph name="NAME" />.</translation>
 <translation id="1737078180382804488">Nerādīt iespēju iestatīt tālruņa paziņojumu skatīšanu</translation>
 <translation id="174102739345480129">Marķieris ir izslēgts.</translation>
@@ -494,6 +496,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> iepriekšējā nedēļā</translation>
 <translation id="2687510499067466116">Īsinājumtaustiņi ir mainīti</translation>
 <translation id="2689613560355655046">8. darbvieta</translation>
+<translation id="2692092709110488417">Nospiediet tabulēšanas taustiņu, lai fokusētu un pārvietotu atlasīto apgabalu</translation>
 <translation id="2695305337569143674">tīmeklis</translation>
 <translation id="2697697418792422688">Rādīt tastatūras iestatījumus. Ir atlasīta tastatūra “<ph name="KEYBOARD_NAME" />”.</translation>
 <translation id="2699913284398121653">Izmantojiet lietotni Satura pārsūtīšana, lai pārvietotu savus skolas mācību iestādes datus uz personīgo kontu.</translation>
@@ -729,6 +732,7 @@ Pretējā gadījumā iebūvētais skārienpaliktnis tiks atkārtoti iespējots, 
 <translation id="346243998268439747">Atiestatīt tālummaiņas līmeni</translation>
 <translation id="3465223694362104965">Kopš pēdējoreiz pierakstījāties, šai ierīcei ir pievienota cita tastatūra. Pirms izmantojat šo tastatūru, pārliecinieties, ka tā ir uzticama.</translation>
 <translation id="3465356146291925647">Pārvalda jūsu administrators</translation>
+<translation id="3470502288861289375">Notiek kopēšana...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> un pēc tam <ph name="KEY_TWO" /> vai <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1033,6 +1037,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4412698727486357573">Palīdzības centrs</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> ir izslēgta.</translation>
 <translation id="4417647906073317561">Fokusa režīma iestatījumi. Iestatiet taimeri, uzdevumu un mūziku, lai koncentrētos.</translation>
+<translation id="4418600384772451109">Aizvērt paneli</translation>
 <translation id="4424159417645388645">5. darbvieta</translation>
 <translation id="4426817706804363424">Vareni!</translation>
 <translation id="4430019312045809116">Skaļums</translation>
@@ -2229,6 +2234,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8287009018010202411">Produktivitāte</translation>
 <translation id="828708037801473432">Izslēgts</translation>
 <translation id="8297006494302853456">Vājš</translation>
+<translation id="8300451473979404345">Atlasīts turis; izmantojiet bulttaustiņus, pārvietotu</translation>
 <translation id="8308637677604853869">Iepriekšējā izvēlne</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Funkcija Caps Lock ir ieslēgta</translation>
@@ -2289,6 +2295,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="851458219935658693">Atlasīta poga “Rādīt pašreizējās darbvietas logus”</translation>
 <translation id="851660987304951246">Izmantojiet funkciju “Palīdzība lasīšanā”, lai ātri iegūtu satura apkopojumu vai uzdotu jautājumus</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ierīce, iespējams, netiks uzlādēta, kamēr tā būs ieslēgta.</translation>
+<translation id="8519329096920173967">Meklēt ekrānā redzamo saturu, izmantojot Google Lens</translation>
 <translation id="8535393432370007982">Atsaukt kārtošanu pēc krāsas</translation>
 <translation id="8536886494750559755">Rādīt ātrās kopīgošanas iestatījumus. Redzama visiem šādu laika periodu: <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">Teksts ir nokopēts starpliktuvē.</translation>

@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Joidenkin sivustojen ominaisuudet eivät välttämättä toimi incognito-tilassa</translation>
 <translation id="2442870161001914531">Pyydä aina tietokonesivustoa</translation>
 <translation id="2445311670906052406">Chrome jakaa nyt viimeaikaiset välilehdet laitteelle. Näet ne laitteen sovelluslistasta ja hakutuloksista. Voit laittaa tämän pois päältä milloin tahansa Chromen asetuksista.</translation>
+<translation id="245322989586167203">Sivustot yhdistävät yleensä sarjaportteihin datansiirto-ominaisuuksia, esimerkiksi verkon luomista, varten</translation>
 <translation id="2469312991797799607">Tämä toiminto poistaa kaiken datan ja kaikki evästeet sivustolta <ph name="ORIGIN" /> ja sen alla olevilta sivustoilta</translation>
 <translation id="2482878487686419369">Ilmoitukset</translation>
 <translation id="2485422356828889247">Poista</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Estä sivustoja tietämästä, kun käytät tätä laitetta aktiivisesti</translation>
 <translation id="4412992751769744546">Salli kolmannen osapuolen evästeet</translation>
 <translation id="4419929467120297501">Chrome estää sivustoja seuraamasta sinua kolmansien osapuolten evästeiden avulla selaamisen aikana. Siirry asetuksiin, niin voit <ph name="BEGIN_LINK" />hallinnoida pääsyä kolmannen osapuolen evästeisiin<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Sarjaportti</translation>
 <translation id="4434045419905280838">Ponn.ikkunat ja uudelleenohjaus</translation>
 <translation id="443552056913301231">Tämä toiminto poistaa kaiken paikallisen datan, myös evästeet, ja nollaa kaikki luvat: <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Mykistä tietyn sivuston äänet.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Kysy ensin</translation>
 <translation id="7423538860840206698">Leikepöydältä lukeminen estetty</translation>
 <translation id="7425915948813553151">Sivustojen tumma teema</translation>
+<translation id="7478658909253570368">Älä salli sivustojen yhdistää sarjaportteihin</translation>
 <translation id="7488573225650545859">Piilota View-välilehdet sovelluslistassa</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kun tämä on päällä, sivustot voivat näyttää sisäänkirjautumiskehotteita. Kun tämä on pois päältä, sivustot eivät voi näyttää sisäänkirjautumiskehotteita.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Yhdistetty Bluetooth-laitteeseen</translation>
 <translation id="7617547684249261169">Voit poistaa osan tai kaiken historian, evästeet, sivustodatan ja muuta</translation>
 <translation id="7649070708921625228">Ohje</translation>
+<translation id="7655411746932645568">Sivustot saavat pyytää lupaa sarjaportteihin yhdistämiseen</translation>
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7667547420449112975">Ihmemaa Oz</translation>
 <translation id="7681597159868843240">Sivustot käyttävät yleensä laitteen liiketunnistimia esim. virtuaalitodellisuuteen tai liikuntaseurantaan</translation>

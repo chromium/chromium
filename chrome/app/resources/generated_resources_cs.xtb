@@ -8,6 +8,7 @@
 <translation id="100323615638474026">Zařízení USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Nedávná historie stahování</translation>
 <translation id="1004218526896219317">Přístup k webu</translation>
+<translation id="1005230401424685968">RRRR</translation>
 <translation id="1005274289863221750">Používat mikrofon a fotoaparát</translation>
 <translation id="1005333234656240382">Aktivovat ladění ADB?</translation>
 <translation id="1005671386794704751">Růže</translation>
@@ -1369,6 +1370,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="193565226207940518">Nástroj podpory</translation>
 <translation id="1935995810530254458">Přesto zkopírovat</translation>
 <translation id="1936157145127842922">Zobrazit ve složce</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Stránka byla přidána do seznamu četby}few{Stránky byly přidány do seznamu četby}many{Stránky byly přidány do seznamu četby}other{Stránky byly přidány do seznamu četby}}</translation>
 <translation id="1936931585862840749">Počet kopií, které chcete vytisknout, je třeba zadat jako číslo (od 1 do <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Typ architektury kontejneru <ph name="ARCHITECTURE_CONTAINER" /> do tohoto zařízení s architekturou <ph name="ARCHITECTURE_DEVICE" /> nelze importovat. Můžete tento kontejner zkusit obnovit do jiného zařízení nebo soubory v obrazu kontejneru otevřít v aplikaci Soubory.</translation>
 <translation id="1938351510777341717">Externí příkaz</translation>
@@ -2007,6 +2009,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2373666622366160481">Přizpůsobit papíru</translation>
 <translation id="2375406435414127095">Připojte se k telefonu</translation>
 <translation id="2376056713414548745">Čtení nahlas</translation>
+<translation id="2376122016044804363">Potvrzení zkopírování do schránky</translation>
 <translation id="2377667304966270281">Chyby stránkování na disk</translation>
 <translation id="237828693408258535">Přeložit tuto stránku?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Toto rozšíření pravděpodobně již brzy nebude podporováno}few{Tato rozšíření pravděpodobně již brzy nebudou podporována}many{Tato rozšíření pravděpodobně již brzy nebudou podporována}other{Tato rozšíření pravděpodobně již brzy nebudou podporována}}</translation>
@@ -3159,6 +3162,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3192586965067888278">Podrobně problém popište. Zpětná vazba bude odeslána společnosti Google ke kontrole člověkem a může být použita ke zlepšení nebo vývoji produktů a služeb Google.</translation>
 <translation id="3192947282887913208">Zvukové soubory</translation>
 <translation id="3193695589337931419">Nástroje pro sběr systémových signálů</translation>
+<translation id="3194095220941877499">Zobrazuje potvrzení při kopírování odkazů, obrázků nebo videí</translation>
 <translation id="3196912927885212665">Pokud chcete provést nastavení pomocí telefonu Android, musí být na Chromebooku zapnutý Bluetooth</translation>
 <translation id="3197453258332670132">Zobrazit kliknutím pravým tlačítkem nebo dlouhým stisknutím informace o vybraném textu</translation>
 <translation id="3199127022143353223">Servery</translation>
@@ -3173,7 +3177,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
         <ph name="BREAK" />
         <ph name="BREAK" />
         Nastavení můžete z této karty kdykoliv změnit nebo si projít další možnosti v sekci Přizpůsobit Chrome.</translation>
-<translation id="3207437351138888228">Při vyplňování formuláře se vaše informace a stránka, ze které pocházejí, odešlou do Googlu, aby vygeneroval návrhy</translation>
 <translation id="3207960819495026254">Přidáno do záložek</translation>
 <translation id="3208584281581115441">Zkontrolovat</translation>
 <translation id="3208703785962634733">Nepotvrzeno</translation>
@@ -3218,6 +3221,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3242289508736283383">Aplikace s atributem manifestu kiosk_only je třeba nainstalovat v režimu veřejného terminálu systému ChromeOS</translation>
 <translation id="3243017971870859287">Číst sériová čísla zařízení se systémem ChromeOS Flex a komponent</translation>
 <translation id="324366796737464147">Potlačení hluku</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Pokračovat v tlumení zvuku</translation>
 <translation id="3247006341013237647">Uspořádat karty?</translation>
 <translation id="3247649647204519958">Zde můžete zobrazit a spravovat oprávnění rozšíření pro web, na kterém se nacházíte</translation>
@@ -6083,7 +6087,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5267572070504076962">Zapněte Bezpečné prohlížení, abyste získali ochranu před nebezpečnými weby</translation>
 <translation id="5269977353971873915">Tisk se nezdařil</translation>
 <translation id="5271578170655641944">Odebrat přístup k Disku Google?</translation>
-<translation id="5271782684896713035">Data mohou vidět kontroloři, kteří tuto funkci pomáhají zlepšovat</translation>
 <translation id="5273806377963980154">Upravit URL webu</translation>
 <translation id="5275084684151588738">Uživatelské slovníky</translation>
 <translation id="5275338516105640560">Tlačítko uložené skupiny karet</translation>
