@@ -207,10 +207,12 @@ class TemplateURLService final : public WebDataServiceConsumer,
   bool BothPolicySetKeywordsNotOverriden(const TemplateURL* template_url) const;
 
   // Adds to |matches| all TemplateURLs whose keywords begin with |prefix|,
-  // sorted shortest-keyword-first. This method must be
+  // sorted shortest-keyword-first. If |supports_replacement_only| is true, only
+  // TemplateURLs that support replacement are returned. This method must be
   // efficient, since it's run roughly once per omnibox keystroke.
   void AddMatchingKeywords(const std::u16string& prefix,
-                           TemplateURLVector* matches);
+                           bool supports_replacement_only,
+                           TemplateURLVector* turls);
 
   // Looks up |keyword| and returns the best TemplateURL for it.  Returns
   // nullptr if the keyword was not found. The caller should not try to delete
