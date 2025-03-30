@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_LOGGER_H_
-#define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_LOGGER_H_
+#ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_METRICS_AUTOFILL_AI_LOGGER_H_
+#define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_METRICS_AUTOFILL_AI_LOGGER_H_
 
 #include <map>
 
@@ -11,7 +11,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
-#include "components/autofill_ai/core/browser/autofill_ai_ukm_logger.h"
+#include "components/autofill_ai/core/browser/metrics/autofill_ai_ukm_logger.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill_ai {
@@ -77,4 +77,4 @@ class AutofillAiLogger {
 
 }  // namespace autofill_ai
 
-#endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_LOGGER_H_
+#endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_METRICS_AUTOFILL_AI_LOGGER_H_
