@@ -424600,10 +424600,6 @@
      "d75e37783703bf028d95a28b9000ffe5651a34aa",
      []
     ],
-    "should-sink-type-mismatch-violation-be-blocked-by-csp-001-expected.txt": [
-     "42d1f1e0dca27b10186d1fa5adde6a7b914b0513",
-     []
-    ],
     "should-sink-type-mismatch-violation-be-blocked-by-csp-003.html.headers": [
      "b48df2b0ccc70404c91bc6e0311b62f70db5573d",
      []
@@ -727568,7 +727564,7 @@
      ]
     ],
     "should-sink-type-mismatch-violation-be-blocked-by-csp-001.html": [
-     "add14466e57d6c7ead8690a7f19d89565eaca7e6",
+     "13fd3549953a5b0dc8b52e7ce1619d3ef216cb75",
      [
       null,
       {
