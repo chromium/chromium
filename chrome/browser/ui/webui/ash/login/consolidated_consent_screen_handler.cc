@@ -25,12 +25,16 @@ ConsolidatedConsentScreenHandler::~ConsolidatedConsentScreenHandler() = default;
 void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("consolidatedConsentHeader", IDS_CONSOLIDATED_CONSENT_HEADER);
+  builder->Add("consolidatedConsentHeaderDemoMode",
+               IDS_CONSOLIDATED_CONSENT_HEADER_DEMO_MODE);
   builder->Add("consolidatedConsentHeaderChild",
                IDS_CONSOLIDATED_CONSENT_HEADER_CHILD);
   builder->Add("consolidatedConsentHeaderManaged",
                IDS_CONSOLIDATED_CONSENT_HEADER_MANAGED);
   builder->Add("consolidatedConsentSubheader",
                IDS_CONSOLIDATED_CONSENT_SUBHEADER);
+  builder->Add("consolidatedConsentSubheaderDemoMode",
+               IDS_CONSOLIDATED_CONSENT_SUBHEADER_DEMO_MODE);
   builder->Add("consolidatedConsentSubheaderArcDisabled",
                IDS_CONSOLIDATED_CONSENT_SUBHEADER_ARC_DISABLED);
   builder->Add("consolidatedConsentTermsDescriptionTitle",
@@ -43,6 +47,8 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
                IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_TITLE);
   builder->Add("consolidatedConsentUsageOptIn",
                IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_OWNER);
+  builder->Add("consolidatedConsentUsageOptInDemoMode",
+               IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_DEMO_MODE);
   builder->Add("consolidatedConsentUsageOptInLearnMoreLink",
                IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_LINK);
   builder->Add("consolidatedConsentBackupOptInTitle",
