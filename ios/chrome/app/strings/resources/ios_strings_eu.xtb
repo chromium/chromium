@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Kendu</translation>
 <translation id="1190609913194133056">Jakinarazpen-zentroa</translation>
 <translation id="1201402288615127009">Hurrengoa</translation>
-<translation id="1202892408424955784">Jarraipena egiten diezun produktuak</translation>
 <translation id="1204075260022434100">{count,plural, =1{Laster-marka gorde da zure kontuko ({email}) "{title}" karpetan}other{{count} laster-marka gorde dira zure kontuko ({email}) "{title}" karpetan}}</translation>
 <translation id="120431140543679678">Jarraitu</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">elementu berria</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> kontuk pasahitz bera darabilte</translation>
 <translation id="2059166748188874810">Udalerria</translation>
-<translation id="2060114494785549741">Ezabatu hilabete barru</translation>
 <translation id="2060638295449304809">Helbidea gailu honetan soilik gordeta dago. Beste gailuetan erabiltzeko, gorde ezazu Google-ko kontuan (<ph name="USER_EMAIL" />).</translation>
 <translation id="20638360198452347">Unitate motaren hautatzailea</translation>
 <translation id="2067852168641682340">Gorde kontu honetan beti</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Ezkutatu prezioen jarraipena egiteko txartela</translation>
 <translation id="2216366330550244277">Joan produktu baten orrira</translation>
 <translation id="2220529011494928058">Eman arazo baten berri</translation>
-<translation id="2220887224562128152">Fitxategi bat ezabatzeko programatu ostean, ezin izango da berreskuratu.</translation>
 <translation id="2223461067862937305">Sortu QR kode bat</translation>
 <translation id="2229345671837147090">Urruneko fitxen sareta</translation>
 <translation id="2230173723195178503">Kargatu da webgunea</translation>
@@ -493,7 +490,6 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="3059270601560379555">Bilaketa berria</translation>
 <translation id="3064547930554042309">Kudeatu deskargak</translation>
 <translation id="3072279342064724558">Jadanik badago pasahitza</translation>
-<translation id="3074862506644936708">Gaitu Ezabatze automatikoa</translation>
 <translation id="3076846064362030967">Ez da amaituko Google-ko kontuko saioa. Litekeena da <ph name="BEGIN_LINK" />beste jarduera batzuk<ph name="END_LINK" /> Google-ko kontuan gordetzea saioa hasita daukazun bitartean. Nahi duzunean ezaba ditzakezu.
 
 
@@ -912,6 +908,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4896467949657706481">Fitxak itxi dira, eta zure saioa amaitu da</translation>
 <translation id="4913626501929406101">Pasahitzaren kopia bat era seguruan parteka dezakezu zure familia-taldeko beste norbaitekin. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Onartu</translation>
+<translation id="4930714375720679147">Aktibatu</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4936354130727646074">Ez mugitu inoiz</translation>
 <translation id="4937410517508563815">Gorde pasahitzak kontuan</translation>
@@ -1147,7 +1144,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5899314093904173337">Ingurukoekin partekatu nahi izanez gero, eska iezaiezu QR kode hau eskaneatzeko kamera edo QR kodeak eskaneatzeko aplikazio baten bidez</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} fitxa berri}other{{count} fitxa berri}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
-<translation id="5917913282764181683">Ezabatu deskargak automatikoki</translation>
 <translation id="5922999516621365983">Fitxa ainguratzeko, arrasta ezazu hona.</translation>
 <translation id="5936006948844852401">Kudeatu biltegia</translation>
 <translation id="5936065461722368675">Itzuli orri osoa</translation>
@@ -1506,7 +1502,6 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="741204030948306876">Bai, ados</translation>
 <translation id="7417689656810783109">Aldatu taldearen izena</translation>
 <translation id="7419565702166471774">Erabili beti konexio seguruak</translation>
-<translation id="742001653298797675">Programatu deskarga guztiak hilabete igarotakoan ezabatzea, telefonoan tokia aurrezteko eta pribatutasuna babesteko.</translation>
 <translation id="7425053386765766120">Gehitu ordainketa-metodo bat…</translation>
 <translation id="7425346204213733349">Aurrerantzean, ez dira Google-ko kontuarekin sinkronizatuko laster-marketan, historian, pasahitzetan eta bestelako ezarpenetan egiten dituzun aldaketak. Hala ere, orain arteko datuak Google-ko kontuan izaten jarraituko duzu.</translation>
 <translation id="742664698522525515">Taldea mantendu nahi duzu?</translation>

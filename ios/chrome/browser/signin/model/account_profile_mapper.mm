@@ -1089,7 +1089,7 @@ void AccountProfileMapper::NotifyRefreshTokenUpdated(
     id<SystemIdentity> identity,
     const std::optional<std::string>& profile_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
     if (!profile_name.has_value()) {
       return;
     }

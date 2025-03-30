@@ -4,7 +4,16 @@
 
 #include "third_party/webrtc_overrides/coalesced_tasks.h"
 
+#include <cstdint>
+#include <optional>
+#include <utility>
 #include <vector>
+
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/synchronization/lock.h"
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/functional/any_invocable.h"
 
 namespace blink {
 

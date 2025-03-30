@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# TODO:(crbug.com/406830591): Split build rule for save card bottomsheet classes.
+
 group("unit_tests") {
   testonly = true
   deps = [
@@ -42,6 +44,8 @@ source_set("bottom_sheet") {
     "save_card_bottom_sheet_coordinator.mm",
     "save_card_bottom_sheet_mediator.h",
     "save_card_bottom_sheet_mediator.mm",
+    "settings_autofill_edit_profile_bottom_sheet_handler.h",
+    "settings_autofill_edit_profile_bottom_sheet_handler.mm",
   ]
   deps = [
     ":bottom_sheet_ui",
@@ -87,6 +91,8 @@ source_set("bottom_sheet_ui") {
     "payments_suggestion_bottom_sheet_handler.h",
     "payments_suggestion_bottom_sheet_view_controller.h",
     "payments_suggestion_bottom_sheet_view_controller.mm",
+    "save_card_bottom_sheet_view_controller.h",
+    "save_card_bottom_sheet_view_controller.mm",
   ]
   deps = [
     ":constants",

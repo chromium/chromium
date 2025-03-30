@@ -1,5 +1,4 @@
 include_rules = [
   "+components/sync/base",
   "+components/sync/service",
-  "+ui/base/device_form_factor.h",
 ]

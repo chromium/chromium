@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Veçoritë në disa sajte mund të mos funksionojnë në "Modalitetin 'e fshehtë'"</translation>
 <translation id="2442870161001914531">Kërko gjithmonë sajtin për desktop</translation>
 <translation id="2445311670906052406">Chrome tani i ndan skedat e tua të fundit me pajisjen tënde. Do t'i shohësh ato në listën e aplikacioneve dhe rezultatet e kërkimit të pajisjes. Mund ta çaktivizosh këtë në çdo kohë te cilësimet e Chrome.</translation>
+<translation id="245322989586167203">Sajtet lidhen zakonisht me portat seriale për veçoritë e transferimit të të dhënave, si p.sh. konfigurimin e rrjetit tënd</translation>
 <translation id="2469312991797799607">Ky veprim do të fshijë të gjitha të dhënat dhe kukit për <ph name="ORIGIN" /> dhe të gjitha sajtet nën të</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
 <translation id="2485422356828889247">Çinstalo</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Blloko sajtet që të mos e dinë kur ti e përdor këtë pajisje në mënyrë aktive</translation>
 <translation id="4412992751769744546">Lejo kukit e palëve të treta</translation>
 <translation id="4419929467120297501">Chrome i bllokon sajtet që të mos përdorin kukit e palëve të treta për të të gjurmuar kur ti shfleton. Vizito cilësimet <ph name="BEGIN_LINK" />për të menaxhuar qasjen te kukit e palëve të treta<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Porta seriale</translation>
 <translation id="4434045419905280838">Dritaret kërcyese dhe ridrejtimet</translation>
 <translation id="443552056913301231">Ky veprim do të fshijë të gjitha të dhënat lokale, duke përfshirë kukit, dhe do të rivendosë të gjitha lejet për <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Hiq zërin për një sajt specifik.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Pyet në fillim</translation>
 <translation id="7423538860840206698">Bllokuar për leximin e kujtesës së fragmenteve</translation>
 <translation id="7425915948813553151">Tema e errët për sajtet</translation>
+<translation id="7478658909253570368">Mos lejo që sajtet të lidhen me portat seriale</translation>
 <translation id="7488573225650545859">Fshih "Shiko skedat në listën e aplikacioneve"</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kur cilësimi është aktiv, sajtet mund të shfaqin kërkesat për identifikim. Kur cilësimi është joaktiv, sajtet nuk mund të shfaqin kërkesat për identifikim.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">U lidh me një pajisje me Bluetooth</translation>
 <translation id="7617547684249261169">Mund të fshish disa ose të gjitha nga historiku, kukit, të dhënat e sajteve etj.</translation>
 <translation id="7649070708921625228">Ndihma</translation>
+<translation id="7655411746932645568">Sajtet mund të kërkojnë të lidhen me portat seriale</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7667547420449112975">Magjistari i mrekullueshëm i Ozit</translation>
 <translation id="7681597159868843240">Sajtet përdorin zakonisht sensorët e lëvizjes të pajisjes për veçoritë si realiteti virtual ose monitorimi i fitnesit</translation>

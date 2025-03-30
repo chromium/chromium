@@ -46,7 +46,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -64,7 +63,6 @@ import org.chromium.chrome.test.transit.hub.TabSwitcherSearchStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -75,7 +73,6 @@ import java.util.concurrent.TimeoutException;
 /** Tests for search in the tab switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherSearchTest {
     private static final int SERVER_PORT = 13245;
@@ -345,7 +342,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH + ":enable_press_enter_to_search/true")
     public void testTypedSuggestions_OpenSuggestionWithEnter() {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         List<String> urlsToOpen =
@@ -453,7 +449,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH + ":enable_bookmark_provider/true")
     // TODO(crbug.com/394401323): Add some PT station for searching bookmarks.
     public void testBookmarkSuggestions() {
         WebPageStation openPage =
@@ -481,7 +476,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH + ":enable_history_provider/true")
     // TODO(crbug.com/394401463): Add some PT station for searching history.
     public void testHistorySuggestions() throws TimeoutException {
         TabSwitcherSearchStation tabSwitcherSearchStation =

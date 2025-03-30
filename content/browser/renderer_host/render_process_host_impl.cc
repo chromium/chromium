@@ -1505,7 +1505,8 @@ RenderProcessHostImpl::RenderProcessHostImpl(
                 frame_depth_,
                 false /* intersects_viewport */,
                 true /* boost_for_pending_views */,
-                false /*boost_for_loading*/
+                false /*boost_for_loading*/,
+                false /*is_spare_renderer*/
 #if BUILDFLAG(IS_ANDROID)
                 ,
                 ChildProcessImportance::NORMAL
@@ -5400,7 +5401,7 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
       media_stream_count_ > 0, has_immersive_xr_session_,
       foreground_service_worker_count_ > 0, frame_depth_, intersects_viewport_,
       pending_views_ > 0, /* boost_for_pending_views */
-      boost_for_loading_count_ > 0
+      boost_for_loading_count_ > 0, has_spare_renderer_priority_
 #if BUILDFLAG(IS_ANDROID)
       ,
       GetEffectiveImportance()
@@ -5857,6 +5858,14 @@ void RenderProcessHostImpl::GetBoundInterfacesForTesting(
   io_thread_host_impl_->AsyncCall(&IOThreadHostImpl::GetInterfacesForTesting)
       .WithArgs(std::ref(out));
   io_thread_host_impl_->FlushPostedTasksForTesting();  // IN-TEST
+}
+
+void RenderProcessHostImpl::SetHasSpareRendererPriority(
+    bool has_spare_renderer_priority) {
+  if (has_spare_renderer_priority_ != has_spare_renderer_priority) {
+    has_spare_renderer_priority_ = has_spare_renderer_priority;
+    UpdateProcessPriority();
+  }
 }
 
 }  // namespace content

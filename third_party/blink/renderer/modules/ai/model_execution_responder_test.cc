@@ -82,10 +82,8 @@ TEST(CreateModelExecutionResponder, Simple) {
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
       std::move(pending_remote));
   responder.set_disconnect_handler(disconnect_runloop.QuitClosure());
-  responder->OnStreaming("a",
-                         mojom::blink::ModelStreamingResponderAction::kReplace);
-  responder->OnStreaming("ab",
-                         mojom::blink::ModelStreamingResponderAction::kReplace);
+  responder->OnStreaming("a");
+  responder->OnStreaming("b");
   responder->OnQuotaOverflow();
   responder->OnCompletion(
       mojom::blink::ModelExecutionContextInfo::New(kTestTokenNumber));
@@ -95,57 +93,6 @@ TEST(CreateModelExecutionResponder, Simple) {
   EXPECT_TRUE(tester.IsFulfilled());
   EXPECT_TRUE(tester.Value().V8Value()->IsString());
   EXPECT_EQ("ab", ToCoreString(scope.GetIsolate(),
-                               tester.Value().V8Value().As<v8::String>()));
-
-  // Check that the complete and overflow callback is run.
-  complete_runloop.Run();
-  overflow_runloop.Run();
-  // Check that the Mojo handle will be disconnected.
-  disconnect_runloop.Run();
-}
-
-TEST(CreateModelExecutionResponder, ChunkByChunk) {
-  uint64_t kTestTokenNumber = 1u;
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  ScriptState* script_state = scope.GetScriptState();
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
-  auto promise = resolver->Promise();
-  base::RunLoop disconnect_runloop;
-  base::RunLoop complete_runloop;
-  base::RunLoop overflow_runloop;
-  auto pending_remote = CreateModelExecutionResponder(
-      script_state, /*signal=*/nullptr, resolver,
-      blink::scheduler::GetSequencedTaskRunnerForTesting(),
-      AIMetrics::AISessionType::kLanguageModel,
-      /*complete_callback=*/
-      base::BindOnce(
-          [](uint64_t expected_tokens, base::RunLoop* runloop,
-             mojom::blink::ModelExecutionContextInfoPtr context_info) {
-            EXPECT_TRUE(context_info);
-            EXPECT_EQ(context_info->current_tokens, expected_tokens);
-            runloop->Quit();
-          },
-          kTestTokenNumber, &complete_runloop),
-      /*overflow_callback=*/overflow_runloop.QuitClosure());
-
-  mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
-      std::move(pending_remote));
-  responder.set_disconnect_handler(disconnect_runloop.QuitClosure());
-  responder->OnStreaming("a",
-                         mojom::blink::ModelStreamingResponderAction::kAppend);
-  responder->OnStreaming("ab",
-                         mojom::blink::ModelStreamingResponderAction::kAppend);
-  responder->OnQuotaOverflow();
-  responder->OnCompletion(
-      mojom::blink::ModelExecutionContextInfo::New(kTestTokenNumber));
-  // Check that the promise will be resolved with the "result" string.
-  ScriptPromiseTester tester(scope.GetScriptState(), promise);
-  tester.WaitUntilSettled();
-  EXPECT_TRUE(tester.IsFulfilled());
-  EXPECT_TRUE(tester.Value().V8Value()->IsString());
-  EXPECT_EQ("aab", ToCoreString(scope.GetIsolate(),
                                 tester.Value().V8Value().As<v8::String>()));
 
   // Check that the complete and overflow callback is run.
@@ -245,8 +192,7 @@ TEST(CreateModelExecutionResponder, AbortAfterResponse) {
       std::move(pending_remote));
   base::RunLoop runloop;
   responder.set_disconnect_handler(runloop.QuitClosure());
-  responder->OnStreaming("result",
-                         mojom::blink::ModelStreamingResponderAction::kReplace);
+  responder->OnStreaming("result");
   responder->OnCompletion(mojom::blink::ModelExecutionContextInfo::New(
       /*current_tokens=*/1u));
 
@@ -281,8 +227,7 @@ TEST(CreateModelExecutionStreamingResponder, Simple) {
       std::move(pending_remote));
   base::RunLoop runloop;
   responder.set_disconnect_handler(runloop.QuitClosure());
-  responder->OnStreaming("result",
-                         mojom::blink::ModelStreamingResponderAction::kReplace);
+  responder->OnStreaming("result");
   responder->OnCompletion(mojom::blink::ModelExecutionContextInfo::New(
       /*current_tokens=*/1u));
 
@@ -391,8 +336,7 @@ TEST(CreateModelExecutionStreamingResponder, AbortAfterResponse) {
       std::move(pending_remote));
   base::RunLoop runloop;
   responder.set_disconnect_handler(runloop.QuitClosure());
-  responder->OnStreaming("result",
-                         mojom::blink::ModelStreamingResponderAction::kReplace);
+  responder->OnStreaming("result");
   responder->OnCompletion(mojom::blink::ModelExecutionContextInfo::New(1u));
 
   // Check that the AbortError is passed to the stream.

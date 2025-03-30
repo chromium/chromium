@@ -325,7 +325,6 @@
 <translation id="2527209463677295330">納入較多網頁文字，也許能搜尋到更相關的結果</translation>
 <translation id="2527779675047087889">隱藏剪貼簿內容</translation>
 <translation id="2532336938189706096">網頁檢視</translation>
-<translation id="2534155362429831547">已刪除 <ph name="NUMBER_OF_ITEMS" /> 個項目</translation>
 <translation id="253498598929009420">網站將能查看你的畫面內容</translation>
 <translation id="2536728043171574184">目前瀏覽的是這個網頁的離線複本</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />，分頁</translation>
@@ -365,7 +364,6 @@
 <translation id="2677748264148917807">離開</translation>
 <translation id="2687009626279857299">已停止在這部裝置上運作</translation>
 <translation id="2702516483241149200">新功能：分享可跳至這段文字的連結</translation>
-<translation id="2705073298859543115">建立摘要</translation>
 <translation id="2708051474374549906">系統會根據你傳送到 Google 的瀏覽資料，即時、主動防範危險的網站、下載內容和擴充功能</translation>
 <translation id="2708226184420201102">使用 <ph name="PRODUCT_NAME" /> 瀏覽器開啟</translation>
 <translation id="271033894570825754">全新</translation>
@@ -677,6 +675,7 @@
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{這部裝置上的 1 個分頁}other{這部裝置上的 # 個分頁}}</translation>
 <translation id="4198423547019359126">沒有可用的下載位置</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • 你在這個網站使用過</translation>
 <translation id="4214315110991671325">如果你允許 Cookie，Chrome 可能會使用 Cookie 預先載入網頁。</translation>
 <translation id="4216511743389425832">朗讀這頁內容</translation>
 <translation id="4225725533026049334">追蹤中</translation>
@@ -1198,7 +1197,6 @@
 <translation id="6564820424018738527">Android 裝置可能會有類似的設定。如果 Chrome 和 Android 裝置開啟了廣告評估設定，廣告技術公司或許就能在你造訪的網站和使用的應用程式上評估廣告成效。</translation>
 <translation id="6565959834589222080">有可用 Wi-Fi 時，系統會使用 Wi-Fi</translation>
 <translation id="6569373978618239158">往後開啟新分頁時，你就會看到「<ph name="SITE_NAME" />」的網路故事。你追蹤的網站會儲存在 Google 帳戶中，你可以在「探索」設定中管理這些網站。</translation>
-<translation id="6570116402456758630">頁面摘要</translation>
 <translation id="657177046675873214">如要將書籤同步到所有裝置，請在設定中開啟「書籤」</translation>
 <translation id="6573096386450695060">一律允許</translation>
 <translation id="6573431926118603307">您在其他裝置上透過 Chrome 開啟的分頁會顯示在這裡。</translation>

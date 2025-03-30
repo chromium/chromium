@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">Обратитесь за помощью к системному администратору.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, действительна до <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Компьютер</translation>
-<translation id="1739422091279046802">изменение масштаба и прокрутка</translation>
 <translation id="1741613555002899862">Необходимо указать значение и ввести действительную строку, если для правила DnsOverHttpsMode выбрано значение <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Постельное белье</translation>
 <translation id="1743892871127720056">Заголовок сравнительной таблицы, редактировать текст</translation>
@@ -1296,7 +1295,7 @@
 <translation id="3273757719652748628">Экран для сохранения кода IBAN открыт полностью.</translation>
 <translation id="3281350579597955952">{0,plural, =1{Администратор не рекомендует открывать этот файл в месте назначения "<ph name="DESTINATION_NAME" />".}one{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}few{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}many{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}other{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}}</translation>
 <translation id="3282085321714087552">Ваша организация (<ph name="ENROLLMENT_DOMAIN" />) отправила на следующие веб-сайты некоторые данные, такие как настройки и правила.</translation>
-<translation id="3282568296779691940">Войдите в Chrome</translation>
+<translation id="3282568296779691940">Аккаунт Chrome</translation>
 <translation id="3286372614333682499">вертикальная ориентация</translation>
 <translation id="3287510313208355388">Скачать при подключении к Интернету</translation>
 <translation id="3288238092761586174">Сайт <ph name="URL" /> может выполнить дополнительные действия, чтобы подтвердить ваш платеж.</translation>
@@ -1568,6 +1567,7 @@
 <translation id="3715016660240337709">{0,plural, =1{Файл нельзя загрузить}one{<ph name="FILE_COUNT" /> файл нельзя загрузить}few{<ph name="FILE_COUNT" /> файла нельзя загрузить}many{<ph name="FILE_COUNT" /> файлов нельзя загрузить}other{<ph name="FILE_COUNT" /> файла нельзя загрузить}}</translation>
 <translation id="3715597595485130451">Подключение к Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Проверьте настройки прокси-сервера, брандмауэра и DNS<ph name="END_LINK" />.</translation>
+<translation id="3723316892512143176">Код IBAN</translation>
 <translation id="3723663469265383848">Во время обновления вы не сможете использовать устройство до 10 минут.</translation>
 <translation id="372429172604983730">Эта ошибка может возникать из-за антивирусных приложений, брандмауэра, программ для веб-фильтрации или прокси-сервера.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать презентацию Google, нажмите Tab, а затем Ввод.</translation>
@@ -2494,6 +2494,7 @@
 <translation id="5379618281582508161">Чтобы пароль был доступен на всех ваших устройствах, подтвердите личность.</translation>
 <translation id="5380953781541843508">по возрастанию</translation>
 <translation id="5381318171304904246">Нажмите "Продолжить", чтобы перейти на сайт банка. После подтверждения личности вы вернетесь на эту страницу для завершения покупки.</translation>
+<translation id="5381952079334035181">Пользователь <ph name="MEMBER_FIRST_NAME" /> обновил вкладку "<ph name="WEBSITE_TITLE" />".</translation>
 <translation id="5383478552402031184">Напольные покрытия</translation>
 <translation id="5385857628869214740">Юмор</translation>
 <translation id="5385966243497224160">Предпросмотр URL с протоколом, отличным от HTTPS, запрещен</translation>
@@ -2879,6 +2880,7 @@
 <translation id="6059925163896151826">USB-устройства</translation>
 <translation id="6060009363608157444">Недопустимый режим DnsOverHttps.</translation>
 <translation id="6061154937977953833">Борьба</translation>
+<translation id="6062405040252994646">Инструмент</translation>
 <translation id="6062937464449575061">Перестать отслеживать цену</translation>
 <translation id="6063415549109819824">Ипотечное кредитование</translation>
 <translation id="6070432475334343308">Не удалось загрузить один или несколько файлов в папку "<ph name="FOLDER_NAME" />" сервиса "<ph name="CLOUD_PROVIDER" />".</translation>
@@ -3926,6 +3928,7 @@
 <translation id="787226752901403048">Чтобы делиться группами вкладок, присоединяться к ним и обсуждать идеи с другими пользователями, войдите в Chrome.</translation>
 <translation id="7877007680666472091">идентификаторы защищенного контента</translation>
 <translation id="7878562273885520351">Злоумышленники могли узнать ваш пароль</translation>
+<translation id="7881044256965445977">Поиск устройств в локальной сети и подключение к ним</translation>
 <translation id="7882421473871500483">Коричневый</translation>
 <translation id="7886897188117641322">Выбирайте, какие категории тем могут использоваться для персонализации рекламы</translation>
 <translation id="7887683347370398519">Проверьте CVC-код и повторите попытку</translation>
@@ -4683,6 +4686,7 @@
 <translation id="94613679163347541">Сравнить товары из категории "<ph name="CATEGORY" />"?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать сайт в Google Сайтах, нажмите Tab, а затем Ввод.</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Сегодня Chrome снова ограничит использование файлов cookie}=1{Завтра Chrome снова ограничит использование файлов cookie}one{Chrome снова ограничит использование файлов cookie через # день}few{Chrome снова ограничит использование файлов cookie через # дня}many{Chrome снова ограничит использование файлов cookie через # дней}other{Chrome снова ограничит использование файлов cookie через # дня}}</translation>
+<translation id="949026252328034572">К группе вкладок "<ph name="GROUP_NAME" />" присоединилось несколько человек (<ph name="MEMBER_COUNT" />).</translation>
 <translation id="949314938206378263">Чтобы смотреть этот сайт, нужно получить разрешение родителя через Family Link.</translation>
 <translation id="950736567201356821">Три отверстия сверху</translation>
 <translation id="950926967802086924">Ключ доступа • Google Менеджер паролей</translation>

@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1190609913194133056">Centro notifiche</translation>
 <translation id="1201402288615127009">Avanti</translation>
-<translation id="1202892408424955784">Prodotti monitorati</translation>
 <translation id="1204075260022434100">{count,plural, =1{Preferito salvato in "{title}" nel tuo account, {email}}other{{count} preferiti salvati in "{title}" nel tuo account, {email}}}</translation>
 <translation id="120431140543679678">Segui</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">nuovo elemento</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> account utilizzano la stessa password</translation>
 <translation id="2059166748188874810">Comune</translation>
-<translation id="2060114494785549741">Elimina tra 1 mese</translation>
 <translation id="2060638295449304809">Questo indirizzo viene salvato solo su questo dispositivo. Per usarlo sugli altri dispositivi, salvalo nel tuo Account Google, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Selettore del tipo di unità</translation>
 <translation id="2067852168641682340">Salva sempre in questo account</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Nascondi scheda Monitora prezzo</translation>
 <translation id="2216366330550244277">Vai alla pagina di un prodotto</translation>
 <translation id="2220529011494928058">Segnala un problema</translation>
-<translation id="2220887224562128152">Una volta programmata l'eliminazione di un file, non è possibile recuperarlo.</translation>
 <translation id="2223461067862937305">Crea un codice QR</translation>
 <translation id="2229345671837147090">Griglia schede remote</translation>
 <translation id="2230173723195178503">Pagina web caricata</translation>
@@ -384,7 +381,6 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2539748786028143624">Attiva la Protezione avanzata…</translation>
 <translation id="2540111494300686866">Elimina finestre di dialogo</translation>
 <translation id="2542268842667970959">Nascondi "Controllo di sicurezza"</translation>
-<translation id="2543870349255816922">Questa scheda mostra una riduzione di prezzo sul prodotto tracciato da uno dei tuoi dispositivi sincronizzati</translation>
 <translation id="2547458583188611426">La sincronizzazione non funziona. Per avviare la sincronizzazione devi inserire la tua passphrase.</translation>
 <translation id="2551153019974022505">Errore dell'account</translation>
 <translation id="2559843230610279254">Gruppo di schede, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> schede.</translation>
@@ -495,7 +491,6 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="3059270601560379555">Nuova ricerca</translation>
 <translation id="3064547930554042309">Gestisci i download</translation>
 <translation id="3072279342064724558">La password esiste già</translation>
-<translation id="3074862506644936708">Abilita l'eliminazione automatica</translation>
 <translation id="3076846064362030967">Non verrà eseguita la disconnessione dal tuo Account Google. <ph name="BEGIN_LINK" />Altri tipi di attività<ph name="END_LINK" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminarli in qualsiasi momento.
 
 
@@ -917,6 +912,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4896467949657706481">Le schede sono state chiuse; il tuo account è stato disconnesso</translation>
 <translation id="4913626501929406101">Puoi condividere in sicurezza una copia della tua password con un membro del tuo gruppo Famiglia. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Accetto</translation>
+<translation id="4930714375720679147">Attiva</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4936354130727646074">Non spostare mai</translation>
 <translation id="4937410517508563815">Salva le password nell'account</translation>
@@ -1152,7 +1148,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5899314093904173337">Per condividere i contenuti con le persone qui vicino, chiedi loro di scansionare questo codice QR con la fotocamera o con un'app scanner QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} nuova scheda}other{{count} nuove schede}}</translation>
 <translation id="5911030830365207728">Google Traduttore</translation>
-<translation id="5917913282764181683">Elimina automaticamente i download</translation>
 <translation id="5922999516621365983">Trascina qui la scheda per bloccarla.</translation>
 <translation id="5936006948844852401">Gestisci spazio di archiviazione</translation>
 <translation id="5936065461722368675">Traduci pagina intera</translation>
@@ -1511,7 +1506,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="741204030948306876">Sì, accetto</translation>
 <translation id="7417689656810783109">Rinomina gruppo</translation>
 <translation id="7419565702166471774">Utilizza sempre connessioni sicure</translation>
-<translation id="742001653298797675">Programma l'eliminazione di tutti i download dopo un mese per risparmiare spazio sullo smartphone e proteggere la tua privacy.</translation>
 <translation id="7425053386765766120">Aggiungi il metodo di pagamento…</translation>
 <translation id="7425346204213733349">Le modifiche ai preferiti, alla cronologia, alle password e ad altre impostazioni non verranno più sincronizzate con il tuo Account Google. Tuttavia, i dati esistenti rimarranno memorizzati.</translation>
 <translation id="742664698522525515">Mantenere il gruppo?</translation>

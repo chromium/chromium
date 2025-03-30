@@ -9,7 +9,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 
 namespace web_app {
 

@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
@@ -151,6 +152,14 @@ class NoVarySearchCacheTest : public ::testing::TestWithParam<bool> {
     return cache.GetSizeForTesting() == 1u;
   }
 
+  std::string GenerateCacheKey(std::string_view url) {
+    const auto request = TestRequest(GURL(url));
+    std::optional<std::string> maybe_cache_key =
+        HttpCache::GenerateCacheKeyForRequest(&request);
+    EXPECT_TRUE(maybe_cache_key);
+    return maybe_cache_key.value_or(std::string());
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   NoVarySearchCache cache_{kMaxSize};
@@ -160,6 +169,14 @@ class NoVarySearchCacheTest : public ::testing::TestWithParam<bool> {
   // each test.
   std::vector<scoped_refptr<HttpResponseHeaders>> response_header_storage_;
 };
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NoVarySearchCacheTest,
+                         ::testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "SplitCacheEnabled"
+                                             : "SplitCacheDisabled";
+                         });
 
 TEST_P(NoVarySearchCacheTest, NewlyConstructedCacheIsEmpty) {
   EXPECT_EQ(cache().GetSizeForTesting(), 0u);
@@ -881,9 +898,24 @@ TEST_P(NoVarySearchCacheTest, TruncatedPickle) {
   }
 }
 
-// An Observer object implemented by GoogleMock.
-class MockObserver : public NoVarySearchCache::Observer {
+// An Observer that registers and deregisters itself automatically.
+class ScopedObserver : public NoVarySearchCache::Observer {
  public:
+  explicit ScopedObserver(NoVarySearchCache& cache) : cache_(cache) {
+    cache.SetObserver(this);
+  }
+
+  ~ScopedObserver() override { cache_->SetObserver(nullptr); }
+
+ private:
+  raw_ref<NoVarySearchCache> cache_;
+};
+
+// An Observer object implemented by GoogleMock.
+class ScopedMockObserver : public ScopedObserver {
+ public:
+  using ScopedObserver::ScopedObserver;
+
   MOCK_METHOD(void,
               OnInsert,
               (const std::string&,
@@ -897,20 +929,6 @@ class MockObserver : public NoVarySearchCache::Observer {
                const HttpNoVarySearchData&,
                const std::optional<std::string>&),
               (override));
-};
-
-// A version of MockObserver that registers and unregisters itself
-// automatically.
-class ScopedMockObserver : public ::testing::StrictMock<MockObserver> {
- public:
-  explicit ScopedMockObserver(NoVarySearchCache& cache) : cache_(&cache) {
-    cache.SetObserver(this);
-  }
-
-  ~ScopedMockObserver() override { cache_->SetObserver(nullptr); }
-
- private:
-  raw_ptr<NoVarySearchCache> cache_;
 };
 
 // A matcher which matches No-Vary-Search: key-order
@@ -1024,13 +1042,218 @@ TEST_P(NoVarySearchCacheTest, DontObserveLookup) {
   cache().Lookup(TestRequest("a=6"));
 }
 
+// An Observer that clones all changes into a target NoVarySearchCache object.
+class CloningObserver : public ScopedObserver {
+ public:
+  CloningObserver(NoVarySearchCache& source, NoVarySearchCache& target)
+      : ScopedObserver(source), target_(target) {}
+
+  void OnInsert(const std::string& base_url_cache_key,
+                const HttpNoVarySearchData& nvs_data,
+                const std::optional<std::string>& query,
+                base::Time update_time) override {
+    target_->ReplayInsert(base_url_cache_key, nvs_data, query, update_time);
+  }
+
+  // Called when an entry is erased by the Erase() method.
+  void OnErase(const std::string& base_url_cache_key,
+               const HttpNoVarySearchData& nvs_data,
+               const std::optional<std::string>& query) override {
+    target_->ReplayErase(base_url_cache_key, nvs_data, query);
+  }
+
+ private:
+  raw_ref<NoVarySearchCache> target_;
+};
+
+struct CloneMaker {
+  NoVarySearchCache clone;
+  CloningObserver observer;
+
+  explicit CloneMaker(NoVarySearchCache& source)
+      : clone(kMaxSize), observer(source, clone) {}
+};
+
+class NoVarySearchCacheReplayTest : public NoVarySearchCacheTest {
+ protected:
+  struct ReplayTestCase {
+    std::string_view description;
+    HttpRequestInfo to_insert;
+    std::string_view no_vary_search_value;
+    HttpRequestInfo to_lookup;
+  };
+
+  auto ReplayTestCases() {
+    return std::to_array<ReplayTestCase>({
+        {
+            "Simple key-order",
+            TestRequest("c=2&a=1"),
+            "key-order",
+            TestRequest("a=1&c=2"),
+        },
+        {
+            "Different no-vary-search",
+            TestRequest("d=3&e=5"),
+            "params=(\"d\")",
+            TestRequest("e=5"),
+        },
+        {
+            "Different base URL",
+            TestRequest(GURL("https://www.example.com/other?c=2&a=1")),
+            "key-order",
+            TestRequest(GURL("https://www.example.com/other?a=1&c=2")),
+        },
+        {
+            "Different site",
+            TestRequest(GURL("https://example.example/?c=2&a=1")),
+            "key-order",
+            TestRequest(GURL("https://example.example/?a=1&c=2")),
+        },
+        {
+            "No question mark",
+            TestRequest(GURL("https://example2.example/")),
+            "params",
+            TestRequest(GURL("https://example2.example/?q=ignored")),
+        },
+    });
+  }
+};
+
 INSTANTIATE_TEST_SUITE_P(All,
-                         NoVarySearchCacheTest,
+                         NoVarySearchCacheReplayTest,
                          ::testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "SplitCacheEnabled"
                                              : "SplitCacheDisabled";
                          });
+
+TEST_P(NoVarySearchCacheReplayTest, Inserts) {
+  const auto test_cases = ReplayTestCases();
+  CloneMaker maker(cache());
+
+  for (const auto& [description, to_insert, no_vary_search_value, to_lookup] :
+       test_cases) {
+    cache().MaybeInsert(to_insert, TestHeaders(no_vary_search_value));
+  }
+
+  EXPECT_EQ(maker.clone.GetSizeForTesting(), test_cases.size());
+
+  for (const auto& [description, to_insert, no_vary_search_value, to_lookup] :
+       test_cases) {
+    SCOPED_TRACE(description);
+    auto source_lookup_result = cache().Lookup(to_lookup);
+    auto target_lookup_result = maker.clone.Lookup(to_lookup);
+
+    ASSERT_TRUE(source_lookup_result);
+    ASSERT_TRUE(target_lookup_result);
+    EXPECT_EQ(source_lookup_result->original_url,
+              target_lookup_result->original_url);
+  }
+}
+
+TEST_P(NoVarySearchCacheReplayTest, Erases) {
+  const auto test_cases = ReplayTestCases();
+  CloneMaker maker(cache());
+
+  for (const auto& [description, to_insert, no_vary_search_value, to_lookup] :
+       test_cases) {
+    cache().MaybeInsert(to_insert, TestHeaders(no_vary_search_value));
+  }
+
+  for (const auto& [description, to_insert, no_vary_search_value, to_lookup] :
+       test_cases) {
+    SCOPED_TRACE(description);
+    auto source_lookup_result = cache().Lookup(to_lookup);
+    ASSERT_TRUE(source_lookup_result);
+
+    cache().Erase(std::move(source_lookup_result->erase_handle));
+
+    EXPECT_FALSE(maker.clone.Lookup(to_lookup));
+  }
+
+  EXPECT_EQ(maker.clone.GetSizeForTesting(), 0u);
+  EXPECT_TRUE(maker.clone.IsTopLevelMapEmptyForTesting());
+}
+
+TEST_P(NoVarySearchCacheTest, ReplayInsertBadURLs) {
+  struct TestCase {
+    std::string_view description;
+    std::string_view bad_url;
+  };
+  static constexpr auto kBadURLs = std::to_array<TestCase>({
+      {"Invalid URL", ":"},
+      {"Not canonical", "https://example%2Eexample/"},
+      {"No path", "what:"},
+      {"Has username", "https://bob@example.example/"},
+      {"Has password", "https://:pass@example.example/"},
+      {"Has query", "https://example.example/?"},
+      {"Has ref", "https://example.example/#water"},
+  });
+  static constexpr std::string_view kRealURL = "https://example.example/test";
+  const std::string real_cache_key = GenerateCacheKey(kRealURL);
+  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, true);
+  const std::optional<std::string> query = "t=1";
+  const base::Time update_time;
+  for (const auto& [description, bad_url] : kBadURLs) {
+    SCOPED_TRACE(description);
+    std::string modified_cache_key = real_cache_key;
+    base::ReplaceFirstSubstringAfterOffset(&modified_cache_key, 0u, kRealURL,
+                                           bad_url);
+    cache().ReplayInsert(modified_cache_key, nvs_data, query, update_time);
+    EXPECT_EQ(cache().GetSizeForTesting(), 0u);
+  }
+}
+
+TEST_P(NoVarySearchCacheTest, ReplayInsertBadQuery) {
+  const std::string cache_key = GenerateCacheKey("https://example.example/");
+  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, true);
+  const base::Time update_time;
+  cache().ReplayInsert(cache_key, nvs_data, "t=1#what", update_time);
+  EXPECT_EQ(cache().GetSizeForTesting(), 0u);
+}
+
+TEST_P(NoVarySearchCacheTest, ReplayEraseOnEmptyCache) {
+  const std::string cache_key = GenerateCacheKey("https://example.example/");
+  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, true);
+  cache().ReplayErase(cache_key, nvs_data, "t=1");
+  EXPECT_EQ(cache().GetSizeForTesting(), 0u);
+}
+
+TEST_P(NoVarySearchCacheTest, ReplayEraseMismatchedCacheKey) {
+  const std::string cache_key = GenerateCacheKey("https://example.example/");
+  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, true);
+  const std::optional<std::string> query = "t=1";
+  const base::Time update_time;
+  cache().ReplayInsert(cache_key, nvs_data, query, update_time);
+
+  cache().ReplayErase(cache_key + ".", nvs_data, query);
+  EXPECT_EQ(cache().GetSizeForTesting(), 1u);
+}
+
+TEST_P(NoVarySearchCacheTest, ReplayEraseMismatchedNVSData) {
+  const std::string cache_key = GenerateCacheKey("https://example.example/");
+  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, true);
+  const std::optional<std::string> query = "t=1";
+  const base::Time update_time;
+  cache().ReplayInsert(cache_key, nvs_data, query, update_time);
+
+  const auto mismatched_nvs_data =
+      HttpNoVarySearchData::CreateFromNoVaryParams({"z"}, true);
+  cache().ReplayErase(cache_key, mismatched_nvs_data, query);
+  EXPECT_EQ(cache().GetSizeForTesting(), 1u);
+}
+
+TEST_P(NoVarySearchCacheTest, ReplayEraseMismatchedQuery) {
+  const std::string cache_key = GenerateCacheKey("https://example.example/");
+  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, true);
+  const std::optional<std::string> query = "t=1";
+  const base::Time update_time;
+  cache().ReplayInsert(cache_key, nvs_data, query, update_time);
+
+  const std::optional<std::string> mismatched_query = "t=2";
+  cache().ReplayErase(cache_key, nvs_data, mismatched_query);
+  EXPECT_EQ(cache().GetSizeForTesting(), 1u);
+}
 
 // TODO(https://crbug.com/390216627): Test the various experiments that affect
 // the cache key and make sure they also affect NoVarySearchCache.

@@ -19,7 +19,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/unexportable_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
@@ -164,7 +164,7 @@ class DBSCSessionStorePerfTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<SessionStoreImpl> store_;
-  crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
   unexportable_keys::UnexportableKeyTaskManager task_manager_{
       crypto::UnexportableKeyProvider::Config()};
   unexportable_keys::UnexportableKeyServiceImpl key_service_;

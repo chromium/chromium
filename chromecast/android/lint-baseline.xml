@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.7.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.7.0-alpha03">
+<issues format="6" by="lint 8.11.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.11.0-alpha03">
 
     <issue
         id="PictureInPictureIssue"
@@ -8,7 +8,7 @@
         errorLine2="   ~~~~~~~~~~~">
         <location
             file="gen/chromecast/cast_browser_apk__lint/AndroidManifest.xml"
-            line="37"
+            line="34"
             column="4"/>
     </issue>
 
@@ -19,19 +19,19 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chromecast/browser/android/apk/src/org/chromium/chromecast/shell/BroadcastReceiverScope.java"
-            line="37"
+            line="39"
             column="9"/>
     </issue>
 
     <issue
         id="DiscouragedApi"
-        message="Should not restrict activity to fixed orientation. This may not be suitable for different form factors, causing the app to be letterboxed."
-        errorLine1="    &lt;activity android:name=&quot;org.chromium.chromecast.shell.CastWebContentsActivity&quot; android:theme=&quot;@style/CastShellTheme&quot; android:exported=&quot;true&quot; android:hardwareAccelerated=&quot;true&quot; android:launchMode=&quot;singleInstance&quot; android:screenOrientation=&quot;landscape&quot; android:taskAffinity=&quot;.CastWebContentsActivity&quot; android:supportsPictureInPicture=&quot;true&quot; android:configChanges=&quot;orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|screenLayout|smallestScreenSize|uiMode&quot; android:excludeFromRecents=&quot;false&quot; android:noHistory=&quot;false&quot; android:showWhenLocked=&quot;true&quot;>"
-        errorLine2="                                                                                                                                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Fixed screen orientations will be ignored in most cases, starting from Android 16. Android is moving toward a model where apps are expected to adapt to various orientations, display sizes, and aspect ratios."
+        errorLine1="    &lt;activity android:name=&quot;org.chromium.chromecast.shell.CastWebContentsActivity&quot; android:theme=&quot;@style/CastShellTheme&quot; android:exported=&quot;true&quot; android:hardwareAccelerated=&quot;true&quot; android:launchMode=&quot;singleInstance&quot; android:process=&quot;:cast_browser_process&quot; android:screenOrientation=&quot;landscape&quot; android:taskAffinity=&quot;.CastWebContentsActivity&quot; android:supportsPictureInPicture=&quot;true&quot; android:configChanges=&quot;orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|screenLayout|smallestScreenSize|uiMode&quot; android:excludeFromRecents=&quot;false&quot; android:noHistory=&quot;false&quot; android:showWhenLocked=&quot;true&quot;>"
+        errorLine2="                                                                                                                                                                                                                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/chromecast/cast_browser_apk__lint/AndroidManifest.xml"
-            line="71"
-            column="217"/>
+            line="59"
+            column="257"/>
     </issue>
 
     <issue

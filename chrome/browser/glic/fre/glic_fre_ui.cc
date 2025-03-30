@@ -12,6 +12,8 @@
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/glic_fre_resources.h"
@@ -38,6 +40,7 @@ bool GlicFreUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
 
 GlicFreUI::GlicFreUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   static constexpr webui::LocalizedString kStrings[] = {
+      {"closeButtonLabel", IDS_GLIC_NOTICE_CLOSE_BUTTON_LABEL},
       {"errorNotice", IDS_GLIC_ERROR_NOTICE},
       {"errorNoticeActionButton", IDS_GLIC_ERROR_NOTICE_ACTION_BUTTON},
       {"errorNoticeHeader", IDS_GLIC_ERROR_NOTICE_HEADER},
@@ -63,6 +66,19 @@ GlicFreUI::GlicFreUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddString(
       "glicFreURL",
       GetFreURL(Profile::FromBrowserContext(browser_context)).spec());
+
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  const bool is_glic_dev = command_line->HasSwitch(::switches::kGlicDev);
+
+  // Set up loading notice timeout values.
+  source->AddInteger("preLoadingTimeMs", features::kGlicPreLoadingTimeMs.Get());
+  source->AddInteger("minLoadingTimeMs", features::kGlicMinLoadingTimeMs.Get());
+  int max_loading_time_ms = features::kGlicMaxLoadingTimeMs.Get();
+  if (is_glic_dev) {
+    // Bump up timeout value, as dev server may be slow.
+    max_loading_time_ms *= 100;
+  }
+  source->AddInteger("maxLoadingTimeMs", max_loading_time_ms);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicFreUI)

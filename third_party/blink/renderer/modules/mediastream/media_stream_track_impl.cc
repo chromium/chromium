@@ -690,14 +690,11 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
     }
     settings->setCursor(value);
   }
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
   if (IsCapturedSurfaceResolutionActive(platform_settings)) {
     std::optional<float> ratio = platform_settings.device_scale_factor;
-    if (platform_settings.display_surface ==
-            media::mojom::DisplayCaptureSurfaceType::BROWSER &&
-        zoom_level_ && ratio) {
-      ratio = (*zoom_level_) * (*ratio);
-      ratio = *ratio / 100.0f;
+    if (ratio) {
+      settings->setScreenPixelRatio(*ratio);
     }
 
     if (platform_settings.physical_frame_size) {
@@ -710,11 +707,9 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
             platform_settings.physical_frame_size->width() / *ratio);
         settings->setLogicalHeight(
             platform_settings.physical_frame_size->height() / *ratio);
-        settings->setPixelRatio(*ratio);
       }
     }
   }
-#endif
 
   if (suppress_local_audio_playback_setting_.has_value()) {
     settings->setSuppressLocalAudioPlayback(

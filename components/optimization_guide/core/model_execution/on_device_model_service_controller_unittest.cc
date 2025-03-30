@@ -157,13 +157,10 @@ class FakeOnDeviceModelAvailabilityObserver
 
 }  // namespace
 
-std::vector<std::string> ConcatResponses(
-    const std::vector<std::string>& responses) {
-  std::vector<std::string> concat_responses;
-  std::string current_response;
+std::string ConcatResponses(const std::vector<std::string>& responses) {
+  std::string concat_responses;
   for (const std::string& response : responses) {
-    current_response += response;
-    concat_responses.push_back(current_response);
+    concat_responses += response;
   }
   return concat_responses;
 }
@@ -1462,7 +1459,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_THAT(response_.model_execution_info()
                   ->on_device_model_execution_info()
                   .execution_infos(),
-              ElementsAre(testing::_,  // Base Model Execution
+              ElementsAre(testing::_,
                           ResultOf("check text", &GetCheckText,
                                    "response_check: url_very_safe_output")));
 }
@@ -2135,7 +2132,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
   const std::string expected_response1 =
       "Context: execute:foo off:0 max:1024\n";
   EXPECT_EQ(*response_.value(), expected_response1);
-  EXPECT_THAT(response_.partials(), ElementsAre(expected_response1));
+  EXPECT_THAT(response_.partials(), IsEmpty());
 
   // Input and output contain text matching redact, so should not be redacted.
   auto session2 = CreateSession();
@@ -2147,7 +2144,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
   const std::string expected_response2 =
       "Context: execute:abarx off:0 max:1024\n";
   EXPECT_EQ(*response2.value(), expected_response2);
-  EXPECT_THAT(response2.partials(), ElementsAre(expected_response2));
+  EXPECT_THAT(response2.partials(), IsEmpty());
 
   // Output contains redacted text (and  input doesn't), so redact.
   fake_settings_.set_execute_result({"Context: abarx off:0 max:1024\n"});
@@ -2159,7 +2156,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
   task_environment_.RunUntilIdle();
   const std::string expected_response3 = "Context: a[###]x off:0 max:1024\n";
   EXPECT_EQ(*response3.value(), expected_response3);
-  EXPECT_THAT(response3.partials(), ElementsAre(expected_response3));
+  EXPECT_THAT(response3.partials(), IsEmpty());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
@@ -2229,7 +2226,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
   // `bar` shouldn't be rewritten as it's in the input.
   const std::string expected_response = "Context: bar off:0 max:1024\n";
   EXPECT_EQ(*response_.value(), expected_response);
-  EXPECT_THAT(response_.partials(), ElementsAre(expected_response));
+  EXPECT_THAT(response_.partials(), IsEmpty());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ReplacementText) {
@@ -2253,7 +2250,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ReplacementText) {
   const std::string expected_response =
       "Context: a[redacted]x off:0 max:1024\n";
   EXPECT_EQ(*response_.value(), expected_response);
-  EXPECT_THAT(response_.partials(), ElementsAre(expected_response));
+  EXPECT_THAT(response_.partials(), IsEmpty());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeats) {
@@ -2280,12 +2277,12 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeats) {
   session->ExecuteModel(UserInputRequest("foo"),
                         response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
-  const std::vector<std::string> expected_responses = ConcatResponses({
+  const std::vector<std::string> expected_responses = {
       "some text",
       " some more repeating text",
-  });
+  };
   EXPECT_EQ(*response_.value(),
-            expected_responses.back() + " some more repeating text");
+            ConcatResponses(expected_responses) + " some more repeating text");
   EXPECT_THAT(response_.partials(), ElementsAreArray(expected_responses));
 
   ASSERT_TRUE(response_.model_execution_info());
@@ -2376,13 +2373,14 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAcrossResponses) {
   session->ExecuteModel(UserInputRequest("foo"),
                         response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
-  const std::vector<std::string> partial_responses = ConcatResponses({
+  const std::vector<std::string> partial_responses = {
       "some text",
       " some more repeating",
       " text",
       " some more ",
-  });
-  EXPECT_EQ(*response_.value(), partial_responses.back() + "repeating text");
+  };
+  EXPECT_EQ(*response_.value(),
+            ConcatResponses(partial_responses) + "repeating text");
   EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));
 
   ASSERT_TRUE(response_.model_execution_info());
@@ -2426,13 +2424,13 @@ TEST_F(OnDeviceModelServiceControllerTest, IgnoresNonRepeatingText) {
   session->ExecuteModel(UserInputRequest("foo"),
                         response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
-  const std::vector<std::string> expected_responses = ConcatResponses({
+  const std::vector<std::string> expected_responses = {
       "some text",
       " some more repeating text",
       " some more non repeating text",
       " more stuff",
-  });
-  EXPECT_EQ(*response_.value(), expected_responses.back());
+  };
+  EXPECT_EQ(*response_.value(), ConcatResponses(expected_responses));
   EXPECT_THAT(response_.partials(), ElementsAreArray(expected_responses));
 
   ASSERT_TRUE(response_.model_execution_info());
@@ -2501,10 +2499,10 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
                         response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
-  const std::vector<std::string> partial_responses = ConcatResponses({
+  const std::vector<std::string> partial_responses = {
       "Context: execute:foo off:0 max:1024\n",
-  });
-  EXPECT_EQ(*response_.value(), partial_responses.back());
+  };
+  EXPECT_EQ(*response_.value(), ConcatResponses(partial_responses));
   EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));
 }
 
@@ -2523,20 +2521,15 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval0) {
   auto session = CreateSession();
   EXPECT_TRUE(session);
 
-  fake_settings_.set_execute_result(
-      {"token1", " token2", " token3", " token4"});
+  const std::vector<std::string> tokens = {"token1", " token2", " token3",
+                                           " token4"};
+  fake_settings_.set_execute_result(tokens);
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
 
-  const std::vector<std::string> expected_responses = {
-      "token1 token2 token3 token4"};
-  EXPECT_EQ(*response_.value(), expected_responses.back());
-  const std::vector<std::string> partial_expected_responses = {
-      "token1", "token1 token2", "token1 token2 token3",
-      "token1 token2 token3 token4"};
-  EXPECT_THAT(response_.partials(),
-              ElementsAreArray(partial_expected_responses));
+  EXPECT_EQ(*response_.value(), ConcatResponses(tokens));
+  EXPECT_THAT(response_.partials(), ElementsAreArray(tokens));
 }
 
 // Validate that token interval 1 evaluates all partial output.
@@ -2555,19 +2548,15 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval1) {
   auto session = CreateSession();
   EXPECT_TRUE(session);
 
-  fake_settings_.set_execute_result(
-      {"token1", " token2", " token3", " token4"});
+  const std::vector<std::string> tokens = {"token1", " token2", " token3",
+                                           " token4"};
+  fake_settings_.set_execute_result(tokens);
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(*response_.value(), "token1 token2 token3 token4");
-  EXPECT_THAT(response_.partials(), ElementsAreArray({
-                                        "token1",
-                                        "token1 token2",
-                                        "token1 token2 token3",
-                                        "token1 token2 token3 token4",
-                                    }));
+  EXPECT_EQ(*response_.value(), ConcatResponses(tokens));
+  EXPECT_THAT(response_.partials(), ElementsAreArray(tokens));
 }
 
 // Validate that token interval 3 only evaluates every third and final chunk.
@@ -2586,19 +2575,19 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval3) {
   auto session = CreateSession();
   EXPECT_TRUE(session);
 
-  fake_settings_.set_execute_result({"token1", " token2", " token3", " token4",
-                                     " token5", " token6", " token7"});
+  const std::vector<std::string> tokens = {"token1",  " token2", " token3",
+                                           " token4", " token5", " token6",
+                                           " token7"};
+  fake_settings_.set_execute_result(tokens);
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(*response_.value(),
-            "token1 token2 token3 token4 token5 token6 token7");
-  EXPECT_THAT(response_.partials(),
-              ElementsAreArray({
-                  "token1 token2 token3",
-                  "token1 token2 token3 token4 token5 token6",
-              }));
+  EXPECT_EQ(*response_.value(), ConcatResponses(tokens));
+  EXPECT_THAT(response_.partials(), ElementsAreArray({
+                                        "token1 token2 token3",
+                                        " token4 token5 token6",
+                                    }));
 }
 
 // Validate that PartialOutputChecks::minimum_tokens is respected.
@@ -2619,19 +2608,19 @@ TEST_F(OnDeviceModelServiceControllerTest, MinimumSafetyTokens) {
   auto session = CreateSession();
   EXPECT_TRUE(session);
 
-  fake_settings_.set_execute_result(
-      {"token1", " token2", " token3", " token4"});
+  const std::vector<std::string> tokens = {"token1", " token2", " token3",
+                                           " token4"};
+  fake_settings_.set_execute_result(tokens);
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
 
   const std::vector<std::string> expected_responses = {
       "token1 token2",
-      "token1 token2 token3",
-      "token1 token2 token3 token4",
+      " token3",
+      " token4",
   };
-
-  EXPECT_EQ(*response_.value(), expected_responses.back());
+  EXPECT_EQ(*response_.value(), ConcatResponses(tokens));
   EXPECT_THAT(response_.partials(), ElementsAreArray(expected_responses));
 }
 
@@ -2652,8 +2641,9 @@ TEST_F(OnDeviceModelServiceControllerTest, WaitUntilCompleteToCancel) {
   auto session = CreateSession();
   EXPECT_TRUE(session);
 
-  fake_settings_.set_execute_result(
-      {"safe", " safe", " lang:en=1.0", " safe", " unsafe"});
+  const std::vector<std::string> tokens = {"safe", " safe", " lang:en=1.0",
+                                           " safe", " unsafe"};
+  fake_settings_.set_execute_result(tokens);
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
 
@@ -2672,51 +2662,13 @@ TEST_F(OnDeviceModelServiceControllerTest, WaitUntilCompleteToCancel) {
 
       // The next two responses are not filtered because the language has been
       // reliably detected as a supported language.
-      "safe safe lang:en=1.0", "safe safe lang:en=1.0 safe",
+      "safe safe lang:en=1.0", " safe",
 
       // The last response is unsafe so it is filtered. Since the output is
       // complete the response is cancelled.
       //
       // "safe safe lang:en=1.0 safe unsafe",
   };
-  EXPECT_THAT(response_.partials(), ElementsAreArray(expected_responses));
-}
-
-// Validate chunk-by-chunk streaming mode works correctly.
-TEST_F(OnDeviceModelServiceControllerTest, TsInterval1_ChunkByChunk) {
-  // Configure a token interval to enable streaming responses.
-  FakeSafetyModelAsset safety_asset([]() {
-    auto safety_config = ComposeSafetyConfig();
-    safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
-    safety_config.mutable_partial_output_checks()->set_token_interval(1);
-    return safety_config;
-  }());
-  FakeAdaptationAsset compose_asset({
-      .config =
-          []() {
-            auto config = SimpleComposeConfig();
-            config.mutable_output_config()->set_response_streaming_mode(
-                proto::STREAMING_MODE_CHUNK_BY_CHUNK);
-            return config;
-          }(),
-  });
-  Initialize({
-      .base_model = &standard_assets_.base_model,
-      .safety = &safety_asset,
-      .adaptations = {&compose_asset},
-  });
-  auto session = CreateSession();
-  EXPECT_TRUE(session);
-
-  fake_settings_.set_execute_result(
-      {"token1", " token2", " token3", " token4"});
-  session->ExecuteModel(PageUrlRequest("foo"),
-                        response_.GetStreamingCallback());
-  task_environment_.RunUntilIdle();
-
-  const std::vector<std::string> expected_responses = {"token1", " token2",
-                                                       " token3", " token4"};
-  EXPECT_EQ(*response_.value(), "");
   EXPECT_THAT(response_.partials(), ElementsAreArray(expected_responses));
 }
 
@@ -3519,10 +3471,10 @@ TEST_F(OnDeviceModelServiceControllerTest, CloneUsesSessionTopKAndTemperature) {
   clone->ExecuteModel(PageUrlRequest("foo"), response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
-  const std::vector<std::string> partial_responses = ConcatResponses({
+  const std::vector<std::string> partial_responses = {
       "Context: execute:foo off:0 max:1024\n",
-  });
-  EXPECT_EQ(*response_.value(), partial_responses.back());
+  };
+  EXPECT_EQ(*response_.value(), ConcatResponses(partial_responses));
   EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));
 }
 

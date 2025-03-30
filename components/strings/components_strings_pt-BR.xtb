@@ -441,7 +441,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1734878702283171397">Tente entrar em contato com o administrador do sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expira em <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computador</translation>
-<translation id="1739422091279046802">rolagem e zoom</translation>
 <translation id="1741613555002899862">Precisa ser especificada e ser uma string válida quando DnsOverHttpsMode for <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Roupa e artigos de cama</translation>
 <translation id="1743892871127720056">Título da tabela de comparação, editar o texto</translation>
@@ -1569,6 +1568,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3715016660240337709">{0,plural, =1{O upload do arquivo está bloqueado}one{O upload de <ph name="FILE_COUNT" /> arquivo está bloqueado}other{O upload de <ph name="FILE_COUNT" /> arquivos está bloqueado}}</translation>
 <translation id="3715597595485130451">Conectar ao Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Verificar a configuração de DNS, proxy e firewall<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">Não será possível usar o dispositivo por até 10 minutos durante a atualização.</translation>
 <translation id="372429172604983730">Entre os apps que podem causar esse erro estão antivírus, firewall e softwares de filtros ou proxy da Web.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo no Apresentações Google</translation>
@@ -2495,6 +2495,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5379618281582508161">Para acessar essa senha em todos os seus dispositivos, confirme sua identidade</translation>
 <translation id="5380953781541843508">em ordem crescente</translation>
 <translation id="5381318171304904246">Ao continuar, vamos abrir o site do seu banco. Após a verificação, você vai retornar automaticamente para concluir a compra.</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> atualizou a guia "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="5383478552402031184">Serviços de pisos</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">Não é possível ver prévias de URLs que não são HTTPS</translation>
@@ -2880,6 +2881,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6059925163896151826">Dispositivos USB</translation>
 <translation id="6060009363608157444">Modo DnsOverHttps inválido.</translation>
 <translation id="6061154937977953833">Luta livre</translation>
+<translation id="6062405040252994646">Ferramenta</translation>
 <translation id="6062937464449575061">Não monitorar preço</translation>
 <translation id="6063415549109819824">Financiamento de imóveis residenciais</translation>
 <translation id="6070432475334343308">Um ou mais arquivos não foram enviados para <ph name="FOLDER_NAME" /> em <ph name="CLOUD_PROVIDER" /></translation>
@@ -3927,6 +3929,7 @@ Mais detalhes:
 <translation id="787226752901403048">Faça login no Chrome para compartilhar e participar de grupos de guias e trabalhar em conjunto</translation>
 <translation id="7877007680666472091">IDs de conteúdo protegido</translation>
 <translation id="7878562273885520351">Sua senha pode estar comprometida</translation>
+<translation id="7881044256965445977">Buscar e se conectar a qualquer dispositivo na sua rede local</translation>
 <translation id="7882421473871500483">Marrom</translation>
 <translation id="7886897188117641322">Escolha quais categorias amplas de temas podem ser usadas para personalizar anúncios</translation>
 <translation id="7887683347370398519">Verifique seu CVC e tente novamente</translation>
@@ -4686,6 +4689,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="94613679163347541">Comparar <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo site no Google Sites</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{O Chrome vai limitar os cookies de novo hoje}=1{O Chrome vai limitar os cookies de novo amanhã}one{# dia até que o Chrome limite os cookies de novo}other{# dias até que o Chrome limite os cookies de novo}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> membros entraram no grupo de guias "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Você pediu para acessar este site. O familiar responsável pode responder no Family Link.</translation>
 <translation id="950736567201356821">Perfuração tripla na parte superior</translation>
 <translation id="950926967802086924">Chave de acesso • Gerenciador de senhas do Google</translation>

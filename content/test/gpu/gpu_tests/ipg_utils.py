@@ -55,10 +55,10 @@ def GenerateIPGLogFilename(log_prefix: str = 'PowerLog',
   log_dir = log_dir or os.getcwd()
   log_dir = os.path.abspath(log_dir)
   if total_runs > 1:
-    log_prefix = '%s_%d_%d' % (log_prefix, current_run, total_runs)
+    log_prefix = f'{log_prefix}_{current_run}_{total_runs}'
   if timestamp:
     now = datetime.datetime.now()
-    log_prefix = '%s_%s' % (log_prefix, now.strftime('%Y%m%d%H%M%S'))
+    log_prefix = f'{log_prefix}_{now.strftime("%Y%m%d%H%M%S")}'
   return os.path.join(log_dir, log_prefix + '.csv')
 
 
@@ -66,12 +66,12 @@ def RunIPG(duration_in_s: int = 60,
            resolution_in_ms: int = 100,
            logfile: str | None = None) -> None:
   intel_power_gadget_path = LocateIPG()
-  command = ('"%s" -duration %d -resolution %d' %
-             (intel_power_gadget_path, duration_in_s, resolution_in_ms))
+  command = (f'"{intel_power_gadget_path}" -duration {duration_in_s} '
+             f'-resolution {resolution_in_ms}')
   if not logfile:
     # It is not necessary but allows to print out the log path for debugging.
     logfile = GenerateIPGLogFilename()
-  command = command + (' -file %s' % logfile)
+  command = f'{command} -file {logfile}'
   logging.debug('Running: %s', command)
   try:
     output = subprocess.check_output(command,

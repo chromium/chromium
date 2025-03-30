@@ -506,4 +506,42 @@ TEST_F(InputTransferHandlerTest, DoNotRetryTransferIfNoActiveSequence) {
   }
 }
 
+TEST_F(InputTransferHandlerTest, DownTimeAfterEventTimeBrowserHandlesSequence) {
+  base::HistogramTester histogram_tester;
+  base::TimeTicks event_time = base::TimeTicks::Now() - base::Milliseconds(60);
+  base::TimeTicks down_time = event_time + base::Milliseconds(8);
+  ui::MotionEventAndroidJava down_event = GetMotionEventAndroid(
+      ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
+
+  EXPECT_CALL(*mock_, MaybeTransferInputToViz(_, _)).Times(0);
+  EXPECT_FALSE(transfer_handler_->OnTouchEvent(down_event));
+  histogram_tester.ExpectUniqueSample(
+      InputTransferHandlerAndroid::kTransferInputToVizResultHistogram,
+      TransferInputToVizResult::kDownTimeAfterEventTime, 1);
+}
+
+TEST_F(InputTransferHandlerTest,
+       DownTimeAfterEventTimeButActiveTouchSequenceOnViz) {
+  base::TimeTicks event_time = base::TimeTicks::Now() - base::Milliseconds(60);
+  base::TimeTicks down_time = event_time;
+  ui::MotionEventAndroidJava down_event_1 = GetMotionEventAndroid(
+      ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
+  event_time += base::Milliseconds(8);
+  ui::MotionEventAndroidJava cancel_event_1 = GetMotionEventAndroid(
+      ui::MotionEvent::Action::CANCEL, event_time, down_time, finger_pointer_);
+
+  EXPECT_CALL(*mock_, MaybeTransferInputToViz(_, _))
+      .WillOnce(Return(kSuccessfullyTransferred));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event_1));
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(cancel_event_1));
+
+  // Touch end hasn't been received from Viz.
+  event_time += base::Milliseconds(20);
+  // Down time is later than the event time of input event.
+  down_time = event_time + base::Milliseconds(8);
+  ui::MotionEventAndroidJava down_event_2 = GetMotionEventAndroid(
+      ui::MotionEvent::Action::DOWN, event_time, down_time, finger_pointer_);
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event_2));
+}
+
 }  // namespace content

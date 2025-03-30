@@ -235,6 +235,7 @@ Task::Type ChildProcessTask::GetType() const {
 }
 
 Task::SubType ChildProcessTask::GetSubType() const {
+  // Please consult Task Manager OWNERs when adding a new ProcessSubType.
   switch (process_subtype_) {
     case ChildProcessTask::ProcessSubtype::kSpareRenderProcess:
       return Task::SubType::kSpareRenderer;

@@ -441,7 +441,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="1734878702283171397">Zama ukuxhumana nomlawuli wesistimu.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, iphelelwa isikhathi <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Ikhompuyutha</translation>
-<translation id="1739422091279046802">ukuskrola nokusondeza</translation>
 <translation id="1741613555002899862">Kufanele kucaciswe futhi uchungechunge oluvumelekile uma i-DnsOverHttpsMode ingu-<ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Okombhede Namalineni Ombhede</translation>
 <translation id="1743892871127720056">Qhathanisa isihloko sethebula, hlela umbhalo</translation>
@@ -1566,6 +1565,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3715016660240337709">{0,plural, =1{Ifayela livinjiwe ukuthi lingalayishi}one{Amafayela angu-<ph name="FILE_COUNT" /> avinjiwe ukuthi angalayishi}other{Amafayela angu-<ph name="FILE_COUNT" /> avinjiwe ukuthi angalayishi}}</translation>
 <translation id="3715597595485130451">Xhumeka ku-Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Ukuhlola i-proxy, i-firewall, nokulungiswa kwe-DNS<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">I-Iban</translation>
 <translation id="3723663469265383848">Ngesikhathi sokubuyekeza ngeke ukwazi ukusebenzisa idivayisi yakho kuze kube yimizuzu eyi-10.</translation>
 <translation id="372429172604983730">Izinhlelo zokusebenza ezingabangela leli phutha zifaka isivikeli magciwane, uhlelo lokuvikela, nokuhlungwa kwewebhu noma isofthiwe yommeleli.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, cindezela u-Tab bese u-Enter ukuze udale iphrezentheshini entsha ye-Google ku-Slides ngokushesha</translation>
@@ -2492,6 +2492,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5379618281582508161">Ukuze uthole le phasiwedi kuwo wonke amadivayisi akho, qinisekisa ukuthi nguwe</translation>
 <translation id="5380953781541843508">ngohlelo olukhuphukayo</translation>
 <translation id="5381318171304904246">Uma uqhubeka uzomikiswa kuwebhusayithi yebhange lakho. Ngemva kokuthi uqinisekise, uzobuyiselwa ngokuzenzakalela ukuze uqedelele ukuthenga kwakho.</translation>
+<translation id="5381952079334035181">U-<ph name="MEMBER_FIRST_NAME" /> ubuyekeze ithebhu elithi “<ph name="WEBSITE_TITLE" />”</translation>
 <translation id="5383478552402031184">Okwaphansi</translation>
 <translation id="5385857628869214740">Amahlaya</translation>
 <translation id="5385966243497224160">Ayikwazi ukubuka kuqala i-URL engeyona eye-HTTPS</translation>
@@ -2877,6 +2878,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6059925163896151826">Amadivayisi e-USB</translation>
 <translation id="6060009363608157444">Imodi ye-DnsOverHttps engavumelekile.</translation>
 <translation id="6061154937977953833">I-wrestling</translation>
+<translation id="6062405040252994646">Ithuluzi</translation>
 <translation id="6062937464449575061">Yeka Ukulandelela Intengo</translation>
 <translation id="6063415549109819824">Ukusiza ngezimali kwekhaya</translation>
 <translation id="6070432475334343308">Ifayela elilodwa noma ngaphezulu alilayishwanga <ph name="FOLDER_NAME" /> ku-<ph name="CLOUD_PROVIDER" /></translation>
@@ -3923,6 +3925,7 @@ Imininingwane engeziwe:
 <translation id="787226752901403048">Ngena ngemvume kuChrome ukuze wabelane uphinde ujoyine amaqembu ethebhu, uphinde usebenze ndawonye ngemibono</translation>
 <translation id="7877007680666472091">ama-ID wokuqukethwe okuvikelekile</translation>
 <translation id="7878562273885520351">Iphasiwedi yakho ingafakwa engozini</translation>
+<translation id="7881044256965445977">Bheka futhi uxhume kunoma iyiphi idivayisi kunethiwekhi yakho yasendaweni</translation>
 <translation id="7882421473871500483">Mpofu</translation>
 <translation id="7886897188117641322">Khetha ukuthi yiziphi izigaba ezibanzi zezihloko ezingasetshenziswa ukusiza ukuqondanisa izikhangiso nomuntu siqu</translation>
 <translation id="7887683347370398519">Hlola i-CVC yakho uphinde uzame futhi</translation>
@@ -4680,6 +4683,7 @@ Imininingwane engeziwe:
 <translation id="94613679163347541">Qhathanisa okuthi <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, cindezela u-Tab bese u-Enter ukuze udale isayithi elisha ngokushesha ku-Google Sites</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{I-Chrome izokhawulela amakhukhi futhi namuhla}=1{I-Chrome izokhawulela amakhukhi futhi kusasa}one{izinsuku ezingu-# ngaphambi kokuthi i-Chrome ikhawulele amakhukhi futhi}other{izinsuku ezingu-# ngaphambi kokuthi i-Chrome ikhawulele amakhukhi futhi}}</translation>
+<translation id="949026252328034572">Amalungu angu-<ph name="MEMBER_COUNT" /> ajoyine iqembu lethebhu elithi "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Ucele ukuvakashela le sayithi. Umzali wakho ukwazi ukuphendula ku-Family Link.</translation>
 <translation id="950736567201356821">Ukushaya kathathu phezulu</translation>
 <translation id="950926967802086924">Ukhiye wokudlula • Umphathi Wephasiwedi YeGoogle</translation>

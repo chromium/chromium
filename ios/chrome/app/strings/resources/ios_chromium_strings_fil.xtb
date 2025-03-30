@@ -91,6 +91,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="3054480780637153380">Buksan ang mga setting ng Chromium sa iOS, pagkatapos ay i-tap ang "Default Browser App" at piliin ang Chromium.</translation>
 <translation id="3102849287235003384">Para mag-sign out sa iyong Google Account sa lahat ng website, <ph name="BEGIN_LINK" />mag-sign out sa Chromium<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Gawing default na browser mo ang Chromium?</translation>
+<translation id="3180939591219927904">I-on ang "I-lock ang mga tab na Incognito kapag isinara mo ang Chromium"</translation>
 <translation id="3242612358525156339">Sa mga setting ng iyong device, buksan ang "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" at piliin ang "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{Nagpapakita ngayon ng 1 window ng Chromium}one{Nagpapakita ngayon ng {count} window ng Chromium}other{Nagpapakita ngayon ng {count} na window ng Chromium}}</translation>
 <translation id="3344973607274501920">Hindi masuri ng Chromium ang iyong mga password. Subukang tingnan ang iyong koneksyon sa internet.</translation>
@@ -260,6 +261,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Inalis ang piniling data mula sa Chromium at mga naka-sync na device. Maaaring mayroong ibang mga uri ng history ng pag-browse ang iyong Google Account gaya ng mga paghahanap at aktibidad mula sa iba pang mga serbisyo ng Google sa history.google.com.</translation>
 <translation id="7395825497086981028">Ise-save ang iyong password sa Password Manager para sa <ph name="EMAIL" />.</translation>
+<translation id="7504829997542308412">Buksan ang Chromium</translation>
 <translation id="7531461704633548377">Mula sa Chromium</translation>
 <translation id="7554983317097061001">Tip sa Chromium: Ilipat ang Chromium sa dock</translation>
 <translation id="7576863740961052505">Pamahalaan ang mga setting ng Chromium</translation>

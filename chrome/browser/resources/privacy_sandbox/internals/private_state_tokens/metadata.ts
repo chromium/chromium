@@ -36,9 +36,9 @@ export class PrivateStateTokensMetadataElement extends CrLitElement {
     };
   }
 
-  issuerOrigin: string = '';
-  expiration: string = '';
-  purposes: string[] = [];
+  accessor issuerOrigin: string = '';
+  accessor expiration: string = '';
+  accessor purposes: string[] = [];
 
   protected onClick_() {
     window.history.pushState(

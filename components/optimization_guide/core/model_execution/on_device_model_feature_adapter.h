@@ -83,7 +83,6 @@ class OnDeviceModelFeatureAdapter final
   proto::OnDeviceModelExecutionFeatureConfig config_;
   TokenLimits token_limits_;
   Redactor redactor_;
-  proto::ResponseStreamingMode response_streaming_mode_;
   std::unique_ptr<ResponseParser> parser_;
 };
 

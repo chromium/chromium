@@ -1095,6 +1095,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     static method availability
 [Worker]     static method create
 [Worker]     attribute @@toStringTag
+[Worker]     getter expectedInputLanguages
 [Worker]     getter inputQuota
 [Worker]     method constructor
 [Worker]     method destroy

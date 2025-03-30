@@ -256,6 +256,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(
 CC_BASE_EXPORT extern const base::FeatureParam<int>
     kNumDidNotProduceFrameBeforeInternalBeginFrameSource;
 
+// When enabled, the LayerTreeHost will expect to use layer lists instead of
+// layer trees by default; the caller can explicitly opt into enabled or
+// disabled if need be to override this.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseLayerListsByDefault);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

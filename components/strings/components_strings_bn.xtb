@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">সিস্টেম প্রশাসকের সাথে যোগাযোগ করে দেখুন।</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" />-এ মেয়াদ শেষ হবে</translation>
 <translation id="1736420071277903564">কম্পিউটার</translation>
-<translation id="1739422091279046802">স্ক্রল করা ও জুম করা</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> হলে অবশ্যই নির্দিষ্ট করে দিতে হবে এবং একটি সঠিক স্ট্রিং হতে হবে।</translation>
 <translation id="1743393865165844832">বেডিং ও বেড লিনেন</translation>
 <translation id="1743892871127720056">তুলনা করার টেবিলের শিরোনাম, টেক্সট এডিট করুন</translation>
@@ -1570,6 +1569,7 @@
 <translation id="3715016660240337709">{0,plural, =1{ফাইল আপলোড করা যাবে না}one{<ph name="FILE_COUNT" />টি ফাইল আপলোড করা যাবে না}other{<ph name="FILE_COUNT" />টি ফাইল আপলোড করা যাবে না}}</translation>
 <translation id="3715597595485130451">ওয়াই-ফাইতে কানেক্ট করুন</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />প্রক্সি, ফায়ারওয়াল এবং ডিএনএস কনফিগারেশন পরীক্ষা করে দেখুন<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">আপডেট চলাকালীন আপনি ১০ মিনিট পর্যন্ত ডিভাইস ব্যবহার করতে পারবেন না।</translation>
 <translation id="372429172604983730">অ্যান্টিভাইরাস, ফায়ারওয়াল এবং ওয়েব-ফিল্টারিং বা প্রক্সি সফ্টওয়্যারের মতো অ্যাপ্লিকেশন এই ধরণের ত্রুটির কারণ হতে পারে।</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides-এ চটপট নতুন Google প্রেজেন্টেশন করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
@@ -2496,6 +2496,7 @@
 <translation id="5379618281582508161">আপনার সব ডিভাইসে এই পাসওয়ার্ড পেতে, নিজের পরিচয় যাচাই করুন</translation>
 <translation id="5380953781541843508">ছোট থেকে বড় ক্রমানুসারে</translation>
 <translation id="5381318171304904246">আপনি চালিয়ে গেলে আপনাকে ব্যাঙ্কের ওয়েবসাইটে নিয়ে যাওয়া হবে। আপনি যাচাই করার পর, আপনার কেনাকাটা সম্পূর্ণ করতে অটোমেটিক ফিরিয়ে আনা হবে।</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" />, “<ph name="WEBSITE_TITLE" />” ট্যাব আপডেট করেছেন</translation>
 <translation id="5383478552402031184">মেঝে নির্মাণ</translation>
 <translation id="5385857628869214740">হাস্যরস</translation>
 <translation id="5385966243497224160">HTTPS নেই এমন URL প্রিভিউ করা যাবে না</translation>
@@ -2881,6 +2882,7 @@
 <translation id="6059925163896151826">USB ডিভাইসগুলি</translation>
 <translation id="6060009363608157444">ভুল DnsOverHttps মোড।</translation>
 <translation id="6061154937977953833">কুস্তি</translation>
+<translation id="6062405040252994646">টুল</translation>
 <translation id="6062937464449575061">দাম ট্র্যাক করা বন্ধ করুন</translation>
 <translation id="6063415549109819824">হোম ফাইন্যান্সিং</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" />-এ <ph name="FOLDER_NAME" />-এ এক বা তার থেকে বেশি ফাইল আপলোড করা যায়নি</translation>
@@ -3927,6 +3929,7 @@
 <translation id="787226752901403048">ট্যাব গ্রুপে শেয়ার করতে ও যোগ দিতে এবং আইডিয়ার উপরে একসাথে কাজ করতে, Chrome-এ সাইন-ইন করুন</translation>
 <translation id="7877007680666472091">সুরক্ষিত কন্টেন্ট আইডি</translation>
 <translation id="7878562273885520351">আপনার পাসওয়ার্ড অন্য কেউ পরিবর্তন করার চেষ্টা করেছে</translation>
+<translation id="7881044256965445977">আপনার স্থানীয় নেটওয়ার্কে, যেকোনও ডিভাইস খুঁজুন ও কানেক্ট করুন</translation>
 <translation id="7882421473871500483">খয়েরি</translation>
 <translation id="7886897188117641322">পছন্দমতো বিজ্ঞাপন দেখানোর জন্য কোনও বিষয়ের কোন কোন বিস্তারিত বিভাগ ব্যবহার করা যেতে পারে তা বেছে নিন</translation>
 <translation id="7887683347370398519">আপনার CVC পরীক্ষা করে আবার চেষ্টা করুন</translation>
@@ -4684,6 +4687,7 @@
 <translation id="94613679163347541"><ph name="CATEGORY" /> 'তুলনা' করবেন?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites-এ চটপট নতুন সাইট তৈরি করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome আজ আবার কুকির ব্যবহারের উপরে সীমাবদ্ধতা আরোপ করবে}=1{Chrome আগামীকাল কাল আবার কুকির ব্যবহারের উপরে সীমাবদ্ধতা আরোপ করবে}one{Chrome # দিন পরে আবার কুকির ব্যবহারের উপরে সীমাবদ্ধতা আরোপ করবে}other{Chrome # দিন পরে আবার কুকির ব্যবহারের উপরে সীমাবদ্ধতা আরোপ করবে}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> জন সদস্য "<ph name="GROUP_NAME" />" ট্যাব গ্রুপে যোগ দিয়েছেন</translation>
 <translation id="949314938206378263">তুমি এই সাইট দেখার অনুমতি চেয়েছ। আপনার অভিভাবক Family Link-এ উত্তর দিতে পারেন।</translation>
 <translation id="950736567201356821">উপরে তিনটি পাঞ্চ</translation>
 <translation id="950926967802086924">পাসকী • Google Password Manager</translation>

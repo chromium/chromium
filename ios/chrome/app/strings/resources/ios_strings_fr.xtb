@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1190609913194133056">Centre de notification</translation>
 <translation id="1201402288615127009">Suivant</translation>
-<translation id="1202892408424955784">Produits suivis</translation>
 <translation id="1204075260022434100">{count,plural, =1{Favori enregistré dans "{title}" sur votre compte {email}}one{{count} favori enregistré dans "{title}" sur votre compte {email}}other{{count} favoris enregistrés dans "{title}" sur votre compte {email}}}</translation>
 <translation id="120431140543679678">Suivre</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -133,7 +132,7 @@
 <translation id="1509960214886564027">Des fonctionnalités sur de nombreux sites risquent de ne pas fonctionner</translation>
 <translation id="1513858653616922153">Supprimer le mot de passe</translation>
 <translation id="1517166097004694782">Masquer "Continuer avec cet onglet"</translation>
-<translation id="1520027731907768768">Recevoir des alertes en cas de baisse de prix des produits que vous suivez.</translation>
+<translation id="1520027731907768768">Recevez des alertes en cas de baisse de prix des produits que vous suivez.</translation>
 <translation id="1521366073263497277">Accédez à la grille d'onglets</translation>
 <translation id="1521774566618522728">Actif aujourd'hui</translation>
 <translation id="1524563461097350801">Non, merci</translation>
@@ -180,7 +179,7 @@
 <translation id="1715515772563243997">Si vous faites confiance à <ph name="SITE" />, vous pouvez utiliser un mot de passe enregistré pour vous connecter.</translation>
 <translation id="1718835860248848330">Dernière heure</translation>
 <translation id="1728549374069268714">Coller et rechercher</translation>
-<translation id="1732468323901456775">Activer les notifications pour les <ph name="MODULE_NAME" /></translation>
+<translation id="1732468323901456775">Activer les notifications "<ph name="MODULE_NAME" />"</translation>
 <translation id="1740468249224277719">Appuyez deux fois pour installer.</translation>
 <translation id="1740650426894359238">Changer de profil</translation>
 <translation id="1741219894094057085">Montre connectée</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">nouvel élément</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> comptes utilisent le même mot de passe</translation>
 <translation id="2059166748188874810">Municipalité</translation>
-<translation id="2060114494785549741">Supprimer dans 1 mois</translation>
 <translation id="2060638295449304809">Cette adresse n'est enregistrée que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-la dans votre compte Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="20638360198452347">Sélecteur de type d'unité</translation>
 <translation id="2067852168641682340">Enregistrer dans ce compte à chaque fois</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Masquer la carte de suivi du prix</translation>
 <translation id="2216366330550244277">Accédez à la page d'un produit</translation>
 <translation id="2220529011494928058">Signaler un problème</translation>
-<translation id="2220887224562128152">Une fois que la suppression d'un fichier a été programmée, il est impossible de le restaurer.</translation>
 <translation id="2223461067862937305">Créer un QR code</translation>
 <translation id="2229345671837147090">Grille d'onglets à distance</translation>
 <translation id="2230173723195178503">Page Web chargée</translation>
@@ -493,7 +490,6 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="3059270601560379555">Nouvelle recherche</translation>
 <translation id="3064547930554042309">Gérer les téléchargements</translation>
 <translation id="3072279342064724558">Ce mot de passe existe déjà</translation>
-<translation id="3074862506644936708">Activer la suppression automatique</translation>
 <translation id="3076846064362030967">Vous ne serez pas déconnecté de votre compte Google. D'<ph name="BEGIN_LINK" />autres formes d'activité<ph name="END_LINK" /> peuvent y être enregistrées lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.
 
 
@@ -912,6 +908,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4896467949657706481">Les onglets ont été fermés. Vous avez été déconnecté.</translation>
 <translation id="4913626501929406101">Vous pouvez partager de façon sécurisée une copie de votre mot de passe avec un membre de votre groupe familial. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Accepter</translation>
+<translation id="4930714375720679147">Activer</translation>
 <translation id="4932733599132424254">Date</translation>
 <translation id="4936354130727646074">Ne jamais déplacer</translation>
 <translation id="4937410517508563815">Enregistrer les mots de passe dans le compte</translation>
@@ -946,7 +943,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="507187271399539513">{count,plural, =1{{position} mode de paiement sur {count}}one{{position} mode de paiement sur {count}}other{{position} modes de paiement sur {count}}}</translation>
 <translation id="5075939510584558547">Enregistrer sans chiffrement</translation>
 <translation id="5076534614343816664">Suivi des prix</translation>
-<translation id="5078303485429639424">Activer les notifications pour les <ph name="FEATURE_NAME" /></translation>
+<translation id="5078303485429639424">Activer les notifications "<ph name="FEATURE_NAME" />"</translation>
 <translation id="5079950360618752063">Utiliser le mot de passe suggéré</translation>
 <translation id="5083464117946352670">Impos. déterm. taille fichier.</translation>
 <translation id="5085558938118581974">Rechercher dans les onglets sur les appareils synchronisés</translation>
@@ -1147,7 +1144,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5899314093904173337">Pour partager un contenu avec des personnes à proximité, laissez-les scanner ce QR code avec leur appareil photo ou leur application de lecture de QR codes</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} nouvel onglet}one{{count} nouvel onglet}other{{count} nouveaux onglets}}</translation>
 <translation id="5911030830365207728">Google Traduction</translation>
-<translation id="5917913282764181683">Supprimer automatiquement vos téléchargements</translation>
 <translation id="5922999516621365983">Faites glisser l'onglet ici pour l'épingler.</translation>
 <translation id="5936006948844852401">Gérer l'espace de stockage</translation>
 <translation id="5936065461722368675">Traduire toute la page</translation>
@@ -1183,7 +1179,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6059103953801602038">Les sites que vous suivez sont enregistrés dans votre compte Google. Vous pouvez les gérer dans les paramètres Discover.</translation>
 <translation id="6059830886158432458">Contrôlez vos articles et votre activité via ce menu</translation>
 <translation id="6066301408025741299">Appuyez pour annuler.</translation>
-<translation id="6074656473835429958">Recevoir des notifications</translation>
+<translation id="6074656473835429958">Recevez des notifications</translation>
 <translation id="607620096698446287">Impossible d'importer <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">Accès à la caméra autorisé</translation>
 <translation id="6084848228346514841">Sélectionner des onglets</translation>
@@ -1506,7 +1502,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="741204030948306876">J'accepte</translation>
 <translation id="7417689656810783109">Renommer le groupe</translation>
 <translation id="7419565702166471774">Toujours utiliser une connexion sécurisée</translation>
-<translation id="742001653298797675">Programmez la suppression de tous vos téléchargements au bout d'un mois pour économiser de l'espace sur votre téléphone et protéger votre confidentialité.</translation>
 <translation id="7425053386765766120">Ajouter un mode de paiement…</translation>
 <translation id="7425346204213733349">Les modifications apportées à vos favoris, votre historique, vos mots de passe et d'autres paramètres ne seront plus synchronisées avec votre compte Google. Vos données seront cependant maintenues sur votre compte Google.</translation>
 <translation id="742664698522525515">Conserver le groupe ?</translation>
@@ -1642,7 +1637,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 
 Ils peuvent également s'en servir pour voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces).</translation>
 <translation id="7971136598759319605">Actif il y a 1 jour</translation>
-<translation id="7975036700432177008">Essayer</translation>
+<translation id="7975036700432177008">OK</translation>
 <translation id="797588153137233716">Menu → Historique → Supprimer les données de navigation</translation>
 <translation id="7977451675950311423">Vous avertit si vous utilisez un mot de passe compromis par une violation des données.</translation>
 <translation id="797824194429476746">Les onglets resteront ouverts sur cet appareil, mais le groupe sera définitivement supprimé.</translation>

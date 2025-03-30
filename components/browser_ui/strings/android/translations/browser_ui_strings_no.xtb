@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Det kan hende at funksjoner på enkelte nettsteder ikke fungerer i Inkognitomodus</translation>
 <translation id="2442870161001914531">Be alltid om nettstedet for datamaskiner</translation>
 <translation id="2445311670906052406">Nå deler Chrome nylige faner med enheten din. Du ser dem på applisten og i søkeresultater på enheten. Du kan slå dette av når som helst i Chrome-innstillingene.</translation>
+<translation id="245322989586167203">Nettsteder kobler vanligvis til serielle porter for å kunne tilby funksjoner for dataoverføring, som å konfigurere nettverket ditt</translation>
 <translation id="2469312991797799607">Denne handlingen sletter alle data og informasjonskapsler for <ph name="ORIGIN" /> og alle undernettsteder</translation>
 <translation id="2482878487686419369">Varsler</translation>
 <translation id="2485422356828889247">Avinstaller</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Blokkér nettsteder fra å vite når du bruker denne enheten aktivt</translation>
 <translation id="4412992751769744546">Tillat informasjonskapsler fra tredjeparter</translation>
 <translation id="4419929467120297501">Chrome blokkerer nettsteder fra å bruke informasjonskapsler fra tredjeparter til å spore deg når du surfer. Gå til innstillingene for å <ph name="BEGIN_LINK" />administrere tilgang til informasjonskapsler fra tredjeparter<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Seriell port</translation>
 <translation id="4434045419905280838">Forgrunnsvinduer/viderekoblinger</translation>
 <translation id="443552056913301231">Denne handlingen sletter alle lokale data, inkludert informasjonskapsler, og tilbakestiller alle tillatelsene for <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Kutt lyden for et bestemt nettsted.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Spør først</translation>
 <translation id="7423538860840206698">Blokkert fra å lese utklippstavlen</translation>
 <translation id="7425915948813553151">Mørkt tema for nettsteder</translation>
+<translation id="7478658909253570368">Ikke la nettsteder koble til serielle porter</translation>
 <translation id="7488573225650545859">Skjul Vis faner på applisten</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Når dette er på, kan nettsteder vise påloggingsforespørsler. Når dette er av, kan ikke nettsteder vise påloggingsforespørsler.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Koblet til en Bluetooth-enhet</translation>
 <translation id="7617547684249261169">Du kan slette deler av eller hele loggen din, informasjonskapsler, nettstedsdata med mer</translation>
 <translation id="7649070708921625228">Hjelp</translation>
+<translation id="7655411746932645568">Nettsteder kan be om å få koble til serielle porter</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7667547420449112975">Trollmannen fra Oz</translation>
 <translation id="7681597159868843240">Nettsteder bruker vanligvis bevegelsessensorene på enheten din for å kunne tilby funksjoner som virtuell virkelighet eller helsesporing</translation>

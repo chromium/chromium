@@ -159,9 +159,7 @@ void AIWriter::ModelExecutionCallback(
       optimization_guide::proto::WritingAssistanceApiResponse>(
       result.response->response);
   if (response) {
-    responder->OnStreaming(
-        response->output(),
-        blink::mojom::ModelStreamingResponderAction::kReplace);
+    responder->OnStreaming(response->output());
   }
   if (result.response->is_complete) {
     responder->OnCompletion(/*context_info=*/nullptr);

@@ -62,9 +62,13 @@ void InstallDetails::SetForProcess(
 // static
 const InstallDetails::Payload* InstallDetails::GetPayload() {
   assert(g_module_details);
-  static_assert(std::is_pod<Payload>::value, "Payload must be a POD-struct");
-  static_assert(std::is_pod<InstallConstants>::value,
-                "InstallConstants must be a POD-struct");
+
+  // We're handing a pointer to a struct created in one module
+  // to a different module, with distinct allocation domains.
+  static_assert(std::is_standard_layout<Payload>::value,
+                "Payload must have standard layout");
+  static_assert(std::is_standard_layout<InstallConstants>::value,
+                "InstallConstants must have standard layout");
   return g_module_details->payload_;
 }
 

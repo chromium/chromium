@@ -732,6 +732,7 @@
 <translation id="346243998268439747">重置缩放级别</translation>
 <translation id="3465223694362104965">这部设备当前连接的键盘已不同于您上次登录时所用的键盘。请确保您信任此键盘，然后再使用它。</translation>
 <translation id="3465356146291925647">由您的管理员管理</translation>
+<translation id="3470502288861289375">正在复制…</translation>
 <translation id="347117769229524881">按 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />，然后按 <ph name="KEY_TWO" /> 或 <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Ctrl+Shift+空格键</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>

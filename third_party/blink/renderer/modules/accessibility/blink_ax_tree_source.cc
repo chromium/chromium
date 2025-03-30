@@ -172,7 +172,6 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
       }
     }
   }
-
   return true;
 }
 
@@ -224,6 +223,14 @@ size_t BlinkAXTreeSource::GetChildCount(const AXObject* node) const {
   if (ShouldTruncateInlineTextBoxes() &&
       ui::CanHaveInlineTextBoxChildren(node->RoleValue())) {
     return 0;
+  }
+  if (ax_object_cache_->GetAXMode().HasFilterFlags(ui::AXMode::kOnScreenOnly)) {
+    // If kOnScreenOnly is set, we don't want to serialize children of nodes
+    // that are off-screen, thus pruning the tree that is sent to
+    // clients.
+    if (!node->WasEverOnScreen()) {
+      return 0;
+    }
   }
   return node->ChildCountIncludingIgnored();
 }

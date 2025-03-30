@@ -8,6 +8,7 @@
 <translation id="100323615638474026">Dispositivo USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Histórico de transferências recentes</translation>
 <translation id="1004218526896219317">Acesso a sites</translation>
+<translation id="1005230401424685968">AAAA</translation>
 <translation id="1005274289863221750">Usar o seu microfone e a câmara</translation>
 <translation id="1005333234656240382">Ativar a depuração do adb?</translation>
 <translation id="1005671386794704751">Rosa</translation>
@@ -1367,6 +1368,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="193565226207940518">Ferramenta de apoio técnico</translation>
 <translation id="1935995810530254458">Copiar mesmo assim</translation>
 <translation id="1936157145127842922">Mostrar na pasta</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Página adicionada à Lista de leitura}other{Páginas adicionadas à Lista de leitura}}</translation>
 <translation id="1936931585862840749">Utilize um número para indicar as cópias a imprimir (1 a <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Não é possível importar o tipo de arquitetura de contentor <ph name="ARCHITECTURE_CONTAINER" /> com este dispositivo cuja arquitetura é <ph name="ARCHITECTURE_DEVICE" />. Pode tentar restaurar este contentor para um dispositivo diferente ou pode aceder aos ficheiros contidos na imagem deste contentor através da aplicação Ficheiros.</translation>
 <translation id="1938351510777341717">Comando externo</translation>
@@ -3073,6 +3075,7 @@ Quer pará-lo?</translation>
 <translation id="3122883569442693641">Mais detalhes</translation>
 <translation id="3124111068741548686">Identificadores de UTILIZADOR</translation>
 <translation id="3124332159330678621">Personalize o Chrome para dar um novo aspeto ao seu navegador</translation>
+<translation id="3125816458150005808">Pode desafixá-la e abri-la no menu</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Para evitar problemas de carregamento e desempenho, utilize um transformador Dell ou USB tipo C compatível.</translation>
 <translation id="3127862849166875294">Redimensionamento de disco do Linux</translation>
@@ -3176,7 +3179,6 @@ Quer pará-lo?</translation>
         <ph name="BREAK" />
         <ph name="BREAK" />
         Pode gerir as definições a partir deste cartão em qualquer altura ou ver mais opções em Personalizar o Chrome.</translation>
-<translation id="3207437351138888228">Quando preenche um formulário, as suas informações e a página de onde são provenientes são enviadas para a Google para gerar sugestões</translation>
 <translation id="3207960819495026254">Adicionado aos marcadores</translation>
 <translation id="3208584281581115441">Rever agora</translation>
 <translation id="3208703785962634733">Não confirmado</translation>
@@ -3221,6 +3223,7 @@ Quer pará-lo?</translation>
 <translation id="3242289508736283383">A app com o atributo de manifesto "kiosk_only" tem de ser instalada no modo quiosque do ChromeOS</translation>
 <translation id="3243017971870859287">Ler números de série de componentes e dispositivos com ChromeOS Flex</translation>
 <translation id="324366796737464147">Supressão de ruído</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Manter o som desativado</translation>
 <translation id="3247006341013237647">Organizar os separadores?</translation>
 <translation id="3247649647204519958">A partir daqui, pode ver e gerir as autorizações de extensões para o site que está a visitar</translation>
@@ -5323,6 +5326,7 @@ Quer pará-lo?</translation>
 <translation id="4723140812774948886">Trocar com o seguinte</translation>
 <translation id="4724450788351008910">A afiliação mudou</translation>
 <translation id="4725511304875193254">Corgi</translation>
+<translation id="4725762702191453794">A Pesquisa de separadores está agora afixada à sua barra de ferramentas</translation>
 <translation id="4726710355753484204">Use Ctrl + Alt + Aumentar o brilho para aumentar o zoom.
 Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4726710629007580002">Foram obtidos avisos ao tentar instalar esta extensão:</translation>
@@ -6088,7 +6092,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5267572070504076962">Ative a Navegação Segura para se proteger contra sites perigosos</translation>
 <translation id="5269977353971873915">Falha de Impressão</translation>
 <translation id="5271578170655641944">Remover o acesso ao Google Drive?</translation>
-<translation id="5271782684896713035">Os dados podem ser vistos por revisores humanos para melhorar esta funcionalidade</translation>
 <translation id="5273806377963980154">Editar o URL do site</translation>
 <translation id="5275084684151588738">Dicionários do utilizador</translation>
 <translation id="5275338516105640560">Botão do grupo de separadores guardado</translation>

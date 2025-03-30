@@ -34,7 +34,8 @@ class GlicWidget : public views::Widget, public ThemeServiceObserver {
   static std::unique_ptr<GlicWidget> Create(
       Profile* profile,
       const gfx::Rect& initial_bounds,
-      base::WeakPtr<ui::AcceleratorTarget> accelerator_delegate);
+      base::WeakPtr<ui::AcceleratorTarget> accelerator_delegate,
+      bool user_resizable);
 
   // Get the most-overlapping display.
   display::Display GetDisplay();

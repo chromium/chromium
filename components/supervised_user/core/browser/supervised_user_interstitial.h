@@ -10,7 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
-#include "components/supervised_user/core/browser/supervised_user_error_page.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -75,13 +75,15 @@ class SupervisedUserInterstitial {
       const std::u16string& supervised_user_name,
       FilteringBehaviorReason reason);
 
+  // Returns the HTML contents of the error page.
   static std::string GetHTMLContents(
       SupervisedUserService* supervised_user_service,
       PrefService* pref_service,
       FilteringBehaviorReason reason,
       bool already_sent_request,
       bool is_main_frame,
-      const std::string& application_locale);
+      const std::string& application_locale,
+      std::optional<float> font_size_multiplier = std::nullopt);
 
   void GoBack();
   void RequestUrlAccessRemote(base::OnceCallback<void(bool)> callback);

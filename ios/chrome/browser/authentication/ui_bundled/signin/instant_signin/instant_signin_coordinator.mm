@@ -215,6 +215,7 @@
     case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
+    case SigninCoordinatorProfileSwitch:
       [self runCompletionWithSigninResult:result completionIdentity:nil];
       break;
     case SigninCoordinatorUINotAvailable:
@@ -282,6 +283,7 @@
     case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
+    case SigninCoordinatorProfileSwitch:
       [self runCompletionWithSigninResult:result completionIdentity:nil];
       break;
     case SigninCoordinatorUINotAvailable:

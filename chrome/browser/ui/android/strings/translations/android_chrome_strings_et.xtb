@@ -325,7 +325,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2527209463677295330">Kaasates rohkem lehe teksti võite näha paremaid tulemusi</translation>
 <translation id="2527779675047087889">Peida lõikelaua sisu</translation>
 <translation id="2532336938189706096">Veebi kuva</translation>
-<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> üksust kustutati</translation>
 <translation id="253498598929009420">Sait näeb teie ekraanikuval olevat sisu</translation>
 <translation id="2536728043171574184">Kuvatakse on lehe võrguühenduseta koopia</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, vaheleht</translation>
@@ -365,7 +364,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2677748264148917807">Lahku</translation>
 <translation id="2687009626279857299">Ei tööta enam selles seadmes</translation>
 <translation id="2702516483241149200">Uus: jagage linki, millega keritakse selle teksti juurde</translation>
-<translation id="2705073298859543115">Kokkuvõtte loomine</translation>
 <translation id="2708051474374549906">Reaalajas ja ennetav kaitse ohtlike saitide, allalaadimiste ja laienduste eest, mis põhineb teie sirvimisandmetel, mis saadetakse Google'ile</translation>
 <translation id="2708226184420201102">Avamine brauseris <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Uus</translation>
@@ -677,6 +675,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4195643157523330669">Ava uuel vahelehel</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 vahekaart selles seadmes}other{# vahekaarti selles seadmes}}</translation>
 <translation id="4198423547019359126">Ükski allalaadimise asukoht ei ole saadaval</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Kasutasite sellel saidil</translation>
 <translation id="4214315110991671325">Kui lubate küpsised, võib Chrome neid kasutada eellaadimise jaoks.</translation>
 <translation id="4216511743389425832">Kuulake seda lehte</translation>
 <translation id="4225725533026049334">Jälgitav</translation>
@@ -1198,7 +1197,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6564820424018738527">Teie Android-seadmes võib olla sarnane seade. Kui reklaamide mõõtmine on Chrome'is ja teie Android-seadmes sisse lülitatud, võib ettevõttel olla võimalik mõõta reklaami toimivust veebisaitidel, mida külastate, ja rakendustes, mida kasutate.</translation>
 <translation id="6565959834589222080">WiFi-t kasutatakse siis, kui see on saadaval</translation>
 <translation id="6569373978618239158">Uue vahelehe avamisel näete nüüd lugusid saidilt <ph name="SITE_NAME" />. Jälgitud saidid salvestatakse teie Google'i kontole. Saate neid hallata teenuse Discover seadetes.</translation>
-<translation id="6570116402456758630">Lehe kokkuvõte</translation>
 <translation id="657177046675873214">Järjehoidjate nägemiseks kõigis oma seadmetes lülitage seadetes sisse valik „Järjehoidjad“</translation>
 <translation id="6573096386450695060">Luba alati</translation>
 <translation id="6573431926118603307">Siin kuvatakse teie teistes seadmetes Chrome'is avatud vahelehed.</translation>

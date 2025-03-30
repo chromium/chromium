@@ -1934,6 +1934,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.iOS.FillDataRetrievalStatus"
+    enum="FillDataRetrievalStatusIOS" expires_after="2026-02-10">
+  <owner>vincb@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Tracks the status of retrieving fill data for filling. Recorded when filling
+    a suggestion from the KA or the bottom sheet.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.iOS.HandleFormSubmitEvent"
     enum="HandleSubmittedFormStatus" expires_after="2025-08-24">
   <owner>vincb@google.com</owner>
@@ -2870,6 +2880,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>
     Logs whether the password dropdown has the option to use another device for
     a passkey sign in. This is emitted when the dropdown is displayed.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordFilling.ReauthPromo"
+    enum="PasswordFillingReauthPromoShown" expires_after="2026-03-28">
+  <owner>droger@chromium.org</owner>
+  <owner>mlbipin@google.com</owner>
+  <summary>
+    Logs whether the reauth promo is shown as part of password filling
+    suggestions. Recorded when some suggestions are shown.
   </summary>
 </histogram>
 

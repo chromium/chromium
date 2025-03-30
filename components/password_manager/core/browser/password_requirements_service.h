@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/lru_cache.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -24,6 +25,8 @@ class SharedURLLoaderFactory;
 }
 
 namespace password_manager {
+using FetchPasswordRequirementsSpecCallback =
+    base::OnceCallback<void(autofill::PasswordRequirementsSpec)>;
 
 // A service that fetches, stores and returns requirements for generating a
 // random password on a specific form and site.
@@ -62,6 +65,11 @@ class PasswordRequirementsService : public KeyedService {
                autofill::FieldSignature field_signature,
                const autofill::PasswordRequirementsSpec& spec);
 
+  // Retrieves the PasswordRequirementsSpec for a given domain asynchronously.
+  void FetchPasswordRequirementsSpec(
+      const GURL& main_frame_domain,
+      FetchPasswordRequirementsSpecCallback callback);
+
 #if defined(UNIT_TEST)
   // Wipes MRU cached data to ensure that it gets fetched again.
   // This style of delegation is used because UNIT_TEST is only available in
@@ -74,6 +82,14 @@ class PasswordRequirementsService : public KeyedService {
                              const autofill::PasswordRequirementsSpec& spec);
   void ClearDataForTestingImpl();
 
+  // Handles the fetched password requirements spec. This function wraps the
+  // internal processing of the spec (OnFetchedRequirements) and then executes
+  // the original `callback` with the fetched data.
+  void HandlePasswordRequirementsSpecFetched(
+      const GURL& main_frame_domain,
+      FetchPasswordRequirementsSpecCallback callback,
+      const autofill::PasswordRequirementsSpec& spec);
+
   using FullSignature =
       std::pair<autofill::FormSignature, autofill::FieldSignature>;
   base::LRUCache<GURL, autofill::PasswordRequirementsSpec> specs_for_domains_;
@@ -81,6 +97,7 @@ class PasswordRequirementsService : public KeyedService {
       specs_for_signatures_;
   // May be a nullptr.
   std::unique_ptr<autofill::PasswordRequirementsSpecFetcher> fetcher_;
+  base::WeakPtrFactory<PasswordRequirementsService> weak_ptr_factory_;
 };
 
 std::unique_ptr<PasswordRequirementsService> CreatePasswordRequirementsService(

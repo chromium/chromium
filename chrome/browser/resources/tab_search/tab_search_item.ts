@@ -75,7 +75,7 @@ export class TabSearchItemElement extends TabSearchItemBase {
     };
   }
 
-  data: TabData = new TabData(
+  accessor data: TabData = new TabData(
       {
         active: false,
         faviconUrl: null,
@@ -92,13 +92,14 @@ export class TabSearchItemElement extends TabSearchItemBase {
         url: {url: ''},
       },
       TabItemType.OPEN_TAB, '');
-  protected buttonRipples_: boolean = loadTimeData.getBoolean('useRipples');
-  inSuggestedGroup: boolean = false;
-  compact: boolean = false;
-  hideUrl: boolean = false;
-  closeButtonIcon: string = 'tab-search:close';
-  closeButtonAriaLabel: string = '';
-  closeButtonTooltip: string = '';
+  protected accessor buttonRipples_: boolean =
+      loadTimeData.getBoolean('useRipples');
+  accessor inSuggestedGroup: boolean = false;
+  accessor compact: boolean = false;
+  accessor hideUrl: boolean = false;
+  accessor closeButtonIcon: string = 'tab-search:close';
+  accessor closeButtonAriaLabel: string = '';
+  accessor closeButtonTooltip: string = '';
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

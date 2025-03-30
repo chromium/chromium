@@ -7,6 +7,7 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/input/render_widget_host_input_event_router.h"
 
 namespace viz {

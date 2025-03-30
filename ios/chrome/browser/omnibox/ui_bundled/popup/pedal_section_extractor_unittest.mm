@@ -5,9 +5,13 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_section_extractor.h"
 
 #import "base/test/ios/wait_util.h"
+#import "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
+#import "components/omnibox/browser/autocomplete_match_test_util.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_pedal.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_match_preview_delegate.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_swift.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -25,23 +29,28 @@ class PedalSectionExtractorTest : public PlatformTest {
     delegate_ =
         [OCMockObject mockForProtocol:@protocol(PedalSectionExtractorDelegate)];
     extractor_.delegate = delegate_;
+    mock_suggestion_no_pedal_ = [[AutocompleteMatchFormatter alloc]
+        initWithMatch:CreateSearchMatch(u"search 1")];
 
-    mock_suggestion_no_pedal_ =
-        [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
-    [[[mock_suggestion_no_pedal_ stub] andReturn:nil] pedal];
-
-    mock_pedal_ = [OCMockObject mockForProtocol:@protocol(OmniboxPedal)];
-    [[[mock_pedal_ stub] andReturn:@"pedal title"] title];
-    mock_suggestion_with_pedal_ =
-        [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
-    [[[mock_suggestion_with_pedal_ stub] andReturn:mock_pedal_] pedal];
+    mock_suggestion_with_pedal_ = [[AutocompleteMatchFormatter alloc]
+        initWithMatch:CreateSearchMatch(u"clear browsing data")];
+    mock_suggestion_with_pedal_.pedalData = [[OmniboxPedalData alloc]
+            initWithTitle:@"clear browsing data"
+                 subtitle:@""
+        accessibilityHint:@""
+                    image:[[UIImage alloc] init]
+           imageTintColor:nil
+          backgroundColor:nil
+         imageBorderColor:nil
+                     type:static_cast<int>(OmniboxPedalId::CLEAR_BROWSING_DATA)
+                   action:^{
+                   }];
   }
 
   PedalSectionExtractor* extractor_;
   OCMockObject<PedalSectionExtractorDelegate>* delegate_;
-  OCMockObject<OmniboxPedal>* mock_pedal_;
-  id mock_suggestion_no_pedal_;
-  id mock_suggestion_with_pedal_;
+  AutocompleteMatchFormatter* mock_suggestion_no_pedal_;
+  AutocompleteMatchFormatter* mock_suggestion_with_pedal_;
 };
 
 // When there's no pedals, extractor returns nil.
@@ -62,7 +71,7 @@ TEST_F(PedalSectionExtractorTest, ExtractPedals) {
   EXPECT_EQ(pedalGroup.suggestions.count, 1u);
 
   id<AutocompleteSuggestion> suggestion = pedalGroup.suggestions[0];
-  EXPECT_EQ(suggestion.text.string, mock_pedal_.title);
+  EXPECT_EQ(suggestion.text.string, suggestion.pedal.title);
 }
 
 // When a pedal disappears from the result list, the extractor prevents

@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Eiginleikar sumra vefsvæða virka e.t.v. ekki í huliðsstillingu</translation>
 <translation id="2442870161001914531">Biðja alltaf um tölvuútgáfu vefsvæða</translation>
 <translation id="2445311670906052406">Chrome deilir nú nýlegum flipum með tækinu þínu. Þú getur séð þá á forritalista og í leitarniðurstöðum tækisins. Þú getur slökkt á þessu hvenær sem er í stillingum Chrome.</translation>
+<translation id="245322989586167203">Vefsvæði tengjast yfirleitt raðtengjum fyrir gagnaflutninga, líkt og þegar net er sett upp</translation>
 <translation id="2469312991797799607">Þessi aðgerð eyðir öllum gögnum og fótsporum fyrir <ph name="ORIGIN" /> og öll undirvefsvæði þess</translation>
 <translation id="2482878487686419369">Tilkynningar</translation>
 <translation id="2485422356828889247">Fjarlægja</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Lokaðu á að vefsvæði geti séð hvenær þú notar þetta tæki</translation>
 <translation id="4412992751769744546">Leyfa fótspor þriðja aðilla</translation>
 <translation id="4419929467120297501">Chrome lokar á getu vefsvæða til að nota fótspor þriðju aðila til að fylgjast með ferðum þínum um vefinn. Farðu í stillingarnar til að <ph name="BEGIN_LINK" />stjórna aðgangi að fótsporum þriðju aðila<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Raðtengi</translation>
 <translation id="4434045419905280838">Sprettigluggar og framsendingar</translation>
 <translation id="443552056913301231">Þessi aðgerð eyðir öllum staðbundnum gögnum, þar á meðal fótsporum, og endurstillir allar heimildir fyrir <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Slökkva á hljóði á tilteknu vefsvæði.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Spyrja fyrst</translation>
 <translation id="7423538860840206698">Lokað fyrir lestur klippiborðs</translation>
 <translation id="7425915948813553151">Dökkt þema fyrir vefsvæði</translation>
+<translation id="7478658909253570368">Ekki leyfa vefsvæðum að tengjast raðtengjum</translation>
 <translation id="7488573225650545859">Fela „Sjá flipa á forritalista“</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Þegar kveikt er á þessu geta vefsvæði sýnt innskráningarbeiðnir. Þegar slökkt er á þessu geta vefsvæði ekki sýnt innskráningarbeiðnir.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Tengt við Bluetooth-tæki</translation>
 <translation id="7617547684249261169">Þú getur eytt ferlinum þínum, fótsporum, vefsvæðagögnum og fleiru að hluta til eða í heild sinni.</translation>
 <translation id="7649070708921625228">Hjálp</translation>
+<translation id="7655411746932645568">Vefsvæði geta beðið um að tengjast raðtengjum</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7667547420449112975">Galdrakarlinn í Oz</translation>
 <translation id="7681597159868843240">Yfirleitt nota vefsvæði hreyfiskynjara tækisins fyrir eiginleika á borð við sýndarveruleika eða hreystimælingar</translation>

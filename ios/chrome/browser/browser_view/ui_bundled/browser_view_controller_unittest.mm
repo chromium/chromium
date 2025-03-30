@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
@@ -140,6 +141,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     test_profile_builder.AddTestingFactory(
         TipsManagerIOSFactory::GetInstance(),
         TipsManagerIOSFactory::GetDefaultFactory());
+    test_profile_builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        feature_engagement::TrackerFactory::GetDefaultFactory());
 
     profile_ =
         profile_manager_.AddProfileWithBuilder(std::move(test_profile_builder));
@@ -303,7 +307,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     tab_events_mediator_ = [[TabEventsMediator alloc]
         initWithWebStateList:browser_.get()->GetWebStateList()
               ntpCoordinator:NTPCoordinator_
-                     profile:GetProfile()
+                     tracker:feature_engagement::TrackerFactory::GetForProfile(
+                                 GetProfile())
+                   incognito:NO
              loadingNotifier:url_loading_notifier];
     tab_events_mediator_.consumer = bvc_;
 

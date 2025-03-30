@@ -66,10 +66,8 @@ class GPUCanvasContext : public ScriptWrappable,
   SkAlphaType GetAlphaType() const override;
   viz::SharedImageFormat GetSharedImageFormat() const override;
   gfx::ColorSpace GetColorSpace() const override;
-  // Produces a snapshot of the current contents of the swap chain if possible.
-  // If that texture has already been sent to the compositor, will produce a
-  // snapshot of the just released texture associated to this gpu context.
-  // todo(crbug/1267243) Make snapshot always return the current frame.
+  // Produces a snapshot of the current contents of the swap chain if possible
+  // or else a snapshot of the most-recently presented contents.
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
   bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) final;
   bool CopyRenderingResultsToVideoFrame(

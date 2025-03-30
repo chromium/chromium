@@ -16,6 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.core.content.ContextCompat;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,7 +31,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -140,8 +141,7 @@ public class SuggestionListViewBinderUnitTest {
         assertThat(mContainer.getBackground(), instanceOf(ColorDrawable.class));
         ColorDrawable background = (ColorDrawable) mContainer.getBackground();
         assertEquals(
-                mActivity.getColor(R.color.default_bg_color_dark_elev_3_baseline),
-                background.getColor());
+                mActivity.getColor(R.color.omnibox_dropdown_bg_incognito), background.getColor());
     }
 
     @Test
@@ -152,8 +152,7 @@ public class SuggestionListViewBinderUnitTest {
         assertThat(mContainer.getBackground(), instanceOf(ColorDrawable.class));
         ColorDrawable background = (ColorDrawable) mContainer.getBackground();
         assertEquals(
-                ChromeColors.getSurfaceColor(
-                        mActivity, R.dimen.omnibox_suggestion_dropdown_bg_elevation),
+                ContextCompat.getColor(mActivity, R.color.omnibox_suggestion_dropdown_bg),
                 background.getColor());
     }
 }

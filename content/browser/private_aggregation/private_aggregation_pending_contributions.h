@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/numerics/safe_conversions.h"
+#include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
@@ -58,23 +59,9 @@ class CONTENT_EXPORT PrivateAggregationPendingContributions {
 
   class Wrapper;
 
-  // For a single contribution, whether the budgeter approved its budget usage
-  // (including provisionally) or denied it.
-  enum BudgeterResult {
-    kApproved,
-    kDenied,
-  };
-
-  // Note that if the limit has been reached and there is no space for this
-  // report, the entire report will be dropped with a fatal error.
-  enum PendingReportLimitResult {
-    // Indicates the limit has not been reached.
-    kNotAtLimit,
-
-    // Indicates the limit has been reached with this report, i.e. the report
-    // can still be processed.
-    kAtLimit
-  };
+  using BudgeterResult = PrivateAggregationBudgeter::ResultForContribution;
+  using PendingReportLimitResult =
+      PrivateAggregationBudgeter::PendingReportLimitResult;
 
   // Indicates the reason for the PrivateAggregationHost mojo pipe closing.
   // TODO(crbug.com/381788013): Consider moving this enum to

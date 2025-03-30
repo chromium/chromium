@@ -8,7 +8,6 @@
  * the graphics tablets, and allow users to configure the pen buttons for
  * each graphics tablet.
  */
-import '../icons.html.js';
 import '../settings_shared.css.js';
 import './input_device_settings_shared.css.js';
 

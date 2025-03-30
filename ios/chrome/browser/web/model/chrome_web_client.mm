@@ -94,6 +94,7 @@
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_error.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_error.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
+#import "ios/components/ui_util/dynamic_type_util.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/net/protocol_handler_util.h"
 #import "ios/public/provider/chrome/browser/url_rewriters/url_rewriters_api.h"
@@ -213,7 +214,8 @@ NSString* GetSupervisedUserErrorPageHTML(web::WebState* web_state,
           profile->GetPrefs(), error_info->filtering_behavior_reason(),
           container->IsRemoteApprovalPendingForUrl(url),
           error_info->is_main_frame(),
-          GetApplicationContext()->GetApplicationLocale());
+          GetApplicationContext()->GetApplicationLocale(),
+          ui_util::SystemSuggestedFontSizeMultiplier());
 
   security_interstitials::IOSBlockingPageTabHelper::FromWebState(web_state)
       ->AssociateBlockingPage(navigation_id, std::move(page));

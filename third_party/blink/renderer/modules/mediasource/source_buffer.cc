@@ -148,11 +148,9 @@ scoped_refptr<media::StreamParserBuffer> MakeAudioStreamParserBuffer(
   // StreamParserBuffer takes int. Fix this. For now, checked_cast is used.
   // TODO(crbug.com/1144908): Add a way for StreamParserBuffer to share the
   // same underlying DecoderBuffer.
-  auto buffer = base::span(*audio_chunk.buffer());
   auto stream_parser_buffer = media::StreamParserBuffer::CopyFrom(
-      buffer.data(), base::checked_cast<int>(buffer.size()),
-      audio_chunk.buffer()->is_key_frame(), media::DemuxerStream::AUDIO,
-      kWebCodecsAudioTrackId);
+      *audio_chunk.buffer(), audio_chunk.buffer()->is_key_frame(),
+      media::DemuxerStream::AUDIO, kWebCodecsAudioTrackId);
 
   // Currently, we do not populate any side_data in these converters.
   DCHECK(!stream_parser_buffer->side_data());
@@ -173,11 +171,9 @@ scoped_refptr<media::StreamParserBuffer> MakeVideoStreamParserBuffer(
   // StreamParserBuffer takes int. Fix this. For now, checked_cast is used.
   // TODO(crbug.com/1144908): Add a way for StreamParserBuffer to share the
   // same underlying DecoderBuffer.
-  auto buffer = base::span(*video_chunk.buffer());
   auto stream_parser_buffer = media::StreamParserBuffer::CopyFrom(
-      buffer.data(), base::checked_cast<int>(buffer.size()),
-      video_chunk.buffer()->is_key_frame(), media::DemuxerStream::VIDEO,
-      kWebCodecsVideoTrackId);
+      *video_chunk.buffer(), video_chunk.buffer()->is_key_frame(),
+      media::DemuxerStream::VIDEO, kWebCodecsVideoTrackId);
 
   // Currently, we do not populate any side_data in these converters.
   DCHECK(!stream_parser_buffer->side_data());

@@ -33,7 +33,10 @@ static_library("common") {
       "widevine_drm_delegate_android.h",
     ]
 
-    deps += [ "//third_party/widevine/cdm:buildflags" ]
+    deps += [
+      "//third_party/widevine/cdm:buildflags",
+      "//third_party/widevine/cdm:headers",
+    ]
   }
 
   if (enable_library_cdms) {

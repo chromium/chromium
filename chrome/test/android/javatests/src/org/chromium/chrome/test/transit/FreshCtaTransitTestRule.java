@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.test.transit;
 
+import android.content.Intent;
+
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.test.transit.Station;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -65,6 +68,28 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
         assert relativeUrl.startsWith("/") : "|relativeUrl| must be relative";
         String fullUrl = mActivityTestRule.getTestServer().getURL(relativeUrl);
         return ChromeTabbedActivityEntryPoints.startOnUrl(mActivityTestRule, fullUrl);
+    }
+
+    /**
+     * Start the test in a web page served by the test server.
+     *
+     * @return the active entry {@link PageStation}
+     */
+    public RegularNewTabPageStation startFromLauncher() {
+        return ChromeTabbedActivityEntryPoints.startFromLauncher(mActivityTestRule);
+    }
+
+    /**
+     * Start the test by launching Chrome with a given Intent and expecting it to reach the expected
+     * Station.
+     *
+     * @param intent the Intent to launch Chrome with
+     * @param expectedStation the state we expect Chrome to reach
+     * @return the active entry {@link Station}
+     */
+    public <T extends Station<?>> T startWithIntent(Intent intent, T expectedStation) {
+        return ChromeTabbedActivityEntryPoints.startWithIntent(
+                mActivityTestRule, intent, expectedStation);
     }
 
     /**

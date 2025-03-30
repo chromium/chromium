@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Odstrani</translation>
 <translation id="1190609913194133056">Središče za obvestila</translation>
 <translation id="1201402288615127009">Naprej</translation>
-<translation id="1202892408424955784">Spremljani izdelki</translation>
 <translation id="1204075260022434100">{count,plural, =1{Zaznamek je shranjen v »{title}« v vašem računu, {email}}one{{count} zaznamek je shranjen v »{title}« v vašem računu, {email}}two{{count} zaznamka sta shranjena v »{title}« v vašem računu, {email}}few{{count} zaznamki so shranjeni v »{title}« v vašem računu, {email}}other{{count} zaznamkov je shranjenih v »{title}« v vašem računu, {email}}}</translation>
 <translation id="120431140543679678">Spremljaj</translation>
 <translation id="1207493287814084192">17.30</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">nov element</translation>
 <translation id="2049727122989709386">Toliko računov uporablja isto geslo: <ph name="COUNT" /></translation>
 <translation id="2059166748188874810">Občina</translation>
-<translation id="2060114494785549741">Izbriši čez 1 mesec</translation>
 <translation id="2060638295449304809">Ta naslov je shranjen samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v računu Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="20638360198452347">Izbirnik vrste enote</translation>
 <translation id="2067852168641682340">Vsakič shrani v ta račun</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Skrivanje kartice za spremljanje cen</translation>
 <translation id="2216366330550244277">Odprite stran izdelka</translation>
 <translation id="2220529011494928058">Prijavite težavo</translation>
-<translation id="2220887224562128152">Ko je datoteka načrtovana za izbris, je ni mogoče obnoviti.</translation>
 <translation id="2223461067862937305">Ustvari kodo QR</translation>
 <translation id="2229345671837147090">Mreža oddaljenih zavihkov</translation>
 <translation id="2230173723195178503">Spletna stran je naložena</translation>
@@ -384,7 +381,6 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2539748786028143624">Vklop izboljšane zaščite …</translation>
 <translation id="2540111494300686866">Onemogoči pogovorna okna</translation>
 <translation id="2542268842667970959">Skrij »Varnostno preverjanje«</translation>
-<translation id="2543870349255816922">Ta kartica prikazuje znižanje cene za spremljan izdelek v eni od sinhroniziranih naprav</translation>
 <translation id="2547458583188611426">Sinhronizacija ne deluje. Če želite začeti sinhronizacijo, vnesite geslo.</translation>
 <translation id="2551153019974022505">Napaka računa</translation>
 <translation id="2559843230610279254">Skupina zavihkov, <ph name="GROUP_TITLE" />, zavihki (<ph name="TABS_NUMBER" />).</translation>
@@ -494,7 +490,6 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="3059270601560379555">Novo iskanje</translation>
 <translation id="3064547930554042309">Upravljanje prenosov</translation>
 <translation id="3072279342064724558">Geslo že obstaja</translation>
-<translation id="3074862506644936708">Omogoči samodejni izbris</translation>
 <translation id="3076846064362030967">Iz računa Google ne boste odjavljeni. Ko ste prijavljeni, se v računu Google morda shranjujejo <ph name="BEGIN_LINK" />druge oblike dejavnosti<ph name="END_LINK" />. Izbrišete jih lahko kadar koli.
 
 
@@ -913,6 +908,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4896467949657706481">Zavihki so bili zaprti; bili ste odjavljeni</translation>
 <translation id="4913626501929406101">Kopijo gesla lahko varno delite z osebo v skupini družinskih članov. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Sprejmi</translation>
+<translation id="4930714375720679147">Vklop</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4936354130727646074">Nikoli ne premakni</translation>
 <translation id="4937410517508563815">Shranjevanje gesel v računu</translation>
@@ -1148,7 +1144,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5899314093904173337">Če želite deliti z osebami v bližini, naj s fotoaparatom ali aplikacijo za optično branje kod QR optično preberejo to kodo QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} nov zavihek}one{{count} nov zavihek}two{{count} nova zavihka}few{{count} novi zavihki}other{{count} novih zavihkov}}</translation>
 <translation id="5911030830365207728">Google Prevajalnik</translation>
-<translation id="5917913282764181683">Samodejni izbris prenosov</translation>
 <translation id="5922999516621365983">Povlecite zavihek sem, če ga želite pripeti.</translation>
 <translation id="5936006948844852401">Upravljanje shrambe</translation>
 <translation id="5936065461722368675">Prevedi celotno stran</translation>
@@ -1507,7 +1502,6 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="741204030948306876">Da, sem za</translation>
 <translation id="7417689656810783109">Preimenovanje skupine</translation>
 <translation id="7419565702166471774">Vedno dovoli varne povezave</translation>
-<translation id="742001653298797675">Razporedite vse prenose za izbris po enem mesecu, da prihranite prostor v telefonu in zaščitite zasebnost.</translation>
 <translation id="7425053386765766120">Dodajanje plačilnega sredstva …</translation>
 <translation id="7425346204213733349">Spremembe zaznamkov, zgodovine, gesel in drugih nastavitev ne bodo več sinhronizirane z Google Računom. Obstoječi podatki bodo še naprej shranjeni v Google Računu.</translation>
 <translation id="742664698522525515">Želite ohraniti skupino?</translation>

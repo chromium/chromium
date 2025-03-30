@@ -60,9 +60,7 @@ def get_used_engines(src_dir) -> set[str]:
   settings = _load_json(src_dir, regional_settings_file_path)
 
   for setting in settings['elements'].values():
-    search_engines = setting['search_engines']
-    used_engines.update(search_engines['top'])
-    used_engines.update(search_engines.get('remaining', []))
+    used_engines.update(setting['search_engines'])
 
   # Strip the reference from engine names.
   used_engines = {engine.removeprefix('&') for engine in used_engines}

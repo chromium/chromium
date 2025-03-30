@@ -57,11 +57,6 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::Gpu {
   void BindWebNNContextProvider(
       mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver);
 
-  // mojom::ClientGmbInterface is direct interface between renderer and GPU
-  // process to create GpuMemoryBuffers.
-  void CreateClientGpuMemoryBufferFactory(
-      mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> receiver) override;
-
   void EstablishGpuChannel(EstablishGpuChannelCallback callback) override;
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -205,6 +205,9 @@
           "--experimental-tbmv3-metrics"
         ],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
@@ -250,6 +253,9 @@
           "--experimental-tbmv3-metrics"
         ],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",

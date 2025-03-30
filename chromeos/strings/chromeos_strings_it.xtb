@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Autenticazione proxy richiesta</translation>
 <translation id="4594021849294327751">Crea trascrizione</translation>
 <translation id="4594541568452132351">Seleziona la lingua della trascrizione e scarica il modello</translation>
-<translation id="4607282946861182308">Impossibile creare immagini di quanto richiesto. Prova un altro comando.</translation>
 <translation id="4609350030397390689">Riduci la luminosità della tastiera</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> di <ph name="TOTAL_PAGE_NUMBER" />. Premi Invio per annullare il processo di stampa.</translation>
 <translation id="463791356324567266">Annullamento scansione in corso…</translation>
@@ -1659,6 +1658,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8543574988889671960">Ricarica scheda</translation>
 <translation id="8550364285433943656">Definisci i controlli per le azioni di gioco per giocare con i tasti della tastiera</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">L'AI generativa può fare errori, anche riguardo a persone, quindi verifica le sue risposte.</translation>
 <translation id="8575298406870537639">Il tuo operatore potrebbe richiedere questa opzione per consentire di collegarsi alla sua rete. Contatta l'operatore per avere informazioni dettagliate.</translation>
 <translation id="8576249514688522074">Non inizializzato</translation>
 <translation id="8584654835905316966">Per completare l'installazione del firmware per <ph name="DEVICE_NAME" /> alla versione <ph name="VERSION" /> è necessario eseguire il riavvio. Potrebbe sembrare che il computer si riavvii più volte. Si tratta di un comportamento normale.</translation>
@@ -1673,7 +1673,6 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8655295600908251630">Canale</translation>
 <translation id="8655828773034788261">Condividi URL:</translation>
 <translation id="8660881923941176839">libbre</translation>
-<translation id="8670057600920888023">L'AI generativa è un esperimento e i contenuti potrebbero essere imprecisi, fuorvianti oppure offensivi.</translation>
 <translation id="8670574982334489519">a destra</translation>
 <translation id="8675354002693747642">Chiave precondivisa</translation>
 <translation id="8677859815076891398">Nessun album. Crea un album in<ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>

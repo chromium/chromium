@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="1190609913194133056">Paziņojumu centrs</translation>
 <translation id="1201402288615127009">Tālāk</translation>
-<translation id="1202892408424955784">Izsekotie produkti</translation>
 <translation id="1204075260022434100">{count,plural, =1{Grāmatzīme ir saglabāta mapē “{title}” jūsu kontā ({email}).}zero{{count} grāmatzīmes ir saglabātas mapē “{title}” jūsu kontā ({email}).}one{{count} grāmatzīme ir saglabāta mapē “{title}” jūsu kontā ({email}).}other{{count} grāmatzīmes ir saglabātas mapē “{title}” jūsu kontā ({email}).}}</translation>
 <translation id="120431140543679678">Sekot</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">jauns vienums</translation>
 <translation id="2049727122989709386">Vēl <ph name="COUNT" /> kontos tiek izmantota tā pati parole.</translation>
 <translation id="2059166748188874810">Pašvaldība</translation>
-<translation id="2060114494785549741">Dzēst pēc viena mēneša</translation>
 <translation id="2060638295449304809">Šī adrese ir saglabāta tikai šajā ierīcē. Lai varētu izmantot šo adresi citās ierīcēs, saglabājiet to savā Google kontā <ph name="USER_EMAIL" />.</translation>
 <translation id="20638360198452347">Mērvienību veidu atlasītājs</translation>
 <translation id="2067852168641682340">Katru reizi saglabāt šajā kontā</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Paslēpt kartīti “Cenas izsekošana”</translation>
 <translation id="2216366330550244277">Pārejiet uz produkta lapu.</translation>
 <translation id="2220529011494928058">Ziņot par problēmu</translation>
-<translation id="2220887224562128152">Kad ir ieplānota kāda faila dzēšana, to vairs nevar atkopt.</translation>
 <translation id="2223461067862937305">Izveidot kvadrātkodu</translation>
 <translation id="2229345671837147090">Attālo ciļņu režģis</translation>
 <translation id="2230173723195178503">Tīmekļa lapa ielādēta</translation>
@@ -493,7 +490,6 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="3059270601560379555">Jauns meklējums</translation>
 <translation id="3064547930554042309">Lejupielāžu pārvaldība</translation>
 <translation id="3072279342064724558">Parole jau pastāv</translation>
-<translation id="3074862506644936708">Iespējot automātisku dzēšanu</translation>
 <translation id="3076846064362030967">Jūs netiksiet izrakstīts no sava Google konta. Kad esat pierakstījies, jūsu Google kontā var saglabāt <ph name="BEGIN_LINK" />arī cita veida darbības<ph name="END_LINK" />. Jebkurā laikā varat tās izdzēst.
 
 
@@ -912,6 +908,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4896467949657706481">Cilnes tika aizvērtas; jūs tikāt izrakstīts</translation>
 <translation id="4913626501929406101">Varat droši kopīgot paroles kopiju ar kādu ģimenes grupas dalībnieku. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="4918086044614829423">Pieņemt</translation>
+<translation id="4930714375720679147">Ieslēgt</translation>
 <translation id="4932733599132424254">Datums</translation>
 <translation id="4936354130727646074">Nekad nepārvietot</translation>
 <translation id="4937410517508563815">Paroles tiks saglabātas kontā</translation>
@@ -1147,7 +1144,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5899314093904173337">Lai kopīgotu saturu ar tuvumā esošajiem cilvēkiem, ļaujiet viņiem skenēt šo kvadrātkodu, izmantojot kameru vai kvadrātkodu skenēšanas lietotni.</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} jauna cilne}zero{{count} jaunu ciļņu}one{{count} jauna cilne}other{{count} jaunas cilnes}}</translation>
 <translation id="5911030830365207728">Google tulkotājs</translation>
-<translation id="5917913282764181683">Lejupielāžu automātiska dzēšana</translation>
 <translation id="5922999516621365983">Velciet cilni šeit, lai to piespraustu.</translation>
 <translation id="5936006948844852401">Pārvaldīt krātuvi</translation>
 <translation id="5936065461722368675">Tulkot visu lapu</translation>
@@ -1506,7 +1502,6 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="741204030948306876">Jā, piekrītu</translation>
 <translation id="7417689656810783109">Pārdēvēt grupu</translation>
 <translation id="7419565702166471774">Vienmēr izmantot drošus savienojumus</translation>
-<translation id="742001653298797675">Lai ietaupītu vietu tālrunī un aizsargātu konfidencialitāti, ieplānojiet visa lejupielādētā satura dzēšanu pēc mēneša.</translation>
 <translation id="7425053386765766120">Maksājuma veida pievienošana…</translation>
 <translation id="7425346204213733349">Grāmatzīmju, vēstures, paroļu un citu iestatījumu izmaiņas vairs netiks sinhronizētas ar jūsu Google kontu. Tomēr esošie dati joprojām tiks glabāti jūsu Google kontā.</translation>
 <translation id="742664698522525515">Vai paturēt grupu?</translation>

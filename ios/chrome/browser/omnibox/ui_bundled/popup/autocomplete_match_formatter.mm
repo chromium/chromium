@@ -372,7 +372,7 @@ UIColor* DimColorIncognito() {
 }
 
 - (id<OmniboxPedal>)pedal {
-  return self.pedalData;
+  return nil;
 }
 
 - (UIImage*)matchTypeIcon {

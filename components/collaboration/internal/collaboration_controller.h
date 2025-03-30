@@ -76,6 +76,9 @@ class CollaborationController {
     // Delegate is showing the manage people screen.
     kShowingManageScreen,
 
+    // A shared tab group has been deleted, cleaning up.
+    kCleaningUpSharedTabGroup,
+
     // The flow is cancelled.
     kCancel,
 
@@ -174,12 +177,15 @@ class CollaborationController {
   // service.
   void Exit();
 
+  // Cancels and exits the current flow.
+  void Cancel();
+
   // Helper functions used in tests.
   void SetStateForTesting(StateId state);
   StateId GetStateForTesting();
 
  private:
-  static constexpr std::array<std::pair<StateId, StateId>, 34>
+  static constexpr std::array<std::pair<StateId, StateId>, 35>
       kValidTransitions = {{
           // kPending transitions to:
           //
@@ -305,7 +311,10 @@ class CollaborationController {
 
           // kShowingManageScreen transition to:
           //
+          //   kCleaningUpSharedTabGroup: When deletion happened on a manage
+          //   screen.
           //   kError: An error occurred while showing the manage people screen.
+          {StateId::kShowingManageScreen, StateId::kCleaningUpSharedTabGroup},
           {StateId::kShowingManageScreen, StateId::kError},
       }};
 

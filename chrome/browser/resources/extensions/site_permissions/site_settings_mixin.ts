@@ -106,11 +106,11 @@ export const SiteSettingsMixin =
           };
         }
 
-        delegate: ItemDelegate&SiteSettingsDelegate =
+        accessor delegate: ItemDelegate&SiteSettingsDelegate =
             new DummySiteSettingsMixinDelegate();
-        enableEnhancedSiteControls: boolean = false;
-        restrictedSites: string[] = [];
-        permittedSites: string[] = [];
+        accessor enableEnhancedSiteControls: boolean = false;
+        accessor restrictedSites: string[] = [];
+        accessor permittedSites: string[] = [];
 
         override firstUpdated(changedProperties: PropertyValues<this>) {
           super.firstUpdated(changedProperties);

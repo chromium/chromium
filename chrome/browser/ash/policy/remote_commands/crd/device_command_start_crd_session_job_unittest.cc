@@ -143,13 +143,11 @@ bool SupportsRemoteSupport(TestSessionType user_session_type) {
     case TestSessionType::kAutoLaunchedKioskSession:
     case TestSessionType::kManagedGuestSession:
     case TestSessionType::kAffiliatedUserSession:
+    case TestSessionType::kNoSession:
       return true;
 
     case TestSessionType::kGuestSession:
     case TestSessionType::kUnaffiliatedUserSession:
-    // TODO(b:393521569) Update session type supported on default enabled
-    // state for CRD unattended feature flag.
-    case TestSessionType::kNoSession:
       return false;
   }
 }
@@ -446,13 +444,11 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
       case TestSessionType::kAutoLaunchedKioskSession:
       case TestSessionType::kManagedGuestSession:
       case TestSessionType::kAffiliatedUserSession:
+      case TestSessionType::kNoSession:
         return true;
 
       case TestSessionType::kGuestSession:
       case TestSessionType::kUnaffiliatedUserSession:
-      // TODO(b:393521569) Update session type supported on default enabled
-      // state for CRD unattended feature flag.
-      case TestSessionType::kNoSession:
         return false;
     }
   }();
@@ -483,13 +479,11 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
       case TestSessionType::kAutoLaunchedKioskSession:
       case TestSessionType::kManagedGuestSession:
       case TestSessionType::kAffiliatedUserSession:
+      case TestSessionType::kNoSession:
         return true;
 
       case TestSessionType::kGuestSession:
       case TestSessionType::kUnaffiliatedUserSession:
-      case TestSessionType::kNoSession:
-        // TODO(b:393521569) Update session type supported on default enabled
-        // state for CRD unattended feature flag.
         return false;
     }
   }();
@@ -661,15 +655,16 @@ TEST_P(DeviceCommandStartCrdSessionJobTestBoolParameterized,
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
-       AllowRemoteSupportSessionAtLoginScreenIfEnabledByFeatureFlag) {
-  EnableFeature(kEnableCrdSharedSessionToUnattendedDevice);
+       DontAllowRemoteSupportSessionAtLoginScreenIfDisabledByFeatureFlag) {
+  DisableFeature(kEnableCrdSharedSessionToUnattendedDevice);
 
   StartSessionOfType(TestSessionType::kNoSession);
 
   Result result = RunJobAndWaitForResult(
       Payload().Set("crdSessionType", CrdSessionType::REMOTE_SUPPORT_SESSION));
 
-  EXPECT_SUCCESS(result);
+  EXPECT_ERROR(result,
+               StartCrdSessionResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
@@ -705,13 +700,11 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
 
       case TestSessionType::kManagedGuestSession:
       case TestSessionType::kAffiliatedUserSession:
+      case TestSessionType::kNoSession:
         return false;
 
       case TestSessionType::kGuestSession:
       case TestSessionType::kUnaffiliatedUserSession:
-      // TODO(b:393521569) Update session type supported on default enabled
-      // state for CRD unattended feature flag.
-      case TestSessionType::kNoSession:
         // Unsupported session types
         NOTREACHED();
     }
@@ -742,17 +735,6 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
   EXPECT_FALSE(delegate().session_parameters().terminate_upon_input);
 }
 
-TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldNotTerminateUponInputForRemoteSupportAtLoginScreen) {
-  EnableFeature(kEnableCrdSharedSessionToUnattendedDevice);
-
-  StartSessionOfType(TestSessionType::kNoSession);
-  Result result = RunJobAndWaitForResult();
-
-  EXPECT_SUCCESS(result);
-  EXPECT_FALSE(delegate().session_parameters().terminate_upon_input);
-}
-
 TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
        TestShowConfirmationDialogForRemoteSupport) {
   TestSessionType user_session_type = GetParam();
@@ -777,13 +759,11 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
 
       case TestSessionType::kManagedGuestSession:
       case TestSessionType::kAffiliatedUserSession:
+      case TestSessionType::kNoSession:
         return true;
 
       case TestSessionType::kGuestSession:
       case TestSessionType::kUnaffiliatedUserSession:
-      // TODO(b:393521569) Update session type supported on default enabled
-      // state for CRD unattended feature flag.
-      case TestSessionType::kNoSession:
         // Unsupported session types
         NOTREACHED();
     }
@@ -807,7 +787,6 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
        TestConnectionAutoApproveTimeoutForSharedSessions) {
-  EnableFeature(kAutoApproveEnterpriseSharedSessions);
   AddActiveManagedNetwork();
   SetDeviceIdleTime(kAutoApproveDeviceIdlenessCutoff);
 
@@ -846,7 +825,6 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 TEST_F(
     DeviceCommandStartCrdSessionJobTest,
     ShouldNotSetConnectionAutoApproveTimeoutIfDeviceIsIdleMoreThanTheCutoff) {
-  EnableFeature(kAutoApproveEnterpriseSharedSessions);
   AddActiveManagedNetwork();
   SetDeviceIdleTime(kAutoApproveDeviceIdlenessCutoff + 1);
 
@@ -861,7 +839,6 @@ TEST_F(
 TEST_F(
     DeviceCommandStartCrdSessionJobTest,
     ShouldNotSetConnectionAutoApproveTimeoutIfDeviceIsNotConnectedToManagedNetwork) {
-  EnableFeature(kAutoApproveEnterpriseSharedSessions);
   SetDeviceIdleTime(kAutoApproveDeviceIdlenessCutoff);
 
   LogInAsAffiliatedUser();
@@ -1301,27 +1278,7 @@ TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
-       ShouldNotTerminateUponInputEvenIfEnabledByCrdUnattendedFeatureFlag) {
-  EnableFeature(kEnableCrdSharedSessionToUnattendedDevice);
-
-  AddActiveManagedNetwork();
-
-  EXPECT_SUCCESS(RunJobAndWaitForResult());
-  EXPECT_FALSE(delegate().session_parameters().terminate_upon_input);
-}
-
-TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
        ShouldNotShowConfirmationDialog) {
-  AddActiveManagedNetwork();
-
-  EXPECT_SUCCESS(RunJobAndWaitForResult(RemoteAccessPayload()));
-  EXPECT_FALSE(delegate().session_parameters().show_confirmation_dialog);
-}
-
-TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
-       ShouldNotShowConfirmationDialogEvenIfEnabledByCrdUnattendedFeatureFlag) {
-  EnableFeature(kEnableCrdSharedSessionToUnattendedDevice);
-
   AddActiveManagedNetwork();
 
   EXPECT_SUCCESS(RunJobAndWaitForResult(RemoteAccessPayload()));
@@ -1340,7 +1297,6 @@ TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
 
 TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
        ShouldNotSetConnectionAutoApproveTimeout) {
-  EnableFeature(kAutoApproveEnterpriseSharedSessions);
   AddActiveManagedNetwork();
   SetDeviceIdleTime(kAutoApproveDeviceIdlenessCutoff);
 

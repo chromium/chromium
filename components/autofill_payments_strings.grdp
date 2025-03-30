@@ -890,6 +890,9 @@
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_TITLE" desc="Title of the BNPL select provider screen that prompts the user to choose a pay over time provider.">
     Choose a pay over time provider
   </message>
+  <message name="IDS_AUTOFILL_CARD_BNPL_LINKED_ISSUER_PILL_LABEL" desc="Label for the linked issuer pill view, which may be displayed on the BNPL select provider screen that prompts the user to choose a pay over time provider. If this label is present, it indicates that the user has previously associated this BNPL provider with their Google account.">
+    Linked
+  </message>
   <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SUGGESTION_IPH_BUBBLE_FALLBACK_LABEL" desc="Text shown in the `In-Product Help(IPH)` bubble for card info retrieval suggestions on Chrome Android when the issuer_id is not present in the card. It is specifically for card info retrieval enrolled card. Card info will be copied after the user clicks the suggestion.">
       You can autofill this card because your account is linked to Google Pay
   </message>

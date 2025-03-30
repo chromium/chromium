@@ -8,6 +8,7 @@
 <translation id="100323615638474026">‏התקן USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">היסטוריית ההורדות מהתקופה האחרונה</translation>
 <translation id="1004218526896219317">גישה לאתרים</translation>
+<translation id="1005230401424685968">YYYY</translation>
 <translation id="1005274289863221750">להשתמש במיקרופון ובמצלמה</translation>
 <translation id="1005333234656240382">‏להפעיל ניפוי באגים באמצעות ADB?</translation>
 <translation id="1005671386794704751">ורוד</translation>
@@ -3187,7 +3188,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         תמיד אפשר לנהל את ההגדרות בכרטיס הזה, או לראות עוד אפשרויות ב'התאמה אישית של Chrome'.</translation>
-<translation id="3207437351138888228">‏כשממלאים טופס, המידע והדף שממנו הוא מגיע נשלחים אל Google כדי ליצור הצעות</translation>
 <translation id="3207960819495026254">מסומן בסימנייה</translation>
 <translation id="3208584281581115441">לבדיקה</translation>
 <translation id="3208703785962634733">לא מאושר</translation>
@@ -3232,6 +3232,7 @@
 <translation id="3242289508736283383">‏במצב קיוסק של ChromeOS, יש להתקין אפליקציות עם מאפיין המניפסט 'kiosk_only'</translation>
 <translation id="3243017971870859287">‏קריאת מספרים סידוריים של מכשירי ChromeOS Flex והרכיבים</translation>
 <translation id="324366796737464147">סינון רעשים</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">המשך השתקת הצלילים</translation>
 <translation id="3247006341013237647">לארגן את הכרטיסיות?</translation>
 <translation id="3247649647204519958">כאן אפשר לראות ולנהל את ההרשאות שיש לתוספים לגבי האתר הנוכחי</translation>
@@ -6100,7 +6101,6 @@
 <translation id="5267572070504076962">כדאי להפעיל את הגלישה הבטוחה ולקבל הגנה מפני אתרים מסוכנים</translation>
 <translation id="5269977353971873915">ההדפסה נכשלה</translation>
 <translation id="5271578170655641944">‏להסיר את הגישה ל-Google Drive?</translation>
-<translation id="5271782684896713035">יכול להיות שבודקים אנושיים יראו את הנתונים האלה כדי לשפר את התכונה הזו.</translation>
 <translation id="5273806377963980154">עריכה של כתובת האתר</translation>
 <translation id="5275084684151588738">מילוני משתמש</translation>
 <translation id="5275338516105640560">כפתור של קבוצת הכרטיסיות שנשמרה</translation>

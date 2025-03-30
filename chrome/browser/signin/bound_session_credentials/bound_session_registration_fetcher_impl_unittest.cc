@@ -25,7 +25,7 @@
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "components/variations/scoped_variations_ids_provider.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "net/http/http_response_headers.h"
@@ -231,8 +231,8 @@ class BoundSessionRegistrationFetcherImplTest : public testing::Test {
                     // called.
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  // Provides a mock key provider by default.
-  std::variant<crypto::ScopedMockUnexportableKeyProvider,
+  // Provides a fake key provider by default.
+  std::variant<crypto::ScopedFakeUnexportableKeyProvider,
                crypto::ScopedNullUnexportableKeyProvider>
       scoped_key_provider_;
   unexportable_keys::UnexportableKeyTaskManager task_manager_{

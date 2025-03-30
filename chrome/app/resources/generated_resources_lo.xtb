@@ -8,6 +8,7 @@
 <translation id="100323615638474026">ອຸປະກອນ USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">ປະຫວັດການດາວໂຫຼດຫຼ້າສຸດ</translation>
 <translation id="1004218526896219317">ສິດເຂົ້າເຖິງເວັບໄຊ</translation>
+<translation id="1005230401424685968">ປປປປ</translation>
 <translation id="1005274289863221750">ໃຊ້ໄມໂຄຣໂຟນ ແລະກ້ອງຖ່າຍຮູບຂອງທ່ານ</translation>
 <translation id="1005333234656240382">ເປີດນຳໃຂ້ການດີບັກ ADB ບໍ?</translation>
 <translation id="1005671386794704751">ກຸຫຼາບ</translation>
@@ -1374,6 +1375,7 @@
 <translation id="193565226207940518">ເຄື່ອງມືຊ່ວຍເຫຼືອ</translation>
 <translation id="1935995810530254458">ຢືນຢັນການສຳເນົາ</translation>
 <translation id="1936157145127842922">ສະ​ແດງ​ຢູ່​ໃນ​ໂຟລ​ເດີ</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{ເພີ່ມໜ້າໃສ່ໃນລາຍຊື່ການອ່ານແລ້ວ}other{ເພີ່ມໜ້າໃສ່ໃນລາຍຊື່ການອ່ານແລ້ວ}}</translation>
 <translation id="1936931585862840749">ໃຊ້ຕົວເລກເພື່ອຊີ້ບອກວ່າຈະພິມອອກຈັກສະບັບ (1 ຫາ <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">ບໍ່ສາມາດນຳເຂົ້າສະຖາປັດຕະຍະກຳກ່ອງບັນຈຸປະເພດ <ph name="ARCHITECTURE_CONTAINER" /> ດ້ວຍອຸປະກອນນີ້ໄດ້ ເຊິ່ງແມ່ນ <ph name="ARCHITECTURE_DEVICE" />. ທ່ານສາມາດລອງກູ້ຄືນກ່ອງບັນຈຸນີ້ໄປໃສ່ອຸປະກອນອື່ນໄດ້ ຫຼື ທ່ານສາມາດເຂົ້າເຖິງໄຟລ໌ຢູ່ພາຍໃນຮູບກ່ອງບັນຈຸນີ້ໄດ້ໂດຍການເປີດຢູ່ໃນແອັບ Files.</translation>
 <translation id="1938351510777341717">ຄຳສັ່ງພາຍນອກ</translation>
@@ -2017,6 +2019,7 @@
 <translation id="2373666622366160481">ພໍດີກັບເຈ້ຍ</translation>
 <translation id="2375406435414127095">ເຊື່ອມຕໍ່ກັບໂທລະສັບຂອງທ່ານ</translation>
 <translation id="2376056713414548745">ອ່ານອອກສຽງ</translation>
+<translation id="2376122016044804363">ການຢືນຢັນສຳເນົາໄປໃສ່ຄລິບບອດແລ້ວ</translation>
 <translation id="2377667304966270281">ການຂັດຂ້ອງຮ້າຍແຮງ</translation>
 <translation id="237828693408258535">ແປໜ້ານີ້ບໍ?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{ໃນອີກບໍ່ດົນລະບົບອາດບໍ່ຮອງຮັບສ່ວນຂະຫຍາຍນີ້ອີກຕໍ່ໄປ}other{ໃນອີກບໍ່ດົນລະບົບອາດບໍ່ຮອງຮັບສ່ວນຂະຫຍາຍເຫຼົ່ານີ້ອີກຕໍ່ໄປ}}</translation>
@@ -3083,6 +3086,7 @@
 <translation id="3122883569442693641">ລາຍລະອຽດເພີ່ມເຕີມ</translation>
 <translation id="3124111068741548686">ດ້າມຈັບ​ຜູ້​ໃຊ້</translation>
 <translation id="3124332159330678621">ປັບແຕ່ງ Chrome ເພື່ອໃຫ້ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານມີຮູບລັກໃໝ່</translation>
+<translation id="3125816458150005808">ທ່ານສາມາດຖອນໝຸດມັນ ແລະ ເປີດມັນຈາກເມນູໄດ້</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">ເພື່ອຫຼີກເວັ້ນບັນຫາການສາກ ແລະ ປະສິດທິພາບການນຳໃຊ້ ກະລຸນາໃຊ້ອະແດັບເຕີໄຟ Dell ຫຼື USB ປະເພດ C.</translation>
 <translation id="3127862849166875294">ການປັບຂະໜາດດິສໃນ Linux</translation>
@@ -3171,6 +3175,7 @@
 <translation id="3192586965067888278">ອະທິບາຍບັນຫາໂດຍລະອຽດ. ຄຳຕິຊົມຈະຖືກສົ່ງໄປໃຫ້ Google ເພື່ອໃຫ້ທີມງານກວດສອບ ແລະ ອາດຖືກໃຊ້ເພື່ອການປັບປຸງ ຫຼື ພັດທະນາຜະລິດຕະພັນ ແລະ ບໍລິການ Google.</translation>
 <translation id="3192947282887913208">ໄຟລ໌ສຽງ</translation>
 <translation id="3193695589337931419">System Signals Utilities</translation>
+<translation id="3194095220941877499">ສະແດງການຢືນຢັນເມື່ອທ່ານສຳເນົາລິ້ງ, ຮູບ ຫຼື ວິດີໂອ</translation>
 <translation id="3196912927885212665">ເພື່ອຕັ້ງຄ່າດ້ວຍໂທລະສັບ Android ຂອງທ່ານ, ຕ້ອງເປີດ Bluetooth ຂອງ Chromebook ຂອງທ່ານ</translation>
 <translation id="3197453258332670132">ດ້ວຍການຄລິກຂວາ ຫຼື ການກົດຄ້າງໄວ້, ໃຫ້ສະແດງຂໍ້ມູນທີ່ກ່ຽວຂ້ອງສຳລັບການເລືອກຂໍ້ຄວາມຂອງທ່ານ</translation>
 <translation id="3199127022143353223">ເຊີບເວີ</translation>
@@ -3185,7 +3190,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         ທ່ານສາມາດຈັດການການຕັ້ງຄ່າຈາກບັດນີ້ຕອນໃດກໍໄດ້ ຫຼື ເບິ່ງຕົວເລືອກເພີ່ມເຕີມໃນການປັບແຕ່ງ Chrome.</translation>
-<translation id="3207437351138888228">ເມື່ອທ່ານຕື່ມຂໍ້ມູນໃສ່ແບບຟອມ, ລະບົບຈະສົ່ງຂໍ້ມູນຂອງທ່ານ ແລະ ໜ້າເວັບຕົ້ນທາງຂອງແບບຟອມດັ່ງກ່າວໄປຫາ Google ເພື່ອສ້າງຄຳແນະນຳ</translation>
 <translation id="3207960819495026254">ໃສ່ບຸກ​ມາກ​໌​ແລ້ວ</translation>
 <translation id="3208584281581115441">ກວດເບິ່ງດຽວນີ້</translation>
 <translation id="3208703785962634733">ບໍ່ຢືນຢັນ</translation>
@@ -3230,6 +3234,7 @@
 <translation id="3242289508736283383">ຕ້ອງຕິດຕັ້ງແອັບທີ່ມີ​ຄຸນ​ສົມ​ບັດ manifest 'kiosk_only' ຢູ່ໃນໂໝດ kiosk ຂອງ ChromeOS</translation>
 <translation id="3243017971870859287">ອ່ານອຸປະກອນ ChromeOS Flex ແລະ ໝາຍເລກຊີຣຽວສ່ວນປະກອບ</translation>
 <translation id="324366796737464147">ການຕັດສຽງລົບກວນ</translation>
+<translation id="3244271242291266297">ດດ</translation>
 <translation id="3244294424315804309">ສືບຕໍ່ປິດສຽງ</translation>
 <translation id="3247006341013237647">ຈັດລະບຽບແຖບບໍ?</translation>
 <translation id="3247649647204519958">ຈາກບ່ອນນີ້, ທ່ານສາມາດເບິ່ງ ແລະ ຈັດການສິດອະນຸຍາດສ່ວນຂະຫຍາຍສຳລັບເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງໄດ້</translation>
@@ -5332,6 +5337,7 @@
 <translation id="4723140812774948886">ສະຫຼັບກັບຊັ້ນວາງຖັດໄປ</translation>
 <translation id="4724450788351008910">ປ່ຽນແປງການເຂົ້າຮ່ວມແລ້ວ</translation>
 <translation id="4725511304875193254">ໝາຄໍກິ</translation>
+<translation id="4725762702191453794">ຕອນນີ້ຊອກຫາແຖບໄດ້ຖືກປັກໝຸດໃສ່ແຖບ​ເຄື່ອງ​ມືຂອງທ່ານແລ້ວ</translation>
 <translation id="4726710355753484204">ໃຊ້ Ctrl + Alt + ປັບຄວາມສະຫວ່າງຂຶ້ນເພື່ອຊູມເຂົ້າ.
 ໃຊ້ Ctr l+ Alt + ປັບຄວາມສະຫວ່າງລົງເພື່ອຂະຫຍາຍອອກ.</translation>
 <translation id="4726710629007580002">ມີຄໍາເຕືອນ ເມື່ອພະຍາຍາມຕິດຕັ້ງສ່ວນຂະຫຍາຍນີ້:</translation>
@@ -6097,7 +6103,6 @@
 <translation id="5267572070504076962">ເປີດ Safe Browsing ເພື່ອຮັບການປົກປ້ອງຈາກເວັບໄຊທີ່ເປັນອັນຕະລາຍ</translation>
 <translation id="5269977353971873915">ພິມບໍ່ສໍາເລັດ</translation>
 <translation id="5271578170655641944">ລຶບສິດເຂົ້າເຖິງ Google Drive ອອກບໍ?</translation>
-<translation id="5271782684896713035">ທີມງານກວດສອບອາດເຫັນຂໍ້ມູນດັ່ງກ່າວເພື່ອນຳໄປໃຊ້ປັບປຸງຄຸນສົມບັດນີ້</translation>
 <translation id="5273806377963980154">ແກ້ໄຈ URL ເວັບໄຊ</translation>
 <translation id="5275084684151588738">ວັດຈະນານຸກົມຜູ້ໃຊ້</translation>
 <translation id="5275338516105640560">ປຸ່ມກຸ່ມແຖບທີ່ບັນທຶກໄວ້</translation>

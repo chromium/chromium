@@ -38,6 +38,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_shell_apk.ChildProcessLauncherTestHelperService;
 import org.chromium.content_shell_apk.ChildProcessLauncherTestUtils;
@@ -423,6 +424,49 @@ public class ChildProcessLauncherHelperTest {
                         () -> connection.isStrongBindingBound()));
     }
 
+    @Test
+    @MediumTest
+    @Feature({"ProcessManagement"})
+    public void testNotPerceptiveBindingForSpareRenderer() {
+        if (!ChildProcessConnection.supportNotPerceptibleBinding()) {
+            return;
+        }
+        ChildProcessLauncherHelperImpl.setSkipDelayForReducePriorityOnBackgroundForTesting();
+
+        final ContentShellActivity activity =
+                mActivityTestRule.launchContentShellWithUrl("about:blank");
+        mActivityTestRule.waitForActiveShellToBeDoneLoading();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> ApplicationStatus.onStateChangeForTesting(activity, ActivityState.STOPPED));
+        Assert.assertFalse(ApplicationStatus.hasVisibleActivities());
+
+        ChildProcessLauncherHelperImpl launcher =
+                startChildProcess(
+                        BLOCK_UNTIL_SETUP,
+                        /* doSetupConnection= */ true,
+                        /* sandboxed= */ false,
+                        /* reducePriorityOnBackground= */ true,
+                        /* canUseWarmUpConnection= */ true);
+        final ChildProcessConnection connection =
+                ChildProcessLauncherTestUtils.getConnection(launcher);
+
+        // addVisibleBinding() is required to correctly setup the initial state
+        // of a created renderer in the unittests.
+        ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
+                () -> connection.addVisibleBinding());
+        Assert.assertFalse(
+                ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                        () -> connection.isNotPerceptibleBindingBound()));
+        setPriorityForSpareRenderer(launcher, true);
+        Assert.assertTrue(
+                ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                        () -> connection.isNotPerceptibleBindingBound()));
+        setPriorityForSpareRenderer(launcher, false);
+        Assert.assertFalse(
+                ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                        () -> connection.isNotPerceptibleBindingBound()));
+    }
+
     private static ChildProcessLauncherHelperImpl startSandboxedChildProcess(
             int blockingPolicy, final boolean doSetupConnection) {
         return startChildProcess(
@@ -548,6 +592,29 @@ public class ChildProcessLauncherHelperTest {
                     @Override
                     public ChildProcessConnection call() {
                         return ChildProcessLauncherHelperImpl.getWarmUpConnectionForTesting();
+                    }
+                });
+    }
+
+    private static void setPriorityForSpareRenderer(
+            final ChildProcessLauncherHelperImpl launcherHelper, boolean isSpareRenderer) {
+        int pid = getPid(launcherHelper);
+        ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        launcherHelper.setPriority(
+                                pid,
+                                /* visible= */ false,
+                                /* hasMediaStream= */ false,
+                                /* hasImmersiveXrSession= */ false,
+                                /* hasForegroundServiceWorker= */ false,
+                                /* frameDepth= */ 0,
+                                /* intersectsViewport= */ false,
+                                /* boostForPendingViews= */ false,
+                                /* boostForLoading= */ false,
+                                isSpareRenderer,
+                                ChildProcessImportance.NORMAL);
                     }
                 });
     }

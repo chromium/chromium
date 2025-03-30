@@ -19,6 +19,7 @@
 #include "content/browser/browsing_data/shared_storage_clear_site_data_tester.h"
 #include "content/browser/fingerprinting_protection/canvas_noise_token_data.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -1051,7 +1052,9 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrerenderingBrowserTest,
 class BrowsingDataRemoverImplPrefetchBrowserTest
     : public BrowsingDataRemoverImplBrowserTest {
  public:
-  BrowsingDataRemoverImplPrefetchBrowserTest() = default;
+  BrowsingDataRemoverImplPrefetchBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kPrefetchBrowsingDataRemoval);
+  }
 
   void StartPrefetch(const GURL& url, Shell* shell) {
     auto* prefetch_document_manager =
@@ -1071,6 +1074,9 @@ class BrowsingDataRemoverImplPrefetchBrowserTest
   }
 
   ~BrowsingDataRemoverImplPrefetchBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrefetchBrowserTest,

@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">Обидете се да контактирате со системскиот администратор.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, истекува на <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Компјутер</translation>
-<translation id="1739422091279046802">лизгање и зумирање</translation>
 <translation id="1741613555002899862">Мора да е одредена и важечка низа кога DnsOverHttpsMode е <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Постелнина и креветски чаршави</translation>
 <translation id="1743892871127720056">Споредете го насловот на табелата, изменете го текстот</translation>
@@ -2882,6 +2881,7 @@
 <translation id="6059925163896151826">USB-уреди</translation>
 <translation id="6060009363608157444">Погрешен режим на DnsOverHttps</translation>
 <translation id="6061154937977953833">Борење</translation>
+<translation id="6062405040252994646">Алатка</translation>
 <translation id="6062937464449575061">Престани со следење на цената</translation>
 <translation id="6063415549109819824">Финансирање за дом</translation>
 <translation id="6070432475334343308">Една или повеќе датотеки не се прикачија во <ph name="FOLDER_NAME" /> во <ph name="CLOUD_PROVIDER" /></translation>

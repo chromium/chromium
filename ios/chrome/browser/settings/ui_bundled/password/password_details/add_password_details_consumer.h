@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORD_DETAILS_ADD_PASSWORD_DETAILS_CONSUMER_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 // Sets the Add Password details for consumer.
 @protocol AddPasswordDetailsConsumer <NSObject>
@@ -17,6 +18,9 @@
 // Called when the validation to find duplicate existing credentials has been
 // completed.
 - (void)onDuplicateCheckCompletion:(BOOL)duplicateFound;
+
+// Called when the user presses on tap suggest strong password.
+- (void)didTapSuggestStrongPassword:(UIButton*)sender;
 
 @end
 

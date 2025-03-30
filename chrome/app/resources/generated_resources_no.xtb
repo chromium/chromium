@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB-enhet (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Logg over nylige nedlastinger</translation>
 <translation id="1004218526896219317">Nettstedstilgang</translation>
+<translation id="1005230401424685968">ÅÅÅÅ</translation>
 <translation id="1005274289863221750">bruke mikrofonen din og kameraet ditt</translation>
 <translation id="1005333234656240382">Vil du slå på ADB-feilsøking?</translation>
 <translation id="1005671386794704751">Rosa</translation>
@@ -1371,6 +1372,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="193565226207940518">Støtteverktøy</translation>
 <translation id="1935995810530254458">Kopier likevel</translation>
 <translation id="1936157145127842922">Vis i mappe</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Siden er lagt til på leselisten}other{Sidene er lagt til på leselisten}}</translation>
 <translation id="1936931585862840749">Bruk et tall for å angi hvor mange eksemplarer som skal skrives ut (1–<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Kan ikke importere beholderarkitekturtypen <ph name="ARCHITECTURE_CONTAINER" /> med denne enheten (<ph name="ARCHITECTURE_DEVICE" />). Du kan prøve å gjenopprette denne beholderen på en annen enhet, eller du kan få tilgang til filene i beholderavbildningen ved å åpne den i Filer-appen.</translation>
 <translation id="1938351510777341717">Ekstern kommando</translation>
@@ -3182,7 +3184,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
         <ph name="BREAK" />
         <ph name="BREAK" />
         Du kan når som helst administrere innstillingene fra dette kortet eller se flere alternativer i Tilpass Chrome.</translation>
-<translation id="3207437351138888228">Når du fyller ut skjemaer, sendes informasjonen din og siden den kommer fra, til Google for å generere forslag</translation>
 <translation id="3207960819495026254">Bokmerket</translation>
 <translation id="3208584281581115441">Sjekk nå</translation>
 <translation id="3208703785962634733">Ikke bekreftet</translation>
@@ -3227,6 +3228,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3242289508736283383">Apper med manifest-attributtet «kiosk_only» må være installert i ChromeOS-kioskmodus</translation>
 <translation id="3243017971870859287">lese serienumrene til ChromeOS Flex-enheten og -komponenter</translation>
 <translation id="324366796737464147">Støyreduksjon</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Fortsett med å kutte lyden</translation>
 <translation id="3247006341013237647">Vil du organisere fanene?</translation>
 <translation id="3247649647204519958">Her kan du se og administrere utvidelsestillatelser for nettstedet du er på</translation>
@@ -6091,7 +6093,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5267572070504076962">Slå på Safe Browsing for å beskytte deg mot farlige nettsteder</translation>
 <translation id="5269977353971873915">Utskrift mislyktes</translation>
 <translation id="5271578170655641944">Vil du fjerne Google Disk-tilgangen?</translation>
-<translation id="5271782684896713035">Dataene kan bli sett av menneskelige evaluerere som jobber med å gjøre denne funksjonen bedre</translation>
 <translation id="5273806377963980154">Rediger nettstedets nettadresse</translation>
 <translation id="5275084684151588738">Brukerordlister</translation>
 <translation id="5275338516105640560">Knapp for lagret fanegruppe</translation>

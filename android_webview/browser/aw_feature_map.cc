@@ -35,7 +35,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewUseMetricsUploadService,
     &features::kWebViewUseMetricsUploadServiceOnlySdkRuntime,
     &features::kWebViewXRequestedWithHeaderControl,
-    &features::kWebViewRestrictSensitiveContent,
     &metrics::kAndroidMetricsAsyncMetricLogging,
     &safe_browsing::kHashPrefixRealTimeLookups,
     &features::kWebViewSupervisedUserSiteBlock,

@@ -75,6 +75,11 @@ struct StructTraits<network::mojom::DeviceBoundSessionAccessDataView,
     return access.session_key;
   }
 
+  static const std::vector<std::string>& cookies(
+      const net::device_bound_sessions::SessionAccess& access) {
+    return access.cookies;
+  }
+
   static bool Read(network::mojom::DeviceBoundSessionAccessDataView data,
                    net::device_bound_sessions::SessionAccess* out);
 };

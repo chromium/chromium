@@ -14,7 +14,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_match.h"
@@ -28,21 +27,19 @@
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
-#import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_image_fetcher.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mediator+Testing.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_presenter.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_section_extractor.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_swift.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/suggest_action.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -52,12 +49,10 @@
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_omnibox_consumer.h"
-#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-const CGFloat kOmniboxIconSize = 16;
 /// Maximum number of suggest tile types we want to record. Anything beyond this
 /// will be reported in the overflow bucket.
 const NSUInteger kMaxSuggestTileTypePosition = 15;
@@ -67,8 +62,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 // FET reference.
 @property(nonatomic, assign) feature_engagement::Tracker* tracker;
-/// Extracts pedals from AutocompleSuggestions.
-@property(nonatomic, strong) PedalSectionExtractor* pedalSectionExtractor;
 /// Index of the group containing AutocompleteSuggestion, first group to be
 /// highlighted on down arrow key.
 @property(nonatomic, assign) NSInteger preselectedGroupIndex;
@@ -87,29 +80,21 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 @end
 
 @implementation OmniboxPopupMediator {
-  // Fetcher for Answers in Suggest images.
-  std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
-  /// Holds cached images keyed by their URL. The cache is purged when the popup
-  /// is closed.
-  NSCache<NSString*, UIImage*>* _cachedImages;
+  /// omnibox images/favicons fetcher.
+  OmniboxImageFetcher* _omniboxImageFetcher;
 }
 @synthesize consumer = _consumer;
 @synthesize incognito = _incognito;
 @synthesize presenter = _presenter;
 
-- (instancetype)
-             initWithFetcher:
-                 (std::unique_ptr<image_fetcher::ImageDataFetcher>)imageFetcher
-               faviconLoader:(FaviconLoader*)faviconLoader
-                     tracker:(feature_engagement::Tracker*)tracker {
+- (instancetype)initWithTracker:(feature_engagement::Tracker*)tracker
+            omniboxImageFetcher:(OmniboxImageFetcher*)omniboxImageFetcher {
   self = [super init];
   if (self) {
-    _imageFetcher = std::move(imageFetcher);
-    _faviconLoader = faviconLoader;
     _open = NO;
     _preselectedGroupIndex = 0;
     _tracker = tracker;
-    _cachedImages = [[NSCache alloc] init];
+    _omniboxImageFetcher = omniboxImageFetcher;
   }
   return self;
 }
@@ -117,7 +102,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 - (void)setOpen:(BOOL)open {
   // When closing the popup.
   if (_open && !open) {
-    [_cachedImages removeAllObjects];
+    [_omniboxImageFetcher clearCache];
   }
   _open = open;
 }
@@ -196,21 +181,18 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     [self logActionsInSuggestShownForCurrentResult];
   }
 
-  if ([suggestion isKindOfClass:[PedalSuggestionWrapper class]]) {
-    PedalSuggestionWrapper* pedalSuggestionWrapper =
-        (PedalSuggestionWrapper*)suggestion;
-    if (pedalSuggestionWrapper.innerPedal.action) {
-      base::UmaHistogramEnumeration(
-          "Omnibox.SuggestionUsed.Pedal",
-          (OmniboxPedalId)pedalSuggestionWrapper.innerPedal.type,
-          OmniboxPedalId::TOTAL_COUNT);
-      if ((OmniboxPedalId)pedalSuggestionWrapper.innerPedal.type ==
+  if (suggestion.pedal) {
+    if (suggestion.pedal.action) {
+      base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal",
+                                    (OmniboxPedalId)suggestion.pedal.type,
+                                    OmniboxPedalId::TOTAL_COUNT);
+      if ((OmniboxPedalId)suggestion.pedal.type ==
           OmniboxPedalId::MANAGE_PASSWORDS) {
         base::UmaHistogramEnumeration(
             "PasswordManager.ManagePasswordsReferrer",
             password_manager::ManagePasswordsReferrer::kOmniboxPedalSuggestion);
       }
-      pedalSuggestionWrapper.innerPedal.action();
+      suggestion.pedal.action();
     }
   } else if ([suggestion isKindOfClass:[AutocompleteMatchFormatter class]]) {
     AutocompleteMatchFormatter* autocompleteMatchFormatter =
@@ -357,48 +339,16 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 }
 
-#pragma mark - ImageFetcher
+#pragma mark - ImageRetriever
 
 - (void)fetchImage:(GURL)imageURL completion:(void (^)(UIImage*))completion {
-  NSString* URL = base::SysUTF8ToNSString(imageURL.spec());
-  UIImage* cachedImage = [_cachedImages objectForKey:URL];
-  if (cachedImage) {
-    completion(cachedImage);
-    return;
-  }
-  __weak NSCache<NSString*, UIImage*>* weakCachedImages = _cachedImages;
-  auto callback =
-      base::BindOnce(^(const std::string& image_data,
-                       const image_fetcher::RequestMetadata& metadata) {
-        NSData* data = [NSData dataWithBytes:image_data.data()
-                                      length:image_data.size()];
-
-        UIImage* image = [UIImage imageWithData:data
-                                          scale:[UIScreen mainScreen].scale];
-        if (image) {
-          [weakCachedImages setObject:image forKey:URL];
-        }
-        completion(image);
-      });
-
-  _imageFetcher->FetchImageData(imageURL, std::move(callback),
-                                NO_TRAFFIC_ANNOTATION_YET);
+  [_omniboxImageFetcher fetchImage:imageURL completion:completion];
 }
 
 #pragma mark - FaviconRetriever
 
 - (void)fetchFavicon:(GURL)pageURL completion:(void (^)(UIImage*))completion {
-  if (!self.faviconLoader) {
-    return;
-  }
-
-  self.faviconLoader->FaviconForPageUrl(
-      pageURL, kOmniboxIconSize, kOmniboxIconSize,
-      /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
-        if (attributes.faviconImage && !attributes.usesDefaultImage) {
-          completion(attributes.faviconImage);
-        }
-      });
+  [_omniboxImageFetcher fetchFavicon:pageURL completion:completion];
 }
 
 #pragma mark - Private methods
@@ -409,9 +359,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
       continue;
     }
 
-    for (PedalSuggestionWrapper* pedalMatch in group.suggestions) {
+    for (id<AutocompleteSuggestion> pedalMatch in group.suggestions) {
       base::UmaHistogramEnumeration("Omnibox.PedalShown",
-                                    (OmniboxPedalId)pedalMatch.innerPedal.type,
+                                    (OmniboxPedalId)pedalMatch.pedal.type,
                                     OmniboxPedalId::TOTAL_COUNT);
     }
   }

@@ -791,7 +791,6 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="4593212453765072419">Authentification requise du mandataire</translation>
 <translation id="4594021849294327751">Créer une transcription</translation>
 <translation id="4594541568452132351">Sélectionner la langue de transcription et le modèle de téléchargement</translation>
-<translation id="4607282946861182308">Impossible de créer des images de cette requête. Essayez une autre requête.</translation>
 <translation id="4609350030397390689">Diminuer la luminosité du clavier</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
 <translation id="463791356324567266">Annulation de la numérisation en cours…</translation>
@@ -1540,6 +1539,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8010765388850538088">En savoir plus sur l'IA générative</translation>
 <translation id="8017679124341497925">Raccourci modifié</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
+<translation id="8027467664787098346">En savoir plus sur le fond d'écran sélectionné</translation>
 <translation id="8028993641010258682">Taille</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Activer le mode Couleur automatique</translation>
@@ -1658,6 +1658,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8543574988889671960">Actualiser l'onglet</translation>
 <translation id="8550364285433943656">Placez des commandes sur les actions du jeu pour jouer avec les touches du clavier</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">L'IA générative peut se tromper, même à propos de personnes. Veuillez donc vérifier ses réponses.</translation>
 <translation id="8575298406870537639">Votre fournisseur de services peut exiger l'activation de cette option pour vous connecter à son réseau. Communiquez avec votre fournisseur de services pour en savoir davantage.</translation>
 <translation id="8576249514688522074">Non initialisé</translation>
 <translation id="8584654835905316966">Un redémarrage est nécessaire pour terminer l'installation du micrologiciel de <ph name="DEVICE_NAME" /> vers la version <ph name="VERSION" />. Il se peut que votre ordinateur semble redémarrer plusieurs fois. Ce comportement est attendu.</translation>
@@ -1672,7 +1673,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8655295600908251630">Version</translation>
 <translation id="8655828773034788261">Partager l'URL :</translation>
 <translation id="8660881923941176839">livres</translation>
-<translation id="8670057600920888023">L'IA générative est expérimentale, et le contenu peut être inexact, trompeur ou choquant.</translation>
 <translation id="8670574982334489519">droit</translation>
 <translation id="8675354002693747642">Clé prépartagée</translation>
 <translation id="8677859815076891398">Aucun album. Créez un album dans <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>

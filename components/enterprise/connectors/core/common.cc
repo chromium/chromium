@@ -11,6 +11,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 #if BUILDFLAG(USE_BLINK)
 #include "components/download/public/common/download_item.h"
@@ -352,6 +354,16 @@ std::string EventResultToString(EventResult result) {
       return "EVENT_RESULT_BYPASSED";
   }
   NOTREACHED();
+}
+
+std::string GetProfileEmail(signin::IdentityManager* identity_manager) {
+  // If the profile is not signed in, GetPrimaryAccountInfo() returns an
+  // empty account info.
+  return identity_manager
+             ? identity_manager
+                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                   .email
+             : std::string();
 }
 
 }  // namespace enterprise_connectors

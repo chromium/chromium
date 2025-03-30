@@ -1327,10 +1327,6 @@ bool RenderThreadImpl::IsElasticOverscrollEnabled() {
   return is_elastic_overscroll_enabled_;
 }
 
-gpu::GpuMemoryBufferManager* RenderThreadImpl::GetGpuMemoryBufferManager() {
-  return gpu_->gpu_memory_buffer_manager();
-}
-
 blink::scheduler::WebThreadScheduler*
 RenderThreadImpl::GetWebMainThreadScheduler() {
   return main_thread_scheduler_.get();

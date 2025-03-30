@@ -269,7 +269,7 @@ GetMicrosoftSoftwareUnexportableKeyProvider();
 CRYPTO_EXPORT std::unique_ptr<VirtualUnexportableKeyProvider>
 GetVirtualUnexportableKeyProvider_DO_NOT_USE_METRICS_ONLY();
 
-// `GetSoftwareUnsecureUnexportableKeyProvider()` returns a mock software
+// `GetSoftwareUnsecureUnexportableKeyProvider()` returns a fake software
 // implementation of `UnexportableKeyProvider` that can be used on platforms
 // that do not have a native secure implementation.
 // This should be used for development purposes only since these keys are not

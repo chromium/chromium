@@ -36,8 +36,9 @@ export class ExtensionsKeyboardShortcutsElement extends
     };
   }
 
-  delegate: KeyboardShortcutDelegate = createDummyKeyboardShortcutDelegate();
-  items: chrome.developerPrivate.ExtensionInfo[] = [];
+  accessor delegate: KeyboardShortcutDelegate =
+      createDummyKeyboardShortcutDelegate();
+  accessor items: chrome.developerPrivate.ExtensionInfo[] = [];
 
   override firstUpdated() {
     this.addEventListener('view-enter-start', this.onViewEnter_);

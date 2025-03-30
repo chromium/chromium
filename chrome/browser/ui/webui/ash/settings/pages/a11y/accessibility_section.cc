@@ -327,6 +327,12 @@ base::span<const SearchConcept> GetA11ySearchConcepts() {
        {IDS_OS_SETTINGS_TAG_A11Y_REDUCED_ANIMATIONS_ALT1,
         IDS_OS_SETTINGS_TAG_A11Y_REDUCED_ANIMATIONS_ALT2,
         SearchConcept::kAltTagEnd}},
+      {IDS_OS_SETTINGS_TAG_A11Y_ALWAYS_SHOW_SCROLLBARS,
+       mojom::kDisplayAndMagnificationSubpagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kAlwaysShowScrollbarsEnabled}},
   });
   return tags;
 }

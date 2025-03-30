@@ -22,6 +22,13 @@ class NativeMessageHost;
 // All methods must be called on the UI Thread of the browser process.
 class NativeMessagePort : public MessagePort {
  public:
+  class Dispatcher {
+   public:
+    virtual ~Dispatcher() = default;
+
+    virtual void DispatchOnMessage(const std::string& message) = 0;
+  };
+
   NativeMessagePort(base::WeakPtr<ChannelDelegate> channel_delegate,
                     const PortId& port_id,
                     std::unique_ptr<NativeMessageHost> native_message_host);
@@ -31,14 +38,13 @@ class NativeMessagePort : public MessagePort {
   bool IsValidPort() override;
   void DispatchOnMessage(const Message& message) override;
 
- private:
-  class Core;
   void PostMessageFromNativeHost(const std::string& message);
   void CloseChannel(const std::string& error_message);
 
+ private:
   base::ThreadChecker thread_checker_;
   scoped_refptr<base::SingleThreadTaskRunner> host_task_runner_;
-  std::unique_ptr<Core> core_;
+  std::unique_ptr<Dispatcher> dispatcher_;
 
   base::WeakPtrFactory<NativeMessagePort> weak_factory_{this};
 };

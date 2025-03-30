@@ -7,19 +7,24 @@
 // third_party/webrtc/rtc_base/logging.h since it defines some of the same
 // macros as Chromium does and we'll run into conflicts.
 
+#include <cstddef>
+#include <cstring>
+#include <ios>
+#include <sstream>
+#include <string>
+
+#include "base/check.h"
+#include "base/logging/log_severity.h"
 #if defined(WEBRTC_MAC) && !defined(WEBRTC_IOS)
 #include <CoreServices/CoreServices.h>
 #endif  // OS_MACOSX
 
-#include <algorithm>
-#include <atomic>
 #include <iomanip>
 
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/threading/platform_thread.h"
-#include "third_party/webrtc/rtc_base/string_utils.h"
 
 // This needs to be included after base/logging.h.
 #include "third_party/webrtc_overrides/rtc_base/diagnostic_logging.h"
@@ -28,6 +33,12 @@
 #if defined(WEBRTC_MAC)
 #include "base/apple/osstatus_logging.h"
 #endif
+#if defined(WEBRTC_WIN)
+#include <windows.h>
+
+#include <malloc.h>
+#include <wchar.h>
+#endif  // WEBRTC_WIN
 
 // Disable logging when fuzzing, for performance reasons.
 // WEBRTC_UNSAFE_FUZZER_MODE is defined by WebRTC's BUILD.gn when

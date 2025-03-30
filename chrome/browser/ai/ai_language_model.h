@@ -8,7 +8,6 @@
 #include <deque>
 #include <optional>
 
-#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
@@ -28,12 +27,6 @@
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
-
-namespace features {
-
-BASE_DECLARE_FEATURE(kAILanguageModelForceStreamingFullResponse);
-
-}  // namespace features
 
 class AIManager;
 
@@ -213,9 +206,7 @@ class AILanguageModel : public AIContextBoundObject,
   base::raw_ref<AIContextBoundObjectSet> context_bound_object_set_;
   base::raw_ref<AIManager> ai_manager_;
 
-  bool is_on_device_session_streaming_chunk_by_chunk_;
-  // The accumulated current response to simulate the old streaming behavior
-  // that always returns all the response generated so far.
+  // The accumulated response generated so far.
   std::string current_response_;
 
   mojo::PendingRemote<blink::mojom::AILanguageModel> pending_remote_;

@@ -8,6 +8,7 @@
 <translation id="100323615638474026">‏دستگاه USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">سابقه بارگیری‌های اخیر</translation>
 <translation id="1004218526896219317">دسترسی به سایت</translation>
+<translation id="1005230401424685968">yyyy</translation>
 <translation id="1005274289863221750">استفاده از میکروفون و دوربین شما</translation>
 <translation id="1005333234656240382">‏اشکال‌زدایی ADB (پل اشکال‌زدایی Android) فعال شود؟</translation>
 <translation id="1005671386794704751">صورتی</translation>
@@ -1374,6 +1375,7 @@
 <translation id="193565226207940518">ابزار پشتیبانی</translation>
 <translation id="1935995810530254458">درهرصورت کپی شود</translation>
 <translation id="1936157145127842922">نمایش در پوشه</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{صفحه به «فهرست خواندن» افزوده شد}one{صفحه‌ها به «فهرست خواندن» افزوده شدند}other{صفحه‌ها به «فهرست خواندن» افزوده شدند}}</translation>
 <translation id="1936931585862840749">از شماره‌ای برای مشخص کردن تعداد کپی‌های چاپ استفاده کنید (۱ تا <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">‏نمی‌توان با این دستگاه که <ph name="ARCHITECTURE_DEVICE" /> است، محتوای با نوع معماری <ph name="ARCHITECTURE_CONTAINER" /> را وارد کرد. می‌توانید این محتوا را در دستگاه دیگری بازیابی کنید، یا اینکه برنامه Files را باز کنید و ازطریق آن به فایل‌های درون این تصویر محتوی دسترسی یابید.</translation>
 <translation id="1938351510777341717">فرمان خارجی</translation>
@@ -3185,7 +3187,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         هرزمان بخواهید می‌توانید تنظیمات را از این کارت مدیریت کنید یا گزینه‌های بیشتری در «سفارشی‌سازی Chrome» ببینید.</translation>
-<translation id="3207437351138888228">‏وقتی فرمی را تکمیل می‌کنید، اطلاعات شما و صفحه مبدأ آن برای تولید کردن پیشنهاد به Google ارسال می‌شود</translation>
 <translation id="3207960819495026254">نشانک‌گذاری شده</translation>
 <translation id="3208584281581115441">اکنون بررسی شود</translation>
 <translation id="3208703785962634733">تأیید نشده</translation>
@@ -3230,6 +3231,7 @@
 <translation id="3242289508736283383">‏برنامه‌ای با مشخصه مانیفست «kiosk_only» باید در حالت کیوسک ChromeOS نصب شود</translation>
 <translation id="3243017971870859287">‏خواندن شماره‌های سریال عنصر و دستگاه ChromeOS Flex</translation>
 <translation id="324366796737464147">حذف نوفه زمینه</translation>
+<translation id="3244271242291266297">ماه</translation>
 <translation id="3244294424315804309">همچنان بی‌صدا</translation>
 <translation id="3247006341013237647">برگه‌ها سازمان‌دهی شود؟</translation>
 <translation id="3247649647204519958">از اینجا می‌توانید اجازه‌های افزونه را برای سایتی که در آن هستید ببینید و مدیریت کنید</translation>
@@ -6097,7 +6099,6 @@
 <translation id="5267572070504076962">برای محافظت دربرابر سایت‌های خطرناک، «مرور ایمن» را روشن کنید</translation>
 <translation id="5269977353971873915">چاپ نشد</translation>
 <translation id="5271578170655641944">‏دسترسی به Google Drive برداشته شود؟</translation>
-<translation id="5271782684896713035">افراد بازبین ممکن است این داده‌ها را برای بهبود دادن این ویژگی ببینند</translation>
 <translation id="5273806377963980154">ویرایش نشانی وب سایت</translation>
 <translation id="5275084684151588738">فرهنگ‌های لغت کاربر</translation>
 <translation id="5275338516105640560">دکمه گروه برگه ذخیره‌شده</translation>

@@ -896,6 +896,10 @@ using segmentation_platform::TipIdentifier;
       [_tipsMediator disableModule];
       break;
     }
+    case ContentSuggestionsModuleType::kShopCard: {
+      [_shopCardMediator disableModule];
+      break;
+    }
     default:
       break;
   }

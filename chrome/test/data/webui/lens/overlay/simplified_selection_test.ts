@@ -625,4 +625,62 @@ suite('SimplifiedSelection', function() {
     await dispatchDetectTextInRegionEvent();
     await showSelectedRegionContextMenuEvent2;
   });
+
+  test('ClearAllSelectionsClearsHighlightedLines', async () => {
+    await addEmptyTextToPage(callbackRouterRemote);
+    // Add 3 words to the region text response.
+    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await waitAfterNextRender(textLayerElement);
+
+    assertFalse(textLayerElement.getHasActionedTextForTesting());
+    assertEquals(
+        2,
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line')
+            .length);
+
+    // Simulate an action.
+    textLayerElement.onCopyDetectedText(/*startIndex=*/ 0,
+                                        /*endIndex=*/ 2,
+                                        /*callback=*/ () => {});
+    assertTrue(textLayerElement.getHasActionedTextForTesting());
+
+    callbackRouterRemote.clearAllSelections();
+    await flushTasks();
+    await waitAfterNextRender(textLayerElement);
+
+    assertFalse(textLayerElement.getHasActionedTextForTesting());
+    assertEquals(
+        0,
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line')
+            .length);
+  });
+
+  test('ClearRegionSelectionClearsHighlightedLines', async () => {
+    await addEmptyTextToPage(callbackRouterRemote);
+    // Add 3 words to the region text response.
+    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await waitAfterNextRender(textLayerElement);
+
+    assertFalse(textLayerElement.getHasActionedTextForTesting());
+    assertEquals(
+        2,
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line')
+            .length);
+
+    // Simulate an action.
+    textLayerElement.onCopyDetectedText(/*startIndex=*/ 0,
+                                        /*endIndex=*/ 2,
+                                        /*callback=*/ () => {});
+    assertTrue(textLayerElement.getHasActionedTextForTesting());
+
+    callbackRouterRemote.clearRegionSelection();
+    await flushTasks();
+    await waitAfterNextRender(textLayerElement);
+
+    assertFalse(textLayerElement.getHasActionedTextForTesting());
+    assertEquals(
+        0,
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line')
+            .length);
+  });
 });

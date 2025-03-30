@@ -17,7 +17,6 @@
 namespace blink {
 
 class ExceptionState;
-class PaymentInstruments;
 class ScriptState;
 class ServiceWorkerRegistration;
 
@@ -29,8 +28,6 @@ class MODULES_EXPORT PaymentManager final : public ScriptWrappable {
 
   PaymentManager(const PaymentManager&) = delete;
   PaymentManager& operator=(const PaymentManager&) = delete;
-
-  PaymentInstruments* instruments();
 
   const String& userHint();
   void setUserHint(const String&);
@@ -55,7 +52,6 @@ class MODULES_EXPORT PaymentManager final : public ScriptWrappable {
 
   Member<ServiceWorkerRegistration> registration_;
   HeapMojoRemote<payments::mojom::blink::PaymentManager> manager_;
-  Member<PaymentInstruments> instruments_;
   String user_hint_;
   Member<ScriptPromiseResolver<IDLBoolean>> enable_delegations_resolver_;
 };

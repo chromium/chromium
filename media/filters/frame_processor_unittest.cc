@@ -210,10 +210,8 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
       // later verification of possible buffer relocation in presentation
       // timeline due to coded frame processing.
       const std::string payload_string = EncodeTestPayload(pts);
-      const char* pts_as_cstr = payload_string.c_str();
       scoped_refptr<StreamParserBuffer> buffer = StreamParserBuffer::CopyFrom(
-          reinterpret_cast<const uint8_t*>(pts_as_cstr), strlen(pts_as_cstr),
-          is_keyframe, type, track_id);
+          base::as_byte_span(payload_string), is_keyframe, type, track_id);
       CHECK(DecodeTestPayload(base::as_string_view(*buffer)) == pts);
 
       buffer->set_timestamp(pts);

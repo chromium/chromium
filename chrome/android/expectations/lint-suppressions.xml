@@ -247,6 +247,10 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.quick_action_search_widget_message_no_incognito` appears to be unused"/>
     <ignore regexp="The resource `R.string.quick_action_search_widget_message_no_voice_search` appears to be unused"/>
 
+    <!-- 2: TODO(crbug.com/404262360) Remove when IPH is implemented. -->
+    <ignore regexp="The resource `R.string.adaptive_toolbar_button_page_summary_iph` appears to be unused"/>
+    <ignore regexp="The resource `R.string.adaptive_toolbar_button_review_pdf_iph` appears to be unused"/>
+
     <!--TODO(crbug.com/40208161): Remove unused resources when UX is finalized. -->
     <ignore regexp="The resource `R.string.price_tracking_title` appears to be unused"/>
 

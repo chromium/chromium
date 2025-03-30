@@ -165,14 +165,10 @@ class AIWriterTest : public AITestUtils::AITestBase {
     AITestUtils::MockModelStreamingResponder mock_responder;
 
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_responder, OnStreaming(_, _))
-        .WillOnce(testing::Invoke(
-            [&](const std::string& text,
-                blink::mojom::ModelStreamingResponderAction action) {
-              EXPECT_THAT(text, "Result text");
-              EXPECT_EQ(action,
-                        blink::mojom::ModelStreamingResponderAction::kReplace);
-            }));
+    EXPECT_CALL(mock_responder, OnStreaming(_))
+        .WillOnce(testing::Invoke([&](const std::string& text) {
+          EXPECT_THAT(text, "Result text");
+        }));
 
     EXPECT_CALL(mock_responder, OnCompletion(_))
         .WillOnce(testing::Invoke(
@@ -566,28 +562,18 @@ TEST_F(AIWriterTest, WriteMultipleResponse) {
 
             callback.Run(
                 CreateExecutionResult("Result ", /*is_complete=*/false));
-            callback.Run(CreateExecutionResult("Result text",
+            callback.Run(CreateExecutionResult("text",
                                                /*is_complete=*/true));
           }));
 
   auto writer_remote = GetAIWriterRemote();
   AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_responder, OnStreaming(_, _))
+  EXPECT_CALL(mock_responder, OnStreaming(_))
       .WillOnce(testing::Invoke(
-          [&](const std::string& text,
-              blink::mojom::ModelStreamingResponderAction action) {
-            EXPECT_THAT(text, "Result ");
-            EXPECT_EQ(action,
-                      blink::mojom::ModelStreamingResponderAction::kReplace);
-          }))
+          [&](const std::string& text) { EXPECT_THAT(text, "Result "); }))
       .WillOnce(testing::Invoke(
-          [&](const std::string& text,
-              blink::mojom::ModelStreamingResponderAction action) {
-            EXPECT_THAT(text, "Result text");
-            EXPECT_EQ(action,
-                      blink::mojom::ModelStreamingResponderAction::kReplace);
-          }));
+          [&](const std::string& text) { EXPECT_THAT(text, "text"); }));
 
   EXPECT_CALL(mock_responder, OnCompletion(_))
       .WillOnce(testing::Invoke(
@@ -631,14 +617,10 @@ TEST_F(AIWriterTest, MultipleWrite) {
   {
     AITestUtils::MockModelStreamingResponder mock_responder;
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_responder, OnStreaming(_, _))
-        .WillOnce(testing::Invoke(
-            [&](const std::string& text,
-                blink::mojom::ModelStreamingResponderAction action) {
-              EXPECT_THAT(text, "Result text");
-              EXPECT_EQ(action,
-                        blink::mojom::ModelStreamingResponderAction::kReplace);
-            }));
+    EXPECT_CALL(mock_responder, OnStreaming(_))
+        .WillOnce(testing::Invoke([&](const std::string& text) {
+          EXPECT_THAT(text, "Result text");
+        }));
 
     EXPECT_CALL(mock_responder, OnCompletion(_))
         .WillOnce(testing::Invoke(
@@ -653,14 +635,10 @@ TEST_F(AIWriterTest, MultipleWrite) {
   {
     AITestUtils::MockModelStreamingResponder mock_responder;
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_responder, OnStreaming(_, _))
-        .WillOnce(testing::Invoke(
-            [&](const std::string& text,
-                blink::mojom::ModelStreamingResponderAction action) {
-              EXPECT_THAT(text, "Result text 2");
-              EXPECT_EQ(action,
-                        blink::mojom::ModelStreamingResponderAction::kReplace);
-            }));
+    EXPECT_CALL(mock_responder, OnStreaming(_))
+        .WillOnce(testing::Invoke([&](const std::string& text) {
+          EXPECT_THAT(text, "Result text 2");
+        }));
 
     EXPECT_CALL(mock_responder, OnCompletion(_))
         .WillOnce(testing::Invoke(

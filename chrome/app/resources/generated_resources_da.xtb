@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB-enhed (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Seneste downloadhistorik</translation>
 <translation id="1004218526896219317">Websiteadgang</translation>
+<translation id="1005230401424685968">ÅÅÅÅ</translation>
 <translation id="1005274289863221750">Bruge din mikrofon og dit kamera</translation>
 <translation id="1005333234656240382">Vil du aktivere ADB-fejlretning?</translation>
 <translation id="1005671386794704751">Rose</translation>
@@ -1379,6 +1380,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="193565226207940518">Supportværktøj</translation>
 <translation id="1935995810530254458">Kopiér alligevel</translation>
 <translation id="1936157145127842922">Vis i mappe</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Siden blev føjet til læselisten}one{Siden blev føjet til læselisten}other{Siderne blev føjet til læselisten}}</translation>
 <translation id="1936931585862840749">Brug et tal til at angive, hvor mange kopier der skal udskrives (1 til <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Containerarkitekturen <ph name="ARCHITECTURE_CONTAINER" /> kan ikke importeres med denne enhed, som kører med <ph name="ARCHITECTURE_DEVICE" />. Du kan prøve at gendanne denne container i en anden enhed, eller også kan du åbne filerne i containerbilledet i appen Filer.</translation>
 <translation id="1938351510777341717">Ekstern kommando</translation>
@@ -2020,6 +2022,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2373666622366160481">Tilpas til papiret</translation>
 <translation id="2375406435414127095">Opret forbindelse til din telefon</translation>
 <translation id="2376056713414548745">Oplæsning</translation>
+<translation id="2376122016044804363">Bekræftelser om kopiering til udklipsholder</translation>
 <translation id="2377667304966270281">Hårde fejl</translation>
 <translation id="237828693408258535">Vil du oversætte denne side?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Denne udvidelse understøttes muligvis snart ikke længere}one{Denne udvidelse understøttes muligvis snart ikke længere}other{Disse udvidelser understøttes muligvis snart ikke længere}}</translation>
@@ -3174,6 +3177,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3192586965067888278">Beskriv problemet i detaljer. Feedbacken sendes til Google med henblik på menneskelig gennemgang og kan anvendes til at forbedre eller udvikle Googles produkter og tjenester.</translation>
 <translation id="3192947282887913208">Lydfiler</translation>
 <translation id="3193695589337931419">Værktøjer til indsamling af systemsignaler</translation>
+<translation id="3194095220941877499">Viser en bekræftelse, når du kopierer links, billeder eller videoer</translation>
 <translation id="3196912927885212665">Bluetooth skal være aktiveret på din Chromebook, før du kan bruge din Android-telefon til konfigurationen</translation>
 <translation id="3197453258332670132">Vis relaterede oplysninger for den tekst, du har markeret, ved at højre klikke eller bruge et langt tryk</translation>
 <translation id="3199127022143353223">Servere</translation>
@@ -3188,7 +3192,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
         <ph name="BREAK" />
         <ph name="BREAK" />
         Du kan til enhver tid administrere indstillinger fra dette kort eller se flere valgmuligheder i Tilpas Chrome.</translation>
-<translation id="3207437351138888228">Når du udfylder en formular, sendes dine oplysninger og den side, de kommer fra, til Google for at generere forslag</translation>
 <translation id="3207960819495026254">Gemt som bogmærke</translation>
 <translation id="3208584281581115441">Tjek nu</translation>
 <translation id="3208703785962634733">Ikke bekræftet</translation>
@@ -3233,6 +3236,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3242289508736283383">Appen med manifestattributten "kiosk_only" skal installeres i ChromeOS-terminaltilstand</translation>
 <translation id="3243017971870859287">Læs serienumre for ChromeOS Flex-enheder og -komponenter</translation>
 <translation id="324366796737464147">Støjreducering</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Lad lyden forblive slået fra</translation>
 <translation id="3247006341013237647">Vil du organisere faner?</translation>
 <translation id="3247649647204519958">Her kan du se og administrere udvidelsestilladelser for det website, du besøger</translation>
@@ -6100,7 +6104,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5267572070504076962">Aktivér Beskyttet browsing for at blive beskyttet mod skadelige websites</translation>
 <translation id="5269977353971873915">Udskrift mislykkedes</translation>
 <translation id="5271578170655641944">Vil du fjerne adgangen til Google Drev?</translation>
-<translation id="5271782684896713035">Data kan blive set af menneskelige kontrollanter med henblik på at forbedre denne funktion.</translation>
 <translation id="5273806377963980154">Rediger websitets webadresse</translation>
 <translation id="5275084684151588738">Brugerordbøger</translation>
 <translation id="5275338516105640560">Knappen Fanegruppe blev gemt</translation>

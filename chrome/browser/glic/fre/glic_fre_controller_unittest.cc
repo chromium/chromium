@@ -71,7 +71,8 @@ TEST_F(GlicFreControllerTest, AcceptFre) {
                                                false);
   PrefService* const profile_pref_service = profile()->GetPrefs();
   glic_fre_controller()->AcceptFre();
-  EXPECT_TRUE(profile_pref_service->GetBoolean(prefs::kGlicCompletedFre));
+  EXPECT_EQ(profile_pref_service->GetInteger(prefs::kGlicCompletedFre),
+            static_cast<int>(prefs::FreStatus::kCompleted));
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 1);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.NoThanks"), 0);
 }

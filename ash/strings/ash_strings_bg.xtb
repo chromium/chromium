@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">Периферното устройство не се поддържа в режим на гост</translation>
 <translation id="1270290102613614947">Екранната клавиатура е деактивирана</translation>
 <translation id="1272079795634619415">Стоп</translation>
+<translation id="12741168609094094">Изберете нещо на екрана, за да търсите, копирате текст и др.</translation>
 <translation id="1275285675049378717">Захранва се <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Избрано</translation>
 <translation id="1276975447697633661">Изберете файла и натиснете <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">Точката за достъп е изключена</translation>
 <translation id="1731815243805539470">Превключване към предишния потребител</translation>
 <translation id="1733996486177697563">Превключвайте между тъмната и светлата тема. Докоснете и задръжте работния плот, след което изберете „Тапет и стил“.</translation>
+<translation id="1735992454301033090">Избрана област, използвайте клавишите със стрелки, за да я преместите</translation>
 <translation id="1736898441010944794">Устройството <ph name="NAME" /> е видимо за устройства с Bluetooth.</translation>
 <translation id="1737078180382804488">Отхвърляне на настройването на прегледа на известията на телефона ви</translation>
 <translation id="174102739345480129">Маркерът е изключен.</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> миналата седмица</translation>
 <translation id="2687510499067466116">Клавишната комбинация е променена</translation>
 <translation id="2689613560355655046">Работен кът 8</translation>
+<translation id="2692092709110488417">Натиснете Tab, за да поставите фокуса върху избраната област и да я преместите</translation>
 <translation id="2695305337569143674">мрежа</translation>
 <translation id="2697697418792422688">Показване на настройките на клавиатурата. Избрахте <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Използвайте приложението „Прехвърляне на съдържание“, за да преместите в личния си профил данните от училищния</translation>
@@ -729,6 +732,7 @@
 <translation id="346243998268439747">Повторно задаване на мащаба на страницата</translation>
 <translation id="3465223694362104965">След последното ви влизане в профила на това устройство към него е свързана друга клавиатура. Преди да я използвате, проверете дали й имате доверие.</translation>
 <translation id="3465356146291925647">Управлява се от администратора ви</translation>
+<translation id="3470502288861289375">Копира се...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" />, след което <ph name="KEY_TWO" /> или <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1033,6 +1037,7 @@
 <translation id="4412698727486357573">Помощен център</translation>
 <translation id="4412944820643904175">„<ph name="FEATURE_NAME" />“ е изключено.</translation>
 <translation id="4417647906073317561">Настройки за режима за концентрация. Задайте таймер, задача и музика, за да се фокусирате.</translation>
+<translation id="4418600384772451109">Затваряне на панела</translation>
 <translation id="4424159417645388645">Работен кът 5</translation>
 <translation id="4426817706804363424">Отлично!</translation>
 <translation id="4430019312045809116">Звук</translation>
@@ -2229,6 +2234,7 @@
 <translation id="8287009018010202411">Продуктивност</translation>
 <translation id="828708037801473432">Изключено</translation>
 <translation id="8297006494302853456">Слаб</translation>
+<translation id="8300451473979404345">Избран манипулатор, използвайте клавишите със стрелки, за да го преместите</translation>
 <translation id="8308637677604853869">Предишно меню</translation>
 <translation id="830868413617744215">Бета</translation>
 <translation id="8314772463905284467">„Caps Lock“ е включен</translation>
@@ -2289,6 +2295,7 @@
 <translation id="851458219935658693">Показват се прозорците от текущия работен кът, активиран е бутон за избор</translation>
 <translation id="851660987304951246">Използвайте функцията за помощ при четене с цел бързо обобщаване на съдържание или задаване на въпроси</translation>
 <translation id="8517041960877371778">Възможно е вашият <ph name="DEVICE_TYPE" /> да не се зарежда, докато е включен.</translation>
+<translation id="8519329096920173967">Търсене в екрана ми с Google Обектив</translation>
 <translation id="8535393432370007982">Отмяна на сортирането по цвят</translation>
 <translation id="8536886494750559755">Показване на настройките за „Бързо споделяне“. Устройството е видимо за всички в продължение на <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Текстът е копиран в буферната памет</translation>

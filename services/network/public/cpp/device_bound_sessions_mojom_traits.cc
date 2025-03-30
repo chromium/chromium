@@ -37,6 +37,10 @@ bool StructTraits<network::mojom::DeviceBoundSessionAccessDataView,
     return false;
   }
 
+  if (!data.ReadCookies(&out->cookies)) {
+    return false;
+  }
+
   return true;
 }
 

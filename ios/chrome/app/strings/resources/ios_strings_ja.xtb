@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">削除</translation>
 <translation id="1190609913194133056">通知センター</translation>
 <translation id="1201402288615127009">次へ</translation>
-<translation id="1202892408424955784">トラッキングしている商品</translation>
 <translation id="1204075260022434100">{count,plural, =1{ブックマークをアカウント（{email}）の「{title}」に保存しました}other{{count} 件のブックマークをアカウント（{email}）の「{title}」に保存しました}}</translation>
 <translation id="120431140543679678">フォロー</translation>
 <translation id="1207493287814084192">5:30 PM</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">新しいアイテム</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> 個のアカウントで同じパスワードを使用しています</translation>
 <translation id="2059166748188874810">市区町村</translation>
-<translation id="2060114494785549741">1 か月後に削除</translation>
 <translation id="2060638295449304809">この住所は、このデバイスにのみ保存されます。他のデバイスで使用するには、Google アカウント（<ph name="USER_EMAIL" />）に保存してください。</translation>
 <translation id="20638360198452347">単位タイプセレクタ</translation>
 <translation id="2067852168641682340">毎回このアカウントに保存</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">価格のトラッキング カードを非表示にする</translation>
 <translation id="2216366330550244277">商品のページに移動します</translation>
 <translation id="2220529011494928058">問題を報告</translation>
-<translation id="2220887224562128152">ファイルを削除するようスケジュール設定すると、元に戻すことはできません。</translation>
 <translation id="2223461067862937305">QR コードを作成</translation>
 <translation id="2229345671837147090">リモートタブのグリッド</translation>
 <translation id="2230173723195178503">ウェブページを読み込みました</translation>
@@ -326,7 +323,7 @@
 <translation id="2299218006564889602">Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します。</translation>
 <translation id="2309265394777270359">タブを閉じる</translation>
 <translation id="2311077293164383652">固定タブを閉じる</translation>
-<translation id="2316129865977710310">いいえ</translation>
+<translation id="2316129865977710310">今はしない</translation>
 <translation id="2320166752086256636">キーボードを非表示</translation>
 <translation id="2321086116217818302">パスワードを準備しています…</translation>
 <translation id="2323697864063408084">通知はロック画面とバナーで表示されるので、重要な情報を見逃すことはありません</translation>
@@ -384,7 +381,6 @@
 <translation id="2539748786028143624">保護強化機能をオンにする…</translation>
 <translation id="2540111494300686866">ダイアログを表示しない</translation>
 <translation id="2542268842667970959">[安全チェック] を非表示にする</translation>
-<translation id="2543870349255816922">このカードには、同期したデバイスでトラッキングしている商品の値下げ情報が表示されます</translation>
 <translation id="2547458583188611426">同期が機能していません。同期を開始するには、パスフレーズを入力してください。</translation>
 <translation id="2551153019974022505">アカウント エラー</translation>
 <translation id="2559843230610279254">タブグループ、<ph name="GROUP_TITLE" />、<ph name="TABS_NUMBER" /> 個のタブ。</translation>
@@ -494,7 +490,6 @@
 <translation id="3059270601560379555">新しい検索</translation>
 <translation id="3064547930554042309">ダウンロードの管理</translation>
 <translation id="3072279342064724558">このパスワードはすでに存在します</translation>
-<translation id="3074862506644936708">自動削除を有効にする</translation>
 <translation id="3076846064362030967">Google アカウントへのログイン状態は維持されます。ログイン中は Google アカウントに<ph name="BEGIN_LINK" />その他のアクティビティ<ph name="END_LINK" />が保存される可能性があります。これらのデータはいつでも削除できます。
 
 
@@ -913,6 +908,7 @@
 <translation id="4896467949657706481">タブを閉じてログアウトしました</translation>
 <translation id="4913626501929406101">パスワードのコピーをファミリー グループのユーザーと安全に共有できます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">同意する</translation>
+<translation id="4930714375720679147">ON にする</translation>
 <translation id="4932733599132424254">日付</translation>
 <translation id="4936354130727646074">移動しない</translation>
 <translation id="4937410517508563815">アカウントにパスワードを保存する</translation>
@@ -1148,7 +1144,6 @@
 <translation id="5899314093904173337">近くのユーザーと共有するには、カメラまたは QR スキャンアプリで、この QR コードをスキャンしてもらいます</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} 個の新しいタブ}other{{count} 個の新しいタブ}}</translation>
 <translation id="5911030830365207728">Google 翻訳</translation>
-<translation id="5917913282764181683">ダウンロードの自動削除</translation>
 <translation id="5922999516621365983">ここにタブをドラッグして固定します。</translation>
 <translation id="5936006948844852401">ストレージを管理</translation>
 <translation id="5936065461722368675">ページ全体を翻訳</translation>
@@ -1507,7 +1502,6 @@
 <translation id="741204030948306876">ON にする</translation>
 <translation id="7417689656810783109">グループ名を変更</translation>
 <translation id="7419565702166471774">常に安全な接続を使用する</translation>
-<translation id="742001653298797675">すべてのダウンロード ファイルを 1 か月後に削除するようスケジュール設定して、スマートフォンの空き容量を確保し、プライバシーを保護します。</translation>
 <translation id="7425053386765766120">お支払い方法を追加…</translation>
 <translation id="7425346204213733349">今後、ブックマーク、履歴、パスワード、その他の設定に行った変更は Google アカウントに同期されません。ただし、既存のデータは Google アカウントに保存されたままとなります。</translation>
 <translation id="742664698522525515">グループを保持しますか？</translation>

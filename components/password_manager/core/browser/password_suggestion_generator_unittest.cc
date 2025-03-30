@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
@@ -1230,6 +1231,7 @@ TEST_F(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(PasswordSuggestionGeneratorTest,
        PendingStateSignin_NoSavedCredentials_ExternalURL) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list(
       switches::kEnablePendingModePasswordsPromo);
   ON_CALL(client(), GetLastCommittedURL())
@@ -1252,10 +1254,13 @@ TEST_F(PasswordSuggestionGeneratorTest,
                   SuggestionType::kPendingStateSignin,
                   l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_PENDING_STATE),
                   Suggestion::Icon::kGoogle)));
+  histogram_tester.ExpectUniqueSample(kReauthPromoHistogramName,
+                                      FillingReauthPromoShown::kShownAlone, 1);
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
        PendingStateSignin_HasSavedCredentials_ExternalURL) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list(
       switches::kEnablePendingModePasswordsPromo);
   ON_CALL(client(), GetLastCommittedURL())
@@ -1283,10 +1288,14 @@ TEST_F(PasswordSuggestionGeneratorTest,
           EqualsManagePasswordsSuggestion(),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsSuggestion(SuggestionType::kPendingStateSignin)));
+  histogram_tester.ExpectUniqueSample(
+      kReauthPromoHistogramName,
+      FillingReauthPromoShown::kShownWithOtherSuggestions, 1);
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
        PendingStateSignin_NoSavedCredentials_GaiaURL) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list(
       switches::kEnablePendingModePasswordsPromo);
   EXPECT_CALL(client(), GetLastCommittedURL)
@@ -1305,10 +1314,12 @@ TEST_F(PasswordSuggestionGeneratorTest,
       ShowWebAuthnCredentials(false));
 
   EXPECT_THAT(suggestions, IsEmpty());
+  histogram_tester.ExpectTotalCount(kReauthPromoHistogramName, 0);
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
        PendingStateSignin_HasSavedCredentials_GaiaURL) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list(
       switches::kEnablePendingModePasswordsPromo);
   ON_CALL(client(), GetLastCommittedURL).WillByDefault(ReturnRef(kGaiaURL));
@@ -1332,10 +1343,13 @@ TEST_F(PasswordSuggestionGeneratorTest,
                               /*realm_label=*/u"", favicon()),
                           EqualsSuggestion(SuggestionType::kSeparator),
                           EqualsManagePasswordsSuggestion()));
+  histogram_tester.ExpectUniqueSample(kReauthPromoHistogramName,
+                                      FillingReauthPromoShown::kNotShown, 1);
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
        PendingStateSignin_NoSavedCredentials_PasswordManagerURL) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list(
       switches::kEnablePendingModePasswordsPromo);
   EXPECT_CALL(client(), GetLastCommittedURL)
@@ -1354,10 +1368,12 @@ TEST_F(PasswordSuggestionGeneratorTest,
       ShowWebAuthnCredentials(false));
 
   EXPECT_THAT(suggestions, IsEmpty());
+  histogram_tester.ExpectTotalCount(kReauthPromoHistogramName, 0);
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
        PendingStateSignin_HasSavedCredentials_PasswordManagerURL) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list(
       switches::kEnablePendingModePasswordsPromo);
   ON_CALL(client(), GetLastCommittedURL)
@@ -1382,6 +1398,8 @@ TEST_F(PasswordSuggestionGeneratorTest,
                               /*realm_label=*/u"", favicon()),
                           EqualsSuggestion(SuggestionType::kSeparator),
                           EqualsManagePasswordsSuggestion()));
+  histogram_tester.ExpectUniqueSample(kReauthPromoHistogramName,
+                                      FillingReauthPromoShown::kNotShown, 1);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

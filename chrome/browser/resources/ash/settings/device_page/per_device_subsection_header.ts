@@ -12,7 +12,6 @@
  */
 
 import './input_device_settings_shared.css.js';
-import '../icons.html.js';
 import '../os_settings_icons.html.js';
 import '../settings_shared.css.js';
 import 'chrome://resources/ash/common/bluetooth/bluetooth_battery_icon_percentage.js';

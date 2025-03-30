@@ -8,6 +8,7 @@
 <translation id="100323615638474026">Urządzenie USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Najnowsza historia pobierania</translation>
 <translation id="1004218526896219317">Dostęp do stron</translation>
+<translation id="1005230401424685968">RRRR</translation>
 <translation id="1005274289863221750">Korzystanie z Twojego mikrofonu i kamery</translation>
 <translation id="1005333234656240382">Włączyć debugowanie ADB?</translation>
 <translation id="1005671386794704751">Pudrowy róż</translation>
@@ -1369,6 +1370,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="193565226207940518">Narzędzie pomocy</translation>
 <translation id="1935995810530254458">Skopiuj mimo to</translation>
 <translation id="1936157145127842922">Pokaż w folderze</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Strona została dodana do listy Do przeczytania}few{Strony zostały dodane do listy Do przeczytania}many{Strony zostały dodane do listy Do przeczytania}other{Strony zostały dodane do listy Do przeczytania}}</translation>
 <translation id="1936931585862840749">Wpisz wartość numeryczną, by określić liczbę kopii do wydrukowania (od 1 do <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Kontenera o architekturze <ph name="ARCHITECTURE_CONTAINER" /> nie można zaimportować na tym urządzeniu, które ma architekturę <ph name="ARCHITECTURE_DEVICE" />. Możesz przywrócić ten kontener na innym urządzeniu albo uzyskać dostęp do plików znajdujących się wewnątrz obrazu kontenera, otwierając go w aplikacji Pliki.</translation>
 <translation id="1938351510777341717">Polecenie zewnętrzne</translation>
@@ -3058,6 +3060,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3122883569442693641">Więcej szczegółów</translation>
 <translation id="3124111068741548686">Uchwyty USER</translation>
 <translation id="3124332159330678621">Spersonalizuj Chrome, aby zmienić wygląd przeglądarki</translation>
+<translation id="3125816458150005808">Możesz je odpiąć i otworzyć z poziomu menu</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Aby uniknąć problemów z ładowaniem i działaniem urządzenia, używaj zgodnego z nim zasilacza firmy Dell lub zasilacza USB typu C.</translation>
 <translation id="3127862849166875294">Zmiana rozmiaru dysku Linuksa</translation>
@@ -3159,7 +3162,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
         <ph name="BREAK" />
         <ph name="BREAK" />
         W każdej chwili możesz zarządzać ustawieniami w tej karcie lub zobaczyć więcej opcji w sekcji Dostosuj Chrome.</translation>
-<translation id="3207437351138888228">Gdy wypełniasz formularz, Twoje informacje i strona, z której one pochodzą, są wysyłane do Google, aby można było wygenerować sugestie</translation>
 <translation id="3207960819495026254">Dodano do zakładek</translation>
 <translation id="3208584281581115441">Sprawdź teraz</translation>
 <translation id="3208703785962634733">Niepotwierdzony</translation>
@@ -3204,6 +3206,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3242289508736283383">Aplikację z atrybutem „kiosk_only” w pliku manifestu należy zainstalować w Chrome OS w trybie kiosku</translation>
 <translation id="3243017971870859287">Odczytywanie numerów seryjnych urządzeń z ChromeOS Flex i komponentów</translation>
 <translation id="324366796737464147">Wyciszanie szumów</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Nadal wyciszaj dźwięk</translation>
 <translation id="3247006341013237647">Czy uporządkować karty?</translation>
 <translation id="3247649647204519958">Tutaj możesz wyświetlać uprawnienia rozszerzeń do witryny, którą przeglądasz, i nimi zarządzać</translation>
@@ -5304,6 +5307,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4723140812774948886">Zamień z następnym</translation>
 <translation id="4724450788351008910">Zmiana przynależności</translation>
 <translation id="4725511304875193254">Corgi</translation>
+<translation id="4725762702191453794">Wyszukiwanie kart jest teraz przypięte do paska narzędzi</translation>
 <translation id="4726710355753484204">Aby powiększyć, naciśnij Ctrl + Alt + zwiększ jasność.
 Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4726710629007580002">Podczas próby zainstalowania tego rozszerzenia zostały zgłoszone ostrzeżenia:</translation>
@@ -6068,7 +6072,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5267572070504076962">Włącz Bezpieczne przeglądanie, aby korzystać z ochrony przed niebezpiecznymi stronami</translation>
 <translation id="5269977353971873915">Niepowodzenie drukowania</translation>
 <translation id="5271578170655641944">Usunąć dostęp do Dysku Google?</translation>
-<translation id="5271782684896713035">Dane te mogą być widoczne dla weryfikatorów, którzy pracują nad ulepszaniem tej funkcji</translation>
 <translation id="5273806377963980154">Edytuj adres URL witryny</translation>
 <translation id="5275084684151588738">Słowniki użytkownika</translation>
 <translation id="5275338516105640560">Przycisk zapisanej grupy kart</translation>

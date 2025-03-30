@@ -4415,6 +4415,25 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Autofill.PaymentMethodsSettingsPage.ScanCardClicked">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <description>
+    Recorded when the user clicks the scan card button in the payment methods
+    settings card edit page.
+  </description>
+</action>
+
+<action name="Autofill.PaymentMethodsSettingsPage.ScannerCannotScan"
+    not_user_triggered="true">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <description>
+    Recorded when the user arrives on the payment methods settings card edit
+    page and the scanner for the scan card feature is not available.
+  </description>
+</action>
+
 <action name="Autofill_BrandingTapped">
   <owner>ginnyhuang@chromium.org</owner>
   <description>
@@ -12458,6 +12477,24 @@ should be able to be added at any place in this file.
   <owner>erikchen@chromium.org</owner>
   <description>
     Logged anytime glic shortcut (aka hotkey) is enabled from chrome://settings.
+  </description>
+</action>
+
+<action name="GlicOsEntrypoint.Settings.Toggle.Disabled">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged anytime glic OS launcher entrypoint (aka hotkey) is toggled off from
+    chrome://settings.
+  </description>
+</action>
+
+<action name="GlicOsEntrypoint.Settings.Toggle.Enabled">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged anytime glic OS launcher entrypoint (aka hotkey) is toggled on from
+    chrome://settings.
   </description>
 </action>
 
@@ -27389,6 +27426,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarTabMenu.MoveTabToNewWindow">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User moved a tab to a new window via the tab context menu on tab strip on
+    Android.
+  </description>
+</action>
+
+<action name="MobileToolbarTabMenu.MoveTabToOtherWindow">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User moved a tab to another window via the tab context menu on tab strip on
+    Android.
+  </description>
+</action>
+
 <action name="MobileToolbarTabMenu.RemoveFromTabGroup">
   <owner>jhimawan@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -38563,6 +38618,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_BottomSheet_ClosedByProfileChange">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded when the sign-in bottom sheet is getting closed because the current
+    profile is being stopped. That is, the user is signing in a managed account
+    and #separate-profiles-for-managed-accounts is enabled. Recorded for iOS
+    only.
+  </description>
+</action>
+
 <action name="Signin_BottomSheet_ClosedBySignIn">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -40943,6 +41009,16 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user signs out and delete user data, from the Account list
     view. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_Switch_Profile">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@chromium.org</owner>
+  <description>
+    Recorded when the user tapped on a managed account and accepted to sign-in
+    it. That Recorder for iOS only and if
+    #separate-profiles-for-managed-accounts is enabled.
   </description>
 </action>
 
@@ -48257,6 +48333,7 @@ should be able to be added at any place in this file.
   <suffix name="PasswordSuggestions" label="For PasswordSuggestions feature."/>
   <suffix name="PasswordsWebAppProfileSwitch"
       label="For PasswordsWebAppProfileSwitch feature."/>
+  <suffix name="PdfPageDownload" label="For the PdfPageDownload feature."/>
   <suffix name="PdfSearchifyFeature" label="For PDF Searchify feature."/>
   <suffix name="PerformanceInterventionDialog"
       label="For triggering the performance intervention dialog and toolbar

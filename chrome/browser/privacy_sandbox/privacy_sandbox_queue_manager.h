@@ -42,13 +42,16 @@ class PrivacySandboxQueueManager {
   // Returns true if the Privacy Sandbox notice is in queue. Exposed for testing
   // purposes.
   bool IsNoticeQueued();
+  // Returns instance of product messaging controller. Exposed for testing
+  // purposes.
+  user_education::ProductMessagingController* GetProductMessagingController();
   // Returns true if the handle is currently being held.
   bool IsHoldingHandle();
+  // Emits queue state metrics when IsHoldingHandle check fails in
+  // DidFinishNavigation.
+  void MaybeEmitQueueStateMetrics();
 
  private:
-  // Returns instance of product messaging controller.
-  user_education::ProductMessagingController* GetProductMessagingController();
-
   raw_ptr<user_education::ProductMessagingController>
       product_messaging_controller_;
   raw_ptr<Profile> profile_;
@@ -56,6 +59,7 @@ class PrivacySandboxQueueManager {
   // TODO(crbug.com/370804492): When we add DMA notice to queue, remove this.
   bool suppress_queue_ = false;
   user_education::RequiredNoticePriorityHandle notice_handle_;
+  int handle_check_failed_count_ = 0;
   base::WeakPtrFactory<PrivacySandboxQueueManager> weak_factory_{this};
 };
 }  // namespace privacy_sandbox

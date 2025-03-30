@@ -54,6 +54,13 @@ class GPU_GLES2_EXPORT GraphiteCacheController final
   friend class base::RefCounted<GraphiteCacheController>;
   ~GraphiteCacheController();
 
+  // If the controller is only for a recorder, aka for viz thread recorer, then
+  // it operates in local mode where it only considers if current controller is
+  // idle. If the controller is for recorder+context then it operates in global
+  // mode where it waits for all global controllers to be idle.
+  bool UseGlobalIdleId() const;
+  uint32_t GetIdleId() const;
+
   void ScheduleCleanUpAllResources(uint32_t idle_id);
   void MaybeCleanUpAllResources(uint32_t posted_idle_id);
   void CleanUpAllResourcesImpl();
@@ -62,6 +69,7 @@ class GPU_GLES2_EXPORT GraphiteCacheController final
   const raw_ptr<skgpu::graphite::Context> context_;
   const raw_ptr<DawnContextProvider> dawn_context_provider_;
 
+  uint32_t local_idle_id_ = 0;
   base::CancelableOnceClosure idle_cleanup_cb_;
 
   SEQUENCE_CHECKER(sequence_checker_);

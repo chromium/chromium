@@ -125,6 +125,7 @@ static_library("browser") {
     "//components/google/core/common",
     "//components/prefs",
     "//components/resources:components_resources",
+    "//components/security_interstitials/core",
     "//components/signin/internal/identity_manager",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",

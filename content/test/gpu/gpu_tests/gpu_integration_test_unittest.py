@@ -163,7 +163,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
       try:
         test_argv = [
             test_name,
-            '--write-full-results-to=%s' % temp_file.name,
+            f'--write-full-results-to={temp_file.name}',
             # We don't want the underlying typ-based tests to report their
             # results to ResultDB.
             '--disable-resultsink',
@@ -614,8 +614,8 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
           config,
           [
               test_args.test_name,
-              '--write-full-results-to=%s' % test_results_path,
-              '--test-state-json-path=%s' % test_state_path,
+              f'--write-full-results-to={test_results_path}',
+              f'--test-state-json-path={test_state_path}',
               # We don't want the underlying typ-based tests to report their
               # results to ResultDB.
               '--disable-resultsink',
@@ -946,8 +946,7 @@ def _ExtractTestResults(
         successes.append(full_test_name)
     else:
       for k in test_dict:
-        node_queues.append(
-            ('%s%s%s' % (full_test_name, delimiter, k), test_dict[k]))
+        node_queues.append((f'{full_test_name}{delimiter}{k}', test_dict[k]))
   return successes, failures, skips
 
 

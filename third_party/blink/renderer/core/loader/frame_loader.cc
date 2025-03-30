@@ -889,9 +889,17 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     }
   }
 
-  probe::FrameRequestedNavigation(frame_.Get(), frame_.Get(), url,
-                                  request.GetClientNavigationReason(),
-                                  request.GetNavigationPolicy());
+  bool is_form_submission = request.GetClientNavigationReason() ==
+                                ClientNavigationReason::kFormSubmissionGet ||
+                            request.GetClientNavigationReason() ==
+                                ClientNavigationReason::kFormSubmissionPost;
+  if (!is_form_submission) {
+    // This signal for form submissions is issued earlier when scheduling
+    // the form submission task. See Frame::ScheduleFormSubmission.
+    probe::FrameRequestedNavigation(frame_.Get(), frame_.Get(), url,
+                                    request.GetClientNavigationReason(),
+                                    request.GetNavigationPolicy());
+  }
 
   // TODO(crbug.com/896041): Instead of just bypassing the CSP for navigations
   // from isolated world, ideally we should enforce the isolated world CSP by

@@ -324,6 +324,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->open_os_settings_api_is_allowed = false;
 #endif
 
+    state->always_detached_mode = GlicWindowController::AlwaysDetached();
+
     local_state_pref_change_registrar_.Init(g_browser_process->local_state());
     local_state_pref_change_registrar_.Add(
         prefs::kGlicLauncherHotkey,
@@ -402,7 +404,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void EnableDragResize(bool enabled) override {
-    glic_service_->window_controller().ShouldEnableDragResize(enabled);
+    glic_service_->window_controller().EnableDragResize(enabled);
   }
 
   void GetContextFromFocusedTab(

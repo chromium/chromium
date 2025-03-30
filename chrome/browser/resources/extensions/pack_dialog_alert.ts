@@ -41,17 +41,17 @@ export class ExtensionsPackDialogAlertElement extends CrLitElement {
     };
   }
 
-  model: chrome.developerPrivate.PackDirectoryResponse = {
+  accessor model: chrome.developerPrivate.PackDirectoryResponse = {
     message: '',
     item_path: '',
     pem_path: '',
     override_flags: 0,
     status: chrome.developerPrivate.PackStatus.SUCCESS,
   };
-  protected cancelLabel_: string|null = null;
+  protected accessor cancelLabel_: string|null = null;
   /** This needs to be initialized to trigger data-binding. */
-  protected confirmLabel_: string|null = '';
-  protected title_: string = '';
+  protected accessor confirmLabel_: string|null = '';
+  protected accessor title_: string = '';
 
   get returnValue(): string {
     return this.$.dialog.getNative().returnValue;

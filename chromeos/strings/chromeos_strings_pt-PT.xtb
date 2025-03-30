@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Autenticação proxy necessária</translation>
 <translation id="4594021849294327751">Criar transcrição</translation>
 <translation id="4594541568452132351">Selecione o idioma da transcrição e transfira o modelo</translation>
-<translation id="4607282946861182308">Não é possível criar imagens disto. Experimente outro comando.</translation>
 <translation id="4609350030397390689">Diminuir o brilho do teclado</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prima Enter para cancelar a tarefa de impressão.</translation>
 <translation id="463791356324567266">A cancelar a digitalização…</translation>
@@ -1659,6 +1658,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="8543574988889671960">Atualizar separador</translation>
 <translation id="8550364285433943656">Coloque os controlos nas ações do jogo para jogar com as teclas do teclado</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">A IA generativa pode cometer erros, inclusive sobre pessoas. Por isso, verifique as informações.</translation>
 <translation id="8575298406870537639">O operador pode exigir esta opção para estabelecer ligação à respetiva rede. Contacte o seu operador para obter mais detalhes.</translation>
 <translation id="8576249514688522074">Não iniciada</translation>
 <translation id="8584654835905316966">É necessário reiniciar para concluir a instalação do firmware do <ph name="DEVICE_NAME" /> para a versão <ph name="VERSION" />. O computador pode reiniciar várias vezes. Este comportamento é o esperado.</translation>
@@ -1673,7 +1673,6 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Partilhar URL:</translation>
 <translation id="8660881923941176839">libras</translation>
-<translation id="8670057600920888023">A IA generativa é experimental e o conteúdo pode ser incorreto, enganador ou ofensivo.</translation>
 <translation id="8670574982334489519">direita</translation>
 <translation id="8675354002693747642">Chave pré-partilhada</translation>
 <translation id="8677859815076891398">Não existem álbuns. Crie um álbum no <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>

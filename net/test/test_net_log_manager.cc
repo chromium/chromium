@@ -17,29 +17,26 @@
 
 namespace net {
 
-// A simple NetLog::ThreadSafeObserver that dumps NetLog entries to VLOG.
-class TestNetLogManager::VlogNetLogObserver
-    : public NetLog::ThreadSafeObserver {
+// A simple NetLog::ThreadSafeObserver that dumps NetLog entries to LOG.
+class TestNetLogManager::LogNetLogObserver : public NetLog::ThreadSafeObserver {
  public:
-  VlogNetLogObserver(NetLog* net_log, NetLogCaptureMode capture_mode)
+  LogNetLogObserver(NetLog* net_log, NetLogCaptureMode capture_mode)
       : net_log_(net_log) {
-    LOG_IF(INFO, !VLOG_IS_ON(1))
-        << "Use --vmodule=test_net_log_manager=1 to see NetLog messages";
     net_log_->AddObserver(this, capture_mode);
   }
 
-  VlogNetLogObserver(const VlogNetLogObserver&) = delete;
-  VlogNetLogObserver& operator=(const VlogNetLogObserver&) = delete;
+  LogNetLogObserver(const LogNetLogObserver&) = delete;
+  LogNetLogObserver& operator=(const LogNetLogObserver&) = delete;
 
-  ~VlogNetLogObserver() override { net_log_->RemoveObserver(this); }
+  ~LogNetLogObserver() override { net_log_->RemoveObserver(this); }
 
   void OnAddEntry(const NetLogEntry& entry) override {
-    VLOG(1) << "NetLog: id=" << entry.source.id
-            << " source=" << NetLog::SourceTypeToString(entry.source.type)
-            << "\n"
-            << "event=" << NetLogEventTypeToString(entry.type)
-            << " phase=" << NetLog::EventPhaseToString(entry.phase) << "\n"
-            << entry.params.DebugString();
+    LOG(ERROR) << "NetLog: id=" << entry.source.id
+               << " source=" << NetLog::SourceTypeToString(entry.source.type)
+               << "\n"
+               << "event=" << NetLogEventTypeToString(entry.type)
+               << " phase=" << NetLog::EventPhaseToString(entry.phase) << "\n"
+               << entry.params.DebugString();
   }
 
  private:
@@ -48,13 +45,36 @@ class TestNetLogManager::VlogNetLogObserver
 
 TestNetLogManager::TestNetLogManager(NetLog* net_log,
                                      NetLogCaptureMode capture_mode) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kLogNetLogSwitch)) {
+    Start(net_log, capture_mode);
+  }
+}
+
+TestNetLogManager::~TestNetLogManager() {
+  if (file_net_log_observer_) {
+    base::RunLoop run_loop;
+    file_net_log_observer_->StopObserving(/*polled_data=*/nullptr,
+                                          run_loop.QuitClosure());
+    run_loop.Run();
+  }
+}
+
+void TestNetLogManager::ForceStart() {
+  if (log_net_log_observer_ || file_net_log_observer_) {
+    return;
+  }
+  Start(NetLog::Get(), NetLogCaptureMode::kEverything);
+}
+
+void TestNetLogManager::Start(NetLog* net_log, NetLogCaptureMode capture_mode) {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
+
   base::FilePath log_file_path =
       command_line->GetSwitchValuePath(kLogNetLogSwitch);
   if (log_file_path.empty()) {
-    vlog_net_log_observer_ =
-        std::make_unique<VlogNetLogObserver>(net_log, capture_mode);
+    log_net_log_observer_ =
+        std::make_unique<LogNetLogObserver>(net_log, capture_mode);
     return;
   }
 
@@ -82,15 +102,6 @@ TestNetLogManager::TestNetLogManager(NetLog* net_log,
   // events as much as possible even when a test fails with a crash.
   file_net_log_observer_->set_num_write_queue_events(1);
   file_net_log_observer_->StartObserving(net_log);
-}
-
-TestNetLogManager::~TestNetLogManager() {
-  if (file_net_log_observer_) {
-    base::RunLoop run_loop;
-    file_net_log_observer_->StopObserving(/*polled_data=*/nullptr,
-                                          run_loop.QuitClosure());
-    run_loop.Run();
-  }
 }
 
 }  // namespace net

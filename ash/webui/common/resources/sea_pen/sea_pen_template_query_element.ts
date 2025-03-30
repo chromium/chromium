@@ -140,11 +140,17 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
           return isSeaPenUseExptTemplateEnabled();
         },
       },
+
+      autoplay_: {
+        type: Boolean,
+        value: false,
+      }
     };
   }
 
   // TODO(b/319719709) this should be SeaPenTemplateId.
   templateId: string|null;
+  private autoplay_: boolean;
   private seaPenTemplate_: SeaPenTemplate;
   private seaPenQuery_: SeaPenQuery|null;
   private selectedOptions_: Map<SeaPenTemplateChip, SeaPenOption>;
@@ -181,11 +187,6 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
         new ResizeObserver(() => this.animateContainerHeight());
 
     beforeNextRender(this, () => {
-      const inspireMeAnimation = this.getInspireMeAnimationElement_();
-      if (inspireMeAnimation) {
-        inspireMeAnimation.autoplay = false;
-      }
-
       this.containerOriginalHeight_ = this.$.container.scrollHeight;
       this.$.container.style.height = `${this.containerOriginalHeight_}px`;
     });

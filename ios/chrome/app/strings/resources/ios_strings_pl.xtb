@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1190609913194133056">Centrum powiadomień</translation>
 <translation id="1201402288615127009">Dalej</translation>
-<translation id="1202892408424955784">Obserwowane produkty</translation>
 <translation id="1204075260022434100">{count,plural, =1{Zakładka została zapisana w folderze „{title}” na Twoim koncie {email}}few{{count} zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}many{{count} zakładek zostało zapisanych w folderze „{title}” na Twoim koncie {email}}other{{count} zakładki zostało zapisane w folderze „{title}” na Twoim koncie {email}}}</translation>
 <translation id="120431140543679678">Obserwuj</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">nowy element</translation>
 <translation id="2049727122989709386">Na <ph name="COUNT" /> kontach masz to samo hasło</translation>
 <translation id="2059166748188874810">Gmina</translation>
-<translation id="2060114494785549741">Usuń za miesiąc</translation>
 <translation id="2060638295449304809">Ten adres został zapisany tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz go na swoim koncie Google <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Selektor typu jednostki</translation>
 <translation id="2067852168641682340">Zawsze zapisuj na tym koncie</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Ukryj kartę śledzenia cen</translation>
 <translation id="2216366330550244277">Otwórz stronę produktu</translation>
 <translation id="2220529011494928058">Zgłoś problem</translation>
-<translation id="2220887224562128152">Pliku zaplanowanego do usunięcia nie można odzyskać.</translation>
 <translation id="2223461067862937305">Utwórz kod QR</translation>
 <translation id="2229345671837147090">Siatka kart zdalnych</translation>
 <translation id="2230173723195178503">Wczytano stronę internetową</translation>
@@ -384,7 +381,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2539748786028143624">Włącz silniejszą ochronę…</translation>
 <translation id="2540111494300686866">Ukryj okna dialogowe</translation>
 <translation id="2542268842667970959">Ukryj „Kontrolę zabezpieczeń”</translation>
-<translation id="2543870349255816922">Ta karta pokazuje obniżkę ceny obserwowanego produktu na jednym z Twoich zsynchronizowanych urządzeń</translation>
 <translation id="2547458583188611426">Synchronizacja nie działa. Aby ją rozpocząć, wpisz swoje hasło wielowyrazowe.</translation>
 <translation id="2551153019974022505">Błąd konta</translation>
 <translation id="2559843230610279254">Grupa kart, <ph name="GROUP_TITLE" />, liczba kart: <ph name="TABS_NUMBER" />.</translation>
@@ -494,7 +490,6 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="3059270601560379555">Nowe wyszukiwanie</translation>
 <translation id="3064547930554042309">Zarządzanie pobranymi plikami</translation>
 <translation id="3072279342064724558">Hasło już istnieje</translation>
-<translation id="3074862506644936708">Włącz automatyczne usuwanie</translation>
 <translation id="3076846064362030967">Usunięcie historii nie spowoduje wylogowania Cię z konta Google. <ph name="BEGIN_LINK" />Inne formy aktywności<ph name="END_LINK" /> mogą być zapisywane na Twoim koncie Google, gdy się zalogujesz. W każdej chwili możesz je usunąć.
 
 
@@ -913,6 +908,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4896467949657706481">Karty zostały zamknięte i nastąpiło wylogowanie</translation>
 <translation id="4913626501929406101">Możesz bezpiecznie udostępnić kopię hasła innej osobie w grupie rodzinnej. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Akceptuj</translation>
+<translation id="4930714375720679147">Włącz</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4936354130727646074">Nigdy nie przenoś</translation>
 <translation id="4937410517508563815">Zapisuj hasła na koncie</translation>
@@ -1148,7 +1144,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5899314093904173337">Aby udostępnić ten kod QR osobom w pobliżu, pozwól im go zeskanować za pomocą aparatu lub aplikacji do skanowania kodów QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} nowa karta}few{{count} nowe karty}many{{count} nowych kart}other{{count} nowej karty}}</translation>
 <translation id="5911030830365207728">Tłumacz Google</translation>
-<translation id="5917913282764181683">Automatycznie usuwaj pobrane pliki</translation>
 <translation id="5922999516621365983">Przeciągnij kartę tutaj, żeby ją przypiąć.</translation>
 <translation id="5936006948844852401">Zarządzaj pamięcią</translation>
 <translation id="5936065461722368675">Przetłumacz całą stronę</translation>
@@ -1507,7 +1502,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="741204030948306876">Tak</translation>
 <translation id="7417689656810783109">Zmień nazwę grupy</translation>
 <translation id="7419565702166471774">Zawsze używaj bezpiecznych połączeń</translation>
-<translation id="742001653298797675">Zaplanuj usuwanie wszystkich pobranych plików po miesiącu, aby oszczędzać miejsce na telefonie i chronić swoją prywatność.</translation>
 <translation id="7425053386765766120">Dodaj formę płatności…</translation>
 <translation id="7425346204213733349">Zmiany w zakładkach, historii, hasłach i innych ustawieniach nie będą już synchronizowane z kontem Google. Twoje obecne dane będą jednak nadal na nim przechowywane.</translation>
 <translation id="742664698522525515">Zachować grupę?</translation>

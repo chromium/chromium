@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"

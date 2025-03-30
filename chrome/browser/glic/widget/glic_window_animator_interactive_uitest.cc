@@ -21,6 +21,12 @@ namespace {
 
 class GlicWindowAnimatorUiTest : public test::InteractiveGlicTest {
  public:
+  GlicWindowAnimatorUiTest() {
+    features_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{{features::kGlicUserResize}});
+  }
+
   auto GetTargetBounds() {
     return Do([this]() {
       target_bounds_ =
@@ -59,6 +65,7 @@ class GlicWindowAnimatorUiTest : public test::InteractiveGlicTest {
 
  private:
   gfx::Rect target_bounds_;
+  base::test::ScopedFeatureList features_;
 };
 
 }  // namespace

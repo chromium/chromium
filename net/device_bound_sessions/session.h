@@ -79,6 +79,8 @@ class NET_EXPORT Session {
 
   bool should_defer_when_expired() const { return should_defer_when_expired_; }
 
+  const std::vector<CookieCraving>& cookies() const { return cookie_cravings_; }
+
   bool IsEqualForTesting(const Session& other) const;
 
   void set_cached_challenge(std::string challenge) {

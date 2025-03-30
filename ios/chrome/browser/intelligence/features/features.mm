@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/features/features.h"
 
+#import "base/metrics/field_trial_params.h"
+
 BASE_FEATURE(kEnhancedCalendar,
              "EnhancedCalendar",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -19,3 +21,21 @@ BASE_FEATURE(kPageActionMenu,
 bool IsPageActionMenuEnabled() {
   return base::FeatureList::IsEnabled(kPageActionMenu);
 }
+
+const char kExplainGeminiEditMenuParams[] = "ExplainGeminiEditMenuPosition";
+
+ExplainGeminiEditMenuPosition ExplainGeminiEditMenuPositionParam() {
+  int param = base::GetFieldTrialParamByFeatureAsInt(
+      kExplainGeminiEditMenu, kExplainGeminiEditMenuParams, 0);
+  if (param == 1) {
+    return ExplainGeminiEditMenuPosition::kBeforeSearch;
+  }
+  if (param == 2) {
+    return ExplainGeminiEditMenuPosition::kAfterSearch;
+  }
+  return ExplainGeminiEditMenuPosition::kDisabled;
+}
+
+BASE_FEATURE(kExplainGeminiEditMenu,
+             "ExplainGeminiEditMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);

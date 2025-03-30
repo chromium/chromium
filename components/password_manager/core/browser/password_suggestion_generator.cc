@@ -34,6 +34,9 @@
 
 namespace password_manager {
 
+const char kReauthPromoHistogramName[] =
+    "PasswordManager.PasswordFilling.ReauthPromo";
+
 namespace {
 
 using affiliations::FacetURI;
@@ -297,6 +300,10 @@ bool CanShowPendingStatePromo(const PasswordManagerClient& password_client) {
              switches::kEnablePendingModePasswordsPromo);
 }
 
+void RecordPendingStatePromoHistogram(FillingReauthPromoShown sample) {
+  base::UmaHistogramEnumeration(kReauthPromoHistogramName, sample);
+}
+
 #endif
 }  // namespace
 
@@ -350,6 +357,7 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
     // Probably the credential was deleted in the mean time.
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     if (CanShowPendingStatePromo(*password_client_)) {
+      RecordPendingStatePromoHistogram(FillingReauthPromoShown::kShownAlone);
       CreateEntryForPendingStateSignin(suggestions);
     }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -391,7 +399,14 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (CanShowPendingStatePromo(*password_client_)) {
+    RecordPendingStatePromoHistogram(
+        suggestions.empty()
+            ? FillingReauthPromoShown::kShownAlone
+            : FillingReauthPromoShown::kShownWithOtherSuggestions);
+
     CreateEntryForPendingStateSignin(suggestions);
+  } else if (!suggestions.empty()) {
+    RecordPendingStatePromoHistogram(FillingReauthPromoShown::kNotShown);
   }
 #endif
 

@@ -49,8 +49,7 @@ void SetSinkIdResolver::Start() {
                audio_utilities::GetSinkIdForTracing(sink_descriptor_));
   DCHECK(IsMainThread());
 
-  auto* execution_context = resolver_->GetExecutionContext();
-  if (!execution_context || !audio_context_ ||
+  if (!resolver_ || !resolver_->GetExecutionContext() || !audio_context_ ||
       audio_context_->IsContextCleared()) {
     // No point in rejecting promise, as it will bail out upon detached
     // context anyway.
@@ -88,20 +87,35 @@ void SetSinkIdResolver::Start() {
   }
 }
 
-ScriptPromiseResolver<IDLUndefined>* SetSinkIdResolver::Resolver() {
-  return resolver_;
+void SetSinkIdResolver::Resolve() {
+  DCHECK(IsMainThread());
+  DCHECK(resolver_);
+  resolver_->Resolve();
+  resolver_ = nullptr;
 }
 
-void SetSinkIdResolver::OnSetSinkIdComplete(media::OutputDeviceStatus status) {
-  TRACE_EVENT1("webaudio", "SetSinkIdResolver::OnSetSinkIdComplete", "sink_id",
-               audio_utilities::GetSinkIdForTracing(sink_descriptor_));
+void SetSinkIdResolver::Reject(DOMException* exception) {
   DCHECK(IsMainThread());
+  DCHECK(resolver_);
+  resolver_->Reject(exception);
+  resolver_ = nullptr;
+}
 
-  auto* excecution_context = resolver_->GetExecutionContext();
-  if (!excecution_context || excecution_context->IsContextDestroyed()) {
-    return;
-  }
+void SetSinkIdResolver::Reject(v8::Local<v8::Value> value) {
+  DCHECK(IsMainThread());
+  DCHECK(resolver_);
+  resolver_->Reject(value);
+  resolver_ = nullptr;
+}
 
+ScriptPromise<IDLUndefined> SetSinkIdResolver::GetPromise() {
+  DCHECK(IsMainThread());
+  DCHECK(resolver_);
+  return resolver_->Promise();
+}
+
+void SetSinkIdResolver::HandleOutputDeviceStatus(
+    media::OutputDeviceStatus status) {
   ScriptState* script_state = resolver_->GetScriptState();
   ScriptState::Scope scope(script_state);
   switch (status) {
@@ -110,29 +124,51 @@ void SetSinkIdResolver::OnSetSinkIdComplete(media::OutputDeviceStatus status) {
         // Update AudioContext's sink ID and fire the 'onsinkchange' event
         audio_context_->NotifySetSinkIdIsDone(sink_descriptor_);
       }
-      resolver_->Resolve();
-      break;
+      Resolve();
+      return;
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND:
-      resolver_->Reject(V8ThrowDOMException::CreateOrEmpty(
+      Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kNotFoundError,
           "AudioContext.setSinkId(): failed: the device " +
               String(sink_descriptor_.SinkId()) + " is not found."));
-      break;
+      return;
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED:
-      resolver_->Reject(V8ThrowDOMException::CreateOrEmpty(
+      Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
           "AudioContext.setSinkId() failed: access to the device " +
               String(sink_descriptor_.SinkId()) + " is not permitted."));
-      break;
+      return;
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_TIMED_OUT:
-      resolver_->Reject(V8ThrowDOMException::CreateOrEmpty(
+      Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kTimeoutError,
           "AudioContext.setSinkId() failed: the request for device " +
               String(sink_descriptor_.SinkId()) + " is timed out."));
-      break;
-    default:
-      DUMP_WILL_BE_NOTREACHED();
+      return;
+    case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL:
+      Reject(V8ThrowDOMException::CreateOrEmpty(
+          script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
+          "AudioContext.setSinkId() failed: the device " +
+              String(sink_descriptor_.SinkId()) + " is not available."));
+      return;
   }
+  NOTREACHED();
+}
+
+void SetSinkIdResolver::OnSetSinkIdComplete(media::OutputDeviceStatus status) {
+  TRACE_EVENT1("webaudio", "SetSinkIdResolver::OnSetSinkIdComplete", "sink_id",
+               audio_utilities::GetSinkIdForTracing(sink_descriptor_));
+  DCHECK(IsMainThread());
+
+  if (!resolver_) {
+    return;
+  }
+
+  auto* excecution_context = resolver_->GetExecutionContext();
+  if (!excecution_context || excecution_context->IsContextDestroyed()) {
+    return;
+  }
+
+  HandleOutputDeviceStatus(status);
 
   auto& resolvers = audio_context_->GetSetSinkIdResolver();
   resolvers.pop_front();

@@ -150,11 +150,13 @@ bool ShouldFireErrorCallback(PrerenderFinalStatus status) {
 PrerenderHandleImpl::PrerenderHandleImpl(
     base::WeakPtr<PrerenderHostRegistry> prerender_host_registry,
     FrameTreeNodeId frame_tree_node_id,
-    const GURL& prerendering_url)
+    const GURL& prerendering_url,
+    std::optional<net::HttpNoVarySearchData> no_vary_search_hint)
     : handle_id_(GetNextHandleId()),
       prerender_host_registry_(std::move(prerender_host_registry)),
       frame_tree_node_id_(frame_tree_node_id),
-      prerendering_url_(prerendering_url) {
+      prerendering_url_(prerendering_url),
+      no_vary_search_hint_(std::move(no_vary_search_hint)) {
   CHECK(!prerendering_url_.is_empty());
   // PrerenderHandleImpl is now designed only for embedder triggers. If you use
   // this handle for other triggers, please make sure to update the logging etc.
@@ -181,6 +183,11 @@ int32_t PrerenderHandleImpl::GetHandleId() const {
 
 const GURL& PrerenderHandleImpl::GetInitialPrerenderingUrl() const {
   return prerendering_url_;
+}
+
+const std::optional<net::HttpNoVarySearchData>&
+PrerenderHandleImpl::GetNoVarySearchHint() const {
+  return no_vary_search_hint_;
 }
 
 base::WeakPtr<PrerenderHandle> PrerenderHandleImpl::GetWeakPtr() {

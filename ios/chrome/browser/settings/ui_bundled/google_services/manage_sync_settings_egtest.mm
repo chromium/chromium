@@ -1164,7 +1164,13 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests that bulk upload moves the following data types to account:
 // - Passwords
-- (void)testBulkUploadForPasswords {
+// TODO(crbug.com/407020882): Remove FLAKY_ from this test.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testBulkUploadForPasswords FLAKY_testBulkUploadForPasswords
+#else
+#define MAYBE_testBulkUploadForPasswords testBulkUploadForPasswords
+#endif
+- (void)MAYBE_testBulkUploadForPasswords {
   // Add local data.
   password_manager_test_utils::SavePasswordFormToProfileStore(
       @"password", @"user", @"https://example.com");

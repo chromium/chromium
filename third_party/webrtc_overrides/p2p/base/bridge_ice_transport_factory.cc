@@ -5,14 +5,18 @@
 #include "third_party/webrtc_overrides/p2p/base/bridge_ice_transport_factory.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-
+#include "third_party/webrtc/api/ice_transport_interface.h"
 #include "third_party/webrtc/api/make_ref_counted.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/p2p/base/active_ice_controller_factory_interface.h"
+#include "third_party/webrtc/p2p/base/active_ice_controller_interface.h"
 #include "third_party/webrtc/p2p/base/basic_ice_controller.h"
 #include "third_party/webrtc/p2p/base/default_ice_transport_factory.h"
 #include "third_party/webrtc/p2p/base/p2p_transport_channel.h"

@@ -400,7 +400,8 @@ public class StripLayoutHelperManager
      * @param tabModelStartupInfoSupplier A supplier for the TabModelStartupInfo.
      * @param lifecycleDispatcher The ActivityLifecycleDispatcher for registering this class to
      *     lifecycle events.
-     * @param multiInstanceManager MultiInstanceManager passed to TabDragSource for drag and drop.
+     * @param multiInstanceManager The {@link MultiInstanceManager} used to move tabs to other
+     *     windows.
      * @param dragDropDelegate DragAndDropDelegate passed to TabDragSource to initiate tab drag and
      *     drop.
      * @param toolbarContainerView View passed to TabDragSource for drag and drop.
@@ -521,6 +522,7 @@ public class StripLayoutHelperManager
                         dataSharingTabManager,
                         () -> getStripVisibilityState() == StripVisibilityState.VISIBLE,
                         bottomSheetController,
+                        multiInstanceManager,
                         shareDelegateSupplier);
         mIncognitoHelper =
                 new StripLayoutHelper(
@@ -538,6 +540,7 @@ public class StripLayoutHelperManager
                         dataSharingTabManager,
                         () -> getStripVisibilityState() == StripVisibilityState.VISIBLE,
                         bottomSheetController,
+                        multiInstanceManager,
                         shareDelegateSupplier);
 
         tabHoverCardViewStub.setOnInflateListener(

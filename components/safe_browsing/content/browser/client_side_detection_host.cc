@@ -184,7 +184,13 @@ bool ShouldShowWarning(bool is_phishing,
           *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1) ||
          (base::FeatureList::IsEnabled(
               kClientSideDetectionShowLlamaScamVerdictWarning) &&
-          *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2);
+          *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2) ||
+         ((base::FeatureList::IsEnabled(
+               kClientSideDetectionShowScamVerdictWarning) ||
+           base::FeatureList::IsEnabled(
+               kClientSideDetectionShowLlamaScamVerdictWarning)) &&
+          *verdict ==
+              IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
 }
 
 }  // namespace

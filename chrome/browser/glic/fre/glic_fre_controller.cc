@@ -68,7 +68,8 @@ void GlicFreController::Shutdown() {
 bool GlicFreController::ShouldShowFreDialog() {
   // If the given profile has not previously completed the FRE, then it should
   // be shown.
-  return !profile_->GetPrefs()->GetBoolean(prefs::kGlicCompletedFre);
+  return profile_->GetPrefs()->GetInteger(prefs::kGlicCompletedFre) !=
+         static_cast<int>(prefs::FreStatus::kCompleted);
 }
 
 bool GlicFreController::CanShowFreDialog(Browser* browser) {
@@ -86,6 +87,9 @@ bool GlicFreController::CanShowFreDialog(Browser* browser) {
 
 void GlicFreController::ShowFreDialog(Browser* browser) {
   show_start_time_ = base::TimeTicks::Now();
+  profile_->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      static_cast<int>(prefs::FreStatus::kIncomplete));
   auth_controller_.CheckAuthBeforeShow(
       AuthController::FallbackBehavior::kShowReauthPage,
       base::BindOnce(&GlicFreController::ShowFreDialogAfterAuthCheck,
@@ -150,7 +154,8 @@ void GlicFreController::DismissFreIfOpenOnActiveTab(Browser* browser) {
 void GlicFreController::AcceptFre() {
   base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept"));
   // Update FRE related preferences.
-  profile_->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
+  profile_->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
 
   // Enable the launcher if it is still disabled by default and the browser
   // is default or is on the stable channel.

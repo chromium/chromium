@@ -29,7 +29,7 @@ namespace {
 using RequestedStorageFormat = SessionRestorationServiceFactory::StorageFormat;
 
 // Threshold before retrying to migration the session storage.
-constexpr base::TimeDelta kRetryMigrationThreshold = base::Days(1);
+constexpr base::TimeDelta kRetryMigrationThreshold = base::Hours(4);
 
 // Value taken from Desktop Chrome.
 constexpr base::TimeDelta kSaveDelay = base::Seconds(2.5);

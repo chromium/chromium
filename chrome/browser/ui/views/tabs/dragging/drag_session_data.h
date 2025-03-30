@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/gfx/geometry/point.h"
@@ -108,8 +109,14 @@ struct DragSessionData final {
   // Returns the number of Tab views currently dragging.
   // Excludes the TabGroupHeader view, if any.
   int num_dragging_tabs() const {
-    return group_drag_data_.has_value() ? tab_drag_data_.size() - 1
-                                        : tab_drag_data_.size();
+    int num_tabs = 0;
+    for (const TabDragData& tab_drag_datum : tab_drag_data_) {
+      if (tab_drag_datum.attached_view->GetTabSlotViewType() ==
+          TabSlotView::ViewType::kTab) {
+        num_tabs++;
+      }
+    }
+    return num_tabs;
   }
 
   std::vector<TabSlotView*> attached_views() const {

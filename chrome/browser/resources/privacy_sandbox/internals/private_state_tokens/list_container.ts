@@ -39,9 +39,9 @@ export class PrivateStateTokensListContainerElement extends CrLitElement {
     };
   }
 
-  data: ListItem[] = [];
+  accessor data: ListItem[] = [];
 
-  protected isAnyRowCollapsed: boolean = true;
+  protected accessor isAnyRowCollapsed: boolean = true;
 
   private rowExpandedStates_: Map<string, boolean> = new Map();
 

@@ -12,8 +12,6 @@ source_set("gpu") {
   ]
 
   sources = [
-    "client_gpu_memory_buffer_manager.cc",
-    "client_gpu_memory_buffer_manager.h",
     "command_buffer_metrics.cc",
     "context_provider_command_buffer.cc",
     "gpu.cc",

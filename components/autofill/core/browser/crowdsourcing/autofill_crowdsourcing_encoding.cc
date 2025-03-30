@@ -833,7 +833,7 @@ void ParseServerPredictionsQueryResponse(
 
   std::string decoded_payload;
   if (!base::Base64Decode(payload, &decoded_payload)) {
-    VLOG(1) << "Could not decode payload from base64 to bytes";
+    DVLOG(1) << "Could not decode payload from base64 to bytes";
     return;
   }
 
@@ -843,8 +843,8 @@ void ParseServerPredictionsQueryResponse(
     return;
   }
 
-  VLOG(1) << "Autofill query response from API was successfully parsed: "
-          << response;
+  DVLOG(1) << "Autofill query response from API was successfully parsed: "
+           << response;
 
   ProcessServerPredictionsQueryResponse(response, forms,
                                         queried_form_signatures, log_manager);

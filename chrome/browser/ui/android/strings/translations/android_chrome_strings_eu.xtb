@@ -325,7 +325,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2527209463677295330">Orriko testu gehiago barne hartuz gero, agian emaitza hobeak ikusiko dituzu</translation>
 <translation id="2527779675047087889">Ezkutatu arbeleko edukia</translation>
 <translation id="2532336938189706096">Web-ikuspegia</translation>
-<translation id="2534155362429831547">Ezabatu dira <ph name="NUMBER_OF_ITEMS" /> elementu</translation>
 <translation id="253498598929009420">Webguneak pantailan agertzen dena ikusi ahal izango du</translation>
 <translation id="2536728043171574184">Orriaren konexiorik gabeko kopia ikusten ari zara</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, fitxa</translation>
@@ -365,7 +364,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2677748264148917807">Irten</translation>
 <translation id="2687009626279857299">Gailu honetan funtzionatzeari utzi dio</translation>
 <translation id="2702516483241149200">Berria: partekatu testu honetan gora eta behera egiteko esteka bat</translation>
-<translation id="2705073298859543115">Sortu laburpena</translation>
 <translation id="2708051474374549906">Webgune, deskarga eta luzapen arriskutsuen aurkako babes proaktiboa denbora errealean, Google-ri bidaltzen zaizkion zure arakatze-datuetan oinarritutakoa</translation>
 <translation id="2708226184420201102">Ireki <ph name="PRODUCT_NAME" /> arakatzailean</translation>
 <translation id="271033894570825754">Berria</translation>
@@ -677,6 +675,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="4195643157523330669">Ireki fitxa berri batean</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Gailu honetako fitxa bat}other{Gailu honetako # fitxa}}</translation>
 <translation id="4198423547019359126">Ez dago deskarga-kokapenik eskuragarri</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Webgune honetan erabili duzu</translation>
 <translation id="4214315110991671325">Cookieak onartzen badituzu, baliteke Chrome-k haiek erabiltzea orriak aurrez kargatzeko.</translation>
 <translation id="4216511743389425832">Entzun orri honetan dagoena</translation>
 <translation id="4225725533026049334">Jarraitzen</translation>
@@ -1198,7 +1197,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6564820424018738527">Baliteke Android-eko gailuak antzeko ezarpen bat izatea. Chrome-n eta Android-eko gailuan Iragarkien neurketa aktibatuta badaukazu, erabiltzen dituzun webgune eta aplikazioetan agertzen diren iragarkien eraginkortasuna neurtu ahal izango dute enpresek.</translation>
 <translation id="6565959834589222080">Wifia erabilgarri dagoenean, hura erabiltzen da</translation>
 <translation id="6569373978618239158">Aurrerantzean, <ph name="SITE_NAME" /> webguneko istorioak ikusiko dituzu fitxa berri bat irekitzean. Jarraitzaile zaituzten webguneak Google-ko kontuan gordetzen dira. Discover-en ezarpenetan kudea ditzakezu webgune horiek.</translation>
-<translation id="6570116402456758630">Orriaren laburpena</translation>
 <translation id="657177046675873214">Laster-markak gailu guztietan eskura izateko, aktibatu Laster-markak ezarpenetan</translation>
 <translation id="6573096386450695060">Eman baimena beti</translation>
 <translation id="6573431926118603307">Beste gailuetan Chrome-n ireki dituzun fitxak hemen agertuko dira.</translation>

@@ -31,9 +31,9 @@ class LanguageDetector final : public ScriptWrappable {
       LanguageDetectorCreateOptions* options,
       ExceptionState& exception_state);
 
-  explicit LanguageDetector(
-      LanguageDetectionModel* language_detection_model,
-      scoped_refptr<base::SequencedTaskRunner>& task_runner);
+  LanguageDetector(LanguageDetectionModel* language_detection_model,
+                   LanguageDetectorCreateOptions* options,
+                   scoped_refptr<base::SequencedTaskRunner>& task_runner);
   ~LanguageDetector() override = default;
 
   void Trace(Visitor* visitor) const override;
@@ -53,6 +53,13 @@ class LanguageDetector final : public ScriptWrappable {
 
   double inputQuota() const;
 
+  std::optional<Vector<String>> expectedInputLanguages() const {
+    if (options_->hasExpectedInputLanguages()) {
+      return options_->expectedInputLanguages();
+    }
+    return std::nullopt;
+  }
+
   // TODO(crbug.com/349927087): Make the functions below free functions.
   static HeapVector<Member<LanguageDetectionResult>> ConvertResult(
       WTF::Vector<LanguageDetectionModel::LanguagePrediction> predictions);
@@ -64,6 +71,7 @@ class LanguageDetector final : public ScriptWrappable {
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   Member<LanguageDetectionModel> language_detection_model_;
+  Member<LanguageDetectorCreateOptions> options_;
 };
 
 }  // namespace blink

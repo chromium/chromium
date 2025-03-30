@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Mõne saidi funktsioonid ei pruugi inkognito režiimis toimida</translation>
 <translation id="2442870161001914531">Alati taotletakse arvutisaiti</translation>
 <translation id="2445311670906052406">Chrome jagab nüüd teie hiljutisi vahelehti teie seadmega. Näete neid oma seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes igal ajal välja lülitada.</translation>
+<translation id="245322989586167203">Saidid loovad jadaportidega ühenduse tavaliselt andmeedastuse funktsioonide jaoks, näiteks võrgu seadistamiseks</translation>
 <translation id="2469312991797799607">See toiming kustutab kõik saidigrupi <ph name="ORIGIN" /> ning selle all olevate kõigi saitide andmed ja küpsised</translation>
 <translation id="2482878487686419369">Märguanded</translation>
 <translation id="2485422356828889247">Desinstalli</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Keelake saitidel selle tuvastamine, millal seda seadet aktiivselt kasutate</translation>
 <translation id="4412992751769744546">Luba kolmanda osapoole küpsisefailid</translation>
 <translation id="4419929467120297501">Chrome blokeerib saitide puhul kolmanda osapoole küpsisefailide kasutamise teie jälgimiseks sirvimise ajal. Külastage seadeid, et <ph name="BEGIN_LINK" />hallata juurdepääsu kolmanda osapoole küpsisefailidele<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Jadaport</translation>
 <translation id="4434045419905280838">Hüpikaknad ja ümbersuunamised</translation>
 <translation id="443552056913301231">See toiming kustutab kõik kohalikud andmed, sh küpsised, ja lähtestab kõik lähtekoha <ph name="ORIGIN" /> õigused</translation>
 <translation id="4468959413250150279">Konkreetse saidi heli vaigistamine.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Esmalt küsib</translation>
 <translation id="7423538860840206698">Lõikelaua lugemine on blokeeritud</translation>
 <translation id="7425915948813553151">Tume teema saitide jaoks</translation>
+<translation id="7478658909253570368">Ära luba saitidel jadaportidega ühendust luua</translation>
 <translation id="7488573225650545859">Peida kaart Vahelehtede kuvamine teie rakenduste loendis</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kui see on sisse lülitatud, saavad saidid sisselogimisviipasid kuvada. Kui see on välja lülitatud, ei saa saidid sisselogimisviipasid kuvada.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Ühendatud Bluetooth-seadmega</translation>
 <translation id="7617547684249261169">Saate kustutada osa või kogu oma ajaloo, küpsisefailid, saidiandmed ja palju muud</translation>
 <translation id="7649070708921625228">Abi</translation>
+<translation id="7655411746932645568">Saidid saavad küsida luba jadaportidega ühenduse loomiseks</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7667547420449112975">Võlur Oz</translation>
 <translation id="7681597159868843240">Saidid kasutavad teie seadme liikumisandureid näiteks VR-kogemuse pakkumiseks või treeningu jälgimiseks</translation>

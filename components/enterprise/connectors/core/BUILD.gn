@@ -60,6 +60,7 @@ source_set("core") {
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/security_interstitials/core",
     "//components/security_interstitials/core:unsafe_resource",
+    "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
     "//components/url_matcher:url_matcher",
     "//ui/base",

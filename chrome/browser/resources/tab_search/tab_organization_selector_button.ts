@@ -42,12 +42,12 @@ export class TabOrganizationSelectorButtonElement extends CrLitElement {
     };
   }
 
-  bottom: boolean = false;
-  disabled: boolean = false;
-  heading: string = '';
-  icon: string = 'cr:error';
-  subheading: string = '';
-  top: boolean = false;
+  accessor bottom: boolean = false;
+  accessor disabled: boolean = false;
+  accessor heading: string = '';
+  accessor icon: string = 'cr:error';
+  accessor subheading: string = '';
+  accessor top: boolean = false;
 
   override focus() {
     this.$.button.focus();

@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_infobar.h"
+#include "chrome/browser/ui/views/tab_sharing/tab_sharing_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -84,8 +85,23 @@ TabSharingInfoBarDelegate* GetDelegate(Browser* browser, int tab) {
       GetInfoBar(browser, tab)->delegate());
 }
 
-std::u16string_view GetInfobarMessageText(Browser* browser, int tab) {
-  return GetInfoBar(browser, tab)->label_for_testing()->GetText();
+std::u16string GetInfoText(const TabSharingStatusMessageView& info_view) {
+  std::u16string text;
+  for (views::View* button_or_label : info_view.children()) {
+    text += GetButtonOrLabelText(*button_or_label);
+  }
+  return text;
+}
+
+std::u16string GetInfobarMessageText(Browser* browser, int tab) {
+  const views::View& view =
+      *GetInfoBar(browser, tab)->GetStatusMessageViewForTesting();
+  if (view.GetClassName() == "Label") {
+    return std::u16string(static_cast<const views::Label&>(view).GetText());
+  } else if (view.GetClassName() == "TabSharingStatusMessageView") {
+    return GetInfoText(static_cast<const TabSharingStatusMessageView&>(view));
+  }
+  NOTREACHED();
 }
 
 bool HasShareThisTabInsteadButton(Browser* browser, int tab) {

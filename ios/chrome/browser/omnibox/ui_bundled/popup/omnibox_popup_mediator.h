@@ -22,16 +22,12 @@
 @class BrowserActionFactory;
 @class CarouselItem;
 @protocol CarouselItemConsumer;
-class FaviconLoader;
 @class OmniboxAutocompleteController;
+@class OmniboxImageFetcher;
 @class OmniboxPopupMediator;
 @class OmniboxPopupPresenter;
 @class SceneState;
 @protocol SnackbarCommands;
-
-namespace image_fetcher {
-class ImageDataFetcher;
-}  // namespace image_fetcher
 
 namespace feature_engagement {
 class Tracker;
@@ -72,8 +68,6 @@ class Tracker;
 @property(nonatomic, weak)
     OmniboxAutocompleteController* omniboxAutocompleteController;
 
-@property(nonatomic, readonly, assign) FaviconLoader* faviconLoader;
-
 @property(nonatomic, weak) id<AutocompleteResultConsumer> consumer;
 
 @property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
@@ -100,12 +94,12 @@ class Tracker;
 @property(nonatomic, strong) BrowserActionFactory* mostVisitedActionFactory;
 @property(nonatomic, weak) id<CarouselItemConsumer> carouselItemConsumer;
 
-/// Designated initializer. Takes ownership of `imageFetcher`.
-- (instancetype)
-             initWithFetcher:
-                 (std::unique_ptr<image_fetcher::ImageDataFetcher>)imageFetcher
-               faviconLoader:(FaviconLoader*)faviconLoader
-                     tracker:(feature_engagement::Tracker*)tracker;
+/// Designated initializer.
+- (instancetype)initWithTracker:(feature_engagement::Tracker*)tracker
+            omniboxImageFetcher:(OmniboxImageFetcher*)omniboxImageFetcher
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

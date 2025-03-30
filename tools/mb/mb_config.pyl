@@ -352,7 +352,8 @@
     ],
 
     'codesearch_gen_chrome_android_bot_remoteexec': [
-      'codesearch_remoteexec', 'android_without_codecs', 'static', 'chrome_branded',
+      'codesearch_remoteexec', 'android_without_codecs', 'static',
+      'chrome_branded', 'android_desktop'
     ],
 
     'codesearch_gen_chrome_bot_remoteexec': [
@@ -361,6 +362,7 @@
 
     'codesearch_gen_chromium_android_bot_remoteexec': [
       'codesearch_remoteexec', 'android_without_codecs', 'static',
+      'android_desktop'
     ],
 
     'codesearch_gen_chromium_bot_remoteexec': [
@@ -684,6 +686,10 @@
     # which are not allowed to have proprietary codecs enabled.
     'android': {
       'mixins': ['android_without_codecs', 'chrome_with_codecs'],
+    },
+
+    'android_desktop': {
+      'gn_args': 'is_desktop_android=true',
     },
 
     'android_external': {

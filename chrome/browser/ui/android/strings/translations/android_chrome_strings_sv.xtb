@@ -325,7 +325,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2527209463677295330">Om du tar med mer av sidans text kanske du får bättre resultat</translation>
 <translation id="2527779675047087889">Dölj innehållet i Urklipp</translation>
 <translation id="2532336938189706096">Webbvy</translation>
-<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> objekt har tagits bort</translation>
 <translation id="253498598929009420">Innehållet på skärmen blir synligt för webbplatsen</translation>
 <translation id="2536728043171574184">En offlinekopia av sidan visas</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, flik</translation>
@@ -365,7 +364,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2677748264148917807">Lämna</translation>
 <translation id="2687009626279857299">Slutade fungera på den här enheten</translation>
 <translation id="2702516483241149200">Nyhet: dela en länk som scrollar fram till den här texten</translation>
-<translation id="2705073298859543115">Skapa översikt</translation>
 <translation id="2708051474374549906">Proaktivt skydd i realtid mot farliga webbplatser, nedladdningar och tillägg baserat på din webbinformation som skickas till Google</translation>
 <translation id="2708226184420201102">Öppna i webbläsaren <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Ny</translation>
@@ -1200,7 +1198,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6564820424018738527">En liknande inställning kan finnas på Android-enheten. Om annonsmätning har aktiverats i Chrome och på Android-enheten kan ett företag mäta hur effektiv en annons är på alla webbplatser du besöker och i appar som du använder.</translation>
 <translation id="6565959834589222080">wifi används när det är tillgängligt</translation>
 <translation id="6569373978618239158">Nu visas artiklar från <ph name="SITE_NAME" /> när du öppnar en ny flik. Webbplatser som du följer sparas i Google-kontot. Du kan hantera dem i inställningarna för Förslag.</translation>
-<translation id="6570116402456758630">Sidsammanfattning</translation>
 <translation id="657177046675873214">Aktivera Bokmärken i inställningarna om du vill få tillgång till dina bokmärken på alla dina enheter</translation>
 <translation id="6573096386450695060">Tillåt alltid</translation>
 <translation id="6573431926118603307">Här visas flikar som du har öppnat i Chrome på andra enheter.</translation>

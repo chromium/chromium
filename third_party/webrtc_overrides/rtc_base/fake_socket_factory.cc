@@ -4,10 +4,13 @@
 
 #include "third_party/webrtc_overrides/rtc_base/fake_socket_factory.h"
 
+#include <cerrno>
+#include <cstdint>
+
 #include "base/check.h"
 #include "base/check_op.h"
-
 #include "third_party/webrtc/rtc_base/ip_address.h"
+#include "third_party/webrtc/rtc_base/socket.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
 
 namespace blink {

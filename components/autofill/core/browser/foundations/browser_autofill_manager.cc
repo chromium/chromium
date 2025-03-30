@@ -2220,7 +2220,9 @@ void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
       continue;
     }
 
-    if (!form->may_run_autofill_ai_model()) {
+    if (!form->may_run_autofill_ai_model() &&
+        !base::FeatureList::IsEnabled(
+            features::kAutofillAiAlwaysTriggerServerModel)) {
       continue;
     }
     AutofillAiModelExecutor* model_executor =

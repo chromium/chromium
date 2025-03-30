@@ -390,12 +390,13 @@ public class CollaborationControllerDelegateImplUnitTest {
 
         doReturn(savedGroup).when(mDataSharingTabManager).getSavedTabGroupForEitherId(syncId, null);
         mCollaborationControllerDelegateImpl.showManageDialog(syncId, null, resultCallback);
-        ArgumentCaptor<Runnable> finishCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        ArgumentCaptor<Callback<@Outcome Integer>> outcomeCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
         verify(mDataSharingTabManager)
                 .showManageSharing(
-                        eq(mActivity), eq(collaborationId), finishCallbackCaptor.capture());
+                        eq(mActivity), eq(collaborationId), outcomeCallbackCaptor.capture());
 
-        finishCallbackCaptor.getValue().run();
+        outcomeCallbackCaptor.getValue().onResult(Outcome.SUCCESS);
         verify(mCollaborationControllerDelegateImplNativeMock)
                 .runResultCallback(eq(Outcome.SUCCESS), eq(resultCallback));
     }

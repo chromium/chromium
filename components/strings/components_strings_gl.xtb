@@ -441,7 +441,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1734878702283171397">Tenta poñerte en contacto coa persoa que administra o sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />; data de caducidade: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Ordenador</translation>
-<translation id="1739422091279046802">desprazamento e zoom</translation>
 <translation id="1741613555002899862">Debe especificarse e ser unha cadea válida cando DnsOverHttpsMode é <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Roupa de cama</translation>
 <translation id="1743892871127720056">Título da táboa de comparación, editar texto</translation>
@@ -1569,6 +1568,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3715016660240337709">{0,plural, =1{Bloqueouse a carga do ficheiro}other{Bloqueouse a carga de <ph name="FILE_COUNT" /> ficheiros}}</translation>
 <translation id="3715597595485130451">Conectarse á wifi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Comprobar o proxy, o firewall e a configuración de DNS<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">Mentres se leva a cabo a actualización, non poderás usar o dispositivo durante un período de ata 10 minutos.</translation>
 <translation id="372429172604983730">Entre as aplicacións que poden provocar este erro inclúense o software de filtrado web ou proxy, o antivirus e o firewall.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para crear rapidamente unha nova presentación de Google en Presentacións</translation>
@@ -2495,6 +2495,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5379618281582508161">Para poder acceder a este contrasinal en todos os teus dispositivos, verifica a túa identidade</translation>
 <translation id="5380953781541843508">en orde ascendente</translation>
 <translation id="5381318171304904246">Se continúas, pasarás ao sitio web do banco. Despois de facer a verificación, volverás automaticamente para rematar a compra.</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> actualizou a pestana "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="5383478552402031184">Pavimentos</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">Os URL que non sexan HTTPS non se poden previsualizar</translation>
@@ -2880,6 +2881,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6059925163896151826">Dispositivos USB</translation>
 <translation id="6060009363608157444">Modo DnsOverHttps non válido.</translation>
 <translation id="6061154937977953833">Loita</translation>
+<translation id="6062405040252994646">Ferramenta</translation>
 <translation id="6062937464449575061">Deixar de facer seguimento de prezos</translation>
 <translation id="6063415549109819824">Financiamento da vivenda</translation>
 <translation id="6070432475334343308">Non se cargaron un ou máis ficheiros en <ph name="FOLDER_NAME" /> de <ph name="CLOUD_PROVIDER" /></translation>
@@ -3926,6 +3928,7 @@ Detalles adicionais:
 <translation id="787226752901403048">Inicia sesión en Chrome para compartir grupos de pestanas e unirte a eles, así como para desenvolver ideas con outras persoas</translation>
 <translation id="7877007680666472091">códigos de identificación de contido protexido</translation>
 <translation id="7878562273885520351">Pode que o teu contrasinal estea en perigo</translation>
+<translation id="7881044256965445977">Busca calquera dispositivo da túa rede local e conéctate a el</translation>
 <translation id="7882421473871500483">Marrón</translation>
 <translation id="7886897188117641322">Selecciona as categorías amplas de temas que se poden usar para axudar a personalizar os anuncios</translation>
 <translation id="7887683347370398519">Comproba o CVC e téntao de novo</translation>
@@ -4683,6 +4686,7 @@ Detalles adicionais:
 <translation id="94613679163347541">Queres comparar <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para crear rapidamente un sitio novo en Google Sites</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome volverá limitar as cookies hoxe}=1{Chrome volverá limitar as cookies mañá}other{Faltan # días para que Chrome volva limitar as cookies}}</translation>
+<translation id="949026252328034572">Uníronse <ph name="MEMBER_COUNT" /> membros ao grupo de pestanas "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Pediches permiso para visitar este sitio. O teu pai ou nai pode responder en Family Link.</translation>
 <translation id="950736567201356821">Tres perforacións na parte superior</translation>
 <translation id="950926967802086924">Clave de acceso • Xestor de contrasinais de Google</translation>

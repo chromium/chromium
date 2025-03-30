@@ -64,6 +64,7 @@ class MEDIA_EXPORT DecoderSelector {
   // `enable_priority_based_selection` allows the DecoderSelector to change the
   // order of which decoders are tried from FIFO order to an order based on
   // characteristics of each decoder and config (resolution, platform, etc).
+  // TODO(crbug.com/368085608): Remove this parameter after M137 goes stable.
   DecoderSelector(scoped_refptr<base::SequencedTaskRunner> task_runner,
                   CreateDecodersCB create_decoders_cb,
                   MediaLog* media_log,

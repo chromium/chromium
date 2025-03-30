@@ -11,6 +11,7 @@
 
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,14 +28,33 @@
 #include "components/search_engines/template_url_data_util.h"
 #include "components/version_info/version_info.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
+#include "third_party/search_engines_data/resources/definitions/regional_settings.h"
 
 namespace TemplateURLPrepopulateData {
 
 // Helpers --------------------------------------------------------------------
 
 namespace {
+// The number of search engines for each country falling into the "top"
+// category.
+constexpr size_t kTopSearchEnginesThreshold = 5;
 
-#include "components/search_engines/search_engine_countries-inc.cc"
+inline std::unique_ptr<TemplateURLData> PrepopulatedEngineToTemplateURLData(
+    const TemplateURLPrepopulateData::PrepopulatedEngine* engine) {
+  return TemplateURLDataFromPrepopulatedEngine(*engine);
+}
+
+// Returns regional settings appropriate for the current country. If no specific
+// regional settings are defined, returns the default settings.
+const RegionalSettings& GetRegionalSettings(CountryId country_id) {
+  auto iter = kRegionalSettings.find(country_id);
+  if (iter == kRegionalSettings.end()) {
+    // Fallback to default country.
+    iter = kRegionalSettings.find(CountryId());
+  }
+
+  return *iter->second;
+}
 
 std::vector<std::unique_ptr<TemplateURLData>>
 GetPrepopulatedEnginesForEeaRegionCountries(CountryId country_id,
@@ -57,11 +77,9 @@ GetPrepopulatedEnginesForEeaRegionCountries(CountryId country_id,
     seed_version_number = current_version_number;
   }
 
-  std::vector<std::unique_ptr<TemplateURLData>> t_urls = base::ToVector(
-      GetPrepopulationSetFromCountryID(country_id),
-      [](const EngineAndTier& entry) {
-        return TemplateURLDataFromPrepopulatedEngine(*entry.search_engine);
-      });
+  std::vector<std::unique_ptr<TemplateURLData>> t_urls =
+      base::ToVector(GetRegionalSettings(country_id).search_engines,
+                     &PrepopulatedEngineToTemplateURLData);
 
   std::default_random_engine generator;
   generator.seed(profile_seed);
@@ -91,16 +109,10 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedTemplateURLData(
     return GetPrepopulatedEnginesForEeaRegionCountries(country_id, prefs);
   }
 
-  std::vector<std::unique_ptr<TemplateURLData>> t_urls;
-  std::vector<EngineAndTier> engines =
-      GetPrepopulationSetFromCountryID(country_id);
-  for (const EngineAndTier& engine : engines) {
-    if (engine.tier == SearchEngineTier::kTopEngines) {
-      t_urls.push_back(
-          TemplateURLDataFromPrepopulatedEngine(*engine.search_engine));
-    }
-  }
-  return t_urls;
+  const auto& engines = GetRegionalSettings(country_id).search_engines;
+  size_t num_top_engines = std::min(engines.size(), kTopSearchEnginesThreshold);
+  return base::ToVector(base::span(engines).first(num_top_engines),
+                        &PrepopulatedEngineToTemplateURLData);
 }
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -248,28 +260,29 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
     }
   }
 
+  auto engine_matcher = [&](const PrepopulatedEngine* engine) {
+    return engine->id == prepopulated_id;
+  };
+
   // We look in the profile country's prepopulated set first. This is intended
   // to help using the right entry for the case where we have multiple ones in
   // the full list that share a same prepopulated id.
-  for (const EngineAndTier& engine_and_tier :
-       GetPrepopulationSetFromCountryID(country_id)) {
-    if (engine_and_tier.search_engine->id == prepopulated_id) {
-      return TemplateURLDataFromPrepopulatedEngine(
-          *engine_and_tier.search_engine);
-    }
+  const auto& engines = GetRegionalSettings(country_id).search_engines;
+  if (auto iter = std::ranges::find_if(engines, engine_matcher);
+      iter != engines.end()) {
+    return PrepopulatedEngineToTemplateURLData(*iter);
   }
 
-  // Fallback: just grab the first matching entry from the complete list. In
-  // case of IDs shared across multiple entries, we might be returning the
-  // wrong one for the profile country. We can look into better heuristics in
-  // future work.
-  for (const PrepopulatedEngine* engine : kAllEngines) {
-    if (engine->id == prepopulated_id) {
-      return TemplateURLDataFromPrepopulatedEngine(*engine);
-    }
+  // Fallback: just grab the first matching entry from the complete list.
+  // In case of IDs shared across multiple entries, we might be returning
+  // the wrong one for the profile country. We can look into better
+  // heuristics in future work.
+  if (auto iter = std::ranges::find_if(kAllEngines, engine_matcher);
+      iter != kAllEngines.end()) {
+    return PrepopulatedEngineToTemplateURLData(*iter);
   }
 
-  return nullptr;
+  return {};
 }
 
 void ClearPrepopulatedEnginesInPrefs(PrefService* prefs) {
@@ -302,13 +315,12 @@ GetAllEeaRegionPrepopulatedEngines() {
   base::flat_set<int> used_engines;
   for (CountryId eea_country_id :
        regional_capabilities::kEeaChoiceCountriesIds) {
-    std::vector<EngineAndTier> country_engines =
-        GetPrepopulationSetFromCountryID(eea_country_id);
-    for (const EngineAndTier& engine : country_engines) {
-      raw_ptr<const PrepopulatedEngine> search_engine = engine.search_engine;
-      if (!base::Contains(used_engines, search_engine->id)) {
-        result.push_back(TemplateURLDataFromPrepopulatedEngine(*search_engine));
-        used_engines.emplace(search_engine->id);
+    const auto& search_engines =
+        GetRegionalSettings(eea_country_id).search_engines;
+
+    for (const auto* engine : search_engines) {
+      if (auto [_, added] = used_engines.emplace(engine->id); added) {
+        result.push_back(PrepopulatedEngineToTemplateURLData(engine));
       }
     }
   }
@@ -317,16 +329,8 @@ GetAllEeaRegionPrepopulatedEngines() {
 }
 
 std::vector<std::unique_ptr<TemplateURLData>> GetDefaultPrepopulatedEngines() {
-  return base::ToVector(engines_default, [](const EngineAndTier& entry) {
-    return TemplateURLDataFromPrepopulatedEngine(*entry.search_engine);
-  });
+  return base::ToVector(GetRegionalSettings(CountryId()).search_engines,
+                        &PrepopulatedEngineToTemplateURLData);
 }
 
-// Test Utilities -------------------------------------------------------------
-
-const std::vector<raw_ptr<const PrepopulatedEngine>>
-GetPrepopulationSetFromCountryIDForTesting(CountryId country_id) {
-  return base::ToVector(GetPrepopulationSetFromCountryID(country_id),
-                        &EngineAndTier::search_engine);
-}
 }  // namespace TemplateURLPrepopulateData

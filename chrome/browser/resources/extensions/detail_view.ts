@@ -121,17 +121,19 @@ export class ExtensionsDetailViewElement extends
     };
   }
 
-  data: chrome.developerPrivate.ExtensionInfo = createDummyExtensionInfo();
-  delegate: ItemDelegate&Mv2DeprecationDelegate = new DummyDetailViewDelegate();
-  inDevMode: boolean = false;
-  enableEnhancedSiteControls: boolean = false;
-  incognitoAvailable: boolean = false;
-  showActivityLog: boolean = false;
-  fromActivityLog: boolean = false;
-  protected showSafetyCheck_: boolean = false;
-  protected size_: string = '';
-  protected sortedViews_: chrome.developerPrivate.ExtensionView[] = [];
-  private mv2ExperimentStage_: Mv2ExperimentStage =
+  accessor data: chrome.developerPrivate.ExtensionInfo =
+      createDummyExtensionInfo();
+  accessor delegate: ItemDelegate&Mv2DeprecationDelegate =
+      new DummyDetailViewDelegate();
+  accessor inDevMode: boolean = false;
+  accessor enableEnhancedSiteControls: boolean = false;
+  accessor incognitoAvailable: boolean = false;
+  accessor showActivityLog: boolean = false;
+  accessor fromActivityLog: boolean = false;
+  protected accessor showSafetyCheck_: boolean = false;
+  protected accessor size_: string = '';
+  protected accessor sortedViews_: chrome.developerPrivate.ExtensionView[] = [];
+  private accessor mv2ExperimentStage_: Mv2ExperimentStage =
       getMv2ExperimentStage(loadTimeData.getInteger('MV2ExperimentStage'));
 
   override firstUpdated() {

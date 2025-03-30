@@ -4,14 +4,16 @@
 
 #include "third_party/webrtc_overrides/task_queue_factory.h"
 
-#include <map>
 #include <memory>
+#include <string_view>
+#include <utility>
 
-#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "base/task/delay_policy.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
@@ -22,7 +24,6 @@
 #include "third_party/webrtc/api/units/time_delta.h"
 #include "third_party/webrtc_overrides/api/location.h"
 #include "third_party/webrtc_overrides/coalesced_tasks.h"
-#include "third_party/webrtc_overrides/metronome_source.h"
 #include "third_party/webrtc_overrides/timer_based_tick_provider.h"
 
 namespace blink {

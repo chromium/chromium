@@ -8,6 +8,7 @@
 <translation id="100323615638474026">Appareil USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Historique des téléchargements récents</translation>
 <translation id="1004218526896219317">Accès aux sites</translation>
+<translation id="1005230401424685968">AAAA</translation>
 <translation id="1005274289863221750">Utiliser votre micro et votre caméra</translation>
 <translation id="1005333234656240382">Activer le débogage ADB ?</translation>
 <translation id="1005671386794704751">Rose</translation>
@@ -1368,6 +1369,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="193565226207940518">Outil d'assistance</translation>
 <translation id="1935995810530254458">Copier quand même</translation>
 <translation id="1936157145127842922">Afficher dans le dossier</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Page ajoutée à la liste de lecture}one{Page ajoutée à la liste de lecture}other{Pages ajoutées à la liste de lecture}}</translation>
 <translation id="1936931585862840749">Indiquez le nombre de copies à imprimer (1 à <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Impossible d'importer le type d'architecture de conteneur <ph name="ARCHITECTURE_CONTAINER" /> avec l'appareil <ph name="ARCHITECTURE_DEVICE" />. Vous pouvez essayer de restaurer ce conteneur dans un autre appareil ou accéder aux fichiers inclus dans l'image de ce conteneur en les ouvrant dans l'application Fichiers.</translation>
 <translation id="1938351510777341717">Commande externe</translation>
@@ -2006,6 +2008,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2373666622366160481">Ajuster à la taille du papier</translation>
 <translation id="2375406435414127095">Connexion à votre téléphone</translation>
 <translation id="2376056713414548745">Lire à voix haute</translation>
+<translation id="2376122016044804363">Confirmations de copie dans le presse-papiers</translation>
 <translation id="2377667304966270281">Défauts matériels</translation>
 <translation id="237828693408258535">Traduire cette page ?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Cette extension ne sera peut-être bientôt plus prise en charge}one{Cette extension ne sera peut-être bientôt plus prise en charge}other{Ces extensions ne seront peut-être bientôt plus prises en charge}}</translation>
@@ -3158,6 +3161,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3192586965067888278">Décrivez en détail le problème rencontré. Vos commentaires seront envoyés à Google et examinés par un humain. Ils pourront servir à améliorer ou à développer les produits et services Google.</translation>
 <translation id="3192947282887913208">Fichiers audio</translation>
 <translation id="3193695589337931419">Utilitaires des signaux du système</translation>
+<translation id="3194095220941877499">Affiche une confirmation lorsque vous copiez des liens, des images ou des vidéos</translation>
 <translation id="3196912927885212665">Pour effectuer la configuration avec votre téléphone Android, vous devez activer le Bluetooth sur votre Chromebook</translation>
 <translation id="3197453258332670132">Affichez des infos liées au texte sélectionné avec un clic droit ou un appui de manière prolongée</translation>
 <translation id="3199127022143353223">Serveurs</translation>
@@ -3172,7 +3176,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
         <ph name="BREAK" />
         <ph name="BREAK" />
         Vous pouvez gérer les paramètres de cette fiche à tout moment ou voir plus d'options dans "Personnaliser Chrome".</translation>
-<translation id="3207437351138888228">Lorsque vous remplissez un formulaire, vos informations et la page d'où elles proviennent sont envoyées à Google pour générer des suggestions</translation>
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208584281581115441">Vérifier maintenant</translation>
 <translation id="3208703785962634733">Non confirmé</translation>
@@ -3217,6 +3220,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3242289508736283383">L'appli dont le fichier manifeste comporte un attribut "kiosk_only" doit être installée en mode Kiosque pour Chrome OS</translation>
 <translation id="3243017971870859287">Lire les numéros de série des appareils ChromeOS Flex et leurs composants</translation>
 <translation id="324366796737464147">Suppression du bruit</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Ne pas réactiver le son</translation>
 <translation id="3247006341013237647">Organiser les onglets ?</translation>
 <translation id="3247649647204519958">Vous pouvez voir et gérer ici les autorisations des extensions pour le site que vous consultez</translation>
@@ -6083,7 +6087,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5267572070504076962">Activez la navigation sécurisée pour vous protéger contre les sites dangereux</translation>
 <translation id="5269977353971873915">Échec de l'impression</translation>
 <translation id="5271578170655641944">Supprimer l'accès à Google Drive ?</translation>
-<translation id="5271782684896713035">Des réviseurs humains peuvent consulter les données pour améliorer cette fonctionnalité</translation>
 <translation id="5273806377963980154">Modifier l'URL du site</translation>
 <translation id="5275084684151588738">Dictionnaires personnels</translation>
 <translation id="5275338516105640560">Bouton "Groupe d'onglets enregistré"</translation>
@@ -8877,7 +8880,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7312210124139670355">Votre administrateur réinitialise votre eSIM. Cela peut prendre quelques minutes.</translation>
 <translation id="7313539585802573958">Couleurs de rétroéclairage du clavier</translation>
 <translation id="7314989823816739632">Romantique</translation>
-<translation id="7317342082064136423">Valider votre compte</translation>
+<translation id="7317342082064136423">Validez votre compte</translation>
 <translation id="7317831949569936035">Enregistrement auprès de l'établissement</translation>
 <translation id="731827437403763009">Innovations de l'IA</translation>
 <translation id="7319320447721994672">Si vous consultez un site qui utilise des cookies, vous devrez peut-être les activer temporairement pour que toutes les fonctionnalités du site soient opérationnelles.</translation>

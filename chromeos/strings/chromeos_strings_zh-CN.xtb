@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">需要验证代理身份</translation>
 <translation id="4594021849294327751">创建转写文本</translation>
 <translation id="4594541568452132351">选择转写语言并下载模型</translation>
-<translation id="4607282946861182308">无法创建这样的图片。请试试其他提示。</translation>
 <translation id="4609350030397390689">调低键盘亮度</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已打印 <ph name="PRINTED_PAGE_NUMBER" /> 页，共 <ph name="TOTAL_PAGE_NUMBER" /> 页。按 Enter 键即可取消这项打印任务。</translation>
 <translation id="463791356324567266">正在取消扫描…</translation>
@@ -1659,6 +1658,7 @@
 <translation id="8543574988889671960">重新加载标签页</translation>
 <translation id="8550364285433943656">使用键盘按键控制游戏操作</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">生成式 AI 可能会输出错误信息，包括与人有关的信息，因此请务必核查回答内容。</translation>
 <translation id="8575298406870537639">您的运营商可能会要求您启用此选项以连接到其网络。如需了解详情，请联系您的运营商。</translation>
 <translation id="8576249514688522074">未初始化</translation>
 <translation id="8584654835905316966">必须重启，才能完成<ph name="DEVICE_NAME" />固件安装操作，并更新至版本 <ph name="VERSION" />。电脑可能会重启几次。这是正常现象。</translation>
@@ -1673,7 +1673,6 @@
 <translation id="8655295600908251630">版本</translation>
 <translation id="8655828773034788261">分享网址：</translation>
 <translation id="8660881923941176839">磅</translation>
-<translation id="8670057600920888023">生成式 AI 尚处于实验阶段，生成的内容可能不准确、具有误导性或冒犯性。</translation>
 <translation id="8670574982334489519">右侧</translation>
 <translation id="8675354002693747642">预共享密钥</translation>
 <translation id="8677859815076891398">无任何相册。请在 <ph name="LINK_BEGIN" />Google 相册<ph name="LINK_END" />中创建一个相册。</translation>

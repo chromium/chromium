@@ -404,6 +404,7 @@ void OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens(
 
   interceptor->MaybeInterceptOidcAuthentication(
       navigation_handle()->GetWebContents(), tokens, *issuer_id, *subject_id,
+      std::string(),
       base::BindOnce(&OidcAuthResponseCaptureNavigationThrottle::Resume,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -502,6 +503,7 @@ ThrottleCheckResult OidcAuthResponseCaptureNavigationThrottle::
         ProfileManagementOidcTokens(
             registration_payload.encrypted_user_information()),
         registration_payload.issuer(), registration_payload.subject(),
+        registration_payload.email(),
         base::BindOnce(&OidcAuthResponseCaptureNavigationThrottle::Resume,
                        weak_ptr_factory_.GetWeakPtr()));
     return DEFER;

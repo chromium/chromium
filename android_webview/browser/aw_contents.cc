@@ -196,6 +196,30 @@ class AwContentsUserData : public base::SupportsUserData::Data {
 
 base::subtle::Atomic32 g_instance_count = 0;
 
+bool IsPrerenderHandleEquivalentTo(
+    const std::unique_ptr<content::PrerenderHandle>& handle,
+    const GURL& url,
+    const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint) {
+  // We will only compare the URLs if the no-vary-search hints match for
+  // determinism. This is because comparing URLs with different no-vary-search
+  // hints will change the outcome of the comparison based on the order the
+  // requests happened in.
+  //
+  // This approach optimizes for determinism over minimizing wasted
+  // or redundant prefetches.
+  if (no_vary_search_hint != handle->GetNoVarySearchHint()) {
+    return false;
+  }
+
+  if (no_vary_search_hint) {
+    return no_vary_search_hint->AreEquivalent(
+        url, handle->GetInitialPrerenderingUrl());
+  }
+
+  // If there is no no-vary-search hint, just compare the URLs.
+  return url == handle->GetInitialPrerenderingUrl();
+}
+
 }  // namespace
 
 class ScopedAllowInitGLBindings {
@@ -1504,13 +1528,27 @@ jint AwContents::StartPrerendering(
                   return !handle->IsValid();
                 });
 
-  // If the valid PrerenderHandle for the same URL exists, add the callbacks to
-  // the handle instead of starting a new one.
-  for (auto& handle : prerender_handles_) {
-    if (handle->GetInitialPrerenderingUrl().spec() == prerendering_url) {
+  GURL url(prerendering_url);
+  std::optional<net::HttpNoVarySearchData> no_vary_search_hint =
+      GetExpectedNoVarySearchFromPrefetchParameters(env, j_prefetch_params);
+
+  for (auto it = prerender_handles_.begin(); it != prerender_handles_.end();
+       ++it) {
+    const std::unique_ptr<content::PrerenderHandle>& handle = *it;
+
+    // If the handle is equivalent to the given URL and the No-Vary-Search hint,
+    // add the callbacks to the handle instead of starting a new one.
+    if (IsPrerenderHandleEquivalentTo(handle, url, no_vary_search_hint)) {
       handle->AddActivationCallback(std::move(activation_callback));
       handle->AddErrorCallback(std::move(error_callback));
       return handle->GetHandleId();
+    }
+
+    // If the handle is not equivalent but has the same prerendering URL, cancel
+    // it to start a new one with the new No-Vary-Search hint.
+    if (handle->GetInitialPrerenderingUrl() == url) {
+      prerender_handles_.erase(it);
+      break;
     }
   }
 
@@ -1529,8 +1567,6 @@ jint AwContents::StartPrerendering(
 
   net::HttpRequestHeaders additional_headers =
       GetAdditionalHeadersFromPrefetchParameters(env, j_prefetch_params);
-  std::optional<net::HttpNoVarySearchData> no_vary_search_hint =
-      GetExpectedNoVarySearchFromPrefetchParameters(env, j_prefetch_params);
 
   // This is the same as the page transition of WebView.loadUrl().
   auto page_transition = ui::PageTransitionFromInt(
@@ -1542,9 +1578,9 @@ jint AwContents::StartPrerendering(
   // - Run multiple prerendering in a sequential manner, not in parallel.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       web_contents_->StartPrerendering(
-          GURL(prerendering_url), content::PreloadingTriggerType::kEmbedder,
-          "WebView", std::move(additional_headers),
-          std::move(no_vary_search_hint), page_transition,
+          url, content::PreloadingTriggerType::kEmbedder, "WebView",
+          std::move(additional_headers), std::move(no_vary_search_hint),
+          page_transition,
           /*should_warm_up_compositor=*/false,
           /*should_prepare_paint_tree=*/false,
           content::PreloadingHoldbackStatus::kUnspecified,

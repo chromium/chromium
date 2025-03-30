@@ -161,7 +161,7 @@ void PinToTaskbarIfAllowedOnUIThread(
 
 // Attempts to pin a shortcut with AUMI `app_user_model_id` to the taskbar.
 // Pinning is done on the UI thread, asynchronously.
-void PinWithLimitedAccessFeature(base::wcstring_view app_user_model_id,
+void PinWithLimitedAccessFeature(const std::wstring& app_user_model_id,
                                  bool check_only,
                                  ResultMetricCallback callback) {
   base::win::AssertComInitialized();
@@ -196,11 +196,10 @@ void PinWithLimitedAccessFeature(base::wcstring_view app_user_model_id,
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&PinToTaskbarIfAllowedOnUIThread, taskbar_manager,
-                     std::wstring(app_user_model_id), check_only,
-                     std::move(callback)));
+                     app_user_model_id, check_only, std::move(callback)));
 }
 
-void PinAppToTaskbarInternal(base::wcstring_view app_user_model_id,
+void PinAppToTaskbarInternal(const std::wstring& app_user_model_id,
                              bool check_only,
                              PinResultCallback callback) {
   // Do the initial work, which does a lot of COM stuff, on a background thread.
@@ -236,13 +235,13 @@ void PinAppToTaskbarInternal(base::wcstring_view app_user_model_id,
 
 }  // namespace
 
-void ShouldOfferToPin(base::wcstring_view app_user_model_id,
+void ShouldOfferToPin(const std::wstring& app_user_model_id,
                       PinResultCallback callback) {
   PinAppToTaskbarInternal(app_user_model_id, /*check_only=*/true,
                           std::move(callback));
 }
 
-void PinAppToTaskbar(base::wcstring_view app_user_model_id,
+void PinAppToTaskbar(const std::wstring& app_user_model_id,
                      PinResultCallback callback) {
   PinAppToTaskbarInternal(app_user_model_id,
                           /*check_only=*/false, std::move(callback));

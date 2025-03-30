@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB ഉപകരണം (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">അടുത്തിടെയുള്ള ഡൗൺലോഡുകളുടെ ചരിത്രം</translation>
 <translation id="1004218526896219317">സൈറ്റ് ആക്‌സസ്</translation>
+<translation id="1005230401424685968">YYYY</translation>
 <translation id="1005274289863221750">നിങ്ങളുടെ മൈക്രോഫോണും ക്യാമറയും ഉപയോഗിക്കുക</translation>
 <translation id="1005333234656240382">ADB ഡീബഗ് ചെയ്യൽ പ്രവർത്തനക്ഷമമാക്കണോ?</translation>
 <translation id="1005671386794704751">റോസാപ്പൂവിന്റെ നിറം</translation>
@@ -1364,6 +1365,7 @@
 <translation id="193565226207940518">പിന്തുണാ ടൂൾ</translation>
 <translation id="1935995810530254458">എന്തായാലും പകർത്തുക</translation>
 <translation id="1936157145127842922">ഫോള്‍ഡറില്‍ കാണിക്കുക</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{വായിക്കാനുള്ളവയുടെ ലിസ്റ്റിലേക്ക് പേജ് ചേർത്തു}other{വായിക്കാനുള്ളവയുടെ ലിസ്റ്റിലേക്ക് പേജുകൾ ചേർത്തു}}</translation>
 <translation id="1936931585862840749">എത്ര പകർപ്പുകൾ പ്രിന്റ് ചെയ്യണമെന്ന് സൂചിപ്പിക്കാൻ ഒരു നമ്പര്‍ ഉപയോഗിക്കുക (1 മുതൽ <ph name="MAX_COPIES" /> വരെ).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> ആയ ഈ ഉപകരണം ഉപയോഗിച്ച് കണ്ടെയ്‌നർ ആർക്കി‌ടെക്‌ചർ തരമായ <ph name="ARCHITECTURE_CONTAINER" /> ഇമ്പോർട്ട് ചെയ്യാനാവില്ല. നിങ്ങൾക്ക് ഈ കണ്ടെയ്‌നർ മറ്റൊരു ഉപകരണത്തിലേക്ക് പുനഃസ്ഥാപിക്കാൻ ശ്രമിക്കാം അല്ലെങ്കിൽ Files ആപ്പിൽ തുറന്ന് ഈ കണ്ടെയ്‌നർ ചിത്രത്തിനുള്ളിലെ ഫയലുകൾ ആക്‌സസ് ചെയ്യാം.</translation>
 <translation id="1938351510777341717">എക്‌സ്‌റ്റേണൽ കമാൻഡ്</translation>
@@ -2977,6 +2979,7 @@
 <translation id="3045447014237878114">ഈ സൈറ്റ് ഒന്നിലധികം ഫയലുകൾ സ്വയമേവ ഡൗൺലോഡ് ചെയ്‌തു</translation>
 <translation id="3046178388369461825">Linux ഡിസ്‌ക് ഇടം വളരെ കുറവാണ്</translation>
 <translation id="304644035656848980">നിങ്ങളുടെ മൈക്രോഫോണിന്റെ പ്രിവ്യൂ</translation>
+<translation id="3046892784550338476">പതിപ്പ് <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">വെബ്‌പേജ്, പൂർണ്ണമായും</translation>
 <translation id="304747341537320566">സ്പീച്ച് എഞ്ചിനുകൾ</translation>
 <translation id="3047678109605649715">നിങ്ങളുടെ ഉപകരണത്തിൽ <ph name="LANGUAGE" /> വോയ്‌സുകളൊന്നുമില്ല. നിങ്ങളുടെ ഉപകരണത്തിലെ സ്പേസ് മായ്ച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -3069,6 +3072,7 @@
 <translation id="3122883569442693641">കൂടുതൽ വിശദാംശങ്ങൾ</translation>
 <translation id="3124111068741548686">ഉപയോക്താവ് കൈകാര്യം ചെയ്യുന്നവ</translation>
 <translation id="3124332159330678621">നിങ്ങളുടെ ബ്രൗസറിന് പുതിയ രൂപം നൽകാൻ Chrome ഇഷ്‌ടാനുസൃതമാക്കുക</translation>
+<translation id="3125816458150005808">നിങ്ങൾക്ക് അത് അൺപിൻ ചെയ്ത് മെനുവിൽ നിന്ന് തുറക്കാം</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">ചാർജ് ചെയ്യുന്നതും പ്രകടന പ്രശ്‌നങ്ങളും ഒഴിവാക്കാൻ, അനുയോജ്യമായ Dell അല്ലെങ്കിൽ USB ടൈപ്പ്-C പവർ അഡാപ്‌റ്റർ ഉപയോഗിക്കുക.</translation>
 <translation id="3127862849166875294">Linux ഡിസ്ക് വലുപ്പം മാറ്റൽ</translation>
@@ -3172,7 +3176,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         നിങ്ങൾക്ക് ഈ കാർഡിൽ നിന്നുള്ള ക്രമീകരണം ഏതുസമയത്തും മാനേജ് ചെയ്യാം അല്ലെങ്കിൽ 'Chrome ഇഷ്ടാനുസൃതമാക്കുക' എന്നതിൽ കൂടുതൽ ഓപ്ഷനുകൾ കാണാം.</translation>
-<translation id="3207437351138888228">നിങ്ങൾ ഒരു ഫോം പൂരിപ്പിക്കുമ്പോൾ നിങ്ങളുടെ വിവരങ്ങളും ആ വിവരങ്ങളടങ്ങിയ പേജും നിർദ്ദേശങ്ങൾ ജനറേറ്റ് ചെയ്യാനായി Google-ന് അയയ്ക്കുന്നു</translation>
 <translation id="3207960819495026254">ബുക്ക്‌മാർക്കുചെയ്‌തു</translation>
 <translation id="3208584281581115441">ഇപ്പോൾ പരിശോധിക്കുക</translation>
 <translation id="3208703785962634733">സ്ഥിരീകരികരിക്കാത്തത്</translation>
@@ -3217,6 +3220,7 @@
 <translation id="3242289508736283383">ChromeOS കിയോസ്‌ക് മോഡിൽ, 'kiosk_only' മാനിഫെസ്റ്റ് ആട്രിബ്യൂട്ട് ഉള്ള ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്യണം</translation>
 <translation id="3243017971870859287">ChromeOS Flex ഉപകരണവും കമ്പോണന്റ് സീരിയൽ നമ്പറുകളും റീഡ് ചെയ്യുക</translation>
 <translation id="324366796737464147">നോയ്‌സ് റദ്ദാക്കൽ</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">ശബ്ദം മ്യൂട്ട് ചെയ്യുന്നത് തുടരുക</translation>
 <translation id="3247006341013237647">ടാബുകൾ ഓർഗനൈസ് ചെയ്യണോ?</translation>
 <translation id="3247649647204519958">ഇവിടെ നിന്ന്, നിങ്ങൾ ഇപ്പോൾ ഉള്ള സൈറ്റിന്റെ വിപുലീകരണ അനുമതികൾ കാണാനും മാനേജ് ചെയ്യാനുമാകും</translation>
@@ -5318,6 +5322,7 @@
 <translation id="4723140812774948886">അടുത്തതുമായി സ്വാപ്പ് ചെയ്യുക</translation>
 <translation id="4724450788351008910">അഫിലിയേഷന്‍‌ മാറ്റി</translation>
 <translation id="4725511304875193254">പട്ടിക്കുട്ടി</translation>
+<translation id="4725762702191453794">ടാബ് തിരയൽ ഇപ്പോൾ നിങ്ങളുടെ ടൂൾബാറിൽ പിൻ ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="4726710355753484204">സൂം ഇൻ ചെയ്യാൻ Ctrl + Alt + Brightness up ഉപയോഗിക്കുക.
 സൂം ഔട്ട് ചെയ്യാൻ Ctrl + Alt + Brightness down ഉപയോഗിക്കുക.</translation>
 <translation id="4726710629007580002">ഈ വിപുലീകരണം ഇൻസ്റ്റാൾ ചെയ്യാൻ ശ്രമിക്കുമ്പോൾ മുന്നറിയിപ്പുകൾ ഉണ്ടായിരുന്നു:</translation>
@@ -6083,7 +6088,6 @@
 <translation id="5267572070504076962">അപകടകരമായ സൈറ്റുകളിൽ നിന്ന് പരിരക്ഷ നേടാൻ സുരക്ഷിത ബ്രൗസിംഗ് ഓണാക്കുക</translation>
 <translation id="5269977353971873915">പ്രിന്‍റ് ചെയ്യൽ പരാജയപ്പെട്ടു</translation>
 <translation id="5271578170655641944">Google Drive ആക്‌സസ് നീക്കം ചെയ്യണോ?</translation>
-<translation id="5271782684896713035">ഈ ഫീച്ചർ മെച്ചപ്പെടുത്താൻ റിവ്യൂവർമാർ ഈ ഡാറ്റ കാണുകയും ചെയ്തേക്കാം</translation>
 <translation id="5273806377963980154">സെെറ്റ് URL എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="5275084684151588738">ഉപയോക്തൃ നിഘണ്ടുകൾ</translation>
 <translation id="5275338516105640560">സംരക്ഷിച്ച ടാബ് ഗ്രൂപ്പ് ബട്ടൺ</translation>

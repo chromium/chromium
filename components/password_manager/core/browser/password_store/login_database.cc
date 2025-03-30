@@ -1031,11 +1031,10 @@ bool ShouldDeleteUndecryptablePasswords(
     bool is_enabled_by_policy,
     IsAccountStore is_account_store) {
 #if BUILDFLAG(IS_LINUX)
-  std::string user_data_dir_string;
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
   // On Linux user data directory ca be specified using an env variable. If it
   // exists, passwords shouldn't be deleted.
-  if (environment->GetVar("CHROME_USER_DATA_DIR", &user_data_dir_string)) {
+  if (environment->HasVar("CHROME_USER_DATA_DIR")) {
     RecordShouldDeleteUndecryptablePasswordsMetric(
         ShouldDeleteUndecryptablePasswordsResult::kUserDataDirEnvVarIsPresent);
     return false;

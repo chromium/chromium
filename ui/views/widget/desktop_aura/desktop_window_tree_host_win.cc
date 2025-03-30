@@ -192,8 +192,7 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
   }
 
   message_handler_ = HWNDMessageHandler::Create(
-      this, native_widget_delegate_->AsWidget()->GetName(),
-      params.ShouldInitAsHeadless());
+      this, native_widget_delegate_->AsWidget()->GetName());
 
   ConfigureWindowStyles(message_handler_.get(), params,
                         GetWidget()->widget_delegate(),
