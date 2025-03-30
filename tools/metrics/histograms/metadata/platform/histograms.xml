@@ -919,12 +919,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Firmware.Mismatch" enum="BooleanDetected"
-    expires_after="2024-09-01">
+    expires_after="2026-03-26">
   <owner>yuanpengni@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
     Records if the system firmware mismatched OS bundled firmware. Reported once
     per boot by dev_debug_vboot.
+
+    Warning: this histogram was expired from 2024-09-02 to 2025-03-27; data may
+    be missing.
   </summary>
 </histogram>
 
