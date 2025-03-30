@@ -424966,6 +424966,10 @@
      "62a0c13f0a38df5b092cdab116f4fdc556a126ec",
      []
     ],
+    "trusted-types-reporting-clipping-of-sample.tentative-expected.txt": [
+     "5f42174013428340681a98adb20a68b48a12f2c2",
+     []
+    ],
     "trusted-types-reporting-expected.txt": [
      "511e25b8778e2babda28a9a551042b33a5f6f1c2",
      []
@@ -494191,7 +494195,7 @@
        ]
       ],
       "multiple-style-containers-comma-separated-queries.html": [
-       "23ea471c4172c077dffa18cd3f2659fd1f8064bf",
+       "daa64aaa42f46c2258f1445172fbc17f459262f1",
        [
         null,
         {}
@@ -727735,6 +727739,20 @@
     ],
     "trusted-types-reporting-check-report-Window-sink-mismatch.html": [
      "ad855dfb2f15a85548c423fe587592925e9a962d",
+     [
+      null,
+      {}
+     ]
+    ],
+    "trusted-types-reporting-clipping-of-sample.html": [
+     "1e4a8470ad1f5b001f4bcd862b74b579758b59cc",
+     [
+      null,
+      {}
+     ]
+    ],
+    "trusted-types-reporting-clipping-of-sample.tentative.html": [
+     "203cff8611086c9642bc5d690c617486b5372dae",
      [
       null,
       {}
