@@ -12,7 +12,8 @@
 
 namespace blink {
 
-LogicalOffset PhysicalOffset::ConvertToLogical(
+template <typename ValueType>
+LogicalOffset PhysicalFixedOffset<ValueType>::ConvertToLogical(
     WritingDirectionMode writing_direction,
     PhysicalSize outer_size,
     PhysicalSize inner_size) const {
@@ -20,13 +21,24 @@ LogicalOffset PhysicalOffset::ConvertToLogical(
       .ToLogical(*this, inner_size);
 }
 
-String PhysicalOffset::ToString() const {
+template <typename ValueType>
+String PhysicalFixedOffset<ValueType>::ToString() const {
   return String::Format("%s,%s", left.ToString().Ascii().c_str(),
                         top.ToString().Ascii().c_str());
 }
 
-std::ostream& operator<<(std::ostream& os, const PhysicalOffset& value) {
+template <typename ValueType>
+std::ostream& operator<<(std::ostream& os,
+                         const PhysicalFixedOffset<ValueType>& value) {
   return os << value.ToString();
 }
+
+// Explicit instantiations.
+#define INSTANTIATE(ValueType)                    \
+  template struct PhysicalFixedOffset<ValueType>; \
+  template CORE_EXPORT std::ostream& operator<<(  \
+      std::ostream&, const PhysicalFixedOffset<ValueType>&)
+
+INSTANTIATE(LayoutUnit);
 
 }  // namespace blink
