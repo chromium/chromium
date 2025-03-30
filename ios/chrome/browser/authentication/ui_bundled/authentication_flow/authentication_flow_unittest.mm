@@ -91,6 +91,7 @@ class AuthenticationFlowTest : public PlatformTest {
         case SigninCoordinatorResult::SigninCoordinatorResultCanceledByUser:
         case SigninCoordinatorResult::SigninCoordinatorResultDisabled:
         case SigninCoordinatorResult::SigninCoordinatorUINotAvailable:
+        case SigninCoordinatorResult::SigninCoordinatorProfileSwitch:
           signin_result_ = signin::Tribool::kFalse;
           break;
       }

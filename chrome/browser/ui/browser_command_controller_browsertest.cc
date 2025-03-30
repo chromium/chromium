@@ -733,7 +733,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
   base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
   // Bypass fre.
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
-  profile_prefs->SetBoolean(glic::prefs::kGlicCompletedFre, true);
+  profile_prefs->SetInteger(glic::prefs::kGlicCompletedFre,
+                            static_cast<int>(glic::prefs::FreStatus::kCompleted));
 
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_OPEN_GLIC));
   ASSERT_TRUE(

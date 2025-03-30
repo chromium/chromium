@@ -686,9 +686,8 @@ void StoreCurrentDisplayRotationLockPrefs(PrefService* pref_service) {
     return;
   }
   display::Display::Rotation rotation =
-      GetDisplayManager()
-          ->GetDisplayInfo(display::Display::InternalDisplayId())
-          .GetRotation(display::Display::RotationSource::ACCELEROMETER);
+      Shell::Get()->display_manager()->registered_internal_display_rotation();
+
   bool rotation_lock = Shell::Get()
                            ->display_manager()
                            ->registered_internal_display_rotation_lock();

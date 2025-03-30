@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Posibleng hindi gumana sa Incognito mode ang mga feature sa ilang site</translation>
 <translation id="2442870161001914531">Palaging hilingin ang pang-desktop na site</translation>
 <translation id="2445311670906052406">Shine-share na ngayon ng Chrome ang iyong mga kamakailang tab sa device mo. Makikita mo ang mga ito sa listahan ng app at mga resulta ng paghahanap ng iyong device. Puwede mo itong i-off anumang oras sa mga setting ng Chrome.</translation>
+<translation id="245322989586167203">Karaniwang kumokonekta ang mga site sa mga serial port para sa mga feature sa paglilipat ng data, gaya ng pag-set up ng iyong network</translation>
 <translation id="2469312991797799607">Ide-delete ng pagkilos na ito ang lahat ng data at cookies para sa <ph name="ORIGIN" /> at lahat ng site sa ilalim nito</translation>
 <translation id="2482878487686419369">Mga Abiso</translation>
 <translation id="2485422356828889247">I-uninstall</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Pigilan ang mga site na malaman kung kailan mo aktibong ginagamit ang device na ito</translation>
 <translation id="4412992751769744546">Payagan ang third-party na cookies</translation>
 <translation id="4419929467120297501">Bina-block ng Chrome ang mga site sa paggamit ng third-party na cookies para masubaybayan ka habang nagba-browse ka. Bisitahin ang mga setting para <ph name="BEGIN_LINK" />pamahalaan ang access sa third-party na cookies<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Serial port</translation>
 <translation id="4434045419905280838">Mga pop-up at pag-redirect</translation>
 <translation id="443552056913301231">Ide-delete ng pagkilos na ito ang lahat ng lokal na data, kabilang ang cookies, at ire-reset nito ang lahat ng pahintulot para sa <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">I-mute ang tunog para sa isang partikular na site.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Magtanong muna</translation>
 <translation id="7423538860840206698">Na-block sa pag-read ng clipboard</translation>
 <translation id="7425915948813553151">Madilim na tema para sa mga site</translation>
+<translation id="7478658909253570368">Huwag payagan ang mga site na kumonekta sa mga serial port</translation>
 <translation id="7488573225650545859">I-hide ang Tingnan ang mga tab sa iyong listahan ng app</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kapag naka-on, makakapagpakita ang mga site ng mga prompt sa pag-sign in. Kapag naka-off, hindi makakapagpakita ang mga site ng mga prompt sa pag-sign in.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Nakakonekta sa isang Bluetooth device</translation>
 <translation id="7617547684249261169">Puwede mong i-delete ang ilan sa o lahat ng iyong history, cookies, data ng site at higit pa</translation>
 <translation id="7649070708921625228">Tulong</translation>
+<translation id="7655411746932645568">Puwedeng hilingin ng mga site na kumonekta sa mga serial port</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
 <translation id="7681597159868843240">Karaniwang ginagamit ng mga site ang mga sensor ng paggalaw ng iyong device para sa mga feature na tulad ng virtual reality o pag-track sa fitness</translation>

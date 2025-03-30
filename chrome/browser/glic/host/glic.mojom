@@ -164,6 +164,8 @@ struct WebClientInitialState {
   // Whether to enable the OpenOsPermissionSettingsMenu API for the client.
   // Depends on platform. Currently only allowed for Mac.
   bool open_os_settings_api_is_allowed;
+  // Reflects the enabling state of always-detached mode.
+  bool always_detached_mode;
 };
 
 // Options for getting tab context.
@@ -310,7 +312,9 @@ interface WebClientHandler {
   // when it's created later.
   ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
 
-  // Allows the panel hosting the WebUI be manually resizable by user-dragging.
+  // Set whether the panel can be manually resized, or if the panel hasn't been
+  // created yet, whether it should be resizable when created. No effect if the
+  // GlicUserResize feature flag is disabled.
   EnableDragResize(bool enabled);
 
   // Returns the screenshot result or error reason. 'screenshot' is null when an
@@ -492,6 +496,9 @@ struct OpenPanelInfo {
   gfx.mojom.Size? panelSize;
   // Resize animation duration.
   mojo_base.mojom.TimeDelta resizeDuration;
+  // Whether the panel should start out user-resizable. No effect if the GlicUserResize feature
+  // flag is disabled.
+  bool can_user_resize;
 };
 
 // Access from the browser to the Glic web client by proxy of the WebUI page.

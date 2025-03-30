@@ -1031,35 +1031,41 @@ TEST_P(CaptureModeTest, CaptureRegionCaptureButtonLocation) {
   auto* controller = StartImageRegionCapture();
 
   // Select a large region. Verify that the capture button widget is centered.
-  SelectRegion(gfx::Rect(100, 100, 600, 600));
+  constexpr gfx::Rect kLargeRegion(200, 200, 500, 500);
+  SelectRegion(kLargeRegion);
 
   views::Widget* capture_button_widget = GetCaptureModeLabelWidget();
   ASSERT_TRUE(capture_button_widget);
   aura::Window* capture_button_window =
       capture_button_widget->GetNativeWindow();
-  EXPECT_EQ(gfx::Point(400, 400),
+  EXPECT_EQ(kLargeRegion.CenterPoint(),
             capture_button_window->bounds().CenterPoint());
 
   // Drag the bottom corner so that the region is too small to fit the capture
-  // button. Verify that the button is aligned horizontally and placed below the
+  // button. Verify that the button is aligned horizontally and placed above the
   // region.
   auto* event_generator = GetEventGenerator();
-  event_generator->DragMouseTo(gfx::Point(120, 120));
-  EXPECT_EQ(gfx::Rect(100, 100, 20, 20), controller->user_capture_region());
-  EXPECT_EQ(110, capture_button_window->bounds().CenterPoint().x());
+  constexpr gfx::Rect kSmallRegion(200, 200, 20, 20);
+  event_generator->DragMouseTo(kSmallRegion.bottom_right());
+  EXPECT_EQ(kSmallRegion, controller->user_capture_region());
+  EXPECT_EQ(kSmallRegion.CenterPoint().x(),
+            capture_button_window->bounds().CenterPoint().x());
   const int distance_from_region =
       CaptureModeSession::kCaptureButtonDistanceFromRegionDp;
-  EXPECT_EQ(120 + distance_from_region, capture_button_window->bounds().y());
-
-  // Click inside the region to drag the entire region to the bottom of the
-  // screen. Verify that the button is aligned horizontally and placed above the
-  // region.
-  event_generator->set_current_screen_location(gfx::Point(110, 110));
-  event_generator->DragMouseTo(gfx::Point(110, 790));
-  EXPECT_EQ(gfx::Rect(100, 780, 20, 20), controller->user_capture_region());
-  EXPECT_EQ(110, capture_button_window->bounds().CenterPoint().x());
-  EXPECT_EQ(780 - distance_from_region,
+  EXPECT_EQ(kSmallRegion.y() - distance_from_region,
             capture_button_window->bounds().bottom());
+
+  // Click inside the region to drag the entire region to the top of the
+  // screen. Verify that the button is aligned horizontally and placed below the
+  // region.
+  event_generator->set_current_screen_location(kSmallRegion.CenterPoint());
+  constexpr gfx::Rect kRegionAtTop(200, 0, 20, 20);
+  event_generator->DragMouseTo(kRegionAtTop.CenterPoint());
+  EXPECT_EQ(kRegionAtTop, controller->user_capture_region());
+  EXPECT_EQ(kRegionAtTop.CenterPoint().x(),
+            capture_button_window->bounds().CenterPoint().x());
+  EXPECT_EQ(kRegionAtTop.bottom() + distance_from_region,
+            capture_button_window->bounds().y());
 }
 
 // Tests some edge cases to ensure the capture button does not intersect the

@@ -91,6 +91,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1269405891096105529">Dispozitivul periferic nu este acceptat în modul pentru invitați</translation>
 <translation id="1270290102613614947">Tastatură pe ecran dezactivată</translation>
 <translation id="1272079795634619415">Oprește</translation>
+<translation id="12741168609094094">Selectează orice de pe ecran pentru a căuta, a copia text și altele</translation>
 <translation id="1275285675049378717">Se încarcă <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Selectat</translation>
 <translation id="1276975447697633661">Selectează fișierul, apoi apasă <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1720230731642245863">Hotspotul este dezactivat</translation>
 <translation id="1731815243805539470">Comută la utilizatorul anterior</translation>
 <translation id="1733996486177697563">Comută între tema luminoasă și cea întunecată Atinge lung pe desktop, apoi selectează Stil și imagine de fundal.</translation>
+<translation id="1735992454301033090">Zonă selectată, folosește tastele săgeată pentru a te deplasa</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />” vizibil pentru dispozitivele Bluetooth.</translation>
 <translation id="1737078180382804488">Renunță la configurarea afișării notificărilor telefonului</translation>
 <translation id="174102739345480129">Marcatorul este dezactivat.</translation>
@@ -494,6 +496,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> săptămâna trecută</translation>
 <translation id="2687510499067466116">Comanda rapidă de la tastatură s-a schimbat</translation>
 <translation id="2689613560355655046">Desktop 8</translation>
+<translation id="2692092709110488417">Apasă pe Tab pentru a focaliza și a muta zona selectată</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Afișează setările pentru tastatură. S-a selectat <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Folosește aplicația Transferul conținutului pentru a muta datele din contul școlar în contul personal</translation>
@@ -729,6 +732,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="346243998268439747">Resetează nivelul de zoom</translation>
 <translation id="3465223694362104965">La acest dispozitiv s-a conectat o altă tastatură de când l-ai folosit ultima dată. Asigură-te că ai încredere în această tastatură înainte să o folosești.</translation>
 <translation id="3465356146291925647">Gestionată de administratorul tău</translation>
+<translation id="3470502288861289375">Se copiază...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, apoi <ph name="KEY_TWO" /> sau <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1033,6 +1037,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4412698727486357573">Centrul de ajutor</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> este dezactivat.</translation>
 <translation id="4417647906073317561">Setări pentru Focus. Setează un temporizator, o activitate și muzică pentru a te concentra.</translation>
+<translation id="4418600384772451109">Închide panoul</translation>
 <translation id="4424159417645388645">Desktop 5</translation>
 <translation id="4426817706804363424">Bravo!</translation>
 <translation id="4430019312045809116">Volum</translation>
@@ -2229,6 +2234,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8287009018010202411">Productivitate</translation>
 <translation id="828708037801473432">Dezactivat</translation>
 <translation id="8297006494302853456">Slab</translation>
+<translation id="8300451473979404345">Ghidaj selectat, folosește tastele săgeată pentru a te deplasa</translation>
 <translation id="8308637677604853869">Meniul anterior</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Tasta Caps Lock este activată</translation>
@@ -2289,6 +2295,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="851458219935658693">Se afișează ferestrele de pe desktopul actual, buton radio selectat</translation>
 <translation id="851660987304951246">Folosește funcția Ajută-mă să citesc pentru a rezuma rapid conținutul sau a pune întrebări</translation>
 <translation id="8517041960877371778">Este posibil ca <ph name="DEVICE_TYPE" /> să nu se încarce cât timp este pornit.</translation>
+<translation id="8519329096920173967">Caută pe ecran cu Google Lens</translation>
 <translation id="8535393432370007982">Anulează sortarea după culoare</translation>
 <translation id="8536886494750559755">Afișează setările Quick Share. Vizibile pentru toată lumea timp de <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Textul a fost copiat în clipboard</translation>

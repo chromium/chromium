@@ -11,6 +11,7 @@ import android.view.Window;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -173,14 +174,13 @@ public class StatusBarColorController
         mStandardDefaultThemeColor = ChromeColors.getDefaultThemeColor(context, false);
         mIncognitoDefaultThemeColor = ChromeColors.getDefaultThemeColor(context, true);
         mBackgroundColorForNtp =
-                ChromeColors.getSurfaceColor(
-                        context, R.dimen.home_surface_background_color_elevation);
+                ContextCompat.getColor(context, R.color.home_surface_background_color);
         mStatusIndicatorColor = UNDEFINED_STATUS_BAR_COLOR;
 
         // TODO(b/41494931): Share code with LocationBarCoordinator's constructor.
         mActiveOmniboxDefaultColor =
-                ChromeColors.getSurfaceColor(
-                        context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+                ContextCompat.getColor(context, R.color.omnibox_suggestion_dropdown_bg);
+
         mIncognitoActiveOmniboxColor = context.getColor(R.color.omnibox_dropdown_bg_incognito);
         // TODO(b/41494931): Share code with ToolbarPhone#getToolbarDefaultColor().
         mStandardScrolledOmniboxColor =

@@ -17,6 +17,7 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/url_file_parser.h"
+#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
 @interface URLAndTitle ()
@@ -228,7 +229,8 @@ URLAndTitle* ExtractURLFromURLFile(NSPasteboardItem* item) {
 
 // Returns a URL and title if a string on the pasteboard item is formatted as a
 // URL but doesn't actually have the URL type.
-URLAndTitle* ExtractURLFromStringValue(NSPasteboardItem* item) {
+URLAndTitle* ExtractURLFromStringValue(NSPasteboardItem* item,
+                                       bool is_renderer_tainted) {
   NSString* string = [item stringForType:NSPasteboardTypeString];
   if (!string) {
     return nil;
@@ -247,6 +249,12 @@ URLAndTitle* ExtractURLFromStringValue(NSPasteboardItem* item) {
   // and don't put that back in.
   GURL url(base::SysNSStringToUTF8(string));
   if (!url.is_valid()) {
+    return nil;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kDragDropOnlySynthesizeHttpOrHttpsUrlsFromText) &&
+      is_renderer_tainted && !url.SchemeIsHTTPOrHTTPS()) {
     return nil;
   }
 
@@ -275,6 +283,8 @@ NSArray<URLAndTitle*>* ReadURLItemsWithTitles(NSPasteboard* pboard,
                                               bool include_files) {
   NSMutableArray<URLAndTitle*>* result = [NSMutableArray array];
 
+  const bool is_renderer_tainted =
+      [pboard.types containsObject:kUTTypeChromiumRendererInitiatedDrag];
   for (NSPasteboardItem* item in pboard.pasteboardItems) {
     // Try each of several ways of getting URLs from the pasteboard item and
     // stop with the first one that works.
@@ -286,7 +296,7 @@ NSArray<URLAndTitle*>* ReadURLItemsWithTitles(NSPasteboard* pboard,
     }
 
     if (!url_and_title) {
-      url_and_title = ExtractURLFromStringValue(item);
+      url_and_title = ExtractURLFromStringValue(item, is_renderer_tainted);
     }
 
     if (!url_and_title && include_files) {

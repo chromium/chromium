@@ -45,12 +45,12 @@ export class DeclutterPageElement extends CrLitElement {
     };
   }
 
-  availableHeight: number = 0;
-  showBackButton: boolean = false;
-  dedupeEnabled: boolean = loadTimeData.getBoolean('dedupeEnabled');
+  accessor availableHeight: number = 0;
+  accessor showBackButton: boolean = false;
+  accessor dedupeEnabled: boolean = loadTimeData.getBoolean('dedupeEnabled');
 
-  protected staleTabDatas_: TabData[] = [];
-  protected duplicateTabDatas_: TabData[] = [];
+  protected accessor staleTabDatas_: TabData[] = [];
+  protected accessor duplicateTabDatas_: TabData[] = [];
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   private visibilityChangedListener_: () => void;

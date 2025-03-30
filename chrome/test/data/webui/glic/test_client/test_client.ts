@@ -91,7 +91,7 @@ interface PageElementTypes {
   contentSizingTest: HTMLElement;
   enableTestSizingMode: HTMLButtonElement;
   disableTestSizingMode: HTMLButtonElement;
-  enableDragResize: HTMLInputElement;
+  enableDragResizeCheckbox: HTMLInputElement;
   growHeight: HTMLButtonElement;
   resetHeight: HTMLButtonElement;
   dump: HTMLElement;
@@ -112,6 +112,8 @@ interface PageElementTypes {
   actionStatus: HTMLSpanElement;
   actionUpdatedContextResult: HTMLSpanElement;
   actionUpdatedScreenshotImg: HTMLImageElement;
+  macOsPermissionsFieldset: HTMLFieldSetElement;
+  attachmentControlsFieldset: HTMLFieldSetElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -152,7 +154,15 @@ class WebClient implements GlicWebClient {
     logMessage('initialize called');
     $.pageHeader!.classList.add('connected');
 
-
+    // Disable sections with unavailable functionality.
+    if (this.browser.openOsPermissionSettingsMenu === undefined) {
+      logMessage('OS permissions are disabled');
+      $.macOsPermissionsFieldset.disabled = true;
+    }
+    if (this.browser.attachPanel === undefined) {
+      logMessage('Attachment controls are disabled (detached-only mode)');
+      $.attachmentControlsFieldset.disabled = true;
+    }
 
     const ver = await browser.getChromeVersion();
     logMessage(`Chrome version: ${JSON.stringify(ver)}`);
@@ -194,6 +204,8 @@ class WebClient implements GlicWebClient {
     } else {
       logMessage('getOsHotkeyState not available');
     }
+    $.enableDragResizeCheckbox.disabled =
+        browser.enableDragResize === undefined;
   }
 
   async notifyPanelWillOpen(panelOpeningData: PanelOpeningData&PanelState):
@@ -334,8 +346,8 @@ $.disableTestSizingMode.addEventListener('click', () => {
   updateSizingMode(false);
 });
 
-$.enableDragResize.addEventListener('change', () => {
-  getBrowser()!.enableDragResize!($.enableDragResize.checked);
+$.enableDragResizeCheckbox.addEventListener('change', () => {
+  getBrowser()!.enableDragResize!($.enableDragResizeCheckbox.checked);
 });
 
 $.growHeight.addEventListener('click', () => {
@@ -905,7 +917,6 @@ window.addEventListener('load', () => {
     $.osMicrophonePermissionResult.textContent =
         `OS Microphone Permission: ${permission}`;
   });
-  $.enableDragResize.disabled = getBrowser()!.enableDragResize !== undefined;
 });
 
 function readStream(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {

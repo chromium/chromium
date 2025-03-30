@@ -265,7 +265,8 @@ void CoralController::OpenNewDeskWithGroup(CoralResponse::Group group,
   }
 }
 
-void CoralController::CreateSavedDeskFromGroup(coral::mojom::GroupPtr group,
+void CoralController::CreateSavedDeskFromGroup(const std::string& template_name,
+                                               coral::mojom::GroupPtr group,
                                                aura::Window* root_window) {
   std::vector<coral::mojom::EntityPtr> tab_app_entities =
       mojo::Clone(group->entities);
@@ -284,6 +285,7 @@ void CoralController::CreateSavedDeskFromGroup(coral::mojom::GroupPtr group,
       aura::WindowTracker::WindowList{root_window});
   if (app_ids.empty()) {
     OnTemplateCreated(std::move(tab_app_entities), std::move(window_tracker),
+                      template_name,
                       /*desk_template=*/nullptr);
     return;
   }
@@ -291,7 +293,7 @@ void CoralController::CreateSavedDeskFromGroup(coral::mojom::GroupPtr group,
   DesksController::Get()->CaptureActiveDeskAsSavedDesk(
       base::BindOnce(&CoralController::OnTemplateCreated,
                      weak_factory_.GetWeakPtr(), std::move(tab_app_entities),
-                     std::move(window_tracker)),
+                     std::move(window_tracker), template_name),
       DeskTemplateType::kCoral,
       /*root_window_to_show=*/root_window, app_ids);
 }
@@ -376,6 +378,7 @@ void CoralController::HandleCacheEmbeddingsResult(
 void CoralController::OnTemplateCreated(
     std::vector<coral::mojom::EntityPtr> tab_app_entities,
     std::unique_ptr<aura::WindowTracker> window_tracker,
+    const std::string& template_name,
     std::unique_ptr<DeskTemplate> desk_template) {
   std::unique_ptr<DeskTemplate> new_template = std::move(desk_template);
   std::vector<GURL> tab_urls;
@@ -391,13 +394,13 @@ void CoralController::OnTemplateCreated(
       return;
     }
 
-    // TODO(crbug.com/365839564): The title can be nullopt and updated async
-    // after. Figure out how to handle that case.
     new_template = std::make_unique<DeskTemplate>(
         base::Uuid::GenerateRandomV4(), DeskTemplateSource::kUser,
-        "saved group", base::Time::Now(), DeskTemplateType::kCoral);
+        template_name, base::Time::Now(), DeskTemplateType::kCoral);
     new_template->set_desk_restore_data(
         std::make_unique<app_restore::RestoreData>());
+  } else {
+    new_template->set_template_name(base::UTF8ToUTF16(template_name));
   }
 
   // To limit the memory usage, only save the first

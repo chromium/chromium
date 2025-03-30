@@ -4,6 +4,7 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
@@ -41,6 +42,24 @@ void PrivacySandboxQueueManager::SetSuppressQueue(bool suppress_queue) {
   }
 
   suppress_queue_ = suppress_queue;
+}
+
+void PrivacySandboxQueueManager::MaybeEmitQueueStateMetrics() {
+  // We only want to count when we are not holding the handle.
+  if (IsHoldingHandle()) {
+    return;
+  }
+
+  handle_check_failed_count_++;
+  if (IsNoticeQueued()) {
+    base::UmaHistogramCounts100(
+        "PrivacySandbox.Notice.NotHoldingHandle.InQueue",
+        handle_check_failed_count_);
+  } else {
+    base::UmaHistogramCounts100(
+        "PrivacySandbox.Notice.NotHoldingHandle.NotInQueue",
+        handle_check_failed_count_);
+  }
 }
 
 bool PrivacySandboxQueueManager::IsHoldingHandle() {

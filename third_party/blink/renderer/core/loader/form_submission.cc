@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -392,6 +393,17 @@ void FormSubmission::Trace(Visitor* visitor) const {
   visitor->Trace(submitter_);
   visitor->Trace(target_frame_);
   visitor->Trace(origin_window_);
+}
+
+void FormSubmission::NotifyInspector() {
+  LocalFrame* origin_frame = origin_window_->GetFrame();
+  if (!origin_frame || !target_frame_) {
+    return;
+  }
+
+  probe::FrameRequestedNavigation(origin_frame, target_frame_.Get(),
+                                  resource_request_->Url(), reason_,
+                                  navigation_policy_);
 }
 
 void FormSubmission::Navigate() {

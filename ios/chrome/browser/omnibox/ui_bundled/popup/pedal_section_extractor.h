@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
 
 @protocol PopupMatchPreviewDelegate;
+@class AutocompleteMatchFormatter;
 
 /// Delegate for PedalSectionExtractor.
 @protocol PedalSectionExtractorDelegate <NSObject>
@@ -28,7 +29,7 @@
 @property(nonatomic, weak) id<PedalSectionExtractorDelegate> delegate;
 
 - (id<AutocompleteSuggestionGroup>)extractPedals:
-    (NSArray<id<AutocompleteSuggestion>>*)suggestions;
+    (NSArray<AutocompleteMatchFormatter*>*)suggestions;
 
 /// Returns whether the object stores pedals in cache. Used in tests.
 - (BOOL)hasCachedPedals;

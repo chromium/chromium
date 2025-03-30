@@ -322,8 +322,9 @@ int MPEGAudioStreamParserBase::ParseFrame(const uint8_t* data,
   // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
   // type and allow multiple audio tracks, if applicable. See
   // https://crbug.com/341581.
+  auto data_span = base::span(data, base::checked_cast<size_t>(frame_size));
   scoped_refptr<StreamParserBuffer> buffer = StreamParserBuffer::CopyFrom(
-      data, frame_size, true, DemuxerStream::AUDIO, kMpegAudioTrackId);
+      data_span, true, DemuxerStream::AUDIO, kMpegAudioTrackId);
   buffer->set_timestamp(timestamp_helper_->GetTimestamp());
   buffer->set_duration(timestamp_helper_->GetFrameDuration(sample_count));
   buffers->push_back(buffer);

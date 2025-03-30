@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">El fitxer de manifest no és vàlid</translation>
 <translation id="7217838517480956708">L'administrador d'aquest equip necessita que s'instal·li <ph name="EXTENSION_NAME" />. No es pot eliminar o modificar.</translation>
 <translation id="7612608473764576263">El valor d'entrada per a la clau privada ha de ser un format vàlid (clau RSA en format PKCS #8 amb codificació PEM).</translation>
+<translation id="7876803335449432072">No s'ha pogut carregar el fitxer <ph name="RELATIVE_PATH" /> per a l'script de contingut. Els fulls d'estil dels scripts de contingut només es poden carregar des de fitxers de fulls d'estil admesos, com ara fitxers .css.</translation>
 <translation id="7939686037314084444">L'extensió no s'ha carregat correctament. És possible que no pugui interceptar les sol·licituds de xarxa.</translation>
 <translation id="7972881773422714442">Opcions: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Càmera frontal</translation>
 <translation id="8047248493720652249">Aquesta extensió no ha pogut posar nom a la baixada "<ph name="ATTEMPTED_FILENAME" />" perquè una altra extensió (<ph name="EXTENSION_NAME" />) ha indicat un nom de fitxer diferent "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> proporcionat per <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Falta el fitxer de manifest o no es pot llegir</translation>
+<translation id="8621383749470166852">No s'ha pogut carregar el fitxer <ph name="RELATIVE_PATH" /> per a l'script de contingut. Els scripts de contingut només es poden carregar des de fitxers JavaScript admesos, com ara fitxers .js.</translation>
 <translation id="8636666366616799973">El paquet no és vàlid. Detalls: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> sol·licita accés a un dels teus dispositius:</translation>
 <translation id="8885905466771744233">Ja existeix una clau privada per a l'extensió especificada. Torneu a utilitzar-la o suprimiu-la primer.</translation>

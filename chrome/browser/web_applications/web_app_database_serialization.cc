@@ -1342,6 +1342,10 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
   }
   web_app->SetRelatedApplications(std::move(related_applications));
 
+  if (proto.has_update_token()) {
+    web_app->SetUpdateToken(proto.update_token());
+  }
+
   return web_app;
 }
 
@@ -1854,6 +1858,10 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
       related_application_proto->set_id(
           base::UTF16ToUTF8(related_application.id.value()));
     }
+  }
+
+  if (web_app.update_token().has_value()) {
+    local_data->set_update_token(web_app.update_token().value());
   }
 
   return local_data;

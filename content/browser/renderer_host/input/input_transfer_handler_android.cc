@@ -5,12 +5,9 @@
 #include "content/browser/renderer_host/input/input_transfer_handler_android.h"
 
 #include "base/android/jni_android.h"
-#include "base/debug/crash_logging.h"
-#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/typed_macros.h"
-#include "base/values.h"
 #include "components/input/utils.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
@@ -21,23 +18,6 @@
 namespace content {
 
 namespace {
-
-// TODO(crbug.com/401270990): Remove crash key after crash investigation is
-// over.
-constexpr int kCrashKeyLengthSize = 256;
-
-std::string MotionEventToString(const ui::MotionEventAndroid& event) {
-  base::Value::Dict query_dict = base::Value::Dict();
-  base::TimeDelta delta = event.GetEventTime() - event.GetDownTime();
-  query_dict.Set("delta", base::TimeDeltaToValue(delta));
-  query_dict.Set("tooltype", static_cast<int>(event.GetToolType()));
-  query_dict.Set("unique_event_id", static_cast<int>(event.GetUniqueEventId()));
-  std::string debug_string = query_dict.DebugString();
-  if (debug_string.size() >= kCrashKeyLengthSize) {
-    return "";
-  }
-  return debug_string;
-}
 
 // Histogram min, max and no. of buckets.
 constexpr int kTouchMoveCountsMin = 1;
@@ -77,45 +57,13 @@ InputTransferHandlerAndroid::~InputTransferHandlerAndroid() = default;
 
 bool InputTransferHandlerAndroid::OnTouchEvent(
     const ui::MotionEventAndroid& event) {
-  // Consume the potential pointer sequence that failed to transfer while there
-  // was already an active sequence on Viz. This is to prevent Browser from
-  // starting a new gesture for this touch sequence independently.
-  if (last_failed_pointer_down_time_ms_ == event.GetDownTime()) {
-    num_events_in_dropped_sequence_++;
-    base::UmaHistogramEnumeration(kEventTypesInDroppedSequenceHistogram,
-                                  event.GetAction());
-
-    if (event.GetAction() == ui::MotionEvent::Action::CANCEL ||
-        event.GetAction() == ui::MotionEvent::Action::UP) {
-      base::UmaHistogramCustomCounts(
-          kEventsInDroppedSequenceHistogram, num_events_in_dropped_sequence_,
-          kTouchMoveCountsMin, kTouchMoveCountsMax, kTouchMoveCountsBuckets);
-      num_events_in_dropped_sequence_ = 0;
-      last_failed_pointer_down_time_ms_.reset();
-    }
-
+  if (handler_state_ == HandlerState::kDroppingCurrentSequence) {
+    DropCurrentSequence(event);
     return true;
   }
 
-  // TODO(crbug.com/383307455): Forward events seen on Browser post transfer
-  // over to Viz.
-  if (touch_transferred_) {
-    if (event.GetAction() == ui::MotionEvent::Action::CANCEL) {
-      // Check if this cancel has same downtime as the original down used for
-      // transfer.
-      CHECK(event.GetDownTime() == cached_transferred_sequence_down_time_ms_);
-      base::UmaHistogramCustomCounts(
-          kTouchMovesSeenHistogram, touch_moves_seen_after_transfer_,
-          kTouchMoveCountsMin, kTouchMoveCountsMax, kTouchMoveCountsBuckets);
-
-      Reset();
-      return true;
-    }
-    if (event.GetAction() == ui::MotionEvent::Action::MOVE) {
-      touch_moves_seen_after_transfer_++;
-    }
-    base::UmaHistogramEnumeration(kEventsAfterTransferHistogram,
-                                  event.GetAction());
+  if (handler_state_ == HandlerState::kConsumeEventsUntilCancel) {
+    ConsumeEventsUntilCancel(event);
     return true;
   }
 
@@ -123,25 +71,43 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
     return false;
   }
 
+  if (event.GetToolType() != ui::MotionEvent::ToolType::FINGER) {
+    base::UmaHistogramEnumeration(kTransferInputToVizResultHistogram,
+                                  TransferInputToVizResult::kNonFingerToolType);
+    return false;
+  }
+
+  const bool active_touch_sequence_on_viz =
+      cached_transferred_sequence_down_time_ms_ > last_seen_touch_end_ts_;
+
   // GetDownTime is in milliseconds precision, convert delta to milliseconds
   // precision as well for accurate comparison.
   const int64_t delta =
       (event.GetEventTime() - event.GetDownTime()).InMilliseconds();
-  {
-    SCOPED_CRASH_KEY_STRING256("crbug401270990", "event",
-                               MotionEventToString(event));
-    CHECK_GE(delta, 0);
-  }
-  const bool is_transferred_back_sequence = delta > 0;
-  if (is_transferred_back_sequence) {
-    // We don't want to retransfer this sequence which was transferred back from
-    // Viz.
+  if (delta < 0) {
+    // TODO(crbug.com/406485568): Investigate this negative delta and
+    // potentially file an Android platform bug.
+    TRACE_EVENT_INSTANT("input", "DownTimeAfterEventTime");
+    base::UmaHistogramEnumeration(
+        kTransferInputToVizResultHistogram,
+        TransferInputToVizResult::kDownTimeAfterEventTime);
+    if (active_touch_sequence_on_viz) {
+      OnStartDroppingSequence(
+          event,
+          InputOnVizSequenceDroppedReason::kActiveSeqOnVizAbnormalDownTime);
+      return true;
+    }
+    // Let browser handle this sequence.
     return false;
   }
 
-  if (event.GetToolType() != ui::MotionEvent::ToolType::FINGER) {
-    base::UmaHistogramEnumeration(kTransferInputToVizResultHistogram,
-                                  TransferInputToVizResult::kNonFingerToolType);
+  const bool is_transferred_back_sequence = delta > 0;
+  if (is_transferred_back_sequence) {
+    base::UmaHistogramEnumeration(
+        kTransferInputToVizResultHistogram,
+        TransferInputToVizResult::kSequenceTransferredBackFromViz);
+    // We don't want to retransfer this sequence which was transferred back from
+    // Viz.
     return false;
   }
 
@@ -158,9 +124,6 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
     OnTouchTransferredSuccessfully(event, /*browser_would_have_handled=*/false);
     return true;
   }
-
-  const bool active_touch_sequence_on_viz =
-      cached_transferred_sequence_down_time_ms_ > last_seen_touch_end_ts_;
 
   if (!active_touch_sequence_on_viz) {
     return false;
@@ -188,13 +151,9 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
     }
   }
 
-  CHECK(!last_failed_pointer_down_time_ms_.has_value());
-  // TODO(crbug.com/398208297): Forward the sequence to Viz that failed to
-  // transfer.
-  last_failed_pointer_down_time_ms_.emplace(event.GetDownTime());
-  num_events_in_dropped_sequence_++;
-  base::UmaHistogramEnumeration(kEventTypesInDroppedSequenceHistogram,
-                                event.GetAction());
+  OnStartDroppingSequence(
+      event,
+      InputOnVizSequenceDroppedReason::kFailedToTransferPotentialPointer);
 
   // Consume events for a potential pointer sequence that failed to transfer, to
   // not have Browser and Viz both sending touch sequences to Renderer at the
@@ -223,15 +182,66 @@ void InputTransferHandlerAndroid::OnTouchEnd(base::TimeTicks event_time) {
   last_seen_touch_end_ts_ = event_time;
 }
 
-void InputTransferHandlerAndroid::Reset() {
-  touch_transferred_ = false;
-  touch_moves_seen_after_transfer_ = 0;
+void InputTransferHandlerAndroid::OnStartDroppingSequence(
+    const ui::MotionEventAndroid& event,
+    InputOnVizSequenceDroppedReason reason) {
+  CHECK_EQ(handler_state_, HandlerState::kIdle);
+  base::UmaHistogramEnumeration(kTouchSequenceDroppedReasonHistogram, reason);
+  handler_state_ = HandlerState::kDroppingCurrentSequence;
+  DropCurrentSequence(event);
+}
+
+void InputTransferHandlerAndroid::DropCurrentSequence(
+    const ui::MotionEventAndroid& event) {
+  CHECK_EQ(handler_state_, HandlerState::kDroppingCurrentSequence);
+  // TODO(crbug.com/398208297): Forward the sequence to Viz that failed to
+  // transfer.
+  // Consume the potential pointer sequence that failed to transfer while there
+  // was already an active sequence on Viz. This is to prevent Browser from
+  // starting a new gesture for this touch sequence independently.
+  num_events_in_dropped_sequence_++;
+  base::UmaHistogramEnumeration(kEventTypesInDroppedSequenceHistogram,
+                                event.GetAction());
+
+  if (event.GetAction() == ui::MotionEvent::Action::CANCEL ||
+      event.GetAction() == ui::MotionEvent::Action::UP) {
+    base::UmaHistogramCustomCounts(
+        kEventsInDroppedSequenceHistogram, num_events_in_dropped_sequence_,
+        kTouchMoveCountsMin, kTouchMoveCountsMax, kTouchMoveCountsBuckets);
+    num_events_in_dropped_sequence_ = 0;
+    handler_state_ = HandlerState::kIdle;
+  }
+}
+
+void InputTransferHandlerAndroid::ConsumeEventsUntilCancel(
+    const ui::MotionEventAndroid& event) {
+  CHECK_EQ(handler_state_, HandlerState::kConsumeEventsUntilCancel);
+  // TODO(crbug.com/383307455): Forward events seen on Browser post transfer
+  // over to Viz.
+  if (event.GetAction() == ui::MotionEvent::Action::CANCEL) {
+    // Check if this cancel has same downtime as the original down used for
+    // transfer.
+    CHECK(event.GetDownTime() == cached_transferred_sequence_down_time_ms_);
+    base::UmaHistogramCustomCounts(
+        kTouchMovesSeenHistogram, touch_moves_seen_after_transfer_,
+        kTouchMoveCountsMin, kTouchMoveCountsMax, kTouchMoveCountsBuckets);
+
+    handler_state_ = HandlerState::kIdle;
+    touch_moves_seen_after_transfer_ = 0;
+    return;
+  }
+  if (event.GetAction() == ui::MotionEvent::Action::MOVE) {
+    touch_moves_seen_after_transfer_++;
+  }
+  base::UmaHistogramEnumeration(kEventsAfterTransferHistogram,
+                                event.GetAction());
 }
 
 void InputTransferHandlerAndroid::OnTouchTransferredSuccessfully(
     const ui::MotionEventAndroid& event,
     bool browser_would_have_handled) {
-  touch_transferred_ = true;
+  CHECK_EQ(handler_state_, HandlerState::kIdle);
+  handler_state_ = HandlerState::kConsumeEventsUntilCancel;
   cached_transferred_sequence_down_time_ms_ = event.GetDownTime();
   client_->SendStateOnTouchTransfer(event, browser_would_have_handled);
 }

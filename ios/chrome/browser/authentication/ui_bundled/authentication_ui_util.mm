@@ -302,7 +302,7 @@ bool ForceLeavingPrimaryAccountConfirmationDialog(
       return false;
     case SignedInUserState::kManagedAccountClearsDataOnSignout:
     case SignedInUserState::kManagedAccountAndMigratedFromSyncing:
-      if (!base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
+      if (!AreSeparateProfilesForManagedAccountsEnabled()) {
         return true;
       }
 

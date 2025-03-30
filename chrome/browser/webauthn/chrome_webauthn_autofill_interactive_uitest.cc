@@ -50,8 +50,8 @@
 #include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/fido/cable/v2_handshake.h"
@@ -307,8 +307,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(
         delegate_observer_.get());
 
-    mock_hw_provider_ =
-        std::make_unique<crypto::ScopedMockUnexportableKeyProvider>();
+    fake_hw_provider_ =
+        std::make_unique<crypto::ScopedFakeUnexportableKeyProvider>();
     fake_uv_provider_ =
         std::make_unique<crypto::ScopedFakeUserVerifyingKeyProvider>();
 
@@ -485,7 +485,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
   std::unique_ptr<DelegateObserver> delegate_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
   logging::ScopedVmoduleSwitches scoped_vmodule_;
-  std::unique_ptr<crypto::ScopedMockUnexportableKeyProvider> mock_hw_provider_;
+  std::unique_ptr<crypto::ScopedFakeUnexportableKeyProvider> fake_hw_provider_;
   std::unique_ptr<crypto::ScopedFakeUserVerifyingKeyProvider> fake_uv_provider_;
 
 #if BUILDFLAG(IS_WIN)

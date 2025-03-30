@@ -199,6 +199,58 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
+                       HidePodWhenWindowHidden) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window. This is when the OnTask pod
+  // is set up.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  ASSERT_THAT(on_task_pod_controller(), NotNull());
+
+  // Hide window and verify the pod widget also gets hidden.
+  boca_app_browser->window()->GetNativeWindow()->Hide();
+  EXPECT_FALSE(on_task_pod_controller()->GetPodWidgetForTesting()->IsVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
+                       ShowPodWhenWindowShown) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window. This is when the OnTask pod
+  // is set up.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  ASSERT_THAT(on_task_pod_controller(), NotNull());
+
+  // Hide window and verify the pod widget also gets hidden.
+  boca_app_browser->window()->GetNativeWindow()->Hide();
+  ASSERT_FALSE(on_task_pod_controller()->GetPodWidgetForTesting()->IsVisible());
+
+  // Show the window and verify the pod is shown.
+  boca_app_browser->window()->GetNativeWindow()->Show();
+  EXPECT_TRUE(on_task_pod_controller()->GetPodWidgetForTesting()->IsVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
                        DestroyPodOnWindowTrackerReset) {
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;

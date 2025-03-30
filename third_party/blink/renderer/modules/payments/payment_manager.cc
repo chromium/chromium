@@ -8,21 +8,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/modules/payments/payment_instruments.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
-
-PaymentInstruments* PaymentManager::instruments() {
-  if (!instruments_) {
-    instruments_ = MakeGarbageCollected<PaymentInstruments>(
-        *this, registration_->GetExecutionContext());
-  }
-  return instruments_.Get();
-}
 
 const String& PaymentManager::userHint() {
   return user_hint_;
@@ -87,15 +78,13 @@ ScriptPromise<IDLBoolean> PaymentManager::enableDelegations(
 void PaymentManager::Trace(Visitor* visitor) const {
   visitor->Trace(registration_);
   visitor->Trace(manager_);
-  visitor->Trace(instruments_);
   visitor->Trace(enable_delegations_resolver_);
   ScriptWrappable::Trace(visitor);
 }
 
 PaymentManager::PaymentManager(ServiceWorkerRegistration* registration)
     : registration_(registration),
-      manager_(registration->GetExecutionContext()),
-      instruments_(nullptr) {
+      manager_(registration->GetExecutionContext()) {
   DCHECK(registration);
 
   if (ExecutionContext* context = registration->GetExecutionContext()) {

@@ -91,6 +91,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1269405891096105529">Lisälaitetta ei tueta vierastilassa</translation>
 <translation id="1270290102613614947">Ruutunäppäimistö poistettiin käytöstä</translation>
 <translation id="1272079795634619415">Pysäytä</translation>
+<translation id="12741168609094094">Valitse mitä tahansa näytöllä, niin voit esimerkiksi hakea, kopioida tekstiä ja paljon muuta</translation>
 <translation id="1275285675049378717">Toimii virtalähteenä: <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Valittu</translation>
 <translation id="1276975447697633661">Valitse tiedosto ja paina <ph name="KEY" />.</translation>
@@ -227,6 +228,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1720230731642245863">Hotspot on pois päältä</translation>
 <translation id="1731815243805539470">Vaihda edelliseen käyttäjään</translation>
 <translation id="1733996486177697563">Vaihda tumman ja vaalean teeman välillä. Kosketa työpöytää pitkään ja valitse Taustakuva ja tyyli.</translation>
+<translation id="1735992454301033090">Valittu alue, siirry nuolinäppäimillä</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" näkyy Bluetooth-laitteille.</translation>
 <translation id="1737078180382804488">Hylkää puhelimen ilmoitusten katselun käyttöönotto</translation>
 <translation id="174102739345480129">Piirtotyökalu ei ole päällä.</translation>
@@ -494,6 +496,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2683887737780133806">Viime viikon <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">Pikakomento on muuttunut</translation>
 <translation id="2689613560355655046">Työpöytä 8</translation>
+<translation id="2692092709110488417">Paina sarkainta kohdistaaksesi ja siirtääksesi valittua aluetta</translation>
 <translation id="2695305337569143674">verkko</translation>
 <translation id="2697697418792422688">Näytä näppäimistöasetukset. <ph name="KEYBOARD_NAME" /> valittiin.</translation>
 <translation id="2699913284398121653">Siirrä koulutilin data henkilökohtaiselle tilille Sisällön siirto ‑sovelluksella</translation>
@@ -729,6 +732,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="346243998268439747">Palauta zoomaustaso normaaliksi</translation>
 <translation id="3465223694362104965">Laitteeseen yhdistettiin uusi näppäimistö viimeisimmän kirjautumisen jälkeen. Varmista ennen käyttöä, että näppäimistö on luotettava.</translation>
 <translation id="3465356146291925647">Järjestelmänvalvojan hallinnoima</translation>
+<translation id="3470502288861289375">Kopioidaan…</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, sitten <ph name="KEY_TWO" /> tai <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Ctrl + vaihto + välilyönti</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1033,6 +1037,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4412698727486357573">Ohjekeskus</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ei ole päällä.</translation>
 <translation id="4417647906073317561">Keskittymistilan asetukset. Aseta ajastin, tehtävä ja musiikki, niin pääset vauhtiin.</translation>
+<translation id="4418600384772451109">Sulje paneeli</translation>
 <translation id="4424159417645388645">Työpöytä 5</translation>
 <translation id="4426817706804363424">Hyvin tehty!</translation>
 <translation id="4430019312045809116">Äänenvoimakkuus</translation>
@@ -2229,6 +2234,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8287009018010202411">Tuottavuus</translation>
 <translation id="828708037801473432">Poissa päältä</translation>
 <translation id="8297006494302853456">Heikko</translation>
+<translation id="8300451473979404345">Valittu kahva, siirry nuolinäppäimillä</translation>
 <translation id="8308637677604853869">Edellinen valikko</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps lock on päällä</translation>
@@ -2289,6 +2295,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="851458219935658693">Näytä ikkunat nykyiseltä työpöydältä, valintanappi valittu</translation>
 <translation id="851660987304951246">Käytä "Apua lukemiseen" ‐toimintoa, niin voit luoda nopeasti yhteenvetoja sisällöstä tai esittää kysymyksiä</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ei välttämättä lataudu, kun se on käynnissä.</translation>
+<translation id="8519329096920173967">Hae näytöltä Google Lensilla</translation>
 <translation id="8535393432370007982">Kumoa värin mukaan lajittelu</translation>
 <translation id="8536886494750559755">Näytä Quick Share ‑asetukset. Näkyy kaikille <ph name="TIME_REMAINING" /> ajan</translation>
 <translation id="8539803091108018926">Teksti kopioitu leikepöydälle</translation>

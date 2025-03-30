@@ -6916,7 +6916,7 @@ void Document::TrustTokenQueryAnswererConnectionError() {
 
 void Document::ariaNotify(const String& announcement,
                           const AriaNotificationOptions* options) {
-  DCHECK(RuntimeEnabledFeatures::AriaNotifyEnabled());
+  DCHECK(RuntimeEnabledFeatures::AriaNotifyEnabled(GetExecutionContext()));
 
   if (auto* cache = ExistingAXObjectCache()) {
     cache->HandleAriaNotification(this, announcement, options);

@@ -36,8 +36,9 @@ class GapIntersection {
   LayoutUnit inline_offset;
   LayoutUnit block_offset;
 
-  // Represents whether the intersection point is blocked before or after
-  // due to the presence of a spanning item.
+  // Represents whether the intersection point is blocked before or after due to
+  // the presence of a spanning item. For flex, this is used to represent
+  // whether the intersection point is "blocked" by the edge of the container.
   bool is_blocked_before = false;
   bool is_blocked_after = false;
 };
@@ -46,7 +47,15 @@ using GapIntersectionList = Vector<GapIntersection>;
 
 // Gap locations are used for painting gap decorations.
 struct GapGeometry : public GarbageCollected<GapGeometry> {
+  enum ContainerType {
+    kGrid,
+    kFlex,
+  };
+
  public:
+  explicit GapGeometry(ContainerType container_type)
+      : container_type_(container_type) {}
+
   void Trace(Visitor* visitor) const {}
 
   void SetGapIntersections(GridTrackSizingDirection track_direction,
@@ -78,6 +87,27 @@ struct GapGeometry : public GarbageCollected<GapGeometry> {
                                           : row_intersections_;
   }
 
+  ContainerType GetContainerType() const { return container_type_; }
+
+  void SetInlineGapSize(LayoutUnit size) { inline_gap_size_ = size; }
+  LayoutUnit GetInlineGapSize() const { return inline_gap_size_; }
+
+  void SetBlockGapSize(LayoutUnit size) { block_gap_size_ = size; }
+  LayoutUnit GetBlockGapSize() const { return block_gap_size_; }
+
+  bool IntersectionIncludesContentEdge(
+      const wtf_size_t intersection_index,
+      wtf_size_t num_intersections,
+      const GapIntersection& intersection) const {
+    // `GapIntersection` objects for flex mark intersections as blocked before
+    // and after if they border a content edge.
+    return container_type_ == ContainerType::kFlex
+               ? (intersection.is_blocked_before ||
+                  intersection.is_blocked_after)
+               : (intersection_index == 0 ||
+                  intersection_index == num_intersections - 1);
+  }
+
  private:
   // TODO(samomekarajr): Potential optimization. This can be a single
   // Vector<GapIntersection> if we exclude intersection points at the edge of
@@ -86,6 +116,15 @@ struct GapGeometry : public GarbageCollected<GapGeometry> {
   // intersection.
   Vector<GapIntersectionList> column_intersections_;
   Vector<GapIntersectionList> row_intersections_;
+
+  // In flex it refers to the gap between flex items, and in grid it
+  // refers to the column gutter size.
+  LayoutUnit inline_gap_size_;
+  // In flex it refers to the gap between flex lines, and in grid it
+  // refers to the row gutter size.
+  LayoutUnit block_gap_size_;
+
+  ContainerType container_type_;
 };
 
 }  // namespace blink

@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_STRIP_CONTEXT_MENU;
+import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
+
+import android.app.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +18,8 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareUtils;
@@ -50,6 +55,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
             Supplier<TabModel> tabModelSupplier,
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
+            MultiInstanceManager multiInstanceManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
             TabGroupSyncService tabGroupSyncService,
@@ -60,6 +66,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                         tabModelSupplier,
                         tabGroupModelFilter,
                         tabGroupListBottomSheetCoordinator,
+                        multiInstanceManager,
                         shareDelegateSupplier),
                 tabModelSupplier,
                 tabGroupSyncService,
@@ -76,6 +83,8 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
      * @param tabGroupModelFilter The {@link TabGroupModelFilter} to act on.
      * @param tabGroupListBottomSheetCoordinator The {@link TabGroupListBottomSheetCoordinator} that
      *     will be used to show a bottom sheet when the user selects the "Add to group" option.
+     * @param multiInstanceManager The {@link MultiInstanceManager} that will be used to move tabs
+     *     from one window to another.
      * @param shareDelegateSupplier Supplies the {@link ShareDelegate} that will be used to share
      *     the tab's URL when the user selects the "Share" option.
      * @param windowAndroid The {@link WindowAndroid} where this context menu will be shown.
@@ -84,6 +93,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
             Supplier<TabModel> tabModelSupplier,
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
+            MultiInstanceManager multiInstanceManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid) {
         Profile profile = tabModelSupplier.get().getProfile();
@@ -98,6 +108,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                 tabModelSupplier,
                 tabGroupModelFilter,
                 tabGroupListBottomSheetCoordinator,
+                multiInstanceManager,
                 shareDelegateSupplier,
                 windowAndroid,
                 tabGroupSyncService,
@@ -109,6 +120,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
             Supplier<TabModel> tabModelSupplier,
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
+            MultiInstanceManager multiInstanceManager,
             Supplier<ShareDelegate> shareDelegateSupplier) {
         return (menuId, tabId, collaborationId) -> {
             if (tabId == Tab.INVALID_TAB_ID) return;
@@ -124,6 +136,12 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                         .getTabUngrouper()
                         .ungroupTabs(List.of(tab), /* trailing= */ true, /* allowDialog= */ true);
                 recordUserAction("RemoveFromTabGroup");
+            } else if (menuId == R.id.move_to_other_window_menu_id) {
+                recordUserAction(
+                        MultiWindowUtils.getInstanceCount() == 1
+                                ? "MoveTabToNewWindow"
+                                : "MoveTabToOtherWindow");
+                multiInstanceManager.moveTabToOtherWindow(tab);
             } else if (menuId == R.id.share_tab) {
                 shareDelegateSupplier
                         .get()
@@ -173,6 +191,22 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                             R.id.remove_from_tab_group,
                             /* startIconId= */ 0));
         }
+
+        if (tab.getTabGroupId() == null && MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            // Show the option to move the tab to another window iff the tab is not in a group.
+            Activity activity = mWindowAndroid.getActivity().get();
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItem(
+                            activity.getResources()
+                                    .getQuantityString(
+                                            R.plurals.move_tab_to_another_window,
+                                            MultiWindowUtils.getInstanceCount()),
+                            R.id.move_to_other_window_menu_id,
+                            /* startIconId= */ 0,
+                            /* enabled= */ true));
+        }
+
+        itemList.add(buildMenuDivider());
 
         if (ShareUtils.shouldEnableShare(tab)) {
             itemList.add(

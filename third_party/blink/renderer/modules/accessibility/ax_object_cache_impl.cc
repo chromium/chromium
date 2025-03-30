@@ -130,6 +130,7 @@
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_location_and_scroll_updates.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/mojom/ax_location_and_scroll_updates.mojom-blink.h"
@@ -158,6 +159,10 @@ namespace {
 
 // Represents a missing AXId in the context of an AXInlineTextBox mapping.
 constexpr int kMissingAXId = 0;
+
+// Number of extra off-screen nodes to serialize when the AXMode kOnScreenOnly
+// is on.
+constexpr int kNumExtraNodesToSerialize = 1;
 
 bool IsInitialEmptyDocument(const Document& document) {
   // Do not fire for initial empty top document. This helps avoid thrashing the
@@ -2116,6 +2121,10 @@ void AXObjectCacheImpl::RemoveReferencesToAXID(AXID obj_id) {
     DCHECK(!fixed_or_sticky_node_ids_.Contains(obj_id));
     DCHECK(!nodes_with_pending_children_changed_.Contains(obj_id));
   }
+
+  if (GetAXMode().HasFilterFlags(ui::AXMode::kOnScreenOnly)) {
+    extra_off_screen_nodes_to_serialize_.erase(obj_id);
+  }
 }
 
 AXObject* AXObjectCacheImpl::NearestExistingAncestor(Node* node) {
@@ -3009,6 +3018,12 @@ void AXObjectCacheImpl::FinalizeTree() {
       }
     }
   }
+  if (GetAXMode().HasFilterFlags(ui::AXMode::kOnScreenOnly)) {
+    // From here, there are no more operations to be performed on the tree, so
+    // we can mark the nodes that will be serialized and the ones that will be
+    // cut.
+    MarkOnScreenNodes(Root());
+  }
 
   CheckTreeIsFinalized();
 }
@@ -3574,11 +3589,20 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
     }
   }
 
-  // updates.empty() -implies-> events.empty()
-  DCHECK(!updates.empty() || events.empty())
-      << "Every event must have at least one corresponding update because "
-         "events cause their related nodes to be marked dirty.";
-  DCHECK(!updates.empty());
+  if (!GetAXMode().HasFilterFlags(ui::AXMode::kOnScreenOnly)) {
+    // updates.empty() -implies-> events.empty(). However, if
+    // AXMode::kOnScreenOnly is set, this is not true; It can be the case that
+    // events were fired on nodes that are not going to be serialized.
+    DCHECK(!updates.empty() || events.empty())
+        << "Every event must have at least one corresponding update because "
+           "events cause their related nodes to be marked dirty.";
+    DCHECK(!updates.empty());
+  } else if (updates.empty() && events.empty()) {
+    // Updates and events can be empty if the filter kOnScreenOnly filtered them
+    // all. This means that the changes were only affecting nodes that are not
+    // known by the client yet, so there is no need to send them.
+    return false;
+  }
 
   // There should be no more dirty objects.
   CHECK(!HasObjectsPendingSerialization());
@@ -5793,11 +5817,19 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
     // Cannot serialize unincluded object.
     // Only included objects are marked dirty, but this can happen if the
     // object becomes unincluded after it was originally marked dirty, in which
-    // cas a children changed will also be fired on the included ancestor. The
+    // case a children changed will also be fired on the included ancestor. The
     // children changed event on the ancestor means that attempting to
     // serialize this unincluded object is not necessary.
     if (!obj->IsIncludedInTree())
       continue;
+
+    if (GetAXMode().HasFilterFlags(ui::AXMode::kOnScreenOnly)) {
+      if (!obj->WasEverOnScreen() &&
+          !obj->ParentObjectIncludedInTree()->WasEverOnScreen()) {
+        // Off-screen children with off-screen parents are not serialized.
+        continue;
+      }
+    }
 
     DCHECK(obj->AXObjectID());
 
@@ -5899,18 +5931,20 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
   }
 
 #if AX_FAIL_FAST_BUILD()
-  // Always compute this state.
-  UpdatePluginIncludedNodeCount();
+  if (!GetAXMode().HasFilterFlags(ui::AXMode::kOnScreenOnly)) {
+    // Always compute this state.
+    UpdatePluginIncludedNodeCount();
 
-  CheckTreeConsistency(*this, *ax_tree_serializer_, plugin_serializer_.get());
+    CheckTreeConsistency(*this, *ax_tree_serializer_, plugin_serializer_.get());
 
-  // Provide the expected node count in the last update, so that
-  // AXTree::Unserialize() can check for tree consistency on the browser side.
-  if (!updates.back().tree_checks) {
-    updates.back().tree_checks.emplace();
+    // Provide the expected node count in the last update, so that
+    // AXTree::Unserialize() can check for tree consistency on the browser side.
+    if (!updates.back().tree_checks) {
+      updates.back().tree_checks.emplace();
+    }
+    updates.back().tree_checks->node_count =
+        GetIncludedNodeCount() + GetPluginIncludedNodeCount();
   }
-  updates.back().tree_checks->node_count =
-      GetIncludedNodeCount() + GetPluginIncludedNodeCount();
 #endif  // AX_FAIL_FAST_BUILD()
 }
 
@@ -6677,6 +6711,58 @@ void AXObjectCacheImpl::RemoveNodeRequiringCacheUpdate(AXID ax_id) {
   nodes_requiring_cache_update_.erase(ax_id);
 }
 #endif
+
+bool AXObjectCacheImpl::MarkOnScreenNodes(AXObject* obj) {
+  const bool was_on_screen = obj->WasEverOnScreen();
+  const bool can_flip = obj->CanFlipFromOffScreenToOnScreen();
+  if (obj->ChildCountIncludingIgnored() == 0) {  // This is a leaf node.
+    // If this node was ever on-screen, keep serializing it or at least allow
+    // serializations to happen.
+    obj->SetIsOnScreen(was_on_screen || !obj->ComputeIsOffScreen());
+    if (!obj->WasEverOnScreen()) {
+      // This node is still offscreen, so check if it can still be included by
+      // the extra nodes rule.
+      // Rule: allow a few extra nodes to be serialized with the first tree
+      // which are likely to be focused by ATs.
+      if (extra_off_screen_nodes_to_serialize_.size() <
+              kNumExtraNodesToSerialize &&
+          obj->IsTextObject()) {
+        extra_off_screen_nodes_to_serialize_.insert(obj->AXObjectID());
+        return true;
+      }
+    }
+  } else {
+    // Discover phase: Check if any children are on-screen.
+    // If any child is on-screen, this marks the entire parent chain up to the
+    // root on-screen.
+    bool any_child_visible = false;
+    for (AXObject* child : obj->CachedChildrenIncludingIgnored()) {
+      CHECK(child->IsIncludedInTree());
+      if (MarkOnScreenNodes(child)) {
+        any_child_visible = true;
+      }
+    }
+
+    // Marking phase: Mark the node as on-screen if any child is on-screen OR if
+    // the node itself is/was on-screen.
+    obj->SetIsOnScreen(any_child_visible || was_on_screen ||
+                       !obj->ComputeIsOffScreen());
+  }
+
+  // Serialization phase: If this node flipped (was off-screen now on-screen,
+  // force it to be serialized, as clients are not aware of it). Note that this
+  // guarantees the parent that contain this child will flip too, so no need to
+  // call it here.
+  if (can_flip && was_on_screen != obj->WasEverOnScreen()) {
+    if (extra_off_screen_nodes_to_serialize_.Contains(obj->AXObjectID())) {
+      // Was added through the extra nodes rule, so remove it so that extra
+      // nodes can be added.
+      extra_off_screen_nodes_to_serialize_.erase(obj->AXObjectID());
+    }
+    AddDirtyObjectToSerializationQueue(obj);
+  }
+  return obj->WasEverOnScreen();
+}
 
 std::ostream& operator<<(std::ostream& stream, const AXObjectCacheImpl& cache) {
   return stream << "AXObjectCache: " << cache.lifecycle().ToString();

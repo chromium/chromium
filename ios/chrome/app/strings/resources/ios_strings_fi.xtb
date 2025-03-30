@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Poista</translation>
 <translation id="1190609913194133056">Ilmoituskeskus</translation>
 <translation id="1201402288615127009">Seuraava</translation>
-<translation id="1202892408424955784">Seuratut tuotteet</translation>
 <translation id="1204075260022434100">{count,plural, =1{Kirjanmerkki tallennettu tilin {email} kansioon "{title}"}other{{count} kirjanmerkkiä tallennettu tilin {email} kansioon "{title}"}}</translation>
 <translation id="120431140543679678">Seuraa</translation>
 <translation id="1207493287814084192">17.30</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">uusi tuote</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> tilillä käytetään samaa salasanaa</translation>
 <translation id="2059166748188874810">Paikkakunta</translation>
-<translation id="2060114494785549741">Poista 1 kuukauden kuluttua</translation>
 <translation id="2060638295449304809">Osoite tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteillasi, tallenna se Google-tilillesi (<ph name="USER_EMAIL" />)</translation>
 <translation id="20638360198452347">Yksikkötyypin valitsin</translation>
 <translation id="2067852168641682340">Tallenna aina tälle tilille</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Piilota hintaseurantakortti</translation>
 <translation id="2216366330550244277">Siirry tuotteen sivulle</translation>
 <translation id="2220529011494928058">Ilmoita ongelmasta</translation>
-<translation id="2220887224562128152">Kun tiedoston poistaminen on ajoitettu, sitä ei voi palauttaa.</translation>
 <translation id="2223461067862937305">Luo QR-koodi</translation>
 <translation id="2229345671837147090">Etävälilehden ruudukko</translation>
 <translation id="2230173723195178503">Verkkosivu ladattiin.</translation>
@@ -493,7 +490,6 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="3059270601560379555">Uusi haku</translation>
 <translation id="3064547930554042309">Latausvalinnat</translation>
 <translation id="3072279342064724558">Salasana on jo olemassa</translation>
-<translation id="3074862506644936708">Ota automaattinen poisto käyttöön</translation>
 <translation id="3076846064362030967">Sinua ei kirjata ulos Google-tililtäsi. <ph name="BEGIN_LINK" />Muita toimintoja<ph name="END_LINK" /> voidaan tallentaa Google-tilillesi, kun olet kirjautuneena sisään. Voit poistaa niitä koska vain.
 
 
@@ -912,6 +908,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4896467949657706481">Välilehdet suljettiin ja sinut kirjattiin ulos</translation>
 <translation id="4913626501929406101">Voit jakaa kopion salasanastasi perheryhmäsi jäsenille. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Hyväksy</translation>
+<translation id="4930714375720679147">Ota käyttöön</translation>
 <translation id="4932733599132424254">Päiväys</translation>
 <translation id="4936354130727646074">Älä koskaan siirrä</translation>
 <translation id="4937410517508563815">Tallenna tilin salasanat</translation>
@@ -1147,7 +1144,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5899314093904173337">Jaa lähellä oleville ihmisille antamalla tämä QR-koodi, jonka he voivat skannata kameralla tai QR-skannaussovelluksella</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} uusi välilehti}other{{count} uutta välilehteä}}</translation>
 <translation id="5911030830365207728">Google Kääntäjä</translation>
-<translation id="5917913282764181683">Latausten automaattinen poisto</translation>
 <translation id="5922999516621365983">Kiinnitä välilehti vetämällä se tähän.</translation>
 <translation id="5936006948844852401">Muuta tallennustilan asetuksia</translation>
 <translation id="5936065461722368675">Käännä koko sivu</translation>
@@ -1506,7 +1502,6 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="741204030948306876">Kyllä</translation>
 <translation id="7417689656810783109">Nimeä ryhmä uudelleen</translation>
 <translation id="7419565702166471774">Käytä aina suojattuja yhteyksiä</translation>
-<translation id="742001653298797675">Aseta kaikki lataukset poistettavaksi kuukauden kuluttua, jotta voit säästää tilaa puhelimellasi ja suojata yksityisyyttäsi.</translation>
 <translation id="7425053386765766120">Lisää maksutapa…</translation>
 <translation id="7425346204213733349">Kirjanmerkkeihin, historiaan, salasanoihin ja muihin asetuksiin tehtäviä muutoksia ei enää synkronoida Google-tilillesi. Olemassa olevia tietojasi säilytetään kuitenkin Google-tililläsi.</translation>
 <translation id="742664698522525515">Säilytetäänkö ryhmä?</translation>

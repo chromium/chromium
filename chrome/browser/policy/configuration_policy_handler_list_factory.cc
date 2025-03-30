@@ -583,9 +583,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDefaultSearchProviderContextMenuAccessAllowed,
     prefs::kDefaultSearchProviderContextMenuAccessAllowed,
     base::Value::Type::BOOLEAN },
-  { key::kDefaultSerialGuardSetting,
-    prefs::kManagedDefaultSerialGuardSetting,
-    base::Value::Type::INTEGER },
   { key::kDefaultWebHidGuardSetting,
     prefs::kManagedDefaultWebHidGuardSetting,
     base::Value::Type::INTEGER },
@@ -795,15 +792,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::LIST },
   { key::kSecurityKeyPermitAttestation,
     prefs::kSecurityKeyPermitAttestation,
-    base::Value::Type::LIST },
-  { key::kSerialAllowAllPortsForUrls,
-    prefs::kManagedSerialAllowAllPortsForUrls,
-    base::Value::Type::LIST },
-  { key::kSerialAskForUrls,
-    prefs::kManagedSerialAskForUrls,
-    base::Value::Type::LIST },
-  { key::kSerialBlockedForUrls,
-    prefs::kManagedSerialBlockedForUrls,
     base::Value::Type::LIST },
   { key::kSharedArrayBufferUnrestrictedAccessAllowed,
     prefs::kSharedArrayBufferUnrestrictedAccessAllowed,
@@ -1044,6 +1032,18 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWebRtcUdpPortRange,
     prefs::kWebRTCUDPPortRange,
     base::Value::Type::STRING },
+  { key::kDefaultSerialGuardSetting,
+    prefs::kManagedDefaultSerialGuardSetting,
+    base::Value::Type::INTEGER },
+  { key::kSerialAllowAllPortsForUrls,
+    prefs::kManagedSerialAllowAllPortsForUrls,
+    base::Value::Type::LIST },
+  { key::kSerialAskForUrls,
+    prefs::kManagedSerialAskForUrls,
+    base::Value::Type::LIST },
+  { key::kSerialBlockedForUrls,
+    prefs::kManagedSerialBlockedForUrls,
+    base::Value::Type::LIST },
   { key::kDefaultWebUsbGuardSetting,
     prefs::kManagedDefaultWebUsbGuardSetting,
     base::Value::Type::INTEGER },
@@ -2680,12 +2680,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 
   handlers->AddHandler(std::make_unique<RestoreOnStartupPolicyHandler>());
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
-      key::kSerialAllowUsbDevicesForUrls,
-      prefs::kManagedSerialAllowUsbDevicesForUrls, chrome_schema,
-      SCHEMA_ALLOW_UNKNOWN,
-      SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
-      SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
-  handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kWebAppInstallForceList, prefs::kWebAppInstallForceList,
       chrome_schema, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
@@ -2776,6 +2770,12 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kHSTSPolicyBypassList, prefs::kHSTSPolicyBypassList, chrome_schema,
+      SCHEMA_ALLOW_UNKNOWN,
+      SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+      SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+  handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
+      key::kSerialAllowUsbDevicesForUrls,
+      prefs::kManagedSerialAllowUsbDevicesForUrls, chrome_schema,
       SCHEMA_ALLOW_UNKNOWN,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));

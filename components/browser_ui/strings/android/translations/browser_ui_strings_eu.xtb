@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Baliteke ezkutuko modua aktibatuta dagoenean webgune batzuetako eginbideek ez funtzionatzea</translation>
 <translation id="2442870161001914531">Eskatu beti ordenagailuetarako webgunea</translation>
 <translation id="2445311670906052406">Orain, azkenaldiko fitxak gailuarekin partekatzen ditu Chrome-k. Gailuko aplikazioen zerrendan eta bilaketa-emaitzetan ikusiko dituzu. Aukera hori desaktibatzeko, joan Chrome-ren ezarpenetara.</translation>
+<translation id="245322989586167203">Webguneak serieko ataketara konektatu ohi dira datuak transferitzeko eginbideak eskaintzeko, hala nola sare-konfigurazioa</translation>
 <translation id="2469312991797799607"><ph name="ORIGIN" /> webgunearen eta haren mendeko webgune guztien datu eta cookie guztiak ezabatuko dira</translation>
 <translation id="2482878487686419369">Jakinarazpenak</translation>
 <translation id="2485422356828889247">Desinstalatu</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Ez utzi jakiten webguneei gailua noiz erabiltzen ari zaren</translation>
 <translation id="4412992751769744546">Onartu hirugarrenen cookieak</translation>
 <translation id="4419929467120297501">Arakatzen duzun bitartean hirugarrenen cookieen bidez zure jarraipena egitea galarazten die Chrome-k webguneei. Joan ezarpenetara <ph name="BEGIN_LINK" />hirugarrenen cookieak erabiltzeko baimena kudeatzeko<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Serieko ataka</translation>
 <translation id="4434045419905280838">Leiho gainerak. / Birbideratzeak</translation>
 <translation id="443552056913301231">Gailuko datu guztiak ezabatuko dira, cookieak barne, eta <ph name="ORIGIN" /> iturburuko baimen guztiak berrezarriko</translation>
 <translation id="4468959413250150279">Desaktibatu webgune jakin baten audioa.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Galdetu lehenbizi</translation>
 <translation id="7423538860840206698">Blokeatuta dago arbeleko edukia irakurtzeko aukera</translation>
 <translation id="7425915948813553151">Webguneetarako gai iluna</translation>
+<translation id="7478658909253570368">Ez eman serieko ataketara konektatzeko baimena webguneei</translation>
 <translation id="7488573225650545859">Ezkutatu Ikusi fitxak aplikazioen zerrendan</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Aktibatuta dagoenean, webguneek saioa hasteko eskaera-mezuak erakusteko aukera dute. Desaktibatuta dagoenean, webguneek ezin dute erakutsi saioa hasteko eskaera-mezurik.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Bluetooth bidezko gailu batera konektatuta zaude</translation>
 <translation id="7617547684249261169">Historia, cookieak, webguneetako datuak eta beste datu batzuk ezaba ditzakezu, guztiak edo batzuk bakarrik</translation>
 <translation id="7649070708921625228">Laguntza</translation>
+<translation id="7655411746932645568">Webguneek serieko ataketara konektatzea eska dezakete</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7667547420449112975">Ozeko azti miragarria</translation>
 <translation id="7681597159868843240">Webguneek gailuko mugimendu-sentsoreak erabili ohi dituzte eginbide batzuk eskaintzeko; adibidez, errealitate birtuala edo fitnessaren jarraipena egiteko aukera</translation>

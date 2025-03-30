@@ -441,7 +441,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1734878702283171397">Setze dich mit dem Systemadministrator in Verbindung.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, gültig bis: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computer</translation>
-<translation id="1739422091279046802">Scrollen und Zoomen</translation>
 <translation id="1741613555002899862">Muss angegeben werden und ein gültiger String sein, wenn "DnsOverHttpsMode" auf <ph name="SECURE_DNS_MODE_SECURE" /> gesetzt ist.</translation>
 <translation id="1743393865165844832">Bettwaren und -wäsche</translation>
 <translation id="1743892871127720056">Titel der Vergleichstabelle, Text bearbeiten</translation>
@@ -1567,6 +1566,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3715016660240337709">{0,plural, =1{Datei kann nicht hochgeladen werden}other{<ph name="FILE_COUNT" /> Dateien können nicht hochgeladen werden}}</translation>
 <translation id="3715597595485130451">WLAN-Verbindung herstellen</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Proxy, Firewall und DNS-Konfiguration prüfen<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">Während des Updates kannst du dein Gerät bis zu 10 Minuten lang nicht verwenden.</translation>
 <translation id="372429172604983730">Anwendungen, die diesen Fehler verursachen können, sind Antivirensoftware, Firewalls, Webfilter- oder Proxy-Software.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell eine neue Präsentation in Google Präsentationen zu erstellen</translation>
@@ -2493,6 +2493,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5379618281582508161">Wenn du dieses Passwort auf allen deinen Geräten verwenden möchtest, bestätige deine Identität</translation>
 <translation id="5380953781541843508">in aufsteigender Reihenfolge</translation>
 <translation id="5381318171304904246">Wenn du fortfährst, wirst du auf die Website deiner Bank weitergeleitet. Nach der Bestätigung kehrst du automatisch zu dieser Seite zurück, um den Kauf abzuschließen.</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> hat den Tab „<ph name="WEBSITE_TITLE" />“ aktualisiert</translation>
 <translation id="5383478552402031184">Bodenbeläge</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5385966243497224160">Vorschau von URL ohne HTTPS nicht möglich</translation>
@@ -2878,6 +2879,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6059925163896151826">USB-Geräte</translation>
 <translation id="6060009363608157444">Ungültiger DnsOverHttps-Modus.</translation>
 <translation id="6061154937977953833">Ringen</translation>
+<translation id="6062405040252994646">Tool</translation>
 <translation id="6062937464449575061">Preis nicht mehr beobachten</translation>
 <translation id="6063415549109819824">Hausfinanzierung</translation>
 <translation id="6070432475334343308">Mindestens eine Datei wurde nicht in „<ph name="FOLDER_NAME" />“ bei <ph name="CLOUD_PROVIDER" /> hochgeladen</translation>
@@ -3925,6 +3927,7 @@ Weitere Details:
 <translation id="787226752901403048">Melde dich in Chrome an, um Tabgruppen zu teilen, ihnen beizutreten und gemeinsam an Ideen zu arbeiten</translation>
 <translation id="7877007680666472091">geschützte Inhalts-IDs</translation>
 <translation id="7878562273885520351">Dein Passwort könnte gefährdet sein</translation>
+<translation id="7881044256965445977">Nach Geräten in deinem lokalen Netzwerk suchen und eine Verbindung mit ihnen herstellen</translation>
 <translation id="7882421473871500483">Braun</translation>
 <translation id="7886897188117641322">Wähle aus, welche allgemeinen Themenkategorien für die Personalisierung von Werbung verwendet werden können</translation>
 <translation id="7887683347370398519">Prüfe deinen CVC und versuche es dann noch einmal.</translation>
@@ -4683,6 +4686,7 @@ Weitere Details:
 <translation id="94613679163347541"><ph name="CATEGORY" /> vergleichen?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell eine neue Website in Google Sites zu erstellen</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome schränkt heute wieder Cookies ein}=1{Chrome schränkt morgen wieder Cookies ein}other{Noch # Tage, bis Chrome wieder Cookies einschränkt}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> Mitglieder sind der Tabgruppe „<ph name="GROUP_NAME" />“ beigetreten</translation>
 <translation id="949314938206378263">Deine Anfrage wurde gesendet. Dein Elternteil kann sie in Family Link prüfen.</translation>
 <translation id="950736567201356821">Dreifache Lochung oben</translation>
 <translation id="950926967802086924">Passkey • Google Passwortmanager</translation>

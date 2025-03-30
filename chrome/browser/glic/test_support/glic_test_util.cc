@@ -46,7 +46,8 @@ void SetModelExecutionCapability(Profile* profile, bool enabled) {
 }
 
 void SetFRECompletion(Profile* profile, bool completed) {
-  profile->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, completed);
+  profile->GetPrefs()->SetInteger(prefs::kGlicCompletedFre,
+                                  static_cast<int>(completed));
 }
 
 void InvalidateAccount(Profile* profile) {

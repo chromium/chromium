@@ -124,8 +124,6 @@ export class ExtensionsRuntimeHostsDialogElement extends
 
   static override get properties() {
     return {
-      ...super.properties,
-
       itemId: {type: String},
 
       /**
@@ -154,12 +152,12 @@ export class ExtensionsRuntimeHostsDialogElement extends
     };
   }
 
-  itemId: string = '';
-  currentSite: string|null = null;
-  updateHostAccess: boolean = false;
-  protected site_: string = '';
-  protected inputInvalid_: boolean = false;
-  protected matchingRestrictedSites_: string[] = [];
+  accessor itemId: string = '';
+  accessor currentSite: string|null = null;
+  accessor updateHostAccess: boolean = false;
+  protected accessor site_: string = '';
+  protected accessor inputInvalid_: boolean = false;
+  protected accessor matchingRestrictedSites_: string[] = [];
 
   override connectedCallback() {
     super.connectedCallback();

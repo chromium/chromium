@@ -325,7 +325,6 @@
 <translation id="2527209463677295330">Благодаря этой функции результаты могут стать точнее</translation>
 <translation id="2527779675047087889">Скрыть содержимое буфера обмена</translation>
 <translation id="2532336938189706096">Веб-версия</translation>
-<translation id="2534155362429831547">Удалено записей: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="253498598929009420">Сайту будет доступно содержимое вашего экрана.</translation>
 <translation id="2536728043171574184">Офлайн-копия страницы</translation>
 <translation id="2542548955756682219">Вкладка "<ph name="TAB_TITLE" />"</translation>
@@ -365,7 +364,6 @@
 <translation id="2677748264148917807">Выйти</translation>
 <translation id="2687009626279857299">Больше не работает на этом устройстве</translation>
 <translation id="2702516483241149200">Теперь можно поделиться ссылкой, которая прокручивает страницу до этого текста.</translation>
-<translation id="2705073298859543115">Создать сводку</translation>
 <translation id="2708051474374549906">Эффективная защита в реальном времени от опасных сайтов, расширений и скачанных файлов. Она действует с учетом данных о вашей работе в браузере, которые отправляются в Google.</translation>
 <translation id="2708226184420201102">Открыть в браузере <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Новое</translation>
@@ -488,7 +486,7 @@
 <translation id="3269093882174072735">Загрузить изображение</translation>
 <translation id="327204079441056603">Пароли на этом устройстве теперь хранятся по-другому</translation>
 <translation id="3280562213547448728">Голосовой поиск</translation>
-<translation id="3282568296779691940">Войдите в Chrome</translation>
+<translation id="3282568296779691940">Аккаунт Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> вкладка}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладка}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладки}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладок}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладки}}</translation>
 <translation id="3293181007446299124">История браузера хранится на устройстве и доступна только вам. Для защиты персональных данных отчеты отправляются с задержкой.</translation>
 <translation id="3301936297336370235">Подтверждение предложенного пароля</translation>
@@ -677,6 +675,7 @@
 <translation id="4195643157523330669">Открыть в новой вкладке</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 вкладка на этом устройстве}one{# вкладка на этом устройстве}few{# вкладки на этом устройстве}many{# вкладок на этом устройстве}other{# вкладки на этом устройстве}}</translation>
 <translation id="4198423547019359126">Нет доступных мест для скачивания</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Вы использовали аккаунт на этом сайте</translation>
 <translation id="4214315110991671325">Если вы разрешили использование файлов cookie, Chrome может применять их для предзагрузки.</translation>
 <translation id="4216511743389425832">Озвучить эту страницу</translation>
 <translation id="4225725533026049334">Вы подписаны</translation>
@@ -1198,7 +1197,6 @@
 <translation id="6564820424018738527">На вашем устройстве Android может быть похожий параметр. Если оценка эффективности рекламы включена в Chrome и на устройстве Android, компании смогут измерять эффективность рекламы на посещаемых вами сайтах и в приложениях, которые вы используете.</translation>
 <translation id="6565959834589222080">Использовать сеть Wi-Fi, когда она доступна</translation>
 <translation id="6569373978618239158">Открыв новую вкладку, вы увидите статьи с сайта "<ph name="SITE_NAME" />". Сайты, на которые вы подписаны, сохранены в вашем аккаунте Google. Управлять ими можно в настройках рекомендаций.</translation>
-<translation id="6570116402456758630">Общая информация о странице</translation>
 <translation id="657177046675873214">Чтобы закладки были доступны на всех устройствах, которые у вас есть, включите параметр "Закладки" в настройках.</translation>
 <translation id="6573096386450695060">Разрешать всегда</translation>
 <translation id="6573431926118603307">Здесь появятся вкладки, открытые в Chrome на других устройствах.</translation>

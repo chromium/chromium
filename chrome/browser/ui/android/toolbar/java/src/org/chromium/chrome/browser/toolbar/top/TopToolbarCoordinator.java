@@ -768,4 +768,14 @@ public class TopToolbarCoordinator implements Toolbar {
     public void onTransitionEnd() {
         mToolbarLayout.onTransitionEnd();
     }
+
+    /** Requests keyboard focus on the toolbar row. */
+    public void requestFocus() {
+        mToolbarLayout.requestKeyboardFocus();
+    }
+
+    /** Returns true if the toolbar contains keyboard focus. */
+    public boolean containsKeyboardFocus() {
+        return mToolbarLayout.getFocusedChild() != null;
+    }
 }

@@ -182,6 +182,10 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return num_partial_page_content_requests_sent_;
   }
 
+  const int& num_upload_chunk_requests_sent() const {
+    return num_upload_chunk_requests_sent_;
+  }
+
   int latency_gen_204_counter(
       lens::LensOverlayGen204Controller::LatencyType latency_type) const {
     auto it = latency_gen_204_counter_.find(latency_type);
@@ -251,7 +255,7 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
  protected:
   std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      lens::LensOverlayServerRequest* request,
+      std::string request_string,
       const GURL& fetch_url,
       const HttpMethod& http_method,
       const base::TimeDelta& timeout,
@@ -386,6 +390,9 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   // The number of partial page content requests sent by the query controller.
   int num_partial_page_content_requests_sent_ = 0;
+
+  // The number of upload chunk requests sent by the query controller.
+  int num_upload_chunk_requests_sent_ = 0;
 
   // The last encoded request id attached to a latency gen204 ping.
   std::optional<lens::LensOverlayRequestId> last_latency_gen204_request_id_;

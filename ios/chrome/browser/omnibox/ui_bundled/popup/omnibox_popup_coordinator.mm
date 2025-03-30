@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_image_fetcher.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item_menu_provider.h"
@@ -73,6 +74,8 @@
   __weak OmniboxAutocompleteController* _omniboxAutocompleteController;
   /// The omnibox debugger mediator.
   OmniboxDebuggerMediator* _omniboxDebuggerMediator;
+  /// The omnibox image fetcher.
+  OmniboxImageFetcher* _omniboxImageFetcher;
 }
 
 #pragma mark - Public
@@ -104,14 +107,17 @@
       std::make_unique<image_fetcher::ImageDataFetcher>(
           self.profile->GetSharedURLLoaderFactory());
 
+  _omniboxImageFetcher = [[OmniboxImageFetcher alloc]
+      initWithFaviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                self.profile)
+               imageFetcher:std::move(imageFetcher)];
+
   BOOL isIncognito = self.profile->IsOffTheRecord();
 
   self.mediator = [[OmniboxPopupMediator alloc]
-               initWithFetcher:std::move(imageFetcher)
-                 faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
-                                   self.profile)
-                       tracker:feature_engagement::TrackerFactory::
-                                   GetForProfile(self.profile)];
+          initWithTracker:feature_engagement::TrackerFactory::GetForProfile(
+                              self.profile)
+      omniboxImageFetcher:_omniboxImageFetcher];
 
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(self.profile);

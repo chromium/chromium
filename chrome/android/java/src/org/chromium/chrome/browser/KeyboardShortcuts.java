@@ -698,14 +698,14 @@ public class KeyboardShortcuts {
     /**
      * This should be called from the Activity's onKeyDown() to handle keyboard shortcuts.
      *
-     * Note: onKeyDown() is called after the active view or web page has had a chance to handle
+     * <p>Note: onKeyDown() is called after the active view or web page has had a chance to handle
      * the key event. So the keys handled here *can* be overridden by any view or web page.
      *
      * @param event The KeyEvent to handle.
      * @param isCurrentTabVisible Whether page-related actions are valid, e.g. reload, zoom in. This
-     *         should be false when in the tab switcher.
+     *     should be false when in the tab switcher.
      * @param tabSwitchingEnabled Whether shortcuts that switch between tabs are enabled (e.g.
-     *         Ctrl+Tab, Ctrl+3).
+     *     Ctrl+Tab, Ctrl+3).
      * @param tabModelSelector The current tab modelSelector.
      * @param menuOrKeyboardActionController Controls keyboard actions.
      * @param toolbarManager Manages the toolbar.
@@ -726,6 +726,7 @@ public class KeyboardShortcuts {
                 && !event.isAltPressed()
                 && keyCode != KeyEvent.KEYCODE_F3
                 && keyCode != KeyEvent.KEYCODE_F5
+                && keyCode != KeyEvent.KEYCODE_F6
                 && keyCode != KeyEvent.KEYCODE_F10
                 && keyCode != KeyEvent.KEYCODE_FORWARD
                 && keyCode != KeyEvent.KEYCODE_REFRESH) {
@@ -894,6 +895,29 @@ public class KeyboardShortcuts {
                 case KeyboardShortcutsSemanticMeaning.OPEN_HELP:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.help_id, false);
                     return true;
+                case KeyboardShortcutsSemanticMeaning
+                        .NOT_IMPLEMENTED_KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS:
+                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_KEYBOARD_A11Y)) {
+                        // TODO(crbug.com/360423850): Don't allow F6 to be overridden by websites.
+                        return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                                R.id.switch_keyboard_focus_row, /* fromMenu= */ false);
+                    } else {
+                        return false;
+                    }
+                case KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_KEYBOARD_FOCUS_TOOLBAR:
+                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_KEYBOARD_A11Y)) {
+                        toolbarManager.requestFocus();
+                        return true;
+                    } else {
+                        return false;
+                    }
+                case KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_KEYBOARD_FOCUS_BOOKMARKS:
+                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_KEYBOARD_A11Y)) {
+                        return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                                R.id.focus_bookmarks, /* fromMenu= */ false);
+                    } else {
+                        return false;
+                    }
             }
         }
 

@@ -12,16 +12,24 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_delegate.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/win/taskbar_manager.h"
+#include "chrome/installer/util/install_util.h"
+#include "chrome/installer/util/shell_util.h"
+#endif
 
 namespace {
 
@@ -61,6 +69,14 @@ DefaultBrowserPromptManager* DefaultBrowserPromptManager::GetInstance() {
   return base::Singleton<DefaultBrowserPromptManager>::get();
 }
 
+void DefaultBrowserPromptManager::InitTabStripTracker() {
+  browser_tab_strip_tracker_ =
+      std::make_unique<BrowserTabStripTracker>(this, this);
+  // This will trigger a call to `OnTabStripModelChanged`, which will create
+  // the info bar.
+  browser_tab_strip_tracker_->Init();
+}
+
 void DefaultBrowserPromptManager::MaybeShowPrompt() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   NOTREACHED() << "Unsupported platforms for showing default browser prompts.";
@@ -70,10 +86,30 @@ void DefaultBrowserPromptManager::MaybeShowPrompt() {
   if (!ShouldShowPrompts()) {
     return;
   }
-    browser_tab_strip_tracker_ =
-        std::make_unique<BrowserTabStripTracker>(this, this);
-    browser_tab_strip_tracker_->Init();
+
+#if BUILDFLAG(IS_WIN)
+  // On Windows, before showing the info bar, determine whether or not to
+  // offer to pin to taskbar, and store that result in `this`.
+  if (base::FeatureList::IsEnabled(
+          features::kOfferPinToTaskbarWhenSettingToDefault)) {
+    // base::Unretained is safe because DefaultBrowserPromptManager is a
+    // global singleton.
+    browser_util::ShouldOfferToPin(
+        ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+        base::BindOnce(&DefaultBrowserPromptManager::OnCanPinToTaskbarResult,
+                       base::Unretained(this)));
+    return;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  InitTabStripTracker();
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+}
+
+void DefaultBrowserPromptManager::OnCanPinToTaskbarResult(
+    bool should_offer_to_pin) {
+  can_pin_to_taskbar_ = should_offer_to_pin;
+  InitTabStripTracker();
 }
 
 void DefaultBrowserPromptManager::CloseAllPrompts(CloseReason close_reason) {
@@ -99,7 +135,8 @@ void DefaultBrowserPromptManager::CreateInfoBarForWebContents(
   CHECK(!infobars_.contains(web_contents));
 
   infobars::InfoBar* infobar = DefaultBrowserInfoBarDelegate::Create(
-      infobars::ContentInfoBarManager::FromWebContents(web_contents), profile);
+      infobars::ContentInfoBarManager::FromWebContents(web_contents), profile,
+      can_pin_to_taskbar_);
 
   if (infobar == nullptr) {
     // Infobar may be null if `InfoBarManager::ShouldShowInfoBar` returns false,

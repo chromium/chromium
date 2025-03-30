@@ -53,18 +53,19 @@ export class TabOrganizationSelectorElement extends CrLitElement {
     };
   }
 
-  availableHeight: number = 0;
+  accessor availableHeight: number = 0;
 
-  protected selectedState_: TabOrganizationFeature =
+  protected accessor selectedState_: TabOrganizationFeature =
       TabOrganizationFeature.kSelector;
-  protected prevSelectedState_: TabOrganizationFeature =
+  protected accessor prevSelectedState_: TabOrganizationFeature =
       TabOrganizationFeature.kSelector;
-  protected declutterHeading_: string = '';
-  protected disableDeclutter_: boolean = false;
+  protected accessor declutterHeading_: string = '';
+  protected accessor disableDeclutter_: boolean = false;
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   private visibilityChangedListener_: () => void;
-  private dedupeEnabled_: boolean = loadTimeData.getBoolean('dedupeEnabled');
+  private accessor dedupeEnabled_: boolean =
+      loadTimeData.getBoolean('dedupeEnabled');
 
   constructor() {
     super();

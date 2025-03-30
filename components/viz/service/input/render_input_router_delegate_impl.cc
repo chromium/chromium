@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/notimplemented.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/viz/service/input/peak_gpu_memory_tracker_impl.h"
 #include "ui/latency/latency_info.h"

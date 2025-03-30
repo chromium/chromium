@@ -41,14 +41,14 @@ export class RelatedWebsiteSetsToolbarElement extends CrLitElement {
     };
   }
 
-  protected autoFocus_: boolean = true;
-  protected alwaysShowLogo_: boolean = true;
-  protected clearLabel_: string = 'Clear search';
-  protected menuLabel_: string = 'Menu';
-  protected narrow?: boolean;
-  protected narrowThreshold_: number = 1096;
-  protected pageName: string = '';
-  protected searchPrompt_: string = 'Search site';
+  protected accessor autoFocus_: boolean = true;
+  protected accessor alwaysShowLogo_: boolean = true;
+  protected accessor clearLabel_: string = 'Clear search';
+  protected accessor menuLabel_: string = 'Menu';
+  protected accessor narrow: boolean|undefined;
+  protected accessor narrowThreshold_: number = 1096;
+  protected accessor pageName: string = '';
+  protected accessor searchPrompt_: string = 'Search site';
 
   setSearchFieldValue(query: string) {
     this.$.mainToolbar.getSearchField().setValue(query);

@@ -79,23 +79,12 @@ class Responder final : public GarbageCollected<Responder>,
   }
 
   // `mojom::blink::ModelStreamingResponder` implementation.
-  void OnStreaming(
-      const String& text,
-      mojom::blink::ModelStreamingResponderAction action) override {
+  void OnStreaming(const String& text) override {
     RecordResponseStatusMetrics(
         mojom::blink::ModelStreamingResponseStatus::kOngoing);
     response_callback_count_++;
     // Update the response with the latest value.
-    switch (action) {
-      case mojom::blink::ModelStreamingResponderAction::kAppend: {
-        response_ = response_ + text;
-        break;
-      }
-      case mojom::blink::ModelStreamingResponderAction::kReplace: {
-        response_ = text;
-        break;
-      }
-    }
+    response_ = response_ + text;
   }
 
   void OnCompletion(
@@ -247,9 +236,7 @@ class StreamingResponder final
   }
 
   // `blink::mojom::blink::ModelStreamingResponder` implementation.
-  void OnStreaming(
-      const String& text,
-      mojom::blink::ModelStreamingResponderAction action) override {
+  void OnStreaming(const String& text) override {
     RecordResponseStatusMetrics(
         mojom::blink::ModelStreamingResponseStatus::kOngoing);
     // Update the response info and enqueue the latest response.

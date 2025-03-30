@@ -8,6 +8,7 @@
 <translation id="100323615638474026">Dispozitiv USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Istoricul descărcărilor recente</translation>
 <translation id="1004218526896219317">Acces la site</translation>
+<translation id="1005230401424685968">AAAA</translation>
 <translation id="1005274289863221750">Utilizează microfonul și camera foto</translation>
 <translation id="1005333234656240382">Activezi remedierea erorilor prin ADB?</translation>
 <translation id="1005671386794704751">Roz</translation>
@@ -1368,6 +1369,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="193565226207940518">Instrument de asistență</translation>
 <translation id="1935995810530254458">Copiază oricum</translation>
 <translation id="1936157145127842922">Afișați în dosar</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Pagina a fost adăugată în lista de lecturi}few{Paginile au fost adăugate în lista de lecturi}other{Paginile au fost adăugate în lista de lecturi}}</translation>
 <translation id="1936931585862840749">Precizează un număr de exemplare pentru printare (de la 1 la <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Nu se poate importa tipul de arhitectură de container <ph name="ARCHITECTURE_CONTAINER" /> cu acest dispozitiv <ph name="ARCHITECTURE_DEVICE" />. Poți încerca să restabilești acest container într-un dispozitiv diferit sau poți accesa fișierele din această imagine de container deschizându-le în aplicația Files.</translation>
 <translation id="1938351510777341717">Comandă externă</translation>
@@ -2006,6 +2008,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2373666622366160481">Potrivește în funcție de dimensiunile hârtiei</translation>
 <translation id="2375406435414127095">Conectează-te la telefon</translation>
 <translation id="2376056713414548745">Citește cu voce tare</translation>
+<translation id="2376122016044804363">Confirmări de copiere în clipboard</translation>
 <translation id="2377667304966270281">Erori de hardware</translation>
 <translation id="237828693408258535">Traduci această pagină?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Este posibil ca, în curând, această extensie să nu mai fie acceptată.}few{Este posibil ca, în curând, aceste extensii să nu mai fie acceptate.}other{Este posibil ca, în curând, aceste extensii să nu mai fie acceptate.}}</translation>
@@ -3159,6 +3162,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3192586965067888278">Descrie problema detaliat. Feedbackul va fi trimis la Google pentru examinare manuală și poate fi folosit pentru a îmbunătăți sau a dezvolta produse și servicii Google.</translation>
 <translation id="3192947282887913208">Fișiere audio</translation>
 <translation id="3193695589337931419">Utilitare pentru semnalele de sistem</translation>
+<translation id="3194095220941877499">Afișează o confirmare când copiezi linkuri, imagini sau videoclipuri</translation>
 <translation id="3196912927885212665">Pentru configurarea cu telefonul Android, trebuie să activezi conexiunea Bluetooth a Chromebookului</translation>
 <translation id="3197453258332670132">Dacă dai clic dreapta sau apeși lung, se afișează informații conexe pentru textul selectat</translation>
 <translation id="3199127022143353223">Servere</translation>
@@ -3173,7 +3177,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
         <ph name="BREAK" />
         <ph name="BREAK" />
         Poți să gestionezi oricând setările din acest card sau să vezi mai multe opțiuni în secțiunea Personalizează Chrome.</translation>
-<translation id="3207437351138888228">Când completezi un formular, informațiile tale și pagina de unde provin sunt trimise la Google pentru a genera sugestii</translation>
 <translation id="3207960819495026254">Marcată</translation>
 <translation id="3208584281581115441">Verifică acum</translation>
 <translation id="3208703785962634733">Neconfirmat</translation>
@@ -3218,6 +3221,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3242289508736283383">Aplicația cu atributul „kiosk_only” din manifest trebuie să fie instalată în modul chioșc pentru sistemul de operare Chrome</translation>
 <translation id="3243017971870859287">Citește numerele de serie ale dispozitivului ChromeOS Flex și ale componentelor</translation>
 <translation id="324366796737464147">Anularea zgomotului</translation>
+<translation id="3244271242291266297">LL</translation>
 <translation id="3244294424315804309">Continuă să dezactivezi sunetul</translation>
 <translation id="3247006341013237647">Organizezi filele?</translation>
 <translation id="3247649647204519958">De aici, poți să vezi și să gestionezi permisiunile pentru extensii ale site-ului pe care l-ai accesat</translation>
@@ -6084,7 +6088,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5267572070504076962">Activează opțiunea Navigare sigură ca să beneficiezi de protecție împotriva site-urilor periculoase</translation>
 <translation id="5269977353971873915">Printarea a eșuat</translation>
 <translation id="5271578170655641944">Elimini accesul la Google Drive?</translation>
-<translation id="5271782684896713035">Datele pot fi examinate de evaluatori umani pentru a îmbunătăți funcția</translation>
 <translation id="5273806377963980154">Editează adresa URL a site-ului</translation>
 <translation id="5275084684151588738">Dicționarele utilizatorului</translation>
 <translation id="5275338516105640560">Butonul grupului de file salvat</translation>

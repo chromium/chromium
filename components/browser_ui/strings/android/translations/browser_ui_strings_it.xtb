@@ -112,6 +112,7 @@
 <translation id="244264527810019436">Le funzionalità su alcuni siti potrebbero non essere disponibili in modalità di navigazione in incognito</translation>
 <translation id="2442870161001914531">Richiedi sempre sito desktop</translation>
 <translation id="2445311670906052406">Chrome ora condivide le schede recenti con il tuo dispositivo. Le vedrai nell'elenco di app e nei risultati di ricerca del tuo dispositivo. Puoi disattivare questa funzionalità in qualsiasi momento nelle impostazioni di Chrome.</translation>
+<translation id="245322989586167203">In genere, i siti si connettono a porte seriali per funzionalità di trasferimento di dati come la configurazione della rete</translation>
 <translation id="2469312991797799607">Questa azione eliminerà tutti i dati e i cookie di <ph name="ORIGIN" /> e di tutti i siti secondari</translation>
 <translation id="2482878487686419369">Notifiche</translation>
 <translation id="2485422356828889247">Disinstalla</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Impedisci ai siti di sapere quando usi attivamente questo dispositivo</translation>
 <translation id="4412992751769744546">Consenti cookie di terze parti</translation>
 <translation id="4419929467120297501">Chrome impedisce ai siti di utilizzare i cookie di terze parti per monitorare la tua navigazione. Vai alle impostazioni per <ph name="BEGIN_LINK" />gestire l'accesso ai cookie di terze parti<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Porta seriale</translation>
 <translation id="4434045419905280838">Popup e reindirizzamenti</translation>
 <translation id="443552056913301231">Questa azione eliminerà tutti i dati locali, compresi i cookie, e reimposterà tutte le autorizzazioni per <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Disattiva l'audio per un sito specifico.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Chiedi prima</translation>
 <translation id="7423538860840206698">Lettura degli appunti non consentita</translation>
 <translation id="7425915948813553151">Tema scuro per i siti</translation>
+<translation id="7478658909253570368">Non consentire ai siti di connettersi alle porte seriali</translation>
 <translation id="7488573225650545859">Nascondi Visualizza schede nell'elenco di app</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Quando l'opzione è attiva, i siti possono mostrare richieste di accesso. Quando l'opzione è disattivata, i siti non possono mostrare le richieste di accesso.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Connesso a un dispositivo Bluetooth</translation>
 <translation id="7617547684249261169">Puoi eliminare in parte o interamente dati della cronologia, cookie, dati dei siti e altro ancora</translation>
 <translation id="7649070708921625228">Guida</translation>
+<translation id="7655411746932645568">I siti possono chiedere di connettersi alle porte seriali</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7667547420449112975">Il meraviglioso mago di Oz</translation>
 <translation id="7681597159868843240">Solitamente i siti usano i sensori di movimento del dispositivo per funzionalità come la realtà virtuale o il monitoraggio dell'attività fisica</translation>

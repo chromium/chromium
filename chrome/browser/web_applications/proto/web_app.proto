@@ -456,4 +456,8 @@ message WebApp {
   // Only used on Mac OS, Set to true if the app was installed via the DIY app
   // install path by the user and had new icons.
   optional bool diy_app_icons_masked_on_mac = 71;
+
+  // When specified, used to track whether a manifest update should happen or
+  // not.
+  optional string update_token = 72;
 }

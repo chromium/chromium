@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Faili ya maelezo si sahihi</translation>
 <translation id="7217838517480956708">Msimamizi wa mashine haya anahitaji <ph name="EXTENSION_NAME" /> kisakinishwe. Hakiwezi kuondolewa au kurekebishwa.</translation>
 <translation id="7612608473764576263">Ni lazima uweke thamani ya ufunguo wa faragha katika muundo sahihi (Ufunguo wa RSA wa PKCS#8-format PEM-encoded).</translation>
+<translation id="7876803335449432072">Imeshindwa kupakia faili ya '<ph name="RELATIVE_PATH" />' katika hati ya maudhui, hati za maudhui za hati ya mitindo zinaweza tu kupakiwa kutoka kwenye faili za hati ya mitindo zinazotumika kama vile faili za .css.</translation>
 <translation id="7939686037314084444">Imeshindwa kupakia kiendelezi vizuri. Huenda haitaweza kuingilia maombi ya mtandao.</translation>
 <translation id="7972881773422714442">Chaguzi: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Kamera ya mbele</translation>
 <translation id="8047248493720652249">Kiendelezi hiki kimeshindwa kukipa kipakuliwa jina "<ph name="ATTEMPTED_FILENAME" />" kwa sababu kipakuliwa kingine (<ph name="EXTENSION_NAME" />) kimechagua jina tofauti la faili "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> kutoka <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Faili ya maelezo haipatikani au haisomeki</translation>
+<translation id="8621383749470166852">Imeshindwa kupakia faili ya '<ph name="RELATIVE_PATH" />' katika hati ya maudhui, hati za maudhui zinaweza tu kupakiwa kutoka kwenye faili za JavaScript zinazotumika kama vile faili za .js.</translation>
 <translation id="8636666366616799973">Furushi ni batili. Maelezo: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" inaomba idhini ya kufikia mojawapo ya vifaa vyako:</translation>
 <translation id="8885905466771744233">Ufunguo binafsi wa kiendelezi kilichobainishwa tayari upo. Tumia ufunguo huo tena au uufute kwanza.</translation>

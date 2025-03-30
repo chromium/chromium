@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Хасах</translation>
 <translation id="1190609913194133056">Мэдэгдлийн төв</translation>
 <translation id="1201402288615127009">Дараагийнх</translation>
-<translation id="1202892408424955784">Хянаж буй бүтээгдэхүүнүүд</translation>
 <translation id="1204075260022434100">{count,plural, =1{Хавчуургыг таны {email} бүртгэлийн "{title}"-д хадгалсан}other{{count} хавчуургыг таны {email} бүртгэлийн "{title}"-д хадгалсан}}</translation>
 <translation id="120431140543679678">Дагах</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">шинэ зүйл</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> бүртгэл ижил нууц үг ашиглаж байна</translation>
 <translation id="2059166748188874810">Хотын захиргаа</translation>
-<translation id="2060114494785549741">1 сарын дараа устгах</translation>
 <translation id="2060638295449304809">Энэ хаягийг зөвхөн энэ төхөөрөмжид хадгалсан. Энэ хаягийг бусад төхөөрөмж дээрээ ашиглахын тулд <ph name="USER_EMAIL" /> Google Бүртгэлдээ хадгална уу</translation>
 <translation id="20638360198452347">Нэгжийн төрөл сонгогч</translation>
 <translation id="2067852168641682340">Энэ бүртгэлд үргэлж хадгалах</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Үнэ мөшгөх картыг нуух</translation>
 <translation id="2216366330550244277">Бүтээгдэхүүний хуудас руу очно уу</translation>
 <translation id="2220529011494928058">Асуудлыг мэдэгдэх</translation>
-<translation id="2220887224562128152">Файлыг устгах хуваарь гаргасны дараа үүнийг сэргээх боломжгүй.</translation>
 <translation id="2223461067862937305">QR код үүсгэх</translation>
 <translation id="2229345671837147090">Алсын зайн табын хүснэгт</translation>
 <translation id="2230173723195178503">Веб хуудсыг ачаалласан</translation>
@@ -384,7 +381,6 @@
 <translation id="2539748786028143624">Сайжруулсан хамгаалалтыг асаана уу…</translation>
 <translation id="2540111494300686866">Харилцах цонхыг зогсоох</translation>
 <translation id="2542268842667970959">"Аюулгүй байдлын шалгалт"-ыг нууна уу</translation>
-<translation id="2543870349255816922">Энэ карт таны синк хийсэн аль нэг төхөөрөмжөөс таны хянасан бүтээгдэхүүний үнийн бууралтыг харуулна</translation>
 <translation id="2547458583188611426">Синк хийх ажиллахгүй байна. Синк хийж эхлэхийн тулд нэвтрэх үгээ оруулна уу.</translation>
 <translation id="2551153019974022505">Бүртгэлийн алдаа</translation>
 <translation id="2559843230610279254">Табын бүлэг, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> таб.</translation>
@@ -494,7 +490,6 @@
 <translation id="3059270601560379555">Шинэ хайлт</translation>
 <translation id="3064547930554042309">Татаж авсан файлыг удирдах</translation>
 <translation id="3072279342064724558">Нууц үг аль хэдийн байна</translation>
-<translation id="3074862506644936708">Автоматаар устгахыг идэвхжүүлэх</translation>
 <translation id="3076846064362030967">Та Google Бүртгэлээсээ гарахгүй. Таныг нэвтэрсэн үед <ph name="BEGIN_LINK" />бусад төрлийн үйл ажиллагааг<ph name="END_LINK" /> Google Бүртгэлд тань хадгалж магадгүй. Та тэдгээрийг хүссэн үедээ устгах боломжтой.
 
 
@@ -913,6 +908,7 @@
 <translation id="4896467949657706481">Табуудыг хаасан; таныг гаргасан</translation>
 <translation id="4913626501929406101">Та нууц үгнийхээ хуулбарыг гэр бүлийн бүлэгтээ байгаа хэн нэгэнтэй аюулгүй хуваалцах боломжтой. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Хүлээн зөвшөөрөх</translation>
+<translation id="4930714375720679147">Асаах</translation>
 <translation id="4932733599132424254">Огноо</translation>
 <translation id="4936354130727646074">Хэзээ ч бүү зөө</translation>
 <translation id="4937410517508563815">Нууц үгнүүдийг бүртгэлд хадгалах</translation>
@@ -1148,7 +1144,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5899314093904173337">Ойролцоо байгаа хүмүүстэй хуваалцахын тулд тэдэнд энэ QR кодыг камер эсвэл QR код скан хийдэг аппаар скан хийхийг зөвшөөрнө үү</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} шинэ таб}other{{count} шинэ таб}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
-<translation id="5917913282764181683">Татаж авсан файлаа автоматаар устгах</translation>
 <translation id="5922999516621365983">Табыг бэхлэхийн тулд ийш чирнэ үү.</translation>
 <translation id="5936006948844852401">Хадгалах санг удирдах</translation>
 <translation id="5936065461722368675">Бүтэн хуудсыг орчуулах</translation>
@@ -1507,7 +1502,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="741204030948306876">Тийм, би зөвшөөрч байна</translation>
 <translation id="7417689656810783109">Бүлгийн нэрийг өөрчлөх</translation>
 <translation id="7419565702166471774">Үргэлж аюулгүй холболт ашиглана</translation>
-<translation id="742001653298797675">Утсан дээрээ зай хэмнэх, нууцлалаа хамгаалахын тулд татаж авсан бүх файлаа нэг сарын дараа устгах хуваарь гаргана уу.</translation>
 <translation id="7425053386765766120">Төлбөрийн хэрэгсэл нэмэх…</translation>
 <translation id="7425346204213733349">Таны хавчуурга, түүх, нууц үг, бусад тохиргоонд хийсэн өөрчлөлтийг цаашид таны Google Бүртгэлд синк хийхгүй. Харин таны одоо байгаа өгөгдлийг Google бүртгэлд хадгалах болно.</translation>
 <translation id="742664698522525515">Бүлгийг үлдээх үү?</translation>

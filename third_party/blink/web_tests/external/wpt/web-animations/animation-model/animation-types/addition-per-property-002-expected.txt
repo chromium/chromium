@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-Found 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] position-visibility: "anchors-valid" onto "always"
+  assert_equals: The value should be anchors-valid at 0ms expected "anchors-valid" but got "always"
 [FAIL] stroke-dasharray: dasharray
   assert_equals: The value should be 1px, 2px, 3px, 4px, 5px at 0ms expected "1px, 2px, 3px, 4px, 5px" but got "7px, calc(30% + 2px), 5px, 10px, calc(30% + 5px), 3px, 8px, calc(30% + 3px), 6px, 11px, calc(30% + 1px), 4px, 9px, calc(30% + 4px), 7px"
 [FAIL] text-decoration: "overline" onto "underline"

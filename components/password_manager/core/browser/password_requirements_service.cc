@@ -28,7 +28,8 @@ PasswordRequirementsService::PasswordRequirementsService(
     std::unique_ptr<PasswordRequirementsSpecFetcher> fetcher)
     : specs_for_domains_(kCacheSizeForDomainKeyedSpecs),
       specs_for_signatures_(kCacheSizeForSignatureKeyedSpecs),
-      fetcher_(std::move(fetcher)) {}
+      fetcher_(std::move(fetcher)),
+      weak_ptr_factory_(this) {}
 
 PasswordRequirementsService::~PasswordRequirementsService() = default;
 
@@ -120,9 +121,38 @@ void PasswordRequirementsService::AddSpec(
   specs_for_domains_.Put(main_frame_domain, spec);
 }
 
+void PasswordRequirementsService::FetchPasswordRequirementsSpec(
+    const GURL& main_frame_domain,
+    FetchPasswordRequirementsSpecCallback callback) {
+  auto iter_by_domain = specs_for_domains_.Get(main_frame_domain);
+  if (iter_by_domain != specs_for_domains_.end()) {
+    std::move(callback).Run(iter_by_domain->second);
+    return;
+  }
+  if (fetcher_) {
+    fetcher_->Fetch(
+        main_frame_domain,
+        base::BindOnce(
+            &PasswordRequirementsService::HandlePasswordRequirementsSpecFetched,
+            weak_ptr_factory_.GetWeakPtr(), main_frame_domain,
+            std::move(callback)));
+    return;
+  }
+  PasswordRequirementsSpec default_spec;
+  std::move(callback).Run(default_spec);
+}
+
 void PasswordRequirementsService::ClearDataForTestingImpl() {
   specs_for_domains_.Clear();
   specs_for_signatures_.Clear();
+}
+
+void PasswordRequirementsService::HandlePasswordRequirementsSpecFetched(
+    const GURL& main_frame_domain,
+    FetchPasswordRequirementsSpecCallback callback,
+    const PasswordRequirementsSpec& spec) {
+  specs_for_domains_.Put(main_frame_domain, spec);
+  std::move(callback).Run(spec);
 }
 
 std::unique_ptr<PasswordRequirementsService> CreatePasswordRequirementsService(

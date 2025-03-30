@@ -441,7 +441,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1734878702283171397">Subukang makipag-ugnayan sa admin ng system.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, mag-e-expire sa <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computer</translation>
-<translation id="1739422091279046802">pag-scroll at pag-zoom</translation>
 <translation id="1741613555002899862">Dapat ay tukuyin at isang valid na string kapag ang DnsOverHttpsMode ay <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Mga Bedding at Sapin sa Kama</translation>
 <translation id="1743892871127720056">Pamagat ng talahanayan sa paghahambing, mag-edit ng text</translation>
@@ -569,6 +568,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1975584088563498795">Mailbox 10</translation>
 <translation id="1978555033938440688">Bersyon ng Firmware</translation>
 <translation id="1979156660928743046">Impormasyon ng Media</translation>
+<translation id="1987486584747170374">Ipinapadala sa Google ang iyong mga paghahanap, pinakamahusay na tugma, at ang mga content ng page ng mga ito. Hindi ito gagamitin ng mga taong tagasuri para mapahusay ang AI. Posibleng baguhin ng iyong organisasyon ang mga setting na ito anumang oras.</translation>
 <translation id="1988881251331415125">Kung tama ang pagbabaybay, <ph name="BEGIN_LINK" />subukang patakbuhin ang Mga Diagnostic sa Pagkakakonekta<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">Gusto ng <ph name="URL" /> na permanenteng mag-store ng malaking data sa iyong lokal na computer</translation>
@@ -764,6 +764,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2301098101308036335">Aling mga website ang binisita at kailan.</translation>
 <translation id="230286397113210245">Button na Magbukas ng Incognito Window, i-activate para makapagbukas ng bagong Incognito window para makapag-browse nang pribado</translation>
 <translation id="2306124309679506798">Payagan ang immersive na experience?</translation>
+<translation id="2307711332257985952">Available na sa Chrome ang iyong mga address ng tahanan at trabaho</translation>
 <translation id="2312234273148520048">Mga Condiment at Dressing</translation>
 <translation id="2316087952091171402">Mas mababa sa <ph name="UPPER_ESTIMATE" />. Posibleng mas mabagal na mag-load ang ilang site sa iyong susunod na pagbisita.</translation>
 <translation id="2316159751672436664">I-personalize ang iyong mga tool sa accessibility sa mga setting ng ChromeOS</translation>
@@ -1179,6 +1180,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3102312643185441063">Savings</translation>
 <translation id="3103188521861412364">Mga Stock at Bond</translation>
 <translation id="3103535543639438037">Paghambingin ang mga katulad na produkto nang magkakatabi</translation>
+<translation id="3103993932858740905">Sa susunod na magbayad ka, mapupunan ang isang one-time na numero ng virtual card. Para lang sa pagbiling ito ang numerong ito.</translation>
 <translation id="3105172416063519923">Asset ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Suriin ang configuration ng secure na DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Gitnang Tray</translation>
@@ -2882,6 +2884,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6059925163896151826">Mga USB device</translation>
 <translation id="6060009363608157444">Invalid ang DnsOverHttps mode.</translation>
 <translation id="6061154937977953833">Wrestling</translation>
+<translation id="6062405040252994646">Tool</translation>
 <translation id="6062937464449575061">Huwag Subaybayan ang Presyo</translation>
 <translation id="6063415549109819824">Pagpopondo para sa Bahay</translation>
 <translation id="6070432475334343308">Isa o higit pang file ang hindi na-upload sa <ph name="FOLDER_NAME" /> sa <ph name="CLOUD_PROVIDER" /></translation>

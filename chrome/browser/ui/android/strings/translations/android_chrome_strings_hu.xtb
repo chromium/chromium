@@ -307,6 +307,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2453860139492968684">Befejezés</translation>
 <translation id="2461378706168271257">Keresés a lapok között</translation>
 <translation id="2461822463642141190">Jelenlegi</translation>
+<translation id="2463770278804271243">OLDAL</translation>
 <translation id="2468444275314013497">Böngészője jól néz ki</translation>
 <translation id="2472163211318554013">Jelentkezzen be, hogy a legtöbbet hozhassa ki a Chrome-ból</translation>
 <translation id="247737702124049222">A képleírások be vannak kapcsolva</translation>
@@ -325,7 +326,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2527209463677295330">Hasznosabb találatokat kaphat, ha nagyobb részt jelöl ki az oldal szövegéből</translation>
 <translation id="2527779675047087889">Vágólap tartalmának elrejtése</translation>
 <translation id="2532336938189706096">Internetes megtekintés</translation>
-<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elem törölve</translation>
 <translation id="253498598929009420">A webhely láthatja majd a képernyőn szereplő tartalmakat</translation>
 <translation id="2536728043171574184">Az oldal offline példányának megtekintése</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, lap</translation>
@@ -365,7 +365,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2677748264148917807">Lap elhagyása</translation>
 <translation id="2687009626279857299">Már nem működik ezen az eszközön</translation>
 <translation id="2702516483241149200">Új: az ehhez a szöveghez gördülő linket oszthat meg</translation>
-<translation id="2705073298859543115">Összefoglaló létrehozása</translation>
 <translation id="2708051474374549906">Valós idejű, proaktív védelem a veszélyes webhelyek, letöltések és bővítmények ellen, amelyek az Ön Google-nak küldött böngészési adatain alapulnak.</translation>
 <translation id="2708226184420201102">Megnyitás a(z) <ph name="PRODUCT_NAME" /> böngészőben</translation>
 <translation id="271033894570825754">Új</translation>
@@ -1199,7 +1198,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6564820424018738527">Előfordulhat, hogy Android-eszköze is rendelkezik hasonló beállítással. Ha a hirdetésmérés be van kapcsolva a Chrome-ban és Android-eszközén, akkor a vállalatok képesek lehetnek az egyes hirdetések hatékonyságának mérésére az Ön által felkeresett webhelyeken és az Ön által használt alkalmazásokban is.</translation>
 <translation id="6565959834589222080">Wi-Fi használata, ha rendelkezésre áll</translation>
 <translation id="6569373978618239158">Új lap megnyitásakor látni fogja a(z) <ph name="SITE_NAME" /> webhely történeteit. A követett webhelyeket a Google-fiókjába menti a rendszer. A Discover beállításaiban kezelheti őket.</translation>
-<translation id="6570116402456758630">Oldal összefoglalása</translation>
 <translation id="657177046675873214">Ha az összes eszközén hozzá szeretné férni könyvjelzőihez, kapcsolja be a „Könyvjelzők” lehetőséget a beállításokban</translation>
 <translation id="6573096386450695060">Engedélyezés mindig</translation>
 <translation id="6573431926118603307">A más eszközökön futó Chrome böngészőben megnyitott lapok itt jelennek meg.</translation>

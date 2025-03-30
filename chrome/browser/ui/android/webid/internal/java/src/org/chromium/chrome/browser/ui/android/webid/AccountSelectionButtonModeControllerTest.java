@@ -66,7 +66,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
             assertEquals(0, mSheetAccountItems.size());
             assertEquals(HeaderType.VERIFY, mModel.get(ItemProperties.HEADER).get(TYPE));
             verify(mMockDelegate).onAccountsDisplayed();
-            assertTrue(containsItemOfType(mModel, ItemProperties.SPINNER_ENABLED));
+            assertTrue(mModel.get(ItemProperties.SPINNER_ENABLED));
+            assertTrue(mModel.get(ItemProperties.DRAGBAR_HANDLE_VISIBLE));
         }
     }
 
@@ -89,7 +90,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
             // There is no account shown on the loading dialog in active mode.
             assertEquals(0, mSheetAccountItems.size());
             assertEquals(HeaderType.LOADING, mModel.get(ItemProperties.HEADER).get(TYPE));
-            assertTrue(containsItemOfType(mModel, ItemProperties.SPINNER_ENABLED));
+            assertTrue(mModel.get(ItemProperties.SPINNER_ENABLED));
+            assertTrue(mModel.get(ItemProperties.DRAGBAR_HANDLE_VISIBLE));
         }
     }
 
@@ -102,9 +104,10 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         assertEquals(HeaderType.LOADING, mModel.get(ItemProperties.HEADER).get(TYPE));
         verify(mMockDelegate, never()).onAccountsDisplayed();
 
-        // For loading dialog, we expect header + spinner.
-        assertEquals(2, countAllItems());
-        assertTrue(containsItemOfType(mModel, ItemProperties.SPINNER_ENABLED));
+        // For loading dialog, we expect dragbar handle + header + spinner.
+        assertEquals(3, countAllItems());
+        assertTrue(mModel.get(ItemProperties.SPINNER_ENABLED));
+        assertTrue(mModel.get(ItemProperties.DRAGBAR_HANDLE_VISIBLE));
 
         // Switching to accounts dialog should disable the spinner.
         mMediator.showAccounts(
@@ -116,9 +119,10 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 /* favicon= */ null);
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
 
-        // For accounts dialog, we expect header + two accounts.
-        assertEquals(3, countAllItems());
-        assertFalse(containsItemOfType(mModel, ItemProperties.SPINNER_ENABLED));
+        // For accounts dialog, we expect dragbar handle + header + two accounts.
+        assertEquals(4, countAllItems());
+        assertFalse(mModel.get(ItemProperties.SPINNER_ENABLED));
+        assertTrue(mModel.get(ItemProperties.DRAGBAR_HANDLE_VISIBLE));
     }
 
     @Test
@@ -133,9 +137,9 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 /* favicon= */ null);
         mMediator.showRequestPermissionModalSheet(mNewUserAccount);
 
-        // For request permission dialog, we expect header + account chip + disclosure text +
-        // continue button.
-        assertEquals(4, countAllItems());
+        // For request permission dialog, we expect drag handlebar + header + account chip +
+        // disclosure text + continue button.
+        assertEquals(5, countAllItems());
 
         // There is no sheet account items because the account is shown in an account chip instead.
         assertEquals(0, mSheetAccountItems.size());

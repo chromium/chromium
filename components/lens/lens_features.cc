@@ -79,6 +79,10 @@ BASE_FEATURE(kLensOverlayOmniboxEntryPoint,
              "LensOverlayOmniboxEntryPoint",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayUploadChunking,
+             "LensOverlayUploadChunking",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -449,6 +453,19 @@ constexpr base::FeatureParam<std::string> kPreconnectKeyForLens{
 
 constexpr base::FeatureParam<bool> kShouldIssueProcessPrewarmingForLens{
     &kLensStandalone, "lens-issue-process-prewarming", true};
+
+constexpr base::FeatureParam<size_t> kLensOverlayChunkSizeBytes{
+    &kLensOverlayUploadChunking, "chunk-size-bytes", 2 * 1024 * 1024};  // 2 MiB
+
+constexpr base::FeatureParam<std::string> kLensOverlayUploadChunkEndpointUrl{
+    &kLensOverlayUploadChunking, "upload-chunk-endpoint-url",
+    "https://lensfrontend-pa.googleapis.com/v1/uploadChunk"};
+
+constexpr base::FeatureParam<bool> kLensOverlayUploadChunkingUseDebugOptions{
+    &kLensOverlayUploadChunking, "use-debug-options", false};
+
+constexpr base::FeatureParam<int> kLensOverlayUploadChunkRequestTimeoutMs{
+    &kLensOverlayUploadChunking, "upload-chunk-request-timeout-ms", 60000};
 
 std::string GetHomepageURLForLens() {
   return kHomepageURLForLens.Get();
@@ -957,6 +974,29 @@ bool ShouldUseAltLoadingHintWeb() {
 
 bool ShouldUseAltLoadingHintPdf() {
   return kUseAltLoadingHintPdf.Get();
+}
+
+bool IsLensOverlayUploadChunkingEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayUploadChunking);
+}
+
+uint32_t GetLensOverlayChunkSizeBytes() {
+  size_t limit = kLensOverlayChunkSizeBytes.Get();
+  return base::IsValueInRangeForNumericType<uint32_t>(limit)
+             ? static_cast<uint32_t>(limit)
+             : static_cast<uint32_t>(kLensOverlayChunkSizeBytes.default_value);
+}
+
+std::string GetLensOverlayUploadChunkEndpointURL() {
+  return kLensOverlayUploadChunkEndpointUrl.Get();
+}
+
+bool IsLensOverlayUploadChunkingUseDebugOptionsEnabled() {
+  return kLensOverlayUploadChunkingUseDebugOptions.Get();
+}
+
+int GetLensOverlayUploadChunkRequestTimeoutMs() {
+  return kLensOverlayUploadChunkRequestTimeoutMs.Get();
 }
 
 }  // namespace lens::features

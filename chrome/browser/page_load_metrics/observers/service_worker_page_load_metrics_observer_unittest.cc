@@ -14,6 +14,10 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 const char kDefaultTestUrl[] = "https://google.com/";
@@ -245,6 +249,13 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, WithServiceWorker) {
 }
 
 TEST_F(ServiceWorkerPageLoadMetricsObserverTest, WithServiceWorkerBackground) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // See crbug.com(407035093).
+    GTEST_SKIP() << "Test broken on automotive builders.";
+  }
+#endif
+
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   PopulateRequiredTimingFields(&timing);

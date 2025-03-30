@@ -5,7 +5,7 @@
 #include "services/network/device_bound_session_manager.h"
 
 #include "base/test/task_environment.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "net/device_bound_sessions/registration_fetcher.h"
 #include "net/device_bound_sessions/session_service.h"
 #include "net/device_bound_sessions/test_support.h"
@@ -82,7 +82,7 @@ class DeviceBoundSessionManagerTest : public ::testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider_;
   std::unique_ptr<net::URLRequestContext> context_;
   std::unique_ptr<SessionService> service_;
   std::unique_ptr<DeviceBoundSessionManager> manager_;

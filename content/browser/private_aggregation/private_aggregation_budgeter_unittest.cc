@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -18,6 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -36,10 +38,13 @@
 #include "content/browser/private_aggregation/proto/private_aggregation_budgets.pb.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/private_aggregation_data_model.h"
+#include "content/public/browser/storage_partition.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -51,6 +56,10 @@ using BudgetEntryValidityStatus =
     PrivateAggregationBudgeter::BudgetValidityStatus;
 
 using RequestResult = PrivateAggregationBudgeter::RequestResult;
+using ResultForContribution = PrivateAggregationBudgeter::ResultForContribution;
+using InspectBudgetCallResult =
+    PrivateAggregationBudgeter::InspectBudgetCallResult;
+using BudgetQueryResult = PrivateAggregationBudgeter::BudgetQueryResult;
 
 constexpr auto kExampleTime =
     base::Time::FromMillisecondsSinceUnixEpoch(1652984901234);
@@ -130,10 +139,16 @@ class PrivateAggregationBudgeterUnderTest : public PrivateAggregationBudgeter {
 
 // TODO(alexmt): Consider moving logic shared with
 // PrivateAggregationBudgetStorageTest to a joint test harness.
-class PrivateAggregationBudgeterTest : public testing::Test {
+class PrivateAggregationBudgeterTestBase : public testing::Test {
  public:
-  PrivateAggregationBudgeterTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  explicit PrivateAggregationBudgeterTestBase(
+      bool enable_error_reporting_feature)
+      : enable_error_reporting_feature_(enable_error_reporting_feature),
+        task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_list_.InitWithFeatureState(
+        blink::features::kPrivateAggregationApiErrorReporting,
+        enable_error_reporting_feature_);
+  }
 
   void SetUp() override {
     ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
@@ -219,16 +234,95 @@ class PrivateAggregationBudgeterTest : public testing::Test {
     return budgeter_->GetStorageStatus();
   }
 
+  // Helper to (conditionally) adapt old tests to new error reporting flow.
+  void ConsumeBudget(int budget,
+                     const PrivateAggregationBudgetKey& budget_key,
+                     base::OnceCallback<void(RequestResult)> on_done) {
+    if (!enable_error_reporting_feature_) {
+      budgeter()->ConsumeBudget(budget, budget_key, std::move(on_done));
+      return;
+    }
+
+    // Bit of a hack to adapt old tests to the new error reporting flow.
+    // TODO(crbug.com/381788013): Remove hack when feature flag is removed
+    // (after full launch).
+    std::vector<blink::mojom::AggregatableReportHistogramContribution>
+        fake_contribution_vector = {
+            blink::mojom::AggregatableReportHistogramContribution(
+                /*bucket=*/0, /*value=*/int32_t{budget},
+                /*filtering_id=*/0)};
+
+    base::OnceCallback<void(InspectBudgetCallResult)> on_test_result =
+        base::BindLambdaForTesting([=, this, on_done = std::move(on_done)](
+                                       InspectBudgetCallResult result) mutable {
+          if (!result.lock.has_value()) {
+            // Handle fatal error
+            std::move(on_done).Run(
+                std::move(result).query_result.overall_result);
+            return;
+          }
+
+          base::OnceCallback<RequestResult(BudgetQueryResult)> adapt_result =
+              base::BindOnce([](BudgetQueryResult result) {
+                return result.overall_result;
+              });
+          base::OnceCallback<void(BudgetQueryResult)> consume_budget_callback =
+              std::move(adapt_result).Then(std::move(on_done));
+
+          budgeter()->ConsumeBudget(std::move(result.lock.value()),
+                                    fake_contribution_vector, budget_key,
+                                    std::move(consume_budget_callback));
+        });
+
+    budgeter()->InspectBudgetAndLock(fake_contribution_vector, budget_key,
+                                     std::move(on_test_result));
+  }
+
  protected:
   base::FilePath storage_directory() const { return temp_directory_.GetPath(); }
 
   base::ScopedTempDir temp_directory_;
   std::unique_ptr<PrivateAggregationBudgeterUnderTest> budgeter_;
   scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  bool enable_error_reporting_feature_;
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(PrivateAggregationBudgeterTest,
+class PrivateAggregationBudgeterTest
+    : public PrivateAggregationBudgeterTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  PrivateAggregationBudgeterTest()
+      : PrivateAggregationBudgeterTestBase(GetErrorReportingEnabledParam()) {}
+
+  bool GetErrorReportingEnabledParam() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PrivateAggregationBudgeterTest,
+                         testing::Bool(),
+                         [](auto& info) {
+                           return info.param ? "ErrorReportingEnabled"
+                                             : "ErrorReportingDisabled";
+                         });
+
+class PrivateAggregationBudgeterErrorReportingEnabledTest
+    : public PrivateAggregationBudgeterTestBase {
+ public:
+  PrivateAggregationBudgeterErrorReportingEnabledTest()
+      : PrivateAggregationBudgeterTestBase(
+            /*enable_error_reporting_feature=*/true) {}
+};
+
+class PrivateAggregationBudgeterErrorReportingDisabledTest
+    : public PrivateAggregationBudgeterTestBase {
+ public:
+  PrivateAggregationBudgeterErrorReportingDisabledTest()
+      : PrivateAggregationBudgeterTestBase(
+            /*enable_error_reporting_feature=*/false) {}
+};
+TEST_P(PrivateAggregationBudgeterTest,
        BudgeterCreated_DatabaseInitializedLazily) {
   bool is_done_initializing = false;
   CreateBudgeterWithoutInitializing(
@@ -250,7 +344,7 @@ TEST_F(PrivateAggregationBudgeterTest,
             PrivateAggregationBudgeter::StorageStatus::kOpen);
 }
 
-TEST_F(PrivateAggregationBudgeterTest,
+TEST_P(PrivateAggregationBudgeterTest,
        DatabaseInitializationFails_StatusIsClosed) {
   // The database initialization will fail to open if its directory already
   // exists.
@@ -262,14 +356,14 @@ TEST_F(PrivateAggregationBudgeterTest,
             PrivateAggregationBudgeter::StorageStatus::kInitializationFailed);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, InMemory_StillInitializes) {
+TEST_P(PrivateAggregationBudgeterTest, InMemory_StillInitializes) {
   CreateAndInitializeBudgeterThenWait(/*exclusively_run_in_memory=*/true);
 
   EXPECT_EQ(GetStorageStatus(),
             PrivateAggregationBudgeter::StorageStatus::kOpen);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, DatabaseReopened_DataPersisted) {
+TEST_P(PrivateAggregationBudgeterTest, DatabaseReopened_DataPersisted) {
   int num_queries_processed = 0;
 
   CreateAndInitializeBudgeterThenWait();
@@ -278,7 +372,7 @@ TEST_F(PrivateAggregationBudgeterTest, DatabaseReopened_DataPersisted) {
       PrivateAggregationBudgetKey::CreateForTesting(
           url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationCallerApi::kProtectedAudience);
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope,
       example_key,
       base::BindLambdaForTesting(
@@ -294,7 +388,7 @@ TEST_F(PrivateAggregationBudgeterTest, DatabaseReopened_DataPersisted) {
   CreateAndInitializeBudgeterThenWait();
 
   base::RunLoop run_loop;
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key,
       base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kInsufficientSmallerScopeBudget);
@@ -305,7 +399,7 @@ TEST_F(PrivateAggregationBudgeterTest, DatabaseReopened_DataPersisted) {
   EXPECT_EQ(num_queries_processed, 2);
 }
 
-TEST_F(PrivateAggregationBudgeterTest,
+TEST_P(PrivateAggregationBudgeterTest,
        InMemoryDatabaseReopened_DataNotPersisted) {
   int num_queries_processed = 0;
 
@@ -315,7 +409,7 @@ TEST_F(PrivateAggregationBudgeterTest,
       PrivateAggregationBudgetKey::CreateForTesting(
           url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationCallerApi::kProtectedAudience);
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope,
       example_key,
       base::BindLambdaForTesting(
@@ -331,7 +425,7 @@ TEST_F(PrivateAggregationBudgeterTest,
   CreateAndInitializeBudgeterThenWait(/*exclusively_run_in_memory=*/true);
 
   base::RunLoop run_loop;
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key,
       base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kApproved);
@@ -342,7 +436,7 @@ TEST_F(PrivateAggregationBudgeterTest,
   EXPECT_EQ(num_queries_processed, 2);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetSameKey) {
+TEST_P(PrivateAggregationBudgeterTest, ConsumeBudgetSameKey) {
   int num_queries_processed = 0;
 
   CreateAndInitializeBudgeterThenWait();
@@ -353,7 +447,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetSameKey) {
           PrivateAggregationCallerApi::kProtectedAudience);
 
   // Budget can be increased to below max
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
@@ -362,7 +456,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetSameKey) {
           }));
 
   // Budget can be increased to max
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/(
           PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope -
           1),
@@ -376,7 +470,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetSameKey) {
   base::RunLoop run_loop;
 
   // Budget cannot be increased above max
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key,
       base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kInsufficientSmallerScopeBudget);
@@ -387,7 +481,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetSameKey) {
   EXPECT_EQ(num_queries_processed, 3);
 }
 
-TEST_F(PrivateAggregationBudgeterTest,
+TEST_P(PrivateAggregationBudgeterTest,
        ConsumeBudgetDifferentWindowsSmallerScope) {
   int num_queries_processed = 0;
 
@@ -415,42 +509,40 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   // Use budget in the first 10 keys.
   for (int i = 0; i < 10; ++i) {
-    budgeter()->ConsumeBudget(
-        budget_to_use_per_minute, example_keys[i],
-        base::BindLambdaForTesting(
-            [&num_queries_processed](RequestResult result) {
-              EXPECT_EQ(result, RequestResult::kApproved);
-              ++num_queries_processed;
-            }));
+    ConsumeBudget(budget_to_use_per_minute, example_keys[i],
+                  base::BindLambdaForTesting(
+                      [&num_queries_processed](RequestResult result) {
+                        EXPECT_EQ(result, RequestResult::kApproved);
+                        ++num_queries_processed;
+                      }));
   }
 
   // The last 10 keys are used for calculating remaining budget, so we can't
   // use more during the 10th time window.
-  budgeter()->ConsumeBudget(
-      budget_to_use_per_minute, example_keys[9],
-      base::BindLambdaForTesting(
-          [&num_queries_processed](RequestResult result) {
-            EXPECT_EQ(result, RequestResult::kInsufficientSmallerScopeBudget);
-            ++num_queries_processed;
-          }));
+  ConsumeBudget(budget_to_use_per_minute, example_keys[9],
+                base::BindLambdaForTesting(
+                    [&num_queries_processed](RequestResult result) {
+                      EXPECT_EQ(result,
+                                RequestResult::kInsufficientSmallerScopeBudget);
+                      ++num_queries_processed;
+                    }));
 
   base::RunLoop run_loop;
 
   // But the last key can use budget as the first key is no longer in the
   // relevant set of 10 smaller scope time windows.
-  budgeter()->ConsumeBudget(
-      budget_to_use_per_minute, example_keys[10],
-      base::BindLambdaForTesting([&](RequestResult result) {
-        EXPECT_EQ(result, RequestResult::kApproved);
-        ++num_queries_processed;
-        run_loop.Quit();
-      }));
+  ConsumeBudget(budget_to_use_per_minute, example_keys[10],
+                base::BindLambdaForTesting([&](RequestResult result) {
+                  EXPECT_EQ(result, RequestResult::kApproved);
+                  ++num_queries_processed;
+                  run_loop.Quit();
+                }));
 
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 12);
 }
 
-TEST_F(PrivateAggregationBudgeterTest,
+TEST_P(PrivateAggregationBudgeterTest,
        ConsumeBudgetDifferentWindowsLargerScope) {
   int num_queries_processed = 0;
 
@@ -484,42 +576,40 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   // Use budget in the first 1440 larger scopes.
   for (int i = 0; i < 1440; ++i) {
-    budgeter()->ConsumeBudget(
-        budget_to_use_per_minute, example_keys[i],
-        base::BindLambdaForTesting(
-            [&num_queries_processed](RequestResult result) {
-              EXPECT_EQ(result, RequestResult::kApproved);
-              ++num_queries_processed;
-            }));
+    ConsumeBudget(budget_to_use_per_minute, example_keys[i],
+                  base::BindLambdaForTesting(
+                      [&num_queries_processed](RequestResult result) {
+                        EXPECT_EQ(result, RequestResult::kApproved);
+                        ++num_queries_processed;
+                      }));
   }
 
   // The last 1440 larger scope windows are used for calculating remaining
   // budget, so we can't use more during the 1440th.
-  budgeter()->ConsumeBudget(
-      budget_to_use_per_minute, example_keys[1439],
-      base::BindLambdaForTesting(
-          [&num_queries_processed](RequestResult result) {
-            EXPECT_EQ(result, RequestResult::kInsufficientLargerScopeBudget);
-            ++num_queries_processed;
-          }));
+  ConsumeBudget(budget_to_use_per_minute, example_keys[1439],
+                base::BindLambdaForTesting(
+                    [&num_queries_processed](RequestResult result) {
+                      EXPECT_EQ(result,
+                                RequestResult::kInsufficientLargerScopeBudget);
+                      ++num_queries_processed;
+                    }));
 
   base::RunLoop run_loop;
 
   // But the last window can use budget as the first window is no longer in the
   // relevant set of 1440 larger scope windows.
-  budgeter()->ConsumeBudget(
-      budget_to_use_per_minute, example_keys[1440],
-      base::BindLambdaForTesting([&](RequestResult result) {
-        EXPECT_EQ(result, RequestResult::kApproved);
-        ++num_queries_processed;
-        run_loop.Quit();
-      }));
+  ConsumeBudget(budget_to_use_per_minute, example_keys[1440],
+                base::BindLambdaForTesting([&](RequestResult result) {
+                  EXPECT_EQ(result, RequestResult::kApproved);
+                  ++num_queries_processed;
+                  run_loop.Quit();
+                }));
 
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 1442);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentApis) {
+TEST_P(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentApis) {
   int num_queries_processed = 0;
 
   CreateAndInitializeBudgeterThenWait();
@@ -534,7 +624,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentApis) {
           url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationCallerApi::kSharedStorage);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope,
       protected_audience_key,
       base::BindLambdaForTesting(
@@ -546,7 +636,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentApis) {
   base::RunLoop run_loop;
 
   // The budget for one API does not interfere with the other.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope,
       shared_storage_key,
       base::BindLambdaForTesting([&](RequestResult request) {
@@ -558,7 +648,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentApis) {
   EXPECT_EQ(num_queries_processed, 2);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentSites) {
+TEST_P(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentSites) {
   int num_queries_processed = 0;
 
   CreateAndInitializeBudgeterThenWait();
@@ -573,7 +663,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentSites) {
           url::Origin::Create(GURL("https://b.example/")), kExampleTime,
           PrivateAggregationCallerApi::kProtectedAudience);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope,
       key_a,
       base::BindLambdaForTesting(
@@ -584,7 +674,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentSites) {
 
   base::RunLoop run_loop;
   // The budget for one site does not interfere with the other.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope,
       key_b, base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kApproved);
@@ -595,7 +685,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentSites) {
   EXPECT_EQ(num_queries_processed, 2);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentOriginsSameSite) {
+TEST_P(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentOriginsSameSite) {
   int num_queries_processed = 0;
 
   CreateAndInitializeBudgeterThenWait();
@@ -610,7 +700,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentOriginsSameSite) {
           url::Origin::Create(GURL("https://b.domain.example/")), kExampleTime,
           PrivateAggregationCallerApi::kProtectedAudience);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope,
       key_a,
       base::BindLambdaForTesting(
@@ -621,7 +711,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentOriginsSameSite) {
 
   base::RunLoop run_loop;
   // The budget is shared for different origins in the same site.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, key_b,
       base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kInsufficientSmallerScopeBudget);
@@ -632,7 +722,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentOriginsSameSite) {
   EXPECT_EQ(num_queries_processed, 2);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetValueTooLarge) {
+TEST_P(PrivateAggregationBudgeterTest, ConsumeBudgetValueTooLarge) {
   CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey example_key =
@@ -643,7 +733,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetValueTooLarge) {
   base::RunLoop run_loop;
 
   // Request will be rejected if budget exceeds maximum
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/(
           PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope +
           1),
@@ -655,7 +745,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetValueTooLarge) {
   run_loop.Run();
 }
 
-TEST_F(PrivateAggregationBudgeterTest, BudgetValidityMetricsRecorded) {
+TEST_P(PrivateAggregationBudgeterTest, BudgetValidityMetricsRecorded) {
   CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey budget_key = CreateBudgetKey();
@@ -735,7 +825,7 @@ TEST_F(PrivateAggregationBudgeterTest, BudgetValidityMetricsRecorded) {
       AddBudgetValueAtTimestamp(budget_key, budget.budget, budget.timestamp);
     }
 
-    budgeter()->ConsumeBudget(
+    ConsumeBudget(
         /*budget=*/1, budget_key,
         base::BindLambdaForTesting([&](RequestResult result) {
           DeleteAllBudgetData();
@@ -743,12 +833,12 @@ TEST_F(PrivateAggregationBudgeterTest, BudgetValidityMetricsRecorded) {
         }));
     histograms.ExpectUniqueSample(
         "PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus2",
-        test_case.expected_status, 1);
+        test_case.expected_status, GetErrorReportingEnabledParam() ? 2 : 1);
     run_loop.Run();
   }
 }
 
-TEST_F(PrivateAggregationBudgeterTest,
+TEST_F(PrivateAggregationBudgeterErrorReportingDisabledTest,
        EnoughBudgetIfNotEnoughOverallMetricRecorded) {
   CreateAndInitializeBudgeterThenWait();
 
@@ -874,7 +964,7 @@ TEST_F(PrivateAggregationBudgeterTest,
   }
 }
 
-TEST_F(PrivateAggregationBudgeterTest,
+TEST_P(PrivateAggregationBudgeterTest,
        ConsumeBudgetBeforeInitialized_QueriesAreQueued) {
   base::RunLoop run_loop;
   CreateBudgeterWithoutInitializing();
@@ -887,14 +977,14 @@ TEST_F(PrivateAggregationBudgeterTest,
   // Queries should be processed in the order they are received.
   int num_queries_processed = 0;
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
             EXPECT_EQ(result, RequestResult::kApproved);
             EXPECT_EQ(++num_queries_processed, 1);
           }));
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/(
           PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope -
           1),
@@ -904,7 +994,7 @@ TEST_F(PrivateAggregationBudgeterTest,
             EXPECT_EQ(result, RequestResult::kApproved);
             EXPECT_EQ(++num_queries_processed, 2);
           }));
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key,
       base::BindLambdaForTesting(
           [&num_queries_processed, &run_loop](RequestResult result) {
@@ -923,7 +1013,7 @@ TEST_F(PrivateAggregationBudgeterTest,
             PrivateAggregationBudgeter::StorageStatus::kOpen);
 }
 
-TEST_F(PrivateAggregationBudgeterTest,
+TEST_P(PrivateAggregationBudgeterTest,
        ClearDataBeforeInitialized_QueriesAreQueued) {
   base::RunLoop run_loop;
   CreateBudgeterWithoutInitializing();
@@ -947,7 +1037,7 @@ TEST_F(PrivateAggregationBudgeterTest,
             PrivateAggregationBudgeter::StorageStatus::kOpen);
 }
 
-TEST_F(PrivateAggregationBudgeterTest,
+TEST_P(PrivateAggregationBudgeterTest,
        ConsumeBudgetBeforeFailedInitialization_QueuedQueriesAreRejected) {
   // The database initialization will fail to open if its directory already
   // exists.
@@ -964,14 +1054,14 @@ TEST_F(PrivateAggregationBudgeterTest,
   // Queries should be processed in the order they are received.
   int num_queries_processed = 0;
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
             EXPECT_EQ(result, RequestResult::kStorageInitializationFailed);
             EXPECT_EQ(++num_queries_processed, 1);
           }));
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/(
           PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope -
           1),
@@ -981,7 +1071,7 @@ TEST_F(PrivateAggregationBudgeterTest,
             EXPECT_EQ(result, RequestResult::kStorageInitializationFailed);
             EXPECT_EQ(++num_queries_processed, 2);
           }));
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key,
       base::BindLambdaForTesting(
           [&num_queries_processed, &run_loop](RequestResult result) {
@@ -1000,7 +1090,7 @@ TEST_F(PrivateAggregationBudgeterTest,
             PrivateAggregationBudgeter::StorageStatus::kInitializationFailed);
 }
 
-TEST_F(PrivateAggregationBudgeterTest,
+TEST_P(PrivateAggregationBudgeterTest,
        MaxPendingCallsExceeded_AdditionalConsumeBudgetCallsRejected) {
   base::RunLoop run_loop;
   CreateBudgeterWithoutInitializing();
@@ -1016,7 +1106,7 @@ TEST_F(PrivateAggregationBudgeterTest,
       PrivateAggregationBudgeter::kMaxPendingCalls, run_loop.QuitClosure());
   for (int i = 0; i < PrivateAggregationBudgeter::kMaxPendingCalls; ++i) {
     // Queries should be processed in the order they are received.
-    budgeter()->ConsumeBudget(
+    ConsumeBudget(
         /*budget=*/1, example_key,
         base::BindLambdaForTesting(
             [&num_queries_succeeded, i,
@@ -1029,7 +1119,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   // This query should be immediately rejected.
   bool was_callback_run = false;
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key,
       base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kTooManyPendingCalls);
@@ -1049,7 +1139,7 @@ TEST_F(PrivateAggregationBudgeterTest,
             PrivateAggregationBudgeter::StorageStatus::kOpen);
 }
 
-TEST_F(PrivateAggregationBudgeterTest,
+TEST_P(PrivateAggregationBudgeterTest,
        MaxPendingCallsExceeded_AdditionalDataClearingCallsAllowed) {
   base::RunLoop run_loop;
   CreateBudgeterWithoutInitializing();
@@ -1063,7 +1153,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   for (int i = 0; i < PrivateAggregationBudgeter::kMaxPendingCalls; ++i) {
     // Queries should be processed in the order they are received.
-    budgeter()->ConsumeBudget(
+    ConsumeBudget(
         /*budget=*/1, example_key,
         base::BindLambdaForTesting(
             [&num_consume_queries_succeeded, i](RequestResult result) {
@@ -1095,14 +1185,14 @@ TEST_F(PrivateAggregationBudgeterTest,
   EXPECT_TRUE(was_callback_run);
 }
 
-TEST_F(PrivateAggregationBudgeterTest,
+TEST_P(PrivateAggregationBudgeterTest,
        BudgeterDestroyedImmediatelyAfterCreation_DoesNotCrash) {
   CreateBudgeterWithoutInitializing(/*exclusively_run_in_memory=*/false);
   DestroyBudgeter();
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(PrivateAggregationBudgeterTest,
+TEST_P(PrivateAggregationBudgeterTest,
        BudgeterDestroyedImmediatelyAfterInitializationStarted_DoesNotCrash) {
   base::RunLoop run_loop;
   CreateBudgeterWithoutInitializing(/*exclusively_run_in_memory=*/false);
@@ -1111,7 +1201,7 @@ TEST_F(PrivateAggregationBudgeterTest,
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(PrivateAggregationBudgeterTest,
+TEST_P(PrivateAggregationBudgeterTest,
        BudgeterDestroyedImmediatelyAfterInitialization_DoesNotCrash) {
   base::RunLoop run_loop;
   CreateBudgeterWithoutInitializing(/*exclusively_run_in_memory=*/false);
@@ -1123,7 +1213,7 @@ TEST_F(PrivateAggregationBudgeterTest,
   run_loop.Run();
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ClearDataBasicTest) {
+TEST_P(PrivateAggregationBudgeterTest, ClearDataBasicTest) {
   int num_queries_processed = 0;
 
   CreateAndInitializeBudgeterThenWait();
@@ -1133,7 +1223,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataBasicTest) {
           url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationCallerApi::kProtectedAudience);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key,
@@ -1144,7 +1234,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataBasicTest) {
           }));
 
   // Maximum budget has been used so this should fail.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
@@ -1163,7 +1253,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataBasicTest) {
                         }));
 
   // After clearing, we can use the full budget again
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key, base::BindLambdaForTesting([&](RequestResult result) {
@@ -1174,7 +1264,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataBasicTest) {
   EXPECT_EQ(num_queries_processed, 4);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ClearDataCrossesWindowBoundary) {
+TEST_P(PrivateAggregationBudgeterTest, ClearDataCrossesWindowBoundary) {
   int num_queries_processed = 0;
 
   CreateAndInitializeBudgeterThenWait();
@@ -1193,7 +1283,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataCrossesWindowBoundary) {
   EXPECT_NE(example_key_1.time_window().start_time(),
             example_key_2.time_window().start_time());
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key_1,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
@@ -1201,7 +1291,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataCrossesWindowBoundary) {
             ++num_queries_processed;
           }));
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/(
           PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope -
           1),
@@ -1213,7 +1303,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataCrossesWindowBoundary) {
           }));
 
   // The full budget has been used across the two time windows.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key_2,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
@@ -1235,7 +1325,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataCrossesWindowBoundary) {
       }));
 
   // After clearing, we can use the full budget again.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key_2, base::BindLambdaForTesting([&](RequestResult result) {
@@ -1246,7 +1336,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataCrossesWindowBoundary) {
   EXPECT_EQ(num_queries_processed, 5);
 }
 
-TEST_F(PrivateAggregationBudgeterTest,
+TEST_P(PrivateAggregationBudgeterTest,
        ClearDataDoesntAffectWindowsOutsideRange) {
   int num_queries_processed = 0;
 
@@ -1282,20 +1372,20 @@ TEST_F(PrivateAggregationBudgeterTest,
             ++num_queries_processed;
           });
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, key_before, expect_approved);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/(
           PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope -
           2),
       key_to_clear, expect_approved);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, key_after, expect_approved);
 
   // The full budget has been used across the three time windows.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, key_after,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
@@ -1318,13 +1408,13 @@ TEST_F(PrivateAggregationBudgeterTest,
   // After clearing, we can have a budget of exactly
   // `(PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope -
   // 2)` that we can use.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/(
           PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope -
           2),
       key_after, expect_approved);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, key_after,
       base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kInsufficientSmallerScopeBudget);
@@ -1334,7 +1424,7 @@ TEST_F(PrivateAggregationBudgeterTest,
   EXPECT_EQ(num_queries_processed, 7);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ClearDataAllApisAffected) {
+TEST_P(PrivateAggregationBudgeterTest, ClearDataAllApisAffected) {
   int num_queries_processed = 0;
 
   CreateAndInitializeBudgeterThenWait();
@@ -1362,22 +1452,22 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataAllApisAffected) {
             ++num_queries_processed;
           });
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       protected_audience_key, expect_approved);
 
   // Maximum budget has been used so this should fail.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, protected_audience_key, expect_insufficient_budget);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       shared_storage_key, expect_approved);
 
   // Maximum budget has been used so this should fail.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, shared_storage_key, expect_insufficient_budget);
 
   // `ClearData()` runs its callback after a round trip in the db task runner,
@@ -1391,12 +1481,12 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataAllApisAffected) {
                         }));
 
   // After clearing, we can use the full budget again
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       protected_audience_key, expect_approved);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       shared_storage_key, base::BindLambdaForTesting([&](RequestResult result) {
@@ -1407,7 +1497,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataAllApisAffected) {
   EXPECT_EQ(num_queries_processed, 7);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ClearAllDataBasicTest) {
+TEST_P(PrivateAggregationBudgeterTest, ClearAllDataBasicTest) {
   int num_queries_processed = 0;
 
   CreateAndInitializeBudgeterThenWait();
@@ -1417,7 +1507,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataBasicTest) {
           url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationCallerApi::kProtectedAudience);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key,
@@ -1428,7 +1518,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataBasicTest) {
           }));
 
   // Maximum budget has been used so this should fail.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
@@ -1447,7 +1537,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataBasicTest) {
                         }));
 
   // After clearing, we can use the full budget again
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key, base::BindLambdaForTesting([&](RequestResult result) {
@@ -1458,7 +1548,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataBasicTest) {
   EXPECT_EQ(num_queries_processed, 4);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullTimes) {
+TEST_P(PrivateAggregationBudgeterTest, ClearAllDataNullTimes) {
   int num_queries_processed = 0;
 
   CreateAndInitializeBudgeterThenWait();
@@ -1468,7 +1558,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullTimes) {
           url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationCallerApi::kProtectedAudience);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key,
@@ -1479,7 +1569,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullTimes) {
           }));
 
   // Maximum budget has been used so this should fail.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
@@ -1498,7 +1588,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullTimes) {
                         }));
 
   // After clearing, we can use the full budget again
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key, base::BindLambdaForTesting([&](RequestResult result) {
@@ -1509,7 +1599,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullTimes) {
   EXPECT_EQ(num_queries_processed, 4);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullStartNonNullEndTime) {
+TEST_P(PrivateAggregationBudgeterTest, ClearAllDataNullStartNonNullEndTime) {
   int num_queries_processed = 0;
 
   CreateAndInitializeBudgeterThenWait();
@@ -1519,7 +1609,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullStartNonNullEndTime) {
           url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationCallerApi::kProtectedAudience);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key,
@@ -1530,7 +1620,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullStartNonNullEndTime) {
           }));
 
   // Maximum budget has been used so this should fail.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
@@ -1549,7 +1639,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullStartNonNullEndTime) {
                         }));
 
   // After clearing, we can use the full budget again
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key, base::BindLambdaForTesting([&](RequestResult result) {
@@ -1560,7 +1650,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullStartNonNullEndTime) {
   EXPECT_EQ(num_queries_processed, 4);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ClearDataFilterSelectsOrigins) {
+TEST_P(PrivateAggregationBudgeterTest, ClearDataFilterSelectsOrigins) {
   int num_queries_processed = 0;
 
   CreateAndInitializeBudgeterThenWait();
@@ -1591,22 +1681,22 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataFilterSelectsOrigins) {
             ++num_queries_processed;
           });
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key_a, expect_approved);
 
   // Maximum budget has been used so this should fail.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key_a, expect_insufficient_budget);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key_b, expect_approved);
 
   // Maximum budget has been used so this should fail.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key_b, expect_insufficient_budget);
 
   // `ClearData()` runs its callback after a round trip in the db task runner,
@@ -1623,11 +1713,11 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataFilterSelectsOrigins) {
       }));
 
   // After clearing, we can use the full budget again for the cleared origin.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key_a, expect_approved);
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key_b, expect_insufficient_budget);
@@ -1635,7 +1725,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataFilterSelectsOrigins) {
   EXPECT_EQ(num_queries_processed, 7);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ClearDataAllTimeFilterSelectsOrigins) {
+TEST_P(PrivateAggregationBudgeterTest, ClearDataAllTimeFilterSelectsOrigins) {
   int num_queries_processed = 0;
 
   CreateAndInitializeBudgeterThenWait();
@@ -1666,22 +1756,22 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataAllTimeFilterSelectsOrigins) {
             ++num_queries_processed;
           });
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key_a, expect_approved);
 
   // Maximum budget has been used so this should fail.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key_a, expect_insufficient_budget);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key_b, expect_approved);
 
   // Maximum budget has been used so this should fail.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key_b, expect_insufficient_budget);
 
   // `ClearData()` runs its callback after a round trip in the db task runner,
@@ -1698,12 +1788,12 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataAllTimeFilterSelectsOrigins) {
       }));
 
   // After clearing, we can use the full budget again for the cleared origin.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key_a, expect_approved);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key_b, expect_insufficient_budget);
@@ -1711,7 +1801,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataAllTimeFilterSelectsOrigins) {
   EXPECT_EQ(num_queries_processed, 7);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ClearDataUnusedSameSiteOrigin) {
+TEST_P(PrivateAggregationBudgeterTest, ClearDataUnusedSameSiteOrigin) {
   base::HistogramTester histogram;
   int num_queries_processed = 0;
 
@@ -1745,14 +1835,14 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataUnusedSameSiteOrigin) {
             ++num_queries_processed;
           });
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key_a, expect_approved);
 
   // Maximum budget has been used so this should fail. This should not record
   // kOriginB in the budget storage.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key_b, expect_insufficient_budget);
 
   // `ClearData()` runs its callback after a round trip in the db task runner,
@@ -1770,9 +1860,9 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataUnusedSameSiteOrigin) {
 
   // Nothing should've been cleared as the origin was not recorded, so attempts
   // to use budget should still fail.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key_a, expect_insufficient_budget);
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key_b, expect_insufficient_budget);
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 5);
@@ -1782,7 +1872,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataUnusedSameSiteOrigin) {
       /*sample=*/1, /*expected_bucket_count=*/4);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ClearDataSameSiteOriginUsed) {
+TEST_P(PrivateAggregationBudgeterTest, ClearDataSameSiteOriginUsed) {
   base::HistogramTester histogram;
 
   int num_queries_processed = 0;
@@ -1817,13 +1907,13 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataSameSiteOriginUsed) {
             ++num_queries_processed;
           });
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/(
           PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope -
           1),
       example_key_a, expect_approved);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key_b, expect_approved);
 
   // `ClearData()` runs its callback after a round trip in the db task runner,
@@ -1841,7 +1931,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataSameSiteOriginUsed) {
 
   // After clearing, we can use the full budget again for the cleared site as
   // both origins were recorded.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key_a, expect_approved);
@@ -1862,7 +1952,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataSameSiteOriginUsed) {
       /*sample=*/2, /*expected_count=*/2);
 }
 
-TEST_F(PrivateAggregationBudgeterTest,
+TEST_P(PrivateAggregationBudgeterTest,
        ClearDataOriginLastUsedBeforeDeletionWindow) {
   int num_queries_processed = 0;
 
@@ -1896,17 +1986,17 @@ TEST_F(PrivateAggregationBudgeterTest,
             ++num_queries_processed;
           });
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/(
           PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope -
           1),
       example_key_a, expect_approved);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key_b, expect_approved);
 
   // Maximum budget has been used so this should fail.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key_b, expect_insufficient_budget);
 
   // `ClearData()` runs its callback after a round trip in the db task runner,
@@ -1924,14 +2014,14 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   // The clearing should have deleted nothing as kOriginA was last used before
   // the deletion window.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key_b, expect_insufficient_budget);
 
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 5);
 }
 
-TEST_F(PrivateAggregationBudgeterTest,
+TEST_P(PrivateAggregationBudgeterTest,
        BudgeterDestroyedImmedatelyAfterClearData_CallbackStillRun) {
   int num_queries_processed = 0;
 
@@ -1942,7 +2032,7 @@ TEST_F(PrivateAggregationBudgeterTest,
           url::Origin::Create(GURL("https://a.example/")), kExampleTime,
           PrivateAggregationCallerApi::kProtectedAudience);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key,
@@ -1966,7 +2056,7 @@ TEST_F(PrivateAggregationBudgeterTest,
   EXPECT_EQ(num_queries_processed, 2);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, ClearDataByDataKey) {
+TEST_P(PrivateAggregationBudgeterTest, ClearDataByDataKey) {
   int num_queries_processed = 0;
 
   CreateAndInitializeBudgeterThenWait();
@@ -1997,22 +2087,22 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataByDataKey) {
             ++num_queries_processed;
           });
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key_a, expect_approved);
 
   // Maximum budget has been used so this should fail.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key_a, expect_insufficient_budget);
 
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key_b, expect_approved);
 
   // Maximum budget has been used so this should fail.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, example_key_b, expect_insufficient_budget);
 
   std::set<PrivateAggregationDataModel::DataKey> keys;
@@ -2030,17 +2120,16 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataByDataKey) {
 
   // After clearing, we can use the full budget again for the cleared origin.
   // Other origins aren't affected.
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
           .max_budget_per_scope,
       example_key_a, expect_approved);
-  budgeter()->ConsumeBudget(/*budget=*/1, example_key_b,
-                            expect_insufficient_budget);
+  ConsumeBudget(/*budget=*/1, example_key_b, expect_insufficient_budget);
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 7);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, StaleDataClearedOnInitialization) {
+TEST_P(PrivateAggregationBudgeterTest, StaleDataClearedOnInitialization) {
   CreateAndInitializeBudgeterThenWait();
 
   int64_t latest_window_start =
@@ -2071,7 +2160,7 @@ TEST_F(PrivateAggregationBudgeterTest, StaleDataClearedOnInitialization) {
   EXPECT_EQ(NumberOfSitesInStorage(), 0);
 }
 
-TEST_F(PrivateAggregationBudgeterTest, StaleDataClearedAfterConsumeBudget) {
+TEST_P(PrivateAggregationBudgeterTest, StaleDataClearedAfterConsumeBudget) {
   CreateAndInitializeBudgeterThenWait();
 
   int64_t latest_window_start =
@@ -2093,7 +2182,7 @@ TEST_F(PrivateAggregationBudgeterTest, StaleDataClearedAfterConsumeBudget) {
           /*api_invocation_time=*/kExampleTime,
           /*caller_api=*/PrivateAggregationCallerApi::kProtectedAudience);
   base::RunLoop run_loop;
-  budgeter()->ConsumeBudget(
+  ConsumeBudget(
       /*budget=*/1, non_stale_key,
       /*on_done=*/base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kApproved);
@@ -2108,6 +2197,282 @@ TEST_F(PrivateAggregationBudgeterTest, StaleDataClearedAfterConsumeBudget) {
 
   // The stale data should've been cleared.
   EXPECT_EQ(NumberOfSitesInStorage(), 1);
+}
+
+TEST_F(PrivateAggregationBudgeterErrorReportingEnabledTest,
+       LockedBudgeterQueuesOtherCalls) {
+  CreateAndInitializeBudgeterThenWait();
+
+  PrivateAggregationBudgetKey example_key =
+      PrivateAggregationBudgetKey::CreateForTesting(
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
+          PrivateAggregationCallerApi::kProtectedAudience);
+
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      example_contribution_vector = {
+          blink::mojom::AggregatableReportHistogramContribution(
+              /*bucket=*/0, /*value=*/1, /*filtering_id=*/std::nullopt)};
+
+  base::RunLoop run_loop_1;
+  std::optional<InspectBudgetCallResult> extracted_result;
+  int num_successful = 0;
+
+  budgeter()->InspectBudgetAndLock(
+      example_contribution_vector, example_key,
+      base::BindLambdaForTesting([&](InspectBudgetCallResult result) {
+        extracted_result = std::move(result);
+        ++num_successful;
+        run_loop_1.Quit();
+      }));
+
+  run_loop_1.Run();
+
+  EXPECT_EQ(num_successful, 1u);
+  ASSERT_TRUE(extracted_result.has_value());
+
+  base::RunLoop run_loop_2;
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(2, run_loop_2.QuitClosure());
+
+  budgeter()->ClearData(base::Time::Min(), base::Time::Max(),
+                        StoragePartition::StorageKeyMatcherFunction(),
+                        base::BindLambdaForTesting([&]() {
+                          ++num_successful;
+                          barrier.Run();
+                        }));
+
+  budgeter()->InspectBudgetAndLock(
+      example_contribution_vector, example_key,
+      base::BindLambdaForTesting([&](InspectBudgetCallResult result) {
+        ++num_successful;
+        barrier.Run();
+      }));
+
+  // All subsequent calls should be queued as the budgeter is locked.
+  EXPECT_EQ(num_successful, 1u);
+
+  budgeter()->ConsumeBudget(
+      std::move(extracted_result->lock.value()), example_contribution_vector,
+      example_key, base::BindLambdaForTesting([&](BudgetQueryResult result) {
+        ++num_successful;
+      }));
+
+  // Note: the `ConsumeBudget()` callback will be run before the queued tasks
+  // are run.
+  run_loop_2.Run();
+
+  EXPECT_EQ(num_successful, 4u);
+}
+
+TEST_F(PrivateAggregationBudgeterErrorReportingEnabledTest,
+       MultipleContributionsInspected_AllApproved) {
+  CreateAndInitializeBudgeterThenWait();
+
+  PrivateAggregationBudgetKey example_key =
+      PrivateAggregationBudgetKey::CreateForTesting(
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
+          PrivateAggregationCallerApi::kProtectedAudience);
+
+  using Contribution = blink::mojom::AggregatableReportHistogramContribution;
+  std::vector<Contribution> example_contribution_vector = {
+      Contribution(/*bucket=*/12, /*value=*/34, /*filtering_id=*/std::nullopt),
+      Contribution(/*bucket=*/56, /*value=*/78, /*filtering_id=*/9),
+      Contribution(/*bucket=*/12, /*value=*/12, /*filtering_id=*/3)};
+
+  base::RunLoop run_loop;
+  std::optional<PrivateAggregationBudgeter::Lock> extracted_lock;
+
+  budgeter()->InspectBudgetAndLock(
+      example_contribution_vector, example_key,
+      base::BindLambdaForTesting([&](InspectBudgetCallResult result) {
+        EXPECT_EQ(result.query_result.overall_result, RequestResult::kApproved);
+        EXPECT_EQ(result.query_result.result_for_each_contribution,
+                  std::vector<ResultForContribution>(
+                      3, ResultForContribution::kApproved));
+
+        extracted_lock = std::move(result.lock);
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+
+  budgeter()->ConsumeBudget(
+      std::move(extracted_lock).value(), example_contribution_vector,
+      example_key, base::BindLambdaForTesting([&](BudgetQueryResult result) {
+        EXPECT_EQ(result.overall_result, RequestResult::kApproved);
+        EXPECT_EQ(result.result_for_each_contribution,
+                  std::vector<ResultForContribution>(
+                      3, ResultForContribution::kApproved));
+      }));
+}
+
+TEST_F(PrivateAggregationBudgeterErrorReportingEnabledTest,
+       MultipleContributionsInspected_SomeDenied) {
+  CreateAndInitializeBudgeterThenWait();
+
+  PrivateAggregationBudgetKey example_key =
+      PrivateAggregationBudgetKey::CreateForTesting(
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
+          PrivateAggregationCallerApi::kProtectedAudience);
+
+  using Contribution = blink::mojom::AggregatableReportHistogramContribution;
+  std::vector<Contribution> example_contribution_vector = {
+      Contribution(/*bucket=*/12, /*value=*/2, /*filtering_id=*/std::nullopt),
+      Contribution(
+          /*bucket=*/34, /*value=*/
+          PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope -
+              1,
+          /*filtering_id=*/5),
+      Contribution(/*bucket=*/67, /*value=*/8, /*filtering_id=*/9)};
+
+  base::RunLoop run_loop;
+  std::optional<PrivateAggregationBudgeter::Lock> extracted_lock;
+
+  budgeter()->InspectBudgetAndLock(
+      example_contribution_vector, example_key,
+      base::BindLambdaForTesting([&](InspectBudgetCallResult result) {
+        EXPECT_EQ(result.query_result.overall_result,
+                  RequestResult::kRequestedMoreThanTotalBudget);
+        EXPECT_EQ(result.query_result.result_for_each_contribution,
+                  std::vector<ResultForContribution>(
+                      {ResultForContribution::kApproved,
+                       ResultForContribution::kDenied,
+                       ResultForContribution::kApproved}));
+
+        extracted_lock = std::move(result.lock);
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+
+  budgeter()->ConsumeBudget(
+      std::move(extracted_lock).value(), example_contribution_vector,
+      example_key, base::BindLambdaForTesting([&](BudgetQueryResult result) {
+        EXPECT_EQ(result.overall_result,
+                  RequestResult::kRequestedMoreThanTotalBudget);
+        EXPECT_EQ(result.result_for_each_contribution,
+                  std::vector<ResultForContribution>(
+                      {ResultForContribution::kApproved,
+                       ResultForContribution::kDenied,
+                       ResultForContribution::kApproved}));
+      }));
+}
+
+TEST_F(PrivateAggregationBudgeterErrorReportingEnabledTest,
+       LockHoldHistogramRecordedOnConsumeBudget) {
+  CreateAndInitializeBudgeterThenWait();
+
+  base::HistogramTester histogram_tester;
+
+  PrivateAggregationBudgetKey example_key =
+      PrivateAggregationBudgetKey::CreateForTesting(
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
+          PrivateAggregationCallerApi::kProtectedAudience);
+
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      example_contribution_vector = {
+          blink::mojom::AggregatableReportHistogramContribution(
+              /*bucket=*/123, /*value=*/45, /*filtering_id=*/std::nullopt)};
+
+  base::RunLoop run_loop_1;
+  std::optional<PrivateAggregationBudgeter::Lock> extracted_lock;
+
+  budgeter()->InspectBudgetAndLock(
+      example_contribution_vector, example_key,
+      base::BindLambdaForTesting([&](InspectBudgetCallResult result) {
+        extracted_lock = std::move(result.lock);
+        run_loop_1.Quit();
+      }));
+
+  run_loop_1.Run();
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+  base::RunLoop run_loop_2;
+
+  budgeter()->ConsumeBudget(
+      std::move(extracted_lock).value(), example_contribution_vector,
+      example_key, base::BindLambdaForTesting([&](BudgetQueryResult result) {
+        run_loop_2.Quit();
+      }));
+
+  run_loop_2.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "PrivacySandbox.PrivateAggregation.Budgeter.LockHoldDuration",
+      base::Seconds(1).InMilliseconds(), 1);
+}
+
+TEST_F(PrivateAggregationBudgeterErrorReportingEnabledTest,
+       LockHoldHistogramRecordedOnBudgetDestruction) {
+  CreateAndInitializeBudgeterThenWait();
+
+  base::HistogramTester histogram_tester;
+
+  PrivateAggregationBudgetKey example_key =
+      PrivateAggregationBudgetKey::CreateForTesting(
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
+          PrivateAggregationCallerApi::kProtectedAudience);
+
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      example_contribution_vector = {
+          blink::mojom::AggregatableReportHistogramContribution(
+              /*bucket=*/123, /*value=*/45, /*filtering_id=*/std::nullopt)};
+
+  base::RunLoop run_loop;
+  std::optional<PrivateAggregationBudgeter::Lock> extracted_lock;
+
+  budgeter()->InspectBudgetAndLock(
+      example_contribution_vector, example_key,
+      base::BindLambdaForTesting([&](InspectBudgetCallResult result) {
+        extracted_lock = std::move(result.lock);
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+
+  DestroyBudgeter();
+
+  histogram_tester.ExpectUniqueSample(
+      "PrivacySandbox.PrivateAggregation.Budgeter.LockHoldDuration",
+      base::Seconds(1).InMilliseconds(), 1);
+}
+
+TEST_F(PrivateAggregationBudgeterErrorReportingEnabledTest,
+       EmptyContributionsInspected_Approved) {
+  CreateAndInitializeBudgeterThenWait();
+
+  PrivateAggregationBudgetKey example_key =
+      PrivateAggregationBudgetKey::CreateForTesting(
+          url::Origin::Create(GURL("https://a.example/")), kExampleTime,
+          PrivateAggregationCallerApi::kProtectedAudience);
+
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      empty_contribution_vector = {};
+
+  base::RunLoop run_loop;
+  std::optional<PrivateAggregationBudgeter::Lock> extracted_lock;
+
+  budgeter()->InspectBudgetAndLock(
+      empty_contribution_vector, example_key,
+      base::BindLambdaForTesting([&](InspectBudgetCallResult result) {
+        EXPECT_EQ(result.query_result.overall_result, RequestResult::kApproved);
+        EXPECT_THAT(result.query_result.result_for_each_contribution,
+                    testing::IsEmpty());
+
+        extracted_lock = std::move(result.lock);
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+
+  budgeter()->ConsumeBudget(
+      std::move(extracted_lock).value(), empty_contribution_vector, example_key,
+      base::BindLambdaForTesting([&](BudgetQueryResult result) {
+        EXPECT_EQ(result.overall_result, RequestResult::kApproved);
+        EXPECT_THAT(result.result_for_each_contribution, testing::IsEmpty());
+      }));
 }
 
 }  // namespace

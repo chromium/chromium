@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">システム管理者にお問い合わせください。</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />、<ph name="CARD_NETWORK_NAME" />、<ph name="CARD_LAST_FOUR_DIGITS" /> の有効期限は <ph name="CARD_EXPIRATION" /> です</translation>
 <translation id="1736420071277903564">パソコン</translation>
-<translation id="1739422091279046802">スクロールとズーム</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode が「<ph name="SECURE_DNS_MODE_SECURE" />」の場合は、有効な文字列を指定する必要があります。</translation>
 <translation id="1743393865165844832">寝具</translation>
 <translation id="1743892871127720056">比較表のタイトル、テキスト編集</translation>
@@ -2882,6 +2881,7 @@
 <translation id="6059925163896151826">USB デバイス</translation>
 <translation id="6060009363608157444">無効な DnsOverHttps モードです。</translation>
 <translation id="6061154937977953833">レスリング</translation>
+<translation id="6062405040252994646">ツール</translation>
 <translation id="6062937464449575061">価格トラッキングを停止</translation>
 <translation id="6063415549109819824">住宅ローン</translation>
 <translation id="6070432475334343308">1 つ以上のファイルが <ph name="CLOUD_PROVIDER" /> の <ph name="FOLDER_NAME" /> にアップロードされませんでした</translation>

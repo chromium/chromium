@@ -370,7 +370,9 @@ TEST_F(GlicMetricsTest, SessionDuration_LogsError) {
 }
 
 TEST_F(GlicMetricsTest, ImpressionBeforeFre) {
-  profile_->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, false);
+  profile_->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      static_cast<int>(prefs::FreStatus::kNotStarted));
 
   ExpectEntryPointImpressionLogged(EntryPointImpression::kBeforeFre);
 }
@@ -450,11 +452,14 @@ TEST_F(GlicMetricsFeaturesEnabledTest, EnablingChanged) {
   // action.
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 1);
 
-  profile_->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, false);
+  profile_->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      static_cast<int>(prefs::FreStatus::kNotStarted));
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 1);
 
-  profile_->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
+  profile_->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 2);
 
@@ -468,6 +473,12 @@ TEST_F(GlicMetricsFeaturesEnabledTest, EnablingChanged) {
       ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 2);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 3);
+
+  profile_->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      static_cast<int>(prefs::FreStatus::kIncomplete));
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 3);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 3);
 }
 

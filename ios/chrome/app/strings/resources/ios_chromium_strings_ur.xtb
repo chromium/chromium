@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">‏‫iOS میں Chromium کی ترتیبات کھولیں، پھر "ڈیفالٹ براؤزر ایپ" پر تھپتھپائیں اور Chromium کو منتخب کریں۔</translation>
 <translation id="3102849287235003384">‏سبھی ویب سائٹس پر اپنے Google اکاؤنٹ سے سائن آؤٹ کرنے کے لیے <ph name="BEGIN_LINK" />Chromium سے سائن آؤٹ کریں<ph name="END_LINK" />۔</translation>
 <translation id="3115956258722352278">‏Chromium کو اپنا ڈیفالٹ براؤزر بنائیں؟</translation>
+<translation id="3180939591219927904">‏‫"Chromium بند کرنے پر پوشیدگی ٹیبز کو مقفل کریں" کو آن کریں</translation>
 <translation id="3242612358525156339">‏اپنے آلے کی ترتیبات سے، "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" کھولیں اور "Chromium" کو منتخب کریں</translation>
 <translation id="328933489847748230">{count,plural, =1{‏اب 1 Chromium ونڈو نظر آ رہا ہے}other{‏اب {count} Chromium ونڈوز نظر آ رہے ہیں}}</translation>
 <translation id="3344973607274501920">‏Chromium آپ کے پاس ورڈز چیک نہیں کر سکا۔ اپنا انٹرنیٹ کنکشن چیک کرنے کی کوشش کریں۔</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">‏Chromium اور مطابقت پذیر آلات سے منتخب ڈیٹا کو ہٹا دیا گیا ہے۔ ممکن ہے کہ history.google.com پر آپ کے Google اکاؤنٹ میں دیگر Google سروسز سے تلاشیں اور سرگرمی جیسی براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں۔</translation>
 <translation id="7395825497086981028">آپ کا پاس ورڈ <ph name="EMAIL" /> کے لیے پاس ورڈ مینیجر میں محفوظ کیا جائے گا۔</translation>
+<translation id="7504829997542308412">‏‫Chromium کھولیں</translation>
 <translation id="7531461704633548377">‏‫Chromium سے</translation>
 <translation id="7554983317097061001">‏‫Chromium کی تجویز: ڈاک پر Chromium کو منتقل کریں</translation>
 <translation id="7576863740961052505">‏‫Chromium کی ترتیبات کا نظم کریں</translation>

@@ -314,7 +314,8 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       ADD_FAILURE() << "This infobar is not supported on this OS.";
 #else
       DefaultBrowserInfoBarDelegate::Create(GetInfoBarManager(),
-                                            browser()->profile());
+                                            browser()->profile(),
+                                            /*can_pin_to_taskbar=*/false);
 #endif
       break;
 
@@ -359,6 +360,8 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       TabSharingInfoBarDelegate::Create(
           /*infobar_manager=*/GetInfoBarManager(),
           /*old_infobar=*/nullptr,
+          /*shared_tab_id=*/content::GlobalRenderFrameHostId(),
+          /*capturer_id=*/content::GlobalRenderFrameHostId(),
           /*shared_tab_name=*/u"example.com",
           /*capturer_name=*/u"application.com",
           /*web_contents=*/nullptr,

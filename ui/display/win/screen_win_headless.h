@@ -47,6 +47,7 @@ class DISPLAY_EXPORT ScreenWinHeadless : public ScreenWin {
   Display GetDisplayNearestPoint(const gfx::Point& point) const override;
   Display GetDisplayMatching(const gfx::Rect& match_rect) const override;
   Display GetPrimaryDisplay() const override;
+  bool IsHeadless() const override;
 
   // ScreenWin:
   std::optional<MONITORINFOEX> MonitorInfoFromScreenPoint(

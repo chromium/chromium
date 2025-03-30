@@ -192,8 +192,30 @@ struct Session {
   array<IdentifiedActivity> activities;
 };
 
+enum StudentStatusDetail {
+  kUnknown = 0,
+  // Student not found.
+  kNotFound = 1,
+  // Student added, hasn't joined yet.
+  kAdded = 2,
+  // Student has joined.
+  kActive = 3,
+  // Student removed due to other session take over.
+  kRemovedByOtherSession = 4,
+  // Student removed due to being a teacher.
+  kRemovedByBeingTeacher = 5,
+  // Student removed by a teacher.
+  kRemovedByTeacher = 6,
+  // Student not added due to configured as teacher in policy.
+  kNotAddedConfiguredAsTeacher = 7,
+  // Student not added due to feature not enabled in policy.
+  kNotAddedNotConfigured = 8,
+};
+
 struct StudentActivity {
-  // If the current student status is active.
+  // The student's status detail.
+  StudentStatusDetail student_status_detail;
+  // If the current device status is active.
   bool is_active;
   // Current active tab title.
   string? active_tab;

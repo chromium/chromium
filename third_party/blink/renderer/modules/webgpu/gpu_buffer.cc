@@ -382,11 +382,7 @@ void GPUBuffer::OnMapAsyncCallback(
     case wgpu::MapAsyncStatus::Success:
       resolver->Resolve();
       break;
-#ifdef WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
     case wgpu::MapAsyncStatus::CallbackCancelled:
-#else
-    case wgpu::MapAsyncStatus::InstanceDropped:
-#endif  // WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
       resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
                                        String::FromUTF8(message));
       break;

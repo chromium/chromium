@@ -230,11 +230,11 @@ std::pair<int, int>
 SaveOrUpdateAutofillAiDataControllerImpl::GetTitleImagesResourceId() const {
   switch (new_entity_->type().name()) {
     case autofill::EntityTypeName::kVehicle:
-      return {IDR_SAVE_ADDRESS, IDR_SAVE_ADDRESS_DARK};
+      return {IDR_SAVE_VEHICLE, IDR_SAVE_VEHICLE_DARK};
     case autofill::EntityTypeName::kPassport:
-      return {IDR_SAVE_ADDRESS, IDR_SAVE_ADDRESS_DARK};
+      return {IDR_SAVE_PASSPORT, IDR_SAVE_PASSPORT_DARK};
     case autofill::EntityTypeName::kDriversLicense:
-      return {IDR_SAVE_ADDRESS, IDR_SAVE_ADDRESS_DARK};
+      return {IDR_SAVE_DRIVERS_LICENSE, IDR_SAVE_DRIVERS_LICENSE_DARK};
   }
   NOTREACHED();
 }

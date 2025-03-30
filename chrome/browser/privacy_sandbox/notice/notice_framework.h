@@ -28,11 +28,12 @@ class PrivacySandboxNoticeFramework : public KeyedService {
   std::vector<notice::mojom::PrivacySandboxNotice> GetRequiredNotices(
       SurfaceType surface);
 
-  void EventOccurred(NoticeId notice, NoticeEvent event);
+  void EventOccurred(NoticeId notice_id, NoticeEvent event);
 
   // Service Accessors.
   PrivacySandboxNoticeStorage* GetNoticeStorage();
   PrefService* GetPrefService();
+  NoticeCatalog* GetCatalog();
 
   // KeyedService:
   void Shutdown() override;

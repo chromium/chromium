@@ -27,8 +27,8 @@ constexpr base::TimeDelta kResourceNotUsedSinceDelay = base::Seconds(5);
 constexpr base::TimeDelta kCleanUpAllResourcesDelay = base::Seconds(1);
 
 // Global atomic idle id shared between all instances of this class. There are
-// multiple GraphiteCacheControllers used from gpu/viz threads and we want to
-// defer cleanup until all those threads are idle.
+// multiple GraphiteCacheControllers used from gpu threads and we want to defer
+// cleanup until all those threads are idle.
 std::atomic<uint32_t> g_current_idle_id = 0;
 
 }  // namespace
@@ -60,10 +60,14 @@ void GraphiteCacheController::ScheduleCleanup() {
   recorder_->performDeferredCleanup(
       std::chrono::seconds(kResourceNotUsedSinceDelay.InSeconds()));
 
-  uint32_t idle_id = ++g_current_idle_id;
+  if (UseGlobalIdleId()) {
+    g_current_idle_id.fetch_add(1, std::memory_order_relaxed);
+  } else {
+    ++local_idle_id_;
+  }
 
   if (idle_cleanup_cb_.IsCancelled()) {
-    ScheduleCleanUpAllResources(idle_id);
+    ScheduleCleanUpAllResources(GetIdleId());
   }
 }
 
@@ -81,6 +85,15 @@ void GraphiteCacheController::CleanUpAllResources() {
   CleanUpAllResourcesImpl();
 }
 
+bool GraphiteCacheController::UseGlobalIdleId() const {
+  return context_ != nullptr;
+}
+
+uint32_t GraphiteCacheController::GetIdleId() const {
+  return UseGlobalIdleId() ? g_current_idle_id.load(std::memory_order_relaxed)
+                           : local_idle_id_;
+}
+
 void GraphiteCacheController::ScheduleCleanUpAllResources(uint32_t idle_id) {
   idle_cleanup_cb_.Reset(
       base::BindOnce(&GraphiteCacheController::MaybeCleanUpAllResources,
@@ -93,10 +106,11 @@ void GraphiteCacheController::MaybeCleanUpAllResources(
     uint32_t posted_idle_id) {
   idle_cleanup_cb_.Cancel();
 
-  if (posted_idle_id != g_current_idle_id) {
-    // If `g_current_idle_id` has changed since this task was posted then the
+  uint32_t current_idle_id = GetIdleId();
+  if (posted_idle_id != current_idle_id) {
+    // If `GetIdleId()` has changed since this task was posted then the
     // GPU process has not been idle. Check again after another delay.
-    ScheduleCleanUpAllResources(g_current_idle_id);
+    ScheduleCleanUpAllResources(current_idle_id);
     return;
   }
 
@@ -115,8 +129,8 @@ void GraphiteCacheController::CleanUpAllResourcesImpl() {
     if (dawn::native::ReduceMemoryUsage(
             dawn_context_provider_->GetDevice().Get())) {
       // There is scheduled work on the GPU that must complete before finishing
-      // cleanup.
-      ScheduleCleanUpAllResources(g_current_idle_id);
+      // cleanup. Schedule cleanup to run again after a delay.
+      ScheduleCleanUpAllResources(GetIdleId());
     }
     dawn::native::PerformIdleTasks(dawn_context_provider_->GetDevice());
   }

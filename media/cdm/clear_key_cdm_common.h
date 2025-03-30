@@ -14,6 +14,9 @@ namespace media {
 // Clear Key key system defined in the EME spec.
 inline constexpr char kClearKeyKeySystem[] = "org.w3.clearkey";
 
+// This is used by UMA. Do not change it!
+inline constexpr char kClearKeyKeySystemNameForUMA[] = "ClearKey";
+
 // UUID from http://dashif.org/identifiers/content_protection/. UUIDs are used
 // in Android for creating MediaDRM objects that support the DRM scheme required
 // by content.

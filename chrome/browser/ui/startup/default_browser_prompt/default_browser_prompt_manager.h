@@ -40,6 +40,9 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
 
   bool get_show_app_menu_item() const { return show_app_menu_item_; }
 
+  // This will trigger the showing of the info bar.
+  void InitTabStripTracker();
+
   void MaybeShowPrompt();
 
   void CloseAllPrompts(CloseReason close_reason);
@@ -52,6 +55,8 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
 
   void CreateInfoBarForWebContents(content::WebContents* contents,
                                    Profile* profile);
+
+  void OnCanPinToTaskbarResult(bool should_offer_to_pin);
 
   void CloseAllInfoBars();
 
@@ -80,6 +85,8 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   std::optional<CloseReason> user_initiated_info_bar_close_pending_;
 
   bool show_app_menu_item_ = false;
+
+  bool can_pin_to_taskbar_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_PROMPT_MANAGER_H_

@@ -86,14 +86,14 @@ export class ExtensionsActivityLogElement extends
     };
   }
 
-  extensionInfo: chrome.developerPrivate.ExtensionInfo|
+  accessor extensionInfo: chrome.developerPrivate.ExtensionInfo|
       ActivityLogExtensionPlaceholder = {
     isPlaceholder: true,
     id: '',
   };
-  delegate: ActivityLogDelegate = new DummyActivityLogDelegate();
-  protected selectedSubpage_: MaybeActivityLogSubpage = NONE_SELECTED;
-  protected tabNames_: string[] = [
+  accessor delegate: ActivityLogDelegate = new DummyActivityLogDelegate();
+  protected accessor selectedSubpage_: MaybeActivityLogSubpage = NONE_SELECTED;
+  protected accessor tabNames_: string[] = [
     loadTimeData.getString('activityLogHistoryTabHeading'),
     loadTimeData.getString('activityLogStreamTabHeading'),
   ];

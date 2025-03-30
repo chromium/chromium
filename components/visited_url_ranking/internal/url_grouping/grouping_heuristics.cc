@@ -6,13 +6,17 @@
 
 #include <variant>
 
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/hash/hash.h"
+#include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_schema.h"
@@ -30,7 +34,7 @@ constexpr auto kReasonToMinTabCount =
     base::MakeFixedFlatMap<GroupSuggestion::SuggestionReason, unsigned>({
         {GroupSuggestion::SuggestionReason::kRecentlyOpened, 4},
         {GroupSuggestion::SuggestionReason::kSwitchedBetween, 2},
-        {GroupSuggestion::SuggestionReason::kSimilarSource, 2},
+        {GroupSuggestion::SuggestionReason::kSimilarSource, 3},
     });
 
 // Limit for tab age till which a tab is considered recent.
@@ -151,14 +155,12 @@ class SimilarSourceHeuristic : public GroupingHeuristics::Heuristic {
         // Assign a cluster ID based on hash of the package name.
         result[i] = base::FastHash(tab_launch_package_name->str_val);
         continue;
-      } else if (tab_launch_type) {
-        // TODO(ssid): Reconsider grouping based on all launch types.
-        // Cluster ID is the launch type of the tab.
-        result[i] = tab_launch_type->float_val;
+      }
+      if (tab_parent_id) {
+        result[i] = tab_parent_id->float_val;
         continue;
       }
-      // TODO(ssid): Same parent ID should already be captured by launch type,
-      // but consider adding explicit case.
+      // TODO(ssid): Reconsider grouping based on launch types.
     }
     return result;
   }
@@ -264,12 +266,18 @@ std::optional<GroupSuggestions> GetAllGroupSuggestions(
 }  // namespace
 
 GroupingHeuristics::GroupingHeuristics() {
-  heuristics_.emplace(GroupSuggestion::SuggestionReason::kSwitchedBetween,
-                      std::make_unique<SwitchedBetweenHeuristic>());
-  heuristics_.emplace(GroupSuggestion::SuggestionReason::kSimilarSource,
-                      std::make_unique<SimilarSourceHeuristic>());
-  heuristics_.emplace(GroupSuggestion::SuggestionReason::kRecentlyOpened,
-                      std::make_unique<RecentlyOpenedHeuristic>());
+  if (features::kGroupSuggestionEnableRecentlyOpened.Get()) {
+    heuristics_.emplace(GroupSuggestion::SuggestionReason::kRecentlyOpened,
+                        std::make_unique<RecentlyOpenedHeuristic>());
+  }
+  if (features::kGroupSuggestionEnableSwitchBetween.Get()) {
+    heuristics_.emplace(GroupSuggestion::SuggestionReason::kSwitchedBetween,
+                        std::make_unique<SwitchedBetweenHeuristic>());
+  }
+  if (features::kGroupSuggestionEnableSimilarSource.Get()) {
+    heuristics_.emplace(GroupSuggestion::SuggestionReason::kSimilarSource,
+                        std::make_unique<SimilarSourceHeuristic>());
+  }
 }
 
 GroupingHeuristics::~GroupingHeuristics() = default;
@@ -300,6 +308,9 @@ void GroupingHeuristics::GetSuggestions(
     signals.push_back(AsInputContext(kSuggestionsPredictionSchema, candidate));
   }
   for (const auto type : heuristics_priority) {
+    if (!base::Contains(heuristics_, type)) {
+      continue;
+    }
     auto& heuristic = heuristics_[type];
     heuristic_results.emplace(heuristic->reason(), heuristic->Run(signals));
   }

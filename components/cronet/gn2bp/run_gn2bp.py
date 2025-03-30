@@ -165,39 +165,49 @@ def _run_copybara_to_aosp(config: str, copybara_binary: str,
   Get the commit hash of AOSP `external/cronet` tip of tree to merge into.
   It will print the generated Gerrit url to stdout.
   """
-  if not git_url_and_branch:
-    parent_commit_raw = subprocess.check_output(
-        ('git ls-remote '
-         'https://android.googlesource.com/platform/external/cronet '
-         '| grep "refs/heads/main$" | cut -f 1'),
-        shell=True)
-    parent_commit = parent_commit_raw.decode('utf-8').strip('\n')
-    print(f'AOSP {parent_commit=}')
-    # TODO(crbug.com/349099325): Generate gerrit change id until
-    # --gerrit-new-change flag is fixed.
-    msg = f'gn2bp{time.time_ns()}'
-    change_id = f'I{hashlib.sha1(msg.encode()).hexdigest()}'
-    print(f'Generated {change_id=}')
-  return cronet_utils.run([
-      _JAVA_PATH,
-      '-jar',
-      copybara_binary,
-      config,
-      f'{import_channel}_import_cronet_to_aosp_gerrit' if git_url_and_branch
-      is None else f'{import_channel}_import_cronet_to_git_branch',
-      REPOSITORY_ROOT,
+  # TODO(crbug.com/349099325): Generate gerrit change id until
+  # --gerrit-new-change flag is fixed.
+  msg = f'gn2bp{time.time_ns()}'
+  change_id = f'I{hashlib.sha1(msg.encode()).hexdigest()}'
+  print(f'Generated {change_id=}')
+
+  target_workflow = None
+  additional_parameters = [
       '--ignore-noop',
-      *(('--change-request-parent', parent_commit, '--git-push-option',
-         'nokeycheck', '--git-push-option', 'uploadvalidator~skip',
-         '--gerrit-change-id', change_id) if git_url_and_branch is None else
-        ('--git-destination-url', git_url_and_branch[0],
-         '--git-destination-push', git_url_and_branch[1])),
-      # We can't use the copybara `regenerate` subcommand because it doesn't
-      # support folder origins. See https://crbug.com/391331930.
-      *(('--disable-consistency-merge-import', 'true',
-         '--baseline-for-merge-import',
-         REPOSITORY_ROOT) if regenerate_consistency_file else ())
-  ])
+  ]
+
+  if git_url_and_branch:
+    target_workflow = f'{import_channel}_import_cronet_to_git_branch'
+    additional_parameters.extend([
+        '--git-destination-url',
+        git_url_and_branch[0],
+        '--git-destination-push',
+        git_url_and_branch[1],
+    ])
+  else:
+    target_workflow = f'{import_channel}_import_cronet_to_aosp_gerrit'
+    additional_parameters.extend([
+        '--git-push-option',
+        'nokeycheck',
+        '--git-push-option',
+        'uploadvalidator~skip',
+        '--gerrit-change-id',
+        change_id,
+    ])
+  if regenerate_consistency_file:
+    # We can't use the copybara `regenerate` subcommand because it doesn't
+    # support folder origins. See https://crbug.com/391331930.
+    additional_parameters.extend([
+        '--disable-consistency-merge-import',
+        'true',
+        '--baseline-for-merge-import',
+        REPOSITORY_ROOT,
+    ])
+
+  return cronet_utils.run([
+      _JAVA_PATH, '-jar', copybara_binary, config, target_workflow,
+      REPOSITORY_ROOT
+  ] + additional_parameters)
 
 
 def _fill_desc_file_for_arch(arch, desc_file, delete_temporary_files):

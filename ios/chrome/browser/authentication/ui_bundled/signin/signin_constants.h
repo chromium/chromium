@@ -29,6 +29,8 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
   // Only triggered by `SceneController` when processing a ShowSigninCommand
   // and when the UI is not ready to present any signin coordinator.
   SigninCoordinatorUINotAvailable,
+  // Sign-in coordinator is stopped because of a change in profile.
+  SigninCoordinatorProfileSwitch,
 };
 
 // Called when the sign-in dialog is closed.

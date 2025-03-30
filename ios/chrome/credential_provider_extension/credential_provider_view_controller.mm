@@ -106,7 +106,7 @@ enum class PasskeyCreationEligibility {
 // Loading indicator used for user validation, which APIs can take a long time.
 @property(nonatomic, strong) UIActivityIndicatorView* activityIndicatorView;
 
-// Identfiers cached in `-prepareCredentialListForServiceIdentifiers:` to show
+// Identifiers cached in `-prepareCredentialListForServiceIdentifiers:` to show
 // the next time this view appears.
 @property(nonatomic, strong)
     NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers;
@@ -394,20 +394,28 @@ enum class PasskeyCreationEligibility {
     case PasskeyCreationEligibility::kUnsupportedAlgorithm:
       [self exitWithErrorCode:ASExtensionErrorCodeFailed];
       return;
-    case PasskeyCreationEligibility::kCanCreate:
     case PasskeyCreationEligibility::kCanCreateWithUserInteraction:
+      if ([self isUsingMultiProfile]) {
+        __weak __typeof__(self) weakSelf = self;
+        auto completion = ^{
+          [weakSelf
+              validateUserAndCreatePasskeyWithDetails:passkeyRequestDetails
+                                                 gaia:gaia];
+        };
+
+        [self showMultiProfilePasskeyCreationDialogWithDetails:
+                  passkeyRequestDetails
+                                                    completion:completion];
+        return;
+      }
+      break;
+    case PasskeyCreationEligibility::kCanCreate:
       // Passkey creation is allowed.
       break;
   }
 
-  __weak __typeof__(self) weakSelf = self;
-  [self validateUserWithCompletion:^(BOOL userIsValid) {
-    if (!userIsValid) {
-      [weakSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
-      return;
-    }
-    [weakSelf createPasskeyWithDetails:passkeyRequestDetails gaia:gaia];
-  }];
+  [self validateUserAndCreatePasskeyWithDetails:passkeyRequestDetails
+                                           gaia:gaia];
 }
 
 #pragma mark - Properties
@@ -988,6 +996,31 @@ enum class PasskeyCreationEligibility {
   [self presentViewController:genericErrorViewController
                      animated:YES
                    completion:nil];
+}
+
+// Shows a confirmation dialog to the user before performing passkey creation.
+- (void)showMultiProfilePasskeyCreationDialogWithDetails:
+            (PasskeyRequestDetails*)passkeyRequestDetails
+                                              completion:
+                                                  (ProceduralBlock)completion {
+  // TODO(crbug.com/382479915): Show the confirmation dialog.
+  completion();
+}
+
+// Attempts to create a passkey if validation succeeds. Exits with an error code
+// otherwise.
+- (void)validateUserAndCreatePasskeyWithDetails:
+            (PasskeyRequestDetails*)passkeyRequestDetails
+                                           gaia:(NSString*)gaia
+    API_AVAILABLE(ios(17.0)) {
+  __weak __typeof(self) weakSelf = self;
+  [self validateUserWithCompletion:^(BOOL userIsValid) {
+    if (!userIsValid) {
+      [weakSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
+      return;
+    }
+    [weakSelf createPasskeyWithDetails:passkeyRequestDetails gaia:gaia];
+  }];
 }
 
 // Attempts to create a passkey.

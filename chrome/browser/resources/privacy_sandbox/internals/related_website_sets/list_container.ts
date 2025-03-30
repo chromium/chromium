@@ -42,11 +42,11 @@ export class RelatedWebsiteSetsListContainerElement extends CrLitElement {
     };
   }
 
-  relatedWebsiteSets: RelatedWebsiteSet[] = [];
-  query: string = '';
-  errorMessage: string = '';
-  protected isAnyRowCollapsed: boolean = true;
-  filteredItems: RelatedWebsiteSet[] = [];
+  accessor relatedWebsiteSets: RelatedWebsiteSet[] = [];
+  accessor query: string = '';
+  accessor errorMessage: string = '';
+  protected accessor isAnyRowCollapsed: boolean = true;
+  accessor filteredItems: RelatedWebsiteSet[] = [];
 
   private rowExpandedStates_: Map<string, boolean> = new Map();
 

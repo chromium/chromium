@@ -732,6 +732,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="346243998268439747">Reimposta il livello di zoom</translation>
 <translation id="3465223694362104965">Dal tuo ultimo accesso, un'altra tastiera si è connessa a questo dispositivo. Prima di usarla, assicurati che sia attendibile.</translation>
 <translation id="3465356146291925647">Gestita dall'amministratore</translation>
+<translation id="3470502288861289375">Copia...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> poi <ph name="KEY_TWO" /> o <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">CTRL + MAIUSC + barra spaziatrice</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" /></translation>

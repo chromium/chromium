@@ -19,6 +19,7 @@ found in the LICENSE file.
   <dimen name="account_selection_sheet_icon_size">20dp</dimen>
   <dimen name="account_selection_separator_margin_start">78dp</dimen>
   <dimen name="account_selection_separator_margin_end">24dp</dimen>
+  <dimen name="account_selection_sheet_drag_handlebar_padding">8dp</dimen>
 
   <!-- FedCM active mode bottom sheet dimensions. -->
   <dimen name="account_selection_active_mode_sheet_avatar_size">40dp</dimen>
@@ -28,7 +29,6 @@ found in the LICENSE file.
   <dimen name="account_selection_active_mode_sheet_arrow_range_icon_size">22dp</dimen>
   <dimen name="account_selection_active_mode_sheet_add_account_icon_size">26dp</dimen>
   <dimen name="account_selection_active_mode_sheet_spinner_margin">42dp</dimen>
-  <dimen name="account_selection_active_mode_sheet_drag_handlebar_padding">8dp</dimen>
   <dimen name="account_selection_active_mode_sheet_icon_padding">8dp</dimen>
   <dimen name="account_selection_active_mode_sheet_continue_button_top_margin">24dp</dimen>
   <dimen name="account_selection_active_mode_sheet_title_padding">10dp</dimen>

@@ -91,6 +91,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1269405891096105529">Le mode Invité ne prend pas en charge votre périphérique</translation>
 <translation id="1270290102613614947">Clavier à l'écran désactivé</translation>
 <translation id="1272079795634619415">Arrêter</translation>
+<translation id="12741168609094094">Sélectionnez n'importe quel élément sur votre écran pour effectuer une recherche, copier du texte, etc.</translation>
 <translation id="1275285675049378717">Alimente cet appareil : <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Sélectionné</translation>
 <translation id="1276975447697633661">Sélectionnez le fichier, puis appuyez sur <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1720230731642245863">Le point d'accès sans fil est désactivé</translation>
 <translation id="1731815243805539470">Passer à l'utilisateur précédent</translation>
 <translation id="1733996486177697563">Basculez entre les thèmes sombre et clair. Maintenez le doigt sur le bureau et sélectionnez Fond d'écran et style.</translation>
+<translation id="1735992454301033090">Zone sélectionnée; utilisez les touches fléchées pour la déplacer</translation>
 <translation id="1736898441010944794">« <ph name="NAME" /> » visible par les appareils Bluetooth.</translation>
 <translation id="1737078180382804488">Ignorer la configuration de l'affichage des notifications de votre téléphone</translation>
 <translation id="174102739345480129">Le marqueur est désactivé.</translation>
@@ -494,6 +496,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> de la semaine dernière</translation>
 <translation id="2687510499067466116">Le raccourci-clavier a été modifié</translation>
 <translation id="2689613560355655046">Bureau 8</translation>
+<translation id="2692092709110488417">Appuyez sur Tabulation pour mettre en évidence et déplacer la zone sélectionnée</translation>
 <translation id="2695305337569143674">Web</translation>
 <translation id="2697697418792422688">Afficher les paramètres du clavier. Langue sélectionnée : <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Utilisez l'appli Transfert de contenus pour déplacer les données de votre compte scolaire vers votre compte personnel</translation>
@@ -729,6 +732,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="346243998268439747">Restaurer le niveau de zoom</translation>
 <translation id="3465223694362104965">Un autre clavier a été connecté à cet appareil depuis votre dernière connexion. Assurez-vous qu'il s'agit d'un clavier de confiance avant de l'utiliser.</translation>
 <translation id="3465356146291925647">Géré par votre administrateur</translation>
+<translation id="3470502288861289375">Copie en cours…</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, puis <ph name="KEY_TWO" /> ou <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Ctrl + Maj + Espace</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1032,6 +1036,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4412698727486357573">Centre d'aide</translation>
 <translation id="4412944820643904175">La fonctionnalité <ph name="FEATURE_NAME" /> est désactivée.</translation>
 <translation id="4417647906073317561">Paramètres du mode Sans distractions. Réglez une minuterie, une tâche et de la musique pour vous mettre dans l'ambiance.</translation>
+<translation id="4418600384772451109">Fermer le panneau</translation>
 <translation id="4424159417645388645">Bureau 5</translation>
 <translation id="4426817706804363424">Félicitations!</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -2228,6 +2233,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8287009018010202411">Productivité</translation>
 <translation id="828708037801473432">Désactivé</translation>
 <translation id="8297006494302853456">Faible</translation>
+<translation id="8300451473979404345">Poignée sélectionnée; utilisez les touches fléchées pour déplacer la zone</translation>
 <translation id="8308637677604853869">Menu précédent</translation>
 <translation id="830868413617744215">Bêta</translation>
 <translation id="8314772463905284467">Verrouillage des majuscules activé</translation>
@@ -2288,6 +2294,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="851458219935658693">Afficher les fenêtres du bureau actuel, bouton radio sélectionné</translation>
 <translation id="851660987304951246">Utilisez Aide-moi à lire pour résumer rapidement le contenu ou poser des questions</translation>
 <translation id="8517041960877371778">Il est possible que votre <ph name="DEVICE_TYPE" /> ne se charge pas lorsqu’il est allumé.</translation>
+<translation id="8519329096920173967">Rechercher sur mon écran avec Lentille Google</translation>
 <translation id="8535393432370007982">Annuler l'ordre de tri par couleur</translation>
 <translation id="8536886494750559755">Affichez les paramètres du Partage rapide. Visible par tous pendant <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Le texte a été copié dans le presse-papiers</translation>

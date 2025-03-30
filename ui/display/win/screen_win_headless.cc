@@ -139,6 +139,10 @@ std::optional<MONITORINFOEX> ScreenWinHeadless::MonitorInfoFromScreenPoint(
   return std::nullopt;
 }
 
+bool ScreenWinHeadless::IsHeadless() const {
+  return true;
+}
+
 std::optional<MONITORINFOEX> ScreenWinHeadless::MonitorInfoFromScreenRect(
     const gfx::Rect& screen_rect) const {
   // ScreenWin::MonitorInfoFromScreenRect() uses Win32 ::MonitorFromRect() with

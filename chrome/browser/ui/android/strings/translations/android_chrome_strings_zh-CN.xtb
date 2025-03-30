@@ -325,7 +325,6 @@
 <translation id="2527209463677295330">如果选择纳入相应页面上的更多文字，您便可能会看到相关性更高的结果</translation>
 <translation id="2527779675047087889">隐藏剪贴板内容</translation>
 <translation id="2532336938189706096">网页视图</translation>
-<translation id="2534155362429831547">删除了 <ph name="NUMBER_OF_ITEMS" /> 项</translation>
 <translation id="253498598929009420">该网站将能看到您屏幕上的内容</translation>
 <translation id="2536728043171574184">正在查看此网页的离线副本</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />，标签页</translation>
@@ -365,7 +364,6 @@
 <translation id="2677748264148917807">离开</translation>
 <translation id="2687009626279857299">已停止在此设备上运行</translation>
 <translation id="2702516483241149200">新功能：可分享能够定位到此文本的链接</translation>
-<translation id="2705073298859543115">创建摘要</translation>
 <translation id="2708051474374549906">根据系统向 Google 发送的浏览数据，实时地主动防范危险的网站、下载内容和扩展程序</translation>
 <translation id="2708226184420201102">在 <ph name="PRODUCT_NAME" /> 浏览器中打开</translation>
 <translation id="271033894570825754">新</translation>
@@ -1199,7 +1197,6 @@
 <translation id="6564820424018738527">您的 Android 设备可能包含类似的设置。如果您在 Chrome 中和 Android 设备上开启了“广告效果衡量”，相关公司或许就能对在您访问的网站和使用的应用中投放的广告进行效果衡量。</translation>
 <translation id="6565959834589222080">当 Wi-Fi 可用时使用 Wi-Fi</translation>
 <translation id="6569373978618239158">现在，当打开新标签页时，您会看到来自<ph name="SITE_NAME" />的故事。您关注的网站会保存在您的 Google 账号中。您可在“探索”设置中管理它们。</translation>
-<translation id="6570116402456758630">网页摘要</translation>
 <translation id="657177046675873214">如要将书签同步到所有设备上，请在设置中开启“书签”</translation>
 <translation id="6573096386450695060">一律允许</translation>
 <translation id="6573431926118603307">您在其他设备上的 Chrome 中打开的标签页将列在此处。</translation>

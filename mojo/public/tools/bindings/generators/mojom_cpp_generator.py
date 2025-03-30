@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 """Generates C++ source files from a mojom.Module."""
+import hashlib
 import os
 import mojom.generate.generator as generator
 import mojom.generate.module as mojom
@@ -176,6 +177,11 @@ def ShouldInlineStruct(struct):
 
 def ShouldInlineUnion(union):
   return not any(mojom.IsReferenceKind(field.kind) for field in union.fields)
+
+
+def _IpcHash(message_name):
+  sha256_hash = hashlib.sha256(message_name.encode('utf-8'))
+  return f'0x{sha256_hash.hexdigest()[:8]}'
 
 
 def HasPackedMethodOrdinals(interface):
@@ -409,6 +415,7 @@ class Generator(generator.Generator):
         "requires_context_for_data_view": RequiresContextForDataView,
         "should_inline": ShouldInlineStruct,
         "should_inline_union": ShouldInlineUnion,
+        "ipc_hash": _IpcHash,
         "is_array_kind": mojom.IsArrayKind,
         "is_bool_kind": mojom.IsBoolKind,
         "is_default_constructible": self._IsDefaultConstructible,
@@ -550,7 +557,8 @@ class Generator(generator.Generator):
     return self._ExpressionToText(constant.value, kind=constant.kind)
 
   def _ConstantLength(self, constant):
-    # The length of the string value, removing the quotes, but preserving the null-terminator.
+    # The length of the string value, removing the quotes, but preserving the
+    # null-terminator.
     return f"{len(constant.value) - 1}"
 
   def _UnderToCamel(self, value, digits_split=False):

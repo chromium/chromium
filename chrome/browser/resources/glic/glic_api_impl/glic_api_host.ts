@@ -89,6 +89,7 @@ class WebClientImpl implements WebClientInterface {
     // The web client is ready to show, ensure the webview is
     // displayed.
     this.embedder.webClientReady();
+
     const openPanelInfoMojo: OpenPanelInfoMojo = {
       webClientMode:
           (result.openPanelInfo?.startingMode as WebClientMode | undefined) ??
@@ -96,6 +97,7 @@ class WebClientImpl implements WebClientInterface {
       panelSize: null,
       resizeDuration: timeDeltaFromClient(
           result.openPanelInfo?.resizeParams?.options?.durationMs),
+      canUserResize: result.openPanelInfo?.canUserResize ?? true,
     };
     if (result.openPanelInfo?.resizeParams) {
       const size = {

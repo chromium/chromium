@@ -120,6 +120,10 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     this.listenerIds = [
       this.browserProxy.callbackRouter.textReceived.addListener(
           this.onTextReceived.bind(this)),
+      this.browserProxy.callbackRouter.clearAllSelections.addListener(
+          this.onClearRegionSelection.bind(this)),
+      this.browserProxy.callbackRouter.clearRegionSelection.addListener(
+          this.onClearRegionSelection.bind(this)),
     ];
 
     this.setTextReceivedTimeout();
@@ -216,6 +220,13 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
       this.translateTimeout.timeoutId = -1;
       this.selectAndTranslateWords(startIndex, endIndex);
     }, this.translateTimeout.timeout);
+  }
+
+  private onClearRegionSelection() {
+    this.isSelectingRegion = false;
+    this.hasActionedText = false;
+    this.hideHighlightedLines = true;
+    this.highlightedLines = [];
   }
 
   private setTextReceivedTimeout() {

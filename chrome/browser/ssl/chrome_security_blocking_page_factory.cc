@@ -24,7 +24,6 @@
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ssl/insecure_form/insecure_form_controller_client.h"
 #include "chrome/browser/ssl/ssl_error_controller_client.h"
-#include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
@@ -32,7 +31,6 @@
 #include "components/security_interstitials/content/content_metrics_helper.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/content/ssl_blocking_page.h"
-#include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/web_contents.h"
@@ -150,11 +148,6 @@ ChromeSecurityBlockingPageFactory::CreateSSLPage(
       CreateMetricsHelperAndStartRecording(
           web_contents, request_url,
           overridable ? "ssl_overridable" : "ssl_nonoverridable", overridable));
-
-  StatefulSSLHostStateDelegate* state =
-      StatefulSSLHostStateDelegateFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  state->DidDisplayErrorPage(cert_error);
 
   LogSafeBrowsingSecuritySensitiveAction(
       safe_browsing::SafeBrowsingMetricsCollectorFactory::GetForProfile(

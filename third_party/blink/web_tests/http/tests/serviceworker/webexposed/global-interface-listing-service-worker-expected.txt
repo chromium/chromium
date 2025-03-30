@@ -1157,6 +1157,7 @@ interface LanguageDetector
     static method availability
     static method create
     attribute @@toStringTag
+    getter expectedInputLanguages
     getter inputQuota
     method constructor
     method destroy

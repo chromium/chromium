@@ -73,16 +73,16 @@ export class ExtensionsCodeSectionElement extends
     };
   }
 
-  code: chrome.developerPrivate.RequestFileSourceResponse|null = null;
-  isActive?: boolean;
-  couldNotDisplayCode: string = '';
-  protected highlighted_: string = '';
-  protected before_: string = '';
-  protected after_: string = '';
-  protected highlightDescription_: string = '';
-  protected lineNumbers_: string = '';
-  protected truncatedBefore_: number = 0;
-  protected truncatedAfter_: number = 0;
+  accessor code: chrome.developerPrivate.RequestFileSourceResponse|null = null;
+  accessor isActive: boolean|undefined;
+  accessor couldNotDisplayCode: string = '';
+  protected accessor highlighted_: string = '';
+  protected accessor before_: string = '';
+  protected accessor after_: string = '';
+  protected accessor highlightDescription_: string = '';
+  protected accessor lineNumbers_: string = '';
+  protected accessor truncatedBefore_: number = 0;
+  protected accessor truncatedAfter_: number = 0;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

@@ -96,6 +96,7 @@ class ChromeMetricsServiceClientTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS)
     scoped_feature_list_.InitWithFeatures(
         {features::kUmaStorageDimensions,
+         features::kK12AgeClassificationMetricsProvider,
          metrics::dwa::kDwaFeature},
         {});
 
@@ -238,13 +239,13 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   // AmbientModeMetricsProvider, AssistantServiceMetricsProvider,
   // CrosHealthdMetricsProvider, ChromeOSMetricsProvider,
   // ChromeOSHistogramMetricsProvider, ChromeShelfMetricsProvider,
-  // KeyboardBacklightColorMetricsProvider,
+  // K12AgeClassificationMetricsProvider, KeyboardBacklightColorMetricsProvider,
   // PersonalizationAppThemeMetricsProvider, PrinterMetricsProvider,
   // FamilyUserMetricsProvider, FamilyLinkUserMetricsProvider,
   // UpdateEngineMetricsProvider, OsSettingsMetricsProvider,
   // UserTypeByDeviceTypeMetricsProvider, WallpaperMetricsProvider,
   // and VmmMetricsProvider.
-  expected_providers += 16;
+  expected_providers += 17;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS)

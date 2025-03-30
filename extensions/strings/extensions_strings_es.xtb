@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">El archivo de manifiesto no es válido</translation>
 <translation id="7217838517480956708">El administrador de este ordenador necesita que se instale <ph name="EXTENSION_NAME" />. No se puede eliminar ni modificar.</translation>
 <translation id="7612608473764576263">El valor de entrada de la clave privada debe tener un formato válido (clave RSA con formato PKCS#8 y codificada con PEM).</translation>
+<translation id="7876803335449432072">No se ha podido cargar el archivo "<ph name="RELATIVE_PATH" />" para la secuencia de comandos de contenido. Las hojas de estilo de la secuencia de comandos de contenido solo se pueden cargar desde archivos de hoja de estilo admitidos, como archivos .css.</translation>
 <translation id="7939686037314084444">No se ha podido cargar la extensión correctamente. Es posible que no pueda interceptar solicitudes de red.</translation>
 <translation id="7972881773422714442">Opciones: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Delantera</translation>
 <translation id="8047248493720652249">Esta extensión no ha podido asignar un nombre a la descarga "<ph name="ATTEMPTED_FILENAME" />" porque otra extensión (<ph name="EXTENSION_NAME" />) ha determinado un nombre de archivo diferente "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Falta el archivo de manifiesto o no se puede leer</translation>
+<translation id="8621383749470166852">No se ha podido cargar el archivo "<ph name="RELATIVE_PATH" />" para la secuencia de comandos de contenido. Las secuencias de comandos de contenido solo se pueden cargar desde archivos JavaScript admitidos, como archivos .js.</translation>
 <translation id="8636666366616799973">El paquete no es válido. Detalles: "<ph name="ERROR_MESSAGE" />"</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> está solicitando acceso a uno de tus dispositivos:</translation>
 <translation id="8885905466771744233">Ya existe una clave privada para la extensión especificada. Vuelve a utilizar esa clave o elimínala primero.</translation>

@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 
+#import "base/functional/callback.h"
+#import "base/run_loop.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
 #import "testing/platform_test.h"
 
 namespace {

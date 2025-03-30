@@ -419,6 +419,14 @@ void SessionServiceImpl::NotifySessionAccess(
     const SchemefulSite& site,
     const Session& session) {
   SessionAccess access{access_type, {site, session.id()}};
+
+  if (access_type == SessionAccess::AccessType::kTermination) {
+    access.cookies.reserve(session.cookies().size());
+    for (const CookieCraving& cookie : session.cookies()) {
+      access.cookies.push_back(cookie.Name());
+    }
+  }
+
   if (per_request_callback) {
     per_request_callback.Run(access);
   }

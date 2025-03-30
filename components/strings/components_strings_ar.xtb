@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">جرّب الاتصال بمشرف النظام.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />، <ph name="CARD_NETWORK_NAME" />، <ph name="CARD_LAST_FOUR_DIGITS" />، تاريخ انتهاء الصلاحية <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">جهاز الكمبيوتر</translation>
-<translation id="1739422091279046802">الانتقال للأعلى أو للأسفل في المحتوى وتكبيره أو تصغيره</translation>
 <translation id="1741613555002899862">‏يجب أن تكون محدّدة وتُمثّل سلسلة صالحة عندما تكون DnsOverHttpsMode مضبوطة على <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">مفروشات وبياضات</translation>
 <translation id="1743892871127720056">عنوان جدول المقارنة، تعديل النص</translation>
@@ -2884,6 +2883,7 @@
 <translation id="6059925163896151826">‏أجهزة USB</translation>
 <translation id="6060009363608157444">‏وضع DnsOverHttps غير صحيح.</translation>
 <translation id="6061154937977953833">مصارعة</translation>
+<translation id="6062405040252994646">الأداة</translation>
 <translation id="6062937464449575061">إيقاف تتبُّع السعر</translation>
 <translation id="6063415549109819824">تمويل عقاري</translation>
 <translation id="6070432475334343308">لم يتم تحميل ملف واحد أو أكثر إلى "<ph name="FOLDER_NAME" />" على <ph name="CLOUD_PROVIDER" /></translation>

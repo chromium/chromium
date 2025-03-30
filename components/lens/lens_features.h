@@ -65,6 +65,10 @@ BASE_DECLARE_FEATURE(kLensOverlayUpdatedClientContext);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayMGTInSidePanel);
 
+// Enables uploading chunking for the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayUploadChunking);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -753,6 +757,25 @@ extern bool ShouldUseAltLoadingHintWeb();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldUseAltLoadingHintPdf();
 
-}  // namespace lens::features
+// Whether to enable upload chunking in the Lens Overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayUploadChunkingEnabled();
 
+// Returns the max number of bytes to allow for upload chunking.
+COMPONENT_EXPORT(LENS_FEATURES)
+uint32_t GetLensOverlayChunkSizeBytes();
+
+// The endpoint URL for upload chunking.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensOverlayUploadChunkEndpointURL();
+
+// Whether to enable debug options for upload chunking.
+COMPONENT_EXPORT(LENS_FEATURES)
+bool IsLensOverlayUploadChunkingUseDebugOptionsEnabled();
+
+// The timeout set for upload chunk requests in milliseconds.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayUploadChunkRequestTimeoutMs();
+
+}  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

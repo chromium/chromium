@@ -14,7 +14,6 @@ namespace media {
 
 namespace {
 // These names are used by UMA. Do not change them!
-const char kClearKeyKeySystemNameForUMA[] = "ClearKey";
 const char kUnknownKeySystemNameForUMA[] = "Unknown";
 const char kHardwareSecureForUMA[] = "HardwareSecure";
 const char kSoftwareSecureForUMA[] = "SoftwareSecure";

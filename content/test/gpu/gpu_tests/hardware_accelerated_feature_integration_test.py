@@ -49,8 +49,9 @@ class HardwareAcceleratedFeatureIntegrationTest(
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     tests = ('webgl', '2d_canvas')
     for feature in tests:
-      yield ('HardwareAcceleratedFeature_%s_accelerated' %
-             safe_feature_name(feature), 'chrome://gpu', [feature])
+      safe_name = safe_feature_name(feature)
+      yield (f'HardwareAcceleratedFeature_{safe_name}_accelerated',
+             'chrome://gpu', [feature])
 
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     feature = args[0]
@@ -61,7 +62,7 @@ class HardwareAcceleratedFeatureIntegrationTest(
         'VerifyHardwareAccelerated({{ feature }})', feature=feature):
       print('Test failed. Printing page contents:')
       print(tab.EvaluateJavaScript('document.body.innerHTML'))
-      self.fail('%s not hardware accelerated' % feature)
+      self.fail(f'{feature} not hardware accelerated')
 
   @classmethod
   def ExpectationsFiles(cls) -> list[str]:

@@ -44,6 +44,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".GestureMode" summary="only gesture nav mode"/>
 </variants>
 
+<variants name="NavigationProcessType">
+  <variant name=".CrossProcess" summary="Cross process navigation."/>
+  <variant name=".SameProcess" summary="Same process navigation."/>
+</variants>
+
 <variants name="NavigationSite">
   <variant name="" summary="for all sites"/>
   <variant name=".GoogleSearch" summary="for Google Search"/>
@@ -2300,7 +2305,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.StartToCommit" units="ms"
+<histogram name="Navigation.StartToCommit{NavigationProcessType}" units="ms"
     expires_after="2025-08-03">
   <owner>nasko@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
@@ -2309,8 +2314,11 @@ chromium-metrics-reviews@google.com.
     committed.
 
     Warning: this histogram was expired after M85 and brought back 2021-04-13;
-    data may be missing.
+    data may be missing. {NavigationProcessType}
   </summary>
+  <token key="NavigationProcessType" variants="NavigationProcessType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Navigation.SuddenTerminationDisabler.{Origins}"
@@ -2541,8 +2549,8 @@ chromium-metrics-reviews@google.com.
   <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
-<histogram name="Navigation.TimeToReadyToCommit2" units="ms"
-    expires_after="2025-08-24">
+<histogram name="Navigation.TimeToReadyToCommit2{NavigationProcessType}"
+    units="ms" expires_after="2025-08-24">
   <owner>clamy@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
   <summary>
@@ -2550,8 +2558,11 @@ chromium-metrics-reviews@google.com.
     commit.
 
     Warning: this histogram was expired after M85 and brought back 2021-04-13;
-    data may be missing.
+    data may be missing. {NavigationProcessType}
   </summary>
+  <token key="NavigationProcessType" variants="NavigationProcessType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Navigation.TpcdMitigations.MetadataCohortDistribution"

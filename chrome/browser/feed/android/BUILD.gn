@@ -156,12 +156,14 @@ android_library("java") {
 
 android_resources("feed_java_resources") {
   sources = [
+    "java/res/color-night/feed_header_section_tab_bg_enabled.xml",
+    "java/res/color-night/selected_feed_tab_color.xml",
     "java/res/color/chip_hairline_color_list.xml",
+    "java/res/color/feed_header_section_tab_bg_enabled.xml",
     "java/res/color/header_title_text_color_list.xml",
     "java/res/color/menu_footer_chip_background_baseline_list.xml",
     "java/res/color/menu_footer_chip_background_list.xml",
     "java/res/color/tab_layout_text_color_list.xml",
-    "java/res/drawable-night/header_title_tab_selected_background.xml",
     "java/res/drawable/creator_content_unavailable_error_illustration.xml",
     "java/res/drawable/creator_general_error_illustration.xml",
     "java/res/drawable/header_title_section_tab_background.xml",

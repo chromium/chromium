@@ -23,6 +23,7 @@
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -131,8 +132,9 @@ TEST_F(CollaborationControllerTest, FullJoinFlowAllStates) {
 
   // The user should be shown authentication screens.
   base::OnceCallback<void(Outcome)> authentication_ui_calback;
-  EXPECT_CALL(*delegate_, ShowAuthenticationUi(IsNotNullCallback()))
-      .WillOnce(MoveArg<0>(&authentication_ui_calback));
+  EXPECT_CALL(*delegate_,
+              ShowAuthenticationUi(FlowType::kJoin, IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&authentication_ui_calback));
 
   // 2. Pending -> Authenticating state.
   std::move(prepare_ui_callback_).Run(Outcome::kSuccess);
@@ -361,8 +363,9 @@ TEST_F(CollaborationControllerTest, JoinFlowManagedAccount) {
 
   // The user should be shown authentication screens.
   base::OnceCallback<void(Outcome)> authentication_ui_calback;
-  EXPECT_CALL(*delegate_, ShowAuthenticationUi(IsNotNullCallback()))
-      .WillOnce(MoveArg<0>(&authentication_ui_calback));
+  EXPECT_CALL(*delegate_,
+              ShowAuthenticationUi(FlowType::kJoin, IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&authentication_ui_calback));
 
   // 2. Pending -> Authenticating state.
   std::move(prepare_ui_callback_).Run(Outcome::kSuccess);
@@ -544,8 +547,9 @@ TEST_F(CollaborationControllerTest, AuthenticationCanceledBeforeSignIn) {
 
   // The user should be shown authentication screens.
   base::OnceCallback<void(Outcome)> authentication_ui_calback;
-  EXPECT_CALL(*delegate_, ShowAuthenticationUi(IsNotNullCallback()))
-      .WillOnce(MoveArg<0>(&authentication_ui_calback));
+  EXPECT_CALL(*delegate_,
+              ShowAuthenticationUi(FlowType::kJoin, IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&authentication_ui_calback));
 
   // Pending -> Authenticating.
   std::move(prepare_ui_callback_).Run(Outcome::kSuccess);
@@ -610,8 +614,9 @@ TEST_F(CollaborationControllerTest, AuthenticationError) {
   // Start Join flow with authenticating screens.
   base::OnceCallback<void(Outcome)> authentication_ui_calback;
   InitializeJoinController(run_loop.QuitClosure());
-  EXPECT_CALL(*delegate_, ShowAuthenticationUi(IsNotNullCallback()))
-      .WillOnce(MoveArg<0>(&authentication_ui_calback));
+  EXPECT_CALL(*delegate_,
+              ShowAuthenticationUi(FlowType::kJoin, IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&authentication_ui_calback));
   controller_->SetStateForTesting(StateId::kAuthenticating);
 
   // Simulate Authentication finishing successfully on the UI, but getting
@@ -647,8 +652,9 @@ TEST_F(CollaborationControllerTest, AuthenticationSuccessObserved) {
   // Start Join flow with authenticating screens.
   base::OnceCallback<void(Outcome)> authentication_ui_calback;
   InitializeJoinController(run_loop.QuitClosure());
-  EXPECT_CALL(*delegate_, ShowAuthenticationUi(IsNotNullCallback()))
-      .WillOnce(MoveArg<0>(&authentication_ui_calback));
+  EXPECT_CALL(*delegate_,
+              ShowAuthenticationUi(FlowType::kJoin, IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&authentication_ui_calback));
   controller_->SetStateForTesting(StateId::kAuthenticating);
 
   // Simulate Authentication finishing successfully on the UI.
@@ -774,7 +780,10 @@ TEST_F(CollaborationControllerTest, CheckingFlowRequirementsManageFlow) {
   InitializeController(base::DoNothing(),
                        Flow(FlowType::kShareOrManage, local_id));
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
-  EXPECT_CALL(*delegate_, ShowManageDialog(either_id, IsNotNullCallback()));
+
+  base::OnceCallback<void(Outcome)> manage_dialog_callback;
+  EXPECT_CALL(*delegate_, ShowManageDialog(either_id, IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&manage_dialog_callback));
 
   controller_->SetStateForTesting(StateId::kCheckingFlowRequirements);
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kShowingManageScreen);
@@ -786,6 +795,14 @@ TEST_F(CollaborationControllerTest, CheckingFlowRequirementsManageFlow) {
   histogram_tester.ExpectBucketCount(
       "CollaborationService.ShareOrManageFlow",
       metrics::CollaborationServiceShareOrManageEvent::kManageDialogShown, 1);
+
+  // Delete the tab group from manage screen.
+  EXPECT_CALL(
+      *tab_group_sync_service_,
+      OnCollaborationRemoved(syncer::CollaborationId(kGroupId.value())));
+  EXPECT_CALL(*data_sharing_service_, OnCollaborationGroupRemoved(kGroupId));
+  EXPECT_CALL(*delegate_, OnFlowFinished());
+  std::move(manage_dialog_callback).Run(Outcome::kDeleteOrLeaveGroup);
 }
 
 TEST_F(CollaborationControllerTest, ShareFlowCanceledBeforeSignin) {
@@ -817,8 +834,9 @@ TEST_F(CollaborationControllerTest, ShareFlowCanceledBeforeSignin) {
 
   // The user should be shown authentication screens.
   base::OnceCallback<void(Outcome)> authentication_ui_calback;
-  EXPECT_CALL(*delegate_, ShowAuthenticationUi(IsNotNullCallback()))
-      .WillOnce(MoveArg<0>(&authentication_ui_calback));
+  EXPECT_CALL(*delegate_, ShowAuthenticationUi(FlowType::kShareOrManage,
+                                               IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&authentication_ui_calback));
 
   // Pending -> Authenticating.
   std::move(prepare_ui_callback_).Run(Outcome::kSuccess);

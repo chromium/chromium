@@ -194,6 +194,7 @@ class InterestGroupStorageTest : public testing::Test {
         case 30:
         case 32:
         case 34:
+        case 35:
           *version_changed_ig_fields = false;
           break;
         default:
@@ -226,6 +227,10 @@ class InterestGroupStorageTest : public testing::Test {
     // instance.
 
     switch (version_number) {
+      case 35:
+        // Added `cached_k_anonymity_hashes` table, but introduced no new
+        // `interest_group` table fields.
+        [[fallthrough]];
       case 34:
         // Added `view_and_click_events` table, but introduced no new
         // `interest_group` table fields.
@@ -461,8 +466,8 @@ TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
     // [interest_groups], [join_history], [bid_history], [win_history],
     // [joined_k_anon], [meta], [lockout_debugging_only_report],
     // [cooldown_debugging_only_report], [bidding_and_auction_server_keys],
-    // [view_and_click_events].
-    EXPECT_EQ(10u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
+    // [view_and_click_events], [cached_k_anonymity_hashes].
+    EXPECT_EQ(11u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
   }
 }
 
@@ -499,8 +504,8 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesOldVersion) {
     // [interest_groups], [join_history], [bid_history], [win_history],
     // [joined_k_anon], [meta], [lockout_debugging_only_report],
     // [cooldown_debugging_only_report], [bidding_and_auction_server_keys],
-    // [view_and_click_events].
-    EXPECT_EQ(10u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
+    // [view_and_click_events], [cached_k_anonymity_hashes].
+    EXPECT_EQ(11u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
   }
 }
 
@@ -537,8 +542,8 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesNewVersion) {
     // [interest_groups], [join_history], [bid_history], [win_history],
     // [joined_k_anon], [meta], [lockout_debugging_only_report],
     // [cooldown_debugging_only_report], [bidding_and_auction_server_keys],
-    // [view_and_click_events].
-    EXPECT_EQ(10u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
+    // [view_and_click_events], [cached_k_anonymity_hashes].
+    EXPECT_EQ(11u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
   }
 }
 
@@ -1004,6 +1009,62 @@ TEST_F(InterestGroupStorageTest,
     EXPECT_EQ(interest_groups[0].next_update_after,
               base::Time::Now() +
                   InterestGroupStorage::kUpdateSucceededBackoffPeriod);
+  }
+}
+
+TEST_F(InterestGroupStorageTest,
+       GetInterestGroupTruncatesSelectableReportingIdsBeyondKAnonLimit) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  url::Origin test_origin =
+      url::Origin::Create(GURL("https://owner.example.com"));
+  GURL ad1_url = GURL("https://owner.example.com/ad1");
+  GURL ad2_url = GURL("https://owner.example.com/ad2");
+  GURL ad3_url = GURL("https://owner.example.com/ad3");
+
+  InterestGroup g = NewInterestGroup(test_origin, "name");
+  blink::InterestGroupKey group_key(g.owner, g.name);
+  g.ads.emplace();
+  g.ads->emplace_back(
+      ad1_url, "metadata1",
+      /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/"brid1",
+      /*buyer_and_seller_reporting_id=*/"shrid1",
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"selectable_id1", "selectable_id2"});
+  storage->JoinInterestGroup(g, test_origin.GetURL());
+
+  // Validate the interest groups's 'next_update_after' field, and that all of
+  // the `selectableBuyerAndSellerReportingIds` were loaded.
+  {
+    std::vector<StorageInterestGroup> interest_groups =
+        storage->GetInterestGroupsForOwner(test_origin);
+    ASSERT_THAT(interest_groups, testing::SizeIs(1u));
+    ASSERT_TRUE(interest_groups[0].interest_group.ads.has_value());
+    const InterestGroup::Ad& ad = interest_groups[0].interest_group.ads->at(0);
+    ASSERT_TRUE(ad.selectable_buyer_and_seller_reporting_ids.has_value());
+    EXPECT_THAT(*ad.selectable_buyer_and_seller_reporting_ids,
+                testing::ElementsAre("selectable_id1", "selectable_id2"));
+  }
+
+  // With the 'TruncateToKAnonLimit' parameter set to true, this time we only
+  // get the `selectableBuyerAndSellerReportingIds` within that limit.
+  {
+    base::test::ScopedFeatureList scoped_feature_to_enforce_limit;
+    scoped_feature_to_enforce_limit.InitAndEnableFeatureWithParameters(
+        features::
+            kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
+        {{"SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit", "1"},
+         {"SelectableBuyerAndSellerReportingIdsTruncateToKAnonLimit", "true"}});
+
+    std::vector<StorageInterestGroup> interest_groups =
+        storage->GetInterestGroupsForOwner(test_origin);
+    ASSERT_THAT(interest_groups, testing::SizeIs(1u));
+    ASSERT_TRUE(interest_groups[0].interest_group.ads.has_value());
+    const InterestGroup::Ad& ad = interest_groups[0].interest_group.ads->at(0);
+    ASSERT_TRUE(ad.selectable_buyer_and_seller_reporting_ids.has_value());
+    EXPECT_THAT(*ad.selectable_buyer_and_seller_reporting_ids,
+                testing::ElementsAre("selectable_id1"));
   }
 }
 
@@ -5037,6 +5098,199 @@ TEST_F(InterestGroupStorageTest, SetGetBiddingAndAuctionKeys) {
   EXPECT_EQ(a_loaded_keys, a_keys);
   EXPECT_EQ(expiration, a_expiration);
   EXPECT_TRUE(b_loaded_keys.empty());
+}
+
+TEST_F(InterestGroupStorageTest, WriteAndLoadCachedKAnonKeys) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  constexpr std::string kKey1 = "key1";
+  constexpr std::string kKey2 = "key2";
+  constexpr std::string kKey3 = "key3";
+  constexpr std::string kKey4 = "key4";
+
+  base::test::ScopedFeatureList scoped_feature_to_enforce_limit;
+  scoped_feature_to_enforce_limit.InitAndEnableFeatureWithParameters(
+      features::kFledgeCacheKAnonHashedKeys,
+      {{"CacheKAnonHashedKeysTtl", "1h"}});
+
+  base::Time now = base::Time::Now();
+
+  // No keys are cached before any are written.
+  {
+    base::HistogramTester histograms;
+    InterestGroupStorage::KAnonymityCacheResponse cache_repsonse =
+        storage->LoadPositiveHashedKAnonymityKeysFromCache(
+            {kKey1, kKey2, kKey3, kKey4}, /*check_time=*/now);
+    EXPECT_THAT(cache_repsonse.positive_hashed_keys_from_cache,
+                testing::IsEmpty());
+    EXPECT_THAT(cache_repsonse.ids_to_query_from_server,
+                testing::ElementsAre(kKey1, kKey2, kKey3, kKey4));
+    histograms.ExpectUniqueSample(
+        "Storage.InterestGroup.KAnonymityKeysCacheHitRate", 0, 1);
+  }
+
+  // Cached values should be reused.
+  EXPECT_TRUE(storage->WriteHashedKAnonymityKeysToCache(
+      /*positive_hashed_keys=*/{kKey1},
+      /*negative_hashed_keys=*/{kKey2},
+      /*fetch_time=*/now));
+  {
+    base::HistogramTester histograms;
+    InterestGroupStorage::KAnonymityCacheResponse cache_repsonse =
+        storage->LoadPositiveHashedKAnonymityKeysFromCache(
+            {kKey1, kKey2, kKey3, kKey4}, /*check_time=*/now);
+    EXPECT_THAT(cache_repsonse.positive_hashed_keys_from_cache,
+                testing::ElementsAre(kKey1));
+    EXPECT_THAT(cache_repsonse.ids_to_query_from_server,
+                testing::ElementsAre(kKey3, kKey4));
+    histograms.ExpectUniqueSample(
+        "Storage.InterestGroup.KAnonymityKeysCacheHitRate", 50, 1);
+  }
+
+  // Move forward by 30 minutes (half of the TTL); everything's still valid.
+  now += base::Minutes(30);
+  {
+    base::HistogramTester histograms;
+    InterestGroupStorage::KAnonymityCacheResponse cache_repsonse =
+        storage->LoadPositiveHashedKAnonymityKeysFromCache(
+            {kKey1, kKey2, kKey3, kKey4}, /*check_time=*/now);
+    EXPECT_THAT(cache_repsonse.positive_hashed_keys_from_cache,
+                testing::ElementsAre(kKey1));
+    EXPECT_THAT(cache_repsonse.ids_to_query_from_server,
+                testing::ElementsAre(kKey3, kKey4));
+    histograms.ExpectUniqueSample(
+        "Storage.InterestGroup.KAnonymityKeysCacheHitRate", 50, 1);
+  }
+
+  // Cached entries can be overwritten. We make key2 k-anon now. (This wouldn't
+  // happen in production, because we wouldn't fetch keys from the k-anonymity
+  // server if they're found in the cache.) We also add key3 to the cache as not
+  // k-anonymous.
+  EXPECT_TRUE(storage->WriteHashedKAnonymityKeysToCache(
+      /*positive_hashed_keys=*/{kKey2},
+      /*negative_hashed_keys=*/{kKey3},
+      /*fetch_time=*/now));
+  {
+    base::HistogramTester histograms;
+    InterestGroupStorage::KAnonymityCacheResponse cache_repsonse =
+        storage->LoadPositiveHashedKAnonymityKeysFromCache(
+            {kKey1, kKey2, kKey3, kKey4}, /*check_time=*/now);
+    EXPECT_THAT(cache_repsonse.positive_hashed_keys_from_cache,
+                testing::ElementsAre(kKey1, kKey2));
+    EXPECT_THAT(cache_repsonse.ids_to_query_from_server,
+                testing::ElementsAre(kKey4));
+    histograms.ExpectUniqueSample(
+        "Storage.InterestGroup.KAnonymityKeysCacheHitRate", 75, 1);
+  }
+
+  // Move forward by 30 minutes (half of the TTL); everything's still valid
+  // because cache entries are still valid right at the TTL.
+  now += base::Minutes(30);
+  {
+    base::HistogramTester histograms;
+    InterestGroupStorage::KAnonymityCacheResponse cache_repsonse =
+        storage->LoadPositiveHashedKAnonymityKeysFromCache(
+            {kKey1, kKey2, kKey3, kKey4}, /*check_time=*/now);
+    EXPECT_THAT(cache_repsonse.positive_hashed_keys_from_cache,
+                testing::ElementsAre(kKey1, kKey2));
+    EXPECT_THAT(cache_repsonse.ids_to_query_from_server,
+                testing::ElementsAre(kKey4));
+    histograms.ExpectUniqueSample(
+        "Storage.InterestGroup.KAnonymityKeysCacheHitRate", 75, 1);
+  }
+
+  // One minute later, key1, which was written 61 minutes ago (> than the TTL),
+  // is no longer in the cache.
+  now += base::Minutes(1);
+  {
+    base::HistogramTester histograms;
+    InterestGroupStorage::KAnonymityCacheResponse cache_repsonse =
+        storage->LoadPositiveHashedKAnonymityKeysFromCache(
+            {kKey1, kKey2, kKey3, kKey4}, /*check_time=*/now);
+    EXPECT_THAT(cache_repsonse.positive_hashed_keys_from_cache,
+                testing::ElementsAre(kKey2));
+    EXPECT_THAT(cache_repsonse.ids_to_query_from_server,
+                testing::ElementsAre(kKey1, kKey4));
+    histograms.ExpectUniqueSample(
+        "Storage.InterestGroup.KAnonymityKeysCacheHitRate", 50, 1);
+  }
+
+  // And finally, 60 minutes after that, all keys are expired.
+  now += base::Hours(1);
+  {
+    base::HistogramTester histograms;
+    InterestGroupStorage::KAnonymityCacheResponse cache_repsonse =
+        storage->LoadPositiveHashedKAnonymityKeysFromCache(
+            {kKey1, kKey2, kKey3, kKey4}, /*check_time=*/now);
+    EXPECT_THAT(cache_repsonse.positive_hashed_keys_from_cache,
+                testing::IsEmpty());
+    EXPECT_THAT(cache_repsonse.ids_to_query_from_server,
+                testing::ElementsAre(kKey1, kKey2, kKey3, kKey4));
+    histograms.ExpectUniqueSample(
+        "Storage.InterestGroup.KAnonymityKeysCacheHitRate", 0, 1);
+  }
+}
+
+// Loads a large number of keys to ensure that the batched lookups work.
+TEST_F(InterestGroupStorageTest, WriteAndLoadCachedKAnonKeys_BatchedLookups) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  std::vector<std::string> all_keys;
+  for (size_t i = 0; i < 234; ++i) {
+    all_keys.push_back(base::NumberToString(i));
+  }
+
+  base::test::ScopedFeatureList scoped_feature_to_enforce_limit;
+  scoped_feature_to_enforce_limit.InitAndEnableFeatureWithParameters(
+      features::kFledgeCacheKAnonHashedKeys,
+      {{"CacheKAnonHashedKeysTtl", "1h"}});
+
+  base::Time now = base::Time::Now();
+
+  // No keys are cached before any are written.
+  {
+    base::HistogramTester histograms;
+    InterestGroupStorage::KAnonymityCacheResponse cache_repsonse =
+        storage->LoadPositiveHashedKAnonymityKeysFromCache(all_keys,
+                                                           /*check_time=*/now);
+    EXPECT_THAT(cache_repsonse.positive_hashed_keys_from_cache,
+                testing::IsEmpty());
+    EXPECT_THAT(cache_repsonse.ids_to_query_from_server,
+                testing::ElementsAreArray(all_keys));
+    histograms.ExpectUniqueSample(
+        "Storage.InterestGroup.KAnonymityKeysCacheHitRate", 0, 1);
+  }
+
+  std::vector<std::string> positive_keys;
+  std::vector<std::string> negative_keys;
+  std::vector<std::string> other_keys;
+  for (size_t i = 0; i < 234; ++i) {
+    if (i % 4 == 0) {
+      positive_keys.push_back(base::NumberToString(i));
+    } else if (i % 2 == 0) {
+      negative_keys.push_back(base::NumberToString(i));
+    } else {
+      other_keys.push_back(base::NumberToString(i));
+    }
+  }
+
+  // Cached values should be reused.
+  EXPECT_TRUE(storage->WriteHashedKAnonymityKeysToCache(
+      /*positive_hashed_keys=*/positive_keys,
+      /*negative_hashed_keys=*/negative_keys,
+      /*fetch_time=*/now));
+  {
+    base::HistogramTester histograms;
+    InterestGroupStorage::KAnonymityCacheResponse cache_repsonse =
+        storage->LoadPositiveHashedKAnonymityKeysFromCache(all_keys,
+                                                           /*check_time=*/now);
+    EXPECT_THAT(cache_repsonse.positive_hashed_keys_from_cache,
+                testing::ElementsAreArray(positive_keys));
+    EXPECT_THAT(cache_repsonse.ids_to_query_from_server,
+                testing::ElementsAreArray(other_keys));
+    histograms.ExpectUniqueSample(
+        "Storage.InterestGroup.KAnonymityKeysCacheHitRate", 50, 1);
+  }
 }
 
 }  // namespace

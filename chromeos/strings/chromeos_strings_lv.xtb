@@ -779,7 +779,6 @@
 <translation id="4593212453765072419">Nepieciešama starpniekservera autentifikācija</translation>
 <translation id="4594021849294327751">Izveidot transkripciju</translation>
 <translation id="4594541568452132351">Atlasiet transkripcijas valodu un lejupielādējiet modeli</translation>
-<translation id="4607282946861182308">Nevar izveidot šādus attēlus. Izmēģiniet citu uzvedni.</translation>
 <translation id="4609350030397390689">Samazināt tastatūras spilgtumu</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />: <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> no <ph name="TOTAL_PAGE_NUMBER" /> lapas(-ām). Lai atceltu drukas uzdevumu, nospiediet taustiņu Enter.</translation>
 <translation id="463791356324567266">Notiek skenēšanas atcelšana…</translation>
@@ -1528,6 +1527,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8010765388850538088">Uzzināt vairāk par ģeneratīvo MI</translation>
 <translation id="8017679124341497925">Saīsne rediģēta</translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
+<translation id="8027467664787098346">Uzzināt vairāk par atlasīto fona tapeti</translation>
 <translation id="8028993641010258682">Izmērs</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Iespējot automātisko krāsu režīmu</translation>
@@ -1646,6 +1646,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8543574988889671960">Atkārtoti ielādēt cilni</translation>
 <translation id="8550364285433943656">Piešķiriet vadīklas spēles darbībām, lai spēlētu ar tastatūras taustiņiem</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Ģeneratīvais MI var pieļaut kļūdas, tostarp par personām, tāpēc pārbaudiet atbildi.</translation>
 <translation id="8575298406870537639">Jūsu mobilo sakaru operators var pieprasīt šīs opcijas izmantošanu, lai varētu izveidot savienojumu ar attiecīgā operatora tīklu. Lai iegūtu detalizētu informāciju, sazinieties ar savu mobilo sakaru operatoru.</translation>
 <translation id="8576249514688522074">Pārbaude nav sākta</translation>
 <translation id="8584654835905316966">Lai pabeigtu <ph name="DEVICE_NAME" /> aparātprogrammatūras versijas <ph name="VERSION" /> instalēšanu, ir nepieciešama restartēšana. Iespējams, dators vairākas reizes tiks palaists atkārtoti. Šāda darbība ir sagaidāma.</translation>
@@ -1660,7 +1661,6 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8655295600908251630">Kanāls</translation>
 <translation id="8655828773034788261">Kopīgot URL:</translation>
 <translation id="8660881923941176839">mārciņas</translation>
-<translation id="8670057600920888023">Ģeneratīvais MI ir eksperimentāls, un saturs var būt neprecīzs, maldinošs vai aizvainojošs.</translation>
 <translation id="8670574982334489519">pa labi</translation>
 <translation id="8675354002693747642">Iepriekš kopīgota atslēga</translation>
 <translation id="8677859815076891398">Nav albumu. Varat izveidot albumu pakalpojumā <ph name="LINK_BEGIN" />Google fotoattēli<ph name="LINK_END" />.</translation>

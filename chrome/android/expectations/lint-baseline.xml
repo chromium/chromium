@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.7.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.7.0-alpha03">
+<issues format="6" by="lint 8.11.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.11.0-alpha03">
 
     <issue
         id="WrongCommentType"
@@ -8,7 +8,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContentsClient.java"
-            line="78"
+            line="81"
             column="16"/>
     </issue>
 
@@ -19,7 +19,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwGeolocationPermissions.java"
-            line="27"
+            line="28"
             column="16"/>
     </issue>
 
@@ -63,7 +63,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/back_press/android/java/src/org/chromium/chrome/browser/back_press/BackPressManager.java"
-            line="279"
+            line="269"
             column="8"/>
     </issue>
 
@@ -74,7 +74,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/process_launcher/ChildProcessService.java"
-            line="370"
+            line="387"
             column="8"/>
     </issue>
 
@@ -85,7 +85,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/minidump_uploader/android/java/src/org/chromium/components/minidump_uploader/CrashReportMimeWriter.java"
-            line="24"
+            line="27"
             column="8"/>
     </issue>
 
@@ -96,7 +96,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/minidump_uploader/android/java/src/org/chromium/components/minidump_uploader/CrashReportMimeWriter.java"
-            line="36"
+            line="39"
             column="8"/>
     </issue>
 
@@ -107,7 +107,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/minidump_uploader/android/java/src/org/chromium/components/minidump_uploader/CrashReportMimeWriter.java"
-            line="49"
+            line="52"
             column="8"/>
     </issue>
 
@@ -118,7 +118,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java"
-            line="330"
+            line="350"
             column="8"/>
     </issue>
 
@@ -129,7 +129,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/dom_distiller/core/android/java/src/org/chromium/components/dom_distiller/core/DistilledPagePrefs.java"
-            line="79"
+            line="81"
             column="8"/>
     </issue>
 
@@ -140,7 +140,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/dom_distiller/core/android/java/src/org/chromium/components/dom_distiller/core/DistilledPagePrefs.java"
-            line="96"
+            line="98"
             column="8"/>
     </issue>
 
@@ -151,7 +151,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/payments/content/android/java/src/org/chromium/components/payments/JourneyLogger.java"
-            line="102"
+            line="104"
             column="8"/>
     </issue>
 
@@ -162,7 +162,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/payments/content/android/java/src/org/chromium/components/payments/JourneyLogger.java"
-            line="125"
+            line="127"
             column="8"/>
     </issue>
 
@@ -173,7 +173,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/share/LensUtils.java"
-            line="35"
+            line="30"
             column="8"/>
     </issue>
 
@@ -184,7 +184,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/share/LensUtils.java"
-            line="120"
+            line="114"
             column="8"/>
     </issue>
 
@@ -195,7 +195,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../media/base/android/java/src/org/chromium/media/MediaDrmBridge.java"
-            line="1517"
+            line="1557"
             column="8"/>
     </issue>
 
@@ -228,7 +228,7 @@
         errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPage.java"
-            line="1246"
+            line="1333"
             column="43"/>
     </issue>
 
@@ -239,7 +239,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/payments/ui/PaymentRequestSection.java"
-            line="864"
+            line="854"
             column="16"/>
     </issue>
 
@@ -250,7 +250,7 @@
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/payments/content/android/java/src/org/chromium/components/payments/PaymentResponseHelperInterface.java"
-            line="31"
+            line="33"
             column="12"/>
     </issue>
 
@@ -272,18 +272,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetBottomSheetContent.java"
-            line="140"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param tab The tab being tested."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/share/ShareUtils.java"
-            line="19"
+            line="142"
             column="8"/>
     </issue>
 
@@ -294,7 +283,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tab/TabViewAndroidDelegate.java"
-            line="155"
+            line="162"
             column="29"/>
     </issue>
 
@@ -305,7 +294,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content_public/browser/WebContents.java"
-            line="121"
+            line="123"
             column="27"/>
     </issue>
 
@@ -316,7 +305,7 @@
         errorLine2="                                                                           ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/input/SelectPopupDialog.java"
-            line="124"
+            line="127"
             column="76"/>
     </issue>
 
@@ -327,7 +316,7 @@
         errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/embedder_support/android/java/src/org/chromium/components/embedder_support/application/FontPreloadingWorkaround.java"
-            line="71"
+            line="72"
             column="41"/>
     </issue>
 
@@ -349,7 +338,7 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/password_manager/AccountChooserDialog.java"
-            line="283"
+            line="281"
             column="17"/>
     </issue>
 
@@ -360,7 +349,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabVersionCompat.java"
-            line="272"
+            line="261"
             column="21"/>
     </issue>
 
@@ -371,7 +360,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java"
-            line="101"
+            line="103"
             column="27"/>
     </issue>
 
@@ -382,7 +371,7 @@
         errorLine2="  ^">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="260"
+            line="259"
             column="3"/>
     </issue>
 
@@ -393,7 +382,7 @@
         errorLine2="  ^">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="260"
+            line="259"
             column="3"/>
     </issue>
 
@@ -437,7 +426,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentCapturedTask.java"
-            line="23"
+            line="25"
             column="16"/>
     </issue>
 
@@ -448,7 +437,7 @@
         errorLine2="                                 ~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="10"
+            line="12"
             column="34"/>
     </issue>
 
@@ -459,7 +448,7 @@
         errorLine2="        ~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="15"
+            line="17"
             column="9"/>
     </issue>
 
@@ -470,7 +459,7 @@
         errorLine2="        ~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="25"
+            line="27"
             column="9"/>
     </issue>
 
@@ -481,7 +470,7 @@
         errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="26"
+            line="28"
             column="51"/>
     </issue>
 
@@ -492,7 +481,7 @@
         errorLine2="                           ~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="28"
+            line="30"
             column="28"/>
     </issue>
 
@@ -503,7 +492,7 @@
         errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="29"
+            line="31"
             column="18"/>
     </issue>
 
@@ -514,7 +503,7 @@
         errorLine2="                                            ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="30"
+            line="32"
             column="45"/>
     </issue>
 
@@ -525,7 +514,7 @@
         errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="31"
+            line="33"
             column="42"/>
     </issue>
 
@@ -536,7 +525,7 @@
         errorLine2="                                                                      ~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="31"
+            line="33"
             column="71"/>
     </issue>
 
@@ -547,7 +536,7 @@
         errorLine2="                        ~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="31"
+            line="33"
             column="25"/>
     </issue>
 
@@ -558,7 +547,7 @@
         errorLine2="                                   ~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="29"
+            line="31"
             column="36"/>
     </issue>
 
@@ -569,7 +558,7 @@
         errorLine2="                         ~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="30"
+            line="32"
             column="26"/>
     </issue>
 
@@ -580,7 +569,7 @@
         errorLine2="                                                          ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="31"
+            line="33"
             column="59"/>
     </issue>
 
@@ -591,7 +580,7 @@
         errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="32"
+            line="34"
             column="50"/>
     </issue>
 
@@ -602,7 +591,7 @@
         errorLine2="                                                                              ~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="32"
+            line="34"
             column="79"/>
     </issue>
 
@@ -613,7 +602,7 @@
         errorLine2="                                ~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="32"
+            line="34"
             column="33"/>
     </issue>
 
@@ -624,7 +613,7 @@
         errorLine2="                           ~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="34"
+            line="36"
             column="28"/>
     </issue>
 
@@ -635,7 +624,7 @@
         errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="35"
+            line="37"
             column="18"/>
     </issue>
 
@@ -646,7 +635,7 @@
         errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="36"
+            line="38"
             column="51"/>
     </issue>
 
@@ -657,41 +646,8 @@
         errorLine2="                                             ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/minidump_uploader/android/java/src/org/chromium/components/minidump_uploader/CrashFileManager.java"
-            line="363"
+            line="365"
             column="46"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 34 (current min is 26): `logGestureType`"
-        errorLine1="                StylusGestureConverter.logGestureType("
-        errorLine2="                                       ~~~~~~~~~~~~~~">
-        <location
-            file="../../components/stylus_handwriting/android/java/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallback.java"
-            line="178"
-            column="40"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 34 (current min is 26): `logGestureType`"
-        errorLine1="                StylusGestureConverter.logGestureType("
-        errorLine2="                                       ~~~~~~~~~~~~~~">
-        <location
-            file="../../components/stylus_handwriting/android/java/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallback.java"
-            line="182"
-            column="40"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 34 (current min is 26): `logGestureType`"
-        errorLine1="                StylusGestureConverter.logGestureType("
-        errorLine2="                                       ~~~~~~~~~~~~~~">
-        <location
-            file="../../components/stylus_handwriting/android/java/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallback.java"
-            line="186"
-            column="40"/>
     </issue>
 
     <issue
@@ -707,12 +663,45 @@
 
     <issue
         id="NewApi"
+        message="Call requires API level 34 (current min is 26): `logGestureType`"
+        errorLine1="                StylusGestureConverter.logGestureType("
+        errorLine2="                                       ~~~~~~~~~~~~~~">
+        <location
+            file="../../components/stylus_handwriting/android/java/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallback.java"
+            line="194"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 34 (current min is 26): `logGestureType`"
+        errorLine1="                StylusGestureConverter.logGestureType("
+        errorLine2="                                       ~~~~~~~~~~~~~~">
+        <location
+            file="../../components/stylus_handwriting/android/java/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallback.java"
+            line="198"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 34 (current min is 26): `logGestureType`"
+        errorLine1="                StylusGestureConverter.logGestureType("
+        errorLine2="                                       ~~~~~~~~~~~~~~">
+        <location
+            file="../../components/stylus_handwriting/android/java/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallback.java"
+            line="202"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 29 (current min is 26): `getDownloadUriForFileName`"
         errorLine1="        return getDownloadUriForFileName(fileName) != null;"
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/download/internal/common/android/java/src/org/chromium/components/download/DownloadCollectionBridge.java"
-            line="251"
+            line="259"
             column="16"/>
     </issue>
 
@@ -723,7 +712,7 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/download/internal/common/android/java/src/org/chromium/components/download/DownloadCollectionBridge.java"
-            line="364"
+            line="375"
             column="17"/>
     </issue>
 
@@ -734,96 +723,8 @@
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DuplicateDownloadClickableSpan.java"
-            line="60"
+            line="56"
             column="52"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Extending NotificationTask requires API level 29 (current min is 26): `NotificationTask`"
-        errorLine1="public class FaviconUpdateTask extends NotificationTask {"
-        errorLine2="                                       ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/FaviconUpdateTask.java"
-            line="10"
-            column="40"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `NotificationTask`"
-        errorLine1="        super(session, platformSession);"
-        errorLine2="        ~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/FaviconUpdateTask.java"
-            line="12"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `log`"
-        errorLine1="        log(&quot;FaviconUpdateTask.updateFavicon&quot;);"
-        errorLine2="        ~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/FaviconUpdateTask.java"
-            line="21"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `buildCurrentSession`"
-        errorLine1="        PlatformSessionData parentPlatformSessionData = buildCurrentSession();"
-        errorLine2="                                                        ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/FaviconUpdateTask.java"
-            line="22"
-            column="57"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getInstance`"
-        errorLine1="        PlatformAPIWrapper.getInstance()"
-        errorLine2="                           ~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/FaviconUpdateTask.java"
-            line="24"
-            column="28"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `notifyFaviconUpdated`"
-        errorLine1="                .notifyFaviconUpdated("
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/FaviconUpdateTask.java"
-            line="25"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
-        errorLine1="                        parentPlatformSessionData.contentCaptureSession,"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/FaviconUpdateTask.java"
-            line="26"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `mSession`"
-        errorLine1="                        mSession.get(0).getFavicon());"
-        errorLine2="                        ~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/FaviconUpdateTask.java"
-            line="27"
-            column="25"/>
     </issue>
 
     <issue
@@ -833,7 +734,7 @@
         errorLine2="                                                     ~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/crash/MinidumpUploadServiceImpl.java"
-            line="152"
+            line="153"
             column="54"/>
     </issue>
 
@@ -844,7 +745,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/notifications/NotificationSuspender.java"
-            line="228"
+            line="223"
             column="16"/>
     </issue>
 
@@ -855,7 +756,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/notifications/NotificationSuspender.java"
-            line="232"
+            line="227"
             column="16"/>
     </issue>
 
@@ -866,7 +767,7 @@
         errorLine2="                                                     ~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
-            line="14"
+            line="19"
             column="54"/>
     </issue>
 
@@ -921,7 +822,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
-            line="66"
+            line="67"
             column="21"/>
     </issue>
 
@@ -932,7 +833,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
-            line="67"
+            line="68"
             column="55"/>
     </issue>
 
@@ -943,7 +844,7 @@
         errorLine2="                                       ~~~~~~~~~~~~~">
         <location
             file="../../components/crash/android/java/src/org/chromium/components/crash/browser/ProcessExitReasonFromSystem.java"
-            line="97"
+            line="108"
             column="40"/>
     </issue>
 
@@ -954,7 +855,7 @@
         errorLine2="                                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/init/ProcessInitializationHandler.java"
-            line="532"
+            line="531"
             column="72"/>
     </issue>
 
@@ -965,7 +866,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="559"
+            line="550"
             column="55"/>
     </issue>
 
@@ -976,7 +877,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="563"
+            line="554"
             column="55"/>
     </issue>
 
@@ -987,7 +888,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="572"
+            line="563"
             column="55"/>
     </issue>
 
@@ -998,7 +899,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1751"
+            line="1746"
             column="47"/>
     </issue>
 
@@ -1009,217 +910,8 @@
         errorLine2="                                              ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1925"
+            line="1920"
             column="47"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Extending NotificationTask requires API level 29 (current min is 26): `NotificationTask`"
-        errorLine1="class SessionRemovedTask extends NotificationTask {"
-        errorLine2="                                 ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="10"
-            column="34"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `NotificationTask`"
-        errorLine1="        super(session, platformSession);"
-        errorLine2="        ~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="12"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `log`"
-        errorLine1="        log(&quot;SessionRemovedTask.removeSession&quot;);"
-        errorLine2="        ~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="21"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getFrameIdToPlatformSessionData`"
-        errorLine1="                mPlatformSession.getFrameIdToPlatformSessionData().remove(mSession.get(0).getId());"
-        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="23"
-            column="34"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `mPlatformSession`"
-        errorLine1="                mPlatformSession.getFrameIdToPlatformSessionData().remove(mSession.get(0).getId());"
-        errorLine2="                ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="23"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `mSession`"
-        errorLine1="                mPlatformSession.getFrameIdToPlatformSessionData().remove(mSession.get(0).getId());"
-        errorLine2="                                                                          ~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="23"
-            column="75"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getInstance`"
-        errorLine1="        PlatformAPIWrapper.getInstance()"
-        errorLine2="                           ~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="25"
-            column="28"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `destroyContentCaptureSession`"
-        errorLine1="                .destroyContentCaptureSession(removedPlatformSessionData.contentCaptureSession);"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="26"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
-        errorLine1="                .destroyContentCaptureSession(removedPlatformSessionData.contentCaptureSession);"
-        errorLine2="                                                                         ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="26"
-            column="74"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getRootPlatformSessionData`"
-        errorLine1="                mPlatformSession.getRootPlatformSessionData();"
-        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="28"
-            column="34"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `mPlatformSession`"
-        errorLine1="                mPlatformSession.getRootPlatformSessionData();"
-        errorLine2="                ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="28"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `mSession`"
-        errorLine1="        if (mSession.size() > 2) {"
-        errorLine2="            ~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="32"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getFrameIdToPlatformSessionData`"
-        errorLine1="                    mPlatformSession.getFrameIdToPlatformSessionData().get(mSession.get(1).getId());"
-        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="34"
-            column="38"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `mPlatformSession`"
-        errorLine1="                    mPlatformSession.getFrameIdToPlatformSessionData().get(mSession.get(1).getId());"
-        errorLine2="                    ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="34"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `mSession`"
-        errorLine1="                    mPlatformSession.getFrameIdToPlatformSessionData().get(mSession.get(1).getId());"
-        errorLine2="                                                                           ~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="34"
-            column="76"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getInstance`"
-        errorLine1="        PlatformAPIWrapper.getInstance()"
-        errorLine2="                           ~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="37"
-            column="28"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `notifyViewDisappeared`"
-        errorLine1="                .notifyViewDisappeared("
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="38"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
-        errorLine1="                        parentPlatformSessionData.contentCaptureSession,"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="39"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `autofillId`"
-        errorLine1="                        removedPlatformSessionData.autofillId);"
-        errorLine2="                                                   ~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
-            line="40"
-            column="52"/>
     </issue>
 
     <issue
@@ -1229,7 +921,7 @@
         errorLine2="                            ~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/common/SurfaceWrapper.java"
-            line="81"
+            line="120"
             column="29"/>
     </issue>
 
@@ -1240,7 +932,7 @@
         errorLine2="                                                                                 ~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedSystemUiCoordinator.java"
-            line="121"
+            line="118"
             column="82"/>
     </issue>
 
@@ -1251,7 +943,7 @@
         errorLine2="                                     ~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="12"
+            line="16"
             column="38"/>
     </issue>
 
@@ -1262,7 +954,7 @@
         errorLine2="        ~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="16"
+            line="20"
             column="9"/>
     </issue>
 
@@ -1273,7 +965,7 @@
         errorLine2="        ~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="26"
+            line="30"
             column="9"/>
     </issue>
 
@@ -1284,7 +976,7 @@
         errorLine2="                                                        ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="29"
+            line="33"
             column="57"/>
     </issue>
 
@@ -1295,7 +987,7 @@
         errorLine2="                                   ~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="31"
+            line="36"
             column="36"/>
     </issue>
 
@@ -1306,7 +998,7 @@
         errorLine2="                         ~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="32"
+            line="37"
             column="26"/>
     </issue>
 
@@ -1317,7 +1009,7 @@
         errorLine2="                                                          ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="33"
+            line="38"
             column="59"/>
     </issue>
 
@@ -1328,7 +1020,7 @@
         errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="34"
+            line="39"
             column="50"/>
     </issue>
 
@@ -1339,7 +1031,7 @@
         errorLine2="                                                                              ~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="34"
+            line="39"
             column="79"/>
     </issue>
 
@@ -1350,7 +1042,7 @@
         errorLine2="                                ~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="34"
+            line="39"
             column="33"/>
     </issue>
 
@@ -1361,7 +1053,7 @@
         errorLine2="                           ~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="36"
+            line="41"
             column="28"/>
     </issue>
 
@@ -1372,7 +1064,7 @@
         errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="37"
+            line="42"
             column="18"/>
     </issue>
 
@@ -1383,7 +1075,7 @@
         errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="38"
+            line="43"
             column="51"/>
     </issue>
 
@@ -1394,7 +1086,7 @@
         errorLine2="                                            ~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/app/TrichromeZygotePreload.java"
-            line="14"
+            line="16"
             column="45"/>
     </issue>
 
@@ -1405,7 +1097,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/app/TrichromeZygotePreload.java"
-            line="23"
+            line="25"
             column="9"/>
     </issue>
 
@@ -1416,7 +1108,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
-            line="558"
+            line="570"
             column="27"/>
     </issue>
 
@@ -1427,7 +1119,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
-            line="559"
+            line="571"
             column="27"/>
     </issue>
 
@@ -1438,7 +1130,7 @@
         errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabmodel/ChromeTabCreator.java"
-            line="280"
+            line="291"
             column="53"/>
     </issue>
 
@@ -1449,7 +1141,7 @@
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/ClipDrawableProgressBar.java"
-            line="131"
+            line="132"
             column="52"/>
     </issue>
 
@@ -1460,30 +1152,30 @@
         errorLine2="                                                      ~~~~~~~~~~">
         <location
             file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/ContactView.java"
-            line="113"
+            line="121"
             column="55"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO"
-        errorLine1="                        signinAccessPoint);"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~">
+        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.HISTORY_PAGE, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION, SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP, SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP"
+        errorLine1="                                mActivity, mProfile, config, signinAccessPoint);"
+        errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/creator/CreatorActionDelegateImpl.java"
-            line="133"
-            column="25"/>
+            line="135"
+            column="62"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO"
-        errorLine1="                            signinAccessPoint);"
-        errorLine2="                            ~~~~~~~~~~~~~~~~~">
+        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.HISTORY_PAGE, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION, SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP, SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP"
+        errorLine1="                                mActivity, mProfile, config, signinAccessPoint);"
+        errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/creator/CreatorActionDelegateImpl.java"
-            line="161"
-            column="29"/>
+            line="165"
+            column="62"/>
     </issue>
 
     <issue
@@ -1493,7 +1185,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
-            line="1350"
+            line="1296"
             column="36"/>
     </issue>
 
@@ -1504,7 +1196,7 @@
         errorLine2="                ~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
-            line="1351"
+            line="1297"
             column="17"/>
     </issue>
 
@@ -1515,30 +1207,30 @@
         errorLine2="                   ~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
-            line="1352"
+            line="1298"
             column="20"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO"
-        errorLine1="                        signinAccessPoint);"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~">
+        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.HISTORY_PAGE, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION, SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP, SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP"
+        errorLine1="                                mActivity, mProfile, config, signinAccessPoint);"
+        errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/feed/FeedActionDelegateImpl.java"
-            line="197"
-            column="25"/>
+            line="195"
+            column="62"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO"
-        errorLine1="                            signinAccessPoint);"
-        errorLine2="                            ~~~~~~~~~~~~~~~~~">
+        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.HISTORY_PAGE, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION, SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP, SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP"
+        errorLine1="                                mActivity, mProfile, config, signinAccessPoint);"
+        errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/feed/FeedActionDelegateImpl.java"
-            line="225"
-            column="29"/>
+            line="224"
+            column="62"/>
     </issue>
 
     <issue
@@ -1548,7 +1240,7 @@
         errorLine2="                                                     ~">
         <location
             file="../../chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java"
-            line="516"
+            line="594"
             column="54"/>
     </issue>
 
@@ -1559,7 +1251,7 @@
         errorLine2="                                                                                   ~~~~~">
         <location
             file="../../chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java"
-            line="517"
+            line="595"
             column="84"/>
     </issue>
 
@@ -1570,41 +1262,8 @@
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/MaterialProgressBar.java"
-            line="234"
+            line="235"
             column="52"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, but could be SigninAccessPoint.SIGNIN_PROMO, SigninAccessPoint.AUTOFILL_DROPDOWN"
-        errorLine1="                        mAccessPoint);"
-        errorLine2="                        ~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/SyncPromoController.java"
-            line="713"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, but could be SigninAccessPoint.SIGNIN_PROMO, SigninAccessPoint.AUTOFILL_DROPDOWN"
-        errorLine1="                        mAccessPoint);"
-        errorLine2="                        ~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/SyncPromoController.java"
-            line="742"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, but could be SigninAccessPoint.SIGNIN_PROMO, SigninAccessPoint.AUTOFILL_DROPDOWN"
-        errorLine1="                        mAccessPoint);"
-        errorLine2="                        ~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/SyncPromoController.java"
-            line="771"
-            column="25"/>
     </issue>
 
     <issue
@@ -1614,7 +1273,7 @@
         errorLine2="    ^">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="630"
+            line="673"
             column="5"/>
     </issue>
 
@@ -1625,7 +1284,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/ContextUtils.java"
-            line="301"
+            line="325"
             column="20"/>
     </issue>
 
@@ -1636,7 +1295,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/sms/Wrappers.java"
-            line="101"
+            line="107"
             column="20"/>
     </issue>
 
@@ -1649,28 +1308,6 @@
             file="../../chrome/android/java/res/drawable/adaptive_toolbar_preference_header.xml"
             line="9"
             column="20"/>
-    </issue>
-
-    <issue
-        id="DiscouragedApi"
-        message="Activity should not be non-resizable. With this setting, apps cannot be used in multi-window or free form mode."
-        errorLine1="    &lt;activity android:name=&quot;org.chromium.components.webxr.XrHostActivity&quot; android:windowSoftInputMode=&quot;adjustResize&quot; android:configChanges=&quot;orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|navigation|density&quot; android:hardwareAccelerated=&quot;false&quot; android:excludeFromRecents=&quot;true&quot; android:noHistory=&quot;true&quot; android:launchMode=&quot;singleTask&quot; android:exported=&quot;false&quot; android:resizeableActivity=&quot;false&quot; android:screenOrientation=&quot;landscape&quot; android:label=&quot;WebXR&quot; android:theme=&quot;@android:style/Theme.Black.NoTitleBar.Fullscreen&quot; tools:ignore=&quot;NonResizeableActivity&quot;>"
-        errorLine2="                                                                                                                                                                                                                                                                                                                                                                                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="2353"
-            column="407"/>
-    </issue>
-
-    <issue
-        id="DiscouragedApi"
-        message="Should not restrict activity to fixed orientation. This may not be suitable for different form factors, causing the app to be letterboxed."
-        errorLine1="    &lt;activity android:name=&quot;org.chromium.components.webxr.XrHostActivity&quot; android:windowSoftInputMode=&quot;adjustResize&quot; android:configChanges=&quot;orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|navigation|density&quot; android:hardwareAccelerated=&quot;false&quot; android:excludeFromRecents=&quot;true&quot; android:noHistory=&quot;true&quot; android:launchMode=&quot;singleTask&quot; android:exported=&quot;false&quot; android:resizeableActivity=&quot;false&quot; android:screenOrientation=&quot;landscape&quot; android:label=&quot;WebXR&quot; android:theme=&quot;@android:style/Theme.Black.NoTitleBar.Fullscreen&quot; tools:ignore=&quot;NonResizeableActivity&quot;>"
-        errorLine2="                                                                                                                                                                                                                                                                                                                                                                                                                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="2353"
-            column="442"/>
     </issue>
 
     <issue
@@ -1691,7 +1328,7 @@
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegate.java"
-            line="21"
+            line="22"
             column="1"/>
     </issue>
 
@@ -1702,7 +1339,7 @@
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/BackgroundSyncNetworkObserver.java"
-            line="43"
+            line="47"
             column="1"/>
     </issue>
 
@@ -1724,7 +1361,7 @@
         errorLine2="              ~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/metrics/ScopedSysTraceEvent.java"
-            line="33"
+            line="48"
             column="15"/>
     </issue>
 
@@ -1764,23 +1401,23 @@
     <issue
         id="UseAppTint"
         message="Must use `app:tint` instead of `android:tint`"
-        errorLine1="            android:tint=&quot;@color/default_icon_color_baseline&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="            android:tint=&quot;@macro/default_icon_color_secondary&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/res/layout/search_widget_template.xml"
-            line="44"
+            line="46"
             column="13"/>
     </issue>
 
     <issue
         id="UseCompatLoadingForDrawables"
         message="Use `ResourcesCompat.getDrawable()`"
-        errorLine1="                return res.getDrawable(id, null);"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="                ret = res.getDrawable(id, null);"
+        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
-            line="193"
-            column="24"/>
+            line="79"
+            column="23"/>
     </issue>
 
     <issue
@@ -1790,7 +1427,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchQuickActionControl.java"
-            line="317"
+            line="314"
             column="36"/>
     </issue>
 
@@ -1834,7 +1471,7 @@
         errorLine2="                        ^">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="419"
+            line="414"
             column="25"/>
     </issue>
 
@@ -1933,7 +1570,7 @@
         errorLine2="  ^">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="260"
+            line="259"
             column="3"/>
     </issue>
 
@@ -1955,7 +1592,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/DateDividedAdapter.java"
-            line="543"
+            line="589"
             column="9"/>
     </issue>
 
@@ -1966,7 +1603,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/DateDividedAdapter.java"
-            line="564"
+            line="610"
             column="9"/>
     </issue>
 
@@ -1977,7 +1614,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/DateDividedAdapter.java"
-            line="599"
+            line="652"
             column="9"/>
     </issue>
 
@@ -1988,7 +1625,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/DateDividedAdapter.java"
-            line="626"
+            line="693"
             column="9"/>
     </issue>
 
@@ -1999,7 +1636,7 @@
         errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/DateDividedAdapter.java"
-            line="640"
+            line="707"
             column="35"/>
     </issue>
 
@@ -2010,7 +1647,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/DateDividedAdapter.java"
-            line="757"
+            line="827"
             column="9"/>
     </issue>
 
@@ -2021,7 +1658,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/firstrun/FirstRunActivity.java"
-            line="184"
+            line="289"
             column="13"/>
     </issue>
 
@@ -2032,7 +1669,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/history/HistoryAdapter.java"
-            line="148"
+            line="156"
             column="9"/>
     </issue>
 
@@ -2043,7 +1680,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="145"
+            line="144"
             column="13"/>
     </issue>
 
@@ -2054,7 +1691,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="202"
+            line="201"
             column="9"/>
     </issue>
 
@@ -2064,7 +1701,18 @@
         errorLine1="        notifyDataSetChanged();"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
+            file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/PickerAdapter.java"
+            line="184"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
+        errorLine1="        notifyDataSetChanged();"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/PickerAdapter.java"
             line="213"
             column="9"/>
     </issue>
@@ -2076,7 +1724,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/PickerAdapter.java"
-            line="176"
+            line="234"
             column="9"/>
     </issue>
 
@@ -2087,29 +1735,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/PickerAdapter.java"
-            line="204"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="        notifyDataSetChanged();"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/PickerAdapter.java"
-            line="222"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="        notifyDataSetChanged();"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/PickerAdapter.java"
-            line="363"
+            line="376"
             column="9"/>
     </issue>
 
@@ -2120,7 +1746,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/PickerCategoryView.java"
-            line="241"
+            line="250"
             column="9"/>
     </issue>
 
@@ -2131,7 +1757,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/photo_picker/android/java/src/org/chromium/components/browser_ui/photo_picker/PickerCategoryView.java"
-            line="275"
+            line="283"
             column="13"/>
     </issue>
 
@@ -2142,7 +1768,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/photo_picker/android/java/src/org/chromium/components/browser_ui/photo_picker/PickerCategoryView.java"
-            line="411"
+            line="421"
             column="13"/>
     </issue>
 
@@ -2153,7 +1779,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/photo_picker/android/java/src/org/chromium/components/browser_ui/photo_picker/PickerCategoryView.java"
-            line="473"
+            line="484"
             column="9"/>
     </issue>
 
@@ -2180,17 +1806,6 @@
     </issue>
 
     <issue
-        id="MergeRootFrame"
-        message="This `&lt;FrameLayout>` can be replaced with a `&lt;merge>` tag"
-        errorLine1="&lt;FrameLayout"
-        errorLine2="^">
-        <location
-            file="../../chrome/android/java/res/layout/signin_activity.xml"
-            line="7"
-            column="1"/>
-    </issue>
-
-    <issue
         id="UnusedResources"
         message="The resource `R.macro.suggestion_url_color` appears to be unused"
         errorLine1="    &lt;macro name=&quot;suggestion_url_color&quot;>@macro/default_text_color_link&lt;/macro>"
@@ -2208,7 +1823,7 @@
         errorLine2="                                               ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/DownloadDirectoryProvider.java"
-            line="160"
+            line="162"
             column="48"/>
     </issue>
 
@@ -2263,7 +1878,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/bottomsheet/android/internal/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheet.java"
-            line="270"
+            line="278"
             column="20"/>
     </issue>
 
@@ -2296,7 +1911,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java"
-            line="680"
+            line="672"
             column="20"/>
     </issue>
 
@@ -2307,7 +1922,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/embedder_support/android/java/src/org/chromium/components/embedder_support/view/ContentView.java"
-            line="404"
+            line="395"
             column="20"/>
     </issue>
 
@@ -2362,7 +1977,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/infobars/android/java/src/org/chromium/components/infobars/InfoBarMessageView.java"
-            line="32"
+            line="34"
             column="20"/>
     </issue>
 
@@ -2373,7 +1988,7 @@
         errorLine2="        ^">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="173"
+            line="172"
             column="9"/>
     </issue>
 
@@ -2384,7 +1999,7 @@
         errorLine2="                ^">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="174"
+            line="173"
             column="17"/>
     </issue>
 
@@ -2406,7 +2021,7 @@
         errorLine2="                ^">
         <location
             file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
-            line="307"
+            line="354"
             column="17"/>
     </issue>
 
@@ -2428,7 +2043,7 @@
         errorLine2="                                   ~~~~~~~">
         <location
             file="../../components/browser_ui/photo_picker/android/java/src/org/chromium/components/browser_ui/photo_picker/PickerVideoPlayer.java"
-            line="246"
+            line="251"
             column="36"/>
     </issue>
 
@@ -2439,7 +2054,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/paint_preview/player/android/java/src/org/chromium/components/paintpreview/player/frame/PlayerFrameView.java"
-            line="130"
+            line="131"
             column="20"/>
     </issue>
 
@@ -2450,7 +2065,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/scrim/ScrimView.java"
-            line="83"
+            line="81"
             column="20"/>
     </issue>
 
@@ -2461,7 +2076,7 @@
         errorLine2="                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectableListLayout.java"
-            line="317"
+            line="324"
             column="46"/>
     </issue>
 
@@ -2472,7 +2087,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarControlContainer.java"
-            line="678"
+            line="738"
             column="20"/>
     </issue>
 
@@ -2483,7 +2098,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="571"
+            line="562"
             column="20"/>
     </issue>
 
@@ -2494,7 +2109,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/bottomsheet/android/internal/java/src/org/chromium/components/browser_ui/bottomsheet/TouchRestrictingFrameLayout.java"
-            line="42"
+            line="46"
             column="20"/>
     </issue>
 
@@ -2505,7 +2120,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../ui/android/java/src/org/chromium/ui/DropdownPopupWindowImpl.java"
-            line="176"
+            line="178"
             column="13"/>
     </issue>
 
@@ -2516,7 +2131,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryView.java"
-            line="200"
+            line="206"
             column="9"/>
     </issue>
 
@@ -2527,7 +2142,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabSideSheetStrategy.java"
-            line="247"
+            line="240"
             column="13"/>
     </issue>
 

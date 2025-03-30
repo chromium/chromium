@@ -378,7 +378,7 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     test_params = args[0]
     assert test_params is not None
-    prefixed_test_func_name = '_RunTest_%s' % test_params.test_func
+    prefixed_test_func_name = f'_RunTest_{test_params.test_func}'
     getattr(self, prefixed_test_func_name)(test_path, test_params)
 
   @classmethod

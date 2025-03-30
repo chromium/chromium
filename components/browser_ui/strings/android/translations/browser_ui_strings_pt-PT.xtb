@@ -112,6 +112,7 @@
 <translation id="244264527810019436">As funcionalidades em alguns sites podem não funcionar no Modo de navegação anónima</translation>
 <translation id="2442870161001914531">Peça sempre o site para computador</translation>
 <translation id="2445311670906052406">Agora, o Chrome partilha os seus separadores recentes com o seu dispositivo. Irá vê-los na lista de apps e nos resultados da pesquisa do seu dispositivo. Pode desativar esta opção em qualquer altura nas definições do Chrome.</translation>
+<translation id="245322989586167203">Normalmente, os sites estabelecem ligação a portas de série para funcionalidades de transferência de dados como configurar a sua rede</translation>
 <translation id="2469312991797799607">Esta ação vai eliminar todos os dados e cookies de <ph name="ORIGIN" /> e de todos os sites associados a este</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">Impeça os sites de saberem quando está ativamente a utilizar este dispositivo.</translation>
 <translation id="4412992751769744546">Permitir cookies de terceiros</translation>
 <translation id="4419929467120297501">O Chrome impede que os sites usem cookies de terceiros para monitorizar o seu perfil enquanto navega. Aceda às definições para <ph name="BEGIN_LINK" />gerir o acesso a cookies de terceiros<ph name="END_LINK" />.</translation>
+<translation id="443121186588148776">Porta de série</translation>
 <translation id="4434045419905280838">Pop-ups e redirecionamentos</translation>
 <translation id="443552056913301231">Esta ação vai eliminar todos os dados locais, incluindo os cookies, e repor todas as autorizações de <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Desative o som de um site específico.</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">Perguntar primeiro</translation>
 <translation id="7423538860840206698">Leitura da área de transferência bloqueada</translation>
 <translation id="7425915948813553151">Tema escuro para sites</translation>
+<translation id="7478658909253570368">Não permitir que os sites estabeleçam ligação a portas de série</translation>
 <translation id="7488573225650545859">Ocultar Ver separadores na lista de apps</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Quando esta opção está ativada, os sites podem mostrar pedidos de início de sessão. Quando esta opção está desativada, os sites não podem mostrar pedidos de início de sessão.</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">Ligado a um dispositivo Bluetooth</translation>
 <translation id="7617547684249261169">Pode eliminar parte ou todo o seu histórico, cookies, dados de sites e muito mais</translation>
 <translation id="7649070708921625228">Ajuda</translation>
+<translation id="7655411746932645568">Os sites podem solicitar a ligação a portas de série</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7667547420449112975">O Maravilhoso Feiticeiro de Oz</translation>
 <translation id="7681597159868843240">Normalmente, os sites utilizam os sensores de movimentos do seu dispositivo para funcionalidades como realidade virtual ou monitorização de fitness</translation>

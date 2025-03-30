@@ -261,6 +261,8 @@ class AccountSelectionProperties {
                 new WritableObjectPropertyKey<>("account_chip");
         static final WritableBooleanPropertyKey SPINNER_ENABLED =
                 new WritableBooleanPropertyKey("spinner_enabled");
+        static final WritableBooleanPropertyKey DRAGBAR_HANDLE_VISIBLE =
+                new WritableBooleanPropertyKey("dragbar_handle_visible");
 
         static final PropertyKey[] ALL_KEYS = {
             CONTINUE_BUTTON,
@@ -270,7 +272,8 @@ class AccountSelectionProperties {
             ERROR_TEXT,
             ADD_ACCOUNT_BUTTON,
             ACCOUNT_CHIP,
-            SPINNER_ENABLED
+            SPINNER_ENABLED,
+            DRAGBAR_HANDLE_VISIBLE
         };
 
         private ItemProperties() {}

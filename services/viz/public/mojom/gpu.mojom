@@ -6,7 +6,6 @@ module viz.mojom;
 
 import "gpu/ipc/common/gpu_feature_info.mojom";
 import "gpu/ipc/common/gpu_info.mojom";
-import "gpu/ipc/common/client_gmb_interface.mojom";
 import "gpu/ipc/common/shared_image_capabilities.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 [EnableIf=is_chromeos]
@@ -18,11 +17,6 @@ import "ui/gfx/mojom/buffer_types.mojom";
 
 // API exposed to clients with lower level of trust, e.g. Renderers.
 interface Gpu {
-  // Creates a  direct channel between renderer and gpu process for GMB
-  // creation.
-  CreateClientGpuMemoryBufferFactory(
-      pending_receiver<gpu.mojom.ClientGmbInterface> receiver);
-
   // Tells the GPU service to create a new channel for communication with a
   // client. The GPU service responds with client ID, IPC handle and
   // GPUInfo.

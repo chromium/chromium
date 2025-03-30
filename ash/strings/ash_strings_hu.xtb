@@ -732,6 +732,7 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="346243998268439747">A nagyítási szint alaphelyzetbe állítása</translation>
 <translation id="3465223694362104965">Az utolsó bejelentkezése óta másik billentyűzetet csatlakoztattak ehhez az eszközhöz. Mielőtt elkezdené használni, győződjön meg róla, hogy biztonságos.</translation>
 <translation id="3465356146291925647">A rendszergazdája kezeli</translation>
+<translation id="3470502288861289375">Másolás...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, majd <ph name="KEY_TWO" /> vagy <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control+Shift+szóköz</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" /></translation>

@@ -343,6 +343,10 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
   void MaybeFocusHighlightableWindow(
       const std::vector<HighlightableView*>& current_views);
 
+  // Callback for when `ax_widget_` is closing. Clears `ax_virtual_views_` which
+  // has pointers to objects owned by `ax_widget_`.
+  void OnAXWidgetClosing();
+
   // The current focus group and focus index.
   FocusGroup current_focus_group_ = FocusGroup::kNone;
   size_t focus_index_ = 0u;
@@ -390,6 +394,8 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
   // case, `AdvanceFocus()` will navigate to items within that menu. Otherwise,
   // `AdvanceFocus()` will close the menu.
   bool menu_opened_with_keyboard_nav_ = false;
+
+  base::WeakPtrFactory<CaptureModeSessionFocusCycler> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

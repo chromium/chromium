@@ -608,6 +608,18 @@ const FeatureEntry::FeatureVariation kCCTAdaptiveButtonVariations[] = {
      std::size(kCCTAdaptiveButtonEnableBoth), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kAdaptiveButtonInTopToolbarPageSummaryDisableFallback[] = {
+        {"intent_fallback", "false"},
+};
+const FeatureEntry::FeatureVariation
+    kAdaptiveButtonInTopToolbarPageSummaryVariations[] = {
+        {"(Disable intent fallback)",
+         kAdaptiveButtonInTopToolbarPageSummaryDisableFallback,
+         std::size(kAdaptiveButtonInTopToolbarPageSummaryDisableFallback),
+         nullptr},
+};
+
 const FeatureEntry::FeatureParam kCCTAuthTabHttpsVerificationTimeout10000Ms[] =
     {{"verification_timeout_ms", "10000"}};
 const FeatureEntry::FeatureParam kCCTAuthTabHttpsVerificationTimeout1000Ms[] = {
@@ -1343,15 +1355,16 @@ const FeatureEntry::FeatureVariation kOmniboxSearchAggregatorVariations[] = {
     {"alternate", kOmniboxSearchAggregatorAlternateParams,
      std::size(kOmniboxSearchAggregatorAlternateParams), nullptr}};
 
-const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusOneDayWindow[] = {
-    {"OnFocusMostVisitedRecencyWindow", "0"},
-};
 const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusTwoDayWindow[] = {
     {"OnFocusMostVisitedRecencyWindow", "1"},
 };
 const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusThreeDayWindow[] =
     {
         {"OnFocusMostVisitedRecencyWindow", "2"},
+};
+const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusOneWeekWindow[] =
+    {
+        {"OnFocusMostVisitedRecencyWindow", "6"},
 };
 const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusTwoWeekWindow[] =
     {
@@ -1369,12 +1382,12 @@ const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax4[] = {
 };
 const FeatureEntry::FeatureVariation kOmniboxUrlSuggestionsOnFocusVariations[] =
     {
-        {"- One day window", kOmniboxUrlSuggestionsOnFocusOneDayWindow,
-         std::size(kOmniboxUrlSuggestionsOnFocusOneDayWindow), nullptr},
         {"- Two day window", kOmniboxUrlSuggestionsOnFocusTwoDayWindow,
          std::size(kOmniboxUrlSuggestionsOnFocusTwoDayWindow), nullptr},
         {"- Three day window", kOmniboxUrlSuggestionsOnFocusThreeDayWindow,
          std::size(kOmniboxUrlSuggestionsOnFocusThreeDayWindow), nullptr},
+        {"- One week window", kOmniboxUrlSuggestionsOnFocusOneWeekWindow,
+         std::size(kOmniboxUrlSuggestionsOnFocusOneWeekWindow), nullptr},
         {"- Two week window", kOmniboxUrlSuggestionsOnFocusTwoWeekWindow,
          std::size(kOmniboxUrlSuggestionsOnFocusTwoWeekWindow), nullptr},
         {"- Max 8 Suggestions (One week window)",
@@ -3850,6 +3863,30 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
+const FeatureEntry::FeatureParam kGroupSuggestionEnableRecentlyOpenedOnly[] = {
+    {"group_suggestion_enable_recently_opened", "true"},
+    {"group_suggestion_enable_switch_between", "false"},
+    {"group_suggestion_enable_similar_source", "false"},
+};
+const FeatureEntry::FeatureParam kGroupSuggestionEnableSwitchBetweenOnly[] = {
+    {"group_suggestion_enable_recently_opened", "false"},
+    {"group_suggestion_enable_switch_between", "true"},
+    {"group_suggestion_enable_similar_source", "false"},
+};
+const FeatureEntry::FeatureParam kGroupSuggestionEnableSimilarSourceOnly[] = {
+    {"group_suggestion_enable_recently_opened", "false"},
+    {"group_suggestion_enable_switch_between", "false"},
+    {"group_suggestion_enable_similar_source", "true"},
+};
+const FeatureEntry::FeatureVariation kGroupSuggestionVariations[] = {
+    {"Recently Opened Only", kGroupSuggestionEnableRecentlyOpenedOnly,
+     std::size(kGroupSuggestionEnableRecentlyOpenedOnly), nullptr},
+    {"Switch Between Only", kGroupSuggestionEnableSwitchBetweenOnly,
+     std::size(kGroupSuggestionEnableSwitchBetweenOnly), nullptr},
+    {"Similar Source Only", kGroupSuggestionEnableSimilarSourceOnly,
+     std::size(kGroupSuggestionEnableSimilarSourceOnly), nullptr},
+};
+
 #if BUILDFLAG(ENABLE_COMPOSE)
 // Vatiations of the Compose proactive nudge.
 const FeatureEntry::FeatureParam
@@ -5294,8 +5331,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAdaptiveButtonInTopToolbarPageSummaryName,
      flag_descriptions::kAdaptiveButtonInTopToolbarPageSummaryDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kAdaptiveButtonInTopToolbarPageSummary)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kAdaptiveButtonInTopToolbarPageSummary,
+         kAdaptiveButtonInTopToolbarPageSummaryVariations,
+         "AdaptiveButtonInTopToolbarPageSummary")},
     {"contextual-page-actions-share-model",
      flag_descriptions::kContextualPageActionsShareModelName,
      flag_descriptions::kContextualPageActionsShareModelDescription, kOsAndroid,
@@ -9896,8 +9935,10 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"group-promo-prototype", flag_descriptions::kGroupPromoPrototypeName,
      flag_descriptions::kGroupPromoPrototypeDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         visited_url_ranking::features::kGroupSuggestionService)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         visited_url_ranking::features::kGroupSuggestionService,
+         kGroupSuggestionVariations,
+         "GroupPromoPrototype")},
 
     {"use-dmsaa-for-tiles", flag_descriptions::kUseDMSAAForTilesName,
      flag_descriptions::kUseDMSAAForTilesDescription, kOsAll,
@@ -11502,6 +11543,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(contextual_cueing::kContextualCueing,
                                     kContextualCueingEnabledOptions,
                                     "ContextualCueingEnabledOptions")},
+    {"glic-zero-state-suggestions",
+     flag_descriptions::kGlicZeroStateSuggestionsName,
+     flag_descriptions::kGlicZeroStateSuggestionsDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(contextual_cueing::kGlicZeroStateSuggestions)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
     {"partitioned-popins", flag_descriptions::kPartitionedPopinsName,
@@ -11595,9 +11641,6 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(ENABLE_GLIC)
     {"glic", flag_descriptions::kGlicName, flag_descriptions::kGlicDescription,
      kOsMac | kOsWin | kOsLinux, FEATURE_VALUE_TYPE(features::kGlic)},
-    {"glic-detached", flag_descriptions::kGlicDetachedName,
-     flag_descriptions::kGlicDetachedDescription, kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(features::kGlicDetached)},
     {"glic-user-resize", flag_descriptions::kGlicUserResizeName,
      flag_descriptions::kGlicUserResizeDescription, kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(features::kGlicUserResize)},
@@ -12120,6 +12163,13 @@ const FeatureEntry kFeatureEntries[] = {
          fingerprinting_protection_interventions::features::kCanvasNoise,
          kEnableCanvasNoiseVariations,
          "EnableCanvasNoise")},
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"tab-capture-infobar-links",
+     flag_descriptions::kTabCaptureInfobarLinksName,
+     flag_descriptions::kTabCaptureInfobarLinksDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabCaptureInfobarLinks)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.
 

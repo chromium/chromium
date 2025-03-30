@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB ierīce (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Nesenā lejupielāžu vēsture</translation>
 <translation id="1004218526896219317">Piekļuve vietnēm</translation>
+<translation id="1005230401424685968">GGGG</translation>
 <translation id="1005274289863221750">Izmantot jūsu mikrofonu un videokameru</translation>
 <translation id="1005333234656240382">Vai iespējot ADB atkļūdošanu?</translation>
 <translation id="1005671386794704751">Sārta</translation>
@@ -1369,6 +1370,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="193565226207940518">Atbalsta rīks</translation>
 <translation id="1935995810530254458">Tik un tā kopēt</translation>
 <translation id="1936157145127842922">Rādīt mapē</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Lapa ir pievienota lasīšanas sarakstam.}zero{Lapas ir pievienotas lasīšanas sarakstam.}one{Lapas ir pievienotas lasīšanas sarakstam.}other{Lapas ir pievienotas lasīšanas sarakstam.}}</translation>
 <translation id="1936931585862840749">Izmantojiet skaitli, lai norādītu, cik eksemplāru jādrukā (1–<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Nevar importēt konteinera arhitektūras veidu <ph name="ARCHITECTURE_CONTAINER" /> ar <ph name="ARCHITECTURE_DEVICE" /> ierīci. Varat mēģināt atjaunot šo konteineru citā ierīcē vai arī piekļūt failiem šī konteinera attēla iekšpusē, atverot lietotni Faili.</translation>
 <translation id="1938351510777341717">Ārējais komandtaustiņš</translation>
@@ -2007,6 +2009,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2373666622366160481">Ietilpināt lapā</translation>
 <translation id="2375406435414127095">Savienošana ar tālruni</translation>
 <translation id="2376056713414548745">Lasīšana skaļi</translation>
+<translation id="2376122016044804363">Apstiprinājumi par kopēšanu starpliktuvē</translation>
 <translation id="2377667304966270281">Nopietnas kļūdas</translation>
 <translation id="237828693408258535">Vai tulkot šo lapu?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Iespējams, šis paplašinājums drīzumā vairs netiks atbalstīts}zero{Iespējams, šie paplašinājumi drīzumā vairs netiks atbalstīti}one{Iespējams, šie paplašinājumi drīzumā vairs netiks atbalstīti}other{Iespējams, šie paplašinājumi drīzumā vairs netiks atbalstīti}}</translation>
@@ -3159,6 +3162,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3192586965067888278">Detalizēti aprakstiet radušos problēmu. Atsauksme tiks nosūtīta uzņēmumam Google manuālai pārskatīšanai un var tikt izmantota Google produktu un pakalpojumu uzlabošanai vai izstrādei.</translation>
 <translation id="3192947282887913208">Audio faili</translation>
 <translation id="3193695589337931419">Sistēmas signālu utilītprogrammas</translation>
+<translation id="3194095220941877499">Tiek rādīts apstiprinājums, kad nokopējat saites, attēlus vai videoklipus.</translation>
 <translation id="3196912927885212665">Lai iestatītu Android tālrunī, Chromebook datorā ir jābūt ieslēgtam Bluetooth savienojumam.</translation>
 <translation id="3197453258332670132">Noklikšķiniet ar peles labo pogu vai nospiediet un turiet, lai parādītu ar atlasīto tekstu saistīto informāciju</translation>
 <translation id="3199127022143353223">Serveri</translation>
@@ -3173,7 +3177,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
         <ph name="BREAK" />
         <ph name="BREAK" />
         Jebkurā brīdī varat pārvaldīt šīs kartītes iestatījumus vai skatīt citas opcijas sadaļā Pielāgot pārlūkprogrammu Chrome.</translation>
-<translation id="3207437351138888228">Kad aizpildāt veidlapu, jūsu informācija un lapa, no kuras tā iegūta, tiek nosūtīta Google serveriem, lai ģenerētu ieteikumus.</translation>
 <translation id="3207960819495026254">Atzīmēts kā grāmatzīme</translation>
 <translation id="3208584281581115441">Pārbaudīt tūlīt</translation>
 <translation id="3208703785962634733">Neapstiprināts</translation>
@@ -3218,6 +3221,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3242289508736283383">Lai instalētu lietotni ar manifesta atribūtu kiosk_only, ir jāizmanto Chrome OS kioska režīms.</translation>
 <translation id="3243017971870859287">Lasīt ChromeOS Flex ierīces un komponentu sērijas numurus.</translation>
 <translation id="324366796737464147">Trokšņu mazināšana</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Turpināt ar izslēgtu skaņu</translation>
 <translation id="3247006341013237647">Vai kārtot cilnes?</translation>
 <translation id="3247649647204519958">Šeit varat skatīt un pārvaldīt pašlaik atvērtās vietnes paplašinājumu atļaujas.</translation>
@@ -6085,7 +6089,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5267572070504076962">Ieslēdziet funkciju Droša pārlūkošana, lai iegūtu aizsardzību pret bīstamām vietnēm.</translation>
 <translation id="5269977353971873915">Drukāšana neizdevās</translation>
 <translation id="5271578170655641944">Vai noņemt piekļuvi pakalpojumam Google disks?</translation>
-<translation id="5271782684896713035">Datus var skatīt pārskatītāji, lai uzlabotu šo funkciju.</translation>
 <translation id="5273806377963980154">Rediģēt vietnes URL</translation>
 <translation id="5275084684151588738">Lietotāja vārdnīcas</translation>
 <translation id="5275338516105640560">Saglabātas ciļņu grupas poga</translation>

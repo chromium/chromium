@@ -79,6 +79,48 @@ chromium-metrics-reviews@google.com.
   <variant name="Wifi" summary="Wifi"/>
 </variants>
 
+<variants name="ProgressiveScan">
+  <variant name="_33Percent_4MinMax"
+      summary="Progressive scan @ 33%, 4 frequency bins."/>
+  <variant name="_50Percent_4MinMax"
+      summary="Progressive scan @ 50%, 4 frequency bins."/>
+  <variant name="_50Percent_8MinMax"
+      summary="Progressive scan @ 50%, 8 frequency bins."/>
+  <variant name="_100Percent_1Min_4Max"
+      summary="Progressive scan @ 100%, minimum 1/maximum 4 frequencies."/>
+  <variant name="_100Percent_1MinSeen_A"
+      summary="Progressive scan @ all previously seen frequencies (A)."/>
+  <variant name="_100Percent_1MinSeen_B"
+      summary="Progressive scan @ all previously seen frequencies (B)."/>
+  <variant name="_100Percent_8MinMax"
+      summary="Progressive scan @ 100%, 8 frequency bins."/>
+  <variant name="_FullScan" summary="Using WPA_supplicant to scan."/>
+</variants>
+
+<variants name="RoamSecurityType">
+  <variant name=".EAP"
+      summary="Records roams in a network using 802.1X authentication without
+               Fast Transition"/>
+  <variant name=".FTEAP"
+      summary="Records roams in a network using 802.1X authentication with
+               Fast Transition"/>
+  <variant name=".FTPSK"
+      summary="Records roams in a network using PSK authentication with Fast
+               Transition"/>
+  <variant name=".PSK"
+      summary="Records roams in a network using PSK authentication without
+               Fast Transition"/>
+</variants>
+
+<variants name="ShillWiFiRememberedNetworkSecurityMode">
+  <variant name=".802_1x" summary="Network is secured with 802.1x"/>
+  <variant name=".none" summary="Network is not secured"/>
+  <variant name=".psk"
+      summary="Network is security with WPA or WPA-2 (aka RSN)"/>
+  <variant name=".wep"
+      summary="Network employs WEP (Wired Equivalent Privacy)"/>
+</variants>
+
 <variants name="SmdsType">
   <variant name="Android"/>
   <variant name="Gsma"/>
@@ -4268,8 +4310,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.WiFi.RememberedSystemNetworkCount" units="units"
-    expires_after="2025-12-31">
+<histogram
+    name="Network.Shill.WiFi.RememberedSystemNetworkCount{ShillWiFiRememberedNetworkSecurityMode}"
+    units="units" expires_after="2025-12-31">
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -4281,54 +4324,64 @@ chromium-metrics-reviews@google.com.
     It might be surprising to have a system configuration profile metric sampled
     when a user configuration profile is loaded. But this ensures that we have
     equal numbers of samples for system and user configuration profiles.
+    {ShillWiFiRememberedNetworkSecurityMode}
   </summary>
+  <token key="ShillWiFiRememberedNetworkSecurityMode"
+      variants="ShillWiFiRememberedNetworkSecurityMode">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Network.Shill.WiFi.RememberedUserNetworkCount" units="units"
-    expires_after="2025-12-31">
+<histogram
+    name="Network.Shill.WiFi.RememberedUserNetworkCount{ShillWiFiRememberedNetworkSecurityMode}"
+    units="units" expires_after="2025-12-31">
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric sampling the number of 802.11 wireless networks
     configured from a user configuration profile. This metric is sampled each
     time a user configuration profile is loaded, such as when a user logs in.
+    {ShillWiFiRememberedNetworkSecurityMode}
   </summary>
+  <token key="ShillWiFiRememberedNetworkSecurityMode"
+      variants="ShillWiFiRememberedNetworkSecurityMode">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram base="true" name="Network.Shill.WiFi.RoamComplete"
+<histogram name="Network.Shill.WiFi.RoamComplete{RoamSecurityType}"
     enum="WiFiRoamComplete" expires_after="2025-12-31">
-<!-- Name completed by histogram_suffixes name="RoamSecurityType" -->
-
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric recording roam successes or failures. This is
     recorded every time a client succeeds or fails to roam from one wireless
-    access point to another.
+    access point to another. {RoamSecurityType}
   </summary>
 </histogram>
 
-<histogram base="true" name="Network.Shill.WiFi.RoamTime" units="ms"
+<histogram name="Network.Shill.WiFi.RoamTime{RoamSecurityType}" units="ms"
     expires_after="2025-12-31">
-<!-- Name completed by histogram_suffixes name="RoamSecurityType" -->
-
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric recording roam time in milliseconds. This is
     recorded every time a successful roam from one wireless access point to
-    another occurs.
+    another occurs. {RoamSecurityType}
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.WiFi.ScanResult" enum="WiFiScanResult"
-    expires_after="2025-12-31">
+<histogram name="Network.Shill.WiFi.ScanResult{ProgressiveScan}"
+    enum="WiFiScanResult" expires_after="2025-12-31">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network usage metric describing, for a WiFi scan attempt, what scan
-    method is used and whether it ends in a connection.
+    method is used and whether it ends in a connection. {ProgressiveScan}
   </summary>
+  <token key="ProgressiveScan" variants="ProgressiveScan">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Network.Shill.WiFi.ScanTimeInEbusy" units="ms"
@@ -4373,16 +4426,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Network.Shill.WiFi.SessionLength" units="ms"
+<histogram name="Network.Shill.WiFi.SessionLength{RoamSecurityType}" units="ms"
     expires_after="2025-12-31">
-<!-- Name completed by histogram_suffixes name="RoamSecurityType" -->
-
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network metric recording session length in milliseconds. This is
     recorded every time an uninterrupted session with a wireless access point is
-    terminated.
+    terminated. {RoamSecurityType}
   </summary>
 </histogram>
 
@@ -4511,7 +4562,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.Wifi.TimeToConnect" units="ms"
+<histogram name="Network.Shill.Wifi.TimeToConnect{ProgressiveScan}" units="ms"
     expires_after="2025-12-31">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -4519,7 +4570,11 @@ chromium-metrics-reviews@google.com.
     ChromeOS network performance metric sampling the time to connect to a WiFi
     Basic Service Set (which consists of the access point and associated
     stations on a particular WiFi channel for a specific network).
+    {ProgressiveScan}
   </summary>
+  <token key="ProgressiveScan" variants="ProgressiveScan">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Network.Shill.Wifi.TimeToInitialize" units="ms"
@@ -4532,14 +4587,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.Wifi.TimeToJoin" units="ms"
+<histogram name="Network.Shill.Wifi.TimeToJoin{ProgressiveScan}" units="ms"
     expires_after="2025-12-31">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network performance metric sampling the time to join (associate
-    plus authenticate) an 802.11 wireless network.
+    plus authenticate) an 802.11 wireless network. {ProgressiveScan}
   </summary>
+  <token key="ProgressiveScan" variants="ProgressiveScan">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Network.Shill.Wifi.TimeToOnline" units="ms"
@@ -4576,26 +4634,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.Wifi.TimeToScan" units="ms"
-    expires_after="2025-12-31">
-  <owner>norvez@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    ChromeOS network performance metric sampling the time to scan WiFi until a
-    connection is found.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.Wifi.TimeToScanAndConnect" units="ms"
-    expires_after="2025-12-31">
+<histogram name="Network.Shill.Wifi.TimeToScanAndConnect{ProgressiveScan}"
+    units="ms" expires_after="2025-12-31">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network performance metric sampling the time between the beginning
     of a WiFi scan (if the scan includes both a progressive scan and a full
     scan, the TimeToScanAndConnect starts with the first scan of the series) and
-    the completion of a successful connection.
+    the completion of a successful connection. {ProgressiveScan}
   </summary>
+  <token key="ProgressiveScan" variants="ProgressiveScan">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Network.Shill.Wifi.TimeToScan{ProgressiveScan}" units="ms"
+    expires_after="2025-12-31">
+  <owner>norvez@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network performance metric sampling the time to scan WiFi until a
+    connection is found. {ProgressiveScan}
+  </summary>
+  <token key="ProgressiveScan" variants="ProgressiveScan">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Network.Shill.WiFi.TransmitBitrateMbps" units="Mbps"

@@ -76,7 +76,8 @@ bool GlicEnabling::IsEnabledAndConsentForProfile(Profile* profile) {
   if (!IsEnabledForProfile(profile)) {
     return false;
   }
-  return profile->GetPrefs()->GetBoolean(glic::prefs::kGlicCompletedFre);
+  return (profile->GetPrefs()->GetInteger(glic::prefs::kGlicCompletedFre) ==
+          static_cast<int>(prefs::FreStatus::kCompleted));
 }
 
 bool GlicEnabling::IsReadyForProfile(Profile* profile) {
@@ -108,7 +109,8 @@ bool GlicEnabling::ShouldShowSettingsPage(Profile* profile) {
     // permissions and has previously completed the FRE before the policy went
     // into effect.
     return IsNonEnterpriseEnabled(profile) &&
-           profile->GetPrefs()->GetBoolean(glic::prefs::kGlicCompletedFre);
+           profile->GetPrefs()->GetInteger(glic::prefs::kGlicCompletedFre) ==
+               static_cast<int>(prefs::FreStatus::kCompleted);
   }
 
   return IsEnabledAndConsentForProfile(profile);

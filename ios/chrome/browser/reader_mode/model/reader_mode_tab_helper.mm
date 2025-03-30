@@ -93,10 +93,49 @@ void RecordReaderModeDistillationResult(bool is_distillable,
   }
 }
 
+bool IsKnownAmpCache(web::WebFrame* web_frame) {
+  url::Origin origin = web_frame->GetSecurityOrigin();
+  // Source:
+  // https://github.com/ampproject/amphtml/blob/main/build-system/global-configs/caches.json
+  return origin.DomainIs("cdn.ampproject.org") ||
+         origin.DomainIs("bing-amp.com");
+}
+
+// Records whether any available web frames in the current web state use AMP.
+// This metric will help determine whether AMP special casing will affect
+// distillation success.
+void RecordReaderModeForAmpDistill(bool is_distillable_page,
+                                   web::WebState* web_state) {
+  if (!web_state) {
+    return;
+  }
+
+  web::WebFramesManager* page_world_manager =
+      web_state->GetPageWorldWebFramesManager();
+  auto web_frames = page_world_manager->GetAllWebFrames();
+  bool is_amp =
+      std::any_of(web_frames.begin(), web_frames.end(), IsKnownAmpCache);
+
+  ReaderModeAmpClassification classification;
+  if (is_amp) {
+    classification = is_distillable_page
+                         ? ReaderModeAmpClassification::kPopulatedDistillWithAmp
+                         : ReaderModeAmpClassification::kEmptyDistillWithAmp;
+  } else {
+    classification = is_distillable_page
+                         ? ReaderModeAmpClassification::kPopulatedDistillNoAmp
+                         : ReaderModeAmpClassification::kEmptyDistillNoAmp;
+  }
+
+  UMA_HISTOGRAM_ENUMERATION(kReaderModeAmpClassificationHistogram,
+                            classification);
+}
+
 }  // namespace
 
 ReaderModeTabHelper::ReaderModeTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
+  CHECK(web_state_);
   web_state_->AddObserver(this);
 }
 
@@ -242,6 +281,7 @@ void ReaderModeTabHelper::PageDistillationCompleted(
   RecordReaderModeDistillationResult(is_distillable_page, source_id);
   RecordReaderModeHeuristicClassification(is_distillable_page,
                                           heuristic_result);
+  RecordReaderModeForAmpDistill(is_distillable_page, web_state_);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(ReaderModeTabHelper)

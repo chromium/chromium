@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB uređaj (<ph name="VENDOR_ID" />: <ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Nedavna istorija preuzimanja</translation>
 <translation id="1004218526896219317">Pristup sajtu</translation>
+<translation id="1005230401424685968">GGGG</translation>
 <translation id="1005274289863221750">Korišćenje mikrofona i kamere</translation>
 <translation id="1005333234656240382">Želite da omogućite ADB otklanjanje grešaka?</translation>
 <translation id="1005671386794704751">Roze</translation>
@@ -1366,6 +1367,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="193565226207940518">Alatka za podršku</translation>
 <translation id="1935995810530254458">Ipak kopiraj</translation>
 <translation id="1936157145127842922">Prikaži u direktorijumu</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Stranica je dodata na listu za čitanje}one{Stranice su dodate na listu za čitanje}few{Stranice su dodate na listu za čitanje}other{Stranice su dodate na listu za čitanje}}</translation>
 <translation id="1936931585862840749">Navedite broj primeraka za štampanje (1–<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Ne možete da uvezete tip arhitekture kontejnera <ph name="ARCHITECTURE_CONTAINER" /> pomoću ovog uređaja, koji je <ph name="ARCHITECTURE_DEVICE" />. Možete da probate da vratite ovaj kontejner na drugi uređaj ili da otvorite aplikaciju Datoteke da biste pristupili datotekama u slici ovog kontejnera.</translation>
 <translation id="1938351510777341717">Spoljna komanda</translation>
@@ -3071,6 +3073,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3122883569442693641">Još detalja</translation>
 <translation id="3124111068741548686">KORISNIČKI nadimci</translation>
 <translation id="3124332159330678621">Prilagodite Chrome da biste prešli na nov izgled pregledača</translation>
+<translation id="3125816458150005808">Možete da je otkačite i otvorite iz menija</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Da biste izbegli probleme sa punjenjem i učinkom, koristite kompatibilni adapter proizvođača Dell ili USB adapter tipa C.</translation>
 <translation id="3127862849166875294">Promena veličine diska za Linux</translation>
@@ -3174,7 +3177,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
         <ph name="BREAK" />
         <ph name="BREAK" />
         U svakom trenutku možete da upravljate podešavanjima sa ove kartice ili da vidite još opcija u meniju Prilagodite Chrome.</translation>
-<translation id="3207437351138888228">Kada popunite obrazac, vaše informacije i stranica sa koje potiču se šalju Google-u da bi generisao predloge</translation>
 <translation id="3207960819495026254">Obeleženo</translation>
 <translation id="3208584281581115441">Proveri</translation>
 <translation id="3208703785962634733">Nepotvrđeno</translation>
@@ -3219,6 +3221,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3242289508736283383">Aplikacija sa atributom manifesta „kiosk_only“ mora da se instalira u režimu kioska u Chrome OS-u</translation>
 <translation id="3243017971870859287">Čitanje serijskih brojeva ChromeOS Flex uređaja i komponenti</translation>
 <translation id="324366796737464147">Umanjivanje šuma</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Ne uključuj zvuk</translation>
 <translation id="3247006341013237647">Želite da organizujete kartice?</translation>
 <translation id="3247649647204519958">Ovde možete da vidite dozvole za dodatak za sajt na kom se nalazite i da upravljate njima</translation>
@@ -5321,6 +5324,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4723140812774948886">Zameni sledećim</translation>
 <translation id="4724450788351008910">Pripadnost je izmenjena</translation>
 <translation id="4725511304875193254">Korgi</translation>
+<translation id="4725762702191453794">Pretraga kartica je sada zakačena na traku s alatkama</translation>
 <translation id="4726710355753484204">Koristite Ctrl + Alt + taster za povećavanje osvetljenosti da biste uvećali prikaz.
 Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili prikaz.</translation>
 <translation id="4726710629007580002">Bilo je upozorenja kada ste pokušavali da instalirate ovaj dodatak:</translation>
@@ -6086,7 +6090,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5267572070504076962">Uključite Bezbedno pregledanje da biste dobili zaštitu od opasnih sajtova</translation>
 <translation id="5269977353971873915">Štampanje nije uspelo</translation>
 <translation id="5271578170655641944">Želite da uklonite pristup Google disku?</translation>
-<translation id="5271782684896713035">Osobe koje pregledaju mogu da vide te podatke radi poboljšanja ove funkcije</translation>
 <translation id="5273806377963980154">Izmenite URL sajta</translation>
 <translation id="5275084684151588738">Korisnički rečnici</translation>
 <translation id="5275338516105640560">Dugme sačuvane grupe kartica</translation>

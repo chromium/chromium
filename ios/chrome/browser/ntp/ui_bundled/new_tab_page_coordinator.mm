@@ -439,6 +439,7 @@
   self.feedMetricsRecorder.NTPActionsDelegate = nil;
   self.feedMetricsRecorder = nil;
 
+  [self.feedExpandedPref stop];
   [self.feedExpandedPref setObserver:nil];
   self.feedExpandedPref = nil;
 

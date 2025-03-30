@@ -260,7 +260,7 @@ OmniboxUrlSuggestionsOnFocus::OmniboxUrlSuggestionsOnFocus() {
                                "ShowRecentlyClosedTabs", false)
           .Get();
   max_suggestions = base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
-                                               "OnFocusMaxSuggestions", 6)
+                                               "OnFocusMaxSuggestions", 0)
                         .Get();
   max_search_suggestions =
       base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,

@@ -11395,6 +11395,36 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="HistoryApi">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <summary>
+    Records usage of the window.history API, capturing details about the
+    operation type, user activation, and ad-related information. Recorded when
+    window.history API is used.
+  </summary>
+  <metric name="FromAd" enum="Boolean">
+    <summary>
+      True if the history API is invoked when an ad script is in the JavaScript
+      stack, or if the invoking context is an ad iframe, as determined by
+      Chrome's ad tagging mechanisms.
+      (https://chromium.googlesource.com/chromium/src/+/lkgr/docs/ad_tagging.md)
+    </summary>
+  </metric>
+  <metric name="HasStickyUserActivation" enum="Boolean">
+    <summary>
+      Whether the invoking context has seen user activation.
+      (https://mustaqahmed.github.io/user-activation-v2)
+    </summary>
+  </metric>
+  <metric name="IsHistoryModifyingOperation" enum="Boolean">
+    <summary>
+      Whether the operation modifies the history state (i.e., back(), forward(),
+      go(), pushState(), replaceState()).
+    </summary>
+  </metric>
+</event>
+
 <event name="HistoryClusters" singular="True">
   <owner>chrome-memories@google.com</owner>
   <owner>mcrouse@chromium.org</owner>
@@ -16144,11 +16174,11 @@ be describing additional metrics about the same event.
   <summary>
     Recorded when the user uses the omnibox to search or navigate.
   </summary>
-  <metric name="ResultType" enum="ClientSummarizedResultType">
+  <metric name="PageClassification" enum="OmniboxPageClassification">
     <summary>
-      A value that indicates if the user searched or navigated from the omnibox.
-      Used to understand which URLs most commonly lead to searches or
-      navigations from the omnibox.
+      The type of page the user was on when they used the omnibox. Corresponds
+      to the PageClassification enum in
+      //third_party/metrics_proto/omnibox_event.proto
     </summary>
     <aggregation>
       <history>
@@ -16157,6 +16187,70 @@ be describing additional metrics about the same event.
         </statistics>
       </history>
     </aggregation>
+  </metric>
+  <metric name="ProviderType" enum="OmniboxProviderType">
+    <summary>
+      The provider type the selected suggestion came from. Corresponds to the
+      ProviderType enum in //third_party/metrics_proto/omnibox_event.proto.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ResultType" enum="OmniboxResultType">
+    <summary>
+      The type of the suggestion the user selected in the omnibox. Corresponds
+      to the ResultType enum in //third_party/metrics_proto/omnibox_event.proto.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ResultTypeGroup" enum="ClientSummarizedResultType">
+    <summary>
+      A value that indicates if the user searched or navigated from the omnibox.
+      Corresponds to the ClientSummarizedResultType enum in
+      //components/omnibox/browser/omnibox_metrics_provider.h.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SelectedIndex">
+    <summary>
+      The index of the suggestion that the user selected in the omnibox popup.
+    </summary>
+  </metric>
+  <metric name="TimeSinceLastFocusMs">
+    <summary>
+      The amount of time, in milliseconds, since the user last focused the
+      omnibox until they searched or navigated from the omnibox. Bucketed into
+      exponential intervals with a standard bucket_spacing of 2.0.
+    </summary>
+  </metric>
+  <metric name="TypedLength">
+    <summary>
+      The number of characters the user typed, excluding autocompletion.
+    </summary>
+  </metric>
+  <metric name="TypingDurationMs">
+    <summary>
+      The amount of time, in milliseconds, since the user first began modifying
+      the text in the omnibox until they searched or navigated from the omnibox.
+      Bucketed into exponential intervals with a standard bucket_spacing of 2.0.
+    </summary>
   </metric>
 </event>
 
@@ -16370,6 +16464,23 @@ be describing additional metrics about the same event.
       A bitmask of the optimization types that were registered at the start of
       the page load where each flipped bit corresponds to its int value in
       |optimization_guide::proto::OptimizationTarget|.
+    </summary>
+  </metric>
+</event>
+
+<event name="OptimizationGuide.AIPageContentAgent">
+  <owner>chrome-intelligence-core@google.com</owner>
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>abigailklein@chromium.org</owner>
+  <owner>gklassen@chromium.org</owner>
+  <summary>
+    Metrics related to page content extraction. Only recorded when depth limit
+    is exceeded.
+  </summary>
+  <metric name="NodeDepthLimitExceeded">
+    <summary>
+      Indicates that the node depth limit was exceeded while building
+      AnnotatedPageContent.
     </summary>
   </metric>
 </event>
@@ -17534,15 +17645,6 @@ be describing additional metrics about the same event.
       to record PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.
     </summary>
   </metric>
-</event>
-
-<event name="PageLoad.PervasivePayloadsEnabled" singular="True">
-  <owner>nidhijaju@chromium.org</owner>
-  <owner>ricea@chromium.org</owner>
-  <summary>
-    Recorded for page loads where the pervasive payloads list is inputted to
-    Chrome.
-  </summary>
 </event>
 
 <event name="PageLoad.ServiceWorkerControlled" singular="True">

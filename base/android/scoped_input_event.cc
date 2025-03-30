@@ -40,6 +40,38 @@ ScopedInputEvent& ScopedInputEvent::operator=(ScopedInputEvent&& other) {
   return *this;
 }
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+void ScopedInputEvent::WriteIntoTrace(
+    perfetto::TracedProto<perfetto::protos::pbzero::EventForwarder> forwarder)
+    const {
+  if (!a_input_event_) {
+    return;
+  }
+
+  const int history_size =
+      static_cast<const int>(AMotionEvent_getHistorySize(a_input_event_));
+  forwarder->set_history_size(history_size);
+
+  forwarder->set_latest_time_ns(AMotionEvent_getEventTime(a_input_event_));
+  if (history_size > 0) {
+    forwarder->set_oldest_time_ns(AMotionEvent_getHistoricalEventTime(
+        a_input_event_, /* history_index= */ 0));
+  }
+  forwarder->set_down_time_ns(AMotionEvent_getDownTime(a_input_event_));
+
+  forwarder->set_x_pixel(
+      AMotionEvent_getX(a_input_event_, /* pointer_index= */ 0));
+  forwarder->set_y_pixel(
+      AMotionEvent_getY(a_input_event_, /* pointer_index= */ 0));
+
+  const int action =
+      AMotionEvent_getAction(a_input_event_) & AMOTION_EVENT_ACTION_MASK;
+  forwarder->set_action(
+      static_cast<perfetto::protos::pbzero::EventForwarder::AMotionEventAction>(
+          action));
+}
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
 void ScopedInputEvent::DestroyIfNeeded() {
   if (a_input_event_ == nullptr) {
     return;

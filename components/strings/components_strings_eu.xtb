@@ -441,7 +441,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1734878702283171397">Jarri sistemaren administratzailearekin harremanetan.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" /> datan iraungiko da</translation>
 <translation id="1736420071277903564">Ordenagailua</translation>
-<translation id="1739422091279046802">gora/behera egitea eta zooma erabiltzea</translation>
 <translation id="1741613555002899862">Zehaztu egin behar da eta kateak baliozkoa izan behar du DnsOverHttpsMode gidalerroan <ph name="SECURE_DNS_MODE_SECURE" /> ezarrita dagoenean.</translation>
 <translation id="1743393865165844832">Maindireak eta oheko arropa</translation>
 <translation id="1743892871127720056">Konparazio-taularen izena, editatu testua</translation>
@@ -1565,6 +1564,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3715016660240337709">{0,plural, =1{Fitxategia ezin da kargatu}other{<ph name="FILE_COUNT" /> fitxategi ezin dira kargatu}}</translation>
 <translation id="3715597595485130451">Konektatu wifi-sarera</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Proxya, suebakia eta DNS konfigurazioa egiaztatu<ph name="END_LINK" />.</translation>
+<translation id="3723316892512143176">IBANa</translation>
 <translation id="3723663469265383848">Eguneratu bitartean, ezingo duzu erabili gailua 10 minutuz, gehienez.</translation>
 <translation id="372429172604983730">Hona hemen errore hau sor dezaketen software motak: antibirusak, suebakiak, web-iragazkiak edo proxy-softwarea.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, "Sartu", Aurkezpenak zerbitzuan Google-ko aurkezpen bat bizkor sortzeko</translation>
@@ -2491,6 +2491,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5379618281582508161">Pasahitza zure gailu guztietan lortzeko, egiaztatu zeu zarela</translation>
 <translation id="5380953781541843508">gorantz ordenatuta</translation>
 <translation id="5381318171304904246">Aurrera egiten duzunean, bankuaren webgunera joango zara. Egiaztatu ondoren, hona itzuliko zara automatikoki, erosketa amaitzeko.</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> kideak "<ph name="WEBSITE_TITLE" />" fitxa eguneratu du</translation>
 <translation id="5383478552402031184">Zoruak</translation>
 <translation id="5385857628869214740">Umorea</translation>
 <translation id="5385966243497224160">HTTPS ez darabilten URLak ezin dira aurreikusi</translation>
@@ -2876,6 +2877,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6059925163896151826">USB bidezko ailuak</translation>
 <translation id="6060009363608157444">DnsOverHttps moduak ez du balio.</translation>
 <translation id="6061154937977953833">Borroka</translation>
+<translation id="6062405040252994646">Tresna</translation>
 <translation id="6062937464449575061">Utzi prezioaren jarraipena egiteari</translation>
 <translation id="6063415549109819824">Etxebizitzen finantzaketa</translation>
 <translation id="6070432475334343308">Fitxategi bat edo gehiago ez dira kargatu <ph name="CLOUD_PROVIDER" /> zerbitzuko <ph name="FOLDER_NAME" /> karpetara</translation>
@@ -3921,6 +3923,7 @@ Xehetasun gehiago:
 <translation id="787226752901403048">Hasi saioa Chrome-n fitxa taldeak partekatzeko eta haietan sartzeko, eta ideien inguruan elkarlanean jarduteko</translation>
 <translation id="7877007680666472091">eduki babestuaren IDak</translation>
 <translation id="7878562273885520351">Baliteke pasahitza arriskuan egotea</translation>
+<translation id="7881044256965445977">Sare lokaleko gailuak bilatu eta haietara konektatu.</translation>
 <translation id="7882421473871500483">Marroia</translation>
 <translation id="7886897188117641322">Hautatu zein gai-kategoria zabal erabil daitezkeen iragarkiak pertsonalizatzeko</translation>
 <translation id="7887683347370398519">Begiratu CVCa eta saiatu berriro</translation>
@@ -4677,6 +4680,7 @@ Xehetasun gehiago:
 <translation id="94613679163347541"><ph name="CATEGORY" /> konparatu nahi dituzu?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, "Sartu", Google Sites-en webgune bat bizkor sortzeko</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Gaur mugatuko ditu cookieak berriro Chrome-k}=1{Bihar mugatuko ditu cookieak berriro Chrome-k}other{# egun barru mugatuko ditu cookieak berriro Chrome-k}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> kide sartu dira "<ph name="GROUP_NAME" />" fitxa taldean</translation>
 <translation id="949314938206378263">Webgune hau bisitatzeko baimena eskatu duzu. Zure gurasoak Family Link-en erantzun dezake.</translation>
 <translation id="950736567201356821">Hiru zulo goian</translation>
 <translation id="950926967802086924">Sarbide-gakoa • Google Password Manager</translation>

@@ -440,7 +440,6 @@
 <translation id="1734878702283171397">ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" /> ರಂದು ಅವಧಿ ಮುಕ್ತಾಯಗೊಳ್ಳುತ್ತದೆ</translation>
 <translation id="1736420071277903564">ಕಂಪ್ಯೂಟರ್</translation>
-<translation id="1739422091279046802">ಸ್ಕ್ರಾಲ್ ಮಾಡುವುದು ಮತ್ತು ಝೂಮ್ ಮಾಡುವುದು</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode ಕಾರ್ಯನೀತಿಯು <ph name="SECURE_DNS_MODE_SECURE" /> ಆಗಿದ್ದಾಗ, ಮಾನ್ಯವಾದ ಸ್ಟ್ರಿಂಗ್ ಅನ್ನು ನಿರ್ದಿಷ್ಟಪಡಿಸಬೇಕು.</translation>
 <translation id="1743393865165844832">ಹಾಸಿಗೆ ತಯಾರಿಕೆ ಮತ್ತು ಹಾಸಿಗೆ ಲಿನೆನ್‌ಗಳು</translation>
 <translation id="1743892871127720056">ಟೇಬಲ್ ಶೀರ್ಷಿಕೆಯನ್ನು ಹೋಲಿಕೆ ಮಾಡಿ, ಪಠ್ಯವನ್ನು ಎಡಿಟ್‌ ಮಾಡಿ</translation>
@@ -2879,6 +2878,7 @@
 <translation id="6059925163896151826">USB ಸಾಧನಗಳು</translation>
 <translation id="6060009363608157444">ಅಮಾನ್ಯ DnsOverHttps ಮೋಡ್.</translation>
 <translation id="6061154937977953833">ಕುಸ್ತಿ</translation>
+<translation id="6062405040252994646">ಟೂಲ್‌</translation>
 <translation id="6062937464449575061">ಬೆಲೆ ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="6063415549109819824">ಗೃಹ ಸಾಲ</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" /> ನಲ್ಲಿನ <ph name="FOLDER_NAME" /> ಗೆ ಒಂದು ಅಥವಾ ಹೆಚ್ಚಿನ ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>

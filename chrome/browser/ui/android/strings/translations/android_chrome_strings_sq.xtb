@@ -325,7 +325,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2527209463677295330">Duke përfshirë më shumë nga teksti i një faqeje, mund të shikosh rezultate më të mira</translation>
 <translation id="2527779675047087889">Fshih përmbajtjet e kujtesës së fragmenteve</translation>
 <translation id="2532336938189706096">Pamja e uebit</translation>
-<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> artikuj të fshirë</translation>
 <translation id="253498598929009420">Sajti do të mund të shikojë përmbajtjet në ekranin tënd</translation>
 <translation id="2536728043171574184">Po shikon një kopje offline të kësaj faqeje</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, skedë</translation>
@@ -365,7 +364,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2677748264148917807">Largohu</translation>
 <translation id="2687009626279857299">Ndaloi së funksionuari në këtë pajisje</translation>
 <translation id="2702516483241149200">E re: Ndaj një lidhje që të drejton te ky tekst</translation>
-<translation id="2705073298859543115">Krijo përmbledhjen</translation>
 <translation id="2708051474374549906">Mbrojtje proaktive dhe në kohë reale nga sajtet, shkarkimet dhe shtesat e rrezikshme që bazohet në të dhënat e tua të shfletimit që dërgohen te Google</translation>
 <translation id="2708226184420201102">Hape në shfletuesin <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">E re</translation>
@@ -677,6 +675,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4195643157523330669">Hape në një skedë të re</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 skedë në këtë pajisje}other{# skeda në këtë pajisje}}</translation>
 <translation id="4198423547019359126">Nuk ka vendndodhje shkarkimi</translation>
+<translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • E ke përdorur në këtë sajt</translation>
 <translation id="4214315110991671325">Nëse lejon kukit, Chrome mund t'i përdorë ato për ngarkimin paraprak.</translation>
 <translation id="4216511743389425832">Dëgjoje këtë faqe</translation>
 <translation id="4225725533026049334">Po ndjek</translation>
@@ -1198,7 +1197,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6564820424018738527">Pajisja jote Android mund të përfshijë një cilësim të ngjashëm. Nëse matja e reklamave është aktivizuar në Chrome dhe në pajisjen tënde Android, një kompani mund të matë efektivitetin e një reklame nëpër sajtet e uebit që viziton dhe aplikacionet që përdor ti.</translation>
 <translation id="6565959834589222080">Wi-Fi përdoret kur ofrohet</translation>
 <translation id="6569373978618239158">Tani do të shikosh histori nga <ph name="SITE_NAME" /> kur të hapësh një skedë të re. Sajtet që ndjek ruhen në llogarinë tënde të Google. Mund t'i menaxhosh te cilësimet e "Zbulo".</translation>
-<translation id="6570116402456758630">Përmbledhja e faqes</translation>
 <translation id="657177046675873214">Për të marrë faqeshënuesit e tu në të gjitha pajisjet e tua, aktivizo "Faqeshënuesit" te cilësimet</translation>
 <translation id="6573096386450695060">Lejo gjithmonë</translation>
 <translation id="6573431926118603307">Skedat që ke hapur në Chrome në pajisjet e tjera do të shfaqen këtu.</translation>

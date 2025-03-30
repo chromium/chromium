@@ -27,8 +27,7 @@ void EchoAISummarizer::Summarize(
         pending_responder) {
   mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
       std::move(pending_responder));
-  responder->OnStreaming("Model not available in Chromium\n" + input,
-                         blink::mojom::ModelStreamingResponderAction::kReplace);
+  responder->OnStreaming("Model not available in Chromium\n" + input);
   responder->OnCompletion(/*context_info=*/nullptr);
 }
 

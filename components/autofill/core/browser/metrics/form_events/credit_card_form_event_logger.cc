@@ -56,10 +56,6 @@ void CreditCardFormEventLogger::OnDidFetchSuggestion(
       with_card_info_retrieval_enrolled;
   is_virtual_card_standalone_cvc_field_ = is_virtual_card_standalone_cvc_field;
   metadata_logging_context_ = std::move(metadata_logging_context);
-  VLOG(3) << "Number of instruments with card benefits in "
-             "OnDidFetchSuggestion: "
-          << metadata_logging_context_
-                 .instrument_ids_to_issuer_ids_with_benefits_available.size();
   suggestions_.clear();
   for (const auto& suggestion : suggestions)
     suggestions_.emplace_back(suggestion);
@@ -490,10 +486,6 @@ void CreditCardFormEventLogger::OnDidUndoAutofill() {
 void CreditCardFormEventLogger::OnMetadataLoggingContextReceived(
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context) {
   metadata_logging_context_ = std::move(metadata_logging_context);
-  VLOG(3) << "Number of instruments with card benefits in "
-             "OnMetadataLoggingContextReceived: "
-          << metadata_logging_context_
-                 .instrument_ids_to_issuer_ids_with_benefits_available.size();
 }
 
 void CreditCardFormEventLogger::Log(FormEvent event,

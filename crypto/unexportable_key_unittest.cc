@@ -9,7 +9,7 @@
 
 #include "base/logging.h"
 #include "base/time/time.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -20,13 +20,13 @@ namespace {
 
 enum class Provider {
   kTPM,
-  kMock,
+  kFake,
   kMicrosoftSoftware,
 };
 
 const Provider kAllProviders[] = {
     Provider::kTPM,
-    Provider::kMock,
+    Provider::kFake,
     Provider::kMicrosoftSoftware,
 };
 
@@ -43,8 +43,8 @@ std::string ToString(Provider provider) {
   switch (provider) {
     case Provider::kTPM:
       return "TPM";
-    case Provider::kMock:
-      return "Mock";
+    case Provider::kFake:
+      return "Fake";
     case Provider::kMicrosoftSoftware:
       return "Microsoft Software";
   }
@@ -84,9 +84,9 @@ TEST_P(UnexportableKeySigningTest, RoundTrip) {
   SCOPED_TRACE(static_cast<int>(algo));
   SCOPED_TRACE(ToString(provider_type));
 
-  std::optional<crypto::ScopedMockUnexportableKeyProvider> mock;
-  if (provider_type == Provider::kMock) {
-    mock.emplace();
+  std::optional<crypto::ScopedFakeUnexportableKeyProvider> fake;
+  if (provider_type == Provider::kFake) {
+    fake.emplace();
   }
 
   const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {algo};

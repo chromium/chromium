@@ -274,6 +274,12 @@
         <structure type="chrome_scaled_image" name="IDR_SAVED_PASSWORDS_SAFE_STATE_DARK" file="common/passwords_safe_state_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_ADDRESS" file="common/save_address.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_ADDRESS_DARK" file="common/save_address_dark.png" />
+        <structure type="chrome_scaled_image" name="IDR_SAVE_PASSPORT" file="common/save_passport.png" />
+        <structure type="chrome_scaled_image" name="IDR_SAVE_PASSPORT_DARK" file="common/save_passport_dark.png" />
+        <structure type="chrome_scaled_image" name="IDR_SAVE_DRIVERS_LICENSE" file="common/save_drivers_license.png" />
+        <structure type="chrome_scaled_image" name="IDR_SAVE_DRIVERS_LICENSE_DARK" file="common/save_drivers_license_dark.png" />
+        <structure type="chrome_scaled_image" name="IDR_SAVE_VEHICLE" file="common/save_vehicle.png" />
+        <structure type="chrome_scaled_image" name="IDR_SAVE_VEHICLE_DARK" file="common/save_vehicle_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD" file="common/save_password.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD_DARK" file="common/save_password_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CARD" file="common/save_card.png" />

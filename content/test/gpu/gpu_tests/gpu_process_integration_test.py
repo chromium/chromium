@@ -180,8 +180,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if failure:
       print('Test failed. Printing page contents:')
       print(tab.EvaluateJavaScript('document.body.innerHTML'))
-      self.fail('%s %s workarounds: %s' % (workaround_name, error_message,
-                                           gpu_driver_bug_workarounds))
+      self.fail(f'{workaround_name} {error_message} workarounds: '
+                f'{gpu_driver_bug_workarounds}')
 
   def _ValidateDriverBugWorkarounds(self, expected_workaround: str | None,
                                     unexpected_workaround: str | None) -> None:
@@ -224,9 +224,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     diff = set(browser_list).symmetric_difference(set(gpu_list))
     if len(diff) > 0:
-      self.fail('Browser and GPU process list of driver bug'
-                'workarounds are not equal: %s != %s, diff: %s' %
-                (browser_list, gpu_list, list(diff)))
+      self.fail(f'Browser and GPU process list of driver bug workarounds are '
+                f'not equal: {browser_list} != {gpu_list}, diff: {list(diff)}')
 
     basic_infos = _GetBrowserBridgeProperty(tab, 'gpuInfo.basicInfo')
     disabled_gl_extensions = None
@@ -307,7 +306,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       else:
         pass
     if not result:
-      self.fail('WebGL readback setup failed: %s' % feature_status_list)
+      self.fail(f'WebGL readback setup failed: {feature_status_list}')
 
   def _GpuProcess_feature_status_under_swiftshader(self,
                                                    test_path: str) -> None:
@@ -321,9 +320,9 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         self.tab, 'gpuInfo.featureStatus.featureStatus')
     for name, status in feature_status_list.items():
       if name == 'webgl' and status != 'unavailable_software':
-        self.fail('WebGL status for SwiftShader failed: %s' % status)
+        self.fail(f'WebGL status for SwiftShader failed: {status}')
       elif name == '2d_canvas' and status != 'unavailable_software':
-        self.fail('2D Canvas status for SwiftShader failed: %s' % status)
+        self.fail(f'2D Canvas status for SwiftShader failed: {status}')
 
     # On Linux we relaunch GPU process to fallback to SwiftShader, therefore
     # featureStatusForHardwareGpu isn't available. So finish early if we're on
@@ -335,9 +334,9 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         self.tab, 'gpuInfo.featureStatusForHardwareGpu.featureStatus')
     for name, status in feature_status_for_hardware_gpu_list.items():
       if name == 'webgl' and status != 'unavailable_off':
-        self.fail('WebGL status for hardware GPU failed: %s' % status)
+        self.fail(f'WebGL status for hardware GPU failed: {status}')
       elif name == '2d_canvas' and status != 'enabled':
-        self.fail('2D Canvas status for hardware GPU failed: %s' % status)
+        self.fail(f'2D Canvas status for hardware GPU failed: {status}')
 
   def _GpuProcess_feature_status_under_warp(self, test_path: str) -> None:
     if not host_information.IsWindows():
@@ -353,17 +352,17 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         self.tab, 'gpuInfo.featureStatus.featureStatus')
     for name, status in feature_status_list.items():
       if name == 'webgl' and status != 'unavailable_software':
-        self.fail('WebGL status for WARP failed: %s' % status)
+        self.fail(f'WebGL status for WARP failed: {status}')
       elif name == '2d_canvas' and status != 'unavailable_software':
-        self.fail('2D Canvas status for WARP failed: %s' % status)
+        self.fail(f'2D Canvas status for WARP failed: {status}')
 
     feature_status_for_hardware_gpu_list = _GetBrowserBridgeProperty(
         self.tab, 'gpuInfo.featureStatusForHardwareGpu.featureStatus')
     for name, status in feature_status_for_hardware_gpu_list.items():
       if name == 'webgl' and status != 'unavailable_off':
-        self.fail('WebGL status for hardware GPU failed: %s' % status)
+        self.fail(f'WebGL status for hardware GPU failed: {status}')
       elif name == '2d_canvas' and status != 'enabled':
-        self.fail('2D Canvas status for hardware GPU failed: %s' % status)
+        self.fail(f'2D Canvas status for hardware GPU failed: {status}')
 
   def _GpuProcess_one_extra_workaround(self, test_path: str) -> None:
     # Start this test by launching the browser with no command line
@@ -394,15 +393,15 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if len(diff) > 0:
       print('Test failed. Printing page contents:')
       print(tab.EvaluateJavaScript('document.body.innerHTML'))
-      self.fail('GPU process and expected list of driver bug '
-                'workarounds are not equal: %s != %s, diff: %s' %
-                (recorded_workarounds, new_workarounds, list(diff)))
+      self.fail(f'GPU process and expected list of driver bug workarounds are '
+                f'not equal: {recorded_workarounds} != {new_workarounds}, '
+                f'diff: {list(diff)}')
     if recorded_disabled_gl_extensions != new_disabled_gl_extensions:
       print('Test failed. Printing page contents:')
       print(tab.EvaluateJavaScript('document.body.innerHTML'))
-      self.fail('The expected disabled gl extensions are '
-                'incorrect: %s != %s:' % (recorded_disabled_gl_extensions,
-                                          new_disabled_gl_extensions))
+      self.fail(f'The expected disabled gl extensions are incorrect: '
+                f'{recorded_disabled_gl_extensions} != '
+                f'{new_disabled_gl_extensions}:')
 
   def _GpuProcess_disable_gpu(self, test_path: str) -> None:
     # This test loads functional_webgl.html so that there is a
@@ -442,8 +441,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         'visibility_callback_call_count']
     # initial callback count should be 1 since the app became visible
     if callback_count != 1:
-      self.fail('Visibility callback call count expected 1, got %d' %
-                callback_count)
+      self.fail(
+          f'Visibility callback call count expected 1, got {callback_count}')
 
     self.browser.platform.android_action_runner.TurnScreenOff()
     self.tab.WaitForJavaScriptCondition('document.visibilityState == "hidden"',
@@ -452,8 +451,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     callback_count = system_info.gpu.aux_attributes[
         'visibility_callback_call_count']
     if callback_count != 2:
-      self.fail('Visibility callback call count expected 2, got %d' %
-                callback_count)
+      self.fail(
+          f'Visibility callback call count expected 2, got {callback_count}')
 
     self.browser.platform.android_action_runner.TurnScreenOn()
     self.tab.WaitForJavaScriptCondition('document.visibilityState == "visible"',
@@ -462,8 +461,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     callback_count = system_info.gpu.aux_attributes[
         'visibility_callback_call_count']
     if callback_count != 3:
-      self.fail('Visibility callback call count expected 3, got %d' %
-                callback_count)
+      self.fail(
+          f'Visibility callback call count expected 3, got {callback_count}')
 
   def _GpuProcess_disable_gpu_and_swiftshader(self, test_path: str) -> None:
     # Disable SwiftShader, GPU process should launch for display compositing.
@@ -557,7 +556,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       tab = self.tab
       for ext in ext_list:
         if tab.EvaluateJavaScript('!gl_context.getExtension("' + ext + '")'):
-          self.fail('Expected %s support' % ext)
+          self.fail(f'Expected {ext} support')
 
   def _GpuProcess_warp_for_webgl(self, test_path: str) -> None:
     if not host_information.IsWindows():
@@ -620,7 +619,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       tab = self.tab
       for ext in ext_list:
         if tab.EvaluateJavaScript('!gl_context.getExtension("' + ext + '")'):
-          self.fail('Expected %s support' % ext)
+          self.fail(f'Expected {ext} support')
 
   def _GpuProcess_no_swiftshader_for_webgl_without_flags(
       self, test_path: str) -> None:

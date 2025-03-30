@@ -109,6 +109,24 @@ bool URLIsAcceptable(const GURL& url) {
          !url.has_password();
 }
 
+bool BaseURLIsAcceptable(const GURL& base_url) {
+  return URLIsAcceptable(base_url) && !base_url.has_query() &&
+         !base_url.has_ref();
+}
+
+// Given `base_url` and `query`, return the original URL that would have been
+// used to construct them.
+GURL ReconstructOriginalURLFromQuery(const GURL& base_url,
+                                     const std::optional<std::string>& query) {
+  if (!query.has_value()) {
+    return base_url;
+  }
+
+  GURL::Replacements replacements;
+  replacements.SetQueryStr(query.value());
+  return base_url.ReplaceComponents(replacements);
+}
+
 }  // namespace
 
 // base::LinkedList only supports having an object in a single linked list at a
@@ -223,13 +241,7 @@ class NoVarySearchCache::QueryString final
   // including any fragment). It's important to use this method to correctly
   // reconstruct URLs that have an empty query (end in '?').
   GURL ReconstructOriginalURL(const GURL& base_url) {
-    if (!query_.has_value()) {
-      return base_url;
-    }
-
-    GURL::Replacements replacements;
-    replacements.SetQueryStr(query_.value());
-    return base_url.ReplaceComponents(replacements);
+    return ReconstructOriginalURLFromQuery(base_url, query_);
   }
 
   EraseHandle CreateEraseHandle() {
@@ -411,54 +423,8 @@ void NoVarySearchCache::MaybeInsert(const HttpRequestInfo& request,
 
   const base::Time update_time = base::Time::Now();
 
-  const BaseURLCacheKey cache_key(maybe_cache_key.value());
-  const auto [it, _] = map_.try_emplace(cache_key);
-  DataMapType& data_map = it->second;
-  const auto [data_it, inserted] =
-      data_map.emplace(std::move(*maybe_nvs_data), it->first);
-  const HttpNoVarySearchData& nvs_data = data_it->first;
-  QueryStringList& query_strings = data_it->second;
-
-  const auto call_observer = [this, &cache_key, &nvs_data,
-                              update_time](const QueryString* query_string) {
-    if (observer_) {
-      observer_->OnInsert(cache_key.value(), nvs_data, query_string->query(),
-                          update_time);
-    }
-  };
-
-  if (inserted) {
-    query_strings.nvs_data_ref = &nvs_data;
-  } else {
-    // There was already an entry for this `nvs_data`. We need to check if it
-    // has a match for the URL we're trying to insert. If it does, we should
-    // update or replace the existing QueryString.
-    if (auto result =
-            FindQueryStringInList(query_strings, base_url, url, nvs_data)) {
-      QueryString* match = result->match;
-      if (match->query() == query) {
-        // In the exact match case we can use the existing QueryString object.
-        match->set_update_time(update_time);
-        match->MoveToHead(query_strings.list);
-        match->MoveToHead(lru_);
-        call_observer(match);
-        return;
-      }
-
-      // No-Vary-Search matches are transitive. Any future requests that might
-      // be a match for `match` are also a match for `url`. Since `url` is newer
-      // we will prefer it, and so `match` will never be used again and we can
-      // safely remove it from the cache.
-      --size_;
-      match->RemoveAndDelete();
-    }
-  }
-  CHECK_LE(size_, max_size_);
-  ++size_;
-  auto* query_string =
-      QueryString::CreateAndInsert(query, query_strings, lru_, update_time);
-  call_observer(query_string);
-  EvictIfOverfull();
+  DoInsert(url, base_url, std::move(maybe_cache_key.value()),
+           std::move(maybe_nvs_data.value()), query, update_time, observer_);
 }
 
 bool NoVarySearchCache::ClearData(UrlFilterType filter_type,
@@ -503,6 +469,63 @@ void NoVarySearchCache::Erase(EraseHandle handle) {
 
 void NoVarySearchCache::SetObserver(Observer* observer) {
   observer_ = observer;
+}
+
+void NoVarySearchCache::ReplayInsert(std::string base_url_cache_key,
+                                     HttpNoVarySearchData nvs_data,
+                                     std::optional<std::string> query,
+                                     base::Time update_time) {
+  const std::string base_url_string =
+      HttpCache::GetResourceURLFromHttpCacheKey(base_url_cache_key);
+  const GURL base_url(base_url_string);
+  if (!BaseURLIsAcceptable(base_url)) {
+    return;
+  }
+  // The URL should have been stored in its canonical form.
+  if (base_url_string != base_url.possibly_invalid_spec()) {
+    return;
+  }
+  if (query && query->find('#') != std::string::npos) {
+    return;
+  }
+  const GURL url = ReconstructOriginalURLFromQuery(base_url, query);
+
+  // To be extra careful to avoid re-entrancy, explicitly set `observer` to
+  // nullptr so that no notification is fired for this insertion.
+  DoInsert(url, base_url, std::move(base_url_cache_key), std::move(nvs_data),
+           query, update_time, /*observer=*/nullptr);
+}
+
+void NoVarySearchCache::ReplayErase(const std::string& base_url_cache_key,
+                                    const HttpNoVarySearchData& nvs_data,
+                                    const std::optional<std::string>& query) {
+  const auto map_it = map_.find(BaseURLCacheKey(base_url_cache_key));
+  if (map_it == map_.end()) {
+    return;
+  }
+
+  DataMapType& data_map = map_it->second;
+  const auto data_it = data_map.find(nvs_data);
+  if (data_it == data_map.end()) {
+    return;
+  }
+
+  QueryStringList& query_strings = data_it->second;
+  QueryString* query_string = nullptr;
+  ForEachQueryString(query_strings.list,
+                     [&query_string, &query](QueryString* candidate) {
+                       if (!query_string && candidate->query() == query) {
+                         query_string = candidate;
+                       }
+                     });
+  if (!query_string) {
+    return;
+  }
+
+  // TODO(https://crbug.com/382394774): This could be made more efficient in the
+  // case when the map keys need to be deleted since we have `map_it` and
+  // `data_it` already available.
+  EraseQuery(query_string);
 }
 
 // This is out-of-line to discourage inlining so the bots can detect if it is
@@ -567,6 +590,64 @@ void NoVarySearchCache::EraseQuery(QueryString* query_string) {
       map_.erase(map_it);
     }
   }
+}
+
+void NoVarySearchCache::DoInsert(const GURL& url,
+                                 const GURL& base_url,
+                                 std::string base_url_cache_key,
+                                 HttpNoVarySearchData nvs_data,
+                                 std::optional<std::string_view> query,
+                                 base::Time update_time,
+                                 Observer* observer) {
+  const BaseURLCacheKey cache_key(std::move(base_url_cache_key));
+  const auto [it, _] = map_.try_emplace(std::move(cache_key));
+  const BaseURLCacheKey& cache_key_ref = it->first;
+  DataMapType& data_map = it->second;
+  const auto [data_it, inserted] =
+      data_map.emplace(std::move(nvs_data), it->first);
+  const HttpNoVarySearchData& nvs_data_ref = data_it->first;
+  QueryStringList& query_strings = data_it->second;
+
+  const auto call_observer = [observer, &cache_key_ref, &nvs_data_ref,
+                              update_time](const QueryString* query_string) {
+    if (observer) {
+      observer->OnInsert(cache_key_ref.value(), nvs_data_ref,
+                         query_string->query(), update_time);
+    }
+  };
+
+  if (inserted) {
+    query_strings.nvs_data_ref = &nvs_data_ref;
+  } else {
+    // There was already an entry for this `nvs_data`. We need to check if it
+    // has a match for the URL we're trying to insert. If it does, we should
+    // update or replace the existing QueryString.
+    if (auto result =
+            FindQueryStringInList(query_strings, base_url, url, nvs_data_ref)) {
+      QueryString* match = result->match;
+      if (match->query() == query) {
+        // In the exact match case we can use the existing QueryString object.
+        match->set_update_time(update_time);
+        match->MoveToHead(query_strings.list);
+        match->MoveToHead(lru_);
+        call_observer(match);
+        return;
+      }
+
+      // No-Vary-Search matches are transitive. Any future requests that might
+      // be a match for `match` are also a match for `url`. Since `url` is newer
+      // we will prefer it, and so `match` will never be used again and we can
+      // safely remove it from the cache.
+      --size_;
+      match->RemoveAndDelete();
+    }
+  }
+  CHECK_LE(size_, max_size_);
+  ++size_;
+  auto* query_string =
+      QueryString::CreateAndInsert(query, query_strings, lru_, update_time);
+  call_observer(query_string);
+  EvictIfOverfull();
 }
 
 // static

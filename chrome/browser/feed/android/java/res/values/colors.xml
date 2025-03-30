@@ -14,4 +14,7 @@ found in the LICENSE file.
     <color name="menu_footer_chip_background_color_baseline">@color/menu_footer_chip_background_color_dark</color>
     <color name="menu_footer_chip_background_color_disabled">@color/menu_footer_chip_background_color_disabled_dark</color>
     <macro name="menu_footer_chip_background_color" tools:ignore="UnusedResources">@macro/default_control_color_active</macro>
+
+     <!-- NTP -->
+    <color name="selected_feed_tab_color">@color/color_primary_with_alpha_15</color>
 </resources>

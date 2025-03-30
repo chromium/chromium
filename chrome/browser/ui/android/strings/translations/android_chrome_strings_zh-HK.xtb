@@ -325,7 +325,6 @@
 <translation id="2527209463677295330">加入網頁上的更多文字，可能會找到更相關的結果</translation>
 <translation id="2527779675047087889">隱藏剪貼簿內容</translation>
 <translation id="2532336938189706096">網頁檢視</translation>
-<translation id="2534155362429831547">已刪除 <ph name="NUMBER_OF_ITEMS" /> 個項目</translation>
 <translation id="253498598929009420">網站將可見到您螢幕上的內容</translation>
 <translation id="2536728043171574184">正在瀏覽此網頁的離線版本</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />，分頁</translation>
@@ -365,7 +364,6 @@
 <translation id="2677748264148917807">離開</translation>
 <translation id="2687009626279857299">已停止在此裝置上運作</translation>
 <translation id="2702516483241149200">新功能：分享捲動至此段文字的連結</translation>
-<translation id="2705073298859543115">建立摘要</translation>
 <translation id="2708051474374549906">系統會根據你向 Google 傳送的瀏覽資料，即時、主動防範危險的網站、下載內容和擴充程式</translation>
 <translation id="2708226184420201102">在 <ph name="PRODUCT_NAME" /> 瀏覽器中開啟</translation>
 <translation id="271033894570825754">全新</translation>
@@ -1199,7 +1197,6 @@
 <translation id="6564820424018738527">Android 裝置可能會有類似的設定。如果 Chrome 和 Android 裝置已開啟廣告評估設定，廣告商或可在你瀏覽的網站和使用的應用程式中評估廣告成效。</translation>
 <translation id="6565959834589222080">有可用的 Wi-Fi 時使用 Wi-Fi</translation>
 <translation id="6569373978618239158">您將會在開啟新分頁時看到「<ph name="SITE_NAME" />」的內容。您追蹤的網站會儲存在 Google 帳戶中。您可在「探索」設定中管理已儲存的網站。</translation>
-<translation id="6570116402456758630">頁面摘要</translation>
 <translation id="657177046675873214">如要將書籤同步到所有裝置，請在設定中開啟「書籤」</translation>
 <translation id="6573096386450695060">一律允許</translation>
 <translation id="6573431926118603307">您在其他裝置上開啟的 Chrome 分頁會在這裡顯示。</translation>

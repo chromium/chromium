@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">ລຶບອອກ</translation>
 <translation id="1190609913194133056">ສູນ​ແຈ້ງ​ເຕືອນ</translation>
 <translation id="1201402288615127009">ຕໍ່ໄປ</translation>
-<translation id="1202892408424955784">ສິນຄ້າທີ່ຕິດຕາມແລ້ວ</translation>
 <translation id="1204075260022434100">{count,plural, =1{ບັນທຶກບຸກມາກໃສ່ "{title}" ໃນບັນຊີ {email} ຂອງທ່ານແລ້ວ}other{ບັນທຶກບຸກມາກ {count} ລາຍການໃສ່ "{title}" ໃນບັນຊີ {email} ຂອງທ່ານແລ້ວ}}</translation>
 <translation id="120431140543679678">ຕິດຕາມ</translation>
 <translation id="1207493287814084192">5:30 ຫຼັງທ່ຽງ</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">ລາຍການໃໝ່</translation>
 <translation id="2049727122989709386">ມີ <ph name="COUNT" /> ບັນຊີໃຊ້ລະຫັດຜ່ານດຽວກັນ</translation>
 <translation id="2059166748188874810">ເທດສະບານ</translation>
-<translation id="2060114494785549741">ລຶບໃນ 1 ເດືອນ</translation>
 <translation id="2060638295449304809">ທີ່ຢູ່ນີ້ຈະຖືກບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອນຳໃຊ້ຢູ່ອຸປະກອນເຄື່ອງອື່ນໆຂອງທ່ານ, ໃຫ້ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">ຕົວເລືອກປະເພດຫົວໜ່ວຍ</translation>
 <translation id="2067852168641682340">ບັນທຶກໃສ່ໃນບັນຊີນີ້ທຸກເທື່ອ</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">ເຊື່ອງບັດຕິດຕາມລາຄາ</translation>
 <translation id="2216366330550244277">ເຂົ້າໄປໜ້າຜະລິດຕະພັນ</translation>
 <translation id="2220529011494928058">ລາຍ​ງານ​ບັນ​ຫາ</translation>
-<translation id="2220887224562128152">ເມື່ອໄຟລ໌ຖືກກຳນົດເວລາລຶບແລ້ວ, ມັນບໍ່ສາມາດກູ້ຄືນໄດ້.</translation>
 <translation id="2223461067862937305">ສ້າງລະຫັດ QR</translation>
 <translation id="2229345671837147090">ຕາຕະລາງແຖບທາງໄກ</translation>
 <translation id="2230173723195178503">ໂຫຼດໜ້າເວັບແລ້ວ</translation>
@@ -493,7 +490,6 @@
 <translation id="3059270601560379555">ຊອກຫາໃໝ່</translation>
 <translation id="3064547930554042309">ຈັດການການດາວໂຫຼດ</translation>
 <translation id="3072279342064724558">ມີລະຫັດຜ່ານຢູ່ແລ້ວ</translation>
-<translation id="3074862506644936708">ເປີດການນຳໃຊ້ການລຶບອັດຕະໂນມັດ</translation>
 <translation id="3076846064362030967">ທ່ານຈະບໍ່ຖືກພາອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານ. <ph name="BEGIN_LINK" />ການເຄື່ອນໄຫວຮູບແບບອື່ນ<ph name="END_LINK" /> ອາດຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານເມື່ອທ່ານເຂົ້າສູ່ລະບົບ. ທ່ານສາມາດລຶບພວກມັນຕອນໃດກໍໄດ້.
 
 
@@ -912,6 +908,7 @@
 <translation id="4896467949657706481">ປິດແຖບແລ້ວ; ທ່ານອອກຈາກລະບົບແລ້ວ</translation>
 <translation id="4913626501929406101">ທ່ານສາມາດແບ່ງປັນສຳເນົາລະຫັດຜ່ານຂອງທ່ານກັບຄົນໃນກຸ່ມຄອບຄົວຂອງທ່ານໄດ້ຢ່າງປອດໄພ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">ຍອມ​ຮັບ</translation>
+<translation id="4930714375720679147">ເປີດ</translation>
 <translation id="4932733599132424254">ວັນ​ທີ</translation>
 <translation id="4936354130727646074">ບໍ່ຕ້ອງຍ້າຍ</translation>
 <translation id="4937410517508563815">ບັນທຶກລະຫັດຜ່ານໃນບັນຊີ</translation>
@@ -1147,7 +1144,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5899314093904173337">ອະນຸຍາດໃຫ້ເຂົາເຈົ້າສະແກນລະຫັດ QR ນີ້ດ້ວຍແອັບກ້ອງຖ່າຍຮູບ ຫຼື ເຄື່ອງສະແກນ QR ຂອງເຂົາເຈົ້າເພື່ອແບ່ງປັນກັບຄົນທີ່ຢູ່ໃກ້ຄຽງ</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} ແຖບໃໝ່}other{{count} ແຖບໃໝ່}}</translation>
 <translation id="5911030830365207728">Google ແປພາສາ</translation>
-<translation id="5917913282764181683">ລຶບການດາວໂຫຼດຂອງທ່ານໂດຍອັດຕະໂນມັດ</translation>
 <translation id="5922999516621365983">ລາກແຖບມາບ່ອນນີ້ເພື່ອປັກໝຸດ.</translation>
 <translation id="5936006948844852401">ຈັດການບ່ອນຈັດເກັບຂໍ້ມູນ</translation>
 <translation id="5936065461722368675">ແປພາສາໜ້າເຕັມ</translation>
@@ -1506,7 +1502,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="741204030948306876">ແມ່ນ, ຂ້ອຍຂໍເຂົ້າຮ່ວມ</translation>
 <translation id="7417689656810783109">ປ່ຽນຊື່ກຸ່ມ</translation>
 <translation id="7419565702166471774">ໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພທຸກເທື່ອ</translation>
-<translation id="742001653298797675">ກຳນົດເວລາການດາວໂຫຼດທັງໝົດຂອງທ່ານສຳລັບການລຶບຫຼັງຈາກໜຶ່ງເດືອນເພື່ອປະຢັດພື້ນທີ່ຢູ່ໂທລະສັບຂອງທ່ານ ແລະ ປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງທ່ານ.</translation>
 <translation id="7425053386765766120">ເພີ່ມວິທີການຈ່າຍເງິນ…</translation>
 <translation id="7425346204213733349">ການປ່ຽນແປງຕໍ່ກັບບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນຂອງທ່ານຈະບໍ່ຖືກຊິ້ງກັບບັນຊີ Google ຂອງທ່ານອີກຕໍ່ໄປ. ແນວໃດກໍຕາມ, ຂໍ້ມູນທີ່ມີຢູ່ຂອງທ່ານຈະຍັງຄົງເກັບຮັກສາໄວ້ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="742664698522525515">ເກັບກຸ່ມໄວ້ບໍ?</translation>

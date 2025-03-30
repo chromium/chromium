@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">અતિથિ મોડમાં પેરિફેરલને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="1270290102613614947">ઓન-સ્ક્રીન કીબોર્ડ અક્ષમ કર્યું</translation>
 <translation id="1272079795634619415">રોકો</translation>
+<translation id="12741168609094094">શોધવા, ટેક્સ્ટ કૉપિ કરવા અને તેના જેવી અન્ય વસ્તુઓ કરવા માટે તમારી સ્ક્રીન પર કંઈપણ પસંદ કરો</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" />ને પાવર સપ્લાય આપી રહ્યું છે</translation>
 <translation id="1275718070701477396">પસંદ કરેલ</translation>
 <translation id="1276975447697633661">ફાઇલ પસંદ કરો, પછી <ph name="KEY" /> દબાવો</translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">હૉટસ્પૉટ બંધ છે</translation>
 <translation id="1731815243805539470">પાછલા વપરાશકર્તા પર સ્વિચ કરો</translation>
 <translation id="1733996486177697563">ઘેરી અને ઝાંખી થીમ વચ્ચે સ્વિચ કરો. ડેસ્કટૉપ આઇકનને ટચ કરીને થોડીવાર દબાવી રાખો, પછી વૉલપેપર અને સ્ટાઇલ પસંદ કરો.</translation>
+<translation id="1735992454301033090">પસંદ કરેલા વિસ્તારને ખસેડવા માટે ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="1736898441010944794">બ્લૂટૂથ ચાલુ હોય તેવા ડિવાઇસમાં "<ph name="NAME" />"ને જોઈ શકાય છે.</translation>
 <translation id="1737078180382804488">તમારા ફોનના નોટિફિકેશન જોવાની સુવિધા સેટઅપ કરવાની પ્રક્રિયા છોડી દો</translation>
 <translation id="174102739345480129">માર્કર બંધ છે.</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806">ગયા અઠવાડિયે <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">કીબોર્ડ શૉર્ટકટ બદલાઈ ગયો છે</translation>
 <translation id="2689613560355655046">ડેસ્ક 8</translation>
+<translation id="2692092709110488417">ફોકસ કરવા અને પસંદ કરેલા વિસ્તારને ખસેડવા માટે ટૅબ કી દબાવો</translation>
 <translation id="2695305337569143674">વેબ</translation>
 <translation id="2697697418792422688">કીબોર્ડ સેટિંગ બતાવો. <ph name="KEYBOARD_NAME" /> પસંદ કર્યું.</translation>
 <translation id="2699913284398121653">તમારા સ્કૂલ એકાઉન્ટના ડેટાને તમારા વ્યક્તિગત એકાઉન્ટમાં ખસેડવા માટે, કન્ટેન્ટ ટ્રાન્સફર કરવા માટેની ઍપનો ઉપયોગ કરો</translation>
@@ -729,6 +732,7 @@
 <translation id="346243998268439747">ઝૂમ લેવલ રીસેટ કરો</translation>
 <translation id="3465223694362104965">તમે છેલ્લે સાઇન ઇન કર્યું તે પછી આ ડિવાઇસ સાથે બીજું કીબોર્ડ કનેક્ટ કરવામાં આવ્યું છે. તમે આ કીબોર્ડનો ઉપયોગ કરો તે પહેલાં ખાતરી કરો કે તમને તેના પર વિશ્વાસ છે.</translation>
 <translation id="3465356146291925647">તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
+<translation id="3470502288861289375">કૉપિ કરી રહ્યું છે...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="KEY_ONE" /> પછી <ph name="KEY_TWO" /> અથવા <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1033,6 +1037,7 @@
 <translation id="4412698727486357573">સહાયતા કેન્દ્ર</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> બંધ છે.</translation>
 <translation id="4417647906073317561">ફોકસના સેટિંગ. અનુભૂતિ કરવા માટે ટાઇમર, કામ અને મ્યુઝિક સેટ કરો.</translation>
+<translation id="4418600384772451109">પૅનલ બંધ કરો</translation>
 <translation id="4424159417645388645">ડેસ્ક 5</translation>
 <translation id="4426817706804363424">અદ્દભુત!</translation>
 <translation id="4430019312045809116">વૉલ્યૂમ</translation>
@@ -2229,6 +2234,7 @@
 <translation id="8287009018010202411">પ્રૉડક્ટિવિટી</translation>
 <translation id="828708037801473432">બંધ</translation>
 <translation id="8297006494302853456">નબળું</translation>
+<translation id="8300451473979404345">પસંદ કરેલા હૅન્ડલને ખસેડવા માટે ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="8308637677604853869">પાછલું મેનૂ</translation>
 <translation id="830868413617744215">બીટા</translation>
 <translation id="8314772463905284467">Caps Lock ચાલુ છે</translation>
@@ -2289,6 +2295,7 @@
 <translation id="851458219935658693">વર્તમાન ડેસ્કમાંની બધી વિન્ડો બતાવો, રેડિયો બટન પસંદ કર્યું</translation>
 <translation id="851660987304951246">કન્ટેન્ટનો ઝડપથી સારાંશ આપવા માટે કે પ્રશ્નો પૂછવા માટે, 'વાંચવામાં મારી સહાય કરો' સુવિધાનો ઉપયોગ કરો</translation>
 <translation id="8517041960877371778">તમારું <ph name="DEVICE_TYPE" /> ચાલુ હોય ત્યારે તે ચાર્જ ન થાય તેવું બની શકે.</translation>
+<translation id="8519329096920173967">Google Lens વડે મારી સ્ક્રીન શોધો</translation>
 <translation id="8535393432370007982">રંગ મુજબ સૉર્ટ કરવાના ક્રમનો છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="8536886494750559755">ક્વિક શેરિંગ સેટિંગ બતાવો. <ph name="TIME_REMAINING" /> માટે દરેક વ્યક્તિને દેખાશે</translation>
 <translation id="8539803091108018926">ક્લિપબોર્ડ પર ટેક્સ્ટ કૉપિ કરી</translation>

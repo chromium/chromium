@@ -89,6 +89,7 @@ class ArcDlcInstaller {
   // failure notification, and invokes the callback with a failure status.
   void OnDlcInstalled(
       base::OnceCallback<void(bool)> callback,
+      base::TimeTicks start_installation_time,
       const ash::DlcserviceClient::InstallResult& install_result);
 
   std::unique_ptr<ArcDlcNotificationManagerFactory>

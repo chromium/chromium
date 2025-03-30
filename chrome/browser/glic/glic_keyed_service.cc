@@ -71,15 +71,23 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
   metrics_->SetControllers(window_controller_.get(), &focused_tab_manager_);
 
+  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
+      FROM_HERE, base::BindRepeating(&GlicKeyedService::OnMemoryPressure,
+                                     weak_ptr_factory_.GetWeakPtr()));
+
   // If `--glic-always-open-fre` is present, unset this pref to ensure the FRE
   // is shown for testing convenience.
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(::switches::kGlicAlwaysOpenFre)) {
-    profile_->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, false);
+    profile_->GetPrefs()->SetInteger(
+        prefs::kGlicCompletedFre,
+        static_cast<int>(prefs::FreStatus::kNotStarted));
   }
   // If automation is enabled do the opposite.
   if (command_line->HasSwitch(::switches::kGlicAutomation)) {
-    profile_->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
+    profile_->GetPrefs()->SetInteger(
+        prefs::kGlicCompletedFre,
+        static_cast<int>(prefs::FreStatus::kCompleted));
   }
 
   if (base::FeatureList::IsEnabled(features::kGlicActor)) {
@@ -119,6 +127,10 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
 void GlicKeyedService::CloseUI() {
   window_controller_->Shutdown();
   SetContextAccessIndicator(false);
+}
+
+void GlicKeyedService::FocusUI() {
+  window_controller_->FocusIfOpen();
 }
 
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
@@ -359,6 +371,17 @@ void GlicKeyedService::TryPreloadFre() {
 
 void GlicKeyedService::Reload() {
   window_controller().Reload();
+}
+
+void GlicKeyedService::OnMemoryPressure(
+    base::MemoryPressureListener::MemoryPressureLevel level) {
+  if (level == base::MemoryPressureListener::MemoryPressureLevel::
+                   MEMORY_PRESSURE_LEVEL_NONE ||
+      (this == GlicProfileManager::GetInstance()->GetLastActiveGlic())) {
+    return;
+  }
+
+  CloseUI();
 }
 
 base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {

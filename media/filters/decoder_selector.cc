@@ -345,7 +345,11 @@ void DecoderSelector<StreamType>::FilterAndSortAvailableDecoders() {
       continue;
     }
 
-    if (!enable_priority_based_selection_) {
+    // If the stream doesn't support config changes, prioritize decoder
+    // selection based on resolution. Experiments show this greatly improves
+    // rebuffering for src= playbacks without config changes, but doesn't help
+    // and may hurt Media Source based playbacks.
+    if (!enable_priority_based_selection_ || stream_->SupportsConfigChanges()) {
       decoders_.push_back(std::move(decoder));
       continue;
     }

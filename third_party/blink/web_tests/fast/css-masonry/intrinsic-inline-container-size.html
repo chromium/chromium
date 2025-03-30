@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<link href="resources/masonry.css" rel="stylesheet">
+<style>
+.masonry {
+    gap: 20px;
+    padding: 20px;
+}
+</style>
+<body>
+    <p>Test that masonry containers are correctly sized when an intrinsic inline size is specified.</p>
+    <div class="masonry" style="width: max-content">
+        <div class="first-track">This is some text</div>
+        <div class="second-track">Some larger words in this sentence</div>
+        <div class="third-track">The cat cannot be separated from milk</div>
+    </div>
+    <div class="masonry" style="width: min-content">
+        <div class="first-track">This is some text</div>
+        <div class="second-track">Some larger words in this sentence</div>
+        <div class="third-track">The cat cannot be separated from milk</div>
+    </div>
+</body>
+</html>

@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -43,7 +43,7 @@ import java.util.List;
 
 // TODO(crbug.com/392943234): Update this class's naming and description when naming is finalized.
 /** Handles logic for the Privacy Sandbox Ads consents/notices dialogs. */
-public class PrivacySandboxDialogV3 extends ChromeDialog {
+public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterface.OnShowListener {
 
     @IntDef({
         PrivacySandboxDialogType.UNKNOWN,
@@ -98,7 +98,6 @@ public class PrivacySandboxDialogV3 extends ChromeDialog {
 
     // TODO(crbug.com/392943234): Update the constructor to accept a layoutRes required for the
     // dialog.
-    // TODO(crbug.com/392943234): Write a java doc that defines the IDS this dialog expects.
     public PrivacySandboxDialogV3(
             Activity activity,
             Profile profile,
@@ -117,62 +116,39 @@ public class PrivacySandboxDialogV3 extends ChromeDialog {
         registerDialogButtons();
         registerDropdownElements(activity);
         registerPrivacyPolicy(profile, activityWindowAndroid);
-        registerScrollView();
 
-        setCancelable(false);
-    }
-
-    private void registerScrollView() {
         mScrollView = mContentView.findViewById(R.id.privacy_sandbox_dialog_scroll_view);
-        mShouldShowActionButtons = false;
-        mScrollView
-                .getViewTreeObserver()
-                .addOnGlobalLayoutListener(
-                        new ViewTreeObserver.OnGlobalLayoutListener() {
-                            @Override
-                            public void onGlobalLayout() {
-                                // We won't need to update visibilities after the action button is
-                                // shown.
-                                if (mShouldShowActionButtons) {
-                                    mScrollView
-                                            .getViewTreeObserver()
-                                            .removeOnGlobalLayoutListener(this);
-                                    return;
-                                }
-                                // Only attempt to update button visibilities if the main view is
-                                // visible.
-                                if (mViewContainer.getVisibility() != View.VISIBLE) {
-                                    return;
-                                }
-                                updateButtonVisibility();
-                            }
-                        });
         mScrollView
                 .getViewTreeObserver()
                 .addOnScrollChangedListener(
                         () -> {
                             if (!canScrollVerticallyDown()) {
                                 setMoreButtonVisibility(View.GONE);
-                                setActionButtonsVisibility(View.VISIBLE);
+                                mActionButtons.setVisibility(View.VISIBLE);
+                                // Set the flag to always show the action buttons if we re-render.
+                                mShouldShowActionButtons = true;
                                 mScrollView.post(
                                         () -> {
-                                            // Ensure we're at the very bottom of the scroll view.
                                             mScrollView.pageScroll(ScrollView.FOCUS_DOWN);
                                         });
                             }
                         });
+
+        setOnShowListener(this);
+        setCancelable(false);
     }
 
     private void updateButtonVisibility() {
         // Display the action buttons if we've displayed it before or if we cannot scroll vertically
         // down (we've hit the end of the dialog).
         if (mShouldShowActionButtons || !canScrollVerticallyDown()) {
+            mShouldShowActionButtons = true;
             setMoreButtonVisibility(View.GONE);
-            setActionButtonsVisibility(View.VISIBLE);
+            mActionButtons.setVisibility(View.VISIBLE);
         } else {
             // Handle the case where we can still scroll down - display the `More` button.
             setMoreButtonVisibility(View.VISIBLE);
-            setActionButtonsVisibility(View.GONE);
+            mActionButtons.setVisibility(View.GONE);
         }
     }
 
@@ -180,13 +156,6 @@ public class PrivacySandboxDialogV3 extends ChromeDialog {
         mMoreButton.setVisibility(visibility);
         // The bottom fade should always match the visibility value for the more button.
         mBottomFade.setVisibility(visibility);
-    }
-
-    private void setActionButtonsVisibility(int visibility) {
-        mActionButtons.setVisibility(visibility);
-        if (visibility == View.VISIBLE) {
-            mShouldShowActionButtons = true;
-        }
     }
 
     private void fetchDialogContent(Context context) {
@@ -203,8 +172,6 @@ public class PrivacySandboxDialogV3 extends ChromeDialog {
                 contentToInflate = R.layout.privacy_sandbox_notice_eea_v3;
                 break;
             case PrivacySandboxDialogType.ROW_NOTICE:
-                contentToInflate = R.layout.privacy_sandbox_notice_row_v3;
-                break;
             case PrivacySandboxDialogType.RESTRICTED_NOTICE:
             default:
                 // TODO(crbug.com/392943234): Don't default to the eea consent
@@ -359,9 +326,6 @@ public class PrivacySandboxDialogV3 extends ChromeDialog {
     private void createPrivacyPolicyLink(
             Profile profile, ActivityWindowAndroid activityWindowAndroid) {
         mLearnMoreText = mContentView.findViewById(mLearnMoreTextIdRes);
-        if (mLearnMoreText == null) {
-            return;
-        }
         mLearnMoreText.setText(
                 SpanApplier.applySpans(
                         getContext().getString(mLearnMoreLinkString),
@@ -451,6 +415,11 @@ public class PrivacySandboxDialogV3 extends ChromeDialog {
         } else if (id == R.id.privacy_policy_back_button) {
             handlePrivacyPolicyBackButtonClicked();
         }
+    }
+
+    @Override
+    public void onShow(DialogInterface dialogInterface) {
+        updateButtonVisibility();
     }
 
     @Override

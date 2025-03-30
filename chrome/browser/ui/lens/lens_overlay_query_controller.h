@@ -212,7 +212,7 @@ class LensOverlayQueryController {
   // Returns the EndpointFetcher to use with the given params. Protected to
   // allow overriding in tests to mock server responses.
   virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      lens::LensOverlayServerRequest* request,
+      std::string request_string,
       const GURL& fetch_url,
       const HttpMethod& http_method,
       const base::TimeDelta& timeout,
@@ -398,6 +398,24 @@ class LensOverlayQueryController {
   // then sends the request.
   void PrepareAndFetchPageContentRequest();
 
+  // Creates chunk upload requests for the given chunks.
+  void PrepareAndFetchUploadChunkRequests(lens::LensOverlayRequestId request_id,
+                                          std::vector<std::string> chunks);
+
+  // Performs the chunk upload requests.
+  void PrepareAndFetchUploadChunkRequestsPart2(
+      std::vector<std::string> headers);
+
+  // Performs the chunk upload request with the given index.
+  void FetchUploadChunkRequest(size_t chunk_request_index);
+
+  // Handles the endpoint fetch response for chunk upload requests. When a
+  // response is received for the last chunk, initiates the page content
+  // request.
+  void UploadChunkResponseHandler(lens::LensOverlayRequestId request_id,
+                                  size_t total_chunks,
+                                  std::unique_ptr<EndpointResponse> response);
+
   // Creates the PageContentRequest that is sent to the server and performs the
   // request. Prefer to use PrepareAndFetchPageContentRequest() directly since
   // it calls this method after doing the necessary preprocessing.
@@ -517,10 +535,7 @@ class LensOverlayQueryController {
       std::string vit_query_param_value,
       std::optional<lens::LensOverlayRequestId> request_id);
 
-  // Creates an endpoint fetcher with the given request_headers to perform the
-  // given request. Calls fetcher_created_callback when the EndpointFetcher is
-  // created to keep it alive while the request is being made.
-  // response_received_callback is invoked once the request returns a response.
+  // Performs the given server request.
   void PerformFetchRequest(
       lens::LensOverlayServerRequest* request,
       std::vector<std::string>* request_headers,
@@ -530,6 +545,20 @@ class LensOverlayQueryController {
       EndpointFetcherCallback response_received_callback,
       const UploadProgressCallback upload_progress_callback =
           base::NullCallback());
+
+  // Creates an endpoint fetcher with the given request_headers to perform the
+  // given request. Calls fetcher_created_callback when the EndpointFetcher is
+  // created to keep it alive while the request is being made.
+  // response_received_callback is invoked once the request returns a response.
+  void PerformFetchRequest(
+      std::string request_string,
+      std::vector<std::string>* request_headers,
+      const base::TimeDelta& timeout,
+      base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
+          fetcher_created_callback,
+      EndpointFetcherCallback response_received_callback,
+      const UploadProgressCallback upload_progress_callback,
+      GURL fetch_url);
 
   // Creates a client context proto to be attached to a server request.
   lens::LensOverlayClientContext CreateClientContext();
@@ -584,6 +613,11 @@ class LensOverlayQueryController {
 
   // Callback for when the interaction endpoint fetcher is created.
   void OnInteractionEndpointFetcherCreated(
+      lens::LensOverlayRequestId request_id,
+      std::unique_ptr<EndpointFetcher> endpoint_fetcher);
+
+  // Callback for when a chunk upload endpoint fetcher is created.
+  void OnChunkUploadEndpointFetcherCreated(
       lens::LensOverlayRequestId request_id,
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
 
@@ -667,6 +701,10 @@ class LensOverlayQueryController {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       full_image_access_token_fetcher_;
 
+  // The access token fetcher used for getting OAuth for chunk upload requests.
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+      chunk_upload_access_token_fetcher_;
+
   // The access token fetcher used for getting OAuth for page content requests.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       page_content_access_token_fetcher_;
@@ -710,6 +748,9 @@ class LensOverlayQueryController {
   // earlier unfinished requests.
   std::unique_ptr<EndpointFetcher> interaction_endpoint_fetcher_;
 
+  // The endpoint fetchers used for the chunk upload requests.
+  std::vector<std::unique_ptr<EndpointFetcher>> chunk_upload_endpoint_fetchers_;
+
   // Task runner used to compress page content bytes on a separate thread.
   scoped_refptr<base::TaskRunner> compression_task_runner_;
 
@@ -724,6 +765,13 @@ class LensOverlayQueryController {
   // because it is assumed this request will finish, never need to be
   // cancelled, and all other tasks will wait on it if needed.
   std::unique_ptr<base::CancelableTaskTracker> encoding_task_tracker_;
+
+  // Bounding boxes for significant regions identified in the original
+  // screenshot image.
+  std::vector<lens::LensOverlayUploadChunkRequest>
+      pending_upload_chunk_requests_;
+
+  std::vector<std::string> pending_upload_chunk_headers_;
 
   // The current suggest inputs. The fields in this proto are updated
   // whenever new data is available (i.e. after an objects or interaction

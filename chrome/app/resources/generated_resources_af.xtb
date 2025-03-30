@@ -8,6 +8,7 @@
 <translation id="100323615638474026">USB-toestel (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">Onlangse aflaaigeskiedenis</translation>
 <translation id="1004218526896219317">Werftoegang</translation>
+<translation id="1005230401424685968">JJJJ</translation>
 <translation id="1005274289863221750">Gebruik jou mikrofoon en kamera</translation>
 <translation id="1005333234656240382">Aktiveer ADB-ontfouting?</translation>
 <translation id="1005671386794704751">Roos</translation>
@@ -1377,6 +1378,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="193565226207940518">Steundienstenutsding</translation>
 <translation id="1935995810530254458">Kopieer in elk geval</translation>
 <translation id="1936157145127842922">Wys in vouer</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Bladsy is by leeslys gevoeg}other{Bladsye is by leeslys gevoeg}}</translation>
 <translation id="1936931585862840749">Gebruik 'n getal om aan te dui hoeveel kopieë gedruk moet word (1 tot <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Kan nie 'n houerargitektuursoort <ph name="ARCHITECTURE_CONTAINER" /> saam met hierdie invoer toestel wat 'n <ph name="ARCHITECTURE_DEVICE" /> is nie. Jy kan probeer om hierdie houer op 'n ander toestel te herlaai, of jy kan toegang tot die lêers binne hierdie houerprent kry deur dit in Lêers-program oop te maak.</translation>
 <translation id="1938351510777341717">Eksterne bevel</translation>
@@ -2018,6 +2020,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2373666622366160481">Pas op papier</translation>
 <translation id="2375406435414127095">Koppel aan jou foon</translation>
 <translation id="2376056713414548745">Lees hardop</translation>
+<translation id="2376122016044804363">Gekopieer na knipbord-bevestigings</translation>
 <translation id="2377667304966270281">Harde foute</translation>
 <translation id="237828693408258535">Vertaal hierdie bladsy?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Hierdie uitbreiding sal dalk binnekort nie meer gesteun word nie}other{Hierdie uitbreidings sal dalk binnekort nie meer gesteun word nie}}</translation>
@@ -3172,6 +3175,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3192586965067888278">Beskryf die kwessie in besonderhede. Terugvoer sal aan Google gestuur word vir kontrolering deur ’n mens en kan gebruik word om Google-produkte en -dienste te verbeter of te ontwikkel.</translation>
 <translation id="3192947282887913208">Oudiolêers</translation>
 <translation id="3193695589337931419">Stelselseinnutsdienste</translation>
+<translation id="3194095220941877499">Wys ’n bevestiging wanneer jy skakels, prente of video’s kopieer</translation>
 <translation id="3196912927885212665">Jou Chromebook se Bluetooth moet aan wees om jou Android-foon op te stel</translation>
 <translation id="3197453258332670132">Wys verwante inligting vir jou tekskeuse met 'n regsklik of langdruk</translation>
 <translation id="3199127022143353223">Bedieners</translation>
@@ -3186,7 +3190,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
         <ph name="BREAK" />
         <ph name="BREAK" />
         Jy kan enige tyd instellings vanaf hierdie kaart bestuur of meer opsies in Pasmaak Chrome sien.</translation>
-<translation id="3207437351138888228">Wanneer jy ’n vorm invul, word jou inligting en die bladsy waar dit vandaan kom, na Google toe gestuur om voorstelle te genereer</translation>
 <translation id="3207960819495026254">Geboekmerk</translation>
 <translation id="3208584281581115441">Kontroleer nou</translation>
 <translation id="3208703785962634733">Onbevestigde</translation>
@@ -3231,6 +3234,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3242289508736283383">Program met "net_kiosk"-manifeseienskap moet in Chrome-bedryfstelsel se kioskmodus geïnstalleer word</translation>
 <translation id="3243017971870859287">Lees ChromeOS Flex-toestel- en -komponentreeksnommers</translation>
 <translation id="324366796737464147">Geraasvermindering</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Hou aan om klank te demp</translation>
 <translation id="3247006341013237647">Organiseer oortjies?</translation>
 <translation id="3247649647204519958">Van hier af kan jy uitbreidingtoestemmings sien en bestuur vir die werf waarop jy is</translation>
@@ -6098,7 +6102,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5267572070504076962">Skakel Veiligblaai aan om beskerming teen gevaarlike werwe te kry</translation>
 <translation id="5269977353971873915">Kon nie uitdruk nie</translation>
 <translation id="5271578170655641944">Verwyder Google Drive-toegang?</translation>
-<translation id="5271782684896713035">Data kan deur mense wat kontrolering uitvoer gesien word om hierdie kenmerk te verbeter</translation>
 <translation id="5273806377963980154">Wysig werf-URL</translation>
 <translation id="5275084684151588738">Gebruikerwoordeboeke</translation>
 <translation id="5275338516105640560">Gestoorde Oortjiegroep-knoppie</translation>

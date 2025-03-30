@@ -441,7 +441,6 @@
 <translation id="1734878702283171397">Жүйе әкімшісіне хабарласып көріңіз.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, мерзімі <ph name="CARD_EXPIRATION" /> аяқталады</translation>
 <translation id="1736420071277903564">Компьютер</translation>
-<translation id="1739422091279046802">айналдыру және масштабтау</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode саясаты <ph name="SECURE_DNS_MODE_SECURE" /> мәніне орнатылғанда, сәйкес мән және жарамды жол көрсетілуі керек.</translation>
 <translation id="1743393865165844832">Төсек және төсек-орын жабдығы</translation>
 <translation id="1743892871127720056">Салыстыру кестесінің атауы, мәтінді өзгерту</translation>
@@ -1568,6 +1567,7 @@
 <translation id="3715016660240337709">{0,plural, =1{Файлды жүктеп салуға блок қойылған}other{<ph name="FILE_COUNT" /> файлды жүктеп салуға блок қойылған}}</translation>
 <translation id="3715597595485130451">Wi-Fi желісіне қосылу</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Проксиді, брандмауэрді және DNS конфигурациясын тексеру<ph name="END_LINK" /></translation>
+<translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">Жаңарту кезінде құрылғыны 10 минутқа дейін пайдалана алмайсыз.</translation>
 <translation id="372429172604983730">Мұндай қате тудыратын қолданбаларға антивирустар, брандмауэрлер, вебсүзгілер және прокси-сервер бағдарламалық құралдары жатады.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides-да жаңа Google презентациясын жылдам жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
@@ -2494,6 +2494,7 @@
 <translation id="5379618281582508161">Бұл құпия сөз барлық құрылғыңызда болуы үшін жеке басыңызды растаңыз.</translation>
 <translation id="5380953781541843508">өсу ретімен</translation>
 <translation id="5381318171304904246">Жалғастырсаңыз, банк веб-сайтына бағытталасыз. Растағаннан кейін, сатып алуды аяқтау бетіне автоматты түрде қайтарыласыз.</translation>
+<translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> "<ph name="WEBSITE_TITLE" />" қойындысын жаңартты.</translation>
 <translation id="5383478552402031184">Еден төсеу қызметтері</translation>
 <translation id="5385857628869214740">Әзіл</translation>
 <translation id="5385966243497224160">HTTPS емес URL мекенжайын алдын ала көру мүмкін емес</translation>
@@ -2879,6 +2880,7 @@
 <translation id="6059925163896151826">USB құрылғылары</translation>
 <translation id="6060009363608157444">DnsOverHttps режимі жарамсыз.</translation>
 <translation id="6061154937977953833">Күрес</translation>
+<translation id="6062405040252994646">Құрал</translation>
 <translation id="6062937464449575061">Баға бақылауды тоқтату</translation>
 <translation id="6063415549109819824">Тұрғын үйді қаржыландыру</translation>
 <translation id="6070432475334343308">Бір не бірнеше файл <ph name="CLOUD_PROVIDER" /> қызметіндегі <ph name="FOLDER_NAME" /> қалтасына жүктеп салынбады.</translation>
@@ -3925,6 +3927,7 @@
 <translation id="787226752901403048">Қойындылар топтарын бөлісу, оларға қосылу және идеялар төңірегінде бірлесіп жұмыс істеу үшін Chrome-ға кіріңіз.</translation>
 <translation id="7877007680666472091">Қорғалған content ID-лер</translation>
 <translation id="7878562273885520351">Құпия сөзіңіз ұрланған болуы мүмкін</translation>
+<translation id="7881044256965445977">Жергілікті желідегі құрылғыларды іздеу және қосылу</translation>
 <translation id="7882421473871500483">Қоңыр</translation>
 <translation id="7886897188117641322">Жарнамаларды жекелендіру үшін тақырыптардың қандай жалпылама санаттарын пайдалануға болатынын таңдаңыз.</translation>
 <translation id="7887683347370398519">CVC нөмірін енгізіп, әрекетті қайталаңыз</translation>
@@ -4681,6 +4684,7 @@
 <translation id="94613679163347541"><ph name="CATEGORY" /> санатын салыстыру қажет пе?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites-та жылдам жаңа сайт жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Chrome бүгін cookie файлдарына қайта шектеу қояды.}=1{Chrome ертең cookie файлдарына қайта шектеу қояды.}other{Chrome # күннен кейін cookie файлдарына қайта шектеу қояды.}}</translation>
+<translation id="949026252328034572"><ph name="MEMBER_COUNT" /> қатысушы "<ph name="GROUP_NAME" />" қойындылар тобына қосылды.</translation>
 <translation id="949314938206378263">Осы сайтқа кіруді сұрадыңыз. Ата-анаңыз Family Link-те жауап бере алады.</translation>
 <translation id="950736567201356821">Жоғарғы жағын үш рет тесу</translation>
 <translation id="950926967802086924">Кіру кілті • Google Password Manager</translation>

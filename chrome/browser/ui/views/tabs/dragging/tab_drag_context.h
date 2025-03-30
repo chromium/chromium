@@ -121,8 +121,7 @@ class TabDragContext : public TabDragContextBase {
   virtual int GetInsertionIndexForDraggedBounds(
       const gfx::Rect& dragged_bounds,
       std::vector<TabSlotView*> dragged_views,
-      int num_dragged_tabs,
-      std::optional<tab_groups::TabGroupId> group) const = 0;
+      int num_dragged_tabs) const = 0;
 
   // Returns the bounds needed for each of the views, relative to a leading
   // coordinate of 0 for the left edge of the first view's bounds.

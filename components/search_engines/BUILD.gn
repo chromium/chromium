@@ -295,11 +295,11 @@ if (!is_android) {
 
     inputs = [
       "//tools/search_engine_choice/generate_search_engine_icons_config.json",
-      "//components/search_engines/search_engine_countries-inc.cc",
       "//tools/json_comment_eater/json_comment_eater.py",
       "//tools/search_engine_choice/generate_search_engine_icons.py",
       "//tools/search_engine_choice/search_engine_icons_utils.py",
       "//third_party/search_engines_data/resources/definitions/prepopulated_engines.json",
+      "//third_party/search_engines_data/resources/definitions/regional_settings.json",
     ]
 
     outputs = [

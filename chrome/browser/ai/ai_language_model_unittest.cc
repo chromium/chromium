@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -213,22 +212,13 @@ std::string GetContextString(AILanguageModel::Context& ctx) {
   return ToString(ctx.MakeRequest());
 }
 
-const optimization_guide::proto::Any& GetPromptApiMetadata(
-    bool is_streaming_chunk_by_chunk) {
-  static base::NoDestructor<std::map<bool, optimization_guide::proto::Any>>
-      metadata_map;
-  auto key = is_streaming_chunk_by_chunk;
-
-  if (metadata_map->find(key) == metadata_map->end()) {
-    metadata_map->emplace(key, [is_streaming_chunk_by_chunk]() {
-      optimization_guide::proto::PromptApiMetadata metadata;
-      metadata.set_version(AILanguageModel::kMinVersionUsingProto);
-      metadata.set_is_streaming_chunk_by_chunk(is_streaming_chunk_by_chunk);
-      return optimization_guide::AnyWrapProto(metadata);
-    }());
-  }
-
-  return metadata_map->at(key);
+const optimization_guide::proto::Any& GetPromptApiMetadata() {
+  static base::NoDestructor<optimization_guide::proto::Any> data([]() {
+    optimization_guide::proto::PromptApiMetadata metadata;
+    metadata.set_version(AILanguageModel::kMinVersionUsingProto);
+    return optimization_guide::AnyWrapProto(metadata);
+  }());
+  return *data;
 }
 
 optimization_guide::OptimizationGuideModelStreamingExecutionResult
@@ -248,10 +238,7 @@ CreateExecutionResult(const std::string& output,
       /*provided_by_on_device=*/true);
 }
 
-class AILanguageModelTest : public AITestUtils::AITestBase,
-                            public testing::WithParamInterface<testing::tuple<
-                                /*is_model_streaming_chunk_by_chunk=*/bool,
-                                /*is_api_streaming_chunk_by_chunk=*/bool>> {
+class AILanguageModelTest : public AITestUtils::AITestBase {
  public:
   struct Options {
     blink::mojom::AILanguageModelSamplingParamsPtr sampling_params = nullptr;
@@ -265,21 +252,6 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
     bool should_overflow_context = false;
     bool should_use_supported_language = true;
   };
-
-  void SetUp() override {
-    std::vector<base::test::FeatureRefAndParams> enabled_features{};
-    std::vector<base::test::FeatureRef> disabled_features{};
-    if (IsAPIStreamingChunkByChunk()) {
-      disabled_features.push_back(
-          features::kAILanguageModelForceStreamingFullResponse);
-    } else {
-      enabled_features.push_back(base::test::FeatureRefAndParams(
-          features::kAILanguageModelForceStreamingFullResponse, {}));
-    }
-    AITestUtils::AITestBase::SetUp();
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                       disabled_features);
-  }
 
  protected:
   void SetupMockOptimizationGuideKeyedService() override {
@@ -305,9 +277,6 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
           return any;
         });
   }
-
-  bool IsModelStreamingChunkByChunk() { return std::get<0>(GetParam()); }
-  bool IsAPIStreamingChunkByChunk() { return std::get<1>(GetParam()); }
 
   // The helper function that creates a `AILanguageModel` and executes the
   // prompt.
@@ -338,7 +307,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
                                  sampling_params_copy->temperature));
             }
 
-            SetUpMockSession(*session, IsModelStreamingChunkByChunk());
+            SetUpMockSession(*session);
 
             ON_CALL(*session, GetContextSizeInTokens(_, _))
                 .WillByDefault([&](MultimodalMessageReadView request_metadata,
@@ -384,7 +353,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
             auto session = std::make_unique<
                 testing::NiceMock<optimization_guide::MockSession>>();
 
-            SetUpMockSession(*session, IsModelStreamingChunkByChunk());
+            SetUpMockSession(*session);
 
             ON_CALL(*session, SetInput(_))
                 .WillByDefault([&](MultimodalMessage request_metadata) {
@@ -530,8 +499,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
               auto session = std::make_unique<
                   testing::NiceMock<optimization_guide::MockSession>>();
 
-              SetUpMockSession(*session,
-                               /*is_streaming_chunk_by_chunk=*/true);
+              SetUpMockSession(*session);
               ON_CALL(*session, GetExecutionInputSizeInTokens(_, _))
                   .WillByDefault(
                       [&](MultimodalMessageReadView request_metadata,
@@ -588,7 +556,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
           auto session = std::make_unique<
               testing::NiceMock<optimization_guide::MockSession>>();
 
-          SetUpMockSession(*session, IsModelStreamingChunkByChunk());
+          SetUpMockSession(*session);
 
           ON_CALL(*session, GetContextSizeInTokens(_, _))
               .WillByDefault(
@@ -642,28 +610,12 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
     base::RunLoop responder_run_loop_1;
     base::RunLoop responder_run_loop_2;
 
-    EXPECT_CALL(mock_responder_1, OnStreaming(_, _))
+    EXPECT_CALL(mock_responder_1, OnStreaming(_))
         .WillOnce(testing::Invoke(
-            [&](const std::string& text,
-                blink::mojom::ModelStreamingResponderAction action) {
-              EXPECT_THAT(text, "OK");
-              EXPECT_EQ(
-                  IsAPIStreamingChunkByChunk()
-                      ? blink::mojom::ModelStreamingResponderAction::kAppend
-                      : blink::mojom::ModelStreamingResponderAction::kReplace,
-                  action);
-            }));
-    EXPECT_CALL(mock_responder_2, OnStreaming(_, _))
+            [&](const std::string& text) { EXPECT_THAT(text, "OK"); }));
+    EXPECT_CALL(mock_responder_2, OnStreaming(_))
         .WillOnce(testing::Invoke(
-            [&](const std::string& text,
-                blink::mojom::ModelStreamingResponderAction action) {
-              EXPECT_THAT(text, "OK");
-              EXPECT_EQ(
-                  IsAPIStreamingChunkByChunk()
-                      ? blink::mojom::ModelStreamingResponderAction::kAppend
-                      : blink::mojom::ModelStreamingResponderAction::kReplace,
-                  action);
-            }));
+            [&](const std::string& text) { EXPECT_THAT(text, "OK"); }));
 
     EXPECT_CALL(mock_responder_2, OnQuotaOverflow())
         .Times(should_overflow_context ? 1 : 0);
@@ -688,14 +640,12 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
   }
 
   void SetUpMockSession(
-      testing::NiceMock<optimization_guide::MockSession>& session,
-      bool is_streaming_chunk_by_chunk) {
+      testing::NiceMock<optimization_guide::MockSession>& session) {
     ON_CALL(session, GetTokenLimits())
         .WillByDefault(AITestUtils::GetFakeTokenLimits);
 
     ON_CALL(session, GetOnDeviceFeatureMetadata())
-        .WillByDefault(
-            ReturnRef(GetPromptApiMetadata(is_streaming_chunk_by_chunk)));
+        .WillByDefault(ReturnRef(GetPromptApiMetadata()));
     ON_CALL(session, GetSamplingParams()).WillByDefault([]() {
       // We don't need to use these value, so just mock it with defaults.
       return optimization_guide::SamplingParams{
@@ -724,15 +674,9 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
           callback) {
     std::string responses[3];
     std::string response = std::string(kTestResponse);
-    if (IsModelStreamingChunkByChunk()) {
-      responses[0] = response.substr(0, 1);
-      responses[1] = response.substr(1);
-      responses[2] = "";
-    } else {
-      responses[0] = response.substr(0, 1);
-      responses[1] = kTestResponse;
-      responses[2] = kTestResponse;
-    }
+    responses[0] = response.substr(0, 1);
+    responses[1] = response.substr(1);
+    responses[2] = "";
     callback.Run(CreateExecutionResult(responses[0],
                                        /*is_complete=*/false,
                                        /*input_token_count=*/1u,
@@ -754,41 +698,16 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
 
     base::RunLoop responder_run_loop;
     std::string response = std::string(kTestResponse);
-    EXPECT_CALL(mock_responder, OnStreaming(_, _))
+    EXPECT_CALL(mock_responder, OnStreaming(_))
         .Times(3)
+        .WillOnce(testing::Invoke([&](const std::string& text) {
+          EXPECT_THAT(text, response.substr(0, 1));
+        }))
+        .WillOnce(testing::Invoke([&](const std::string& text) {
+          EXPECT_THAT(text, response.substr(1));
+        }))
         .WillOnce(testing::Invoke(
-            [&](const std::string& text,
-                blink::mojom::ModelStreamingResponderAction action) {
-              EXPECT_THAT(text, response.substr(0, 1));
-              EXPECT_EQ(
-                  IsAPIStreamingChunkByChunk()
-                      ? blink::mojom::ModelStreamingResponderAction::kAppend
-                      : blink::mojom::ModelStreamingResponderAction::kReplace,
-                  action);
-            }))
-        .WillOnce(testing::Invoke(
-            [&](const std::string& text,
-                blink::mojom::ModelStreamingResponderAction action) {
-              EXPECT_THAT(text, IsAPIStreamingChunkByChunk()
-                                    ? response.substr(1)
-                                    : kTestResponse);
-              EXPECT_EQ(
-                  IsAPIStreamingChunkByChunk()
-                      ? blink::mojom::ModelStreamingResponderAction::kAppend
-                      : blink::mojom::ModelStreamingResponderAction::kReplace,
-                  action);
-            }))
-        .WillOnce(testing::Invoke(
-            [&](const std::string& text,
-                blink::mojom::ModelStreamingResponderAction action) {
-              EXPECT_THAT(text,
-                          IsAPIStreamingChunkByChunk() ? "" : kTestResponse);
-              EXPECT_EQ(
-                  IsAPIStreamingChunkByChunk()
-                      ? blink::mojom::ModelStreamingResponderAction::kAppend
-                      : blink::mojom::ModelStreamingResponderAction::kReplace,
-                  action);
-            }));
+            [&](const std::string& text) { EXPECT_THAT(text, ""); }));
 
     EXPECT_CALL(mock_responder, OnCompletion(_))
         .WillOnce(testing::Invoke(
@@ -830,30 +749,14 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    AILanguageModelTest,
-    testing::Combine(testing::Bool(), testing::Bool()),
-    [](const testing::TestParamInfo<testing::tuple<bool, bool>>& info) {
-      std::string description = "";
-      description += std::get<0>(info.param)
-                         ? "IsModelStreamingChunkByChunk"
-                         : "IsModelStreamingWithCurrentResponse";
-      description += "_";
-      description += std::get<1>(info.param)
-                         ? "IsAPIStreamingChunkByChunk"
-                         : "IsAPIStreamingWithCurrentResponse";
-      return description;
-    });
-
-TEST_P(AILanguageModelTest, PromptDefaultSession) {
+TEST_F(AILanguageModelTest, PromptDefaultSession) {
   RunPromptTest(AILanguageModelTest::Options{
       .prompt_input = kTestPrompt,
       .expected_prompt = kExpectedFormattedTestPrompt,
   });
 }
 
-TEST_P(AILanguageModelTest, PromptSessionWithSamplingParams) {
+TEST_F(AILanguageModelTest, PromptSessionWithSamplingParams) {
   RunPromptTest(AILanguageModelTest::Options{
       .sampling_params = blink::mojom::AILanguageModelSamplingParams::New(
           /*top_k=*/kTestMaxTopK - 1,
@@ -863,7 +766,7 @@ TEST_P(AILanguageModelTest, PromptSessionWithSamplingParams) {
   });
 }
 
-TEST_P(AILanguageModelTest, PromptSessionWithSamplingParams_ExceedMaxTopK) {
+TEST_F(AILanguageModelTest, PromptSessionWithSamplingParams_ExceedMaxTopK) {
   RunPromptTest(AILanguageModelTest::Options{
       .sampling_params = blink::mojom::AILanguageModelSamplingParams::New(
           /*top_k=*/kTestMaxTopK + 1,
@@ -873,7 +776,7 @@ TEST_P(AILanguageModelTest, PromptSessionWithSamplingParams_ExceedMaxTopK) {
   });
 }
 
-TEST_P(AILanguageModelTest,
+TEST_F(AILanguageModelTest,
        PromptSessionWithSamplingParams_ExceedMaxTemperature) {
   RunPromptTest(AILanguageModelTest::Options{
       .sampling_params = blink::mojom::AILanguageModelSamplingParams::New(
@@ -884,7 +787,7 @@ TEST_P(AILanguageModelTest,
   });
 }
 
-TEST_P(AILanguageModelTest, PromptSessionWithSystemPrompt) {
+TEST_F(AILanguageModelTest, PromptSessionWithSystemPrompt) {
   RunPromptTest(AILanguageModelTest::Options{
       .system_prompt = kTestSystemPrompts,
       .prompt_input = kTestPrompt,
@@ -896,7 +799,7 @@ TEST_P(AILanguageModelTest, PromptSessionWithSystemPrompt) {
   });
 }
 
-TEST_P(AILanguageModelTest, PromptSessionWithInitialPrompts) {
+TEST_F(AILanguageModelTest, PromptSessionWithInitialPrompts) {
   RunPromptTest(AILanguageModelTest::Options{
       .initial_prompts = GetTestInitialPrompts(),
       .prompt_input = kTestPrompt,
@@ -908,7 +811,7 @@ TEST_P(AILanguageModelTest, PromptSessionWithInitialPrompts) {
   });
 }
 
-TEST_P(AILanguageModelTest, PromptSessionWithSystemPromptAndInitialPrompts) {
+TEST_F(AILanguageModelTest, PromptSessionWithSystemPromptAndInitialPrompts) {
   RunPromptTest(AILanguageModelTest::Options{
       .system_prompt = kTestSystemPrompts,
       .initial_prompts = GetTestInitialPrompts(),
@@ -921,7 +824,7 @@ TEST_P(AILanguageModelTest, PromptSessionWithSystemPromptAndInitialPrompts) {
   });
 }
 
-TEST_P(AILanguageModelTest, PromptSessionWithPromptApiRequests) {
+TEST_F(AILanguageModelTest, PromptSessionWithPromptApiRequests) {
   RunPromptTest(AILanguageModelTest::Options{
       .system_prompt = "Test system prompt",
       .initial_prompts = GetTestInitialPrompts(),
@@ -940,19 +843,19 @@ TEST_P(AILanguageModelTest, PromptSessionWithPromptApiRequests) {
   });
 }
 
-TEST_P(AILanguageModelTest, PromptSessionWithQuotaOverflow) {
+TEST_F(AILanguageModelTest, PromptSessionWithQuotaOverflow) {
   RunPromptTest({.prompt_input = kTestPrompt,
                  .expected_prompt = kExpectedFormattedTestPrompt,
                  .should_overflow_context = true});
 }
 
-TEST_P(AILanguageModelTest, PromptSessionWithUnsupportedLanguage) {
+TEST_F(AILanguageModelTest, PromptSessionWithUnsupportedLanguage) {
   RunPromptTest({.should_use_supported_language = true});
 }
 
 // Tests that sending `Prompt()` after destroying the session won't make a real
 // call to the model.
-TEST_P(AILanguageModelTest, PromptAfterDestroy) {
+TEST_F(AILanguageModelTest, PromptAfterDestroy) {
   TestSessionDestroy(base::BindOnce(
       [](mojo::Remote<blink::mojom::AILanguageModel> mock_session,
          AITestUtils::MockModelStreamingResponder& mock_responder) {
@@ -964,7 +867,7 @@ TEST_P(AILanguageModelTest, PromptAfterDestroy) {
 
 // Tests that sending `Prompt()` right before destroying the session won't make
 // a real call to the model.
-TEST_P(AILanguageModelTest, PromptBeforeDestroy) {
+TEST_F(AILanguageModelTest, PromptBeforeDestroy) {
   TestSessionDestroy(base::BindOnce(
       [](mojo::Remote<blink::mojom::AILanguageModel> mock_session,
          AITestUtils::MockModelStreamingResponder& mock_responder) {
@@ -976,17 +879,17 @@ TEST_P(AILanguageModelTest, PromptBeforeDestroy) {
 
 // Tests that the session will call `AddContext()` from the second prompt when
 // there is no context overflow.
-TEST_P(AILanguageModelTest, PromptWithHistoryWithoutQuotaOverflow) {
+TEST_F(AILanguageModelTest, PromptWithHistoryWithoutQuotaOverflow) {
   TestSessionAddContext(/*should_overflow_context=*/false);
 }
 
 // Tests that the session will not call `AddContext()` from the second prompt
 // when there is context overflow.
-TEST_P(AILanguageModelTest, PromptWithHistoryWithQuotaOverflow) {
+TEST_F(AILanguageModelTest, PromptWithHistoryWithQuotaOverflow) {
   TestSessionAddContext(/*should_overflow_context=*/true);
 }
 
-TEST_P(AILanguageModelTest, CanCreate_IsLanguagesSupported) {
+TEST_F(AILanguageModelTest, CanCreate_IsLanguagesSupported) {
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibility(_))
@@ -1007,7 +910,7 @@ TEST_P(AILanguageModelTest, CanCreate_IsLanguagesSupported) {
                                                   callback.Get());
 }
 
-TEST_P(AILanguageModelTest, CanCreate_UnIsLanguagesSupported) {
+TEST_F(AILanguageModelTest, CanCreate_UnIsLanguagesSupported) {
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibility(_))
@@ -1029,7 +932,7 @@ TEST_P(AILanguageModelTest, CanCreate_UnIsLanguagesSupported) {
 }
 
 // Test Prompt() with image and audio input.
-TEST_P(AILanguageModelTest, MultimodalInput) {
+TEST_F(AILanguageModelTest, MultimodalInput) {
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce([&](optimization_guide::ModelBasedCapabilityKey feature,
@@ -1038,7 +941,7 @@ TEST_P(AILanguageModelTest, MultimodalInput) {
                         config_params) {
         auto session = std::make_unique<
             testing::NiceMock<optimization_guide::MockSession>>();
-        SetUpMockSession(*session, IsModelStreamingChunkByChunk());
+        SetUpMockSession(*session);
         EXPECT_CALL(*session, SetInput(_))
             .WillOnce([&](MultimodalMessage request_metadata) {
               EXPECT_THAT(ToString(request_metadata),
@@ -1066,7 +969,7 @@ TEST_P(AILanguageModelTest, MultimodalInput) {
 
   AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_responder, OnStreaming("OK", _)).Times(1);
+  EXPECT_CALL(mock_responder, OnStreaming("OK")).Times(1);
   EXPECT_CALL(mock_responder, OnCompletion(_))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
 
@@ -1257,25 +1160,9 @@ class AILanguageModelHackyPrototypeTest : public AILanguageModelTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    AILanguageModelHackyPrototypeTest,
-    testing::Combine(testing::Bool(), testing::Bool()),
-    [](const testing::TestParamInfo<testing::tuple<bool, bool>>& info) {
-      std::string description = "";
-      description += std::get<0>(info.param)
-                         ? "IsModelStreamingChunkByChunk"
-                         : "IsModelStreamingWithCurrentResponse";
-      description += "_";
-      description += std::get<1>(info.param)
-                         ? "IsAPIStreamingChunkByChunk"
-                         : "IsAPIStreamingWithCurrentResponse";
-      return description;
-    });
-
 // Test Prompt() with image input.
 // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
-TEST_P(AILanguageModelHackyPrototypeTest, Basic) {
+TEST_F(AILanguageModelHackyPrototypeTest, Basic) {
   MockOnDeviceVisionSession mock_on_device_vision_session;
   // First call is for input.
   EXPECT_CALL(mock_on_device_vision_session, Append(_, _))
@@ -1323,7 +1210,7 @@ TEST_P(AILanguageModelHackyPrototypeTest, Basic) {
                   config_params) {
             auto session = std::make_unique<
                 testing::NiceMock<optimization_guide::MockSession>>();
-            SetUpMockSession(*session, IsModelStreamingChunkByChunk());
+            SetUpMockSession(*session);
             // optimization_guide::Session execution is bypassed for now.
             EXPECT_CALL(*session, GetContextSizeInTokens(_, _)).Times(0);
             EXPECT_CALL(*session, AddContext(_)).Times(0);
@@ -1337,7 +1224,7 @@ TEST_P(AILanguageModelHackyPrototypeTest, Basic) {
       CreateMockSession();
   AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_responder, OnStreaming("Lovely, thanks for sharing", _));
+  EXPECT_CALL(mock_responder, OnStreaming("Lovely, thanks for sharing"));
   EXPECT_CALL(mock_responder, OnCompletion(_))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
 

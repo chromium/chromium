@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
 
 #include "base/time/time.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -683,6 +684,13 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   WalkChildren(*layout_view, *root_node, *document_style);
   page_content->root_node = std::move(root_node);
 
+  if (stack_depth_exceeded_) {
+    ukm::builders::OptimizationGuide_AIPageContentAgent(
+        document.UkmSourceID())
+        .SetNodeDepthLimitExceeded(true)
+        .Record(document.UkmRecorder());
+  }
+
   return page_content;
 }
 
@@ -740,7 +748,7 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
   // used in message creation.
   static const int kMaxTreeDepth = kMaxRecursionDepth - 8;
   if (stack_depth_ > kMaxTreeDepth) {
-    // TODO(gklassen): Add a metric for this.
+    stack_depth_exceeded_ = true;
     return false;
   }
 
