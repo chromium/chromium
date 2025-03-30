@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <variant>
 
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
@@ -173,6 +174,9 @@ FillDataRetrievalResult AccountSelectFillData::GetFillData(
 FillDataRetrievalResult AccountSelectFillData::GetFillData(
     const std::u16string& username) const {
   if (!last_requested_form_) {
+    SCOPED_CRASH_KEY_NUMBER(
+        "Bug6401794", "fill_data_status",
+        static_cast<int>(FillDataRetrievalStatus::kNoCachedLastRequestForm));
     DUMP_WILL_BE_NOTREACHED();
     return base::unexpected(FillDataRetrievalStatus::kNoCachedLastRequestForm);
   }
