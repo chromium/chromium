@@ -77,12 +77,14 @@ void AutofillAiLogger::RecordFormMetrics(const autofill::FormStructure& form,
                                          bool submission_state,
                                          bool opt_in_status) {
   FunnelState state = form_states_[form.global_id()];
-  ukm_logger_.LogKeyMetrics(
-      ukm_source_id, form, /*data_to_fill_available=*/state.has_data_to_fill,
-      /*suggestions_shown=*/state.suggestions_shown,
-      /*suggestion_filled=*/state.did_fill_suggestions,
-      /*edited_autofilled_field=*/state.edited_autofilled_field,
-      /*opt_in_status=*/opt_in_status);
+  if (submission_state) {
+    ukm_logger_.LogKeyMetrics(
+        ukm_source_id, form, /*data_to_fill_available=*/state.has_data_to_fill,
+        /*suggestions_shown=*/state.suggestions_shown,
+        /*suggestion_filled=*/state.did_fill_suggestions,
+        /*edited_autofilled_field=*/state.edited_autofilled_field,
+        /*opt_in_status=*/opt_in_status);
+  }
 
   LogFunnelMetric("Eligibility", submission_state, state.is_eligible);
   if (!state.is_eligible) {

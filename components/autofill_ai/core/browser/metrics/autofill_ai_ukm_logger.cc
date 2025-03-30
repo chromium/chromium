@@ -133,7 +133,7 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
       mqls_key_metrics->set_filling_acceptance(suggestion_filled);
     }
     if (suggestion_filled) {
-      mqls_key_metrics->set_filling_correctness(edited_autofilled_field);
+      mqls_key_metrics->set_filling_correctness(!edited_autofilled_field);
     }
   }
 

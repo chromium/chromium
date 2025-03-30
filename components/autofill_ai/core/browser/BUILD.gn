@@ -50,6 +50,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//base",
       "//components/autofill/core/browser:test_support",
       "//components/autofill/core/common",
+      "//components/optimization_guide/core:test_support",
       "//testing/gmock",
     ]
   }
@@ -69,6 +70,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//base/test:test_support",
       "//components/autofill/core/browser:test_support",
       "//components/autofill/core/common",
+      "//components/optimization_guide/core:test_support",
       "//components/prefs:test_support",
       "//testing/gmock",
       "//testing/gtest",

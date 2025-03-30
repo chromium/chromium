@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -25,7 +26,12 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 #include "components/autofill_ai/core/browser/autofill_ai_manager_test_api.h"
+#include "components/autofill_ai/core/browser/metrics/autofill_ai_ukm_logger.h"
 #include "components/autofill_ai/core/browser/mock_autofill_ai_client.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
+#include "components/optimization_guide/proto/features/forms_classifications.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -93,6 +99,34 @@ class BaseAutofillAiTest : public testing::Test {
     entity_data_manager_.AddOrUpdateEntityInstance(std::move(entity));
     webdata_helper_.WaitUntilIdle();
   }
+
+  // A form is made eligible by adding an AutofillAi type prediction.
+  std::unique_ptr<autofill::FormStructure> CreateEligibleForm() {
+    autofill::FormData form_data;
+    form_data.set_main_frame_origin(
+        url::Origin::Create(GURL("https://myform_root.com/form.html")));
+    auto form = std::make_unique<autofill::FormStructure>(form_data);
+    autofill::AutofillField& autofill_ai_field = test_api(*form).PushField();
+    autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+        FieldPrediction prediction;
+    prediction.set_type(autofill::PASSPORT_NAME_TAG);
+    autofill_ai_field.set_server_predictions({prediction});
+
+    return form;
+  }
+
+  std::unique_ptr<autofill::FormStructure> CreateIneligibleForm() {
+    autofill::FormData form_data;
+    auto form = std::make_unique<autofill::FormStructure>(form_data);
+    autofill::AutofillField& prediction_improvement_field =
+        test_api(*form).PushField();
+    prediction_improvement_field.SetTypeTo(
+        autofill::AutofillType(autofill::CREDIT_CARD_NUMBER),
+        autofill::AutofillPredictionSource::kHeuristics);
+    return form;
+  }
+
+  MockAutofillAiClient& client() { return client_; }
 
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
@@ -188,30 +222,6 @@ class AutofillAiFunnelMetricsTest
           GetCorrectionAfterFillHistogram(submitted()), 0);
     }
   }
-
-  // A form is made eligible by adding an AutofillAi type prediction.
-  std::unique_ptr<autofill::FormStructure> CreateEligibleForm() {
-    autofill::FormData form_data;
-    auto form = std::make_unique<autofill::FormStructure>(form_data);
-    autofill::AutofillField& autofill_ai_field = test_api(*form).PushField();
-    autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-        FieldPrediction prediction;
-    prediction.set_type(autofill::PASSPORT_NAME_TAG);
-    autofill_ai_field.set_server_predictions({prediction});
-
-    return form;
-  }
-
-  std::unique_ptr<autofill::FormStructure> CreateIneligibleForm() {
-    autofill::FormData form_data;
-    auto form = std::make_unique<autofill::FormStructure>(form_data);
-    autofill::AutofillField& prediction_improvement_field =
-        test_api(*form).PushField();
-    prediction_improvement_field.SetTypeTo(
-        autofill::AutofillType(autofill::CREDIT_CARD_NUMBER),
-        autofill::AutofillPredictionSource::kHeuristics);
-    return form;
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(AutofillAiTest,
@@ -276,6 +286,192 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
   test_api(manager()).logger().RecordFormMetrics(
       *form, /*ukm_source_id=*/{}, submitted(), /*opt_in_status=*/true);
   ExpectCorrectFunnelRecording(histogram_tester);
+}
+
+class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
+ public:
+  AutofillAiMqlsMetricsTest() {
+    logs_uploader_ = std::make_unique<
+        optimization_guide::TestModelQualityLogsUploaderService>(&local_state_);
+
+    optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(
+        local_state_.registry());
+    optimization_guide::model_execution::prefs::RegisterProfilePrefs(
+        local_state_.registry());
+    ON_CALL(client(), GetMqlsUploadService)
+        .WillByDefault(testing::Return(logs_uploader_.get()));
+  }
+
+  const std::vector<
+      std::unique_ptr<optimization_guide::proto::LogAiDataRequest>>&
+  mqls_logs() {
+    return logs_uploader_->uploaded_logs();
+  }
+
+  const optimization_guide::proto::AutofillAiFieldEvent&
+  GetLastFieldEventLogs() {
+    return *(logs_uploader_->uploaded_logs()
+                 .back()
+                 ->mutable_forms_classifications()
+                 ->mutable_quality()
+                 ->mutable_field_event());
+  }
+
+  const optimization_guide::proto::AutofillAiKeyMetrics& GetKeyMetricsLogs() {
+    return *(logs_uploader_->uploaded_logs()
+                 .back()
+                 ->mutable_forms_classifications()
+                 ->mutable_quality()
+                 ->mutable_key_metrics());
+  }
+
+  void ExpectCorrectMqlsFieldEventLogging(
+      const optimization_guide::proto::AutofillAiFieldEvent& mqls_field_event,
+      const autofill::FormStructure& form,
+      const autofill::AutofillField& field,
+      AutofillAiUkmLogger::EventType event_type,
+      int event_order) {
+    std::string event = [&] {
+      switch (event_type) {
+        case AutofillAiUkmLogger::EventType::kSuggestionShown:
+          return "EventType: SuggestionShown";
+        case AutofillAiUkmLogger::EventType::kSuggestionFilled:
+          return "EventType: SuggestionFilled";
+        case AutofillAiUkmLogger::EventType::kEditedAutofilledValue:
+          return "EventType: EditedAutofilledValue";
+      }
+    }();
+
+    EXPECT_EQ(mqls_field_event.domain(), "myform_root.com") << event;
+    EXPECT_EQ(mqls_field_event.form_signature(), form.form_signature().value())
+        << event;
+    EXPECT_EQ(
+        mqls_field_event.form_session_identifier(),
+        autofill::autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()))
+        << event;
+    EXPECT_EQ(mqls_field_event.form_session_event_order(), event_order)
+        << event;
+    EXPECT_EQ(mqls_field_event.field_signature(),
+              field.GetFieldSignature().value())
+        << event;
+    EXPECT_EQ(
+        mqls_field_event.field_session_identifier(),
+        autofill::autofill_metrics::FieldGlobalIdToHash64Bit(field.global_id()))
+        << event;
+    EXPECT_EQ(mqls_field_event.field_rank(), field.rank()) << event;
+    EXPECT_EQ(mqls_field_event.field_rank_in_signature_group(),
+              field.rank_in_signature_group())
+        << event;
+    EXPECT_EQ(mqls_field_event.field_type(),
+              static_cast<int>(field.Type().GetStorableType()))
+        << event;
+    EXPECT_EQ(
+        mqls_field_event.ai_field_type(),
+        static_cast<int>(field.GetAutofillAiServerTypePredictions().value_or(
+            autofill::UNKNOWN_TYPE)))
+        << event;
+    EXPECT_EQ(base::to_underlying(mqls_field_event.format_string_source()),
+              base::to_underlying(field.format_string_source()))
+        << event;
+    EXPECT_EQ(base::to_underlying(mqls_field_event.form_control_type()),
+              base::to_underlying(field.form_control_type()) + 1)
+        << event;
+    EXPECT_EQ(base::to_underlying(mqls_field_event.event_type()),
+              base::to_underlying(event_type))
+        << event;
+  }
+
+  void ExpectCorrectMqlsKeyMetricsLogging(
+      const optimization_guide::proto::AutofillAiKeyMetrics& mqls_key_metrics,
+      const autofill::FormStructure& form,
+      bool filling_readiness,
+      bool filling_assistance,
+      bool filling_acceptance,
+      bool filling_correctness) {
+    EXPECT_EQ(mqls_key_metrics.domain(), "myform_root.com");
+    EXPECT_EQ(mqls_key_metrics.form_signature(), form.form_signature().value());
+    EXPECT_EQ(
+        mqls_key_metrics.form_session_identifier(),
+        autofill::autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()));
+    EXPECT_EQ(mqls_key_metrics.filling_readiness(), filling_readiness);
+    EXPECT_EQ(mqls_key_metrics.filling_assistance(), filling_assistance);
+    EXPECT_EQ(mqls_key_metrics.filling_acceptance(), filling_acceptance);
+    EXPECT_EQ(mqls_key_metrics.filling_correctness(), filling_correctness);
+  }
+
+ private:
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<optimization_guide::TestModelQualityLogsUploaderService>
+      logs_uploader_;
+};
+
+TEST_F(AutofillAiMqlsMetricsTest, FieldEvent) {
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+
+  test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(0),
+                                                  /*ukm_source_id=*/{});
+  ASSERT_EQ(mqls_logs().size(), 1u);
+  ExpectCorrectMqlsFieldEventLogging(
+      GetLastFieldEventLogs(), *form, *form->field(0),
+      AutofillAiUkmLogger::EventType::kSuggestionShown, /*event_order=*/0);
+
+  test_api(manager()).logger().OnDidFillSuggestion(*form, *form->field(0),
+                                                   /*ukm_source_id=*/{});
+  ASSERT_EQ(mqls_logs().size(), 2u);
+  ExpectCorrectMqlsFieldEventLogging(
+      GetLastFieldEventLogs(), *form, *form->field(0),
+      AutofillAiUkmLogger::EventType::kSuggestionFilled, /*event_order=*/1);
+
+  test_api(manager()).logger().OnEditedAutofilledField(*form, *form->field(0),
+                                                       /*ukm_source_id=*/{});
+  ASSERT_EQ(mqls_logs().size(), 3u);
+  ExpectCorrectMqlsFieldEventLogging(
+      GetLastFieldEventLogs(), *form, *form->field(0),
+      AutofillAiUkmLogger::EventType::kEditedAutofilledValue,
+      /*event_order=*/2);
+}
+
+TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+
+  test_api(manager()).logger().OnFormHasDataToFill(form->global_id());
+  test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(0),
+                                                  /*ukm_source_id=*/{});
+  test_api(manager()).logger().OnDidFillSuggestion(*form, *form->field(0),
+                                                   /*ukm_source_id=*/{});
+  test_api(manager()).logger().OnEditedAutofilledField(*form, *form->field(0),
+                                                       /*ukm_source_id=*/{});
+
+  test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
+                                                 /*submitted_state=*/true,
+                                                 /*opt_in_status=*/true);
+  ASSERT_EQ(mqls_logs().size(), 4u);
+  ExpectCorrectMqlsKeyMetricsLogging(
+      GetKeyMetricsLogs(), *form, /*filling_readiness=*/true,
+      /*filling_assistance=*/true,
+      /*filling_acceptance=*/true, /*filling_correctness=*/false);
+}
+
+// Tests that KeyMetrics MQLS metrics aren't recorded if the user is not opted
+// in for Autofill AI.
+TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics_OptOut) {
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+
+  test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
+                                                 /*submitted_state=*/true,
+                                                 /*opt_in_status=*/false);
+  EXPECT_TRUE(mqls_logs().empty());
+}
+
+// Tests that KeyMetrics MQLS metrics aren't recorded if the form was abandoned
+// and not submitted.
+TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics_FormAbandoned) {
+  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
+
+  test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
+                                                 /*submitted_state=*/false,
+                                                 /*opt_in_status=*/true);
+  EXPECT_TRUE(mqls_logs().empty());
 }
 
 }  // namespace
