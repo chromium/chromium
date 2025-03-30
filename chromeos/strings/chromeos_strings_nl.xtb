@@ -791,7 +791,6 @@ Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck 
 <translation id="4593212453765072419">Proxyverificatie vereist</translation>
 <translation id="4594021849294327751">Transcript maken</translation>
 <translation id="4594541568452132351">Transcriptietaal selecteren en model downloaden</translation>
-<translation id="4607282946861182308">Kan geen afbeeldingen hiervan maken. Probeer een andere prompt.</translation>
 <translation id="4609350030397390689">Helderheid van toetsenbord verlagen</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> van <ph name="TOTAL_PAGE_NUMBER" />. Druk op Enter om de afdruktaak te annuleren.</translation>
 <translation id="463791356324567266">Scannen annuleren…</translation>
@@ -1540,6 +1539,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8010765388850538088">Meer informatie over generatieve AI</translation>
 <translation id="8017679124341497925">Snelkoppeling bewerkt</translation>
 <translation id="802154636333426148">Downloaden mislukt</translation>
+<translation id="8027467664787098346">Meer informatie over de geselecteerde achtergrond</translation>
 <translation id="8028993641010258682">Grootte</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Modus voor automatische kleuren aanzetten</translation>
@@ -1658,6 +1658,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8543574988889671960">Tabblad opnieuw laden</translation>
 <translation id="8550364285433943656">Plaats bedieningselementen op game-acties om te spelen met toetsenbordtoetsen</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck de reacties.</translation>
 <translation id="8575298406870537639">Je provider kan deze optie vereisen om verbinding te maken met hun netwerk. Neem contact op met je provider voor meer informatie.</translation>
 <translation id="8576249514688522074">Niet geïnitialiseerd</translation>
 <translation id="8584654835905316966">Start je computer opnieuw op om de installatie van firmware voor <ph name="DEVICE_NAME" /> naar versie <ph name="VERSION" /> af te ronden. Je computer lijkt misschien een paar keer opnieuw op te starten. Dit is normaal.</translation>
@@ -1672,7 +1673,6 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8655295600908251630">Kanaal</translation>
 <translation id="8655828773034788261">URL delen:</translation>
 <translation id="8660881923941176839">pound</translation>
-<translation id="8670057600920888023">Generatieve AI is experimenteel en content kan onjuist, misleidend of aanstootgevend zijn.</translation>
 <translation id="8670574982334489519">rechts</translation>
 <translation id="8675354002693747642">Eerder gedeelde sleutel</translation>
 <translation id="8677859815076891398">Geen albums. Maak een album in <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" />.</translation>

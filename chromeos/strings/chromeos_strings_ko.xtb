@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">프록시 인증이 필요합니다.</translation>
 <translation id="4594021849294327751">스크립트 만들기</translation>
 <translation id="4594541568452132351">스크립트 작성 언어 선택 및 모델 다운로드</translation>
-<translation id="4607282946861182308">이미지를 만들 수 없습니다. 다른 프롬프트를 사용해 보세요.</translation>
 <translation id="4609350030397390689">키보드 밝기 낮추기</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> 인쇄 작업을 취소하려면 Enter를 누릅니다.</translation>
 <translation id="463791356324567266">스캔 취소 중…</translation>
@@ -1659,6 +1658,7 @@
 <translation id="8543574988889671960">탭 새로고침</translation>
 <translation id="8550364285433943656">게임 액션에 컨트롤을 사용하여 키보드 키로 플레이하세요.</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">생성형 AI는 인물 등에 관한 정보 제공 시 실수를 할 수 있으니 다시 한번 확인하세요.</translation>
 <translation id="8575298406870537639">이동통신사에서 네트워크에 연결하기 위해 이 옵션을 요구할 수 있습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
 <translation id="8576249514688522074">초기화되지 않음</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> 버전 <ph name="VERSION" />의 펌웨어 설치를 완료하려면 기기를 다시 시작해야 합니다. 컴퓨터가 여러 번 재부팅되는 것처럼 보일 수 있습니다. 이는 예상되는 동작입니다.</translation>
@@ -1673,7 +1673,6 @@
 <translation id="8655295600908251630">채널</translation>
 <translation id="8655828773034788261">공유 URL:</translation>
 <translation id="8660881923941176839">파운드</translation>
-<translation id="8670057600920888023">생성형 AI는 현재 실험 단계에 있으므로 부정확하거나, 오해의 소지가 있거나, 불쾌감을 주는 콘텐츠가 표시될 수 있습니다.</translation>
 <translation id="8670574982334489519">오른쪽</translation>
 <translation id="8675354002693747642">사전 공유 키:</translation>
 <translation id="8677859815076891398">앨범이 없습니다. <ph name="LINK_BEGIN" />Google 포토<ph name="LINK_END" />에서 앨범을 만드세요.</translation>

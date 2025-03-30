@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Invalid ang manifest file</translation>
 <translation id="7217838517480956708">Kinakailangan ng administrator ng machine na ito na ma-install ang <ph name="EXTENSION_NAME" />. Hindi ito maaaring alisin o baguhin.</translation>
 <translation id="7612608473764576263">Dapat valid ang format ng value ng input para sa pribadong key (PKCS#8-format PEM-encoded RSA key).</translation>
+<translation id="7876803335449432072">Hindi ma-load ang file na '<ph name="RELATIVE_PATH" />' para sa script ng content, malo-load lang ang style sheet ng script ng content mula sa mga sinusuportahang style sheet file tulad ng mga .css file.</translation>
 <translation id="7939686037314084444">Hindi na-load nang maayos ang extension. Maaaring hindi nito mapigilan ang mga kahilingan sa network.</translation>
 <translation id="7972881773422714442">Mga Opsyon: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Nakaharap sa user</translation>
 <translation id="8047248493720652249">Nabigong pangalanan ng extension na ito ang download na "<ph name="ATTEMPTED_FILENAME" />" dahil nakatukoy ang isa pang extension (<ph name="EXTENSION_NAME" />) ng ibang filename na "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> mula sa <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Nawawala o hindi mabasa ang manifest file</translation>
+<translation id="8621383749470166852">Hindi ma-load ang file na '<ph name="RELATIVE_PATH" />' para sa script ng content, malo-load lang ang mga script ng content mula sa mga sinusuportahang JavaScript file tulad ng mga .js file.</translation>
 <translation id="8636666366616799973">Di-wasto ang package. Mga Detalye: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">Humihiling ang "<ph name="APP_NAME" />" ng access sa isa sa iyong mga device:</translation>
 <translation id="8885905466771744233">Umiiral na ang pribadong key para sa tinukoy na extension. Gamiting muli ang key na iyon o tanggalin muna ito.</translation>

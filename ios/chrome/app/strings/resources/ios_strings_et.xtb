@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Eemalda</translation>
 <translation id="1190609913194133056">Märguannete keskus</translation>
 <translation id="1201402288615127009">Järgmine</translation>
-<translation id="1202892408424955784">Jälgitavad tooted</translation>
 <translation id="1204075260022434100">{count,plural, =1{Järjehoidja salvestati teie kontol {email} kausta „{title}“}other{{count} järjehoidjat salvestati teie kontol {email} kausta „{title}“.}}</translation>
 <translation id="120431140543679678">Jälgimine</translation>
 <translation id="1207493287814084192">17.30</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">uus üksus</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> kontot kasutavad sama parooli</translation>
 <translation id="2059166748188874810">Vald</translation>
-<translation id="2060114494785549741">Kustuta 1 kuu pärast</translation>
 <translation id="2060638295449304809">See aadress on salvestatud ainult sellesse seadmesse. Selle kasutamiseks muudes seadmetes salvestage need oma Google’i kontole <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Ühikutüübi valija</translation>
 <translation id="2067852168641682340">Salvesta iga kord sellele kontole</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Hinna jälgimise kaardi peitmine</translation>
 <translation id="2216366330550244277">Avage toote leht</translation>
 <translation id="2220529011494928058">Probleemist teatamine</translation>
-<translation id="2220887224562128152">Kui fail on kustutamiseks ajastatud, ei saa seda enam taastada.</translation>
 <translation id="2223461067862937305">Loo QR-kood</translation>
 <translation id="2229345671837147090">Kaugseadme vahelehtede ruudustik</translation>
 <translation id="2230173723195178503">Veebileht laaditi</translation>
@@ -493,7 +490,6 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="3059270601560379555">Uus otsing</translation>
 <translation id="3064547930554042309">Allalaadimiste haldamine</translation>
 <translation id="3072279342064724558">Parool on juba olemas</translation>
-<translation id="3074862506644936708">Luba automaatne kustutamine</translation>
 <translation id="3076846064362030967">Teid ei logita teie Google'i kontolt välja. Kui olete sisse logitud, võidakse teie <ph name="BEGIN_LINK" />muud tegevused<ph name="END_LINK" /> teie Google'i kontole salvestada. Saate need alati kustutada.
 
 
@@ -912,6 +908,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4896467949657706481">Vahelehed suleti; teid logiti välja</translation>
 <translation id="4913626501929406101">Saate mõne oma peregrupi liikmega turvaliselt oma parooli koopiat jagada. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Nõustu</translation>
+<translation id="4930714375720679147">Lülita sisse</translation>
 <translation id="4932733599132424254">Kuupäev</translation>
 <translation id="4936354130727646074">Ära teisalda kunagi</translation>
 <translation id="4937410517508563815">Salvestage kontole paroole</translation>
@@ -1147,7 +1144,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5899314093904173337">Läheduses asuvate inimestega jagamiseks paluge neil kaamera või QR-skannerirakendusega skannida see QR-kood</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} uus vaheleht}other{{count} uut vahelehte}}</translation>
 <translation id="5911030830365207728">Google'i tõlge</translation>
-<translation id="5917913282764181683">Allalaaditud failide automaatne kustutamine</translation>
 <translation id="5922999516621365983">Vahelehe kinnitamiseks lohistage see siia.</translation>
 <translation id="5936006948844852401">Salvestusruumi haldamine</translation>
 <translation id="5936065461722368675">Tõlgi kogu leht</translation>
@@ -1506,7 +1502,6 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="741204030948306876">Jah, sobib</translation>
 <translation id="7417689656810783109">Grupi ümbernimetamine</translation>
 <translation id="7419565702166471774">Kasuta alati turvalist ühendust</translation>
-<translation id="742001653298797675">Planeerige kõik allalaadimised ühe kuu pärast kustutamiseks, et säästa telefoni ruumi ja kaitsta oma privaatsust.</translation>
 <translation id="7425053386765766120">Makseviisi lisamine …</translation>
 <translation id="7425346204213733349">Järjehoidjates, ajaloos, paroolides ja muudes seadetes tehtud muudatusi ei sünkroonita enam teie Google'i kontoga. Teie olemasolevad andmed jäävad siiski teie Google'i kontole.</translation>
 <translation id="742664698522525515">Kas soovite grupi säilitada?</translation>

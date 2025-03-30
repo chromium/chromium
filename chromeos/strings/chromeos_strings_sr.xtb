@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Потребна је потврда аутентичности проксија</translation>
 <translation id="4594021849294327751">Направи транскрипт</translation>
 <translation id="4594541568452132351">Изаберите језик транскрипције и модел преузимања</translation>
-<translation id="4607282946861182308">Не можемо да направимо слике на којима је ово. Пробајте са другим упитом.</translation>
 <translation id="4609350030397390689">Смањите осветљеност тастатуре</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> од <ph name="TOTAL_PAGE_NUMBER" />. Притисните тастер Enter да бисте отказали задатак штампања.</translation>
 <translation id="463791356324567266">Отказује се скенирање...</translation>
@@ -1659,6 +1658,7 @@
 <translation id="8543574988889671960">Поново учитајте картицу</translation>
 <translation id="8550364285433943656">Поставите контроле за радње у игри да бисте играли помоћу тастера на тастатури</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">Генеративна вештачка интелигенција може да приказује нетачне информације, укључујући и информације о људима, па проверите одговоре.</translation>
 <translation id="8575298406870537639">Мобилни оператер може да затражи ову опцију ради повезивања на мрежу. Обратите се мобилном оператеру за детаље.</translation>
 <translation id="8576249514688522074">Није покренуто</translation>
 <translation id="8584654835905316966">Рестартовање је обавезно да би се довршилa инсталација фирмвера за <ph name="DEVICE_NAME" /> на верзију <ph name="VERSION" />. Може да изгледа као да се рачунар рестартује неколико пута. Ово је очекивано понашање.</translation>
@@ -1673,7 +1673,6 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655828773034788261">Дели URL:</translation>
 <translation id="8660881923941176839">фунте</translation>
-<translation id="8670057600920888023">Генеративна вештачка интелигенција је експериментална и садржај може да буде нетачан, обмањујући или увредљив.</translation>
 <translation id="8670574982334489519">десна</translation>
 <translation id="8675354002693747642">Тајни кључ</translation>
 <translation id="8677859815076891398">Нема албума. Направите албум у <ph name="LINK_BEGIN" />Google сликама<ph name="LINK_END" />.</translation>

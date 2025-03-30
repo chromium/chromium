@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">需要 Proxy 驗證</translation>
 <translation id="4594021849294327751">建立轉錄稿</translation>
 <translation id="4594541568452132351">選取語音轉錄語言並下載模型</translation>
-<translation id="4607282946861182308">無法製作這類圖片，請試試其他提示。</translation>
 <translation id="4609350030397390689">鍵盤亮度調低</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已列印 <ph name="PRINTED_PAGE_NUMBER" /> 頁 (共 <ph name="TOTAL_PAGE_NUMBER" /> 頁)。按下 Enter 鍵即可取消列印工作。</translation>
 <translation id="463791356324567266">正在取消掃描…</translation>
@@ -1540,6 +1539,7 @@
 <translation id="8010765388850538088">進一步瞭解生成式 AI</translation>
 <translation id="8017679124341497925">已編輯捷徑</translation>
 <translation id="802154636333426148">下載失敗</translation>
+<translation id="8027467664787098346">進一步瞭解選取的桌布</translation>
 <translation id="8028993641010258682">大小</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">啟用自動色彩模式</translation>
@@ -1658,6 +1658,7 @@
 <translation id="8543574988889671960">重新載入分頁</translation>
 <translation id="8550364285433943656">針對遊戲操作設定控制項，即可使用鍵盤按鍵玩遊戲</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">生成式 AI 回覆的資訊不一定正確 (包括人物相關資訊)，請多加查證。</translation>
 <translation id="8575298406870537639">你的電信業者可能會要求你必須選擇此選項才能連線至他們的網路。如要瞭解詳情，請洽詢你的電信業者。</translation>
 <translation id="8576249514688522074">未初始化</translation>
 <translation id="8584654835905316966">必須重新啟動系統，才能完成 <ph name="DEVICE_NAME" /> 韌體安裝作業，並更新至版本 <ph name="VERSION" />。電腦可能會多次重新啟動，這是正常現象。</translation>
@@ -1672,7 +1673,6 @@
 <translation id="8655295600908251630">版本</translation>
 <translation id="8655828773034788261">分享網址：</translation>
 <translation id="8660881923941176839">磅</translation>
-<translation id="8670057600920888023">生成式 AI 目前處於實驗階段，因此內容可能不正確、具誤導性或令人反感。</translation>
 <translation id="8670574982334489519">右側</translation>
 <translation id="8675354002693747642">預先共用金鑰</translation>
 <translation id="8677859815076891398">沒有任何相簿。請在 <ph name="LINK_BEGIN" />Google 相簿<ph name="LINK_END" />中建立相簿。</translation>

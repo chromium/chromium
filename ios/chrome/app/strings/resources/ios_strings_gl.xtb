@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1190609913194133056">Centro de notificacións</translation>
 <translation id="1201402288615127009">Seguinte</translation>
-<translation id="1202892408424955784">Produtos dos que se fai un seguimento</translation>
 <translation id="1204075260022434100">{count,plural, =1{Gardouse o marcador no cartafol "{title}" da túa conta ({email})}other{Gardáronse {count} marcadores no cartafol "{title}" da túa conta ({email})}}</translation>
 <translation id="120431140543679678">Seguir</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">novo elemento</translation>
 <translation id="2049727122989709386">Hai <ph name="COUNT" /> contas nas que se usa o mesmo contrasinal</translation>
 <translation id="2059166748188874810">Concello</translation>
-<translation id="2060114494785549741">Eliminar dentro dun mes</translation>
 <translation id="2060638295449304809">Este enderezo está gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa Conta de Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="20638360198452347">Selector do tipo de unidade</translation>
 <translation id="2067852168641682340">Gardar sempre nesta conta</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Ocultar a tarxeta Facer seguimento do prezo</translation>
 <translation id="2216366330550244277">Vai á páxina dun produto</translation>
 <translation id="2220529011494928058">Informar dun problema</translation>
-<translation id="2220887224562128152">Unha vez que se programe a eliminación dun ficheiro, non se poderá recuperar.</translation>
 <translation id="2223461067862937305">Crear código QR</translation>
 <translation id="2229345671837147090">Grade de pestanas remotas</translation>
 <translation id="2230173723195178503">Cargouse a páxina web</translation>
@@ -493,7 +490,6 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="3059270601560379555">Nova busca</translation>
 <translation id="3064547930554042309">Xestionar as descargas</translation>
 <translation id="3072279342064724558">O contrasinal xa existe</translation>
-<translation id="3074862506644936708">Activar eliminación automática</translation>
 <translation id="3076846064362030967">Non se pechará sesión na túa Conta de Google. Cando teñas a sesión iniciada, é posible que se garden na túa Conta de Google <ph name="BEGIN_LINK" />outros datos da túa actividade<ph name="END_LINK" />. Podes eliminalos en calquera momento.
 
 
@@ -912,6 +908,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4896467949657706481">Pecháronse as pestanas e mais a túa sesión</translation>
 <translation id="4913626501929406101">Podes compartir de maneira segura unha copia do teu contrasinal con calquera persoa do teu grupo familiar. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Aceptar</translation>
+<translation id="4930714375720679147">Activar</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4936354130727646074">Non mover nunca</translation>
 <translation id="4937410517508563815">Garda os contrasinais na conta</translation>
@@ -1147,7 +1144,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5899314093904173337">Para compartir contido coas persoas que estean preto, deixa que escaneen este código QR coa cámara ou coa aplicación de escáner de QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} pestana nova}other{{count} pestanas novas}}</translation>
 <translation id="5911030830365207728">Tradutor de Google</translation>
-<translation id="5917913282764181683">Eliminar automaticamente as descargas</translation>
 <translation id="5922999516621365983">Arrastrar a pestana aquí para fixala.</translation>
 <translation id="5936006948844852401">Xestionar espazo</translation>
 <translation id="5936065461722368675">Traducir páxina completa</translation>
@@ -1506,7 +1502,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="741204030948306876">Si, acepto</translation>
 <translation id="7417689656810783109">Cambiar nome do grupo</translation>
 <translation id="7419565702166471774">Usar sempre conexións seguras</translation>
-<translation id="742001653298797675">Programa a eliminación das túas descargas unha vez ao mes para aforrar espazo no teléfono e protexer a túa privacidade.</translation>
 <translation id="7425053386765766120">Engadir método de pago…</translation>
 <translation id="7425346204213733349">Os cambios nos marcadores, no historial, nos contrasinais e noutras opcións de configuración deixarán de sincronizarse coa túa conta de Google. Non obstante, os teus datos actuais permanecerán almacenados na túa conta de Google.</translation>
 <translation id="742664698522525515">Queres manter o grupo?</translation>

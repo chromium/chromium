@@ -453,6 +453,9 @@ public class AccountSelectionJUnitTestBase {
         if (key == ItemProperties.SPINNER_ENABLED) {
             return model.get((WritableBooleanPropertyKey) key);
         }
+        if (key == ItemProperties.DRAGBAR_HANDLE_VISIBLE) {
+            return model.get((WritableBooleanPropertyKey) key);
+        }
         return model.get((WritableObjectPropertyKey<PropertyModel>) key) != null;
     }
 }

@@ -36,6 +36,8 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
   autofill::EntityDataManager* GetEntityDataManager() override;
   autofill::FormStructure* GetCachedFormStructure(
       const autofill::FormGlobalId& form_id) override;
+  optimization_guide::ModelQualityLogsUploaderService* GetMqlsUploadService()
+      override;
   void ShowSaveOrUpdateBubble(
       autofill::EntityInstance new_entity,
       std::optional<autofill::EntityInstance> old_entity,

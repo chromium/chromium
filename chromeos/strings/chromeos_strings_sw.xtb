@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">Uthibitishaji wa proksi unahitajika</translation>
 <translation id="4594021849294327751">Tayarisha manukuu</translation>
 <translation id="4594541568452132351">Chagua lugha ya manukuu na upakue mfumo</translation>
-<translation id="4607282946861182308">Imeshindwa kubuni picha za kidokezo hiki. Jaribu kidokezo kingine.</translation>
 <translation id="4609350030397390689">Punguza mwangaza wa kibodi</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> kati ya <ph name="TOTAL_PAGE_NUMBER" />. Bonyeza 'Enter' ili ughairi kazi ya kuchapisha.</translation>
 <translation id="463791356324567266">Inaghairi uchanganuzi...</translation>
@@ -1540,6 +1539,7 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="8010765388850538088">Pata maelezo zaidi kuhusu AI Zalishi</translation>
 <translation id="8017679124341497925">Umebadilisha njia ya mkato</translation>
 <translation id="802154636333426148">Haikuweza kupakua</translation>
+<translation id="8027467664787098346">Pata maelezo zaidi kuhusu mandhari uliyochagua</translation>
 <translation id="8028993641010258682">Ukubwa</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Washa hali ya kubadilisha rangi kiotomatiki</translation>
@@ -1658,6 +1658,7 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="8543574988889671960">Pakia kichupo upya</translation>
 <translation id="8550364285433943656">Weka vidhibiti vya vitendo vya mchezo ili ucheze ukitumia funguo za kibodi</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">AI zalishi inaweza kukosea, yakiwemo makosa kuhusu watu, kwa hivyo kagua majibu yake.</translation>
 <translation id="8575298406870537639">Huenda mtoa huduma wako akahitaji chaguo hili ili uweze kuunganisha kwenye mtandao wake. Wasiliana na mtoa huduma wako ili upate maelezo.</translation>
 <translation id="8576249514688522074">Haijaanzishwa</translation>
 <translation id="8584654835905316966">Unahitaji kuzima kisha uwashe kifaa chako ili kukamilisha mchakato wa kuweka toleo la <ph name="VERSION" /> la programu dhibiti kwenye <ph name="DEVICE_NAME" />. Huenda kompyuta yako ikazima na kuwaka tena mara kadhaa. Hali hiyo inatarajiwa.</translation>
@@ -1672,7 +1673,6 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="8655295600908251630">Kituo</translation>
 <translation id="8655828773034788261">Shiriki URL:</translation>
 <translation id="8660881923941176839">wakia</translation>
-<translation id="8670057600920888023">AI zalishi inafanyiwa majaribio na maudhui yake yanaweza kuwa si sahihi, yanayopotosha au ya kukera.</translation>
 <translation id="8670574982334489519">kulia</translation>
 <translation id="8675354002693747642">Kitufe kilichoshirikiwa awali</translation>
 <translation id="8677859815076891398">Hakuna albamu. Anzisha albamu mpya katika <ph name="LINK_BEGIN" />Picha kwenye Google<ph name="LINK_END" />.</translation>

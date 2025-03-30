@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">Сырткы түзмөктөр Конок режиминде колдоого алынбайт</translation>
 <translation id="1270290102613614947">Экрандагы баскычтоп өчүрүлдү</translation>
 <translation id="1272079795634619415">Токтотуу</translation>
+<translation id="12741168609094094">Экрандагы каалаган нерсени тандап, текстти көчүрүп жана башка аракеттерди аткарыңыз</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> түзмөгүн кубаттоодо</translation>
 <translation id="1275718070701477396">Тандалган</translation>
 <translation id="1276975447697633661">Файлды тандап, <ph name="KEY" /> баскычын басыңыз</translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">Байланыш түйүнү өчүк</translation>
 <translation id="1731815243805539470">Мурунку колдонуучуга которулуу</translation>
 <translation id="1733996486177697563">Караңгы жана жарык темалардын арасында которулуңуз. Иш тактада коё бербей басып туруп, "Тушкагаз жана стилди" тандаңыз.</translation>
+<translation id="1735992454301033090">Аймак тандалды, жылдыруу үчүн жебе баскычтарын колдонуңуз</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" Bluetooth түзмөктөрүнө көрүнөт.</translation>
 <translation id="1737078180382804488">Телефонуңуздагы билдирмелерди көрүү параметрин жабуу</translation>
 <translation id="174102739345480129">Белгилегич өчүк.</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806">Өткөн аптада, <ph name="DAY_OF_WEEK" /> күнү</translation>
 <translation id="2687510499067466116">Ыкчам баскыч өзгөрдү</translation>
 <translation id="2689613560355655046">8-иш такта</translation>
+<translation id="2692092709110488417">Фокустоо жана тандалган аймакты жылдыруу үчүн Tab баскычын колдонуңуз</translation>
 <translation id="2695305337569143674">Интернет</translation>
 <translation id="2697697418792422688">Баскычтоптун параметрлерин көрсөтүү. <ph name="KEYBOARD_NAME" /> тандалды.</translation>
 <translation id="2699913284398121653">Окуу аккаунтуңуздагы маалыматты жеке аккаунтуңузга жылдыруу үчүн Content Transfer колдонмосун пайдаланыңыз</translation>
@@ -729,6 +732,7 @@
 <translation id="346243998268439747">Чоңойтуп/кичирейтүү деңгээлин баштапкы абалга келтирүү</translation>
 <translation id="3465223694362104965">Түзмөккө акыркы жолу киргениңизден кийин ага башка баскычтоп туташтырылды. Аны колдонуудан мурда ал ишенимдүү экенин текшериңиз.</translation>
 <translation id="3465356146291925647">Администраторуңуз башкарат</translation>
+<translation id="3470502288861289375">Көчүрүлүүдө…</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, андан соң <ph name="KEY_TWO" /> же <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1033,6 +1037,7 @@
 <translation id="4412698727486357573">Жардам борбору</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> өчүк.</translation>
 <translation id="4417647906073317561">Ынтаа коюу режиминин параметрлери. Ишке киришүү үчүн таймерди, ишти жана музыканы коюңуз.</translation>
+<translation id="4418600384772451109">Панелди жабуу</translation>
 <translation id="4424159417645388645">5-иш такта</translation>
 <translation id="4426817706804363424">Баракелде!</translation>
 <translation id="4430019312045809116">Үндүн катуулугу</translation>
@@ -2229,6 +2234,7 @@
 <translation id="8287009018010202411">Майнаптуулук</translation>
 <translation id="828708037801473432">Өчүк</translation>
 <translation id="8297006494302853456">Начар</translation>
+<translation id="8300451473979404345">Маркер тандалды, жылдыруу үчүн жебе баскычтарын колдонуңуз</translation>
 <translation id="8308637677604853869">Мурунку меню</translation>
 <translation id="830868413617744215">Бета</translation>
 <translation id="8314772463905284467">Caps Lock күйүк</translation>
@@ -2289,6 +2295,7 @@
 <translation id="851458219935658693">Учурдагы иш тактадагы терезелерди көрсөтүү, радио баскычы тандалды</translation>
 <translation id="851660987304951246">Мазмундун корутундусун тез түзүү же суроолорду берүү үчүн "Окуганга жардам бер" куралын колдонуңуз</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> түзмөгүңүз өчүп турганда кубатталбай калышы мүмкүн.</translation>
+<translation id="8519329096920173967">Экрандагыны Google Lens менен издөө</translation>
 <translation id="8535393432370007982">Түсү боюнча иреттөө тартибин артка кайтаруу</translation>
 <translation id="8536886494750559755">Тез Бөлүшүү параметрлерин көрсөтүү. Баарына <ph name="TIME_REMAINING" /> чейин көрүнөт</translation>
 <translation id="8539803091108018926">Текст алмашуу буферине көчүрүлдү</translation>

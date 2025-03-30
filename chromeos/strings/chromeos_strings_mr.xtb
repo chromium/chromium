@@ -387,7 +387,7 @@
 <translation id="2617397783536231890">कॉटन</translation>
 <translation id="2618015542787108131">वाळूची टेकडी</translation>
 <translation id="2619761439309613843">दैनिक रिफ्रेश</translation>
-<translation id="2620436844016719705">सिस्टम</translation>
+<translation id="2620436844016719705">सिस्टीम</translation>
 <translation id="2637303424821734920">बंद - स्थानिक हवामान प्रदर्शित करण्यासाठी <ph name="BEGIN_LINK" />सिस्टीम स्थान अ‍ॅक्सेस सुरू करणे <ph name="END_LINK" /> हे करा</translation>
 <translation id="2638662041295312666">साइन इन इमेज</translation>
 <translation id="2640549051766135490">अल्‍बम <ph name="TITLE" /> <ph name="DESC" /> निवडला</translation>
@@ -791,7 +791,6 @@
 <translation id="4593212453765072419">प्रॉक्सी प्रमाणीकरण आवश्यक</translation>
 <translation id="4594021849294327751">ट्रान्स्क्रिप्ट तयार करा</translation>
 <translation id="4594541568452132351">ट्रान्स्क्रिप्शनची भाषा निवडा आणि मॉडेल डाउनलोड करा</translation>
-<translation id="4607282946861182308">याच्या इमेज तयार करू शकत नाही. दुसरा प्रॉम्प्ट वापरून पहा.</translation>
 <translation id="4609350030397390689">कीबोर्डचा ब्राइटनेस कमी करा</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> पैकी <ph name="PRINTED_PAGE_NUMBER" />. प्रिंट कार्य रद्द करण्यासाठी एंटर प्रेस करा.</translation>
 <translation id="463791356324567266">स्कॅनिंग रद्द करत आहे...</translation>
@@ -1659,6 +1658,7 @@
 <translation id="8543574988889671960">टॅब रीलोड करा</translation>
 <translation id="8550364285433943656">कीबोर्डच्या की वापरून खेळण्यासाठी गेमसंबंधित कृतींना नियंत्रणे लागू करा</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">जनरेटिव्ह AI हे लोकांच्या बाबतीतदेखील चुका करू शकते, त्यामुळे ते दोनदा तपासा.</translation>
 <translation id="8575298406870537639">तुमच्या वाहकाला त्यांच्या नेटवर्कशी कनेक्ट करण्यासाठी या पर्यायाची आवश्यकता असू शकते. तपशिलांसाठी तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="8576249514688522074">सुरुवात केलेली नाही</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> साठी <ph name="VERSION" /> आवृत्तीवर फर्मवेअरचे इंस्टॉलेशन पूर्ण करण्यासाठी रीस्‍टार्टची आवश्‍यकता आहे. तुमचा काँप्युटर अनेक वेळा रीबूट होताना दिसेल. हे वर्तन अपेक्षित आहे.</translation>
@@ -1673,7 +1673,6 @@
 <translation id="8655295600908251630">खाडी</translation>
 <translation id="8655828773034788261">URL शेअर करा:</translation>
 <translation id="8660881923941176839">पाउंड</translation>
-<translation id="8670057600920888023">जनरेटिव्ह AI प्रायोगिक आहे आणि आशय चुकीचा, दिशाभूल करणारा किंवा आक्षेपार्ह असू शकतो.</translation>
 <translation id="8670574982334489519">उजवीकडे</translation>
 <translation id="8675354002693747642">आधी शेअर केलेली की</translation>
 <translation id="8677859815076891398">कोणतेही अल्बम नाहीत. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मध्ये एखादा अल्बम तयार करा.</translation>

@@ -60,6 +60,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
+#include "components/autofill_ai/core/browser/autofill_ai_import_utils.h"
 #include "components/autofill_ai/core/browser/autofill_ai_logger.h"
 #include "components/autofill_ai/core/browser/autofill_ai_utils.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_suggestions.h"
@@ -84,90 +85,6 @@ using autofill::LogBuffer;
 using autofill::LoggingScope;
 using autofill::LogMessage;
 using autofill::SuggestionType;
-
-bool AttributesMeetImportConstraints(EntityType entity_type,
-                                     DenseSet<AttributeType> attributes) {
-  return std::ranges::any_of(entity_type.import_constraints(),
-                             [&](const DenseSet<AttributeType>& constraint) {
-                               return attributes.contains_all(constraint);
-                             });
-}
-
-bool EntitySatisfiesImportConstraints(const EntityInstance& entity) {
-  return AttributesMeetImportConstraints(
-      entity.type(), DenseSet(entity.attributes(), &AttributeInstance::type));
-}
-
-std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
-    const FormStructure& submitted_form,
-    const std::string& app_locale) {
-  std::map<autofill::Section,
-           std::map<EntityType, std::map<AttributeType, AttributeInstance>>>
-      section_to_entity_types_attributes;
-  for (const std::unique_ptr<AutofillField>& field : submitted_form.fields()) {
-    std::optional<FieldType> autofill_ai_server_prediction =
-        field->GetAutofillAiServerTypePredictions();
-    if (!autofill_ai_server_prediction) {
-      continue;
-    }
-    std::optional<AttributeType> field_attribute_type =
-        AttributeType::FromFieldType(*autofill_ai_server_prediction);
-    CHECK(field_attribute_type);
-    // TODO(crbug.com/389629676): Save data format.
-    std::u16string value = field->value(autofill::ValueSemantics::kCurrent);
-    base::TrimWhitespace(value, base::TRIM_ALL, &value);
-    if (value.empty()) {
-      continue;
-    }
-
-    std::map<AttributeType, AttributeInstance>& entity_attributes =
-        section_to_entity_types_attributes[field->section()]
-                                          [field_attribute_type->entity_type()];
-    auto attribute_it =
-        entity_attributes
-            .try_emplace(*field_attribute_type, *field_attribute_type)
-            .first;
-    attribute_it->second.SetInfo(
-        field->Type().GetStorableType(), value, app_locale,
-        field->format_string() ? *field->format_string() : u"",
-        autofill::VerificationStatus::kObserved);
-  }
-
-  for (auto& [section, entities] : section_to_entity_types_attributes) {
-    for (auto& [entity_type, attributes] : entities) {
-      for (auto& [attribute_type, attribute] : attributes) {
-        attribute.FinalizeInfo();
-      }
-      std::erase_if(attributes, [&](const auto& pair) {
-        const AttributeInstance& attribute = pair.second;
-        return attribute.GetCompleteInfo(app_locale).empty();
-      });
-    }
-  }
-
-  std::vector<EntityInstance> entities_found_in_form;
-  for (auto& [section, entity_to_attributes] :
-       section_to_entity_types_attributes) {
-    for (auto& [entity_name, attributes] : entity_to_attributes) {
-      if (attributes.empty()) {
-        continue;
-      }
-      EntityInstance entity = EntityInstance(
-          EntityType(entity_name),
-          base::ToVector(
-              attributes,
-              &std::pair<const AttributeType, AttributeInstance>::second),
-          base::Uuid::GenerateRandomV4(),
-          /*nickname=*/std::string(""), base::Time::Now());
-      if (!EntitySatisfiesImportConstraints(entity)) {
-        continue;
-      }
-      entities_found_in_form.push_back(std::move(entity));
-    }
-  }
-
-  return entities_found_in_form;
-}
 
 // Returns true if `entity` cannot be merged in any of the `current_entities`
 // nor is a subset of any of them. This means that a save prompt should be
@@ -356,7 +273,7 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {
   }
   std::vector<EntityInstance> entity_instances_from_form =
       GetPossibleEntitiesFromSubmittedForm(
-          form, client_->GetAutofillClient().GetAppLocale());
+          form.fields(), client_->GetAutofillClient().GetAppLocale());
   if (entity_instances_from_form.empty()) {
     return false;
   }

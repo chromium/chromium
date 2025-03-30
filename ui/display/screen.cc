@@ -161,6 +161,10 @@ std::optional<float> Screen::GetPreferredScaleFactorForView(
   return GetPreferredScaleFactorForWindow(GetWindowForView(view));
 }
 
+bool Screen::IsHeadless() const {
+  return false;
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TabletState Screen::GetTabletState() const {
   return TabletState::kInClamshellMode;

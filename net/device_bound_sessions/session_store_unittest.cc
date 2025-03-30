@@ -6,7 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "net/device_bound_sessions/unexportable_key_service_factory.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,7 +46,7 @@ class SessionStoreTest : public TestWithTaskEnvironment {
 };
 
 TEST_F(SessionStoreTest, HasStore) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider_;
   auto store = SessionStore::Create(store_file_path());
   EXPECT_TRUE(store);
 }
@@ -54,7 +54,7 @@ TEST_F(SessionStoreTest, HasStore) {
 TEST_F(SessionStoreTest, NoStore) {
   // Empty db path not allowed.
   {
-    crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+    crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider_;
     auto store = SessionStore::Create(base::FilePath());
     EXPECT_FALSE(store);
   }

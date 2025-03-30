@@ -94,8 +94,8 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/unexportable_key.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/enclave/constants.h"
@@ -835,8 +835,8 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
         webauthn_dll_override_(&fake_webauthn_dll_),
 #endif
         recovery_key_store_(FakeRecoveryKeyStore::New()),
-        mock_hw_provider_(
-            std::make_unique<crypto::ScopedMockUnexportableKeyProvider>()) {
+        fake_hw_provider_(
+            std::make_unique<crypto::ScopedFakeUnexportableKeyProvider>()) {
 #if BUILDFLAG(IS_WIN)
     // Make webauthn.dll unavailable to ensure a consistent test environment on
     // Windows. Otherwise the version of webauthn.dll can differ between
@@ -1145,7 +1145,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
   std::unique_ptr<ScopedICloudDriveOverride> scoped_icloud_drive_override_;
 #endif
   std::unique_ptr<FakeRecoveryKeyStore> recovery_key_store_;
-  std::unique_ptr<crypto::ScopedMockUnexportableKeyProvider> mock_hw_provider_;
+  std::unique_ptr<crypto::ScopedFakeUnexportableKeyProvider> fake_hw_provider_;
   network::TestURLLoaderFactory url_loader_factory_;
   std::unique_ptr<DelegateObserver> delegate_observer_;
   std::unique_ptr<ModelObserver> model_observer_;
@@ -3848,7 +3848,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        IsUVPAA_NoUnexportableKeys) {
   // Without support for unexportable keys, IsUVPAA should return false because
   // the enclave cannot be used.
-  mock_hw_provider_.reset();
+  fake_hw_provider_.reset();
   crypto::ScopedNullUnexportableKeyProvider no_hw_key_support;
   EXPECT_FALSE(IsUVPAA());
 }
@@ -4150,7 +4150,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, CancelRacesTPMCheck) {
 
   // Set the UnexportableKeyProvider to one that will block inside
   // `SelectAlgorithm` so that we can simulate a slow TPM check.
-  mock_hw_provider_.reset();
+  fake_hw_provider_.reset();
   crypto::internal::SetUnexportableKeyProviderForTesting(
       BlockingUnexportableKeyProviderFactory);
 

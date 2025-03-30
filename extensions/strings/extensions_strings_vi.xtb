@@ -49,12 +49,14 @@
 <translation id="7068383018033524534">Tệp kê khai không hợp lệ</translation>
 <translation id="7217838517480956708">Quản trị viên của máy này yêu cầu cài đặt <ph name="EXTENSION_NAME" />. Bạn không thể xóa hoặc sửa đổi tiện ích này.</translation>
 <translation id="7612608473764576263">Giá trị đầu vào của khóa riêng tư phải có định dạng hợp lệ (khóa RSA mã hóa kiểu PEM có định dạng PKCS#8).</translation>
+<translation id="7876803335449432072">Không thể tải tệp "<ph name="RELATIVE_PATH" />" cho tập lệnh nội dung. Các biểu định kiểu tập lệnh nội dung chỉ có thể được tải từ các tệp biểu định kiểu được hỗ trợ, chẳng hạn như tệp .css.</translation>
 <translation id="7939686037314084444">Không tải được tiện ích đúng cách. Tiện ích này có thể không chặn được các yêu cầu mạng.</translation>
 <translation id="7972881773422714442">Tùy chọn: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Máy ảnh mặt trước</translation>
 <translation id="8047248493720652249">Tiện ích này không thể đặt tên cho bản tải xuống "<ph name="ATTEMPTED_FILENAME" />" vì một tiện ích khác (<ph name="EXTENSION_NAME" />) đã xác định tên tệp khác "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> từ <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Tệp kê khai bị thiếu hoặc không thể đọc được</translation>
+<translation id="8621383749470166852">Không thể tải tệp "<ph name="RELATIVE_PATH" />" cho tập lệnh nội dung. Tập lệnh nội dung chỉ có thể được tải từ các tệp JavaScript được hỗ trợ, chẳng hạn như tệp .js.</translation>
 <translation id="8636666366616799973">Gói không hợp lệ. Chi tiết: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" đang yêu cầu quyền truy cập vào một trong các thiết bị của bạn:</translation>
 <translation id="8885905466771744233">Khoá cá nhân cho tiện ích chỉ định đã tồn tại. Hãy sử dụng lại hoặc xóa khóa đó trước tiên.</translation>

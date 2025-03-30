@@ -91,6 +91,7 @@
 <translation id="3054480780637153380">បើក​ការកំណត់ Chromium នៅក្នុង iOS រួច​ចុចលើ "កម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើម" ហើយ​ជ្រើសរើស Chromium។</translation>
 <translation id="3102849287235003384">ដើម្បីចេញ​ពី​គណនី Google របស់អ្នក​នៅលើ​គ្រប់​គេហទំព័រ សូម​<ph name="BEGIN_LINK" />ចេញពី Chromium<ph name="END_LINK" />។</translation>
 <translation id="3115956258722352278">កំណត់​ឱ្យ Chromium ក្លាយជា​កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​លំនាំដើម​របស់អ្នកឬ?</translation>
+<translation id="3180939591219927904">បើក "ចាក់សោ​ផ្ទាំងឯកជន នៅពេល​អ្នក​បិទ Chromium"</translation>
 <translation id="3242612358525156339">ពីការកំណត់​ក្នុងឧបករណ៍​របស់​អ្នក សូម​បើក "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" រួច​ជ្រើសរើស "Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{ឥឡូវនេះកំពុងបង្ហាញវិនដូ Chromium ចំនួន 1}other{ឥឡូវនេះកំពុងបង្ហាញវិនដូ Chromium ចំនួន {count}}}</translation>
 <translation id="3344973607274501920">Chromium មិនអាចពិនិត្យ​ពាក្យសម្ងាត់របស់អ្នកបានទេ។ សូមសាកល្បងពិនិត្យ​ការតភ្ជាប់អ៊ីនធឺណិត​របស់អ្នក។</translation>
@@ -260,6 +261,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">ទិន្នន័យដែលបានជ្រើសរើសត្រូវបានលុបចេញពី Chromium និងឧបករណ៍ដែលបានធ្វើសមកាលកម្មហើយ។ គណនី Google របស់អ្នកអាចនឹងមានទម្រង់ប្រវត្តិរុករកផ្សេងទៀត ដូចជា៖ ការស្វែងរក និងសកម្មភាពចេញពីសេវាកម្ម Google ផ្សេងទៀតនៅ history.google.com</translation>
 <translation id="7395825497086981028">ពាក្យសម្ងាត់របស់អ្នកនឹងត្រូវបានរក្សាទុកទៅក្នុងកម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់សម្រាប់ <ph name="EMAIL" />។</translation>
+<translation id="7504829997542308412">បើក Chromium</translation>
 <translation id="7531461704633548377">ពី Chromium</translation>
 <translation id="7554983317097061001">គន្លឹះ Chromium៖ ផ្ទាស់ទី Chromium ទៅធ្នើរ</translation>
 <translation id="7576863740961052505">គ្រប់គ្រង​ការកំណត់ Chromium</translation>

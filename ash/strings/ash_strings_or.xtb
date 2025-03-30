@@ -91,6 +91,7 @@
 <translation id="1269405891096105529">ଅତିଥି ମୋଡରେ ପେରିଫେରାଲ୍ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="1270290102613614947">ଅନ୍-ସ୍କ୍ରିନ୍ କୀ'ବୋର୍ଡକୁ ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="1272079795634619415">ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="12741168609094094">ସର୍ଚ୍ଚ କରିବା, ଟେକ୍ସଟ କପି କରିବା ଏବଂ ଆହୁରି ଅନେକ କିଛି କରିବାକୁ ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଥିବା ଯେ କୌଣସି ଜିନିଷକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="1275285675049378717">ଚାଲୁ କରୁଛି <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">ଚୟନ କରାଯାଇଛି</translation>
 <translation id="1276975447697633661">ଫାଇଲ ଚୟନ କରି <ph name="KEY" />କୁ ଦବାନ୍ତୁ</translation>
@@ -227,6 +228,7 @@
 <translation id="1720230731642245863">ହଟସ୍ପଟ ବନ୍ଦ ଅଛି</translation>
 <translation id="1731815243805539470">ପୂର୍ବବର୍ତ୍ତୀ ୟୁଜରଙ୍କୁ ସ୍ୱିଚ କରନ୍ତୁ</translation>
 <translation id="1733996486177697563">ଗାଢ଼ା ଏବଂ ହାଲୁକା ଥିମ ମଧ୍ୟରେ ସ୍ୱିଚ କରନ୍ତୁ। ଡେସ୍କଟପରେ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ, ତା'ପରେ ୱାଲପେପର ଏବଂ ଷ୍ଟାଇଲକୁ ଚୟନ କରନ୍ତୁ।</translation>
+<translation id="1735992454301033090">ଚୟନିତ ଏରିଆ, ମୁଭ କରିବା ପାଇଁ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1736898441010944794">ବ୍ଲୁଟୁଥ ଡିଭାଇସଗୁଡ଼ିକରେ "<ph name="NAME" />" ଦେଖାଯାଏ।</translation>
 <translation id="1737078180382804488">ଆପଣଙ୍କ ଫୋନର ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଭ୍ୟୁ କରିବାକୁ ସେଟ ଅପ କରିବା ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="174102739345480129">ମାର୍କର ବନ୍ଦ ଅଛି।</translation>
@@ -494,6 +496,7 @@
 <translation id="2683887737780133806">ଗତ ସପ୍ତାହ <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2687510499067466116">କୀବୋର୍ଡ ସର୍ଟକଟ ପରିବର୍ତ୍ତନ ହୋଇଯାଇଛି</translation>
 <translation id="2689613560355655046">ଡେସ୍କ 8</translation>
+<translation id="2692092709110488417">ଚୟନିତ ଏରିଆକୁ ଫୋକସ କରି ମୁଭ କରିବା ପାଇଁ ଟାବ ଦବାନ୍ତୁ</translation>
 <translation id="2695305337569143674">ୱେବ</translation>
 <translation id="2697697418792422688">କୀବୋର୍ଡ ସେଟିଂସ ଦେଖାନ୍ତୁ। <ph name="KEYBOARD_NAME" />କୁ ଚୟନ କରାଯାଇଛି।</translation>
 <translation id="2699913284398121653">ଆପଣଙ୍କ ସ୍କୁଲ ଆକାଉଣ୍ଟ ଡାଟାକୁ ଆପଣଙ୍କର ବ୍ୟକ୍ତିଗତ ଆକାଉଣ୍ଟକୁ ମୁଭ କରିବା ପାଇଁ Content Transfer ଆପକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -729,6 +732,7 @@
 <translation id="346243998268439747">ଜୁମ ଲେଭେଲକୁ ରିସେଟ କରନ୍ତୁ</translation>
 <translation id="3465223694362104965">ଆପଣ ଗତଥର ପାଇଁ ସାଇନ୍ ଇନ୍ କରିବା ପରେ ଅନ୍ୟ ଏକ କୀ'ବୋର୍ଡ ଏହି ଡିଭାଇସ୍‍‍ରେ ସଂଯୁକ୍ତ ହୋଇଛି। ଆପଣ ଏହି କୀ'ବୋର୍ଡକୁ ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ ଏହା ଭରସାଯୋଗ୍ୟ ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="3465356146291925647">ଆପଣଙ୍କ ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
+<translation id="3470502288861289375">କପି କରାଯାଉଛି…</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> ତା'ପରେ <ph name="KEY_TWO" /> କିମ୍ବା <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1033,6 +1037,7 @@
 <translation id="4412698727486357573">ସହାୟତା କେନ୍ଦ୍ର</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ବନ୍ଦ ଅଛି।</translation>
 <translation id="4417647906073317561">ଫୋକସ ସେଟିଂସ। ବ୍ୟବହାର କରିବା ଆରମ୍ଭ କରିବା ପାଇଁ ଏକ ଟାଇମର, ଟାସ୍କ ଓ ମ୍ୟୁଜିକ ସେଟ କରନ୍ତୁ।</translation>
+<translation id="4418600384772451109">ପେନେଲ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4424159417645388645">ଡେସ୍କ 5</translation>
 <translation id="4426817706804363424">ଅଭିନନ୍ଦନ!</translation>
 <translation id="4430019312045809116">ଭଲ୍ୟୁମ୍</translation>
@@ -2228,6 +2233,7 @@
 <translation id="8287009018010202411">ଉତ୍ପାଦନକ୍ଷମତା</translation>
 <translation id="828708037801473432">ବନ୍ଦ</translation>
 <translation id="8297006494302853456">ଦୁର୍ବଳ</translation>
+<translation id="8300451473979404345">ଚୟନିତ ହେଣ୍ଡେଲ, ମୁଭ କରିବା ପାଇଁ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8308637677604853869">ପୂର୍ବବର୍ତ୍ତୀ ମେନୁ</translation>
 <translation id="830868413617744215">ବେଟା</translation>
 <translation id="8314772463905284467">Caps Lock ଚାଲୁ ଅଛି</translation>
@@ -2288,6 +2294,7 @@
 <translation id="851458219935658693">ବର୍ତ୍ତମାନର ଡେସ୍କରୁ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ଦେଖାନ୍ତୁ, ରେଡିଓ ବଟନକୁ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="851660987304951246">ଶୀଘ୍ର ବିଷୟବସ୍ତୁର ସାରାଂଶ ତିଆରି କରିବା କିମ୍ବା ପ୍ରଶ୍ନ ପଚାରିବା ପାଇଁ 'ମୋତେ ପଢ଼ିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ'କୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8517041960877371778">ଯେତେବେଳେ ଏହା ଚାଲୁ ଅଛି, ସେତେବେଳେ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ଚାର୍ଜ ହୋ‍ଇନପାରେ।</translation>
+<translation id="8519329096920173967">Google Lens ମାଧ୍ୟମରେ ମୋ ସ୍କ୍ରିନ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8535393432370007982">ରଙ୍ଗ ଅନୁସାରେ ସର୍ଟ କରିବାକୁ ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
 <translation id="8536886494750559755">Quick Share ସେଟିଂ ଦେଖାନ୍ତୁ। <ph name="TIME_REMAINING" /> ପାଇଁ ସମସ୍ତଙ୍କୁ ଦେଖାଯିବ</translation>
 <translation id="8539803091108018926">କ୍ଲିପବୋର୍ଡକୁ ଟେକ୍ସଟ କପି କରାଯାଇଛି</translation>

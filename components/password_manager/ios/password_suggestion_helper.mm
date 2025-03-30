@@ -4,6 +4,8 @@
 
 #import "components/password_manager/ios/password_suggestion_helper.h"
 
+#import <utility>
+
 #import "base/feature_list.h"
 #import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
@@ -189,7 +191,7 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
 - (NSArray<FormSuggestion*>*)retrieveSuggestionsWithForm:
     (FormSuggestionProviderQuery*)formQuery {
   const std::string frameId = SysNSStringToUTF8(formQuery.frameID);
-  AccountSelectFillData* fillData = [self fillDataForFrameId:frameId];
+  AccountSelectFillData* fillData = [self fillDataForFrameId:frameId].first;
 
   BOOL isPasswordField =
       [self isPasswordFieldOnForm:formQuery
@@ -200,10 +202,13 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
   if (fillData->IsSuggestionsAvailable(formQuery.formRendererID,
                                        formQuery.fieldRendererID,
                                        isPasswordField)) {
-    const password_manager::FormInfo* formInfo = fillData->GetFormInfo(
-        formQuery.formRendererID, formQuery.fieldRendererID, isPasswordField);
-    bool is_single_username_form = formInfo && formInfo->username_element_id &&
-                                   !formInfo->password_element_id;
+    password_manager::FormInfoRetrievalResult formInfoResult =
+        fillData->GetFormInfo(formQuery.formRendererID,
+                              formQuery.fieldRendererID, isPasswordField);
+    bool is_single_username_form =
+        formInfoResult.has_value() &&
+        formInfoResult.value()->username_element_id &&
+        !formInfoResult.value()->password_element_id;
 
     std::vector<password_manager::UsernameAndRealm> usernameAndRealms =
         fillData->RetrieveSuggestions(formQuery.formRendererID,
@@ -269,7 +274,7 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
                              fillDataProvider:self
                               isPasswordField:isPasswordField];
 
-  AccountSelectFillData* fillData = [self fillDataForFrameId:frame_id];
+  AccountSelectFillData* fillData = [self fillDataForFrameId:frame_id].first;
 
   if (![formQuery hasFocusType] || !fillData->Empty() ||
       _framesFormExtractionStatus[frame_id] ==
@@ -308,21 +313,40 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
   _framesFormExtractionStatus[frame_id] = FormExtractionStatus::kRequested;
 }
 
-- (std::unique_ptr<password_manager::FillData>)
+- (password_manager::FillDataRetrievalResult)
     passwordFillDataForUsername:(NSString*)username
         likelyRealPasswordField:(bool)passwordField
                  formIdentifier:(autofill::FormRendererId)formId
                 fieldIdentifier:(autofill::FieldRendererId)fieldId
                         frameId:(const std::string&)frameId {
-  return [self fillDataForFrameId:frameId]->GetFillData(
-      SysNSStringToUTF16(username), formId, fieldId, passwordField);
+  auto [fill_data, is_new] = [self fillDataForFrameId:frameId];
+  if (is_new) {
+    // If the AccountSelectFillData was freshly created, there is no way there
+    // is going to be FillData matching the query. Return an error as the result
+    // with the exact reason why the FillData wasn't available. This would
+    // ultimately lead not being to match the form for FillData but we wouldn't
+    // know exactly why.
+    return base::unexpected(
+        password_manager::FillDataRetrievalStatus::kNoFrame);
+  }
+  return fill_data->GetFillData(SysNSStringToUTF16(username), formId, fieldId,
+                                passwordField);
 }
 
-- (std::unique_ptr<password_manager::FillData>)
+- (password_manager::FillDataRetrievalResult)
     passwordFillDataForUsername:(NSString*)username
                      forFrameId:(const std::string&)frameId {
-  return [self fillDataForFrameId:frameId]->GetFillData(
-      SysNSStringToUTF16(username));
+  auto [fill_data, is_new] = [self fillDataForFrameId:frameId];
+  if (is_new) {
+    // If the AccountSelectFillData was freshly created, there is no way there
+    // is going to be FillData matching the query. Return an error as the result
+    // with the exact reason why the FillData wasn't available. This would
+    // ultimately lead not being to match the form for FillData but we wouldn't
+    // know exactly why.
+    return base::unexpected(
+        password_manager::FillDataRetrievalStatus::kNoFrame);
+  }
+  return fill_data->GetFillData(SysNSStringToUTF16(username));
 }
 
 - (void)resetForNewPage {
@@ -336,7 +360,7 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
                             isMainFrame:(BOOL)isMainFrame
                       forSecurityOrigin:(const url::Origin&)origin {
   DCHECK(_webState.get());
-  [self fillDataForFrameId:frameId]->Add(
+  [self fillDataForFrameId:frameId].first->Add(
       formData, [self shouldAlwaysPopulateRealmForFrame:frameId
                                             isMainFrame:isMainFrame
                                       forSecurityOrigin:origin]);
@@ -442,8 +466,8 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
                       fieldRendererId:(autofill::FieldRendererId)fieldRendererId
                       isPasswordField:(bool)isPasswordField {
   return [self fillDataForFrameId:SysNSStringToUTF8(frameId)]
-      ->IsSuggestionsAvailable(formRendererId, fieldRendererId,
-                               isPasswordField);
+      .first->IsSuggestionsAvailable(formRendererId, fieldRendererId,
+                                     isPasswordField);
 }
 
 #pragma mark - Private
@@ -503,12 +527,16 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
   }
 }
 
-- (AccountSelectFillData*)fillDataForFrameId:(const std::string&)frameId {
+// Returns a pair where the first element is the AccountSelectFillData for the
+// corresponding `frameId` and the second element a bool that is true if the
+// AccountSelectFillData had to be lazily created (i.e. didn't exist before).
+- (std::pair<AccountSelectFillData*, bool>)fillDataForFrameId:
+    (const std::string&)frameId {
   // Create empty AccountSelectFillData for the frame if it doesn't exist.
-  return _fillDataMap
-      .insert(
-          std::make_pair(frameId, std::make_unique<AccountSelectFillData>()))
-      .first->second.get();
+  auto insert_result = _fillDataMap.insert(
+      std::make_pair(frameId, std::make_unique<AccountSelectFillData>()));
+  return std::make_pair(insert_result.first->second.get(),
+                        insert_result.second);
 }
 
 // Completes, if needed, frame extraction for `frameId`.

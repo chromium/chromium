@@ -8,6 +8,7 @@
 <translation id="100323615638474026">‏جهاز USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">سجلّ عمليات التنزيل الأخيرة</translation>
 <translation id="1004218526896219317">الوصول إلى موقع إلكتروني</translation>
+<translation id="1005230401424685968">السنة</translation>
 <translation id="1005274289863221750">استخدام الميكروفون والكاميرا</translation>
 <translation id="1005333234656240382">‏هل تريد تفعيل خيار "تصحيح الأخطاء عبر ADB"؟</translation>
 <translation id="1005671386794704751">وردي</translation>
@@ -1371,6 +1372,7 @@
 <translation id="193565226207940518">أداة الدعم</translation>
 <translation id="1935995810530254458">النسخ على أيّ حال</translation>
 <translation id="1936157145127842922">عرض في المجلد</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{تمت إضافة الصفحة إلى "قائمة القراءة"}zero{تمت إضافة الصفحات إلى "قائمة القراءة"}two{تمت إضافة الصفحتَين إلى "قائمة القراءة"}few{تمت إضافة الصفحات إلى "قائمة القراءة"}many{تمت إضافة الصفحات إلى "قائمة القراءة"}other{تمت إضافة الصفحات إلى "قائمة القراءة"}}</translation>
 <translation id="1936931585862840749">استخدِم رقمًا للإشارة إلى عدد النُسخ المطلوب طباعتها (من 1 إلى <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">يتعذّر استيراد نوع بنية الحاوية <ph name="ARCHITECTURE_CONTAINER" /> باستخدام هذا الجهاز الذي يمثل <ph name="ARCHITECTURE_DEVICE" />.يمكنك محاولة استعادة هذه الحاوية على جهاز مختلف، أو يمكنك الوصول إلى الملفات داخل صورة الحاوية هذه عن طريق فتح تطبيق "الملفات".</translation>
 <translation id="1938351510777341717">‏مفتاح Command الخارجي</translation>
@@ -3180,7 +3182,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         يمكنك إدارة الإعدادات من هذه البطاقة في أي وقت أو الاطّلاع على المزيد من الخيارات في قسم "تخصيص Chrome".</translation>
-<translation id="3207437351138888228">‏عند ملء نموذج، يتم إرسال معلوماتك والصفحة الواردة منها تلك المعلومات إلى Google لإنشاء اقتراحات</translation>
 <translation id="3207960819495026254">تمت إضافتها إلى الإشارات المرجعية.</translation>
 <translation id="3208584281581115441">التحقّق الآن</translation>
 <translation id="3208703785962634733">لم يتم تأكيده</translation>
@@ -3225,6 +3226,7 @@
 <translation id="3242289508736283383">‏يجب تثبيت التطبيق الذي يحمل سمة البيان "kiosk_only" في وضع الكشك على نظام التشغيل Chrome.</translation>
 <translation id="3243017971870859287">‏الاطّلاع على الأرقام التسلسلية لمكوِّنات وأجهزة ChromeOS Flex</translation>
 <translation id="324366796737464147">إلغاء الضجيج</translation>
+<translation id="3244271242291266297">الشهر</translation>
 <translation id="3244294424315804309">استمرار كتم الصوت</translation>
 <translation id="3247006341013237647">هل تريد تنظيم علامات التبويب؟</translation>
 <translation id="3247649647204519958">يمكنك هنا الاطّلاع على أذونات الإضافات وإدارتها للموقع الإلكتروني الذي تتصفّحه.</translation>
@@ -6090,7 +6092,6 @@
 <translation id="5267572070504076962">يُرجى تفعيل ميزة "التصفُّح الآمن" للحصول على حماية من المواقع الإلكترونية الخطيرة.</translation>
 <translation id="5269977353971873915">تعذّرت الطباعة</translation>
 <translation id="5271578170655641944">‏هل تريد إزالة إمكانية الوصول إلى Google Drive؟</translation>
-<translation id="5271782684896713035">قد يطّلع على هذه البيانات فريق من المراجعين لتحسين هذه الميزة</translation>
 <translation id="5273806377963980154">‏تعديل عنوان URL للموقع الإلكتروني</translation>
 <translation id="5275084684151588738">قواميس المستخدم</translation>
 <translation id="5275338516105640560">زر مجموعة علامات التبويب المحفوظة</translation>

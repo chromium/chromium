@@ -91,6 +91,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1269405891096105529">Peripheral not supported in Guest Mode</translation>
 <translation id="1270290102613614947">On-screen keyboard disabled</translation>
 <translation id="1272079795634619415">Stop</translation>
+<translation id="12741168609094094">Select anything on your screen to search, copy text and more</translation>
 <translation id="1275285675049378717">Powering <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Selected</translation>
 <translation id="1276975447697633661">Select the file, then press <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1720230731642245863">Hotspot is off</translation>
 <translation id="1731815243805539470">Switch to previous user</translation>
 <translation id="1733996486177697563">Switch between Dark and Light theme. Touch and hold on the desktop, then select Wallpaper and style.</translation>
+<translation id="1735992454301033090">Selected area, use arrow keys to move</translation>
 <translation id="1736898441010944794">'<ph name="NAME" />' visible to Bluetooth devices.</translation>
 <translation id="1737078180382804488">Dismiss setting up viewing your phone's notifications</translation>
 <translation id="174102739345480129">Marker is off.</translation>
@@ -494,6 +496,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> last week</translation>
 <translation id="2687510499067466116">Keyboard shortcut has changed</translation>
 <translation id="2689613560355655046">Desk 8</translation>
+<translation id="2692092709110488417">Press tab to focus and move selected area</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Show keyboard settings. <ph name="KEYBOARD_NAME" /> is selected.</translation>
 <translation id="2699913284398121653">Use the Content Transfer app to move your school account data to your personal account</translation>
@@ -729,6 +732,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="346243998268439747">Reset zoom level</translation>
 <translation id="3465223694362104965">Another keyboard has connected to this device since you last signed in. Make sure that you trust this keyboard before you use it.</translation>
 <translation id="3465356146291925647">Managed by your administrator</translation>
+<translation id="3470502288861289375">Copying...</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, then <ph name="KEY_TWO" /> or <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1033,6 +1037,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4412698727486357573">Help Centre</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is off.</translation>
 <translation id="4417647906073317561">Focus settings. Set a timer, task and music to get in the flow.</translation>
+<translation id="4418600384772451109">Close panel</translation>
 <translation id="4424159417645388645">Desk 5</translation>
 <translation id="4426817706804363424">Well done!</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -2229,6 +2234,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8287009018010202411">Productivity</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Weak</translation>
+<translation id="8300451473979404345">Selected handle, use arrow keys to move</translation>
 <translation id="8308637677604853869">Previous menu</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock is on</translation>
@@ -2289,6 +2295,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="851458219935658693">Show windows from the current desk, radio button selected</translation>
 <translation id="851660987304951246">Use Help me read to quickly summarise content or ask questions</translation>
 <translation id="8517041960877371778">Your <ph name="DEVICE_TYPE" /> may not charge while it is turned on.</translation>
+<translation id="8519329096920173967">Search my screen with Google Lens</translation>
 <translation id="8535393432370007982">Undo sort order by colour</translation>
 <translation id="8536886494750559755">Show Quick Share settings. Visible to everyone for <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Text copied to Clipboard</translation>

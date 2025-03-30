@@ -112,6 +112,7 @@
 <translation id="244264527810019436">在無痕模式下，某些網站的功能可能無法正常運作</translation>
 <translation id="2442870161001914531">一律要求電腦版網站</translation>
 <translation id="2445311670906052406">Chrome 現在會將最近開啟的分頁分享給裝置，這些資訊會顯示在裝置的應用程式清單和搜尋結果。你隨時可以前往 Chrome 設定頁面關閉這項功能。</translation>
+<translation id="245322989586167203">網站通常會連線至序列埠，以提供設定網路等資料移轉功能</translation>
 <translation id="2469312991797799607">這項操作將刪除 <ph name="ORIGIN" /> 及底下所有網站的所有資料和 Cookie</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2485422356828889247">解除安裝</translation>
@@ -271,6 +272,7 @@
 <translation id="4402755511846832236">禁止網站取得這部裝置的使用狀態</translation>
 <translation id="4412992751769744546">允許第三方 Cookie</translation>
 <translation id="4419929467120297501">Chrome 會禁止網站使用第三方 Cookie 追蹤你的瀏覽活動。前往設定頁面<ph name="BEGIN_LINK" />管理第三方 Cookie 存取權<ph name="END_LINK" />。</translation>
+<translation id="443121186588148776">序列埠</translation>
 <translation id="4434045419905280838">彈出式視窗與重新導向</translation>
 <translation id="443552056913301231">這項操作會刪除 Cookie 等所有本機資料，並重設 <ph name="ORIGIN" /> 的所有權限</translation>
 <translation id="4468959413250150279">關閉特定網站的音訊。</translation>
@@ -498,6 +500,7 @@
 <translation id="7423098979219808738">先詢問我</translation>
 <translation id="7423538860840206698">禁止讀取剪貼簿</translation>
 <translation id="7425915948813553151">網站的深色主題</translation>
+<translation id="7478658909253570368">禁止網站連線至序列埠</translation>
 <translation id="7488573225650545859">不要在應用程式清單中查看分頁</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">如果啟用，網站就可以顯示登入提示。如果停用，網站將無法顯示登入提示。</translation>
@@ -509,6 +512,7 @@
 <translation id="7594634374516752650">已連線至藍牙裝置</translation>
 <translation id="7617547684249261169">你可以刪除部分或全部的歷史記錄、Cookie、網站資料和其他資料</translation>
 <translation id="7649070708921625228">說明</translation>
+<translation id="7655411746932645568">網站可以要求連線至序列埠</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7667547420449112975">綠野仙蹤</translation>
 <translation id="7681597159868843240">網站通常會使用裝置的動作感應器提供虛擬實境或健身追蹤等功能</translation>

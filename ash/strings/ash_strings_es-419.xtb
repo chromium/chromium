@@ -91,6 +91,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1269405891096105529">El dispositivo periférico no es compatible en el Modo de invitado.</translation>
 <translation id="1270290102613614947">Teclado en pantalla inhabilitado</translation>
 <translation id="1272079795634619415">Interrumpir</translation>
+<translation id="12741168609094094">Selecciona cualquier elemento de la pantalla para buscar, copiar texto y mucho más</translation>
 <translation id="1275285675049378717">Cargando <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Seleccionada</translation>
 <translation id="1276975447697633661">Selecciona el archivo y, luego, presiona <ph name="KEY" /></translation>
@@ -227,6 +228,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1720230731642245863">El hotspot está desactivado</translation>
 <translation id="1731815243805539470">Cambiar al usuario anterior</translation>
 <translation id="1733996486177697563">Cambia entre los temas oscuro y claro. Mantén presionado el escritorio y elige Estilo y fondo de pantalla.</translation>
+<translation id="1735992454301033090">Se seleccionó el área, usa las teclas de flecha para moverte</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" visible para dispositivos Bluetooth.</translation>
 <translation id="1737078180382804488">Descartar la configuración de la visualización de las notificaciones de tu teléfono</translation>
 <translation id="174102739345480129">El marcador está desactivado.</translation>
@@ -494,6 +496,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2683887737780133806">El <ph name="DAY_OF_WEEK" /> de la semana pasada</translation>
 <translation id="2687510499067466116">Se modificó la combinación de teclas</translation>
 <translation id="2689613560355655046">Escritorio 8</translation>
+<translation id="2692092709110488417">Presiona Tab para enfocar y mover el área seleccionada</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Mostrar la configuración del teclado. Se seleccionó <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Usa la app de Transferencia de contenido para mover los datos de tu cuenta educativa a tu cuenta personal</translation>
@@ -729,6 +732,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <p
 <translation id="346243998268439747">Restablecer el nivel de zoom</translation>
 <translation id="3465223694362104965">Se conectó otro teclado a este dispositivo desde la última vez que accediste. Asegúrate de que este teclado sea de confianza antes de usarlo.</translation>
 <translation id="3465356146291925647">Administrada por tu administrador</translation>
+<translation id="3470502288861289375">Copiando…</translation>
 <translation id="347117769229524881"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, luego, <ph name="KEY_TWO" /> o <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control-Mayúscula-Espacio</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1034,6 +1038,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4412698727486357573">Centro de ayuda</translation>
 <translation id="4412944820643904175">La función <ph name="FEATURE_NAME" /> está desactivada.</translation>
 <translation id="4417647906073317561">Configuración del Modo sin distracciones. Establece un temporizador, una tarea y música para concentrarte.</translation>
+<translation id="4418600384772451109">Cerrar panel</translation>
 <translation id="4424159417645388645">Escritorio 5</translation>
 <translation id="4426817706804363424">¡Así se hace!</translation>
 <translation id="4430019312045809116">Volumen</translation>
@@ -2230,6 +2235,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8287009018010202411">Productividad</translation>
 <translation id="828708037801473432">No</translation>
 <translation id="8297006494302853456">Débil</translation>
+<translation id="8300451473979404345">Se seleccionó el controlador, usa las teclas de flecha para moverlo</translation>
 <translation id="8308637677604853869">Menú anterior</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Bloq Mayús está activado.</translation>
@@ -2290,6 +2296,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="851458219935658693">Está seleccionado el botón que muestra las ventanas del escritorio actual</translation>
 <translation id="851660987304951246">Usa Help me read para resumir contenido o hacer preguntas rápidamente</translation>
 <translation id="8517041960877371778">Tu <ph name="DEVICE_TYPE" /> podría no cargarse si el dispositivo está encendido.</translation>
+<translation id="8519329096920173967">Buscar en mi pantalla con Google Lens</translation>
 <translation id="8535393432370007982">Deshacer el orden por color</translation>
 <translation id="8536886494750559755">Mostrar la configuración de Quick Share. Visible para todos durante <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">Se copió el texto en el Portapapeles</translation>

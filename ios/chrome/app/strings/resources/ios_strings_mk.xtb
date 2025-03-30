@@ -48,7 +48,6 @@
 <translation id="1181037720776840403">Отстрани</translation>
 <translation id="1190609913194133056">Центар за известување</translation>
 <translation id="1201402288615127009">Следно</translation>
-<translation id="1202892408424955784">Следени производи</translation>
 <translation id="1204075260022434100">{count,plural, =1{Обележувачот е зачуван во „{title}“ во вашата сметка {email}}one{{count} обележувач се зачувани во „{title}“ во вашата сметка {email}}other{{count} обележувачи се зачувани во „{title}“ во вашата сметка {email}}}</translation>
 <translation id="120431140543679678">Следете</translation>
 <translation id="1207493287814084192">17:30 ч.</translation>
@@ -264,7 +263,6 @@
 <translation id="20485545164632846">нова ставка</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> сметки ја користат истата лозинка</translation>
 <translation id="2059166748188874810">Општина</translation>
-<translation id="2060114494785549741">Избриши по 1 месец</translation>
 <translation id="2060638295449304809">Адресава е зачувана само на овој уред. За да ја користите на другите ваши уреди, зачувајте ја во вашата сметка на Google, <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Избирач на типови единици</translation>
 <translation id="2067852168641682340">Секогаш зачувувај на оваа сметка</translation>
@@ -300,7 +298,6 @@
 <translation id="2215819824168709130">Скриј ја картичката „Следи ја цената“</translation>
 <translation id="2216366330550244277">Одете на страницата на некој производ</translation>
 <translation id="2220529011494928058">Пријави проблем</translation>
-<translation id="2220887224562128152">Штом датотека ќе се закаже за бришење, не може да се врати.</translation>
 <translation id="2223461067862937305">Создајте QR-код</translation>
 <translation id="2229345671837147090">Мрежа на далечински картички</translation>
 <translation id="2230173723195178503">Веб-страницата е вчитана</translation>
@@ -384,7 +381,6 @@
 <translation id="2539748786028143624">Вклучете „Подобрена заштита“…</translation>
 <translation id="2540111494300686866">Спречете дијалози</translation>
 <translation id="2542268842667970959">Скриј „Безбедносна проверка“</translation>
-<translation id="2543870349255816922">Картичкава прикажува намалување на цената на производот што го следите од еден од вашите синхронизирани уреди</translation>
 <translation id="2547458583188611426">Синхронизацијата не функционира. Внесете ја лозинката за да започне синхронизацијата.</translation>
 <translation id="2551153019974022505">Грешка на сметката</translation>
 <translation id="2559843230610279254">Група картички, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> картички.</translation>
@@ -494,7 +490,6 @@
 <translation id="3059270601560379555">Ново пребарување</translation>
 <translation id="3064547930554042309">Управувајте со преземањата</translation>
 <translation id="3072279342064724558">Лозинката веќе постои</translation>
-<translation id="3074862506644936708">Овозможете „Автоматско бришење“</translation>
 <translation id="3076846064362030967">Нема да ве одјавиме од сметката на Google. <ph name="BEGIN_LINK" />Други форми на активност<ph name="END_LINK" /> може да се зачувуваат во вашата сметка на Google кога сте најавени. Може да ги избришете во секое време.
 
 
@@ -913,6 +908,7 @@
 <translation id="4896467949657706481">Картичките се затворија; се одјавивте</translation>
 <translation id="4913626501929406101">Може безбедно да споделите копија од вашата лозинка со некого во вашата семејна група. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Прифати</translation>
+<translation id="4930714375720679147">Вклучи</translation>
 <translation id="4932733599132424254">Датум</translation>
 <translation id="4936354130727646074">Никогаш не преместувај</translation>
 <translation id="4937410517508563815">Зачувување лозинка во сметка</translation>
@@ -1148,7 +1144,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5899314093904173337">За споделување со луѓето во близина, дозволете им да го скенираат овој QR-код со нивната камера или апликацијата QR-скенер</translation>
 <translation id="5902752768726620872">{count,plural, =1{Нови картички: {count}}one{Нови картички: {count}}other{Нови картички: {count}}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
-<translation id="5917913282764181683">Бришете ги преземањата автоматски</translation>
 <translation id="5922999516621365983">Повлечете ја картичката тука за да ја закачите.</translation>
 <translation id="5936006948844852401">Управувајте со просторот</translation>
 <translation id="5936065461722368675">Преведи ја целата страница</translation>
@@ -1507,7 +1502,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="741204030948306876">Да, може</translation>
 <translation id="7417689656810783109">Преименувајте група</translation>
 <translation id="7419565702166471774">Секогаш користи безбедни врски</translation>
-<translation id="742001653298797675">Закажете ги сите преземања за бришење по еден месец за да заштедите простор на телефонот и да ја заштитите вашата приватност.</translation>
 <translation id="7425053386765766120">Додајте начин на плаќање…</translation>
 <translation id="7425346204213733349">Промените во обележувачите, историјата, лозинките и другите поставки нема веќе да се синхронизираат со вашата сметка на Google. Како и да е, постоечките податоци ќе останат зачувани на сметката на Google.</translation>
 <translation id="742664698522525515">Да се задржи групата?</translation>
